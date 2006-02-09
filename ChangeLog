@@ -1,5 +1,10 @@
 2006-02-09  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
+	* skel/build-skel.xml: 
+	* src/de/schlund/pfixcore/util/Merge.java: 
+	Adapated merge utility to new include parts file schema, now merging theme
+	nodes instead of language nodes
+	
 	* src/de/schlund/pfixxml/targets/VirtualTarget.java (generateValue): 
 	Fixing "unused part does not disappear bug" by adding missing call to 
 	AuxDependencyManager.reset()

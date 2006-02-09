@@ -409,7 +409,7 @@ or delete the DOCTYPE definition -->
 
   <target name="merge">
     <property name="merge.src" location="${dir.projects}/core/dyntxt/statusmessages.xml"/>
-    <property name="merge.srcPath" location="/include_parts/part/product[@name='default']/lang[@name='default']"/>
+    <property name="merge.srcPath" location="/include_parts/part/theme[@name='default']"/>
     <property name="merge.dest" location="${dir.projects}/common/dyntxt/statusmessages-core-merged.xml"/>
     <java classname="de.schlund.pfixcore.util.Merge" fork="true" classpathref="cp.classpath">
       <arg file="${merge.src}"/>

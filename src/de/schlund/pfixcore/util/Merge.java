@@ -60,78 +60,63 @@ public class Merge {
         
         System.out.println("Merge " + src + " into" + dest);
         destDoc = Xml.parseMutable(dest);
-        remove(XPath.select(destDoc, "/include_parts/part/product[count(lang) = 0]"));
-        remove(XPath.select(destDoc, "/include_parts/part[count(product) = 0]"));
+        remove(XPath.select(destDoc, "/include_parts/part/theme[count(*) = 0 and normalize-space(text()) = '']"));
+        remove(XPath.select(destDoc, "/include_parts/part[count(theme) = 0]"));
         nodes = XPath.select(Xml.parseMutable(src), srcPath);
         modified = merge(nodes, destDoc);
-        System.out.println("  modified: " + modified);
-        System.out.println("  added: " + (nodes.size() - modified));
+        System.out.println("  merged: " + modified);
         Xml.serialize(destDoc, dest, true, true);
     }
 
     private int merge(List<Element> src, Document dest) throws TransformerException {
-        int modified;
+        int merged;
         
-        modified = 0;
+        merged = 0;
         for (Element element : src) {
-            if (mergeLang(element, dest)) {
-                modified++;
+            if (mergeTheme(element, dest)) {
+                merged++;
             }
         }
-        return modified;
+        return merged;
     }
     
-    private boolean mergeLang(Element src, Document dest) throws TransformerException {
+    private boolean mergeTheme(Element src, Document dest) throws TransformerException {
         Element part;
-        Element product;
         
-        ensureElement(src, "lang");
-        product = (Element) src.getParentNode();
-        ensureElement(product, "product");
-        part = (Element) product.getParentNode();
+        ensureElement(src, "theme");
+        part = (Element) src.getParentNode();
         ensureElement(part, "part");
-        return mergeLang(getName(part), getName(product), src, dest);
+        return mergeTheme(getName(part), getName(src), src, dest);
     }
 
-    private boolean mergeLang(String partName, String productName, Element src, Document dest) throws TransformerException {
+    private boolean mergeTheme(String partName, String themeName, Element src, Document dest) throws TransformerException {
         Node all;
         Element destPart;
-        Element destProduct;
-        Node newNode;
+        Element destTheme;
         Node first;
-        boolean modified;
         
         all = XPath.selectNode(dest, "/include_parts");
         destPart = getOrCreate(all, "part", partName);
-        destProduct = getOrCreate(destPart, "product", productName);
-        modified = removeLang(destProduct, getName(src));
-        newNode = dest.importNode(src, true);
-        first = destProduct.getFirstChild();
-        if (first != null) {
-            destProduct.insertBefore(newNode, first);
-        } else {
-            destProduct.appendChild(newNode);
+        destTheme = get(destPart, "theme", themeName);
+        if (destTheme != null) {
+            return false;
         }
-        return modified;
+        destTheme = (Element) dest.importNode(src, true);
+        first = destPart.getFirstChild();
+        if (first != null) {
+            destPart.insertBefore(destTheme, first);
+        } else {
+            destPart.appendChild(destTheme);
+        }
+        return true;
     }
 
     private void ensureElement(Element ele, String name) {
         if (!name.equals(ele.getTagName())) {
-            throw new IllegalArgumentException("illegal elememt: expected " + name + ", found " + ele.getTagName());
+            throw new IllegalArgumentException("illegal element: expected " + name + ", found " + ele.getTagName());
         }
     }
     
-    private boolean removeLang(Element product, String langName) throws TransformerException {
-        Node lang;
-        
-        lang = XPath.selectNode(product, "lang[@name = '" + langName + "']");
-        if (lang != null) {
-            lang.getParentNode().removeChild(lang);
-            return true;
-        }
-        return false;
-    }
-
     private Element getOrCreate(Node root, String element, String name) throws TransformerException {
         Element result;
         
@@ -141,6 +126,13 @@ public class Merge {
             result.setAttribute("name", name);
             root.appendChild(result);
         }
+        return result;
+    }
+    
+    private Element get(Node root, String element, String name) throws TransformerException {
+        Element result;
+        
+        result = (Element) XPath.selectNode(root, element + "[@name = '" + name + "']");
         return result;
     }
     
