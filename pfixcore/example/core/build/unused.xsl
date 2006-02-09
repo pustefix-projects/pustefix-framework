@@ -16,8 +16,8 @@
 
   <xsl:template match="incfile">
     <xsl:choose>
-      <xsl:when test="not(./part/product[not(@UNUSED = 'true')])">
-FILE UNUSED: <xsl:value-of select="@name"/>
+      <xsl:when test="not(./part/theme[not(@UNUSED = 'true')])">
+FILE  UNUSED: <xsl:value-of select="@name"/>
       </xsl:when>
       <xsl:otherwise>
         <xsl:apply-templates select="./part">
@@ -30,11 +30,11 @@ FILE UNUSED: <xsl:value-of select="@name"/>
   <xsl:template match="part">
     <xsl:param name="file"/>
     <xsl:choose>
-      <xsl:when test="not(./product[not(@UNUSED = 'true')])">
-PART UNUSED: <xsl:value-of select="$file"/> => <xsl:value-of select="@name"/>
+      <xsl:when test="not(./theme[not(@UNUSED = 'true')])">
+PART  UNUSED: <xsl:value-of select="$file"/> => <xsl:value-of select="@name"/>
       </xsl:when>
       <xsl:otherwise>
-        <xsl:apply-templates select="./product">
+        <xsl:apply-templates select="./theme">
           <xsl:with-param name="file"><xsl:value-of select="$file"/></xsl:with-param>
           <xsl:with-param name="part"><xsl:value-of select="@name"/></xsl:with-param>
         </xsl:apply-templates>
@@ -42,17 +42,17 @@ PART UNUSED: <xsl:value-of select="$file"/> => <xsl:value-of select="@name"/>
     </xsl:choose>
   </xsl:template>
 
-  <xsl:template match="product">
+  <xsl:template match="theme">
     <xsl:param name="file"/>
     <xsl:param name="part"/>
     <xsl:if test="@UNUSED = 'true'">
-PROD UNUSED: <xsl:value-of select="$file"/> => <xsl:value-of select="$part"/> => <xsl:value-of select="@name"/>
+THEME UNUSED: <xsl:value-of select="$file"/> => <xsl:value-of select="$part"/> => <xsl:value-of select="@name"/>
     </xsl:if>
   </xsl:template>
   
   <xsl:template match="image">
     <xsl:if test="@UNUSED = 'true'">
-IMAG UNUSED: <xsl:value-of select="substring-after(@name, $pwd)"/>
+IMAGE UNUSED: <xsl:value-of select="substring-after(@name, $pwd)"/>
     </xsl:if>
   </xsl:template>
 
