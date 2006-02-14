@@ -1,3 +1,9 @@
+2006-02-14  Sebastian Marsching  <sebastian.marsching@1und1.de>
+
+	* src/de/schlund/pfixxml/util/Xslt.java (resolve): Fixing nasty bug
+	causing NullPointerExceptions in Saxon when an included stylesheet
+	does not exist
+
 2006-02-09  Jens Lautenbacher  <jtl@schlund.de>
 
 	* src/de/schlund/pfixcore/util/Cleanup.java (Module): 

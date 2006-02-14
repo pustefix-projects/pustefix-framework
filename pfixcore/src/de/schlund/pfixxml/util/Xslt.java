@@ -221,6 +221,13 @@ public class Xslt {
                                     + target.getTargetKey()
                                     + "' included by stylesheet!", e);
                 }
+                
+                // If Document object is null, the file could not be found or read
+                // so return null to tell the parser the URI could not be resolved
+                if (dom == null) {
+                    return null;
+                }
+                
                 Source source = new DOMSource(dom);
     
                 // There is a bug in Saxon 6.5.3 which causes
