@@ -1,3 +1,9 @@
+2006-02-14  Sebastian Marsching  <sebastian.marsching@1und1.de>
+
+	* src/de/schlund/pfixxml/util/Xslt.java (resolve): Fixing bug causing
+	nasty NullPointerExceptions in Saxon when an included XSL stylesheet
+	does not exist
+
 2006-02-09  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
 	* src/de/schlund/pfixxml/targets/VirtualTarget.java (generateValue): 

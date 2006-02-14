@@ -222,6 +222,12 @@ public class Xslt {
                                     + "' included by stylesheet!", e);
                 }
                 Source source = new DOMSource(dom);
+                
+                // If Document object is null, the file could not be found or read
+                // so return null to tell the parser the URI could not be resolved
+                if (dom == null) {
+                    return null;
+                }
     
                 // There is a bug in Saxon 6.5.3 which causes
                 // a NullPointerException to be thrown, if systemId
