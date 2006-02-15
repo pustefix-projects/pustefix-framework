@@ -1,3 +1,20 @@
+2006-02-15  Sebastian Marsching  <sebastian.marsching@1und1.de>
+
+	* src/de/schlund/pfixxml/ContextXMLServer.java (getDom): 
+	* src/de/schlund/pfixcore/scriptedflow/*: 
+	Added code for scripted flows, which allow the well definend
+	automatic triggering of virtual requests
+	
+	* example/core/schema/properties200401.xsd: 
+	* example/core/build/create_propfiles.xsl: 
+	Extended XML schema and stylesheet to support the definition of 
+	scripted flows
+
+	* example/sample1/conf/config.prop.in: 
+	* example/sample1/conf/scriptedflow/forceadult.script.xml: 
+	* example/sample1/conf/scriptedflow/ordershirt.script.xml: 	
+	Created example for scripted flows in sample1 project
+
 2006-02-14  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
 	* src/de/schlund/pfixxml/util/Xslt.java (resolve): Fixing nasty bug

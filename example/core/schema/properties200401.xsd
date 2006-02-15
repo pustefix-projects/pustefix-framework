@@ -28,6 +28,7 @@
       <xs:element name="servletinfo" type="prop:contextxmlserverservletinfoType"/>
       <xs:element ref="prop:context"/>
       <xs:element ref="prop:interceptors" maxOccurs="1" minOccurs="0"/>
+      <xs:element ref="prop:scriptedflow" minOccurs="0" maxOccurs="unbounded"/>
       <xs:choice minOccurs="1" maxOccurs="unbounded">
         <xs:element ref="prop:pageflow"/>
         <xs:element ref="prop:pagerequest"/>
@@ -389,7 +390,14 @@
       </xs:sequence>
   </xs:group>
   <!-- </pagerequest> -->
-
+	
+  <!-- <scriptedflow name="..." file="..."/> -->
+  <xs:element name="scriptedflow" type="prop:scriptedflowType"/>
+  <xs:complexType name="scriptedflowType" mixed="false">
+    <xs:attribute name="name" use="required"/>
+    <xs:attribute name="file" use="required"/>
+  </xs:complexType>
+  
   <!-- <exception> -->
   <!-- the desired behaviour for page and forward cannot be expressed -->
   <!-- within the schema. The "use"-attribut of xs:attributes for exact the same element cannot differ -->

@@ -46,6 +46,9 @@
 <!--     </end> -->
   </interceptors>
   
+  <scriptedflow name="forceadult" file="sample1/conf/scriptedflow/forceadult.script.xml"/>
+  <scriptedflow name="ordershirt" file="sample1/conf/scriptedflow/ordershirt.script.xml"/>
+  
   <!-- <pageflow name="OrderFlow" stopnext="true"> -->
   <pageflow name="OrderFlow" final="home">
     <default>
@@ -170,8 +173,7 @@
     <prop name="contexttrouser.feature.1">Extra warm</prop>
     <prop name="contexttrouser.feature.2">Windproof</prop>
 
-    <!--<prop name="context.startinterceptor.001">de.schlund.pfixcore.example.SampleStartIC</prop>-->
-    
+    <!--<prop name="context.startinterceptor.001">de.schlund.pfixcore.example.SampleStartIC</prop>-->    
   </properties>
 
 </contextxmlserver>

@@ -792,7 +792,11 @@
         <xsl:text>&#xa;</xsl:text>
       </xsl:for-each>
   </xsl:template>
-
+  
+    
+  <xsl:template match="prop:scriptedflow">
+    <xsl:text>scriptedflow.</xsl:text><xsl:value-of select="@name"/>=<xsl:value-of select="@file"/><xsl:text>&#xa;</xsl:text>
+  </xsl:template>
 
   <xsl:template match="prop:servletinfo | prop:directoutputservletinfo">
     <xsl:text>xmlserver.depend.xml=</xsl:text>
