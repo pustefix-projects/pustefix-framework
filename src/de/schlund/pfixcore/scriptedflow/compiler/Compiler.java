@@ -257,7 +257,12 @@ public class Compiler {
                 }
 
             } else if (node.getNodeType() == Node.TEXT_NODE) {
-                return new StaticObject(node.getNodeValue());
+                String value = node.getNodeValue();
+                if (isWhitespace(value)) {
+                    return new StaticObject("");
+                } else {
+                    return new StaticObject(value);
+                }
             }
         }
 
@@ -279,7 +284,10 @@ public class Compiler {
                 }
 
             } else if (node.getNodeType() == Node.TEXT_NODE) {
-                lo.addObject(new StaticObject(node.getNodeValue()));
+                String value = node.getNodeValue();
+                if (!isWhitespace(value)) {
+                    lo.addObject(new StaticObject(node.getNodeValue()));
+                }
             }
         }
         return lo;
@@ -441,12 +449,16 @@ public class Compiler {
                         .addStatement(statementFromElement(block,
                                 (Element) child));
             } else if (child.getNodeType() == Node.TEXT_NODE) {
-                if (!child.getNodeValue().matches("\\s*")) {
+                if (!isWhitespace(child.getNodeValue())) {
                     throw new CompilerException("Found illegal text data \""
                             + child.getNodeValue() + "\"!");
                 }
             }
         }
         return block;
+    }
+
+    private static boolean isWhitespace(String teststr) {
+        return teststr.matches("\\s*");
     }
 }
