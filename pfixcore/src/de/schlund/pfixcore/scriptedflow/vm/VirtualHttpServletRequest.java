@@ -149,16 +149,21 @@ public class VirtualHttpServletRequest implements HttpServletRequest {
     public String getRequestURI() {
         // Construct the request URI using servlet path
         // and path info
+        String contextpath = getContextPath();
         String servletpath = getServletPath();
         String pathinfo = getPathInfo();
         if (pathinfo == null && servletpath == null) {
-            return "/";
+            if (contextpath.length() == 0) {
+                return "/";
+            } else {
+                return contextpath;
+            }
         } else if (servletpath == null) {
-            return pathinfo;
+            return contextpath + pathinfo;
         } else if (pathinfo == null) {
-            return servletpath;
+            return contextpath + servletpath;
         } else {
-            return servletpath + pathinfo;
+            return contextpath + servletpath + pathinfo;
         }
     }
 
