@@ -55,25 +55,31 @@ public class TargetDependencyRelation {
     private static Category                       CAT      = Category.getInstance(TargetDependencyRelation.class.getName());
     private static final TargetDependencyRelation instance = new TargetDependencyRelation();
     
-    private HashMap<AuxDependency, TreeSet<Target>> allauxs                            = 
-        new HashMap<AuxDependency, TreeSet<Target>>();
-    private HashMap<Target, TreeSet<AuxDependency>> alltargets                         = 
-        new HashMap<Target, TreeSet<AuxDependency>>();
-    private HashMap<AuxDependency, RefCountingCollection<TargetGenerator>> auxtotgen   = 
-        new HashMap<AuxDependency, RefCountingCollection<TargetGenerator>>(); 
-    private HashMap<TargetGenerator, RefCountingCollection<AuxDependency>> tgentoaux   = 
-        new HashMap<TargetGenerator, RefCountingCollection<AuxDependency>>();
-    private HashMap<Target, HashMap<AuxDependency, HashSet<AuxDependency>>> targettoparentchild = 
-        new HashMap<Target, HashMap<AuxDependency, HashSet<AuxDependency>>>();
-    private HashMap<AuxDependency, RefCountingCollection<AuxDependency>> auxtochildaux = 
-        new HashMap<AuxDependency, RefCountingCollection<AuxDependency>>();
-//     private HashMap<Target, HashMap<AuxDependency, HashSet<AuxDependency>>> targettochildparent =
-//         new HashMap<Target, HashMap<AuxDependency, HashSet<AuxDependency>>>();
-//     private HashMap<AuxDependency, RefCountingCollection<AuxDependency>> auxtoparentaux = 
-//         new HashMap<AuxDependency, RefCountingCollection<AuxDependency>>();
+    private HashMap<AuxDependency, TreeSet<Target>> allauxs;
+    private HashMap<Target, TreeSet<AuxDependency>> alltargets;
+    private HashMap<AuxDependency, RefCountingCollection<TargetGenerator>> auxtotgen; 
+    private HashMap<TargetGenerator, RefCountingCollection<AuxDependency>> tgentoaux;
+    private HashMap<Target, HashMap<AuxDependency, HashSet<AuxDependency>>> targettoparentchild;
+    private HashMap<AuxDependency, RefCountingCollection<AuxDependency>> auxtochildaux;
+//     private HashMap<Target, HashMap<AuxDependency, HashSet<AuxDependency>>> targettochildparent;
+//     private HashMap<AuxDependency, RefCountingCollection<AuxDependency>> auxtoparentaux;
     
-    private TargetDependencyRelation() {}
+    private TargetDependencyRelation() {
+        init();
+    }
 
+    public void init() {
+        allauxs = new HashMap<AuxDependency, TreeSet<Target>>();
+        alltargets = new HashMap<Target, TreeSet<AuxDependency>>();
+        auxtotgen = new HashMap<AuxDependency, RefCountingCollection<TargetGenerator>>();
+        tgentoaux = new HashMap<TargetGenerator, RefCountingCollection<AuxDependency>>();
+        targettoparentchild = new HashMap<Target, HashMap<AuxDependency, HashSet<AuxDependency>>>();
+        auxtochildaux = new HashMap<AuxDependency, RefCountingCollection<AuxDependency>>();
+//        targettochildparent = new HashMap<Target, HashMap<AuxDependency, HashSet<AuxDependency>>>();
+//        auxtoparentaux = new HashMap<AuxDependency, RefCountingCollection<AuxDependency>>();
+    }
+    
+    
     public static final TargetDependencyRelation getInstance() {
         return instance;
     }
