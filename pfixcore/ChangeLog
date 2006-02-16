@@ -1,6 +1,10 @@
 2006-02-16  Niels Schelbach <niels@schlund.de>
 	* src/de/schlund/pfixxml/targets/TargetDependencyRelation.java:
 	added init method which initializes all maps
+	* src/de/schlund/pfixxml/jmx/JmxServerFactory.java:
+	* src/de/schlund/pfixxml/jmx/JmxPortServlet.java:
+	* example/servletconf/projects.xml.in:
+	added servlet to obtain jmx port 
 
 
 2006-02-15  Sebastian Marsching  <sebastian.marsching@1und1.de>

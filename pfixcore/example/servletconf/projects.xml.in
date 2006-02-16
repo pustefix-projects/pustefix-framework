@@ -59,6 +59,11 @@
       <active>true</active>
       <class>de.schlund.pfixxml.CacheStatisticServlet</class> 
     </servlet>
+
+	<servlet name="jmxport">
+      <active>true</active>
+      <class>de.schlund.pfixxml.jmx.JmxPortServlet</class> 
+    </servlet>
     
   </project>
 
