@@ -72,15 +72,16 @@ public class JmxServerFactory {
     }
     
     private JmxServer server;
+    private int port;
+    private String host;
     
     public JmxServerFactory() {
     	server = null;
     }
     
     public void init(Properties props) throws Exception {
-        final String host = getHost(props);
-        final int port = getPort(props);
-        
+        host = getHost(props);
+        port = getPort(props);
         if(port <= 0) {
             LOG.error("Got port <=0["+port+"]. Not starting jmx-server!");
         } else {
@@ -94,8 +95,14 @@ public class JmxServerFactory {
         }
     }
     
-   
-    
+    public String getHost() {
+        return host;
+    }
+
+    public int getPort() {
+        return port;
+    }
+
     private static String getHost(Properties props) throws UnknownHostException {
         
         String machine = props.getProperty(PROP_SERVERNAME, null);
