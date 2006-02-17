@@ -1,3 +1,9 @@
+2006-02-17  Jens Lautenbacher  <jtl@schlund.de>
+
+	* changed saxon from 6.5.3 to 6.5.5 (tweaked a little by removing
+	the parser service entry from the META-INF of saxon to make it not
+	try to use aelfred)
+
 2006-02-16  Niels Schelbach <niels@schlund.de>
 	* src/de/schlund/pfixxml/targets/TargetDependencyRelation.java:
 	added init method which initializes all maps
