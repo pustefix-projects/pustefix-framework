@@ -43,18 +43,11 @@ import de.schlund.pfixxml.PathFactory;
  * Configures and starts JmxServer
  */
 public class JmxServerFactory {
-    /** don't store this in a config file, because client apps can access values where */
-    // Lieber Jörg -- lies doch mal was hier im kommentar steht ^^^ ...
-    //public static final int PORT_A = 9334;
-    //public static final int PORT_B = 9335;
-    
-    
-    public  static String PROP_DEFAULT_PORT = "de.schlund.pfixcore.jmx.port.default";
+    public static String PROP_DEFAULT_PORT = "de.schlund.pfixcore.jmx.port.default";
     public static String PROP_CONF_PORT_PREFIX = "de.schlund.pfixcore.jmx.port";
     public static String PROP_CONF_REGEX_PREFIX = "de.schlund.pfixcore.jmx.regex";
     public static String PROP_USE_KEYSTORE = "de.schlund.pfixcore.jmx.keystore";
     public static String PROP_SERVERNAME = "de.schlund.pfixcore.jmx.servername";
-    
     
     private static Logger LOG = Logger.getLogger(JmxServerFactory.class);
     
