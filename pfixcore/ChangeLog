@@ -1,3 +1,7 @@
+2006-02-21  Joerg Haecker <haecker@schlund.de>
+	* src/de/schlund/pfixxml/PfixServletRequest.java(handleMulti):
+	make sure that temporary directory exists.
+	
 2006-02-21  Jens Lautenbacher  <jtl@schlund.de>
 
 	* example/core/xsl/include.xsl: added $__env to pfx:langselect.
