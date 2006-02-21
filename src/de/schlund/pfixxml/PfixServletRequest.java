@@ -18,6 +18,7 @@
  */
 package de.schlund.pfixxml;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -417,6 +418,14 @@ public class PfixServletRequest {
         if (tmpdir == null || tmpdir.equals("")) {
             tmpdir = System.getProperty(DEF_PROP_TMPDIR);
         }
+        File temporary_dir = new File(tmpdir);
+        if(!temporary_dir.exists()) {
+            boolean ok = temporary_dir.mkdirs();
+            if(CAT.isInfoEnabled()) {
+                CAT.info(temporary_dir.getPath()+" did not exist. Created now. Sucess:"+ok);
+            }
+        }
+        
         String maxsize = properties.getProperty(PROP_MAXPARTSIZE);
         if (maxsize == null || maxsize.equals("")) {
             maxsize = DEF_MAXPARTSIZE;
