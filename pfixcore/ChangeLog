@@ -1,3 +1,7 @@
+2006-02-21  Jens Lautenbacher  <jtl@schlund.de>
+
+	* example/core/xsl/include.xsl: added $__env to pfx:langselect.
+
 2006-02-17  Jens Lautenbacher  <jtl@schlund.de>
 
 	* changed saxon from 6.5.3 to 6.5.5 (tweaked a little by removing

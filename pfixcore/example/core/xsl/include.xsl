@@ -20,30 +20,39 @@
   <xsl:param name="prohibitEdit">no</xsl:param>
 
   <xsl:template match="pfx:langselect">
+    <xsl:param name="__env"/>
     <xsl:choose>
       <xsl:when test="not($__target_key = '__NONE__')">
         <xsl:choose>
           <xsl:when test="not(./pfx:lang[not(@name = 'default')]) and ./pfx:lang[@name = 'default']">
-            <xsl:apply-templates select="./pfx:lang[@name = 'default']/node()"/>
+            <xsl:apply-templates select="./pfx:lang[@name = 'default']/node()">
+              <xsl:with-param name="__env" select="$__env"/>
+            </xsl:apply-templates>
           </xsl:when>
           <xsl:otherwise>
             <ixsl:choose>
               <xsl:for-each select="./pfx:lang[not(@name = 'default') and string-length(@name) > 0 and
                                     not(substring(@name, string-length(@name)) = '*')]">
                 <ixsl:when test="$lang = '{./@name}'">
-                  <xsl:apply-templates select="./node()"/>
+                  <xsl:apply-templates select="./node()">
+                    <xsl:with-param name="__env" select="$__env"/>
+                  </xsl:apply-templates>
                 </ixsl:when>
               </xsl:for-each>
               <xsl:for-each select="./pfx:lang[not(@name = 'default') and string-length(@name) > 1 and
                                     substring(@name, string-length(@name)) = '*']">
                 <ixsl:when test="starts-with($lang, '{substring(@name, 0, string-length(@name))}')">
-                  <xsl:apply-templates select="./node()"/>
+                  <xsl:apply-templates select="./node()">
+                    <xsl:with-param name="__env" select="$__env"/>
+                  </xsl:apply-templates>
                 </ixsl:when>
               </xsl:for-each>
               <xsl:choose>
                 <xsl:when test="./pfx:lang[@name = 'default']">
                   <ixsl:otherwise>
-                    <xsl:apply-templates select="./pfx:lang[@name = 'default']/node()"/>
+                    <xsl:apply-templates select="./pfx:lang[@name = 'default']/node()">
+                      <xsl:with-param name="__env" select="$__env"/>
+                    </xsl:apply-templates>
                   </ixsl:otherwise>
                 </xsl:when>
                 <xsl:otherwise>
@@ -70,13 +79,19 @@
                               starts-with($lang, substring(@name, 0, string-length(@name)))]"/>
         <xsl:choose>
           <xsl:when test="$langnodes">
-            <xsl:apply-templates select="$langnodes/node()"/>
+            <xsl:apply-templates select="$langnodes/node()">
+              <xsl:with-param name="__env" select="$__env"/>
+            </xsl:apply-templates>
           </xsl:when>
           <xsl:when test="$commonlangnodes">
-            <xsl:apply-templates select="$commonlangnodes/node()"/>
+            <xsl:apply-templates select="$commonlangnodes/node()">
+              <xsl:with-param name="__env" select="$__env"/>
+            </xsl:apply-templates>
           </xsl:when>
           <xsl:when test="$deflangnodes">
-            <xsl:apply-templates select="$deflangnodes/node()"/>
+            <xsl:apply-templates select="$deflangnodes/node()">
+              <xsl:with-param name="__env" select="$__env"/>
+            </xsl:apply-templates>
           </xsl:when>
           <xsl:otherwise>
             <span>
