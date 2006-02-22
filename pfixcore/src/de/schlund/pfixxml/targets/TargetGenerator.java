@@ -679,7 +679,7 @@ public class TargetGenerator implements Comparable{
         PageInfoFactory.getInstance().reset();
         SharedLeafFactory.getInstance().reset();
         AuxDependencyFactory.getInstance().reset();
-        TargetDependencyRelation.getInstance().init();
+        TargetDependencyRelation.getInstance().reset();
     }
 
     //--
