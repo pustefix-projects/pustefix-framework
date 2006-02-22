@@ -558,7 +558,6 @@ public class TargetGenerator implements Comparable{
         }
     }
     
-    
     public void generateTarget(Target target) throws Exception {
         if (target.getType() != TargetType.XML_LEAF && target.getType() != TargetType.XSL_LEAF) {
             System.out.println(">>>>> Generating " + getDisccachedir().getRelative() + File.separator +
@@ -586,12 +585,6 @@ public class TargetGenerator implements Comparable{
             notifyListenerTargetDone(target);
         }
     }
-    
-    
-    
-    
-    
-    
     
     /**
      * This method checks, if a TargetGeneratorListener wants to stop,
@@ -640,8 +633,6 @@ public class TargetGenerator implements Comparable{
             listener.generationException(target,tgex);
         }
     }
-    
-    
     
     /**
      * Returns the isGetModTimeMaybeUpdateSkipped.
@@ -704,10 +695,10 @@ public class TargetGenerator implements Comparable{
         return attr.getValue();
     }
 
-	public int compareTo(Object o) {
-		TargetGenerator cmp = (TargetGenerator)o;
-		return cmp.getName().compareTo(this.getName());
-	}
+    public int compareTo(Object o) {
+        TargetGenerator cmp = (TargetGenerator)o;
+        return cmp.getName().compareTo(this.getName());
+    }
     
     public Path getConfigPath() {
         return this.config_path;
