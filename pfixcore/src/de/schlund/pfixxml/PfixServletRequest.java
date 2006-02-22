@@ -100,6 +100,7 @@ public class PfixServletRequest {
         serverport  = req.getServerPort();
         request     = req;
         session     = req.getSession(false);
+        verifyDirExists(System.getProperty(DEF_PROP_TMPDIR));
     }
 
     //~ Methods ....................................................................................
@@ -418,13 +419,6 @@ public class PfixServletRequest {
         if (tmpdir == null || tmpdir.equals("")) {
             tmpdir = System.getProperty(DEF_PROP_TMPDIR);
         }
-        File temporary_dir = new File(tmpdir);
-        if(!temporary_dir.exists()) {
-            boolean ok = temporary_dir.mkdirs();
-            if(CAT.isInfoEnabled()) {
-                CAT.info(temporary_dir.getPath()+" did not exist. Created now. Sucess:"+ok);
-            }
-        }
         
         String maxsize = properties.getProperty(PROP_MAXPARTSIZE);
         if (maxsize == null || maxsize.equals("")) {
@@ -502,4 +496,15 @@ public class PfixServletRequest {
             }
         }
     }
+    
+    private void verifyDirExists(String tmpdir) {
+        File temporary_dir = new File(tmpdir);
+        if(!temporary_dir.exists()) {
+            boolean ok = temporary_dir.mkdirs();
+            if(CAT.isInfoEnabled()) {
+                CAT.info(temporary_dir.getPath()+" did not exist. Created now. Sucess:"+ok);
+            }
+        }
+    }
+        
 } // PfixServletRequest
