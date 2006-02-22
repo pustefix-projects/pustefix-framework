@@ -55,7 +55,7 @@ public class TargetDependencyRelation {
     private static Category                       CAT      = Category.getInstance(TargetDependencyRelation.class.getName());
     private static final TargetDependencyRelation instance = new TargetDependencyRelation();
     
-    private HashMap<AuxDependency, TreeSet<Target>> allauxs;
+    private HashMap<AuxDependency, TreeSet<Target>> allauxs; 
     private HashMap<Target, TreeSet<AuxDependency>> alltargets;
     private HashMap<AuxDependency, RefCountingCollection<TargetGenerator>> auxtotgen; 
     private HashMap<TargetGenerator, RefCountingCollection<AuxDependency>> tgentoaux;
