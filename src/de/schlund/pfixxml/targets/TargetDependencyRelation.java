@@ -65,10 +65,10 @@ public class TargetDependencyRelation {
 //     private HashMap<AuxDependency, RefCountingCollection<AuxDependency>> auxtoparentaux;
     
     private TargetDependencyRelation() {
-        init();
+        reset();
     }
 
-    public void init() {
+    public void reset() {
         allauxs = new HashMap<AuxDependency, TreeSet<Target>>();
         alltargets = new HashMap<Target, TreeSet<AuxDependency>>();
         auxtotgen = new HashMap<AuxDependency, RefCountingCollection<TargetGenerator>>();

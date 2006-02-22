@@ -1,3 +1,9 @@
+2006-02-22  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixxml/targets/TargetDependencyRelation.java (TargetDependencyRelation::reset): 
+	renamed from init
+	* src/de/schlund/pfixxml/targets/TargetGenerator.java (TargetGenerator::resetFactories): use it.
+
 2006-02-21  Joerg Haecker <haecker@schlund.de>
 	* src/de/schlund/pfixxml/PfixServletRequest.java(handleMulti):
 	make sure that temporary directory exists.
