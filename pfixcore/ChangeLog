@@ -1,3 +1,7 @@
+2006-02-23  Sebastian Marsching <sebastian.marsching@1und1.de>
+
+	* Releasing version 0.8.10
+
 2006-02-22  Joerg Haecker <haecker@schlund.de>
 
 	* src/de/schlund/pfixxml/PfixServletRequest.java:
