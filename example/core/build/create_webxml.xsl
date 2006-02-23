@@ -26,13 +26,32 @@
       <xsl:if test="$active = 'true'">
         <servlet-mapping>
           <servlet-name><xsl:value-of select="@name"/></servlet-name>
-          <url-pattern>/<xsl:value-of select="@name"/>/*</url-pattern>
+          <url-pattern>/xml/<xsl:value-of select="@name"/>/*</url-pattern>
         </servlet-mapping>
       </xsl:if>
     </xsl:for-each>
-  </xsl:template>
+    
+    <!-- Default servlet for retrieving static files from /xml/* -->
+    <servlet-mapping>
+      <servlet-name>static-docroot</servlet-name>
+      <url-pattern>/xml/*</url-pattern>
+    </servlet-mapping>
+    
+    <!-- Servlet for static files in / for standalone mode -->
+    <servlet-mapping>
+      <servlet-name>static-docroot</servlet-name>
+      <url-pattern>/</url-pattern>
+    </servlet-mapping>
+
+      </xsl:template>
 
   <xsl:template match="cus:servlet">
+    <!-- Docroot servlet -->
+    <servlet>
+      <servlet-name>static-docroot</servlet-name>
+      <servlet-class>de.schlund.pfixxml.DocrootServlet</servlet-class>
+    </servlet>
+    
     <xsl:for-each select="$project/servlet">
       <xsl:variable name="active_node">
         <xsl:apply-templates select="./active/node()"/>

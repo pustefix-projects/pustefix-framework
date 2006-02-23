@@ -193,6 +193,7 @@
     <form method="post">
       <xsl:copy-of select="./@*[name()!='send-to-page' and name()!='send-to-pageflow']"/>
       <ixsl:attribute name="action">
+        <ixsl:value-of select="$__contextpath"/>
         <xsl:choose>
           <xsl:when test="$send-to-page">
             <xsl:value-of select="concat($thehandler, '/', $send-to-page)"/>;<ixsl:value-of select="$__sessid"/><xsl:if test="not($theframe = '')"></xsl:if>?__frame=<xsl:value-of select="$theframe"/>
@@ -293,7 +294,7 @@
       </xsl:call-template>
     </xsl:variable>
     <ixsl:variable><xsl:attribute name="name">genname_<xsl:value-of select="generate-id(.)"/></xsl:attribute><xsl:value-of select="generate-id(.)"/><ixsl:value-of select="generate-id(.)"/></ixsl:variable>
-    <input type="image" src="/{$realsrc}" alt="{$alt}"> 
+    <input type="image" src="{{$__contextpath}}/{$realsrc}" alt="{$alt}"> 
       <xsl:copy-of select="@*[not(contains(concat('|',$always-exclude-attributes,'|',$exclude-attributes,'|') , concat('|',name(),'|')))]"/>
       <xsl:attribute name="class"><xsl:value-of select="@class"/> PfxInputImage</xsl:attribute>
       <xsl:call-template name="pfx:image_geom_impl">

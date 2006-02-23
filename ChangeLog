@@ -1,3 +1,20 @@
+2006-02-23  Sebastian Marsching  <sebastian.marsching@1und1.de>
+
+	* src/de/schlund/pfixxml/AbstractXMLServer.java: 
+	* src/de/schlund/pfixxml/DocrootServlet.java: 
+	* example/core/build/create_serverxml.xsl: 
+	* example/core/build/create_webxml.xsl: 
+	* example/core/xsl/forminput.xsl: 
+	* example/core/xsl/include.xsl: 
+	* example/core/xsl/master.xsl: 
+	* example/core/xsl/navigation.xsl: 
+	* example/core/xsl/utils.xsl: 
+	Changed the XSL templates to prepend the context path to constructed URLs
+	in order to allow WAR names other than xml.war. In order to make this also
+	work in standalone mode, the servlets are now directly running in the root
+	context of each vhost instead of the special /xml subcontext and servlet
+	mappings have been changed to keep known URLs.
+
 2006-02-23  Sebastian Marsching <sebastian.marsching@1und1.de>
 
 	* Beginning development version 0.9.0-pre

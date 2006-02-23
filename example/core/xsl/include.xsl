@@ -59,7 +59,7 @@
                   <ixsl:otherwise>
                     <span>
                       <div style="width: 100px; align: center; color:white; background-color:black;">
-                        <img src="/core/img/warning2.png"/><br/>
+                        <img src="{{$__contextpath}}/core/img/warning2.png"/><br/>
                         <span style="font-size: 8px; font-family: verdana,arial,helvetica,sans;"> No content for [<xsl:value-of select="$lang"/>]</span>
                       </div>
                     </span>
@@ -96,7 +96,7 @@
           <xsl:otherwise>
             <span>
               <div style="width: 100px; align: center; color:white; background-color:black;">
-                <img src="/core/img/warning2.png"/><br/>
+                <img src="{{$__contextpath}}/core/img/warning2.png"/><br/>
                 <span style="font-size: 8px; font-family: verdana,arial,helvetica,sans;"> No content for [<xsl:value-of select="$lang"/>]</span>
               </div>
             </span>
@@ -129,7 +129,7 @@
       <xsl:otherwise>
         <span>
           <div style="width: 100px; align: center; color:white; background-color:black;">
-            <img src="/core/img/warning2.png"/><br/>
+            <img src="{{$__contextpath}}/core/img/warning2.png"/><br/>
             <span style="font-size: 8px; font-family: verdana,arial,helvetica,sans;"> No content for [<xsl:value-of select="$themes"/>]</span>
           </div>
         </span>
@@ -164,7 +164,7 @@
     <xsl:param name="part"/>
     <xsl:param name="href"/>
     <xsl:variable name="thetext">Missing include: '<xsl:value-of select="$part"/>' in file '<xsl:value-of select="$href"/>'</xsl:variable>
-    <img src="/core/img/warning.gif">
+    <img src="{{$__contextpath}}/core/img/warning.gif">
       <xsl:attribute name="alt"><xsl:value-of select="$thetext"/></xsl:attribute>
       <xsl:attribute name="title"><xsl:value-of select="$thetext"/></xsl:attribute>
     </img>
@@ -220,11 +220,11 @@
           <xsl:when test="$noedit = 'true'"/> <!-- Do NOTHING! -->
           <xsl:when test="not($__target_key = '__NONE__') and $prohibitEdit = 'no'">
             <ixsl:if test="$__editmode='admin'">
-              <img border="0" src="/core/img/edit_start.gif"/>
+              <img border="0" src="{{$__contextpath}}/core/img/edit_start.gif"/>
             </ixsl:if>
           </xsl:when>
           <xsl:when test="$__target_key = '__NONE__' and $__editmode = 'admin'">
-            <img border="0" src="/core/img/edit_start.gif"/>
+            <img border="0" src="{{$__contextpath}}/core/img/edit_start.gif"/>
           </xsl:when>
         </xsl:choose>
         <!-- -->
@@ -260,7 +260,7 @@
             <ixsl:if test="$__editmode = 'admin'">
               <a href="">
                 <ixsl:attribute name="onclick">window.open('/xml/edit/includes;<ixsl:value-of select="$__sessid"/>?jump.Theme=<xsl:value-of select="string($used_theme)"/>&amp;jump.Path=<xsl:value-of select="string($realpath)"/>&amp;jump.Part=<xsl:value-of select="$part"/>&amp;jump.TargetGenerator=<xsl:value-of select="$product"/>&amp;jump.Type=include&amp;__anchor=left_navi|<xsl:value-of select="$realpath"/>','PustefixEditor','menubar=yes,status=yes,resizable=yes');return(false);</ixsl:attribute>
-                <img border="0" src="/core/img/edit.gif"
+                <img border="0" src="{{$__contextpath}}/core/img/edit.gif"
                      alt="Edit include: '{$part}' in file '{$realpath}'"
                      title="Edit include: '{$part}' in file '{$realpath}'"/>
               </a>
@@ -269,7 +269,7 @@
           <xsl:when test="$__target_key='__NONE__' and $__editmode = 'admin'">
             <a href="">
               <ixsl:attribute name="onClick">window.open('/xml/edit/dynincludes;{$__sessid}?jump.Path={$realpath}&amp;jump.Part={$part}&amp;jump.Name={$product}&amp;jump.TargetGenerator=<xsl:value-of select="$product"/>&amp;jump.Type=dyninclude&amp;__anchor=left_navi|{$realpath}','PustefixEditor','menubar=yes,status=yes,resizable=yes');return(false);</ixsl:attribute>
-              <img border="0" src="/core/img/edit.gif" alt="Edit include: '{$part}' in file '{$realpath}'" title="Edit include: '{$part}' in file '{$realpath}'"/>
+              <img border="0" src="{{$__context_path}}/core/img/edit.gif" alt="Edit include: '{$part}' in file '{$realpath}'" title="Edit include: '{$part}' in file '{$realpath}'"/>
             </a>
           </xsl:when>
         </xsl:choose>
@@ -313,7 +313,7 @@
         <xsl:with-param name="themed-img" select="$themed-img"/>
       </xsl:call-template>
     </xsl:variable>
-    <img src="/{$real_src}" alt="{$alt}">
+    <img src="{{$__contextpath}}/{$real_src}" alt="{$alt}">      
       <xsl:copy-of select="@*[not(contains(concat('|',$always-exclude-attributes,'|',$exclude-attributes,'|') , concat('|',name(),'|')))]"/>
       <xsl:call-template name="pfx:image_geom_impl">
         <xsl:with-param name="src" select="$real_src"/>

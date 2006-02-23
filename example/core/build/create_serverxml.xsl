@@ -135,7 +135,7 @@
                 directory="logs" prefix="log." suffix=".txt"	timestamp="true"/ -->
         
         <xsl:call-template name="create_context_list">
-          <xsl:with-param name="defpath">/xml</xsl:with-param>
+          <xsl:with-param name="defpath"></xsl:with-param>
         </xsl:call-template>
       </Host>
     </xsl:if>
@@ -147,23 +147,23 @@
       <xsl:with-param name="cookies">false</xsl:with-param>
       <xsl:with-param name="path"><xsl:value-of select="$defpath"/></xsl:with-param>
       <xsl:with-param name="docBase">webapps/<xsl:apply-templates select="@name"/></xsl:with-param>
+      <xsl:with-param name="staticDocBase">
+        <xsl:if test="$standalone = 'true'">
+          <xsl:if test="documentroot">
+            <xsl:variable name="abs_path"><xsl:apply-templates select="documentroot/node()"/></xsl:variable>
+            <xsl:choose>
+              <xsl:when test="ext:exists($abs_path)">
+                <xsl:value-of select="$abs_path"/>
+              </xsl:when>
+              <xsl:otherwise>
+                <xsl:message>CAUTION: documentroot does not exist: <xsl:value-of select="$abs_path"/></xsl:message>
+              </xsl:otherwise>
+            </xsl:choose>
+          </xsl:if>
+        </xsl:if>
+      </xsl:with-param>
     </xsl:call-template>
     <xsl:if test="$standalone = 'true'">
-      <xsl:if test="documentroot">
-        <xsl:variable name="abs_path"><xsl:apply-templates select="documentroot/node()"/></xsl:variable>
-        <xsl:choose>
-          <xsl:when test="ext:exists($abs_path)">
-            <xsl:call-template name="create_context">
-              <xsl:with-param name="path">/</xsl:with-param>
-              <xsl:with-param name="docBase"><xsl:value-of select="$abs_path"/></xsl:with-param>
-              <xsl:with-param name="cookies">false</xsl:with-param>
-            </xsl:call-template>
-          </xsl:when>
-          <xsl:otherwise>
-            <xsl:message>CAUTION: documentroot does not exist: <xsl:value-of select="$abs_path"/></xsl:message>
-          </xsl:otherwise>
-        </xsl:choose>
-      </xsl:if>
       <xsl:apply-templates select="passthrough"/>
       <xsl:apply-templates select="/projects/common/apache/passthrough"/>
     </xsl:if>
@@ -190,6 +190,7 @@
     <xsl:param name="path"/>
     <xsl:param name="docBase"/>
     <xsl:param name="cookies"/>
+    <xsl:param name="staticDocBase"/>
     <Context crossContext="true">
       <xsl:attribute name="cookies"><xsl:value-of select="$cookies"/></xsl:attribute>
       <xsl:attribute name="path"><xsl:value-of select="$path"/></xsl:attribute>
@@ -197,6 +198,9 @@
       <xsl:attribute name="debug"><xsl:value-of select="$debug"/></xsl:attribute>
       <!-- switch off session serialization -->
       <Manager  pathname=""/>
+      <xsl:if test="$staticDocBase">
+        <Parameter name="staticDocBase" value="{$staticDocBase}"/>
+      </xsl:if>
     </Context>
   </xsl:template>
   
