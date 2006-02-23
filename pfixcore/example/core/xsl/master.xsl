@@ -126,6 +126,8 @@
       
       <!-- e.g. /xml/static -->
       <ixsl:param name="__servletpath"/>
+      <!-- e.g. /context -->
+      <ixsl:param name="__contextpath"/>
 
       <ixsl:param name="__derefkey"/>
       <ixsl:param name="__querystring"/>

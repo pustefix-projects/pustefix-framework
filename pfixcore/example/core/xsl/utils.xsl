@@ -61,14 +61,14 @@
                   <a target="_top">
                     <ixsl:attribute name="href">
                       <ixsl:value-of select="$__uri"/>?__editmode=none</ixsl:attribute>
-                    <img border="0" title="Switch edit mode OFF" src="/core/img/do_noedit.gif"/>
+                    <img border="0" title="Switch edit mode OFF" src="{{$__contextpath}}/core/img/do_noedit.gif"/>
                   </a>
                 </ixsl:when>
                 <ixsl:otherwise>
                   <a target="_top">
                     <ixsl:attribute name="href">
                       <ixsl:value-of select="$__uri"/>?__editmode=admin</ixsl:attribute>
-                    <img border="0" title="Switch edit mode ON" src="/core/img/do_edit.gif"/>
+                    <img border="0" title="Switch edit mode ON" src="{{$__contextpath}}/core/img/do_edit.gif"/>
                   </a>
                 </ixsl:otherwise>
               </ixsl:choose>
@@ -77,7 +77,7 @@
               <a target="__xml_source__">
                 <ixsl:attribute name="href">
                   <ixsl:value-of select="$__uri"/>?__reuse=<ixsl:value-of select="$__reusestamp"/>&amp;__xmlonly=1</ixsl:attribute>
-                <img border="0" title="Show last XML tree" src="/core/img/show_xml.gif"/></a>
+                <img border="0" title="Show last XML tree" src="{{$__contextpath}}/core/img/show_xml.gif"/></a>
             </td>
           </tr>
           <tr>
@@ -101,13 +101,13 @@
         Web service tools:
         <a target="__WEB_SERVICE_MONITOR__">
           <ixsl:attribute name="href">
-            <ixsl:value-of select="concat('/xml/webservice;',$__sessid,'?monitor')"/>
+            <ixsl:value-of select="concat($__contextpath, '/xml/webservice;',$__sessid,'?monitor')"/>
           </ixsl:attribute>
           Monitor
         </a>
         <a target="__WEB_SERVICE_ADMIN__">
           <ixsl:attribute name="href">
-            <ixsl:value-of select="concat('/xml/webservice;',$__sessid,'?admin')"/>
+            <ixsl:value-of select="concat($__contextpath, '/xml/webservice;',$__sessid,'?admin')"/>
           </ixsl:attribute>
           Admin
         </a>

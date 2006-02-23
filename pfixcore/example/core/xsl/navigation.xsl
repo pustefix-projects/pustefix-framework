@@ -237,7 +237,7 @@
       <xsl:text>?</xsl:text><xsl:value-of select="$thequery"/>
     </xsl:variable>
     <xsl:variable name="fulllink">
-      <xsl:value-of select="$prelink"/>;<ixsl:value-of select="$__sessid"/><xsl:value-of select="$postlink"/>
+      <ixsl:value-of select="$__contextpath"/><xsl:value-of select="$prelink"/>;<ixsl:value-of select="$__sessid"/><xsl:value-of select="$postlink"/>
       <ixsl:if test="not($pageflow = '')">&amp;__lf=<ixsl:value-of select="$pageflow"/></ixsl:if>
       <xsl:if test="$args and not($nodata)">&amp;__sendingdata=1</xsl:if>
       <xsl:for-each select="$args">&amp;<xsl:value-of select="./@name"/>=<ixsl:call-template name="__enc"><ixsl:with-param name="in"><xsl:apply-templates select="./node()"/></ixsl:with-param></ixsl:call-template></xsl:for-each>
@@ -564,7 +564,7 @@
               </xsl:otherwise>
             </xsl:choose>
           </xsl:attribute>
-          <a><ixsl:attribute name="href"><xsl:value-of select="concat($thehandler, '/', $page)"/>;<ixsl:value-of select="$__sessid"/>?__currentindex[<xsl:value-of select="$page"/>]=<ixsl:value-of select="/formresult/iwrappergroups/@currentindex - 1"/>&amp;__frame=<xsl:value-of select="$frame_impl"/></ixsl:attribute><xsl:apply-templates select="./pfx:active/node()"/></a>
+          <a><ixsl:attribute name="href"><xsl:value-of select="concat($__contextpath, $thehandler, '/', $page)"/>;<ixsl:value-of select="$__sessid"/>?__currentindex[<xsl:value-of select="$page"/>]=<ixsl:value-of select="/formresult/iwrappergroups/@currentindex - 1"/>&amp;__frame=<xsl:value-of select="$frame_impl"/></ixsl:attribute><xsl:apply-templates select="./pfx:active/node()"/></a>
         </span>
       </ixsl:otherwise>
     </ixsl:choose>

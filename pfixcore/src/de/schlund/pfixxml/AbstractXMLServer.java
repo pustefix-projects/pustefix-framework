@@ -105,6 +105,7 @@ public abstract class AbstractXMLServer extends ServletManager {
     private static final String   XSLPARAM_SESSID         = "__sessid";
     private static final String   XSLPARAM_URI            = "__uri";
     private static final String   XSLPARAM_SERVP          = "__servletpath";
+    private static final String   XSLPARAM_CONTEXTPATH    = "__contextpath";
     private static final String   XSLPARAM_REMOTE_ADDR    = "__remote_addr";
     private static final String   XSLPARAM_SERVER_NAME    = "__server_name";
     private static final String   XSLPARAM_REQUEST_SCHEME = "__request_scheme";
@@ -316,6 +317,7 @@ public abstract class AbstractXMLServer extends ServletManager {
             }
         params.put(XSLPARAM_URI, preq.getRequestURI());
         params.put(XSLPARAM_SERVP, preq.getContextPath() + preq.getServletPath());
+        params.put(XSLPARAM_CONTEXTPATH, preq.getContextPath());
         if (preq.getRemoteAddr() != null)
             params.put(XSLPARAM_REMOTE_ADDR, preq.getRemoteAddr());
         if (preq.getServerName() != null)
