@@ -4,7 +4,7 @@
   <!-- The webservice application. Use this as a template for how to define your own projects -->
   
   <active>true</active>
-  <comment>webservice Application For Pfixcore</comment>
+  <comment>Webservice Demo</comment>
   <depend>webservice/conf/depend.xml</depend>
   <virtualhost><cus:fqdn/></virtualhost>
   <servername>webservice.<cus:fqdn/></servername>

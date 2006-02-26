@@ -4,7 +4,7 @@
   <!-- The sample1 application. Use this as a template for how to define your own projects -->
   
   <active>true</active>
-  <comment>Sample1 Application For Pfixcore</comment>
+  <comment>Sample1 Application</comment>
   <depend>sample1/conf/depend.xml</depend>
   <!-- <encoding>ISO-8859-1</encoding> -->
   <virtualhost><cus:fqdn/></virtualhost>
