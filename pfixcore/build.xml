@@ -14,6 +14,7 @@ or delete the DOCTYPE definition -->
   
   <!-- additional properties -->
   <property name="name.svnrevision"       value="SVN_REVISION"/>
+  <property name="dir.metainf"              location="META-INF"/>
   <property name="dir.dist"               location="dist"/>
   <property name="file.jnipkg"            location="${dir.jni}/${name.jnipkg}"/>
   <property name="project.version"        value="0.9.0-pre" description="the version to use for pfixcore-*.*"/>
@@ -91,7 +92,7 @@ or delete the DOCTYPE definition -->
     <delete file="${dir.metainf}/${name.svnrevision}"/>
 
     <exec executable="svn" outputproperty="dist.autotagmessage">
-      <arg line="info"/>
+      <arg line="info -r HEAD"/>
     </exec>
     <!-- looks funny, but if someone called something like
          "ant jar dist" the jar file would have a wrong SVN_REVISION file -->

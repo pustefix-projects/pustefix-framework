@@ -23,7 +23,6 @@ or delete the DOCTYPE definition -->
   <property name="dir.lib"                  location="lib"/>
   <property name="dir.skel"                 location="skel"/>
   <property name="dir.jni"                  location="${dir.lib}/jni"/>
-  <property name="dir.metainf"              location="META-INF"/>
   <property name="dir.projects"             location="projects"/>
   <property name="dir.docroot"              location="${dir.projects}" description="document root for tomcat, defaults to dir.projects"/>
   <property name="dir.src.modules"          location="modules"/>
