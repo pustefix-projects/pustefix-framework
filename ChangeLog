@@ -1,3 +1,10 @@
+2006-02-27  Jens Lautenbacher  <jtl@schlund.de>
+
+	* build.xml: 
+	* skel/build-skel.xml: changed to remove the CVS_AUTOTAG stuff,
+	no longer have a notag target. Now, on "ant dist", we simply put the output of "svn info" into
+	the file META-INF/SVN_REVISION.
+
 2006-02-23  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
 	* src/de/schlund/pfixxml/AbstractXMLServer.java: 
