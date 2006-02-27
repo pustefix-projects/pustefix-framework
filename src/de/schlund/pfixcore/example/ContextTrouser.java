@@ -35,5 +35,7 @@ package de.schlund.pfixcore.example;
 // Inheritance from one C-Res to another is asking for trouble.
 // But for this example it helps keeping the code small.
 public interface ContextTrouser extends ContextTShirt {
+
+    void reset();
     
 }// ContextTrouser

@@ -56,7 +56,7 @@ public class ProjectsResourceImpl implements ProjectsResource {
         }
     }
 
-    public void reset() throws Exception {
+    public void reset() {
         this.selectedProject = null;
     }
 
