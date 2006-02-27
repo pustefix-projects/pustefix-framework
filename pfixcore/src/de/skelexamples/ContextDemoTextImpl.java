@@ -70,12 +70,4 @@ public class ContextDemoTextImpl implements ContextDemoText {
         }
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see de.schlund.pfixcore.workflow.ContextResource#reset()
-     */
-    public void reset() throws Exception {
-
-    }
 }

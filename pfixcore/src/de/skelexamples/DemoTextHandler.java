@@ -49,7 +49,6 @@ public class DemoTextHandler implements IHandler {
         DemoText txtwrp            = (DemoText) wrapper;
         String txt                 = txtwrp.getDemoText();
 
-        cdemotxt.reset();
         System.out.println(" ====> Get DemoText from the form: " + txt);
         cdemotxt.setDemoText(txt);
     }

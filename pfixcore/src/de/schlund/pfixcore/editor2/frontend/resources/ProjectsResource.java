@@ -57,4 +57,6 @@ public interface ProjectsResource extends ContextResource {
      *         project not found)
      */
     boolean selectProjectByTargetGeneratorName(String targetGenerator);
+
+    void reset();
 }
