@@ -9,10 +9,11 @@ or delete the DOCTYPE definition -->
   <property name="dir.projects"           location="example"/>
   <property name="dir.jni"                location="jni"/>
   <property name="exclude.examples"       value="de/skelexamples/**/*.*"/>
-
+  
   <import file="skel/build-skel.xml"/>
-
+  
   <!-- additional properties -->
+  <property name="name.svnrevision"       value="SVN_REVISION"/>
   <property name="dir.dist"               location="dist"/>
   <property name="file.jnipkg"            location="${dir.jni}/${name.jnipkg}"/>
   <property name="project.version"        value="0.9.0-pre" description="the version to use for pfixcore-*.*"/>
@@ -86,18 +87,17 @@ or delete the DOCTYPE definition -->
     <!-- override skel.init-data: do nothing -->
   </target>
     
-  <target name="dist" depends="clean, init, dist-examples" description="Builds release files in dist directory, tags cvs.">
-    <property name="dist.autotagmessage" value="${tstamp.autotag}"/>
+  <target name="dist" depends="clean, init, dist-examples" description="Builds release files in dist directory.">
+    <delete file="${dir.metainf}/${name.svnrevision}"/>
+
+    <exec executable="svn" outputproperty="dist.autotagmessage">
+      <arg line="info"/>
+    </exec>
     <!-- looks funny, but if someone called something like
-         "ant jar dist" the jar file would have a wrong CVS_AUTOTAG file -->
+         "ant jar dist" the jar file would have a wrong SVN_REVISION file -->
     <antcall target="skeleton" inheritall="true">
       <param name="autotagmessage" value="${dist.autotagmessage}"/>
     </antcall>
-    <cvs command="tag -c ${dist.autotagmessage}"/>
-  </target>
-
-  <target name="notag" depends="clean, dist-examples" description="Builds release files in dist directory without tagging cvs.">
-    <antcall target="skeleton" inheritall="true"/>
   </target>
 
   <!-- Building the basic examples for dist -->
@@ -148,7 +148,7 @@ or delete the DOCTYPE definition -->
     <echo message="Building ${name.pfixcore_skel_tgz} in dist directory"/>
     <tar destfile="${file.pfixcore_skel_tgz}" compression="gzip">
       <tarfileset dir="${dir.skel}" prefix="skel"/>
-      <tarfileset dir="${dir.metainf}" includes="${name.cvsautotag}" prefix="skel"/>
+      <tarfileset dir="${dir.metainf}" includes="${name.svnrevision}" prefix="skel"/>
       <tarfileset dir="${dir.lib}" includes="*.jar, tomcat/README" prefix="skel/lib"/>
       <tarfileset dir="${dir.dist}" includes="${name.pfixcore_jar}" prefix="skel/lib"/>
       <tarfileset dir="${dir.dist}" includes="${name.pfixcore_data_tgz}" prefix="skel/lib"/>
@@ -160,12 +160,12 @@ or delete the DOCTYPE definition -->
 
   <target name="data" depends="init, stylesheets, autotag">
     <echo message="Building ${name.pfixcore_data_tgz} in dist directory" />
-    <copy file="${dir.metainf}/${name.cvsautotag}" tofile="${dir.projects}/core/${name.cvsautotag}"/>
+    <copy file="${dir.metainf}/${name.svnrevision}" tofile="${dir.projects}/core/${name.svnrevision}"/>
     <tar destfile="${file.pfixcore_data_tgz}" compression="gzip">
       <tarfileset dir="${dir.projects}/core" prefix="core"/>
       <tarfileset file="${basedir}/skel/build-skel.xml" prefix="core/build"/>
     </tar>
-    <delete file="${dir.projects}/core/${name.cvsautotag}"/>
+    <delete file="${dir.projects}/core/${name.svnrevision}"/>
   </target>
 
   <target name="jar" depends="autotag, dist-jni">
@@ -184,10 +184,8 @@ or delete the DOCTYPE definition -->
   </target>
 
   <target name="autotag" depends="init">
-    <!-- property gets overridden when calling target dist -->
-    <property name="autotagmessage" value="${tstamp.autotag} (not tagged in cvs)"/>
     <!-- make echo insert a newline into the file with &#010; -->
-    <echo file="${dir.metainf}/${name.cvsautotag}" message="${autotagmessage}&#010;"/>
+    <echo file="${dir.metainf}/${name.svnrevision}" message="${autotagmessage}&#010;"/>
   </target>
 
   <target name="test-skeleton" description="extracts skel.jar, copies sample files, runs ant">
@@ -214,8 +212,3 @@ or delete the DOCTYPE definition -->
   </target>
 </project>
 
-<!--
-Local Variables:
-sgml-indent-step: 4
-End:
--->
