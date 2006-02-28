@@ -1,3 +1,6 @@
+2006-02-27 Ute Platzer <up@schlund.de>
+        * ContextResource: removed reset() method
+
 2006-02-27  Jens Lautenbacher  <jtl@schlund.de>
 
 	* build.xml: 
