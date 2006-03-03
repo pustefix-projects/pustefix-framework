@@ -218,8 +218,9 @@ public class TargetAuxDepImpl extends AbstractTarget {
         }
         for (Iterator i2 = pageinfos.iterator(); i2.hasNext();) {
             PageInfo pageinfo = (PageInfo) i2.next();
-            String projectName = pageinfo.getTargetGenerator().getName();
-            Project project = projectfactory.getProjectByName(projectName);
+            Project project = projectfactory
+                    .getProjectByPustefixTargetGenerator(pageinfo
+                            .getTargetGenerator());
             Variant variant = null;
             if (pageinfo.getVariant() != null) {
                 variant = variantfactory.getVariant(pageinfo.getVariant());

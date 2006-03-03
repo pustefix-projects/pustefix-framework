@@ -1,3 +1,12 @@
+2006-03-03  Sebastian Marsching  <sebastian.marsching@1und1.de>
+
+	* src/de/schlund/pfixxml/targets/TargetGeneratorFactory.java (createGenerator): 
+	Check that each target generator has an unique name and throw an exception
+	of duplicate names are found
+	
+	* src/de/schlund/pfixcore/editor2/core/spring/internal/TargetAuxDepImpl.java (getAffectedPages): 
+	Cleaning up code that assumed project name always equals target generator name
+
 2006-02-27 Ute Platzer <up@schlund.de>
         * ContextResource: removed reset() method
 
