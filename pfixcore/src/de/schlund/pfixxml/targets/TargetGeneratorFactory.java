@@ -28,9 +28,9 @@ import org.apache.log4j.Category;
 
 
 public class TargetGeneratorFactory {
-    private static TargetGeneratorFactory instance     = new TargetGeneratorFactory();
-    private static HashMap                generatormap = new HashMap();
-    private static Category               CAT          = Category.getInstance(TargetGeneratorFactory.class.getName());
+    private static TargetGeneratorFactory            instance     = new TargetGeneratorFactory();
+    private static HashMap<String, TargetGenerator>  generatormap = new HashMap<String, TargetGenerator>();
+    private static Category                          CAT          = Category.getInstance(TargetGeneratorFactory.class.getName());
     
     public static TargetGeneratorFactory getInstance() {
         return instance;
@@ -44,6 +44,21 @@ public class TargetGeneratorFactory {
             if (generator == null) {
                 CAT.debug("-- Init TargetGenerator --");
                 generator = new TargetGenerator(cfilepath);
+                
+                // Check generator has unique name
+                String tgenName = generator.getName();
+                for (TargetGenerator tgen : generatormap.values()) {
+                    if (tgen.getName().equals(tgenName)) {
+                        String msg = "Cannot create TargetGenerator for config file \"" 
+                            + generator.getConfigPath().resolve() 
+                            + "\" as it is using the name \"" + tgenName
+                            + "\" which is already being used by TargetGenerator with config file \""
+                            + tgen.getConfigPath().resolve() + "\"";
+                        CAT.error(msg);
+                        throw new Exception(msg);
+                    }
+                }
+                
                 generatormap.put(key, generator);
             } else {
                 generator.tryReinit();
