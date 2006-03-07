@@ -33,7 +33,10 @@
               <td align="left" valign="middle">
                 <pfx:forminput method="get" target="_top">
                   <pfx:xinp default="abcdäöüß" id="text" name="text.Text" onchange="setDynHref(this.value)" type="text"/>
-                  <ixsl:text> </ixsl:text><pfx:xinp type="submit" value="Send via GET-method"/>
+                  <ixsl:text> </ixsl:text>
+                  <pfx:xinp type="submit" value="Send via GET-method">
+                    <pfx:command name="SELWRP">text</pfx:command>
+                  </pfx:xinp>
                 </pfx:forminput>
               </td>
             </tr>
@@ -41,7 +44,10 @@
               <td align="left" valign="middle">
                 <pfx:forminput method="post" target="_top">
                   <pfx:xinp default="abcdäöüß" name="text.Text" onchange="setDynHref(this.value)" type="text"/>
-                  <ixsl:text> </ixsl:text><pfx:xinp type="submit" value="Send via POST-method"/>
+                  <ixsl:text> </ixsl:text>
+                  <pfx:xinp type="submit" value="Send via POST-method">
+                    <pfx:command name="SELWRP">text</pfx:command>
+                  </pfx:xinp>
                 </pfx:forminput>
               </td>
             </tr>
@@ -63,7 +69,10 @@
               <pfx:option value="ISO-8859-1">Decode as ISO-8859-1</pfx:option>
               <pfx:option value="none">No special decoding</pfx:option>
             </pfx:xinp>
-            <ixsl:text> </ixsl:text><pfx:xinp type="submit" value="Send via GET-method"/>
+            <ixsl:text> </ixsl:text>
+            <pfx:xinp type="submit" value="Send via GET-method">
+              <pfx:command name="SELWRP">text</pfx:command>
+            </pfx:xinp>
           </pfx:forminput>
           
           <table cellspacing="5">
@@ -76,6 +85,31 @@
               <td><ixsl:value-of select="/formresult/text/urlenc-utf"/></td>
             </tr>
           </table>
+          
+          <h3>Multipart form test</h3>
+          
+          
+          <ixsl:if test="/formresult/text/file">
+            <p>
+              <code><ixsl:value-of select="/formresult/text/file"/></code>
+            </p>
+          </ixsl:if>
+          <pfx:forminput enctype="multipart/form-data" target="_top">
+            <table>
+              <tr><td>
+            <pfx:xinp name="upload.Text" id="uploadtext" type="text" size="20"/><br/>
+              </td></tr>
+              <tr><td>
+            <input name="upload.File" id="uploadfile" type="file" size="20" onChange="document.getElementById('uploadtext').value=this.value;"/><br/>
+              </td></tr>
+              <tr><td>
+            <pfx:xinp type="submit" value="Submit">
+              <pfx:command name="SELWRP">upload</pfx:command>
+            </pfx:xinp>
+              </td></tr>
+            </table>
+          </pfx:forminput>
+          
         </center>
       </theme>
   </part>
