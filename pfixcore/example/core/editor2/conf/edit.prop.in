@@ -1,0 +1,253 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<contextxmlserver xmlns="http://pustefix.sourceforge.net/properties200401" xmlns:cus="http://www.schlund.de/pustefix/customize" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://pustefix.sourceforge.net/properties200401 http://pustefix.sourceforge.net/properties200401.xsd" version="1.0">
+
+  <servletinfo depend="core/editor2/conf/depend.xml" name="pfixcore_project:core_editor_servlet:1">
+    <editmode allow="false"/>
+  </servletinfo>
+  
+  <context defaultflow="EditorFlow" authpage="login">
+    <resource class="de.schlund.pfixcore.editor2.frontend.resources.SessionResourceImpl">
+      <implements class="de.schlund.pfixcore.editor2.frontend.resources.SessionResource"/>
+    </resource>
+    <resource class="de.schlund.pfixcore.editor2.frontend.resources.SpringHelperResourceImpl">
+      <implements class="de.schlund.pfixcore.editor2.frontend.resources.SpringHelperResource"/>
+    </resource>
+    <resource class="de.schlund.pfixcore.editor2.frontend.resources.ProjectsResourceImpl">
+      <implements class="de.schlund.pfixcore.editor2.frontend.resources.ProjectsResource"/>
+    </resource>
+    <resource class="de.schlund.pfixcore.editor2.frontend.resources.PagesResourceImpl">
+      <implements class="de.schlund.pfixcore.editor2.frontend.resources.PagesResource"/>
+    </resource>
+    <resource class="de.schlund.pfixcore.editor2.frontend.resources.TargetsResourceImpl">
+      <implements class="de.schlund.pfixcore.editor2.frontend.resources.TargetsResource"/>
+    </resource>
+    <resource class="de.schlund.pfixcore.editor2.frontend.resources.ImagesResourceImpl">
+      <implements class="de.schlund.pfixcore.editor2.frontend.resources.ImagesResource"/>
+    </resource>
+    <resource class="de.schlund.pfixcore.editor2.frontend.resources.IncludesResourceImpl">
+      <implements class="de.schlund.pfixcore.editor2.frontend.resources.IncludesResource"/>
+    </resource>
+    <resource class="de.schlund.pfixcore.editor2.frontend.resources.DynIncludesResourceImpl">
+      <implements class="de.schlund.pfixcore.editor2.frontend.resources.DynIncludesResource"/>
+    </resource>
+    <resource class="de.schlund.pfixcore.editor2.frontend.resources.SessionInfoResourceImpl">
+      <implements class="de.schlund.pfixcore.editor2.frontend.resources.SessionInfoResource"/>
+    </resource>
+    <resource class="de.schlund.pfixcore.editor2.frontend.resources.UsersResourceImpl">
+    <implements class="de.schlund.pfixcore.editor2.frontend.resources.UsersResource"/>   </resource>
+    <resource class="de.schlund.pfixcore.lucefix.ContextSearchImpl">
+      <implements class="de.schlund.pfixcore.lucefix.ContextSearch"/>
+    </resource>
+  </context>
+  
+  <pageflow name="EditorFlow" final="start">
+    <flowstep name="start"/>
+    <flowstep name="home"/>
+    <flowstep name="logout"/>
+  </pageflow>
+  
+  <pageflow name="EditorPageFlow" final="pages">
+    <flowstep name="start"/>
+    <flowstep name="pages"/>
+  </pageflow>
+  
+  <pageflow name="EditorTargetFlow" final="targets">
+    <flowstep name="start"/>
+    <flowstep name="targets"/>
+  </pageflow>
+  
+  <pageflow name="EditorImageFlow" final="images">
+    <flowstep name="start"/>
+    <flowstep name="images"/>
+  </pageflow>
+  
+  <pageflow name="EditorIncludeFlow" final="includes">
+    <flowstep name="start"/>
+    <flowstep name="includes"/>
+  </pageflow>
+  
+  <pageflow name="EditorDynIncludeFlow" final="dynincludes">
+    <flowstep name="start"/>
+    <flowstep name="dynincludes"/>
+  </pageflow>
+  
+  <pageflow name="EditorJumpToPageFlow">
+    <flowstep name="jumptopage"/>
+    <flowstep name="pages"/>
+  </pageflow>
+  
+  <pagerequest name="login">
+    <auth>
+      <authinterface class="de.schlund.pfixcore.editor2.frontend.wrappers.Login" prefix="auth"/>
+      <auxinterface class="de.schlund.pfixcore.editor2.frontend.wrappers.JumpToIncludePart" prefix="jump"/>
+    </auth>
+  </pagerequest>
+  
+  <pagerequest name="start">
+    <input>
+      <interface class="de.schlund.pfixcore.editor2.frontend.wrappers.SelectProject" prefix="selectproject"/>
+      <interface class="de.schlund.pfixcore.editor2.frontend.wrappers.UserLoginSwitch" prefix="userlogins"/>
+      <interface class="de.schlund.pfixcore.editor2.frontend.wrappers.SelectUser" prefix="selectuser"/>
+    </input>
+    <output>
+      <resource node="session" class="de.schlund.pfixcore.editor2.frontend.resources.SessionResource"/>
+      <resource node="projects" class="de.schlund.pfixcore.editor2.frontend.resources.ProjectsResource"/>
+    </output>
+  </pagerequest>
+  
+  <pagerequest name="home">
+    <output>
+      <resource node="session" class="de.schlund.pfixcore.editor2.frontend.resources.SessionResource"/>
+      <resource node="projects" class="de.schlund.pfixcore.editor2.frontend.resources.ProjectsResource"/>
+    </output>
+  </pagerequest>
+  
+  <pagerequest name="pages">
+    <input>
+      <interface class="de.schlund.pfixcore.editor2.frontend.wrappers.SelectPage" prefix="selectpage"/>
+    </input>
+    <output>
+      <resource node="session" class="de.schlund.pfixcore.editor2.frontend.resources.SessionResource"/>
+      <resource node="projects" class="de.schlund.pfixcore.editor2.frontend.resources.ProjectsResource"/>
+      <resource node="pages" class="de.schlund.pfixcore.editor2.frontend.resources.PagesResource"/>
+    </output>
+  </pagerequest>
+
+  <pagerequest name="targets">
+    <input>
+      <interface class="de.schlund.pfixcore.editor2.frontend.wrappers.SelectTarget" prefix="selecttarget"/>
+    </input>
+    <output>
+      <resource node="session" class="de.schlund.pfixcore.editor2.frontend.resources.SessionResource"/>
+      <resource node="projects" class="de.schlund.pfixcore.editor2.frontend.resources.ProjectsResource"/>
+      <resource node="targets" class="de.schlund.pfixcore.editor2.frontend.resources.TargetsResource"/>
+    </output>
+  </pagerequest>
+
+  <pagerequest name="images">
+    <input>
+      <interface class="de.schlund.pfixcore.editor2.frontend.wrappers.SelectImage" prefix="selectimage"/>
+      <interface class="de.schlund.pfixcore.editor2.frontend.wrappers.UploadImage" prefix="upload"/>
+      <interface class="de.schlund.pfixcore.editor2.frontend.wrappers.RestoreImage" prefix="restore"/>
+    </input>
+    <output>
+      <resource node="session" class="de.schlund.pfixcore.editor2.frontend.resources.SessionResource"/>
+      <resource node="projects" class="de.schlund.pfixcore.editor2.frontend.resources.ProjectsResource"/>
+      <resource node="images" class="de.schlund.pfixcore.editor2.frontend.resources.ImagesResource"/>
+    </output>
+  </pagerequest>
+  
+  <pagerequest name="includes">
+    <input>
+      <interface class="de.schlund.pfixcore.editor2.frontend.wrappers.SelectIncludePart" prefix="selectinclude"/>
+      <interface class="de.schlund.pfixcore.editor2.frontend.wrappers.BranchIncludePart" prefix="branch"/>
+      <interface class="de.schlund.pfixcore.editor2.frontend.wrappers.RestoreIncludePart" prefix="restore"/>
+      <interface class="de.schlund.pfixcore.editor2.frontend.wrappers.UploadIncludePart" prefix="upload"/>
+    </input>
+    <output>
+      <resource node="session" class="de.schlund.pfixcore.editor2.frontend.resources.SessionResource"/>
+      <resource node="projects" class="de.schlund.pfixcore.editor2.frontend.resources.ProjectsResource"/>
+      <resource node="includes" class="de.schlund.pfixcore.editor2.frontend.resources.IncludesResource"/>
+      <resource node="lucefix" class="de.schlund.pfixcore.lucefix.ContextSearch"/>
+    </output>
+  </pagerequest>
+  
+  <pagerequest name="dynincludes">
+    <input>
+      <interface class="de.schlund.pfixcore.editor2.frontend.wrappers.SelectDynIncludePart" prefix="selectinclude"/>
+      <interface class="de.schlund.pfixcore.editor2.frontend.wrappers.BranchDynIncludePart" prefix="branch"/>
+      <interface class="de.schlund.pfixcore.editor2.frontend.wrappers.RestoreDynIncludePart" prefix="restore"/>
+      <interface class="de.schlund.pfixcore.editor2.frontend.wrappers.UploadDynIncludePart" prefix="upload"/>
+    </input>
+    <output>
+      <resource node="session" class="de.schlund.pfixcore.editor2.frontend.resources.SessionResource"/>
+      <resource node="projects" class="de.schlund.pfixcore.editor2.frontend.resources.ProjectsResource"/>
+      <resource node="dynincludes" class="de.schlund.pfixcore.editor2.frontend.resources.DynIncludesResource"/>
+    </output>
+  </pagerequest>
+	
+  <pagerequest name="search">
+    <input>
+      <interface class="de.schlund.pfixcore.lucefix.wrappers.Search" prefix="lucefix"/>
+    </input>
+    <output>
+      <resource node="projects" class="de.schlund.pfixcore.editor2.frontend.resources.ProjectsResource"/>
+      <resource node="lucefix" class="de.schlund.pfixcore.lucefix.ContextSearch"/>
+    </output>
+  </pagerequest>
+    
+  <pagerequest name="logout">
+    <state class="de.schlund.pfixcore.editor2.frontend.handlers.LogoutState"/>
+  </pagerequest>
+  
+  <pagerequest name="jumptopage">
+    <input>
+      <interface class="de.schlund.pfixcore.editor2.frontend.wrappers.SelectProject" prefix="selectproject"></interface>
+      <interface class="de.schlund.pfixcore.editor2.frontend.wrappers.SelectPage" prefix="selectpage"/>
+    </input>
+  </pagerequest>
+  
+  <pagerequest name="sessionmanager">
+    <output>
+      <resource class="de.schlund.pfixcore.editor2.frontend.resources.SessionInfoResource" node="sessioninfo"/>
+    </output>
+  </pagerequest>
+  
+  <pagerequest name="useradmin">
+    <input>
+      <interface class="de.schlund.pfixcore.editor2.frontend.wrappers.SelectUser" prefix="selectuser"/>
+      <interface class="de.schlund.pfixcore.editor2.frontend.wrappers.DeleteUsers" prefix="delete"/>
+    </input>
+    <output>
+      <resource node="session" class="de.schlund.pfixcore.editor2.frontend.resources.SessionResource"/>
+      <resource node="users" class="de.schlund.pfixcore.editor2.frontend.resources.UsersResource"/>
+    </output>
+  </pagerequest>
+  
+  <pagerequest name="useredit">
+    <input>
+      <interface class="de.schlund.pfixcore.editor2.frontend.wrappers.EditUser" prefix="user"/>
+    </input>
+    <output>
+      <resource node="session" class="de.schlund.pfixcore.editor2.frontend.resources.SessionResource"/>
+      <resource node="projects" class="de.schlund.pfixcore.editor2.frontend.resources.ProjectsResource"/>
+      <resource node="users" class="de.schlund.pfixcore.editor2.frontend.resources.UsersResource"/>
+    </output>
+  </pagerequest>
+  
+  <pagerequest name="ws_includes" nostore="true">
+    <state class="de.schlund.pfixcore.editor2.frontend.webservice.StaticIncludesState"/>
+    <properties>
+      <prop name="mimetype">text/xml</prop>
+    </properties>
+  </pagerequest>
+  
+  <pagerequest name="ws_dynincludes" nostore="true">
+    <state class="de.schlund.pfixcore.editor2.frontend.webservice.DynamicIncludesState"/>
+    <properties>
+      <prop name="mimetype">text/xml</prop>
+    </properties>
+  </pagerequest>
+  
+  <properties>
+    <!-- This ContextInterceptor has to be called BEFORE all other interceptors -->
+    <prop name="context.startinterceptor.1">de.schlund.pfixcore.editor2.frontend.util.SpringHelperStartContextInterceptor</prop>
+    <!-- This ContextInterceptor has to be called AFTER all other interceptors -->
+    <prop name="context.endinterceptor.1">de.schlund.pfixcore.editor2.frontend.util.SpringHelperEndContextInterceptor</prop>
+    <!-- ContextInterceptor being used to reset edit state flag -->
+    <prop name="context.startinterceptor.2">de.schlund.pfixcore.editor2.frontend.util.EditViewResetContextInterceptor</prop>
+  </properties>
+  
+  <!-- Not in schema yet
+  <interceptors>
+    <start>
+      <interceptor class="de.schlund.pfixcore.editor2.frontend.util.SpringHelperStartContextInterceptor"/>
+      <interceptor class="de.schlund.pfixcore.editor2.frontend.util.EditViewResetContextInterceptor"/>
+    </start>
+    <end>
+      <interceptor class="de.schlund.pfixcore.editor2.frontend.util.SpringHelperEndContextInterceptor"/>
+    </end>
+  </interceptors>  
+  -->
+  
+</contextxmlserver>

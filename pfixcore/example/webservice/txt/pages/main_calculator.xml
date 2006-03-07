@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="ISO-8859-1"?><include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
+
+  <part name="content">
+    <theme name="default">
+		<h1>Calculator service</h1>
+		
+		<div>
+		<h2>Pustefix SOAP</h2>
+		<p>Pustefix soap call took <span id="pfxsoap_time">0</span> ms.</p>
+		<p><span class="error" id="pfxsoap_error"/></p>
+		<form action="" name="pfxsoap">
+			<table bgcolor="#b6cfe4" cellpadding="5">
+				<tr>
+					<td>Value 1:</td><td><input name="i1" size="8" type="text" value="3"/></td>
+				</tr>
+				<tr>
+					<td>Value 2:</td><td><input name="i2" size="8" type="text" value="7"/></td>
+				</tr>
+				<tr>
+					<td align="center" colspan="2">
+						<input onclick="pfxsoapCall('add',document.pfxsoap.i1.value,document.pfxsoap.i2.value);" type="button" value=" + "/>
+						<input onclick="pfxsoapCall('subtract',document.pfxsoap.i1.value,document.pfxsoap.i2.value);" type="button" value=" - "/>
+						<input onclick="pfxsoapCall('multiply',document.pfxsoap.i1.value,document.pfxsoap.i2.value);" type="button" value=" * "/>
+						<input onclick="pfxsoapCall('divide',document.pfxsoap.i1.value,document.pfxsoap.i2.value);" type="button" value=" / "/>
+					</td>
+				</tr>
+				<tr>
+					<td>Result:</td><td><input id="pfxsoap_result" readonly="readonly" size="8" type="text"/></td>
+				</tr>
+			</table>	
+		</form>
+		</div>
+		
+		<div name="gecko_disp" style="display:none">
+		<h2>Mozilla low-level SOAP</h2>
+		<p>Low-level soap call took <span id="soap_time">0</span> ms.</p>
+		<p><span class="error" id="soap_error"/></p>
+		<form action="" name="mozsoap">
+			<table bgcolor="#b6cfe4" cellpadding="5">
+				<tr>
+					<td>Value 1:</td><td><input name="i1" size="8" type="text" value="3"/></td>
+				</tr>
+				<tr>
+					<td>Value 2:</td><td><input name="i2" size="8" type="text" value="7"/></td>
+				</tr>
+				<tr>
+					<td align="center" colspan="2">
+						<input onclick="mozsoapCall('add',document.mozsoap.i1.value,document.mozsoap.i2.value);" type="button" value=" + "/>
+						<input onclick="mozsoapCall('subtract',document.mozsoap.i1.value,document.mozsoap.i2.value);" type="button" value=" - "/>
+						<input onclick="mozsoapCall('multiply',document.mozsoap.i1.value,document.mozsoap.i2.value);" type="button" value=" * "/>
+						<input onclick="mozsoapCall('divide',document.mozsoap.i1.value,document.mozsoap.i2.value);" type="button" value=" / "/>
+					</td>
+				</tr>
+				<tr>
+					<td>Result:</td><td><input id="soap_result" readonly="readonly" size="8" type="text"/></td>
+				</tr>
+			</table>	
+		</form>
+		
+		<h2>Mozilla WSDL proxying</h2>
+		<p>Proxying soap call took <span id="wsdl_time">0</span> ms.</p>
+		<p><span class="error" id="wsdl_error"/></p>
+		<form action="" name="mozproxy">
+			<table bgcolor="#b6cfe4" cellpadding="5">
+				<tr>
+					<td>Value 1:</td><td><input name="i1" size="8" type="text" value="3"/></td>
+				</tr>
+				<tr>
+					<td>Value 2:</td><td><input name="i2" size="8" type="text" value="7"/></td>
+				</tr>
+				<tr>
+					<td align="center" colspan="2">
+						<input onclick="wsdlCall('add',document.mozproxy.i1.value,document.mozproxy.i2.value);" type="button" value=" + "/>
+						<input onclick="wsdlCall('subtract',document.mozproxy.i1.value,document.mozproxy.i2.value);" type="button" value=" - "/>
+						<input onclick="wsdlCall('multiply',document.mozproxy.i1.value,document.mozproxy.i2.value);" type="button" value=" * "/>
+						<input onclick="wsdlCall('divide',document.mozproxy.i1.value,document.mozproxy.i2.value);" type="button" value=" / "/>
+					</td>
+				</tr>
+				<tr>
+					<td>Result:</td><td><input id="wsdl_result" readonly="readonly" size="8" type="text"/></td>
+				</tr>
+			</table>	
+		</form>
+		
+		<h2>Raw mySOAP over XMLHttpReqeuest</h2>
+		<p>Soap call took <span id="mysoap_time">0</span> ms.</p>
+		<textarea cols="80" id="mysoap_request" rows="10" style="font-style:monospace;font-size:8pt">
+
+&lt;env:Envelope xmlns:env="http://schemas.xmlsoap.org/soap/envelope/"
+              xmlns:enc="http://schemas.xmlsoap.org/soap/encoding/"
+              env:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"
+              xmlns:xs="http://www.w3.org/1999/XMLSchema"
+              xmlns:xsi="http://www.w3.org/1999/XMLSchema-instance"&gt;
+   &lt;env:Header/&gt;
+   &lt;env:Body&gt;
+      &lt;a0:multiply xmlns:a0="urn:webservices.example.pfixcore.schlund.de"&gt;
+         &lt;a0:in0 xsi:type="xs:int"&gt;3&lt;/a0:in0&gt;
+         &lt;a0:in1 xsi:type="xs:int"&gt;7&lt;/a0:in1&gt;
+      &lt;/a0:multiply&gt;
+   &lt;/env:Body&gt;
+&lt;/env:Envelope&gt;
+
+		</textarea>
+		<textarea cols="80" id="mysoap_response" rows="10" style="font-style:monospace;font-size:8pt">
+			
+		</textarea>
+		<p>
+			<a href="javascript:mysoapCall()">Send SOAP request</a>
+		</p>
+		
+		</div>
+		
+		
+      </theme>
+  </part>
+  
+  
+ 
+</include_parts>

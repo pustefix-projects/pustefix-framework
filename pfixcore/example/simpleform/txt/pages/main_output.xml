@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
+  <part name="content">
+    <theme name="default">
+      <p><pfx:button page="home">Home</pfx:button></p>
+      <b>The text received from the form:</b><br/>
+      <!-- ixsl means that this tag will be interpreted at runtime, when the HTML -->
+      <!-- is generated. It means that there will be a node "data" in the DOM tree containing -->
+      <!-- a node called "demotext".  -->
+      <ixsl:value-of select="/formresult/data/demotext/@value"/>
+    </theme>
+  </part>
+</include_parts>

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
+  
+  <part name="content">
+    <theme name="default">
+      A page sending a simple form.     	
+      <!-- A tag showing that the form starts here -->
+      <pfx:forminput>
+        <table cellpadding="5">
+          <tr>
+            <!-- A label containing a description for the textfield -->
+            <pfx:checkfield name="demo.DemoText">
+              <td class="{$pfx_class}">The text to send:</td>
+            </pfx:checkfield>
+            <!-- The textfield itself -->
+            <td><pfx:xinp name="demo.DemoText" type="text"/></td>
+          </tr>
+          <tr>
+            <!-- A submit button -->
+            <td><pfx:xinp type="submit" value="Abschicken"/></td>
+          </tr>
+        </table>
+        <!-- The closing tag for our form -->
+      </pfx:forminput>
+    </theme>
+  </part>
+</include_parts>

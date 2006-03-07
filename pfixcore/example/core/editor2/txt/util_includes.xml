@@ -1,0 +1,272 @@
+<?xml version="1.0" encoding="ISO-8859-1"?><include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
+  <part name="displayallincludes">
+    <theme name="default">
+        <div class="editor_includes_sidebar_content" id="editor_includes_sidebar_content">
+          <div class="editor_includes_sidebar_buttons">
+            (<span onClick="pfx_editor_expandAllDirectories()">Expand all</span>)
+            (<span onClick="pfx_editor_collapseAllDirectories()">Collapse all</span>)
+          </div>
+          <!-- 
+               pfx:script is not used here intentionally:
+               It caused problems with part names containing a double "-".
+               This fix is ugly, but it works...               
+          -->
+          <script language="javascript"><ixsl:text disable-output-escaping="yes">&lt;!--</ixsl:text>
+            var pfx_editor_sessid = "<ixsl:value-of select="$__sessid"/>";
+            var pfx_editor_inc_root = new pfx_editor_TreeRoot(document.getElementById("editor_includes_sidebar_content"));
+            var pfx_editor_inc_dir = false;
+            var pfx_editor_inc_file = false;
+            var pfx_editor_inc_part = false;
+            var pfx_editor_scrollElement = false;
+            
+            <ixsl:for-each select="./directory">
+              pfx_editor_inc_dir = new pfx_editor_Directory("<ixsl:value-of select="./@path"/>");
+              <ixsl:if test="./@open">
+                <ixsl:for-each select="./file">
+                  pfx_editor_inc_file = new pfx_editor_File("<ixsl:value-of select="./@path"/>");
+                  <ixsl:if test="./@open='true'">
+                    <ixsl:for-each select="./include">
+                      pfx_editor_inc_part = new pfx_editor_Part(
+                        "<ixsl:value-of select="../@path"/>", 
+                        "<ixsl:value-of select="./@part"/>", 
+                        "<ixsl:value-of select="./@theme"/>",
+                        <ixsl:choose>
+                          <ixsl:when test="./@selected='true'">
+                            true
+                          </ixsl:when>
+                          <ixsl:otherwise>
+                            false
+                          </ixsl:otherwise>
+                        </ixsl:choose>);
+                      pfx_editor_inc_file.appendPart(pfx_editor_inc_part);
+                      <ixsl:if test="./@selected='true'">
+                        window.scrollTo(0, pfx_editor_inc_file.getElement().offsetTop);
+                        pfx_editor_scrollElement = pfx_editor_inc_part.getElement();
+                      </ixsl:if>
+                    </ixsl:for-each>
+                    pfx_editor_inc_file.expand();
+                  </ixsl:if>
+                  pfx_editor_inc_dir.appendFile(pfx_editor_inc_file);
+                </ixsl:for-each>
+                pfx_editor_inc_dir.expand();
+              </ixsl:if>
+              pfx_editor_inc_root.appendDir(pfx_editor_inc_dir);
+            </ixsl:for-each>
+            if (pfx_editor_scrollElement) {
+              window.scrollTo(0, pfx_editor_scrollElement.offsetTop - 50);
+            }
+          <ixsl:text disable-output-escaping="yes">--&gt;</ixsl:text></script>
+        </div>
+      </theme>
+  </part>
+  
+  <part name="displayincludedetails">
+    <theme name="default">
+        <pfx:forminput name="my_form" target="bottom">
+          <pfx:xinp name="__anchor" type="hidden">
+            <ixsl:attribute name="value">left_navi|<ixsl:value-of select="./currentinclude/@path"/></ixsl:attribute>
+          </pfx:xinp>
+          
+          <pfx:include part="showcurrentinclude"/>
+          <pfx:include part="partdetails"/>
+
+        </pfx:forminput>
+      </theme>
+  </part>
+  
+  <part name="showcurrentinclude">
+    <theme name="default">
+        <table width="100%">
+          <tr>
+            <td class="editor_main_emph">Current include:
+              <ixsl:value-of select="./currentinclude/@part"/>
+              <span style="color: #9999cc">@</span>
+              <ixsl:value-of select="./currentinclude/@path"/>
+              (Theme: <ixsl:value-of select="./currentinclude/@theme"/>)
+            </td>
+          </tr>
+        </table>
+      </theme>
+  </part>
+  
+  <part name="partdetails">
+    <theme name="default">
+        <ixsl:choose>
+          <ixsl:when test="./currentinclude/@mayEdit='true'">
+            <pfx:include part="uploadinclude"/>
+          </ixsl:when>
+          <ixsl:otherwise>
+            <pfx:include href="core/editor2/txt/util.xml" part="perm_denied_usedby_other_prods"/>
+          </ixsl:otherwise>
+        </ixsl:choose>
+        <pfx:include part="handlethemebranches"/>
+      </theme>
+  </part>
+  
+  <part name="handlethemebranches">
+    <theme name="default">
+        <br/>
+        <table class="editor_box" width="100%"> 
+          <tr>
+            <td colspan="2">
+              This is the branch for theme <b><ixsl:value-of select="./currentinclude/@theme"/></b>
+              of the include part.
+            </td>
+          </tr>
+          
+          <ixsl:variable name="currtheme"><ixsl:value-of select="./currentinclude/@theme"/></ixsl:variable>
+          <ixsl:variable name="currpart"><ixsl:value-of select="./currentinclude/@part"/></ixsl:variable>
+          <ixsl:if test="./directory/file/include[@selected='true']/parent::node()/include[(@theme!=$currtheme) and (@part=$currpart)]">
+            <tr><td colspan="2"><hr/></td></tr>
+            <tr>
+              <td colspan="2">
+                Other existing theme branches:
+                <ixsl:for-each select="./directory/file/include[@selected='true']/parent::node()/include[(@theme!=$currtheme) and (@part=$currpart)]">
+                  <pfx:button frame="_top" mode="force" target="_top">
+                    <pfx:command name="SELWRP">selectinclude</pfx:command>
+                    <pfx:command name="SELWRP">upload</pfx:command>
+                    <pfx:argument name="selectinclude.Path"><ixsl:value-of select="../@path"/></pfx:argument>
+                    <pfx:argument name="selectinclude.Part"><ixsl:value-of select="./@part"/></pfx:argument>
+                    <pfx:argument name="selectinclude.Theme"><ixsl:value-of select="./@theme"/></pfx:argument>
+                    <pfx:anchor frame="left_navi"><ixsl:value-of select="../@path"/></pfx:anchor>
+                    <ixsl:value-of select="@theme"/>
+                  </pfx:button>
+                   
+                </ixsl:for-each>
+              </td>
+            </tr>
+          </ixsl:if>
+
+          <ixsl:if test="./currentinclude/possiblethemes">
+            <tr><td colspan="2"><hr/></td></tr>
+            <tr>
+              <td nowrap="nowrap">
+                Select other possible theme for current targets:
+                <pfx:xinp name="branch.Theme" type="select">
+                  <pfx:dynoptions optionpath="./currentinclude/possiblethemes"/>
+                </pfx:xinp>
+              </td>
+              <td>
+                <pfx:xinp class="editor_submit" type="submit" value="Switch branch">
+                  <pfx:argument name="__frame">bottom</pfx:argument>
+                  <pfx:command name="SELWRP">branch</pfx:command>
+                  <pfx:command name="SELWRP">upload</pfx:command>
+                  <pfx:argument name="branch.Action">create</pfx:argument>
+                </pfx:xinp>
+              </td>
+            </tr>
+          </ixsl:if>
+          <ixsl:if test="not(./currentinclude/@theme = 'default') and (./currentinclude/@mayEdit = 'true')">
+            <tr><td colspan="2"><hr/></td></tr>
+            <tr>
+              <td>
+                <b>CAUTION:</b> Current theme branch can be removed: 
+              </td>
+              <td>
+                <pfx:button mode="force" normalclass="editor_submit">
+                  <pfx:argument name="__frame">bottom</pfx:argument>
+                  <pfx:command name="SELWRP">branch</pfx:command>
+                  <pfx:command name="SELWRP">upload</pfx:command>
+                  <pfx:argument name="branch.Action">delete</pfx:argument>
+                  Delete
+                </pfx:button>
+              </td>
+            </tr>
+          </ixsl:if>
+        </table>
+      </theme>
+  </part>
+  
+  <part name="uploadinclude">
+    <theme name="default">
+        <br/>
+        <table class="editor_box" width="100%">
+          <pfx:checkfield name="upload.Content">
+            <pfx:error>
+              <tr>
+                <td class="core_errorlabel_text" colspan="2">
+                  ERROR: 
+                  <span class="core_errortext"><pfx:scode/></span>
+                </td>
+              </tr>
+            </pfx:error>
+          </pfx:checkfield>
+          <ixsl:if test="./currentinclude/concurrentedits/user">
+            <tr>
+              <td colspan="2">
+                <table class="editor_box" width="100%">
+                  <tr>
+                    <td>
+                <span class="editor_main_emph">WARNING:</span>
+                The following users are editing this part at the moment:
+                <ixsl:for-each select="./currentinclude/concurrentedits/user">
+                  <i>
+                    <ixsl:value-of select="@username"/>
+                    <ixsl:if test="following-sibling::user">, </ixsl:if>
+                  </i>
+                </ixsl:for-each>
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+          </ixsl:if>
+          <tr>
+            <td align="right" colspan="2">
+              <div id="wfxtb01" style="border:1px solid black"/>
+              <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                <tbody>
+                  <tr>
+                    <td width="50"><iframe frameborder="0" id="wfxline01" scrolling="no" src="about:blank" style="width:50px; height:384px; border:1px solid #000000; background-color:#ffffff; float:left"/></td>
+                    <td><iframe frameborder="0" id="wfxedit01" scrolling="yes" src="about:blank" style="width:100%; height:384px; border:1px solid #000000; background-color:#ffffff; float:right"/></td>
+                  </tr>
+                </tbody>
+              </table>
+              <br/>
+              <input class="editor_submit" onclick="wfxed.submitContent('wfxta01', 'wfxsubmit01')" type="button" value="Upload Data"/>
+              <br/>
+              <div style="display:none">
+                Line: <input id="wfxed_line" size="3" type="text" value=""/>
+                Scroll: <input id="wfxed_column" size="3" type="text" value=""/>
+                Message: <input id="wfxed_msg" size="100" type="text" value=""/>
+                <br/>
+                <textarea cols="130" id="ta_src" rows="10" style="display:none"/>
+                <textarea cols="130" id="ta_col" rows="10" style="display:none"/>
+                <textarea cols="130" id="dbg" rows="25" style="display:none"/>
+                <br/>
+                <pfx:xinp class="editor_textarea" id="wfxta01" name="upload.Content" type="area" wrap="off"/>
+                <pfx:xinp name="upload.Hash" type="hidden"/>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td align="right" colspan="2">
+              <pfx:xinp class="editor_submit" id="wfxsubmit01" name="Upload Data" style="display:none" type="submit" value="Upload Data">
+                <pfx:command name="SELWRP">upload</pfx:command> 
+                <pfx:argument name="upload.DoUpload">1</pfx:argument>
+                </pfx:xinp>
+            </td>
+          </tr>
+          <ixsl:if test="./currentinclude/backups">
+            <tr>
+              <td colspan="2"><hr/></td>
+            </tr>
+            <tr valign="top">
+              <td>
+                If you want to return to a previous version of the include, select one of the backups below.
+              </td>
+              <td align="right" nowrap="nowrap">
+                <pfx:xinp name="restore.Version" optionpath="./currentinclude/backups" type="dynselect"/> 
+                <input name="restore.Hash" type="hidden"><ixsl:attribute name="value"><ixsl:value-of select="./currentinclude/@hash"/></ixsl:attribute></input>
+                <pfx:xinp class="editor_submit" type="submit" value="Use Backup">
+                  <pfx:command name="SELWRP">upload</pfx:command>
+                  <pfx:command name="SELWRP">restore</pfx:command>
+                </pfx:xinp>
+              </td>
+            </tr>
+          </ixsl:if>
+        </table>
+      </theme>
+  </part>
+
+</include_parts>
