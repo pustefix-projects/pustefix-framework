@@ -14,7 +14,6 @@
 	<classpathentry kind="lib" path="lib/jnet.jar"/>
 	<classpathentry kind="lib" path="lib/junit-3.8.1.jar"/>
 	<classpathentry sourcepath="/sources/xml-commons-resolver-1.1/src" kind="lib" path="lib/resolver.jar"/>
-	<classpathentry sourcepath="/sources/saxon-6.5.3/source.zip" kind="lib" path="lib/saxon6_5_3.jar"/>
 	<classpathentry kind="lib" path="lib/jmxremote_optional-1.0.1_03.jar"/>
 	<classpathentry kind="lib" path="lib/saaj-1.2.jar"/>
 	<classpathentry kind="lib" path="lib/wsdl4j-1.5.1.jar"/>
@@ -29,5 +28,6 @@
 	<classpathentry kind="src" path="gensrc"/>
 	<classpathentry kind="lib" path="lib/spring-1.2.1.jar"/>
 	<classpathentry kind="lib" path="lib/lucene-1.4.3.jar"/>
+	<classpathentry kind="lib" path="lib/saxon6_5_5.jar"/>
 	<classpathentry kind="output" path="build"/>
 </classpath>

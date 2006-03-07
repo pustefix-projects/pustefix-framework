@@ -1,11 +1,6 @@
-/*
- * Created on 19.02.2005
- *
- * To change the template for this generated file go to
- * Window - Preferences - Java - Code Generation - Code and Comments
- */
 package de.schlund.pfixcore.example;
 
+import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
@@ -15,17 +10,15 @@ import de.schlund.pfixcore.workflow.Context;
 import de.schlund.pfixxml.ResultDocument;
 
 /**
- * @author ml
- *
- * To change the template for this generated type comment go to
- * Window - Preferences - Java - Code Generation - Code and Comments
+ * @author mleidig@schlund.de
  */
 public class ContextEncodingTestImpl implements ContextEncodingTest {
 
     private final static String DEFAULT_TEXT="abcdäöüß";
-    private Context ctx;
+    
     private String text=DEFAULT_TEXT;
     private String encoding="";
+    private File file;
     
     public String getText() {
     	return text;
@@ -33,6 +26,14 @@ public class ContextEncodingTestImpl implements ContextEncodingTest {
     
     public void setText(String text) {
     	this.text=text;
+    }
+    
+    public File getFile() {
+        return file;
+    }
+    
+    public void setFile(File file) {
+        this.file=file;
     }
     
     public String getEncoding() {
@@ -44,24 +45,18 @@ public class ContextEncodingTestImpl implements ContextEncodingTest {
     }
     
     public void init(Context ctx) {
-        this.ctx=ctx;
-    }
-    
-    public void reset() {
-        ctx=null;
-        text=DEFAULT_TEXT;
-        encoding="";
     }
     
     public void insertStatus(ResultDocument resDoc,Element elem) {
     	ResultDocument.addTextChild(elem,"encoding",encoding);
     	ResultDocument.addTextChild(elem,"original",text);
+        if(file!=null) ResultDocument.addTextChild(elem,"file",file.getAbsolutePath());
     	try {
-    		String utfEnc=URLEncoder.encode(text,"UTF-8");
-      	ResultDocument.addTextChild(elem,"urlenc-utf",utfEnc);
-      	String isoEnc=URLEncoder.encode(text,"ISO-8859-1");
-      	ResultDocument.addTextChild(elem,"urlenc-iso",isoEnc);
-      } catch(UnsupportedEncodingException x) {}
+    	    String utfEnc=URLEncoder.encode(text,"UTF-8");
+    	    ResultDocument.addTextChild(elem,"urlenc-utf",utfEnc);
+    	    String isoEnc=URLEncoder.encode(text,"ISO-8859-1");
+    	    ResultDocument.addTextChild(elem,"urlenc-iso",isoEnc);
+    	} catch(UnsupportedEncodingException x) {}
     }
     
 }
