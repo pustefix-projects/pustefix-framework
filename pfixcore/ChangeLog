@@ -1,5 +1,8 @@
 2006-03-08  Jens Lautenbacher  <jtl@schlund.de>
 
+	* src/de/schlund/pfixcore/example/ContextEncodingTestImpl.java (ContextEncodingTestImpl::reset): we need this 
+	method still in this branch
+
 	* src/de/schlund/pfixxml/util/Xslt.java (Xslt::createIdentityTransformer): re-enabled
 	synchronization for testing purposes...
 

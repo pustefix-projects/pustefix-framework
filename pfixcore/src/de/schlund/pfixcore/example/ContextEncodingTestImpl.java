@@ -46,6 +46,9 @@ public class ContextEncodingTestImpl implements ContextEncodingTest {
     
     public void init(Context ctx) {
     }
+
+    public void reset() {
+    }
     
     public void insertStatus(ResultDocument resDoc,Element elem) {
     	ResultDocument.addTextChild(elem,"encoding",encoding);
