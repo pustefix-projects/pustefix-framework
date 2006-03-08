@@ -15,7 +15,6 @@ or delete the DOCTYPE definition -->
   <property name="javac.source"             value="1.5"/>
   <property name="javac.encoding"           value="iso8859-1"/>
   <property name="name.jnipkg"              value="jni.tar.gz"/>
-  <property name="name.cvsautotag"          value="CVS_AUTOTAG"/>
   <property name="debugopts"                value="-Xdebug -Xnoagent -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5000"/>
   <property name="gen"                      value="**/depend.xml"/>
   <property name="dir.src"                  location="src"/>
@@ -24,7 +23,6 @@ or delete the DOCTYPE definition -->
   <property name="dir.lib"                  location="lib"/>
   <property name="dir.skel"                 location="skel"/>
   <property name="dir.jni"                  location="${dir.lib}/jni"/>
-  <property name="dir.metainf"              location="META-INF"/>
   <property name="dir.projects"             location="projects"/>
   <property name="dir.docroot"              location="${dir.projects}" description="document root for tomcat, defaults to dir.projects"/>
   <property name="dir.src.modules"          location="modules"/>
@@ -99,10 +97,6 @@ or delete the DOCTYPE definition -->
     <condition property="fqdn"     value="${machine}">
       <not><isset property="dnsdomainname"/></not>
     </condition>
-
-    <!-- Create time stamp in ISO 8601 alike format.
-         17th September 2003 11:58:23 formats to AUTO_TAG_2003-09-17-115823 in property -->
-    <tstamp><format property="tstamp.autotag" pattern="'AUTO_TAG_'yyyy'-'MM'-'dd'-'HHmmss"/></tstamp>
 
     <exec outputproperty="trusted.tomcat" executable="hostname" os="Linux"><arg value="-i"/></exec>
   </target>
@@ -324,7 +318,6 @@ or delete the DOCTYPE definition -->
     <delete dir="${dir.build}" />
     <!-- Delete *.java files created from some kind source files (e.g. .iwrp files) -->
     <delete dir="${dir.gensrc}" />
-    <delete file="${dir.metainf}/${name.cvsautotag}"/>
   </target>
 
   <target name="clean-modules" description="deletes files from ${dir.extract.modules}">
@@ -409,7 +402,7 @@ or delete the DOCTYPE definition -->
 
   <target name="merge">
     <property name="merge.src" location="${dir.projects}/core/dyntxt/statusmessages.xml"/>
-    <property name="merge.srcPath" location="/include_parts/part/product[@name='default']/lang[@name='default']"/>
+    <property name="merge.srcPath" location="/include_parts/part/theme[@name='default']"/>
     <property name="merge.dest" location="${dir.projects}/common/dyntxt/statusmessages-core-merged.xml"/>
     <java classname="de.schlund.pfixcore.util.Merge" fork="true" classpathref="cp.classpath">
       <arg file="${merge.src}"/>
@@ -707,8 +700,6 @@ or delete the DOCTYPE definition -->
       <fileset dir="${tmp.tomcat}" />
     </move>
 
-    <!-- cvs would remove this dir, event though we cvs-ignore it! -->
-    <touch file="${dir.tomcat}/logs/dontpruneme"/>
   </target>
 
   <target name="tomcat.strip">
@@ -1067,9 +1058,3 @@ or delete the DOCTYPE definition -->
   </description>
 
 </project>
-
-<!--
-Local Variables:
-sgml-indent-step: 4
-End:
--->
