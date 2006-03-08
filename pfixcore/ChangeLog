@@ -1,3 +1,8 @@
+2006-03-08  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixxml/util/Xslt.java (Xslt::createIdentityTransformer): re-enabled
+	synchronization for testing purposes...
+
 2006-03-07  Martin Leidig  <mleidig@schlund.de>
 
 	* example/core/build/create_serverxml.xsl: Set useBodyEncodingForURI also for standalone 
@@ -16,11 +21,6 @@
 	* src/de/schlund/pfixcore/example/ContextEncodingTest.java
 	* example/sample1/txt/pages/main_encoding.xml
 	* example/sample1/conf/config.prop.in
-
-2006-03-08  Jens Lautenbacher  <jtl@schlund.de>
-
-	* src/de/schlund/pfixxml/util/Xslt.java (Xslt::createIdentityTransformer): re-enabled 
-	synchronization for testing purposes...
 
 2006-02-23  Sebastian Marsching <sebastian.marsching@1und1.de>
 
