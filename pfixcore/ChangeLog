@@ -1,3 +1,8 @@
+2006-03-08  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixxml/util/Xslt.java (Xslt::createIdentityTransformer): re-enabled 
+	synchronization for testing purposes...
+
 2006-02-23  Sebastian Marsching <sebastian.marsching@1und1.de>
 
 	* Releasing version 0.8.10

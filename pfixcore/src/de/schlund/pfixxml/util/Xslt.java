@@ -61,7 +61,7 @@ public class Xslt {
 
     //-- load documents
 
-    public static Transformer createIdentityTransformer() {
+    public synchronized static Transformer createIdentityTransformer() {
         try {
             return ifactory.newTransformer();
         } catch (TransformerException e) {
