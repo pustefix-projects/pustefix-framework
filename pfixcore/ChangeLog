@@ -1,3 +1,22 @@
+2006-03-07  Martin Leidig  <mleidig@schlund.de>
+
+	* example/core/build/create_serverxml.xsl: Set useBodyEncodingForURI also for standalone 
+	connectors (fixes special character problems for GET requests in standalone mode)
+
+	* src/de/schlund/pfixxml/multipart/MultipartHandler.java: Request parameter parsing now
+	uses the encoding provided by the underlying ServletRequest (fixes special character
+	problems for multipart form parameters on non-ISO-8859-1-pages, but doesn't fix the
+	decoding problem with non-ISO-8859-1 filenames in den Content-Disposition header)	
+
+	Added encoding test example for multipart form handling and file upload
+	* src/de/schlund/pfixcore/example/iwrapper/EncodingTest.iwrp
+	* src/de/schlund/pfixcore/example/iwrapper/EncodingTestUpload.iwrp
+	* src/de/schlund/pfixcore/example/ContextEncodingTestImpl.java
+	* src/de/schlund/pfixcore/example/EncodingTestUploadHandler.java
+	* src/de/schlund/pfixcore/example/ContextEncodingTest.java
+	* example/sample1/txt/pages/main_encoding.xml
+	* example/sample1/conf/config.prop.in
+
 2006-03-08  Jens Lautenbacher  <jtl@schlund.de>
 
 	* src/de/schlund/pfixxml/util/Xslt.java (Xslt::createIdentityTransformer): re-enabled 

@@ -204,7 +204,7 @@ public class MultipartHandler {
                 curCtStr = headers[0];
                 curCt = new ContentType(curCtStr);
             } else {
-                curCt = new ContentType(DEFAULT_CTYPE);
+                curCt= new ContentType("text/plain; charset="+req.getCharacterEncoding());
             }
 
             boolean isfile = false;
