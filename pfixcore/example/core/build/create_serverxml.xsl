@@ -98,7 +98,8 @@
       <Connector maxHttpHeaderSize="8192"
                  maxThreads="150" minSpareThreads="25" maxSpareThreads="75"
                  enableLookups="false" acceptCount="100"
-                 connectionTimeout="20000" disableUploadTimeout="true" >
+                 connectionTimeout="20000" disableUploadTimeout="true" 
+                 useBodyEncodingForURI="true">
         <xsl:attribute name="debug"><xsl:value-of select="$debug"/></xsl:attribute>
         <xsl:attribute name="port"><xsl:value-of select="$portbase+80"/></xsl:attribute>
         <xsl:attribute name="redirectport"><xsl:value-of select="$portbase+443"/></xsl:attribute>
@@ -107,7 +108,8 @@
                  maxThreads="150" minSpareThreads="25" maxSpareThreads="75"
                  enableLookups="false" disableUploadTimeout="true"
                  acceptCount="100" scheme="https" secure="true"
-                 clientAuth="false" sslProtocol="TLS" keystoreFile="conf/keystore" keystorePass="secret">
+                 clientAuth="false" sslProtocol="TLS" keystoreFile="conf/keystore" keystorePass="secret"
+                 useBodyEncodingForURI="true">
         <xsl:attribute name="port"><xsl:value-of select="$portbase+443"/></xsl:attribute>
         <xsl:attribute name="debug"><xsl:value-of select="$debug"/></xsl:attribute>
       </Connector>
