@@ -21,13 +21,17 @@ package de.schlund.pfixxml.config;
 public class AbstractXMLServletConfig extends ServletManagerConfig {
 
     private String servletName;
+
     private String dependFile;
+
     private boolean editMode;
+
+    private boolean editModeSet = false;
 
     public void setServletName(String value) {
         this.servletName = value;
     }
-    
+
     public String getServletName() {
         return this.servletName;
     }
@@ -35,17 +39,31 @@ public class AbstractXMLServletConfig extends ServletManagerConfig {
     public void setDependFile(String value) {
         this.dependFile = value;
     }
-    
+
     public String getDependFile() {
         return this.dependFile;
     }
 
     public void setEditMode(boolean b) {
         this.editMode = b;
+        this.editModeSet = true;
     }
-    
+
     public boolean isEditMode() {
-        return this.editMode;
+        // We have to take care to handle the case where the editmode is
+        // simply not set for the current servlet. Then we should skip
+        // to reading the central property.
+        if (this.editModeSet) {
+            return this.editMode;
+        } else {
+            String prop = this.getProperties().getProperty(
+                    "xmlserver.noeditmodeallowed");
+            if (prop != null && prop.equalsIgnoreCase("false")) {
+                return true;
+            } else {
+                return false;
+            }
+        }
     }
 
 }
