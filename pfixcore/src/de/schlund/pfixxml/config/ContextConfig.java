@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.Properties;
 import java.util.Set;
 import java.util.Map.Entry;
@@ -36,7 +37,7 @@ public class ContextConfig {
     private Class contextClass = null;
     private String authPage = null;
     private String defaultFlow = null;
-    private HashSet<ContextResourceConfig> resources = new HashSet<ContextResourceConfig>();
+    private LinkedHashSet<ContextResourceConfig> resources = new LinkedHashSet<ContextResourceConfig>();
     private HashMap<String, PageFlowConfig> pageflows = new HashMap<String, PageFlowConfig>();
     private HashMap<String, PageRequestConfig> pagerequests = new HashMap<String, PageRequestConfig>();
     private String navigationFile = null;
