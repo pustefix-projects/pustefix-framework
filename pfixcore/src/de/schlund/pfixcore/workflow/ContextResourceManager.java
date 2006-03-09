@@ -19,9 +19,12 @@
 
 package de.schlund.pfixcore.workflow;
 
+import de.schlund.pfixxml.config.ContextConfig;
+import de.schlund.pfixxml.config.ContextResourceConfig;
 import de.schlund.pfixxml.loader.*;
 import de.schlund.pfixcore.util.PropertiesUtils;
 import java.util.*;
+
 import javax.servlet.*;
 import org.apache.log4j.*;
 
@@ -76,66 +79,53 @@ public class ContextResourceManager implements Reloader {
      *
      */
     
-     public void init(Context context) throws Exception{
+     public void init(Context context, ContextConfig config) throws Exception{
         CAT.debug("initialize ContextResources...");
-        // CAT.debug("Properties:\n" + context.getProperties());
         
-        // Getting all Properties beginning with PROP_RESOURCE
-        TreeMap cr_create = PropertiesUtils.selectPropertiesSorted(context.getProperties(), PROP_RESOURCE);
-        List    cr_init   = new LinkedList();
-        // Hope, I got properties
-        if (cr_create != null && !cr_create.isEmpty()) {
-            // For each property...
-            for (Iterator i = cr_create.keySet().iterator(); i.hasNext(); ) {
-                // Get the classname and create a tokenizer to traverse the
-                // list of interfaces
-                String resourcename   = (String) i.next();
-                int    classnameIndex = resourcename.indexOf(".") + 1;
-                if (classnameIndex == -1) {
-                    throw new ServletException("Not the needed format for " +
-                                               " ContextResource-Property !");
+        Collection<ContextResource> resourcesToInitialize = new ArrayList();
+        
+        Set<ContextResourceConfig> resourceConfigs = config.getContextResources();
+        
+        for (Iterator<ContextResourceConfig> i = resourceConfigs.iterator(); i.hasNext();) {
+            ContextResourceConfig resourceConfig = i.next();
+            ContextResource cr = null;
+            String classname = resourceConfig.getContextResouceClass().getName();
+            try {
+                CAT.debug("Creating object with name [" + classname + "]");
+                AppLoader appLoader = AppLoader.getInstance();
+                if (appLoader.isEnabled()) {
+                    cr = (ContextResource) appLoader.loadClass(classname).newInstance();
+                } else {
+                    cr = (ContextResource) resourceConfig.getContextResouceClass().newInstance();
                 }
-                String          classname     = resourcename.substring(classnameIndex);  
-                String          interfacelist = (String) cr_create.get(resourcename);
-                StringTokenizer tokenizer     = new StringTokenizer(interfacelist, SEPERATOR); 
-                ContextResource cr            = null;
-                
-                // Now create an object of the requested class 
-                try {
-                    CAT.debug("Creating object with name [" + classname + "]");
-                    AppLoader appLoader = AppLoader.getInstance();
-                    if (appLoader.isEnabled()) {
-                        cr = (ContextResource) appLoader.loadClass(classname).newInstance();
-                    } else {
-                        cr = (ContextResource) Class.forName(classname).newInstance();
-                    }
-                } catch (Exception e) {
-                    throw new ServletException("Exception while creating object " +
-                                               classname + ":" + e);
-                }
-                
-                // initialize it...
-                // cr.init(context);
-                cr_init.add(cr);
-                
-                if (tokenizer.countTokens() == 0) {
-                    throw new ServletException("No interfaces given for object of class [" + classname + "]"); 
-                }
-		
-                while (tokenizer.hasMoreTokens()) {
-                    String interfacename = tokenizer.nextToken().trim();
-                    checkInterface(cr, interfacename);
-                    CAT.debug("* Registering [" + classname + "] for interface [" + interfacename + "]");
-                    resources.put(interfacename, cr);
-                }
+            } catch (Exception e) {
+                throw new ServletException("Exception while creating object " +
+                        classname + ":" + e);
             }
-            for (Iterator i = cr_init.iterator(); i.hasNext(); ) {
-                ContextResource cr = (ContextResource) i.next();
-                cr.init(context);
+            
+            resourcesToInitialize.add(cr);
+            
+            // Register interfaces
+            Set<Class> interfaces = resourceConfig.getInterfaces();
+            
+            if (interfaces.size() == 0) {
+                throw new ServletException("No interfaces given for object of class [" + classname + "]");
             }
-        } else {
-            CAT.debug("No Properties with prefix " + PROP_RESOURCE + " found! ");
+            
+            for (Iterator<Class> j = interfaces.iterator(); j.hasNext();) {
+                Class iface = j.next();
+                String interfacename = iface.getName();
+                checkInterface(cr, interfacename);
+                CAT.debug("* Registering [" + classname + "] for interface [" + interfacename + "]");
+                resources.put(interfacename, cr);
+            }
         }
+        
+        for (Iterator i = resourcesToInitialize.iterator(); i.hasNext();) {
+            ContextResource resource = (ContextResource) i.next();
+            resource.init(context);
+        }
+        
         AppLoader appLoader = AppLoader.getInstance();
         if (appLoader.isEnabled()) appLoader.addReloader(this);   
     }

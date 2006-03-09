@@ -58,7 +58,7 @@ public class PropertiesUtils {
             p = (String) enm.nextElement();
             if (p.startsWith(prefix)) {
                 String suffix = p.substring(prefix.length(),p.length());
-                result.put(suffix,props.get(p));
+                result.put(suffix,props.getProperty(p));
             }
     	}
         
@@ -102,7 +102,7 @@ public class PropertiesUtils {
                     if (pKey.startsWith(dottedPrefix)) {
                         try {
                             newKey = pKey.substring(dottedPrefix.length(), pKey.length());
-                            rc.put(newKey, props.get(pKey));
+                            rc.put(newKey, props.getProperty(pKey));
                         } catch (IndexOutOfBoundsException e) { }
                     }
                 }

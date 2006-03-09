@@ -19,13 +19,25 @@
 
 package de.schlund.pfixcore.workflow.app;
 
-import de.schlund.pfixcore.generator.*;
-import de.schlund.pfixcore.util.PropertiesUtils;
-import de.schlund.pfixcore.workflow.*;
-import de.schlund.pfixxml.*;
-import de.schlund.pfixxml.loader.*;
-import de.schlund.util.statuscodes.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Properties;
+
+import de.schlund.pfixcore.generator.IHandler;
+import de.schlund.pfixcore.generator.IWrapper;
+import de.schlund.pfixcore.generator.IWrapperParam;
+import de.schlund.pfixcore.generator.RequestData;
+import de.schlund.pfixcore.generator.StatusCodeInfo;
+import de.schlund.pfixcore.workflow.Context;
+import de.schlund.pfixcore.workflow.StateImpl;
+import de.schlund.pfixxml.AbstractXMLServer;
+import de.schlund.pfixxml.PfixServletRequest;
+import de.schlund.pfixxml.RequestParam;
+import de.schlund.pfixxml.ResultDocument;
+import de.schlund.pfixxml.XMLException;
+import de.schlund.pfixxml.config.PageRequestConfig;
+import de.schlund.pfixxml.loader.AppLoader;
 
 /**
  * DefaultAuthIWrapperState.java
@@ -40,9 +52,6 @@ import java.util.*;
  */
 
 public class DefaultAuthIWrapperState extends StateImpl {
-    private static final String PROP_AUTHIFACE = "interface";
-    private static final String PROP_AUXIFACE  = "auxinterface";
-    
     /**
      * This returns alwys true. I don't know why you'd want to overwrite
      * this with a different behaviour.
@@ -72,17 +81,16 @@ public class DefaultAuthIWrapperState extends StateImpl {
     }
 
     private ArrayList getAuxWrapper(Context context) throws Exception {
-        Properties props     = context.getPropertiesForCurrentPageRequest();
         ArrayList  aux       = new ArrayList();
-        TreeMap    auxwrp    = PropertiesUtils.selectPropertiesSorted(props, PROP_AUXIFACE);
+        PageRequestConfig config = context.getConfigForCurrentPageRequest();
+        Map<String, Class> auxwrp = config.getAuxWrappers();
         AppLoader  appLoader = AppLoader.getInstance();
         
         if (auxwrp != null) {
             for (Iterator i = auxwrp.keySet().iterator(); i.hasNext(); ) {
-                String sorted_prefix = (String) i.next();
-                String prefix        = sorted_prefix.substring(sorted_prefix.indexOf(".") + 1);
-                String iface         = (String) auxwrp.get(sorted_prefix);
-                if (iface == null || iface.equals("")) {
+                String prefix = (String) i.next(); 
+                String iface  = auxwrp.get(prefix).getName();
+                if (iface.equals("")) {
                     throw new XMLException("FATAL: No interface for prefix " + prefix);
                 }
                 Class auxwrapper = null;
@@ -101,23 +109,23 @@ public class DefaultAuthIWrapperState extends StateImpl {
 
     private IWrapper getAuthWrapper(Context context, boolean do_init) throws Exception {
         String     pagename  = context.getCurrentPageRequest().getName();
-        Properties props     = context.getPropertiesForCurrentPageRequest();
-        HashMap    authwrp   = PropertiesUtils.selectProperties(props, PROP_AUTHIFACE);
+        PageRequestConfig config = context.getConfigForCurrentPageRequest();
         AppLoader  appLoader = AppLoader.getInstance();
         
-        if (authwrp == null || authwrp.size() != 1) {
+        String authprefix = config.getAuthWrapperPrefix();
+        String authwrapper = config.getAuthWrapperClass().getName();
+        
+        if (authprefix == null || authwrapper == null) {
             String msg;
-            if (authwrp == null) {
-                msg = "authwrp == null (" + pagename + ")";
+            if (authprefix == null) {
+                msg = "authprefix == null (" + pagename + ")";
             } else {
-                msg = "authwrp.size = " + authwrp.size() + " (" + pagename + ")";
+                msg = "authwrapper == null  (" + pagename + ")";
             }
             throw new XMLException("FATAL: Need exactly one interface definition for authpage! " + msg);
         }
 
-        String authprefix  = (String) authwrp.keySet().iterator().next();
-        String authwrapper = (String) authwrp.get(authprefix);
-        if (authwrapper == null || authwrapper.equals("")) {
+        if (authwrapper.equals("")) {
             throw new XMLException("*** No interface for prefix " + authprefix);
         }
 

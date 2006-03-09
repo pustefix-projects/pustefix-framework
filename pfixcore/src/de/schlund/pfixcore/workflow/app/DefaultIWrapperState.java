@@ -22,6 +22,7 @@ package de.schlund.pfixcore.workflow.app;
 
 import de.schlund.pfixcore.workflow.*;
 import de.schlund.pfixxml.*;
+import de.schlund.pfixxml.config.PageRequestConfig;
 import de.schlund.pfixxml.perflogging.PerfEvent;
 import de.schlund.pfixxml.perflogging.PerfEventType;
 import java.util.Properties;
@@ -187,8 +188,8 @@ public class DefaultIWrapperState extends StateImpl {
 
     // Eeek, unfortunately we can't use a flyweight here... (somewhere we need to store state after all)
     protected IWrapperContainer getIWrapperContainer(Context context) throws XMLException  {
-        Properties        props     = context.getPropertiesForCurrentPageRequest();
-        String            classname = props.getProperty(IWrapperSimpleContainer.PROP_CONTAINER);
+        PageRequestConfig config = context.getConfigForCurrentPageRequest();
+        String            classname = config.getProperties().getProperty(IWrapperSimpleContainer.PROP_CONTAINER);
         IWrapperContainer obj       = null;
         
         if (classname == null) {
@@ -212,10 +213,12 @@ public class DefaultIWrapperState extends StateImpl {
 
     // Remember, a ResdocFinalizer is a flyweight!!!
     protected ResdocFinalizer getResdocFinalizer(Context context) throws XMLException {
-        Properties props     = context.getPropertiesForCurrentPageRequest();
-        String     classname = props.getProperty(ResdocSimpleFinalizer.PROP_FINALIZER);
-        if (classname == null) {
-            classname = DEF_FINALIZER;
+        PageRequestConfig config = context.getConfigForCurrentPageRequest();
+        Class clazz = config.getFinalizer();
+        String classname = DEF_FINALIZER;
+        if (clazz != null) {
+            classname = clazz.getName();
+            
         }
         
         ResdocFinalizer fin = ResdocFinalizerFactory.getInstance().getResdocFinalizer(classname);

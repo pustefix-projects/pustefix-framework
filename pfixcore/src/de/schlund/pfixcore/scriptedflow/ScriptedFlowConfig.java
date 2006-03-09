@@ -21,21 +21,18 @@ package de.schlund.pfixcore.scriptedflow;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Properties;
 
 import de.schlund.pfixcore.scriptedflow.compiler.Compiler;
 import de.schlund.pfixcore.scriptedflow.compiler.CompilerException;
 import de.schlund.pfixcore.scriptedflow.vm.Script;
-import de.schlund.pfixcore.util.PropertiesUtils;
 import de.schlund.pfixxml.PathFactory;
-import de.schlund.pfixxml.PropertyObject;
 
 /**
  * Stores configuration for scripted flows.  
  * 
  * @author Sebastian Marsching <sebastian.marsching@1und1.de>
  */
-public class ScriptedFlowConfig implements PropertyObject {
+public class ScriptedFlowConfig {
     private class Triple {
         long mtime = -1;
 
@@ -44,9 +41,7 @@ public class ScriptedFlowConfig implements PropertyObject {
         Script script = null;
     }
 
-    private final static String PROP_SCRIPTEDFLOW = "scriptedflow";
-
-    private Map<String, Triple> scripts;
+    private Map<String, Triple> scripts = new HashMap<String, Triple>();
 
     public Script getScript(String name) throws CompilerException {
         Triple t = this.scripts.get(name);
@@ -68,16 +63,9 @@ public class ScriptedFlowConfig implements PropertyObject {
         }
     }
 
-    public void init(Properties props) throws Exception {
-        scripts = new HashMap<String, Triple>();
-        Map<String, String> nameToFile = PropertiesUtils.selectProperties(
-                props, PROP_SCRIPTEDFLOW);
-
-        for (String key : nameToFile.keySet()) {
-            Triple t = new Triple();
-            t.file = PathFactory.getInstance().createPath(nameToFile.get(key))
-                    .resolve();
-            scripts.put(key, t);
-        }
+    public void addScript(String name, String path) {
+        Triple t = new Triple();
+        t.file = PathFactory.getInstance().createPath(path).resolve();
+        scripts.put(name, t);
     }
 }

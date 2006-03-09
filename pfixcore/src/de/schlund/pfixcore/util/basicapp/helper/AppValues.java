@@ -31,7 +31,7 @@ public final class AppValues {
     /** The property describing the path to the log4j.xml */
     public static final String LOG4JPROP       = "pustefix.newprjlog4j.config";
     /** The basic path set by ant while starting the app */
-    public static final String BASICPATH       = PropResourceManager.getPropertyValue("pustefix.docroot");
+    public static final String BASICPATH       = System.getProperty("pustefix.docroot");
     /** A String array with basic items */
     public static final String[] ITEMS         = {"name", "language"};
     /** A String array with basic servlet items */

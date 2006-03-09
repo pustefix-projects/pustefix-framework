@@ -19,13 +19,17 @@
 
 package de.schlund.pfixcore.workflow;
 
-import java.util.*;
-import org.apache.log4j.*;
+import java.util.HashMap;
+import java.util.Iterator;
+
+import org.apache.log4j.Category;
+
+import de.schlund.pfixxml.ConfigurableObject;
+import de.schlund.pfixxml.config.DirectOutputPageRequestConfig;
+import de.schlund.pfixxml.config.DirectOutputServletConfig;
 import de.schlund.pfixxml.loader.AppLoader;
 import de.schlund.pfixxml.loader.Reloader;
 import de.schlund.pfixxml.loader.StateTransfer;
-import de.schlund.pfixxml.PropertyObject;
-import de.schlund.pfixxml.PropertyObjectManager;
 
 /**
  * <code>DirectOutputPageMap</code> holds a mapping of PageRequests to DirectOutputStates. It
@@ -34,35 +38,29 @@ import de.schlund.pfixxml.PropertyObjectManager;
  *
  * @author <a href="mailto:jtl@schlund.de">Jens Lautenbacher</a>
  */
-public class DirectOutputPageMap implements PropertyObject,Reloader {
+public class DirectOutputPageMap implements ConfigurableObject,Reloader {
     protected            HashMap  pagemap       = new HashMap();
-    public  final static String   CLASSNAMEPROP = "classname";
     private final static Category CAT           = Category.getInstance(DirectOutputPageMap.class.getName());
     
     /**
      * The <code>init</code> method initializes a mapping from {@link PageRequest}s to {@link DirectOutputState}s.
      *
-     * @param properties a <code>Properties</code> value
+     * @param confObj a {@link de.schlund.pfixxml.config.DirectOutputServletConfig} object
      * @exception Exception if an error occurs
      */
-    public void init(Properties properties) throws Exception {
-
-        //Get PageRequestProperties object from PropertyObjectManager 
-        PageRequestProperties preqprops = (PageRequestProperties) PropertyObjectManager.getInstance().
-            getPropertyObject(properties,"de.schlund.pfixcore.workflow.PageRequestProperties");
+    public void init(Object confObj) throws Exception {
+        DirectOutputServletConfig config = (DirectOutputServletConfig) confObj;
         
-        String[] pages = preqprops.getAllDefinedPageRequestNames();
-        
+        DirectOutputPageRequestConfig[] pages = config.getPageRequests();
         for (int i = 0; i < pages.length; i++) {
-            String            page      = pages[i];
-            Properties        props     = preqprops.getPropertiesForPageRequestName(page);
-            String            classname = props.getProperty(CLASSNAMEPROP);
-            DirectOutputState state     = DirectOutputStateFactory.getInstance().getDirectOutputState(classname);
+            DirectOutputPageRequestConfig pConfig = pages[i];
+            Class clazz = pConfig.getState();
+            DirectOutputState state = DirectOutputStateFactory.getInstance().getDirectOutputState(clazz.getName());
             if (state == null) {
-                CAT.error("***** Skipping page '" + page + "' as it's corresponding class " + classname +
-                          "couldn't be initialized by the DirectOutputStateFactory");
+                CAT.error("***** Skipping page '" + pConfig.getPageName() + "' as it's corresponding class " + clazz.getName() +
+                " couldn't be initialized by the DirectOutputStateFactory");
             } else {
-                pagemap.put(page, state);
+                pagemap.put(pConfig.getPageName(), state);
             }
         }
         

@@ -5,6 +5,8 @@ package de.schlund.pfixcore.webservice;
 
 import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
@@ -14,6 +16,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.Iterator;
+import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -22,6 +25,16 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMResult;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.sax.SAXTransformerFactory;
+import javax.xml.transform.sax.TransformerHandler;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
 
 import org.apache.axis.AxisEngine;
 import org.apache.axis.AxisFault;
@@ -31,6 +44,11 @@ import org.apache.axis.description.ServiceDesc;
 import org.apache.axis.transport.http.AxisServlet;
 import org.apache.log4j.Category;
 import org.apache.log4j.Logger;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+import org.xml.sax.XMLReader;
+import org.xml.sax.helpers.DefaultHandler;
+import org.xml.sax.helpers.XMLReaderFactory;
 
 import de.schlund.pfixcore.webservice.config.ConfigProperties;
 import de.schlund.pfixcore.webservice.config.Configuration;
@@ -43,7 +61,11 @@ import de.schlund.pfixcore.webservice.monitor.MonitorHistory;
 import de.schlund.pfixcore.webservice.monitor.MonitorRecord;
 import de.schlund.pfixcore.workflow.Context;
 import de.schlund.pfixxml.PathFactory;
+import de.schlund.pfixxml.config.BuildTimeProperties;
+import de.schlund.pfixxml.config.CustomizationHandler;
+import de.schlund.pfixxml.config.XMLPropertiesUtil;
 import de.schlund.pfixxml.loader.AppLoader;
+import de.schlund.pfixxml.util.TransformerHandlerAdapter;
 
 /**
  * WebServiceServlet.java 
@@ -56,6 +78,9 @@ public class WebServiceServlet extends AxisServlet {
 
     private Category LOG=Logger.getLogger(getClass().getName());
     private boolean DEBUG=LOG.isDebugEnabled();
+    
+    private final static String WS_CONF_NS = "http://pustefix.sourceforge.net/wsconfig200401";
+    private final static String CUS_NS = "http://www.schlund.de/pustefix/customize";
     
     private WebServiceContext wsc;
     private ClassLoader currentLoader;
@@ -79,7 +104,6 @@ public class WebServiceServlet extends AxisServlet {
         return (HttpServletRequest)currentRequest.get();
     }
 
-    
     public void init(ServletConfig config) throws ServletException {
     	AppLoader loader=AppLoader.getInstance();
     	if(loader.isEnabled()) {
@@ -89,11 +113,85 @@ public class WebServiceServlet extends AxisServlet {
             currentLoader=newLoader;
     	}
         super.init(config);
-        ArrayList al=new ArrayList();
-        String common=config.getInitParameter(Constants.PROP_COMMON_FILE);
-        if(common!=null) al.add(PathFactory.getInstance().createPath(common).resolve());
-        String servlet=config.getInitParameter(Constants.PROP_SERVLET_FILE);
-        if(servlet!=null) al.add(PathFactory.getInstance().createPath(servlet).resolve());
+        ArrayList al = new ArrayList();
+
+        // Create temporary files with global properties
+        String common = config.getInitParameter(Constants.PROP_COMMON_FILE);
+        File tempFile = null;
+        if (common != null) {
+            File commonFile = PathFactory.getInstance().createPath(common).resolve();
+            Properties globalProps;
+            try {
+                globalProps = XMLPropertiesUtil.loadPropertiesFromXMLFile(commonFile);
+                tempFile = File.createTempFile("pfixglobal", ".prop");
+                globalProps.store(new FileOutputStream(tempFile), "Automatically generated for webservices");
+            } catch (SAXException e) {
+                // Log and ignore
+                tempFile = null;
+                LOG.warn("Ignoring common properties file " + commonFile.getAbsolutePath());
+            } catch (IOException e) {
+                // Log and ignore
+                tempFile = null;
+                LOG.warn("Ignoring common properties file " + commonFile.getAbsolutePath());
+            }
+        }
+        if (tempFile != null) {
+            al.add(tempFile);
+        }
+        
+        String servlet = config.getInitParameter(Constants.PROP_SERVLET_FILE);
+        if (servlet != null) {
+            File servletFile = PathFactory.getInstance().createPath(servlet).resolve();
+
+            // Transform XML, creating temporary property file
+            XMLReader xreader;
+            try {
+                xreader = XMLReaderFactory.createXMLReader();
+            } catch (SAXException e) {
+                throw new ServletException("Could not create XMLReader", e);
+            }
+            TransformerFactory tf = SAXTransformerFactory.newInstance();
+            if (tf.getFeature(SAXTransformerFactory.FEATURE)) {
+                SAXTransformerFactory stf = (SAXTransformerFactory) tf;
+                TransformerHandler th;
+                try {
+                    th = stf.newTransformerHandler();
+                } catch (TransformerConfigurationException e) {
+                    throw new RuntimeException(
+                            "Failed to configure TransformerFactory!", e);
+                }
+                DOMResult dr = new DOMResult();
+                try {
+                    tempFile = File.createTempFile("webservice", ".prop");
+                } catch (IOException e) {
+                    throw new ServletException("Could not create temporary file", e);
+                }
+                StreamResult sr = new StreamResult(tempFile);
+                th.setResult(dr);
+                DefaultHandler dh = new TransformerHandlerAdapter(th);
+                DefaultHandler cushandler = new CustomizationHandler(dh, WS_CONF_NS, CUS_NS);
+                xreader.setContentHandler(cushandler);
+                xreader.setDTDHandler(cushandler);
+                xreader.setErrorHandler(cushandler);
+                xreader.setEntityResolver(cushandler);
+                try {
+                    xreader.parse(new InputSource(new FileInputStream(servletFile)));
+                    Transformer trans = tf.newTransformer(new StreamSource(
+                            PathFactory.getInstance().createPath(
+                                    "core/build/create_webservice.xsl").resolve()));
+                    trans.setParameter("docroot", PathFactory.getInstance().createPath("").resolve().getAbsolutePath());
+                    trans.transform(new DOMSource(dr.getNode()), sr);
+                } catch (Exception e) {
+                    throw new ServletException("Error on reading config file " + servletFile.getAbsolutePath(), e);
+                }
+            } else {
+                throw new ServletException(
+                        "Could not get instance of SAXTransformerFactory!");
+            }
+            
+            al.add(tempFile);
+        }
+
         try {
             File[] propFiles=new File[al.size()];
             for(int i=0;i<al.size();i++) propFiles[i]=(File)al.get(i);
@@ -488,5 +586,5 @@ public class WebServiceServlet extends AxisServlet {
             "</style>";
         return css;
     }
-    
+
 }

@@ -24,7 +24,7 @@
     <servlet name="edit" useineditor="true">
       <active>true</active>
       <class>de.schlund.pfixxml.ContextXMLServer</class>
-      <propfile>core/editor2/conf/edit.prop</propfile>
+      <propfile>core/editor2/conf/edit.conf.xml</propfile>
     </servlet>
     <servlet name="deref">
       <active>true</active>
@@ -48,7 +48,7 @@
     <servlet name="init" autostartup="true">
       <active>true</active>
       <class>de.schlund.pfixxml.FactoryInitServlet</class>
-      <propfile>common/conf/factory.prop</propfile>
+      <propfile>common/conf/factory.xml</propfile>
       <init-param>
         <param-name>pustefix.docroot</param-name>
         <param-value><cus:docroot/></param-value>
@@ -75,7 +75,7 @@
       <namespace-declaration prefix="pfx" url="http://www.schlund.de/pustefix/core"/>
       <namespace-declaration prefix="ixsl" url="http://www.w3.org/1999/XSL/Transform"/>
     </namespaces>
-    <commonpropfile>common/conf/pustefix.prop</commonpropfile>
+    <commonpropfile>common/conf/pustefix.xml</commonpropfile>
     <documentation>
       <doc_file>core/xsl/navigation.xsl.in</doc_file>
       <doc_file>core/xsl/utils.xsl.in</doc_file>

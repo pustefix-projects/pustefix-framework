@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<contextxmlserver xmlns="http://pustefix.sourceforge.net/properties200401" xmlns:cus="http://www.schlund.de/pustefix/customize" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://pustefix.sourceforge.net/properties200401 http://pustefix.sourceforge.net/properties200401.xsd" version="1.0">
+  
+  <servletinfo depend="sample1/conf/depend.xml" name="pfixcore_project:sample1::servlet:config">
+    <editmode allow="true"/>
+    <!-- <adminmode watch="default" page="admin"/> -->
+  </servletinfo>
+  
+  <context defaultflow="OrderFlow">
+    <resource class="de.schlund.pfixcore.example.ContextCounterImpl">
+      <implements class="de.schlund.pfixcore.example.ContextCounter"/>
+      <properties>
+        <prop name="foo">bar</prop>
+        <prop name="baz">snafu</prop>
+      </properties>
+    </resource>
+    
+    <resource class="de.schlund.pfixcore.example.ContextTShirtImpl">
+      <implements class="de.schlund.pfixcore.example.ContextTShirt"/>
+    </resource>
+    
+    <resource class="de.schlund.pfixcore.example.ContextTrouserImpl">
+      <implements class="de.schlund.pfixcore.example.ContextTrouser"/>
+    </resource>
+    
+    <resource class="de.schlund.pfixcore.example.ContextAdultInfoImpl">
+      <implements class="de.schlund.pfixcore.example.ContextAdultInfo"/>
+    </resource>
+    
+    <resource class="de.schlund.pfixcore.example.ContextTogglePicImpl">
+      <implements class="de.schlund.pfixcore.example.ContextTogglePic"/>
+    </resource>
+    
+     <resource class="de.schlund.pfixcore.example.ContextEncodingTestImpl">
+      <implements class="de.schlund.pfixcore.example.ContextEncodingTest"/>
+    </resource>
+    
+  </context>
+
+  <interceptors>
+    <start>
+      <interceptor class="de.schlund.pfixcore.example.SampleStartIC"/>
+    </start>
+<!--     <end> -->
+<!--       <interceptor class="de.schlund.pfixcore.example.SampleStartIC"/> -->
+<!--     </end> -->
+  </interceptors>
+  
+  <scriptedflow name="forceadult" file="sample1/conf/scriptedflow/forceadult.script.xml"/>
+  <scriptedflow name="ordershirt" file="sample1/conf/scriptedflow/ordershirt.script.xml"/>
+  
+  <!-- <pageflow name="OrderFlow" stopnext="true"> -->
+  <pageflow name="OrderFlow" final="home">
+    <default>
+      <flowstep name="home"/>
+      <flowstep name="order">
+        <oncontinue applyall="true">
+          <when test="/formresult/counter/@counter = 2">
+            <action type="jumpto" page="test" pageflow="OrderFlow"/>
+          </when>
+          <when>
+            <action type="de.schlund.pfixcore.example.MsgFlowStepAction" text="**** Variant: Default ****"/>
+          </when>
+        </oncontinue>
+      </flowstep>
+      <flowstep name="overview"/>
+    </default>
+    <variant name="foo:bar">
+      <flowstep name="home" stophere="true"/>
+      <flowstep name="order" stophere="true">
+        <oncontinue applyall="true">
+          <when test="/formresult/counter/@counter = 1">
+            <action type="jumpto" page="test" pageflow="OrderFlow"/>
+          </when>
+          <when>
+            <action type="de.schlund.pfixcore.example.MsgFlowStepAction" text="**** Variant: FOO BAR ****"/>
+          </when>
+        </oncontinue>
+      </flowstep>
+      <flowstep name="overview" stophere="true"/>
+    </variant>
+  </pageflow>
+  
+  <!-- *** PageRequests and associated properties *** -->
+  
+  <pagerequest name="test"/>
+  
+  <pagerequest name="home">
+    <default>
+      <input>
+        <interface prefix="info" class="de.schlund.pfixcore.example.iwrapper.AdultInfo"/>
+        <interface prefix="prefix" class="de.schlund.pfixcore.example.iwrapper.IndexedTest"/>
+      </input>
+    </default>
+    <variant name="foo:bar:baz">
+      <input>
+        <interface prefix="info" class="de.schlund.pfixcore.example.iwrapper.AdultInfo"/>
+        <interface prefix="prefix" class="de.schlund.pfixcore.example.iwrapper.IndexedTest"/>
+      </input>
+      <output>
+        <resource node="adultinfo" class="de.schlund.pfixcore.example.ContextAdultInfo"/>
+      </output>
+    </variant>
+  </pagerequest>
+  
+  <pagerequest name="order">
+    <choose>
+      <when test="$mode = 'prod'">
+        <ssl force="true"/>
+      </when>
+    </choose>
+    <input>
+      <interface prefix="shirt" class="de.schlund.pfixcore.example.iwrapper.TShirt"/>
+      <interface prefix="counter" class="de.schlund.pfixcore.example.iwrapper.Counter"/>
+      <interface prefix="cinput" class="de.schlund.pfixcore.example.iwrapper.CounterInput" alwaysretrieve="true"/>
+      <interface prefix="trouser" class="de.schlund.pfixcore.example.iwrapper.Trouser"/>
+      <interface prefix="pic" class="de.schlund.pfixcore.example.iwrapper.TogglePic"/>
+    </input>
+    <output>
+      <resource node="counter" class="de.schlund.pfixcore.example.ContextCounter"/>
+      <resource node="togglepic" class="de.schlund.pfixcore.example.ContextTogglePic"/>
+    </output>
+    <!-- The next properties can be set additonally for DefaultIWrapperState and descendants (default is shown) -->
+    <!-- <finalizer class="de.schlund.pfixcore.workflow.app.ResdocSimpleFinalizer"/> -->
+  </pagerequest>
+  
+  <!-- Here we have a simple state which extends StaticState so we can render ContextResources. -->
+  <!-- It does the isAccessible() part on it's own. -->
+  <pagerequest name="overview">
+    <choose>
+      <when test="$mode = 'prod'">
+        <ssl force="true"/>
+      </when>
+    </choose>
+    <state class="de.schlund.pfixcore.example.OverviewState"/>
+    <output>
+      <resource node="adultinfo" class="de.schlund.pfixcore.example.ContextAdultInfo"/>
+      <resource node="tshirt" class="de.schlund.pfixcore.example.ContextTShirt"/>
+      <resource node="trouser" class="de.schlund.pfixcore.example.ContextTrouser"/>
+    </output>
+  </pagerequest>
+  
+  <pagerequest name="encoding">
+    <state class="de.schlund.pfixcore.example.EncodingTestState"/>
+    <input>
+      <interface prefix="text" class="de.schlund.pfixcore.example.iwrapper.EncodingTest"/>
+    </input>
+    <output>
+      <resource node="text" class="de.schlund.pfixcore.example.ContextEncodingTest"/>
+    </output>
+    <!-- <properties> -->
+    <!--   <prop name="mimetype">text/html; charset=utf-8</prop> -->
+    <!-- </properties> -->
+  </pagerequest>
+  
+  <pagerequest name="scriptingstate">
+    <state class="script:sample1/script/ScriptingState.bsh" />
+    <output>
+      <resource node="tshirt" class="de.schlund.pfixcore.example.ContextTShirt"/>
+    </output>
+  </pagerequest>  
+  
+  <pagerequest name="scripting">
+    <input>
+      <interface prefix="shirt" class="de.schlund.pfixcore.example.iwrapper.ScriptingTShirt"/>
+    </input>
+    <output>
+      <resource node="tshirt" class="de.schlund.pfixcore.example.ContextTShirt"/>
+    </output>
+  </pagerequest>  
+  
+  <pagerequest name="geninc"/>
+  
+  <properties>
+    <!-- *** some additional properties needed for this application *** -->
+    <!-- <prop name="interfacelogging">sample1/log</prop> -->
+    <prop name="contexttshirt.feature.0">Waterproof</prop>
+    <prop name="contexttshirt.feature.1">Extra warm</prop>
+    <prop name="contexttshirt.feature.2">Windproof</prop>
+    <prop name="contexttrouser.feature.0">Waterproof</prop>
+    <prop name="contexttrouser.feature.1">Extra warm</prop>
+    <prop name="contexttrouser.feature.2">Windproof</prop>
+
+    <!--<prop name="context.startinterceptor.001">de.schlund.pfixcore.example.SampleStartIC</prop>-->    
+  </properties>
+
+</contextxmlserver>

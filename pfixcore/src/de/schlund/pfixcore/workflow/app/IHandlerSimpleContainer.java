@@ -22,6 +22,7 @@ package de.schlund.pfixcore.workflow.app;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Properties;
 import java.util.StringTokenizer;
 
@@ -31,6 +32,8 @@ import de.schlund.pfixcore.generator.IHandler;
 import de.schlund.pfixcore.generator.IHandlerFactory;
 import de.schlund.pfixcore.util.PropertiesUtils;
 import de.schlund.pfixcore.workflow.Context;
+import de.schlund.pfixxml.config.IWrapperConfig;
+import de.schlund.pfixxml.config.PageRequestConfig;
 import de.schlund.pfixxml.loader.*;
 import de.schlund.pfixxml.perflogging.PerfEvent;
 import de.schlund.pfixxml.perflogging.PerfEventType;
@@ -51,13 +54,11 @@ public class IHandlerSimpleContainer implements IHandlerContainer, Reloader {
     private HashSet    handlers;
     /** Store all handlers here which do not have a 'ihandlercontainer.ignore' property*/
     private HashSet    activeset;
-    /** The policy currently used for the page */
-    private String     policy;
+    
+    private String policy;
     
     public  static final String   PROP_CONTAINER = "ihandlercontainer";
     private static final String   PROP_POLICY    = PROP_CONTAINER + ".policy";
-    private static final String   PROP_IGNORE    = PROP_CONTAINER + ".ignoreforactive";
-    private static final String   PROP_INTERFACE = "interface";
     private static       Category CAT = Category.getInstance(IHandlerSimpleContainer.class);
     
     // implementation of de.schlund.pfixcore.workflow.app.IHandlerContainer interface
@@ -68,42 +69,29 @@ public class IHandlerSimpleContainer implements IHandlerContainer, Reloader {
      * @param props the properties containing the interface names
      * @see de.schlund.pfixcore.workflow.app.IHandlerContainer#initIHandlers(Properties)
      */
-    public void initIHandlers(Properties props) {
-        policy = props.getProperty(PROP_POLICY);
-        if (policy == null) {
-            policy = "ANY";
-        }
-
+    public void initIHandlers(PageRequestConfig config) {
         handlers  = new HashSet();
         activeset = new HashSet();
-           
-        HashMap    interfaces = PropertiesUtils.selectProperties(props, PROP_INTERFACE);
-        String     ignore     = props.getProperty(PROP_IGNORE);
-        HashSet    skipprefix = new HashSet(); 
         
-        if (ignore != null && !ignore.equals("")) {
-            StringTokenizer tok = new StringTokenizer(ignore);
-            while (tok.hasMoreElements()) {
-                skipprefix.add(tok.nextToken());
+        if (config.getIWrapperPolicy() == PageRequestConfig.Policy.ALL) {
+            this.policy = "ALL";
+        } else if (config.getIWrapperPolicy() == PageRequestConfig.Policy.ANY) {
+            this.policy = "ANY";
+        } else {
+            this.policy = "NONE";
+        }
+        
+        IWrapperConfig[] interfaces = config.getIWrappers();
+        for (int i = 0; i < interfaces.length; i++) {
+            IWrapperConfig iConfig = interfaces[i];
+            String wrapperclass = iConfig.getWrapperClass().getName();
+            IHandler handler = IHandlerFactory.getInstance().getIHandlerForWrapperClass(wrapperclass);
+            handlers.add(handler);
+            if (!iConfig.isActiveIgnore()) {
+                activeset.add(handler);
             }
         }
         
-        if (!interfaces.isEmpty()) {
-            for (Iterator iter = interfaces.keySet().iterator(); iter.hasNext(); ) {
-                String   numprefix = (String) iter.next();
-                String   prefix    = numprefix; 
-                if (numprefix.indexOf(".") > 0) {
-                    prefix = numprefix.substring(numprefix.indexOf(".") + 1); 
-                }
-                String   wrapperclass = (String) interfaces.get(numprefix);
-                IHandler handler      = IHandlerFactory.getInstance().getIHandlerForWrapperClass(wrapperclass);
-                handlers.add(handler);
-                if (!skipprefix.contains(prefix)) {
-                    // CAT.debug("~~~~~~~~~~~~~~~~~ Adding " + prefix + " to activeset ~~~~~~~~~~~~~~~");
-                    activeset.add(handler);
-                }
-            }
-        }
         AppLoader appLoader = AppLoader.getInstance();
         if (appLoader.isEnabled()) {
             appLoader.addReloader(this);

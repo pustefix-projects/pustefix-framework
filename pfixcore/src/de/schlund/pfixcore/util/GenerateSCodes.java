@@ -18,27 +18,26 @@
  */
 package de.schlund.pfixcore.util;
 
-import de.schlund.pfixxml.PathFactory;
-import de.schlund.pfixxml.util.Path;
-import de.schlund.pfixxml.util.XPath;
-import de.schlund.pfixxml.util.Xml;
-import de.schlund.util.statuscodes.StatusCode;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Properties;
+
 import javax.xml.transform.TransformerException;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+
+import de.schlund.pfixxml.PathFactory;
+import de.schlund.pfixxml.config.XMLPropertiesUtil;
+import de.schlund.pfixxml.util.Path;
+import de.schlund.pfixxml.util.Xml;
+import de.schlund.util.statuscodes.StatusCode;
 
 public class GenerateSCodes {
 
@@ -50,8 +49,10 @@ public class GenerateSCodes {
         }
 
         //System.out.println("**** prop " + args[1]);
+        // Initialize PathFactory as it is needed by XMLPropertiesUtil
+        PathFactory.getInstance().init(args[2]);
         Properties tmp = new Properties();
-        tmp.load(new FileInputStream(new File(args[1])));
+        XMLPropertiesUtil.loadPropertiesFromXMLFile(new File(args[1]), tmp);
         
         new GenerateSCodes (new File(args[0]), tmp, args[2]).run();
     }

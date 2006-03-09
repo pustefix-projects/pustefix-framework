@@ -37,6 +37,8 @@ import de.schlund.pfixxml.PfixServletRequest;
 import de.schlund.pfixxml.RequestParam;
 import de.schlund.pfixxml.ResultDocument;
 import de.schlund.pfixxml.XMLException;
+import de.schlund.pfixxml.config.IWrapperConfig;
+import de.schlund.pfixxml.config.PageRequestConfig;
 import de.schlund.pfixxml.loader.AppLoader;
 import de.schlund.pfixxml.loader.Reloader;
 import de.schlund.pfixxml.loader.StateTransfer;
@@ -561,36 +563,27 @@ public class IWrapperSimpleContainer implements IWrapperContainer, Reloader {
             extendedstatus = true;
         }
 
-        Properties props      = context.getPropertiesForCurrentPageRequest();
-        HashMap    interfaces = PropertiesUtils.selectProperties(props, PROP_INTERFACE);
-        
-        
-        if (interfaces.isEmpty()) {
+        //Properties props      = context.getPropertiesForCurrentPageRequest();
+        //HashMap    interfaces = PropertiesUtils.selectProperties(props, PROP_INTERFACE);
+        PageRequestConfig config = context.getConfigForCurrentPageRequest();
+        IWrapperConfig[] interfaces = config.getIWrappers();
+
+        if (interfaces.length == 0) {
             CAT.debug("*** Found no interfaces for this page (page=" + context.getCurrentPageRequest().getName() + ")");
         } else {
             // Initialize all wrappers
-            for (Iterator i = interfaces.keySet().iterator(); i.hasNext(); ) {
-                String prefix = (String) i.next();
-                String realprefix = prefix;
-                int    order      = -1;
-                int    index;
-                if ((index = prefix.indexOf(".")) > 0) {
-                    order      = Integer.parseInt(prefix.substring(0, index)); 
-                    realprefix = prefix.substring(index + 1);
-                } else {
-                    throw new XMLException("You need to give an order for the interfaces to be called (" + prefix + ")!");
-                }
+            for (int i = 0; i < interfaces.length; i++) {
+                IWrapperConfig iConfig = interfaces[i];
+                String prefix = iConfig.getPrefix();
+                int order = i;
 
-                if (wrappers.get(realprefix) != null) {
+                if (wrappers.get(prefix) != null) {
                     throw new XMLException("FATAL: you have already defined a wrapper with prefix " +
-                                           realprefix + " on page " + context.getCurrentPageRequest().getName());
+                                           prefix + " on page " + context.getCurrentPageRequest().getName());
                 }
                 
-                String iface  = (String) interfaces.get(prefix);
-                if (iface == null || iface.equals("")) {
-                    throw new XMLException("No interface for prefix " + realprefix);
-                }
-                
+                String iface  = iConfig.getWrapperClass().getName();
+                                
                 Class thewrapper = null;
                 IWrapper wrapper = null;
                 try {
@@ -611,73 +604,58 @@ public class IWrapperSimpleContainer implements IWrapperContainer, Reloader {
                     throw new XMLException("class [" + iface + "] does not implement the interface IWrapper :" + e.getMessage());
                 }
                 
-                if (order > -1) {
-                    wrapper.defineOrder(order);
-                }
+                wrapper.defineOrder(order);
                 
-                wrappers.put(realprefix, wrapper);
-                wrapper.init(realprefix);
+                wrappers.put(prefix, wrapper);
+                wrapper.init(prefix);
 
                 String logdir       = context.getProperties().getProperty(WRAPPER_LOGDIR);
-                String debugwrapper = props.getProperty(WRAPPER_LOGLIST);
+                String debugwrapper = config.getProperties().getProperty(WRAPPER_LOGLIST);
                 if (logdir != null && !logdir.equals("") && debugwrapper != null && !debugwrapper.equals("")) {
                     File dir = PathFactory.getInstance().createPath(logdir).resolve();
                     if (dir.isDirectory() && dir.canWrite()) {
                         StringTokenizer tok = new StringTokenizer(debugwrapper);
                         for (; tok.hasMoreTokens(); ) {
                             String debwrp = tok.nextToken();
-                            if (realprefix.equals(debwrp)) {
+                            if (prefix.equals(debwrp)) {
                                 wrapper.initLogging(dir.getCanonicalPath(), context.getCurrentPageRequest().getName(),
                                                     context.getVisitId());
                                 break;
                             }
                         }
                     }
-                }
-                
-                
-                AppLoader appLoader = AppLoader.getInstance();
-                if (appLoader.isEnabled()) appLoader.addReloader(this);
+                }    
             }
+            
+            AppLoader appLoader = AppLoader.getInstance();
+            if (appLoader.isEnabled()) appLoader.addReloader(this);
         }
     }
 
     private void createAlwaysRetrieveGroup() {
-        Properties props    = context.getPropertiesForCurrentPageRequest();
+        IWrapperConfig[] interfaces = context.getConfigForCurrentPageRequest().getIWrappers();
         always_retrieve     = new IWrapperGroup();
-        String     retrieve = props.getProperty(PROP_ALWAYS_RETRIEVE);
-
-        if (retrieve != null && !retrieve.equals("")) {
-            StringTokenizer tok = new StringTokenizer(retrieve);
-            for (; tok.hasMoreTokens(); ) {
-                String   prefix  = tok.nextToken();
-                IWrapper wrapper = (IWrapper) wrappers.get(prefix);
-                if (wrapper == null) {
-                    CAT.warn("*** Prefix '" + prefix + "' is not mapped to a defined interface. Ignoring...");
-                } else {
-                    CAT.debug("*** Adding interface '" + prefix + "' to the always_retrieve group...");
-                    always_retrieve.addIWrapper(wrapper);
-                }
+        
+        for (int i = 0; i < interfaces.length; i++) {
+            IWrapperConfig iConfig = interfaces[i];
+            if (iConfig.isAlwaysRetrieve()) {
+                IWrapper wrapper = (IWrapper) wrappers.get(iConfig.getPrefix());
+                CAT.debug("*** Adding interface '" + iConfig.getPrefix() + "' to the always_retrieve group...");
+                always_retrieve.addIWrapper(wrapper);
             }
         }
     }
 
     private void createRestrictedContinueGroup() {
-        Properties props      = context.getPropertiesForCurrentPageRequest();
-        contwrappers          = new IWrapperGroup();
-        String     restricted = props.getProperty(PROP_RESTRICED);
+        IWrapperConfig[] interfaces = context.getConfigForCurrentPageRequest().getIWrappers();
+        contwrappers = new IWrapperGroup();
         
-        if (restricted != null && !restricted.equals("")) {
-            StringTokenizer tok = new StringTokenizer(restricted);
-            for (; tok.hasMoreTokens(); ) {
-                String   prefix  = tok.nextToken();
-                IWrapper wrapper = (IWrapper) wrappers.get(prefix);
-                if (wrapper == null) {
-                    CAT.warn("*** Prefix '" + prefix + "' is not mapped to a defined interface. Ignoring...");
-                } else {
-                    CAT.debug("*** Adding interface '" + prefix + "' to the restricted_continue group...");
-                    contwrappers.addIWrapper(wrapper);
-                }
+        for (int i = 0; i < interfaces.length; i++) {
+            IWrapperConfig iConfig = interfaces[i];
+            if (iConfig.isContinue()) {
+                IWrapper wrapper = (IWrapper) wrappers.get(iConfig.getPrefix());
+                CAT.debug("*** Adding interface '" + iConfig.getPrefix() + "' to the restricted_continue group...");
+                contwrappers.addIWrapper(wrapper);
             }
         }
     }

@@ -20,10 +20,17 @@
 package de.schlund.pfixcore.workflow;
 
 
-import de.schlund.pfixcore.util.PropertiesUtils;
-import de.schlund.pfixxml.*;
-import java.util.*;
-import org.apache.log4j.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Properties;
+
+import org.apache.log4j.Category;
+
+import de.schlund.pfixxml.ConfigurableObject;
+import de.schlund.pfixxml.Variant;
+import de.schlund.pfixxml.config.ContextConfig;
+import de.schlund.pfixxml.config.PageRequestConfig;
 
 /**
  * PageRequestProperties.java
@@ -35,46 +42,24 @@ import org.apache.log4j.*;
  *
  */
 
-public class PageRequestProperties implements PropertyObject {
-    private Properties         properties;
+public class PageRequestProperties implements ConfigurableObject {
     private HashSet            preqnames        = new HashSet();
     private HashMap            preqprops        = new HashMap();
     private HashMap            variantpagecache = new HashMap();
     private Category           CAT              = Category.getInstance(this.getClass());
     public static final String PREFIX           = "pagerequest";
     
-    public void init(Properties properties) throws Exception {
-        this.properties = properties;
-
-        Map     map = PropertiesUtils.selectProperties(properties, PREFIX);
-        HashSet set = new HashSet();
-
-        for (Iterator i = map.keySet().iterator(); i.hasNext();) {
-            String key = (String) i.next();
-            key = key.substring(0, key.indexOf("."));
-            
-            if (properties.getProperty(PREFIX + "." + key + "." + PageMap.CLASSNAMEPROP) == null) {
-                throw new XMLException("No 'classname' property found for " + "PageRequest '" + key + "'");
-            }
-            set.add(key);
-        }
+    public void init(Object confObj) throws Exception {
+        ContextConfig config = (ContextConfig) confObj;
         
-        for (Iterator i = set.iterator(); i.hasNext();) {
-            String fullname = (String) i.next();
+        PageRequestConfig[] pageConfigs = config.getPageRequests();
+        
+        for (int i = 0; i < pageConfigs.length; i++) {
+            PageRequestConfig pageConfig = pageConfigs[i];
+            String fullname = pageConfig.getPageName();
             preqnames.add(fullname);
-            
-            HashMap nmap = PropertiesUtils.selectProperties(properties, PREFIX + "." + fullname);
-            if (nmap != null) {
-            	Properties props = new Properties();
-                for (Iterator it = nmap.keySet().iterator(); it.hasNext();) {
-                    String key = (String) it.next();
-                    props.setProperty(key, (String) nmap.get(key));
-                }
-                preqprops.put(fullname, props);
-            }
+            preqprops.put(fullname, pageConfig.getProperties());
         }
-
-        // CAT.info("**** PageRequestProperties ****\n" + this.toString());
     }
 
     public String toString() {

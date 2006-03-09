@@ -20,14 +20,21 @@
 package de.schlund.pfixcore.workflow;
 
 
-import de.schlund.pfixcore.util.PropertiesUtils;
-import de.schlund.pfixxml.ResultDocument;
-import de.schlund.pfixxml.util.XPath;
-import java.util.*;
-import org.apache.log4j.Category;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Properties;
 
-import org.w3c.dom.Document;
 import javax.xml.transform.TransformerException;
+
+import org.apache.log4j.Category;
+import org.w3c.dom.Document;
+
+import de.schlund.pfixxml.ResultDocument;
+import de.schlund.pfixxml.config.PageFlowStepActionConditionConfig;
+import de.schlund.pfixxml.config.PageFlowStepActionConfig;
+import de.schlund.pfixxml.config.PageFlowStepConfig;
+import de.schlund.pfixxml.util.XPath;
 
 /**
  * @author: jtl@schlund.de
@@ -35,71 +42,54 @@ import javax.xml.transform.TransformerException;
  */
 
 public class FlowStep {
-    private String  page;
-    private boolean isstophere = false;
 
-    private boolean   applyall_oncontinue = false;
     private ArrayList actions_oncontinue  = new ArrayList();
     private ArrayList tests_oncontinue    = new ArrayList();
+    private PageFlowStepConfig config;
 
     private static Category     LOG               = Category.getInstance(PageFlow.class.getName());
-    private final static String PROPERTY_PAGEFLOW = "context.pageflowproperty";
-    private final static String ACTION_PAGEFLOW   = "context.pageflowaction";
-    
-    public FlowStep(String page, Properties props, String flowname) {
-        this.page      = page;
-        String prefix  = PROPERTY_PAGEFLOW + "." + flowname + "." + page;
-        Map    propmap = PropertiesUtils.selectProperties(props, prefix);
-        String stop    = (String) propmap.get("stophere");
-        if (stop != null && stop.equals("true")) {
-            isstophere = true;
-        }
-        String all_cont = (String) propmap.get("oncontinue.applyall");
-        if (all_cont != null && all_cont.equals("true")) {
-            applyall_oncontinue = true;
-        }
+    public FlowStep(PageFlowStepConfig config) {
+        this.config = config;
         
-        prefix  = ACTION_PAGEFLOW + "." + flowname + "." + page + ".oncontinue";
-        propmap = PropertiesUtils.selectProperties(props, prefix);
-
-        if (propmap != null && !propmap.isEmpty()) {
-            int count = 1;
-            while (true) {
-                String testkey = count + ".test";
-                String test    = (String) propmap.get(testkey);
-                if (test == null) {
-                    break;
+        PageFlowStepActionConditionConfig[] conditions = config.getActionCondtions();
+        
+        for (int i = 0; i < conditions.length; i++) {
+            PageFlowStepActionConfig[] actions = conditions[i].getActions();
+            ArrayList actionList = new ArrayList();
+            for (int j = 0; j < actions.length; j++) {
+                FlowStepAction action = FlowStepActionFactory.getInstance().createAction(actions[j].getActionType().getName());
+                HashMap datamap = new HashMap();
+                Properties params = actions[j].getParams();
+                for (Iterator k = params.keySet().iterator(); k.hasNext();) {
+                    String key = (String) k.next();
+                    String value = params.getProperty(key);
+                    datamap.put(key, value);
                 }
-                String actionkey = count + ".action";
-                String action    = (String) propmap.get(actionkey);
-                
-                String     datakey = count + ".data";
-                Properties tmp     = new Properties();
-                tmp.putAll(propmap);
-                HashMap datamap = PropertiesUtils.selectProperties(tmp, datakey);
-                
-                FlowStepAction continueact = FlowStepActionFactory.getInstance().createAction(action);
-                continueact.setData(datamap);
-                actions_oncontinue.add(continueact);
-                tests_oncontinue.add(test);
-                
-                count++;
+                action.setData(datamap);
             }
+            actions_oncontinue.add(actionList);
+            tests_oncontinue.add(conditions[i].getXPathExpression());
         }
+
     }
 
     public void applyActionsOnContinue(Context context, ResultDocument resdoc) throws Exception {
         if (!actions_oncontinue.isEmpty()) {
             for (int i = 0; i < actions_oncontinue.size(); i++) {
-                FlowStepAction action = (FlowStepAction) actions_oncontinue.get(i);
+                ArrayList actionList = (ArrayList) actions_oncontinue.get(i);
                 String         test   = (String) tests_oncontinue.get(i);
-                LOG.debug("*** [" + page + "] Trying on-continue-action #" + i);
+                LOG.debug("*** [" + this.config.getPage() + "] Trying on-continue-action #" + i);
                 if (checkAction(test, resdoc.getSPDocument().getDocument())) {
                     LOG.debug("    ===> Action applies, calling doAction now...");
-                    action.doAction(context, resdoc);
-                    if (!applyall_oncontinue) {
+                    for (Iterator j = actionList.iterator(); j.hasNext();) {
+                        FlowStepAction action = (FlowStepAction) j.next();
+                        action.doAction(context, resdoc);
+                    }
+                    
+                    if (!this.config.isApplyAllConditions()) {
                         break;
                     }
+                    
                 } else {
                     LOG.debug("    ===> Action didn't apply, continue");
                 }
@@ -123,18 +113,18 @@ public class FlowStep {
     }
     
     public String getPageName() {
-        return page;
+        return this.config.getPage();
     }
     
     public String getName() {
-        return page;
+        return this.config.getPage();
     }
 
     public boolean wantsToStopHere() {
-        return isstophere;
+        return this.config.isStopHere();
     }
 
     public String toString() {
-        return("[page=" + page + " stophere=" + isstophere + " #cont_actions=" + actions_oncontinue.size()+ "]");
+        return("[page=" + this.config.getPage() + " stophere=" + this.config.isStopHere() + " #cont_actions=" + actions_oncontinue.size()+ "]");
     }
 }

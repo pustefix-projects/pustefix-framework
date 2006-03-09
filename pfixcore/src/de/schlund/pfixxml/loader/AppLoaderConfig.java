@@ -20,9 +20,12 @@
 package de.schlund.pfixxml.loader;
 
 import de.schlund.pfixxml.PathFactory;
+import de.schlund.pfixxml.config.XMLPropertiesUtil;
+
 import java.io.*;
 import java.util.*;
 import org.apache.log4j.Category;
+import org.xml.sax.SAXException;
 
 /**
  * AppLoaderConfig.java 
@@ -47,9 +50,11 @@ public class AppLoaderConfig {
             Properties props=new Properties();
             String fileName=getProperty(globProps, "apploader.propertyfile");
             try {
-                props.load(new FileInputStream(PathFactory.getInstance().createPath(fileName).resolve()));
+                XMLPropertiesUtil.loadPropertiesFromXMLFile(PathFactory.getInstance().createPath(fileName).resolve(), props);
             } catch(IOException x) {
                 throw new AppLoaderConfigException("AppLoader config file '"+fileName+"' can't be loaded.");
+            } catch (SAXException e) {
+                throw new AppLoaderConfigException("AppLoader config file '"+fileName+"' can't be parsed.");
             }
             //apploader
             String name="apploader.mode";

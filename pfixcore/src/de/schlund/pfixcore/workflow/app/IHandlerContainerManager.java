@@ -72,7 +72,7 @@ public class IHandlerContainerManager implements PropertyObject {
                         classname = DEF_HDL_CONTAINER;
                     }
                     retval = (IHandlerContainer) Class.forName(classname).newInstance();
-                    retval.initIHandlers(props);
+                    retval.initIHandlers(context.getConfigForCurrentPageRequest());
                 } catch (InstantiationException e) {
                     throw new XMLException("unable to instantiate class [" + classname + "]" + e.getMessage());
                 } catch (IllegalAccessException e) {
