@@ -205,6 +205,9 @@ public class ContextXMLServletConfig extends AbstractXMLServletConfig implements
         digester.addRule(
                 "contextxmlserver/pagerequest/variant/input/interface",
                 pagerequestInputInterfaceRule);
+        digester.addRule("contextxmlserver/pagerequest/auth", dummyRule);
+        digester.addRule("contextxmlserver/pagerequest/default/auth", dummyRule);
+        digester.addRule("contextxmlserver/pagerequest/variant/auth", dummyRule);
         digester.addRule("contextxmlserver/pagerequest/auth/authinterface",
                 pagerequestAuthInterfaceRule);
         digester.addRule(
