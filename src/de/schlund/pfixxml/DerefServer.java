@@ -19,14 +19,23 @@
 
 package de.schlund.pfixxml;
 
+import de.schlund.pfixxml.config.ServletManagerConfig;
 import de.schlund.pfixxml.serverutil.SessionHelper;
 import de.schlund.pfixxml.util.MD5Utils;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
+import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -46,6 +55,7 @@ public class DerefServer extends ServletManager {
     protected static Category CAT             = Category.getInstance(DerefServer.class);
     public static String      PROP_DEREFKEY   = "derefserver.signkey";
     public static String      PROP_IGNORESIGN = "derefserver.ignoresign";
+    private ServletManagerConfig config;
     
     protected boolean allowSessionCreate() {
         return (false);
@@ -70,8 +80,8 @@ public class DerefServer extends ServletManager {
         RequestParam linkparam    = preq.getRequestParam("link");
         RequestParam enclinkparam = preq.getRequestParam("enclink");
         RequestParam signparam    = preq.getRequestParam("sign");
-        String       key          = getProperties().getProperty(PROP_DEREFKEY);
-        String       ign          = getProperties().getProperty(PROP_IGNORESIGN);
+        String       key          = config.getProperties().getProperty(PROP_DEREFKEY);
+        String       ign          = config.getProperties().getProperty(PROP_IGNORESIGN);
 
         // This is currently set to true by default for backward compatibility. 
         boolean ignoresign = true;
@@ -159,5 +169,18 @@ public class DerefServer extends ServletManager {
             res.sendError(HttpServletResponse.SC_BAD_REQUEST);
             return;
         }
+    }
+
+    protected ServletManagerConfig getServletManagerConfig() {
+        return this.config;
+    }
+
+    protected void reloadServletConfig(File configFile, Properties globalProperties) throws ServletException {
+        // Deref server does not use a servlet specific configuration
+        // So simply initialize configuration with global properties
+        ServletManagerConfig sConf = new ServletManagerConfig();
+        sConf.setProperties(globalProperties);
+        sConf.setSSL(false);
+        this.config = sConf;
     }
 }

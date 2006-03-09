@@ -19,7 +19,10 @@
 
 package de.schlund.pfixxml;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.Iterator;
+import java.util.Properties;
 import java.util.WeakHashMap;
 
 import javax.servlet.ServletConfig;
@@ -27,12 +30,15 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Category;
+import org.xml.sax.SAXException;
 
 import de.schlund.pfixcore.scriptedflow.ScriptedFlowConfig;
 import de.schlund.pfixcore.scriptedflow.ScriptedFlowInfo;
 import de.schlund.pfixcore.scriptedflow.vm.Script;
 import de.schlund.pfixcore.scriptedflow.vm.ScriptVM;
 import de.schlund.pfixcore.scriptedflow.vm.VirtualHttpServletRequest;
+import de.schlund.pfixxml.config.AbstractXMLServletConfig;
+import de.schlund.pfixxml.config.ContextXMLServletConfig;
 
 /**
  * @author jtl
@@ -53,17 +59,28 @@ public class ContextXMLServer extends AbstractXMLServer {
 
     private final static String SCRIPTEDFLOW_SUFFIX = "__SCRIPTEDFLOW__";
 
+    private ContextXMLServletConfig config = null;
+
     private WeakHashMap contextMap = new WeakHashMap();
 
     private String contextclassnname;
 
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
-        contextclassnname = getProperties().getProperty(CONTEXT_CLASS);
+        contextclassnname = this.getContextXMLServletConfig()
+                .getContextConfig().getContextClass().getName();
         if (contextclassnname == null) {
             throw (new ServletException(
                     "Need name for context class from context.class property"));
         }
+    }
+
+    protected ContextXMLServletConfig getContextXMLServletConfig() {
+        return this.config;
+    }
+
+    protected AbstractXMLServletConfig getAbstractXMLServletConfig() {
+        return this.config;
     }
 
     protected boolean needsSSL(PfixServletRequest preq) throws ServletException {
@@ -110,12 +127,13 @@ public class ContextXMLServer extends AbstractXMLServer {
         if (super.tryReloadProperties(preq)) {
             //Reset PropertyObjects
             PropertyObjectManager.getInstance().resetPropertyObjects(
-                    getProperties());
+                    this.getContextXMLServletConfig().getProperties());
             //Reset Contexts
             synchronized (contextMap) {
                 //Set name of Context class, compare with old name
                 String oldClassName = contextclassnname;
-                contextclassnname = getProperties().getProperty(CONTEXT_CLASS);
+                contextclassnname = getContextXMLServletConfig()
+                        .getContextConfig().getContextClass().getName();
                 if (contextclassnname.equals(oldClassName)) {
                     //Iterate over Contexts and reset them
                     Iterator it = contextMap.keySet().iterator();
@@ -153,7 +171,7 @@ public class ContextXMLServer extends AbstractXMLServer {
             // to get an initial SPDocument
             PfixServletRequest vpreq = new PfixServletRequest(
                     VirtualHttpServletRequest.getVoidRequest(preq.getRequest()),
-                    getProperties());
+                    getContextXMLServletConfig().getProperties());
             spdoc = context.handleRequest(vpreq);
 
             // Reset current scripted flow state
@@ -213,9 +231,8 @@ public class ContextXMLServer extends AbstractXMLServer {
 
     private Script getScriptedFlowByName(String scriptedFlowName)
             throws Exception {
-        ScriptedFlowConfig config = (ScriptedFlowConfig) PropertyObjectManager
-                .getInstance().getPropertyObject(getProperties(),
-                        ScriptedFlowConfig.class);
+        ScriptedFlowConfig config = getContextXMLServletConfig()
+                .getScriptedFlowConfig();
         return config.getScript(scriptedFlowName);
     }
 
@@ -258,7 +275,24 @@ public class ContextXMLServer extends AbstractXMLServer {
     private AppContext createContext() throws Exception {
         AppContext context = (AppContext) Class.forName(contextclassnname)
                 .newInstance();
-        context.init(getProperties(), makeContextName());
+        context.init(this.getContextXMLServletConfig().getContextConfig(),
+                makeContextName());
         return context;
+    }
+
+    protected void reloadServletConfig(File configFile,
+            Properties globalProperties) throws ServletException {
+        try {
+            this.config = ContextXMLServletConfig.readFromFile(configFile,
+                    globalProperties);
+        } catch (SAXException e) {
+            throw new ServletException(
+                    "Could not read servlet configuration from "
+                            + configFile.getAbsolutePath(), e);
+        } catch (IOException e) {
+            throw new ServletException(
+                    "Could not read servlet configuration from "
+                            + configFile.getAbsolutePath(), e);
+        }
     }
 }

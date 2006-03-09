@@ -20,6 +20,8 @@
 package de.schlund.pfixcore.workflow;
 
 import de.schlund.pfixxml.*;
+import de.schlund.pfixxml.config.ContextConfig;
+import de.schlund.pfixxml.config.PageFlowConfig;
 import de.schlund.pfixcore.util.PropertiesUtils;
 import java.util.*;
 import org.apache.log4j.*;
@@ -29,28 +31,20 @@ import org.apache.log4j.*;
  *
  */
 
-public class PageFlowManager implements PropertyObject {
+public class PageFlowManager implements ConfigurableObject {
     private              HashMap  flowmap       = new HashMap();
     private              HashSet  rootflownames = new HashSet();
-    private       static Category LOG           = Category.getInstance(PageFlowManager.class.getName());
+    private       static Logger LOG           = Logger.getLogger(PageFlowManager.class);
     public  final static String   PROP_PREFIX   = "context.pageflow";
 
-    public void init(Properties props) throws Exception {
-        HashSet names = new HashSet();
-        HashMap tmp   = PropertiesUtils.selectProperties(props, PROP_PREFIX);
-        for (Iterator i = tmp.keySet().iterator(); i.hasNext(); ) {
-            String full = (String) i.next();
-            String name = full.substring(0, full.indexOf("."));
-            names.add(name);
-            if (name.indexOf("::") == -1) {
-                rootflownames.add(name);
-            }
-        }
+    public void init(Object confObj) throws Exception {
+        ContextConfig config = (ContextConfig) confObj;
+        PageFlowConfig[] pageflows = config.getPageFlows();
 
-        for (Iterator i = names.iterator(); i.hasNext(); ) {
-            String    name = (String) i.next();
+        for (int i = 0; i < pageflows.length; i++) {
+            String name = pageflows[i].getFlowName();
             LOG.debug("===> Found flowname: " + name);
-            PageFlow  pf = new PageFlow(props, name);
+            PageFlow  pf = new PageFlow(pageflows[i]);
             flowmap.put(name, pf);
         }
     }

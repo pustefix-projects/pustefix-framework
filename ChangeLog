@@ -1,3 +1,85 @@
+2006-03-09  Sebastian Marsching  <sebastian.marsching@1und1.de>
+
+	* src/de/schlund/pfixcore/scriptedflow/ScriptedFlowConfig.java: 
+	* src/de/schlund/pfixcore/util/basicapp/helper/AppValues.java: 
+	* src/de/schlund/pfixcore/util/basicapp/helper/AppWorker.java: 
+	* src/de/schlund/pfixcore/util/GenerateSCodes.java: 
+	* src/de/schlund/pfixcore/util/PropertiesUtils.java: 
+	* src/de/schlund/pfixcore/util/StateUtil.java: 
+	* src/de/schlund/pfixcore/util/XsltProjectsXmlTask.java: 
+	* src/de/schlund/pfixcore/webservice/WebServiceContext.java: 
+	* src/de/schlund/pfixcore/webservice/WebServiceServlet.java: 
+	* src/de/schlund/pfixcore/workflow/app/DefaultAuthIWrapperState.java: 
+	* src/de/schlund/pfixcore/workflow/app/DefaultIWrapperState.java: 
+	* src/de/schlund/pfixcore/workflow/app/IHandlerContainer.java: 
+	* src/de/schlund/pfixcore/workflow/app/IHandlerContainerManager.java: 
+	* src/de/schlund/pfixcore/workflow/app/IHandlerSimpleContainer.java: 
+	* src/de/schlund/pfixcore/workflow/app/IWrapperSimpleContainer.java: 
+	* src/de/schlund/pfixcore/workflow/Context.java: 
+	* src/de/schlund/pfixcore/workflow/ContextResourceManager.java: 
+	* src/de/schlund/pfixcore/workflow/DirectOutputPageMap.java: 
+	* src/de/schlund/pfixcore/workflow/FlowStep.java: 
+	* src/de/schlund/pfixcore/workflow/PageFlow.java: 
+	* src/de/schlund/pfixcore/workflow/PageFlowManager.java: 
+	* src/de/schlund/pfixcore/workflow/PageMap.java: 
+	* src/de/schlund/pfixcore/workflow/PageRequestProperties.java: 
+	* src/de/schlund/pfixxml/config/*: 
+	* src/de/schlund/pfixxml/exceptionhandler/PropertyManager.java: 
+	* src/de/schlund/pfixxml/loader/AppLoaderConfig.java: 
+	* src/de/schlund/pfixxml/targets/TargetGenerator.java: 
+	* src/de/schlund/pfixxml/util/TransformerHandlerAdapter.java: 
+	* src/de/schlund/pfixxml/AbstractXMLServer.java: 
+	* src/de/schlund/pfixxml/AppContext.java: 
+	* src/de/schlund/pfixxml/ConfigurableObject.java: 
+	* src/de/schlund/pfixxml/ContextXMLServer.java: 
+	* src/de/schlund/pfixxml/DerefServer.java: 
+	* src/de/schlund/pfixxml/DirectOutputServlet.java: 
+	* src/de/schlund/pfixxml/FactoryInitServlet.java: 
+	* src/de/schlund/pfixxml/PropertyObjectManager.java: 
+	* src/de/schlund/pfixxml/ServletManager.java: 
+	* src/de/schlund/pfixxml/ServletManagerCompat.java: 
+	* example/common/conf/apploader.xml: 
+	* example/common/conf/exceptionhandler.xml: 
+	* example/common/conf/pfixlog.xml: 
+	* example/common/conf/factory.xml: 
+	* example/common/conf/pustefix.xml: 
+	* example/core/editor2/conf/depend.xml: 
+	* example/core/editor2/conf/edit.conf.xml: 
+	* example/sample1/conf/config.conf.xml: 
+	* example/sample1/conf/depend.xml: 
+	* example/sample1/conf/direct.conf.xml: 
+	* example/sample1/conf/project.xml.in: 
+	* example/sample1/conf/secure.conf.xml: 
+	* example/servletconf/projects.xml.in: 
+	* example/simpleform/conf/config.conf.xml: 
+	* example/simpleform/conf/depend.xml: 
+	* example/simpleform/conf/project.xml.in: 
+	* example/simplelink/conf/config.conf.xml: 
+	* example/simplelink/conf/depend.xml: 
+	* example/simplelink/conf/project.xml.in: 
+	* example/simplepage/conf/config.conf.xml: 
+	* example/simplepage/conf/depend.xml: 
+	* example/simplepage/conf/project.xml.in: 
+	* example/webservice/conf/config.conf.xml: 
+	* example/webservice/conf/depend.xml: 
+	* example/webservice/conf/webservice.conf.xml: 
+	* example/webservice/conf/project.xml.in: 
+	* skel/projects/common/conf/apploader.xml: 
+	* skel/projects/common/conf/exceptionhandler.xml: 
+	* skel/projects/common/conf/factory.xml: 
+	* skel/projects/common/conf/pfixlog.xml: 
+	* skel/projects/common/conf/pustefix.xml: 
+	* skel/projects/servletconf/projects.xml.in: 
+	* skel/build-skel.xml: 
+	* skel/newproject.sh: 
+	* build.xml: 
+	Rewrote configuration system: Now all configuration files (except projects.xml)
+	are directly read at runtime and do not require any additional generation
+	step. In order to improve compatibility with old applications a new class
+	"ServletManagerCompat" was introduced which can be used to derive class that
+	were previously derived from "ServletManager". This compatibility class
+	reads a configuration file in the XML properties file format.
+
 2006-03-08  Jens Lautenbacher  <jtl@schlund.de>
 
 	* src/de/schlund/pfixxml/util/Xslt.java (Xslt::createIdentityTransformer): re-enabled 

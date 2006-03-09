@@ -19,19 +19,38 @@
 
 package de.schlund.pfixcore.workflow;
 
-import de.schlund.pfixcore.generator.StatusCodeInfo;
-import de.schlund.pfixcore.util.PropertiesUtils;
-import de.schlund.pfixcore.workflow.Navigation.NavigationElement;
-import de.schlund.pfixxml.*;
-import de.schlund.pfixxml.perflogging.PerfEvent;
-import de.schlund.pfixxml.perflogging.PerfEventType;
-import de.schlund.util.statuscodes.StatusCode;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Properties;
+import java.util.TreeMap;
+
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
+
 import org.apache.log4j.Category;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+
+import de.schlund.pfixcore.generator.StatusCodeInfo;
+import de.schlund.pfixcore.util.PropertiesUtils;
+import de.schlund.pfixcore.workflow.Navigation.NavigationElement;
+import de.schlund.pfixxml.AbstractXMLServer;
+import de.schlund.pfixxml.AppContext;
+import de.schlund.pfixxml.PfixServletRequest;
+import de.schlund.pfixxml.PropertyObjectManager;
+import de.schlund.pfixxml.RequestParam;
+import de.schlund.pfixxml.ResultDocument;
+import de.schlund.pfixxml.SPDocument;
+import de.schlund.pfixxml.ServletManager;
+import de.schlund.pfixxml.Variant;
+import de.schlund.pfixxml.XMLException;
+import de.schlund.pfixxml.config.ContextConfig;
+import de.schlund.pfixxml.config.PageRequestConfig;
+import de.schlund.pfixxml.perflogging.PerfEvent;
+import de.schlund.pfixxml.perflogging.PerfEventType;
+import de.schlund.util.statuscodes.StatusCode;
 
 /**
  * This class is the corner piece of our workflow concept.
@@ -51,9 +70,6 @@ public class Context implements AppContext {
     private final static String   NAVPROP             = "xmlserver.depend.xml";
     private final static String   PROP_NAVI_AUTOINV   = "navigation.autoinvalidate";
     private final static String   PROP_NEEDS_SSL      = "needsSSL";
-    private final static String   WATCHMODE           = "context.adminmode.watch";
-    private final static String   ADMINPAGE           = "context.adminmode.page";
-    private final static String   ADMINMODE           = "context.adminmode";
     private final static String   AUTH_PROP           = "authcontext.authpage";
     private final static String   JUMPPAGE            = "__jumptopage";
     private final static String   JUMPPAGEFLOW        = "__jumptopageflow";
@@ -65,7 +81,6 @@ public class Context implements AppContext {
 
     // from constructor
     private String     name;
-    private Properties properties;
 
     // shared between all instances that have the same properties
     private PageFlowManager       pageflowmanager;
@@ -83,8 +98,6 @@ public class Context implements AppContext {
     
     // values read from properties
     private boolean     autoinvalidate_navi = true;
-    private boolean     in_adminmode        = false;
-    private PageRequest admin_pagereq;
 
     // the request state
     private PfixServletRequest currentpservreq;
@@ -103,6 +116,7 @@ public class Context implements AppContext {
     private ArrayList messages           = new ArrayList();
     private HashMap   navigation_visible = null;
     private String    visit_id           = null;
+    private ContextConfig config;
 
     /**
      * <code>init</code> sets up the Context for operation.
@@ -110,12 +124,12 @@ public class Context implements AppContext {
      * @param properties a <code>Properties</code> value
      * @exception Exception if an error occurs
      */
-    public void init(Properties properties, String name) throws Exception {
-        this.properties = properties;
+    public void init(ContextConfig config, String name) throws Exception {
+        this.config = config;
         this.name       = name;
         rmanager        = new ContextResourceManager();
         visited_pages   = new HashSet();
-        rmanager.init(this);
+        rmanager.init(this, config);
         reset();
     }
 
@@ -191,23 +205,6 @@ public class Context implements AppContext {
         PageRequest prevpage = currentpagerequest;
         PageFlow    prevflow = currentpageflow;
 
-        if (in_adminmode) {
-            ResultDocument resdoc;
-            if (checkIsAccessible(admin_pagereq, PageRequestStatus.UNDEF)) {
-                currentpagerequest = admin_pagereq;
-                resdoc             = documentFromCurrentStep();
-                currentpagerequest = prevpage;
-            } else {
-                throw new XMLException("*** admin mode requested but admin page " + admin_pagereq + " is inaccessible ***");
-            }
-            spdoc = resdoc.getSPDocument();
-            spdoc.setPagename(admin_pagereq.getName());
-            insertPageMessages(spdoc);
-            storeCookies(spdoc);
-            processIC(endIC);
-            return spdoc;
-        }
-
         trySettingPageRequestAndFlow();
         spdoc = documentFromFlow();
 
@@ -262,10 +259,13 @@ public class Context implements AppContext {
         TreeMap sic = PropertiesUtils.selectPropertiesSorted(props, STARTIC);
         TreeMap eic = PropertiesUtils.selectPropertiesSorted(props, ENDIC);
         
+        
         if (sic != null && sic.size() > 0) {
             ArrayList list = new ArrayList();
             for (Iterator i = sic.keySet().iterator(); i.hasNext();) {
-                list.add(ContextInterceptorFactory.getInstance().getInterceptor((String) sic.get((String) i.next())));
+                String key = (String) i.next();
+                String classname = (String) sic.get(key);
+                list.add(ContextInterceptorFactory.getInstance().getInterceptor(classname));
             }
             startIC = (ContextInterceptor[]) list.toArray(new ContextInterceptor[]{});
         } else {
@@ -306,7 +306,7 @@ public class Context implements AppContext {
      * @return a <code>Properties</code> value
      */
     public Properties getProperties() {
-        return properties;
+        return config.getProperties();
     }
 
     /**
@@ -319,6 +319,10 @@ public class Context implements AppContext {
      */
     public Properties getPropertiesForCurrentPageRequest() {
         return preqprops.getPropertiesForPageRequest(currentpagerequest);
+    }
+    
+    public PageRequestConfig getConfigForCurrentPageRequest() {
+        return config.getPageRequest(currentpagerequest.getName());
     }
 
     /**
@@ -567,24 +571,24 @@ public class Context implements AppContext {
     	// get PropertyObjects from PropertyObjectManager
     	PropertyObjectManager pom = PropertyObjectManager.getInstance();
 
-        pageflowmanager = (PageFlowManager) pom.getPropertyObject(properties,"de.schlund.pfixcore.workflow.PageFlowManager");
-        preqprops       = (PageRequestProperties) pom.getPropertyObject(properties,"de.schlund.pfixcore.workflow.PageRequestProperties");
-        pagemap         = (PageMap) pom.getPropertyObject(properties,"de.schlund.pfixcore.workflow.PageMap");
+        pageflowmanager = (PageFlowManager) pom.getConfigurableObject(config, de.schlund.pfixcore.workflow.PageFlowManager.class);
+        preqprops       = (PageRequestProperties) pom.getConfigurableObject(config, PageRequestProperties.class);
+        pagemap         = (PageMap) pom.getConfigurableObject(config, de.schlund.pfixcore.workflow.PageMap.class);
 
         // The navigation is possibly shared across more than one
         // context, i.e. more than one properties object.  So we can't
         // let it be handled by the PropertyObjectManager.
-        if (properties.getProperty(NAVPROP) != null) {
-            navigation = NavigationFactory.getInstance().getNavigation(properties.getProperty(NAVPROP));
+        if (this.config.getNavigationFile() != null) {
+            navigation = NavigationFactory.getInstance().getNavigation(this.config.getNavigationFile());
         }
 
-        currentpageflow    = pageflowmanager.getPageFlowByName(properties.getProperty(DEFPROP), variant);
+        currentpageflow    = pageflowmanager.getPageFlowByName(this.config.getDefaultFlow(), variant);
         currentpagerequest = PageRequest.createPageRequest(currentpageflow.getFirstStep().getPageName(), variant, preqprops);
 
-        createInterceptors(properties);
+        // Use properties until interceptors are in XSD
+        createInterceptors(config.getProperties());
         
         checkForAuthenticationMode();
-        checkForAdminMode();
         checkForNavigationReuse();
 
         needs_update = false;
@@ -595,21 +599,12 @@ public class Context implements AppContext {
     }
 
     private boolean pageIsSidestepPage(PageRequest page) {
-        Properties props  = preqprops.getPropertiesForPageRequest(page);
-        if (props != null) {
-            String nostore = props.getProperty(NOSTORE);
-            if (nostore != null && nostore.toLowerCase().equals("true")) {
-                // LOG.debug("*** Found sidestep page: " + page);
-                return true;
-            }
-        } else {
-            LOG.error("*** Got NULL properties for page " + page);
-        }
-        return false;
+        PageRequestConfig config = getConfigForCurrentPageRequest();
+        return !config.isStoreXML();
     }
 
     private void checkForAuthenticationMode() {
-        String authpagename = properties.getProperty(AUTH_PROP);
+        String authpagename = this.config.getAuthPage();
         if (authpagename != null) {
             authpage = PageRequest.createPageRequest(authpagename, variant, preqprops);
         } else {
@@ -618,29 +613,13 @@ public class Context implements AppContext {
     }
 
     private void checkForNavigationReuse() {
-        String navi_autoinv = properties.getProperty(PROP_NAVI_AUTOINV);
+        String navi_autoinv = config.getProperties().getProperty(PROP_NAVI_AUTOINV);
         if (navi_autoinv != null && navi_autoinv.equals("false")) {
             autoinvalidate_navi = false;
             LOG.info("CAUTION: Setting autoinvalidate of navigation to FALSE!");
             LOG.info("CAUTION: You need to call context.invalidateNavigation() to update the navigation.");
         } else {
             autoinvalidate_navi = true;
-        }
-    }
-
-    private void checkForAdminMode() {
-        admin_pagereq = null;
-        in_adminmode  = false;
-
-        String watchprop = properties.getProperty(WATCHMODE);
-        if (watchprop != null && !watchprop.equals("")) {
-            String adminprop = properties.getProperty(ADMINMODE + "." + watchprop + ".status");
-            String adminpage = properties.getProperty(ADMINPAGE);
-            if (adminpage != null && !adminpage.equals("") && adminprop != null && adminprop.equals("on")) {
-                LOG.debug("*** setting Adminmode for : " + watchprop + " ***");
-                admin_pagereq = PageRequest.createPageRequest(adminpage, variant, preqprops);
-                in_adminmode  = true;
-            }
         }
     }
 
@@ -714,7 +693,7 @@ public class Context implements AppContext {
             // Now we need to make sure that the current page is accessible, and take the right measures if not.
             if (!checkIsAccessible(currentpagerequest, PageRequestStatus.DIRECT)) {
                 LOG.warn("[" + currentpagerequest + "]: not accessible! Trying first page of default flow.");
-                currentpageflow     = pageflowmanager.getPageFlowByName(properties.getProperty(DEFPROP), variant);
+                currentpageflow     = pageflowmanager.getPageFlowByName(config.getDefaultFlow(), variant);
                 PageRequest defpage = PageRequest.createPageRequest(currentpageflow.getFirstStep().getPageName(), variant, preqprops);
                 currentpagerequest  = defpage;
                 if (!checkIsAccessible(defpage, PageRequestStatus.DIRECT)) {
@@ -1059,7 +1038,7 @@ public class Context implements AppContext {
                 while (iter.hasNext()) {
                     StatusCodeInfo sci = (StatusCodeInfo) iter.next();
                     Element        msg = doc.createElement("message");
-                    Element        inc = ResultDocument.createIncludeFromStatusCode(doc, properties, sci.getStatusCode(), sci.getArgs());
+                    Element        inc = ResultDocument.createIncludeFromStatusCode(doc, config.getProperties(), sci.getStatusCode(), sci.getArgs());
                     msg.appendChild(inc);
                     if (sci.getLevel() != null) {
                         msg.setAttribute("level", sci.getLevel());

@@ -23,6 +23,8 @@ package de.schlund.pfixxml.exceptionhandler;
 
 
 import de.schlund.pfixxml.PathFactory;
+import de.schlund.pfixxml.config.XMLPropertiesUtil;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -36,6 +38,7 @@ import javax.mail.internet.InternetAddress;
 import org.apache.log4j.Category;
 import org.apache.oro.text.perl.MalformedPerl5PatternException;
 import org.apache.oro.text.perl.Perl5Util;
+import org.xml.sax.SAXException;
 
 
 /**
@@ -214,18 +217,17 @@ class PropertyManager {
     void init(String propfile) throws PFConfigurationException {
         initialised_            = false;
         file_                   = PathFactory.getInstance().createPath(propfile).resolve();
-        FileInputStream istream = null;
+        
         try {
-            istream = new FileInputStream(file_);
+            properties_ = XMLPropertiesUtil.loadPropertiesFromXMLFile(file_);
         } catch (FileNotFoundException e) {
             throw new PFConfigurationException("File Not Found :" + propfile, e);
-        }
-        try {
-            properties_ = new Properties();
-            properties_.load(istream);
         } catch (IOException e) {
             throw new PFConfigurationException("Could Not Load Properties ", e);
+        } catch (SAXException e) {
+            throw new PFConfigurationException("Could not parse properties", e);
         }
+        
         mtime_ = file_.lastModified();
     }
 

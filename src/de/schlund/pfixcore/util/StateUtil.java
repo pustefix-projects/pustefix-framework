@@ -35,6 +35,7 @@ import de.schlund.pfixxml.perflogging.PerfEventType;
 
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Properties;
 import org.apache.log4j.Logger;
 
@@ -66,29 +67,25 @@ public class StateUtil {
      * 
      */
     public static void renderContextResources(Context context, ResultDocument resdoc) throws Exception {
-        Properties props  = context.getPropertiesForCurrentPageRequest();
-        if (props != null) {
-            ContextResourceManager crm = context.getContextResourceManager();
-            HashMap                crs = PropertiesUtils.selectProperties(props, StateImpl.PROP_INSERTCR);
-            if (crs != null) {
-                for (Iterator i = crs.keySet().iterator(); i.hasNext();) {
-                    String nodename  = (String) i.next();
-                    String classname = (String) crs.get(nodename);
-                    if (LOG.isDebugEnabled()) {
-                        LOG.debug("*** Auto appending status for " + classname + " at node " + nodename);
-                    }
-                    ContextResource cr = crm.getResource(classname);
-                    if (cr == null) {
-                        throw new XMLException("ContextResource not found: " + classname);
-                    }
-                   
-                    PerfEvent pe = new PerfEvent(PerfEventType.CONTEXTRESOURCE_INSERTSTATUS, classname);
-                    pe.start();
-                    cr.insertStatus(resdoc, resdoc.createNode(nodename));
-                    pe.save();
-                  
-                }
+        ContextResourceManager crm = context.getContextResourceManager();
+        Map<String, Class> crs = context.getConfigForCurrentPageRequest().getContextResources();
+        
+        for (Iterator i = crs.keySet().iterator(); i.hasNext();) {
+            String nodename = (String) i.next();
+            String classname = crs.get(nodename).getName();
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("*** Auto appending status for " + classname + " at node " + nodename);
             }
+            ContextResource cr = crm.getResource(classname);
+            if (cr == null) {
+                throw new XMLException("ContextResource not found: " + classname);
+            }
+           
+            PerfEvent pe = new PerfEvent(PerfEventType.CONTEXTRESOURCE_INSERTSTATUS,
+                    classname);
+            pe.start();
+            cr.insertStatus(resdoc, resdoc.createNode(nodename));
+            pe.save();
         }
     }
 

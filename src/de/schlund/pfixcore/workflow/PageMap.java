@@ -19,37 +19,38 @@
 
 package de.schlund.pfixcore.workflow;
 
-import de.schlund.pfixxml.PropertyObject;
-import de.schlund.pfixxml.PropertyObjectManager;
+import java.util.HashMap;
+import java.util.Iterator;
+
+import org.apache.log4j.Category;
+
+import de.schlund.pfixxml.ConfigurableObject;
+import de.schlund.pfixxml.config.ContextConfig;
+import de.schlund.pfixxml.config.PageRequestConfig;
 import de.schlund.pfixxml.loader.AppLoader;
 import de.schlund.pfixxml.loader.Reloader;
 import de.schlund.pfixxml.loader.StateTransfer;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Properties;
-import org.apache.log4j.Category;
 
-public class PageMap implements   PropertyObject, Reloader {
+public class PageMap implements   ConfigurableObject, Reloader {
     protected            HashMap  pagemap       = new HashMap();
     public  final static String   CLASSNAMEPROP = "classname";
     private final static Category CAT           = Category.getInstance(PageMap.class.getName());
     
-    public void init(Properties properties) throws Exception {
+    public void init(Object confObj) throws Exception {
 
         //Get PageRequestProperties object from PropertyObjectManager 
-        PageRequestProperties preqprops = (PageRequestProperties) PropertyObjectManager.getInstance().
-            getPropertyObject(properties,"de.schlund.pfixcore.workflow.PageRequestProperties");
+        ContextConfig config = (ContextConfig) confObj;
         
-        String[] pages = preqprops.getAllDefinedPageRequestNames();
+        PageRequestConfig[] pages = config.getPageRequests();
         
         for (int i = 0; i < pages.length; i++) {
-            String      page      = pages[i];
-            Properties  props     = preqprops.getPropertiesForPageRequestName(page);
-            String      classname = props.getProperty(CLASSNAMEPROP);
-            State       state     = StateFactory.getInstance().getState(classname);
+            String      page      = pages[i].getPageName();
+            //Properties  props     = preqprops.getPropertiesForPageRequestName(page);
+            Class       stateClass = pages[i].getState();
+            State       state     = StateFactory.getInstance().getState(stateClass.getName());
 
             if (state == null) {
-                CAT.error("***** Skipping page '" + page + "' as it's corresponding class " + classname +
+                CAT.error("***** Skipping page '" + page + "' as it's corresponding class " + stateClass.getName() +
                           "couldn't be initialized by the StateFactory");
             } else {
                 pagemap.put(page, state);

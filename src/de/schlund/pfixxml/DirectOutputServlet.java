@@ -19,6 +19,8 @@
 
 package de.schlund.pfixxml;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.Properties;
 
 import javax.servlet.ServletConfig;
@@ -27,6 +29,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Category;
+import org.xml.sax.SAXException;
 
 import de.schlund.pfixcore.workflow.Context;
 import de.schlund.pfixcore.workflow.ContextResourceManager;
@@ -34,6 +37,8 @@ import de.schlund.pfixcore.workflow.DirectOutputPageMap;
 import de.schlund.pfixcore.workflow.DirectOutputState;
 import de.schlund.pfixcore.workflow.PageRequest;
 import de.schlund.pfixcore.workflow.PageRequestProperties;
+import de.schlund.pfixxml.config.DirectOutputServletConfig;
+import de.schlund.pfixxml.config.ServletManagerConfig;
 
 /**
  * The <code>DirectOutputServlet</code> is a servlet that hijacks the {@link de.schlund.pfixcore.workflow.Context} of a
@@ -62,11 +67,10 @@ import de.schlund.pfixcore.workflow.PageRequestProperties;
  * @version $Id$
  */
 public class DirectOutputServlet extends ServletManager {
-    private static String                PROP_EXT_CONTEXT = "foreigncontextservlet.foreignservletname";
     private        Category              CAT              = Category.getInstance(this.getClass());
     private        String                ext_cname        = null;
     private        DirectOutputPageMap   pagemap          = null;
-    private        PageRequestProperties preqprops        = null;
+    private DirectOutputServletConfig config;
     
     /**
      * The usual <code>needsSession</code> method. Is set to return
@@ -130,7 +134,7 @@ public class DirectOutputServlet extends ServletManager {
          
          PageRequest       page  = PageRequest.createPageRequest(preq, null, null);
          DirectOutputState state = pagemap.getDirectOutputState(page);
-         Properties        props = preqprops.getPropertiesForPageRequest(page);
+         Properties        props = config.getPageRequest(page.getName()).getProperties();
          if (state != null) {
              boolean allowed = state.isAccessible(crm, props, preq);
              if (allowed) {
@@ -161,27 +165,40 @@ public class DirectOutputServlet extends ServletManager {
     }
 
     private void initValues() throws ServletException {
-        String cname = getProperties().getProperty(PROP_EXT_CONTEXT);
+        String cname = this.config.getExternalServletName();
         if (cname != null && !cname.equals("")) {
             ext_cname = cname;
         } else {
-            throw new ServletException ("*** Need property " + PROP_EXT_CONTEXT + " *****");
+            throw new ServletException ("*** Need external servlet name! *****");
         }
 
         try {
             pagemap   = (DirectOutputPageMap) PropertyObjectManager.getInstance().
-                getPropertyObject(getProperties(), "de.schlund.pfixcore.workflow.DirectOutputPageMap");
-            preqprops = (PageRequestProperties) PropertyObjectManager.getInstance().
-                getPropertyObject(getProperties(), "de.schlund.pfixcore.workflow.PageRequestProperties");
+                getConfigurableObject(this.config, de.schlund.pfixcore.workflow.DirectOutputPageMap.class);
         } catch (Exception e) {
             CAT.warn("==================> XPTN " + e.getMessage());
-            throw new ServletException(e.getMessage());
+            throw new ServletException(e.getMessage(), e);
         }
     }
     
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
         initValues();
+    }
+
+    protected ServletManagerConfig getServletManagerConfig() {
+        return this.config;
+    }
+
+    protected void reloadServletConfig(File configFile, Properties globalProperties) throws ServletException {
+        try {
+            this.config = DirectOutputServletConfig.readFromFile(configFile, globalProperties);
+        } catch (SAXException e) {
+            throw new ServletException("Error on reading config file " + configFile.getAbsolutePath(), e);
+        } catch (IOException e) {
+            throw new ServletException("Could not read file " + configFile.getAbsolutePath(), e);
+        }
+        
     }
 
 }

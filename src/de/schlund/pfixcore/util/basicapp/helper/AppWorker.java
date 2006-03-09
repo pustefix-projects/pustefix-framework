@@ -19,8 +19,10 @@
 
 package de.schlund.pfixcore.util.basicapp.helper;
 
+import org.apache.log4j.BasicConfigurator;
+import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Logger;
-import org.apache.log4j.xml.DOMConfigurator;
+import org.apache.log4j.PatternLayout;
 
 /**
  * Basic work like e.g. initializing log4j will happen
@@ -31,14 +33,15 @@ import org.apache.log4j.xml.DOMConfigurator;
  */
 
 public final class AppWorker {
-    
+
     private static final Logger LOG = Logger.getLogger(AppWorker.class);
-    
-    /** Configurinig log4j */
+
+    /** Configuring log4j */
     public static void initLogging() {
-        DOMConfigurator.configure(PropResourceManager.
-                getPropertyValue(AppValues.LOG4JPROP));
-        
+        // Use basic logging without any configuration file
+        String pattern = "%-5  %c: %m%n";
+        BasicConfigurator.configure(new ConsoleAppender(new PatternLayout(
+                pattern), "System.err"));
         LOG.debug("Log4j has been sussessfully initialized");
     }
 }

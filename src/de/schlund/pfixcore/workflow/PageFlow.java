@@ -19,10 +19,13 @@
 
 package de.schlund.pfixcore.workflow;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
 
-import de.schlund.pfixcore.util.PropertiesUtils;
-import org.apache.log4j.*;
+import org.apache.log4j.Category;
+
+import de.schlund.pfixxml.config.PageFlowConfig;
+import de.schlund.pfixxml.config.PageFlowStepConfig;
 
 /**
  * @author: jtl
@@ -34,51 +37,33 @@ public class PageFlow {
     private String    rootname;
     private ArrayList allsteps = new ArrayList();
     private HashMap   stepmap  = new HashMap();
+    private String    finalpage;
     
     private final static String PROPERTY_PREFIX   = PageFlowManager.PROP_PREFIX;
     private final static String FLAG_FINAL        = "FINAL";
     private static Category     LOG               = Category.getInstance(PageFlow.class.getName());
-    private String              finalpage         = null;
     
-    public PageFlow(Properties props, String name) {
-        flowname = name;
+    public PageFlow(PageFlowConfig config) {
+        flowname = config.getFlowName();
         if (flowname.indexOf("::") > 0) {
             rootname = flowname.substring(0, flowname.indexOf("::"));
         } else {
             rootname = flowname;
         }
-
-        Map     map    = PropertiesUtils.selectProperties(props, PROPERTY_PREFIX + "." + flowname);
-        TreeMap sorted = new TreeMap();
         
-        for (Iterator i = map.keySet().iterator(); i.hasNext(); ) {
-            String  key      = (String) i.next();
-            String  pagename = (String) map.get(key);
-            Integer index;
-            
-            if (key.equals(FLAG_FINAL)) {
-                finalpage = pagename;
-            } else {
-                try {
-                    index = new Integer(key);
-                    sorted.put(index, pagename);
-                } catch (NumberFormatException e) {
-                    throw new RuntimeException("**** The Pageflow [" + flowname + "] didn't specifiy a numerical index for page [" +
-                                               pagename + "] ****\n" + e.getMessage());
-                }
-            }
-        }
-
-        for (Iterator i = sorted.values().iterator(); i.hasNext(); ) {
-            String   pagename = (String) i.next();
-            FlowStep step     = new FlowStep(pagename, props, flowname);
+        finalpage = config.getFinalPage();
+        
+        PageFlowStepConfig[] steps = config.getFlowSteps();
+        
+        for (int i = 0; i < steps.length; i++) {
+            FlowStep step = new FlowStep(steps[i]);
             allsteps.add(step);
             stepmap.put(step.getPageName(), step);
         }
         
         if (LOG.isDebugEnabled()) {
             for (int i = 0; i < allsteps.size(); i++) {
-                LOG.debug(">>> Workflow '" + name + "' Step #" + i + " " + allsteps.get(i));
+                LOG.debug(">>> Workflow '" + config.getFlowName() + "' Step #" + i + " " + allsteps.get(i));
             }
         }
     }

@@ -20,6 +20,35 @@
 package de.schlund.pfixxml;
 
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.text.NumberFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.Map;
+import java.util.Properties;
+
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
+import org.apache.log4j.Category;
+import org.xml.sax.SAXException;
+
+import de.schlund.pfixxml.config.ServletManagerConfig;
+import de.schlund.pfixxml.config.XMLPropertiesUtil;
 import de.schlund.pfixxml.exceptionhandler.ExceptionHandler;
 import de.schlund.pfixxml.exceptionprocessor.ExceptionConfig;
 import de.schlund.pfixxml.exceptionprocessor.ExceptionProcessor;
@@ -30,20 +59,6 @@ import de.schlund.pfixxml.serverutil.SessionAdmin;
 import de.schlund.pfixxml.serverutil.SessionHelper;
 import de.schlund.pfixxml.serverutil.SessionInfoStruct;
 import de.schlund.pfixxml.util.MD5Utils;
-import de.schlund.pfixxml.util.PfxProperties;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.nio.charset.Charset;
-import java.text.NumberFormat;
-import java.text.SimpleDateFormat;
-import java.util.*;
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
-import javax.servlet.http.*;
-import org.apache.log4j.Category;
 
 /**
  * ServletManager.java
@@ -86,26 +101,25 @@ public abstract class ServletManager extends HttpServlet {
     private long             common_mtime                 = 0;
     private long             servlet_mtime                = 0;
     private long             loadindex                    = 0;
-    private Properties       properties;
     private File             commonpropfile;
     private File             servletpropfile;
     private String           servletEncoding;
+    
+    protected abstract ServletManagerConfig getServletManagerConfig();
+    protected abstract void reloadServletConfig(File configFile, Properties globalProperties) throws ServletException;
 
+    /*
     protected Properties getProperties() {
-        return properties;
+        return this.properties;
     }
-
+    */
+    
     protected boolean runningUnderSSL(HttpServletRequest req) {
         return req.getScheme().equals("https") && (isSslPort(req.getServerPort()));
     }
 
     protected boolean needsSSL(PfixServletRequest preq) throws ServletException {
-        String needs_ssl = properties.getProperty("servlet.needsSSL");
-        if (needs_ssl != null && (needs_ssl.equals("true") || needs_ssl.equals("yes") || needs_ssl.equals("1"))) {
-            return true;
-        } else {
-            return false;
-        }
+        return this.getServletManagerConfig().isSSL();
     }
 
     abstract protected boolean needsSession();
@@ -155,12 +169,12 @@ public abstract class ServletManager extends HttpServlet {
                 }
             }
         }
-        HttpSession session                    = null;
-        boolean     has_session                = false;
-        boolean     has_ssl_session_insecure   = false;
-        boolean     has_ssl_session_secure     = false;
-        boolean     force_jump_back_to_ssl     = false;
-        boolean     force_reuse_visit_id       = false;
+        HttpSession session                  = null;
+        boolean     has_session              = false;
+        boolean     has_ssl_session_insecure = false;
+        boolean     has_ssl_session_secure   = false;
+        boolean     force_jump_back_to_ssl   = false;
+        boolean     force_reuse_visit_id     = false;
         String      mark_session_as_no_cookies = null;
         boolean     does_cookies               = false;
         
@@ -313,7 +327,7 @@ public abstract class ServletManager extends HttpServlet {
         }
         if (preq == null) {
             CAT.debug("*** Creating PfixServletRequest object.");
-            preq = new PfixServletRequest(req, properties);
+            preq = new PfixServletRequest(req, this.getServletManagerConfig().getProperties());
         }
 
         FactoryInitServlet.tryReloadLog4j();
@@ -703,8 +717,7 @@ public abstract class ServletManager extends HttpServlet {
 
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
-        properties = new PfxProperties(System.getProperties());
-
+        
         ServletContext ctx   = config.getServletContext();
         CAT.debug("*** Servlet container is '" + ctx.getServerInfo() + "'");
         int            major = ctx.getMajorVersion();
@@ -714,7 +727,9 @@ public abstract class ServletManager extends HttpServlet {
         } else {
             throw new ServletException("*** Can't detect servlet container with support for Servlet API 2.3 or higher");
         }
-
+        
+        Properties properties = new Properties(System.getProperties());
+        
         String commonpropfilename = config.getInitParameter("servlet.commonpropfile");
         if (commonpropfilename != null) {
             if (!commonpropfilename.startsWith("/")) {
@@ -722,9 +737,10 @@ public abstract class ServletManager extends HttpServlet {
             } else {
                 commonpropfile = new File(commonpropfilename);
             }
+            // Load on first request
             common_mtime = loadPropertyfile(properties, commonpropfile);
         }
-
+        
         String servletpropfilename = config.getInitParameter("servlet.propfile");
         if (servletpropfilename != null) {
             if (!servletpropfilename.startsWith("/")) {
@@ -732,10 +748,11 @@ public abstract class ServletManager extends HttpServlet {
             } else {
                 servletpropfile = new File(servletpropfilename);
             }
-            servlet_mtime = loadPropertyfile(properties, servletpropfile);
         }
-        loadindex = 0;
-        properties.setProperty(PROP_LOADINDEX, "" + loadindex);
+        
+        // Make sure configuration is available
+        this.reloadServletConfig(servletpropfile, properties);
+        
         initCookieSec();
         initExceptionConfigs();
         initServletEncoding();
@@ -744,20 +761,18 @@ public abstract class ServletManager extends HttpServlet {
     protected boolean tryReloadProperties(PfixServletRequest preq) throws ServletException {
         if ((commonpropfile  != null && commonpropfile.lastModified()  > common_mtime) ||
             (servletpropfile != null && servletpropfile.lastModified() > servlet_mtime)) {
-            loadindex++;
 
             CAT.warn("\n\n##############################\n" +
                      "#### Reloading properties ####\n" +
                      "##############################\n");
-            properties.clear();
-            
+            Properties properties = new Properties(System.getProperties());
+                        
             if (commonpropfile != null) {
                 common_mtime = loadPropertyfile(properties, commonpropfile);
             }
-            if (servletpropfile != null) {
-                servlet_mtime = loadPropertyfile(properties, servletpropfile);
-            }
-            properties.setProperty(PROP_LOADINDEX, "" + loadindex);
+            servlet_mtime = servletpropfile.lastModified();
+            this.reloadServletConfig(servletpropfile, properties);
+            
             initCookieSec();
             return true;
         } else {
@@ -774,7 +789,7 @@ public abstract class ServletManager extends HttpServlet {
      * You are strongly advised to NOT set the corresponding property to true, unless you deal with broken software.
      */
     private void initCookieSec() {
-        String csec = properties.getProperty(PROP_COOKIE_SEC_NOT_ENFORCED);
+        String csec = this.getServletManagerConfig().getProperties().getProperty(PROP_COOKIE_SEC_NOT_ENFORCED);
         if (csec != null && csec.equals("true")) {
             cookie_security_not_enforced = true;
         } else {
@@ -786,11 +801,13 @@ public abstract class ServletManager extends HttpServlet {
         long mtime;
         try {
             mtime = propfile.lastModified();
-            props.load(new FileInputStream(propfile));
+            XMLPropertiesUtil.loadPropertiesFromXMLFile(propfile, props);
         } catch (FileNotFoundException e) {
             throw new ServletException("*** [" + propfile.getName() + "] Not found: " + e.toString());
         } catch (IOException e) {
             throw new ServletException("*** [" + propfile.getName() + "] IO-error: " + e.toString());
+        } catch (SAXException e) {
+            throw new ServletException("*** [" + propfile.getName() + "] Parsing-error: " + e.toString());
         }
         return mtime;
     }
@@ -811,12 +828,12 @@ public abstract class ServletManager extends HttpServlet {
                 ExceptionProcessor eproc = exconf.getProcessor();
                 eproc.processException(e, exconf, preq,
                                        getServletConfig().getServletContext(),
-                                       req, res, properties);
+                                       req, res, this.getServletManagerConfig().getProperties());
                 
             } else {
                 // This is the default case when no
                 // exceptionprocessors are defined.
-                xhandler.handle(e, preq, properties);
+                xhandler.handle(e, preq, this.getServletManagerConfig().getProperties());
             }
             throw new ServletException("callProcess failed", e);
         }
@@ -858,7 +875,8 @@ public abstract class ServletManager extends HttpServlet {
     private void initExceptionConfigs() throws ServletException {
         Map tmpExConf = new HashMap();
         int len = PROP_EXCEPTION.length();
-
+        
+        Properties properties = this.getServletManagerConfig().getProperties();
     	Enumeration props = properties.propertyNames();
     	while (props.hasMoreElements()) {
             String propName = (String) props.nextElement();
@@ -944,7 +962,7 @@ public abstract class ServletManager extends HttpServlet {
      */
     private void initServletEncoding() {
         //Try to get servlet encoding from properties:
-        String encoding = properties.getProperty(SERVLET_ENCODING);
+        String encoding = this.getServletManagerConfig().getProperties().getProperty(SERVLET_ENCODING);
         if (encoding == null || encoding.trim().equals("")) CAT.warn("No servlet encoding property set");
         else if(!Charset.isSupported(encoding)) CAT.error("Servlet encoding '"+encoding+"' is not supported.");
         else servletEncoding = encoding;

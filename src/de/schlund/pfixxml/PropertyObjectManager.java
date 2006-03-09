@@ -31,7 +31,8 @@ public class PropertyObjectManager {
 
     private        Category CAT = Category.getInstance(this.getClass());
     private static PropertyObjectManager instance=new PropertyObjectManager();
-    private        HashMap propMaps;
+    private        Map propMaps;
+    private        Map confMaps;
     
     /**Returns PropertyObjectManager instance.*/
     public static PropertyObjectManager getInstance() {
@@ -40,12 +41,47 @@ public class PropertyObjectManager {
     
     /**Constructor.*/
     PropertyObjectManager() {
-        propMaps=new HashMap();
+        propMaps = new WeakHashMap();
+        confMaps = new WeakHashMap();
     }
     
     /**Returns PropertyObject according to Properties and Class parameters. If it doesn't already exist, it will be created.*/
     public PropertyObject getPropertyObject(Properties props,String className) throws Exception {
         return getPropertyObject(props,Class.forName(className));
+    }
+    
+    public ConfigurableObject getConfigurableObject(Object config, String className) throws Exception {
+        return getConfigurableObject(config, Class.forName(className));
+    }
+    
+    public ConfigurableObject getConfigurableObject(Object config, Class objClass) throws Exception {
+        HashMap        confObjs = null;
+        ConfigurableObject confObj = null;
+        
+        confObjs = (HashMap) confMaps.get(config);
+        if (confObjs == null) {
+            synchronized (confMaps) {
+                confObjs = (HashMap) confMaps.get(config);
+                if (confObjs == null) {
+                    confObjs = new HashMap();
+                    confMaps.put(config, confObjs);
+                }
+            }
+        }
+
+        confObj = (ConfigurableObject) confObjs.get(objClass);
+        if (confObj == null) {
+            synchronized (confObjs) {
+                confObj = (ConfigurableObject) confObjs.get(objClass);
+                if (confObj == null) {
+                    CAT.warn("******* Creating new ConfigurableObject " + objClass.getName());
+                    confObj = (ConfigurableObject) objClass.newInstance();
+                    confObj.init(config);
+                    confObjs.put(objClass, confObj);
+                }
+            }
+        }
+        return confObj;
     }
     
     /**Returns PropertyObject according to Properties and Class parameters. If it doesn't already exist, it will be created.*/
@@ -105,5 +141,4 @@ public class PropertyObjectManager {
             propMaps.remove(props);
         }
     }
-
 }

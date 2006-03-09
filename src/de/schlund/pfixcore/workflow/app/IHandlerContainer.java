@@ -19,6 +19,7 @@
 package de.schlund.pfixcore.workflow.app;
 
 import de.schlund.pfixcore.workflow.Context;
+import de.schlund.pfixxml.config.PageRequestConfig;
 
 import java.util.Properties;
 
@@ -36,9 +37,9 @@ public interface IHandlerContainer {
 
     /**
      * Initialize all IHandlers in this container.
-     * @param props the properties needed for initialization
+     * @param config Configuration for pagerequest
      */
-    void initIHandlers(Properties props);
+    void initIHandlers(PageRequestConfig config);
 
     /**
      * Determine if the requested page is accesible.

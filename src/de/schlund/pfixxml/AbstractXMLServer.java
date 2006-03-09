@@ -21,9 +21,35 @@ package de.schlund.pfixxml;
 
 
 
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.net.SocketException;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Properties;
+import java.util.TreeMap;
 
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletException;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import javax.xml.transform.Templates;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.TransformerFactoryConfigurationError;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 
+import org.apache.log4j.Logger;
+import org.w3c.dom.Document;
 
+import de.schlund.pfixxml.config.AbstractXMLServletConfig;
+import de.schlund.pfixxml.config.ServletManagerConfig;
 import de.schlund.pfixxml.jmx.JmxServerFactory;
 import de.schlund.pfixxml.jmx.TrailLogger;
 import de.schlund.pfixxml.perflogging.AdditionalTrailInfo;
@@ -42,31 +68,6 @@ import de.schlund.pfixxml.targets.TargetGeneratorFactory;
 import de.schlund.pfixxml.util.Path;
 import de.schlund.pfixxml.util.Xml;
 import de.schlund.pfixxml.util.Xslt;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.net.SocketException;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Properties;
-import java.util.TreeMap;
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletException;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-import javax.xml.transform.Templates;
-import javax.xml.transform.TransformerConfigurationException;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.TransformerFactoryConfigurationError;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
-import org.apache.log4j.Category;
-import org.w3c.dom.Document;
 
 
 /**
@@ -128,7 +129,6 @@ public abstract class AbstractXMLServer extends ServletManager {
     public static final String GETDOMTIME  = "__GETDOMTIME__";
     public static final String TRAFOTIME   = "__TRAFOTIME__";
     
-    
     /**
      * Holds the TargetGenerator which is the XML/XSL Cache for this
      * class of servlets.
@@ -140,7 +140,13 @@ public abstract class AbstractXMLServer extends ServletManager {
      * the HttpSession Session.
      */
     protected String servletname = null;
-
+    
+    protected ServletManagerConfig getServletManagerConfig() {
+        return this.getAbstractXMLServletConfig();
+    }
+    
+    protected abstract AbstractXMLServletConfig getAbstractXMLServletConfig();
+    
     /**
      * The configuration file for the TargetGeneratorFacory.
      */
@@ -150,9 +156,9 @@ public abstract class AbstractXMLServer extends ServletManager {
     private boolean skip_getmodtimemaybeupdate = false;
     private int     scleanertimeout            = 300;
     
-    private static Category LOGGER_TRAIL    = Category.getInstance("LOGGER_TRAIL");
-    private static Category CAT             = Category.getInstance(AbstractXMLServer.class.getName());
-
+    private static Logger LOGGER_TRAIL    = Logger.getLogger("LOGGER_TRAIL");
+    private static Logger LOGGER = Logger.getLogger(AbstractXMLServer.class);
+    
     private boolean allowInfo  = true;
     private boolean allowDebug = true;
 
@@ -162,21 +168,22 @@ public abstract class AbstractXMLServer extends ServletManager {
     /**
      * Init method of all servlets inheriting from AbstractXMLServers.
      * It calls super.init(Config) as a first step.
-     * @param ServletConfig config. Passed in from the servlet container.
+     * @param ContextXMLServletConfig config. Passed in from the servlet container.
      * @return void
      * @exception ServletException thrown when the initialisation goes havoc somehow
      */
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
-        if (CAT.isDebugEnabled()) {
-            CAT.debug("\n>>>> In init of AbstractXMLServer <<<<");
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("\n>>>> In init of AbstractXMLServer <<<<");
         }
         initValues();
-        if (CAT.isDebugEnabled()) {
-            CAT.debug("End of init AbstractXMLServer");
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("End of init AbstractXMLServer");
         }
     }
 
+    /*
     private String getProperty(String name) throws ServletException {
         String value;
         
@@ -186,39 +193,37 @@ public abstract class AbstractXMLServer extends ServletManager {
         }
         return value;
     }
+    */
 
     private void initValues() throws ServletException {
-        targetconf  = PathFactory.getInstance().createPath(getProperty(PROP_DEPEND));
-        servletname = getProperty(PROP_NAME);
+        targetconf  = PathFactory.getInstance().createPath(this.getAbstractXMLServletConfig().getDependFile());
+        servletname = this.getAbstractXMLServletConfig().getServletName();
 
         try {
             generator = TargetGeneratorFactory.getInstance().createGenerator(targetconf);
         } catch (Exception e) {
-            CAT.error("Error: ", e);
+            LOGGER.error("Error: ", e);
             throw new ServletException("Couldn't get TargetGenerator", e);
         }
-
-        String prohibitDebug = getProperties().getProperty(PROP_PROHIBITDEBUG);
+        String prohibitDebug = getAbstractXMLServletConfig().getProperties().getProperty(PROP_PROHIBITDEBUG);
         allowDebug           = (prohibitDebug != null && (prohibitDebug.equals("true") ||
                                                           prohibitDebug.equals("1"))) ? false : true;
         
-        String prohibitInfo = getProperties().getProperty(PROP_PROHIBITINFO);
+        String prohibitInfo = getAbstractXMLServletConfig().getProperties().getProperty(PROP_PROHIBITINFO);
         allowInfo           = (prohibitInfo != null && (prohibitInfo.equals("true") ||
                                                         prohibitInfo.equals("1"))) ? false : true;
-        
-        String noeditmode_prop = getProperties().getProperty(PROP_NOEDIT);
-        editmodeAllowed        = (noeditmode_prop != null && (noeditmode_prop.equals("false") ||
-                                                              noeditmode_prop.equals("0")));
 
-        String render_external_prop = getProperties().getProperty(PROP_RENDER_EXT);
+        editmodeAllowed        = this.getAbstractXMLServletConfig().isEditMode();
+
+        String render_external_prop = this.getAbstractXMLServletConfig().getProperties().getProperty(PROP_RENDER_EXT);
         render_external             = ((render_external_prop != null) && render_external_prop.equals("true"));
         
-        String skip_gmmu_prop      = getProperties().getProperty(PROP_SKIP_GETMODTIME_MU);
+        String skip_gmmu_prop      = this.getAbstractXMLServletConfig().getProperties().getProperty(PROP_SKIP_GETMODTIME_MU);
         skip_getmodtimemaybeupdate = ((skip_gmmu_prop != null) && skip_gmmu_prop.equals("true"));
 
         generator.setIsGetModTimeMaybeUpdateSkipped(skip_getmodtimemaybeupdate);
         String timeout;
-        if ((timeout = getProperties().getProperty(PROP_CLEANER_TO)) != null) {
+        if ((timeout = this.getAbstractXMLServletConfig().getProperties().getProperty(PROP_CLEANER_TO)) != null) {
             try {
                 scleanertimeout = new Integer(timeout).intValue();
             } catch (NumberFormatException e) {
@@ -226,10 +231,10 @@ public abstract class AbstractXMLServer extends ServletManager {
             }
         }
 
-        String addinfoprop = getProperty(PROP_ADD_TRAIL_INFO);
+        String addinfoprop = getAbstractXMLServletConfig().getProperties().getProperty(PROP_ADD_TRAIL_INFO);
         addtrailinfo       = AdditionalTrailInfoFactory.getInstance().getAdditionalTrailInfo(addinfoprop);
         
-        if (isInfoEnabled()) {
+        if (LOGGER.isInfoEnabled()) {
             StringBuffer sb = new StringBuffer(255);
             sb.append("\n").append("AbstractXMLServer properties after initValues(): \n");
             sb.append("                targetconf = ").append(targetconf).append("\n");
@@ -238,7 +243,7 @@ public abstract class AbstractXMLServer extends ServletManager {
             sb.append("                   timeout = ").append(timeout).append("\n");
             sb.append("skip_getmodtimemaybeupdate = ").append(skip_getmodtimemaybeupdate).append("\n");
             sb.append("           render_external = ").append(render_external).append("\n");
-            CAT.info(sb.toString());
+            LOGGER.info(sb.toString());
         }
     }
 
@@ -327,7 +332,7 @@ public abstract class AbstractXMLServer extends ServletManager {
         if (preq.getQueryString() != null)
             params.put(XSLPARAM_QUERYSTRING, preq.getQueryString());
 
-        params.put(XSLPARAM_DEREFKEY, getProperty(DerefServer.PROP_DEREFKEY));
+        params.put(XSLPARAM_DEREFKEY, this.getAbstractXMLServletConfig().getProperties().getProperty(DerefServer.PROP_DEREFKEY));
 
         if (session != null) {
             params.put(XSLPARAM_SESSID,
@@ -364,11 +369,11 @@ public abstract class AbstractXMLServer extends ServletManager {
         preq.getRequest().setAttribute(PREPROCTIME, preproctime);
         
         if (spdoc == null) {
-                
+            
             // Performace tracking
             PerfEvent pe = new PerfEvent(PerfEventType.XMLSERVER_GETDOM);
             pe.start();
-            currtime = System.currentTimeMillis();
+            currtime        = System.currentTimeMillis();
             
             // Now get the document
             spdoc = getDom(preq);
@@ -388,8 +393,8 @@ public abstract class AbstractXMLServer extends ServletManager {
             if (spdoc.getDocument() == null) {
                 // thats a request to an unkown page!
                 // do nothing, cause we  want a 404 and no NPExpection
-                if (CAT.isDebugEnabled()) {
-                    CAT.debug("Having a null-document in the SPDoc. Unkown page? Returning 404...");
+                if (LOGGER.isDebugEnabled()) {
+                    LOGGER.debug("Having a null-document in the SPDoc. Unkown page? Returning 404...");
                 }
             }
 
@@ -399,7 +404,7 @@ public abstract class AbstractXMLServer extends ServletManager {
                 SessionCleaner.getInstance().storeSPDocument(spdoc, session, servletname + SUFFIX_SAVEDDOM, scleanertimeout);
                 // }
             } else {
-                CAT.info("*** Got NOSTORE from SPDocument! ****");
+                LOGGER.info("*** Got NOSTORE from SPDocument! ****");
             }
             // this will remain at -1 when we don't have to enter the businesslogic codepathv
             // (whenever there is a stored spdoc already)
@@ -423,8 +428,8 @@ public abstract class AbstractXMLServer extends ServletManager {
             for (Iterator i = headers.keySet().iterator(); i.hasNext();) {
                 String key = (String) i.next();
                 String val = (String) headers.get(key);
-                if (isDebugEnabled()) {
-                    CAT.debug("*** Setting custom supplied header: " + key + " -> " + val);
+                if (LOGGER.isDebugEnabled()) {
+                    LOGGER.debug("*** Setting custom supplied header: " + key + " -> " + val);
                 }
                 res.setHeader(key, val);
             }
@@ -474,11 +479,11 @@ public abstract class AbstractXMLServer extends ServletManager {
         }
 
         if (! doreuse) {
-            if (isDebugEnabled()) {
-                CAT.debug("*** Using document:" + spdoc);
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug("*** Using document:" + spdoc);
             }
-            if (isInfoEnabled()) {
-                CAT.info(" *** Using stylesheet: " + stylesheet + " ***");
+            if (LOGGER.isInfoEnabled()) {
+                LOGGER.info(" *** Using stylesheet: " + stylesheet + " ***");
             }
             // we only want to update the Session hit when we are not handling a "reuse" request
             if (session != null) {
@@ -486,14 +491,14 @@ public abstract class AbstractXMLServer extends ServletManager {
             }
             // Only process cookies if we don't reuse
             if (spdoc.getCookies() != null && ! spdoc.getCookies().isEmpty()) {
-                if (isDebugEnabled()) {
-                    CAT.debug("*** Sending cookies ***");
+                if (LOGGER.isDebugEnabled()) {
+                    LOGGER.debug("*** Sending cookies ***");
                 }
                 // Now adding the Cookies from spdoc
                 for (Iterator i = spdoc.getCookies().iterator(); i.hasNext();) {
                     Cookie cookie = (Cookie) i.next();
-                    if (isDebugEnabled()) {
-                        CAT.debug("    Add cookie: " + cookie);
+                    if (LOGGER.isDebugEnabled()) {
+                        LOGGER.debug("    Add cookie: " + cookie);
                     }
                     res.addCookie(cookie);
                 }
@@ -537,8 +542,8 @@ public abstract class AbstractXMLServer extends ServletManager {
 
         pe.save();
         
-        if (isInfoEnabled()) {
-            CAT.info(">>> Complete handleDocument(...) took " + handletime + "ms");
+        if (LOGGER.isInfoEnabled()) {
+            LOGGER.info(">>> Complete handleDocument(...) took " + handletime + "ms");
         }
         try {
             if (spdoc.getResponseContentType() == null || spdoc.getResponseContentType().startsWith("text/html")) {
@@ -589,7 +594,7 @@ public abstract class AbstractXMLServer extends ServletManager {
         paramhash.put("themes", target.getThemes().getId());
         stylevalue = (Templates) target.getValue();
         if ( stylevalue == null ) { // AH 2004-09-21 added for bugtracing 
-            CAT.warn("stylevalue must not be null; stylevalue=" +
+            LOGGER.warn("stylevalue must not be null; stylevalue=" +
                      stylevalue + "; stylesheet=" + stylesheet + "; spdoc.getPagename()=" +
                      ((spdoc != null) ? spdoc.getPagename() : "spdoc==null") + " spdoc.getXSLKey()=" +
                      ((spdoc != null) ? spdoc.getXSLKey() : "spdoc==null"));
@@ -598,13 +603,13 @@ public abstract class AbstractXMLServer extends ServletManager {
             Xslt.transform(spdoc.getDocument(), stylevalue, paramhash, new StreamResult(res.getOutputStream()));
         } catch (TransformerException e) {
             if (e.getException() instanceof SocketException) {
-                CAT.warn("[Ignored TransformerException] : " + e.getMessage());
-                if (isInfoEnabled()) {
-                    CAT.info("[Ignored TransformerException]", e);
+                LOGGER.warn("[Ignored TransformerException] : " + e.getMessage());
+                if (LOGGER.isInfoEnabled()) {
+                    LOGGER.info("[Ignored TransformerException]", e);
                 }
             } else if(e.getException() != null &&
                       e.getException().getClass().getName().equals("org.apache.catalina.connector.ClientAbortException")) {
-                CAT.warn("[Ignored TransformerException] : " + e.getMessage());
+                LOGGER.warn("[Ignored TransformerException] : " + e.getMessage());
             } else
                 throw e;
         }
@@ -639,7 +644,7 @@ public abstract class AbstractXMLServer extends ServletManager {
         try {
             Xslt.transform(spdoc.getDocument(), stylevalue, null, new StreamResult(res.getOutputStream()));
         } catch (TransformerException e) {
-            CAT.warn("*** Ignored exception when trying to render XML tree ***");
+            LOGGER.warn("*** Ignored exception when trying to render XML tree ***");
         }
         
     }
@@ -719,7 +724,7 @@ public abstract class AbstractXMLServer extends ServletManager {
                 String[] variants = variant.getVariantFallbackArray();
                 for (int i = 0; i < variants.length; i++) {
                     variant_id = variants[i];
-                    CAT.info("   ** Trying variant '" + variant_id + "' **");
+                    LOGGER.info("   ** Trying variant '" + variant_id + "' **");
                     pinfo   = PageInfoFactory.getInstance().getPage(generator, pagename, variant_id);
                     target  = pagetree.getTargetForPageInfo(pinfo);
                     if (target != null) {
@@ -728,12 +733,12 @@ public abstract class AbstractXMLServer extends ServletManager {
                 }
             }
             if (target == null) {
-                CAT.info("   ** Trying root variant **");
+                LOGGER.info("   ** Trying root variant **");
                 pinfo = PageInfoFactory.getInstance().getPage(generator, pagename, null);
                 target = pagetree.getTargetForPageInfo(pinfo);
             }
             if (target == null) {
-                CAT.warn("\n********************** NO TARGET ******************************");
+                LOGGER.warn("\n********************** NO TARGET ******************************");
                 return null;
             } else {
                 return target.getTargetKey();
@@ -780,17 +785,6 @@ public abstract class AbstractXMLServer extends ServletManager {
         }
         return map;
     }
-
-
-    private boolean isDebugEnabled() {
-        return CAT.isDebugEnabled() && allowDebug;
-    }
-    
-
-    private boolean isInfoEnabled() {
-        return CAT.isInfoEnabled() && allowInfo;
-    }
-
 }
 
 

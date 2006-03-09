@@ -27,12 +27,12 @@
   <servlet name="config" useineditor="true">
     <active>true</active>
     <class>de.schlund.pfixxml.ContextXMLServer</class>
-    <propfile>webservice/conf/config.prop</propfile>
+    <propfile>webservice/conf/config.conf.xml</propfile>
   </servlet>
   <servlet name="edit">
     <active>true</active>
     <class>de.schlund.pfixxml.ContextXMLServer</class>
-    <propfile>core/editor2/conf/edit.prop</propfile>
+    <propfile>core/editor2/conf/edit.conf.xml</propfile>
   </servlet>
   <servlet name="deref">
     <active>true</active>
@@ -41,7 +41,7 @@
   <servlet name="webservice">
     <active>true</active>
     <class>de.schlund.pfixcore.webservice.WebServiceServlet</class>
-    <propfile>webservice/conf/webservice.conf</propfile>
+    <propfile>webservice/conf/webservice.conf.xml</propfile>
   </servlet>
 </project>
 
