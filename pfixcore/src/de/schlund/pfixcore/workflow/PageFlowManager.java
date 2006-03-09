@@ -24,6 +24,7 @@ import de.schlund.pfixxml.config.ContextConfig;
 import de.schlund.pfixxml.config.PageFlowConfig;
 import de.schlund.pfixcore.util.PropertiesUtils;
 import java.util.*;
+
 import org.apache.log4j.*;
 
 /**
@@ -40,12 +41,15 @@ public class PageFlowManager implements ConfigurableObject {
     public void init(Object confObj) throws Exception {
         ContextConfig config = (ContextConfig) confObj;
         PageFlowConfig[] pageflows = config.getPageFlows();
-
+        
         for (int i = 0; i < pageflows.length; i++) {
             String name = pageflows[i].getFlowName();
             LOG.debug("===> Found flowname: " + name);
             PageFlow  pf = new PageFlow(pageflows[i]);
             flowmap.put(name, pf);
+            if (!name.contains("::")) {
+                rootflownames.add(name);
+            }
         }
     }
 
