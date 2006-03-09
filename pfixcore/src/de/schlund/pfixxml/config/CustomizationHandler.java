@@ -55,11 +55,11 @@ public class CustomizationHandler extends DefaultHandler {
     private final static String DEFAULT_CHOOSE_ELEMENTNAME = "choose";
 
     private final static String DEFAULT_DOCROOT_ELEMENTNAME = "docroot";
-    
+
     private final static String DEFAULT_FQDN_ELEMENTNAME = "fqdn";
-    
+
     private final static String DEFAULT_UID_ELEMENTNAME = "uid";
-    
+
     private final static String DEFAULT_MACHINE_ELEMENTNAME = "machine";
 
     private class ParsingInfo implements Cloneable {
@@ -103,11 +103,11 @@ public class CustomizationHandler extends DefaultHandler {
     private XPathFactory xpfac;
 
     private String docroot;
-    
+
     private String fqdn;
-    
+
     private String machine;
-    
+
     private String uid;
 
     private String namespace;
@@ -117,11 +117,11 @@ public class CustomizationHandler extends DefaultHandler {
     private String elementChoose = DEFAULT_CHOOSE_ELEMENTNAME;
 
     private String elementDocroot = DEFAULT_DOCROOT_ELEMENTNAME;
-    
+
     private String elementFqdn = DEFAULT_FQDN_ELEMENTNAME;
-    
+
     private String elementMachine = DEFAULT_MACHINE_ELEMENTNAME;
-    
+
     private String elementUid = DEFAULT_UID_ELEMENTNAME;
 
     private StringBuffer xmlPath = new StringBuffer();
@@ -314,15 +314,16 @@ public class CustomizationHandler extends DefaultHandler {
                     && uri.equals(this.namespaceContent)) {
                 targetHandler.characters(docroot.toCharArray(), 0, docroot
                         .length());
-            } else if (this.namespaceContent != null 
+            } else if (this.namespaceContent != null
                     && localName.equals(this.elementFqdn)
                     && uri.equals(this.namespaceContent)) {
                 targetHandler.characters(fqdn.toCharArray(), 0, fqdn.length());
-            } else if (this.namespaceContent != null 
+            } else if (this.namespaceContent != null
                     && localName.equals(this.elementMachine)
                     && uri.equals(this.namespaceContent)) {
-                targetHandler.characters(machine.toCharArray(), 0, machine.length());
-            } else if (this.namespaceContent != null 
+                targetHandler.characters(machine.toCharArray(), 0, machine
+                        .length());
+            } else if (this.namespaceContent != null
                     && localName.equals(this.elementUid)
                     && uri.equals(this.namespaceContent)) {
                 targetHandler.characters(uid.toCharArray(), 0, uid.length());
@@ -372,7 +373,8 @@ public class CustomizationHandler extends DefaultHandler {
 
     public void characters(char[] ch, int start, int length)
             throws SAXException {
-        if (this.peekParsingInfo().parsingActive) {
+        if (this.peekParsingInfo().parsingActive
+                && !this.peekParsingInfo().inChoose) {
             this.targetHandler.characters(ch, start, length);
         }
     }
