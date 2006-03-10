@@ -45,7 +45,7 @@ public class ContextResourcePropertyRule extends CheckedRule {
     
     public void end(String namespace, String name) throws Exception {
         ContextResourceConfig crConfig = (ContextResourceConfig) this.getDigester().peek();
-        crConfig.setProperty(propName, propValue);
+        crConfig.setProperty(propName, propValue.trim());
     }
 
     public void body(String namespace, String name, String text) throws Exception {
