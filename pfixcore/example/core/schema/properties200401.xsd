@@ -12,7 +12,7 @@
   TODO:
   * make ihandler and authhandler mutually exclusive
   -->
-
+  <!-- adam first svn test commit -->
   <xs:element name="contextxmlserver" type="prop:contextxmlserverType">
     <xs:keyref refer="prop:contextresourceimplements" name="contextresourceimplements2pagerequestoutputresource">
       <xs:selector xpath="prop:pagerequest/prop:output/prop:resource"></xs:selector>
