@@ -44,31 +44,27 @@ public abstract class ServletManagerCompat extends ServletManager {
         return config;
     }
 
-    protected void reloadServletConfig(File configFile,
-            Properties globalProperties) throws ServletException {
+    protected void reloadServletConfig(File configFile, Properties globalProperties) throws ServletException {
         Properties props = new Properties(globalProperties);
         try {
             XMLPropertiesUtil.loadPropertiesFromXMLFile(configFile, props);
         } catch (SAXException e) {
-            throw new ServletException(
-                    "Parsing error while reading configuration file "
-                            + configFile.getAbsolutePath());
+            throw new ServletException("Parsing error while reading configuration file "
+                                       + configFile.getAbsolutePath());
         } catch (IOException e) {
-            throw new ServletException("Could not read configuration file "
-                    + configFile.getAbsolutePath());
+            throw new ServletException("Could not read configuration file " + configFile.getAbsolutePath());
         }
         this.config = new ServletManagerConfig();
         this.config.setProperties(props);
         String needs_ssl = props.getProperty("servlet.needsSSL");
         if (needs_ssl != null
-                && (needs_ssl.equals("true") || needs_ssl.equals("yes") || needs_ssl
-                        .equals("1"))) {
+            && (needs_ssl.equals("true") || needs_ssl.equals("yes") || needs_ssl.equals("1"))) {
             this.config.setSSL(true);
         } else {
             this.config.setSSL(false);
         }
     }
-
+    
     /**
      * Compatibility method as old ServletManager used to be confingured using
      * properties and child implementations might depend on this.

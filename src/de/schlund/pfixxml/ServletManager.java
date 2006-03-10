@@ -108,11 +108,9 @@ public abstract class ServletManager extends HttpServlet {
     protected abstract ServletManagerConfig getServletManagerConfig();
     protected abstract void reloadServletConfig(File configFile, Properties globalProperties) throws ServletException;
 
-    /*
-    protected Properties getProperties() {
-        return this.properties;
-    }
-    */
+//     protected Properties getProperties() {
+//         return this.properties;
+//     }
     
     protected boolean runningUnderSSL(HttpServletRequest req) {
         return req.getScheme().equals("https") && (isSslPort(req.getServerPort()));
