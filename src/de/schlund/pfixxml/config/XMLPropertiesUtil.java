@@ -72,7 +72,7 @@ public abstract class XMLPropertiesUtil {
          * @see org.apache.commons.digester.Rule#end(java.lang.String, java.lang.String)
          */
         public void end(String namespace, String name) throws Exception {
-            props.setProperty(propName, propValue);
+            props.setProperty(propName, propValue.trim());
         }
 
         /* (non-Javadoc)
