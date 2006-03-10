@@ -44,7 +44,7 @@ public class ServletPropertyRule extends CheckedRule {
     }
     
     public void end(String namespace, String name) throws Exception {
-        config.getProperties().setProperty(propName, propValue);
+        config.getProperties().setProperty(propName, propValue.trim());
     }
 
     public void body(String namespace, String name, String text) throws Exception {

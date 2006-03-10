@@ -45,7 +45,7 @@ public class PagerequestPropertyRule extends CheckedRule {
     
     public void end(String namespace, String name) throws Exception {
         PageRequestConfig pageConfig = (PageRequestConfig) this.getDigester().peek();
-        pageConfig.setProperty(propName, propValue);
+        pageConfig.setProperty(propName, propValue.trim());
     }
 
     public void body(String namespace, String name, String text) throws Exception {
