@@ -40,6 +40,19 @@
     </resource>
   </context>
   
+  <interceptors>
+    <start>
+      <!-- This ContextInterceptor has to be called BEFORE all other interceptors -->
+      <interceptor class="de.schlund.pfixcore.editor2.frontend.util.SpringHelperStartContextInterceptor"/>
+      <!-- Resets edit state flag -->
+      <interceptor class="de.schlund.pfixcore.editor2.frontend.util.EditViewResetContextInterceptor"/>
+    </start>
+    <end>
+      <!-- This ContextInterceptor has to be called AFTER all other interceptors -->
+      <interceptor class="de.schlund.pfixcore.editor2.frontend.util.SpringHelperEndContextInterceptor"/>
+    </end>
+  </interceptors>  
+  
   <pageflow name="EditorFlow" final="start">
     <flowstep name="start"/>
     <flowstep name="home"/>
@@ -228,26 +241,5 @@
       <prop name="mimetype">text/xml</prop>
     </properties>
   </pagerequest>
-  
-  <properties>
-    <!-- This ContextInterceptor has to be called BEFORE all other interceptors -->
-    <prop name="context.startinterceptor.1">de.schlund.pfixcore.editor2.frontend.util.SpringHelperStartContextInterceptor</prop>
-    <!-- This ContextInterceptor has to be called AFTER all other interceptors -->
-    <prop name="context.endinterceptor.1">de.schlund.pfixcore.editor2.frontend.util.SpringHelperEndContextInterceptor</prop>
-    <!-- ContextInterceptor being used to reset edit state flag -->
-    <prop name="context.startinterceptor.2">de.schlund.pfixcore.editor2.frontend.util.EditViewResetContextInterceptor</prop>
-  </properties>
-  
-  <!-- Not in schema yet
-  <interceptors>
-    <start>
-      <interceptor class="de.schlund.pfixcore.editor2.frontend.util.SpringHelperStartContextInterceptor"/>
-      <interceptor class="de.schlund.pfixcore.editor2.frontend.util.EditViewResetContextInterceptor"/>
-    </start>
-    <end>
-      <interceptor class="de.schlund.pfixcore.editor2.frontend.util.SpringHelperEndContextInterceptor"/>
-    </end>
-  </interceptors>  
-  -->
   
 </contextxmlserver>

@@ -1,3 +1,8 @@
+2006-03-13  Sebastian Marsching  <sebastian.marsching@1und1.de>
+
+	* example/core/editor2/conf/edit.conf.xml: Using XML tags
+	instead of properties to configure context interceptors
+
 2006-03-10  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
 	* src/de/schlund/pfixxml/util/PfxProperties.java: 
