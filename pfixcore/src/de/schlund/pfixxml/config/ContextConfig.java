@@ -19,12 +19,12 @@
 package de.schlund.pfixxml.config;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedHashSet;
+import java.util.LinkedHashMap;
 import java.util.Properties;
-import java.util.Set;
 import java.util.Map.Entry;
 
 /**
@@ -37,7 +37,7 @@ public class ContextConfig {
     private Class contextClass = null;
     private String authPage = null;
     private String defaultFlow = null;
-    private LinkedHashSet<ContextResourceConfig> resources = new LinkedHashSet<ContextResourceConfig>();
+    private LinkedHashMap<Class, ContextResourceConfig> resources = new LinkedHashMap<Class, ContextResourceConfig>();
     private HashMap<String, PageFlowConfig> pageflows = new HashMap<String, PageFlowConfig>();
     private HashMap<String, PageRequestConfig> pagerequests = new HashMap<String, PageRequestConfig>();
     private String navigationFile = null;
@@ -68,11 +68,15 @@ public class ContextConfig {
     }
     
     public void addContextResource(ContextResourceConfig config) {
-        resources.add(config);
+        resources.put(config.getContextResourceClass(), config);
     }
     
-    public Set<ContextResourceConfig> getContextResources() {
-        return this.resources;
+    public Collection<ContextResourceConfig> getContextResources() {
+        return this.resources.values();
+    }
+    
+    public ContextResourceConfig getContextResource(Class clazz) {
+        return this.resources.get(clazz);
     }
     
     public void addPageFlow(PageFlowConfig config) {

@@ -37,7 +37,7 @@ public class ContextResourceConfig {
         this.resourceClass = clazz;
     }
     
-    public Class getContextResouceClass() {
+    public Class getContextResourceClass() {
         return this.resourceClass;
     }
     
@@ -47,10 +47,6 @@ public class ContextResourceConfig {
     
     public Set<Class> getInterfaces() {
         return this.interfaces;
-    }
-
-    public void setProperty(String key, String value) {
-        this.props.setProperty(key, value);
     }
     
     public Properties getProperties() {

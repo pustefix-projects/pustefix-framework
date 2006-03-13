@@ -1128,5 +1128,7 @@ public class Context implements AppContext {
         messages.add(new StatusCodeInfo(scode, args, level));
     }
 
-    
+    public Properties getPropertiesForContextResource(ContextResource res) {
+        return this.config.getContextResource(res.getClass()).getProperties();
+    }
 }

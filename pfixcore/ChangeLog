@@ -1,5 +1,18 @@
 2006-03-13  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
+	* build.xml: Changed ant tasks for examples cleanup so that
+	configuration files with new names are not deleted
+	
+	* src/de/schlund/pfixcore/workflow/Context.java: 
+	* src/de/schlund/pfixcore/workflow/ContextResource.java: 
+	* src/de/schlund/pfixcore/workflow/ContextResourceManager.java: 
+	* src/de/schlund/pfixxml/config/ContextConfig.java: 
+	* src/de/schlund/pfixxml/config/ContextResourceConfig.java: 
+	* src/de/schlund/pfixxml/config/ContextResourcePropertyRule.java: 
+	Changed the way properties for context resources are stored,
+	making them avaible through the context method
+	getPropertiesForContextResource()
+	
 	* example/core/editor2/conf/edit.conf.xml: Using XML tags
 	instead of properties to configure context interceptors
 

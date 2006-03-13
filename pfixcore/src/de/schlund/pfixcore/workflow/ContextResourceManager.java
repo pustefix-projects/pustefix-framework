@@ -19,14 +19,21 @@
 
 package de.schlund.pfixcore.workflow;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Set;
+
+import javax.servlet.ServletException;
+
+import org.apache.log4j.Category;
+
 import de.schlund.pfixxml.config.ContextConfig;
 import de.schlund.pfixxml.config.ContextResourceConfig;
-import de.schlund.pfixxml.loader.*;
-import de.schlund.pfixcore.util.PropertiesUtils;
-import java.util.*;
-
-import javax.servlet.*;
-import org.apache.log4j.*;
+import de.schlund.pfixxml.loader.AppLoader;
+import de.schlund.pfixxml.loader.Reloader;
+import de.schlund.pfixxml.loader.StateTransfer;
 
 /**
  * Implements the ability to store objects implementing a number of interfaces extending
@@ -84,19 +91,19 @@ public class ContextResourceManager implements Reloader {
         
         Collection<ContextResource> resourcesToInitialize = new ArrayList();
         
-        Set<ContextResourceConfig> resourceConfigs = config.getContextResources();
+        Collection<ContextResourceConfig> resourceConfigs = config.getContextResources();
         
         for (Iterator<ContextResourceConfig> i = resourceConfigs.iterator(); i.hasNext();) {
             ContextResourceConfig resourceConfig = i.next();
             ContextResource cr = null;
-            String classname = resourceConfig.getContextResouceClass().getName();
+            String classname = resourceConfig.getContextResourceClass().getName();
             try {
                 CAT.debug("Creating object with name [" + classname + "]");
                 AppLoader appLoader = AppLoader.getInstance();
                 if (appLoader.isEnabled()) {
                     cr = (ContextResource) appLoader.loadClass(classname).newInstance();
                 } else {
-                    cr = (ContextResource) resourceConfig.getContextResouceClass().newInstance();
+                    cr = (ContextResource) resourceConfig.getContextResourceClass().newInstance();
                 }
             } catch (Exception e) {
                 throw new ServletException("Exception while creating object " +
