@@ -1,3 +1,10 @@
+2006-03-15  Sebastian Marsching  <sebastian.marsching@1und1.de>
+
+	* skel/build-skel.xml: 
+	Introduced new property lib.includes which can be changed in order
+	to include JARs that are installed in subdirectories of the lib
+	directory
+
 2006-03-08  Jens Lautenbacher  <jtl@schlund.de>
 
 	* src/de/schlund/pfixxml/util/Xslt.java (Xslt::createIdentityTransformer): re-enabled
