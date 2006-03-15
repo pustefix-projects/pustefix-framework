@@ -1,3 +1,12 @@
+2006-03-15  Sebastian Marsching  <sebastian.marsching@1und1.de>
+
+	* xdocs/*: 
+	* maven.xml: 
+	* project.properties: 
+	* project.xml: 
+	Removing Maven stuff as it is not being used and obviously not even 
+	working anymore
+
 2006-03-13  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
 	* build.xml: Changed ant tasks for examples cleanup so that
