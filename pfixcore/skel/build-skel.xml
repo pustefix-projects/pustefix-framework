@@ -21,6 +21,7 @@ or delete the DOCTYPE definition -->
   <property name="dir.gensrc"               location="gensrc"/>
   <property name="dir.build"                location="build"/>
   <property name="dir.lib"                  location="lib"/>
+  <property name="lib.includes"             value="*.jar"/>
   <property name="dir.skel"                 location="skel"/>
   <property name="dir.jni"                  location="${dir.lib}/jni"/>
   <property name="dir.projects"             location="projects"/>
@@ -95,10 +96,14 @@ or delete the DOCTYPE definition -->
 
     <exec outputproperty="trusted.tomcat" executable="hostname" os="Linux"><arg value="-i"/></exec>
   </target>
+  
+  <path id="cp.libs">
+    <fileset dir="${dir.lib}" includes="${lib.includes}"/>
+    <fileset dir="${dir.projects}/servletconf/tomcat/common" includes="lib/servlet-api.jar"/>
+  </path>
 
   <path id="cp.classpath">
-    <fileset dir="${dir.lib}" includes="*.jar"/>
-    <fileset dir="${dir.projects}/servletconf/tomcat/common" includes="lib/servlet-api.jar"/>
+    <path refid="cp.libs"/>
     <pathelement location="${dir.build}"/>
   </path>
 
@@ -250,9 +255,14 @@ or delete the DOCTYPE definition -->
       <arg line="-iname *.jar -a -type l -exec rm -v {} ;"/>
     </exec>
     <echo level="verbose">Creating symlinks in tomcat's lib directory</echo>
-    <exec executable="sh">
-      <arg line="-c &quot;cd ${dir.projects}/servletconf/tomcat/shared/lib &amp;&amp; for i in ${dir.lib}/*.jar ; do test -L $(basename $i) || ln -s $i . ; done&quot;"/>
-    </exec>
+    <pathconvert property="cp.property" refid="cp.libs" pathsep=","/>
+    <apply executable="ln" dir="${dir.projects}/servletconf/tomcat/shared/lib" failonerror="true" verbose="true"
+      type="file">  <!-- type file: to make sure that directories that might be added to cp.libs by accident are not passed to ln -->
+      <arg value="-s"/>
+      <srcfile/>
+      <arg value="."/>
+      <filelist dir="/" files="${cp.property}"/>
+    </apply>
   </target>
 
   <target name="ant-tasks" depends="init" description="declares the ant task used for generating java source code. This target needs to be run prior to the actual compile.">
