@@ -1,3 +1,14 @@
+2006-03-16  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixcore/workflow/Context.java (Context): added
+	the ability to set a variant only for one request, and restore the 
+	"old" variant on the next incoming request. We do it this way to
+	make sure that even in case of an exception, we still know what
+	variant is the "permanent" one (without the need to catch every exception).
+	(Context::setVariantForThisRequest): new method
+	(Context::setVariant): when there is already a variant set for
+	only the current request, use the given variant for the following requests instead.
+
 2006-03-15  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
 	* skel/build-skel.xml: 
