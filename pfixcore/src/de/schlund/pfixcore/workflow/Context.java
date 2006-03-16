@@ -80,6 +80,9 @@ public class Context implements AppContext {
     private Variant                variant       = null;
     private ContextInterceptor[]   startIC       = null;
     private ContextInterceptor[]   endIC         = null;
+
+    private Variant variantToRestoreOnNextRequest = null;
+    private boolean restoreVariantOnNextRequest   = false;
     
     // values read from properties
     private boolean     autoinvalidate_navi = true;
@@ -133,7 +136,7 @@ public class Context implements AppContext {
      * @exception Exception if an error occurs
      */
     public synchronized SPDocument handleRequest(PfixServletRequest preq) throws Exception {
-        currentpservreq                = preq;
+        currentpservreq            = preq;
         prohibitcontinue           = false;
         stopnextforcurrentrequest  = false;
         jumptopagerequest          = null;
@@ -142,6 +145,11 @@ public class Context implements AppContext {
         pageflow_requested_by_user = false;
         startwithflow              = false;
         cookielist                 = new ArrayList();
+
+        if (restoreVariantOnNextRequest) {
+            variant                     = variantToRestoreOnNextRequest;
+            restoreVariantOnNextRequest = false;
+        }
         
         if (needs_update) {
             do_update();
@@ -403,9 +411,24 @@ public class Context implements AppContext {
     }
 
     public void setVariant(Variant var) {
+        if (restoreVariantOnNextRequest) {
+            variantToRestoreOnNextRequest = var;
+        } else {
+            variant = var;
+        }
+    }
+
+    public void setVariantForThisRequest(Variant var) {
+        // Note: it only makes sense to call this method once during a request, if you insist on
+        // calling it more than once, the variant that is scheduled to be restored the next time
+        // will always be the first variant to be stored.
+        if (!restoreVariantOnNextRequest) {
+            variantToRestoreOnNextRequest = variant;
+            restoreVariantOnNextRequest = true;
+        }
         variant = var;
     }
-    
+
     /**
      * <code>getCurrentVisitId</code> returns the visit_id.
      *
