@@ -11,6 +11,15 @@
 
 2006-03-15  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
+	* xdocs/*: 
+	* maven.xml: 
+	* project.properties: 
+	* project.xml: 
+	Removing Maven stuff as it is not being used and obviously not even 
+	working anymore
+
+2006-03-15  Sebastian Marsching  <sebastian.marsching@1und1.de>
+
 	* skel/build-skel.xml: 
 	Introduced new property lib.includes which can be changed in order
 	to include JARs that are installed in subdirectories of the lib
