@@ -422,7 +422,7 @@ public class Context implements AppContext {
         }
     }
 
-    public void setVariantForThisRequest(Variant var) {
+    public void setVariantForThisRequestOnly(Variant var) {
         // Note: it only makes sense to call this method once during a request, if you insist on
         // calling it more than once, the variant that is scheduled to be restored the next time
         // will always be the first variant to be stored.
