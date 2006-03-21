@@ -21,6 +21,7 @@ package de.schlund.pfixcore.util;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
@@ -91,8 +92,11 @@ public class XsltProjectsXmlTask extends XsltGenericTask {
                     .newTransformer(new StreamSource(stylefile));
             trans.setURIResolver(customizationResolver);
             File temp = File.createTempFile("tempprojects", ".xml");
-            StreamResult sr = new StreamResult(temp);
+            FileOutputStream fos = new FileOutputStream(temp);
+            StreamResult sr = new StreamResult(fos);
             customize(in, sr);
+            fos.flush();
+            fos.close();
             
             for (XsltParam param : params) {
                 trans.setParameter(param.getName(), param.getExpression());
