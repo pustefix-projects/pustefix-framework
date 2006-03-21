@@ -200,7 +200,7 @@
       <xsl:attribute name="debug"><xsl:value-of select="$debug"/></xsl:attribute>
       <!-- switch off session serialization -->
       <Manager  pathname=""/>
-      <xsl:if test="$staticDocBase">
+      <xsl:if test="$staticDocBase and not($staticDocBase = '')">
         <Parameter name="staticDocBase" value="{$staticDocBase}"/>
       </xsl:if>
     </Context>
