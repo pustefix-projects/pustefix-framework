@@ -109,8 +109,6 @@ public class IWrapperSimpleContainer implements IWrapperContainer, Reloader {
     private static final String  GROUP_PREV         = "PREV";  
     private static final String  SELECT_GROUP       = "SELGRP";  
     private static final String  SELECT_WRAPPER     = "SELWRP";  
-    private static final String  DESEL_WRAPPER      = "DESELWRP";  
-    private static final String  SUGGEST_CONT       = "SUGGESTCONT";  
     private static final String  WRAPPER_LOGDIR     = "interfacelogging";
     private static final String  WRAPPER_LOGLIST    = "loginterfaces";
 
@@ -242,18 +240,6 @@ public class IWrapperSimpleContainer implements IWrapperContainer, Reloader {
     public boolean stayAfterSubmit() throws Exception {
         if (wrappers.isEmpty()) return false; // border case
 
-        // TODO: IS this really a good idea at all?
-        String[] suggestcontinue = reqdata.getCommands(SUGGEST_CONT);
-        if (suggestcontinue != null && suggestcontinue.length > 0) {
-            if (suggestcontinue[0].equals("true")) {
-                CAT.debug("*** Allow continue because SUGGESTCONT command is 'true'.");
-                return false;
-            } else if (suggestcontinue[0].equals("false")) {
-                CAT.debug("*** Disallow continue because SUGGESTCONT command is 'false'.");
-                return true;
-            }
-        }
-        
         if (!is_splitted) splitIWrappers();
         
         if (selectedwrappers != currentgroup) {
@@ -507,20 +493,6 @@ public class IWrapperSimpleContainer implements IWrapperContainer, Reloader {
             }
         }
 
-        String[] deselwrappers = reqdata.getCommands(DESEL_WRAPPER);
-        if (deselwrappers != null && deselwrappers.length > 0) {
-            HashSet    deselset = new HashSet(Arrays.asList(deselwrappers));
-            IWrapper[] all      = currentgroup.getIWrappers();
-            for (int i = 0; i < all.length; i++) {
-                IWrapper tmp = all[i];
-                if (deselset.contains(tmp.gimmePrefix())) {
-                    CAT.debug("  >> Restrict NOT to Wrapper: " + tmp.gimmePrefix());
-                } else {
-                    selected.addIWrapper(all[i]);
-                }
-            }
-        }
-        
         if (selected.isEmpty()) {
             selectedwrappers = currentgroup;
         } else {

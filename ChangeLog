@@ -7,6 +7,14 @@
 	Ensure stream to temporary file is flushed before using the file
 	for the next transformation step
 
+2006-03-18  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixcore/workflow/app/IWrapperSimpleContainer.java
+	(IWrapperSimpleContainer::stayAfterSubmit): remove handling of
+	SUGGESTCONT command (never used anyway)	
+	(IWrapperSimpleContainer::checkForRestrictedCalling): remove
+	handling of DESELWRP command (never used anyway)
+
 2006-03-16  Jens Lautenbacher  <jtl@schlund.de>
 
 	* src/de/schlund/pfixcore/workflow/Context.java (Context): added
