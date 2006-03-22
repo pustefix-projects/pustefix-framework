@@ -317,14 +317,6 @@ public class Context implements AppContext {
         return config.getProperties();
     }
 
-    /**
-     * Describe <code>getPropertiesForCurrentPageRequest</code> method here.
-     * This returnes the all Properties which match the current PageRequest <b>without</b> the common prefix.
-     * E.g. the page is named "foo", then all properties starting with "pagerequest.foo.*" will be returned after
-     * stripping the "pagerequest.foo." prefix.
-     *
-     * @return a <code>Properties</code> value
-     */
     public Properties getPropertiesForCurrentPageRequest() {
         return preqprops.getPropertiesForPageRequest(currentpagerequest);
     }
