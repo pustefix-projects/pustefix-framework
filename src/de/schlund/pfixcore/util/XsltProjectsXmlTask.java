@@ -95,6 +95,9 @@ public class XsltProjectsXmlTask extends XsltGenericTask {
             FileOutputStream fos = new FileOutputStream(temp);
             StreamResult sr = new StreamResult(fos);
             customize(in, sr);
+
+            // Flush output to make sure it is avaiable for the
+            // next transformation step
             fos.flush();
             fos.close();
             
@@ -102,7 +105,9 @@ public class XsltProjectsXmlTask extends XsltGenericTask {
                 trans.setParameter(param.getName(), param.getExpression());
             }
             
-            trans.transform(new StreamSource(temp), new StreamResult(out));
+            // Pass FileOutputStream instead of File to
+            // circumvent a bug in certain Xalan versions
+            trans.transform(new StreamSource(temp), new StreamResult(new FileOutputStream(out)));
             temp.delete();
         } catch (TransformerConfigurationException e) {
             throw new BuildException("Could not create transformer", e);
