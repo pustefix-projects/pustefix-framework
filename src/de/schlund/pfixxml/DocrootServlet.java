@@ -42,9 +42,11 @@ import javax.servlet.http.HttpServletResponse;
 public class DocrootServlet extends HttpServlet {
     private String base;
 
+    private String defaultpath;
+
     protected void doGet(HttpServletRequest req, HttpServletResponse res)
             throws ServletException, IOException {
-        
+
         boolean docrootMode;
 
         // Get path and determine whether to deliver files from
@@ -58,12 +60,19 @@ public class DocrootServlet extends HttpServlet {
             docrootMode = true;
         }
 
+        // Handle default (root) request
+        if (docrootMode && this.defaultpath != null
+                && (path == null || path.length() == 0 || path.equals("/"))) {
+            res.sendRedirect(req.getContextPath() + this.defaultpath);
+            return;
+        }
+
         // Avoid path traversal and access to config or source files
         if (path.contains("..") || path.startsWith("/WEB-INF")) {
             res.sendError(HttpServletResponse.SC_NOT_FOUND, path);
             return;
         }
-        
+
         // Directory listing is not allowed
         if (path.endsWith("/")) {
             res.sendError(HttpServletResponse.SC_FORBIDDEN, path);
@@ -79,7 +88,7 @@ public class DocrootServlet extends HttpServlet {
             }
 
             InputStream in;
-            
+
             if (docrootMode) {
                 File file = new File(base, path);
                 in = new BufferedInputStream(new FileInputStream(file));
@@ -91,7 +100,7 @@ public class DocrootServlet extends HttpServlet {
                     throw new FileNotFoundException();
                 }
             }
-            
+
             String type = getServletContext().getMimeType(path);
             if (type == null) {
                 type = "application/octet-stream";
@@ -118,6 +127,17 @@ public class DocrootServlet extends HttpServlet {
         // In standalone mode, the context sets a parameter
         // containing the path to the docroot
         this.base = this.getServletContext().getInitParameter("staticDocBase");
+
+        this.defaultpath = null;
+        String temp = this.getInitParameter("defaultpath");
+        if (temp != null && temp.length() > 0) {
+            if (temp.charAt(0) != '/') {
+                temp = "/" + temp;
+            }
+            if (temp.length() > 1) {
+                this.defaultpath = temp;
+            }
+        }
     }
 
 }

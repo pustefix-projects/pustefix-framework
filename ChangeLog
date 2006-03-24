@@ -1,5 +1,27 @@
 2006-03-24  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
+	* src/de/schlund/pfixcore/webservice/generate/WebServiceTask.java: 
+	* src/de/schlund/pfixcore/webservice/WebServiceServlet.java: 
+	Fixed problems occuring in webservice stuff due to new config system
+	
+	* src/de/schlund/pfixxml/ServletManager.java: 
+	Use context path (if available) when setting cookies
+
+	* src/de/schlund/pfixcore/util/WebappCopyPassthroughHtdocsTask.java: 
+	* src/de/schlund/pfixxml/DocrootServlet.java: 
+	* src/de/schlund/pfixxml/FactoryInitServlet.java: 
+	* example/core/build/create_webxml.xsl: 
+	* skel/build-skel.xml: 
+	Improved WAR support by moving the document root stuff beneath the
+	WEB-INF directory and copying files from (Apache) docroot and
+	passthrough parts into webapp directory
+
+	* example/sample1/xml/one_frame.xml: 
+	* example/sample1/xml/two_frames.xml: 
+	Changed masters to use $__contextpath variable when importing
+	CSS styles, so that sample1 application works correctly when
+	exported as WAR
+		
 	* src/de/schlund/pfixcore/editor2/frontend/resources/CommonIncludesResourceImpl.java (fixIndention): 
 	Fixed StringIndexOutOfBoundsException caused by unexpected empty string
 
