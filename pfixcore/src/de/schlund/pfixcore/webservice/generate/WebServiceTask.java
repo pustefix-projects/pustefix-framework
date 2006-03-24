@@ -4,18 +4,26 @@
 package de.schlund.pfixcore.webservice.generate;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.HashSet;
 import java.util.Iterator;
 
+import javax.servlet.ServletException;
 import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.sax.SAXTransformerFactory;
+import javax.xml.transform.sax.TransformerHandler;
 import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
 
 import org.apache.axis.deployment.wsdd.WSDDDocument;
 import org.apache.axis.deployment.wsdd.WSDDHandler;
@@ -34,11 +42,19 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+import org.xml.sax.XMLReader;
+import org.xml.sax.helpers.DefaultHandler;
+import org.xml.sax.helpers.XMLReaderFactory;
 
 import de.schlund.pfixcore.webservice.config.ConfigProperties;
 import de.schlund.pfixcore.webservice.config.Configuration;
 import de.schlund.pfixcore.webservice.config.GlobalServiceConfig;
 import de.schlund.pfixcore.webservice.config.ServiceConfig;
+import de.schlund.pfixxml.PathFactory;
+import de.schlund.pfixxml.config.CustomizationHandler;
+import de.schlund.pfixxml.util.TransformerHandlerAdapter;
 
 /**
  * WebServiceTask.java
@@ -68,6 +84,8 @@ public class WebServiceTask extends Task {
     //SOAP encoding use: encoded|literal
     private String encUse="encoded";
     
+    private final static String WS_CONF_NS = "http://pustefix.sourceforge.net/wsconfig200401";
+    private final static String CUS_NS = "http://www.schlund.de/pustefix/customize";
     
     public void checkAttributes() throws BuildException {
     	if(srcdir==null) throw new BuildException("No source directory specified.");
@@ -99,7 +117,7 @@ public class WebServiceTask extends Task {
                 
                 Element elem=(Element)nl.item(i);
                 String prjName=elem.getAttribute("name");
-                File wsConfFile=new File(prjdir,prjName+File.separator+"conf"+File.separator+"webservice.conf");         
+                File wsConfFile=new File(prjdir,prjName+File.separator+"conf"+File.separator+"webservice.conf.xml");         
                 
                 //go on processing if webservices found
                 if(wsConfFile.exists()) {
@@ -112,7 +130,55 @@ public class WebServiceTask extends Task {
                     boolean propsChanged=false;
                     if(!globPropsFile.exists() || globPropsFile.lastModified()<wsConfFile.lastModified()) propsChanged=true;
                     
-                    ConfigProperties cfgProps=new ConfigProperties(new File[] {wsConfFile});
+                    // Transform XML, creating temporary property file
+                    PathFactory.getInstance().init(prjdir.getAbsolutePath());
+                    File tempFile = null;
+                    XMLReader xreader;
+                    try {
+                        xreader = XMLReaderFactory.createXMLReader();
+                    } catch (SAXException e) {
+                        throw new ServletException("Could not create XMLReader", e);
+                    }
+                    TransformerFactory tf = SAXTransformerFactory.newInstance();
+                    if (tf.getFeature(SAXTransformerFactory.FEATURE)) {
+                        SAXTransformerFactory stf = (SAXTransformerFactory) tf;
+                        TransformerHandler th;
+                        try {
+                            th = stf.newTransformerHandler();
+                        } catch (TransformerConfigurationException e) {
+                            throw new RuntimeException(
+                                    "Failed to configure TransformerFactory!", e);
+                        }
+                        DOMResult dr = new DOMResult();
+                        try {
+                            tempFile = File.createTempFile("webservice", ".prop");
+                        } catch (IOException e) {
+                            throw new ServletException("Could not create temporary file", e);
+                        }
+                        StreamResult sr = new StreamResult(tempFile);
+                        th.setResult(dr);
+                        DefaultHandler dh = new TransformerHandlerAdapter(th);
+                        DefaultHandler cushandler = new CustomizationHandler(dh, WS_CONF_NS, CUS_NS);
+                        xreader.setContentHandler(cushandler);
+                        xreader.setDTDHandler(cushandler);
+                        xreader.setErrorHandler(cushandler);
+                        xreader.setEntityResolver(cushandler);
+                        try {
+                            xreader.parse(new InputSource(new FileInputStream(wsConfFile)));
+                            Transformer trans = tf.newTransformer(new StreamSource(
+                                    PathFactory.getInstance().createPath(
+                                            "core/build/create_webservice.xsl").resolve()));
+                            trans.setParameter("docroot", PathFactory.getInstance().createPath("").resolve().getAbsolutePath());
+                            trans.transform(new DOMSource(dr.getNode()), sr);
+                        } catch (Exception e) {
+                            throw new BuildException("Error on reading config file " + wsConfFile.getAbsolutePath(), e);
+                        }
+                    } else {
+                        throw new BuildException(
+                                "Could not get instance of SAXTransformerFactory!");
+                    }
+                    
+                    ConfigProperties cfgProps=new ConfigProperties(new File[] {tempFile});
                     Configuration srvConf=new Configuration(cfgProps);
                     GlobalServiceConfig globConf=srvConf.getGlobalServiceConfig();
                     

@@ -50,6 +50,12 @@
     <servlet>
       <servlet-name>static-docroot</servlet-name>
       <servlet-class>de.schlund.pfixxml.DocrootServlet</servlet-class>
+      <xsl:if test="$project/defpath/text()">
+        <init-param>
+          <param-name>defaultpath</param-name>
+          <param-value><xsl:value-of select="$project/defpath"/></param-value>
+        </init-param>
+      </xsl:if>
     </servlet>
     
     <xsl:for-each select="$project/servlet">

@@ -139,6 +139,7 @@ public class WebServiceServlet extends AxisServlet {
             al.add(tempFile);
         }
         
+        File tempFile2 = null;
         String servlet = config.getInitParameter(Constants.PROP_SERVLET_FILE);
         if (servlet != null) {
             File servletFile = PathFactory.getInstance().createPath(servlet).resolve();
@@ -162,11 +163,11 @@ public class WebServiceServlet extends AxisServlet {
                 }
                 DOMResult dr = new DOMResult();
                 try {
-                    tempFile = File.createTempFile("webservice", ".prop");
+                    tempFile2 = File.createTempFile("webservice", ".prop");
                 } catch (IOException e) {
                     throw new ServletException("Could not create temporary file", e);
                 }
-                StreamResult sr = new StreamResult(tempFile);
+                StreamResult sr = new StreamResult(tempFile2);
                 th.setResult(dr);
                 DefaultHandler dh = new TransformerHandlerAdapter(th);
                 DefaultHandler cushandler = new CustomizationHandler(dh, WS_CONF_NS, CUS_NS);
@@ -189,7 +190,7 @@ public class WebServiceServlet extends AxisServlet {
                         "Could not get instance of SAXTransformerFactory!");
             }
             
-            al.add(tempFile);
+            al.add(tempFile2);
         }
 
         try {

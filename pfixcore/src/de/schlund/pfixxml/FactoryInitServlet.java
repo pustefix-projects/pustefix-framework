@@ -161,7 +161,7 @@ public class FactoryInitServlet extends HttpServlet implements Reloader {
         // old webapps specify docroot -- true webapps don't
         String docrootstr = Config.getInitParameter(PROP_DOCROOT);
         if (docrootstr == null || docrootstr.equals("")) {
-            docrootstr = Config.getServletContext().getRealPath(".");
+            docrootstr = Config.getServletContext().getRealPath("/WEB-INF/pfixroot/.");
             if (!docrootstr.endsWith("/.")) {
                 throw new IllegalStateException(docrootstr);
             }

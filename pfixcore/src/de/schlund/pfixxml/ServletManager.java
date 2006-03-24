@@ -653,7 +653,11 @@ public abstract class ServletManager extends HttpServlet {
                 CAT.debug("*** Creating a random test cookie name: " + rand);
             }
             Cookie newprobe = new Cookie(TEST_COOKIE, rand);
-            newprobe.setPath("/");
+            if (req.getContextPath().length() > 0) {
+                newprobe.setPath(req.getContextPath());
+            } else {
+                newprobe.setPath("/");
+            }
             res.addCookie(newprobe);
             sess.setAttribute(RAND_SESS_COOKIE_VALUE, rand);
             return true;
