@@ -601,8 +601,11 @@ public abstract class CommonIncludesResourceImpl implements
             }
         }
         
-        // Remove last trailing newline
-        output.deleteCharAt(output.length() -1);
+        // Remove last trailing newline, but make sure string
+        // is not empty
+        if (output.length() > 0) {
+            output.deleteCharAt(output.length() -1);
+        }
         
         return output.toString();
     }
