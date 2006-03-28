@@ -128,10 +128,10 @@ public class Context implements AppContext {
      * @exception Exception if an error occurs
      */
     public void init(ContextConfig config, String name) throws Exception {
-        this.config = config;
-        this.name       = name;
-        rmanager        = new ContextResourceManager();
-        visited_pages   = new HashSet();
+        this.config   = config;
+        this.name     = name;
+        rmanager      = new ContextResourceManager();
+        visited_pages = new HashSet();
         rmanager.init(this, config);
         reset();
     }
