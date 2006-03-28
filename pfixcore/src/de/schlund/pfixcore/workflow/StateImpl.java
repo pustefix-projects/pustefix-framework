@@ -39,7 +39,7 @@ public abstract class StateImpl implements State {
 
     /**
      * @see de.schlund.pfixcore.util.StateUtil#isDirectTrigger(Context, PfixServletRequest)
-     */    
+     */
     public final boolean isDirectTrigger(Context context, PfixServletRequest preq) {
         return StateUtil.isDirectTrigger(context, preq);
     }
