@@ -443,9 +443,6 @@ or delete the DOCTYPE definition -->
   <target name="check-permissions">
     <apply executable="chmod" os="Linux">
       <arg line="a+x"/>
-      <!-- // TODO_AH 2004-12-08 take out if other fileset works okay
-      <fileset dir="${basedir}" includes="apploader.sh newproject.sh startTomcat.sh bin/setClassPath.sh bin/setvars.sh projects/servletconf/tomcat/bin/catalina.sh projects/servletconf/tomcat/bin/setclasspath.sh example/checkfiles.sh example/servletconf/tomcat/bin/catalina.sh example/servletconf/tomcat/bin/setclasspath.sh"/>
-      -->
       <fileset dir="${basedir}" includes="apploader.sh newproject.sh startTomcat.sh skel/apploader.sh skel/newproject.sh skel/startTomcat.sh bin/setClassPath.sh bin/setvars.sh stuff/**/*.sh stuff/**/bin/*"/>
       <fileset dir="${dir.projects}" includes="**/*.sh"/>
     </apply>

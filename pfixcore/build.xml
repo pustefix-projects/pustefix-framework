@@ -6,7 +6,7 @@ or delete the DOCTYPE definition -->
 
 <project name="pfixcore" default="all" basedir=".">
   <!-- override properties -->
-  <property name="dir.projects"           location="example"/>
+  <property name="dir.projects"           location="projects"/>
   <property name="dir.jni"                location="jni"/>
   <property name="exclude.examples"       value="de/skelexamples/**/*.*"/>
   
