@@ -1,5 +1,7 @@
 2006-03-29  Jens Lautenbacher  <jtl@schlund.de>
 
+	* TargetGenerator, TargetGeneratorTask, TransformerHandlerAdapter: cosmetics
+
 	* moved example => projects to finally come in line with what
 	everything else uses....
 	* startTomcat.sh, skel/build-skel.xml, prj.el, build.xml: changed accordingly
