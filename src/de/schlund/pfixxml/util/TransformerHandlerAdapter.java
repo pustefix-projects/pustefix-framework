@@ -45,8 +45,7 @@ public class TransformerHandlerAdapter extends DefaultHandler {
      * 
      * @see org.xml.sax.helpers.DefaultHandler#characters(char[], int, int)
      */
-    public void characters(char[] ch, int start, int length)
-            throws SAXException {
+    public void characters(char[] ch, int start, int length) throws SAXException {
         this.handler.characters(ch, start, length);
     }
 
@@ -65,11 +64,10 @@ public class TransformerHandlerAdapter extends DefaultHandler {
      * @see org.xml.sax.helpers.DefaultHandler#endElement(java.lang.String,
      *      java.lang.String, java.lang.String)
      */
-    public void endElement(String uri, String localName, String qName)
-            throws SAXException {
+    public void endElement(String uri, String localName, String qName) throws SAXException {
         this.handler.endElement(uri, localName, qName);
     }
-
+    
     /*
      * (non-Javadoc)
      * 
@@ -85,8 +83,7 @@ public class TransformerHandlerAdapter extends DefaultHandler {
      * @see org.xml.sax.helpers.DefaultHandler#ignorableWhitespace(char[], int,
      *      int)
      */
-    public void ignorableWhitespace(char[] ch, int start, int length)
-            throws SAXException {
+    public void ignorableWhitespace(char[] ch, int start, int length) throws SAXException {
         this.handler.ignorableWhitespace(ch, start, length);
     }
 
@@ -96,8 +93,7 @@ public class TransformerHandlerAdapter extends DefaultHandler {
      * @see org.xml.sax.helpers.DefaultHandler#notationDecl(java.lang.String,
      *      java.lang.String, java.lang.String)
      */
-    public void notationDecl(String name, String publicId, String systemId)
-            throws SAXException {
+    public void notationDecl(String name, String publicId, String systemId) throws SAXException {
         this.handler.notationDecl(name, publicId, systemId);
     }
 
@@ -107,8 +103,7 @@ public class TransformerHandlerAdapter extends DefaultHandler {
      * @see org.xml.sax.helpers.DefaultHandler#processingInstruction(java.lang.String,
      *      java.lang.String)
      */
-    public void processingInstruction(String target, String data)
-            throws SAXException {
+    public void processingInstruction(String target, String data) throws SAXException {
         this.handler.processingInstruction(target, data);
     }
 
@@ -145,19 +140,17 @@ public class TransformerHandlerAdapter extends DefaultHandler {
      * @see org.xml.sax.helpers.DefaultHandler#startElement(java.lang.String,
      *      java.lang.String, java.lang.String, org.xml.sax.Attributes)
      */
-    public void startElement(String uri, String localName, String qName,
-            Attributes attributes) throws SAXException {
+    public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
         this.handler.startElement(uri, localName, qName, attributes);
     }
-
+    
     /*
      * (non-Javadoc)
      * 
      * @see org.xml.sax.helpers.DefaultHandler#startPrefixMapping(java.lang.String,
      *      java.lang.String)
      */
-    public void startPrefixMapping(String prefix, String uri)
-            throws SAXException {
+    public void startPrefixMapping(String prefix, String uri) throws SAXException {
         this.handler.startPrefixMapping(prefix, uri);
     }
 
@@ -167,8 +160,7 @@ public class TransformerHandlerAdapter extends DefaultHandler {
      * @see org.xml.sax.helpers.DefaultHandler#unparsedEntityDecl(java.lang.String,
      *      java.lang.String, java.lang.String, java.lang.String)
      */
-    public void unparsedEntityDecl(String name, String publicId,
-            String systemId, String notationName) throws SAXException {
+    public void unparsedEntityDecl(String name, String publicId, String systemId, String notationName) throws SAXException {
         this.handler.unparsedEntityDecl(name, publicId, systemId, notationName);
     }
 

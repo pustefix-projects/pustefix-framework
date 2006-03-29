@@ -63,7 +63,7 @@ public class TargetGeneratorTask extends MatchingTask {
             try {
                 for (int i = 0; i < confignames.length; i++) {
                     Path confilepath = PathFactory.getInstance().createPath(confignames[i]);
-                    File confile = confilepath.resolve();
+                    File confile     = confilepath.resolve();
                     if (confile.exists() && confile.canRead() && confile.isFile()) {
                         try {
                             gen = createTargetGenerator(confilepath);
