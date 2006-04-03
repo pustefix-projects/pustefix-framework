@@ -45,6 +45,7 @@ import org.apache.log4j.xml.DOMConfigurator;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -243,7 +244,18 @@ public class TargetGenerator implements Comparable{
                 }
                 trans.setParameter("docroot", PathFactory.getInstance().createPath("").resolve().getAbsolutePath());
                 trans.transform(new DOMSource(dr.getNode()), dr2);
-                config = dr2.getNode().getOwnerDocument();
+                Node tempNode = dr2.getNode();
+                config = tempNode.getOwnerDocument();
+                
+                // tempNode might already be the document and
+                // getOwnerDocument() will return null in this case
+                if (config == null) {
+                    if (tempNode.getNodeType() == Node.DOCUMENT_NODE) {
+                        config = (Document) tempNode;
+                    } else {
+                        throw new SAXException("XML result is not a Document though it should be");
+                    }
+                }
             } catch (TransformerException e) {
                 throw new SAXException(e);
             }
