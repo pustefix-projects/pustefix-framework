@@ -1,3 +1,8 @@
+2006-04-03  Sebastian Marsching  <sebastian.marsching@1und1.de>
+
+	* src/de/schlund/pfixxml/targets/TargetGenerator.java (loadConfig): 
+	Fixed problem occuring when using "ant generate"
+
 2006-03-29  Jens Lautenbacher  <jtl@schlund.de>
 
 	* TargetGenerator, TargetGeneratorTask, TransformerHandlerAdapter: cosmetics
