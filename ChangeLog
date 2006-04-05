@@ -1,5 +1,7 @@
 2006-04-05  Sebastian Marsching  <sebastian.marsching@1und1.de>
-
+	
+	* .classpath: Changed path to servlet-api.jar to match new name of projects directory
+	
 	* src/de/schlund/pfixcore/editor2/frontend/resources/UsersResource.java (existsSelectedUser): 
 	* src/de/schlund/pfixcore/editor2/frontend/resources/UsersResourceImpl.java (existsSelectedUser): 
 	* src/de/schlund/pfixcore/editor2/frontend/handlers/EditUserHandler.java (handleSubmittedData):
