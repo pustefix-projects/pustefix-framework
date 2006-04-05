@@ -1,5 +1,11 @@
 2006-04-05  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
+	* src/de/schlund/pfixcore/editor2/frontend/resources/UsersResource.java (existsSelectedUser): 
+	* src/de/schlund/pfixcore/editor2/frontend/resources/UsersResourceImpl.java (existsSelectedUser): 
+	* src/de/schlund/pfixcore/editor2/frontend/handlers/EditUserHandler.java (handleSubmittedData):
+	Check for password during user creation to avoid strange exceptions
+	being caused by users without a stored password logging in
+	 
 	* skel/build-skel.xml: Created new property "test.classpath" that
 	is set based on "test.lib.includes" to provide a facility to
 	specify additional libraries when running tests

@@ -75,6 +75,14 @@ public class EditUserHandler implements IHandler {
                         .addSCodePassword(StatusCodeLib.PFIXCORE_EDITOR_USERDATA_PWD_NO_MATCH);
                 return;
             }
+            
+            // Make sure user is always created with a password
+            if (!EditorResourceLocator.getUsersResource(context).existsSelectedUser()
+                    && pwd == null && input.getPasswordRepeat() == null) {
+                input.addSCodePassword(StatusCodeLib.PFIXCORE_GENERATOR_MISSING_PARAM);
+                return;
+            }
+            
             user.setFullname(name);
             user.setSectionName(section);
             user.setPhoneNumber(phone);
