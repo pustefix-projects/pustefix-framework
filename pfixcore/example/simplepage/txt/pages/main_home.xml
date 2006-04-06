@@ -9,10 +9,6 @@
     </theme>
   </part>
 
-  <part name="test">
-    <theme name="default">
-      INPUT!!!
-    </theme>
-  </part>
+  
 
 </include_parts>
