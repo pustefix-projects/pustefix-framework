@@ -51,9 +51,6 @@ public class Context implements AppContext {
     private final static String   NAVPROP             = "xmlserver.depend.xml";
     private final static String   PROP_NAVI_AUTOINV   = "navigation.autoinvalidate";
     private final static String   PROP_NEEDS_SSL      = "needsSSL";
-    private final static String   WATCHMODE           = "context.adminmode.watch";
-    private final static String   ADMINPAGE           = "context.adminmode.page";
-    private final static String   ADMINMODE           = "context.adminmode";
     private final static String   AUTH_PROP           = "authcontext.authpage";
     private final static String   JUMPPAGE            = "__jumptopage";
     private final static String   JUMPPAGEFLOW        = "__jumptopageflow";
@@ -81,13 +78,13 @@ public class Context implements AppContext {
     private ContextInterceptor[]   startIC       = null;
     private ContextInterceptor[]   endIC         = null;
 
-    private Variant variantToRestoreOnNextRequest = null;
-    private boolean restoreVariantOnNextRequest   = false;
+    private Variant variantToRestore = null;
+    private boolean restoreVariant   = false;
+
+    private Boolean saved_autoinvalidate = null;
     
     // values read from properties
-    private boolean     autoinvalidate_navi = true;
-    private boolean     in_adminmode        = false;
-    private PageRequest admin_pagereq;
+    private boolean autoinvalidate_navi = true;
 
     // the request state
     private PfixServletRequest currentpservreq;
@@ -136,6 +133,23 @@ public class Context implements AppContext {
      * @exception Exception if an error occurs
      */
     public synchronized SPDocument handleRequest(PfixServletRequest preq) throws Exception {
+        try {
+            return handleRequestWorker(preq);
+        } catch (Exception e) {
+            throw e;
+        } finally {
+            if (restoreVariant) {
+                variant        = variantToRestore;
+                restoreVariant = false;
+            }
+            if (saved_autoinvalidate != null) {
+                autoinvalidate_navi  = saved_autoinvalidate;
+                saved_autoinvalidate = null;
+            }
+        }
+    }
+
+    private synchronized SPDocument handleRequestWorker(PfixServletRequest preq) throws Exception {
         currentpservreq            = preq;
         prohibitcontinue           = false;
         stopnextforcurrentrequest  = false;
@@ -146,11 +160,6 @@ public class Context implements AppContext {
         startwithflow              = false;
         cookielist                 = new ArrayList();
 
-        if (restoreVariantOnNextRequest) {
-            variant                     = variantToRestoreOnNextRequest;
-            restoreVariantOnNextRequest = false;
-        }
-        
         if (needs_update) {
             do_update();
         }
@@ -198,23 +207,6 @@ public class Context implements AppContext {
         SPDocument  spdoc;
         PageRequest prevpage = currentpagerequest;
         PageFlow    prevflow = currentpageflow;
-
-        if (in_adminmode) {
-            ResultDocument resdoc;
-            if (checkIsAccessible(admin_pagereq, PageRequestStatus.UNDEF)) {
-                currentpagerequest = admin_pagereq;
-                resdoc             = documentFromCurrentStep();
-                currentpagerequest = prevpage;
-            } else {
-                throw new XMLException("*** admin mode requested but admin page " + admin_pagereq + " is inaccessible ***");
-            }
-            spdoc = resdoc.getSPDocument();
-            spdoc.setPagename(admin_pagereq.getName());
-            insertPageMessages(spdoc);
-            storeCookies(spdoc);
-            processIC(endIC);
-            return spdoc;
-        }
 
         trySettingPageRequestAndFlow();
         spdoc = documentFromFlow();
@@ -411,8 +403,8 @@ public class Context implements AppContext {
     }
 
     public void setVariant(Variant var) {
-        if (restoreVariantOnNextRequest) {
-            variantToRestoreOnNextRequest = var;
+        if (restoreVariant) {
+            variantToRestore = var;
         } else {
             variant = var;
         }
@@ -422,9 +414,9 @@ public class Context implements AppContext {
         // Note: it only makes sense to call this method once during a request, if you insist on
         // calling it more than once, the variant that is scheduled to be restored the next time
         // will always be the first variant to be stored.
-        if (!restoreVariantOnNextRequest) {
-            variantToRestoreOnNextRequest = variant;
-            restoreVariantOnNextRequest = true;
+        if (!restoreVariant) {
+            variantToRestore = variant;
+            restoreVariant = true;
         }
         variant = var;
     }
@@ -607,7 +599,6 @@ public class Context implements AppContext {
         createInterceptors(properties);
         
         checkForAuthenticationMode();
-        checkForAdminMode();
         checkForNavigationReuse();
 
         needs_update = false;
@@ -651,22 +642,13 @@ public class Context implements AppContext {
         }
     }
 
-    private void checkForAdminMode() {
-        admin_pagereq = null;
-        in_adminmode  = false;
-
-        String watchprop = properties.getProperty(WATCHMODE);
-        if (watchprop != null && !watchprop.equals("")) {
-            String adminprop = properties.getProperty(ADMINMODE + "." + watchprop + ".status");
-            String adminpage = properties.getProperty(ADMINPAGE);
-            if (adminpage != null && !adminpage.equals("") && adminprop != null && adminprop.equals("on")) {
-                LOG.debug("*** setting Adminmode for : " + watchprop + " ***");
-                admin_pagereq = PageRequest.createPageRequest(adminpage, variant, preqprops);
-                in_adminmode  = true;
-            }
+    public void setAutoinvalidateNavigation(boolean invalidate) {
+        if (saved_autoinvalidate == null) {
+            saved_autoinvalidate = autoinvalidate_navi;
         }
+        autoinvalidate_navi = invalidate;
     }
-
+    
     private boolean checkNeedsData(PageRequest page, PageRequestStatus status) throws Exception {
         PageRequest saved  = currentpagerequest;
         currentpagerequest = page;

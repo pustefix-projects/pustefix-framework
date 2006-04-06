@@ -1,3 +1,16 @@
+2006-04-06  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixcore/workflow/Context.java:
+	removed adminmode implementation - never needed anyway, and just
+	too stupid to be useful.
+
+	(handleRequest)
+	(handleRequestWorker): now handleRequest makes sure in a finally
+	block to reset a saved variant and autoinvalidate state after the request.
+
+	(setAutoinvalidateNavigationForRequest): can be used to set the
+	autoinvalidation of the navigation structure for this request.
+	
 2006-03-24  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
 	* src/de/schlund/pfixcore/editor2/frontend/resources/CommonIncludesResourceImpl.java (fixIndention): 
