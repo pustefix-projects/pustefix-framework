@@ -120,4 +120,9 @@ public class UsersResourceImpl implements UsersResource {
     public EditorUser getSelectedUser() {
         return this.selectedUser;
     }
+
+    public boolean existsSelectedUser() {
+        UserManagementService ums = SpringBeanLocator.getUserManagementService();
+        return ums.hasUser(this.selectedUser.getUsername());
+    }
 }

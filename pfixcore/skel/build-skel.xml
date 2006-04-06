@@ -21,7 +21,8 @@ or delete the DOCTYPE definition -->
   <property name="dir.gensrc"               location="gensrc"/>
   <property name="dir.build"                location="build"/>
   <property name="dir.lib"                  location="lib"/>
-  <property name="lib.includes"             value="*.jar"/>
+  <property name="lib.includes"             value="lib/*.jar"/>
+  <property name="test.lib.includes"        value="${lib.includes}"/>
   <property name="dir.skel"                 location="skel"/>
   <property name="dir.jni"                  location="${dir.lib}/jni"/>
   <property name="dir.projects"             location="projects"/>
@@ -103,12 +104,22 @@ or delete the DOCTYPE definition -->
   </target>
 
   <path id="cp.libs">
-    <fileset dir="${dir.lib}" includes="${lib.includes}"/>
+    <fileset dir="${basedir}" includes="${lib.includes}"/>
     <fileset dir="${dir.projects}/servletconf/tomcat/common" includes="lib/servlet-api.jar"/>
   </path>
 
   <path id="cp.classpath">
     <path refid="cp.libs"/>
+    <pathelement location="${dir.build}"/>
+  </path>
+  
+  <path id="test.libs">
+    <fileset dir="${basedir}" includes="${test.lib.includes}"/>
+    <fileset dir="${dir.projects}/servletconf/tomcat/common" includes="lib/servlet-api.jar"/>
+  </path>
+  
+  <path id="test.classpath">
+    <path refid="test.libs"/>
     <pathelement location="${dir.build}"/>
   </path>
 
@@ -930,8 +941,7 @@ or delete the DOCTYPE definition -->
       <formatter type="xml"/>
       <formatter type="plain"/>
       <classpath>
-        <path refid="cp.classpath"/>
-        <pathelement path="${dir.build}"/>
+        <path refid="test.classpath"/>
         <pathelement path="${dir.test.classes}"/>
       </classpath>
       <batchtest todir="${dir.test.report}">
@@ -954,8 +964,7 @@ or delete the DOCTYPE definition -->
      encoding="${javac.encoding}"
      >
       <classpath>
-        <path refid="cp.classpath"/>
-        <pathelement path="${dir.build}"/>
+        <path refid="test.classpath"/>
       </classpath>
     </javac>
     <available file="res" type="dir" property="has.resources" />

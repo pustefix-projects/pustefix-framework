@@ -42,4 +42,6 @@ public interface UsersResource extends ContextResource {
             EditorSecurityException, EditorDuplicateUsernameException;
 
     EditorUser getSelectedUser();
+
+    boolean existsSelectedUser();
 }
