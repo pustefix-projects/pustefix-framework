@@ -642,7 +642,7 @@ public class Context implements AppContext {
         }
     }
 
-    public void setAutoinvalidateNavigation(boolean invalidate) {
+    public void setAutoinvalidateNavigationForThisRequestOnly(boolean invalidate) {
         if (saved_autoinvalidate == null) {
             saved_autoinvalidate = autoinvalidate_navi;
         }
