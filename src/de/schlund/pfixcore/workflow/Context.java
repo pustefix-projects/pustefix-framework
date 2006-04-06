@@ -96,11 +96,13 @@ public class Context implements AppContext {
     private ContextInterceptor[]   startIC       = null;
     private ContextInterceptor[]   endIC         = null;
 
-    private Variant variantToRestoreOnNextRequest = null;
-    private boolean restoreVariantOnNextRequest   = false;
+    private Variant variantToRestore = null;
+    private boolean restoreVariant   = false;
+
+    private Boolean saved_autoinvalidate = null;
     
     // values read from properties
-    private boolean     autoinvalidate_navi = true;
+    private boolean autoinvalidate_navi = true;
 
     // the request state
     private PfixServletRequest currentpservreq;
@@ -150,6 +152,23 @@ public class Context implements AppContext {
      * @exception Exception if an error occurs
      */
     public synchronized SPDocument handleRequest(PfixServletRequest preq) throws Exception {
+        try {
+            return handleRequestWorker(preq);
+        } catch (Exception e) {
+            throw e;
+        } finally {
+            if (restoreVariant) {
+                variant        = variantToRestore;
+                restoreVariant = false;
+            }
+            if (saved_autoinvalidate != null) {
+                autoinvalidate_navi  = saved_autoinvalidate;
+                saved_autoinvalidate = null;
+            }
+        }
+    }
+
+    private synchronized SPDocument handleRequestWorker(PfixServletRequest preq) throws Exception {
         currentpservreq            = preq;
         prohibitcontinue           = false;
         stopnextforcurrentrequest  = false;
@@ -160,11 +179,6 @@ public class Context implements AppContext {
         startwithflow              = false;
         cookielist                 = new ArrayList();
 
-        if (restoreVariantOnNextRequest) {
-            variant                     = variantToRestoreOnNextRequest;
-            restoreVariantOnNextRequest = false;
-        }
-        
         if (needs_update) {
             do_update();
         }
@@ -407,8 +421,8 @@ public class Context implements AppContext {
     }
 
     public void setVariant(Variant var) {
-        if (restoreVariantOnNextRequest) {
-            variantToRestoreOnNextRequest = var;
+        if (restoreVariant) {
+            variantToRestore = var;
         } else {
             variant = var;
         }
@@ -418,9 +432,9 @@ public class Context implements AppContext {
         // Note: it only makes sense to call this method once during a request, if you insist on
         // calling it more than once, the variant that is scheduled to be restored the next time
         // will always be the first variant to be stored.
-        if (!restoreVariantOnNextRequest) {
-            variantToRestoreOnNextRequest = variant;
-            restoreVariantOnNextRequest = true;
+        if (!restoreVariant) {
+            variantToRestore = variant;
+            restoreVariant = true;
         }
         variant = var;
     }
@@ -638,6 +652,13 @@ public class Context implements AppContext {
         }
     }
 
+    public void setAutoinvalidateNavigation(boolean invalidate) {
+        if (saved_autoinvalidate == null) {
+            saved_autoinvalidate = autoinvalidate_navi;
+        }
+        autoinvalidate_navi = invalidate;
+    }
+    
     private boolean checkNeedsData(PageRequest page, PageRequestStatus status) throws Exception {
         PageRequest saved  = currentpagerequest;
         currentpagerequest = page;
