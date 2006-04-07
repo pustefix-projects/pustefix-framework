@@ -661,7 +661,7 @@ public class Context implements AppContext {
         
         PerfEvent pe = new PerfEvent(PerfEventType.PAGE_NEEDSDATA, page.getName());
         pe.start();
-        boolean retval     = state.needsData(this, currentpservreq);
+        boolean retval = state.needsData(this, currentpservreq);
         pe.save();
        
         currentpagerequest = saved;

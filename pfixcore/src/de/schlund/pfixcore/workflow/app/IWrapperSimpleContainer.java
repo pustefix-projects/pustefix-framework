@@ -19,11 +19,6 @@
 
 package de.schlund.pfixcore.workflow.app;
 
-
-
-
-
-
 import de.schlund.pfixcore.generator.IHandler;
 import de.schlund.pfixcore.generator.IWrapper;
 import de.schlund.pfixcore.generator.IWrapperParam;
@@ -40,6 +35,8 @@ import de.schlund.pfixxml.XMLException;
 import de.schlund.pfixxml.loader.AppLoader;
 import de.schlund.pfixxml.loader.Reloader;
 import de.schlund.pfixxml.loader.StateTransfer;
+import de.schlund.pfixxml.perflogging.PerfEvent;
+import de.schlund.pfixxml.perflogging.PerfEventType;
 import de.schlund.util.statuscodes.StatusCode;
 import java.io.File;
 import java.util.ArrayList;
@@ -413,7 +410,10 @@ public class IWrapperSimpleContainer implements IWrapperContainer, Reloader {
                 if (selectedwrappers.contains(wrapper)) {
                     wrapper.tryParamLogging();
                     if (!wrapper.errorHappened()) {
+                        PerfEvent pe = new PerfEvent(PerfEventType.IHANDLER_HANDLESUBMITTEDDATA, handler.getClass().getName());
+                        pe.start();
                         handler.handleSubmittedData(context, wrapper);
+                        pe.save();
                     }
                 }
             }
