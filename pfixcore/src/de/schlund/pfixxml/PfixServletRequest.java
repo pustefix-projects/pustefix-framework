@@ -18,6 +18,14 @@
  */
 package de.schlund.pfixxml;
 
+
+
+
+import de.schlund.pfixxml.multipart.MultipartHandler;
+import de.schlund.pfixxml.multipart.PartData;
+import de.schlund.pfixxml.perflogging.PerfEvent;
+import de.schlund.pfixxml.perflogging.PerfEventType;
+import de.schlund.pfixxml.serverutil.SessionHelper;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -26,16 +34,10 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
-
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-
 import org.apache.log4j.Category;
-
-import de.schlund.pfixxml.multipart.MultipartHandler;
-import de.schlund.pfixxml.multipart.PartData;
-import de.schlund.pfixxml.serverutil.SessionHelper;
 
 /**
  * <p>This class is an abstraction of a servlet request. Is provides wrapper functions
@@ -91,7 +93,10 @@ public class PfixServletRequest {
      * @param cUtil
      */
     public PfixServletRequest(HttpServletRequest req, Properties properties) {
-        starttime = System.currentTimeMillis();
+        PerfEvent pe = new PerfEvent(PerfEventType.PFIXSERVLETREQUEST_INIT);
+        pe.start();
+        
+        starttime   = System.currentTimeMillis();
         getRequestParams(req, properties);
         servername  = req.getServerName();
         querystring = req.getQueryString();
@@ -101,6 +106,9 @@ public class PfixServletRequest {
         request     = req;
         session     = req.getSession(false);
         verifyDirExists(System.getProperty(DEF_PROP_TMPDIR));
+
+        pe.setIdentfier(uri);
+        pe.save();
     }
 
     //~ Methods ....................................................................................

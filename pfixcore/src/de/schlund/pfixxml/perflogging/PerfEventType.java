@@ -28,11 +28,11 @@ package de.schlund.pfixxml.perflogging;
  */
 public class PerfEventType {
     
-   
-    public static final String IHANDLER_ISACTIVE = "IHANDLER_IS_ACTIVE";
     public static final String XMLSERVER_PREPROCESS = "XMLSERVER_PRE_PROCESS";
+    public static final String IHANDLER_ISACTIVE = "IHANDLER_IS_ACTIVE";
     public static final String IHANDLER_NEEDSDATA = "IHANDLER_NEEDS_DATA";
     public static final String IHANDLER_PREREQUISITESMET= "IHANDLER_PREREQUISITES_MET";
+    public static final String IHANDLER_HANDLESUBMITTEDDATA= "IHANDLER_HANDLE_SUBMITTED_DATA";
     public static final String CONTEXTRESOURCE_INSERTSTATUS= "CONTEXTRESOURCE_INSERT_STATUS";
     public static final String CONTEXTRESOURCE_OBSERVERUPDATE = "CONTEXTRESOURCE_OBSERVER_UPDATE";
     public static final String PAGE_ISACCESSIBLE = "PAGE_IS_ACCESSIBLE";
@@ -45,7 +45,7 @@ public class PerfEventType {
     public static final String XMLSERVER_HANDLEDOCUMENT = "XMLSERVER_HANDLE_DOCUMENT";
     public static final String XMLSERVER_CALLPROCESS = "XMLSERVER_CALL_PROCESS";
     public static final String XMLSERVER_GETDOM= "XMLSERVER_GET_DOM";
-  
-    
-   
+    public static final String PFIXSERVLETREQUEST_INIT= "PFIXSERVLETREQUEST_INIT";
+
 }
+
