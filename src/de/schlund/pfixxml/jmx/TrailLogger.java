@@ -49,22 +49,22 @@ public class TrailLogger extends NotificationBroadcasterSupport implements Trail
     private static Logger LOG = Logger.getLogger(TrailLogger.class);
     
     public static final String NOTIFICATION_TYPE = "step";
-	public static final String CLOSE_TYPE ="close";
+    public static final String CLOSE_TYPE ="close";
 	
     /** session attribute name */
     private static final String SESS_TRAIL_LOGGER = "__TRAIL_LOGGER__";
-
+    
     // TODO: ugly static thing code. 
     // maps visit_ids auf TrailLogger
     public static final Map map = new HashMap();
     
     public static void log(PfixServletRequest preq, SPDocument resdoc, HttpSession session) throws IOException {
-		TrailLogger logger;
-		String visit;
+        TrailLogger logger;
+        String visit;
         
-		if (session == null) {
-			return; // no sessions, no trails ...
-		}
+        if (session == null) {
+            return; // no sessions, no trails ...
+        }
         visit = lookupVisit(session);
         if (visit != null) {
             logger = (TrailLogger) map.get(visit);
@@ -90,44 +90,44 @@ public class TrailLogger extends NotificationBroadcasterSupport implements Trail
         }
         return visit;
     }
-
+    
     public static String lookupVisit(HttpSession session) {
         return (String) session.getAttribute(ServletManager.VISIT_ID);
     }
-
+    
     //--
 
-	private final String visit;
+    private final String visit;
     private int sequenceNumber;
-	
-	public TrailLogger(String visit) throws IOException {
-		this.visit = visit;
+    
+    public TrailLogger(String visit) throws IOException {
+        this.visit = visit;
         this.sequenceNumber = 0;
         map.put(visit, this);
-	}
-
-	public void log(PfixServletRequest request, SPDocument response) {
-		String step;
-		Notification n;
-
-		step = Xml.serialize(createStep(request, response), true, false);
+    }
+    
+    public void log(PfixServletRequest request, SPDocument response) {
+        String step;
+        Notification n;
+        
+        step = Xml.serialize(createStep(request, response), true, false);
         LOG.debug("step " + sequenceNumber + " "+ step);
-		n = new Notification(NOTIFICATION_TYPE, this, sequenceNumber++);
-		n.setUserData(step);
-		sendNotification(n);
-	}
-
-	public void stop() {
+        n = new Notification(NOTIFICATION_TYPE, this, sequenceNumber++);
+        n.setUserData(step);
+        sendNotification(n);
+    }
+    
+    public void stop() {
         if (map.remove(visit) != this) {
             throw new IllegalStateException();
         }
         sendNotification(new Notification(CLOSE_TYPE, this, sequenceNumber++));
-	}
-
-	//-- create xml
-	
+    }
+    
+    //-- create xml
+    
     private static Document createStep(PfixServletRequest request, SPDocument spdoc) {
-		Document doc = Xml.createDocument();
+        Document doc = Xml.createDocument();
         Element step = doc.createElement("step");
         doc.appendChild(step);
         step.appendChild(doc.importNode(createRequest(request), true));
@@ -144,14 +144,14 @@ public class TrailLogger extends NotificationBroadcasterSupport implements Trail
         new_ele.appendChild(text_node);
         root.appendChild(new_ele);
     }
-
+    
     private static Node createRequest(PfixServletRequest request) {
         Document doc = Xml.createDocument();
         Element ele = doc.createElement("request");
-		String uri = request.getRequestURI();
+        String uri = request.getRequestURI();
         String path = uri.substring(0, uri.indexOf(';'));
         addElement(ele, "path", path, null, null);
-
+        
         Element ele_params = doc.createElement("params");
         String[] req_param_names = request.getRequestParamNames();
         for (int i = 0; i < req_param_names.length; i++) {
@@ -166,7 +166,7 @@ public class TrailLogger extends NotificationBroadcasterSupport implements Trail
         ele.appendChild(ele_params);
         return ele;
     }
-
+    
     private static Node createResponse(SPDocument doc) {
         return doc.getDocument().getFirstChild();
     }

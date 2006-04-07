@@ -97,7 +97,7 @@ public class IHandlerSimpleContainer implements IHandlerContainer, Reloader {
             appLoader.addReloader(this);
         }
     }
-
+    
     /**
      * The principal accessibility of a page is deduced as follows:
      * If ANY of all the associated IHandlers returns false on a call to
@@ -110,19 +110,17 @@ public class IHandlerSimpleContainer implements IHandlerContainer, Reloader {
     public boolean isPageAccessible(Context context) throws Exception {
         if (handlers.isEmpty()) return true; // border case
         
-        // synchronized (handlers) {
-            for (Iterator iter = handlers.iterator(); iter.hasNext(); ) {
-                IHandler handler = (IHandler) iter.next();
-                PerfEvent pe = new PerfEvent(PerfEventType.IHANDLER_PREREQUISITESMET, handler.getClass().getName());
-                pe.start();
-                boolean  test = handler.prerequisitesMet(context);
-                pe.save();
+        for (Iterator iter = handlers.iterator(); iter.hasNext(); ) {
+            IHandler handler = (IHandler) iter.next();
+            PerfEvent pe = new PerfEvent(PerfEventType.IHANDLER_PREREQUISITESMET, handler.getClass().getName());
+            pe.start();
+            boolean  test = handler.prerequisitesMet(context);
+            pe.save();
             
-                if (!test) {
-                    return false;
-                }
+            if (!test) {
+                return false;
             }
-        // }
+        }
         return true;
     }
 
@@ -149,7 +147,6 @@ public class IHandlerSimpleContainer implements IHandlerContainer, Reloader {
 
         if (policy.equals("ALL")) {
             retval = true;
-            // synchronized (activeset) {
             for (Iterator iter = activeset.iterator(); iter.hasNext(); ) {
                 IHandler handler = (IHandler) iter.next();
                 
@@ -159,20 +156,17 @@ public class IHandlerSimpleContainer implements IHandlerContainer, Reloader {
                     break;
                 }
             }
-            // }
         } else if (policy.equals("ANY")) {
             retval = false;
-            // synchronized (activeset) {
             for (Iterator iter = activeset.iterator(); iter.hasNext(); ) {
                 IHandler handler = (IHandler) iter.next();
-               
+                
                 boolean test = doIsActive(handler, context);
                 if (test) {
                     retval = true;
                     break;
                 }
             }
-            // }
         } else {
             throw new RuntimeException("ERROR: property '" + PROP_POLICY + "' must be 'ALL', 'ANY'(default) or 'NONE'");
         }
@@ -190,8 +184,7 @@ public class IHandlerSimpleContainer implements IHandlerContainer, Reloader {
      * @throws Exception
      */
     private boolean doIsActive(IHandler handler, Context ctx) throws Exception{
-        PerfEvent pe = new PerfEvent(PerfEventType.IHANDLER_ISACTIVE, 
-                handler.getClass().getName());
+        PerfEvent pe = new PerfEvent(PerfEventType.IHANDLER_ISACTIVE, handler.getClass().getName());
         pe.start();
         boolean  test = handler.isActive(ctx);
         pe.save();
@@ -208,15 +201,13 @@ public class IHandlerSimpleContainer implements IHandlerContainer, Reloader {
      * @throws Exception
      */
     private boolean doNeedsData(IHandler handler, Context ctx) throws Exception{
-        PerfEvent pe = new PerfEvent(PerfEventType.IHANDLER_NEEDSDATA, 
-                handler.getClass().getName());
+        PerfEvent pe = new PerfEvent(PerfEventType.IHANDLER_NEEDSDATA, handler.getClass().getName());
         pe.start();
         boolean  test = handler.needsData(ctx);
         pe.save();
         return test;
     }
     
-
     /**
      * The method <code>needsData</code> tells if any of the IHandlers this instance 
      * aggregates still needs data.
@@ -228,18 +219,16 @@ public class IHandlerSimpleContainer implements IHandlerContainer, Reloader {
     public boolean needsData(Context context) throws Exception  {
         if (handlers.isEmpty()) return true; // border case
         
-        // synchronized (handlers) {
-            for (Iterator iter = handlers.iterator(); iter.hasNext(); ) {
-                IHandler handler = (IHandler) iter.next();
-                if (handler.isActive(context)) {
-                    
-                    boolean test = doNeedsData(handler, context);
-                    if (test) {
-                        return true;
-                    }
+        for (Iterator iter = handlers.iterator(); iter.hasNext(); ) {
+            IHandler handler = (IHandler) iter.next();
+            if (handler.isActive(context)) {
+                
+                boolean test = doNeedsData(handler, context);
+                if (test) {
+                    return true;
                 }
             }
-        // }
+        }
         return false;
     }
     
