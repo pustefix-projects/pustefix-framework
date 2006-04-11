@@ -1,5 +1,13 @@
 2006-04-11  Jens Lautenbacher  <jtl@schlund.de>
 
+	* src/de/schlund/pfixxml/PfixServletRequest.java
+	(PfixServletRequest::handleMulti): don't check for temp file on
+	every request
+	* src/de/schlund/pfixxml/AbstractXMLServer.java
+	(AbstractXMLServer::verifyDirExists): moved from PfixServletRequest
+	(AbstractXMLServer::init): check temp file here
+	* src/de/schlund/pfixxml/multipart/MultipartHandler.java: changed accordingly.
+
 	* src/de/schlund/pfixxml/ServletManager.java
 	(ServletManager::doGet): added request uri to perfevent
 	
