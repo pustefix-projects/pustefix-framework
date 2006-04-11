@@ -19,6 +19,10 @@
 
 package de.schlund.pfixxml.multipart;
 
+
+
+import de.schlund.pfixxml.AbstractXMLServer;
+import de.schlund.pfixxml.PfixServletRequest;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -34,7 +38,6 @@ import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
-
 import javax.mail.MessagingException;
 import javax.mail.internet.ContentType;
 import javax.mail.internet.InternetHeaders;
@@ -45,8 +48,6 @@ import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.log4j.Category;
 import org.apache.oro.text.perl.Perl5Util;
-
-import de.schlund.pfixxml.PfixServletRequest;
 
 /**
  *
@@ -134,7 +135,7 @@ public class MultipartHandler {
         }
 
         if (dir == null) {
-            dir = System.getProperty(PfixServletRequest.DEF_PROP_TMPDIR);
+            dir = System.getProperty(AbstractXMLServer.DEF_PROP_TMPDIR);
         }
         dirFile = new File(dir);
         if (!dirFile.isDirectory()) {

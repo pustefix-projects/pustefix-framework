@@ -64,7 +64,6 @@ public class PfixServletRequest {
     private static final String   PROP_TMPDIR         = "pfixservletrequest.tmpdir";
     private static final String   PROP_MAXPARTSIZE    = "pfixservletrequest.maxpartsize";
     private static final String   ATTR_LASTEXCEPTION  = "REQ_LASTEXCEPTION";
-    public static String          DEF_PROP_TMPDIR     = "java.io.tmpdir";
     private static String         DEF_MAXPARTSIZE     = "" + (10 * 1024 * 1024); // 10 MB
     private HashMap               parameters          = new HashMap();
     private Category              CAT                 = Category.getInstance(this.getClass());
@@ -105,7 +104,6 @@ public class PfixServletRequest {
         serverport  = req.getServerPort();
         request     = req;
         session     = req.getSession(false);
-        verifyDirExists(System.getProperty(DEF_PROP_TMPDIR));
 
         pe.setIdentfier(uri);
         pe.save();
@@ -425,7 +423,7 @@ public class PfixServletRequest {
         String  tmpdir = properties.getProperty(PROP_TMPDIR);
         HashSet names = new HashSet();
         if (tmpdir == null || tmpdir.equals("")) {
-            tmpdir = System.getProperty(DEF_PROP_TMPDIR);
+            tmpdir = System.getProperty(AbstractXMLServer.DEF_PROP_TMPDIR);
         }
         
         String maxsize = properties.getProperty(PROP_MAXPARTSIZE);
@@ -505,14 +503,4 @@ public class PfixServletRequest {
         }
     }
     
-    private void verifyDirExists(String tmpdir) {
-        File temporary_dir = new File(tmpdir);
-        if(!temporary_dir.exists()) {
-            boolean ok = temporary_dir.mkdirs();
-            if(CAT.isInfoEnabled()) {
-                CAT.info(temporary_dir.getPath()+" did not exist. Created now. Sucess:"+ok);
-            }
-        }
-    }
-        
 } // PfixServletRequest

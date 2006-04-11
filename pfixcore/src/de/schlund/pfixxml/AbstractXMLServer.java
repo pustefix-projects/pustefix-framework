@@ -18,12 +18,6 @@
  */
 package de.schlund.pfixxml;
 
-
-
-
-
-
-
 import de.schlund.pfixxml.jmx.JmxServerFactory;
 import de.schlund.pfixxml.jmx.TrailLogger;
 import de.schlund.pfixxml.perflogging.AdditionalTrailInfo;
@@ -42,6 +36,7 @@ import de.schlund.pfixxml.targets.TargetGeneratorFactory;
 import de.schlund.pfixxml.util.Path;
 import de.schlund.pfixxml.util.Xml;
 import de.schlund.pfixxml.util.Xslt;
+import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
@@ -87,18 +82,19 @@ public abstract class AbstractXMLServer extends ServletManager {
     private static final int RENDER_FONTIFY  = 2;
     private static final int RENDER_XMLONLY  = 3;
 
-    private static final String   FONTIFY_SSHEET          = "core/xsl/xmlfontify.xsl";
-    public  static final String   SESS_LANG               = "__SELECTED_LANGUAGE__";
-    private static final String   XML_CONTENT_TYPE        = "text/xml; charset=iso-8859-1";
-    public  static final String   PARAM_XMLONLY           = "__xmlonly";
-    public  static final String   PARAM_XMLONLY_FONTIFY   = "1"; // -> RENDER_FONFIFY
-    public  static final String   PARAM_XMLONLY_XMLONLY   = "2"; // -> RENDER_XMLONLY
-    public  static final String   PARAM_ANCHOR            = "__anchor";
-    private static final String   PARAM_EDITMODE          = "__editmode";
-    private static final String   PARAM_LANG              = "__language";
-    private static final String   PARAM_FRAME             = "__frame";
-    // private static final String   PARAM_NOSTORE           = "__nostore";
-    private static final String   PARAM_REUSE             = "__reuse"; // internally used
+    public static String        DEF_PROP_TMPDIR       = "java.io.tmpdir";
+    private static final String FONTIFY_SSHEET        = "core/xsl/xmlfontify.xsl";
+    public  static final String SESS_LANG             = "__SELECTED_LANGUAGE__";
+    private static final String XML_CONTENT_TYPE      = "text/xml; charset=iso-8859-1";
+    public  static final String PARAM_XMLONLY         = "__xmlonly";
+    public  static final String PARAM_XMLONLY_FONTIFY = "1"; // -> RENDER_FONFIFY
+    public  static final String PARAM_XMLONLY_XMLONLY = "2"; // -> RENDER_XMLONLY
+    public  static final String PARAM_ANCHOR          = "__anchor";
+    private static final String PARAM_EDITMODE        = "__editmode";
+    private static final String PARAM_LANG            = "__language";
+    private static final String PARAM_FRAME           = "__frame";
+    // private static final String   PARAM_NOSTORE    = "__nostore";
+    private static final String PARAM_REUSE           = "__reuse"; // internally used
 
     private static final String   XSLPARAM_LANG           = "lang";
     private static final String   XSLPARAM_DEREFKEY       = "__derefkey";
@@ -174,6 +170,7 @@ public abstract class AbstractXMLServer extends ServletManager {
         if (CAT.isDebugEnabled()) {
             CAT.debug("End of init AbstractXMLServer");
         }
+        verifyDirExists(System.getProperty(DEF_PROP_TMPDIR));
     }
 
     private String getProperty(String name) throws ServletException {
@@ -789,6 +786,16 @@ public abstract class AbstractXMLServer extends ServletManager {
         return CAT.isInfoEnabled() && allowInfo;
     }
 
+    private void verifyDirExists(String tmpdir) {
+        File temporary_dir = new File(tmpdir);
+        if(!temporary_dir.exists()) {
+            boolean ok = temporary_dir.mkdirs();
+            if (CAT.isInfoEnabled()) {
+                CAT.info(temporary_dir.getPath() + " did not exist. Created now. Sucess:" + ok);
+            }
+        }
+    }
+    
 }
 
 
