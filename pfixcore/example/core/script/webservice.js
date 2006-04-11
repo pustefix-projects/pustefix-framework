@@ -460,6 +460,7 @@ SOAP_SimpleSerializer.prototype.deserialize=function(typeInfo,element) {
 function SOAP_NumberSerializer(xmlType) {
   SOAP_SimpleSerializer.call(this,xmlType);
 }
+
 SOAP_NumberSerializer.extend(SOAP_SimpleSerializer);
 SOAP_NumberSerializer.prototype.serialize=function(value,name,typeInfo,writer,ctx) {
   if(typeof value!="number") throw new SOAP_SerializeEx("Illegal type: "+(typeof value),"SOAP_NumberSerializer.serialize");
@@ -468,7 +469,10 @@ SOAP_NumberSerializer.prototype.serialize=function(value,name,typeInfo,writer,ct
 }
 SOAP_NumberSerializer.prototype.deserialize=function(typeInfo,element) {
   var val=parseInt(this.superclass.deserialize.call(this,typeInfo,element));
-  if(isNaN(val)) throw new SOAP_SerializeEx("Illegal value: "+val,"SOAP_NumberSerializer.deserialize");
+  if( isNaN(val) ) {
+    if ( element.getAttributeNS(XML_NS_XSI, 'nil') == 'true' ) return null;
+    else throw new SOAP_SerializeEx("Illegal value: "+val,"SOAP_NumberSerializer.deserialize");
+  }
   return val;
 }
 
@@ -487,7 +491,10 @@ SOAP_FloatSerializer.prototype.serialize=function(value,name,typeInfo,writer,ctx
 }
 SOAP_FloatSerializer.prototype.deserialize=function(typeInfo,element) {
   var val=parseFloat(this.superclass.deserialize.call(this,typeInfo,element));
-  if(isNaN(val)) throw new SOAP_SerializeEx("Illegal value: "+val,"SOAP_FloatSerializer.deserialize");
+  if( isNaN(val) ) {
+    if ( element.getAttributeNS(XML_NS_XSI, 'nil') == 'true' ) return null;
+    else throw new SOAP_SerializeEx("Illegal value: "+val,"SOAP_FloatSerializer.deserialize");
+  }
   return val;
 }
 
@@ -523,6 +530,7 @@ SOAP_BooleanSerializer.prototype.deserialize=function(typeInfo,element) {
   var str=this.superclass.deserialize.call(this,typeInfo,element);
   if(str=='true') val=true;
   else if(str=='false') val=false;
+  else if ( element.getAttributeNS(XML_NS_XSI, 'nil') == 'true' ) val = null;
   else throw new SOAP_SerializeEx("Illegal value: "+str,"SOAP_BooleanSerializer.deserialize");
   return val;
 }
@@ -568,8 +576,8 @@ SOAP_DateTimeSerializer.prototype.serialize=function(value,name,typeInfo,writer,
   this.superclass.serialize(date,name,typeInfo,writer,ctx);
 }
 SOAP_DateTimeSerializer.prototype.deserialize=function(typeInfo,element) {
-  var val=this.parseDate(this.superclass.deserialize.call(this,typeInfo,element));
-  return val;
+  if ( element.getAttributeNS(XML_NS_XSI, 'nil') == 'true' ) return null;
+  else return this.parseDate(this.superclass.deserialize.call(this,typeInfo,element));
 }
 
 //*********************************
