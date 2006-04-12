@@ -1,3 +1,9 @@
+2006-04-12  Jens Lautenbacher  <jtl@schlund.de>
+	(merged from trunk)
+	* moved example => projects to finally come in line with what
+	everything else uses....
+	* startTomcat.sh, skel/build-skel.xml, prj.el, build.xml: changed accordingly
+
 2006-04-11  Jens Lautenbacher  <jtl@schlund.de>
 
 	* src/de/schlund/pfixxml/PfixServletRequest.java
