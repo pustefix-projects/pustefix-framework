@@ -1,0 +1,9 @@
+The configuration migration tool helps you during the migration of a 
+pre Pustefix 0.9.0 environment to a current version of Pustefix.
+
+You can build the migration tool by running "ant" within the migration 
+tool directory.
+
+After you have built the tool, change to the root path ouf the 
+Pustefix environment you want to migrate and run the shell-script 
+do_migration.sh included in the "dist" directory of the migration tool.

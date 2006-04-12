@@ -1,0 +1,49 @@
+<?xml version="1.0"?>
+<!-- ====================================================================== 
+     12.04.2006 18:49:51                                                        
+
+     Migration tool for Pustefix projects
+     
+     Converts configuration files from before 0.9.0 release style to
+     the new style                                                          
+     ====================================================================== -->
+<project name="migration-tool" default="default">
+    <description>
+        Converts configuration files
+    </description>
+
+    <target name="default" depends="dist">
+    </target>
+
+    <target name="dist" depends="compile">
+        <mkdir dir="dist"/>   
+        <copy file="src/do_migration.sh" todir="dist"/>
+        <chmod perm="ugo+x" file="dist/do_migration.sh"/>
+        <copy todir="dist">
+            <fileset dir="../../lib">
+                <include name="saxon*.jar"/>
+            </fileset>
+        </copy>
+        <jar destfile="dist/migration-tool.jar">
+            <fileset dir="build"/>
+            <fileset dir=".">
+                <include name="xsl/**.*"/>
+            </fileset>
+            <manifest>
+                <attribute name="Main-Class" value="de.schlund.util.configmigration.MigrationTool"/>
+            </manifest>
+        </jar>
+    </target>
+	
+	<target name="compile">
+        <mkdir dir="build"/>
+        <javac srcdir="src" destdir="build"/>
+	</target>
+ 
+    <target name="clean">
+        <delete dir="build"/>
+        <delete dir="dist"/>
+    </target>
+
+</project>
+
