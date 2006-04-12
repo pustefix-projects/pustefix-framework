@@ -1,3 +1,9 @@
+2006-04-12  Sebastian Marsching <sebastian.marsching@1und1.de>
+
+	* stuff/migration-tool/*
+	Adding tool that supports user during the migration from the old configuration
+	file format to the new one
+
 2006-04-11  Jens Lautenbacher  <jtl@schlund.de>
 
 	* src/de/schlund/pfixxml/PfixServletRequest.java
