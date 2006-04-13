@@ -1,6 +1,9 @@
 #!/bin/sh
 
+docroot=$PWD/projects/
+
 mylogjar=`ls lib/log*.jar;`
 mysaxonjar=`ls lib/saxon*.jar;`
+mypfixcore=`ls lib/pfixcore*.jar;`
 
-java -Dnewprjprops="$PWD/example/common/conf/newproject.prop" -classpath $mylogjar:$mysaxonjar:build de.schlund.pfixcore.util.basicapp.basics.InitNewPfixProject
+java -Dpustefix.docroot=${docroot} -classpath $mypfixcore:$mylogjar:$mysaxonjar:build de.schlund.pfixcore.util.basicapp.basics.InitNewPfixProject
