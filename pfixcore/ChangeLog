@@ -8,6 +8,9 @@
 	reuse of navigation possible at last. This hasn't been working for
 	a long time it seems.
 
+	* src/de/schlund/pfixcore/workflow/Navigation.java: also remember
+	a mapping from pagename to navigation element. 
+
 	(merged from trunk)
 	* src/de/schlund/pfixxml/ContextXMLServer.java: cosmetics
 
