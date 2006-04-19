@@ -382,7 +382,7 @@ public class Context implements AppContext {
     }
 
     public void invalidateNavigation() {
-        navigation_visible = new HashMap();
+        navigation_visible = null;
     }
 
 
@@ -681,7 +681,18 @@ public class Context implements AppContext {
         pe.start();
         boolean retval = state.isAccessible(this, currentpservreq);
         pe.save();
-        
+
+        if (navigation != null &&  navigation_visible != null) {
+            NavigationElement navi_elem = navigation.getNavigationElementForPageRequest(page);
+            if (navi_elem != null) {
+                if (retval) {
+                    navigation_visible.put(navi_elem, 1);
+                } else {
+                    navigation_visible.put(navi_elem, 0);
+                }
+            }
+        }
+
         currentpagerequest = saved;
         return retval;
     }
@@ -960,32 +971,23 @@ public class Context implements AppContext {
         Element  element = doc.createElement("navigation");
         doc.getDocumentElement().appendChild(element);
 
-        StringBuffer debug_buffer = new StringBuffer();
-        StringBuffer warn_buffer  = new StringBuffer();
-
-        if (autoinvalidate_navi) {
+        if (autoinvalidate_navi || navigation_visible == null) {
             LOG.debug("=> Add new navigation.");
-           
+            navigation_visible = new HashMap();
             PerfEvent pe = new PerfEvent(PerfEventType.CONTEXT_CREATENAVICOMPLETE, spdoc.getPagename());
             pe.start();
-            recursePages(navi.getNavigationElements(), element, doc, null, warn_buffer, debug_buffer);
+            recursePages(navi.getNavigationElements(), element, doc, navigation_visible, true);
             pe.save();
         } else {
-            if (navigation_visible != null) {
-                LOG.debug("=> Reuse old navigation.");
-            } else {
-                LOG.debug("=> Add new navigation (has been invalidated).");
-            }
-           
+            LOG.debug("=> Reuse old navigation.");
             PerfEvent pe = new PerfEvent(PerfEventType.CONTEXT_CREATENAVIREUSE, spdoc.getPagename());
             pe.start();
-            recursePages(navi.getNavigationElements(), element, doc, navigation_visible, warn_buffer, debug_buffer);
+            recursePages(navi.getNavigationElements(), element, doc, navigation_visible, false);
             pe.save();
         }
     }
 
-    private void recursePages(NavigationElement[] pages, Element parent,  Document doc,
-                              HashMap vis_map, StringBuffer warn_buffer, StringBuffer debug_buffer) throws Exception {
+    private void recursePages(NavigationElement[] pages, Element parent,  Document doc, HashMap vis_map, boolean create_new) throws Exception {
         for (int i = 0; i < pages.length; i++) {
             NavigationElement page     = pages[i];
             String            pagename = page.getName();
@@ -997,10 +999,10 @@ public class Context implements AppContext {
             pageelem.setAttribute("handler", page.getHandler());
 
             Integer page_vis = null;
-            if (vis_map != null) {
+            if (!create_new) {
                 page_vis = (Integer) vis_map.get(page);
             }
-
+            
             if (page_vis != null) {
                 int visible = page_vis.intValue();
                 pageelem.setAttribute("visible", "" + visible);
@@ -1017,14 +1019,10 @@ public class Context implements AppContext {
                 if (preqprops.pageRequestIsDefined(pagereq)) {
                     if (checkIsAccessible(pagereq,PageRequestStatus.NAVIGATION)) {
                         pageelem.setAttribute("visible", "1");
-                        if (vis_map != null) {
-                            vis_map.put(page, new Integer(1));
-                        }
+                        vis_map.put(page, new Integer(1));
                     } else {
                         pageelem.setAttribute("visible", "0");
-                        if (vis_map != null) {
-                            vis_map.put(page, new Integer(0));
-                        }
+                        vis_map.put(page, new Integer(0));
                     }
                     if (visited_pages.contains(pagename)) {
                         pageelem.setAttribute("visited", "1");
@@ -1034,14 +1032,12 @@ public class Context implements AppContext {
                 } else {
                     pageelem.setAttribute("visible", "-1");
                     pageelem.setAttribute("visited", "-1");
-                    if (vis_map != null) {
-                        vis_map.put(page, new Integer(-1));
-                    }
+                    vis_map.put(page, new Integer(-1));
                 }
             }
 
             if (page.hasChildren()) {
-                recursePages(page.getChildren(), pageelem, doc, vis_map, warn_buffer, debug_buffer);
+                recursePages(page.getChildren(), pageelem, doc, vis_map, create_new);
             }
         }
     }
