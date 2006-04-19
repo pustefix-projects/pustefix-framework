@@ -40,8 +40,7 @@ import de.schlund.pfixcore.scriptedflow.vm.VirtualHttpServletRequest;
  */
 
 public class ContextXMLServer extends AbstractXMLServer {
-    private Category CAT = Category.getInstance(ContextXMLServer.class
-            .getName());
+    private Category CAT = Category.getInstance(ContextXMLServer.class.getName());
 
     public final static String CONTEXT_SUFFIX = "__CONTEXT__";
 
@@ -61,8 +60,7 @@ public class ContextXMLServer extends AbstractXMLServer {
         super.init(config);
         contextclassnname = getProperties().getProperty(CONTEXT_CLASS);
         if (contextclassnname == null) {
-            throw (new ServletException(
-                    "Need name for context class from context.class property"));
+            throw (new ServletException("Need name for context class from context.class property"));
         }
     }
 
@@ -70,8 +68,7 @@ public class ContextXMLServer extends AbstractXMLServer {
         if (super.needsSSL(preq)) {
             return true;
         } else {
-            if (preq.getSession(false) != null
-                    && preq.isRequestedSessionIdValid()) {
+            if (preq.getSession(false) != null && preq.isRequestedSessionIdValid()) {
                 String contextname = makeContextName();
                 HttpSession session = preq.getSession(false);
                 String already_ssl = (String) session.getAttribute(ALREADY_SSL);
@@ -79,8 +76,7 @@ public class ContextXMLServer extends AbstractXMLServer {
                     return true;
                 } else {
                     try {
-                        AppContext context = (AppContext) session
-                                .getAttribute(contextname);
+                        AppContext context = (AppContext) session.getAttribute(contextname);
                         if (context != null) {
                             boolean retval = context.currentPageNeedsSSL(preq);
                             if (retval == true) {
@@ -105,12 +101,10 @@ public class ContextXMLServer extends AbstractXMLServer {
         return true;
     }
 
-    protected boolean tryReloadProperties(PfixServletRequest preq)
-            throws ServletException {
+    protected boolean tryReloadProperties(PfixServletRequest preq) throws ServletException {
         if (super.tryReloadProperties(preq)) {
             //Reset PropertyObjects
-            PropertyObjectManager.getInstance().resetPropertyObjects(
-                    getProperties());
+            PropertyObjectManager.getInstance().resetPropertyObjects(getProperties());
             //Reset Contexts
             synchronized (contextMap) {
                 //Set name of Context class, compare with old name
@@ -124,8 +118,7 @@ public class ContextXMLServer extends AbstractXMLServer {
                             AppContext appCon = (AppContext) it.next();
                             appCon.reset();
                         } catch (Exception e) {
-                            throw new ServletException(
-                                    "Error while resetting context.");
+                            throw new ServletException("Error while resetting context.");
                         }
                     }
                 } else {
@@ -144,36 +137,32 @@ public class ContextXMLServer extends AbstractXMLServer {
         SPDocument spdoc;
 
         ScriptedFlowInfo info = getScriptedFlowInfo(preq);
-        if (preq.getRequestParam(PARAM_SCRIPTEDFLOW) != null
-                && preq.getRequestParam(PARAM_SCRIPTEDFLOW).getValue() != null) {
-            String scriptedFlowName = preq.getRequestParam(PARAM_SCRIPTEDFLOW)
-                    .getValue();
-
+        if (preq.getRequestParam(PARAM_SCRIPTEDFLOW) != null && preq.getRequestParam(PARAM_SCRIPTEDFLOW).getValue() != null) {
+            String scriptedFlowName = preq.getRequestParam(PARAM_SCRIPTEDFLOW).getValue();
+            
             // Do a virtual request without any request parameters
             // to get an initial SPDocument
-            PfixServletRequest vpreq = new PfixServletRequest(
-                    VirtualHttpServletRequest.getVoidRequest(preq.getRequest()),
-                    getProperties());
+            PfixServletRequest vpreq = new PfixServletRequest(VirtualHttpServletRequest.getVoidRequest(preq.getRequest()),
+                                                              getProperties());
             spdoc = context.handleRequest(vpreq);
-
+            
             // Reset current scripted flow state
             info.reset();
-
+            
             // Lookup script name
             Script script = getScriptedFlowByName(scriptedFlowName);
-
+            
             if (script != null) {
                 // Remember running script
                 info.isScriptRunning(true);
-
+                
                 // Get parameters for scripted flow:
                 // They have the form __scriptedflow.<name>=<value>
                 String[] paramNames = preq.getRequestParamNames();
                 for (int i = 0; i < paramNames.length; i++) {
                     if (!paramNames[i].equals(PARAM_SCRIPTEDFLOW)) {
                         String paramName = paramNames[i];
-                        String paramValue = preq.getRequestParam(paramName)
-                                .getValue();
+                        String paramValue = preq.getRequestParam(paramName).getValue();
                         info.addParam(paramName, paramValue);
                     }
                 }
@@ -192,7 +181,7 @@ public class ContextXMLServer extends AbstractXMLServer {
             // First handle user request, then use result document
             // as base for further processing
             spdoc = context.handleRequest(preq);
-
+            
             // Create VM and run script
             ScriptVM vm = new ScriptVM();
             vm.loadVMState(info.getState());
@@ -207,15 +196,13 @@ public class ContextXMLServer extends AbstractXMLServer {
             // handle as usual
             spdoc = context.handleRequest(preq);
         }
-
+        
         return spdoc;
     }
 
-    private Script getScriptedFlowByName(String scriptedFlowName)
-            throws Exception {
-        ScriptedFlowConfig config = (ScriptedFlowConfig) PropertyObjectManager
-                .getInstance().getPropertyObject(getProperties(),
-                        ScriptedFlowConfig.class);
+    private Script getScriptedFlowByName(String scriptedFlowName) throws Exception {
+        ScriptedFlowConfig config = (ScriptedFlowConfig) PropertyObjectManager.getInstance().
+            getPropertyObject(getProperties(), ScriptedFlowConfig.class);
         return config.getScript(scriptedFlowName);
     }
 
@@ -223,8 +210,7 @@ public class ContextXMLServer extends AbstractXMLServer {
         // Context is already loaded at this time, so we cann assume
         // that there is a valid session
         String name = servletname + SCRIPTEDFLOW_SUFFIX;
-        ScriptedFlowInfo info = (ScriptedFlowInfo) preq.getSession(false)
-                .getAttribute(name);
+        ScriptedFlowInfo info = (ScriptedFlowInfo) preq.getSession(false).getAttribute(name);
         if (info == null) {
             info = new ScriptedFlowInfo();
             preq.getSession(false).setAttribute(name, info);
@@ -240,8 +226,7 @@ public class ContextXMLServer extends AbstractXMLServer {
         }
         AppContext context = (AppContext) session.getAttribute(contextname);
         // Create new context and add it to contextMap, if context is null or contextClass has changed
-        if ((context == null)
-                || (!contextclassnname.equals(context.getClass().getName()))) {
+        if ((context == null) || (!contextclassnname.equals(context.getClass().getName()))) {
             context = createContext();
             session.setAttribute(contextname, context);
             synchronized (contextMap) {
@@ -254,10 +239,9 @@ public class ContextXMLServer extends AbstractXMLServer {
     private String makeContextName() {
         return servletname + CONTEXT_SUFFIX;
     }
-
+    
     private AppContext createContext() throws Exception {
-        AppContext context = (AppContext) Class.forName(contextclassnname)
-                .newInstance();
+        AppContext context = (AppContext) Class.forName(contextclassnname).newInstance();
         context.init(getProperties(), makeContextName());
         return context;
     }

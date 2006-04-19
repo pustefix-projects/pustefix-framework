@@ -53,7 +53,7 @@ Prerequisites:
           should have a "* entry" for your machine in DNS (This means that 
           a lookup to NAME.HOSTNAME.DOMAIN should resolve to HOSTNAME.DOMAIN no
           matter what NAME is). If you don't have DNS configured like this you can 
-          still supply the names (if you use the skelelton distribution) 
+          still supply the names (if you use the skeleton distribution) 
                  "cmsskel.HOSTNAME.DOMAIN" and "admskel.HOSTNAME.DOMAIN" 
           or, in case you work with the cvs checkout
                  "cmscore.HOSTNAME.DOMAIN" and "admcore.HOSTNAME.DOMAIN"

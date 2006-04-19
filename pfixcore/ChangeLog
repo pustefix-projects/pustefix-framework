@@ -1,8 +1,21 @@
+2006-04-19  Jens Lautenbacher  <jtl@schlund.de>
+	(merged from trunk)
+	* src/de/schlund/pfixxml/ContextXMLServer.java: cosmetics
+
+	* src/de/schlund/pfixcore/workflow/app/StaticState.java (StaticState::getDocument): 
+	* src/de/schlund/pfixcore/workflow/app/DefaultIWrapperState.java (DefaultIWrapperState::getDocument): 
+	implemented to set autoinvalidate_navi to false when
+	isDirectTrigger returns true (this is to share the navigation as
+	long as there has (for sure) no data been submitted that may have
+	changed the data model) 
+
 2006-04-12  Jens Lautenbacher  <jtl@schlund.de>
 	(merged from trunk)
 	* moved example => projects to finally come in line with what
 	everything else uses....
 	* startTomcat.sh, skel/build-skel.xml, prj.el, build.xml: changed accordingly
+
+2006-04-12  Sebastian Marsching <sebastian.marsching@1und1.de>
 
 2006-04-11  Jens Lautenbacher  <jtl@schlund.de>
 

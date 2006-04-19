@@ -78,9 +78,8 @@ public class DefaultIWrapperState extends StateImpl {
         
         CAT.debug("[[[[[ " + context.getCurrentPageRequest().getName() + " ]]]]]"); 
 
-        PerfEvent pe = new PerfEvent(PerfEventType.PAGE_INITIWRAPPERS,
-                                     context.getCurrentPageRequest().toString());
-        
+        PerfEvent pe = new PerfEvent(PerfEventType.PAGE_INITIWRAPPERS, context.getCurrentPageRequest().toString());
+       
         pe.start();
         container.initIWrappers(context, preq, resdoc);
         pe.save();
@@ -88,8 +87,7 @@ public class DefaultIWrapperState extends StateImpl {
         if (isSubmitTrigger(context, preq)) {
             CAT.debug(">>> In SubmitHandling...");
             
-            pe = new PerfEvent(PerfEventType.PAGE_HANDLESUBMITTEDDATA,
-                               context.getCurrentPageRequest().toString());
+            pe = new PerfEvent(PerfEventType.PAGE_HANDLESUBMITTEDDATA, context.getCurrentPageRequest().toString());
             pe.start();
             container.handleSubmittedData();
             pe.save();
@@ -105,8 +103,7 @@ public class DefaultIWrapperState extends StateImpl {
                     CAT.debug("... Container says he wants to stay on this page and no jumptopage is set:");
                     CAT.debug("    => retrieving current status.");
                     
-                    pe = new PerfEvent(PerfEventType.PAGE_RETRIEVECURRENTSTATUS, 
-                                       context.getCurrentPageRequest().toString());
+                    pe = new PerfEvent(PerfEventType.PAGE_RETRIEVECURRENTSTATUS, context.getCurrentPageRequest().toString());
                     pe.start();
                     container.retrieveCurrentStatus();
                     pe.save();
@@ -118,8 +115,7 @@ public class DefaultIWrapperState extends StateImpl {
                     if (!canContinue(context)) {
                         CAT.debug(">>> We can't continue:");
                         CAT.debug("    => retrieving current status and stay here...");
-                        pe = new PerfEvent(PerfEventType.PAGE_RETRIEVECURRENTSTATUS, 
-                                           context.getCurrentPageRequest().toString());
+                        pe = new PerfEvent(PerfEventType.PAGE_RETRIEVECURRENTSTATUS, context.getCurrentPageRequest().toString());
                         
                         pe.start();
                         container.retrieveCurrentStatus();
@@ -133,16 +129,18 @@ public class DefaultIWrapperState extends StateImpl {
         } else if (isDirectTrigger(context, preq) || context.finalPageIsRunning() || context.flowIsRunning()) {
             CAT.debug(">>> Retrieving current status...");
             
-            pe = new PerfEvent(PerfEventType.PAGE_RETRIEVECURRENTSTATUS, 
-                               context.getCurrentPageRequest().toString());
+            pe = new PerfEvent(PerfEventType.PAGE_RETRIEVECURRENTSTATUS, context.getCurrentPageRequest().toString());
             pe.start();
             container.retrieveCurrentStatus();
             pe.save();
             if (isDirectTrigger(context,preq)) {
+                context.setAutoinvalidateNavigationForThisRequestOnly(false);
                 CAT.debug("    => REASON: DirectTrigger");
             } else if (context.finalPageIsRunning()) {
+                // nothing
                 CAT.debug("    => REASON: FinalPage");
             } else {
+                // nothing, too
                 CAT.debug("    => REASON: WorkFlow");
             }
             rfinal.onRetrieveStatus(container);
@@ -231,8 +229,7 @@ public class DefaultIWrapperState extends StateImpl {
     protected IHandlerContainer getIHandlerContainer(Context context) throws Exception {
         Properties props               = context.getProperties();
         PropertyObjectManager pom      = PropertyObjectManager.getInstance();
-        IHandlerContainerManager  ihcm = (IHandlerContainerManager)
-            PropertyObjectManager.getInstance().getPropertyObject(props, IHDL_CONT_MANAGER);
+        IHandlerContainerManager  ihcm = (IHandlerContainerManager) PropertyObjectManager.getInstance().getPropertyObject(props, IHDL_CONT_MANAGER);
         return ihcm.getIHandlerContainer(context);
     }
 
