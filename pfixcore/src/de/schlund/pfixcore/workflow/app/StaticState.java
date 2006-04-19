@@ -38,7 +38,7 @@ import de.schlund.pfixxml.ResultDocument;
  */
 
 public class StaticState extends StateImpl {
-    private static final String CONTINUEONSUBMIT  = "state.continueonsubmit";
+    // private static final String CONTINUEONSUBMIT  = "state.continueonsubmit";
     private static final String NEEDSDATA         = "state.needsdata";
     
     /**
@@ -48,15 +48,11 @@ public class StaticState extends StateImpl {
         ResultDocument resdoc = createDefaultResultDocument(context);
         Properties     props  = context.getPropertiesForCurrentPageRequest();
 
-        String autocontinue = props.getProperty(CONTINUEONSUBMIT);
-        if (autocontinue != null && autocontinue.equals("true") && isSubmitTrigger(context, preq) &&
-            DefaultIWrapperState.canContinue(context)) {
-            // We continue, despite the fact that this is a StaticState
-            return resdoc;
-        } else {
-            context.prohibitContinue();
-            return resdoc;
+        if (isDirectTrigger(context, preq)) {
+            context.setAutoinvalidateNavigationForThisRequestOnly(false);
         }
+        context.prohibitContinue();
+        return resdoc;
     }
 
     public boolean needsData(Context context, PfixServletRequest preq) throws Exception {

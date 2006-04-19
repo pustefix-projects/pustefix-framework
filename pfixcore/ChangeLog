@@ -1,3 +1,14 @@
+2006-04-19  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixxml/ContextXMLServer.java: cosmetics
+
+	* src/de/schlund/pfixcore/workflow/app/StaticState.java (StaticState::getDocument): 
+	* src/de/schlund/pfixcore/workflow/app/DefaultIWrapperState.java (DefaultIWrapperState::getDocument): 
+	implemented to set autoinvalidate_navi to false when
+	isDirectTrigger returns true (this is to share the navigation as
+	long as there has (for sure) no data been submitted that may have
+	changed the data model) 
+
 2006-04-12  Sebastian Marsching <sebastian.marsching@1und1.de>
 
 	* stuff/migration-tool/*
