@@ -29,11 +29,13 @@ import org.w3c.dom.*;
 public class Navigation {
     private Category CAT = Category.getInstance(Navigation.class.getName());
 
-    private NavigationElement pageroot = new NavigationElement("__NONE__", "__NONE__");
+    private NavigationElement                   pageroot = new NavigationElement("__NONE__", "__NONE__");
+    private Map<String, NavigationElement> pagetonavi;
     
     public Navigation(File navifile) throws Exception {
-        Document        navitree = Xml.parseMutable(navifile);
-        List            nl       = XPath.select(navitree, "/make/navigation/page");
+        Document navitree = Xml.parseMutable(navifile);
+        List     nl       = XPath.select(navitree, "/make/navigation/page");
+        pagetonavi        = new HashMap<String, NavigationElement>();
         recursePagetree(pageroot, nl);
     }
 
@@ -44,6 +46,7 @@ public class Navigation {
             String  handler = page.getAttribute("handler");
             
             NavigationElement elem = new NavigationElement(name, handler);
+            pagetonavi.put(name, elem);
             parent.addChild(elem);
             List tmp = XPath.select(page, "./page");
             if (tmp.size() > 0) {
@@ -54,6 +57,10 @@ public class Navigation {
     
     public NavigationElement[] getNavigationElements() {
         return pageroot.getChildren();
+    }
+
+    public NavigationElement getNavigationElementForPageRequest(PageRequest page) {
+        return pagetonavi.get(page.getRootName());
     }
 
     public class NavigationElement {

@@ -1,5 +1,16 @@
 2006-04-19  Jens Lautenbacher  <jtl@schlund.de>
 
+	* src/de/schlund/pfixcore/workflow/Context.java
+	(Context::checkIsAccessible): always try to update the navigation
+	here, too (in case it will be reused)
+
+	(Context::addNavigation, Context::recursePages): bugfixes to make
+	reuse of navigation possible at last. This hasn't been working for
+	a long time it seems.
+
+	* src/de/schlund/pfixcore/workflow/Navigation.java: also remember
+	a mapping from pagename to navigation element. 
+
 	* src/de/schlund/pfixxml/ContextXMLServer.java: cosmetics
 
 	* src/de/schlund/pfixcore/workflow/app/StaticState.java (StaticState::getDocument): 
