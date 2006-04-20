@@ -470,8 +470,9 @@ SOAP_NumberSerializer.prototype.serialize=function(value,name,typeInfo,writer,ct
 SOAP_NumberSerializer.prototype.deserialize=function(typeInfo,element) {
   var val=parseInt(this.superclass.deserialize.call(this,typeInfo,element));
   if( isNaN(val) ) {
-    if ( element.getAttributeNS(XML_NS_XSI, 'nil') == 'true' ) return null;
-    else throw new SOAP_SerializeEx("Illegal value: "+val,"SOAP_NumberSerializer.deserialize");
+    //if ( element.getAttributeNS(XML_NS_XSI, 'nil') == 'true' ) return null;
+    //else 
+    throw new SOAP_SerializeEx("Illegal value: "+val,"SOAP_NumberSerializer.deserialize");
   }
   return val;
 }
@@ -492,8 +493,9 @@ SOAP_FloatSerializer.prototype.serialize=function(value,name,typeInfo,writer,ctx
 SOAP_FloatSerializer.prototype.deserialize=function(typeInfo,element) {
   var val=parseFloat(this.superclass.deserialize.call(this,typeInfo,element));
   if( isNaN(val) ) {
-    if ( element.getAttributeNS(XML_NS_XSI, 'nil') == 'true' ) return null;
-    else throw new SOAP_SerializeEx("Illegal value: "+val,"SOAP_FloatSerializer.deserialize");
+    //if ( element.getAttributeNS(XML_NS_XSI, 'nil') == 'true' ) return null;
+    //else 
+    throw new SOAP_SerializeEx("Illegal value: "+val,"SOAP_FloatSerializer.deserialize");
   }
   return val;
 }
@@ -530,7 +532,7 @@ SOAP_BooleanSerializer.prototype.deserialize=function(typeInfo,element) {
   var str=this.superclass.deserialize.call(this,typeInfo,element);
   if(str=='true') val=true;
   else if(str=='false') val=false;
-  else if ( element.getAttributeNS(XML_NS_XSI, 'nil') == 'true' ) val = null;
+  //else if ( element.getAttributeNS(XML_NS_XSI, 'nil') == 'true' ) val = null;
   else throw new SOAP_SerializeEx("Illegal value: "+str,"SOAP_BooleanSerializer.deserialize");
   return val;
 }
@@ -576,8 +578,9 @@ SOAP_DateTimeSerializer.prototype.serialize=function(value,name,typeInfo,writer,
   this.superclass.serialize(date,name,typeInfo,writer,ctx);
 }
 SOAP_DateTimeSerializer.prototype.deserialize=function(typeInfo,element) {
-  if ( element.getAttributeNS(XML_NS_XSI, 'nil') == 'true' ) return null;
-  else return this.parseDate(this.superclass.deserialize.call(this,typeInfo,element));
+  //if ( element.getAttributeNS(XML_NS_XSI, 'nil') == 'true' ) return null;
+  //else 
+  return this.parseDate(this.superclass.deserialize.call(this,typeInfo,element));
 }
 
 //*********************************
