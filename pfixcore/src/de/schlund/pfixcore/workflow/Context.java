@@ -19,19 +19,8 @@
 
 package de.schlund.pfixcore.workflow;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Properties;
-import java.util.TreeMap;
 
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Category;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 
 import de.schlund.pfixcore.generator.StatusCodeInfo;
 import de.schlund.pfixcore.util.PropertiesUtils;
@@ -51,6 +40,19 @@ import de.schlund.pfixxml.config.PageRequestConfig;
 import de.schlund.pfixxml.perflogging.PerfEvent;
 import de.schlund.pfixxml.perflogging.PerfEventType;
 import de.schlund.util.statuscodes.StatusCode;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Properties;
+import java.util.Set;
+import java.util.TreeMap;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletResponse;
+import org.apache.log4j.Category;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import java.util.Map;
 
 /**
  * This class is the corner piece of our workflow concept.
