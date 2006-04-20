@@ -1,3 +1,14 @@
+2006-04-20  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixcore/workflow/app/StaticState.java (StaticState::getDocument): 
+	* src/de/schlund/pfixcore/workflow/app/DefaultIWrapperState.java (DefaultIWrapperState::getDocument): 
+	only try to reuse navigation when direct trigger is not via jumpToPage 
+
+	* src/de/schlund/pfixcore/workflow/app/DefaultAuthIWrapperState.java (DefaultAuthIWrapperState::getDocument): 
+	always invalidate the navigation after trying to handle auth data
+	
+	* src/de/schlund/pfixcore/workflow/Context.java: fix imports
+
 2006-04-19  Jens Lautenbacher  <jtl@schlund.de>
 
 	* src/de/schlund/pfixcore/workflow/Context.java
