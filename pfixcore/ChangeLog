@@ -1,3 +1,18 @@
+2006-04-21  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixcore/generator/IWrapperParam.java
+	(IWrapperParam::setValue) new method, used internally and for
+	usage when testig.
+	
+	(IWrapperParam::setStringValue(RequestParam[])): removed. handled
+	(IWrapperParam::setSimpleObjectValue(Object[])): renamed to 
+	IWrapperParam::setStringValue(Object[]). This now also handles the
+	RequestParam case.
+
+	* projects/core/build/iwrapper.xsl: changed accordingly. Create
+	also a setStringVal<NAME> method for the object array case; mark
+	setVal<NAME> as deprecated.
+
 2006-04-20  Jens Lautenbacher  <jtl@schlund.de>
 
 	* src/de/schlund/pfixcore/workflow/app/StaticState.java (StaticState::getDocument): 
