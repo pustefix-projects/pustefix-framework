@@ -61,6 +61,10 @@ public class IWrapperParam implements IWrapperParamCheck, IWrapperParamDefinitio
         this.defaultval = defaultval;
     }
 
+    public void setValue(Object[] value) {
+        this.value = value;
+    }
+    
     public String getOccurance() {
         return optional ? TYPE_OPTIONAL : TYPE_MANDATORY;
     }
@@ -128,31 +132,24 @@ public class IWrapperParam implements IWrapperParamCheck, IWrapperParamDefinitio
 
     public String[] getStringValue() { return stringval; }
 
+    public void setStringValue(Object[] values) {
+        if (values != null) {
+            stringval = new String[values.length];
+            for (int i = 0; i < values.length; i++) {
+                if (values[i] instanceof RequestParam) {
+                    stringval[i] = ((RequestParam) values[i]).getValue();
+                } else {
+                    stringval[i] = values[i].toString();
+                }
+            }
+        } else {
+            stringval = null;
+        }
+    }
+
+    // This method is just a little optimization for the case of a String argument.
     public void setStringValue(String[] v) { stringval = v; }
-
-    public void setSimpleObjectValue(Object[] values) {
-        if (values != null) {
-            stringval = new String[values.length];
-            for (int i = 0; i < values.length; i++) {
-                stringval[i] = values[i].toString();
-            }
-        } else {
-            stringval = null;
-        }
-    }
     
-    private void setStringValue(RequestParam[] values) {
-        if (values != null) {
-            stringval = new String[values.length];
-            for (int i = 0; i < values.length; i++) {
-                stringval[i] = values[i].getValue();
-            }
-
-        } else {
-            stringval = null;
-        }
-    }
-
     public void initValueFromRequest(String prefix, RequestData reqdata) {
         String            thename = prefix + "." + name;
         RequestParam[]    rparamv = reqdata.getParameters(thename);
@@ -248,12 +245,12 @@ public class IWrapperParam implements IWrapperParamCheck, IWrapperParamDefinitio
                         }
                     }
                     if (!errorHappened()) {
-                        value = tmp;
+                        setValue(tmp);
                     }
                 }
             }
         } else {
-            value = null;
+            setValue(null);
         }
     }
 
