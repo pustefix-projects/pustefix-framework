@@ -50,8 +50,7 @@ public abstract class ServletManagerCompat extends ServletManager {
             try {
                 XMLPropertiesUtil.loadPropertiesFromXMLFile(configFile, props);
             } catch (SAXException e) {
-                throw new ServletException("Parsing error while reading configuration file "
-                                           + configFile.getAbsolutePath());
+                throw new ServletException("Parsing error while reading configuration file " + configFile.getAbsolutePath());
             } catch (IOException e) {
                 throw new ServletException("Could not read configuration file " + configFile.getAbsolutePath());
             }
@@ -59,8 +58,7 @@ public abstract class ServletManagerCompat extends ServletManager {
         this.config = new ServletManagerConfig();
         this.config.setProperties(props);
         String needs_ssl = props.getProperty("servlet.needsSSL");
-        if (needs_ssl != null
-            && (needs_ssl.equals("true") || needs_ssl.equals("yes") || needs_ssl.equals("1"))) {
+        if (needs_ssl != null && (needs_ssl.equals("true") || needs_ssl.equals("yes") || needs_ssl.equals("1"))) {
             this.config.setSSL(true);
         } else {
             this.config.setSSL(false);

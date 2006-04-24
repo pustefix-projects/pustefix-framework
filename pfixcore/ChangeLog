@@ -1,7 +1,7 @@
 2006-04-24  Niels Schelbach <niels@schlund.de>
+
 	* src/de/schlund/pfixxml/ServletManagerCompat.java:
 	Fixed reloading in case of no config file provided.
-
 
 2006-04-21  Jens Lautenbacher  <jtl@schlund.de>
 
