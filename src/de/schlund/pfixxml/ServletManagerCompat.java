@@ -46,13 +46,15 @@ public abstract class ServletManagerCompat extends ServletManager {
 
     protected void reloadServletConfig(File configFile, Properties globalProperties) throws ServletException {
         Properties props = new Properties(globalProperties);
-        try {
-            XMLPropertiesUtil.loadPropertiesFromXMLFile(configFile, props);
-        } catch (SAXException e) {
-            throw new ServletException("Parsing error while reading configuration file "
-                                       + configFile.getAbsolutePath());
-        } catch (IOException e) {
-            throw new ServletException("Could not read configuration file " + configFile.getAbsolutePath());
+        if (configFile != null) {
+            try {
+                XMLPropertiesUtil.loadPropertiesFromXMLFile(configFile, props);
+            } catch (SAXException e) {
+                throw new ServletException("Parsing error while reading configuration file "
+                                           + configFile.getAbsolutePath());
+            } catch (IOException e) {
+                throw new ServletException("Could not read configuration file " + configFile.getAbsolutePath());
+            }
         }
         this.config = new ServletManagerConfig();
         this.config.setProperties(props);
