@@ -1,3 +1,20 @@
+2006-04-25  Sebastian Marsching  <sebastian.marsching@1und1.de>
+
+	* src/de/schlund/pfixcore/util/basicapp/basics/HandleXMLFiles.java: 
+	* src/de/schlund/pfixcore/util/basicapp/helper/AppValues.java: 
+	Changed file names / suffixes for new configuration systems
+	
+	* src/de/schlund/pfixcore/util/basicapp/projectdom/PageXmlDom.java: 
+	* projects/core/prjtemplates/page.tmpl: Changed to new XML structure
+	
+	* projects/core/prjtemplates/project.tmpl: Changed path to editor servlet
+	configuration file
+	
+	* skel/newproject.sh: Marked as executable
+	
+	* skel/projects/common/conf/factory.xml: Deactivating JMX server in
+	default skeleton configuration
+
 2006-04-24  Niels Schelbach <niels@schlund.de>
 
 	* src/de/schlund/pfixxml/ServletManagerCompat.java:

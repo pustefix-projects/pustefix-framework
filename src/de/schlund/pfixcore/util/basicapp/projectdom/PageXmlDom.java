@@ -56,7 +56,7 @@ public final class PageXmlDom {
     private void preparePage() {
         String pageName = AppValues.PAGEDEFAULT + counter;
         // setting the current path
-        domDoc = XmlUtils.changeTextValues(domDoc, "lang", "Page: " + pageName, false);
+        domDoc = XmlUtils.changeTextValues(domDoc, "theme", "Page: " + pageName, false);
     }
     
     

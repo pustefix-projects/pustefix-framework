@@ -11,7 +11,7 @@
     <prop name="factory.initialize.03">de.schlund.pfixxml.exceptionhandler.ExceptionHandler</prop>
     <prop name="factory.initialize.04">de.schlund.pfixxml.targets.cachestat.SPCacheStatistic</prop>
     <prop name="factory.initialize.05">de.schlund.pfixxml.perflogging.PerfLogging</prop>
-    <prop name="factory.initialize.06">de.schlund.pfixxml.jmx.JmxServerFactory</prop>
+    <!--<prop name="factory.initialize.06">de.schlund.pfixxml.jmx.JmxServerFactory</prop>-->
     <choose>
       <when test="$mode = 'prod'">
         <!-- Load all projects on startup when in production mode-->

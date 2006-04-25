@@ -102,7 +102,7 @@ public class HandleXMLFiles {
             for (int j = 0; j < project.getServletList().size(); j++) {
                 String defServletName = ((ServletObject)(project.getServletList().
                         get(j))).getServletName();
-                wrtDoc                   = defServletName + AppValues.CFGFILESUFFIN;
+                wrtDoc                   = defServletName + AppValues.CFGFILESUFF;
                 ConfigXmlDom configDom   = new ConfigXmlDom(project, domDoc, j + 1);
                 domDoc                   = configDom.getDom();
                 writeXmlFile(domDoc, wrtDoc);
@@ -110,7 +110,7 @@ public class HandleXMLFiles {
                 
             // the depend.xml    
             } else if (tmpDoc.equals(AppValues.DEPEND_TMPL)) {
-                wrtDoc                   = AppValues.DEPENDXMLIN;
+                wrtDoc                   = AppValues.DEPENDXML;
                 DependXmlDom dependDom   = new DependXmlDom(project, domDoc);
                 domDoc                   = dependDom.getDom();
                 
@@ -211,11 +211,11 @@ public class HandleXMLFiles {
                 
             // and in the case that is a normal config file
               // e.g. The config.prop.in
-            } else if (fileName.endsWith(AppValues.CFGFILESUFFIN)) {
+            } else if (fileName.endsWith(AppValues.CFGFILESUFF)) {
                 file = new File(pathToConf + fileName);
                 
               // or the depend.xml.in 
-            } else if (fileName.equals(AppValues.DEPENDXMLIN)) {
+            } else if (fileName.equals(AppValues.DEPENDXML)) {
                 file = new File(pathToConf + fileName);
                 
             } else if (fileName.startsWith(AppValues.PAGEDEFPREFIX)) {
