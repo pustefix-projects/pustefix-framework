@@ -47,12 +47,6 @@ public final class AppValues {
     public static final String XMLCONSTANT       = "/xml/";
     /** The htdocs folder */
     public static final String HTDOCSFOLDER    = "/htdocs";
-    /** String for config.prop.in */
-    public static final String CONFIGPROPIN    = "config.prop.in";
-    /** String for config.prop */
-    public static final String CONFIGPROP      = "config.prop";
-    /** String for depend.xml.in */
-    public static final String DEPENDXMLIN     = "depend.xml.in";
     /** String for depend.xml.in */
     public static final String DEPENDXML       = "depend.xml";
     /** String for the content.xml (the basic page) */
@@ -76,9 +70,7 @@ public final class AppValues {
     /** suffix for docroot tag */
     public static final String DOCROOTSUFFIX  = "cus";
     /** file suffix for prop */
-    public static final String CFGFILESUFF    = ".prop";
-    /** file suffix for prop.in */
-    public static final String CFGFILESUFFIN = ".prop.in";
+    public static final String CFGFILESUFF    = ".conf.xml";
     /** default name for pages */
     public static final String PAGEDEFAULT   = "home";
     /** prefix for pages to be displayes */
