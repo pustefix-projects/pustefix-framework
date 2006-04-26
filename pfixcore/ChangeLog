@@ -1,3 +1,9 @@
+2006-04-26  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixxml/AbstractXMLServer.java
+	(AbstractXMLServer::renderNormal): This is hopefully a bit better
+	than comparing class names.....
+
 2006-04-21  Jens Lautenbacher  <jtl@schlund.de>
 
 	* src/de/schlund/pfixcore/generator/IWrapperParam.java
