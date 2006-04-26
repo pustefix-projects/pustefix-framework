@@ -1,3 +1,10 @@
+2006-04-26  Jens Lautenbacher  <jtl@schlund.de>
+
+	(merged from BEFORE_XMLCONFIG)
+	* src/de/schlund/pfixxml/AbstractXMLServer.java
+	(AbstractXMLServer::renderNormal): This is hopefully a bit better
+	than comparing class names.....
+
 2006-04-25  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
 	* src/de/schlund/pfixcore/util/basicapp/basics/HandleXMLFiles.java: 

@@ -592,7 +592,7 @@ public abstract class AbstractXMLServer extends ServletManager {
         Target    target = generator.getTarget(stylesheet);
         paramhash.put("themes", target.getThemes().getId());
         stylevalue = (Templates) target.getValue();
-        if ( stylevalue == null ) { // AH 2004-09-21 added for bugtracing 
+        if (stylevalue == null) { // AH 2004-09-21 added for bugtracing 
             LOGGER.warn("stylevalue must not be null; stylevalue=" +
                      stylevalue + "; stylesheet=" + stylesheet + "; spdoc.getPagename()=" +
                      ((spdoc != null) ? spdoc.getPagename() : "spdoc==null") + " spdoc.getXSLKey()=" +
@@ -601,16 +601,18 @@ public abstract class AbstractXMLServer extends ServletManager {
         try {
             Xslt.transform(spdoc.getDocument(), stylevalue, paramhash, new StreamResult(res.getOutputStream()));
         } catch (TransformerException e) {
-            if (e.getException() instanceof SocketException) {
+            Throwable inner = e.getException();
+            Throwable cause = null;
+            if (inner != null) {
+                cause = inner.getCause();
+            }
+            
+            if ((inner != null && inner instanceof SocketException) ||
+                (cause != null && cause instanceof SocketException)) {
                 LOGGER.warn("[Ignored TransformerException] : " + e.getMessage());
-                if (LOGGER.isInfoEnabled()) {
-                    LOGGER.info("[Ignored TransformerException]", e);
-                }
-            } else if(e.getException() != null &&
-                      e.getException().getClass().getName().equals("org.apache.catalina.connector.ClientAbortException")) {
-                LOGGER.warn("[Ignored TransformerException] : " + e.getMessage());
-            } else
+            } else {
                 throw e;
+            }
         }
     }
 
