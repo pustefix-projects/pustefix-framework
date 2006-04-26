@@ -62,7 +62,7 @@ public final class AppValues {
     /** String for metatags.xsl (first transformation xsl) */
     public static final String METATAGSXSL     = "metatags.xsl";
     /** String for default language */
-    public static final String DEFAULTLNG      = "en";
+    public static final String DEFAULTLNG      = "en_GB";
     /** String for default servlet name */
     public static final String DFSERVLETNAME   = "config";
     /** Suffix for the projects comment */
