@@ -39,7 +39,4 @@
     </tr>
   </xsl:template>
 
-  <xsl:template match="overviewinfo">
-  </xsl:template>
-
 </xsl:stylesheet>

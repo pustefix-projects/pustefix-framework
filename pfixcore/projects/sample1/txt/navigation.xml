@@ -2,22 +2,22 @@
   
 <part name="top">
   <theme name="default">
-        <center><br/>
-        <pfx:button page="home"> <pfx:visited>Home</pfx:visited> <pfx:unvisited>HOME</pfx:unvisited> </pfx:button> 
-        <pfx:button page="order"> <pfx:visited>Order</pfx:visited> <pfx:unvisited>ORDER</pfx:unvisited> </pfx:button> 
-        <pfx:button page="overview"> <pfx:visited>Overview</pfx:visited> <pfx:unvisited>OVERVIEW</pfx:unvisited> </pfx:button> 
-        </center>
-    </theme>
+    <center><br/>
+    <pfx:button page="home"> <pfx:visited>Home</pfx:visited> <pfx:unvisited>HOME</pfx:unvisited> </pfx:button> 
+    <pfx:button page="order"> <pfx:visited>Order</pfx:visited> <pfx:unvisited>ORDER</pfx:unvisited> </pfx:button> 
+    <pfx:button page="overview"> <pfx:visited>Overview</pfx:visited> <pfx:unvisited>OVERVIEW</pfx:unvisited> </pfx:button> 
+    </center>
+  </theme>
 </part>
 
 <part name="test">
   <theme name="default">
-      Included part for testing.<br/>
-      Second level nodes from the runtime tree:<br/>
-      <ixsl:for-each select="./*/node()">
-        <i><ixsl:value-of select="name()"/></i><br/>
-      </ixsl:for-each>
-    </theme>
+    Included part for testing.<br/>
+    Second level nodes from the runtime tree:<br/>
+    <ixsl:for-each select="./*/node()">
+      <i><ixsl:value-of select="name()"/></i><br/>
+    </ixsl:for-each>
+  </theme>
 </part>
     
 </include_parts>
