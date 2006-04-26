@@ -1,5 +1,7 @@
 2006-04-26  Jens Lautenbacher  <jtl@schlund.de>
 
+	* projects/core/build/iwrapper.xsl: Deprecated and Override annotations
+
 	(merged from BEFORE_XMLCONFIG)
 	* src/de/schlund/pfixxml/AbstractXMLServer.java
 	(AbstractXMLServer::renderNormal): This is hopefully a bit better
