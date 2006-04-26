@@ -72,6 +72,7 @@ public <xsl:if test="not(/iwrp:interface/iwrp:ihandler) and not(@extends)">abstr
       <xsl:with-param name="classname" select="$classname"/> 
     </xsl:call-template>
     
+    @Override
     protected synchronized void registerParams() {
         super.registerParams();
         @SuppressWarnings("unused")
@@ -217,6 +218,7 @@ public <xsl:if test="not(/iwrp:interface/iwrp:ihandler) and not(@extends)">abstr
     /**
       * @deprecated use setStringVal<xsl:value-of select="$cpname"/>(<xsl:value-of select="$ptype"/><xsl:value-of select="$freq"/> v, String index) instead.
       */
+    @Deprecated
     public void set<xsl:value-of select="$cpname"/>(<xsl:value-of select="$ptype"/><xsl:value-of select="$freq"/> v, String index) {
         setStringVal<xsl:value-of select="$cpname"/>(v, index);
     }
@@ -232,6 +234,7 @@ public <xsl:if test="not(/iwrp:interface/iwrp:ihandler) and not(@extends)">abstr
     /**
       * @deprecated use addScode<xsl:value-of select="$cpname"/>(scode, args, null, index)
       */
+    @Deprecated
     public void addSCodeWithArgs<xsl:value-of select="$cpname"/>(de.schlund.util.statuscodes.StatusCode scode, String[] args, String index) {
         gimmeIndexedParamForKey("<xsl:value-of select="$pname"/>").addSCode(scode, args, null, index);
     }
@@ -259,6 +262,7 @@ public <xsl:if test="not(/iwrp:interface/iwrp:ihandler) and not(@extends)">abstr
     /**
       * @deprecated use setStringVal<xsl:value-of select="$cpname"/>(<xsl:value-of select="$ptype"/><xsl:value-of select="$freq"/> v) instead.
       */
+    @Deprecated
     public void set<xsl:value-of select="$cpname"/>(<xsl:value-of select="$ptype"/><xsl:value-of select="$freq"/> v) {
         setStringVal<xsl:value-of select="$cpname"/>(v);
     }
@@ -274,6 +278,7 @@ public <xsl:if test="not(/iwrp:interface/iwrp:ihandler) and not(@extends)">abstr
     /**
       * @deprecated use addScode<xsl:value-of select="$cpname"/>(scode, args, null)
       */
+    @Deprecated
     public void addSCodeWithArgs<xsl:value-of select="$cpname"/>(de.schlund.util.statuscodes.StatusCode scode, String[] args) {
         addSCode(gimmeParamForKey("<xsl:value-of select="$pname"/>"), scode, args, null);
     }
@@ -336,6 +341,7 @@ public <xsl:if test="not(/iwrp:interface/iwrp:ihandler) and not(@extends)">abstr
 
   <xsl:template name="generatetostring">
     <xsl:param name="classname"/>
+    @Override
     public String toString() {
         StringBuffer sb = new StringBuffer(255);
         sb.append("\n*** All wrapper-data for <xsl:value-of select="$classname"/> ***\n");
