@@ -1,5 +1,10 @@
 2006-04-27  Jens Lautenbacher  <jtl@schlund.de>
 
+	* src/de/schlund/pfixcore/workflow/Context.java
+	(Context::currentPageNeedsSSL): Bugfix: the information if a page
+	requests SSL is NOT in the properties, but in the
+	PageRequestConfig structure!
+
 	* projects/core/build/iwrapper.xsl: 
 	removed the ambiguous setStringVal(Object[] ...) method because it
 	does clash when "null" is given.

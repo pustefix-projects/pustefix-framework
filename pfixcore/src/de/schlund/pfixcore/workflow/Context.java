@@ -121,7 +121,7 @@ public class Context implements AppContext {
     private boolean            stopnextforcurrentrequest;
     private boolean            needs_update;
     private ArrayList          messages = new ArrayList();
-    private ContextConfig config;
+    private ContextConfig      config;
 
     /**
      * <code>init</code> sets up the Context for operation.
@@ -524,10 +524,9 @@ public class Context implements AppContext {
             page = currentpagerequest;
         }
         if (page != null) {
-            Properties props = preqprops.getPropertiesForPageRequest(page);
-            if (props != null) {
-                String needssl = props.getProperty(PROP_NEEDS_SSL);
-                if (needssl != null && needssl.equals("true")) {
+            PageRequestConfig prconfig = config.getPageRequest(page.getName());
+            if (prconfig != null) {
+                if (prconfig.isSSL()) {
                     return true;
                 }
             }
