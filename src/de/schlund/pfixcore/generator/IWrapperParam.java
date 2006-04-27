@@ -147,9 +147,6 @@ public class IWrapperParam implements IWrapperParamCheck, IWrapperParamDefinitio
         }
     }
 
-    // This method is just a little optimization for the case of a String argument.
-    public void setStringValue(String[] v) { stringval = v; }
-    
     public void initValueFromRequest(String prefix, RequestData reqdata) {
         String            thename = prefix + "." + name;
         RequestParam[]    rparamv = reqdata.getParameters(thename);
