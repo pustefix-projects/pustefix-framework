@@ -207,20 +207,10 @@ public <xsl:if test="not(/iwrp:interface/iwrp:ihandler) and not(@extends)">abstr
             <xsl:otherwise>setStringValue(v);</xsl:otherwise></xsl:choose>
     }
 
-    <xsl:if test="not($ptype = 'String') and not($ptype = 'java.lang.String')">
-    public void setStringVal<xsl:value-of select="$cpname"/>(<xsl:value-of select="$ptype"/><xsl:value-of select="$freq"/> v, String index) {
+    public void set<xsl:value-of select="$cpname"/>(<xsl:value-of select="$ptype"/><xsl:value-of select="$freq"/> v, String index) {
         gimmeIndexedParamForKey("<xsl:value-of select="$pname"/>").getParamForIndex(index).
           <xsl:choose><xsl:when test="string($freq) = ''">setStringValue(new <xsl:value-of select="$ptype"/>[] {v});</xsl:when>
             <xsl:otherwise>setStringValue(v);</xsl:otherwise></xsl:choose>
-    }
-    </xsl:if>
-    
-    /**
-      * @deprecated use setStringVal<xsl:value-of select="$cpname"/>(<xsl:value-of select="$ptype"/><xsl:value-of select="$freq"/> v, String index) instead.
-      */
-    @Deprecated
-    public void set<xsl:value-of select="$cpname"/>(<xsl:value-of select="$ptype"/><xsl:value-of select="$freq"/> v, String index) {
-        setStringVal<xsl:value-of select="$cpname"/>(v, index);
     }
 
     public void addSCode<xsl:value-of select="$cpname"/>(de.schlund.util.statuscodes.StatusCode scode, String index) {
@@ -251,20 +241,10 @@ public <xsl:if test="not(/iwrp:interface/iwrp:ihandler) and not(@extends)">abstr
             <xsl:otherwise>setStringValue(v);</xsl:otherwise></xsl:choose>
     }
 
-    <xsl:if test="not($ptype = 'String') and not($ptype = 'java.lang.String')">
-    public void setStringVal<xsl:value-of select="$cpname"/>(<xsl:value-of select="$ptype"/><xsl:value-of select="$freq"/> v) {
+    public void set<xsl:value-of select="$cpname"/>(<xsl:value-of select="$ptype"/><xsl:value-of select="$freq"/> v) {
         gimmeParamForKey("<xsl:value-of select="$pname"/>").
           <xsl:choose><xsl:when test="string($freq) = ''">setStringValue(new <xsl:value-of select="$ptype"/>[] {v});</xsl:when>
             <xsl:otherwise>setStringValue(v);</xsl:otherwise></xsl:choose>
-    }
-    </xsl:if>
-
-    /**
-      * @deprecated use setStringVal<xsl:value-of select="$cpname"/>(<xsl:value-of select="$ptype"/><xsl:value-of select="$freq"/> v) instead.
-      */
-    @Deprecated
-    public void set<xsl:value-of select="$cpname"/>(<xsl:value-of select="$ptype"/><xsl:value-of select="$freq"/> v) {
-        setStringVal<xsl:value-of select="$cpname"/>(v);
     }
 
     public void addSCode<xsl:value-of select="$cpname"/>(de.schlund.util.statuscodes.StatusCode scode) {
