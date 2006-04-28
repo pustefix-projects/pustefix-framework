@@ -104,11 +104,11 @@
   </pagerequest>
   
   <pagerequest name="order">
-<!--     <choose> -->
-<!--       <when test="$mode = 'prod'"> -->
+    <choose>
+      <when test="$mode = 'prod'">
         <ssl force="true"/>
-<!--       </when> -->
-<!--     </choose> -->
+      </when>
+    </choose>
     <input>
       <interface prefix="shirt" class="de.schlund.pfixcore.example.iwrapper.TShirt"/>
       <interface prefix="counter" class="de.schlund.pfixcore.example.iwrapper.Counter"/>

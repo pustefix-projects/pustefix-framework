@@ -83,7 +83,6 @@ public class FlowStep {
                 if (checkAction(test, resdoc.getSPDocument().getDocument())) {
                     LOG.debug("    ===> Action applies, calling doAction now...");
                     for (Iterator j = actionList.iterator(); j.hasNext();) {
-                        LOG.debug("    ===> In Iterator <===");
                         FlowStepAction action = (FlowStepAction) j.next();
                         action.doAction(context, resdoc);
                     }
