@@ -1285,7 +1285,16 @@ SOAP_Stub.prototype._extractCallback=function(call,args,expLen) {
 }
 
 SOAP_Stub.prototype._setURL=function(url) {
-  this._url=url.replace(/(https?:\/\/)([^\/]+)(.*)/,window.location.protocol+"//"+window.location.host+"$3");
-  var session=window.location.href.replace(/.*(;jsessionid=[A-Z0-9]+\.[a-zA-Z0-9]+)(\?.*)?$/,"$1");
+  var temp = window.location.pathname;
+  temp = temp.replace(/^([^;]*)(;.*)?$/, "$1");
+  temp = temp.replace(/^(.*)\/[^/]*$/, "$1");
+  var contextpath = temp.replace(/^(.*)\/xml(\/([^\/]+))?$/, "$1");
+  var portstring = "";
+  if ((window.location.protocol == "http:" && window.location.port != 80)
+    || (window.location.protocol == "https:" && window.location.port != 443)) {
+    portstring = ":" + window.location.port;
+  }
+  this._url=url.replace(/(https?:\/\/)([^\/]+)(.*)/,window.location.protocol+"//"+window.location.hostname+portstring+contextpath+"$3");
+  var session=window.location.href.replace(/.*(;jsessionid=([A-Z0-9]+(\.[a-zA-Z0-9]+)?)(\?.*)?$/,"$1");
   this._url+=session;
 }

@@ -57,7 +57,7 @@ import de.schlund.pfixxml.util.TransformerHandlerAdapter;
  * 
  * @author Sebastian Marsching <sebastian.marsching@1und1.de>
  */
-public class XsltProjectsXmlTask extends XsltGenericTask {
+public class XsltCustomizeXmlTask extends XsltGenericTask {
 
     private String docroot;
     
@@ -91,7 +91,13 @@ public class XsltProjectsXmlTask extends XsltGenericTask {
             Transformer trans = TransformerFactory.newInstance()
                     .newTransformer(new StreamSource(stylefile));
             trans.setURIResolver(customizationResolver);
-            File temp = File.createTempFile("tempprojects", ".xml");
+            File temp;
+            try {
+                temp = File.createTempFile("temptransform", ".xml");
+            } catch (IOException e) {
+                throw new BuildException("Could not create temporary file", e);
+            }
+            temp.deleteOnExit();
             FileOutputStream fos = new FileOutputStream(temp);
             StreamResult sr = new StreamResult(fos);
             customize(in, sr);
@@ -114,7 +120,7 @@ public class XsltProjectsXmlTask extends XsltGenericTask {
         } catch (TransformerFactoryConfigurationError e) {
             throw new BuildException("Could not create transformer", e);
         } catch (IOException e) {
-            throw new BuildException("Could not create temporary file", e);
+            throw new BuildException("I/O-Error during transformation", e);
         } catch (TransformerException e) {
             throw new BuildException("Parsing of " + in + " failed!", e);
         }

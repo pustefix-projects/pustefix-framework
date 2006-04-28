@@ -60,6 +60,7 @@ import de.schlund.pfixxml.loader.Reloader;
 import de.schlund.pfixxml.loader.StateTransfer;
 import de.schlund.pfixxml.util.Misc;
 import de.schlund.pfixxml.util.TransformerHandlerAdapter;
+import de.schlund.pfixxml.util.logging.ProxyLogUtil;
 
 /**
  * This Servlet is just there to have it's init method called on startup of the
@@ -76,10 +77,11 @@ public class FactoryInitServlet extends HttpServlet implements Reloader {
 
     private static String PROP_LOG4J = "pustefix.log4j.config";
 
+    private static String PROP_PREFER_CONTAINER_LOGGING = "pustefix.logging.prefercontainer";
+
     private Object LOCK = new Object();
 
-    private static Category CAT = Category.getInstance(FactoryInitServlet.class
-            .getName());
+    private static Category CAT = Category.getInstance(FactoryInitServlet.class.getName());
 
     private static boolean configured = false;
 
@@ -88,6 +90,9 @@ public class FactoryInitServlet extends HttpServlet implements Reloader {
     private static String log4jconfig = null;
 
     private static long log4jmtime = -1;
+    
+    private boolean warMode = false;
+    private boolean standaloneMode = false;
 
     // ~ Methods
     // ....................................................................................
@@ -100,8 +105,7 @@ public class FactoryInitServlet extends HttpServlet implements Reloader {
      * @throws ServletException
      *             on all
      */
-    public void doPost(HttpServletRequest req, HttpServletResponse res)
-            throws ServletException {
+    public void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException {
         doGet(req, res);
     }
 
@@ -113,31 +117,24 @@ public class FactoryInitServlet extends HttpServlet implements Reloader {
      * @throws ServletException
      *             on call
      */
-    public void doGet(HttpServletRequest req, HttpServletResponse res)
-            throws ServletException {
+    public void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException {
         throw new ServletException("This servlet can't be called interactively");
     }
 
     public static void tryReloadLog4j() {
         if (log4jconfig != null) {
-            File l4jfile = PathFactory.getInstance().createPath(log4jconfig)
-                    .resolve();
+            File l4jfile = PathFactory.getInstance().createPath(log4jconfig).resolve();
             long tmpmtime = l4jfile.lastModified();
             if (tmpmtime > log4jmtime) {
-                CAT.error("\n\n################################\n"
-                        + "#### Reloading log4j config ####\n"
-                        + "################################\n");
+                CAT.error("\n\n################################\n" + "#### Reloading log4j config ####\n" + "################################\n");
                 try {
                     configureLog4j(l4jfile);
                 } catch (FileNotFoundException e) {
-                    Logger.getLogger(FactoryInitServlet.class).error(
-                            "Reloading log4j config failed!", e);
+                    Logger.getLogger(FactoryInitServlet.class).error("Reloading log4j config failed!", e);
                 } catch (SAXException e) {
-                    Logger.getLogger(FactoryInitServlet.class).error(
-                            "Reloading log4j config failed!", e);
+                    Logger.getLogger(FactoryInitServlet.class).error("Reloading log4j config failed!", e);
                 } catch (IOException e) {
-                    Logger.getLogger(FactoryInitServlet.class).error(
-                            "Reloading log4j config failed!", e);
+                    Logger.getLogger(FactoryInitServlet.class).error("Reloading log4j config failed!", e);
                 }
                 log4jmtime = tmpmtime;
             }
@@ -160,18 +157,24 @@ public class FactoryInitServlet extends HttpServlet implements Reloader {
         Properties properties = new Properties(System.getProperties());
         // old webapps specify docroot -- true webapps don't
         String docrootstr = Config.getInitParameter(PROP_DOCROOT);
-        if (docrootstr == null || docrootstr.equals("")) {
+        if (docrootstr != null && !docrootstr.equals("")) {
+            standaloneMode = true;
+        } else {
             docrootstr = Config.getServletContext().getRealPath("/WEB-INF/pfixroot/.");
-            if (!docrootstr.endsWith("/.")) {
-                throw new IllegalStateException(docrootstr);
+            if (docrootstr == null) {
+                warMode = true;
+            } else {
+                if (!docrootstr.endsWith("/.")) {
+                    throw new IllegalStateException(docrootstr);
+                }
+                docrootstr = docrootstr.substring(0, docrootstr.length() - 1);
             }
-            docrootstr = docrootstr.substring(0, docrootstr.length() - 1);
         }
-        
+
         // PathFactory is needed to read the global properties file, so
         // do initialization first
         PathFactory.getInstance().init(docrootstr);
-        
+
         String confname = Config.getInitParameter("servlet.propfile");
         if (confname != null) {
             if (!confname.startsWith("/")) {
@@ -181,18 +184,14 @@ public class FactoryInitServlet extends HttpServlet implements Reloader {
             try {
                 XMLPropertiesUtil.loadPropertiesFromXMLFile(confFile, properties);
             } catch (FileNotFoundException e) {
-                throw new ServletException("*** [" + confname + "] Not found: "
-                        + e.toString());
+                throw new ServletException("*** [" + confname + "] Not found: " + e.toString());
             } catch (IOException e) {
-                throw new ServletException("*** [" + confname + "] IO-error: "
-                        + e.toString());
+                throw new ServletException("*** [" + confname + "] IO-error: " + e.toString());
             } catch (SAXException e) {
-                throw new ServletException("*** [" + confname + "] Parsing-error: "
-                        + e.toString());
+                throw new ServletException("*** [" + confname + "] Parsing-error: " + e.toString());
             }
         } else {
-            throw new ServletException(
-                    "*** FATAL: Need the servlet.propfile property as init parameter! ***");
+            throw new ServletException("*** FATAL: Need the servlet.propfile property as init parameter! ***");
         }
         // this is for stuff that can't use the PathFactory. Should not be used
         // when possible...
@@ -200,34 +199,9 @@ public class FactoryInitServlet extends HttpServlet implements Reloader {
 
         synchronized (LOCK) {
             if (!configured) {
-                log4jconfig = properties.getProperty(PROP_LOG4J);
-                if (log4jconfig == null || log4jconfig.equals("")) {
-                    throw new ServletException(
-                            "*** FATAL: Need the pustefix.log4j.config property in factory.xml! ***");
-                }
-                // Look for .in file for compatibility reasons
-                File l4jfile = PathFactory.getInstance()
-                        .createPath(log4jconfig + ".in").resolve();
-                if (!l4jfile.exists()) {
-                    l4jfile = PathFactory.getInstance()
-                    .createPath(log4jconfig).resolve();
-                }
-                try {
-                    configureLog4j(l4jfile);
-                } catch (FileNotFoundException e) {
-                    throw new ServletException(
-                            "File for log4j configuration not found!", e);
-                } catch (SAXException e) {
-                    throw new ServletException(
-                            "Error on parsing log4j configuration file!", e);
-                } catch (IOException e) {
-                    throw new ServletException(
-                            "Error on reading log4j configuration file!", e);
-                }
+                configureLogging(properties);
 
-                CAT.debug(">>>> LOG4J Init OK <<<<");
-                HashMap to_init = PropertiesUtils.selectProperties(properties,
-                        "factory.initialize");
+                HashMap to_init = PropertiesUtils.selectProperties(properties, "factory.initialize");
                 if (to_init != null) {
                     // sort key to initialize the factories in defined order
                     TreeSet keyset = new TreeSet(to_init.keySet());
@@ -235,49 +209,34 @@ public class FactoryInitServlet extends HttpServlet implements Reloader {
                         String key = (String) i.next();
                         String the_class = (String) to_init.get(key);
                         try {
-                            CAT.debug(">>>> Init key: [" + key + "] class: ["
-                                    + the_class + "] <<<<");
+                            CAT.debug(">>>> Init key: [" + key + "] class: [" + the_class + "] <<<<");
                             AppLoader appLoader = AppLoader.getInstance();
                             long start = 0;
                             long stop = 0;
-                            if (appLoader.isEnabled()
-                                    && appLoader.isReloadableClass(the_class)) {
+                            if (appLoader.isEnabled() && appLoader.isReloadableClass(the_class)) {
                                 Class clazz = appLoader.loadClass(the_class);
-                                Object factory = clazz.getMethod("getInstance",
-                                        Misc.NO_CLASSES).invoke(null,
-                                        Misc.NO_OBJECTS);
+                                Object factory = clazz.getMethod("getInstance", Misc.NO_CLASSES).invoke(null, Misc.NO_OBJECTS);
                                 CAT.debug("     Object ID: " + factory);
                                 start = System.currentTimeMillis();
-                                clazz.getMethod("init",
-                                        new Class[] { Properties.class })
-                                        .invoke(factory,
-                                                new Object[] { properties });
+                                clazz.getMethod("init", new Class[] { Properties.class }).invoke(factory, new Object[] { properties });
                                 stop = System.currentTimeMillis();
-                                CAT.debug("Init of " + factory + " took "
-                                        + (stop - start) + " ms");
+                                CAT.debug("Init of " + factory + " took " + (stop - start) + " ms");
                                 if (factories == null) {
                                     factories = new ArrayList();
                                 }
                                 factories.add(factory);
                             } else {
                                 Class clazz = Class.forName(the_class);
-                                Object factory = clazz.getMethod("getInstance",
-                                        Misc.NO_CLASSES).invoke(null,
-                                        Misc.NO_OBJECTS);
+                                Object factory = clazz.getMethod("getInstance", Misc.NO_CLASSES).invoke(null, Misc.NO_OBJECTS);
                                 CAT.debug("     Object ID: " + factory);
                                 start = System.currentTimeMillis();
-                                clazz.getMethod("init",
-                                        new Class[] { Properties.class })
-                                        .invoke(factory,
-                                                new Object[] { properties });
+                                clazz.getMethod("init", new Class[] { Properties.class }).invoke(factory, new Object[] { properties });
                                 stop = System.currentTimeMillis();
-                                CAT.debug("Init of " + factory + " took "
-                                        + (stop - start) + " ms");
+                                CAT.debug("Init of " + factory + " took " + (stop - start) + " ms");
                             }
                         } catch (Exception e) {
                             CAT.error(e.toString());
-                            ThrowableInformation info = new ThrowableInformation(
-                                    e);
+                            ThrowableInformation info = new ThrowableInformation(e);
                             String[] trace = info.getThrowableStrRep();
                             StringBuffer strerror = new StringBuffer();
                             for (int ii = 0; ii < trace.length; ii++) {
@@ -298,8 +257,50 @@ public class FactoryInitServlet extends HttpServlet implements Reloader {
         }
     }
 
-    private static void configureLog4j(File configFile) throws SAXException,
-            FileNotFoundException, IOException {
+    private Class classFromContainer(Class clazz) {
+        ClassLoader webappLoader = clazz.getClassLoader();
+        ClassLoader cl = webappLoader.getParent();
+        while (cl != null) {
+            Class containerClazz;
+            try {
+                containerClazz = cl.loadClass(clazz.getName());
+            } catch (ClassNotFoundException e) {
+                cl = cl.getParent();
+                continue;
+            }
+            if (clazz != containerClazz) {
+                return containerClazz;
+            }
+            cl = cl.getParent();
+        }
+        return null;
+    }
+
+    private void configureLogging(Properties properties) throws ServletException {
+        String containerProp = properties.getProperty(PROP_PREFER_CONTAINER_LOGGING);
+        if (warMode || (!standaloneMode && (containerProp != null && containerProp.toLowerCase().equals("true")))) {
+            ProxyLogUtil.getInstance().configureLog4jProxy();
+            ProxyLogUtil.getInstance().setServletContext(getServletContext());
+        } else {
+            log4jconfig = properties.getProperty(PROP_LOG4J);
+            if (log4jconfig == null || log4jconfig.equals("")) {
+                throw new ServletException("*** FATAL: Need the pustefix.log4j.config property in factory.xml! ***");
+            }
+            File l4jfile = PathFactory.getInstance().createPath(log4jconfig).resolve();
+            try {
+                configureLog4j(l4jfile);
+            } catch (FileNotFoundException e) {
+                throw new ServletException("File for log4j configuration not found!", e);
+            } catch (SAXException e) {
+                throw new ServletException("Error on parsing log4j configuration file!", e);
+            } catch (IOException e) {
+                throw new ServletException("Error on reading log4j configuration file!", e);
+            }
+
+        }
+    }
+
+    private static void configureLog4j(File configFile) throws SAXException, FileNotFoundException, IOException {
         log4jmtime = configFile.lastModified();
         XMLReader xreader = XMLReaderFactory.createXMLReader();
         TransformerFactory tf = SAXTransformerFactory.newInstance();
@@ -309,8 +310,7 @@ public class FactoryInitServlet extends HttpServlet implements Reloader {
             try {
                 th = stf.newTransformerHandler();
             } catch (TransformerConfigurationException e) {
-                throw new RuntimeException(
-                        "Failed to configure TransformerFactory!", e);
+                throw new RuntimeException("Failed to configure TransformerFactory!", e);
             }
             DOMResult dr = new DOMResult();
             DOMResult dr2 = new DOMResult();
@@ -323,23 +323,13 @@ public class FactoryInitServlet extends HttpServlet implements Reloader {
             xreader.setEntityResolver(cushandler);
             xreader.parse(new InputSource(new FileInputStream(configFile)));
             try {
-                tf
-                        .newTransformer(
-                                new StreamSource(
-                                        PathFactory
-                                                .getInstance()
-                                                .createPath(
-                                                        "core/build/create_log4j_config.xsl")
-                                                .resolve())).transform(
-                                new DOMSource(dr.getNode()), dr2);
+                tf.newTransformer(new StreamSource(PathFactory.getInstance().createPath("core/build/create_log4j_config.xsl").resolve())).transform(new DOMSource(dr.getNode()), dr2);
             } catch (TransformerException e) {
                 throw new SAXException(e);
             }
-            DOMConfigurator.configure(dr2.getNode().getOwnerDocument()
-                    .getDocumentElement());
+            DOMConfigurator.configure(dr2.getNode().getOwnerDocument().getDocumentElement());
         } else {
-            throw new RuntimeException(
-                    "Could not get instance of SAXTransformerFactory!");
+            throw new RuntimeException("Could not get instance of SAXTransformerFactory!");
         }
     }
 

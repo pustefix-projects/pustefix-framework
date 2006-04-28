@@ -1,3 +1,32 @@
+2006-04-28  Sebastian Marsching  <sebastian.marsching@1und1.de>
+
+	* src/de/schlund/pfixcore/util/XsltCustomizeXmlTask.java: Renamed task
+	and changed it to support processing of generic files with cus-tags, not
+	projects.xml.in only
+	
+	* src/de/schlund/pfixxml/util/logging/*: Created new logging mechanism
+	automatically using container-logging in WAR mode
+	 
+	* src/de/schlund/pfixxml/FactoryInitServlet.java: Set variable identifying 
+	mode (standalone, war or neither) during initialization, use new logging 
+	mechanism
+	
+	* lib/commons-logging-*.jar: Updated commons-logging to version 1.0.4
+
+	* projects/common/conf/factory.xml: Introduced property "pustefix.logging.prefercontainer"
+	
+	* projects/core/build/create_webxml.xsl: Introduces new parameter "warMode"
+	
+	* projects/core/script/webservice.js: Fixed webservice endpoint
+	location to support webservices in war mode
+	
+	* projects/webservice/xml/two_frames.xml: Made references to script files
+	relative so that they work in war mode
+	
+	* skel/build-skel.xml: Create commons-logging service descriptor,
+	renamed pfx-projectsxsl task to pfx-xsltcus,
+	introduces parameter "warMode" when creating web.xml
+
 2006-04-11  Jens Lautenbacher  <jtl@schlund.de>
 
 	* src/de/schlund/pfixxml/PfixServletRequest.java
