@@ -53,7 +53,7 @@ public class PageFlowStepConfig {
         this.continueConditions.add(config);
     }
     
-    public PageFlowStepActionConditionConfig[] getActionCondtions() {
+    public PageFlowStepActionConditionConfig[] getActionConditions() {
         return this.continueConditions.toArray(new PageFlowStepActionConditionConfig[0]);
     }
     

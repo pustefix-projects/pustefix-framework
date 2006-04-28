@@ -47,11 +47,11 @@ public class FlowStep {
     private ArrayList tests_oncontinue    = new ArrayList();
     private PageFlowStepConfig config;
 
-    private static Category     LOG               = Category.getInstance(PageFlow.class.getName());
+    private static Category LOG = Category.getInstance(PageFlow.class.getName());
     public FlowStep(PageFlowStepConfig config) {
         this.config = config;
         
-        PageFlowStepActionConditionConfig[] conditions = config.getActionCondtions();
+        PageFlowStepActionConditionConfig[] conditions = config.getActionConditions();
         
         for (int i = 0; i < conditions.length; i++) {
             PageFlowStepActionConfig[] actions = conditions[i].getActions();
@@ -82,6 +82,7 @@ public class FlowStep {
                 if (checkAction(test, resdoc.getSPDocument().getDocument())) {
                     LOG.debug("    ===> Action applies, calling doAction now...");
                     for (Iterator j = actionList.iterator(); j.hasNext();) {
+                        LOG.debug("    ===> In Iterator <===");
                         FlowStepAction action = (FlowStepAction) j.next();
                         action.doAction(context, resdoc);
                     }
