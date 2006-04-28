@@ -1,3 +1,8 @@
+2006-04-28  Sebastian Marsching  <sebastian.marsching@1und1.de>
+
+	* src/de/schlund/pfixcore/workflow/FlowStep.java (FlowStep):
+	Fixed bug: Actions are now added to list correctly
+
 2006-04-27  Jens Lautenbacher  <jtl@schlund.de>
 
 	* src/de/schlund/pfixcore/workflow/Context.java

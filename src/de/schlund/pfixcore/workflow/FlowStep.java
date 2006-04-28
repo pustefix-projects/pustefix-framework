@@ -66,6 +66,7 @@ public class FlowStep {
                     datamap.put(key, value);
                 }
                 action.setData(datamap);
+                actionList.add(action);
             }
             actions_oncontinue.add(actionList);
             tests_oncontinue.add(conditions[i].getXPathExpression());
