@@ -136,7 +136,9 @@ public class IWrapperParam implements IWrapperParamCheck, IWrapperParamDefinitio
         if (values != null) {
             stringval = new String[values.length];
             for (int i = 0; i < values.length; i++) {
-                if (values[i] instanceof RequestParam) {
+                if (values[i] == null) {
+                    stringval[i] = null;
+                } else if (values[i] instanceof RequestParam) {
                     stringval[i] = ((RequestParam) values[i]).getValue();
                 } else {
                     stringval[i] = values[i].toString();

@@ -1,3 +1,9 @@
+2006-05-02  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixcore/generator/IWrapperParam.java
+	(IWrapperParam::setStringValue): handle "null" for elements of
+	input array.
+
 2006-04-27  Jens Lautenbacher  <jtl@schlund.de>
 
 	* projects/core/build/iwrapper.xsl: 
