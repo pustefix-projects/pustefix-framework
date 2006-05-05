@@ -1,5 +1,23 @@
 2006-05-05  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
+	* projects/core/editor2/txt/pages/main_images.xml: 
+	* src/de/schlund/pfixcore/editor2/frontend/handlers/UploadImageHandler.java: 
+	Prevent images from being uploaded to the root directory
+	
+	* projects/core/editor2/txt/styles.xml: 
+	* projects/core/editor2/txt/util_includes.xml: 
+	Print a warning if an include file is residing directly in the root directory
+	
+	* projects/core/script/editor.js: 
+	Handle includes in root directory
+	
+	* src/de/schlund/pfixcore/editor2/frontend/handlers/CommonUploadIncludePartHandler.java (handleSubmittedData): 
+	* projects/core/dyntxt/statusmessages.xml: 
+	Cancel upload process if uploaded include file is directly in root directory
+	
+	* src/de/schlund/pfixcore/editor2/frontend/resources/CommonIncludesResourceImpl.java (closeDirectoryTree): 
+	(openFileTree): Fixing another StringIndexOutOfBoundsException
+	
 	* src/de/schlund/pfixcore/editor2/frontend/resources/DynIncludesResourceImpl.java (renderAllIncludes): 
 	(getIncludeFilesInDirectory): Fixing potential StringIndexOutOfBoundsException
 	for dynincludes

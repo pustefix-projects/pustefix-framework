@@ -86,6 +86,19 @@
             </td>
           </tr>
         </table>
+        <ixsl:if test="not(contains(./currentinclude/@path, '/'))">
+          <table class="editor_error" width="100%">
+            <tr>
+               <td>
+                 <pfx:image src="/core/editor2/img/error.png"/>
+               </td>
+               <td>
+                 Include files residing directly in the root directory
+                 are not allowed by convention.
+               </td>
+            </tr>
+          </table>
+        </ixsl:if>
       </theme>
   </part>
   

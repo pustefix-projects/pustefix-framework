@@ -42,6 +42,9 @@
         Do upload again, if you still want to replace the image.
       </theme>
   </part>
+  <part name="pfixcore.editor.imagesupload.FILE_IS_IN_ROOT">
+    <theme name="default">Upload of images residing in the root directory is not allowed.</theme>
+  </part>
   <part name="pfixcore.editor.includes.INCLUDE_UNDEF">
     <theme name="default">This include does not exist.</theme>
   </part>
@@ -65,6 +68,9 @@
   </part>
   <part name="pfixcore.editor.includesupload.INCLUDE_HAS_CHANGED_RESTORE">
     <theme name="default">The include part has been changed by another user. If you still want to restore the backup, please do so again.</theme>
+  </part>
+  <part name="pfixcore.editor.includesupload.FILE_IS_IN_ROOT">
+    <theme name="default">Upload of include parts for files residing in the root directory is not allowed.</theme>
   </part>
   <part name="pfixcore.editor.pages.PAGE_UNDEF">
     <theme name="default">This page is unknown.</theme>

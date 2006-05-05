@@ -54,6 +54,10 @@ public class UploadImageHandler implements IHandler {
             input.addSCodeImageFile(StatusCodeLib.PFIXCORE_EDITOR_IMAGESUPLOAD_IMAGEUPL_WRONGTYPE);
         }
         String imagePath = image.getPath();
+        if (imagePath.lastIndexOf('/') == -1 || imagePath.lastIndexOf('/') == 0) {
+            input.addSCodeImageFile(StatusCodeLib.PFIXCORE_EDITOR_IMAGESUPLOAD_FILE_IS_IN_ROOT);
+            return;
+        }
         String suffix = imagePath.substring(imagePath.lastIndexOf("."));
         if ((mimeType.equals("image/jpeg") && suffix.equals(".jpg"))
                 || (mimeType.equals("image/png") && suffix.equals(".png"))
