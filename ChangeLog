@@ -1,6 +1,8 @@
 2006-05-05  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
 	* projects/core/editor2/txt/pages/main_images.xml: 
+	Fixing small bug in last bugfix :-)
+	
 	* src/de/schlund/pfixcore/editor2/frontend/handlers/UploadImageHandler.java: 
 	Prevent images from being uploaded to the root directory
 	

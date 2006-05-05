@@ -118,19 +118,6 @@
         <div align="right" class="editor_main_emph">
           [IMAGE: <ixsl:value-of select="/formresult/images/currentimage/@filename"/>]
         </div>
-        <ixsl:if test="not(contains(/formresult/images/currentimage/@filename, '/'))">
-          <table class="editor_error" width="100%">
-            <tr>
-               <td>
-                 <pfx:image src="/core/editor2/img/error.png"/>
-               </td>
-               <td>
-                 Images residing directly in the root directory
-                 are not allowed by convention.
-               </td>
-            </tr>
-          </table>
-        </ixsl:if>
         <br/>
       </theme>
   </part>
@@ -147,6 +134,19 @@
               </td>
             </tr>
           </table>
+          <ixsl:if test="not(contains(/formresult/images/currentimage/@path, '/'))">
+            <table class="editor_error" width="100%">
+              <tr>
+                 <td>
+                   <pfx:image src="/core/editor2/img/error.png"/>
+                 </td>
+                 <td>
+                   Images residing directly in the root directory
+                   are not allowed by convention.
+                 </td>
+              </tr>
+            </table>
+          </ixsl:if>
           <ixsl:choose>
             <ixsl:when test="/formresult/images/currentimage/@mayEdit = 'true'">
               <table background="/core/editor2/img/alpha.gif" cellspacing="0" class="editor_box_alpha" width="100%">
