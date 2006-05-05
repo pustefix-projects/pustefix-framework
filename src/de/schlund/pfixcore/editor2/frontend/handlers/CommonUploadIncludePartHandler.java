@@ -53,6 +53,11 @@ public abstract class CommonUploadIncludePartHandler implements IHandler {
                 && input.getContent() != null && input.getHash() != null) {
             // System.out.println("In HSD: HASH: " + input.getHash());
             try {
+                String path = this.getResource(context).getSelectedIncludePart().getIncludePart().getIncludeFile().getPath();
+                if (path.lastIndexOf('/') == -1 || path.lastIndexOf('/') == 0) {
+                    input.addSCodeContent(StatusCodeLib.PFIXCORE_EDITOR_INCLUDESUPLOAD_FILE_IS_IN_ROOT);
+                    return;
+                }
                 this.getResource(context).setContent(input.getContent(),
                         input.getHash());
                 input.setHash(this.getResource(context).getMD5());

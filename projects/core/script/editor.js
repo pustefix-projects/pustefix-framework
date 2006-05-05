@@ -18,7 +18,12 @@ pfx_editor_TreeRoot.prototype.getDir = function(dirname) {
 }
 
 pfx_editor_TreeRoot.prototype.getFile = function(filename) {
-  var dirname = filename.substring(0, filename.lastIndexOf("/"));
+  var dirname;
+  if (filename.lastIndexOf("/") == -1) {
+    dirname = "/";
+  } else {
+    var dirname = filename.substring(0, filename.lastIndexOf("/"));
+  }
   var dir = this.getDir(dirname);
   if (dir) {
     return dir.getFile(filename);

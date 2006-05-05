@@ -418,6 +418,18 @@ div.info h2{
   font-size: 11px;
   margin: 10px 0 10px 0;
 }
+      
+.editor_error {
+  background-color: #ffeeee;
+  border: 1px solid #990000;
+  padding: 4px;
+  margin: 10px 0 10px 0;
+  vertical-align:middle;
+}
+.editor_error td {
+  font-weight:bold;
+  font-size:15px;      
+}
 
 ul.list{
   padding-left: 24px;
