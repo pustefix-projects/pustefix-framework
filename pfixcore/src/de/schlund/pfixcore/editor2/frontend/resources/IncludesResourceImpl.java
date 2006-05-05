@@ -164,7 +164,11 @@ public class IncludesResourceImpl extends CommonIncludesResourceImpl implements
             IncludePartThemeVariant part = (IncludePartThemeVariant) i.next();
             IncludeFile file = part.getIncludePart().getIncludeFile();
             String path = file.getPath();
-            path = path.substring(0, path.lastIndexOf('/'));
+            try {
+                path = path.substring(0, path.lastIndexOf('/'));
+            } catch (StringIndexOutOfBoundsException e) {
+                path = "/";
+            }
             if (path.equals(dirname) && !files.contains(file)) {
                 files.add(file);
             }
