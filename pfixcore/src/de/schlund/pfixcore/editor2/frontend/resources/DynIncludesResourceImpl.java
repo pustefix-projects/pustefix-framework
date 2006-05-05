@@ -104,7 +104,12 @@ public class DynIncludesResourceImpl extends CommonIncludesResourceImpl
         for (Iterator i = incFiles.iterator(); i.hasNext();) {
             IncludeFile incFile = (IncludeFile) i.next();
             String path = incFile.getPath();
-            String dir = path.substring(0, path.lastIndexOf(File.separator));
+            String dir;
+            try {
+                dir = path.substring(0, path.lastIndexOf(File.separator));
+            } catch (StringIndexOutOfBoundsException e) {
+                dir = "/";
+            }
             Element directoryNode = (Element) directoryNodes.get(dir);
             if (directoryNode == null) {
                 directoryNode = resdoc.createSubNode(elem, "directory");
@@ -151,7 +156,11 @@ public class DynIncludesResourceImpl extends CommonIncludesResourceImpl
                 .getDynIncludeFiles().iterator(); i.hasNext();) {
             IncludeFile file = (IncludeFile) i.next();
             String path = file.getPath();
-            path = path.substring(0, path.lastIndexOf('/'));
+            try {
+                path = path.substring(0, path.lastIndexOf('/'));
+            } catch (StringIndexOutOfBoundsException e) {
+                path = "/";
+            }
             if (path.equals(dirname) && !files.contains(file)) {
                 files.add(file);
             }
