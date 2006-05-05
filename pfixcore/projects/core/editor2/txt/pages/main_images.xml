@@ -118,6 +118,19 @@
         <div align="right" class="editor_main_emph">
           [IMAGE: <ixsl:value-of select="/formresult/images/currentimage/@filename"/>]
         </div>
+        <ixsl:if test="not(contains(/formresult/images/currentimage/@filename, '/'))">
+          <table class="editor_error" width="100%">
+            <tr>
+               <td>
+                 <pfx:image src="/core/editor2/img/error.png"/>
+               </td>
+               <td>
+                 Images residing directly in the root directory
+                 are not allowed by convention.
+               </td>
+            </tr>
+          </table>
+        </ixsl:if>
         <br/>
       </theme>
   </part>

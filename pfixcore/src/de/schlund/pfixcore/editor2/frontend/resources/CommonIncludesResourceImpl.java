@@ -27,8 +27,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -467,9 +465,17 @@ public abstract class CommonIncludesResourceImpl implements
         // Close all file tree below this directory
         for (Iterator i = this.openFiles.iterator(); i.hasNext();) {
             String file = (String) i.next();
-            String dir = file.substring(0, file.lastIndexOf('/'));
-            if (dir.equals(name)) {
-                i.remove();
+            try {
+                String dir = file.substring(0, file.lastIndexOf('/'));
+                if (dir.equals(name)) {
+                    i.remove();
+                }
+            } catch (StringIndexOutOfBoundsException e) {
+                // Okay, file does not contain a "/", so if we are closing the
+                // special "/" directory, this file should be closed
+                if (name.equals("/")) {
+                    i.remove();
+                }
             }
         }
     }
@@ -497,7 +503,11 @@ public abstract class CommonIncludesResourceImpl implements
      */
     public SortedSet<IncludePartThemeVariant> openFileTree(String name) {
         // Make sure directory is open
-        this.openDirectoryTree(name.substring(0, name.lastIndexOf('/')));
+        try {
+            this.openDirectoryTree(name.substring(0, name.lastIndexOf('/')));
+        } catch (StringIndexOutOfBoundsException e) {
+            this.openDirectoryTree("/");
+        }
 
         TreeSet<IncludePartThemeVariant> parts = new TreeSet<IncludePartThemeVariant>(
                 this.getIncludePartsInFile(name, EditorResourceLocator
