@@ -1,5 +1,9 @@
 2006-05-05  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
+	* src/de/schlund/pfixcore/editor2/frontend/resources/DynIncludesResourceImpl.java (renderAllIncludes): 
+	(getIncludeFilesInDirectory): Fixing potential StringIndexOutOfBoundsException
+	for dynincludes
+	
 	* src/de/schlund/pfixcore/editor2/frontend/resources/IncludesResourceImpl.java (getIncludeFilesInDirectory): 
 	Fixed StringIndexOutOfBoundsException occurring when a project uses an
 	include file path without a "/"
