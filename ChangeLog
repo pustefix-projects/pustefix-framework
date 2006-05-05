@@ -1,3 +1,9 @@
+2006-05-05  Sebastian Marsching  <sebastian.marsching@1und1.de>
+
+	* src/de/schlund/pfixcore/editor2/frontend/resources/IncludesResourceImpl.java (getIncludeFilesInDirectory): 
+	Fixed StringIndexOutOfBoundsException occurring when a project uses an
+	include file path without a "/"
+
 2006-05-02  Jens Lautenbacher  <jtl@schlund.de>
 
 	* src/de/schlund/pfixcore/generator/IWrapperParam.java
