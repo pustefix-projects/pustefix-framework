@@ -1,3 +1,10 @@
+2006-05-08  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixcore/workflow/Context.java
+	(Context::runPageFlow): added logmessage to check if it's possible
+	to remove the skipping over the current page without problems in
+	running apps.
+
 2006-05-05  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
 	* projects/core/editor2/txt/pages/main_images.xml: 
