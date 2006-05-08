@@ -813,6 +813,11 @@ public class Context implements AppContext {
                     break;
                 } else {
                     LOG.debug("* Skipping step [" + page + "] in page flow (been there already...)");
+                    if (checkNeedsData(page, PageRequestStatus.WORKFLOW)) {
+                        LOG.warn("SKIPPEDWOULDSTOP:" + currentpservreq.getServerName() + "|"
+                                 + page.getName() + "|" + currentpageflow.getName());
+                    }
+
                     after_current = true;
                 }
             } else if (!checkIsAccessible(page, PageRequestStatus.WORKFLOW)) {

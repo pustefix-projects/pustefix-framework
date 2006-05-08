@@ -38,6 +38,12 @@
 
 	* projects/core/script/baselib.js: is now officially deprecated...
 
+	(merged from BEFORE_XMLCONFIG)
+	* src/de/schlund/pfixcore/workflow/Context.java
+	(Context::runPageFlow): added logmessage to check if it's possible
+	to remove the skipping over the current page without problems in
+	running apps.
+
 2006-05-05  Jens Lautenbacher  <jtl@schlund.de>
 
 	* projects/core/script/baselib.js: 
