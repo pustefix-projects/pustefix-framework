@@ -18,8 +18,11 @@
  */
 
 package de.schlund.pfixxml.targets;
-import java.util.*;
-import de.schlund.pfixxml.util.Path;
+import java.util.Iterator;
+import java.util.TreeMap;
+import java.util.TreeSet;
+
+import de.schlund.pfixxml.resources.FileResource;
 
 /**
  * AuxDependencyFactory.java
@@ -63,8 +66,8 @@ public class AuxDependencyFactory {
         return root;
     }
     
-    public synchronized AuxDependencyInclude getAuxDependencyInclude(Path path, String part, String theme) {
-        String key = DependencyType.TEXT.getTag() + "@" + path.getRelative() + "@" + part + "@" + theme;
+    public synchronized AuxDependencyInclude getAuxDependencyInclude(FileResource path, String part, String theme) {
+        String key = DependencyType.TEXT.getTag() + "@" + path.toString() + "@" + part + "@" + theme;
         AuxDependencyInclude ret = (AuxDependencyInclude) includeparts.get(key);
         if (ret == null) {
             ret = new AuxDependencyInclude(path, part, theme);
@@ -73,8 +76,8 @@ public class AuxDependencyFactory {
         return ret;
     }
     
-    public synchronized AuxDependencyImage getAuxDependencyImage(Path path) {
-        String key = path.getRelative();
+    public synchronized AuxDependencyImage getAuxDependencyImage(FileResource path) {
+        String key = path.toString();
         AuxDependencyImage ret = (AuxDependencyImage) images.get(key);
         if (ret == null) {
             ret = new AuxDependencyImage(path);
@@ -83,8 +86,8 @@ public class AuxDependencyFactory {
         return ret;
     }
     
-    public synchronized AuxDependencyFile getAuxDependencyFile(Path path) {
-        String key = path.getRelative();
+    public synchronized AuxDependencyFile getAuxDependencyFile(FileResource path) {
+        String key = path.toString();
         AuxDependencyFile ret = (AuxDependencyFile) files.get(key);
         if (ret == null) {
             ret = new AuxDependencyFile(path);
@@ -94,7 +97,7 @@ public class AuxDependencyFactory {
     }
     
     public synchronized AuxDependencyTarget getAuxDependencyTarget(TargetGenerator tgen, String targetkey) {
-        String key = tgen.getConfigPath().getRelative() + ":" + targetkey;
+        String key = tgen.getConfigPath().toString() + ":" + targetkey;
         AuxDependencyTarget ret = (AuxDependencyTarget) targets.get(key);
         if (ret == null) {
             ret = new AuxDependencyTarget(tgen, targetkey);

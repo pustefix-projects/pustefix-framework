@@ -45,7 +45,7 @@ import de.schlund.pfixcore.editor2.core.spring.ProjectFactoryService;
 import de.schlund.pfixcore.editor2.core.spring.SecurityManagerService;
 import de.schlund.pfixcore.editor2.core.spring.ThemeFactoryService;
 import de.schlund.pfixcore.editor2.core.spring.VariantFactoryService;
-import de.schlund.pfixxml.PathFactory;
+import de.schlund.pfixxml.resources.ResourceUtil;
 import de.schlund.pfixxml.targets.AuxDependency;
 import de.schlund.pfixxml.targets.AuxDependencyFactory;
 import de.schlund.pfixxml.targets.AuxDependencyImage;
@@ -95,7 +95,7 @@ public class IncludePartThemeVariantImpl extends
 
     private AuxDependency getAuxDependency() {
         return AuxDependencyFactory.getInstance().getAuxDependencyInclude(
-                PathFactory.getInstance().createPath(
+                ResourceUtil.getFileResourceFromDocroot(
                         this.getIncludePart().getIncludeFile().getPath()),
                 this.getIncludePart().getName(), this.getTheme().getName());
     }
@@ -145,12 +145,12 @@ public class IncludePartThemeVariantImpl extends
             if (child.getType() == DependencyType.IMAGE) {
                 Image image = this.imagefactory
                         .getImage(((AuxDependencyImage) child).getPath()
-                                .getRelative());
+                                .toURI().getPath().substring(1));
                 images.add(image);
             } else if ((child.getType() == DependencyType.TEXT) && recursive) {
                 AuxDependencyInclude aux = (AuxDependencyInclude) child;
                 IncludePartThemeVariant variant = this.includefactory
-                        .getIncludeFile(aux.getPath().getRelative())
+                        .getIncludeFile(aux.getPath().toURI().getPath().substring(1))
                         .createPart(aux.getPart()).createThemeVariant(
                                 themefactory.getTheme(aux.getTheme()));
                 images.addAll(variant.getImageDependencies(true));
@@ -230,12 +230,12 @@ public class IncludePartThemeVariantImpl extends
             if (child.getType() == DependencyType.IMAGE) {
                 Image image = this.imagefactory
                         .getImage(((AuxDependencyImage) child).getPath()
-                                .getRelative());
+                                .toURI().getPath().substring(1));
                 images.add(image);
             } else if ((child.getType() == DependencyType.TEXT) && recursive) {
                 AuxDependencyInclude aux = (AuxDependencyInclude) child;
                 IncludePartThemeVariant variant = this.includefactory
-                        .getIncludeFile(aux.getPath().getRelative())
+                        .getIncludeFile(aux.getPath().toURI().getPath().substring(1))
                         .createPart(aux.getPart()).createThemeVariant(
                                 themefactory.getTheme(aux.getTheme()));
                 images.addAll(variant.getImageDependencies(true));

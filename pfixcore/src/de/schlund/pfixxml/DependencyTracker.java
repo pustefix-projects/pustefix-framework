@@ -20,11 +20,16 @@
 package de.schlund.pfixxml;
 
 
-import de.schlund.pfixxml.targets.*;
-import de.schlund.pfixxml.util.Path;
-
 import org.apache.log4j.Category;
+
 import com.icl.saxon.Context;
+
+import de.schlund.pfixxml.resources.FileResource;
+import de.schlund.pfixxml.resources.ResourceUtil;
+import de.schlund.pfixxml.targets.DependencyType;
+import de.schlund.pfixxml.targets.TargetGenerator;
+import de.schlund.pfixxml.targets.TargetGeneratorFactory;
+import de.schlund.pfixxml.targets.VirtualTarget;
 
 public class DependencyTracker {
     private static Category CAT = Category.getInstance(DependencyTracker.class.getName());
@@ -38,7 +43,7 @@ public class DependencyTracker {
             return "0";
         }
 
-        Path            tgen_path = PathFactory.getInstance().createPath(targetGen);
+        FileResource    tgen_path = ResourceUtil.getFileResource(targetGen);
         TargetGenerator gen       = TargetGeneratorFactory.getInstance().createGenerator(tgen_path);
         VirtualTarget   target    = (VirtualTarget) gen.getTarget(targetKey);
 
@@ -60,8 +65,8 @@ public class DependencyTracker {
             CAT.error("Error adding Dependency: empty path"); 
             return "1"; 
         }
-        Path relativePath   = PathFactory.getInstance().createPath(path);
-        Path relativeParent = parent_path.equals("") ? null : PathFactory.getInstance().createPath(parent_path);
+        FileResource relativePath   = ResourceUtil.getFileResourceFromDocroot(path);
+        FileResource relativeParent = parent_path.equals("") ? null : ResourceUtil.getFileResourceFromDocroot(parent_path);
         try {
             logTyped(type, relativePath, "", "", relativeParent, parent_part, parent_theme, target);
             return "0";
@@ -71,17 +76,17 @@ public class DependencyTracker {
         }
     }
     
-    public static void logTyped(String type,Path path, String part, String theme,
-                                Path parent_path, String parent_part, String parent_theme,
+    public static void logTyped(String type, FileResource path, String part, String theme,
+                                FileResource parent_path, String parent_part, String parent_theme,
                                 VirtualTarget target) {
         if (CAT.isDebugEnabled()) {
             String project = target.getTargetGenerator().getName();
             CAT.debug("Adding dependency to AuxdependencyManager :+\n"+
                       "Type       = " + type + "\n" +
-                      "Path       = " + path.getRelative() + "\n" +
+                      "Path       = " + path.toURI().getPath().substring(1) + "\n" +
                       "Part       = " + part + "\n" +
                       "Theme      = " + theme + "\n" +
-                      "ParentPath = " + ((parent_path == null)? "null" : parent_path.getRelative()) + "\n" +
+                      "ParentPath = " + ((parent_path == null)? "null" : parent_path.toURI().getPath().substring(1)) + "\n" +
                       "ParentPart = " + parent_part + "\n" +
                       "ParentProd = " + parent_theme + "\n" +
                       "Project    = " + project + "\n");

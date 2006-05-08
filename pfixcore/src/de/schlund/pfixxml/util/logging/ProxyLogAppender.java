@@ -23,10 +23,11 @@ import org.apache.log4j.Level;
 import org.apache.log4j.spi.LoggingEvent;
 
 /**
- * Special log4j appender, that passes the logging event to commons-logging.
- * Of course, this appender should not be used, if commons-logging is
- * configured to use log4j itself, as this configuration will result in a
- * logging loop.
+ * Special log4j appender, that passes the logging event to the
+ * {@link de.schlund.pfixxml.util.logging.ProxyLogUtil} class.
+ * This appender should only if the webapplication's instance
+ * of log4j cannot log itself (e.g. because the application is in
+ * a packed WAR file}.
  * 
  * @author Sebastian Marsching <sebastian.marsching@1und1.de>
  */

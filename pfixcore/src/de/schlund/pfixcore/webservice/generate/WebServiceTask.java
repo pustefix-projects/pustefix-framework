@@ -52,8 +52,10 @@ import de.schlund.pfixcore.webservice.config.ConfigProperties;
 import de.schlund.pfixcore.webservice.config.Configuration;
 import de.schlund.pfixcore.webservice.config.GlobalServiceConfig;
 import de.schlund.pfixcore.webservice.config.ServiceConfig;
-import de.schlund.pfixxml.PathFactory;
 import de.schlund.pfixxml.config.CustomizationHandler;
+import de.schlund.pfixxml.config.GlobalConfig;
+import de.schlund.pfixxml.config.GlobalConfigurator;
+import de.schlund.pfixxml.resources.ResourceUtil;
 import de.schlund.pfixxml.util.TransformerHandlerAdapter;
 
 /**
@@ -131,7 +133,12 @@ public class WebServiceTask extends Task {
                     if(!globPropsFile.exists() || globPropsFile.lastModified()<wsConfFile.lastModified()) propsChanged=true;
                     
                     // Transform XML, creating temporary property file
-                    PathFactory.getInstance().init(prjdir.getAbsolutePath());
+                    try {
+                        GlobalConfigurator.setDocroot(prjdir.getAbsolutePath());
+                    } catch (IllegalStateException e) {
+                        // Ignore exception as there is no problem
+                        // if the docroot has already been configured
+                    }
                     File tempFile = null;
                     XMLReader xreader;
                     try {
@@ -166,9 +173,8 @@ public class WebServiceTask extends Task {
                         try {
                             xreader.parse(new InputSource(new FileInputStream(wsConfFile)));
                             Transformer trans = tf.newTransformer(new StreamSource(
-                                    PathFactory.getInstance().createPath(
-                                            "core/build/create_webservice.xsl").resolve()));
-                            trans.setParameter("docroot", PathFactory.getInstance().createPath("").resolve().getAbsolutePath());
+                                    ResourceUtil.getFileResourceFromDocroot("core/build/create_webservice.xsl").toURL().toString()));
+                            trans.setParameter("docroot", GlobalConfig.getDocroot());
                             trans.transform(new DOMSource(dr.getNode()), sr);
                         } catch (Exception e) {
                             throw new BuildException("Error on reading config file " + wsConfFile.getAbsolutePath(), e);

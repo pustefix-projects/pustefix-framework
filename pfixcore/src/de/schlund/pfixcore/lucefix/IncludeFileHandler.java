@@ -29,7 +29,7 @@ import org.xml.sax.SAXException;
 import org.xml.sax.ext.LexicalHandler;
 import org.xml.sax.helpers.DefaultHandler;
 
-import de.schlund.pfixxml.PathFactory;
+import de.schlund.pfixxml.resources.FileResource;
 
 /**
  * @author schuppi
@@ -38,9 +38,9 @@ import de.schlund.pfixxml.PathFactory;
 public class IncludeFileHandler extends DefaultHandler implements LexicalHandler {
 
 
-    public IncludeFileHandler(String path, long lastTouchOfFile) {
-        this.lasttouch = lastTouchOfFile;
-        this.path = PathFactory.getInstance().makePathStringRelative(path);
+    public IncludeFileHandler(FileResource file) {
+        this.lasttouch = file.lastModified();
+        this.path = file.toURI().getPath().substring(1);
         alleDokumente = new Vector();
     }
 

@@ -25,7 +25,7 @@ import org.springframework.context.ApplicationContext;
 
 import de.schlund.pfixcore.editor2.core.spring.EditorApplicationContext;
 import de.schlund.pfixcore.editor2.core.spring.PustefixTargetUpdateServiceImpl;
-import de.schlund.pfixxml.PathFactory;
+import de.schlund.pfixxml.config.GlobalConfig;
 
 /**
  * Utility class used to create a Spring ApplicationContext at startup and
@@ -93,8 +93,14 @@ public final class EditorApplicationContextFactory implements Runnable {
             Logger.getLogger(this.getClass()).fatal(err);
         }
         try {
+            String docroot = GlobalConfig.getDocroot();
+            if (docroot == null) {
+                String err = "Docroot has to be set! Editor is not supported in WAR mode!";
+                Logger.getLogger(this.getClass()).fatal(err);
+                throw new IllegalStateException(err);
+            }
             EditorApplicationContext context = 
-                new EditorApplicationContext(configFile, PathFactory.getInstance().createPath("").getBase().getAbsolutePath());
+                new EditorApplicationContext(configFile, docroot);
             this.appContext = context;
             Logger.getLogger(this.getClass()).info("Initialized ApplicationContext for editor");
         } catch (RuntimeException e) {

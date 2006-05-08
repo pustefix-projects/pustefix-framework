@@ -1,3 +1,22 @@
+2006-05-08  Sebastian Marsching  <sebastian.marsching@1und1.de>
+
+	* skel/build-skel.xml: 
+	Create empty log directory in WAR file so that logging works
+	out of the box when it is unpacked.
+	Added dependency on generate target to webapp target to make sure
+	all targets are packed into the WAR archive and no runtime
+	generation is needed. This is essential for Pustefix to work
+	when it is running out of a packed WAR archive.
+	
+	* src/*:
+	Removed use of Path and PathFactory from all core classes, using
+	the new FileResource and ResourceUtil classes instead.
+	Made some more modifications to the logging system in order
+	to make it work in combination with Apache Tomcat's logging.
+	
+	* tests/*:
+	Changed tests to use FileResource instead of Path objects
+
 2006-04-28  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
 	* src/de/schlund/pfixcore/util/XsltCustomizeXmlTask.java: Renamed task

@@ -14,6 +14,7 @@ import org.w3c.dom.Document;
 
 import de.schlund.pfixxml.PathFactory;
 import de.schlund.pfixxml.XMLException;
+import de.schlund.pfixxml.resources.ResourceUtil;
 import de.schlund.pfixxml.util.Path;
 import de.schlund.pfixxml.util.Xml;
 
@@ -33,7 +34,7 @@ public class TargetGeneratorTest extends TestCase {
         assertEquals(0, gen.getAllTargets().size());
         assertEquals("foo", gen.getName());
         assertEquals("bar", gen.getLanguage());
-        assertNotNull(gen.getDisccachedir().getRelative());
+        assertNotNull(gen.getDisccachedir().toURI().getPath());
     }
 
     public void testTarget() throws Exception {
@@ -106,7 +107,7 @@ public class TargetGeneratorTest extends TestCase {
         file = File.createTempFile("depend", "xml", new File("example"));
         file.deleteOnExit();
         Xml.serialize(doc, file, true, true);
-        gen = new TargetGenerator(Path.create(file.getPath()));
+        gen = new TargetGenerator(ResourceUtil.getFileResource(file.toURI()));
         return gen;
     }
 }

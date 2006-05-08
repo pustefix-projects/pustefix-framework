@@ -24,7 +24,9 @@ import de.schlund.pfixxml.util.logging.ProxyLogUtil.Level;
 
 /**
  * Logger for commons-logging that logs through ProxyLogUtil.
+ * Created by {@link de.schlund.pfixxml.util.logging.ProxyLogFactory}
  * 
+ * @see de.schlund.pfixxml.util.logging.ProxyLogFactory
  * @see de.schlund.pfixxml.util.logging.ProxyLogUtil
  * @author Sebastian Marsching <sebastian.marsching@1und1.de>
  */

@@ -144,7 +144,7 @@ public class IncludeFactoryServiceImpl implements IncludeFactoryService {
         if (auxdep.getType() == DependencyType.TEXT) {
             AuxDependencyInclude aux = (AuxDependencyInclude) auxdep;
             IncludePartThemeVariant variant = this.includefactory
-                    .getIncludeFile(aux.getPath().getRelative()).createPart(
+                    .getIncludeFile(aux.getPath().toURI().getPath().substring(1)).createPart(
                             aux.getPart()).createThemeVariant(
                             this.themefactory.getTheme(aux.getTheme()));
             return variant;

@@ -19,11 +19,12 @@
 
 package de.schlund.pfixcore.workflow;
 
-import de.schlund.pfixxml.PathFactory;
-import de.schlund.pfixxml.util.Path;
-import java.io.*;
-import java.util.*;
-import org.apache.log4j.*;
+import java.util.HashMap;
+
+import org.apache.log4j.Category;
+
+import de.schlund.pfixxml.resources.FileResource;
+import de.schlund.pfixxml.resources.ResourceUtil;
 
 
 /**
@@ -40,25 +41,28 @@ public class NavigationFactory {
     public static NavigationFactory getInstance() {
         return instance;
     }
-            
+    
     public synchronized Navigation getNavigation(String navifilename) throws Exception {
+        FileResource navifile = ResourceUtil.getFileResourceFromDocroot(navifilename);
+        return getNavigation(navifile);
+    }
+            
+    public synchronized Navigation getNavigation(FileResource navifile) throws Exception {
         Navigation navi = null;
-        Path       navipath = PathFactory.getInstance().createPath(navifilename);
-        File       navifile = navipath.resolve();
         long       modfile  = navifile.lastModified();
         long       currmod  = modfile;
         
-        navi = (Navigation) navis.get(navifilename);
+        navi = (Navigation) navis.get(navifile.toURI().toString());
         if (navi != null) {
-            currmod = ((Long) modts.get(navifilename)).longValue();
+            currmod = ((Long) modts.get(navifile.toURI().toString())).longValue();
         }
         
         if (navi == null || (currmod < modfile)) {
             CAT.warn("***** Creating Navigation object *******");
             long now = System.currentTimeMillis();
             navi     = new Navigation(navifile);
-            navis.put(navifilename, navi);
-            modts.put(navifilename, new Long(now));
+            navis.put(navifile.toURI().toString(), navi);
+            modts.put(navifile.toURI().toString(), new Long(now));
         }
         
         return navi;

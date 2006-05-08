@@ -807,11 +807,12 @@ or delete the DOCTYPE definition -->
     <property name="webapp.tomcat.dir" location="${basedir}/dist/tomcat"/>
   </target>    
 
-  <target name="webapp.dir" depends="webapp.init, webservice">
+  <target name="webapp.dir" depends="webapp.init, webservice, generate">
     <delete dir="${webapp.dir}"/>
     <mkdir dir="${webapp.dir}"/> 
     <mkdir dir="${webapp.pfixroot}"/>
     <mkdir dir="${webapp.pfixroot}/servletconf"/> 
+    <mkdir dir="${webapp.pfixroot}/servletconf/log"/> 
     <mkdir dir="${webapp.dir}/xml"/>
     <mkdir dir="${webapp.dir}/WEB-INF/classes"/>
     <mkdir dir="${webapp.dir}/WEB-INF/lib"/>

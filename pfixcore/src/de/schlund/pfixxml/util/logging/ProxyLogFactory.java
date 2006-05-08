@@ -35,8 +35,12 @@ public class ProxyLogFactory extends LogFactoryImpl {
     protected Constructor getLogConstructor() throws LogConfigurationException {
         try {
             if (ProxyLogUtil.getInstance().isConfiguredForCl()) {
+                // Commons-logging is available in the container
+                // so we want to use it
                 return ProxyLogObject.class.getConstructor(new Class[] {String.class});
             } else {
+                // Commons-logging is not available, so use log4j
+                // ignoring how it is configured
                 return Log4JLogger.class.getConstructor(new Class[] {String.class});
             }
         } catch (SecurityException e) {

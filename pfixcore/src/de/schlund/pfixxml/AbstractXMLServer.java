@@ -54,6 +54,8 @@ import de.schlund.pfixxml.perflogging.AdditionalTrailInfo;
 import de.schlund.pfixxml.perflogging.AdditionalTrailInfoFactory;
 import de.schlund.pfixxml.perflogging.PerfEvent;
 import de.schlund.pfixxml.perflogging.PerfEventType;
+import de.schlund.pfixxml.resources.FileResource;
+import de.schlund.pfixxml.resources.ResourceUtil;
 import de.schlund.pfixxml.serverutil.SessionAdmin;
 import de.schlund.pfixxml.serverutil.SessionHelper;
 import de.schlund.pfixxml.targets.PageInfo;
@@ -63,7 +65,6 @@ import de.schlund.pfixxml.targets.Target;
 import de.schlund.pfixxml.targets.TargetGenerationException;
 import de.schlund.pfixxml.targets.TargetGenerator;
 import de.schlund.pfixxml.targets.TargetGeneratorFactory;
-import de.schlund.pfixxml.util.Path;
 import de.schlund.pfixxml.util.Xml;
 import de.schlund.pfixxml.util.Xslt;
 
@@ -149,7 +150,7 @@ public abstract class AbstractXMLServer extends ServletManager {
     /**
      * The configuration file for the TargetGeneratorFacory.
      */
-    private Path    targetconf                 = null;
+    private FileResource targetconf            = null;
     private boolean render_external            = false;
     private boolean editmodeAllowed            = false;
     private boolean skip_getmodtimemaybeupdate = false;
@@ -194,7 +195,7 @@ public abstract class AbstractXMLServer extends ServletManager {
 //     }
 
     private void initValues() throws ServletException {
-        targetconf  = PathFactory.getInstance().createPath(this.getAbstractXMLServletConfig().getDependFile());
+        targetconf  = ResourceUtil.getFileResourceFromDocroot(this.getAbstractXMLServletConfig().getDependFile());
         servletname = this.getAbstractXMLServletConfig().getServletName();
 
         try {
@@ -700,7 +701,7 @@ public abstract class AbstractXMLServer extends ServletManager {
                 }
             }
         }
-        paramhash.put(TargetGenerator.XSLPARAM_TG, targetconf.getRelative());
+        paramhash.put(TargetGenerator.XSLPARAM_TG, targetconf.toURI().toString());
         paramhash.put(TargetGenerator.XSLPARAM_TKEY, VALUE_NONE);
 
         String session_to_link_from_external = SessionAdmin.getInstance().getExternalSessionId(session);

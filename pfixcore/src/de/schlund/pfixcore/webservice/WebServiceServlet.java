@@ -5,7 +5,6 @@ package de.schlund.pfixcore.webservice;
 
 import java.io.BufferedInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -27,7 +26,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
-import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.dom.DOMSource;
@@ -60,11 +58,12 @@ import de.schlund.pfixcore.webservice.monitor.Monitor;
 import de.schlund.pfixcore.webservice.monitor.MonitorHistory;
 import de.schlund.pfixcore.webservice.monitor.MonitorRecord;
 import de.schlund.pfixcore.workflow.Context;
-import de.schlund.pfixxml.PathFactory;
-import de.schlund.pfixxml.config.BuildTimeProperties;
 import de.schlund.pfixxml.config.CustomizationHandler;
+import de.schlund.pfixxml.config.GlobalConfig;
 import de.schlund.pfixxml.config.XMLPropertiesUtil;
 import de.schlund.pfixxml.loader.AppLoader;
+import de.schlund.pfixxml.resources.FileResource;
+import de.schlund.pfixxml.resources.ResourceUtil;
 import de.schlund.pfixxml.util.TransformerHandlerAdapter;
 
 /**
@@ -119,7 +118,7 @@ public class WebServiceServlet extends AxisServlet {
         String common = config.getInitParameter(Constants.PROP_COMMON_FILE);
         File tempFile = null;
         if (common != null) {
-            File commonFile = PathFactory.getInstance().createPath(common).resolve();
+            FileResource commonFile = ResourceUtil.getFileResourceFromDocroot(common);
             Properties globalProps;
             try {
                 globalProps = XMLPropertiesUtil.loadPropertiesFromXMLFile(commonFile);
@@ -128,11 +127,11 @@ public class WebServiceServlet extends AxisServlet {
             } catch (SAXException e) {
                 // Log and ignore
                 tempFile = null;
-                LOG.warn("Ignoring common properties file " + commonFile.getAbsolutePath());
+                LOG.warn("Ignoring common properties file " + commonFile.toString());
             } catch (IOException e) {
                 // Log and ignore
                 tempFile = null;
-                LOG.warn("Ignoring common properties file " + commonFile.getAbsolutePath());
+                LOG.warn("Ignoring common properties file " + commonFile.toString());
             }
         }
         if (tempFile != null) {
@@ -142,7 +141,7 @@ public class WebServiceServlet extends AxisServlet {
         File tempFile2 = null;
         String servlet = config.getInitParameter(Constants.PROP_SERVLET_FILE);
         if (servlet != null) {
-            File servletFile = PathFactory.getInstance().createPath(servlet).resolve();
+            FileResource servletFile = ResourceUtil.getFileResourceFromDocroot(servlet);
 
             // Transform XML, creating temporary property file
             XMLReader xreader;
@@ -176,14 +175,15 @@ public class WebServiceServlet extends AxisServlet {
                 xreader.setErrorHandler(cushandler);
                 xreader.setEntityResolver(cushandler);
                 try {
-                    xreader.parse(new InputSource(new FileInputStream(servletFile)));
-                    Transformer trans = tf.newTransformer(new StreamSource(
-                            PathFactory.getInstance().createPath(
-                                    "core/build/create_webservice.xsl").resolve()));
-                    trans.setParameter("docroot", PathFactory.getInstance().createPath("").resolve().getAbsolutePath());
+                    xreader.parse(new InputSource(servletFile.getInputStream()));
+                    Transformer trans = tf.newTransformer(new StreamSource(ResourceUtil.getFileResourceFromDocroot("core/build/create_webservice.xsl").toURL().toString()));
+                    String docroot = GlobalConfig.getDocroot();
+                    if (docroot != null) {
+                        trans.setParameter("docroot", docroot);
+                    }
                     trans.transform(new DOMSource(dr.getNode()), sr);
                 } catch (Exception e) {
-                    throw new ServletException("Error on reading config file " + servletFile.getAbsolutePath(), e);
+                    throw new ServletException("Error on reading config file " + servletFile.toString(), e);
                 }
             } else {
                 throw new ServletException(

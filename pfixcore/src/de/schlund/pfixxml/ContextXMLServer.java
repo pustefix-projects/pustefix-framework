@@ -19,7 +19,6 @@
 
 package de.schlund.pfixxml;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.Properties;
@@ -39,6 +38,7 @@ import de.schlund.pfixcore.scriptedflow.vm.ScriptVM;
 import de.schlund.pfixcore.scriptedflow.vm.VirtualHttpServletRequest;
 import de.schlund.pfixxml.config.AbstractXMLServletConfig;
 import de.schlund.pfixxml.config.ContextXMLServletConfig;
+import de.schlund.pfixxml.resources.FileResource;
 
 /**
  * @author jtl
@@ -280,7 +280,7 @@ public class ContextXMLServer extends AbstractXMLServer {
         return context;
     }
 
-    protected void reloadServletConfig(File configFile,
+    protected void reloadServletConfig(FileResource configFile,
             Properties globalProperties) throws ServletException {
         try {
             this.config = ContextXMLServletConfig.readFromFile(configFile,
@@ -288,11 +288,11 @@ public class ContextXMLServer extends AbstractXMLServer {
         } catch (SAXException e) {
             throw new ServletException(
                     "Could not read servlet configuration from "
-                            + configFile.getAbsolutePath(), e);
+                            + configFile.toString(), e);
         } catch (IOException e) {
             throw new ServletException(
                     "Could not read servlet configuration from "
-                            + configFile.getAbsolutePath(), e);
+                            + configFile.toString(), e);
         }
     }
 }

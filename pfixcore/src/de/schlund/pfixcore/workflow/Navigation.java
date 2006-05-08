@@ -19,19 +19,23 @@
 
 package de.schlund.pfixcore.workflow;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.log4j.Category;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+
+import de.schlund.pfixxml.resources.FileResource;
 import de.schlund.pfixxml.util.XPath;
 import de.schlund.pfixxml.util.Xml;
-import java.io.File;
-import java.util.*;
-import org.apache.log4j.*;
-import org.w3c.dom.*;
 
 public class Navigation {
     private Category CAT = Category.getInstance(Navigation.class.getName());
 
     private NavigationElement pageroot = new NavigationElement("__NONE__", "__NONE__");
     
-    public Navigation(File navifile) throws Exception {
+    public Navigation(FileResource navifile) throws Exception {
         Document        navitree = Xml.parseMutable(navifile);
         List            nl       = XPath.select(navitree, "/make/navigation/page");
         recursePagetree(pageroot, nl);

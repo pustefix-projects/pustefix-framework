@@ -40,8 +40,6 @@ import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 import org.xml.sax.helpers.DefaultHandler;
 
-import de.schlund.pfixxml.PathFactory;
-
 /**
  * Handler for conditional processing. This handler takes care that only the
  * parts matching certain conditions are parsed, where applicable. Please note
@@ -207,10 +205,10 @@ public class CustomizationHandler extends DefaultHandler {
             throw new RuntimeException(e);
         }
         Properties props = new Properties(buildTimeProps);
-        String docroot = PathFactory.getInstance().createPath("").resolve()
-                .getAbsolutePath()
-                + "/";
-        props.setProperty("docroot", docroot);
+        String docroot = GlobalConfig.getDocroot() + "/";
+        if (docroot != null) {
+            props.setProperty("docroot", docroot);
+        }
         this.xpfac = XPathFactory.newInstance();
         this.xpfac.setXPathVariableResolver(new PropertiesVariableResolver(
                 props));
@@ -312,8 +310,11 @@ public class CustomizationHandler extends DefaultHandler {
             } else if (this.namespaceContent != null
                     && localName.equals(this.elementDocroot)
                     && uri.equals(this.namespaceContent)) {
-                targetHandler.characters(docroot.toCharArray(), 0, docroot
-                        .length());
+                if (docroot != null) {
+                    targetHandler.characters(docroot.toCharArray(), 0, docroot.length());
+                } else {
+                    throw new SAXException("Element \"" + qName + "\" is not allowed in packed WAR mode. Please change your configuration to use relative paths instead.");
+                }
             } else if (this.namespaceContent != null
                     && localName.equals(this.elementFqdn)
                     && uri.equals(this.namespaceContent)) {

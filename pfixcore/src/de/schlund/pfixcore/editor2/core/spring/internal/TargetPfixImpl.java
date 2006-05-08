@@ -162,7 +162,7 @@ public class TargetPfixImpl extends AbstractTarget {
                 Logger.getLogger(this.getClass()).warn(msg);
             }
             file = new File(this.pathresolver.resolve(this.pfixTarget
-                    .getTargetGenerator().getDisccachedir().getRelative()
+                    .getTargetGenerator().getDisccachedir().toURI().getPath().substring(1)
                     + "/" + this.pfixTarget.getTargetKey()));
         }
         Object lock = this.filesystem.getLock(file);
@@ -326,7 +326,7 @@ public class TargetPfixImpl extends AbstractTarget {
                         if (auxdep.getType() == DependencyType.IMAGE) {
                             Image img = this.imagefactory
                                     .getImage(((AuxDependencyImage) auxdep)
-                                            .getPath().getRelative());
+                                            .getPath().toURI().getPath().substring(1));
                             deps.add(img);
                         }
                     }
@@ -356,7 +356,7 @@ public class TargetPfixImpl extends AbstractTarget {
                     if (auxdep.getType() == DependencyType.IMAGE) {
                         Image img = this.imagefactory
                         .getImage(((AuxDependencyImage) auxdep)
-                                .getPath().getRelative());
+                                .getPath().toURI().getPath().substring(1));
                         deps.add(img);
                     }
                 }

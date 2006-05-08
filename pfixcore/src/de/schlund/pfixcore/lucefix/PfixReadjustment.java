@@ -21,34 +21,22 @@ package de.schlund.pfixcore.lucefix;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
-import java.util.Properties;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.Vector;
 
 import org.apache.log4j.Category;
 import org.apache.lucene.document.DateField;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexReader;
 
-import de.schlund.pfixcore.editor2.core.dom.IncludePart;
 import de.schlund.pfixcore.editor2.core.dom.IncludePartThemeVariant;
 import de.schlund.pfixcore.editor2.core.dom.Project;
 import de.schlund.pfixcore.editor2.core.spring.ProjectFactoryService;
 import de.schlund.pfixcore.editor2.frontend.util.SpringBeanLocator;
-import de.schlund.pfixxml.PathFactory;
 import de.schlund.pfixxml.XMLException;
-import de.schlund.pfixxml.targets.AuxDependency;
-import de.schlund.pfixxml.targets.DependencyType;
-import de.schlund.pfixxml.targets.Target;
-import de.schlund.pfixxml.targets.VirtualTarget;
+import de.schlund.pfixxml.config.GlobalConfig;
 
 /**
  * @author schuppi
@@ -138,8 +126,8 @@ public class PfixReadjustment {
 					if (partsKnownByPustefix.contains(pfixTripel)) {
 
 						// checkTs
-						File f = PathFactory.getInstance().createPath(
-								currentdoc.get(PreDoc.FILENAME)).resolve();
+						File f = new File(GlobalConfig.getDocroot(),
+								currentdoc.get(PreDoc.FILENAME));
 						if (f.lastModified() != DateField
 								.stringToTime(currentdoc.get(PreDoc.LASTTOUCH))) {
 							// ts differs

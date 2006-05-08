@@ -19,7 +19,6 @@
 
 package de.schlund.pfixxml;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.Properties;
 
@@ -36,9 +35,9 @@ import de.schlund.pfixcore.workflow.ContextResourceManager;
 import de.schlund.pfixcore.workflow.DirectOutputPageMap;
 import de.schlund.pfixcore.workflow.DirectOutputState;
 import de.schlund.pfixcore.workflow.PageRequest;
-import de.schlund.pfixcore.workflow.PageRequestProperties;
 import de.schlund.pfixxml.config.DirectOutputServletConfig;
 import de.schlund.pfixxml.config.ServletManagerConfig;
+import de.schlund.pfixxml.resources.FileResource;
 
 /**
  * The <code>DirectOutputServlet</code> is a servlet that hijacks the {@link de.schlund.pfixcore.workflow.Context} of a
@@ -190,13 +189,13 @@ public class DirectOutputServlet extends ServletManager {
         return this.config;
     }
 
-    protected void reloadServletConfig(File configFile, Properties globalProperties) throws ServletException {
+    protected void reloadServletConfig(FileResource configFile, Properties globalProperties) throws ServletException {
         try {
             this.config = DirectOutputServletConfig.readFromFile(configFile, globalProperties);
         } catch (SAXException e) {
-            throw new ServletException("Error on reading config file " + configFile.getAbsolutePath(), e);
+            throw new ServletException("Error on reading config file " + configFile.toString(), e);
         } catch (IOException e) {
-            throw new ServletException("Could not read file " + configFile.getAbsolutePath(), e);
+            throw new ServletException("Could not read file " + configFile.toString(), e);
         }
         
     }

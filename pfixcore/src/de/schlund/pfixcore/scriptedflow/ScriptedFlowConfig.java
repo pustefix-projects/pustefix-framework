@@ -18,14 +18,14 @@
 
 package de.schlund.pfixcore.scriptedflow;
 
-import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
 import de.schlund.pfixcore.scriptedflow.compiler.Compiler;
 import de.schlund.pfixcore.scriptedflow.compiler.CompilerException;
 import de.schlund.pfixcore.scriptedflow.vm.Script;
-import de.schlund.pfixxml.PathFactory;
+import de.schlund.pfixxml.resources.FileResource;
+import de.schlund.pfixxml.resources.ResourceUtil;
 
 /**
  * Stores configuration for scripted flows.  
@@ -36,7 +36,7 @@ public class ScriptedFlowConfig {
     private class Triple {
         long mtime = -1;
 
-        File file = null;
+        FileResource file = null;
 
         Script script = null;
     }
@@ -65,7 +65,7 @@ public class ScriptedFlowConfig {
 
     public void addScript(String name, String path) {
         Triple t = new Triple();
-        t.file = PathFactory.getInstance().createPath(path).resolve();
+        t.file = ResourceUtil.getFileResourceFromDocroot(path);
         scripts.put(name, t);
     }
 }

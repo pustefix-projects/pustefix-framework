@@ -48,8 +48,8 @@ import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
 import org.xml.sax.helpers.XMLReaderFactory;
 
-import de.schlund.pfixxml.PathFactory;
 import de.schlund.pfixxml.config.CustomizationHandler;
+import de.schlund.pfixxml.config.GlobalConfigurator;
 import de.schlund.pfixxml.util.TransformerHandlerAdapter;
 
 /**
@@ -70,7 +70,12 @@ public class XsltCustomizeXmlTask extends XsltGenericTask {
         if (docroot == null) {
             throw new BuildException("Attribute docroot not set!");
         }
-        PathFactory.getInstance().init(docroot);
+        try {
+            GlobalConfigurator.setDocroot(docroot);
+        } catch (IllegalStateException e) {
+            // Ignore exception as there is no problem
+            // if the docroot has already been configured
+        }
     }
     
     public String getDocroot() {

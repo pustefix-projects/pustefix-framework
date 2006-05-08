@@ -19,10 +19,11 @@
 package de.schlund.pfixxml.util;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.StringReader;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -46,8 +47,8 @@ import org.xml.sax.InputSource;
 import com.icl.saxon.TransformerFactoryImpl;
 import com.icl.saxon.tinytree.TinyDocumentImpl;
 
-import de.schlund.pfixxml.PathFactory;
-import de.schlund.pfixxml.targets.DependencyType;
+import de.schlund.pfixxml.resources.FileResource;
+import de.schlund.pfixxml.resources.ResourceUtil;
 import de.schlund.pfixxml.targets.Target;
 import de.schlund.pfixxml.targets.TargetGenerationException;
 import de.schlund.pfixxml.targets.TargetImpl;
@@ -56,8 +57,6 @@ public class Xslt {
     private static final Category CAT = Category.getInstance(Xslt.class.getName());
 
     private static final TransformerFactory ifactory = new TransformerFactoryImpl();
-
-    private static final HashMap factorymap = new HashMap();
 
     //-- load documents
 
@@ -101,23 +100,20 @@ public class Xslt {
         }
     }
 
-    public static synchronized Templates loadTemplates(Path path) throws TransformerConfigurationException {
+    public static synchronized Templates loadTemplates(FileResource path) throws TransformerConfigurationException {
         return loadTemplates(path, null);
     }
 
-    public static synchronized Templates loadTemplates(Path path, TargetImpl parent) throws TransformerConfigurationException {
-        InputSource input = new InputSource("file://" + path.getBase() + "/" + path.getRelative());
-        Source src = new SAXSource(Xml.createXMLReader(), input);
-        TransformerFactory factory = (TransformerFactory) factorymap.get(path.getBase());
-
-        if (factory == null) {
-            // Create a new factory with the correct URIResolver.
-            factory = new TransformerFactoryImpl();
-            factory.setErrorListener(new PFErrorListener());
-            factorymap.put(path.getBase(), factory);
+    public static synchronized Templates loadTemplates(FileResource path, TargetImpl parent) throws TransformerConfigurationException {
+        InputSource input;
+        try {
+            input = new InputSource(path.toURL().toString());
+        } catch (MalformedURLException e) {
+            throw new TransformerConfigurationException("\"" + path.toString() + "\" does not respresent a valid file", e);
         }
-
-        factory.setURIResolver(new FileResolver(path.getBase(), parent));
+        Source src = new SAXSource(Xml.createXMLReader(), input);
+        TransformerFactory factory = ifactory;
+        factory.setURIResolver(new FileResolver(parent));
 
         try {
             Templates retval = factory.newTemplates(src);
@@ -164,12 +160,9 @@ public class Xslt {
     static class FileResolver implements URIResolver {
         private static final String SEP = File.separator;
         
-        private final File root;
-        
         private TargetImpl parent;
 
-        public FileResolver(File root, TargetImpl parent) {
-            this.root = root;
+        public FileResolver(TargetImpl parent) {
             this.parent = parent;
         }
 
@@ -181,18 +174,25 @@ public class Xslt {
         public Source resolve(String href, String base) throws TransformerException {
             URI uri;
             String path;
-            File file;
+            FileResource file;
+            boolean forcePfixroot = false;
             
             try {
                 uri = new URI(href);
             } catch (URISyntaxException e) {
                 return new StreamSource(href);
             }
-            if (uri.getScheme() != null) {
+            if (uri.getScheme() != null && !uri.getScheme().equals("pfixroot")) {
                 // we don't handle uris with an explicit scheme
                 return new StreamSource(href);
             }
             path = uri.getPath();
+            if (uri.getScheme() != null && uri.getScheme().equals("pfixroot")) {
+                forcePfixroot = true;
+                if (path.startsWith("/")) {
+                    path = path.substring(1);
+                }
+            }
             
             if (parent != null) {
                 Target target = parent.getTargetGenerator().getTarget(path);
@@ -219,21 +219,20 @@ public class Xslt {
                 // There is a bug in Saxon 6.5.3 which causes
                 // a NullPointerException to be thrown, if systemId
                 // is not set
-                source.setSystemId("file://" +
-                                   PathFactory.getInstance().createPath(target.getTargetGenerator().getDisccachedir().getRelative()
-                                                                        + File.separator + path).resolve().getAbsolutePath());
+                source.setSystemId(target.getTargetGenerator().getDisccachedir().toURI().toString() + "/" + path);
                 
                 // Register included stylesheet with target
                 parent.getAuxDependencyManager().addDependencyTarget(target.getTargetKey());
                 return source;
             }
             
+            file = ResourceUtil.getFileResourceFromDocroot(path);
             try {
-                file = Path.create(root, path).resolve();
-            } catch (IllegalArgumentException e) {
-                throw new TransformerException("cannot resolve " + href, e);
+                Source source = new StreamSource(file.toURL().toString());
+                return source;
+            } catch (MalformedURLException e) {
+                return null;
             }
-            return new StreamSource(file);
         }
     }
 

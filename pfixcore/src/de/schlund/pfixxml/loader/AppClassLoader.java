@@ -24,6 +24,9 @@ import java.net.*;
 import java.util.*;
 import org.apache.log4j.*;
 
+import de.schlund.pfixxml.resources.FileResource;
+import de.schlund.pfixxml.resources.ResourceUtil;
+
 /**
  * AppClassLoader.java 
  * 
@@ -123,7 +126,7 @@ public class AppClassLoader extends java.lang.ClassLoader {
     
     protected byte[] getClassData(String name) {
         byte[] data = null;
-        File file   = null;
+        FileResource file   = null;
         try {
             String pathName=name.replace('.','/');
             /**
@@ -157,10 +160,10 @@ public class AppClassLoader extends java.lang.ClassLoader {
             klass = klassgen.getJavaClass();
             data = klass.getBytes();
             */
-            file = new File(AppLoader.getInstance().getRepository(),pathName + ".class");
-            FileInputStream fis=new FileInputStream(file);
-            data=new byte[fis.available()];
-            fis.read(data);
+            file = ResourceUtil.getFileResource(AppLoader.getInstance().getRepository(), pathName + ".class");
+            InputStream is = file.getInputStream();
+            data=new byte[is.available()];
+            is.read(data);
             synchronized(modTimes) {
                 modTimes.put(file,new Long(file.lastModified()));
             }
