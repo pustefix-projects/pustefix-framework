@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <pfx:document xmlns:pfx="http://www.schlund.de/pustefix/core">
-  <pfx:head>
+  <head>
     <title>Pustefix Content Management System</title>
-  </pfx:head>
+  </head>
   <pfx:frameset rows="40,*">
     <pfx:frame name="top_navi" scrolling="no">
       <html>
@@ -32,9 +32,3 @@
     </pfx:frame>
   </pfx:frameset>
 </pfx:document>
-
-<!--
-Local Variables:
-mode: xml
-End:
--->

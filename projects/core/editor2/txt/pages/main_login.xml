@@ -8,86 +8,39 @@
   
   <part name="content">
     <theme name="default">
-        <center>
-          <div class="box" style="width:400px">
-             <h1>Welcome to the Pustefix CMS</h1>
-
+      <center>
+        <div class="box" style="width:400px">
+          <h1>Welcome to the Pustefix CMS</h1>
           <pfx:forminput target="_top" type="auth">
-
-                  <span style="color: #ffffff; font-weight: bold;">Enter your userdata below:</span>
-
-                  <table width="350">
-                    <pfx:checkerror>
-                      <tr>
-                        <td colspan="2">
-                          <table class="core_errorbox_table" width="100%">
-                            <pfx:checkfield name="auth.User"> 
-                              <pfx:error>
-                                <tr>
-                                  <td class="core_errorlabel_td">
-                                    <span class="core_errorlabel_text">
-                                      Username:
-                                    </span>
-                                  </td>
-                                  <td class="core_errortext_td">
-                                    <span class="core_errortext">
-			  														  <pfx:scode/>
-                                    </span>
-                                  </td>
-                                </tr>
-                              </pfx:error>
-                            </pfx:checkfield>
-                            <pfx:checkfield name="auth.Pass"> 
-                              <pfx:error>
-                                <tr>
-                                  <td class="core_errorlabel_td">
-                                    <span class="core_errorlabel_text">
-                                      Password:
-                                    </span>
-                                  </td>
-                                  <td class="core_errortext_td">
-                                    <span class="core_errortext">
-			  														  <pfx:scode/>
-                                    </span>
-                                  </td>
-                                </tr>
-                              </pfx:error>
-                            </pfx:checkfield>
-                          </table>
-                        </td>
-                      </tr>
-                    </pfx:checkerror>
-                    <tr>
-                      <td align="right" nowrap="nowrap">
-                        <pfx:label name="auth.User">Username:</pfx:label>
-                      </td>
-                      <td>
-                        <pfx:xinp class="editor_input" name="auth.User" size="20" type="text"/>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td align="right" nowrap="nowrap">
-                        <pfx:label name="auth.Pass">Password:</pfx:label>
-                      </td>
-                      <td>
-                        <pfx:xinp class="editor_input" name="auth.Pass" size="20" type="password"/>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td align="right" colspan="2">
-                        <br/><pfx:xinp class="editor_submit" type="submit">Login</pfx:xinp>
-                      </td>
-                    </tr>
-                  </table>
-
+            <span style="color: #ffffff; font-weight: bold;">Enter your userdata below:</span>
+            <table width="350">
+              <tr>
+                <pfx:checkfield name="auth.User">
+                  <td class="{$pfx_class}" align="right" nowrap="nowrap">Username:</td>
+                </pfx:checkfield>
+                <td>
+                  <pfx:xinp class="editor_input" name="auth.User" size="20" type="text"/>
+                </td>
+              </tr>
+              <errmsg name="auth.User"/>
+              <tr>
+                <pfx:checkfield name="auth.Pass">
+                  <td class="{$pfx_class}" align="right" nowrap="nowrap">Password:</td>
+                </pfx:checkfield>
+                <td>
+                  <pfx:xinp class="editor_input" name="auth.Pass" size="20" type="password"/>
+                </td>
+              </tr>
+              <errmsg name="auth.Pass"/>
+              <tr>
+                <td align="right" colspan="2">
+                  <br/><pfx:xinp class="editor_submit" type="submit">Login</pfx:xinp>
+                </td>
+              </tr>
+            </table>
           </pfx:forminput>
-          </div>
-        </center>
-      </theme>
-    
+        </div>
+      </center>
+    </theme>
   </part>
-</include_parts><!--
-Local Variables:
-mode: xml
-End:
--->
+</include_parts>

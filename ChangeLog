@@ -1,3 +1,48 @@
+2006-05-08  Jens Lautenbacher  <jtl@schlund.de>
+
+	* projects/core/xsl/forminput.xsl
+	* projects/core/xsl/include.xsl
+	* projects/core/xsl/master.xsl
+	* projects/core/xsl/navigation.xsl
+	* projects/core/xsl/utils.xsl: removed all deprecated templates
+	and put them into the two files below.
+
+	* projects/core/xsl/deprecated/deprecated_metatags.xsl: 
+	* projects/core/xsl/deprecated/deprecated_master.xsl: new
+	files. These hold all the deprecated templates from above.
+
+	* projects/sample1/txt/pages/main_encoding.xml
+	* projects/sample1/xml/one_frame.xml
+	* projects/sample1/xml/two_frames.xml
+	* projects/sample1/xsl/metatags.xsl
+	* projects/simpleform/xml/frame.xml
+	* projects/simplelink/xml/frame.xml
+	* projects/simplepage/xml/frame.xml
+	* projects/core/prjtemplates/config.tmpl
+	* projects/core/prjtemplates/depend.tmpl
+	* projects/core/prjtemplates/frame.tmpl
+	* projects/core/editor2/xsl/metatags.xsl: 
+	* projects/core/editor2/xml/two_frames_inactive.xml: 
+	* projects/core/editor2/xml/two_frames.xml: 
+	* projects/core/editor2/xml/three_frames.xml: 
+	* projects/core/editor2/txt/util_includes.xml: 
+	* projects/core/editor2/txt/styles.xml: 
+	* projects/core/editor2/txt/pages/main_useredit.xml: 
+	* projects/core/editor2/txt/pages/main_useradmin.xml: 
+	* projects/core/editor2/txt/pages/main_search.xml: 
+	* projects/core/editor2/txt/pages/main_login.xml: 
+	* projects/core/editor2/txt/pages/main_includes.xml: 
+	* projects/core/editor2/txt/pages/main_images.xml: 
+	* projects/core/editor2/txt/pages/main_dynincludes.xml: changed to
+	not use any deprecated tags anymore (+ some cosmetics).
+
+	* projects/core/script/baselib.js: is now officially deprecated...
+
+2006-05-05  Jens Lautenbacher  <jtl@schlund.de>
+
+	* projects/core/script/baselib.js: 
+	* projects/core/xsl/include.xsl: remove not working PNG for IE stuff
+
 2006-05-05  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
 	* projects/core/editor2/txt/pages/main_images.xml: 

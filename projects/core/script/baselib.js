@@ -1,3 +1,10 @@
+//  
+//  WARNING: This file is deprecated. It's only used for some 
+//           deprecated XSLT templates to work. 
+//
+//           DON'T USE IT IN NEW PROJECTS !!!!!
+//  
+
 //  Copyright (C) 2001-2003  Schlund + Partner AG
 //
 //  This library is free software; you can redistribute it and/or
@@ -13,48 +20,6 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with this library; if not, write to the Free Software
 //  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-
-var __js_png = {};
-  
-__js_png.hasActiveX = function()
-{
-  var e = null;
-
-  try {
-    e = new ActiveXObject("WMPlayer.OCX.7");
-  } 
-  catch(ex)
-  {
-    try {
-      e = new ActiveXObject("Microsoft.XMLHTTP");
-    } catch(ex) {};
-  };
-  
-  return e != null;
-};
-
-if (document.all && navigator.platform == "Win32" && /MSIE (5\.5)|[6789]/.test(navigator.userAgent) && !window.opera && __js_png.hasActiveX())
-{
-  __js_png.fix = function()
-  {
-    try
-    {
-      var t = window.event.srcElement;
-    
-      if (t.src.indexOf("blank") == -1 && t.runtimeStyle)
-      {
-        // t.runtimeStyle.filter = "progid:DXImageTransform.Microsoft.AlphaImageLoader(src='" + t.src + "',sizingMethod='scale')";
-        // t.src = "/core/img/blank.gif";    
-      };
-    }
-    catch(ex) {};
-  };
-}
-else
-{
-  __js_png.fix = function() {};
-};
-
 
 Array.prototype.mapKeys = function() {
     var c = new Array();

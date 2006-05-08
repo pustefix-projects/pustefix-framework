@@ -1,70 +1,67 @@
-<?xml version="1.0" encoding="ISO-8859-1"?><include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
   
   <part name="logoutbutton">
     <theme name="default">
-        <pfx:button mode="force" page="start" target="_top">Cancel</pfx:button>
-      </theme>
+      <pfx:button mode="force" page="start" target="_top">Cancel</pfx:button>
+    </theme>
   </part>
-
+  
   <part name="content">
     <theme name="default">
-        <center>
-          <pfx:forminput target="_top">
-            <br/><br/>
-            <table width="90%">
-              <tr>
-                <td align="center">
-                  <pfx:errorbox width="400"/>
-                </td>
-              </tr>
-              <tr>
-                <td>
-                  <span style="color: #ffffff; font-weight: bold;">Currently registered users:</span>
-                </td>
-              </tr>
-              <tr>
-                <td align="center">
-                  <pfx:include part="displayallusers"/>
-                </td>
-              </tr>
-            </table>
-            <br/><br/>
-            <table width="90%">
-              <tr>
-                <td>
-                  <span style="color: #ffffff; font-weight: bold;">Add new user:</span>
-                </td>
-              </tr>
-              <tr>
-                <td align="center">
-                  <table class="editor_box" width="100%">
-                    <tr>
-                      <td align="right">
-                        <pfx:label name="selectuser.Username">New user id:</pfx:label>
-                      </td>
-                      <td>
-                        <pfx:xinp class="editor_input" name="selectuser.Username" size="20" type="text"/>
-                      </td>
-                      <td align="right">
-                        <pfx:xinp class="editor_submit" type="submit" value="Create new user">
-                          <pfx:command name="SELWRP">selectuser</pfx:command>
-                          <pfx:argument name="__jumptopage">useredit</pfx:argument>
-                          <pfx:argument name="selectuser.Create">1</pfx:argument>
-                        </pfx:xinp>
-                      </td>
-                    </tr>
-                  </table>
-                </td>
-              </tr>
-            </table>
-          </pfx:forminput>
-        </center>
-      </theme>
+      <center>
+        <pfx:forminput target="_top">
+          <br/><br/>
+          <table width="90%">
+            <tr>
+              <td>
+                <span style="color: #ffffff; font-weight: bold;">Currently registered users:</span>
+              </td>
+            </tr>
+            <tr>
+              <td align="center">
+                <pfx:include part="displayallusers"/>
+              </td>
+            </tr>
+          </table>
+          <br/><br/>
+          <table width="90%">
+            <tr>
+              <td>
+                <span style="color: #ffffff; font-weight: bold;">Add new user:</span>
+              </td>
+            </tr>
+            <tr>
+              <td align="center">
+                <table class="editor_box" width="100%">
+                  <tr>
+                    <pfx:checkfield name="selectuser.Username">
+                      <td align="right" class="{$pfx_class}">New user id:</td>
+                    </pfx:checkfield>
+                    <td>
+                      <pfx:xinp class="editor_input" name="selectuser.Username" size="20" type="text"/>
+                    </td>
+                    <td align="right">
+                      <pfx:xinp class="editor_submit" type="submit" value="Create new user">
+                        <pfx:command name="SELWRP">selectuser</pfx:command>
+                        <pfx:argument name="__jumptopage">useredit</pfx:argument>
+                        <pfx:argument name="selectuser.Create">1</pfx:argument>
+                      </pfx:xinp>
+                    </td>
+                  </tr>
+                  <errmsg name="selectuser.Username" cols="3"/>
+                </table>
+              </td>
+            </tr>
+          </table>
+        </pfx:forminput>
+      </center>
+    </theme>
   </part>
   
   <part name="displayallusers">
     <theme name="default">
-        <table cellspacing="0" class="editor_box" style="padding:0px;" width="100%">
+      <table cellspacing="0" class="editor_box" style="padding:0px;" width="100%">
           <tr>
             <td class="editor_head">
               <b>UserId</b>
@@ -75,9 +72,12 @@
             <td class="editor_head" colspan="2">
               <b>Sect/Phone</b>
             </td>
-            <td align="right" class="editor_head">
-              <b><pfx:label name="deluser.Id">Delete user</pfx:label></b>
-            </td>
+            <pfx:checkfield name="delete.Username">
+              <td align="right" class="{$pfx_class} editor_head">
+                <b>Delete user</b>
+                <pfx:error><br/><pfx:scode/></pfx:error>
+              </td>
+            </pfx:checkfield>
           </tr>
           <ixsl:for-each select="/formresult/users/user">
             <ixsl:variable name="class">
@@ -125,8 +125,4 @@
       </theme>
   </part>
   
-</include_parts><!--
-Local Variables:
-mode: xml
-End:
--->
+</include_parts>
