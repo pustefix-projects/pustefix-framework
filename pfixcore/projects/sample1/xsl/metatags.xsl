@@ -20,23 +20,23 @@
   </xsl:template>
   
   <xsl:template match="errormsg">
-    <tr>
-      <td colspan="2">
-        <pfx:checkfield>
-          <pfx:name>
-            <xsl:choose>
-              <xsl:when test="@name"><xsl:value-of select="@name"/></xsl:when>
-              <xsl:otherwise><xsl:apply-templates select="./name/node()"/></xsl:otherwise>
-            </xsl:choose>
-          </pfx:name>
-          <pfx:error>
+    <pfx:checkfield>
+      <pfx:name>
+        <xsl:choose>
+          <xsl:when test="@name"><xsl:value-of select="@name"/></xsl:when>
+          <xsl:otherwise><xsl:apply-templates select="./name/node()"/></xsl:otherwise>
+        </xsl:choose>
+      </pfx:name>
+      <pfx:error>
+        <tr>
+          <td colspan="2">
             <div class="errmsg">
               <pfx:scode/>
             </div>
-          </pfx:error>
-        </pfx:checkfield>
-      </td>
-    </tr>
+          </td>
+        </tr>
+      </pfx:error>
+    </pfx:checkfield>
   </xsl:template>
 
 </xsl:stylesheet>

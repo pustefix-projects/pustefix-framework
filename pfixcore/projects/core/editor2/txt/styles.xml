@@ -449,32 +449,28 @@ div.editor_pagemessages_box {
 }
 
 
-        .core_errorbox_table   { background-color: #f2cf8a;
-                                 border-style:groove; border-width:2px;}
-        .core_errorlabel_td    { text-align: left; }
-        .core_errorlabel_text  { color: #cc0000; font-weight: bold; }
-        .core_errortext        { font-style: italic; }
+.PfxError  { color: #cc0000; font-weight: bold; }
 
-        .editor_box_alpha { border-style:solid; border-width:1px;
-                            padding: 0; border-color: black; }
-        .editor_box_alpha tr { padding: 0;}
-        .editor_box_alpha td { padding: 3px;}
-        
-        .editor_box_alpha tr td { padding: 10px;}
+.editor_box_alpha { border-style:solid; border-width:1px;
+                    padding: 0; border-color: black; }
+.editor_box_alpha tr { padding: 0;}
+.editor_box_alpha td { padding: 3px;}
 
-        .editor_main_emph { font-weight: bold; }
-        .editor_warn { color: #cc0000; font-weight: bold; padding: 5px;}
-        .editor_locked { color: #ff0000; font-weight: bold; }
+.editor_box_alpha tr td { padding: 10px;}
 
-        .editor_missing_img { color: #0000cc; font-weight: bold; }
-        .editor_missing_img_txt { color: #ffffff; font-weight: bold;
-                                  font-size: 14px; }
+.editor_main_emph { font-weight: bold; }
+.editor_warn { color: #cc0000; font-weight: bold; padding: 5px;}
+.editor_locked { color: #ff0000; font-weight: bold; }
 
-        .editor_dim { color:#445588; }
+.editor_missing_img { color: #0000cc; font-weight: bold; }
+.editor_missing_img_txt { color: #ffffff; font-weight: bold;
+                          font-size: 14px; }
 
-        .editor_page_old { font-weight: bold; font-style: italic; color:#aa3333; }
-        .editor_small { color: #000000; font-size: 9px;
-                        font-family: Verdana, Helvetica, Tahoma, Arial, sans-serif;}
+.editor_dim { color:#445588; }
+
+.editor_page_old { font-weight: bold; font-style: italic; color:#aa3333; }
+.editor_small { color: #000000; font-size: 9px;
+                font-family: Verdana, Helvetica, Tahoma, Arial, sans-serif;}
       </theme>
     
     

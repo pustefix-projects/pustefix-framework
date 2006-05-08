@@ -211,13 +211,6 @@
   <xsl:template match="pfx:rem">
   </xsl:template>
 
-  <xsl:template match="pfx:head">
-    <head>
-      <script language="JavaScript" src="/core/script/baselib.js" type="text/javascript"/>
-      <xsl:apply-templates select="./node()"/>
-    </head>
-  </xsl:template>
-  
   <xsl:template match="pfx:script">
     <script>
       <xsl:attribute name="language">JavaScript</xsl:attribute>
