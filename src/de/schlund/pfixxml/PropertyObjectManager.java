@@ -31,7 +31,6 @@ public class PropertyObjectManager {
 
     private        Category CAT = Category.getInstance(this.getClass());
     private static PropertyObjectManager instance=new PropertyObjectManager();
-    private        Map propMaps;
     private        Map confMaps;
     
     /**Returns PropertyObjectManager instance.*/
@@ -41,13 +40,7 @@ public class PropertyObjectManager {
     
     /**Constructor.*/
     PropertyObjectManager() {
-        propMaps = new WeakHashMap();
         confMaps = new WeakHashMap();
-    }
-    
-    /**Returns PropertyObject according to Properties and Class parameters. If it doesn't already exist, it will be created.*/
-    public PropertyObject getPropertyObject(Properties props,String className) throws Exception {
-        return getPropertyObject(props,Class.forName(className));
     }
     
     public ConfigurableObject getConfigurableObject(Object config, String className) throws Exception {
@@ -82,63 +75,5 @@ public class PropertyObjectManager {
             }
         }
         return confObj;
-    }
-    
-    /**Returns PropertyObject according to Properties and Class parameters. If it doesn't already exist, it will be created.*/
-    public PropertyObject getPropertyObject(Properties props,Class propObjClass) throws Exception {
-        HashMap        propObjs = null;
-        PropertyObject propObj  = null;
-        
-        propObjs = (HashMap) propMaps.get(props);
-        if (propObjs == null) {
-            synchronized (propMaps) {
-                propObjs = (HashMap) propMaps.get(props);
-                if (propObjs == null) {
-                    propObjs = new HashMap();
-                    propMaps.put(props,propObjs);
-                }
-            }
-        }
-
-        propObj = (PropertyObject) propObjs.get(propObjClass);
-        if (propObj == null) {
-            synchronized (propObjs) {
-                propObj = (PropertyObject) propObjs.get(propObjClass);
-                if (propObj == null) {
-                    CAT.warn("******* Creating new PropertyObject " + propObjClass.getName());
-                    propObj = (PropertyObject) propObjClass.newInstance();
-                    propObj.init(props);
-                    propObjs.put(propObjClass,propObj);
-                }
-            }
-        }
-        return propObj;
-
-        /*
-        synchronized (propMaps) {
-            propObjs = (HashMap) propMaps.get(props);
-            if (propObjs == null) {
-                propObjs = new HashMap();
-                propMaps.put(props,propObjs);
-            }
-        }
-        synchronized (propObjs) {
-            PropertyObject propObj = (PropertyObject) propObjs.get(propObjClass);
-            if (propObj == null) {
-            CAT.warn("******* Creating new PropertyObject " + propObjClass.getName());
-                propObj = (PropertyObject) propObjClass.newInstance();
-                propObj.init(props);
-                propObjs.put(propObjClass,propObj);
-            }
-            return propObj;
-         }
-        */
-    }
-    
-    /**Removes PropertyObjects for Properties.They are newly created on demand, i.e. as a result of subsequent getPropertyObject calls.*/
-    public void resetPropertyObjects(Properties props) {
-        synchronized (propMaps) {
-            propMaps.remove(props);
-        }
     }
 }
