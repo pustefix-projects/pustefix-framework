@@ -1,3 +1,15 @@
+2006-05-10  Sebastian Marsching  <sebastian.marsching@1und1.de>
+
+	* src/de/schlund/pfixcore/workflow/App/DefaultIWrapperState.java (getIHandlerContainer): 
+	* src/de/schlund/pfixcore/workflow/App/IHandlerContainerManager.java (init): 
+	* src/de/schlund/pfixxml/ContextXMLServer.java (tryReloadProperties): 
+	* src/de/schlund/pfixxml/PropertyObjectManager.java: 
+	Changed IHandlerContainerManager to take a dummy Context object during
+	initialization in order to fix problems with IHandlerContainerManager being
+	inadvently shared across contexts. Removed getPropertyObject(...) methods from
+	PropertyObjectManager as the cause for this bug was an unclean implemenation of
+	equals() in the Properties class.
+
 2006-05-08  Jens Lautenbacher  <jtl@schlund.de>
 
 	* projects/core/xsl/forminput.xsl
@@ -3348,7 +3360,7 @@
 	transformed into according SOAP_Call setEncoding() statements within
 	the webservice stub methods.
 
-2004-11-18  J�rg H�cker <haecker@schlund.de>
+2004-11-18  J???rg H???cker <haecker@schlund.de>
 
 	* src/de/schlund/pfixcore/util/email/EmailSender.java
 

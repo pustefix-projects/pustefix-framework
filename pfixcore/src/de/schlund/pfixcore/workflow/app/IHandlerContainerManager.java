@@ -25,7 +25,7 @@ import org.apache.log4j.Category;
 
 import de.schlund.pfixcore.workflow.Context;
 import de.schlund.pfixcore.workflow.PageRequest;
-import de.schlund.pfixxml.PropertyObject;
+import de.schlund.pfixxml.ConfigurableObject;
 import de.schlund.pfixxml.XMLException;
 
 /**
@@ -35,7 +35,7 @@ import de.schlund.pfixxml.XMLException;
  * @author <a href="mailto:jtl@schlund.de">Jens Lautenbacher</a>
  */
 
-public class IHandlerContainerManager implements PropertyObject {
+public class IHandlerContainerManager implements ConfigurableObject {
     private static Category LOG               = Category.getInstance(IHandlerContainerManager.class.getName());
     private static String   DEF_HDL_CONTAINER = "de.schlund.pfixcore.workflow.app.IHandlerSimpleContainer";
     /** Store the already created IHandlerContainer here, use the page as key*/
@@ -44,7 +44,9 @@ public class IHandlerContainerManager implements PropertyObject {
     /**
      * @see de.schlund.pfixxml.PropertyObject#init(Properties)
      */
-    public void init(Properties properties) {
+    public void init(Object dummy) {
+    	    // Take a dummy context object, which is only used to ensure
+    	    // there is one instance if IHandlerContainerManager per context
         // nothing :-)
     }
     

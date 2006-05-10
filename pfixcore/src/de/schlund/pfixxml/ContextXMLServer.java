@@ -119,8 +119,6 @@ public class ContextXMLServer extends AbstractXMLServer {
 
     protected boolean tryReloadProperties(PfixServletRequest preq) throws ServletException {
         if (super.tryReloadProperties(preq)) {
-            //Reset PropertyObjects
-            PropertyObjectManager.getInstance().resetPropertyObjects(this.getContextXMLServletConfig().getProperties());
             //Reset Contexts
             synchronized (contextMap) {
                 //Set name of Context class, compare with old name
