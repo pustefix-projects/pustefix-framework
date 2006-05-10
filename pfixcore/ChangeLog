@@ -6,7 +6,7 @@
 	* src/de/schlund/pfixxml/PropertyObjectManager.java: 
 	Changed IHandlerContainerManager to take a dummy Context object during
 	initialization in order to fix problems with IHandlerContainerManager being
-	inadvently shared across contexts. Removed getPropertyObject(...) methods from
+	inadvertently shared across contexts. Removed getPropertyObject(...) methods from
 	PropertyObjectManager as the cause for this bug was an unclean implemenation of
 	equals() in the Properties class.
 
