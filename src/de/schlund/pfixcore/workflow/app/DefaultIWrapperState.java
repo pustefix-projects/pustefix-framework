@@ -101,30 +101,19 @@ public class DefaultIWrapperState extends StateImpl {
             } else {
                 CAT.debug("    => No error happened during work ...");
                 if (!context.isJumptToPageSet() && container.stayAfterSubmit()) {
-                    CAT.debug("... Container says he wants to stay on this page and no jumptopage is set:");
-                    CAT.debug("    => retrieving current status.");
-                    
-                    pe = new PerfEvent(PerfEventType.PAGE_RETRIEVECURRENTSTATUS, context.getCurrentPageRequest().toString());
-                    pe.start();
-                    container.retrieveCurrentStatus();
-                    pe.save();
-                    //SUCCESS_STAY
+                    CAT.debug("... Container says he wants to stay on this page and no jumptopage is set: Setting prohibitcontinue=true");
                     context.prohibitContinue();
                 } else {
-                    CAT.debug("... Container says he is ready");
-                    CAT.debug("    => end of submit reached successfully. Determine from status of context if we can continue:");
-                    if (!canContinue(context)) {
-                        CAT.debug(">>> We can't continue:");
-                        CAT.debug("    => retrieving current status and stay here...");
-                        pe = new PerfEvent(PerfEventType.PAGE_RETRIEVECURRENTSTATUS, context.getCurrentPageRequest().toString());
-                        
-                        pe.start();
-                        container.retrieveCurrentStatus();
-                        pe.save();
-                        //SUCESS_STAY_NOW
-                        context.prohibitContinue();
-                    }
+                    CAT.debug("... Container says he is ready.");
                 }
+
+                CAT.debug("    => end of submit reached successfully.");
+                CAT.debug("    => retrieving current status.");
+                pe = new PerfEvent(PerfEventType.PAGE_RETRIEVECURRENTSTATUS, context.getCurrentPageRequest().toString());
+                pe.start();
+                container.retrieveCurrentStatus();
+                pe.save();
+
                 rfinal.onSuccess(container);
             }
         } else if (isDirectTrigger(context, preq) || context.finalPageIsRunning() || context.flowIsRunning()) {
@@ -151,11 +140,15 @@ public class DefaultIWrapperState extends StateImpl {
         } else {
             throw new XMLException("This should not happen: No submit trigger, no direct trigger, no final page and no workflow???");
         }
-        // We need to check because in the success case, there's no need to add anything to the
-        // SPDocument, as we will advance in the pageflow anyway; so only add it when we stop OR
-        // when we need the Status of the Context Resources for the "FlowStepWantsPostProcess" case,
-        // to decide where to jump to.
-        if (context.isProhibitContinueSet() || context.currentFlowStepWantsPostProcess()) {
+
+        // We want to optimise away the case where the context tells us that we don't need to supply
+        // a full document as the context will - because of the current state of the context
+        // itself - not use the returned document for displaying the page anyway. The context is
+        // responsible to only return false when it can be 100% sure that the document is not needed.
+        // Most notably this is NOT the case whenever the current flow step has pageflow actions attached, because
+        // those can possibly call prohibitContinue() which in turn would force the context to display the current page.
+        // See the implementation of Context.stateMustSupplyFullDocument() for details.
+        if (context.stateMustSupplyFullDocument()) {
             container.addStringValues();
             container.addIWrapperStatus();
             renderContextResources(context, resdoc);
@@ -164,28 +157,6 @@ public class DefaultIWrapperState extends StateImpl {
         return resdoc;
     }
     
-  
-    protected static boolean canContinue(Context context) {
-        if (context.isProhibitContinueSet()) {
-            CAT.debug(">>> Have already set prohibitcontinue to true!");
-            CAT.debug("    => must stay on this page");
-            return false;
-        } else if (context.isCurrentPageRequestInCurrentFlow()) {
-            CAT.debug(">>> Page is part of current pageflow:");
-            CAT.debug("    => continue with pagflow...");
-            return true;
-        } else if (context.isCurrentPageFlowRequestedByUser()) {
-            CAT.debug(">>> Page not part of current pageflow, but flow is explicitely set from request data:");
-            CAT.debug("    => continue with pagflow...");
-            return true;
-        } else if (context.isJumptToPageSet()) {
-            CAT.debug(">>> Have been called with a jumptopage set:");
-            CAT.debug("    => continue so we can jump to this page...");
-            return true;
-        }
-        return false;
-    }
-
     // Eeek, unfortunately we can't use a flyweight here... (somewhere we need to store state after all)
     protected IWrapperContainer getIWrapperContainer(Context context) throws XMLException  {
         PageRequestConfig config    = context.getConfigForCurrentPageRequest();

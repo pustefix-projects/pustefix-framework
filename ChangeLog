@@ -1,3 +1,18 @@
+2006-05-12  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixcore/workflow/Context.java (Context): made private.
+	(Context::documentFromFlow): move the logic to stay on the current
+	page if the page is neither part of the pageflow nor the pageflow
+	has been explicitely set by the client for this request into the
+	context's pageflow handling.
+
+	* src/de/schlund/pfixcore/workflow/app/DefaultIWrapperState.java
+	(canContinue): removed. We want to aggregate such logic in the
+	Context instead.
+	(DefaultIWrapperState::getDocument): use
+	context.stateMustSupplyFullDocument() instead of canContinue()
+	here. 
+
 2006-05-12  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
 	* src/de/schlund/pfixcore/workflow/app/DefaultIWrapperState.java (getIHandlerContainer): 
