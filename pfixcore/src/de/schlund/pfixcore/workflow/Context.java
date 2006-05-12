@@ -554,7 +554,7 @@ public class Context implements AppContext {
         return prohibitcontinue;
     }
     
-    public boolean isForceStopAtNextStepSet() {
+    private boolean isForceStopAtNextStepSet() {
         return stopnextforcurrentrequest;
     }
 
@@ -658,6 +658,28 @@ public class Context implements AppContext {
         autoinvalidate_navi = invalidate;
     }
     
+    public boolean stateMustSupplyFullDocument() {
+        if (prohibitcontinue) {
+            // We will use the returned document no matter what else happens.
+            return true;
+        }
+        if (currentFlowStepWantsPostProcess()) {
+            // We need the full doc for the post processing no matter what else happens.
+            return true;
+        }
+        if (isJumptToPageFlowSet()) {
+            // We will jump to some page and not use the returned document for creating the UI.
+            return false;
+        }
+        if (isCurrentPageRequestInCurrentFlow() || isCurrentPageFlowRequestedByUser()) {
+            // The next page to display is determined from the pageflow
+            return false;
+        }
+        
+        // better create the document one time too much...
+        return true;
+    }
+
     private boolean checkNeedsData(PageRequest page, PageRequestStatus status) throws Exception {
         PageRequest saved  = currentpagerequest;
         currentpagerequest = page;
@@ -748,8 +770,7 @@ public class Context implements AppContext {
             }
 
             resdoc = documentFromCurrentStep();
-            if ( // !prohibitcontinue &&
-                currentpageflow != null && currentpageflow.containsPage(currentpagerequest.getRootName())) {
+            if (currentpageflow != null && currentpageflow.containsPage(currentpagerequest.getRootName())) {
                 FlowStep step = currentpageflow.getFlowStepForPage(currentpagerequest.getRootName());
                 step.applyActionsOnContinue(this, resdoc);
             }
@@ -772,10 +793,18 @@ public class Context implements AppContext {
                 LOG.debug("******* JUMPING to [" + currentpagerequest + "] *******\n");
                 document = documentFromFlow();
             } else if (currentpageflow != null) {
-                LOG.debug("* [" + currentpagerequest + "] signalled success, starting page flow process");
-                document = runPageFlow(false);
+                if (pageflow_requested_by_user || currentpageflow.containsPage(currentpagerequest.getRootName())) {
+                    LOG.debug("* [" + currentpagerequest + "] signalled success, starting page flow process");
+                    document = runPageFlow(false);
+                } else {
+                    LOG.debug("* [" + currentpagerequest + "] signalled success, but is neither member of flow [" +
+                              currentpageflow + "] nor is this flow explicitely requested, skipping page flow.");
+                    document = resdoc.getSPDocument();
+                }
             } else {
-                throw new XMLException("*** ERROR! *** [" + currentpagerequest + "] signalled success, but current page flow == null!");
+                // throw new XMLException("*** ERROR! *** [" + currentpagerequest + "] signalled success, but current page flow == null!");
+                LOG.debug("* [" + currentpagerequest + "] signalled success, but page flow == null, skipping page flow.");
+                document = resdoc.getSPDocument();
             }
         } else {
             LOG.debug("* Page is determined from flow [" + currentpageflow + "], starting page flow process");
