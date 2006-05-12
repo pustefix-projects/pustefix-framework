@@ -132,10 +132,10 @@ public class DirectOutputServlet extends ServletManager {
          // check the authentification first....
          if (context.checkAuthorization(false) != null) return;
          
-         PageRequest       page  = PageRequest.createPageRequest(preq, null, null);
+         PageRequest       page  = new PageRequest(preq.getPageName());
          DirectOutputState state = pagemap.getDirectOutputState(page);
-         Properties        props = config.getPageRequest(page.getName()).getProperties();
          if (state != null) {
+             Properties        props = config.getPageRequest(page.getName()).getProperties();
              boolean allowed = state.isAccessible(crm, props, preq);
              if (allowed) {
                  try {

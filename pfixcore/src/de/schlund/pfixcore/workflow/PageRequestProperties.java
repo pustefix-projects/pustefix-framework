@@ -21,16 +21,12 @@ package de.schlund.pfixcore.workflow;
 
 
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Properties;
 
-import org.apache.log4j.Category;
+import org.apache.log4j.Logger;
 
 import de.schlund.pfixxml.ConfigurableObject;
 import de.schlund.pfixxml.Variant;
 import de.schlund.pfixxml.config.ContextConfig;
-import de.schlund.pfixxml.config.PageRequestConfig;
 
 /**
  * PageRequestProperties.java
@@ -43,53 +39,17 @@ import de.schlund.pfixxml.config.PageRequestConfig;
  */
 
 public class PageRequestProperties implements ConfigurableObject {
-    private HashSet            preqnames        = new HashSet();
-    private HashMap            preqprops        = new HashMap();
-    private HashMap            variantpagecache = new HashMap();
-    private Category           CAT              = Category.getInstance(this.getClass());
+    private ContextConfig      contextConfig;
+    private HashMap<String, String> variantpagecache = new HashMap<String, String>();
+    private Logger             LOG              = Logger.getLogger(this.getClass());
     public static final String PREFIX           = "pagerequest";
     
     public void init(Object confObj) throws Exception {
-        ContextConfig config = (ContextConfig) confObj;
-        
-        PageRequestConfig[] pageConfigs = config.getPageRequests();
-        
-        for (int i = 0; i < pageConfigs.length; i++) {
-            PageRequestConfig pageConfig = pageConfigs[i];
-            String fullname = pageConfig.getPageName();
-            preqnames.add(fullname);
-            preqprops.put(fullname, pageConfig.getProperties());
-        }
-    }
-
-    public String toString() {
-        StringBuffer buff = new StringBuffer();
-        for (Iterator i = preqprops.keySet().iterator(); i.hasNext();) {
-            String     key   = (String) i.next();
-            Properties props = (Properties) preqprops.get(key);
-            buff.append(key + " ==> " + props.toString() + "\n");
-        }
-        return buff.toString();
-    }
-
-    public Properties getPropertiesForPageRequest(PageRequest preq) {
-    	return getPropertiesForPageRequestName(preq.getName());
-    }
-
-    public Properties getPropertiesForPageRequestName(String name) {
-    	return (Properties) preqprops.get(name);
-    }
-
-    public boolean pageRequestIsDefined(PageRequest preq) {
-        return pageRequestNameIsDefined(preq.getName());
+        contextConfig = (ContextConfig) confObj;
     }
 
     public boolean pageRequestNameIsDefined(String fullname) {
-        return preqnames.contains(fullname);
-    }
-
-    public String[] getAllDefinedPageRequestNames() {
-        return (String[]) preqnames.toArray(new String[] {});
+        return (contextConfig.getPageRequest(fullname) != null);
     }
 
     public String getVariantMatchingPageRequestName(String name, Variant variant) {
@@ -105,11 +65,11 @@ public class PageRequestProperties implements ConfigurableObject {
                     for (int i = 0; i < variant_arr.length; i++) {
                         String tmp = name + "::" + variant_arr[i];
                         if (pageRequestNameIsDefined(tmp)) {
-                            CAT.debug("=== Found PR for '" + tmp + "' ===");
+                            LOG.debug("=== Found PR for '" + tmp + "' ===");
                             fullname = tmp;
                             break;
                         } else {
-                            CAT.debug("=== PR NOT FOUND for '" + tmp + "' ===");
+                            LOG.debug("=== PR NOT FOUND for '" + tmp + "' ===");
                         }
                     }
                     if (fullname == null) {

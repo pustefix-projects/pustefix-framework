@@ -64,6 +64,7 @@ public class PfixServletRequest {
     private static final String   PROP_TMPDIR         = "pfixservletrequest.tmpdir";
     private static final String   PROP_MAXPARTSIZE    = "pfixservletrequest.maxpartsize";
     private static final String   ATTR_LASTEXCEPTION  = "REQ_LASTEXCEPTION";
+    public  static final String   PAGEPARAM           = "__page";
     private static String         DEF_MAXPARTSIZE     = "" + (10 * 1024 * 1024); // 10 MB
     private HashMap               parameters          = new HashMap();
     private Category              CAT                 = Category.getInstance(this.getClass());
@@ -500,6 +501,36 @@ public class PfixServletRequest {
                     }
                 }
             }
+        }
+    }
+    
+    /**
+     * Extracts page name from pathinfo of this request.
+     * 
+     * @return page name for the given request or <code>null</code>
+     *         if no page name has been specified or specified page name
+     *         has invalid scheme
+     */
+    public String getPageName() {
+        String       pagename = "";
+        String       pathinfo = getPathInfo();
+        RequestParam name     = getRequestParam(PAGEPARAM);
+        if (name != null && !name.getValue().equals("")) {
+            pagename = name.getValue();
+        } else if (pathinfo != null && !pathinfo.equals("") && 
+                   pathinfo.startsWith("/") && pathinfo.length() > 1) {
+            pagename = pathinfo.substring(1);
+        } else {
+            return null;
+        }
+        // We must remove any '::' that may have slipped in through the request
+        if (pagename.indexOf("::") > 0) {
+            pagename = pagename.substring(0, pagename.indexOf("::"));
+        }
+        if (pagename.length() > 0) {
+            return pagename;
+        } else {
+            return null;
         }
     }
     
