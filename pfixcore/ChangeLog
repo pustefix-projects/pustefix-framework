@@ -1,5 +1,9 @@
 2006-05-12  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
+	* src/de/schlund/pfixxml/DirectOutputServlet.java (process): 
+	Return error pages except of throwing exceptions when a page
+	is not found or no valid session is supplied
+
 	* src/de/schlund/pfixcore/workflow/PageRequestProperties.java (getAllDefinedPageRequestNames): 
 	Removed unused methods and narrowed functionality to make the
 	class less complex and prepare for its removal

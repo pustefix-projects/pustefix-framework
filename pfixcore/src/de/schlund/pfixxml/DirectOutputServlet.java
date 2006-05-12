@@ -36,7 +36,6 @@ import de.schlund.pfixcore.workflow.ContextResourceManager;
 import de.schlund.pfixcore.workflow.DirectOutputPageMap;
 import de.schlund.pfixcore.workflow.DirectOutputState;
 import de.schlund.pfixcore.workflow.PageRequest;
-import de.schlund.pfixcore.workflow.PageRequestProperties;
 import de.schlund.pfixxml.config.DirectOutputServletConfig;
 import de.schlund.pfixxml.config.ServletManagerConfig;
 
@@ -118,6 +117,7 @@ public class DirectOutputServlet extends ServletManager {
          if (session == null) {
              //throw new RuntimeException("*** didn't get Session from request. ***");
              CAT.error("*** didn't get Session from request. Stop processing. ***");
+             res.sendError(HttpServletResponse.SC_FORBIDDEN, "No session supplied");
              return;
          }
          
@@ -130,9 +130,19 @@ public class DirectOutputServlet extends ServletManager {
          ContextResourceManager crm = context.getContextResourceManager();
 
          // check the authentification first....
-         if (context.checkAuthorization(false) != null) return;
+         if (context.checkAuthorization(false) != null) {
+             CAT.info("Got request without authorization");
+             res.sendError(HttpServletResponse.SC_FORBIDDEN, "Must authenticate first");
+             return;
+         }
          
-         PageRequest       page  = new PageRequest(preq.getPageName());
+         String            pagename = preq.getPageName();
+         if (pagename == null || pagename.length() == 0) {
+             CAT.error("*** got request without page name ***");
+             res.sendError(HttpServletResponse.SC_NOT_FOUND, "Must specify page name");
+             return;
+         }
+         PageRequest       page  = new PageRequest(pagename);
          DirectOutputState state = pagemap.getDirectOutputState(page);
          if (state != null) {
              Properties        props = config.getPageRequest(page.getName()).getProperties();
@@ -151,7 +161,9 @@ public class DirectOutputServlet extends ServletManager {
                                             " without being accessible ***");  
              }
          } else {
-             throw new RuntimeException("*** No DirectOutputState for page " + page.getName() + " ***");  
+             CAT.error("*** No DirectOutputState for page " + page.getName() + " ***");
+             res.sendError(HttpServletResponse.SC_NOT_FOUND, "Page " + page.getName() + " not found");
+             return;
          }
     }
     
