@@ -45,9 +45,9 @@ public class IHandlerContainerManager implements ConfigurableObject {
      * @see de.schlund.pfixxml.PropertyObject#init(Properties)
      */
     public void init(Object dummy) {
-    	    // Take a dummy context object, which is only used to ensure
-    	    // there is one instance if IHandlerContainerManager per context
-        // nothing :-)
+    	// Takes a dummy context config object, which is only used to ensure
+    	// there is one instance if IHandlerContainerManager per context
+        // Intentionally do nothing here :-)
     }
     
     /**

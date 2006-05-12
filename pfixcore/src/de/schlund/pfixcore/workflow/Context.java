@@ -1165,4 +1165,8 @@ public class Context implements AppContext {
     public Properties getPropertiesForContextResource(ContextResource res) {
         return this.config.getContextResource(res.getClass()).getProperties();
     }
+    
+    public ContextConfig getContextConfig() {
+        return config;
+    }
 }
