@@ -61,12 +61,11 @@ public class MessageBuilder {
         String servletname;
         PageRequest pr;
         
-        pr = PageRequest.createPageRequest(req, null, null);
         result.startSection("request");
         result.add("remoteAddr", req.getRemoteAddr());
         result.add("serverName", req.getOriginalServerName());
         result.add("servletPath", req.getServletPath());
-        result.add("page", pr != null ? pr.getName() : null);
+        result.add("page", req.getPageName());
         result.add("url", extractURL(req));
         result.addParameter(req);
         result.endSection();

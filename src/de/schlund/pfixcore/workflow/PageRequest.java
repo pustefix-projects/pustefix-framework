@@ -19,8 +19,6 @@
 
 package de.schlund.pfixcore.workflow;
 
-import de.schlund.pfixxml.*;
-import org.apache.log4j.*;
 
 /**
  * Describe class <code>PageRequest</code> here.
@@ -28,8 +26,6 @@ import org.apache.log4j.*;
  * @author <a href="mailto:jtl@schlund.de">Jens Lautenbacher</a>
  */
 public class PageRequest {
-    public  static final String            PAGEPARAM = "__page";
-    private static final Category          CAT       = Category.getInstance(PageRequest.class.getName());
     private              PageRequestStatus status    = PageRequestStatus.UNDEF;
     private              String            preqname;
     private              String            rootname;
@@ -129,32 +125,4 @@ public class PageRequest {
         return rootname;
     }
 
-
-    public static PageRequest createPageRequest(PfixServletRequest preq, Variant variant, PageRequestProperties preqprops) {
-        String       pagename = "";
-        String       pathinfo = preq.getPathInfo();
-        RequestParam name     = preq.getRequestParam(PAGEPARAM);
-        if (name != null && !name.getValue().equals("")) {
-            pagename = name.getValue();
-        } else if (pathinfo != null && !pathinfo.equals("") && 
-                   pathinfo.startsWith("/") && pathinfo.length() > 1) {
-            pagename = pathinfo.substring(1);
-        } else {
-            return null;
-        }
-        // We must remove any '::' that may have slipped in through the request
-        if (pagename.indexOf("::") > 0) {
-            pagename = pagename.substring(0, pagename.indexOf("::"));
-        }
-        return createPageRequest(pagename, variant, preqprops);
-    }
-    
-    public static PageRequest createPageRequest(String name, Variant variant, PageRequestProperties preqprops) {
-
-        if (variant != null && variant.getVariantFallbackArray() != null && preqprops != null) {
-            return new PageRequest(preqprops.getVariantMatchingPageRequestName(name, variant));
-        } else {
-            return new PageRequest(name);
-        }
-    }
 }

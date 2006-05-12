@@ -1,3 +1,23 @@
+2006-05-12  Sebastian Marsching  <sebastian.marsching@1und1.de>
+
+	* src/de/schlund/pfixcore/workflow/PageRequestProperties.java (getAllDefinedPageRequestNames): 
+	Removed unused methods and narrowed functionality to make the
+	class less complex and prepare for its removal
+	
+	* src/de/schlund/pfixxml/DirectOutputServlet.java (process): 
+	* src/de/schlund/pfixxml/exceptionprocessor/util/ExceptionDataValueHelper.java (createExceptionDataValue): 
+	* src/de/schlund/pfixxml/exceptionhandler/ExceptionContext.java (createMailSubject): 
+	* src/de/schlund/pfixxml/exceptionhandler/MessageBuilder.java (request): 
+	Use PfixServletRequest#getPageName() to extract page name instead
+	of building dummy PageRequest object
+	
+	* src/de/schlund/pfixxml/PfixServletRequest.java (getPageName): 
+	Added method to get page name from a servlet request
+	
+	* src/de/schlund/pfixcore/workflow/Context.java: 
+	Moved much of PageRequest and PageRequestProperties code
+	to context class to prepare for removal of PageRequestProperties
+
 2006-05-12  Jens Lautenbacher  <jtl@schlund.de>
 
 	* src/de/schlund/pfixcore/workflow/Context.java (Context): made private.

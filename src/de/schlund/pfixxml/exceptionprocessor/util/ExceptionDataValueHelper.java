@@ -29,7 +29,6 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Category;
 
-import de.schlund.pfixcore.workflow.PageRequest;
 import de.schlund.pfixxml.PfixServletRequest;
 import de.schlund.pfixxml.serverutil.SessionAdmin;
 import de.schlund.pfixxml.serverutil.SessionInfoStruct;
@@ -58,12 +57,12 @@ public class ExceptionDataValueHelper {
 		final String id = session.getId();
 		exdata.setSessionid(id);
 		exdata.setServlet(pfixReq.getServletName());
-		PageRequest createPageRequest = PageRequest.createPageRequest(pfixReq, null, null);
-        if (createPageRequest == null) {
+        String pagename = pfixReq.getPageName();
+		if (pagename == null) {
             exdata.setPage("null");
         }
         else {
-            exdata.setPage(createPageRequest.getName());
+            exdata.setPage(pagename);
         }
 		exdata.setQuery(pfixReq.getQueryString());
 		

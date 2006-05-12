@@ -35,7 +35,6 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Category;
 
-import de.schlund.pfixcore.workflow.PageRequest;
 import de.schlund.pfixxml.PfixServletRequest;
 import de.schlund.pfixxml.RequestParam;
 import de.schlund.pfixxml.serverutil.SessionAdmin;
@@ -340,8 +339,10 @@ class ExceptionContext {
             servletname = servletname.substring(1, servletname.length());
         }
      
-        PageRequest pr = PageRequest.createPageRequest(pfrequest_, null, null);
-        String page = (pr != null ? pr.getName() : "unkown page");
+        String page = pfrequest_.getPageName();
+        if (page == null) {
+            page = "unknown page";
+        }
         Object[] args = { servername, servletname, exceptname, message, page };
         buf = MessageFormat.format("{0}|{1}|{4}|{2}:{3}", args);
         if(CAT.isDebugEnabled())
