@@ -1,3 +1,11 @@
+2006-05-12  Sebastian Marsching  <sebastian.marsching@1und1.de>
+
+	* src/de/schlund/pfixcore/workflow/app/DefaultIWrapperState.java (getIHandlerContainer): 
+	* src/de/schlund/pfixcore/workflow/app/IHandlerContainerManager.java (init): 
+	* src/de/schlund/pfixcore/workflow/Context.java: 
+	Using ContextConfig instead of Context object to reduce number
+	of IHandlerContainerManagers (saves memory)
+
 2006-05-10  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
 	* src/de/schlund/pfixcore/workflow/App/DefaultIWrapperState.java (getIHandlerContainer): 
