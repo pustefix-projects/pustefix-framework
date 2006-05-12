@@ -337,7 +337,7 @@ XML_Request.prototype.start = function( content, reqId ) {
           document.getElementById("pfxxmlform"+i).target = "pfxxmliframe"+i;
 
           window.setTimeout( function() {
-            document.forms[document.forms.length-1].submit();
+            elForm.submit();
           }, 1 );
         }, 1 );        
 
