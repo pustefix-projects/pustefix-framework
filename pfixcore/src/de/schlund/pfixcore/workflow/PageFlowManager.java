@@ -33,14 +33,14 @@ import org.apache.log4j.*;
  */
 
 public class PageFlowManager implements ConfigurableObject {
-    private              HashMap  flowmap       = new HashMap();
-    private              HashSet  rootflownames = new HashSet();
-    private       static Logger LOG           = Logger.getLogger(PageFlowManager.class);
-    public  final static String   PROP_PREFIX   = "context.pageflow";
+    private              HashMap<String, PageFlow> flowmap       = new HashMap<String, PageFlow>();
+    private              HashSet<String>           rootflownames = new HashSet<String>();
+    private       static Logger                    LOG           = Logger.getLogger(PageFlowManager.class);
+    public  final static String                    PROP_PREFIX   = "context.pageflow";
 
     public void init(Object confObj) throws Exception {
         ContextConfig config = (ContextConfig) confObj;
-        PageFlowConfig[] pageflows = config.getPageFlows();
+        PageFlowConfig[] pageflows = config.getPageFlowConfigs();
         
         for (int i = 0; i < pageflows.length; i++) {
             String name = pageflows[i].getFlowName();

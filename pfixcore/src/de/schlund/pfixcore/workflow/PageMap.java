@@ -31,23 +31,21 @@ import de.schlund.pfixxml.loader.AppLoader;
 import de.schlund.pfixxml.loader.Reloader;
 import de.schlund.pfixxml.loader.StateTransfer;
 
-public class PageMap implements   ConfigurableObject, Reloader {
-    protected            HashMap  pagemap       = new HashMap();
-    public  final static String   CLASSNAMEPROP = "classname";
-    private final static Category CAT           = Category.getInstance(PageMap.class.getName());
+public class PageMap implements ConfigurableObject, Reloader {
+
+    protected            HashMap<String, State> pagemap = new HashMap<String, State>();
+    private final static Category               CAT     = Category.getInstance(PageMap.class.getName());
     
     public void init(Object confObj) throws Exception {
 
         //Get PageRequestProperties object from PropertyObjectManager 
-        ContextConfig config = (ContextConfig) confObj;
-        
-        PageRequestConfig[] pages = config.getPageRequests();
+        ContextConfig       config = (ContextConfig) confObj;
+        PageRequestConfig[] pages  = config.getPageRequestConfigs();
         
         for (int i = 0; i < pages.length; i++) {
-            String      page      = pages[i].getPageName();
-            //Properties  props     = preqprops.getPropertiesForPageRequestName(page);
-            Class       stateClass = pages[i].getState();
-            State       state     = StateFactory.getInstance().getState(stateClass.getName());
+            String page       = pages[i].getPageName();
+            Class  stateClass = pages[i].getState();
+            State  state      = StateFactory.getInstance().getState(stateClass.getName());
 
             if (state == null) {
                 CAT.error("***** Skipping page '" + page + "' as it's corresponding class " + stateClass.getName() +

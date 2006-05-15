@@ -82,12 +82,12 @@ public class Context implements AppContext {
     private final static String   DEF_MESSAGE_LEVEL   = "info";
 
     // from constructor
-    private String     name;
+    private String name;
 
     // shared between all instances that have the same properties
-    private PageFlowManager       pageflowmanager;
-    private PageRequestProperties preqprops;
-    private PageMap               pagemap;
+    private PageFlowManager pageflowmanager;
+    private VariantManager  variantmanager;
+    private PageMap         pagemap;
 
     // new instance for every Context
     private ContextResourceManager          rmanager;
@@ -224,8 +224,6 @@ public class Context implements AppContext {
         }
         
         SPDocument  spdoc;
-        PageRequest prevpage = currentpagerequest;
-        PageFlow    prevflow = currentpageflow;
 
         trySettingPageRequestAndFlow();
         spdoc = documentFromFlow();
@@ -249,8 +247,6 @@ public class Context implements AppContext {
         }
         
         if (spdoc.getResponseError() != 0) {
-            currentpagerequest = prevpage;
-            currentpageflow    = prevflow;
             insertPageMessages(spdoc);
             storeCookies(spdoc);
             processIC(endIC);
@@ -262,14 +258,10 @@ public class Context implements AppContext {
             addNavigation(navigation, spdoc);
         }
 
-        if (pageIsSidestepPage(currentpagerequest)) {
-            LOG.info("* [" + currentpagerequest + "] is sidestep: Restoring to [" +
-                     prevpage + "] in flow [" + prevflow.getName() + "]");
-            currentpagerequest = prevpage;
-            currentpageflow    = prevflow;
+        if (!getConfigForCurrentPageRequest().isStoreXML()) {
             spdoc.setNostore(true);
         }
-
+        
         LOG.debug("\n");
         insertPageMessages(spdoc);
         storeCookies(spdoc);
@@ -332,11 +324,11 @@ public class Context implements AppContext {
     }
 
     public Properties getPropertiesForCurrentPageRequest() {
-        return config.getPageRequest(currentpagerequest.getName()).getProperties();
+        return config.getPageRequestConfig(currentpagerequest.getName()).getProperties();
     }
     
     public PageRequestConfig getConfigForCurrentPageRequest() {
-        return config.getPageRequest(currentpagerequest.getName());
+        return config.getPageRequestConfig(currentpagerequest.getName());
     }
 
     /**
@@ -528,7 +520,7 @@ public class Context implements AppContext {
             page = currentpagerequest;
         }
         if (page != null) {
-            PageRequestConfig prconfig = config.getPageRequest(page.getName());
+            PageRequestConfig prconfig = config.getPageRequestConfig(page.getName());
             if (prconfig != null) {
                 if (prconfig.isSSL()) {
                     return true;
@@ -604,7 +596,7 @@ public class Context implements AppContext {
     	PropertyObjectManager pom = PropertyObjectManager.getInstance();
 
         pageflowmanager = (PageFlowManager) pom.getConfigurableObject(config, de.schlund.pfixcore.workflow.PageFlowManager.class);
-        preqprops       = (PageRequestProperties) pom.getConfigurableObject(config, PageRequestProperties.class);
+        variantmanager  = (VariantManager) pom.getConfigurableObject(config, VariantManager.class);
         pagemap         = (PageMap) pom.getConfigurableObject(config, de.schlund.pfixcore.workflow.PageMap.class);
 
         // The navigation is possibly shared across more than one
@@ -628,11 +620,6 @@ public class Context implements AppContext {
 
     private boolean isPageRequestInFlow(PageRequest page, PageFlow pageflow) {
         return (pageflow != null && pageflow.containsPage(page.getRootName()));
-    }
-
-    private boolean pageIsSidestepPage(PageRequest page) {
-        PageRequestConfig config = getConfigForCurrentPageRequest();
-        return !config.isStoreXML();
     }
 
     private void checkForAuthenticationMode() {
@@ -1067,7 +1054,7 @@ public class Context implements AppContext {
                     }
                 }
             } else {
-                if (config.getPageRequest(pagereq.getName()) != null) {
+                if (config.getPageRequestConfig(pagereq.getName()) != null) {
                     if (checkIsAccessible(pagereq,PageRequestStatus.NAVIGATION)) { // this also updates navi_visible_map!
                         pageelem.setAttribute("visible", "1");
                     } else {
@@ -1200,7 +1187,7 @@ public class Context implements AppContext {
     }
 
     public Properties getPropertiesForContextResource(ContextResource res) {
-        return this.config.getContextResource(res.getClass()).getProperties();
+        return this.config.getContextResourceConfig(res.getClass()).getProperties();
     }
     
     public ContextConfig getContextConfig() {
@@ -1208,10 +1195,11 @@ public class Context implements AppContext {
     }
     
     private PageRequest createPageRequest(String pagename) {
-        if (variant != null && variant.getVariantFallbackArray() != null && preqprops != null) {
-            return new PageRequest(preqprops.getVariantMatchingPageRequestName(pagename, variant));
+        if (variant != null && variant.getVariantFallbackArray() != null && variantmanager != null) {
+            return new PageRequest(variantmanager.getVariantMatchingPageRequestName(pagename, variant));
         } else {
             return new PageRequest(pagename);
         }
     }
+    
 }

@@ -91,7 +91,7 @@ public class ContextResourceManager implements Reloader {
         
         Collection<ContextResource> resourcesToInitialize = new ArrayList();
         
-        Collection<ContextResourceConfig> resourceConfigs = config.getContextResources();
+        Collection<ContextResourceConfig> resourceConfigs = config.getContextResourceConfigs();
         
         for (Iterator<ContextResourceConfig> i = resourceConfigs.iterator(); i.hasNext();) {
             ContextResourceConfig resourceConfig = i.next();
