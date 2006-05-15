@@ -92,6 +92,10 @@ public class ContextConfig {
         return list.toArray(new PageFlowConfig[0]);
     }
     
+    public PageFlowConfig getPageFlowConfig(String name) {
+        return this.pageflows.get(name);
+    }
+    
     public void addPageRequest(PageRequestConfig config) {
         this.pagerequests.put(config.getPageName(), config);
     }
