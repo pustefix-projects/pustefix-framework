@@ -19,9 +19,6 @@
 
 package de.schlund.pfixcore.workflow;
 
-
-
-
 import de.schlund.pfixcore.generator.StatusCodeInfo;
 import de.schlund.pfixcore.util.PropertiesUtils;
 import de.schlund.pfixcore.workflow.Navigation.NavigationElement;
@@ -210,13 +207,13 @@ public class Context implements AppContext {
         processIC(startIC);
         
         if (lastflow != null && !lastflow.getValue().equals("")) {
-            PageFlow tmp = pageflowmanager.getPageFlowByName(lastflow.getValue(), variant);
+            PageFlow tmp = pageflowmanager.getPageFlowByName(variantmanager.getVariantMatchingPageFlowName(lastflow.getValue(), variant));
             if (tmp != null) {
                 LOG.debug("* Got last pageflow state from request as [" + tmp.getName() + "]");
                 currentpageflow = tmp;
             }
         } else if (currentpageflow != null) {
-            currentpageflow = pageflowmanager.getPageFlowByName(currentpageflow.getRootName(), variant);
+            currentpageflow = pageflowmanager.getPageFlowByName(variantmanager.getVariantMatchingPageFlowName(currentpageflow.getRootName(), variant));
         }
         // Update currentpagerequest to currently valid variant
         if (currentpagerequest != null) {
@@ -350,7 +347,7 @@ public class Context implements AppContext {
     }
 
     public void setPageFlow(String flowname) {
-        PageFlow tmp = pageflowmanager.getPageFlowByName(flowname, variant);
+        PageFlow tmp = pageflowmanager.getPageFlowByName(variantmanager.getVariantMatchingPageFlowName(flowname, variant));
         if (tmp != null) {
             LOG.debug("===> Setting currentpageflow to user-requested flow " + flowname);
             currentpageflow            = tmp;
@@ -372,7 +369,7 @@ public class Context implements AppContext {
 
     public void setJumpToPageFlow(String flowname) {
         if (jumptopagerequest != null) {
-            PageFlow tmp = pageflowmanager.getPageFlowByName(flowname, variant);
+            PageFlow tmp = pageflowmanager.getPageFlowByName(variantmanager.getVariantMatchingPageFlowName(flowname, variant));
             if (tmp != null) {
                 jumptopageflow = tmp;
             } else {
@@ -606,7 +603,7 @@ public class Context implements AppContext {
             navigation = NavigationFactory.getInstance().getNavigation(this.config.getNavigationFile());
         }
 
-        currentpageflow    = pageflowmanager.getPageFlowByName(this.config.getDefaultFlow(), variant);
+        currentpageflow    = pageflowmanager.getPageFlowByName(variantmanager.getVariantMatchingPageFlowName(this.config.getDefaultFlow(), variant));
         currentpagerequest = createPageRequest(currentpageflow.getFirstStep().getPageName());
 
         // Use properties until interceptors are in XSD
@@ -752,7 +749,7 @@ public class Context implements AppContext {
             // Now we need to make sure that the current page is accessible, and take the right measures if not.
             if (!checkIsAccessible(currentpagerequest, PageRequestStatus.DIRECT)) {
                 LOG.warn("[" + currentpagerequest + "]: not accessible! Trying first page of default flow.");
-                currentpageflow     = pageflowmanager.getPageFlowByName(config.getDefaultFlow(), variant);
+                currentpageflow     = pageflowmanager.getPageFlowByName(variantmanager.getVariantMatchingPageFlowName(config.getDefaultFlow(), variant));
                 PageRequest defpage = createPageRequest(currentpageflow.getFirstStep().getPageName());
                 currentpagerequest  = defpage;
                 if (!checkIsAccessible(defpage, PageRequestStatus.DIRECT)) {
@@ -939,7 +936,7 @@ public class Context implements AppContext {
             RequestParam flowname = currentpservreq.getRequestParam(PARAM_FLOW);
             if (flowname != null && !flowname.getValue().equals("")) {
                 LOG.debug("===> User requesting to switch to flow '" + flowname.getValue() + "'");
-                flow = pageflowmanager.getPageFlowByName(flowname.getValue(), variant);
+                flow = pageflowmanager.getPageFlowByName(variantmanager.getVariantMatchingPageFlowName(flowname.getValue(), variant));
                 if (flow != null) {
                     LOG.debug("===> Flow '" + flowname.getValue() + "' exists...");
                     pageflow_requested_by_user = true;

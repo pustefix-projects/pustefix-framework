@@ -1,3 +1,15 @@
+2006-05-15  Sebastian Marsching  <sebastian.marsching@1und1.de>
+
+	* src/de/schlund/pfixcore/workflow/VariantManager.java: 
+	* src/de/schlund/pfixcore/workflow/PageFlowManager.java: 
+	* src/de/schlund/pfixcore/workflow/Context.java: 
+	Moved variant handling for pageflows from PageFlowManager
+	to VariantManager. Optimized PageFlowManager by reducing
+	number of pageflows being searched for page
+	
+	* src/de/schlund/pfixxml/config/ContextConfig.java (getPageFlowConfig): 
+	Added method to get config for a specific pageflow
+
 2006-05-15  Jens Lautenbacher  <jtl@schlund.de>
 
 	* src/de/schlund/pfixxml/config/ContextConfig.java: renaming of
