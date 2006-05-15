@@ -1,3 +1,22 @@
+2006-05-15  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixxml/config/ContextConfig.java: renaming of
+	getContextResource => getContextResourceConfig
+	getPageRequest     => getPageRequestConfig
+	etc.
+	* src/de/schlund/pfixcore/workflow/Context.java: changed accordingly,
+	(pageIsSidestepPage): removed. The whole handling shouldn't needed anymore.
+	* src/de/schlund/pfixcore/workflow/ContextResourceManager.java: 
+	* src/de/schlund/pfixcore/workflow/PageFlowManager.java: 
+	* src/de/schlund/pfixcore/workflow/PageMap.java: cometics,
+	changed accordingly.
+
+	* src/de/schlund/pfixcore/workflow/VariantManager.java: renamed from PageRequestProperties.
+	(pageRequestNameIsDefined): removed
+
+	* src/de/schlund/pfixcore/workflow/app/DefaultIWrapperState.java
+	(DefaultIWrapperState::getIHandlerContainer): cosmetics
+
 2006-05-12  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
 	* src/de/schlund/pfixxml/DirectOutputServlet.java (process): 

@@ -71,11 +71,11 @@ public class ContextConfig {
         resources.put(config.getContextResourceClass(), config);
     }
     
-    public Collection<ContextResourceConfig> getContextResources() {
+    public Collection<ContextResourceConfig> getContextResourceConfigs() {
         return this.resources.values();
     }
     
-    public ContextResourceConfig getContextResource(Class clazz) {
+    public ContextResourceConfig getContextResourceConfig(Class clazz) {
         return this.resources.get(clazz);
     }
     
@@ -83,7 +83,7 @@ public class ContextConfig {
         this.pageflows.put(config.getFlowName(), config);
     }
     
-    public PageFlowConfig[] getPageFlows() {
+    public PageFlowConfig[] getPageFlowConfigs() {
         ArrayList<PageFlowConfig> list = new ArrayList<PageFlowConfig>();
         for (Iterator i = this.pageflows.entrySet().iterator(); i.hasNext();) {
             Entry entry = (Entry) i.next();
@@ -96,7 +96,7 @@ public class ContextConfig {
         this.pagerequests.put(config.getPageName(), config);
     }
     
-    public PageRequestConfig[] getPageRequests() {
+    public PageRequestConfig[] getPageRequestConfigs() {
         ArrayList<PageRequestConfig> list = new ArrayList<PageRequestConfig>();
         for (Iterator i = this.pagerequests.entrySet().iterator(); i.hasNext();) {
             Entry entry = (Entry) i.next();
@@ -105,7 +105,7 @@ public class ContextConfig {
         return list.toArray(new PageRequestConfig[0]);
     }
     
-    public PageRequestConfig getPageRequest(String name) {
+    public PageRequestConfig getPageRequestConfig(String name) {
         return this.pagerequests.get(name);
     }
     

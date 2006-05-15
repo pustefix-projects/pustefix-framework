@@ -189,7 +189,6 @@ public class DefaultIWrapperState extends StateImpl {
         String classname = DEF_FINALIZER;
         if (clazz != null) {
             classname = clazz.getName();
-            
         }
         
         ResdocFinalizer fin = ResdocFinalizerFactory.getInstance().getResdocFinalizer(classname);
@@ -206,7 +205,8 @@ public class DefaultIWrapperState extends StateImpl {
         PropertyObjectManager pom      = PropertyObjectManager.getInstance();
         // Use context config object as dummy configuration object to make sure
         // each context (server) has its own IHandlerContainerManager
-        IHandlerContainerManager  ihcm = (IHandlerContainerManager) PropertyObjectManager.getInstance().getConfigurableObject(context.getContextConfig(), IHDL_CONT_MANAGER);
+        IHandlerContainerManager  ihcm = 
+            (IHandlerContainerManager) PropertyObjectManager.getInstance().getConfigurableObject(context.getContextConfig(), IHDL_CONT_MANAGER);
         return ihcm.getIHandlerContainer(context);
     }
 

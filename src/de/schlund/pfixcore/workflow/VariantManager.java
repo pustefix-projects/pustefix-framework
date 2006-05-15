@@ -29,7 +29,7 @@ import de.schlund.pfixxml.Variant;
 import de.schlund.pfixxml.config.ContextConfig;
 
 /**
- * PageRequestProperties.java
+ * VariantManager.java
  *
  *
  * Created: Sun Oct  7 13:28:11 2001
@@ -38,18 +38,13 @@ import de.schlund.pfixxml.config.ContextConfig;
  *
  */
 
-public class PageRequestProperties implements ConfigurableObject {
-    private ContextConfig      contextConfig;
+public class VariantManager implements ConfigurableObject {
+    private ContextConfig           contextConfig;
     private HashMap<String, String> variantpagecache = new HashMap<String, String>();
-    private Logger             LOG              = Logger.getLogger(this.getClass());
-    public static final String PREFIX           = "pagerequest";
+    private Logger                  LOG              = Logger.getLogger(this.getClass());
     
     public void init(Object confObj) throws Exception {
         contextConfig = (ContextConfig) confObj;
-    }
-
-    public boolean pageRequestNameIsDefined(String fullname) {
-        return (contextConfig.getPageRequest(fullname) != null);
     }
 
     public String getVariantMatchingPageRequestName(String name, Variant variant) {
@@ -64,7 +59,7 @@ public class PageRequestProperties implements ConfigurableObject {
                     String[] variant_arr = variant.getVariantFallbackArray();
                     for (int i = 0; i < variant_arr.length; i++) {
                         String tmp = name + "::" + variant_arr[i];
-                        if (pageRequestNameIsDefined(tmp)) {
+                        if (contextConfig.getPageRequestConfig(tmp) != null) {
                             LOG.debug("=== Found PR for '" + tmp + "' ===");
                             fullname = tmp;
                             break;
@@ -82,4 +77,4 @@ public class PageRequestProperties implements ConfigurableObject {
         return fullname;
     }
     
-} // PageRequestProperties
+} // VariantManager (was: PageRequestProperties)
