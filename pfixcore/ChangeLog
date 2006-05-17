@@ -1,3 +1,9 @@
+2006-05-17  Sebastian Marsching  <sebastian.marsching@1und1.de>
+
+	* src/de/schlund/pfixcore/workflow/VariantManager.java (getVariantMatchingPageFlowName): 
+	Fixing bug in VariantManager causing to return non-existent variants
+	of a pageflow
+
 2006-05-15  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
 	* src/de/schlund/pfixcore/workflow/VariantManager.java: 
