@@ -17,7 +17,6 @@
 	<classpathentry kind="lib" path="lib/jmxremote_optional-1.0.1_03.jar"/>
 	<classpathentry kind="lib" path="lib/saaj-1.2.jar"/>
 	<classpathentry kind="lib" path="lib/wsdl4j-1.5.1.jar"/>
-	<classpathentry kind="lib" path="example/servletconf/tomcat/common/lib/servlet-api.jar"/>
 	<classpathentry kind="lib" path="lib/concurrent.jar"/>
 	<classpathentry kind="lib" path="lib/log4j-1.2.9.jar"/>
 	<classpathentry kind="lib" path="lib/axis-1.2.1.jar"/>
@@ -29,5 +28,6 @@
 	<classpathentry kind="lib" path="lib/spring-1.2.1.jar"/>
 	<classpathentry kind="lib" path="lib/lucene-1.4.3.jar"/>
 	<classpathentry kind="lib" path="lib/saxon6_5_5.jar"/>
+	<classpathentry kind="lib" path="projects/servletconf/tomcat/common/lib/servlet-api.jar"/>
 	<classpathentry kind="output" path="build"/>
 </classpath>
