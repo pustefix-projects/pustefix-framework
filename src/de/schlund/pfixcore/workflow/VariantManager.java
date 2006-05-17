@@ -84,7 +84,7 @@ public class VariantManager implements ConfigurableObject {
             String[] variant_arr = variant.getVariantFallbackArray();
             for (int i = 0; i < variant_arr.length; i++) {
                 String   fullname = name + "::" + variant_arr[i];
-                if (contextConfig.getPageFlowConfig(name) != null) {
+                if (contextConfig.getPageFlowConfig(fullname) != null) {
                     LOG.debug("=== Found FLOW for '" + fullname + "' ===");
                     return fullname;
                 }
