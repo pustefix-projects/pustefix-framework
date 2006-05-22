@@ -19,7 +19,6 @@
 
 package de.schlund.pfixxml;
 
-import de.schlund.pfixxml.serverutil.*;
 import de.schlund.pfixxml.util.Xml;
 import java.util.*;
 
@@ -32,7 +31,7 @@ import org.w3c.dom.*;
  *
  *
  */
-public class SPDocument implements NoCopySessionData {
+public class SPDocument {
 
     //~ Instance/static variables ..................................................................
 
@@ -43,12 +42,13 @@ public class SPDocument implements NoCopySessionData {
     private String     pagename    = null;
     private Variant    variant     = null;
     private String     xslkey      = null;
-    private long       timestamp   = -1;
+    private long       timestamp   = System.currentTimeMillis();
     private int        error       = 0;
     private String     errortext   = null;
     private String     contenttype = null;
     private HashMap    header      = new HashMap();
     private ArrayList  cookies     = new ArrayList();
+    private String     sslRedirectURL = null;
 
     //~ Methods ....................................................................................
 
@@ -98,7 +98,11 @@ public class SPDocument implements NoCopySessionData {
     }
 
     public int getResponseError() {
-        return error;
+        if (sslRedirectURL == null) {
+            return error;
+        } else {
+            return HttpServletResponse.SC_MOVED_TEMPORARILY;
+        }
     }
 
     public void addResponseHeader(String key, String val) {
@@ -106,7 +110,13 @@ public class SPDocument implements NoCopySessionData {
     }
 
     public HashMap getResponseHeader() {
-        return header;
+        if (sslRedirectURL == null) {
+            return header;
+        } else {
+            HashMap newheader = new HashMap();
+            newheader.put("Location", sslRedirectURL);
+            return newheader;
+        }
     }
 
     public void storeFrameAnchors(Map anchors) {
@@ -125,16 +135,8 @@ public class SPDocument implements NoCopySessionData {
     }
 
     /**
-     * Describe <code>setTimestamp</code> method here.
-     *
-     * @param stamp a <code>long</code> value
-     */
-    public void setTimestamp(long stamp) {
-        timestamp = stamp;
-    }
-
-    /**
-     * Describe <code>getTimestamp</code> method here.
+     * Returns timestamp that was created on construction
+     * of the document. Is <b>not</b> guaranteed to be unique.
      *
      * @return a <code>long</code> value
      */
@@ -192,6 +194,27 @@ public class SPDocument implements NoCopySessionData {
      */
     public void setXSLKey(String xslkey) {
         this.xslkey = xslkey;
+    }
+    
+    /**
+     * Sets an URL to use for redirection.
+     * This will cause the {@link #getResponseError()} and
+     * {@link #getResponseHeader()} methods to return special
+     * values.
+     * 
+     * @param redirectURL Complete URL string
+     */
+    public void setSSLRedirect(String redirectURL) {
+        this.sslRedirectURL = redirectURL;
+    }
+    
+    /**
+     * Resets the redirect URL set via {@link #setSSLRedirect(String)}.
+     * Should be called after serving the document the first time
+     * (which effectively means after doing the redirect).
+     */
+    public void resetSSLRedirectURL() {
+        this.sslRedirectURL = null;
     }
 
     /**

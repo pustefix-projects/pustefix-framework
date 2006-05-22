@@ -338,6 +338,9 @@ public abstract class AbstractXMLServer extends ServletManager {
             if (doreuse) {
                 synchronized (session) {
                     spdoc = (SPDocument) session.getAttribute(servletname + SUFFIX_SAVEDDOM);
+                    // Make sure redirect is only done once
+                    // See also: SSL redirect implementation in Context
+                    spdoc.resetSSLRedirectURL();
                 }
             }
            
