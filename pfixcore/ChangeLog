@@ -1,3 +1,25 @@
+2006-05-22  Martin Leidig  <mleidig@schlund.de>
+
+	Resolved the filename encoding problem relating to form-based file
+	uploads. Replaced the javax.mail.internet.InternetHeaders class by
+	an own RFC 822 message header parser. Due to the fact that current
+	browsers don't encode non-ASCII characters (as they should do and
+	as defined in RFC 1522), but send the raw bytes in the encoding of
+	the page, the parser decodes the bytes according to the specified
+	character encoding.
+
+	* src/de/schlund/pfixxml/multipart/RFC822Headers.java: Parser for
+	RFC 822 headers
+	* src/de/schlund/pfixxml/multipart/MultipartHandler.java: Replaced
+	InternetHeaders class by RFC822Headers class
+	* tests/junit/de/schlund/pfixxml/multipart/RFC822HeadersTest.java:
+	Added some tests for different headers and browsers (and recorded
+	upload requests in .dump files)
+	* tests/junit/de/schlund/pfixxml/multipart/ff_win_upload.dump
+	* tests/junit/de/schlund/pfixxml/multipart/ff_linux_upload.dump
+	* tests/junit/de/schlund/pfixxml/multipart/ie_win_upload.dump
+	* tests/junit/de/schlund/pfixxml/multipart/complex_header.dump
+
 2006-05-22  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
 	* src/de/schlund/pfixcore/workflow/Context.java: 
