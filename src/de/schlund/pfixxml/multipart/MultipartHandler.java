@@ -21,8 +21,6 @@ package de.schlund.pfixxml.multipart;
 
 
 
-import de.schlund.pfixxml.AbstractXMLServer;
-import de.schlund.pfixxml.PfixServletRequest;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -38,16 +36,19 @@ import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
+
 import javax.mail.MessagingException;
 import javax.mail.internet.ContentType;
-import javax.mail.internet.InternetHeaders;
 import javax.mail.internet.MailDateFormat;
 import javax.mail.internet.MimeUtility;
 import javax.servlet.GenericServlet;
 import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
+
 import org.apache.log4j.Category;
 import org.apache.oro.text.perl.Perl5Util;
+
+import de.schlund.pfixxml.AbstractXMLServer;
 
 /**
  *
@@ -192,13 +193,13 @@ public class MultipartHandler {
         ms.setBoundary(boundary);
         ms.skipBoundary();
         boolean doLoop = true;
-        InternetHeaders curHeaders = null;
+        RFC822Headers curHeaders = null;
         ContentType curCt = null;
         String curCtStr = null;
         String[] headers = null;
         do {
             printDebug("\n");
-            curHeaders = new InternetHeaders(ms);
+            curHeaders = new RFC822Headers(ms,req.getCharacterEncoding());
 
             headers = curHeaders.getHeader(CTYPE_HEADER);
             if (headers != null && 0 < headers.length) {
@@ -241,7 +242,7 @@ public class MultipartHandler {
         } while (doLoop);
     }
 
-    protected void parseTextField(MultipartStream ms, InternetHeaders headers, ContentType ct)
+    protected void parseTextField(MultipartStream ms, RFC822Headers headers, ContentType ct)
         throws MessagingException, IOException {
         String charEnc = ct.getParameter(CHARSET_PARAM);
         if (charEnc == null) {
@@ -304,12 +305,12 @@ public class MultipartHandler {
         }
     }
 
-    protected void parseMultiFile(MultipartStream ms, InternetHeaders headers, ContentType ct, ContentType parentCt)
+    protected void parseMultiFile(MultipartStream ms, RFC822Headers headers, ContentType ct, ContentType parentCt)
         throws MessagingException, IOException {
         String localBoundary = ct.getParameter(PARAM_BOUNDARY);
         ms.setBoundary(localBoundary);
         ms.skipBoundary();
-        InternetHeaders localHeaders = null;
+        RFC822Headers localHeaders = null;
         ContentType tmpCt = null;
         String[] tmpHeaders = null;
         HeaderStruct cdStruct = getHeaderStruct(headers, CONTENT_DISP_HEADER);
@@ -317,7 +318,7 @@ public class MultipartHandler {
         if (fieldName != null && fieldName.length() <= 0)
             fieldName = null;
         while (!ms.isEndOfMultipart()) {
-            localHeaders = new InternetHeaders(ms);
+            localHeaders = new RFC822Headers(ms,req.getCharacterEncoding());
             tmpHeaders = localHeaders.getHeader(CTYPE_HEADER);
             if (tmpHeaders != null && 0 < tmpHeaders.length) {
                 tmpCt = new ContentType(tmpHeaders[0]);
@@ -329,7 +330,7 @@ public class MultipartHandler {
         ms.setBoundary(localBoundary);
     }
 
-    protected void parseFile(MultipartStream ms, InternetHeaders headers, ContentType ct, String defFieldName)
+    protected void parseFile(MultipartStream ms, RFC822Headers headers, ContentType ct, String defFieldName)
         throws MessagingException, IOException {
         HeaderStruct cdStruct = getHeaderStruct(headers, CONTENT_DISP_HEADER);
         HeaderStruct cteStruct = getHeaderStruct(headers, CONTENT_TRANS_ENC_HEADER);
@@ -411,7 +412,7 @@ public class MultipartHandler {
         return rc;
     }
 
-    protected HeaderStruct getHeaderStruct(InternetHeaders headers, String name) {
+    protected HeaderStruct getHeaderStruct(RFC822Headers headers, String name) {
         HeaderStruct rc = null;
         if (name != null) {
             rc = new HeaderStruct();
