@@ -65,7 +65,6 @@ public class SessionCleaner {
      * @param timeoutsecs a <code>int</code> value. The timeout when the document should be removed.
      */
     public void storeSPDocument(SPDocument spdoc, HttpSession session,String key, int timeoutsecs) {
-        long   stamp   = System.currentTimeMillis();
         String taskkey = key + TASK_POSTFIX; 
 
         synchronized (session) {
@@ -84,7 +83,6 @@ public class SessionCleaner {
             timer.schedule(task, timeoutsecs * 1000);
             session.setAttribute(taskkey, task);
             
-            spdoc.setTimestamp(stamp);
             session.setAttribute(key, spdoc);
         }
     }

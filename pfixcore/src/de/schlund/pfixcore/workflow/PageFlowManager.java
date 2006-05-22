@@ -100,6 +100,10 @@ public class PageFlowManager implements ConfigurableObject {
         return currentflow;
     }
     
+    protected PageFlow getPageFlowByName(String rootname, Variant variant) {
+        return getPageFlowByName(vmanager.getVariantMatchingPageFlowName(rootname, variant));
+    }
+    
     protected PageFlow getPageFlowByName(String fullname) {
         return flowmap.get(fullname);
     }

@@ -1,3 +1,18 @@
+2006-05-22  Sebastian Marsching  <sebastian.marsching@1und1.de>
+
+	* src/de/schlund/pfixcore/workflow/Context.java: 
+	* src/de/schlund/pfixcore/workflow/PageFlowManager.java: 
+	* src/de/schlund/pfixxml/AbstractXMLServer.java: 
+	* src/de/schlund/pfixxml/SessionCleaner.java: 
+	* src/de/schlund/pfixxml/SPDocument.java: 
+	Redesigned SSL switch handling. Now when a SSL-enabled page
+	is requested through the pageflow, a redirect is triggered
+	to switch the connection to SSL. After the switch, the stored
+	SPDocument is used to serve the request. To make this work
+	SPDocument does not implemenet NoCopySessionData.
+	Context now uses the new PageFlowManager#getPageFlowByName(String, Variant)
+	method to make the code readable more easily.
+
 2006-05-17  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
 	* src/de/schlund/pfixcore/workflow/VariantManager.java (getVariantMatchingPageFlowName): 
