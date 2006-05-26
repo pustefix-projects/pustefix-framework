@@ -21,6 +21,7 @@ public class ServiceConfig extends AbstractConfig {
     private final static String PROP_ITFNAME=".interface.name";
     private final static String PROP_IMPLNAME=".implementation.name";
     private final static String PROP_CTXNAME=".context.name";
+    private final static String PROP_CTXSYNC=".context.synchronize";
     private final static String PROP_SESSTYPE=".session.type";
     private final static String PROP_SCOPETYPE=".scope.type";
     private final static String PROP_SSLFORCE=".ssl.force";
@@ -33,6 +34,7 @@ public class ServiceConfig extends AbstractConfig {
     String  itfName;
     String  implName;
     String  ctxName;
+    boolean ctxSync;
     String  sessType=Constants.SESSION_TYPE_SERVLET;
     String scopeType;
     boolean sslForce;
@@ -56,6 +58,7 @@ public class ServiceConfig extends AbstractConfig {
         itfName       = props.getStringProperty(prefix + PROP_ITFNAME,true);
         implName      = props.getStringProperty(prefix + PROP_IMPLNAME,true);
         ctxName       = props.getStringProperty(prefix + PROP_CTXNAME,false);
+        ctxSync=props.getBooleanProperty(prefix+PROP_CTXSYNC,false,true);
         sessType      = props.getStringProperty(prefix + PROP_SESSTYPE,Constants.SESSION_TYPES,true);
         scopeType=props.getStringProperty(prefix+PROP_SCOPETYPE,Constants.SERVICE_SCOPES,false);
         sslForce      = props.getBooleanProperty(prefix + PROP_SSLFORCE,false,false);
@@ -105,6 +108,10 @@ public class ServiceConfig extends AbstractConfig {
     
     public String getContextName() {
         return ctxName;
+    }
+    
+    public boolean doSynchronizeOnContext() {
+        return ctxSync;
     }
     
     public void setSessionType(String sessType) {

@@ -173,7 +173,7 @@ public class WebServiceServlet extends AxisServlet {
         		String insPI=req.getParameter("insertpi");
         		if(insPI!=null) response=new InsertPIResponseWrapper(res);
         		if(DEBUG) if(insPI!=null) LOG.debug("contains insertpi parameter");
-        		if(pfxContext!=null) {
+        		if(pfxContext!=null&&srvConf.doSynchronizeOnContext()) {
         			synchronized(pfxContext) {
         				super.doPost(new SOAPActionRequestWrapper(req),response);
         			}
@@ -185,7 +185,7 @@ public class WebServiceServlet extends AxisServlet {
         		String reqID=req.getHeader(Constants.HEADER_REQUEST_ID);
         		if(DEBUG) if(reqID!=null) LOG.debug("contains requestID header: "+reqID);
         		if(reqID!=null) res.setHeader(Constants.HEADER_REQUEST_ID,reqID);
-        		if(pfxContext!=null) {
+        		if(pfxContext!=null&&srvConf.doSynchronizeOnContext()) {
         			synchronized(pfxContext) {
         				super.doPost(req,res);
         			}

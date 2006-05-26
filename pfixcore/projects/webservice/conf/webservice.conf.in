@@ -2,7 +2,7 @@
 <webservice-config
   xmlns="http://pustefix.sourceforge.net/wsconfig200401"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://pustefix.sourceforge.net/wsconfig200401 http://pustefix.sourceforge.net/wsconfig200401.xsd">
+  xsi:schemaLocation="http://pustefix.sourceforge.net/wsconfig200401 ../../core/schema/wsconfig200401.xsd">
 
   <webservice-global>
     <server name="axis"/>
@@ -52,7 +52,7 @@
     <implementation name="de.schlund.pfixcore.example.webservices.CounterImpl"/>
     <session type="servlet"/>
     <scope type="application"/>
-    <context name="pfixcore_project:webservice::servlet:config"/>
+    <context name="pfixcore_project:webservice::servlet:config" synchronize="false"/>
     <faulthandler class="de.schlund.pfixcore.webservice.fault.LoggingHandler"/>
   </webservice>
 
