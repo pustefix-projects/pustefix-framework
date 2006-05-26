@@ -1,4 +1,4 @@
-2006-05-22  Martin Leidig  <mleidig@schlund.de>
+2006-05-26  Martin Leidig  <mleidig@schlund.de>
 
 	Added support for unsynchronized (on the Context) webservice calls.
 	Therefore introduced new 'synchronize'-attribute (true|false) at the
