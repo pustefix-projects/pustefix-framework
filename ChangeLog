@@ -1,3 +1,15 @@
+2006-05-26  Martin Leidig  <mleidig@schlund.de>
+
+	Added support for unsynchronized (on the Context) webservice calls.
+	Therefore introduced new 'synchronize'-attribute (true|false) at the
+	'context'-element in the webservice configuration file. For backwards
+	compatibility reasons 'true' (enabled synchronization) is default.
+	* src/de/schlund/pfixcore/webservice/WebServiceServlet.java: Added
+	case switch for synchronization
+	* src/de/schlund/pfixcore/webservice/config/ServiceConfig.java: Added
+	'synchronize' property
+	* projects/core/schema/wsconfig200401.xsd: Added 'synchronize' attribute
+
 2006-05-22  Martin Leidig  <mleidig@schlund.de>
 
 	Resolved the filename encoding problem relating to form-based file
