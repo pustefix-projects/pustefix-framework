@@ -81,6 +81,7 @@
           <xsd:attribute name="enabled" type="xsd:boolean" default="false"/>
         </xsd:complexType>
       </xsd:element>
+      <xsd:element ref="faulthandler" minOccurs="0" maxOccurs="1"/>
     </xsd:sequence>
   </xsd:group>
 
@@ -105,8 +106,10 @@
         <xsd:element name="context" minOccurs="0">
           <xsd:complexType>
             <xsd:attribute name="name" type="xsd:string"/>
+            <xsd:attribute name="synchronize" type="xsd:boolean" default="true"/>
           </xsd:complexType>
         </xsd:element>
+        <xsd:element ref="faulthandler" minOccurs="0"/>
       </xsd:all>
       <xsd:attribute name="name" type="NameType" use="required"/>
     </xsd:complexType>
@@ -134,6 +137,20 @@
   <xsd:element name="ssl">
     <xsd:complexType>
       <xsd:attribute name="force" type="xsd:boolean" use="required"/>
+    </xsd:complexType>
+  </xsd:element>
+  
+  <xsd:element name="faulthandler">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="param" minOccurs="0" maxOccurs="100">
+          <xsd:complexType>
+            <xsd:attribute name="name" type="xsd:string" use="required"/>
+            <xsd:attribute name="value" type="xsd:string" use="required"/>
+          </xsd:complexType>
+        </xsd:element>
+      </xsd:sequence>
+      <xsd:attribute name="class" type="ClassType" use="required"/>
     </xsd:complexType>
   </xsd:element>
 
