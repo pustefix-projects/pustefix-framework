@@ -1,3 +1,8 @@
+2006-05-29  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixcore/workflow/Context.java: cleanup. Setting
+	of variants in preparation for request/session state split. 
+
 2006-05-26  Martin Leidig  <mleidig@schlund.de>
 
 	Added support for unsynchronized (on the Context) webservice calls.
