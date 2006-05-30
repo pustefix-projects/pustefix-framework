@@ -19,18 +19,18 @@
     
 package de.schlund.pfixcore.scripting;
 
-import de.schlund.pfixcore.workflow.State;
-import de.schlund.pfixcore.workflow.Context;
 import de.schlund.pfixcore.util.StateUtil;
+import de.schlund.pfixcore.workflow.Context;
+import de.schlund.pfixcore.workflow.State;
 import de.schlund.pfixxml.PfixServletRequest;
 import de.schlund.pfixxml.ResultDocument;
-
-import java.util.Properties;
 import java.io.IOException;
-
+import java.util.Map;
+import java.util.Properties;
+import java.util.concurrent.ConcurrentHashMap;
+import org.apache.bsf.BSFEngine;
 import org.apache.bsf.BSFException;
 import org.apache.bsf.BSFManager;
-import org.apache.bsf.BSFEngine;
 import org.apache.log4j.Logger;
 
 /**
@@ -39,31 +39,16 @@ import org.apache.log4j.Logger;
  */
 public class ScriptingState implements State {
   
-    private static Logger LOG = Logger.getLogger(ScriptingState.class);
-  
-    public static final String PROP_SCRIPT_PATH = "SCRIPTINGSTATE_SRC_PATH";
-    
-    /**
-     */
-    private boolean initialized = false;
-    
-    /**
-     */
-    private BSFEngine bsfEngine = null;     
-    
-    
-    /**
-     */
-    public ScriptingState() {
-    }
-    
+    public  static final String                PROP_SCRIPT_PATH = "SCRIPTINGSTATE_SRC_PATH";
+    private static final Logger                LOG              = Logger.getLogger(ScriptingState.class);
+    private static final Map<String,BSFEngine> bsfenginemap     = new ConcurrentHashMap<String, BSFEngine>();
     
     /**
      * 
      */
     public boolean isAccessible(Context context, PfixServletRequest preq) throws Exception {
-        init(context);
-        return ScriptingUtil.exec(bsfEngine, "isAccessible", new Object[] {context, preq});
+        BSFEngine bsfengine = init(context);
+        return ScriptingUtil.exec(bsfengine, "isAccessible", new Object[] {context, preq});
     }
     
     
@@ -71,8 +56,8 @@ public class ScriptingState implements State {
      * 
      */
     public boolean needsData(Context context, PfixServletRequest preq) throws Exception {
-        init(context);
-        return ScriptingUtil.exec(bsfEngine, "needsData", new Object[] {context, preq});
+        BSFEngine bsfengine = init(context);
+        return ScriptingUtil.exec(bsfengine, "needsData", new Object[] {context, preq});
     }
     
     
@@ -80,8 +65,8 @@ public class ScriptingState implements State {
      * 
      */
     public ResultDocument getDocument(Context context, PfixServletRequest preq) throws Exception {
-        init(context);
-        return (ResultDocument) bsfEngine.call(null, "getDocument", new Object[]{context, preq});
+        BSFEngine bsfengine = init(context);
+        return (ResultDocument) bsfengine.call(null, "getDocument", new Object[]{context, preq});
     }
     
     
@@ -92,13 +77,15 @@ public class ScriptingState implements State {
      * @exception IllegalStateException if the properties for the current page
      * request don't contain a property, that denotes the 
      */
-    protected void init(Context context) throws BSFException, IOException {
+    protected BSFEngine init(Context context) throws BSFException, IOException {
       
-        String path = getScriptPath(context);
+        String    path      = getScriptPath(context);
+        String    key       = path + "@" + context.getName();
+        BSFEngine bsfengine = bsfenginemap.get(key);
         
-        if ( bsfEngine == null || !ScriptingUtil.isCachedCurrent(path) ) {
+        if (bsfengine == null || !ScriptingUtil.isCachedCurrent(path)) {
       
-            LOG.debug("Initializing ScriptingState with script path: "+path);
+            LOG.debug("Initializing ScriptingState with script path: " + path);
             
             String lang = BSFManager.getLangFromFilename(path);
       
@@ -106,8 +93,10 @@ public class ScriptingState implements State {
             manager.declareBean("LOG", LOG, Logger.class);
             manager.exec(lang, path, 0, 0, ScriptingUtil.getScript(path));
             
-            bsfEngine = manager.loadScriptingEngine(lang);
+            bsfengine = manager.loadScriptingEngine(lang);
         }
+        bsfenginemap.put(key, bsfengine);
+        return bsfengine;
     }
     
     
@@ -116,11 +105,11 @@ public class ScriptingState implements State {
      */
     public String getScriptPath(Context context) {
         Properties props = context.getPropertiesForCurrentPageRequest();
-        String path = props.getProperty(ScriptingState.PROP_SCRIPT_PATH);
+        String     path  = props.getProperty(ScriptingState.PROP_SCRIPT_PATH);
         
-        if ( path == null ) {
+        if (path == null) {
             String pr = context.getCurrentPageRequest().getName();
-            throw new IllegalArgumentException("ScriptingState for "+pr+" has no script path specified");
+            throw new IllegalArgumentException("ScriptingState for " + pr + " has no script path specified");
         } else {
             return path;
         }
