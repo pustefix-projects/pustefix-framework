@@ -1,3 +1,9 @@
+2006-05-30  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixcore/scripting/ScriptingState.java: removed
+	shared non-static, non-final instance variable... Now the
+	bsfengines are stored in a static map for each context+scriptpath key.
+
 2006-05-29  Sebastian Marsching <sebastian.marsching@1und1.de>
 
 	* Starting development version 0.9.1-pre
