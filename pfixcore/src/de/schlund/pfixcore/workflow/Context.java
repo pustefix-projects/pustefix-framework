@@ -55,8 +55,8 @@ import org.w3c.dom.Element;
 /**
  * This class is the corner piece of our workflow concept.
  * Here we decide which {@link de.schlund.pfixcore.workflow.State State} handles the
- * request. This decision is based on the notion of workflows (aka
- * {@link de.schlund.pfixcore.workflow.PageFlow PageFlow}s).
+ * request. This decision is based on the notion of
+ * {@link de.schlund.pfixcore.workflow.PageFlow PageFlow}s.
  *
  * @author jtl
  *
