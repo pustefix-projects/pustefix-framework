@@ -38,7 +38,7 @@ import de.schlund.pfixcore.workflow.Context;
  */
 
 public class AdultInfoHandler implements IHandler {
-    private Category  CAT  = Category.getInstance(this.getClass().getName());
+    private final static Category CAT  = Category.getInstance(AdultInfoHandler.class);
 
     public void handleSubmittedData(Context context, IWrapper wrapper) throws Exception {
         AdultInfo              info    = (AdultInfo) wrapper;

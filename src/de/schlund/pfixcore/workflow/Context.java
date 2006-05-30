@@ -41,15 +41,16 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.TreeMap;
 import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Category;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import java.util.Map;
 
 /**
  * This class is the corner piece of our workflow concept.
@@ -216,6 +217,10 @@ public class Context implements AppContext {
                 currentpageflow = tmp;
             }
         } else if (currentpageflow != null) {
+//             HttpServletRequest req = currentpservreq.getRequest();
+//             LOG.warn("LASTFLOWNOTSET:" + currentpservreq.getServerName() + "|"
+//                      + currentpservreq.getRequest().getHeader("Referer") + "|"
+//                      + currentpservreq.getRequestURI() + "|" + currentpageflow.getName());
             currentpageflow = pageflowmanager.getPageFlowByName(currentpageflow.getRootName(), getVariant());
         }
         // Update currentpagerequest to currently valid variant

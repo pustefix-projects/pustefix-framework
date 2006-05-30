@@ -19,9 +19,10 @@
 
 package de.schlund.pfixcore.workflow;
 
+import de.schlund.pfixcore.util.FlyWeightChecker;
+import de.schlund.pfixxml.loader.*;
 import java.util.*;
 import org.apache.log4j.*;
-import de.schlund.pfixxml.loader.*;
 
 /**
  * StateFactory.java
@@ -63,16 +64,19 @@ public class StateFactory implements Reloader {
                         Class stateclass = Class.forName(classname);
                         retval = (State) stateclass.newInstance();
                     }
+                    if (!FlyWeightChecker.check(retval)) {
+                        throw new IllegalStateException("You MUST NOT use non-static fields in flyweight class " + classname);
+                    }
+                    knownstates.put(classname, retval);
                 } catch (InstantiationException e) {
-                    LOG.error("unable to instantiate class [" + classname + "]", e);
+                    throw new IllegalStateException("unable to instantiate class [" + classname + "] :" + e.getMessage());
                 } catch (IllegalAccessException e) {
-                    LOG.error("unable access class [" + classname + "]", e);
+                    throw new IllegalStateException("unable access class [" + classname + "] :" + e.getMessage());
                 } catch (ClassNotFoundException e) {
-                    LOG.error("unable to find class [" + classname + "]", e);
+                    throw new IllegalStateException("unable to find class [" + classname + "] :" + e.getMessage());
                 } catch (ClassCastException e) {
-                    LOG.error("class [" + classname + "] does not implement the interface State", e);
+                    throw new IllegalStateException("class [" + classname + "] does not implement the interface IHandler. :" + e.getMessage());
                 }
-                knownstates.put(classname, retval);
             }
             return retval;
         }

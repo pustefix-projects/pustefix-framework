@@ -38,7 +38,7 @@ import java.util.*;
  */
 
 public class TrouserHandler implements IHandler {
-    private Category  CAT  = Category.getInstance(this.getClass().getName());
+    private static final Category  CAT  = Category.getInstance(TrouserHandler.class);
     
     public void handleSubmittedData(Context context, IWrapper wrapper) throws Exception {
         Trouser        trouser = (Trouser) wrapper;
