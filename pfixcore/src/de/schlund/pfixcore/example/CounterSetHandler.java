@@ -36,7 +36,7 @@ import org.apache.log4j.*;
  */
 
 public class CounterSetHandler implements IHandler {
-    private Category  CAT  = Category.getInstance(this.getClass().getName());
+    private static final Category CAT = Category.getInstance(CounterSetHandler.class);
 
     public void handleSubmittedData(Context context, IWrapper wrapper) throws Exception {
         CounterInput    counter = (CounterInput) wrapper;
@@ -46,7 +46,6 @@ public class CounterSetHandler implements IHandler {
         if (count != null) {
             cc.setCounter(count.intValue());
         }
-        
     }
     
     public void retrieveCurrentStatus(Context context, IWrapper wrapper) throws Exception {
