@@ -1,4 +1,21 @@
+2006-05-31  Jens Lautenbacher  <jtl@schlund.de>
+
+	* build.xml: started 0.8.11-pre
+
 2006-05-30  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixcore/util/FlyWeightChecker.java: new
+	class. used to check if a class has only static or final fields.
+	* src/de/schlund/pfixcore/workflow/StateFactory.java: 
+	* src/de/schlund/pfixcore/generator/IHandlerFactory.java: use it
+	here. Bail out if test fails.
+
+	* src/de/schlund/pfixcore/example/CounterHandler.java: 
+	* src/de/schlund/pfixcore/example/AdultInfoHandler.java:
+	* src/de/schlund/pfixcore/example/TrouserHandler.java: 
+	* src/de/schlund/pfixcore/example/TShirtHandler.java: 
+	* src/de/schlund/pfixcore/example/EncodingTestHandler.java: 
+	* src/de/schlund/pfixcore/example/CounterSetHandler.java: fix accordingly
 
 	* src/de/schlund/pfixcore/scripting/ScriptingState.java: removed
 	shared non-static, non-final instance variable... Now the

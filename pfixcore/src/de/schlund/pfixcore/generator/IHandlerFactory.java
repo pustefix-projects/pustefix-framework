@@ -18,14 +18,15 @@
  */
 
 package de.schlund.pfixcore.generator;
-import java.util.HashMap;
-import java.util.Iterator;
 
-import org.apache.log4j.Category;
 
+import de.schlund.pfixcore.util.FlyWeightChecker;
 import de.schlund.pfixxml.loader.AppLoader;
 import de.schlund.pfixxml.loader.Reloader;
 import de.schlund.pfixxml.loader.StateTransfer;
+import java.util.HashMap;
+import java.util.Iterator;
+import org.apache.log4j.Category;
 
 /**
  * IHandlerFactory.java
@@ -46,7 +47,7 @@ public class IHandlerFactory implements Reloader {
 
     private IHandlerFactory() {
         // do nothing.
-        AppLoader appLoader=AppLoader.getInstance();
+        AppLoader appLoader = AppLoader.getInstance();
         if (appLoader.isEnabled()) {
             appLoader.addReloader(this);
         }
@@ -75,11 +76,15 @@ public class IHandlerFactory implements Reloader {
                 try {
                     AppLoader appLoader = AppLoader.getInstance();
                     if (appLoader.isEnabled()) {
-                        retval = (IHandler)appLoader.loadClass(classname).newInstance();
+                        retval = (IHandler) appLoader.loadClass(classname).newInstance();
                     } else {
                         Class stateclass = Class.forName(classname);
                         retval = (IHandler) stateclass.newInstance();
                     }
+                    if (!FlyWeightChecker.check(retval)) {
+                        throw new IllegalStateException("You MUST NOT use non-static fields in flyweight class " + classname);
+                    }
+                    knownhandlers.put(classname, retval);
                 } catch (InstantiationException e) {
                     throw new IllegalStateException("unable to instantiate class [" + classname + "] :" + e.getMessage());
                 } catch (IllegalAccessException e) {
@@ -89,13 +94,12 @@ public class IHandlerFactory implements Reloader {
                 } catch (ClassCastException e) {
                     throw new IllegalStateException("class [" + classname + "] does not implement the interface IHandler. :" + e.getMessage());
                 }
-                knownhandlers.put(classname, retval);
             }
             // LOG.debug("Retval is: " + retval);
             return retval;
         }
     }
-
+    
     public IHandler getIHandlerForWrapperClass(String classname) {
         synchronized (wrapper2handlers) {
             IHandler retval = (IHandler) wrapper2handlers.get(classname); 

@@ -19,19 +19,19 @@ import de.schlund.pfixcore.workflow.Context;
  */
 public class EncodingTestHandler implements IHandler {
 
-	public void handleSubmittedData(Context context,IWrapper wrapper) throws Exception {
-        EncodingTest test=(EncodingTest)wrapper;
-        String encoding=test.getEncoding();
-        if(encoding==null || encoding.trim().equals("") || encoding.equals("none")) {
-        	  ContextEncodingTest ctx=(ContextEncodingTest)context.getContextResourceManager().getResource(ContextEncodingTest.class.getName());
-        	  ctx.setText(test.getText());
+    public void handleSubmittedData(Context context,IWrapper wrapper) throws Exception {
+        EncodingTest test     = (EncodingTest)wrapper;
+        String       encoding = test.getEncoding();
+        if (encoding == null || encoding.trim().equals("") || encoding.equals("none")) {
+            ContextEncodingTest ctx = (ContextEncodingTest)context.getContextResourceManager().getResource(ContextEncodingTest.class.getName());
+            ctx.setText(test.getText());
         }
     }
     
     public void retrieveCurrentStatus(Context context,IWrapper wrapper) throws Exception {
-        EncodingTest test=(EncodingTest)wrapper;
-        ContextEncodingTest ctx=(ContextEncodingTest)context.getContextResourceManager().getResource(ContextEncodingTest.class.getName());
-        if(ctx.getText()!=null) test.setText(ctx.getText());
+        EncodingTest        test = (EncodingTest)wrapper;
+        ContextEncodingTest ctx  = (ContextEncodingTest)context.getContextResourceManager().getResource(ContextEncodingTest.class.getName());
+        if (ctx.getText() != null) test.setText(ctx.getText());
     }
     
     public boolean needsData(Context context) throws Exception {
