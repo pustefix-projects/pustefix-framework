@@ -81,8 +81,7 @@ public class StateUtil {
                 throw new XMLException("ContextResource not found: " + classname);
             }
            
-            PerfEvent pe = new PerfEvent(PerfEventType.CONTEXTRESOURCE_INSERTSTATUS,
-                    classname);
+            PerfEvent pe = new PerfEvent(PerfEventType.CONTEXTRESOURCE_INSERTSTATUS, classname);
             pe.start();
             cr.insertStatus(resdoc, resdoc.createNode(nodename));
             pe.save();
@@ -129,7 +128,7 @@ public class StateUtil {
      * 
      */
     public static boolean isSubmitTrigger(Context context, PfixServletRequest preq) {
-        return isSubmitTriggerAny(context, preq.getRequestParam(State.SENDDATA));
+        return isSubmitTriggerHelper(context, preq.getRequestParam(State.SENDDATA));
     }
     
     
@@ -137,7 +136,7 @@ public class StateUtil {
      * 
      */
     public static boolean isSubmitAuthTrigger(Context context, PfixServletRequest preq) {
-        return isSubmitTriggerAny(context, preq.getRequestParam(State.SENDAUTHDATA));
+        return isSubmitTriggerHelper(context, preq.getRequestParam(State.SENDAUTHDATA));
     }
     
     
@@ -146,7 +145,7 @@ public class StateUtil {
     /**
      * 
      */
-    private static boolean isSubmitTriggerAny(Context context, RequestParam sdreq) {
+    private static boolean isSubmitTriggerHelper(Context context, RequestParam sdreq) {
         return (!context.flowIsRunning() && !context.finalPageIsRunning() &&
                 !context.jumpToPageIsRunning() && sdreq != null && sdreq.isTrue());
     }  
