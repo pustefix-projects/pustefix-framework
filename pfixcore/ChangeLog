@@ -1,5 +1,8 @@
 2006-05-31  Jens Lautenbacher  <jtl@schlund.de>
 
+	* src/de/schlund/pfixxml/jmx/ApplicationList.java
+	(ApplicationList::load): changed xpath to only select active projects
+
 	* build.xml: started 0.8.11-pre
 
 2006-05-30  Jens Lautenbacher  <jtl@schlund.de>
