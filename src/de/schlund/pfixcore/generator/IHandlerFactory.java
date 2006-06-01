@@ -64,7 +64,7 @@ public class IHandlerFactory implements Reloader {
     
     /**
      * <code>getIHandler</code> returns the IHandler for the given classname.
-     * (IHandlers are singletons).
+     * (IHandlers are flyweights).
      *
      * @param classname a <code>String</code> value
      * @return a <code>IHandler</code> value
@@ -82,7 +82,7 @@ public class IHandlerFactory implements Reloader {
                         retval = (IHandler) stateclass.newInstance();
                     }
                     if (!FlyWeightChecker.check(retval)) {
-                        throw new IllegalStateException("You MUST NOT use non-static fields in flyweight class " + classname);
+                        throw new IllegalStateException("You MUST NOT use non-static/non-final fields in flyweight class " + classname);
                     }
                     knownhandlers.put(classname, retval);
                 } catch (InstantiationException e) {
@@ -105,25 +105,25 @@ public class IHandlerFactory implements Reloader {
             IHandler retval = (IHandler) wrapper2handlers.get(classname); 
             if (retval == null) {
                 try {
-                    AppLoader appLoader=AppLoader.getInstance();
-                    if(appLoader.isEnabled()) {
-                        IWrapper wrapper=(IWrapper)appLoader.loadClass(classname).newInstance();
-                        retval=wrapper.gimmeIHandler();
+                    AppLoader appLoader = AppLoader.getInstance();
+                    if (appLoader.isEnabled()) {
+                        IWrapper wrapper = (IWrapper) appLoader.loadClass(classname).newInstance();
+                        retval           = wrapper.gimmeIHandler();
                     } else {
                         Class    stateclass = Class.forName(classname);
                         IWrapper wrapper    = (IWrapper) stateclass.newInstance();
                         retval              = wrapper.gimmeIHandler();
                     }
+                    wrapper2handlers.put(classname, retval);
                 } catch (InstantiationException e) {
                     throw new IllegalStateException("unable to instantiate class [" + classname + "] :" + e.getMessage());
                 } catch (IllegalAccessException e) {
-                   throw new IllegalStateException("unable access class [" + classname + "] :" + e.getMessage());
+                    throw new IllegalStateException("unable access class [" + classname + "] :" + e.getMessage());
                 } catch (ClassNotFoundException e) {
                     throw new IllegalStateException("unable to find class [" + classname + "] :" + e.getMessage());
                 } catch (ClassCastException e) {
                     throw new IllegalStateException("class [" + classname + "] does not implement the interface IWrapper :"+ e.getMessage());
                 }
-                wrapper2handlers.put(classname, retval);
             }
             return retval;
         }
