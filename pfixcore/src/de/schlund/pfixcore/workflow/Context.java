@@ -819,7 +819,7 @@ public class Context implements AppContext {
                     break;
                 } else {
                     LOG.debug("* Skipping step [" + page + "] in page flow (been there already...)");
-                    if (checkNeedsData(page, PageRequestStatus.WORKFLOW)) {
+                    if (checkIsAccessible(page, PageRequestStatus.WORKFLOW) && checkNeedsData(page, PageRequestStatus.WORKFLOW)) {
                         LOG.warn("SKIPPEDWOULDSTOP:" + currentpservreq.getServerName() + "|"
                                  + page.getName() + "|" + currentpageflow.getName());
                     }

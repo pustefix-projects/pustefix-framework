@@ -1,3 +1,9 @@
+2006-06-01  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixcore/workflow/Context.java
+	(Context::runPageFlow): need to add a check for accessibility
+	before our current logging of "skipped current page in flow"
+
 2006-05-31  Jens Lautenbacher  <jtl@schlund.de>
 
 	* src/de/schlund/pfixxml/jmx/ApplicationList.java
