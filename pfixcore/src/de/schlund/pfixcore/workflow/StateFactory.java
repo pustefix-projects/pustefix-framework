@@ -65,7 +65,7 @@ public class StateFactory implements Reloader {
                         retval = (State) stateclass.newInstance();
                     }
                     if (!FlyWeightChecker.check(retval)) {
-                        throw new IllegalStateException("You MUST NOT use non-static fields in flyweight class " + classname);
+                        throw new IllegalStateException("You MUST NOT use non-static/non-final fields in flyweight class " + classname);
                     }
                     knownstates.put(classname, retval);
                 } catch (InstantiationException e) {
