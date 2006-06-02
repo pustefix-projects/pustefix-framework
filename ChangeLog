@@ -1,3 +1,9 @@
+2006-06-02  Sebastian Marsching  <sebastian.marsching@1und1.de>
+
+	* src/de/schlund/pfixcore/editor2/frontend/resources/SessionInfoResourceImpl.java (insertStatus): 
+	Using temporary set for session ids to avoid ConcurrentModificationException
+	due to modifications to the set while iterating.
+
 2006-06-01  Jens Lautenbacher  <jtl@schlund.de>
 
 	* src/de/schlund/pfixcore/workflow/Context.java

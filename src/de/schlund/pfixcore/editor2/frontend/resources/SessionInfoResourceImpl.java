@@ -23,7 +23,9 @@ import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.Map;
+import java.util.Set;
 
 import org.w3c.dom.Element;
 
@@ -52,8 +54,9 @@ public class SessionInfoResourceImpl implements SessionInfoResource {
         Map<Context, String> contextmap = ContextStore.getInstance()
                 .getContextMap();
 
-        for (Iterator i = sessadmin.getAllSessionIds().iterator(); i.hasNext();) {
-            String sessId = (String) i.next();
+        Set<String> allsessionids = new LinkedHashSet<String>(sessadmin.getAllSessionIds());
+        for (Iterator<String> i = allsessionids.iterator(); i.hasNext();) {
+            String sessId = i.next();
             try {
                 SessionInfoStruct info = sessadmin.getInfo(sessId);
                 if (info != null) {
