@@ -82,7 +82,8 @@ public class IHandlerFactory implements Reloader {
                         retval = (IHandler) stateclass.newInstance();
                     }
                     if (!FlyWeightChecker.check(retval)) {
-                        throw new IllegalStateException("You MUST NOT use non-static/non-final fields in flyweight class " + classname);
+                        // throw new IllegalStateException("You MUST NOT use non-static/non-final fields in flyweight class " + classname);
+                        LOG.error("NOTSTATICFINAL: You MUST NOT use non-static/non-final fields in flyweight class " + classname);
                     }
                     knownhandlers.put(classname, retval);
                 } catch (InstantiationException e) {
