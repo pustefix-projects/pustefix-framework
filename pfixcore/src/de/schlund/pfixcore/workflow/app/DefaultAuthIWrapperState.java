@@ -159,7 +159,7 @@ public class DefaultAuthIWrapperState extends StateImpl {
         if (isSubmitAuthTrigger(context, preq)) {
             CAT.debug("====> Handling AUTHDATA SUBMIT");
             user.load(rdata);
-            if (user.errorHappened()) { // during loading of the wrapper...
+            if (user.errorHappened()) {
                 userhandler.retrieveCurrentStatus(context, user);
                 CAT.debug("====> Error during loading of wrapper data");
                 // Try loading the aux interfaces, just to echo the stringvals.
@@ -170,14 +170,16 @@ public class DefaultAuthIWrapperState extends StateImpl {
             } else {
                 CAT.debug("====> Calling handleSubmittedData on " + userhandler.getClass().getName());
                 userhandler.handleSubmittedData(context, user);
-                if (user.errorHappened()) { // during trying to authenticate
+                if (user.errorHappened() || context.isProhibitContinueSet()) { // during trying to authenticate
+                    // There may have occured an error (a StatusCode is set), or prohibitContinue()
+                    // has been already called (because a PageMessage has been used to signal an error condition) 
                     CAT.debug("====> Error during submit handling");
                     userhandler.retrieveCurrentStatus(context, user);
                     // Try loading the aux interfaces, just to echo the stringvals.
                     // so no error handling needs to take place.
                     auxEchoData(aux, rdata, resdoc);
                     userInsertErrors(properties, user, resdoc);
-                    context.prohibitContinue();
+                    context.prohibitContinue(); // no problem if called more than once...
                 } else {
                     // Try loading the aux interfaces, and call
                     // their handlers if no error happened.

@@ -1,3 +1,10 @@
+2006-06-07  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixcore/workflow/app/DefaultAuthIWrapperState.java
+	(DefaultAuthIWrapperState::getDocument): handle the case where no
+	StatusCode has been set, but context.prohibitContinue() has been
+	called.
+
 2006-06-06  Jens Lautenbacher  <jtl@schlund.de>
 
 	* src/de/schlund/pfixcore/generator/IHandlerFactory.java (IHandlerFactory::getIHandler): 
