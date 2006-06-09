@@ -152,7 +152,7 @@ public class Context implements AppContext {
             // flag, as we would not be able to return such a page
             // after the redirect
             if (this.getConfigForCurrentPageRequest() != null && this.getConfigForCurrentPageRequest().isSSL() &&
-                spdoc != null && !spdoc.getNostore() && !preq.getOriginalScheme().equals("https")) {
+                spdoc != null && !spdoc.getNostore() && !preq.getOriginalScheme().equals("https") && preq.getSession(false) != null) {
                 spdoc.setSSLRedirect("https://" + preq.getServerName() + preq.getContextPath() + preq.getServletPath()
                                      + ";jsessionid=" + preq.getSession(false).getId() + "?__reuse=" + spdoc.getTimestamp());
             }
