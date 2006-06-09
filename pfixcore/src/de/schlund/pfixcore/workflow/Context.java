@@ -151,7 +151,8 @@ public class Context implements AppContext {
             // This rule does not apply to pages with the nostore
             // flag, as we would not be able to return such a page
             // after the redirect
-            if (this.getConfigForCurrentPageRequest().isSSL() && !spdoc.getNostore() && !preq.getOriginalScheme().equals("https")) {
+            if (this.getConfigForCurrentPageRequest() != null && this.getConfigForCurrentPageRequest().isSSL() &&
+                spdoc != null && !spdoc.getNostore() && !preq.getOriginalScheme().equals("https")) {
                 spdoc.setSSLRedirect("https://" + preq.getServerName() + preq.getContextPath() + preq.getServletPath()
                                      + ";jsessionid=" + preq.getSession(false).getId() + "?__reuse=" + spdoc.getTimestamp());
             }
