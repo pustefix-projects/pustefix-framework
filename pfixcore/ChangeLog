@@ -1,3 +1,18 @@
+2006-06-12  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixcore/workflow/StateFactory.java (StateFactory::getState): 
+	* src/de/schlund/pfixcore/generator/IHandlerFactory.java
+	(IHandlerFactory::getIHandler): now finally throw an exception,
+	not only logging an error.
+	
+
+2006-06-09  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixcore/workflow/Context.java
+	(Context::handleRequest): added a check against empty
+	configuration for a page (and also if the spdoc is empty  - this
+	should never happen, though)
+
 2006-06-07  Jens Lautenbacher  <jtl@schlund.de>
 
 	* src/de/schlund/pfixcore/workflow/app/DefaultAuthIWrapperState.java
