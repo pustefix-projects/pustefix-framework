@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="ISO-8859-1"?><include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
+  <part name="content">
+    <theme name="default">
+      <pfx:forminput>
+        <pfx:xinp type="submit" value="Submit, jump to B, then flow to C">
+          <pfx:argument name="select.Do_B">true</pfx:argument>
+        </pfx:xinp>
+        <br/>
+        <pfx:xinp type="submit" value="Submit, then flow to C"/>
+      </pfx:forminput>
+      <hr/>
+      <pfx:button page="home">Home</pfx:button>
+      <hr/>
+    </theme>
+  </part>
+</include_parts>

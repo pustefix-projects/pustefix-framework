@@ -1,3 +1,24 @@
+2006-06-13  Jens Lautenbacher  <jtl@schlund.de>
+
+	* projects/sample1/txt/pages/*: 
+	* src/de/schlund/pfixcore/example/*:  added some more tests
+
+	* src/de/schlund/pfixcore/workflow/Context.java (Context): store
+	the jumptopage and jumptopageflow not as PageRequest and PageFlow
+	but as Strings instead. This way we can select the right variant
+	just before we use them. In other news, when a jumptopageflow
+	isn't given, the isJumpToPageFlowSet() returns null, not the
+	"default" pageflow. When it is set, we also set the
+	isCurrentPageFlowRequestedByUser to true when we finally use the
+	jumptopageflow in documentFromFlow(), if it is null the "right"
+	pageflow is selected automatically via the usual rules.
+
+	* src/de/schlund/pfixcore/workflow/FlowStepSetFlowAction.java (FlowStepSetFlowAction::setData): 
+	* src/de/schlund/pfixcore/workflow/FlowStepJumpToAction.java (FlowStepJumpToAction::setData): 
+	* src/de/schlund/pfixcore/workflow/FlowStepForceStopAction.java (FlowStepForceStopAction::setData): 
+	* src/de/schlund/pfixcore/workflow/FlowStepAction.java
+	(setData::data): use HashMap<String, String>
+
 2006-06-12  Jens Lautenbacher  <jtl@schlund.de>
 
 	* src/de/schlund/pfixcore/workflow/StateFactory.java (StateFactory::getState): 

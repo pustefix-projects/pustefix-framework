@@ -17,24 +17,20 @@
  *
  */
 
-package de.schlund.pfixcore.workflow;
-
-
-import java.util.*;
-import de.schlund.pfixxml.ResultDocument;
+package de.schlund.pfixcore.example;
+import de.schlund.pfixcore.workflow.*;
+import java.util.HashMap;
 
 /**
- * @author: jtl@schlund.de
+ * ContextSimpleData.java
+ *
+ * Created: Thu Oct 22 19:24:37 2001
+ * @author <a href="mailto:jtl@schlund.de">Jens Lautenbacher</a>
  *
  */
 
-public class FlowStepForceStopAction implements FlowStepAction {
-    
-    public void setData(HashMap<String, String> data) {
-        // nothing
-    }
-
-    public void doAction(Context context, ResultDocument resdoc) throws Exception {
-        context.prohibitContinue();
-    }
+public interface ContextSimpleData extends ContextResource {
+    public void    setValue(String key, String value);
+    public String  getValue(String key);
+    public void    reset();
 }
