@@ -35,6 +35,10 @@
       <implements class="de.schlund.pfixcore.example.ContextEncodingTest"/>
     </resource>
     
+    <resource class="de.schlund.pfixcore.example.ContextSimpleDataImpl">
+      <implements class="de.schlund.pfixcore.example.ContextSimpleData"/>
+    </resource>
+
   </context>
 
   <interceptors>
@@ -81,8 +85,38 @@
     </variant>
   </pageflow>
   
+  <pageflow name="test" final="home">
+    <flowstep name="A">
+      <oncontinue>
+        <when test="/formresult/simpledata/call_b/@value = 'true'">
+          <action type="jumpto" page="B" pageflow="test"/>
+        </when>
+      </oncontinue>
+    </flowstep>
+    <flowstep name="C"/>
+  </pageflow>
+  
   <!-- *** PageRequests and associated properties *** -->
   
+  <pagerequest name="A">
+    <input>
+      <interface prefix="select" class="de.schlund.pfixcore.example.iwrapper.TestSelect"/>
+    </input>
+    <output>
+      <resource node="simpledata" class="de.schlund.pfixcore.example.ContextSimpleData"/>
+    </output>
+  </pagerequest>
+  
+  <pagerequest name="B">
+    <state class="de.schlund.pfixcore.example.TestState"/>
+  </pagerequest>
+  
+  <pagerequest name="C">
+    <output>
+      <resource node="simpledata" class="de.schlund.pfixcore.example.ContextSimpleData"/>
+    </output>
+  </pagerequest>
+
   <pagerequest name="test"/>
   
   <pagerequest name="home">

@@ -77,6 +77,8 @@
             </td>
           </tr>
         </table>
+        <hr/>
+        <pfx:button page="A">Go to test page A</pfx:button>
       </center>
     </theme>
   </part>

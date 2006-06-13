@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="ISO-8859-1"?><include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
+  <part name="content">
+    <theme name="default">
+      <ixsl:choose>
+        <ixsl:when test="/formresult/simpledata/b_was_called/@value = 'true'">
+          Page B has been called
+        </ixsl:when>
+        <ixsl:otherwise>
+          Page B has NOT been called
+        </ixsl:otherwise>
+      </ixsl:choose>
+      <hr/>
+      <pfx:button page="A">Goto A</pfx:button>
+      <hr/>
+    </theme>
+  </part>
+</include_parts>

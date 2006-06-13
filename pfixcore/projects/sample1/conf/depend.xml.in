@@ -24,6 +24,11 @@
     <page name="install"  handler="/xml/download"/>
     
     <page name="geninc"  handler="/xml/config"/>
+
+    <page name="A"  handler="/xml/config"/>
+    <page name="B"  handler="/xml/config"/>
+    <page name="C"  handler="/xml/config"/>
+
   </navigation>
 
   <standardmaster>
@@ -34,15 +39,19 @@
     <include stylesheet="sample1/xsl/metatags.xsl"/>
   </standardmetatags>
 
-  <standardpage name="home"     xml="sample1/xml/two_frames.xml"/>
-  <standardpage name="home"     xml="sample1/xml/two_frames.xml" variant="foo"/>
-  <standardpage name="home"     xml="sample1/xml/two_frames.xml" variant="foo:bar:baz"/>
-  <standardpage name="home"     xml="sample1/xml/two_frames.xml" variant="baz"/>
-  <standardpage name="order"    xml="sample1/xml/two_frames.xml"/>
-  <standardpage name="overview" xml="sample1/xml/two_frames.xml"/>
-  <standardpage name="scripting" xml="sample1/xml/two_frames.xml"/>
-  <standardpage name="scriptingstate" xml="sample1/xml/two_frames.xml"/>
+  <standardpage name="home"     xml="sample1/xml/one_frame_navi.xml"/>
+  <standardpage name="home"     xml="sample1/xml/one_frame_navi.xml" variant="foo"/>
+  <standardpage name="home"     xml="sample1/xml/one_frame_navi.xml" variant="foo:bar:baz"/>
+  <standardpage name="home"     xml="sample1/xml/one_frame_navi.xml" variant="baz"/>
+  <standardpage name="order"    xml="sample1/xml/one_frame_navi.xml"/>
+  <standardpage name="overview" xml="sample1/xml/one_frame_navi.xml"/>
+  <standardpage name="scripting" xml="sample1/xml/one_frame_navi.xml"/>
+  <standardpage name="scriptingstate" xml="sample1/xml/one_frame_navi.xml"/>
 
+  <standardpage name="A" xml="sample1/xml/one_frame.xml"/>
+  <standardpage name="B" xml="sample1/xml/one_frame.xml"/>
+  <standardpage name="C" xml="sample1/xml/one_frame.xml"/>
+  
   <standardpage name="encoding" xml="sample1/xml/one_frame.xml"/>
   <standardpage name="test"     xml="sample1/xml/one_frame.xml"/>
 
