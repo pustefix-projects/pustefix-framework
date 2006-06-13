@@ -85,11 +85,10 @@
     </variant>
   </pageflow>
   
-
   <pageflow name="test" final="home">
     <flowstep name="A">
       <oncontinue>
-        <when test="/formresult/data/call_b/@value = 'true'">
+        <when test="/formresult/simpledata/call_b/@value = 'true'">
           <action type="jumpto" page="B" pageflow="test"/>
         </when>
       </oncontinue>
