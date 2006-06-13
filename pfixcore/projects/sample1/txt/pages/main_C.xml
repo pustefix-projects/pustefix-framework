@@ -2,7 +2,7 @@
   <part name="content">
     <theme name="default">
       <ixsl:choose>
-        <ixsl:when test="/formresult/simpledata/call_b/@value = 'true'">
+        <ixsl:when test="/formresult/simpledata/b_was_called/@value = 'true'">
           Page B has been called
         </ixsl:when>
         <ixsl:otherwise>
