@@ -31,8 +31,8 @@ import de.schlund.pfixxml.ResultDocument;
 public class FlowStepSetFlowAction implements FlowStepAction {
     private String pageflow = null;
     
-    public void setData(HashMap data) {
-        pageflow = (String) data.get("pageflow");
+    public void setData(HashMap<String, String> data) {
+        pageflow = data.get("pageflow");
     }
 
     public void doAction(Context context, ResultDocument resdoc) throws Exception {

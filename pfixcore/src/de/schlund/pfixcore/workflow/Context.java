@@ -103,8 +103,8 @@ public class Context implements AppContext {
     private PfixServletRequest currentpservreq;
     private PageRequest        currentpagerequest;
     private PageFlow           currentpageflow;
-    private PageRequest        jumptopagerequest;
-    private PageFlow           jumptopageflow;
+    private String             jumptopagename;
+    private String             jumptopageflowname;
     private boolean            on_jumptopage;
     private boolean            pageflow_requested_by_user;
     private boolean            startwithflow;
@@ -172,8 +172,8 @@ public class Context implements AppContext {
         currentpservreq            = preq;
         prohibitcontinue           = false;
         stopnextforcurrentrequest  = false;
-        jumptopagerequest          = null;
-        jumptopageflow             = null;
+        jumptopagename      = null;
+        jumptopageflowname         = null;
         on_jumptopage              = false;
         pageflow_requested_by_user = false;
         startwithflow              = false;
@@ -366,25 +366,27 @@ public class Context implements AppContext {
     }
     
     public void setJumpToPageRequest(String pagename) {
+        // Just check if the pagename will map to ANY pagerequest in any variant...
         PageRequest page = createPageRequest(pagename);
         if (pagemap.getState(page) != null) {
-            jumptopagerequest = page;
+            jumptopagename = pagename;
         } else {
             LOG.warn("*** Trying to set jumppage " + pagename + ", but it's not defined ***");
-            jumptopagerequest = null;
+            jumptopagename = null;
         }
     }
 
     public void setJumpToPageFlow(String flowname) {
-        if (jumptopagerequest != null) {
-            PageFlow tmp = pageflowmanager.getPageFlowByName(flowname, getVariant());
+        if (jumptopagename != null) {
+            PageFlow tmp = pageflowmanager.getPageFlowByName(flowname, null);
             if (tmp != null) {
-                jumptopageflow = tmp;
+                jumptopageflowname = flowname;
             } else {
-                jumptopageflow = pageflowmanager.pageFlowToPageRequest(currentpageflow, jumptopagerequest, getVariant());
+                LOG.warn("*** Trying to set jumptopageflow " + flowname + ", but it's not defined ***");
+                jumptopageflowname = null;
             }
         } else {
-            jumptopageflow = null;
+            jumptopageflowname = null;
         }
     }
 
@@ -536,11 +538,11 @@ public class Context implements AppContext {
     }
 
     public boolean isJumptToPageSet() {
-        return jumptopagerequest != null;
+        return jumptopagename != null;
     }
     
     public boolean isJumptToPageFlowSet() {
-        return jumptopageflow != null;
+        return jumptopageflowname != null;
     }
     
     public boolean isProhibitContinueSet() {
@@ -766,17 +768,20 @@ public class Context implements AppContext {
             if (prohibitcontinue) {
                 LOG.debug("* [" + currentpagerequest + "] returned document to show, skipping page flow.");
                 document = resdoc.getSPDocument();
-            } else if (jumptopagerequest != null) {
-                LOG.debug("* [" + currentpagerequest + "] signalled success, jumptopage is set as [" + jumptopagerequest + "].");
-                currentpagerequest = jumptopagerequest;
-                if (jumptopageflow != null) {
-                    currentpageflow = jumptopageflow;
+            } else if (jumptopagename != null) {
+                LOG.debug("* [" + currentpagerequest + "] signalled success, jumptopage is set as [" + jumptopagename + "].");
+                currentpagerequest = createPageRequest(jumptopagename);
+                if (jumptopageflowname != null) {
+                    setPageFlow(jumptopageflowname);
+                } else {
+                    currentpageflow = pageflowmanager.pageFlowToPageRequest(currentpageflow, currentpagerequest, getVariant());
                 }
-                jumptopagerequest = null; // we don't want to recurse infinitely
-                jumptopageflow    = null; // we don't want to recurse infinitely
-                on_jumptopage     = true; // we need this information to supress the interpretation of
-                                          // the request as one that submits data. See StateImpl,
-                                          // methods isSubmitTrigger & isDirectTrigger
+
+                jumptopagename     = null; // we don't want to recurse infinitely
+                jumptopageflowname = null; // we don't want to recurse infinitely
+                on_jumptopage      = true; // we need this information to supress the interpretation of
+                                           // the request as one that submits data. See StateImpl,
+                                           // methods isSubmitTrigger & isDirectTrigger
 
                 LOG.debug("******* JUMPING to [" + currentpagerequest + "] *******\n");
                 document = documentFromFlow();

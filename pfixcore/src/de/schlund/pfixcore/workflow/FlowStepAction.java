@@ -28,6 +28,6 @@ import de.schlund.pfixxml.ResultDocument;
  */
 
 public interface FlowStepAction {
-    public void setData(HashMap data);
+    public void setData(HashMap<String, String> data);
     public void doAction(Context context, ResultDocument resdoc) throws Exception;
 }

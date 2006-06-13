@@ -32,9 +32,9 @@ public class FlowStepJumpToAction implements FlowStepAction {
     private String page     = null;
     private String pageflow = null;
     
-    public void setData(HashMap data) {
-        page     = (String) data.get("page");
-        pageflow = (String) data.get("pageflow");
+    public void setData(HashMap<String, String> data) {
+        page     = data.get("page");
+        pageflow = data.get("pageflow");
     }
 
     public void doAction(Context context, ResultDocument resdoc) throws Exception {
