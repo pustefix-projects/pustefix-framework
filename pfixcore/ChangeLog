@@ -1,5 +1,6 @@
 2006-06-19  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
+	* src/de/schlund/pfixcore/webservice/WebServiceServlet.java (doPost): 
 	* src/de/schlund/pfixcore/scriptedflow/vm/ScriptVM.java: 
 	* src/de/schlund/pfixcore/webservice/handler/AuthenticationHandler.java: 
 	* src/de/schlund/pfixcore/workflow/context/RequestContext.java: 
