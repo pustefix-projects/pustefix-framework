@@ -26,6 +26,7 @@ import org.apache.log4j.Category;
 
 import de.schlund.pfixxml.config.PageFlowConfig;
 import de.schlund.pfixxml.config.PageFlowStepConfig;
+import de.schlund.pfixxml.contextxmlserver.PageFlowManager;
 
 /**
  * @author: jtl

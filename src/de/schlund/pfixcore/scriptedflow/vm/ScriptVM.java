@@ -25,9 +25,9 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import de.schlund.pfixcore.scriptedflow.vm.pvo.ParamValueObject;
-import de.schlund.pfixxml.AppContext;
 import de.schlund.pfixxml.PfixServletRequest;
 import de.schlund.pfixxml.SPDocument;
+import de.schlund.pfixxml.contextxmlserver.RequestContextImpl;
 
 /**
  * Executes scripts that have been compiled previously.  
@@ -78,7 +78,7 @@ public class ScriptVM {
     }
 
     public SPDocument run(PfixServletRequest preq, SPDocument spdoc,
-            AppContext context, Map<String, String> params) throws Exception {
+            RequestContextImpl rcontext, Map<String, String> params) throws Exception {
         isRunning = true;
 
         // Make sure resolver and registers are set up
@@ -105,7 +105,7 @@ public class ScriptVM {
                 if (registerSPDoc != null) {
                     return registerSPDoc;
                 } else {
-                    return context.handleRequest(preq);
+                    return rcontext.handleRequest(preq);
                 }
                 
             } else if (instr instanceof SetVariableInstruction) {
@@ -159,7 +159,7 @@ public class ScriptVM {
                     }
                     reqParams.put(key, rlist);
                 }
-                doVirtualRequest(in.getPagename(), reqParams, preq, context);
+                doVirtualRequest(in.getPagename(), reqParams, preq, rcontext);
                 ip++;
                 continue;
 
@@ -180,7 +180,7 @@ public class ScriptVM {
 
     private void doVirtualRequest(String pagename,
             Map<String, String[]> reqParams, PfixServletRequest origPreq,
-            AppContext context) throws Exception {
+            RequestContextImpl rcontext) throws Exception {
         HttpServletRequest vhttpreq = new VirtualHttpServletRequest(origPreq
                 .getRequest(), pagename, reqParams);
 
@@ -189,7 +189,7 @@ public class ScriptVM {
 
         // Send request to the context and use returned SPDocument
         // for further processing
-        SPDocument newdoc = context.handleRequest(vpreq);
+        SPDocument newdoc = rcontext.handleRequest(vpreq);
         if (newdoc != null) {
             updateRegisterSPDoc(newdoc);
         }

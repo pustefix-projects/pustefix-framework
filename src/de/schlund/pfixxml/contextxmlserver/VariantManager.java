@@ -17,14 +17,13 @@
  *
  */
 
-package de.schlund.pfixcore.workflow;
+package de.schlund.pfixxml.contextxmlserver;
 
 
 import java.util.HashMap;
 
 import org.apache.log4j.Logger;
 
-import de.schlund.pfixxml.ConfigurableObject;
 import de.schlund.pfixxml.Variant;
 import de.schlund.pfixxml.config.ContextConfig;
 
@@ -38,13 +37,13 @@ import de.schlund.pfixxml.config.ContextConfig;
  *
  */
 
-public class VariantManager implements ConfigurableObject {
+public class VariantManager {
     private ContextConfig           contextConfig;
     private HashMap<String, String> variantpagecache = new HashMap<String, String>();
     private Logger                  LOG              = Logger.getLogger(this.getClass());
     
-    public void init(Object confObj) throws Exception {
-        contextConfig = (ContextConfig) confObj;
+    public VariantManager(ContextConfig config) {
+        contextConfig = config;
     }
 
     public String getVariantMatchingPageRequestName(String name, Variant variant) {
