@@ -26,8 +26,6 @@ import org.xml.sax.SAXException;
 
 public class ContextRule extends CheckedRule {
     
-    private final static String DEFAULT_CONTEXT_CLASS = "de.schlund.pfixcore.workflow.Context";
-    
     private ContextXMLServletConfig config;
 
     public ContextRule(ContextXMLServletConfig config) {
@@ -42,15 +40,6 @@ public class ContextRule extends CheckedRule {
         // Navigation is stored in depend.xml
         ctxConfig.setNavigationFile(this.config.getDependFile());
         
-        String className = attributes.getValue("class");
-        if (className == null) {
-            className = DEFAULT_CONTEXT_CLASS;
-        }
-        try {
-            ctxConfig.setContextClass(Class.forName(className));
-        } catch (ClassNotFoundException e) {
-            throw new SAXException("Could not load class \"" + className + "\"!", e);
-        }
         String defaultFlow = attributes.getValue("defaultflow");
         if (defaultFlow == null) {
             throw new SAXException("Mandatory attribute \"defaultflow\" is missing!");
@@ -71,7 +60,6 @@ public class ContextRule extends CheckedRule {
     protected Map<String, Boolean> wantsAttributes() {
         HashMap<String, Boolean> atts = new HashMap<String, Boolean>();
         atts.put("defaultflow", true);
-        atts.put("class", false);
         atts.put("authpage", false);
         return atts;
     }

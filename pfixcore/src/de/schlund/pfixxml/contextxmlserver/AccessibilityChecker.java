@@ -14,17 +14,16 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with PFIXCORE; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- *
  */
 
-package de.schlund.pfixcore.workflow;
+package de.schlund.pfixxml.contextxmlserver;
 
 /**
- * @author jtl
+ * Used by {@link de.schlund.pfixxml.contextxmlserver.SessionContextImpl} for 
+ * checking the availability of a page when generating the navigation map.
+ * 
+ * @author Sebastian Marsching <sebastian.marsching@1und1.de>
  */
-public class AuthContext extends Context {
-
-    // This is only a dummy now. This clas will be removed.
-
-
+interface AccessibilityChecker {
+    boolean isPageAccessible(String pagename) throws Exception;
 }

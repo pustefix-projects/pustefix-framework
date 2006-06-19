@@ -1,5 +1,7 @@
 package de.schlund.pfixcore.webservice.handler;
 
+import java.util.Properties;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
@@ -12,6 +14,12 @@ import de.schlund.pfixcore.webservice.config.Configuration;
 import de.schlund.pfixcore.webservice.config.ServiceConfig;
 import de.schlund.pfixcore.workflow.Context;
 import de.schlund.pfixcore.workflow.ContextResourceManager;
+import de.schlund.pfixcore.workflow.State;
+import de.schlund.pfixxml.PfixServletRequest;
+import de.schlund.pfixxml.XMLException;
+import de.schlund.pfixxml.contextxmlserver.ContextWrapper;
+import de.schlund.pfixxml.contextxmlserver.ServerContextImpl;
+import de.schlund.pfixxml.contextxmlserver.SessionContextImpl;
 import de.schlund.pfixxml.serverutil.SessionAdmin;
 
 public class AuthenticationHandler extends AbstractHandler {
@@ -43,14 +51,26 @@ public class AuthenticationHandler extends AbstractHandler {
                     Boolean secure=(Boolean)session.getAttribute(SessionAdmin.SESSION_IS_SECURE);
                     if(secure==null || !secure.booleanValue()) throw AxisFault.makeFault(new Exception("Authentication failed: No secure session"));
                 }
-                Context pfxContext=(Context)session.getAttribute(srvConf.getContextName()+"__CONTEXT__");
-                try {
-                    if(pfxContext.checkAuthorization(false)!=null) throw AxisFault.makeFault(new Exception("Authorization failed"));
-                } catch(Exception x) {
-                    throw AxisFault.makeFault(new Exception("Authorization failed"));
+                String contextname = srvConf.getContextName() + "__CONTEXT__";
+                ServerContextImpl srvcontext = (ServerContextImpl) getServletContext(messageContext).getAttribute(contextname);
+                SessionContextImpl sesscontext = (SessionContextImpl) session.getAttribute(contextname);
+                State authstate = srvcontext.getAuthState();
+                Context wcontext = new ContextWrapper(srvcontext, sesscontext, null);
+                if (authstate != null) {
+                    PfixServletRequest preq = new PfixServletRequest(getServletRequest(messageContext), new Properties());
+                    try {
+                        if (!authstate.isAccessible(wcontext, preq)) {
+                            throw new XMLException("State of authpage is not accessible!");                        }
+                        if (authstate.needsData(wcontext, preq)) {
+                            throw new Exception("Authorization failed");
+                        }
+                    } catch (Exception e) {
+                        throw AxisFault.makeFault(e);
+                    }
+
                 }
-                ContextResourceManager crm=pfxContext.getContextResourceManager();
-                messageContext.setProperty(Constants.MSGCTX_PROP_CTX,pfxContext);
+                ContextResourceManager crm = sesscontext.getContextResourceManager();
+                messageContext.setProperty(Constants.MSGCTX_PROP_CTX,wcontext);
                 messageContext.setProperty(Constants.MSGCTX_PROP_CTXRESMAN,crm);
             }
         }
