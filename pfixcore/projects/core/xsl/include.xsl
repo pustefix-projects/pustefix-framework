@@ -268,7 +268,7 @@
           </xsl:when>
           <xsl:when test="$__target_key='__NONE__' and $__editmode = 'admin'">
             <a href="">
-              <ixsl:attribute name="onClick">window.open('/xml/edit/dynincludes;{$__sessid}?jump.Path={$realpath}&amp;jump.Part={$part}&amp;jump.Name={$product}&amp;jump.TargetGenerator=<xsl:value-of select="$product"/>&amp;jump.Type=dyninclude&amp;__anchor=left_navi|{$realpath}','PustefixEditor','menubar=yes,status=yes,resizable=yes');return(false);</ixsl:attribute>
+              <xsl:attribute name="onClick">window.open('/xml/edit/dynincludes;<xsl:value-of select="$__sessid"/>?jump.Theme=<xsl:value-of select="string($used_theme)"/>&amp;jump.Path=<xsl:value-of select="$realpath"/>&amp;jump.Part=<xsl:value-of select="$part"/>&amp;jump.Name=<xsl:value-of select="$product"/>&amp;jump.TargetGenerator=<xsl:value-of select="$product"/>&amp;jump.Type=dyninclude&amp;__anchor=left_navi|{$realpath}','PustefixEditor','menubar=yes,status=yes,resizable=yes');return(false);</xsl:attribute>
               <img border="0" src="/core/img/edit.gif" alt="Edit include: '{$part}' in file '{$realpath}'" title="Edit include: '{$part}' in file '{$realpath}'"/>
             </a>
           </xsl:when>

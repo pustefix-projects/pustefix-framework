@@ -1,3 +1,8 @@
+2006-06-19  Sebastian Marsching  <sebastian.marsching@1und1.de>
+
+	* projects/core/xsl/include.xsl: Merging bugfix for dyinclude links to
+	the editor from trunk
+
 2006-06-13  Jens Lautenbacher  <jtl@schlund.de>
 
 	* projects/sample1/txt/pages/*: 
