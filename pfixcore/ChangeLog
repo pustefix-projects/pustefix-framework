@@ -1,5 +1,11 @@
 2006-06-26  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
+	* src/de/schlund/pfixcore/example/ContextCounterImpl.java: 
+	* src/de/schlund/pfixcore/example/CounterHandler.java: 
+	* src/de/schlund/pfixcore/example/CounterSetHandler.java: 
+	Changed bad example for page messages in order to better 
+	reflect the actual way page messages should be used.
+	
 	* src/de/schlund/pfixxml/config/ContextConfig.java: 
 	* src/de/schlund/pfixxml/config/ContextRule.java: 
 	* src/de/schlund/pfixxml/config/DirectForeignContextRule.java: 

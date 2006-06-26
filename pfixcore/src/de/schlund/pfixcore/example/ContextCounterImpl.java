@@ -19,12 +19,12 @@
 
 package de.schlund.pfixcore.example;
 
+import org.apache.log4j.Category;
+import org.w3c.dom.Element;
+
 import de.schlund.pfixcore.workflow.Context;
 import de.schlund.pfixcore.workflow.ContextResource;
 import de.schlund.pfixxml.ResultDocument;
-import de.schlund.util.statuscodes.StatusCodeLib;
-import org.apache.log4j.Category;
-import org.w3c.dom.Element;
 
 /**
  * ContextCounter.java
@@ -63,24 +63,10 @@ public class ContextCounterImpl implements ContextResource, ContextCounter {
 
     public void setCounter(int count) {
         counter = count;
-        checkValue();
     }
 
     public void addToCounter(int count) {
         counter += count;
-        checkValue();
-    }
-    
-    private void checkValue() {
-        // demo of pageMessage feature
-        if (counter > 9 ) {
-            context.addPageMessage(StatusCodeLib.PFIXCORE_EXAMPLE_COUNTER_WARN_GREATER_9, new String[] {""+counter}, "error");
-            context.prohibitContinue();
-        } else if (counter > 5 ) {
-            context.addPageMessage(StatusCodeLib.PFIXCORE_EXAMPLE_COUNTER_WARN_GREATER_5, new String[] {""+counter}, "warn");
-        } else if (counter > 3 ) {
-            context.addPageMessage(StatusCodeLib.PFIXCORE_EXAMPLE_COUNTER_INFO_GREATER_3, new String[] {""+counter}, "info");
-        }
     }
 
     public boolean needsData() {
