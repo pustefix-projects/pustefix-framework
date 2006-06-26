@@ -131,7 +131,17 @@ public class DirectOutputServlet extends ServletManager {
              throw new RuntimeException("*** didn't find Context " + name + " in Session " + session.getId() +
                                         " , maybe it's not yet initialized??? ***");
          }
-
+         
+         if (config.isSynchronized()) {
+             synchronized (scontext) {
+                 doProcess(preq, res, context, scontext);
+            }
+         } else {
+             doProcess(preq, res, context, scontext);
+         }
+    }
+    
+    protected void doProcess(PfixServletRequest preq, HttpServletResponse res, ServerContextImpl context, SessionContextImpl scontext) throws Exception {
          ContextResourceManager crm = scontext.getContextResourceManager();
 
          // check the authentification first....

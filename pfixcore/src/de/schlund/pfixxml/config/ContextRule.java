@@ -49,6 +49,12 @@ public class ContextRule extends CheckedRule {
         if (authPage != null) {
             ctxConfig.setAuthPage(authPage);
         }
+        String syncStr = attributes.getValue("synchronized");
+        if (syncStr != null) {
+            ctxConfig.setSynchronized(Boolean.parseBoolean(syncStr));
+        } else {
+            ctxConfig.setSynchronized(true);
+        }
         this.config.setContextConfig(ctxConfig);
         this.getDigester().push(ctxConfig);
     }
@@ -61,6 +67,7 @@ public class ContextRule extends CheckedRule {
         HashMap<String, Boolean> atts = new HashMap<String, Boolean>();
         atts.put("defaultflow", true);
         atts.put("authpage", false);
+        atts.put("synchronized", false);
         return atts;
     }
 }
