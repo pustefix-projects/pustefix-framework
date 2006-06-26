@@ -362,7 +362,14 @@ public class RequestContextImpl implements RequestContext, AccessibilityChecker 
 
     public SPDocument handleRequest(PfixServletRequest preq) throws Exception {
         try {
-            SPDocument spdoc = handleRequestWorker(preq);
+            SPDocument spdoc;
+            if (context.getContextConfig().isSynchronized()) {
+                synchronized (scontext) {
+                    spdoc = handleRequestWorker(preq);
+                }
+            } else {
+                spdoc = handleRequestWorker(preq);
+            }
 
             // Make sure SSL pages are only returned using SSL.
             // This rule does not apply to pages with the nostore

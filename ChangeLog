@@ -1,3 +1,13 @@
+2006-06-26  Sebastian Marsching  <sebastian.marsching@1und1.de>
+
+	* src/de/schlund/pfixxml/config/ContextConfig.java: 
+	* src/de/schlund/pfixxml/config/ContextRule.java: 
+	* src/de/schlund/pfixxml/config/DirectForeignContextRule.java: 
+	* src/de/schlund/pfixxml/config/DirectOutputServletConfig.java: 
+	* src/de/schlund/pfixxml/contextxmlserver/RequestContextImpl.java: 
+	* src/de/schlund/pfixxml/DirectOutputServlet.java: 
+	Made synchronization of requests switchable
+
 2006-06-19  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
 	* projects/core/xsl/include.xsl: 
