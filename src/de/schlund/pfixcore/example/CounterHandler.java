@@ -25,6 +25,7 @@ import de.schlund.pfixcore.example.iwrapper.Counter;
 import de.schlund.pfixcore.generator.IHandler;
 import de.schlund.pfixcore.generator.IWrapper;
 import de.schlund.pfixcore.workflow.Context;
+import de.schlund.util.statuscodes.StatusCodeLib;
 
 /**
  * CounterHandler.java
@@ -53,6 +54,17 @@ public class CounterHandler implements IHandler {
 
         if (cc.getShowCounter().booleanValue() && count != null) {
             cc.addToCounter(count.intValue());
+        }
+        
+        // demo of pageMessage feature
+        int c = cc.getCounter();
+        if (c > 9 ) {
+            context.addPageMessage(StatusCodeLib.PFIXCORE_EXAMPLE_COUNTER_WARN_GREATER_9, new String[] {""+c}, "error");
+            context.prohibitContinue();
+        } else if (c > 5 ) {
+            context.addPageMessage(StatusCodeLib.PFIXCORE_EXAMPLE_COUNTER_WARN_GREATER_5, new String[] {""+c}, "warn");
+        } else if (c > 3 ) {
+            context.addPageMessage(StatusCodeLib.PFIXCORE_EXAMPLE_COUNTER_INFO_GREATER_3, new String[] {""+c}, "info");
         }
 
     }
