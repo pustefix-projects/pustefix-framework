@@ -1,3 +1,13 @@
+2006-06-27  Jens Lautenbacher  <jtl@schlund.de>
+
+	* projects/core/schema/properties200401.xsd: add synchronized
+	attribute for context tag
+
+	* src/de/schlund/pfixxml/ServletManager.java
+	(ServletManager::getServerName): new method. Will return
+	req.getServername() but prefer the value of the header
+	X-Forwarded-Server if it is set.
+
 2006-06-26  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
 	* src/de/schlund/pfixcore/example/ContextCounterImpl.java: 
