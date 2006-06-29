@@ -62,8 +62,14 @@ AllowOverride None
 DirectoryIndex index.cgi
 AddHandler cgi-script .cgi
 &lt;/VirtualHost&gt;
+      
+  <xsl:apply-templates select="ancestor::project/extendedvhost"/>   
   </xsl:template>
 
+  <xsl:template match="extendedvhost">
+    <xsl:copy-of select="."/>
+  </xsl:template>
+    
   
   <xsl:template match="project">
     <xsl:param name="active">
