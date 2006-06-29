@@ -64,7 +64,6 @@ import de.schlund.pfixxml.PathFactory;
 import de.schlund.pfixxml.config.BuildTimeProperties;
 import de.schlund.pfixxml.config.CustomizationHandler;
 import de.schlund.pfixxml.config.XMLPropertiesUtil;
-import de.schlund.pfixxml.contextxmlserver.SessionContextImpl;
 import de.schlund.pfixxml.loader.AppLoader;
 import de.schlund.pfixxml.util.TransformerHandlerAdapter;
 
@@ -261,8 +260,8 @@ public class WebServiceServlet extends AxisServlet {
         	Configuration config=wsc.getConfiguration();
         	ServiceConfig srvConf=config.getServiceConfig(serviceName);
         	HttpSession session=req.getSession(false);
-        	SessionContextImpl pfxContext=null;
-        	if(session!=null) pfxContext = (SessionContextImpl) session.getAttribute(srvConf.getContextName()+"__CONTEXT__");
+        	Context pfxContext=null;
+        	if(session!=null) pfxContext=(Context)session.getAttribute(srvConf.getContextName()+"__CONTEXT__");
         
         	if(DEBUG) LOG.debug("Process webservice request: "+req.getPathInfo());
         	if(req.getHeader(Constants.HEADER_SOAP_ACTION)==null && req.getParameter(Constants.PARAM_SOAP_MESSAGE)!=null) {
