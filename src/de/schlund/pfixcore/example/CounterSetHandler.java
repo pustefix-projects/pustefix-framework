@@ -22,8 +22,6 @@ package de.schlund.pfixcore.example;
 import de.schlund.pfixcore.example.iwrapper.*;
 import de.schlund.pfixcore.generator.*;
 import de.schlund.pfixcore.workflow.*;
-import de.schlund.util.statuscodes.StatusCodeLib;
-
 import org.apache.log4j.*;
 
 /**
@@ -47,17 +45,6 @@ public class CounterSetHandler implements IHandler {
         Integer count = counter.getSet();
         if (count != null) {
             cc.setCounter(count.intValue());
-        }
-        
-        // demo of pageMessage feature
-        int c = cc.getCounter();
-        if (c > 9 ) {
-            context.addPageMessage(StatusCodeLib.PFIXCORE_EXAMPLE_COUNTER_WARN_GREATER_9, new String[] {""+c}, "error");
-            context.prohibitContinue();
-        } else if (c > 5 ) {
-            context.addPageMessage(StatusCodeLib.PFIXCORE_EXAMPLE_COUNTER_WARN_GREATER_5, new String[] {""+c}, "warn");
-        } else if (c > 3 ) {
-            context.addPageMessage(StatusCodeLib.PFIXCORE_EXAMPLE_COUNTER_INFO_GREATER_3, new String[] {""+c}, "info");
         }
     }
     
