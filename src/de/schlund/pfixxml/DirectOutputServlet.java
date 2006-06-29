@@ -36,12 +36,8 @@ import de.schlund.pfixcore.workflow.ContextResourceManager;
 import de.schlund.pfixcore.workflow.DirectOutputPageMap;
 import de.schlund.pfixcore.workflow.DirectOutputState;
 import de.schlund.pfixcore.workflow.PageRequest;
-import de.schlund.pfixcore.workflow.State;
 import de.schlund.pfixxml.config.DirectOutputServletConfig;
 import de.schlund.pfixxml.config.ServletManagerConfig;
-import de.schlund.pfixxml.contextxmlserver.ContextWrapper;
-import de.schlund.pfixxml.contextxmlserver.ServerContextImpl;
-import de.schlund.pfixxml.contextxmlserver.SessionContextImpl;
 
 /**
  * The <code>DirectOutputServlet</code> is a servlet that hijacks the {@link de.schlund.pfixcore.workflow.Context} of a
@@ -125,37 +121,19 @@ public class DirectOutputServlet extends ServletManager {
              return;
          }
          
-         ServerContextImpl context = (ServerContextImpl) getServletContext().getAttribute(name);
-         SessionContextImpl scontext = (SessionContextImpl) session.getAttribute(name);
-         if (context == null || scontext == null) {
+         Context context = (Context) session.getAttribute(name);
+         if (context == null) {
              throw new RuntimeException("*** didn't find Context " + name + " in Session " + session.getId() +
                                         " , maybe it's not yet initialized??? ***");
          }
-         
-         if (config.isSynchronized()) {
-             synchronized (scontext) {
-                 doProcess(preq, res, context, scontext);
-            }
-         } else {
-             doProcess(preq, res, context, scontext);
-         }
-    }
-    
-    protected void doProcess(PfixServletRequest preq, HttpServletResponse res, ServerContextImpl context, SessionContextImpl scontext) throws Exception {
-         ContextResourceManager crm = scontext.getContextResourceManager();
+
+         ContextResourceManager crm = context.getContextResourceManager();
 
          // check the authentification first....
-         State authstate = context.getAuthState();
-         if (authstate != null) {
-             Context wcontext = new ContextWrapper(context, scontext, null);
-             if (!authstate.isAccessible(wcontext, preq)) {
-                 throw new XMLException("State of authpage is not accessible!");
-             }
-             if (authstate.needsData(wcontext, preq)) {
-                 CAT.info("Got request without authorization");
-                 res.sendError(HttpServletResponse.SC_FORBIDDEN, "Must authenticate first");
-                 return;
-             }
+         if (context.checkAuthorization(false) != null) {
+             CAT.info("Got request without authorization");
+             res.sendError(HttpServletResponse.SC_FORBIDDEN, "Must authenticate first");
+             return;
          }
          
          String            pagename = preq.getPageName();

@@ -54,8 +54,6 @@ public class DirectOutputServletConfig extends ServletManagerConfig implements
     private boolean editMode = false;
 
     private String externalName;
-    
-    private boolean sync = true;
 
     private HashMap<String, DirectOutputPageRequestConfig> pages = new HashMap<String, DirectOutputPageRequestConfig>();
 
@@ -168,14 +166,6 @@ public class DirectOutputServletConfig extends ServletManagerConfig implements
 
     public String getExternalServletName() {
         return this.externalName;
-    }
-    
-    public void setSynchronized(boolean sync) {
-        this.sync = sync;
-    }
-    
-    public boolean isSynchronized() {
-        return sync;
     }
 
     public void addPageRequest(String name, DirectOutputPageRequestConfig config) {

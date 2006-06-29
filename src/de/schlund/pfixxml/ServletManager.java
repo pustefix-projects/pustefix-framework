@@ -123,15 +123,6 @@ public abstract class ServletManager extends HttpServlet {
     abstract protected boolean needsSession();
     abstract protected boolean allowSessionCreate();
 
-    private String getServerName(HttpServletRequest req) {
-        String forward = req.getHeader("X-Forwarded-Server");
-        if (forward != null && !forward.equals("")) {
-            return forward;
-        } else {
-            return req.getServerName();
-        }
-    }
-    
     protected void relocate(HttpServletResponse res, String reloc_url) {
         CAT.debug("\n\n        ======> relocating to " + reloc_url + "\n");
         res.setHeader("Expires", "Mon, 26 Jul 1997 05:00:00 GMT");
@@ -150,7 +141,7 @@ public abstract class ServletManager extends HttpServlet {
         res.setCharacterEncoding(servletEncoding);
         if (CAT.isDebugEnabled()) {
             CAT.debug("\n ------------------- Start of new Request ---------------");
-            CAT.debug("====> Scheme://Server:Port " + req.getScheme() + "://" + getServerName(req) + ":" + req.getServerPort());
+            CAT.debug("====> Scheme://Server:Port " + req.getScheme() + "://" + req.getServerName() + ":" + req.getServerPort());
             CAT.debug("====> URI:   " + req.getRequestURI());
             CAT.debug("====> Query: " + req.getQueryString());
             CAT.debug("----> needsSession=" + needsSession() + " allowSessionCreate=" + allowSessionCreate());
@@ -163,15 +154,6 @@ public abstract class ServletManager extends HttpServlet {
                     CAT.debug(">>>>> Cookie: " + tmp.getName() + " -> " + tmp.getValue());
                 }
             }
-
-            CAT.debug("\n");
-            Enumeration headers = req.getHeaderNames();
-            while (headers.hasMoreElements()) {
-                String header    = (String) headers.nextElement();
-                String headerval = req.getHeader(header);
-                CAT.debug("+++ Header: " + header + " -> " + headerval);
-            }
-
         }
 
         //if AppLoader is enabled and currently doing a reload, block request until reloading is finished
@@ -398,13 +380,13 @@ public abstract class ServletManager extends HttpServlet {
 
     private void redirectToClearedRequest(HttpServletRequest req, HttpServletResponse res) {
         CAT.debug("===> Redirecting to cleared Request URL");
-        String redirect_uri = SessionHelper.getClearedURL(req.getScheme(), getServerName(req), req);
+        String redirect_uri = SessionHelper.getClearedURL(req.getScheme(), req.getServerName(), req);
         relocate(res, redirect_uri);
     }
 
     private void redirectToSSL(HttpServletRequest req, HttpServletResponse res) {
         CAT.debug("===> Redirecting to session-less request URL under SSL");
-        String redirect_uri = SessionHelper.getClearedURL("https", getServerName(req), req);
+        String redirect_uri = SessionHelper.getClearedURL("https", req.getServerName(), req);
         relocate(res, redirect_uri);
     }
 
@@ -429,7 +411,7 @@ public abstract class ServletManager extends HttpServlet {
                     if (cookie.getValue().equals(sec_testid)) {
                         CAT.debug("   ... and the value is correct! (" + cookie.getValue() + ")");
                         CAT.debug("==> Redirecting to the secure SSL URL with the already running secure session " + secure_id);
-                        String redirect_uri = SessionHelper.encodeURL("https", getServerName(req), req,  secure_id);
+                        String redirect_uri = SessionHelper.encodeURL("https", req.getServerName(), req,  secure_id);
                         relocate(res, redirect_uri);
                         return;
                     } else {
@@ -499,7 +481,7 @@ public abstract class ServletManager extends HttpServlet {
         createTestCookie(req, res);
 
         CAT.debug("===> Redirecting to secure SSL URL with session (Id: " + session.getId() + ")");
-        String redirect_uri = SessionHelper.encodeURL("https", getServerName(req), req);
+        String redirect_uri = SessionHelper.encodeURL("https", req.getServerName(), req);
         relocate(res, redirect_uri);
     }
 
@@ -516,7 +498,7 @@ public abstract class ServletManager extends HttpServlet {
             } else {
                 session.setAttribute(VISIT_ID, msanc);
                 session.setAttribute(NO_COOKIES_OVERRIDE, Boolean.TRUE);
-                SessionAdmin.getInstance().registerSession(session, getServerName(req), req.getRemoteAddr());
+                SessionAdmin.getInstance().registerSession(session, req.getServerName(), req.getRemoteAddr());
             }
         }
 
@@ -529,7 +511,7 @@ public abstract class ServletManager extends HttpServlet {
         createTestCookie(req, res);
 
         CAT.debug("===> Redirecting to insecure SSL URL with session (Id: " + session.getId() + ")");
-        String redirect_uri = SessionHelper.encodeURL("https", getServerName(req), req);
+        String redirect_uri = SessionHelper.encodeURL("https", req.getServerName(), req);
         relocate(res, redirect_uri);
     }
 
@@ -554,7 +536,7 @@ public abstract class ServletManager extends HttpServlet {
         }
 
         CAT.debug("===> Redirecting to SSL URL with session (Id: " + session.getId() + ")");
-        String redirect_uri = SessionHelper.encodeURL("https", getServerName(req), req);
+        String redirect_uri = SessionHelper.encodeURL("https", req.getServerName(), req);
         relocate(res, redirect_uri);
     }
 
@@ -579,10 +561,10 @@ public abstract class ServletManager extends HttpServlet {
         LinkedList  traillog      = SessionAdmin.getInstance().getInfo(child).getTraillog();
         session.setAttribute(SessionHelper.SESSION_ID_URL, SessionHelper.getURLSessionId(req));
         session.setAttribute(VISIT_ID, curr_visit_id);
-        SessionAdmin.getInstance().registerSession(session, traillog, getServerName(req), req.getRemoteAddr());
+        SessionAdmin.getInstance().registerSession(session, traillog, req.getServerName(), req.getRemoteAddr());
         CAT.debug("===> Redirecting with session (Id: " + session.getId() + ") using OLD VISIT_ID: " + curr_visit_id);
         session.setAttribute(STORED_REQUEST, preq);
-        String redirect_uri = SessionHelper.encodeURL(req.getScheme(), getServerName(req), req);
+        String redirect_uri = SessionHelper.encodeURL(req.getScheme(), req.getServerName(), req);
         relocate(res, redirect_uri);
     }
 
@@ -594,7 +576,7 @@ public abstract class ServletManager extends HttpServlet {
         } else {
             session.setAttribute(VISIT_ID, msanc);
             session.setAttribute(NO_COOKIES_OVERRIDE, Boolean.TRUE);
-            SessionAdmin.getInstance().registerSession(session, getServerName(req), req.getRemoteAddr());
+            SessionAdmin.getInstance().registerSession(session, req.getServerName(), req.getRemoteAddr());
         }
 
         // Make sure a test cookie is created if needed.
@@ -602,7 +584,7 @@ public abstract class ServletManager extends HttpServlet {
 
         CAT.debug("===> Redirecting to URL with session (Id: " + session.getId() + ")");
         session.setAttribute(STORED_REQUEST, preq);
-        String redirect_uri = SessionHelper.encodeURL(req.getScheme(), getServerName(req), req);
+        String redirect_uri = SessionHelper.encodeURL(req.getScheme(), req.getServerName(), req);
         relocate(res, redirect_uri);
     }
 
@@ -722,7 +704,7 @@ public abstract class ServletManager extends HttpServlet {
             }
             StringBuffer logbuff = new StringBuffer();
             logbuff.append(session.getAttribute(VISIT_ID) + "|" + session.getId() + "|");
-            logbuff.append(getServerName(req) + "|" + req.getRemoteAddr() + "|" + req.getHeader("user-agent") + "|");
+            logbuff.append(req.getServerName() + "|" + req.getRemoteAddr() + "|" + req.getHeader("user-agent") + "|");
             if (req.getHeader("referer") != null) {
                 logbuff.append(req.getHeader("referer"));
             }
@@ -731,7 +713,7 @@ public abstract class ServletManager extends HttpServlet {
                 logbuff.append(req.getHeader("accept-language"));
             }
             LOGGER_VISIT.warn(logbuff.toString());
-            SessionAdmin.getInstance().registerSession(session, getServerName(req), req.getRemoteAddr());
+            SessionAdmin.getInstance().registerSession(session, req.getServerName(), req.getRemoteAddr());
         }
     }
 

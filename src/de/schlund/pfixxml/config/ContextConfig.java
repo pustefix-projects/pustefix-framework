@@ -34,6 +34,7 @@ import java.util.Map.Entry;
  */
 public class ContextConfig {
     
+    private Class contextClass = null;
     private String authPage = null;
     private String defaultFlow = null;
     private LinkedHashMap<Class, ContextResourceConfig> resources = new LinkedHashMap<Class, ContextResourceConfig>();
@@ -41,7 +42,14 @@ public class ContextConfig {
     private HashMap<String, PageRequestConfig> pagerequests = new HashMap<String, PageRequestConfig>();
     private String navigationFile = null;
     private Properties props = new Properties();
-    private boolean synchronize = true;
+
+    public void setContextClass(Class clazz) {
+        this.contextClass = clazz; 
+    }
+    
+    public Class getContextClass() {
+        return this.contextClass;
+    }
 
     public void setAuthPage(String page) {
         this.authPage = page;
@@ -119,14 +127,6 @@ public class ContextConfig {
     
     public Properties getProperties() {
         return this.props;
-    }
-    
-    public void setSynchronized(boolean sync) {
-        this.synchronize = sync;
-    }
-    
-    public boolean isSynchronized() {
-        return this.synchronize;
     }
 
     public void doFinishing() {
