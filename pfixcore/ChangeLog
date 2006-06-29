@@ -1,3 +1,9 @@
+2006-06-29 Niels Schelbach <niels@schlund.de>
+	* projects/core/build/create_apacheconf.xsl: add extendedvhost
+	tag to be able to define multiple vhosts for one project, e.g. for
+	branding a project for different urls.
+
+
 2006-06-27  Jens Lautenbacher  <jtl@schlund.de>
 
 	* src/de/schlund/pfixxml/ServletManager.java
