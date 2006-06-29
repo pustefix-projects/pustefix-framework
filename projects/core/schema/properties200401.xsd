@@ -154,7 +154,6 @@
     <xs:attribute name="class"/>
     <xs:attribute name="defaultflow" use="required"/>
     <xs:attribute name="authpage"/>
-    <xs:attribute name="synchronized"/>
   </xs:complexType>
 
   <xs:element name="resource" type="prop:resourceType"/>
