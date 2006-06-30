@@ -1,3 +1,10 @@
+2006-06-30  Sebastian Marsching  <sebastian.marsching@1und1.de>
+
+	* src/de/schlund/pfixxml/FactoryInitServlet.java (fatalError): 
+	* projects/core/build/create_log4j_config.xsl: 
+	* projects/core/schema/log4j.dtd: 
+	Enabling DTD validation for log4j configuration
+
 2006-06-29 Niels Schelbach <niels@schlund.de>
 	* projects/core/build/create_apacheconf.xsl: add extendedvhost
 	tag to be able to define multiple vhosts for one project, e.g. for
