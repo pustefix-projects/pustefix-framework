@@ -712,8 +712,16 @@ or delete the DOCTYPE definition -->
     <move todir="${dir.tomcat}">
       <fileset dir="${tmp.tomcat}" />
     </move>
-
+   <!-- Create dummy log4j config to make start process faster -->
+   <available file="${dir.tomcat}/common/classes/log4j.properties" property="tomcat.log4jconfig.exists"/>
+   <antcall target="tomcat.log4jconfig"/>
   </target>
+ 
+ <target name="tomcat.log4jconfig" unless="tomcat.log4jconfig.exists">
+    <!-- Create dummy log4j config to make startup faster -->
+    <echo>Creating dummy log4j config</echo>
+    <echo file="${dir.tomcat}/common/classes/log4j.properties">log4j.rootLogger=OFF</echo>    
+ </target>   
 
   <target name="tomcat.strip">
     <delete dir="${dir.tomcat}/conf/Catalina"/>
