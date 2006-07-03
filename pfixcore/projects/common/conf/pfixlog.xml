@@ -265,7 +265,7 @@
   </category>
 
   <category name="LOGGER_DEREF" additivity="false">
-    <priority value="WARN"/>
+    <priority value="INFO"/>
     <appender-ref ref="LOGGER_DEREF"/>
   </category>
 

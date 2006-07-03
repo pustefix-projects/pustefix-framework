@@ -1,3 +1,17 @@
+2006-07-03  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixxml/DerefServer.java
+	(DerefServer::handleLink): log at the right state during
+	relocating.
+	Also never enforce a sign when relocating to a link starting with
+	a "/" (so no http://foreign.domain.tld).
+
+2006-07-03  Sebastian Marsching  <sebastian.marsching@1und1.de>
+
+	* skel/build-skel.xml: Creating a dummy log4j config when
+	Tomcat is extracted in order to decrease the time Tomcat 
+	needs for starting
+
 2006-06-29 Niels Schelbach <niels@schlund.de>
 	* projects/core/build/create_apacheconf.xsl: add extendedvhost
 	tag to be able to define multiple vhosts for one project, e.g. for
