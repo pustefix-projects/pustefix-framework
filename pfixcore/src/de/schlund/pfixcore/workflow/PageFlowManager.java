@@ -17,7 +17,7 @@
  *
  */
 
-package de.schlund.pfixxml.contextxmlserver;
+package de.schlund.pfixcore.workflow;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -27,8 +27,6 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 
-import de.schlund.pfixcore.workflow.PageFlow;
-import de.schlund.pfixcore.workflow.PageRequest;
 import de.schlund.pfixxml.PropertyObjectManager;
 import de.schlund.pfixxml.Variant;
 import de.schlund.pfixxml.config.ContextConfig;

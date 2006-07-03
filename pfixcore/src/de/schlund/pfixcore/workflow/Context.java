@@ -41,11 +41,11 @@ public interface Context {
     ContextResourceManager getContextResourceManager();
     Properties getProperties();
     Properties getPropertiesForCurrentPageRequest();
-    PageRequestConfig getConfigForCurrentPageRequest(); // ??
+    PageRequestConfig getConfigForCurrentPageRequest();
     PageRequest getCurrentPageRequest();
     PageFlow getCurrentPageFlow();
-    void setPageFlow(String pageflow);
-    void setJumpToPageRequest(String pagename);
+    void setCurrentPageFlow(String pageflow);
+    void setJumpToPage(String pagename);
     void setJumpToPageFlow(String pageflow);
     void prohibitContinue();
     void invalidateNavigation();
@@ -56,23 +56,24 @@ public interface Context {
     void setVariant(Variant variant);
     void setVariantForThisRequestOnly(Variant variant);
     String getVisitId();
-    boolean flowBeforeNeedsData() throws Exception;
+    boolean flowStepsBeforeCurrentStepNeedData() throws Exception;
     boolean finalPageIsRunning();
     boolean jumpToPageIsRunning();
     boolean flowIsRunning();
     boolean isCurrentPageRequestInCurrentFlow();
     boolean isCurrentPageFlowRequestedByUser();
-    boolean isJumptToPageSet();
-    boolean isJumptToPageFlowSet();
+    boolean isJumpToPageSet();
+    boolean isJumpToPageFlowSet();
     boolean isProhibitContinueSet();
-    void setAutoinvalidateNavigationForThisRequestOnly(boolean invalidate);
+    //void setAutoinvalidateNavigationForThisRequestOnly(boolean invalidate);
+    void reuseNavigation();
     boolean stateMustSupplyFullDocument();
-    String getName(); // ??
-    Throwable getLastException(); // ??
+    String getName();
+    Throwable getLastException();
     void addPageMessage(StatusCode scode);
     void addPageMessage(StatusCode scode, String level);
     void addPageMessage(StatusCode scode, String[] args);
     void addPageMessage(StatusCode scode, String[] args, String level);
     Properties getPropertiesForContextResource(ContextResource res);
-    ContextConfig getContextConfig(); // ??
+    ContextConfig getContextConfig();
 }

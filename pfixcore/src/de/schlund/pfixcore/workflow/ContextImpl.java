@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-package de.schlund.pfixxml.contextxmlserver;
+package de.schlund.pfixcore.workflow;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -32,23 +32,17 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import de.schlund.pfixcore.generator.StatusCodeInfo;
-import de.schlund.pfixcore.workflow.Context;
-import de.schlund.pfixcore.workflow.ContextInterceptor;
-import de.schlund.pfixcore.workflow.FlowStep;
-import de.schlund.pfixcore.workflow.Navigation;
-import de.schlund.pfixcore.workflow.NavigationFactory;
-import de.schlund.pfixcore.workflow.PageFlow;
-import de.schlund.pfixcore.workflow.PageRequest;
-import de.schlund.pfixcore.workflow.PageRequestStatus;
-import de.schlund.pfixcore.workflow.State;
 import de.schlund.pfixcore.workflow.Navigation.NavigationElement;
-import de.schlund.pfixcore.workflow.context.RequestContext;
+import de.schlund.pfixcore.workflow.context.AccessibilityChecker;
+import de.schlund.pfixcore.workflow.context.ServerContextImpl;
+import de.schlund.pfixcore.workflow.context.SessionContextImpl;
 import de.schlund.pfixxml.PfixServletRequest;
 import de.schlund.pfixxml.RequestParam;
 import de.schlund.pfixxml.ResultDocument;
 import de.schlund.pfixxml.SPDocument;
 import de.schlund.pfixxml.Variant;
 import de.schlund.pfixxml.XMLException;
+import de.schlund.pfixxml.config.ContextConfig;
 import de.schlund.pfixxml.config.PageRequestConfig;
 import de.schlund.pfixxml.perflogging.PerfEvent;
 import de.schlund.pfixxml.perflogging.PerfEventType;
@@ -61,7 +55,7 @@ import de.schlund.util.statuscodes.StatusCode;
  * 
  * @author Sebastian Marsching <sebastian.marsching@1und1.de>
  */
-public class RequestContextImpl implements RequestContext, AccessibilityChecker {
+public class ContextImpl implements Context, AccessibilityChecker {
     private final static String PARAM_JUMPPAGE = "__jumptopage";
 
     private final static String PARAM_JUMPPAGEFLOW = "__jumptopageflow";
@@ -76,7 +70,7 @@ public class RequestContextImpl implements RequestContext, AccessibilityChecker 
 
     private final static String PROP_NAVI_AUTOINV = "navigation.autoinvalidate";
 
-    private final static Logger LOG = Logger.getLogger(RequestContextImpl.class);
+    private final static Logger LOG = Logger.getLogger(ContextImpl.class);
 
     private PageFlowManager pageflowmanager;
 
@@ -89,8 +83,6 @@ public class RequestContextImpl implements RequestContext, AccessibilityChecker 
     private ServerContextImpl context;
 
     private SessionContextImpl scontext;
-
-    private Context contextWrapper;
 
     private PageRequest currentpagerequest = null;
 
@@ -126,7 +118,7 @@ public class RequestContextImpl implements RequestContext, AccessibilityChecker 
 
     private List<Cookie> cookielist = new ArrayList<Cookie>();
 
-    public RequestContextImpl(ServerContextImpl context, SessionContextImpl scontext) throws Exception {
+    public ContextImpl(ServerContextImpl context, SessionContextImpl scontext) throws Exception {
         pageflowmanager = context.getPageFlowManager();
         variantmanager = context.getVariantManager();
         pagemap = context.getPageMap();
@@ -145,8 +137,12 @@ public class RequestContextImpl implements RequestContext, AccessibilityChecker 
         // Look for last request in session
         // this is done to get a behaviour similar to the old one
         // when requests where only done synchronous
-        String lastpage = scontext.getLastPageName();
-        String lastpageflow = scontext.getLastPageFlowName();
+        String lastpage = null;
+        String lastpageflow = null;
+        if (scontext != null) {
+            lastpage = scontext.getLastPageName();
+            lastpageflow = scontext.getLastPageFlowName();    
+        }
         if (lastpage != null && lastpageflow != null) {
             PageFlow tempflow = pageflowmanager.getPageFlowByName(lastpageflow, getVariant());
 
@@ -165,26 +161,44 @@ public class RequestContextImpl implements RequestContext, AccessibilityChecker 
             currentpagerequest = createPageRequest(currentpageflow.getFirstStep().getPageName());
         }
 
-        this.variant = scontext.getVariant();
-        this.language = scontext.getLanguage();
+        if (scontext !=  null) {
+            this.variant = scontext.getVariant();
+            this.language = scontext.getLanguage();
+        }
 
         checkForAuthenticationMode();
         checkForNavigationReuse();
     }
 
     public Properties getPropertiesForCurrentPageRequest() {
-        return context.getContextConfig().getPageRequestConfig(currentpagerequest.getName()).getProperties();
+        if (currentpagerequest != null) {
+            PageRequestConfig conf = context.getContextConfig().getPageRequestConfig(currentpagerequest.getName());
+            if (conf != null) {
+                return conf.getProperties();
+            }
+        }
+        return null;
     }
 
-    public PageRequest getPageRequest() {
+    public PageRequest getCurrentPageRequest() {
+        if (currentpservreq == null) {
+            throw new IllegalStateException("PageRequest is only available witihin request handling");
+        }
         return currentpagerequest;
     }
 
-    public PageFlow getPageFlow() {
+    public PageFlow getCurrentPageFlow() {
+        if (currentpservreq == null) {
+            throw new IllegalStateException("PageFlow is only available witihin request handling");
+        }
         return currentpageflow;
     }
 
-    public void setPageFlow(String pageflow) {
+    public void setCurrentPageFlow(String pageflow) {
+        if (currentpservreq == null) {
+            throw new IllegalStateException("PageFlow is only available witihin request handling");
+        }
+        
         PageFlow tmp = pageflowmanager.getPageFlowByName(pageflow, getVariant());
         if (tmp != null) {
             LOG.debug("===> Setting currentpageflow to user-requested flow " + pageflow);
@@ -196,10 +210,18 @@ public class RequestContextImpl implements RequestContext, AccessibilityChecker 
     }
 
     public String getJumpToPage() {
+        if (currentpservreq == null) {
+            throw new IllegalStateException("JumpToPage is only available witihin request handling");
+        }
+        
         return jumptopage;
     }
 
     public void setJumpToPage(String pagename) {
+        if (currentpservreq == null) {
+            throw new IllegalStateException("JumpToPage is only available witihin request handling");
+        }
+        
         PageRequest page = createPageRequest(pagename);
         if (pagemap.getState(page) != null) {
             jumptopage = pagename;
@@ -208,12 +230,24 @@ public class RequestContextImpl implements RequestContext, AccessibilityChecker 
             jumptopage = null;
         }
     }
+    
+    public boolean isJumpToPageSet() {
+        return getJumpToPage() != null;
+    }
 
     public String getJumpToPageFlow() {
+        if (currentpservreq == null) {
+            throw new IllegalStateException("JumpToPageFlow is only available witihin request handling");
+        }
+        
         return jumptopageflow;
     }
 
     public void setJumpToPageFlow(String pageflow) {
+        if (currentpservreq == null) {
+            throw new IllegalStateException("JumpToPageFlow is only available witihin request handling");
+        }
+        
         if (jumptopage != null) {
             PageFlow tmp = pageflowmanager.getPageFlowByName(pageflow, null);
             if (tmp != null) {
@@ -226,16 +260,34 @@ public class RequestContextImpl implements RequestContext, AccessibilityChecker 
             jumptopageflow = null;
         }
     }
+    
+    public boolean isJumpToPageFlowSet() {
+        return getJumpToPageFlow() != null;
+    }
 
     public void prohibitContinue() {
+        if (currentpservreq == null) {
+            throw new IllegalStateException("PageFlow handling is only available witihin request handling");
+        }
         prohibitcontinue = true;
     }
 
     public boolean isProhibitContinue() {
+        if (currentpservreq == null) {
+            throw new IllegalStateException("PageFlow handling is only available witihin request handling");
+        }
         return prohibitcontinue;
+    }
+    
+    public boolean isProhibitContinueSet() {
+        return isProhibitContinue();
     }
 
     public boolean flowStepsBeforeCurrentStepNeedData() throws Exception {
+        if (currentpservreq == null) {
+            throw new IllegalStateException("PageFlow information is only availabe during request handling");
+        }
+        
         if (!currentpageflow.containsPage(currentpagerequest.getRootName())) {
             throw new RuntimeException("*** current pageflow " + currentpageflow.getName() + " does not contain current pagerequest " + currentpagerequest);
         }
@@ -258,14 +310,25 @@ public class RequestContextImpl implements RequestContext, AccessibilityChecker 
     }
 
     public boolean finalPageIsRunning() {
+        if (currentpservreq == null) {
+            throw new IllegalStateException("PageFlow information is only availabe during request handling");
+        }
+        
         return (currentpagerequest.getStatus() == PageRequestStatus.FINAL);
     }
 
     public boolean jumpToPageIsRunning() {
+        if (currentpservreq == null) {
+            throw new IllegalStateException("PageFlow information is only availabe during request handling");
+        }
         return on_jumptopage;
     }
 
     public boolean flowIsRunning() {
+        if (currentpservreq == null) {
+            throw new IllegalStateException("PageFlow information is only availabe during request handling");
+        }
+        
         if (currentpagerequest.getStatus() == PageRequestStatus.WORKFLOW) {
             return true;
         } else {
@@ -274,18 +337,30 @@ public class RequestContextImpl implements RequestContext, AccessibilityChecker 
     }
 
     public boolean isCurrentPageRequestInCurrentFlow() {
+        if (currentpservreq == null) {
+            throw new IllegalStateException("PageFlow information is only availabe during request handling");
+        }
         return (currentpageflow != null && currentpageflow.containsPage(currentpagerequest.getRootName()));
     }
 
     public boolean isCurrentPageFlowRequestedByUser() {
+        if (currentpservreq == null) {
+            throw new IllegalStateException("PageFlow information is only availabe during request handling");
+        }
         return pageflow_requested_by_user;
     }
 
     public void invalidateNavigation() {
+        if (currentpservreq == null) {
+            throw new IllegalStateException("Request handling is only available witihin request handling");
+        }
         forceinvalidate_navi = true;
     }
 
     public void reuseNavigation() {
+        if (currentpservreq == null) {
+            throw new IllegalStateException("Request handling is only available witihin request handling");
+        }
         autoinvalidate_navi = false;
     }
 
@@ -294,7 +369,9 @@ public class RequestContextImpl implements RequestContext, AccessibilityChecker 
     }
 
     public void setLanguage(String lang) {
-        scontext.setLanguage(lang);
+        if (scontext != null) {
+            scontext.setLanguage(lang);
+        }
         language = lang;
     }
 
@@ -303,15 +380,27 @@ public class RequestContextImpl implements RequestContext, AccessibilityChecker 
     }
 
     public void setVariant(Variant variant) {
+        if (scontext == null && currentpservreq == null) {
+            throw new IllegalStateException("A request or at least a session has to be present for variant handling");
+        }
         this.variant = variant;
-        scontext.setVariant(variant);
+        if (scontext != null) {
+            scontext.setVariant(variant);
+        }
     }
 
     public void setVariantForThisRequestOnly(Variant variant) {
+        if (currentpservreq == null) {
+            throw new IllegalStateException("This feature is only available during request handling");
+        }
         this.variant = variant;
     }
 
     public boolean stateMustSupplyFullDocument() {
+        if (currentpservreq == null) {
+            throw new IllegalStateException("PageFlow information is only availabe during request handling");
+        }
+        
         if (prohibitcontinue) {
             // We will use the returned document no matter what else happens.
             return true;
@@ -355,6 +444,9 @@ public class RequestContextImpl implements RequestContext, AccessibilityChecker 
     }
 
     public void addPageMessage(StatusCode scode, String[] args, String level) {
+        if (currentpservreq == null) {
+            throw new IllegalStateException("PageMessages are only availabe during request handling");
+        }
         if (scode == null)
             return;
         messages.add(new StatusCodeInfo(scode, args, level));
@@ -479,8 +571,8 @@ public class RequestContextImpl implements RequestContext, AccessibilityChecker 
         processIC(context.getEndInterceptors());
         
         // Save pagerequest and pageflow
-        scontext.setLastPageName(getPageRequest().getRootName());
-        scontext.setLastPageFlowName(getPageFlow().getRootName());
+        scontext.setLastPageName(getCurrentPageRequest().getRootName());
+        scontext.setLastPageFlowName(getCurrentPageFlow().getRootName());
 
         return spdoc;
     }
@@ -612,7 +704,7 @@ public class RequestContextImpl implements RequestContext, AccessibilityChecker 
     private void processIC(ContextInterceptor[] icarr) {
         if (icarr != null) {
             for (int i = 0; i < icarr.length; i++) {
-                icarr[i].process(getContextWrapper(), currentpservreq);
+                icarr[i].process(this, currentpservreq);
             }
         }
     }
@@ -626,7 +718,10 @@ public class RequestContextImpl implements RequestContext, AccessibilityChecker 
         }
     }
 
-    private PageRequestConfig getConfigForCurrentPageRequest() {
+    public PageRequestConfig getConfigForCurrentPageRequest() {
+        if (currentpservreq == null) {
+            throw new IllegalStateException("PageRequest is only available witihin request handling");
+        }
         return context.getContextConfig().getPageRequestConfig(currentpagerequest.getName());
     }
 
@@ -672,7 +767,7 @@ public class RequestContextImpl implements RequestContext, AccessibilityChecker 
             resdoc = documentFromCurrentStep();
             if (currentpageflow != null && currentpageflow.containsPage(currentpagerequest.getRootName())) {
                 FlowStep step = currentpageflow.getFlowStepForPage(currentpagerequest.getRootName());
-                step.applyActionsOnContinue(getContextWrapper(), resdoc);
+                step.applyActionsOnContinue(this, resdoc);
             }
 
             if (prohibitcontinue) {
@@ -682,7 +777,7 @@ public class RequestContextImpl implements RequestContext, AccessibilityChecker 
                 LOG.debug("* [" + currentpagerequest + "] signalled success, jumptopage is set as [" + jumptopage + "].");
                 currentpagerequest = createPageRequest(jumptopage);
                 if (jumptopageflow != null) {
-                    setPageFlow(jumptopageflow);
+                    setCurrentPageFlow(jumptopageflow);
                 } else {
                     currentpageflow = pageflowmanager.pageFlowToPageRequest(currentpageflow, currentpagerequest, getVariant());
                 }
@@ -855,7 +950,7 @@ public class RequestContextImpl implements RequestContext, AccessibilityChecker 
 
         LOG.debug("** [" + currentpagerequest + "]: associated state: " + state.getClass().getName());
         LOG.debug("=> [" + currentpagerequest + "]: Calling getDocument()");
-        return state.getDocument(getContextWrapper(), currentpservreq);
+        return state.getDocument(this, currentpservreq);
     }
 
     private void trySettingPageRequestAndFlow() {
@@ -925,7 +1020,7 @@ public class RequestContextImpl implements RequestContext, AccessibilityChecker 
 
         PerfEvent pe = new PerfEvent(PerfEventType.PAGE_NEEDSDATA, page.getName());
         pe.start();
-        boolean retval = state.needsData(getContextWrapper(), currentpservreq);
+        boolean retval = state.needsData(this, currentpservreq);
         pe.save();
 
         currentpagerequest = saved;
@@ -944,7 +1039,7 @@ public class RequestContextImpl implements RequestContext, AccessibilityChecker 
 
             PerfEvent pe = new PerfEvent(PerfEventType.PAGE_ISACCESSIBLE, page.getName());
             pe.start();
-            boolean retval = state.isAccessible(getContextWrapper(), currentpservreq);
+            boolean retval = state.isAccessible(this, currentpservreq);
             pe.save();
 
             return retval;
@@ -989,23 +1084,24 @@ public class RequestContextImpl implements RequestContext, AccessibilityChecker 
         return retval;
     }
 
-    private Context getContextWrapper() {
-        if (contextWrapper == null) {
-            contextWrapper = new ContextWrapper(context, scontext, this);
+    public Cookie[] getRequestCookies() {
+        if (currentpservreq == null) {
+            throw new IllegalStateException("Cookies are only available witihin request handling");
         }
-        return contextWrapper;
-
-    }
-
-    public Cookie[] getCookies() {
         return currentpservreq.getCookies();
     }
 
     public void addCookie(Cookie cookie) {
+        if (currentpservreq == null) {
+            throw new IllegalStateException("Cookies are only available witihin request handling");
+        }
         cookielist.add(cookie);
     }
 
-    protected Throwable getLastException() {
+    public Throwable getLastException() {
+        if (currentpservreq == null) {
+            throw new IllegalStateException("This method is only available during request processing");
+        }
         return currentpservreq.getLastException();
     }
 
@@ -1018,7 +1114,41 @@ public class RequestContextImpl implements RequestContext, AccessibilityChecker 
             contextbuf.append("       -> State: " + pagemap.getState(currentpagerequest) + "\n");
             contextbuf.append("       -> Status: " + currentpagerequest.getStatus() + "\n");
         }
+        
+        if (scontext != null) {
+            contextbuf.append(scontext.toString());
+        }
 
         return contextbuf.toString();
+    }
+
+    public ContextResourceManager getContextResourceManager() {
+        if (scontext == null) {
+            throw new IllegalStateException("ContextResourceManager is only availabe within a session");
+        }
+        return scontext.getContextResourceManager();
+    }
+
+    public Properties getProperties() {
+        return context.getProperties();
+    }
+
+    public String getVisitId() {
+        if (scontext == null) {
+            throw new IllegalStateException("Session is needed for visit id");
+        }
+        return scontext.getVisitId();
+    }
+
+    public String getName() {
+        return context.getName();
+    }
+
+    public Properties getPropertiesForContextResource(ContextResource res) {
+        return context.getPropertiesForContextResource(res);
+    }
+
+    public ContextConfig getContextConfig() {
+        return context.getContextConfig();
     }
 }

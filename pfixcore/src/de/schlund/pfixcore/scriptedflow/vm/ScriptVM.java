@@ -25,9 +25,9 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import de.schlund.pfixcore.scriptedflow.vm.pvo.ParamValueObject;
+import de.schlund.pfixcore.workflow.ContextImpl;
 import de.schlund.pfixxml.PfixServletRequest;
 import de.schlund.pfixxml.SPDocument;
-import de.schlund.pfixxml.contextxmlserver.RequestContextImpl;
 
 /**
  * Executes scripts that have been compiled previously.  
@@ -78,7 +78,7 @@ public class ScriptVM {
     }
 
     public SPDocument run(PfixServletRequest preq, SPDocument spdoc,
-            RequestContextImpl rcontext, Map<String, String> params) throws Exception {
+            ContextImpl rcontext, Map<String, String> params) throws Exception {
         isRunning = true;
 
         // Make sure resolver and registers are set up
@@ -180,7 +180,7 @@ public class ScriptVM {
 
     private void doVirtualRequest(String pagename,
             Map<String, String[]> reqParams, PfixServletRequest origPreq,
-            RequestContextImpl rcontext) throws Exception {
+            ContextImpl rcontext) throws Exception {
         HttpServletRequest vhttpreq = new VirtualHttpServletRequest(origPreq
                 .getRequest(), pagename, reqParams);
 

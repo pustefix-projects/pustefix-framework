@@ -13,13 +13,13 @@ import de.schlund.pfixcore.webservice.WebServiceContext;
 import de.schlund.pfixcore.webservice.config.Configuration;
 import de.schlund.pfixcore.webservice.config.ServiceConfig;
 import de.schlund.pfixcore.workflow.Context;
+import de.schlund.pfixcore.workflow.ContextImpl;
 import de.schlund.pfixcore.workflow.ContextResourceManager;
 import de.schlund.pfixcore.workflow.State;
+import de.schlund.pfixcore.workflow.context.ServerContextImpl;
+import de.schlund.pfixcore.workflow.context.SessionContextImpl;
 import de.schlund.pfixxml.PfixServletRequest;
 import de.schlund.pfixxml.XMLException;
-import de.schlund.pfixxml.contextxmlserver.ContextWrapper;
-import de.schlund.pfixxml.contextxmlserver.ServerContextImpl;
-import de.schlund.pfixxml.contextxmlserver.SessionContextImpl;
 import de.schlund.pfixxml.serverutil.SessionAdmin;
 
 public class AuthenticationHandler extends AbstractHandler {
@@ -55,7 +55,12 @@ public class AuthenticationHandler extends AbstractHandler {
                 ServerContextImpl srvcontext = (ServerContextImpl) getServletContext(messageContext).getAttribute(contextname);
                 SessionContextImpl sesscontext = (SessionContextImpl) session.getAttribute(contextname);
                 State authstate = srvcontext.getAuthState();
-                Context wcontext = new ContextWrapper(srvcontext, sesscontext, null);
+                Context wcontext;
+                try {
+                    wcontext = new ContextImpl(srvcontext, sesscontext);
+                } catch (Exception e) {
+                    throw AxisFault.makeFault(e);
+                }
                 if (authstate != null) {
                     PfixServletRequest preq = new PfixServletRequest(getServletRequest(messageContext), new Properties());
                     try {

@@ -34,12 +34,12 @@ import de.schlund.pfixcore.scriptedflow.ScriptedFlowInfo;
 import de.schlund.pfixcore.scriptedflow.vm.Script;
 import de.schlund.pfixcore.scriptedflow.vm.ScriptVM;
 import de.schlund.pfixcore.scriptedflow.vm.VirtualHttpServletRequest;
+import de.schlund.pfixcore.workflow.ContextImpl;
+import de.schlund.pfixcore.workflow.context.ServerContextImpl;
+import de.schlund.pfixcore.workflow.context.SessionContextImpl;
 import de.schlund.pfixxml.config.AbstractXMLServletConfig;
 import de.schlund.pfixxml.config.ContextXMLServletConfig;
 import de.schlund.pfixxml.config.PageRequestConfig;
-import de.schlund.pfixxml.contextxmlserver.RequestContextImpl;
-import de.schlund.pfixxml.contextxmlserver.ServerContextImpl;
-import de.schlund.pfixxml.contextxmlserver.SessionContextImpl;
 
 /**
  * @author jtl
@@ -129,7 +129,7 @@ public class ContextXMLServer extends AbstractXMLServer {
 
     public SPDocument getDom(PfixServletRequest preq) throws Exception {
         SessionContextImpl scontext = getSessionContext(preq);
-        RequestContextImpl rcontext = new RequestContextImpl(context, scontext);
+        ContextImpl rcontext = new ContextImpl(context, scontext);
         SPDocument spdoc;
 
         ScriptedFlowInfo info = getScriptedFlowInfo(preq);

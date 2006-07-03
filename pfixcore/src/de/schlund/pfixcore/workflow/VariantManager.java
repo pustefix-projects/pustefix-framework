@@ -17,7 +17,7 @@
  *
  */
 
-package de.schlund.pfixxml.contextxmlserver;
+package de.schlund.pfixcore.workflow;
 
 
 import java.util.HashMap;

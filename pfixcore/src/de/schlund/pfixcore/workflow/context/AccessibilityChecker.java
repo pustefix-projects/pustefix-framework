@@ -16,14 +16,14 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-package de.schlund.pfixxml.contextxmlserver;
+package de.schlund.pfixcore.workflow.context;
 
 /**
- * Used by {@link de.schlund.pfixxml.contextxmlserver.SessionContextImpl} for 
+ * Used by {@link de.schlund.pfixcore.workflow.context.SessionContextImpl} for 
  * checking the availability of a page when generating the navigation map.
  * 
  * @author Sebastian Marsching <sebastian.marsching@1und1.de>
  */
-interface AccessibilityChecker {
+public interface AccessibilityChecker {
     boolean isPageAccessible(String pagename) throws Exception;
 }
