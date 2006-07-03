@@ -32,16 +32,16 @@ import org.apache.log4j.Category;
 import org.xml.sax.SAXException;
 
 import de.schlund.pfixcore.workflow.Context;
+import de.schlund.pfixcore.workflow.ContextImpl;
 import de.schlund.pfixcore.workflow.ContextResourceManager;
 import de.schlund.pfixcore.workflow.DirectOutputPageMap;
 import de.schlund.pfixcore.workflow.DirectOutputState;
 import de.schlund.pfixcore.workflow.PageRequest;
 import de.schlund.pfixcore.workflow.State;
+import de.schlund.pfixcore.workflow.context.ServerContextImpl;
+import de.schlund.pfixcore.workflow.context.SessionContextImpl;
 import de.schlund.pfixxml.config.DirectOutputServletConfig;
 import de.schlund.pfixxml.config.ServletManagerConfig;
-import de.schlund.pfixxml.contextxmlserver.ContextWrapper;
-import de.schlund.pfixxml.contextxmlserver.ServerContextImpl;
-import de.schlund.pfixxml.contextxmlserver.SessionContextImpl;
 
 /**
  * The <code>DirectOutputServlet</code> is a servlet that hijacks the {@link de.schlund.pfixcore.workflow.Context} of a
@@ -147,7 +147,7 @@ public class DirectOutputServlet extends ServletManager {
          // check the authentification first....
          State authstate = context.getAuthState();
          if (authstate != null) {
-             Context wcontext = new ContextWrapper(context, scontext, null);
+             Context wcontext = new ContextImpl(context, scontext);
              if (!authstate.isAccessible(wcontext, preq)) {
                  throw new XMLException("State of authpage is not accessible!");
              }

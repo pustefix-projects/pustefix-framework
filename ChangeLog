@@ -8,6 +8,29 @@
 
 2006-07-03  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
+	* src/de/schlund/pfixcore/scriptedflow/vm/ScriptVM.java: 
+	* src/de/schlund/pfixcore/util/DummyContextFactory.java: 
+	* src/de/schlund/pfixcore/webservice/handler/AuthenticationHandler.java: 
+	* src/de/schlund/pfixcore/webservice/WebServiceServlet.java: 
+	* src/de/schlund/pfixcore/workflow/app/DefaultIWrapperState.java: 
+	* src/de/schlund/pfixcore/workflow/context/AccessibilityChecker.java: 
+	* src/de/schlund/pfixcore/workflow/context/ServerContextImpl.java: 
+	* src/de/schlund/pfixcore/workflow/context/SessionContextImpl.java: 
+	* src/de/schlund/pfixcore/workflow/Context.java: 
+	* src/de/schlund/pfixcore/workflow/ContextImpl.java: 
+	* src/de/schlund/pfixcore/workflow/FlowStepJumpToAction.java: 
+	* src/de/schlund/pfixcore/workflow/FlowStepSetFlowAction.java: 
+	* src/de/schlund/pfixcore/workflow/PageFlow.java: 
+	* src/de/schlund/pfixcore/workflow/PageFlowManager.java: 
+	* src/de/schlund/pfixcore/workflow/PageMap.java: 
+	* src/de/schlund/pfixcore/workflow/VariantManager.java: 
+	* src/de/schlund/pfixxml/contextxmlserver/*: 
+	* src/de/schlund/pfixxml/ContextXMLServer.java: 
+	* src/de/schlund/pfixxml/DirectOutputServlet.java: 
+	Moved context related code back to de.schlund.pfixcore.workflow package.
+	Removed ContextWrapper class and RequestContext interface, renaming
+	RequestContextImpl to ContextImpl and made it directly implement Context.
+	
 	* skel/build-skel.xml: Creating a dummy log4j config when
 	Tomcat is extracted in order to decrease the time Tomcat 
 	needs for starting

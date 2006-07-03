@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-package de.schlund.pfixxml.contextxmlserver;
+package de.schlund.pfixcore.workflow.context;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -27,8 +27,10 @@ import de.schlund.pfixcore.util.PropertiesUtils;
 import de.schlund.pfixcore.workflow.ContextInterceptor;
 import de.schlund.pfixcore.workflow.ContextInterceptorFactory;
 import de.schlund.pfixcore.workflow.ContextResource;
+import de.schlund.pfixcore.workflow.PageFlowManager;
+import de.schlund.pfixcore.workflow.PageMap;
 import de.schlund.pfixcore.workflow.State;
-import de.schlund.pfixcore.workflow.context.ServerContext;
+import de.schlund.pfixcore.workflow.VariantManager;
 import de.schlund.pfixxml.Variant;
 import de.schlund.pfixxml.config.ContextConfig;
 
@@ -109,31 +111,31 @@ public class ServerContextImpl implements ServerContext {
         return pagemap.getState(authpage);
     }
     
-    protected ContextConfig getContextConfig() {
+    public ContextConfig getContextConfig() {
         return config;
     }
         
-    protected PageFlowManager getPageFlowManager() {
+    public PageFlowManager getPageFlowManager() {
         return pageflowmanager;
     }
     
-    protected VariantManager getVariantManager() {
+    public VariantManager getVariantManager() {
         return variantmanager;
     }
     
-    protected PageMap getPageMap() {
+    public PageMap getPageMap() {
         return pagemap;
     }
     
-    protected ContextInterceptor[] getStartInterceptors() {
+    public ContextInterceptor[] getStartInterceptors() {
         return startInterceptors;
     }
     
-    protected ContextInterceptor[] getEndInterceptors() {
+    public ContextInterceptor[] getEndInterceptors() {
         return endInterceptors;
     }
     
-    protected String getName() {
+    public String getName() {
         return name;
     }
     

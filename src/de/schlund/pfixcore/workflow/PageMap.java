@@ -17,16 +17,13 @@
  *
  */
 
-package de.schlund.pfixxml.contextxmlserver;
+package de.schlund.pfixcore.workflow;
 
 import java.util.HashMap;
 import java.util.Iterator;
 
 import org.apache.log4j.Logger;
 
-import de.schlund.pfixcore.workflow.PageRequest;
-import de.schlund.pfixcore.workflow.State;
-import de.schlund.pfixcore.workflow.StateFactory;
 import de.schlund.pfixxml.config.ContextConfig;
 import de.schlund.pfixxml.config.PageRequestConfig;
 import de.schlund.pfixxml.loader.AppLoader;

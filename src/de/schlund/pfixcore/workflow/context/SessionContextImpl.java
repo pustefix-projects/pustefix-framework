@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-package de.schlund.pfixxml.contextxmlserver;
+package de.schlund.pfixcore.workflow.context;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -27,11 +27,11 @@ import java.util.Set;
 
 import javax.servlet.http.HttpSession;
 
+import de.schlund.pfixcore.workflow.ContextImpl;
 import de.schlund.pfixcore.workflow.ContextResource;
 import de.schlund.pfixcore.workflow.ContextResourceManager;
 import de.schlund.pfixcore.workflow.Navigation;
 import de.schlund.pfixcore.workflow.Navigation.NavigationElement;
-import de.schlund.pfixcore.workflow.context.SessionContext;
 import de.schlund.pfixxml.AbstractXMLServer;
 import de.schlund.pfixxml.ServletManager;
 import de.schlund.pfixxml.Variant;
@@ -59,7 +59,7 @@ public class SessionContextImpl implements SessionContext {
     public SessionContextImpl(ServerContextImpl context, HttpSession session) throws Exception {
         this.session = session;
         this.crm = new ContextResourceManager();
-        crm.init(new ContextWrapper(context, this, null), context.getContextConfig());
+        crm.init(new ContextImpl(context, this), context.getContextConfig());
     }
     
     public ContextResourceManager getContextResourceManager() {
@@ -97,11 +97,11 @@ public class SessionContextImpl implements SessionContext {
         return visitId;
     }
     
-    protected String getLastPageFlowName() {
+    public String getLastPageFlowName() {
         return lastPageFlowName;
     }
 
-    protected void setLastPageFlowName(String lastPageFlowName) {
+    public void setLastPageFlowName(String lastPageFlowName) {
         this.lastPageFlowName = lastPageFlowName;
     }
 
@@ -109,17 +109,17 @@ public class SessionContextImpl implements SessionContext {
         return lastPageName;
     }
 
-    protected void setLastPageName(String lastPageName) {
+    public void setLastPageName(String lastPageName) {
         this.lastPageName = lastPageName;
     }
     
-    protected Map<NavigationElement, Integer> getNavigation() {
+    public Map<NavigationElement, Integer> getNavigation() {
         synchronized (navigationMap) {
             return new HashMap<NavigationElement, Integer>(navigationMap);
         }
     }
     
-    protected boolean navigationNeedsRefresh() {
+    public boolean navigationNeedsRefresh() {
         synchronized (navigationMap) {
             if (navigationMap.size() == 0) {
                 return true;
@@ -129,7 +129,7 @@ public class SessionContextImpl implements SessionContext {
         }
     }
     
-    protected void refreshNavigation(Navigation navi, AccessibilityChecker checker) {
+    public void refreshNavigation(Navigation navi, AccessibilityChecker checker) {
         synchronized (navigationMap) {
             navigationMap.clear();
             recurseNavigation(navi.getNavigationElements(), checker);
@@ -157,11 +157,11 @@ public class SessionContextImpl implements SessionContext {
         }
     }
     
-    protected void addVisitedPage(String pagename) {
+    public void addVisitedPage(String pagename) {
         visitedPages.add(pagename);
     }
     
-    protected boolean isVisitedPage(String pagename) {
+    public boolean isVisitedPage(String pagename) {
         return visitedPages.contains(pagename);
     }
     

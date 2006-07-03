@@ -60,11 +60,11 @@ import de.schlund.pfixcore.webservice.monitor.Monitor;
 import de.schlund.pfixcore.webservice.monitor.MonitorHistory;
 import de.schlund.pfixcore.webservice.monitor.MonitorRecord;
 import de.schlund.pfixcore.workflow.Context;
+import de.schlund.pfixcore.workflow.context.SessionContextImpl;
 import de.schlund.pfixxml.PathFactory;
 import de.schlund.pfixxml.config.BuildTimeProperties;
 import de.schlund.pfixxml.config.CustomizationHandler;
 import de.schlund.pfixxml.config.XMLPropertiesUtil;
-import de.schlund.pfixxml.contextxmlserver.SessionContextImpl;
 import de.schlund.pfixxml.loader.AppLoader;
 import de.schlund.pfixxml.util.TransformerHandlerAdapter;
 

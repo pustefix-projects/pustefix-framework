@@ -100,7 +100,7 @@ public class DefaultIWrapperState extends StateImpl {
                 context.prohibitContinue();
             } else {
                 CAT.debug("    => No error happened during work ...");
-                if (!context.isJumptToPageSet() && container.stayAfterSubmit()) {
+                if (!context.isJumpToPageSet() && container.stayAfterSubmit()) {
                     CAT.debug("... Container says he wants to stay on this page and no jumptopage is set: Setting prohibitcontinue=true");
                     context.prohibitContinue();
                 } else {
@@ -125,7 +125,7 @@ public class DefaultIWrapperState extends StateImpl {
             pe.save();
             if (isDirectTrigger(context,preq)) {
                 if (!context.jumpToPageIsRunning()) {
-                    context.setAutoinvalidateNavigationForThisRequestOnly(false);
+                    context.reuseNavigation();
                 }
                 CAT.debug("    => REASON: DirectTrigger");
             } else if (context.finalPageIsRunning()) {

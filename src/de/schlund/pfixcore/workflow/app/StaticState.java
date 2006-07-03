@@ -49,7 +49,7 @@ public class StaticState extends StateImpl {
         Properties     props  = context.getPropertiesForCurrentPageRequest();
 
         if (isDirectTrigger(context, preq) && !context.jumpToPageIsRunning()) {
-            context.setAutoinvalidateNavigationForThisRequestOnly(false);
+            context.reuseNavigation();
         }
         context.prohibitContinue();
         return resdoc;
