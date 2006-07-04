@@ -30,8 +30,8 @@ import javax.servlet.http.HttpSession;
 import de.schlund.pfixcore.workflow.ContextImpl;
 import de.schlund.pfixcore.workflow.ContextResource;
 import de.schlund.pfixcore.workflow.ContextResourceManager;
-import de.schlund.pfixcore.workflow.Navigation;
-import de.schlund.pfixcore.workflow.Navigation.NavigationElement;
+// import de.schlund.pfixcore.workflow.Navigation;
+// import de.schlund.pfixcore.workflow.Navigation.NavigationElement;
 import de.schlund.pfixxml.AbstractXMLServer;
 import de.schlund.pfixxml.ServletManager;
 import de.schlund.pfixxml.Variant;
@@ -53,7 +53,7 @@ public class SessionContextImpl implements SessionContext {
     private String visitId = null;
     private ContextResourceManager crm;
     
-    private Map<NavigationElement, Integer> navigationMap = new HashMap<NavigationElement, Integer>();
+    // private Map<NavigationElement, Integer> navigationMap = new HashMap<NavigationElement, Integer>();
     private Set<String> visitedPages = Collections.synchronizedSet(new HashSet<String>());
     
     public SessionContextImpl(ServerContextImpl context, HttpSession session) throws Exception {
@@ -113,49 +113,49 @@ public class SessionContextImpl implements SessionContext {
         this.lastPageName = lastPageName;
     }
     
-    public Map<NavigationElement, Integer> getNavigation() {
-        synchronized (navigationMap) {
-            return new HashMap<NavigationElement, Integer>(navigationMap);
-        }
-    }
+    // public Map<NavigationElement, Integer> getNavigation() {
+    //     synchronized (navigationMap) {
+    //         return new HashMap<NavigationElement, Integer>(navigationMap);
+    //     }
+    // }
     
-    public boolean navigationNeedsRefresh() {
-        synchronized (navigationMap) {
-            if (navigationMap.size() == 0) {
-                return true;
-            } else {
-                return false;
-            }
-        }
-    }
+    // public boolean navigationNeedsRefresh() {
+    //     synchronized (navigationMap) {
+    //         if (navigationMap.size() == 0) {
+    //             return true;
+    //         } else {
+    //             return false;
+    //         }
+    //     }
+    // }
     
-    public void refreshNavigation(Navigation navi, AccessibilityChecker checker) {
-        synchronized (navigationMap) {
-            navigationMap.clear();
-            recurseNavigation(navi.getNavigationElements(), checker);
-        }
-    }
-    
-    private void recurseNavigation(NavigationElement[] pages, AccessibilityChecker checker) {
-        for (int i = 0; i < pages.length; i++) {
-            NavigationElement page = pages[i];
-            try {
-                if (checker.isPageAccessible(page.getName())) {
-                    navigationMap.put(page, 1);
-                } else {
-                    navigationMap.put(page, 0);
-                }
-            } catch (Exception e) {
-                // This is not totally clean as there might be other causes
-                // for exceptions than a non-existing page, but it should
-                // work for most cases
-                navigationMap.put(page, -1);
-            }
-            if (page.hasChildren()) {
-                recurseNavigation(page.getChildren(), checker);
-            }
-        }
-    }
+    // public void refreshNavigation(Navigation navi, AccessibilityChecker checker) {
+    //     synchronized (navigationMap) {
+    //         navigationMap.clear();
+    //         recurseNavigation(navi.getNavigationElements(), checker);
+    //     }
+    // }
+    // 
+    // private void recurseNavigation(NavigationElement[] pages, AccessibilityChecker checker) {
+    //     for (int i = 0; i < pages.length; i++) {
+    //         NavigationElement page = pages[i];
+    //         try {
+    //             if (checker.isPageAccessible(page.getName())) {
+    //                 navigationMap.put(page, 1);
+    //             } else {
+    //                 navigationMap.put(page, 0);
+    //             }
+    //         } catch (Exception e) {
+    //             // This is not totally clean as there might be other causes
+    //             // for exceptions than a non-existing page, but it should
+    //             // work for most cases
+    //             navigationMap.put(page, -1);
+    //         }
+    //         if (page.hasChildren()) {
+    //             recurseNavigation(page.getChildren(), checker);
+    //         }
+    //     }
+    // }
     
     public void addVisitedPage(String pagename) {
         visitedPages.add(pagename);

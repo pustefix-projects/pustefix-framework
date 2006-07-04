@@ -32,7 +32,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import de.schlund.pfixcore.generator.StatusCodeInfo;
-import de.schlund.pfixcore.workflow.Navigation.NavigationElement;
+//import de.schlund.pfixcore.workflow.Navigation.NavigationElement;
 import de.schlund.pfixcore.workflow.context.AccessibilityChecker;
 import de.schlund.pfixcore.workflow.context.ServerContextImpl;
 import de.schlund.pfixcore.workflow.context.SessionContextImpl;
@@ -68,8 +68,6 @@ public class ContextImpl implements Context, AccessibilityChecker {
 
     private final static String PARAM_FORCESTOP = "__forcestop";
 
-    private final static String PROP_NAVI_AUTOINV = "navigation.autoinvalidate";
-
     private final static Logger LOG = Logger.getLogger(ContextImpl.class);
 
     private PageFlowManager pageflowmanager;
@@ -77,8 +75,6 @@ public class ContextImpl implements Context, AccessibilityChecker {
     private VariantManager variantmanager;
 
     private PageMap pagemap;
-
-    private Navigation navigation;
 
     private ServerContextImpl context;
 
@@ -126,14 +122,6 @@ public class ContextImpl implements Context, AccessibilityChecker {
         this.context = context;
         this.scontext = scontext;
 
-        // The navigation is possibly shared across more than one
-        // context, i.e. more than one properties object.  So we can't
-        // let it be handled by the PropertyObjectManager.
-        String navifile = context.getContextConfig().getNavigationFile();
-        if (navifile != null) {
-            navigation = NavigationFactory.getInstance().getNavigation(navifile);
-        }
-
         // Look for last request in session
         // this is done to get a behaviour similar to the old one
         // when requests where only done synchronous
@@ -167,7 +155,6 @@ public class ContextImpl implements Context, AccessibilityChecker {
         }
 
         checkForAuthenticationMode();
-        checkForNavigationReuse();
     }
 
     public Properties getPropertiesForCurrentPageRequest() {
@@ -348,20 +335,6 @@ public class ContextImpl implements Context, AccessibilityChecker {
             throw new IllegalStateException("PageFlow information is only availabe during request handling");
         }
         return pageflow_requested_by_user;
-    }
-
-    public void invalidateNavigation() {
-        if (currentpservreq == null) {
-            throw new IllegalStateException("Request handling is only available witihin request handling");
-        }
-        forceinvalidate_navi = true;
-    }
-
-    public void reuseNavigation() {
-        if (currentpservreq == null) {
-            throw new IllegalStateException("Request handling is only available witihin request handling");
-        }
-        autoinvalidate_navi = false;
     }
 
     public String getLanguage() {
@@ -554,11 +527,7 @@ public class ContextImpl implements Context, AccessibilityChecker {
             }
 
             if (spdoc.getResponseError() == 0) {
-                if (navigation != null && spdoc != null) {
-                    scontext.addVisitedPage(spdoc.getPagename());
-                    addNavigation(navigation, spdoc);
-                }
-
+                scontext.addVisitedPage(spdoc.getPagename());
                 if (!getConfigForCurrentPageRequest().isStoreXML()) {
                     spdoc.setNostore(true);
                 }
@@ -626,79 +595,6 @@ public class ContextImpl implements Context, AccessibilityChecker {
             Element stepelem = doc.createElement("step");
             root.appendChild(stepelem);
             stepelem.setAttribute("name", step);
-        }
-    }
-
-    private void addNavigation(Navigation navi, SPDocument spdoc) throws Exception {
-        Document doc = spdoc.getDocument();
-        Element element = doc.createElement("navigation");
-        doc.getDocumentElement().appendChild(element);
-
-        if (autoinvalidate_navi || forceinvalidate_navi || scontext.navigationNeedsRefresh()) {
-            LOG.debug("=> Add new navigation.");
-            PerfEvent pe = new PerfEvent(PerfEventType.CONTEXT_CREATENAVICOMPLETE, spdoc.getPagename());
-            pe.start();
-            scontext.refreshNavigation(navi, this);
-            recursePages(navi.getNavigationElements(), scontext.getNavigation(), element, doc);
-            pe.save();
-        } else {
-            LOG.debug("=> Reuse old navigation.");
-            PerfEvent pe = new PerfEvent(PerfEventType.CONTEXT_CREATENAVIREUSE, spdoc.getPagename());
-            pe.start();
-            recursePages(navi.getNavigationElements(), scontext.getNavigation(), element, doc);
-            pe.save();
-        }
-    }
-
-    private void recursePages(NavigationElement[] pages, Map<NavigationElement, Integer> navistate, Element parent, Document doc) throws Exception {
-        for (int i = 0; i < pages.length; i++) {
-            NavigationElement page = pages[i];
-            String pagename = page.getName();
-            Element pageelem = doc.createElement("page");
-
-            parent.appendChild(pageelem);
-            pageelem.setAttribute("name", pagename);
-            pageelem.setAttribute("handler", page.getHandler());
-
-            Integer page_vis = navistate.get(page);
-
-            if (page_vis != null) {
-                int visible = page_vis.intValue();
-                pageelem.setAttribute("visible", "" + visible);
-                if (visible == -1) {
-                    pageelem.setAttribute("visited", "-1");
-                } else {
-                    if (scontext.isVisitedPage(pagename)) {
-                        pageelem.setAttribute("visited", "1");
-                    } else {
-                        pageelem.setAttribute("visited", "0");
-                    }
-                }
-            } else {
-                // Okay, the page is not in the map
-                // however there is a rare chance that the
-                // navigation is outdated because the
-                // configuration was reloaded in the meantime
-                if (context.getContextConfig().getPageRequestConfig(pagename) != null) {
-                    if (isPageAccessible(pagename)) { // this also updates navi_visible_map!
-                        pageelem.setAttribute("visible", "1");
-                    } else {
-                        pageelem.setAttribute("visible", "0");
-                    }
-                    if (scontext.isVisitedPage(pagename)) {
-                        pageelem.setAttribute("visited", "1");
-                    } else {
-                        pageelem.setAttribute("visited", "0");
-                    }
-                } else {
-                    pageelem.setAttribute("visible", "-1");
-                    pageelem.setAttribute("visited", "-1");
-                }
-            }
-
-            if (page.hasChildren()) {
-                recursePages(page.getChildren(), navistate, pageelem, doc);
-            }
         }
     }
 
@@ -1055,22 +951,6 @@ public class ContextImpl implements Context, AccessibilityChecker {
             authpage = createPageRequest(authpagename);
         } else {
             authpage = null;
-        }
-    }
-
-    private void checkForNavigationReuse() {
-        String navi_autoinv = context.getContextConfig().getProperties().getProperty(PROP_NAVI_AUTOINV);
-        if (navi_autoinv != null && navi_autoinv.equals("false")) {
-            autoinvalidate_navi = false;
-            forceinvalidate_navi = false;
-            LOG.info("CAUTION: Setting autoinvalidate of navigation to FALSE!");
-            LOG.info("CAUTION: You need to call context.invalidateNavigation() to update the navigation.");
-        } else if (navi_autoinv != null && navi_autoinv.equals("true")) {
-            autoinvalidate_navi = true;
-            forceinvalidate_navi = true;
-        } else {
-            autoinvalidate_navi = true;
-            forceinvalidate_navi = false;
         }
     }
 

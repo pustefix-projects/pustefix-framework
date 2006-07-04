@@ -38,7 +38,7 @@
                 <b>Indexed parameter test:</b>
               </td>
             </tr>
-            <ixsl:for-each select="/formresult/navigation//page">
+            <ixsl:for-each select="$navitree//page">
               <tr>
                 <pfx:checkfield>
                   <pfx:name>prefix.Value.<ixsl:value-of select="position()"/></pfx:name>

@@ -1,5 +1,21 @@
 2006-07-04  Jens Lautenbacher  <jtl@schlund.de>
 
+	* projects/core/xsl/master.xsl: make sure that $navitree is also
+	valid in the final generated stylesheet (that means: at runtime)
+	so it's still possible to iterate over the pages in runtime code.
+
+	* projects/sample1/txt/pages/main_home.xml: fix accordingly (use
+	$navitree//pages instead of /formresult/navigation//pages)
+
+	* src/de/schlund/pfixcore/workflow/Context.java
+	* src/de/schlund/pfixcore/workflow/ContextImpl.java
+	* src/de/schlund/pfixcore/workflow/app/DefaultAuthIWrapperState.java
+	* src/de/schlund/pfixcore/workflow/app/DefaultIWrapperState.java
+	* src/de/schlund/pfixcore/workflow/app/StaticState.java
+	* src/de/schlund/pfixcore/workflow/context/SessionContextImpl.java
+	* src/de/schlund/pfixxml/AbstractXMLServer.java: removed all the
+	navigation generating and handling stuff
+
 	* src/de/schlund/pfixxml/SessionCleaner.java: 
 	* src/de/schlund/pfixxml/AbstractXMLServer.java: changed to handle
 	storing of more than one SPDocument in a LRUCache, make sure that

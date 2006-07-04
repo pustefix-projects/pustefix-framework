@@ -48,9 +48,6 @@ public class StaticState extends StateImpl {
         ResultDocument resdoc = createDefaultResultDocument(context);
         Properties     props  = context.getPropertiesForCurrentPageRequest();
 
-        if (isDirectTrigger(context, preq) && !context.jumpToPageIsRunning()) {
-            context.reuseNavigation();
-        }
         context.prohibitContinue();
         return resdoc;
     }

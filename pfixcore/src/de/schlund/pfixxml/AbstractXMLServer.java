@@ -183,16 +183,6 @@ public abstract class AbstractXMLServer extends ServletManager {
         verifyDirExists(System.getProperty(DEF_PROP_TMPDIR));
     }
 
-//     private String getProperty(String name) throws ServletException {
-//         String value;
-        
-//         value = getProperties().getProperty(name);
-//         if (value == null) {
-//             throw new ServletException("Need property '" + name + "'");
-//         }
-//         return value;
-//     }
-
     private void initValues() throws ServletException {
         targetconf  = PathFactory.getInstance().createPath(this.getAbstractXMLServletConfig().getDependFile());
         servletname = this.getAbstractXMLServletConfig().getServletName();
@@ -801,5 +791,3 @@ public abstract class AbstractXMLServer extends ServletManager {
     }
     
 }
-
-

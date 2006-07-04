@@ -105,7 +105,10 @@
         </xsl:if>
       </ixsl:output>
 
-
+      <ixsl:param name="navitree">
+        <xsl:attribute name="select">document('<xsl:value-of select="$navigation"/>')/make/navigation</xsl:attribute>
+      </ixsl:param>
+      
       <!-- The next two parameters are opaque Java objects. Use them only to pass them to extension functions! -->
       <ixsl:param name="__context__"/>
       <ixsl:param name="__spdoc__"/>
