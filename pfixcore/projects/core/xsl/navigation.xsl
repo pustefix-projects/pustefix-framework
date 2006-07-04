@@ -28,8 +28,9 @@
       </xsl:choose>
     </xsl:variable>
     <xsl:variable name="thebuttpage" select="$navitree//page[@name = $pagename_impl]"/>
-    <xsl:variable name="page_path">/formresult/navigation<xsl:for-each select="$thebuttpage/ancestor-or-self::page">/page[@name='<xsl:value-of select="./@name"/>']</xsl:for-each></xsl:variable>
-    <ixsl:if test="{$page_path}/@visited = '1'">
+<!--     <xsl:variable name="page_path">/formresult/navigation<xsl:for-each select="$thebuttpage/ancestor-or-self::page">/page[@name='<xsl:value-of select="./@name"/>']</xsl:for-each></xsl:variable> -->
+<!--     <ixsl:if test="{$page_path}/@visited = '1'"> -->
+    <ixsl:if test="callback:isVisited($__context__, '{$pagename_impl}') = 1">
       <xsl:apply-templates/>
     </ixsl:if>
   </xsl:template>
@@ -47,8 +48,9 @@
       </xsl:choose>
     </xsl:variable>
     <xsl:variable name="thebuttpage" select="$navitree//page[@name = $pagename_impl]"/>
-    <xsl:variable name="page_path">/formresult/navigation<xsl:for-each select="$thebuttpage/ancestor-or-self::page">/page[@name='<xsl:value-of select="./@name"/>']</xsl:for-each></xsl:variable>
-    <ixsl:if test="not({$page_path}/@visited = '1')">
+<!--     <xsl:variable name="page_path">/formresult/navigation<xsl:for-each select="$thebuttpage/ancestor-or-self::page">/page[@name='<xsl:value-of select="./@name"/>']</xsl:for-each></xsl:variable> -->
+<!--     <ixsl:if test="not({$page_path}/@visited = '1')"> -->
+    <ixsl:if test="callback:isVisited($__context__, '{$pagename_impl}') = 0">
       <xsl:apply-templates/>
     </ixsl:if>
   </xsl:template>
@@ -226,7 +228,7 @@
         <xsl:otherwise><xsl:value-of select="$thebuttpage/@accesskey"/></xsl:otherwise>
       </xsl:choose>
     </xsl:variable>
-    <xsl:variable name="path_to_page">/formresult/navigation<xsl:for-each select="$thebuttpage/ancestor-or-self::page">/page[@name='<xsl:value-of select="./@name"/>']</xsl:for-each></xsl:variable>
+<!--     <xsl:variable name="path_to_page">/formresult/navigation<xsl:for-each select="$thebuttpage/ancestor-or-self::page">/page[@name='<xsl:value-of select="./@name"/>']</xsl:for-each></xsl:variable> -->
 
     <xsl:variable name="thehandler" select="$thebuttpage/@handler"/>
     <xsl:variable name="thequery">__frame=<xsl:value-of select="$frame_impl"/></xsl:variable>
@@ -258,7 +260,8 @@
       </xsl:when>
       <xsl:otherwise>
         <ixsl:choose>
-          <ixsl:when test="{$path_to_page}/@visible = '0'">
+<!--           <ixsl:when test="{$path_to_page}/@visible = '0'"> -->
+          <ixsl:when test="callback:isAccessible($__context__, '{$buttpage_impl}') = 0">
             <span>
               <xsl:attribute name="class">
                 <xsl:choose>

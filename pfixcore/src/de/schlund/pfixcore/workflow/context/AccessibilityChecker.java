@@ -26,4 +26,5 @@ package de.schlund.pfixcore.workflow.context;
  */
 public interface AccessibilityChecker {
     boolean isPageAccessible(String pagename) throws Exception;
+    boolean isPageAlreadyVisited(String pagename) throws Exception;
 }

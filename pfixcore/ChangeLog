@@ -1,3 +1,43 @@
+2006-07-04  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixxml/SessionCleaner.java: 
+	* src/de/schlund/pfixxml/AbstractXMLServer.java: changed to handle
+	storing of more than one SPDocument in a LRUCache, make sure that
+	they are cleared with a TimerTask when needed and other little
+	fixes to make the callback to not store a spdoc work in the case
+	of an SSL redirect. 
+
+	* src/de/schlund/pfixcore/workflow/ContextImpl.java
+	(ContextImpl::handleRequest): set the Context as a xslt param in
+	the spdoc.
+	(ContextImpl::handleRequestWorker): no longer synchronized.
+	(ContextImpl::isPageAccessible): synchronize if config says so.
+	(ContextImpl::isPageAccessibleWorker): used from mthod above.
+	(ContextImpl::isPageAlreadyVisited): new method: check to see if
+	page has already been visited in this session.
+
+	* projects/core/xsl/master.xsl: 2 new params __context__ and
+	__spdoc__ containing opaque java objects used in callbacks. 
+	Set the nostore flag in the spdoc whenever we don't use frames AND
+	$prohibitEdit != 'no'.
+
+	* projects/core/xsl/navigation.xsl: 
+	* projects/core/xsl/forminput.xsl: use callbacks instead of /formresult/navigation
+
+	* projects/core/xsl/xmlfontify.xsl: no longer handle /formresult/navigation
+
+	* src/de/schlund/pfixcore/util/TransformerCallback.java: new
+	class, used as XSLT callbacks
+
+	* src/de/schlund/pfixcore/workflow/context/AccessibilityChecker.java
+	(AccessibilityChecker::isPageAlreadyVisited): new method
+
+	* src/de/schlund/pfixxml/util/SimpleCacheLRU.java: new
+	class. Implement a LRU Cache with a remove method...
+
+	* src/de/schlund/pfixxml/util/Xslt.java (Xslt::transform): 	
+	* src/de/schlund/pfixxml/ContextXMLServer.java (ContextXMLServer::getDom): cosmetics
+
 2006-07-04  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
 	* build.xml: Exclude testsuite classes from being bundled with

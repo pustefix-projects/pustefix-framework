@@ -471,13 +471,14 @@ public class ContextImpl implements Context, AccessibilityChecker {
                 spdoc.setSSLRedirect("https://" + preq.getServerName() + preq.getContextPath() + preq.getServletPath() + ";jsessionid=" + preq.getSession(false).getId() + "?__reuse=" + spdoc.getTimestamp());
             }
 
+            spdoc.setProperty("__context__", this);
             return spdoc;
         } catch (Exception e) {
             throw e;
         }
     }
 
-    private synchronized SPDocument handleRequestWorker(PfixServletRequest preq) throws Exception {
+    private SPDocument handleRequestWorker(PfixServletRequest preq) throws Exception {
         currentpservreq = preq;
         prohibitcontinue = false;
         stopnextforcurrentrequest = false;
@@ -1076,12 +1077,32 @@ public class ContextImpl implements Context, AccessibilityChecker {
     // Must be public because it is declared in an interface,
     // however it should only be used within the same package
     public boolean isPageAccessible(String pagename) throws Exception {
+        if (context.getContextConfig().isSynchronized()) {
+            synchronized (scontext) {
+                return isPageAccessibleWorker(pagename);
+            }
+        } else {
+            return isPageAccessibleWorker(pagename);
+        }
+    }
+
+    private boolean isPageAccessibleWorker(String pagename) throws Exception {
         PageRequest page = createPageRequest(pagename);
         Variant currentvariant = getVariant();
         setVariant(scontext.getVariant());
         boolean retval = checkIsAccessible(page, PageRequestStatus.NAVIGATION);
         setVariant(currentvariant);
         return retval;
+    }
+
+    public boolean isPageAlreadyVisited(String pagename) throws Exception {
+        if (context.getContextConfig().isSynchronized()) {
+            synchronized (scontext) {
+                return scontext.isVisitedPage(pagename);
+            }
+        } else {
+            return scontext.isVisitedPage(pagename);
+        }
     }
 
     public Cookie[] getRequestCookies() {
