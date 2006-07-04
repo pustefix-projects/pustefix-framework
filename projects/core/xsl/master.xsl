@@ -79,6 +79,7 @@
     <ixsl:stylesheet version="1.1"
                      xmlns:url="xalan://java.net.URLEncoder"
                      xmlns:deref="xalan://de.schlund.pfixxml.DerefServer"
+                     xmlns:callback="xalan://de.schlund.pfixcore.util.TransformerCallback"
                      exclude-result-prefixes="url pfx cus xsl deref">
 
       <ixsl:import href="core/xsl/default_copy.xsl"/>
@@ -104,6 +105,11 @@
         </xsl:if>
       </ixsl:output>
 
+
+      <!-- The next two parameters are opaque Java objects. Use them only to pass them to extension functions! -->
+      <ixsl:param name="__context__"/>
+      <ixsl:param name="__spdoc__"/>
+      
       <!-- these parameters will always be passed in by the servlet -->
       <!-- e.g. /xml/static/FOOBAR;jsessionid=1E668C65F42697962A31177EB5319D8B.foo -->
       <ixsl:param name="__uri"/>
@@ -200,6 +206,9 @@
             </ixsl:choose>
           </xsl:when>
           <xsl:otherwise> <!-- no frames defined! -->
+            <xsl:if test="not($prohibitEdit = 'no')">
+              <ixsl:value-of select="callback:setNoStore($__spdoc__)"/>
+            </xsl:if>
             <xsl:apply-templates select="/pfx:document/node()"/>
           </xsl:otherwise>
         </xsl:choose>

@@ -35,20 +35,20 @@ public class SPDocument {
 
     //~ Instance/static variables ..................................................................
 
-    private Document   document;
-    private Properties properties;
-    private boolean    updateable  = true;
-    private boolean    nostore     = false;
-    private String     pagename    = null;
-    private Variant    variant     = null;
-    private String     xslkey      = null;
-    private long       timestamp   = System.currentTimeMillis();
-    private int        error       = 0;
-    private String     errortext   = null;
-    private String     contenttype = null;
-    private HashMap    header      = new HashMap();
-    private ArrayList  cookies     = new ArrayList();
-    private String     sslRedirectURL = null;
+    private Document  document;
+    private HashMap   propertiesmap;
+    private boolean   updateable     = true;
+    private boolean   nostore        = false;
+    private String    pagename       = null;
+    private Variant   variant        = null;
+    private String    xslkey         = null;
+    private long      timestamp      = System.currentTimeMillis();
+    private int       error          = 0;
+    private String    errortext      = null;
+    private String    contenttype    = null;
+    private HashMap   header         = new HashMap();
+    private ArrayList cookies        = new ArrayList();
+    private String    sslRedirectURL = null;
 
     //~ Methods ....................................................................................
 
@@ -160,8 +160,8 @@ public class SPDocument {
         return document;
     }
 
-    public Properties getProperties() {
-        return properties;
+    public HashMap getProperties() {
+        return propertiesmap;
     }
 
     public boolean docIsUpdateable() {
@@ -176,15 +176,15 @@ public class SPDocument {
         document = newDocument;
     }
 
-    public void setProperties(Properties newProperties) {
-        properties = newProperties;
+    public void setProperties(HashMap newPropertiesmap) {
+        propertiesmap = newPropertiesmap;
     }
 
-    public void setProperty(String key, String value) {
-        if (properties == null) {
-            properties = new Properties();
+    public void setProperty(String key, Object value) {
+        if (propertiesmap == null) {
+            propertiesmap = new HashMap();
         }
-        properties.setProperty(key, value);
+        propertiesmap.put(key, value);
     }
 
     /**
@@ -206,6 +206,10 @@ public class SPDocument {
      */
     public void setSSLRedirect(String redirectURL) {
         this.sslRedirectURL = redirectURL;
+    }
+
+    public boolean isSSLRedirect() {
+        return sslRedirectURL != null;
     }
     
     /**

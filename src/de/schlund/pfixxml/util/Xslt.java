@@ -143,8 +143,8 @@ public class Xslt {
         long start = 0;
         if (params != null) {
             for (Iterator e = params.keySet().iterator(); e.hasNext();) {
-                String name = (String) e.next();
-                String value = (String) params.get(name);
+                String name  = (String) e.next();
+                Object value = params.get(name);
                 if (name != null && value != null) {
                     trafo.setParameter(name, value);
                 }

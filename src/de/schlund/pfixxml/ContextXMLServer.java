@@ -138,7 +138,8 @@ public class ContextXMLServer extends AbstractXMLServer {
 
             // Do a virtual request without any request parameters
             // to get an initial SPDocument
-            PfixServletRequest vpreq = new PfixServletRequest(VirtualHttpServletRequest.getVoidRequest(preq.getRequest()), getContextXMLServletConfig().getProperties());
+            PfixServletRequest vpreq = new PfixServletRequest(VirtualHttpServletRequest.getVoidRequest(preq.getRequest()),
+                                                              getContextXMLServletConfig().getProperties());
             spdoc = rcontext.handleRequest(vpreq);
 
             // Reset current scripted flow state
