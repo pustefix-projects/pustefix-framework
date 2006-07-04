@@ -1,3 +1,12 @@
+2006-07-04  Sebastian Marsching  <sebastian.marsching@1und1.de>
+
+	* build.xml: Exclude testsuite classes from being bundled with
+	the JAR generated for distribution purposes
+	
+	* src/de/schlund/pfixcore/testsuite/*: 
+	* projects/testsuite/*: 
+	Created new project containing tests for pfixcore
+
 2006-07-04  Ute Platzer <up@schlund.de>
         * skel/build-skel.xml:
 	fix problem with clean-modules/extract-modules targets: use a
