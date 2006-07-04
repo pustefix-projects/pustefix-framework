@@ -179,6 +179,7 @@ or delete the DOCTYPE definition -->
         <exclude name="de/schlund/pfixcore/example/ContextDemoText.class"/>
         <exclude name="de/schlund/pfixcore/example/ContextDemoTextImpl.class"/>
         <exclude name="de/schlund/pfixcore/example/DemoTextHandler.class"/>
+        <exclude name="de/schlund/pfixcore/testsuite/**/*.class"/> 
       </fileset>
       <fileset dir="${dir.jni}" includes="${name.jnipkg}"/>
     </jar>

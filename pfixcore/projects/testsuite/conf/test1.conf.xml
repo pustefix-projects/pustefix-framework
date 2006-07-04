@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<contextxmlserver 
+  xmlns="http://pustefix.sourceforge.net/properties200401"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://pustefix.sourceforge.net/properties200401 http://pustefix.sourceforge.net/properties200401.xsd"
+  version="1.0"
+>
+  
+  <servletinfo depend="testsuite/conf/depend.xml" name="pfixcore::testsuite::servlet::test1">
+    <editmode allow="true"/>
+  </servletinfo>
+  
+  <context defaultflow="StartFlow">
+    
+  </context>
+  
+  <pageflow name="StartFlow">
+    <flowstep name="Start"/>
+  </pageflow>
+  
+  <pageflow name="Test2Flow1">
+    <flowstep name="Test2">
+      <oncontinue>
+        <when>
+          <action type="jumpto" page="Test2Succeeded"/>
+        </when>
+      </oncontinue>
+    </flowstep>
+    <flowstep name="Test2Failed"/>
+  </pageflow>
+  
+  <pagerequest name="Start"/>
+  
+  <pagerequest name="Test1"/>
+  
+  <pagerequest name="Test2">
+    <input>
+      <interface prefix="test" class="de.schlund.pfixcore.testsuite.wrapper.NoInputNoError"/>
+    </input>
+  </pagerequest>
+  <pagerequest name="Test2Failed"/>
+  <pagerequest name="Test2Succeeded"/>
+  
+</contextxmlserver>

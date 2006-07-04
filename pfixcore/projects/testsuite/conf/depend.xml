@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<make project="testsuite" lang="en_US">
+  
+  <navigation>
+    <page name="Start" handler="/xml/main"/>
+    <page name="Test1" handler="/xml/test1"/>
+    <page name="Test2" handler="/xml/test1"/>
+    <page name="Test2Failed" handler="/xml/test1"/>
+    <page name="Test2Succeeded" handler="/xml/test1"/>
+  </navigation>
+  
+  <standardmaster/>
+  <standardmetatags/>
+  
+  <standardpage name="Start" xml="testsuite/xml/main.xml"/>
+  
+  <standardpage name="Test1" xml="testsuite/xml/test.xml"/>
+  
+  <standardpage name="Test2" xml="testsuite/xml/test.xml"/>
+  <standardpage name="Test2Failed" xml="testsuite/xml/test.xml"/>
+  <standardpage name="Test2Succeeded" xml="testsuite/xml/test.xml"/>
+  
+</make>
