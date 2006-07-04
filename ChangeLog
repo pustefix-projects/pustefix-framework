@@ -1,3 +1,8 @@
+2006-07-04  Ute Platzer <up@schlund.de>
+        * skel/build-skel.xml:
+	fix problem with clean-modules/extract-modules targets: use a
+	timestamp to determine when to delete and re-extract the modules.
+
 2006-07-03  Jens Lautenbacher  <jtl@schlund.de>
 
 	* src/de/schlund/pfixxml/DerefServer.java

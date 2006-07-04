@@ -405,13 +405,21 @@ or delete the DOCTYPE definition -->
     <delete dir="${dir.projects}/core"/>
   </target>
         
-  <target name="extract-modules" depends="clean-modules" description="extracts all *.jar files in ${dir.extract.modules}">
-    <echo>Unpacking *.jar-Modules from ${dir.src.modules}</echo>
+  <target name="extract-modules-check">
+    <!-- extract only if there are newer jars in the src directory than the target directory -->
+    <uptodate property="upd.extract-modules" targetfile="${dir.extract.modules}/TIMESTAMP">
+      <srcfiles dir= "${dir.src.modules}" includes="**/*.jar"/>
+    </uptodate>
+  </target>
+
+  <target name="extract-modules" depends="extract-modules-check" unless="upd.extract-modules" description="extracts all *.jar files in ${dir.extract.modules}">
+    <antcall target="clean-modules"/>
     <mkdir dir="${dir.extract.modules}"/>
     <unjar dest="${dir.extract.modules}">
       <fileset dir="${dir.src.modules}" includes="*.jar" />
     </unjar>
     <chmod perm="444"><fileset dir="${dir.extract.modules}" includes="**/*"/></chmod>
+    <touch file="${dir.extract.modules}/TIMESTAMP"/>
   </target>
   
   <target name="init-data-check" unless="pfx.force">
