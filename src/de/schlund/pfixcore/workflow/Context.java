@@ -28,52 +28,45 @@ import de.schlund.pfixxml.config.PageRequestConfig;
 import de.schlund.util.statuscodes.StatusCode;
 
 /**
- * Compatibility layer which provides an aggregated view on the
- * methods provided by the splitted context interfaces.
- * 
  * @see de.schlund.pfixcore.workflow.context.ServerContext
  * @see de.schlund.pfixcore.workflow.context.SessionContext
- * @see de.schlund.pfixcore.workflow.context.RequestContext
  * 
  * @author Sebastian Marsching <sebastian.marsching@1und1.de>
  */
 public interface Context {
     ContextResourceManager getContextResourceManager();
-    Properties getProperties();
-    Properties getPropertiesForCurrentPageRequest();
-    PageRequestConfig getConfigForCurrentPageRequest();
-    PageRequest getCurrentPageRequest();
-    PageFlow getCurrentPageFlow();
-    void setCurrentPageFlow(String pageflow);
-    void setJumpToPage(String pagename);
-    void setJumpToPageFlow(String pageflow);
-    void prohibitContinue();
-    void invalidateNavigation();
-    Cookie[] getRequestCookies();
-    void setLanguage(String lang);
-    void addCookie(Cookie cookie);
-    Variant getVariant();
-    void setVariant(Variant variant);
-    void setVariantForThisRequestOnly(Variant variant);
-    String getVisitId();
-    boolean flowStepsBeforeCurrentStepNeedData() throws Exception;
-    boolean finalPageIsRunning();
-    boolean jumpToPageIsRunning();
-    boolean flowIsRunning();
-    boolean isCurrentPageRequestInCurrentFlow();
-    boolean isCurrentPageFlowRequestedByUser();
-    boolean isJumpToPageSet();
-    boolean isJumpToPageFlowSet();
-    boolean isProhibitContinueSet();
-    //void setAutoinvalidateNavigationForThisRequestOnly(boolean invalidate);
-    void reuseNavigation();
-    boolean stateMustSupplyFullDocument();
-    String getName();
-    Throwable getLastException();
-    void addPageMessage(StatusCode scode);
-    void addPageMessage(StatusCode scode, String level);
-    void addPageMessage(StatusCode scode, String[] args);
-    void addPageMessage(StatusCode scode, String[] args, String level);
-    Properties getPropertiesForContextResource(ContextResource res);
-    ContextConfig getContextConfig();
+    Properties             getProperties();
+    Properties             getPropertiesForCurrentPageRequest();
+    PageRequestConfig      getConfigForCurrentPageRequest();
+    PageRequest            getCurrentPageRequest();
+    PageFlow               getCurrentPageFlow();
+    void                   setCurrentPageFlow(String pageflow);
+    void                   setJumpToPage(String pagename);
+    void                   setJumpToPageFlow(String pageflow);
+    void                   prohibitContinue();
+    Cookie[]               getRequestCookies();
+    void                   setLanguage(String lang);
+    void                   addCookie(Cookie cookie);
+    Variant                getVariant();
+    void                   setVariant(Variant variant);
+    void                   setVariantForThisRequestOnly(Variant variant);
+    String                 getVisitId();
+    boolean                flowStepsBeforeCurrentStepNeedData() throws Exception;
+    boolean                finalPageIsRunning();
+    boolean                jumpToPageIsRunning();
+    boolean                flowIsRunning();
+    boolean                isCurrentPageRequestInCurrentFlow();
+    boolean                isCurrentPageFlowRequestedByUser();
+    boolean                isJumpToPageSet();
+    boolean                isJumpToPageFlowSet();
+    boolean                isProhibitContinueSet();
+    boolean                stateMustSupplyFullDocument();
+    String                 getName();
+    Throwable              getLastException();
+    void                   addPageMessage(StatusCode scode);
+    void                   addPageMessage(StatusCode scode, String level);
+    void                   addPageMessage(StatusCode scode, String[] args);
+    void                   addPageMessage(StatusCode scode, String[] args, String level);
+    Properties             getPropertiesForContextResource(ContextResource res);
+    ContextConfig          getContextConfig();
 }

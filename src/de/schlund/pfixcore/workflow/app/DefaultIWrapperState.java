@@ -124,9 +124,7 @@ public class DefaultIWrapperState extends StateImpl {
             container.retrieveCurrentStatus();
             pe.save();
             if (isDirectTrigger(context,preq)) {
-                if (!context.jumpToPageIsRunning()) {
-                    context.reuseNavigation();
-                }
+                // nothing
                 CAT.debug("    => REASON: DirectTrigger");
             } else if (context.finalPageIsRunning()) {
                 // nothing

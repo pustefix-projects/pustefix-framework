@@ -202,8 +202,7 @@ public class DefaultAuthIWrapperState extends StateImpl {
             userInsertErrors(properties, user, resdoc);
             context.prohibitContinue();
         }
-        // Make sure that the next selected page will really build up a new navigation structure.
-        context.invalidateNavigation();
+
         return resdoc;
     }
 
