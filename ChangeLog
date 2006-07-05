@@ -1,3 +1,10 @@
+2006-07-06  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixxml/ServletManager.java
+	(ServletManager::getServerName): make public static
+	* src/de/schlund/pfixcore/workflow/ContextImpl.java (ContextImpl::handleRequest): 
+	use it here in the redirect to SSL processing
+
 2006-07-04  Jens Lautenbacher  <jtl@schlund.de>
 
 	* projects/core/xsl/master.xsl: make sure that $navitree is also

@@ -123,7 +123,7 @@ public abstract class ServletManager extends HttpServlet {
     abstract protected boolean needsSession();
     abstract protected boolean allowSessionCreate();
 
-    private String getServerName(HttpServletRequest req) {
+    public static String getServerName(HttpServletRequest req) {
         String forward = req.getHeader("X-Forwarded-Server");
         if (forward != null && !forward.equals("")) {
             return forward;
