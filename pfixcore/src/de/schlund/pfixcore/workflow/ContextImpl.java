@@ -32,13 +32,13 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import de.schlund.pfixcore.generator.StatusCodeInfo;
-//import de.schlund.pfixcore.workflow.Navigation.NavigationElement;
 import de.schlund.pfixcore.workflow.context.AccessibilityChecker;
 import de.schlund.pfixcore.workflow.context.ServerContextImpl;
 import de.schlund.pfixcore.workflow.context.SessionContextImpl;
 import de.schlund.pfixxml.PfixServletRequest;
 import de.schlund.pfixxml.RequestParam;
 import de.schlund.pfixxml.ResultDocument;
+import de.schlund.pfixxml.ServletManager;
 import de.schlund.pfixxml.SPDocument;
 import de.schlund.pfixxml.Variant;
 import de.schlund.pfixxml.XMLException;
@@ -441,7 +441,7 @@ public class ContextImpl implements Context, AccessibilityChecker {
             // flag, as we would not be able to return such a page
             // after the redirect
             if (getConfigForCurrentPageRequest() != null && spdoc != null && getConfigForCurrentPageRequest().isSSL() && !spdoc.getNostore() && !preq.getOriginalScheme().equals("https")) {
-                spdoc.setSSLRedirect("https://" + preq.getServerName() + preq.getContextPath() + preq.getServletPath() + ";jsessionid=" + preq.getSession(false).getId() + "?__reuse=" + spdoc.getTimestamp());
+                spdoc.setSSLRedirect("https://" + ServletManager.getServerName(preq.getRequest()) + preq.getContextPath() + preq.getServletPath() + ";jsessionid=" + preq.getSession(false).getId() + "?__reuse=" + spdoc.getTimestamp());
             }
 
             spdoc.setProperty("__context__", this);
