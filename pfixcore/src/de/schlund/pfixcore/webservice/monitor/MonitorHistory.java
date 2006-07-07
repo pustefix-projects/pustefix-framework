@@ -1,28 +1,39 @@
 /*
- * Created on 01.08.2004
+ * This file is part of PFIXCORE.
  *
- * To change the template for this generated file go to
- * Window - Preferences - Java - Code Generation - Code and Comments
+ * PFIXCORE is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * PFIXCORE is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with PFIXCORE; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
  */
+
 package de.schlund.pfixcore.webservice.monitor;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
- * @author ml
- *
- * To change the template for this generated type comment go to
- * Window - Preferences - Java - Code Generation - Code and Comments
+ * @author mleidig@schlund.de
  */
 public class MonitorHistory {
     
     private int max;
-    private ArrayList records;
+    private List<MonitorRecord> records;
     private long lastMod;
     
     public MonitorHistory(int max) {
         this.max=max;
-        records=new ArrayList();
+        records=new ArrayList<MonitorRecord>();
         lastMod=System.currentTimeMillis();
     }
     
@@ -34,7 +45,7 @@ public class MonitorHistory {
     
     public synchronized MonitorRecord[] getRecords() {
     	MonitorRecord[] mr=new MonitorRecord[records.size()];
-        for(int i=0;i<records.size();i++) mr[i]=(MonitorRecord)records.get(i);
+        for(int i=0;i<records.size();i++) mr[i]=records.get(i);
         return mr;
     }
     

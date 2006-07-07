@@ -6,6 +6,7 @@
  */
 package de.schlund.pfixcore.example.webservices.chat;
 
+import java.util.Calendar;
 import java.util.Date;
 
 /**
@@ -18,12 +19,12 @@ public class Message {
     
     private String from;
     private String text;
-    private Date date;
+    private Calendar date;
     
     public Message() {   
     }
     
-    public Message(String from,String text,Date date) {
+    public Message(String from,String text,Calendar date) {
     	this.from=from;
         this.text=text;
         this.date=date;
@@ -37,7 +38,7 @@ public class Message {
     	return text;
     }
     
-    public Date getDate() {
+    public Calendar getDate() {
     	return date;
     }
 

@@ -1,11 +1,28 @@
 /*
- * de.schlund.pfixcore.webservice.config.ServiceConfig
+ * This file is part of PFIXCORE.
+ *
+ * PFIXCORE is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * PFIXCORE is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with PFIXCORE; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
  */
+
 package de.schlund.pfixcore.webservice.config;
 
-import java.util.*;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 
-import de.schlund.pfixcore.webservice.*;
+import de.schlund.pfixcore.webservice.Constants;
 import de.schlund.pfixcore.webservice.fault.FaultHandler;
 
 /**
@@ -13,22 +30,9 @@ import de.schlund.pfixcore.webservice.fault.FaultHandler;
  * 
  * Created: 27.07.2004
  * 
- * @author mleidig
+ * @author mleidig@schlund.de
  */
-public class ServiceConfig extends AbstractConfig {
-
-    private final static String PROP_PREFIX="webservice.";
-    private final static String PROP_ITFNAME=".interface.name";
-    private final static String PROP_IMPLNAME=".implementation.name";
-    private final static String PROP_CTXNAME=".context.name";
-    private final static String PROP_CTXSYNC=".context.synchronize";
-    private final static String PROP_SESSTYPE=".session.type";
-    private final static String PROP_SCOPETYPE=".scope.type";
-    private final static String PROP_SSLFORCE=".ssl.force";
-    private final static String PROP_ENCODINGSTYLE=".encoding.style";
-    private final static String PROP_ENCODINGUSE=".encoding.use";
-    private final static String PROP_FAULTHANDLERCLASS=".faulthandler.class";
-    private final static String PROP_FAULTHANDLERPARAM=".faulthandler.param";
+public class ServiceConfig {
 
     String  name;
     String  itfName;
@@ -38,45 +42,12 @@ public class ServiceConfig extends AbstractConfig {
     String  sessType=Constants.SESSION_TYPE_SERVLET;
     String scopeType;
     boolean sslForce;
+    String protocolType;
     String  encStyle;
     String  encUse;
     FaultHandler faultHandler;
-    HashMap params;
     
-    public ServiceConfig() {
-        
-    }
-    
-    public ServiceConfig(ConfigProperties props,String name) throws ConfigException {
-        this.props=props;
-        this.name=name;
-        init();
-    }
-    
-    private void init() throws ConfigException {
-        String prefix = PROP_PREFIX + name;
-        itfName       = props.getStringProperty(prefix + PROP_ITFNAME,true);
-        implName      = props.getStringProperty(prefix + PROP_IMPLNAME,true);
-        ctxName       = props.getStringProperty(prefix + PROP_CTXNAME,false);
-        ctxSync=props.getBooleanProperty(prefix+PROP_CTXSYNC,false,true);
-        sessType      = props.getStringProperty(prefix + PROP_SESSTYPE,Constants.SESSION_TYPES,true);
-        scopeType=props.getStringProperty(prefix+PROP_SCOPETYPE,Constants.SERVICE_SCOPES,false);
-        sslForce      = props.getBooleanProperty(prefix + PROP_SSLFORCE,false,false);
-        encStyle      = props.getStringProperty(prefix + PROP_ENCODINGSTYLE,Constants.ENCODING_STYLES,false);
-        encUse        = props.getStringProperty(prefix + PROP_ENCODINGUSE,Constants.ENCODING_USES,false);
-        faultHandler=(FaultHandler)props.getObjectProperty(prefix+PROP_FAULTHANDLERCLASS,FaultHandler.class,false);
-        if(faultHandler!=null) {
-            HashMap faultParams=props.getHashMap(prefix+PROP_FAULTHANDLERPARAM);
-            faultHandler.setParams(faultParams);
-            faultHandler.init();
-        }
-        //TODO: get params
-        params        = new HashMap();
-    }
-
-    public void reload() throws ConfigException {
-        init();
-    }
+    public ServiceConfig() {}
     
     public String getName() {
         return name;
@@ -138,12 +109,28 @@ public class ServiceConfig extends AbstractConfig {
         this.sslForce=sslForce;
     }
     
+    public String getProtocolType() {
+    	return protocolType;
+    }
+    
+    public void setProtocolType(String protocolType) {
+    	this.protocolType=protocolType;
+    }
+    
     public String getEncodingStyle() {
         return encStyle;
     }
     
+    public void setEncodingStyle(String encStyle) {
+    	this.encStyle=encStyle;
+    }
+    
     public String getEncodingUse() {
         return encUse;
+    }
+    
+    public void setEncodingUse(String encUse) {
+    	this.encUse=encUse;
     }
     
     public FaultHandler getFaultHandler() {
@@ -154,20 +141,34 @@ public class ServiceConfig extends AbstractConfig {
     	this.faultHandler=faultHandler;
     }
     
-    public Iterator getParameterNames() {
-        return params.keySet().iterator();
+    @Override
+    public boolean equals(Object obj) {
+    	if(obj instanceof ServiceConfig) {
+    		ServiceConfig ref=(ServiceConfig)obj;
+    		Method[] meths=getClass().getDeclaredMethods();
+    		for(int i=0;i<meths.length;i++) {
+    			Method meth=meths[i];
+    			if(meth.getName().startsWith("get")&&Modifier.isPublic(meth.getModifiers())) { 
+    				try {
+    					Object res=meth.invoke(this,new Object[0]);
+    					Object refRes=meth.invoke(ref,new Object[0]);
+    					if(res==null ^ refRes==null) {
+    						System.out.println("Difference found: "+meth.getName()+" "+res+" "+refRes);
+    						return false;
+    					}
+    					if(res!=null && !res.equals(refRes)) {
+    						System.out.println("Difference found: "+meth.getName()+" "+res+" "+refRes);
+    						return false;
+    					}
+    				} catch(Exception x) {
+    					x.printStackTrace();
+    					return false;
+    				}
+    			}
+    		}
+    		return true;
+    	}
+    	return false;
     }
-    
-    public String getParameter(String name) {
-        return (String)params.get(name);
-    }
-
-    protected Properties getProperties() {
-        return props.getProperties("webservice\\."+getName()+"\\..*");
-    }
-    
-    protected String getPropertiesDescriptor() {
-        return "webservice properties";
-    }
-    
+	
 }

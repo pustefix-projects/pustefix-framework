@@ -25,6 +25,10 @@ public class TypeTestImpl implements TypeTest {
         return val;
     }
     
+    public Integer echoIntObj(Integer val) {
+        return val;
+    }
+    
     public int[] echoIntArray(int[] vals) {
         return vals;
     }
@@ -33,7 +37,19 @@ public class TypeTestImpl implements TypeTest {
         return val;
     }
     
+    public Long echoLongObj(Long val) {
+        return val;
+    }
+    
+    public long[] echoLongArray(long[] vals) {
+        return vals;
+    }
+    
     public float echoFloat(float val) {
+        return val;
+    }
+    
+    public Float echoFloatObj(Float val) {
         return val;
     }
     
@@ -41,24 +57,16 @@ public class TypeTestImpl implements TypeTest {
         return vals;
     }
     
-    public double echoDouble(double val) {
+    public boolean echoBoolean(boolean val) {
         return val;
     }
     
-    public double[] echoDoubleArray(double[] vals) {
-        return vals;
-    }
-    
-    public boolean echoBoolean(boolean val) {
+    public Boolean echoBooleanObj(Boolean val) {
         return val;
     }
     
     public boolean[] echoBooleanArray(boolean[] vals) {
         return vals;
-    }
-    
-    public Boolean echoBooleanObject(Boolean val) {
-        return val;
     }
     
     public Calendar echoDate(Calendar date) {

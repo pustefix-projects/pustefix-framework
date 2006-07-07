@@ -1,3 +1,22 @@
+/*
+ * This file is part of PFIXCORE.
+ *
+ * PFIXCORE is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * PFIXCORE is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with PFIXCORE; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ */
+
 package de.schlund.pfixcore.webservice.handler;
 
 import javax.servlet.http.HttpServletRequest;
@@ -7,15 +26,18 @@ import org.apache.axis.MessageContext;
 import org.apache.axis.SOAPPart;
 import org.apache.log4j.Logger;
 
-import de.schlund.pfixcore.webservice.Constants;
+import de.schlund.pfixcore.webservice.ServiceCallContext;
 import de.schlund.pfixcore.webservice.WebServiceServlet;
 import de.schlund.pfixcore.webservice.config.Configuration;
 import de.schlund.pfixcore.webservice.config.GlobalServiceConfig;
 import de.schlund.pfixcore.webservice.config.ServiceConfig;
 import de.schlund.pfixcore.webservice.fault.Fault;
 import de.schlund.pfixcore.webservice.fault.FaultHandler;
-import de.schlund.pfixcore.workflow.Context;
+import de.schlund.pfixcore.workflow.context.SessionContext;
 
+/**
+ * @author mleidig@schlund.de
+ */
 public class ErrorHandler extends AbstractHandler {
         
     private static Logger LOG=Logger.getLogger(ErrorHandler.class);
@@ -29,7 +51,7 @@ public class ErrorHandler extends AbstractHandler {
     
     public void onFault(MessageContext msgCtx) {
     	String serviceName=msgCtx.getTargetService();
-    	Configuration config=getWebServiceContext(msgCtx).getConfiguration();
+    	Configuration config=getServiceRuntime(msgCtx).getConfiguration();
     	ServiceConfig serviceConfig=config.getServiceConfig(serviceName);
     	FaultHandler faultHandler=serviceConfig.getFaultHandler();
     	if(faultHandler==null) {
@@ -38,7 +60,9 @@ public class ErrorHandler extends AbstractHandler {
     	}
     	if(faultHandler!=null) {
            try {
-               Context context=(Context)msgCtx.getProperty(Constants.MSGCTX_PROP_CTX);
+        	   ServiceCallContext callContext=ServiceCallContext.getCurrentContext();
+        	   SessionContext context=null;
+        	   if(callContext!=null) context=callContext.getContext();
                HttpServletRequest srvReq=getServletRequest(msgCtx);
                String reqMsg=((SOAPPart)msgCtx.getRequestMessage().getSOAPPart()).getAsString();
                Fault fault=new Fault(serviceName,srvReq,reqMsg,context);

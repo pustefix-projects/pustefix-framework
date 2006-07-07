@@ -12,7 +12,7 @@ import javax.servlet.http.HttpSession;
 import org.apache.log4j.Logger;
 
 import de.schlund.pfixcore.webservice.Constants;
-import de.schlund.pfixcore.workflow.Context;
+import de.schlund.pfixcore.workflow.context.SessionContext;
 
 public class Fault {
 	
@@ -22,11 +22,11 @@ public class Fault {
 	String requestURI;
 	String reqMsg;
     String serverName;
-    Context context;
+    SessionContext context;
     Throwable throwable;
     String faultString;
 	
-	public Fault(String serviceName,HttpServletRequest srvReq,String reqMsg,Context context) {
+	public Fault(String serviceName,HttpServletRequest srvReq,String reqMsg,SessionContext context) {
 		this.serviceName=serviceName;
 		this.requestURI=getRequestURI(srvReq);
 		this.serverName=getServerName(srvReq);
@@ -134,7 +134,7 @@ public class Fault {
         return srvReq.getServerName();
     }
     
-    public Context getContext() {
+    public SessionContext getContext() {
         return context;
     }
 	

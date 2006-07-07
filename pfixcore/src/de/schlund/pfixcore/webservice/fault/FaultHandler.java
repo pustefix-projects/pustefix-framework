@@ -11,22 +11,26 @@ import java.util.Iterator;
 
 public abstract class FaultHandler {
 	
-    HashMap params;
+    HashMap<String,String> params=new HashMap<String,String>();
     
 	protected FaultHandler() {
 	}
     
-    public void setParams(HashMap params) {
+	public void addParam(String name,String value) {
+		params.put(name,value);
+	}
+	
+    public void setParams(HashMap<String,String> params) {
         this.params=params;
     }
     
-    public HashMap getParams() {
+    public HashMap<String,String> getParams() {
         return params;
     }
     
     public String getParam(String name) {
         if(params==null) return null;
-        return (String)params.get(name);
+        return params.get(name);
     }
 	
     public String paramsToString() {
@@ -34,10 +38,10 @@ public abstract class FaultHandler {
         else {
             StringBuffer sb=new StringBuffer();
             sb.append("[");
-            Iterator it=params.keySet().iterator();
+            Iterator<String> it=params.keySet().iterator();
             while(it.hasNext()) {
-                String key=(String)it.next();
-                String val=(String)params.get(key);
+                String key=it.next();
+                String val=params.get(key);
                 sb.append("("+key+"="+val+")");
             }
             sb.append("]");
@@ -49,4 +53,28 @@ public abstract class FaultHandler {
     
 	public abstract void handleFault(Fault fault);
 
+	@Override
+	public boolean equals(Object obj) {
+		if(obj instanceof FaultHandler) {
+			FaultHandler ref=(FaultHandler)obj;
+			if(!getClass().equals(ref.getClass())) return false;
+			if(params==null ^ ref.getParams()==null) return false;
+			Iterator<String> it=params.keySet().iterator();
+			while(it.hasNext()) {
+				String name=it.next();
+				String val=params.get(name);
+				String refVal=ref.getParam(name);
+				if(refVal==null||!(val.equals(refVal))) return false;
+			}
+			it=ref.getParams().keySet().iterator();
+			while(it.hasNext()) {
+				String name=it.next();
+				String val=params.get(name);
+				if(val==null) return false;
+			}
+			return true;
+		}
+		return false;
+	}
+	
 }
