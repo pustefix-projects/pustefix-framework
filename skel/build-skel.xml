@@ -175,7 +175,7 @@ or delete the DOCTYPE definition -->
   </target>
 
   <target name="all"
-          depends="compile, post-compile, installjars, check-permissions, compile-xml"
+          depends="init, compile, post-compile, installjars, check-permissions, compile-xml"
           description="builds all files required to run"
           />
 
@@ -276,7 +276,7 @@ or delete the DOCTYPE definition -->
     </apply>
   </target>
 
-  <target name="ant-tasks" depends="init" description="declares the ant task used for generating java source code. This target needs to be run prior to the actual compile.">
+  <target name="ant-tasks" description="declares the ant task used for generating java source code. This target needs to be run prior to the actual compile.">
     <taskdef
      name="pfx-xslt"
      classname="de.schlund.pfixcore.util.XsltGenericTask"
@@ -333,6 +333,11 @@ or delete the DOCTYPE definition -->
   	 loaderref="pfx-loader"
   	 description="Stores properties used at buildtime to be used later at runtime"
   	 />
+    <taskdef
+     resource="net/sf/antcontrib/antlib.xml"
+     classpathref="cp.classpath"
+     loaderref="pfx-loader"   
+     /> 
   </target>
 
   <target name="dtd" depends="dtd-check, ant-tasks" unless="upd.dtd" description="creates a DTD for this build file">
@@ -364,17 +369,17 @@ or delete the DOCTYPE definition -->
   <target name="clean-project" description="deletes files from ${dir.projects}">
     <mkdir dir="${dir.webapps}"/>
     <delete>
-      <fileset dir="${dir.projects}" includes="**/*.xsl">
+      <fileset dir="${dir.projects}" includes="**/*.xsl" excludes="modules/**">
         <present present="both" targetdir="${dir.projects}">
           <mapper type="glob" from="*.xsl" to="*.xsl.in"/>
         </present>
       </fileset>
-      <fileset dir="${dir.projects}" includes="**/*.prop">
+      <fileset dir="${dir.projects}" includes="**/*.prop" excludes="modules/**">
         <present present="both" targetdir="${dir.projects}">
           <mapper type="glob" from="*.prop" to="*.prop.in"/>
         </present>
       </fileset>
-      <fileset dir="${dir.projects}" includes="**/webservice.conf">
+      <fileset dir="${dir.projects}" includes="**/webservice.conf" excludes="modules/**">
         <present present="both" targetdir="${dir.projects}">
           <mapper type="glob" from="*webservice.conf" to="*webservice.conf.in"/>
         </present>
@@ -412,7 +417,7 @@ or delete the DOCTYPE definition -->
     </uptodate>
   </target>
 
-  <target name="extract-modules" depends="extract-modules-check" unless="upd.extract-modules" description="extracts all *.jar files in ${dir.extract.modules}">
+  <target name="extract-modules" depends="extract-modules-check, ant-tasks" unless="upd.extract-modules" description="extracts all *.jar files in ${dir.extract.modules}">
     <antcall target="clean-modules"/>
     <mkdir dir="${dir.extract.modules}"/>
     <unjar dest="${dir.extract.modules}">
@@ -420,6 +425,16 @@ or delete the DOCTYPE definition -->
     </unjar>
     <chmod perm="444"><fileset dir="${dir.extract.modules}" includes="**/*"/></chmod>
     <touch file="${dir.extract.modules}/TIMESTAMP"/>
+    <foreach param="tmp.modules.buildxml" target="extract-modules-call-ant" inheritall="true" inheritrefs="true">
+      <fileset dir="${dir.extract.modules}">
+        <include name="*/build.xml"/>
+      </fileset>   
+    </foreach> 
+  </target>
+  
+  <target name="extract-modules-call-ant">
+    <dirname property="tmp.modules.modulepath" file="${tmp.modules.buildxml}"/> 
+    <ant antfile="${tmp.modules.buildxml}" dir="${tmp.modules.modulepath}" inheritAll="false"/>
   </target>
   
   <target name="init-data-check" unless="pfx.force">
@@ -535,6 +550,7 @@ or delete the DOCTYPE definition -->
      srcdir="${dir.projects}"
      destdir="${dir.projects}"
      includes="**/*.prop.in"
+     excludes="modules/**"   
      extension=""
      validate="${validate}"
      catalogfile="${catalogfile}"
@@ -547,7 +563,7 @@ or delete the DOCTYPE definition -->
     </pfx-xslt>
   </target>
 
-  <target name="projects_xml" depends="ant-tasks" description="creates projects.xml out of projects.xml.in and multiple project.xml files" >
+  <target name="projects_xml" depends="ant-tasks, init" description="creates projects.xml out of projects.xml.in and multiple project.xml files" >
     <fileset id="id.fileset.projectxmlin" dir="${dir.projects}" includes="**/project.xml.in"/>
     <pathconvert property="projectxmlins" refid="id.fileset.projectxmlin" pathsep="|">
       <map from="${dir.projects}/" to=""/>
@@ -591,12 +607,13 @@ or delete the DOCTYPE definition -->
     </pfx-webxml>
   </target>
 
-  <target name="stylesheets" depends="ant-tasks" description="creates **/*.xsl from **/*.xsl.in with create_stylesheet.xsl">
+  <target name="stylesheets" depends="ant-tasks, init" description="creates **/*.xsl from **/*.xsl.in with create_stylesheet.xsl">
     <pfx-xslt
      style="${dir.projects}/core/build/create_stylesheet.xsl"
      srcdir="${dir.projects}"
      destdir="${dir.projects}"
      includes="**/*.xsl.in"
+     excludes="modules/**"   
      extension=""
      >
       <param name="docroot" expression="${dir.docroot}"/>
