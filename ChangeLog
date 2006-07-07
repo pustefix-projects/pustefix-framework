@@ -1,3 +1,133 @@
+2006-07-07  Martin Leidig  <mleidig@schlund.de>
+
+	Added support for JSON as (web)service protocol. It can be
+	used just as a SOAP service: you just have to instantiate a
+	stub and can call the remote methods. In contrast to SOAP stubs
+	the JSON stubs are Dynamic Proxies which request the method
+	descriptions from the server and dynamically create according
+	Javascript methods. JSON and SOAP stubs are largely compatible
+	for the caller, so they can be used together and migrating in
+	between should work without code changes.
+
+	Introduced general service runtime and processing layer, into
+	which different service protocols can be plugged by implementing
+	the ServiceProcessor interface.
+	Refactored monitoring and logging facilities. Made them service
+	independent and transparent for service processors. Authentication
+	now also is done on service runtime level (removed all special
+	handling within according Axis request/response handlers).
+	Refactored the webservice configuration system, now it's completely
+	XML based, no more property stuff.
+	The JSON services use parts of the JSON-RPC framework for
+	serialization/deserialization. Added some patches to it: fixed
+	problem with float number precision in the included json.org code,
+	moved the org.json package down in the package hierarchy to 
+	support other implementations, added support for sending the
+	exceptions names as part of the JSON response.
+	Integrated the JSON framework: added special Date handler for
+	Calendar support (compatibility with SOAP-Java-Binding). 
+	Implemented general service registry mechanism for service
+	description and instance creation/management.
+
+	Refactored all webservice sample applications, added switchable 
+	support for SOAP and JSON protocol, removed proprietary/browser
+	dependent stuff. 
+	
+
+	Added:
+
+	* src/de/schlund/pfixcore/webservice/ServiceDescriptor.java
+	* src/de/schlund/pfixcore/webservice/ServiceProcessor.java
+	* src/de/schlund/pfixcore/webservice/ServiceCallContext.java
+	* src/de/schlund/pfixcore/webservice/ServiceRuntime.java
+	* src/de/schlund/pfixcore/webservice/HttpServiceRequest.java
+	* src/de/schlund/pfixcore/webservice/ServiceRequest.java
+	* src/de/schlund/pfixcore/webservice/ServiceRequestWrapper.java
+	* src/de/schlund/pfixcore/webservice/ServiceProcessingException.java
+	* src/de/schlund/pfixcore/webservice/HttpServiceResponse.java
+	* src/de/schlund/pfixcore/webservice/ServiceResponse.java
+	* src/de/schlund/pfixcore/webservice/ServiceException.java
+	* src/de/schlund/pfixcore/webservice/ServiceResponseWrapper.java
+	* src/de/schlund/pfixcore/webservice/utils
+	* src/de/schlund/pfixcore/webservice/utils/RecordingReader.java
+	* src/de/schlund/pfixcore/webservice/utils/XMLFormatter.java
+	* src/de/schlund/pfixcore/webservice/utils/RecordingRequestWrapper.java
+	* src/de/schlund/pfixcore/webservice/utils/RecordingInputStream.java
+	* src/de/schlund/pfixcore/webservice/utils/RecordingOutputStream.java
+	* src/de/schlund/pfixcore/webservice/utils/RecordingWriter.java
+	* src/de/schlund/pfixcore/webservice/utils/RecordingResponseWrapper.java
+	* src/de/schlund/pfixcore/webservice/config/ConfigurationReader.java
+	* src/de/schlund/pfixcore/webservice/ServiceRegistry.java
+	* src/de/schlund/pfixcore/webservice/annotation
+	* src/de/schlund/pfixcore/webservice/annotation/Service.java
+	* src/de/schlund/pfixcore/webservice/handler/RecordingHandler.java
+	* src/de/schlund/pfixcore/webservice/jsonrpc
+	* src/de/schlund/pfixcore/webservice/jsonrpc/CalendarSerializer.java
+	* src/de/schlund/pfixcore/webservice/jsonrpc/CustomJSONObject.java
+	* src/de/schlund/pfixcore/webservice/jsonrpc/JSONRPCProcessor.java
+	* projects/core/script/webservice_json.js
+	* projects/core/script/httpRequest.js
+	* projects/webservice/txt/common.xml
+	* lib/jsonrpc-1.0-patched.jar
+
+	Modified:
+
+	* src/de/schlund/pfixcore/example/webservices/chat/Message.java
+	* src/de/schlund/pfixcore/example/webservices/chat/ChatServer.java
+	* src/de/schlund/pfixcore/example/webservices/TypeTest.java
+	* src/de/schlund/pfixcore/example/webservices/TypeTestImpl.java
+	* src/de/schlund/pfixcore/example/webservices/CalculatorImpl.java
+	* src/de/schlund/pfixcore/webservice/WebServiceServlet.java
+	* src/de/schlund/pfixcore/webservice/monitor/MonitorRecord.java
+	* src/de/schlund/pfixcore/webservice/monitor/Monitor.java
+	* src/de/schlund/pfixcore/webservice/monitor/MonitorHistory.java
+	* src/de/schlund/pfixcore/webservice/generate/WebServiceTask.java
+	* src/de/schlund/pfixcore/webservice/Constants.java
+	* src/de/schlund/pfixcore/webservice/AbstractService.java
+	* src/de/schlund/pfixcore/webservice/config/ConfigException.java
+	* src/de/schlund/pfixcore/webservice/config/ServiceConfig.java
+	* src/de/schlund/pfixcore/webservice/config/Configuration.java
+	* src/de/schlund/pfixcore/webservice/config/GlobalServiceConfig.java
+	* src/de/schlund/pfixcore/webservice/fault/FaultHandler.java
+	* src/de/schlund/pfixcore/webservice/fault/Fault.java
+	* src/de/schlund/pfixcore/webservice/handler/AbstractHandler.java
+	* src/de/schlund/pfixcore/webservice/handler/ErrorHandler.java
+	* projects/common/conf/server-config.wsdd
+	* projects/core/schema/wsconfig200401.xsd
+	* projects/webservice/txt/pages/main_chat.xml
+	* projects/webservice/txt/pages/main_counter.xml
+	* projects/webservice/txt/pages/main_typetest.xml
+	* projects/webservice/txt/pages/main_calculator.xml
+	* projects/webservice/txt/pages/main_data.xml
+	* projects/webservice/xml/two_frames.xml
+	* projects/webservice/htdocs/webservice.css
+	* projects/webservice/htdocs/calc-pfxsoap.js
+	* projects/webservice/htdocs/data-pfxsoap.js
+	* projects/webservice/htdocs/counter-pfxsoap.js
+	* projects/webservice/htdocs/chat-pfxsoap.js
+	* projects/webservice/htdocs/typetest-pfxsoap.js
+	* projects/webservice/htdocs/application.js
+	* projects/webservice/conf/webservice.conf.xml
+	* .classpath
+
+	Removed:
+
+	* src/de/schlund/pfixcore/webservice/WebServiceContext.java
+	* src/de/schlund/pfixcore/webservice/config/ConfigProperties.java
+	* src/de/schlund/pfixcore/webservice/config/AbstractConfig.java
+	* src/de/schlund/pfixcore/webservice/handler/MonitoringHandler.java
+	* src/de/schlund/pfixcore/webservice/handler/LoggingHandler.java
+	* src/de/schlund/pfixcore/webservice/handler/AuthenticationHandler.java
+	* projects/webservice/htdocs/calc-mysoap.js
+	* projects/webservice/htdocs/data-soap.js
+	* projects/webservice/htdocs/calc-wsdl.js
+	* projects/webservice/htdocs/counter-soap.js
+	* projects/webservice/htdocs/data-wsdl.js
+	* projects/webservice/htdocs/counter-wsdl.js
+	* projects/webservice/htdocs/webservice.htc
+	* projects/webservice/htdocs/calc-soap.js
+
+
 2006-07-07  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
 	* lib/ant-contrib-1.0b2.jar: 

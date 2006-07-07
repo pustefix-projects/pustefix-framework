@@ -21,23 +21,27 @@ public interface TypeTest {
     
     public int echoInt(int val);
     
+    public Integer echoIntObj(Integer val);
+    
     public int[] echoIntArray(int[] vals);
     
     public long echoLong(long val);
     
+    public Long echoLongObj(Long val);
+    
+    public long[] echoLongArray(long[] vals);
+    
     public float echoFloat(float val);
+    
+    public Float echoFloatObj(Float val);
     
     public float[] echoFloatArray(float[] vals);
     
-    public double echoDouble(double val);
-    
-    public double[] echoDoubleArray(double[] vals);
-    
     public boolean echoBoolean(boolean val);
     
-    public boolean[] echoBooleanArray(boolean[] vals);
+    public Boolean echoBooleanObj(Boolean val);
     
-    public Boolean echoBooleanObject(Boolean val);
+    public boolean[] echoBooleanArray(boolean[] vals);
     
     public Calendar echoDate(Calendar date);
     

@@ -1,35 +1,54 @@
 /*
- * Created on 21.08.2004
+ * This file is part of PFIXCORE.
  *
- * To change the template for this generated file go to
- * Window - Preferences - Java - Code Generation - Code and Comments
+ * PFIXCORE is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * PFIXCORE is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with PFIXCORE; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
  */
+
 package de.schlund.pfixcore.webservice.monitor;
 
 /**
- * @author ml
- *
- * To change the template for this generated type comment go to
- * Window - Preferences - Java - Code Generation - Code and Comments
+ * @author mleidig@schlund.de
  */
 public class MonitorRecord {
-
-	String target;
+	
+	String service;
+	String protocol;
     long startTime;
     long endTime;
-    String request;
-    String response;
+    String reqMsg;
+    String resMsg;
     
     public MonitorRecord() {
         
     }
     
-    public String getTarget() {
-    	return target;
+    public String getService() {
+    	return service;
     }
     
-    public void setTarget(String target) {
-    	this.target=target;
+    public void setService(String service) {
+    	this.service=service;
+    }
+    
+    public String getProtocol() {
+    	return protocol;
+    }
+    
+    public void setProtocol(String protocol) {
+    	this.protocol=protocol;
     }
     
     public long getStartTime() {
@@ -52,20 +71,20 @@ public class MonitorRecord {
     	return endTime-startTime;
     }
     
-    public String getRequest() {
-    	return request;
+    public String getRequestMessage() {
+    	return reqMsg;
     }
     
-    public void setRequest(String request) {
-    	this.request=request;
+    public void setRequestMessage(String reqMsg) {
+    	this.reqMsg=reqMsg;
     }
     
-    public String getResponse() {
-    	return response;
+    public String getResponseMessage() {
+    	return resMsg;
     }
     
-    public void setResponse(String response) {
-    	this.response=response;
+    public void setResponseMessage(String resMsg) {
+    	this.resMsg=resMsg;
     }
     
 }

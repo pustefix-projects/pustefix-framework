@@ -1,6 +1,22 @@
 /*
- * de.schlund.pfixcore.webservice.config.Configuration
+ * This file is part of PFIXCORE.
+ *
+ * PFIXCORE is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * PFIXCORE is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with PFIXCORE; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
  */
+
 package de.schlund.pfixcore.webservice.config;
 
 import java.util.*;
@@ -10,57 +26,17 @@ import java.util.*;
  * 
  * Created: 22.07.2004
  * 
- * @author mleidig
+ * @author mleidig@schlund.de
  */
 public class Configuration {
 
-    private ConfigProperties props;
     private GlobalServiceConfig globConf;
-    private HashMap srvsConf;
+    private HashMap<String,ServiceConfig> srvsConf;
     
     public Configuration() {
-        srvsConf=new HashMap();
+        srvsConf=new HashMap<String,ServiceConfig>();
     }
-    
-    public Configuration(ConfigProperties props) throws ConfigException {
-        this.props=props;
-        init();
-    }
-    
-    private void init() throws ConfigException {
-        globConf=new GlobalServiceConfig(props);
-        srvsConf=new HashMap();
-        Iterator it=props.getPropertyKeys("webservice\\.[^\\.]*\\.name");
-        while(it.hasNext()) {
-            String key=(String)it.next();
-            String name=props.getProperty(key);
-            ServiceConfig sc=new ServiceConfig(props,name);
-            srvsConf.put(name,sc);
-        }
-    }
-    
-    public void reload() throws ConfigException {
-        globConf.reload();
-        HashSet names=new HashSet();
-        Iterator it=props.getPropertyKeys("webservice\\.[^\\.]*\\.name");
-        while(it.hasNext()) {
-            String key=(String)it.next();
-            String name=props.getProperty(key);
-            ServiceConfig sc=(ServiceConfig)srvsConf.get(name);
-            if(sc!=null) sc.reload();
-            else {
-                sc=new ServiceConfig(props,name);
-                srvsConf.put(name,sc);
-            }
-            names.add(name);
-        }
-        it=srvsConf.keySet().iterator();
-        while(it.hasNext()) {
-            String name=(String)it.next();
-            if(!names.contains(name)) srvsConf.remove(name);
-        }
-    }
-    
+     
     public GlobalServiceConfig getGlobalServiceConfig() {
         return globConf;
     }
@@ -77,30 +53,45 @@ public class Configuration {
         return (ServiceConfig)srvsConf.get(name);
     }
     
-    public Iterator getServiceConfig() {
+    public Iterator<ServiceConfig> getServiceConfig() {
         return srvsConf.values().iterator();
     }
     
-    public boolean doesDiff(Configuration sc) {
-        if(sc.getGlobalServiceConfig().doesDiff(getGlobalServiceConfig())) return true;
-        Iterator it=getServiceConfig();
-        int cnt=0;
-        while(it.hasNext()) {
-            cnt++;
-            ServiceConfig conf=(ServiceConfig)it.next();
-            ServiceConfig scConf=sc.getServiceConfig(conf.getName());
-            if(scConf==null || scConf.doesDiff(conf)) return true;
-        }
-        it=sc.getServiceConfig();
-        int scCnt=0;
-        while(it.hasNext()) {
-            scCnt++;
-            it.next();
-        }
-        if(cnt!=scCnt) return true;
-        return false;
+    @Override
+    public boolean equals(Object obj) {
+    	if(obj instanceof Configuration) {
+    		Configuration ref=(Configuration)obj;
+    		System.out.println("* Global");
+    		if(!getGlobalServiceConfig().equals(ref.getGlobalServiceConfig())) {
+    			System.out.println("Global service not equal");
+    			return false;
+    		}
+    		Iterator<ServiceConfig> it=getServiceConfig();
+    		while(it.hasNext()) {
+    			ServiceConfig sc=it.next();
+    			ServiceConfig refSc=ref.getServiceConfig(sc.getName());
+    			if(refSc==null) {
+    				System.out.println("Service not found: "+sc.getName());
+    				return false;
+    			}
+    			if(!sc.equals(refSc)) {
+    				System.out.println("Service not equal: "+sc.getName());
+    				return false;
+    			}
+    		}
+    		it=ref.getServiceConfig();
+    		while(it.hasNext()) {
+    			ServiceConfig refSc=it.next();
+    			System.out.println("** "+refSc.getName());
+    			ServiceConfig sc=getServiceConfig(refSc.getName());
+    			if(sc==null) {
+    				System.out.println("Service not found: "+refSc.getName());
+    				return false;
+    			}
+    		}
+    		return true;
+    	}
+    	return false;
     }
-    
-    
     
 }

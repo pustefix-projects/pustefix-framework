@@ -1,31 +1,47 @@
 /*
- * de.schlund.pfixcore.webservice.AbstractService
+ * This file is part of PFIXCORE.
+ *
+ * PFIXCORE is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * PFIXCORE is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with PFIXCORE; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
  */
+
 package de.schlund.pfixcore.webservice;
 
-import org.apache.axis.MessageContext;
 import de.schlund.pfixcore.workflow.ContextResource;
 import de.schlund.pfixcore.workflow.ContextResourceManager;
+import de.schlund.pfixcore.workflow.context.SessionContext;
 
 /**
- * AbstractService.java
- *
- * Created: 29.06.2004
- *
- * @author mleidig
+ * @author mleidig@schlund.de
  */
 public abstract class AbstractService {
 
+	protected SessionContext getContext() {
+		ServiceCallContext callContext=ServiceCallContext.getCurrentContext();
+		if(callContext!=null) return callContext.getContext();
+		return null;
+	}
+	
     protected ContextResourceManager getContextResourceManager() {
-        MessageContext msgContext=MessageContext.getCurrentContext();
-        ContextResourceManager crm=(ContextResourceManager)msgContext.getProperty(Constants.MSGCTX_PROP_CTXRESMAN);
-        return crm;
+    	SessionContext context=getContext();
+    	if(context!=null) return context.getContextResourceManager();
+    	return null;
     }
 
     protected ContextResource getContextResource(Class clazz) {
-        if ( clazz == null ) {
-            throw new IllegalArgumentException("clazz="+clazz);
-        }
+    	if(clazz==null) throw new IllegalArgumentException("clazz="+clazz);
         return getContextResource(clazz.getName());
     }
 

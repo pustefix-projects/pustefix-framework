@@ -1,5 +1,5 @@
-function pfxsoapReset() {
-	var p=document.getElementById("out");
+function consoleReset() {
+	var p=document.getElementById("console");
 	if(p!=null && p.childNodes!=null) {
 		var len=p.childNodes.length;
 		for(var i=0;i<len;i++) {
@@ -8,8 +8,8 @@ function pfxsoapReset() {
 	}
 }
 
-function pfxsoapPrint(method,time,error) {
-	var p=document.createElement("p");
+function consolePrint(method,time,error) {
+	var p=document.createElement("div");
 	var t=document.createTextNode(method+" ("+time+"ms) ");
 	p.appendChild(t);
 	if(error!=undefined) {
@@ -22,17 +22,8 @@ function pfxsoapPrint(method,time,error) {
 		s.appendChild(st);
 		p.appendChild(s);
 	}
-	var out=document.getElementById("out");
+	var out=document.getElementById("console");
 	out.appendChild(p);
-}
-
-function pfxsoapPrintTime(time) {
-	document.getElementById('pfxsoap_time').innerHTML=time;
-}
-
-function pfxsoapPrintError(msg,time) {
-	document.getElementById('pfxsoap_error').innerHTML=msg;
-	document.getElementById('pfxsoap_time').innerHTML=time;
 }
 
 function arrayEquals(a1,a2) {
@@ -53,7 +44,7 @@ function beanEquals(b1,b2) {
 		var val1=b1[prop];
 		var val2=b2[prop];
 		var equal=equals(val1,val2);
-		if(!equal) return false;
+		if(!equal && prop!='javaClass') return false;
 	}
 	return true;
 }
@@ -81,20 +72,16 @@ function equals(obj1,obj2) {
 	return beanEquals(obj1,obj2);
 }
 
-var wsType=new WS_TypeTest();
 
-function pfxsoapCallback(result,exception) {
-	var d2=new Date();
-   var t2=d2.getTime();
-   var t=t2-t1;
-  	if(exception==undefined) pfxsoapPrint(result,t);
-  	else pfxsoapPrintError(exception.toString(),t);
-}
+var wsTypeTest=new WS_TypeTest();
+var jwsTypeTest=new WS_Webservice("TypeTest");
 
+var timer=new Timer();
 
-
-function pfxsoapCall() {
-	pfxsoapReset();
+function serviceCall() {
+	consoleReset();
+	timer.start();
+	var ws=soapEnabled()?wsTypeTest:jwsTypeTest;
 	
 		var total1=(new Date()).getTime();
 	
@@ -102,169 +89,221 @@ function pfxsoapCall() {
 		var t1=(new Date()).getTime();
 		try {
 			var intVal=parseInt(1);
-			var resVal=wsType.echoInt(intVal);
+			var resVal=ws.echoInt(intVal);
 			var t2=(new Date()).getTime();
 			if(resVal!=intVal) throw "Wrong result";
-			pfxsoapPrint("echoInt",(t2-t1));
+			consolePrint("echoInt",(t2-t1));
 		} catch(ex) {
 			var t2=(new Date()).getTime();
-			pfxsoapPrint("echoInt",(t2-t1),ex);
+			consolePrint("echoInt",(t2-t1),ex);
+		}
+		
+		//echoIntObj
+		var t1=(new Date()).getTime();
+		try {
+			var intVal=parseInt(1);
+			var resVal=ws.echoIntObj(intVal);
+			var t2=(new Date()).getTime();
+			if(resVal!=intVal) throw "Wrong result";
+			consolePrint("echoIntObj",(t2-t1));
+		} catch(ex) {
+			var t2=(new Date()).getTime();
+			consolePrint("echoIntObj",(t2-t1),ex);
 		}
 
 		//echoIntArray
 		t1=(new Date()).getTime();
 		try {
 			var intVals=new Array(1,2);
-			var resVals=wsType.echoIntArray(intVals);
+			var resVals=ws.echoIntArray(intVals);
 			var t2=(new Date()).getTime();
 			if(!arrayEquals(intVals,resVals)) throw "Wrong result";
-			pfxsoapPrint("echoIntArray",(t2-t1));
+			consolePrint("echoIntArray",(t2-t1));
 		} catch(ex) {
 			var t2=(new Date()).getTime();
-			pfxsoapPrint("echoIntArray",(t2-t1),ex);
+			consolePrint("echoIntArray",(t2-t1),ex);
 		}
 		
 		//echoLong
 		t1=(new Date()).getTime();
 		try {
 			var longVal=parseInt(2);
-			var resVal=wsType.echoLong(longVal);
+			var resVal=ws.echoLong(longVal);
 			var t2=(new Date()).getTime();
 			if(resVal!=longVal) throw "Wrong result";
-			pfxsoapPrint("echoLong",(t2-t1));
+			consolePrint("echoLong",(t2-t1));
 		} catch(ex) {
 			var t2=(new Date()).getTime();
-			pfxsoapPrint("echoLong",(t2-t1),ex);
+			consolePrint("echoLong",(t2-t1),ex);
+		}
+		
+		//echoLongObj
+		t1=(new Date()).getTime();
+		try {
+			var longVal=parseInt(2);
+			var resVal=ws.echoLongObj(longVal);
+			var t2=(new Date()).getTime();
+			if(resVal!=longVal) throw "Wrong result";
+			consolePrint("echoLongObj",(t2-t1));
+		} catch(ex) {
+			var t2=(new Date()).getTime();
+			consolePrint("echoLongObj",(t2-t1),ex);
+		}
+		
+		//echoLongArray
+		t1=(new Date()).getTime();
+		try {
+			var longVals=new Array(1,2);
+			var resVals=ws.echoLongArray(longVals);
+			var t2=(new Date()).getTime();
+			if(!arrayEquals(longVals,resVals)) throw "Wrong result";
+			consolePrint("echoLongArray",(t2-t1));
+		} catch(ex) {
+			var t2=(new Date()).getTime();
+			consolePrint("echoLongArray",(t2-t1),ex);
 		}
 		
 		//echoFloat
 		t1=(new Date()).getTime();
 		try {
 			var floatVal=parseFloat(2.1);
-			var resVal=wsType.echoFloat(floatVal);
+			var resVal=ws.echoFloat(floatVal);
 			var t2=(new Date()).getTime();
 			if(resVal!=floatVal) throw "Wrong result";
-			pfxsoapPrint("echoFloat",(t2-t1));
+			consolePrint("echoFloat",(t2-t1));
 		} catch(ex) {
 			var t2=(new Date()).getTime();
-			pfxsoapPrint("echoFloat",(t2-t1),ex);
+			consolePrint("echoFloat",(t2-t1),ex);
+		}
+		
+		//echoFloatObj
+		t1=(new Date()).getTime();
+		try {
+			var floatVal=parseFloat(2.1);
+			var resVal=ws.echoFloatObj(floatVal);
+			var t2=(new Date()).getTime();
+			if(resVal!=floatVal) throw "Wrong result";
+			consolePrint("echoFloatObj",(t2-t1));
+		} catch(ex) {
+			var t2=(new Date()).getTime();
+			consolePrint("echoFloatObj",(t2-t1),ex);
 		}
 		
 		//echoFloatArray
 		t1=(new Date()).getTime();
 		try {
 			var floatVals=new Array(1.1,2.2);
-			var resVals=wsType.echoFloatArray(floatVals);
+			var resVals=ws.echoFloatArray(floatVals);
 			var t2=(new Date()).getTime();
 			if(!arrayEquals(floatVals,resVals)) throw "Wrong result";
-			pfxsoapPrint("echoFloatArray",(t2-t1));
+			consolePrint("echoFloatArray",(t2-t1));
 		} catch(ex) {
 			var t2=(new Date()).getTime();
-			pfxsoapPrint("echoFloatArray",(t2-t1),ex);
+			consolePrint("echoFloatArray",(t2-t1),ex);
 		}
 		
 		//echoString
 		t1=(new Date()).getTime();
 		try {
 			var strVal="test";
-			var resVal=wsType.echoString(strVal);
+			var resVal=ws.echoString(strVal);
 			var t2=(new Date()).getTime();
 			if(resVal!=strVal) throw "Wrong result";
-			pfxsoapPrint("echoString",(t2-t1));
+			consolePrint("echoString",(t2-t1));
 		} catch(ex) {
 			var t2=(new Date()).getTime();
-   		pfxsoapPrint("echoString",(t2-t1),ex);
+   		consolePrint("echoString",(t2-t1),ex);
    	}
    	
    	//echoStringArray
 		t1=(new Date()).getTime();
 		try {
 			var strVals=new Array("aaa","bbb");
-			var resVals=wsType.echoStringArray(strVals);
+			var resVals=ws.echoStringArray(strVals);
 			var t2=(new Date()).getTime();
 			if(!arrayEquals(strVals,resVals)) throw "Wrong result";
-			pfxsoapPrint("echoStringArray",(t2-t1));
+			consolePrint("echoStringArray",(t2-t1));
 		} catch(ex) {
 			var t2=(new Date()).getTime();
-			pfxsoapPrint("echoStringArray",(t2-t1),ex);
+			consolePrint("echoStringArray",(t2-t1),ex);
 		}
 		
 		//echoStringMultiArray
 		t1=(new Date()).getTime();
 		try {
 			var strVals=new Array(new Array("aaa","bbb"),new Array("ccc","ddd"));
-			var resVals=wsType.echoStringMultiArray(strVals);
+			var resVals=ws.echoStringMultiArray(strVals);
 			var t2=(new Date()).getTime();
 			if(!arrayEquals(strVals,resVals)) throw "Wrong result";
-			pfxsoapPrint("echoStringMultiArray",(t2-t1));
+			consolePrint("echoStringMultiArray",(t2-t1));
 		} catch(ex) {
 			var t2=(new Date()).getTime();
-			pfxsoapPrint("echoStringMultiArray",(t2-t1),ex);
+			consolePrint("echoStringMultiArray",(t2-t1),ex);
 		}
    	
    	//echoBoolean
 		t1=(new Date()).getTime();
 		try {
 			var boolVal=true;
-			var resVal=wsType.echoBoolean(boolVal);
+			var resVal=ws.echoBoolean(boolVal);
 			var t2=(new Date()).getTime();
 			if(resVal!=boolVal) throw "Wrong result";
-			pfxsoapPrint("echoBoolean",(t2-t1));
+			consolePrint("echoBoolean",(t2-t1));
 		} catch(ex) {
 			var t2=(new Date()).getTime();
-   		pfxsoapPrint("echoBoolean",(t2-t1),ex);
+   		consolePrint("echoBoolean",(t2-t1),ex);
+   	}
+   	
+   	//echoBooleanObj
+		t1=(new Date()).getTime();
+		try {
+			var boolVal=true;
+			var resVal=ws.echoBooleanObj(boolVal);
+			var t2=(new Date()).getTime();
+			if(resVal!=boolVal) throw "Wrong result";
+			consolePrint("echoBooleanObj",(t2-t1));
+		} catch(ex) {
+			var t2=(new Date()).getTime();
+   		consolePrint("echoBooleanObj",(t2-t1),ex);
    	}
    	
    	//echoBooleanArray
 		t1=(new Date()).getTime();
 		try {
 			var boolVals=new Array(true,false);
-			var resVals=wsType.echoBooleanArray(boolVals);
+			var resVals=ws.echoBooleanArray(boolVals);
 			var t2=(new Date()).getTime();
 			if(!arrayEquals(boolVals,resVals)) throw "Wrong result";		
-			pfxsoapPrint("echoBooleanArray",(t2-t1));
+			consolePrint("echoBooleanArray",(t2-t1));
 		} catch(ex) {
 			var t2=(new Date()).getTime();
-			pfxsoapPrint("echoBooleanArray",(t2-t1),ex);
+			consolePrint("echoBooleanArray",(t2-t1),ex);
 		}
-		
-		//echoBooleanObject
-		t1=(new Date()).getTime();
-		try {
-			var boolVal=true;
-			var resVal=wsType.echoBooleanObject(boolVal);
-			var t2=(new Date()).getTime();
-			if(resVal!=boolVal) throw "Wrong result";
-			pfxsoapPrint("echoBooleanObject",(t2-t1));
-		} catch(ex) {
-			var t2=(new Date()).getTime();
-   		pfxsoapPrint("echoBooleanObject",(t2-t1),ex);
-   	}
 
    	//echoDate
 		t1=(new Date()).getTime();
 		try {
 			var dateVal=new Date();
-			var resVal=wsType.echoDate(dateVal);
+			var resVal=ws.echoDate(dateVal);
 			var t2=(new Date()).getTime();
 			if(!equals(resVal,dateVal)) throw "Wrong result";
-			pfxsoapPrint("echoDate",(t2-t1));
+			consolePrint("echoDate",(t2-t1));
 		} catch(ex) {
 			var t2=(new Date()).getTime();
-   		pfxsoapPrint("echoDate",(t2-t1),ex);
+   		consolePrint("echoDate",(t2-t1),ex);
    	}
 
    	//echoDateArray
 		t1=(new Date()).getTime();
 		try {
 			var dateVals=new Array(new Date(),new Date());
-			var resVals=wsType.echoDateArray(dateVals);
+			var resVals=ws.echoDateArray(dateVals);
 			var t2=(new Date()).getTime();
 			if(!arrayEquals(dateVals,resVals)) throw "Wrong result";		
-			pfxsoapPrint("echoDateArray",(t2-t1));
+			consolePrint("echoDateArray",(t2-t1));
 		} catch(ex) {
 			var t2=(new Date()).getTime();
-			pfxsoapPrint("echoDateArray",(t2-t1),ex);
+			consolePrint("echoDateArray",(t2-t1),ex);
 		}
 
 		//echoDataBean
@@ -277,13 +316,13 @@ function pfxsoapCall() {
 			bean["name"]="TestBean";
 			bean["children"]=new Array();
 			bean["boolVal"]=true;
-			var resBean=wsType.echoDataBean(bean);
+			var resBean=ws.echoDataBean(bean);
 			var t2=(new Date()).getTime();
 			if(!equals(resBean,bean)) throw "Wrong result";
-			pfxsoapPrint("echoDataBean",(t2-t1));
+			consolePrint("echoDataBean",(t2-t1));
 		} catch(ex) {
 			var t2=(new Date()).getTime();
-   		pfxsoapPrint("echoDataBean",(t2-t1),ex);
+   		consolePrint("echoDataBean",(t2-t1),ex);
    	}	
    
    	//echoDataBeanArray
@@ -311,16 +350,17 @@ function pfxsoapCall() {
 			bean3["children"]=new Array(bean1,bean2);
 			bean3["boolVal"]=true;
 			var beans=new Array(bean3);
-			var resBeans=wsType.echoDataBeanArray(beans);
+			var resBeans=ws.echoDataBeanArray(beans);
 			var t2=(new Date()).getTime();
 			if(!equals(resBeans,beans)) throw "Wrong result";
-			pfxsoapPrint("echoDataBeanArray",(t2-t1));
+			consolePrint("echoDataBeanArray",(t2-t1));
 		} catch(ex) {
 			var t2=(new Date()).getTime();
-   		pfxsoapPrint("echoDataBeanArray",(t2-t1),ex);
+   		consolePrint("echoDataBeanArray",(t2-t1),ex);
    	}	
    	
    	//echoElement
+   	/*
    	t1=(new Date()).getTime();
    	try {
    		var doc=null;
@@ -340,22 +380,21 @@ function pfxsoapCall() {
          var sub=doc.createElement("foo");
          elem.appendChild(sub);
          sub.setAttribute("id","dafdfd");
-         var txt=doc.createTextNode("asdfghjklöä");
+         var txt=doc.createTextNode("asdfghjkl??");
          sub.appendChild(txt);
-			var resElem=wsType.echoElement(elem);
+			var resElem=ws.echoElement(elem);
 			var t2=(new Date()).getTime();
 			if(!elementEquals(resElem,elem)) throw "Wrong result";
-			pfxsoapPrint("echoElement",(t2-t1));
+			consolePrint("echoElement",(t2-t1));
 		} catch(ex) {
 			var t2=(new Date()).getTime();
-   		pfxsoapPrint("echoElement",(t2-t1),ex);
+   		consolePrint("echoElement",(t2-t1),ex);
    	}
+   	*/
    	
    	var total2=(new Date()).getTime();
-		pfxsoapPrintTime((total2-total1));	
-		
-			equals(null,null);
-			equals(undefined,undefined);
-			equals(2,2);
+   	
+   	timer.stop();
+   	printTime(timer.getTime());
 
 }

@@ -1,12 +1,26 @@
 /*
- * de.schlund.pfixcore.webservice.WebServiceServlet
+ * This file is part of PFIXCORE.
+ *
+ * PFIXCORE is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * PFIXCORE is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with PFIXCORE; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
  */
+
 package de.schlund.pfixcore.webservice;
 
 import java.io.BufferedInputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
@@ -16,7 +30,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.Iterator;
-import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -25,16 +38,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerConfigurationException;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMResult;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.sax.SAXTransformerFactory;
-import javax.xml.transform.sax.TransformerHandler;
-import javax.xml.transform.stream.StreamResult;
-import javax.xml.transform.stream.StreamSource;
 
 import org.apache.axis.AxisEngine;
 import org.apache.axis.AxisFault;
@@ -44,29 +47,18 @@ import org.apache.axis.description.ServiceDesc;
 import org.apache.axis.transport.http.AxisServlet;
 import org.apache.log4j.Category;
 import org.apache.log4j.Logger;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
-import org.xml.sax.XMLReader;
-import org.xml.sax.helpers.DefaultHandler;
-import org.xml.sax.helpers.XMLReaderFactory;
 
-import de.schlund.pfixcore.webservice.config.ConfigProperties;
 import de.schlund.pfixcore.webservice.config.Configuration;
+import de.schlund.pfixcore.webservice.config.ConfigurationReader;
 import de.schlund.pfixcore.webservice.config.GlobalServiceConfig;
 import de.schlund.pfixcore.webservice.config.ServiceConfig;
 import de.schlund.pfixcore.webservice.fault.Fault;
 import de.schlund.pfixcore.webservice.fault.FaultHandler;
-import de.schlund.pfixcore.webservice.monitor.Monitor;
+import de.schlund.pfixcore.webservice.jsonrpc.JSONRPCProcessor;
 import de.schlund.pfixcore.webservice.monitor.MonitorHistory;
 import de.schlund.pfixcore.webservice.monitor.MonitorRecord;
-import de.schlund.pfixcore.workflow.Context;
-import de.schlund.pfixcore.workflow.context.SessionContextImpl;
 import de.schlund.pfixxml.PathFactory;
-import de.schlund.pfixxml.config.BuildTimeProperties;
-import de.schlund.pfixxml.config.CustomizationHandler;
-import de.schlund.pfixxml.config.XMLPropertiesUtil;
 import de.schlund.pfixxml.loader.AppLoader;
-import de.schlund.pfixxml.util.TransformerHandlerAdapter;
 
 /**
  * WebServiceServlet.java 
@@ -75,19 +67,20 @@ import de.schlund.pfixxml.util.TransformerHandlerAdapter;
  * 
  * @author mleidig
  */
-public class WebServiceServlet extends AxisServlet {
+public class WebServiceServlet extends AxisServlet implements ServiceProcessor {
 
     private Category LOG=Logger.getLogger(getClass().getName());
     private boolean DEBUG=LOG.isDebugEnabled();
     
-    private final static String WS_CONF_NS = "http://pustefix.sourceforge.net/wsconfig200401";
-    private final static String CUS_NS = "http://www.schlund.de/pustefix/customize";
-    
-    private WebServiceContext wsc;
+    private static Object initLock=new Object();
+    private ServiceRuntime runtime;
+   
+   
     private ClassLoader currentLoader;
     
-    private static ThreadLocal currentFault=new ThreadLocal();
-    private static ThreadLocal currentRequest=new ThreadLocal();
+    private static ThreadLocal<Fault> currentFault=new ThreadLocal<Fault>();
+    private static ThreadLocal<ServiceRequest> currentRequest=new ThreadLocal<ServiceRequest>();
+    private static ThreadLocal<ServiceResponse> currentResponse=new ThreadLocal<ServiceResponse>();
     
     public static void setCurrentFault(Fault fault) {
         currentFault.set(fault);
@@ -97,14 +90,22 @@ public class WebServiceServlet extends AxisServlet {
         return (Fault)currentFault.get();
     }
     
-    public static void setCurrentRequest(HttpServletRequest request) {
+    public static void setCurrentRequest(ServiceRequest request) {
         currentRequest.set(request);
     }
     
-    public static HttpServletRequest getCurrentRequest() {
-        return (HttpServletRequest)currentRequest.get();
+    public static ServiceRequest getCurrentRequest() {
+        return (ServiceRequest)currentRequest.get();
     }
-
+    
+    public static void setCurrentResponse(ServiceResponse response) {
+        currentResponse.set(response);
+    }
+    
+    public static ServiceResponse getCurrentResponse() {
+        return (ServiceResponse)currentResponse.get();
+    }
+    
     public void init(ServletConfig config) throws ServletException {
     	AppLoader loader=AppLoader.getInstance();
     	if(loader.isEnabled()) {
@@ -114,101 +115,25 @@ public class WebServiceServlet extends AxisServlet {
             currentLoader=newLoader;
     	}
         super.init(config);
-        ArrayList al = new ArrayList();
-
-        // Create temporary files with global properties
-        String common = config.getInitParameter(Constants.PROP_COMMON_FILE);
-        File tempFile = null;
-        if (common != null) {
-            File commonFile = PathFactory.getInstance().createPath(common).resolve();
-            Properties globalProps;
-            try {
-                globalProps = XMLPropertiesUtil.loadPropertiesFromXMLFile(commonFile);
-                tempFile = File.createTempFile("pfixglobal", ".prop");
-                globalProps.store(new FileOutputStream(tempFile), "Automatically generated for webservices");
-            } catch (SAXException e) {
-                // Log and ignore
-                tempFile = null;
-                LOG.warn("Ignoring common properties file " + commonFile.getAbsolutePath());
-            } catch (IOException e) {
-                // Log and ignore
-                tempFile = null;
-                LOG.warn("Ignoring common properties file " + commonFile.getAbsolutePath());
-            }
-        }
-        if (tempFile != null) {
-            al.add(tempFile);
-        }
-        
-        File tempFile2 = null;
-        String servlet = config.getInitParameter(Constants.PROP_SERVLET_FILE);
-        if (servlet != null) {
-            File servletFile = PathFactory.getInstance().createPath(servlet).resolve();
-
-            // Transform XML, creating temporary property file
-            XMLReader xreader;
-            try {
-                xreader = XMLReaderFactory.createXMLReader();
-            } catch (SAXException e) {
-                throw new ServletException("Could not create XMLReader", e);
-            }
-            TransformerFactory tf = SAXTransformerFactory.newInstance();
-            if (tf.getFeature(SAXTransformerFactory.FEATURE)) {
-                SAXTransformerFactory stf = (SAXTransformerFactory) tf;
-                TransformerHandler th;
-                try {
-                    th = stf.newTransformerHandler();
-                } catch (TransformerConfigurationException e) {
-                    throw new RuntimeException(
-                            "Failed to configure TransformerFactory!", e);
-                }
-                DOMResult dr = new DOMResult();
-                try {
-                    tempFile2 = File.createTempFile("webservice", ".prop");
-                } catch (IOException e) {
-                    throw new ServletException("Could not create temporary file", e);
-                }
-                StreamResult sr = new StreamResult(tempFile2);
-                th.setResult(dr);
-                DefaultHandler dh = new TransformerHandlerAdapter(th);
-                DefaultHandler cushandler = new CustomizationHandler(dh, WS_CONF_NS, CUS_NS);
-                xreader.setContentHandler(cushandler);
-                xreader.setDTDHandler(cushandler);
-                xreader.setErrorHandler(cushandler);
-                xreader.setEntityResolver(cushandler);
-                try {
-                    xreader.parse(new InputSource(new FileInputStream(servletFile)));
-                    Transformer trans = tf.newTransformer(new StreamSource(
-                            PathFactory.getInstance().createPath(
-                                    "core/build/create_webservice.xsl").resolve()));
-                    trans.setParameter("docroot", PathFactory.getInstance().createPath("").resolve().getAbsolutePath());
-                    trans.transform(new DOMSource(dr.getNode()), sr);
-                } catch (Exception e) {
-                    throw new ServletException("Error on reading config file " + servletFile.getAbsolutePath(), e);
-                }
-            } else {
-                throw new ServletException(
-                        "Could not get instance of SAXTransformerFactory!");
-            }
-            
-            al.add(tempFile2);
-        }
-
-        try {
-            File[] propFiles=new File[al.size()];
-            for(int i=0;i<al.size();i++) propFiles[i]=(File)al.get(i);
-            ConfigProperties cfgProps=new ConfigProperties(propFiles);
-            Configuration srvConf=new Configuration(cfgProps);
-            wsc=new WebServiceContext(srvConf);
-            getServletContext().setAttribute(wsc.getClass().getName(),wsc);
-            GlobalServiceConfig globConf=wsc.getConfiguration().getGlobalServiceConfig();
-            if(globConf.getMonitoringEnabled()) {
-                Monitor monitor=new Monitor(globConf.getMonitoringHistorySize(),globConf.getMonitoringScope());
-                wsc.setAttribute(Monitor.class.getName(),monitor);
-            }
-        } catch(Exception x) {
-            LOG.error("Can't get web service configuration",x);
-            throw new ServletException("Can't get web service configuration",x);
+        synchronized(initLock) {
+        	runtime=(ServiceRuntime)getServletContext().getAttribute(ServiceRuntime.class.getName());
+        	if(runtime==null) {
+        		String servletProp=config.getInitParameter(Constants.PROP_SERVLET_FILE);
+        		if(servletProp!=null) {
+        			File wsConfFile=PathFactory.getInstance().createPath(servletProp).resolve();
+        			try {
+        				Configuration srvConf=ConfigurationReader.read(wsConfFile);
+        				runtime=new ServiceRuntime();
+        				runtime.setConfiguration(srvConf);
+        				runtime.addServiceProcessor(Constants.PROTOCOL_TYPE_SOAP,this);
+        				runtime.addServiceProcessor(Constants.PROTOCOL_TYPE_JSONRPC,new JSONRPCProcessor());
+        				getServletContext().setAttribute(ServiceRuntime.class.getName(),runtime);
+        			} catch(Exception x) {
+        				LOG.error("Error while initializing ServiceRuntime",x);
+        				throw new ServletException("Error while initializing ServiceRuntime",x);
+        			}
+        		} else LOG.error("No webservice configuration found!!!");
+        	}
         }
     }
     
@@ -234,6 +159,16 @@ public class WebServiceServlet extends AxisServlet {
     }
  
     public void doPost(HttpServletRequest req,HttpServletResponse res) throws ServletException,IOException {
+    	try {
+    		runtime.process(req,res);
+    	} catch(ServiceException x) {
+    		throw new ServletException("Error while processing webservice request.",x);
+    	}
+    }
+    
+    public void init(ServiceRuntime runtime) {}
+    
+    public void process(ServiceRequest serviceReq,ServiceResponse serviceRes,ServiceRegistry registry) throws ServiceException {
         AppLoader loader=AppLoader.getInstance();
         if(loader.isEnabled()) {
             ClassLoader newLoader=loader.getAppClassLoader();
@@ -248,72 +183,48 @@ public class WebServiceServlet extends AxisServlet {
             		axisServer=null;
             		getServletContext().removeAttribute(ATTR_AXIS_ENGINE);
             		getServletContext().removeAttribute(getServletName() + ATTR_AXIS_ENGINE);
-            		init();
+            		try {
+            			init();
+            		} catch(ServletException x) {
+            			throw new RuntimeException("Error while reloading Axis",x);
+            		}
             	}
             }
         }
+          
+        HttpServletRequest req=(HttpServletRequest)serviceReq.getUnderlyingRequest();
+        HttpServletResponse res=(HttpServletResponse)serviceRes.getUnderlyingResponse();
         
         try {
         	setCurrentFault(null);
-        	setCurrentRequest(req);
-        
-        	String serviceName=getServiceName(req);
-        	Configuration config=wsc.getConfiguration();
-        	ServiceConfig srvConf=config.getServiceConfig(serviceName);
-        	HttpSession session=req.getSession(false);
-        	SessionContextImpl pfxContext=null;
-        	if(session!=null) pfxContext = (SessionContextImpl) session.getAttribute(srvConf.getContextName()+"__CONTEXT__");
-        
-        	if(DEBUG) LOG.debug("Process webservice request: "+req.getPathInfo());
-        	if(req.getHeader(Constants.HEADER_SOAP_ACTION)==null && req.getParameter(Constants.PARAM_SOAP_MESSAGE)!=null) {
-        		if(DEBUG) LOG.debug("no SOAPAction header, but soapmessage parameter -> iframe method");
+        	setCurrentRequest(serviceReq);
+        	setCurrentResponse(serviceRes);
+        	
+          	if(req.getHeader(Constants.HEADER_SOAP_ACTION)==null && req.getParameter(Constants.PARAM_SOAP_MESSAGE)!=null) {
+        		if(LOG.isDebugEnabled()) LOG.debug("no SOAPAction header, but soapmessage parameter -> iframe method");
         		HttpServletResponse response=res;
         		String reqID=req.getParameter(Constants.PARAM_REQUEST_ID);
-        		if(DEBUG) if(reqID!=null) LOG.debug("contains requestID parameter: "+reqID);
+        		if(LOG.isDebugEnabled()) if(reqID!=null) LOG.debug("contains requestID parameter: "+reqID);
         		String insPI=req.getParameter("insertpi");
         		if(insPI!=null) response=new InsertPIResponseWrapper(res);
-        		if(DEBUG) if(insPI!=null) LOG.debug("contains insertpi parameter");
-        		if(pfxContext!=null&&srvConf.doSynchronizeOnContext()) {
-        			synchronized(pfxContext) {
-        				super.doPost(new SOAPActionRequestWrapper(req),response);
-        			}
-        		} else {
-        			super.doPost(new SOAPActionRequestWrapper(req),response);
-        		}
+        		if(LOG.isDebugEnabled()) if(insPI!=null) LOG.debug("contains insertpi parameter");
+        		super.doPost(new SOAPActionRequestWrapper(req),response);
         	} else if(req.getHeader(Constants.HEADER_SOAP_ACTION)!=null) {
-        		if(DEBUG) LOG.debug("found SOAPAction header, but no soapmessage parameter -> xmlhttprequest version");
+        		if(LOG.isDebugEnabled()) LOG.debug("found SOAPAction header, but no soapmessage parameter -> xmlhttprequest version");
         		String reqID=req.getHeader(Constants.HEADER_REQUEST_ID);
-        		if(DEBUG) if(reqID!=null) LOG.debug("contains requestID header: "+reqID);
+        		if(LOG.isDebugEnabled()) if(reqID!=null) LOG.debug("contains requestID header: "+reqID);
         		if(reqID!=null) res.setHeader(Constants.HEADER_REQUEST_ID,reqID);
-        		if(pfxContext!=null&&srvConf.doSynchronizeOnContext()) {
-        			synchronized(pfxContext) {
-        				super.doPost(req,res);
-        			}
-        		} else {
-        			super.doPost(req,res);
-        		}
-        	} else {
-        		if(DEBUG) LOG.debug("no SOAPAction header, no soapmessage parameter -> bad request");
-        		sendBadRequest(req,res,res.getWriter());
-        	}
-        } catch(Throwable t) {
-        	LOG.warn("Error while processing webservice request.",t);
-        	throw new ServletException("Error while processing webservice request.",t);
+        		super.doPost(req,res);
+        	} 
+        } catch(IOException x) {
+        	throw new ServiceException("IOException during service processing.",x);
+        } catch(ServletException x) {
+        	throw new ServiceException("ServletException during service processing.",x);
         } finally {
         	setCurrentFault(null);
         	setCurrentRequest(null);
         }
-    }
-    
-    private static String getServiceName(HttpServletRequest req) {
-        String service=req.getPathInfo();
-        if(service==null) throw new IllegalArgumentException("No service name found.");
-        int ind=service.lastIndexOf('/');
-        if(ind<0) throw new IllegalArgumentException("No service name found.");
-        else {
-            if(!((service.length()-ind)>1)) throw new IllegalArgumentException("No service name found.");
-            return service.substring(ind+1);
-        }
+    	
     }
     
     public void doGet(HttpServletRequest req,HttpServletResponse res) throws ServletException,IOException {
@@ -323,7 +234,7 @@ public class WebServiceServlet extends AxisServlet {
         if(qs==null) {
             sendBadRequest(req,res,writer);
         } else if(qs.equalsIgnoreCase("WSDL")) {
-            if(wsc.getConfiguration().getGlobalServiceConfig().getWSDLSupportEnabled()) {
+            if(runtime.getConfiguration().getGlobalServiceConfig().getWSDLSupportEnabled()) {
                 String pathInfo=req.getPathInfo();
                 String serviceName;
                 if (pathInfo.startsWith("/")) {
@@ -331,14 +242,14 @@ public class WebServiceServlet extends AxisServlet {
                 } else {
                     serviceName=pathInfo;
                 }
-                ServiceConfig conf=wsc.getConfiguration().getServiceConfig(serviceName);
+                ServiceConfig conf=runtime.getConfiguration().getServiceConfig(serviceName);
                 String type=conf.getSessionType();
                 if(type.equals(Constants.SESSION_TYPE_SERVLET) && session==null) {
                     sendForbidden(req,res,writer);
                     return;
                 }
                 res.setContentType("text/xml");
-                String repoPath=wsc.getConfiguration().getGlobalServiceConfig().getWSDLRepository();
+                String repoPath=runtime.getConfiguration().getGlobalServiceConfig().getWSDLRepository();
                 InputStream in=getServletContext().getResourceAsStream(repoPath+"/"+serviceName+".wsdl");
                 if(in!=null) {
                     if(type.equals(Constants.SESSION_TYPE_SERVLET)) {
@@ -370,11 +281,11 @@ public class WebServiceServlet extends AxisServlet {
                 } else sendError(req,res,writer);
             } else sendForbidden(req,res,writer);
         } else if(qs.equalsIgnoreCase("monitor")) {
-            if(session!=null && wsc.getConfiguration().getGlobalServiceConfig().getMonitoringEnabled()) {
+            if(session!=null && runtime.getConfiguration().getGlobalServiceConfig().getMonitoringEnabled()) {
             	sendMonitor(req,res,writer);
             } else sendForbidden(req,res,writer);
         } else if(qs.equalsIgnoreCase("admin")) {
-            if(session!=null && wsc.getConfiguration().getGlobalServiceConfig().getAdminEnabled()) {
+            if(session!=null && runtime.getConfiguration().getGlobalServiceConfig().getAdminEnabled()) {
                 sendAdmin(req,res,writer);
             } else sendForbidden(req,res,writer);
         } else sendBadRequest(req,res,writer);
@@ -383,7 +294,8 @@ public class WebServiceServlet extends AxisServlet {
     protected void processAxisFault(AxisFault axisFault) {
         Fault fault=getCurrentFault();
         if(fault==null) {
-        	HttpServletRequest req=getCurrentRequest();
+        	ServiceRequest serviceReq=getCurrentRequest();
+        	HttpServletRequest req=(HttpServletRequest)serviceReq.getUnderlyingRequest();
         	LOG.warn(dumpRequest(req,true));
         	Throwable t=axisFault.getCause();
             if(t!=null) LOG.warn(t,t);
@@ -391,7 +303,7 @@ public class WebServiceServlet extends AxisServlet {
         	Throwable t=axisFault.getCause();
         	if(t!=null) LOG.error("Exception while processing request",t);
         	String serviceName=fault.getServiceName();
-        	Configuration config=wsc.getConfiguration();
+        	Configuration config=runtime.getConfiguration();
         	ServiceConfig serviceConfig=config.getServiceConfig(serviceName);
         	FaultHandler faultHandler=serviceConfig.getFaultHandler();
         	if(faultHandler==null) {
@@ -454,7 +366,7 @@ public class WebServiceServlet extends AxisServlet {
         
         //TODO: source out html
         HttpSession session=req.getSession(false);
-        if(session!=null && wsc.getConfiguration().getGlobalServiceConfig().getAdminEnabled()) {
+        if(session!=null && runtime.getConfiguration().getGlobalServiceConfig().getAdminEnabled()) {
             res.setStatus(HttpURLConnection.HTTP_OK);
             res.setContentType("text/html");
             writer.println("<html><head><title>Web service admin</title>"+getJS()+getCSS()+"</head><body>");
@@ -498,12 +410,10 @@ public class WebServiceServlet extends AxisServlet {
     
     public void sendMonitor(HttpServletRequest req,HttpServletResponse res,PrintWriter writer) {
         //TODO: source out html
-        Monitor monitor=(Monitor)wsc.getAttribute(Monitor.class.getName());
-        if(monitor!=null && wsc.getConfiguration().getGlobalServiceConfig().getMonitoringEnabled()) {
+        if(runtime.getConfiguration().getGlobalServiceConfig().getMonitoringEnabled()) {
             res.setStatus(HttpURLConnection.HTTP_OK);
             res.setContentType("text/html");
-            String ip=req.getRemoteAddr();
-            MonitorHistory history=monitor.getMonitorHistory(ip);
+            MonitorHistory history=runtime.getMonitor().getMonitorHistory(req);
             SimpleDateFormat format=new SimpleDateFormat("MM-dd-yyyy HH:mm:ss");
             writer.println("<html><head><title>Web service monitor</title>"+getJS()+getCSS()+"</head><body>");
             writer.println("<div class=\"title\">Web service monitor</div><div class=\"content\">");
@@ -512,6 +422,7 @@ public class WebServiceServlet extends AxisServlet {
             writer.println("<th align=\"left\">Start</th>");
             writer.println("<th align=\"left\">Time (in ms)</th>");
             writer.println("<th align=\"left\">Service</th>");
+            writer.println("<th align=\"left\">Protocol</th>");
             writer.println("</tr>");
             MonitorRecord[] records=history.getRecords();
             for(int i=0;i<records.length;i++) {
@@ -522,10 +433,11 @@ public class WebServiceServlet extends AxisServlet {
                 writer.println("<tr name=\"row_entry\" class=\""+styleClass+"\" onclick=\"toggleDetails(this,'"+id+"')\">");
                 writer.println("<td align=\"left\">"+format.format(new Date(record.getStartTime()))+"</td>");
                 writer.println("<td align=\"right\">"+record.getTime()+"</td>");
-                writer.println("<td align=\"left\">"+record.getTarget()+"</td>");
+                writer.println("<td align=\"left\">"+record.getService()+"</td>");
+                writer.println("<td align=\"left\">"+record.getProtocol()+"</td>");
                 writer.println("</tr>");
             }
-            writer.println("</table");
+            writer.println("</table>");
             for(int i=0;i<records.length;i++) {
                 MonitorRecord record=records[i];
                 String id="entry"+i;
@@ -534,13 +446,18 @@ public class WebServiceServlet extends AxisServlet {
                 writer.println("<div name=\"detail_entry\" id=\""+id+"\" style=\"display:"+display+"\">");
                 writer.println("<table width=\"100%\">");
                 writer.println("<tr>");
-                writer.println("<td><b>Request:</b><br/><textarea class=\"xml\">");
-                writer.println(record.getRequest());
-                writer.println("</textarea></td>");
-                writer.println("<td><b>Response:</b><br/><textarea class=\"xml\">");
-                writer.println(record.getResponse());
-                writer.println("</textarea></td>");
+                writer.println("<td width=\"50%\"><b>Request:</b><br/><div class=\"body\"><pre>");
+                String reqMsg=record.getRequestMessage();
+                if(reqMsg==null) reqMsg="Not available";
+                writer.println(htmlEscape(reqMsg));
+                writer.println("</pre></div></td>");
+                writer.println("<td width=\"50%\"><b>Response:</b><br/><div class=\"body\"><pre>");
+                String resMsg=record.getResponseMessage();
+                if(resMsg==null) resMsg="Not available";
+                writer.println(htmlEscape(resMsg));
+                writer.println("</pre></div></td>");
                 writer.println("</tr>");
+                
                 writer.println("</table>");
                 writer.println("</div");
             }
@@ -574,6 +491,13 @@ public class WebServiceServlet extends AxisServlet {
         return js;
     }
     
+    private String htmlEscape(String text) {
+    	text=text.replaceAll("&","&amp;");
+    	text=text.replaceAll("<","&lt;");
+    	text=text.replaceAll(">","&gt;");
+    	return text;
+    }
+    
     private String getCSS() {
         //TODO: source out css
         String css=
@@ -584,7 +508,8 @@ public class WebServiceServlet extends AxisServlet {
             "   table.overview td,th {padding-bottom:5pt;padding-right:15pt}" +
             "   table.overview tr.nosel {cursor:pointer;color:#000000;}" +
             "   table.overview tr.sel {cursor:pointer;color:#666666;}" +
-            "   textarea.xml {width:100%;height:400px}" +
+            "   div.body {width:100%;height:300px;overflow:auto;background-color:#FFFFFF;border:1px solid #000000;}" +
+            "   div.headers {width:100%;height:100px;overflow:auto;background-color:#FFFFFF;border:1px solid #000000;}" +
             "</style>";
         return css;
     }

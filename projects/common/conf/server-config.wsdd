@@ -11,15 +11,12 @@
   <parameter name="axis.sendMinimizedElements" value="true"/>
   
   <requestFlow>
-   <handler type="AuthHandler"/>
   </requestFlow>
   <responseFlow>
   </responseFlow>
  </globalConfiguration>
  
- <handler name="AuthHandler" type="java:de.schlund.pfixcore.webservice.handler.AuthenticationHandler"/>
- <handler name="LoggingHandler" type="java:de.schlund.pfixcore.webservice.handler.LoggingHandler"/>
- <handler name="MonitoringHandler" type="java:de.schlund.pfixcore.webservice.handler.MonitoringHandler"/>
+ <handler name="RecordingHandler" type="java:de.schlund.pfixcore.webservice.handler.RecordingHandler"/>
  <handler name="ErrorHandler" type="java:de.schlund.pfixcore.webservice.handler.ErrorHandler"/>
  
  <handler name="LocalResponder" type="java:org.apache.axis.transport.local.LocalResponder"/>
