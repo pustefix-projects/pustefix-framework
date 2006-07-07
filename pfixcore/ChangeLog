@@ -1,3 +1,11 @@
+2006-07-07  Sebastian Marsching  <sebastian.marsching@1und1.de>
+
+	* lib/ant-contrib-1.0b2.jar: 
+	* skel/build-skel.xml: 
+	Changed conversion tasks to exclude modules directory. Added a feature
+	to allow modules to distribute their own "build.xml" which will be run
+	after the module has been unpacked
+
 2006-07-06  Jens Lautenbacher  <jtl@schlund.de>
 
 	* src/de/schlund/pfixxml/ServletManager.java
