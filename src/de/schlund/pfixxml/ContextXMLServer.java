@@ -138,8 +138,7 @@ public class ContextXMLServer extends AbstractXMLServer {
 
             // Do a virtual request without any request parameters
             // to get an initial SPDocument
-            PfixServletRequest vpreq = new PfixServletRequest(VirtualHttpServletRequest.getVoidRequest(preq.getRequest()),
-                                                              getContextXMLServletConfig().getProperties());
+            PfixServletRequest vpreq = new PfixServletRequest(VirtualHttpServletRequest.getVoidRequest(preq.getRequest()), getContextXMLServletConfig().getProperties());
             spdoc = rcontext.handleRequest(vpreq);
 
             // Reset current scripted flow state
@@ -166,13 +165,18 @@ public class ContextXMLServer extends AbstractXMLServer {
                 // Create VM and run script
                 ScriptVM vm = new ScriptVM();
                 vm.setScript(script);
-                spdoc = vm.run(preq, spdoc, rcontext, info.getParams());
-                if (vm.isExitState()) {
-                    info.reset();
-                } else {
-                    info.setState(vm.saveVMState());
+                try {
+                    spdoc = vm.run(preq, spdoc, rcontext, info.getParams());
+                } finally {
+                    // Make sure this is done even if an error has occured
+                    if (vm.isExitState()) {
+                        info.reset();
+                    } else {
+                        info.setState(vm.saveVMState());
+                    }
                 }
             }
+
         } else if (info.isScriptRunning()) {
             // First handle user request, then use result document
             // as base for further processing
@@ -181,11 +185,14 @@ public class ContextXMLServer extends AbstractXMLServer {
             // Create VM and run script
             ScriptVM vm = new ScriptVM();
             vm.loadVMState(info.getState());
-            spdoc = vm.run(preq, spdoc, rcontext, info.getParams());
-            if (vm.isExitState()) {
-                info.reset();
-            } else {
-                info.setState(vm.saveVMState());
+            try {
+                spdoc = vm.run(preq, spdoc, rcontext, info.getParams());
+            } finally {
+                if (vm.isExitState()) {
+                    info.reset();
+                } else {
+                    info.setState(vm.saveVMState());
+                }
             }
         } else {
             // No scripted flow request
