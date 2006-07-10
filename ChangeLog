@@ -1,5 +1,8 @@
 2006-07-10  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
+	* stuff/migration-tool/src/do_migration.sh: 
+	Fixing classpath problems
+	
 	* src/de/schlund/pfixcore/scriptedflow/vm/ScriptVM.java (run): 
 	* src/de/schlund/pfixxml/ContextXMLServer.java (getDom): 
 	Backporting exception fix from trunk
