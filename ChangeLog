@@ -1,5 +1,8 @@
 2006-07-10  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
+	* stuff/migration-tool/src/do_migration.sh: 
+	Fixing classpath problems
+	
 	* src/de/schlund/pfixxml/ContextXMLServer.java (getDom): 
 	Moved check for VM exit state in finally block, so it is honored even
 	if an exception is thrown
