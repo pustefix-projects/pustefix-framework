@@ -89,6 +89,7 @@ public class ScriptVM {
 
         // Check whether a script has been loaded
         if (script == null) {
+            isRunning = false;
             throw new IllegalStateException(
                     "Script has to be loaded before running the machine");
         }
@@ -105,7 +106,15 @@ public class ScriptVM {
                 if (registerSPDoc != null) {
                     return registerSPDoc;
                 } else {
-                    return context.handleRequest(preq);
+                    SPDocument returndoc;
+                    try {
+                        returndoc = context.handleRequest(preq);
+                    } finally {
+                        // Make sure scripted flow is canceled on error
+                        isRunning = false;
+                    }
+                    isRunning = true;
+                    return returndoc;
                 }
                 
             } else if (instr instanceof SetVariableInstruction) {
@@ -128,6 +137,7 @@ public class ScriptVM {
                             continue mainloop;
                         }
                     }
+                    isRunning = false;
                     throw new RuntimeException(
                             "Jump references non-existing target!");
                 }
@@ -141,6 +151,7 @@ public class ScriptVM {
                         continue mainloop;
                     }
                 }
+                isRunning = false;
                 throw new RuntimeException(
                         "Jump references non-existing target!");
 
@@ -159,11 +170,18 @@ public class ScriptVM {
                     }
                     reqParams.put(key, rlist);
                 }
-                doVirtualRequest(in.getPagename(), reqParams, preq, context);
+                try {
+                    doVirtualRequest(in.getPagename(), reqParams, preq, context);
+                } finally {
+                    // Make sure scripted flow is canceled on error
+                    isRunning = false;
+                }
+                isRunning = true;
                 ip++;
                 continue;
 
             } else {
+                isRunning = false;
                 throw new RuntimeException(
                         "Found instruction not understood by the VM!");
             }
