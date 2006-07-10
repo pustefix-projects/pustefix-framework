@@ -153,23 +153,22 @@ public class ContextXMLServer extends AbstractXMLServer {
         ScriptedFlowInfo info = getScriptedFlowInfo(preq);
         if (preq.getRequestParam(PARAM_SCRIPTEDFLOW) != null && preq.getRequestParam(PARAM_SCRIPTEDFLOW).getValue() != null) {
             String scriptedFlowName = preq.getRequestParam(PARAM_SCRIPTEDFLOW).getValue();
-            
+
             // Do a virtual request without any request parameters
             // to get an initial SPDocument
-            PfixServletRequest vpreq = new PfixServletRequest(VirtualHttpServletRequest.getVoidRequest(preq.getRequest()),
-                                                              getContextXMLServletConfig().getProperties());
+            PfixServletRequest vpreq = new PfixServletRequest(VirtualHttpServletRequest.getVoidRequest(preq.getRequest()), getContextXMLServletConfig().getProperties());
             spdoc = context.handleRequest(vpreq);
-            
+
             // Reset current scripted flow state
             info.reset();
-            
+
             // Lookup script name
             Script script = getScriptedFlowByName(scriptedFlowName);
-            
+
             if (script != null) {
                 // Remember running script
                 info.isScriptRunning(true);
-                
+
                 // Get parameters for scripted flow:
                 // They have the form __scriptedflow.<name>=<value>
                 String[] paramNames = preq.getRequestParamNames();
@@ -184,36 +183,42 @@ public class ContextXMLServer extends AbstractXMLServer {
                 // Create VM and run script
                 ScriptVM vm = new ScriptVM();
                 vm.setScript(script);
-                spdoc = vm.run(preq, spdoc, context, info.getParams());
-                if (vm.isExitState()) {
-                    info.reset();
-                } else {
-                    info.setState(vm.saveVMState());
+                try {
+                    spdoc = vm.run(preq, spdoc, context, info.getParams());
+                } finally {
+                    if (vm.isExitState()) {
+                        info.reset();
+                    } else {
+                        info.setState(vm.saveVMState());
+                    }
                 }
             }
         } else if (info.isScriptRunning()) {
             // First handle user request, then use result document
             // as base for further processing
             spdoc = context.handleRequest(preq);
-            
+
             // Create VM and run script
             ScriptVM vm = new ScriptVM();
             vm.loadVMState(info.getState());
-            spdoc = vm.run(preq, spdoc, context, info.getParams());
-            if (vm.isExitState()) {
-                info.reset();
-            } else {
-                info.setState(vm.saveVMState());
+            try {
+                spdoc = vm.run(preq, spdoc, context, info.getParams());
+            } finally {
+                if (vm.isExitState()) {
+                    info.reset();
+                } else {
+                    info.setState(vm.saveVMState());
+                }
             }
         } else {
             // No scripted flow request
             // handle as usual
             spdoc = context.handleRequest(preq);
         }
-        
+
         return spdoc;
     }
-    
+
     private Script getScriptedFlowByName(String scriptedFlowName) throws Exception {
         ScriptedFlowConfig config = getContextXMLServletConfig().getScriptedFlowConfig();
         return config.getScript(scriptedFlowName);
@@ -252,15 +257,14 @@ public class ContextXMLServer extends AbstractXMLServer {
     private String makeContextName() {
         return servletname + CONTEXT_SUFFIX;
     }
-    
+
     private AppContext createContext() throws Exception {
         AppContext context = (AppContext) Class.forName(contextclassnname).newInstance();
         context.init(this.getContextXMLServletConfig().getContextConfig(), makeContextName());
         return context;
     }
 
-    protected void reloadServletConfig(File configFile,
-            Properties globalProperties) throws ServletException {
+    protected void reloadServletConfig(File configFile, Properties globalProperties) throws ServletException {
         try {
             this.config = ContextXMLServletConfig.readFromFile(configFile, globalProperties);
         } catch (SAXException e) {

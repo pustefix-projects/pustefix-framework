@@ -1,3 +1,9 @@
+2006-07-10  Sebastian Marsching  <sebastian.marsching@1und1.de>
+
+	* src/de/schlund/pfixcore/scriptedflow/vm/ScriptVM.java (run): 
+	* src/de/schlund/pfixxml/ContextXMLServer.java (getDom): 
+	Backporting exception fix from trunk
+
 2006-07-06  Jens Lautenbacher  <jtl@schlund.de>
 
 	* src/de/schlund/pfixxml/ServletManager.java
