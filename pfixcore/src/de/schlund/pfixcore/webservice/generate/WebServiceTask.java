@@ -155,7 +155,7 @@ public class WebServiceTask extends Task {
                         } catch (IOException e) {
                             throw new ServletException("Could not create temporary file", e);
                         }
-                        StreamResult sr = new StreamResult(tempFile);
+                        StreamResult sr = new StreamResult(new FileOutputStream(tempFile));
                         th.setResult(dr);
                         DefaultHandler dh = new TransformerHandlerAdapter(th);
                         DefaultHandler cushandler = new CustomizationHandler(dh, WS_CONF_NS, CUS_NS);
