@@ -167,7 +167,7 @@ public class WebServiceServlet extends AxisServlet {
                 } catch (IOException e) {
                     throw new ServletException("Could not create temporary file", e);
                 }
-                StreamResult sr = new StreamResult(tempFile2);
+                //StreamResult sr = new StreamResult(tempFile2);
                 th.setResult(dr);
                 DefaultHandler dh = new TransformerHandlerAdapter(th);
                 DefaultHandler cushandler = new CustomizationHandler(dh, WS_CONF_NS, CUS_NS);
@@ -181,7 +181,7 @@ public class WebServiceServlet extends AxisServlet {
                             PathFactory.getInstance().createPath(
                                     "core/build/create_webservice.xsl").resolve()));
                     trans.setParameter("docroot", PathFactory.getInstance().createPath("").resolve().getAbsolutePath());
-                    trans.transform(new DOMSource(dr.getNode()), sr);
+                    trans.transform(new DOMSource(dr.getNode()), new StreamResult(new FileOutputStream(tempFile2)));
                 } catch (Exception e) {
                     throw new ServletException("Error on reading config file " + servletFile.getAbsolutePath(), e);
                 }
