@@ -34,6 +34,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
@@ -104,6 +105,7 @@ public abstract class ServletManager extends HttpServlet {
     private File             commonpropfile;
     private File             servletpropfile;
     private String           servletEncoding;
+    private AtomicInteger    configLoadIndex              = new AtomicInteger(0);
     
     protected abstract ServletManagerConfig getServletManagerConfig();
     protected abstract void reloadServletConfig(File configFile, Properties globalProperties) throws ServletException;
@@ -781,7 +783,9 @@ public abstract class ServletManager extends HttpServlet {
     protected boolean tryReloadProperties(PfixServletRequest preq) throws ServletException {
         if ((commonpropfile  != null && commonpropfile.lastModified()  > common_mtime) ||
             (servletpropfile != null && servletpropfile.lastModified() > servlet_mtime)) {
-
+            
+            int currLoadIndex = configLoadIndex.incrementAndGet();
+            
             CAT.warn("\n\n##############################\n" +
                      "#### Reloading properties ####\n" +
                      "##############################\n");
@@ -792,6 +796,7 @@ public abstract class ServletManager extends HttpServlet {
             }
             servlet_mtime = servletpropfile.lastModified();
             this.reloadServletConfig(servletpropfile, properties);
+            this.getServletManagerConfig().getProperties().setProperty(PROP_LOADINDEX, String.valueOf(currLoadIndex));
             
             initCookieSec();
             return true;
