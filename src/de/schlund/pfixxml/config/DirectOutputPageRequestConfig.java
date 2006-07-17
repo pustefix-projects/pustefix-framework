@@ -18,6 +18,7 @@
 
 package de.schlund.pfixxml.config;
 
+import java.util.Enumeration;
 import java.util.Properties;
 
 
@@ -51,7 +52,12 @@ public class DirectOutputPageRequestConfig {
     }
     
     public void setProperties(Properties props) {
-        this.properties = new Properties(props);
+        this.properties = new Properties();
+        Enumeration e = props.propertyNames();
+        while (e.hasMoreElements()) {
+            String propname = (String) e.nextElement();
+            this.properties.setProperty(propname, props.getProperty(propname));
+        }
     }
     
     public Properties getProperties() {

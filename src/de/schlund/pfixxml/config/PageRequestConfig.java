@@ -19,6 +19,7 @@
 package de.schlund.pfixxml.config;
 
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -162,7 +163,12 @@ public class PageRequestConfig implements SSLOption, Cloneable {
     }
     
     public void setProperties(Properties props) {
-        this.props = new Properties(props);
+        this.props = new Properties();
+        Enumeration e = props.propertyNames();
+        while (e.hasMoreElements()) {
+            String propname = (String) e.nextElement();
+            this.props.setProperty(propname, props.getProperty(propname));
+        }
     }
     
     public Properties getProperties() {
