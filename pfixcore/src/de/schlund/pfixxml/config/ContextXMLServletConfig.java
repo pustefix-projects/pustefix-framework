@@ -291,7 +291,7 @@ public class ContextXMLServletConfig extends AbstractXMLServletConfig implements
         config.getProperties().setProperty("xmlserver.depend.xml",
                 config.getDependFile());
 
-        // Copy properties from servlet to context config
+        // Set reference to server properties in context config
         config.getContextConfig().setProperties(config.getProperties());
 
         // Do some finishing
