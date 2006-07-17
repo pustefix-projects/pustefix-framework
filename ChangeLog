@@ -1,5 +1,12 @@
 2006-07-17  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
+	* src/de/schlund/pfixxml/ServletManager.java (tryReloadProperties): 
+	* src/de/schlund/pfixxml/config/ContextConfig.java (setProperties): 
+	* src/de/schlund/pfixxml/config/ContextXMLServletConfig.java (readFromFile): 
+	Changed ContextConfig to take a reference to a Properties object instead of
+	creating its own thus allowing modifications to the object to propagate to
+	the context. Reintroduced special property "__PROPERTIES_LOAD_INDEX".
+	
 	* src/de/schlund/pfixxml/config/ServletManagerConfig.java (setProperties): 
 	* src/de/schlund/pfixxml/config/PageRequestConfig.java (setProperties): 
 	* src/de/schlund/pfixxml/config/DirectOutputPageRequestConfig.java (setProperties): 
@@ -8,7 +15,6 @@
 	given Properties object as the parent for the new one as this caused problems
 	with buggy code using the inappropriate Properties#get(Object) method instead
 	of Properties#getProperty(String)
-	
 
 2006-07-14  Sebastian Marsching  <sebastian.marsching@1und1.de>
 

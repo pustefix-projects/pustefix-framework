@@ -115,12 +115,7 @@ public class ContextConfig {
     }
 
     public void setProperties(Properties properties) {
-        this.props = new Properties();
-        Enumeration e = properties.propertyNames();
-        while (e.hasMoreElements()) {
-            String propname = (String) e.nextElement();
-            this.props.setProperty(propname, properties.getProperty(propname));
-        }
+        this.props = properties;
     }
     
     public Properties getProperties() {
