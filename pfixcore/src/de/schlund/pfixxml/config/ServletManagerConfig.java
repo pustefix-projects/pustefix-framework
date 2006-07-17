@@ -18,6 +18,7 @@
 
 package de.schlund.pfixxml.config;
 
+import java.util.Enumeration;
 import java.util.Properties;
 
 /**
@@ -39,7 +40,12 @@ public class ServletManagerConfig {
     }
 
     public void setProperties(Properties props) {
-        this.props = new Properties(props);
+        this.props = new Properties();
+        Enumeration e = props.propertyNames();
+        while (e.hasMoreElements()) {
+            String propname = (String) e.nextElement();
+            this.props.setProperty(propname, props.getProperty(propname));
+        }
     }
     
     public Properties getProperties() {
