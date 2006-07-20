@@ -313,7 +313,8 @@
         <xsl:with-param name="themed-img" select="$themed-img"/>
       </xsl:call-template>
     </xsl:variable>
-    <img src="{{$__contextpath}}/{$real_src}" alt="{$alt}">      
+    <img src="{{$__contextpath}}/{$real_src}" alt="{$alt}">
+      <xsl:if test="$__target_key='__NONE__'"><xsl:attribute name="src"><xsl:value-of select="concat($__contextpath,'/',$real_src)"/></xsl:attribute></xsl:if>      
       <xsl:copy-of select="@*[not(contains(concat('|',$always-exclude-attributes,'|',$exclude-attributes,'|') , concat('|',name(),'|')))]"/>
       <xsl:call-template name="pfx:image_geom_impl">
         <xsl:with-param name="src" select="$real_src"/>
