@@ -1,3 +1,9 @@
+2006-07-20  Martin Leidig  <mleidig@schlund.de>
+
+	* projects/core/xsl/include.xsl: fixed pfx:image problem concerning
+	runtime transformations (uninterpreted __contextpath variable when
+	transformed at runtime, which was leading to broken image paths)
+
 2006-07-17  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
 	* src/de/schlund/pfixxml/ServletManager.java (tryReloadProperties): 
