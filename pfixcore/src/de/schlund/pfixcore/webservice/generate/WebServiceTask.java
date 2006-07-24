@@ -39,6 +39,7 @@ import de.schlund.pfixcore.webservice.config.ConfigProperties;
 import de.schlund.pfixcore.webservice.config.Configuration;
 import de.schlund.pfixcore.webservice.config.GlobalServiceConfig;
 import de.schlund.pfixcore.webservice.config.ServiceConfig;
+import de.schlund.pfixxml.PathFactory;
 
 /**
  * WebServiceTask.java
@@ -86,6 +87,8 @@ public class WebServiceTask extends Task {
     public void execute() throws BuildException {
         
         checkAttributes();
+        
+        PathFactory.getInstance().init(prjdir.getAbsolutePath());
         
         if(!prjfile.exists()) throw new BuildException("Project configuration file "+prjfile.getAbsolutePath()+" doesn't exist");
         
