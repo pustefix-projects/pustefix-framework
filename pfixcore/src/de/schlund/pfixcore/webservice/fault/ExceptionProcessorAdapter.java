@@ -54,7 +54,7 @@ public class ExceptionProcessorAdapter extends FaultHandler {
             } catch(Exception x) {
                 throw new RuntimeException("Can't instantiate ExceptionProcessor.",x);
             }
-        } else LOG.warn("No ExceptionProcessor found in properties!");
+        } else LOG.warn("No ExceptionProcessor for java.lang.Throwable found in properties!");
     }
     
     @Override
