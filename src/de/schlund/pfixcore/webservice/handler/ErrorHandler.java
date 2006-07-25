@@ -1,6 +1,7 @@
 package de.schlund.pfixcore.webservice.handler;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.axis.AxisFault;
 import org.apache.axis.MessageContext;
@@ -40,8 +41,9 @@ public class ErrorHandler extends AbstractHandler {
            try {
                Context context=(Context)msgCtx.getProperty(Constants.MSGCTX_PROP_CTX);
                HttpServletRequest srvReq=getServletRequest(msgCtx);
+               HttpServletResponse srvRes=getServletResponse(msgCtx);
                String reqMsg=((SOAPPart)msgCtx.getRequestMessage().getSOAPPart()).getAsString();
-               Fault fault=new Fault(serviceName,srvReq,reqMsg,context);
+               Fault fault=new Fault(serviceName,srvReq,srvRes,reqMsg,context);
                WebServiceServlet.setCurrentFault(fault);
                msgCtx.setResponseMessage(null);
     		} catch(Exception x) {

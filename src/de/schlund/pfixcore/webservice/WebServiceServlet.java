@@ -85,9 +85,9 @@ public class WebServiceServlet extends AxisServlet {
     private WebServiceContext wsc;
     private ClassLoader currentLoader;
     
-    private static ThreadLocal currentFault=new ThreadLocal();
-    private static ThreadLocal currentRequest=new ThreadLocal();
-    
+    private static ThreadLocal<Fault> currentFault=new ThreadLocal<Fault>();
+    private static ThreadLocal<HttpServletRequest> currentRequest=new ThreadLocal<HttpServletRequest>();
+   
     public static void setCurrentFault(Fault fault) {
         currentFault.set(fault);
     }
@@ -103,7 +103,6 @@ public class WebServiceServlet extends AxisServlet {
     public static HttpServletRequest getCurrentRequest() {
         return (HttpServletRequest)currentRequest.get();
     }
-
     public void init(ServletConfig config) throws ServletException {
     	AppLoader loader=AppLoader.getInstance();
     	if(loader.isEnabled()) {
@@ -209,6 +208,7 @@ public class WebServiceServlet extends AxisServlet {
             LOG.error("Can't get web service configuration",x);
             throw new ServletException("Can't get web service configuration",x);
         }
+        
     }
     
     protected void sendForbidden(HttpServletRequest req,HttpServletResponse res,PrintWriter writer) {
@@ -255,7 +255,7 @@ public class WebServiceServlet extends AxisServlet {
         try {
         	setCurrentFault(null);
         	setCurrentRequest(req);
-        
+    
         	String serviceName=getServiceName(req);
         	Configuration config=wsc.getConfiguration();
         	ServiceConfig srvConf=config.getServiceConfig(serviceName);
@@ -380,9 +380,9 @@ public class WebServiceServlet extends AxisServlet {
     }
     
     protected void processAxisFault(AxisFault axisFault) {
+        HttpServletRequest req=getCurrentRequest();
         Fault fault=getCurrentFault();
         if(fault==null) {
-        	HttpServletRequest req=getCurrentRequest();
         	LOG.warn(dumpRequest(req,true));
         	Throwable t=axisFault.getCause();
             if(t!=null) LOG.warn(t,t);

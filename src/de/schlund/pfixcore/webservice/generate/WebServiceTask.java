@@ -105,6 +105,8 @@ public class WebServiceTask extends Task {
         
         checkAttributes();
         
+        PathFactory.getInstance().init(prjdir.getAbsolutePath());
+        
         if(!prjfile.exists()) throw new BuildException("Project configuration file "+prjfile.getAbsolutePath()+" doesn't exist");
         
         try {
