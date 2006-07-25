@@ -7,6 +7,7 @@
 package de.schlund.pfixcore.webservice.fault;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
@@ -19,6 +20,8 @@ public class Fault {
 	Logger LOG=Logger.getLogger(getClass().getName());
 	
 	String serviceName;
+    HttpServletRequest srvReq;
+    HttpServletResponse srvRes;
 	String requestURI;
 	String reqMsg;
     String serverName;
@@ -26,13 +29,23 @@ public class Fault {
     Throwable throwable;
     String faultString;
 	
-	public Fault(String serviceName,HttpServletRequest srvReq,String reqMsg,Context context) {
+	public Fault(String serviceName,HttpServletRequest srvReq,HttpServletResponse srvRes,String reqMsg,Context context) {
 		this.serviceName=serviceName;
+        this.srvReq=srvReq;
+        this.srvRes=srvRes;
 		this.requestURI=getRequestURI(srvReq);
 		this.serverName=getServerName(srvReq);
         this.reqMsg=reqMsg;
         this.context=context;
 	}
+    
+    public HttpServletRequest getRequest() {
+        return srvReq;
+    }
+    
+    public HttpServletResponse getResponse() {
+        return srvRes;
+    }
     
     public Throwable getThrowable() {
         return throwable;

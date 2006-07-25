@@ -1,3 +1,23 @@
+2006-07-24  Martin Leidig  <mleidig@schlund.de>
+
+	Connected webservice fault handling to general exception processing
+	mechanism. ExceptionProcessorAdapter is a special FaultHandler
+	implementation which can be used to forward webservice exceptions
+	to the ExceptionProcessor implementation, which is used to handle
+	the normal exceptions. Like any other FaultHandler it can be set
+	and configured per webservice or globally in the webservice configuration
+	file.
+
+	Added:
+	* src/de/schlund/pfixcore/webservice/fault/ExceptionProcessorAdapter.java
+
+	Modified:
+	* src/de/schlund/pfixcore/webservice/WebServiceServlet.java
+	* src/de/schlund/pfixcore/webservice/generate/WebServiceTask.java
+	* src/de/schlund/pfixcore/webservice/fault/Fault.java
+	* src/de/schlund/pfixcore/webservice/handler/AbstractHandler.java
+	* src/de/schlund/pfixcore/webservice/handler/ErrorHandler.java
+
 2006-07-20  Martin Leidig  <mleidig@schlund.de>
 
 	* projects/core/xsl/include.xsl: fixed pfx:image problem concerning
