@@ -151,7 +151,7 @@
               </xsl:otherwise>
             </xsl:choose>
           </xsl:attribute>
-          <a><ixsl:attribute name="href"><xsl:value-of select="concat($__contextpath, $thehandler, '/', $page)"/>;<ixsl:value-of select="$__sessid"/>?__currentindex[<xsl:value-of select="$page"/>]=<ixsl:value-of select="/formresult/iwrappergroups/@currentindex - 1"/>&amp;__frame=<xsl:value-of select="$frame_impl"/></ixsl:attribute><xsl:apply-templates select="./pfx:active/node()"/></a>
+          <a><ixsl:attribute name="href"><ixsl:value-of select="$__contextpath"/><xsl:value-of select="concat($thehandler, '/', $page)"/>;<ixsl:value-of select="$__sessid"/>?__currentindex[<xsl:value-of select="$page"/>]=<ixsl:value-of select="/formresult/iwrappergroups/@currentindex - 1"/>&amp;__frame=<xsl:value-of select="$frame_impl"/></ixsl:attribute><xsl:apply-templates select="./pfx:active/node()"/></a>
         </span>
       </ixsl:otherwise>
     </ixsl:choose>

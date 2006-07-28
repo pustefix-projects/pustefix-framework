@@ -1,3 +1,18 @@
+2006-07-28  Sebastian Marsching  <sebastian.marsching@1und1.de>
+
+	* projects/core/xsl/include.xsl: 
+	Changed templates so "__contextpath" stuff works, if the templates are used
+	at runtime.
+	
+	* projects/core/xsl/deprecated/deprecated_master.xsl: 
+	Moving use of "__contextpath" from xsl to ixsl-namespace, as __contextpath
+	is a runtime setting.
+
+2006-07-24  Sebastian Marsching  <sebastian.marsching@1und1.de>
+
+	* src/de/schlund/pfixxml/FactoryInitServlet.java (init): 
+	Removed compatibility code, that looked for a "pfixlog.xml.in"
+
 2006-07-20  Martin Leidig  <mleidig@schlund.de>
 
 	* projects/core/xsl/include.xsl: fixed pfx:image problem concerning
