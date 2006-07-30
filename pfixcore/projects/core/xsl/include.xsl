@@ -131,7 +131,7 @@
           <div style="width: 100px; align: center; color:white; background-color:black;">
             <img src="{{$__contextpath}}/core/img/warning2.png">
               <xsl:if test="$__target_key = '__NONE__'">
-                <xsl:attribute name="src="><xsl:value-of select="$__contextpath"/>/core/img/warning2.png</xsl:attribute>
+                <xsl:attribute name="src"><xsl:value-of select="$__contextpath"/>/core/img/warning2.png</xsl:attribute>
               </xsl:if>
             </img>
             <br/>
@@ -171,7 +171,7 @@
     <xsl:variable name="thetext">Missing include: '<xsl:value-of select="$part"/>' in file '<xsl:value-of select="$href"/>'</xsl:variable>
     <img src="{{$__contextpath}}/core/img/warning.gif">
       <xsl:if test="$__target_key = '__NONE__'">
-        <xsl:attribute name="src="><xsl:value-of select="$__contextpath"/>/core/img/warning.gif</xsl:attribute>
+        <xsl:attribute name="src"><xsl:value-of select="$__contextpath"/>/core/img/warning.gif</xsl:attribute>
       </xsl:if>
       <xsl:attribute name="alt"><xsl:value-of select="$thetext"/></xsl:attribute>
       <xsl:attribute name="title"><xsl:value-of select="$thetext"/></xsl:attribute>
