@@ -1,5 +1,9 @@
 2006-08-01  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
+	* src/de/schlund/pfixxml/FactoryInitServlet.java (init): 
+	Removed check for old "pfixlog.xml.in" file, now only the specified
+	filename is tried, no ".in" suffix is added anymore.
+	
 	* src/de/schlund/pfixxml/config/ContextResourcePropertyRule.java (end): 
 	* src/de/schlund/pfixxml/config/DirectPagerequestPropertyRule.java (end): 
 	* src/de/schlund/pfixxml/config/PagerequestPropertyRule.java (end): 
