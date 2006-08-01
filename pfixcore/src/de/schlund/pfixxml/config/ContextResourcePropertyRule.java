@@ -21,10 +21,12 @@ package de.schlund.pfixxml.config;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
 public class ContextResourcePropertyRule extends CheckedRule {
+    private final static Logger LOG = Logger.getLogger(ContextResourcePropertyRule.class);
 
     private ContextXMLServletConfig config;
     private String propName;
@@ -45,6 +47,9 @@ public class ContextResourcePropertyRule extends CheckedRule {
     
     public void end(String namespace, String name) throws Exception {
         ContextResourceConfig crConfig = (ContextResourceConfig) this.getDigester().peek();
+        if (crConfig.getProperties().getProperty(propName) != null) {
+            LOG.warn("Overwriting already set property \"" + propName + "\" with value \"" + propValue.trim() + "\"!");
+        }
         crConfig.getProperties().setProperty(propName, propValue.trim());
     }
 

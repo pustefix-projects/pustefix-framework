@@ -1,5 +1,17 @@
 2006-08-01  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
+	* src/de/schlund/pfixxml/config/ContextResourcePropertyRule.java (end): 
+	* src/de/schlund/pfixxml/config/DirectPagerequestPropertyRule.java (end): 
+	* src/de/schlund/pfixxml/config/PagerequestPropertyRule.java (end): 
+	* src/de/schlund/pfixxml/config/PropertyRule.java (end): 
+	* src/de/schlund/pfixxml/config/ServletPropertyRule.java (end): 
+	* src/de/schlund/pfixxml/config/XMLPropertiesUtil.java (end): 
+	Added code for logging a warning when an already set property is overwritten
+	with a new value.
+
+	* src/de/schlund/pfixxml/config/PageRequestConfig.java: 
+	Removed setProperty() method
+
 	* skel/build-skel.xml: Adding dependency on "tomcat.dir.opt" in target "ant-tasks"
 	because this is needed when building a fresh skeleton environment.
 

@@ -30,6 +30,7 @@ import org.apache.commons.digester.Digester;
 import org.apache.commons.digester.Rule;
 import org.apache.commons.digester.RulesBase;
 import org.apache.commons.digester.WithDefaultsRulesWrapper;
+import org.apache.log4j.Logger;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
@@ -41,6 +42,8 @@ import org.xml.sax.SAXException;
 public abstract class XMLPropertiesUtil {
     private static final String PROPS_NS = "http://pustefix.sourceforge.net/properties200401";
     private static final String CUS_NS = "http://www.schlund.de/pustefix/customize";
+    
+    private static final Logger LOG = Logger.getLogger(XMLPropertiesUtil.class);
 
     // Define PropertyRule inline
     public static class PropertyRule extends Rule {
@@ -72,6 +75,9 @@ public abstract class XMLPropertiesUtil {
          * @see org.apache.commons.digester.Rule#end(java.lang.String, java.lang.String)
          */
         public void end(String namespace, String name) throws Exception {
+            if (props.getProperty(propName) != null) {
+                LOG.warn("Overwriting already set property \"" + propName + "\" with value \"" + propValue.trim() + "\"!");
+            }
             props.setProperty(propName, propValue.trim());
         }
 

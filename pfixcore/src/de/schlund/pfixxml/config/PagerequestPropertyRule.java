@@ -21,10 +21,12 @@ package de.schlund.pfixxml.config;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
 public class PagerequestPropertyRule extends CheckedRule {
+    private final static Logger LOG = Logger.getLogger(PagerequestPropertyRule.class);
 
     private ContextXMLServletConfig config;
     private String propName;
@@ -45,7 +47,10 @@ public class PagerequestPropertyRule extends CheckedRule {
     
     public void end(String namespace, String name) throws Exception {
         PageRequestConfig pageConfig = (PageRequestConfig) this.getDigester().peek();
-        pageConfig.setProperty(propName, propValue.trim());
+        if (pageConfig.getProperties().getProperty(propName) != null) {
+            LOG.warn("Overwriting already set property \"" + propName + "\" with value \"" + propValue.trim() + "\"!");
+        }
+        pageConfig.getProperties().setProperty(propName, propValue.trim());
     }
 
     public void body(String namespace, String name, String text) throws Exception {
