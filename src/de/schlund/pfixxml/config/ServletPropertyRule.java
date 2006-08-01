@@ -21,10 +21,12 @@ package de.schlund.pfixxml.config;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
 public class ServletPropertyRule extends CheckedRule {
+    private final static Logger LOG = Logger.getLogger(ServletPropertyRule.class);
 
     private ServletManagerConfig config;
     private String propName;
@@ -44,6 +46,9 @@ public class ServletPropertyRule extends CheckedRule {
     }
     
     public void end(String namespace, String name) throws Exception {
+        if (config.getProperties().getProperty(propName) != null) {
+            LOG.warn("Overwriting already set property \"" + propName + "\" with value \"" + propValue.trim() + "\"!");
+        }
         config.getProperties().setProperty(propName, propValue.trim());
     }
 
