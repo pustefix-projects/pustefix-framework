@@ -1,3 +1,8 @@
+2006-08-01  Sebastian Marsching  <sebastian.marsching@1und1.de>
+
+	* skel/build-skel.xml: Adding dependency on "tomcat.dir.opt" in target "ant-tasks"
+	because this is needed when building a fresh skeleton environment.
+
 2006-07-30  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
 	* projects/core/xsl/include.xsl: Fixing typo in include.xsl ("src=" is not a valid 
