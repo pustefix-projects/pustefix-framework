@@ -276,7 +276,7 @@ or delete the DOCTYPE definition -->
     </apply>
   </target>
 
-  <target name="ant-tasks" description="declares the ant task used for generating java source code. This target needs to be run prior to the actual compile.">
+  <target name="ant-tasks" depends="tomcat.dir.opt" description="declares the ant task used for generating java source code. This target needs to be run prior to the actual compile.">
     <taskdef
      name="pfx-xslt"
      classname="de.schlund.pfixcore.util.XsltGenericTask"
