@@ -63,7 +63,6 @@ public class ServiceRuntime {
 	
 	public ServiceRuntime() {
 		processors=new HashMap<String,ServiceProcessor>();
-		appServiceRegistry=new ServiceRegistry(this,ServiceRegistry.RegistryType.APPLICATION);
 	}
 	
 	public void addServiceProcessor(String protocol,ServiceProcessor processor) {
@@ -84,8 +83,9 @@ public class ServiceRuntime {
         }
 	}
 	
-	
-	
+	public void setApplicationServiceRegistry(ServiceRegistry appServiceRegistry) {
+	    this.appServiceRegistry=appServiceRegistry;
+    }
 	
 	public Monitor getMonitor() {
 		return monitor;
@@ -98,9 +98,24 @@ public class ServiceRuntime {
 			ServiceResponse serviceRes=new HttpServiceResponse(res);
 			
 			String serviceName=serviceReq.getServiceName();
-			ServiceConfig srvConf=getConfiguration().getServiceConfig(serviceName);
 			
-			HttpSession session=req.getSession(false);
+            HttpSession session=req.getSession(false);
+            
+            ServiceRegistry serviceReg=null;
+            ServiceConfig srvConf=appServiceRegistry.getServiceConfig(serviceName);
+            if(srvConf!=null) serviceReg=appServiceRegistry;
+            else {
+                if(session!=null) {
+                    serviceReg=(ServiceRegistry)session.getAttribute(ServiceRegistry.class.getName());
+                    if(serviceReg==null) {
+                        serviceReg=new ServiceRegistry(getConfiguration(),ServiceRegistry.RegistryType.SESSION);
+                        session.setAttribute(ServiceRegistry.class.getName(),serviceReg);
+                    }
+                    srvConf=serviceReg.getServiceConfig(serviceName);
+                } 
+            }
+            if(srvConf==null) throw new ServiceException("Service not found: "+serviceName);
+    
 			SessionContextImpl pfxSessionContext=null;
 			ServiceCallContext callContext=null;
 			
@@ -160,17 +175,7 @@ public class ServiceRuntime {
 				serviceRes=new RecordingResponseWrapper(serviceRes);
 			}
 			
-			ServiceRegistry serviceReg=null;
-			if(session!=null) {
-				serviceReg=(ServiceRegistry)session.getAttribute(ServiceRegistry.class.getName());
-				if(serviceReg==null) {
-					serviceReg=new ServiceRegistry(this,ServiceRegistry.RegistryType.SESSION);
-					serviceReg.setSubRegistry(appServiceRegistry);
-					session.setAttribute(ServiceRegistry.class.getName(),serviceReg);
-				}
-			} else {
-				serviceReg=appServiceRegistry;
-			}
+			
 			
 			if(LOG.isDebugEnabled()) LOG.debug("Process webservice request: "+serviceName+" "+processor);
 			if(pfxSessionContext!=null&&srvConf.doSynchronizeOnContext()) {
