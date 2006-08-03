@@ -1,4 +1,4 @@
-function WS_Webservice(service,uri) {
+function WS_Webservice(service,uri,protocol) {
 	this._service=service;
 	if(uri) {
 		this._uri=uri;
@@ -8,12 +8,17 @@ function WS_Webservice(service,uri) {
 	}
    this._calls={};
    this._ids=0;
+   if(protocol) {
+   	this._protocol=protocol;
+   } else {
+   	this._protocol="jsonws";
+   }
    this._proxySetup();
 }
 
 WS_Webservice.prototype._proxySetup=function() {
 	var req=new HTTP_Request('POST',this._uri+'?json',this._proxySetupCB,this);
-   req.setRequestHeader('wstype','jsonrpc');
+   req.setRequestHeader('wstype',this._protocol);
    req.start('',0);
 }
 
@@ -38,7 +43,11 @@ WS_Webservice.prototype._callMethod=function(method,args) {
 	var wsCall={};
 	var jsonReq={};
 	jsonReq.id=this._ids++;
-	jsonReq.method=this._service+"."+method;
+	if(this._protocol=="jsonrpc") {
+		jsonReq.method=this._service+"."+method;
+	} else {
+		jsonReq.method=method;
+	}
 	var arglen=args.length;
 	if(arglen>0 && typeof args[arglen-1]=='function') {
 		wsCall.callback=args[arglen-1];
@@ -99,7 +108,7 @@ WS_Webservice.prototype._serialize=function(obj) {
     	} else if(obj.constructor==Boolean) {
 			json=obj.toString();
    	} else if(obj.constructor==Date) {
-			json='{javaClass:"java.util.Calendar",time:'+obj.valueOf()+'}';
+			json='new Date('+obj.valueOf()+')';
     	} else if(obj.constructor==Array) {
 			var arr=[];
 			for(var i=0;i<obj.length;i++) arr.push(this._serialize(obj[i]));

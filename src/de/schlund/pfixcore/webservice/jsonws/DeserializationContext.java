@@ -17,28 +17,24 @@
  *
  */
 
-package de.schlund.pfixcore.webservice.jsonrpc;
+package de.schlund.pfixcore.webservice.jsonws;
 
-import com.metaparadigm.jsonrpc.org.json.JSONObject;
+public class DeserializationContext {
 
-
-/**
- * JSONObject which can be initialized with arbitrary JSON strings.
- * It can be used by custom serializers to create JSON representations
- * of JS objects which don't base on the supported JS base datatypes
- * 
- * @author mleidig@schlund.de
- */
-public class CustomJSONObject extends JSONObject {
-
-    String jsonStr;
+    DeserializerRegistry deserReg;
     
-	public CustomJSONObject(String jsonStr) {
-	    this.jsonStr=jsonStr;
-	}
-
-	public String toString() {
-	    return jsonStr;
-	}
-
+    public DeserializationContext(DeserializerRegistry deserReg) {
+        this.deserReg=deserReg;
+    }
+   
+    public boolean canDeserialize(Object jsonObj,Class targetClass) throws DeserializationException {
+        Deserializer deser=deserReg.getDeserializer(targetClass);
+        return deser.canDeserialize(this,jsonObj,targetClass);
+    }
+    
+    public Object deserialize(Object jsonObj,Class targetClass) throws DeserializationException {
+        Deserializer deser=deserReg.getDeserializer(targetClass);
+        return deser.deserialize(this,jsonObj,targetClass);
+    }
+    
 }

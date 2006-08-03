@@ -22,6 +22,7 @@ package de.schlund.pfixcore.webservice;
 import java.util.HashMap;
 import java.util.Map;
 
+import de.schlund.pfixcore.webservice.config.Configuration;
 import de.schlund.pfixcore.webservice.config.GlobalServiceConfig;
 import de.schlund.pfixcore.webservice.config.ServiceConfig;
 import de.schlund.pfixxml.loader.AppLoader;
@@ -33,103 +34,101 @@ public class ServiceRegistry {
 	
 	enum RegistryType {APPLICATION,SESSION};
 	
-	ServiceRuntime runtime;
+	Configuration configuration;
+    Map<String,ServiceConfig> runtimeServices;
+    
 	RegistryType registryType;
 	Map<String,ServiceDescriptor> serviceDescriptors;
 	Map<String,Object> serviceObjects;
-	
-	ServiceRegistry subRegistry;
-	
-	public ServiceRegistry(ServiceRuntime runtime,RegistryType registryType) {
-		this.runtime=runtime;
+    
+	public ServiceRegistry(Configuration configuration,RegistryType registryType) {
+		this.configuration=configuration;
 		this.registryType=registryType;
-		serviceDescriptors=new HashMap<String,ServiceDescriptor>();
-		serviceObjects=new HashMap<String,Object>();
+        serviceDescriptors=new HashMap<String,ServiceDescriptor>();
+        serviceObjects=new HashMap<String,Object>();
+        runtimeServices=new HashMap<String,ServiceConfig>();
 	}
 
-	protected void setSubRegistry(ServiceRegistry subRegistry) {
-		this.subRegistry=subRegistry;
-	}
-	
+    public void registerService(Object serviceObject) {
+        //get ServiceConfig from annotations
+        //check if registration allowed
+        //register ServiceConfig and serviceObject
+        throw new RuntimeException("Not yet implemented!");
+    }
+    
+    public void registerService(Class serviceClass) {
+        //get ServiceConfig from annotations
+        //check if registration allowed
+        //register ServiceConfig
+        throw new RuntimeException("Not yet implemented!");
+    }
+    
+    public void deregisterService(String serviceName) {
+        //remove serviceconfig, servicedescriptor and serviceobject
+        throw new RuntimeException("Not yet implemented!");
+    }
+    
 	public boolean isRegistered(String serviceName) {
-		GlobalServiceConfig globSrvConf=runtime.getConfiguration().getGlobalServiceConfig();
-		ServiceConfig srvConf=runtime.getConfiguration().getServiceConfig(serviceName);
-		if(srvConf!=null) {
-			String scope=srvConf.getScopeType();
-			if(scope==null) scope=globSrvConf.getScopeType();
-			if(scope.equals(Constants.SERVICE_SCOPE_REQUEST)||
-					(scope.equals(Constants.SERVICE_SCOPE_SESSION)&&registryType==RegistryType.SESSION)||
-					(scope.equals(Constants.SERVICE_SCOPE_APPLICATION)&&registryType==RegistryType.APPLICATION))
-				return true;
-		}
-		if(subRegistry!=null) return subRegistry.isRegistered(serviceName);
-		return false;
+	    return getServiceConfig(serviceName)!=null;
 	}
 	
 	public GlobalServiceConfig getGlobalServiceConfig() {
-		return runtime.getConfiguration().getGlobalServiceConfig();
+		return configuration.getGlobalServiceConfig();
 	}
 	
 	public ServiceConfig getServiceConfig(String serviceName) {
-		GlobalServiceConfig globSrvConf=runtime.getConfiguration().getGlobalServiceConfig();
-		ServiceConfig srvConf=runtime.getConfiguration().getServiceConfig(serviceName);
+		GlobalServiceConfig globSrvConf=configuration.getGlobalServiceConfig();
+		ServiceConfig srvConf=configuration.getServiceConfig(serviceName);
+        if(srvConf==null) {
+            synchronized(runtimeServices) {
+                srvConf=runtimeServices.get(serviceName);
+            }
+        }
 		if(srvConf!=null) {
 			String scope=srvConf.getScopeType();
 			if(scope==null) scope=globSrvConf.getScopeType();
-			if(scope.equals(Constants.SERVICE_SCOPE_REQUEST)||
-					(scope.equals(Constants.SERVICE_SCOPE_SESSION)&&registryType==RegistryType.SESSION)||
-					(scope.equals(Constants.SERVICE_SCOPE_APPLICATION)&&registryType==RegistryType.APPLICATION))
+			if((scope.equals(Constants.SERVICE_SCOPE_APPLICATION)&&registryType==RegistryType.APPLICATION)||
+                    (scope.equals(Constants.SERVICE_SCOPE_SESSION)&&registryType==RegistryType.SESSION)||
+                    (scope.equals(Constants.SERVICE_SCOPE_REQUEST)))
 				return srvConf;
-		}
-		if(subRegistry!=null) return subRegistry.getServiceConfig(serviceName);
+        }
 		return null;
 	}
 	
 	public ServiceDescriptor getServiceDescriptor(String serviceName) throws ServiceException {
-		GlobalServiceConfig globSrvConf=runtime.getConfiguration().getGlobalServiceConfig();
-		ServiceConfig srvConf=runtime.getConfiguration().getServiceConfig(serviceName);
-		if(srvConf!=null) {
-			String scope=srvConf.getScopeType();
-			if(scope==null) scope=globSrvConf.getScopeType();
-			if(scope.equals(Constants.SERVICE_SCOPE_REQUEST)||
-					(scope.equals(Constants.SERVICE_SCOPE_SESSION)&&registryType==RegistryType.SESSION)||
-					(scope.equals(Constants.SERVICE_SCOPE_APPLICATION)&&registryType==RegistryType.APPLICATION)) {
-				ServiceDescriptor srvDesc=null;
-				synchronized(serviceDescriptors) {
-					srvDesc=serviceDescriptors.get(serviceName);
-					if(srvDesc==null) {
-						srvDesc=new ServiceDescriptor(srvConf);
-						serviceDescriptors.put(serviceName,srvDesc);
-					}
-				}
-				return srvDesc;
-			}
-		}
-		if(subRegistry!=null) return subRegistry.getServiceDescriptor(serviceName);
-		return null;
+        ServiceDescriptor srvDesc=null;
+        synchronized(serviceDescriptors) {
+            srvDesc=serviceDescriptors.get(serviceName);
+        }
+        if(srvDesc==null) {
+            ServiceConfig srvConf=getServiceConfig(serviceName);
+            if(srvConf!=null) {
+                synchronized(serviceDescriptors) {
+                    srvDesc=new ServiceDescriptor(srvConf);
+                    serviceDescriptors.put(serviceName,srvDesc);
+                }
+            }
+        }
+        return srvDesc;
 	}
 	
 	public Object getServiceObject(String serviceName) throws ServiceException {
 		Object serviceObject=null;
-		GlobalServiceConfig globSrvConf=runtime.getConfiguration().getGlobalServiceConfig();
-		ServiceConfig srvConf=runtime.getConfiguration().getServiceConfig(serviceName);
-		if(srvConf!=null) {
-			String scope=srvConf.getScopeType();
-			if(scope==null) scope=globSrvConf.getScopeType();
-			if(scope.equals(Constants.SERVICE_SCOPE_REQUEST)) {
-				serviceObject=createServiceObject(srvConf);
-			} else if((scope.equals(Constants.SERVICE_SCOPE_SESSION)&&registryType==RegistryType.SESSION)||
-					(scope.equals(Constants.SERVICE_SCOPE_APPLICATION)&&registryType==RegistryType.APPLICATION)) {
+        synchronized(serviceObjects) {
+            serviceObject=serviceObjects.get(serviceName);
+        }
+        if(serviceObject==null) {
+            ServiceConfig srvConf=getServiceConfig(serviceName);
+            if(srvConf!=null) {
+                String scope=srvConf.getScopeType();
+                if(scope==null) scope=configuration.getGlobalServiceConfig().getScopeType();
+                if(scope.equals(Constants.SERVICE_SCOPE_REQUEST)) return createServiceObject(srvConf);
 				synchronized(serviceObjects) {
-					serviceObject=serviceObjects.get(serviceName);
-					if(serviceObject==null) {
-						serviceObject=createServiceObject(srvConf);
-						serviceObjects.put(serviceName,serviceObject);
-					}
+				    serviceObject=createServiceObject(srvConf);
+				    serviceObjects.put(serviceName,serviceObject);
 				}
 			}
 		}
-		if(serviceObject==null && subRegistry!=null) serviceObject=subRegistry.getServiceObject(serviceName);
 		return serviceObject;
 	}
 	

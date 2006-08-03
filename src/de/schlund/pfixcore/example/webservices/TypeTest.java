@@ -6,6 +6,10 @@ package de.schlund.pfixcore.example.webservices;
 import java.util.Calendar;
 
 import org.w3c.dom.Element;
+
+import de.schlund.pfixcore.webservice.annotation.Service;
+import de.schlund.pfixcore.webservice.annotation.ServiceMethod;
+
 import java.util.HashMap;
 
 /**
@@ -15,10 +19,12 @@ import java.util.HashMap;
  * 
  * @author mleidig
  */
+@Service(name="TypeTest")
 public interface TypeTest {
     
     public String info();
     
+    @ServiceMethod(name="foo")
     public int echoInt(int val);
     
     public Integer echoIntObj(Integer val);

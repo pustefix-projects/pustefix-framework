@@ -1,3 +1,88 @@
+2006-08-03  Martin Leidig  <mleidig@schlund.de>
+
+	Replaced json.org and json-rpc libraries by our own
+	JSON parsing/serialization/deserialization implementations.
+
+	The new package de.schlund.pfixcore.webservice.json contains
+	a JSON parser and an abstract Java model representing JSON
+	data (replaces the json.org library).
+
+	The new package de.schlund.pfixcore.webservice.jsonws contains
+	a JSON serialization/deserialization framework and a ServiceProcessor
+	implementation (replaces the json-rpc library).
+
+	Modified:
+
+	* src/de/schlund/pfixcore/example/webservices/chat/Message.java
+	* src/de/schlund/pfixcore/example/webservices/TypeTest.java
+	* src/de/schlund/pfixcore/webservice/ServiceDescriptor.java
+	* src/de/schlund/pfixcore/webservice/WebServiceServlet.java
+	* src/de/schlund/pfixcore/webservice/ServiceRuntime.java
+	* src/de/schlund/pfixcore/webservice/ServiceRegistry.java
+	* projects/core/script/webservice_json.js
+	* projects/webservice/htdocs/chat-pfxsoap.js
+	* projects/webservice/htdocs/application.js
+	* build.xml
+	* .classpath
+
+	Added:
+
+	* src/de/schlund/pfixcore/webservice/jsonws
+	* src/de/schlund/pfixcore/webservice/jsonws/SerializerRegistry.java
+	* src/de/schlund/pfixcore/webservice/jsonws/JSONSerializer.java
+	* src/de/schlund/pfixcore/webservice/jsonws/BeanDescriptor.java
+	* src/de/schlund/pfixcore/webservice/jsonws/DeserializationException.java
+	* src/de/schlund/pfixcore/webservice/jsonws/Bean.java
+	* src/de/schlund/pfixcore/webservice/jsonws/Serializer.java
+	* src/de/schlund/pfixcore/webservice/jsonws/DeserializerRegistry.java
+	* src/de/schlund/pfixcore/webservice/jsonws/serializers
+	* src/de/schlund/pfixcore/webservice/jsonws/serializers/BeanSerializer.java
+	* src/de/schlund/pfixcore/webservice/jsonws/serializers/StringSerializer.java
+	* src/de/schlund/pfixcore/webservice/jsonws/serializers/NumberSerializer.java
+	* src/de/schlund/pfixcore/webservice/jsonws/serializers/CalendarSerializer.java
+	* src/de/schlund/pfixcore/webservice/jsonws/serializers/ArraySerializer.java
+	* src/de/schlund/pfixcore/webservice/jsonws/serializers/BooleanSerializer.java
+	* src/de/schlund/pfixcore/webservice/jsonws/JSONDeserializer.java
+	* src/de/schlund/pfixcore/webservice/jsonws/SerializationContext.java
+	* src/de/schlund/pfixcore/webservice/jsonws/JSONRequest.java
+	* src/de/schlund/pfixcore/webservice/jsonws/Deserializer.java
+	* src/de/schlund/pfixcore/webservice/jsonws/JSONWSProcessor.java
+	* src/de/schlund/pfixcore/webservice/jsonws/deserializers
+	* src/de/schlund/pfixcore/webservice/jsonws/deserializers/ArrayDeserializer.java
+	* src/de/schlund/pfixcore/webservice/jsonws/deserializers/BooleanDeserializer.java
+	* src/de/schlund/pfixcore/webservice/jsonws/deserializers/BeanDeserializer.java
+	* src/de/schlund/pfixcore/webservice/jsonws/deserializers/StringDeserializer.java
+	* src/de/schlund/pfixcore/webservice/jsonws/deserializers/NumberDeserializer.java
+	* src/de/schlund/pfixcore/webservice/jsonws/deserializers/CalendarDeserializer.java
+	* src/de/schlund/pfixcore/webservice/jsonws/RequestDeserializer.java
+	* src/de/schlund/pfixcore/webservice/jsonws/DeserializationContext.java
+	* src/de/schlund/pfixcore/webservice/jsonws/CustomJSONObject.java
+	* src/de/schlund/pfixcore/webservice/jsonws/SerializationException.java
+	* src/de/schlund/pfixcore/webservice/jsonws/BeanDescriptorFactory.java
+	* src/de/schlund/pfixcore/webservice/json
+	* src/de/schlund/pfixcore/webservice/json/JSONObject.java
+	* src/de/schlund/pfixcore/webservice/json/JSONValue.java
+	* src/de/schlund/pfixcore/webservice/json/JSONParser.jj
+	* src/de/schlund/pfixcore/webservice/json/JSONArray.java
+	* src/de/schlund/pfixcore/webservice/json/parser
+	* src/de/schlund/pfixcore/webservice/json/parser/TokenMgrError.java
+	* src/de/schlund/pfixcore/webservice/json/parser/Token.java
+	* src/de/schlund/pfixcore/webservice/json/parser/JSONParserTokenManager.java
+	* src/de/schlund/pfixcore/webservice/json/parser/SimpleCharStream.java
+	* src/de/schlund/pfixcore/webservice/json/parser/JSONParserConstants.java
+	* src/de/schlund/pfixcore/webservice/json/parser/JSONParser.java
+	* src/de/schlund/pfixcore/webservice/json/parser/ParseException.java
+	* src/de/schlund/pfixcore/webservice/json/ParserUtils.java
+	* src/de/schlund/pfixcore/webservice/annotation/ServiceMethod.java
+
+	Removed:
+
+	* src/de/schlund/pfixcore/webservice/jsonrpc
+	* src/de/schlund/pfixcore/webservice/jsonrpc/CalendarSerializer.java
+	* src/de/schlund/pfixcore/webservice/jsonrpc/CustomJSONObject.java
+	* src/de/schlund/pfixcore/webservice/jsonrpc/JSONRPCProcessor.java
+	* lib/jsonrpc-1.0-patched.jar
+
 2006-08-01  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
 	* src/de/schlund/pfixxml/FactoryInitServlet.java (init): 

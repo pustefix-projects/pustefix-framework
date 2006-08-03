@@ -54,7 +54,8 @@ import de.schlund.pfixcore.webservice.config.GlobalServiceConfig;
 import de.schlund.pfixcore.webservice.config.ServiceConfig;
 import de.schlund.pfixcore.webservice.fault.Fault;
 import de.schlund.pfixcore.webservice.fault.FaultHandler;
-import de.schlund.pfixcore.webservice.jsonrpc.JSONRPCProcessor;
+
+import de.schlund.pfixcore.webservice.jsonws.JSONWSProcessor;
 import de.schlund.pfixcore.webservice.monitor.MonitorHistory;
 import de.schlund.pfixcore.webservice.monitor.MonitorRecord;
 import de.schlund.pfixxml.PathFactory;
@@ -125,8 +126,9 @@ public class WebServiceServlet extends AxisServlet implements ServiceProcessor {
         				Configuration srvConf=ConfigurationReader.read(wsConfFile);
         				runtime=new ServiceRuntime();
         				runtime.setConfiguration(srvConf);
+        				runtime.setApplicationServiceRegistry(new ServiceRegistry(srvConf,ServiceRegistry.RegistryType.APPLICATION));
         				runtime.addServiceProcessor(Constants.PROTOCOL_TYPE_SOAP,this);
-        				runtime.addServiceProcessor(Constants.PROTOCOL_TYPE_JSONRPC,new JSONRPCProcessor());
+        				runtime.addServiceProcessor(Constants.PROTOCOL_TYPE_JSONWS,new JSONWSProcessor());
         				getServletContext().setAttribute(ServiceRuntime.class.getName(),runtime);
         			} catch(Exception x) {
         				LOG.error("Error while initializing ServiceRuntime",x);
@@ -159,6 +161,30 @@ public class WebServiceServlet extends AxisServlet implements ServiceProcessor {
     }
  
     public void doPost(HttpServletRequest req,HttpServletResponse res) throws ServletException,IOException {
+        AppLoader loader=AppLoader.getInstance();
+        if(loader.isEnabled()) {
+            ClassLoader newLoader=loader.getAppClassLoader();
+            //ClassLoader currentLoader=org.apache.axis.utils.ClassUtils.getDefaultClassLoader();
+            Thread.currentThread().setContextClassLoader(newLoader);
+        
+            synchronized(this) {
+                if(newLoader!=currentLoader) {
+                    if(DEBUG) LOG.debug("Reload Axis Engine.");
+                    //ClassUtils.setDefaultClassLoader(newLoader);
+                    Thread.currentThread().setContextClassLoader(newLoader);
+                    currentLoader=newLoader;
+                    axisServer=null;
+                    getServletContext().removeAttribute(ATTR_AXIS_ENGINE);
+                    getServletContext().removeAttribute(getServletName() + ATTR_AXIS_ENGINE);
+                    try {
+                        init();
+                    } catch(ServletException x) {
+                        throw new RuntimeException("Error while reloading Axis",x);
+                    }
+                }
+            }
+        }
+        
     	try {
     		runtime.process(req,res);
     	} catch(ServiceException x) {
@@ -169,29 +195,7 @@ public class WebServiceServlet extends AxisServlet implements ServiceProcessor {
     public void init(ServiceRuntime runtime) {}
     
     public void process(ServiceRequest serviceReq,ServiceResponse serviceRes,ServiceRegistry registry) throws ServiceException {
-        AppLoader loader=AppLoader.getInstance();
-        if(loader.isEnabled()) {
-            ClassLoader newLoader=loader.getAppClassLoader();
-           	//ClassLoader currentLoader=org.apache.axis.utils.ClassUtils.getDefaultClassLoader();
-           	Thread.currentThread().setContextClassLoader(newLoader);
-            synchronized(this) {
-            	if(newLoader!=currentLoader) {
-            		if(DEBUG) LOG.debug("Reload Axis Engine.");
-            		//ClassUtils.setDefaultClassLoader(newLoader);
-            		Thread.currentThread().setContextClassLoader(newLoader);
-            		currentLoader=newLoader;
-            		axisServer=null;
-            		getServletContext().removeAttribute(ATTR_AXIS_ENGINE);
-            		getServletContext().removeAttribute(getServletName() + ATTR_AXIS_ENGINE);
-            		try {
-            			init();
-            		} catch(ServletException x) {
-            			throw new RuntimeException("Error while reloading Axis",x);
-            		}
-            	}
-            }
-        }
-          
+ 
         HttpServletRequest req=(HttpServletRequest)serviceReq.getUnderlyingRequest();
         HttpServletResponse res=(HttpServletResponse)serviceRes.getUnderlyingResponse();
         
