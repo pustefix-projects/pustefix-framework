@@ -32,10 +32,11 @@ import org.w3c.dom.NodeList;
 
 import de.schlund.pfixxml.IncludeDocumentFactory;
 import de.schlund.pfixxml.config.GlobalConfigurator;
-import de.schlund.pfixxml.resources.FileResource;
+import de.schlund.pfixxml.resources.DocrootResource;
 import de.schlund.pfixxml.resources.ResourceUtil;
 import de.schlund.pfixxml.targets.AuxDependency;
 import de.schlund.pfixxml.targets.AuxDependencyFactory;
+import de.schlund.pfixxml.targets.AuxDependencyFile;
 import de.schlund.pfixxml.targets.AuxDependencyImage;
 import de.schlund.pfixxml.targets.AuxDependencyInclude;
 import de.schlund.pfixxml.targets.DependencyType;
@@ -170,14 +171,15 @@ public class CheckIncludes {
                     Element elem = result.createElement("MISSING");
                     prj_elem.appendChild(elem);
                     elem.setAttribute("type", aux.getType().toString());
+                    String path = ((AuxDependencyFile) aux).getPath().getRelativePath();
                     if (aux.getType().equals(DependencyType.TEXT)) {
                         AuxDependencyInclude a = (AuxDependencyInclude) aux;
-                        elem.setAttribute("path", a.getPath().toURI().getPath().substring(1));
+                        elem.setAttribute("path", path);
                         elem.setAttribute("part", a.getPart());
                         elem.setAttribute("theme", a.getTheme());
                     } else if (aux.getType().equals(DependencyType.IMAGE)) {
                         AuxDependencyImage a = (AuxDependencyImage) aux;
-                        elem.setAttribute("path", a.getPath().toURI().getPath().substring(1));
+                        elem.setAttribute("path", a.getPath().getRelativePath());
                     }
                 }
             }
@@ -187,10 +189,10 @@ public class CheckIncludes {
     private void checkForUnusedImages(Document result, Element res_root) throws Exception {
         IncludeDocumentFactory incfac = IncludeDocumentFactory.getInstance();
         for (Iterator i = imagefilenames.iterator(); i.hasNext();) {
-            FileResource img = (FileResource) i.next();
+            DocrootResource img = (DocrootResource) i.next();
 
             Element res_image = result.createElement("image");
-            res_image.setAttribute("name", img.toURI().getPath().substring(1));
+            res_image.setAttribute("name", img.getRelativePath());
             
             res_root.appendChild(res_image);
             
@@ -206,12 +208,12 @@ public class CheckIncludes {
     
     private void checkForUnusedIncludes(Document result, Element res_root) throws Exception {
         for (Iterator i = includefilenames.iterator(); i.hasNext();) {
-            FileResource path = (FileResource) i.next();
+            DocrootResource path = (DocrootResource) i.next();
             Document doc;
 
             Element res_incfile = result.createElement("incfile");
             res_root.appendChild(res_incfile);
-            res_incfile.setAttribute("name", path.toURI().getPath().substring(1));
+            res_incfile.setAttribute("name", path.getRelativePath());
             
             try {
                 doc = Xml.parseMutable(path);

@@ -402,8 +402,7 @@ public class ProjectImpl extends AbstractProject {
         }
         for (Iterator i = deps.iterator(); i.hasNext();) {
             AuxDependencyImage auxdep = (AuxDependencyImage) i.next();
-            images.add(this.imagefactory.getImage(auxdep.getPath()
-                    .toURI().getPath().substring(1)));
+            images.add(this.imagefactory.getImage(auxdep.getPath().getRelativePath()));
         }
         return images;
     }

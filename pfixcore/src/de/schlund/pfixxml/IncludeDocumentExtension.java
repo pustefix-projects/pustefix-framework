@@ -34,6 +34,7 @@ import com.icl.saxon.Context;
 import com.icl.saxon.om.NodeInfo;
 
 import de.schlund.pfixxml.config.GlobalConfig;
+import de.schlund.pfixxml.resources.DocrootResource;
 import de.schlund.pfixxml.resources.FileResource;
 import de.schlund.pfixxml.resources.ResourceUtil;
 import de.schlund.pfixxml.targets.TargetGenerator;
@@ -103,12 +104,12 @@ public final class IncludeDocumentExtension {
         // EEEEK! this code is in need of some serious beautifying....
         
         try {
-            FileResource    path        = ResourceUtil.getFileResourceFromDocroot(path_str);
-            FileResource    parent_path = "".equals(parent_path_str) ? null : ResourceUtil.getFileResourceFromDocroot(parent_path_str);
-            boolean         dolog       = !targetkey.equals(NOTARGET);
-            int             length      = 0;
-            IncludeDocument iDoc        = null;
-            Document        doc;
+            DocrootResource    path        = ResourceUtil.getFileResourceFromDocroot(path_str);
+            DocrootResource    parent_path = "".equals(parent_path_str) ? null : ResourceUtil.getFileResourceFromDocroot(parent_path_str);
+            boolean            dolog       = !targetkey.equals(NOTARGET);
+            int                length      = 0;
+            IncludeDocument    iDoc        = null;
+            Document           doc;
 
             TargetGenerator tgen = TargetGeneratorFactory.getInstance().createGenerator(tgen_path);
             VirtualTarget target = (VirtualTarget) tgen.getTarget(targetkey);

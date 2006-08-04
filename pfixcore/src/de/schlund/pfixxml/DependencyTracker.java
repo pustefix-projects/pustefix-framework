@@ -24,6 +24,7 @@ import org.apache.log4j.Category;
 
 import com.icl.saxon.Context;
 
+import de.schlund.pfixxml.resources.DocrootResource;
 import de.schlund.pfixxml.resources.FileResource;
 import de.schlund.pfixxml.resources.ResourceUtil;
 import de.schlund.pfixxml.targets.DependencyType;
@@ -65,8 +66,8 @@ public class DependencyTracker {
             CAT.error("Error adding Dependency: empty path"); 
             return "1"; 
         }
-        FileResource relativePath   = ResourceUtil.getFileResourceFromDocroot(path);
-        FileResource relativeParent = parent_path.equals("") ? null : ResourceUtil.getFileResourceFromDocroot(parent_path);
+        DocrootResource relativePath   = ResourceUtil.getFileResourceFromDocroot(path);
+        DocrootResource relativeParent = parent_path.equals("") ? null : ResourceUtil.getFileResourceFromDocroot(parent_path);
         try {
             logTyped(type, relativePath, "", "", relativeParent, parent_part, parent_theme, target);
             return "0";
@@ -76,17 +77,17 @@ public class DependencyTracker {
         }
     }
     
-    public static void logTyped(String type, FileResource path, String part, String theme,
-                                FileResource parent_path, String parent_part, String parent_theme,
+    public static void logTyped(String type, DocrootResource path, String part, String theme,
+                                DocrootResource parent_path, String parent_part, String parent_theme,
                                 VirtualTarget target) {
         if (CAT.isDebugEnabled()) {
             String project = target.getTargetGenerator().getName();
             CAT.debug("Adding dependency to AuxdependencyManager :+\n"+
                       "Type       = " + type + "\n" +
-                      "Path       = " + path.toURI().getPath().substring(1) + "\n" +
+                      "Path       = " + path.getRelativePath() + "\n" +
                       "Part       = " + part + "\n" +
                       "Theme      = " + theme + "\n" +
-                      "ParentPath = " + ((parent_path == null)? "null" : parent_path.toURI().getPath().substring(1)) + "\n" +
+                      "ParentPath = " + ((parent_path == null)? "null" : parent_path.getRelativePath()) + "\n" +
                       "ParentPart = " + parent_part + "\n" +
                       "ParentProd = " + parent_theme + "\n" +
                       "Project    = " + project + "\n");

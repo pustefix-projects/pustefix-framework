@@ -102,7 +102,7 @@ public class TargetAuxDepImpl extends AbstractTarget {
      * @see de.schlund.pfixcore.editor2.core.dom.Target#getName()
      */
     public String getName() {
-        return this.auxdep.getPath().toURI().getPath().substring(1);
+        return this.auxdep.getPath().getRelativePath();
     }
 
     /*
@@ -121,8 +121,7 @@ public class TargetAuxDepImpl extends AbstractTarget {
      */
     public Document getContentXML() throws EditorIOException,
             EditorParsingException {
-        File file = new File(this.pathresolver.resolve(this.auxdep.getPath()
-                .toURI().getPath().substring(1)));
+        File file = new File(this.pathresolver.resolve(auxdep.getPath().getRelativePath()));
         Object lock = this.filesystem.getLock(file);
         synchronized (lock) {
             try {

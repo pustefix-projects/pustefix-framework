@@ -143,16 +143,14 @@ public class IncludePartThemeVariantImpl extends
         for (Iterator i = childs.iterator(); i.hasNext();) {
             AuxDependency child = (AuxDependency) i.next();
             if (child.getType() == DependencyType.IMAGE) {
-                Image image = this.imagefactory
-                        .getImage(((AuxDependencyImage) child).getPath()
-                                .toURI().getPath().substring(1));
+                Image image = this.imagefactory.getImage(((AuxDependencyImage) child).getPath().getRelativePath());
                 images.add(image);
             } else if ((child.getType() == DependencyType.TEXT) && recursive) {
                 AuxDependencyInclude aux = (AuxDependencyInclude) child;
                 IncludePartThemeVariant variant = this.includefactory
-                        .getIncludeFile(aux.getPath().toURI().getPath().substring(1))
-                        .createPart(aux.getPart()).createThemeVariant(
-                                themefactory.getTheme(aux.getTheme()));
+                        .getIncludeFile(aux.getPath().getRelativePath())
+                        .createPart(aux.getPart())
+                        .createThemeVariant(themefactory.getTheme(aux.getTheme()));
                 images.addAll(variant.getImageDependencies(true));
             }
         }
@@ -228,16 +226,13 @@ public class IncludePartThemeVariantImpl extends
         for (Iterator i = childs.iterator(); i.hasNext();) {
             AuxDependency child = (AuxDependency) i.next();
             if (child.getType() == DependencyType.IMAGE) {
-                Image image = this.imagefactory
-                        .getImage(((AuxDependencyImage) child).getPath()
-                                .toURI().getPath().substring(1));
+                Image image = this.imagefactory.getImage(((AuxDependencyImage) child).getPath().getRelativePath());
                 images.add(image);
             } else if ((child.getType() == DependencyType.TEXT) && recursive) {
                 AuxDependencyInclude aux = (AuxDependencyInclude) child;
                 IncludePartThemeVariant variant = this.includefactory
-                        .getIncludeFile(aux.getPath().toURI().getPath().substring(1))
-                        .createPart(aux.getPart()).createThemeVariant(
-                                themefactory.getTheme(aux.getTheme()));
+                        .getIncludeFile(aux.getPath().getRelativePath()).createPart(aux.getPart())
+                        .createThemeVariant(themefactory.getTheme(aux.getTheme()));
                 images.addAll(variant.getImageDependencies(true));
             }
         }

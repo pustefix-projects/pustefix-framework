@@ -31,6 +31,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
+import de.schlund.pfixxml.resources.DocrootResource;
 import de.schlund.pfixxml.resources.FileResource;
 import de.schlund.pfixxml.resources.ResourceUtil;
 import de.schlund.pfixxml.util.Xml;
@@ -67,11 +68,11 @@ public class AuxDependencyManager {
                 for (int j = 0; j < auxdeps.getLength(); j++) {
                     String          type           = ((Element) auxdeps.item(j)).getAttribute("type");
                     String          path_attr      = ((Element) auxdeps.item(j)).getAttribute("path");
-                    FileResource    path           = "".equals(path_attr)? null : ResourceUtil.getFileResourceFromDocroot(path_attr);
+                    DocrootResource    path           = "".equals(path_attr)? null : ResourceUtil.getFileResourceFromDocroot(path_attr);
                     String          part           = ((Element) auxdeps.item(j)).getAttribute("part");
                     String          product        = ((Element) auxdeps.item(j)).getAttribute("product");
                     String          parent_attr    = ((Element) auxdeps.item(j)).getAttribute("parent_path");
-                    FileResource    parent_path    = "".equals(parent_attr)? null : ResourceUtil.getFileResourceFromDocroot(parent_attr);
+                    DocrootResource    parent_path    = "".equals(parent_attr)? null : ResourceUtil.getFileResourceFromDocroot(parent_attr);
                     String          parent_part    = ((Element) auxdeps.item(j)).getAttribute("parent_part");
                     String          parent_product = ((Element) auxdeps.item(j)).getAttribute("parent_product");
                     String          target_attr    = ((Element) auxdeps.item(j)).getAttribute("target");
@@ -89,7 +90,7 @@ public class AuxDependencyManager {
         }
     }
     
-    private AuxDependency getParentDependency(FileResource parent_path,
+    private AuxDependency getParentDependency(DocrootResource parent_path,
             String parent_part, String parent_theme) {
         AuxDependency parent = null;
 
@@ -116,7 +117,7 @@ public class AuxDependencyManager {
         }
     }
     
-    public synchronized void addDependencyInclude(FileResource path, String part, String theme, FileResource parent_path, String parent_part, String parent_theme) {
+    public synchronized void addDependencyInclude(DocrootResource path, String part, String theme, DocrootResource parent_path, String parent_part, String parent_theme) {
         if (path == null || part == null || theme == null) {
             throw new IllegalArgumentException("Null pointer is not allowed here");
         }
@@ -127,8 +128,8 @@ public class AuxDependencyManager {
         if (part != null && part.equals("")) part = null;
         if (theme != null && theme.equals("")) theme = null;
         CAT.info("Adding Dependency of type 'text' to Target '" + target.getFullName() + "':");
-        CAT.info("*** [" + path.toURI().getPath().substring(1) + "][" + part + "][" + theme + "][" +
-                 ((parent_path == null)? "null" : parent_path.toURI().getPath().substring(1)) + "][" + parent_part + "][" + parent_theme + "]");
+        CAT.info("*** [" + path.getRelativePath() + "][" + part + "][" + theme + "][" +
+                 ((parent_path == null)? "null" : parent_path.getRelativePath()) + "][" + parent_part + "][" + parent_theme + "]");
 
         child = AuxDependencyFactory.getInstance().getAuxDependencyInclude(path, part, theme);
         parent = getParentDependency(parent_path, parent_part, parent_theme);
@@ -136,7 +137,7 @@ public class AuxDependencyManager {
         TargetDependencyRelation.getInstance().addRelation(parent, child, target);
     }
     
-    public synchronized void addDependencyImage(FileResource path, FileResource parent_path, String parent_part, String parent_theme) {
+    public synchronized void addDependencyImage(DocrootResource path, DocrootResource parent_path, String parent_part, String parent_theme) {
         if (path == null) {
             throw new IllegalArgumentException("Null pointer is not allowed here");
         }
@@ -145,8 +146,8 @@ public class AuxDependencyManager {
         AuxDependency parent = null;
 
         CAT.info("Adding Dependency of type 'text' to Target '" + target.getFullName() + "':");
-        CAT.info("*** [" + path.toURI().getPath().substring(1) + "][" +
-                 ((parent_path == null)? "null" : parent_path.toURI().getPath().substring(1)) + "][" + parent_part + "][" + parent_theme + "]");
+        CAT.info("*** [" + path.getRelativePath() + "][" +
+                 ((parent_path == null)? "null" : parent_path.getRelativePath()) + "][" + parent_part + "][" + parent_theme + "]");
 
         child = AuxDependencyFactory.getInstance().getAuxDependencyImage(path);
         parent = getParentDependency(parent_path, parent_part, parent_theme);
@@ -154,7 +155,7 @@ public class AuxDependencyManager {
         TargetDependencyRelation.getInstance().addRelation(parent, child, target);
     }
     
-    public synchronized void addDependencyFile(FileResource path) {
+    public synchronized void addDependencyFile(DocrootResource path) {
         if (path == null) {
             throw new IllegalArgumentException("Null pointer is not allowed here");
         }
@@ -162,7 +163,7 @@ public class AuxDependencyManager {
         AuxDependency child  = null;
 
         CAT.info("Adding Dependency of type 'text' to Target '" + target.getFullName() + "':");
-        CAT.info("*** [" + path.toURI().getPath().substring(1) + "]");
+        CAT.info("*** [" + path.getRelativePath() + "]");
 
         child = AuxDependencyFactory.getInstance().getAuxDependencyFile(path);
         
@@ -235,7 +236,7 @@ public class AuxDependencyManager {
         if (parentchild != null) {
             for (Iterator<AuxDependency> i = parentchild.keySet().iterator(); i.hasNext(); ) {
                 AuxDependency parent       = i.next();
-                FileResource  parent_path  = null;
+                DocrootResource  parent_path  = null;
                 String        parent_part  = null;
                 String        parent_theme = null;
                 
@@ -258,20 +259,20 @@ public class AuxDependencyManager {
                         depaux.setAttribute("type", type.getTag());
                         if (aux.getType() == DependencyType.TEXT) {
                             AuxDependencyInclude a = (AuxDependencyInclude) aux;
-                            depaux.setAttribute("path", a.getPath().toURI().getPath().substring(1));
+                            depaux.setAttribute("path", a.getPath().getRelativePath());
                             depaux.setAttribute("part", a.getPart());
                             depaux.setAttribute("product", a.getTheme());
                             if (parent_path != null) 
-                                depaux.setAttribute("parent_path", parent_path.toURI().getPath().substring(1));
+                                depaux.setAttribute("parent_path", parent_path.getRelativePath());
                             if (parent_part != null) 
                                 depaux.setAttribute("parent_part", parent_part);
                             if (parent_theme != null) 
                                 depaux.setAttribute("parent_product", parent_theme);
                         } else if (aux.getType() == DependencyType.IMAGE) {
                             AuxDependencyImage a = (AuxDependencyImage) aux;
-                            depaux.setAttribute("path", a.getPath().toURI().getPath().substring(1));
+                            depaux.setAttribute("path", a.getPath().getRelativePath());
                             if (parent_path != null) 
-                                depaux.setAttribute("parent_path", parent_path.toURI().getPath().substring(1));
+                                depaux.setAttribute("parent_path", parent_path.getRelativePath());
                             if (parent_part != null) 
                                 depaux.setAttribute("parent_part", parent_part);
                             if (parent_theme != null) 

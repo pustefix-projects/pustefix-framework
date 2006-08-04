@@ -21,7 +21,7 @@ package de.schlund.pfixxml.targets;
 import java.util.Iterator;
 import java.util.TreeSet;
 
-import de.schlund.pfixxml.resources.FileResource;
+import de.schlund.pfixxml.resources.DocrootResource;
 
 /**
  * Dependency referencing a static file on the filesystem
@@ -29,13 +29,13 @@ import de.schlund.pfixxml.resources.FileResource;
  * @author Sebastian Marsching <sebastian.marsching@1und1.de>
  */
 public class AuxDependencyFile extends AbstractAuxDependency {
-    private FileResource path;
+    private DocrootResource path;
 
     private long last_lastModTime = -1;
     
     protected int hashCode;
     
-    public AuxDependencyFile(FileResource path) {
+    public AuxDependencyFile(DocrootResource path) {
         this.type = DependencyType.FILE;
         this.path = path;
         this.hashCode = (type.getTag() + ":" + path.toString()).hashCode();
@@ -46,7 +46,7 @@ public class AuxDependencyFile extends AbstractAuxDependency {
      * 
      * @return path to the include file
      */
-    public FileResource getPath() {
+    public DocrootResource getPath() {
         return path;
     }
     
@@ -105,7 +105,7 @@ public class AuxDependencyFile extends AbstractAuxDependency {
     }
 
     public String toString() {
-        return "[AUX/" + getType() + " " + getPath().toURI().getPath().substring(1) + "]";
+        return "[AUX/" + getType() + " " + getPath().getRelativePath() + "]";
     }
 
 }

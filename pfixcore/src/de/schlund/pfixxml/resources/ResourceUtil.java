@@ -58,9 +58,9 @@ public class ResourceUtil {
         }
         
         if (scheme.equals("pfixroot")) {
-            return new DocrootResource(uri);
+            return new DocrootResourceImpl(uri);
         } else if (scheme.equals("file")) {
-            return new FileSystemResource(uri);
+            return new FileSystemResourceImpl(uri);
         } else {
             throw new IllegalArgumentException("Cannot handle URI with scheme '" + scheme + "'");
         }
@@ -122,12 +122,12 @@ public class ResourceUtil {
      * @param path path of the resource relative to the docroot 
      * @return Resource from the docroot
      */
-    public static FileResource getFileResourceFromDocroot(String path) {
+    public static DocrootResource getFileResourceFromDocroot(String path) {
         if (!path.startsWith("/")) {
             path = "/" + path;
         }
         try {
-            return getFileResource(new URI("pfixroot", null, path, null, null));
+            return (DocrootResource) getFileResource(new URI("pfixroot", null, path, null, null));
         } catch (URISyntaxException e) {
             throw new IllegalArgumentException("Path \"" + path + "\" is not well-formed", e);
         }

@@ -34,6 +34,7 @@ import org.w3c.dom.NodeList;
 
 import de.schlund.pfixxml.config.GlobalConfigurator;
 import de.schlund.pfixxml.config.XMLPropertiesUtil;
+import de.schlund.pfixxml.resources.DocrootResource;
 import de.schlund.pfixxml.resources.FileResource;
 import de.schlund.pfixxml.resources.ResourceUtil;
 import de.schlund.pfixxml.util.Xml;
@@ -58,7 +59,7 @@ public class GenerateSCodes {
     }
     
     File          dest;
-    HashSet<FileResource> scfiles;
+    HashSet<DocrootResource> scfiles;
     String        docroot;
     
     
@@ -66,7 +67,7 @@ public class GenerateSCodes {
         this.dest    = dest;
         this.docroot = docroot;
 
-        scfiles          = new HashSet<FileResource>();
+        scfiles          = new HashSet<DocrootResource>();
         
         HashSet<String> propfiles = new HashSet<String>(PropertiesUtils.selectProperties(prop, SCODEFILES).values());
 
@@ -108,7 +109,7 @@ public class GenerateSCodes {
             Writer writer = new OutputStreamWriter(new FileOutputStream(dest), "ascii");
             createHeader(writer);
             
-            for (FileResource input: scfiles) {
+            for (DocrootResource input: scfiles) {
                 Document doc   = Xml.parse(input);
                 NodeList list  = doc.getElementsByTagName("part");
                 for (int i = 0; i < list.getLength() ; i++) {
@@ -116,7 +117,7 @@ public class GenerateSCodes {
                     String  name      = node.getAttribute("name");
                     String  classname = StatusCode.convertToFieldName(name);
                     writer.write("  public static final StatusCode " + classname +
-                                 " = new StatusCode(\"" + name + "\", ResourceUtil.getFileResource(\"" + input.toURI().toString() + "\"));\n");
+                                 " = new StatusCode(\"" + name + "\", ResourceUtil.getFileResourceFromDocroot(\"" + input.getRelativePath() + "\"));\n");
                 }
             }
             
