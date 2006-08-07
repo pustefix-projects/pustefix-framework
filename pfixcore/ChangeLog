@@ -1,3 +1,13 @@
+2006-08-07  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixxml/DerefServer.java (DerefServer::handleLink): 
+	Log non-signed but ignored deref attempts
+
+2006-08-03  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixxml/ServletManager.java (ServletManager::getServerName): 
+	merged from TRUNK
+	
 2006-07-24  Martin Leidig  <mleidig@schlund.de>
 
 	Connected webservice fault handling to general exception processing
