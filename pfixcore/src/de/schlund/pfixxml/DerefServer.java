@@ -144,6 +144,11 @@ public class DerefServer extends ServletManager {
                 SessionHelper.getClearedURI(preq) + "?enclink=" + URLEncoder.encode(enclink, "utf8") +
                 "&sign=" + signString(enclink, key);
             
+            // Log the occurrence of such a case to check if we can enable the feature in the future
+            if (!signed && ignore_nosign) {
+                CAT.warn("NOSIGNEDDEREFIGNORED: " + reallink);
+            }
+
             CAT.debug("===> Meta refresh to link: " + reallink);
             DEREFLOG.info(preq.getServerName() + "|" + link + "|" + preq.getRequest().getHeader("Referer"));
             
