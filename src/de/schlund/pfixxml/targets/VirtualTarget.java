@@ -255,8 +255,7 @@ public abstract class VirtualTarget extends TargetImpl {
                         // a complete rebuild of this target the next try
                         storeValue(null);
                         setModTime(-1);
-                        File cachefile = new File(getTargetGenerator()
-                                .getDisccachedir().resolve(), getTargetKey());
+                        File cachefile = new File(getTargetGenerator().getDisccachedir().resolve(), getTargetKey());
                         if (cachefile.exists()) {
                             cachefile.delete();
                         }
@@ -284,8 +283,7 @@ public abstract class VirtualTarget extends TargetImpl {
         return getModTime();
     }
 
-    private void generateValue() throws XMLException, TransformerException,
-            IOException {
+    private void generateValue() throws XMLException, TransformerException, IOException {
         String key = getTargetKey();
         Target tmpxmlsource = getXMLSource();
         Target tmpxslsource = getXSLSource();
@@ -310,24 +308,23 @@ public abstract class VirtualTarget extends TargetImpl {
         Templates templ = (Templates) ((TargetRW) tmpxslsource).getCurrValue();
         if (xmlobj == null)
             throw new XMLException("**** xml source "
-                    + tmpxmlsource.getTargetKey() + " ("
-                    + tmpxmlsource.getType() + ") doesn't have a value!");
+                                   + tmpxmlsource.getTargetKey() + " ("
+                                   + tmpxmlsource.getType() + ") doesn't have a value!");
         if (templ == null)
             throw new XMLException("**** xsl source "
-                    + tmpxslsource.getTargetKey() + " ("
-                    + tmpxslsource.getType() + ") doesn't have a value!");
+                                   + tmpxslsource.getTargetKey() + " ("
+                                   + tmpxslsource.getType() + ") doesn't have a value!");
         TreeMap tmpparams = getParams();
         tmpparams.put("themes", themes.getId());
 
         // Store output in temporary file and overwrite cache file only
         // when transformation was sucessfully finished
         File tempFile = new File(cachepath.resolve(), ".#" + key + ".tmp");
-        Xslt.transform(xmlobj, templ, tmpparams, new StreamResult(
-                new FileOutputStream(tempFile)));
+        Xslt.transform(xmlobj, templ, tmpparams, new StreamResult(new FileOutputStream(tempFile)));
 
         if (!tempFile.renameTo(cachefile)) {
             throw new RuntimeException("Could not rename temporary file '"
-                    + tempFile + "' to file '" + cachefile + "'!");
+                                       + tempFile + "' to file '" + cachefile + "'!");
         }
         
         // Load the target in memcache to make sure all load time
