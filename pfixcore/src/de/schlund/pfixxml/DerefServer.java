@@ -136,7 +136,7 @@ public class DerefServer extends ServletManager {
             
             // Log the occurrence of such a case to check if we can enable the feature in the future
             if (!signed && ignore_nosign) {
-                CAT.warn("NOSIGNEDDEREFIGNORED: " + reallink);
+                CAT.warn("NOSIGNEDDEREFIGNORED: " + link +  "|" + preq.getRequest().getHeader("Referer"));
             }
 
             CAT.debug("===> Meta refresh to link: " + reallink);
