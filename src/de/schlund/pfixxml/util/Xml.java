@@ -18,7 +18,9 @@
  */
 package de.schlund.pfixxml.util;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -26,6 +28,8 @@ import java.io.OutputStream;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.net.MalformedURLException;
+
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -39,6 +43,7 @@ import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.sax.SAXSource;
 import javax.xml.transform.stream.StreamResult;
+
 import org.apache.log4j.Category;
 import org.w3c.dom.Comment;
 import org.w3c.dom.Document;
@@ -50,11 +55,15 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 import org.xml.sax.XMLReader;
+
 import com.icl.saxon.expr.XPathException;
 import com.icl.saxon.output.SaxonOutputKeys;
 import com.icl.saxon.tinytree.TinyDocumentImpl;
 import com.sun.org.apache.xerces.internal.jaxp.DocumentBuilderFactoryImpl;
 import com.sun.org.apache.xerces.internal.parsers.SAXParser;
+
+import de.schlund.pfixxml.SPDocument;
+import de.schlund.pfixxml.resources.FileResource;
 
 public class Xml {
     private static final Category               CAT     = Category.getInstance(Xml.class.getName());
@@ -113,6 +122,16 @@ public class Xml {
             }
         }
     }
+    
+    public static Document parse(FileResource file) throws TransformerException {
+        SAXSource src;
+        try {
+            src = new SAXSource(createXMLReader(), new InputSource(file.toURL().toString()));
+        } catch (MalformedURLException e) {
+            throw new TransformerException("Cannot create URL for input file: " + file.toString(), e);
+        }
+        return parse(src);
+    }
 
     /**
      * Create a document from a sourcefile in the filesystem.
@@ -157,7 +176,15 @@ public class Xml {
             throw new RuntimeException("unexpected ioexception while reading from memory", e);
         }
     }
-
+    
+    public static Document parseMutable(FileResource file) throws IOException, SAXException {
+        if (file.isDirectory()) {
+            // otherwise, I get obscure content-not-allowed-here exceptions
+            throw new IOException("expected file, got directory: " + file);
+        }
+        return parseMutable(new InputSource(file.toURL().toString()));
+    }
+    
     public static Document parseMutable(File file) throws IOException, SAXException {
         if (file.isDirectory()) {
             // otherwise, I get obscure content-not-allowed-here exceptions
@@ -218,6 +245,16 @@ public class Xml {
             throw new RuntimeException("unexpected IOException while writing to memory", e);
         }
         return dest.getBuffer().toString();
+    }
+    
+    public static void serialize(Node node, FileResource file, boolean pp, boolean decl) throws IOException {
+        ByteArrayOutputStream tmp = new ByteArrayOutputStream();
+
+        serialize(node, tmp, pp, decl);
+        
+        OutputStream dest = file.getOutputStream();
+        dest.write(tmp.toByteArray());
+        dest.close();
     }
 
     /**

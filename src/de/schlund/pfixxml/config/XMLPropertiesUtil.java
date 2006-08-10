@@ -19,7 +19,9 @@
 package de.schlund.pfixxml.config;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Properties;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -33,6 +35,8 @@ import org.apache.commons.digester.WithDefaultsRulesWrapper;
 import org.apache.log4j.Logger;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
+
+import de.schlund.pfixxml.resources.FileResource;
 
 /**
  * Loads properties from a XML file
@@ -97,8 +101,25 @@ public abstract class XMLPropertiesUtil {
         loadPropertiesFromXMLFile(file, props);
         return props;
     }
-
+    
+    public static Properties loadPropertiesFromXMLFile(FileResource file) 
+            throws SAXException, IOException {
+        Properties props = new Properties();
+        loadPropertiesFromXMLFile(file, props);
+        return props;
+    }
+    
+    public static void loadPropertiesFromXMLFile(FileResource file, Properties props)
+            throws SAXException, IOException {
+        loadPropertiesFromXMLStream(file.getInputStream(), props);
+    }
+    
     public static void loadPropertiesFromXMLFile(File file, Properties props)
+            throws SAXException, IOException {
+        loadPropertiesFromXMLStream(new FileInputStream(file), props);
+    }
+    
+    public static void loadPropertiesFromXMLStream(InputStream input, Properties props)
             throws SAXException, IOException {
         Digester digester = new Digester();
         
@@ -121,7 +142,7 @@ public abstract class XMLPropertiesUtil {
             SAXParserFactory spfac = SAXParserFactory.newInstance();
             spfac.setNamespaceAware(true);
             parser = spfac.newSAXParser();
-            parser.parse(file, cushandler);
+            parser.parse(input, cushandler);
         } catch (ParserConfigurationException e) {
             throw new RuntimeException("Could not initialize SAXParser!");
         }

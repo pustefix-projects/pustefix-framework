@@ -122,6 +122,11 @@ or delete the DOCTYPE definition -->
     <mkdir dir="${dir.build}"/>
     <mkdir dir="${dir.src}"/>
     <echo message="using machine=${machine} fqdn=${fqdn}" level="verbose"/>
+   
+    <!-- Create commons-logging configuration info -->
+    <mkdir dir="${dir.build}/META-INF/services"/> 
+    <echo file="${dir.build}/META-INF/services/org.apache.commons.logging.LogFactory">de.schlund.pfixxml.util.logging.ProxyLogFactory</echo>
+    
     <!-- pathconvert dumps classpath on ant -verbose -->
     <!-- failed on 2005-10-21 with "example/servletconf/tomcat/common not found"
     <pathconvert property="dev.null" refid="cp.classpath" pathsep="&#013;"/>
@@ -299,11 +304,11 @@ or delete the DOCTYPE definition -->
      description="Creates WEB-INF/web.xml config files for each project"
      />
     <taskdef
-     name="pfx-projectsxml"
-     classname="de.schlund.pfixcore.util.XsltProjectsXmlTask"
+     name="pfx-xsltcus"
+     classname="de.schlund.pfixcore.util.XsltCustomizeXmlTask"
      classpathref="cp.classpath"
      loaderref="pfx-loader"
-     description="Performs projects.xml XSLT transformations"
+     description="Performs XSLT transformations and evaluates customization tags"
      />
     <taskdef
      name="pfx-generate"
@@ -573,7 +578,7 @@ or delete the DOCTYPE definition -->
       <srcfileset refid="id.fileset.projectxmlin"/>
       <targetfileset dir="${dir.projects}/servletconf" includes="projects.xml"/>
     </dependset>
-    <pfx-projectsxml
+    <pfx-xsltcus
      style="${dir.projects}/core/build/create_projects.xsl"
      docroot="${dir.projects}"
      srcdir="${dir.projects}"
@@ -586,7 +591,7 @@ or delete the DOCTYPE definition -->
       <param name="uid"     expression="${uid}"/>
       <param name="machine" expression="${machine}"/>
       <param name="mode"    expression="${makemode}"/>
-    </pfx-projectsxml>
+    </pfx-xsltcus>
   </target>
 
   <target name="web_xml" depends="ant-tasks, projects_xml, defaultwebxml" description="creates servletconf/tomcat/webapps/**/WEB-INF/web.xml">
@@ -625,11 +630,11 @@ or delete the DOCTYPE definition -->
   </target>
 
   <target name="pfixlog_xml" depends="ant-tasks" description="creates common/conf/pfixlog.xml from common/conf/pfixlog.xml.in with core/build/create_log4j_config.xsl">
-    <pfx-xslt
+    <pfx-xsltcus
      style="${dir.projects}/core/build/create_log4j_config.xsl"
-     srcdir="${dir.projects}"
-     destdir="${dir.projects}"
-     includes="common/conf/pfixlog.xml.in"
+     infile="${dir.projects}/common/conf/pfixlog.xml"
+     outfile="${dir.projects}/servletconf/tomcat/conf/log4j.xml"
+     docroot="${dir.projects}"
      extension=""
      >
       <param name="docroot" expression="${dir.docroot}"/>
@@ -637,7 +642,7 @@ or delete the DOCTYPE definition -->
       <param name="uid"     expression="${uid}"/>
       <param name="machine" expression="${machine}"/>
       <param name="mode"    expression="${makemode}"/>
-    </pfx-xslt>
+    </pfx-xsltcus>
   </target>
 
   <target name="apache_conf" depends="ant-tasks, projects_xml" description="creates servletconf/tomcat/apache.conf from servletconf/projects.xml with core/build/create_apacheconf.xsl">
@@ -835,23 +840,27 @@ or delete the DOCTYPE definition -->
     <property name="webapp.tomcat.dir" location="${basedir}/dist/tomcat"/>
   </target>    
 
-  <target name="webapp.dir" depends="webapp.init, webservice">
+  <target name="webapp.dir" depends="webapp.init, webservice, generate">
     <delete dir="${webapp.dir}"/>
     <mkdir dir="${webapp.dir}"/> 
     <mkdir dir="${webapp.pfixroot}"/>
+    <mkdir dir="${webapp.pfixroot}/servletconf"/> 
+    <mkdir dir="${webapp.pfixroot}/servletconf/log"/> 
     <mkdir dir="${webapp.dir}/xml"/>
     <mkdir dir="${webapp.dir}/WEB-INF/classes"/>
     <mkdir dir="${webapp.dir}/WEB-INF/lib"/>
+    
     <copy todir="${webapp.dir}/WEB-INF/lib" flatten="true">
-        <fileset dir="${dir.lib}">
+        <fileset dir="${basedir}">
            <include name="${lib.includes}"/>
         </fileset>
     </copy>
+    
     <copy todir="${webapp.dir}/WEB-INF/classes">
         <fileset dir="${dir.build}">
         </fileset>
     </copy>
-    
+   
     <copy todir="${webapp.dir}/xml">
         <fileset dir="${dir.tomcat}/webapps/${webapp.name}">
             <include name="**/*"/>
@@ -866,7 +875,7 @@ or delete the DOCTYPE definition -->
     </copy>
 
     <xslt style="${dir.projects}/core/build/create_webapp_projectsxml.xsl" in="${dir.projects}/servletconf/projects.xml"
-     out="${webapp.pfixroot}/projects.xml">
+     out="${webapp.pfixroot}/servletconf/projects.xml">
         <param name="projectname"  expression="${webapp.name}"/>    
         <param name="docroot"  expression="${webapp.dir}"/>    
     </xslt>
@@ -874,7 +883,7 @@ or delete the DOCTYPE definition -->
     <pfx-passthroughcopy 
       srcdir="${dir.projects}"
       destdir="${webapp.dir}"
-      projectsxml="${webapp.pfixroot}/projects.xml"
+      projectsxml="${webapp.pfixroot}/servletconf/projects.xml"
       projectname="${webapp.name}"
     />
      
@@ -892,7 +901,7 @@ or delete the DOCTYPE definition -->
       srcdir="${webapp.pfixroot}"
       destdir="dist"
       extension=".xml"
-      projects="projects.xml"
+      projects="servletconf/projects.xml"
       corewebxml="core/conf/web.xml"
      >
       <param name="docroot" expression="${dir.docroot}"/>
@@ -900,6 +909,7 @@ or delete the DOCTYPE definition -->
       <param name="uid"     expression="${uid}"/>
       <param name="machine" expression="${machine}"/>
       <param name="mode"    expression="${makemode}"/>
+      <param name="warmode" expression="true"/>   
     </pfx-webxml>
    
     <antcall target="-webapp.context">
@@ -935,7 +945,7 @@ or delete the DOCTYPE definition -->
       <param name="dir.tomcat" value="${webapp.tomcat.dir}"/>
     </antcall> 
     <pfx-xslt
-     infile="${webapp.pfixroot}/projects.xml"
+     infile="${webapp.pfixroot}/servletconf/projects.xml"
      outfile="${webapp.tomcat.dir}/conf/server.xml"
      style="${dir.projects}/core/build/create_webapp_serverxml.xsl"
      >

@@ -46,9 +46,10 @@ import de.schlund.pfixcore.editor2.core.spring.VariantFactoryService;
 import de.schlund.pfixcore.workflow.Navigation;
 import de.schlund.pfixcore.workflow.NavigationFactory;
 import de.schlund.pfixcore.workflow.Navigation.NavigationElement;
-import de.schlund.pfixxml.PathFactory;
 import de.schlund.pfixxml.event.ConfigurationChangeEvent;
 import de.schlund.pfixxml.event.ConfigurationChangeListener;
+import de.schlund.pfixxml.resources.FileResource;
+import de.schlund.pfixxml.resources.ResourceUtil;
 import de.schlund.pfixxml.targets.AuxDependency;
 import de.schlund.pfixxml.targets.AuxDependencyFactory;
 import de.schlund.pfixxml.targets.AuxDependencyImage;
@@ -58,7 +59,6 @@ import de.schlund.pfixxml.targets.PageTargetTree;
 import de.schlund.pfixxml.targets.TargetDependencyRelation;
 import de.schlund.pfixxml.targets.TargetGenerator;
 import de.schlund.pfixxml.targets.TargetGeneratorFactory;
-import de.schlund.pfixxml.util.Path;
 
 /**
  * Implementation of Project using a XML file to read project information during
@@ -91,7 +91,7 @@ public class ProjectImpl extends AbstractProject {
 
     private TargetFactoryService targetfactory;
 
-    private Path dependPath;
+    private FileResource dependPath;
 
     /**
      * Creates a new Project object
@@ -121,7 +121,7 @@ public class ProjectImpl extends AbstractProject {
         this.imagefactory = imagefactory;
         this.targetfactory = targetfactory;
 
-        this.dependPath = PathFactory.getInstance().createPath(dependFile);
+        this.dependPath = ResourceUtil.getFileResourceFromDocroot(dependFile);
 
         TargetGenerator gen;
         try {
@@ -365,8 +365,7 @@ public class ProjectImpl extends AbstractProject {
 
     private Navigation getNavigation() {
         try {
-            return NavigationFactory.getInstance().getNavigation(
-                    this.dependPath.getRelative());
+            return NavigationFactory.getInstance().getNavigation(this.dependPath);
         } catch (Exception e) {
             throw new RuntimeException(
                     "Could not get navigation object for prokec \""
@@ -403,8 +402,7 @@ public class ProjectImpl extends AbstractProject {
         }
         for (Iterator i = deps.iterator(); i.hasNext();) {
             AuxDependencyImage auxdep = (AuxDependencyImage) i.next();
-            images.add(this.imagefactory.getImage(auxdep.getPath()
-                    .getRelative()));
+            images.add(this.imagefactory.getImage(auxdep.getPath().getRelativePath()));
         }
         return images;
     }
@@ -414,7 +412,7 @@ public class ProjectImpl extends AbstractProject {
         AuxDependency auxdep = AuxDependencyFactory
                 .getInstance()
                 .getAuxDependencyInclude(
-                        PathFactory.getInstance().createPath(file), part, theme);
+                        ResourceUtil.getFileResourceFromDocroot(file), part, theme);
 
         TreeSet deps = TargetDependencyRelation.getInstance()
                 .getProjectDependencies(tgen);
@@ -440,7 +438,7 @@ public class ProjectImpl extends AbstractProject {
         AuxDependency aux = AuxDependencyFactory
                 .getInstance()
                 .getAuxDependencyInclude(
-                        PathFactory.getInstance().createPath(file), part, theme);
+                        ResourceUtil.getFileResourceFromDocroot(file), part, theme);
         TreeSet generators = TargetDependencyRelation.getInstance()
                 .getAffectedTargetGenerators(aux);
         if (generators == null) {

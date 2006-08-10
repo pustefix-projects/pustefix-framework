@@ -55,6 +55,9 @@ import de.schlund.pfixcore.editor2.core.spring.ProjectFactoryService;
 import de.schlund.pfixcore.editor2.core.spring.TargetFactoryService;
 import de.schlund.pfixcore.editor2.core.spring.ThemeFactoryService;
 import de.schlund.pfixcore.editor2.core.spring.VariantFactoryService;
+import de.schlund.pfixxml.resources.DocrootResource;
+import de.schlund.pfixxml.resources.FileResource;
+import de.schlund.pfixxml.resources.FileSystemResource;
 import de.schlund.pfixxml.targets.AuxDependency;
 import de.schlund.pfixxml.targets.AuxDependencyFile;
 import de.schlund.pfixxml.targets.AuxDependencyImage;
@@ -161,9 +164,17 @@ public class TargetPfixImpl extends AbstractTarget {
                         + "!";
                 Logger.getLogger(this.getClass()).warn(msg);
             }
-            file = new File(this.pathresolver.resolve(this.pfixTarget
-                    .getTargetGenerator().getDisccachedir().getRelative()
-                    + "/" + this.pfixTarget.getTargetKey()));
+            FileResource targetFile = this.pfixTarget.getTargetGenerator().getDisccachedir();
+            if (targetFile instanceof DocrootResource) {
+                String targetPath = ((DocrootResource) targetFile).getRelativePath();
+                file = new File(this.pathresolver.resolve(targetPath + "/" + this.pfixTarget.getTargetKey()));
+            } else if (targetFile instanceof FileSystemResource) {
+                String targetPath = ((FileSystemResource) targetFile).getPathOnFileSystem();
+                file = new File(targetPath);
+            } else {
+                throw new RuntimeException("TargetGenerator returned non-docroot and non-filesystem-based path: " + targetFile.toURI());
+            }
+            
         }
         Object lock = this.filesystem.getLock(file);
         synchronized (lock) {
@@ -324,9 +335,7 @@ public class TargetPfixImpl extends AbstractTarget {
                     for (Iterator i = alldeps.iterator(); i.hasNext();) {
                         AuxDependency auxdep = (AuxDependency) i.next();
                         if (auxdep.getType() == DependencyType.IMAGE) {
-                            Image img = this.imagefactory
-                                    .getImage(((AuxDependencyImage) auxdep)
-                                            .getPath().getRelative());
+                            Image img = this.imagefactory.getImage(((AuxDependencyImage) auxdep).getPath().getRelativePath());
                             deps.add(img);
                         }
                     }
@@ -354,9 +363,7 @@ public class TargetPfixImpl extends AbstractTarget {
                         .hasNext();) {
                     AuxDependency auxdep = (AuxDependency) i.next();
                     if (auxdep.getType() == DependencyType.IMAGE) {
-                        Image img = this.imagefactory
-                        .getImage(((AuxDependencyImage) auxdep)
-                                .getPath().getRelative());
+                        Image img = this.imagefactory.getImage(((AuxDependencyImage) auxdep).getPath().getRelativePath());
                         deps.add(img);
                     }
                 }

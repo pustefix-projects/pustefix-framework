@@ -33,6 +33,7 @@ import org.apache.commons.digester.WithDefaultsRulesWrapper;
 import org.xml.sax.SAXException;
 
 import de.schlund.pfixcore.scriptedflow.ScriptedFlowConfig;
+import de.schlund.pfixxml.resources.FileResource;
 
 /**
  * Stores configuration for a Pustefix servlet
@@ -57,7 +58,7 @@ public class ContextXMLServletConfig extends AbstractXMLServletConfig implements
 
     private ScriptedFlowConfig scriptedFlowConfig = new ScriptedFlowConfig();
 
-    public static ContextXMLServletConfig readFromFile(File file,
+    public static ContextXMLServletConfig readFromFile(FileResource file,
             Properties globalProperties) throws SAXException, IOException {
         ContextXMLServletConfig config = new ContextXMLServletConfig();
 
@@ -276,7 +277,7 @@ public class ContextXMLServletConfig extends AbstractXMLServletConfig implements
             SAXParserFactory spfac = SAXParserFactory.newInstance();
             spfac.setNamespaceAware(true);
             parser = spfac.newSAXParser();
-            parser.parse(file, cushandler);
+            parser.parse(file.getInputStream(), cushandler);
         } catch (ParserConfigurationException e) {
             throw new RuntimeException("Could not initialize SAXParser!");
         }

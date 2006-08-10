@@ -37,13 +37,7 @@ import de.schlund.pfixcore.editor2.core.dom.Project;
 import de.schlund.pfixcore.editor2.frontend.resources.ProjectsResource;
 import de.schlund.pfixcore.editor2.frontend.util.EditorResourceLocator;
 import de.schlund.pfixcore.workflow.Context;
-import de.schlund.pfixxml.PathFactory;
 import de.schlund.pfixxml.ResultDocument;
-import de.schlund.pfixxml.targets.AuxDependency;
-import de.schlund.pfixxml.targets.AuxDependencyFactory;
-import de.schlund.pfixxml.targets.DependencyType;
-import de.schlund.pfixxml.targets.TargetGenerator;
-import de.schlund.pfixxml.targets.TargetGeneratorFactory;
 
 public class ContextSearchImpl implements ContextSearch {
 

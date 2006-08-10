@@ -18,13 +18,15 @@
  */
 
 package de.schlund.pfixxml;
+import org.apache.log4j.Category;
+
 import com.icl.saxon.Context;
+
+import de.schlund.pfixxml.resources.FileResource;
+import de.schlund.pfixxml.resources.ResourceUtil;
 import de.schlund.pfixxml.targets.TargetGenerator;
 import de.schlund.pfixxml.targets.TargetGeneratorFactory;
 import de.schlund.pfixxml.targets.VirtualTarget;
-import de.schlund.pfixxml.util.Path;
-import java.io.File;
-import org.apache.log4j.Category;
     
 /**
  * Describe class ImageThemedSrc here.
@@ -44,7 +46,7 @@ public class ImageThemedSrc {
                                 String targetGen, String targetKey) throws Exception {
 
         String[]        themes    = null;
-        Path            tgen_path = PathFactory.getInstance().createPath(targetGen);
+        FileResource    tgen_path = ResourceUtil.getFileResource(targetGen);
         TargetGenerator gen       = TargetGeneratorFactory.getInstance().createGenerator(tgen_path);
           
         if (!targetKey.equals("__NONE__")) {
@@ -104,7 +106,7 @@ public class ImageThemedSrc {
     }
 
     private static boolean existsImage(String path) {
-        File img = PathFactory.getInstance().createPath(path).resolve();
+        FileResource img = ResourceUtil.getFileResourceFromDocroot(path);
         return (img.exists() && img.canRead() && img.isFile());
     }
 

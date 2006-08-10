@@ -18,7 +18,7 @@
 
 package de.schlund.pfixxml.targets;
 
-import de.schlund.pfixxml.util.Path;
+import de.schlund.pfixxml.resources.DocrootResource;
 
 /**
  * Dependency referencing an image that is embedded into a target.
@@ -30,7 +30,7 @@ import de.schlund.pfixxml.util.Path;
  */
 public class AuxDependencyImage extends AuxDependencyFile {
 
-    public AuxDependencyImage(Path path) {
+    public AuxDependencyImage(DocrootResource path) {
         super(path);
         this.type = DependencyType.IMAGE;
     }

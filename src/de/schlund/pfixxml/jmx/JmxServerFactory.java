@@ -21,23 +21,17 @@ package de.schlund.pfixxml.jmx;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
 import java.util.Properties;
 import java.util.TreeMap;
 
 import org.apache.log4j.Logger;
 import org.apache.oro.text.regex.MalformedPatternException;
-import org.apache.oro.text.regex.Pattern;
 import org.apache.oro.text.regex.PatternMatcher;
 import org.apache.oro.text.regex.Perl5Compiler;
 import org.apache.oro.text.regex.Perl5Matcher;
-import org.apache.oro.text.regex.Perl5Pattern;
 
 import de.schlund.pfixcore.util.PropertiesUtils;
 import de.schlund.pfixxml.FactoryInitServlet;
-import de.schlund.pfixxml.PathFactory;
 
 /** 
  * Configures and starts JmxServer

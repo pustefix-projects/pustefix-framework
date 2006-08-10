@@ -18,7 +18,7 @@
 
 package de.schlund.pfixxml.targets;
 
-import de.schlund.pfixxml.util.Path;
+import de.schlund.pfixxml.resources.DocrootResource;
 
 /**
  * Stores information about an include part used by a target.
@@ -31,13 +31,13 @@ public class AuxDependencyInclude extends AuxDependencyFile {
 
     private String theme;
 
-    public AuxDependencyInclude(Path path, String part, String theme) {
+    public AuxDependencyInclude(DocrootResource path, String part, String theme) {
         super(path);
         this.type = DependencyType.TEXT;
         this.part = part;
         this.theme = theme;
 
-        String key = type.getTag() + "@" + path.getRelative() + "@" + part
+        String key = type.getTag() + "@" + path.toString() + "@" + part
                 + "@" + theme;
         this.hashCode = key.hashCode();
     }
@@ -92,7 +92,7 @@ public class AuxDependencyInclude extends AuxDependencyFile {
     }
 
     public String toString() {
-        return "[AUX/" + getType() + " " + getPath().getRelative() + "@"
+        return "[AUX/" + getType() + " " + getPath().getRelativePath() + "@"
                 + getPart() + "@" + getTheme() + "]";
     }
 

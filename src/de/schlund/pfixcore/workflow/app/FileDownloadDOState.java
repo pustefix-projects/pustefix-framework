@@ -19,11 +19,18 @@
 
 package de.schlund.pfixcore.workflow.app;
 
-import de.schlund.pfixcore.workflow.*;
-import de.schlund.pfixxml.*;
-import java.io.*;
-import java.util.*;
-import javax.servlet.http.*;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.Properties;
+
+import javax.servlet.http.HttpServletResponse;
+
+import de.schlund.pfixcore.workflow.ContextResourceManager;
+import de.schlund.pfixcore.workflow.DirectOutputState;
+import de.schlund.pfixxml.PfixServletRequest;
+import de.schlund.pfixxml.XMLException;
+import de.schlund.pfixxml.resources.FileResource;
+import de.schlund.pfixxml.resources.ResourceUtil;
 
 /**
  * FileDownloadDOState.java
@@ -63,7 +70,7 @@ public class FileDownloadDOState implements DirectOutputState {
             throw new XMLException("*** Need property " + PROP_MIMETYPE + " ***");
         }
 
-        File file = PathFactory.getInstance().createPath(filename).resolve();
+        FileResource file = ResourceUtil.getFileResourceFromDocroot(filename);
 
         if (file.exists() && file.canRead()) {
             return true;
@@ -88,10 +95,10 @@ public class FileDownloadDOState implements DirectOutputState {
     public synchronized void handleRequest(ContextResourceManager crm, Properties props, PfixServletRequest preq, HttpServletResponse res) throws Exception {
         String filename = props.getProperty(PROP_FILENAME);
         String mimetype = props.getProperty(PROP_MIMETYPE);
-        File   file     = PathFactory.getInstance().createPath(filename).resolve();
+        FileResource file = ResourceUtil.getFileResourceFromDocroot(filename);
         
         res.setContentType(mimetype);
-        FileInputStream  fin  = new FileInputStream(file);
+        InputStream  fin  = file.getInputStream();
         OutputStream     out  = res.getOutputStream();
         byte[]           buff = new byte[4096];
         int              num  = 0;

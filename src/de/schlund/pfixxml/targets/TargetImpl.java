@@ -28,6 +28,8 @@ import javax.xml.transform.TransformerException;
 import org.apache.log4j.Category;
 
 import de.schlund.pfixxml.XMLException;
+import de.schlund.pfixxml.resources.FileResource;
+import de.schlund.pfixxml.resources.ResourceUtil;
 import de.schlund.pfixxml.targets.cachestat.SPCacheStatistic;
 
 /**
@@ -140,7 +142,7 @@ public abstract class TargetImpl implements TargetRW, Comparable {
             CAT.debug("skip_getmodtimemaybeupdate is true. Trying to skip getModTimeMaybeUpdate...");
             if (!onceLoaded) {
                 // do test for exists here!
-                File thefile = new File(getTargetGenerator().getDisccachedir().resolve(), getTargetKey());
+                FileResource thefile = ResourceUtil.getFileResource(getTargetGenerator().getDisccachedir(), getTargetKey());
                 if (!thefile.exists()) { // Target has not been loaded once and it doesn't exist in disk cache
                     CAT.debug("Cant't skip getModTimeMaybeUpdated because it has not been loaded " +
                               "and doesn't even exist in disk cache! Generating now !!");
@@ -236,7 +238,7 @@ public abstract class TargetImpl implements TargetRW, Comparable {
                     // newer any more, so set the mod time of the target to the mod time of the file
                     // in disk cache
                     if (isDiskCacheNewerThenMemCache()) {
-                        setModTime(new File(getTargetGenerator().getDisccachedir().resolve(), getTargetKey()).lastModified());
+                        setModTime(ResourceUtil.getFileResource(getTargetGenerator().getDisccachedir(), getTargetKey()).lastModified());
                     }
 
                     // now the target is generated
@@ -262,7 +264,7 @@ public abstract class TargetImpl implements TargetRW, Comparable {
     
     public boolean isDiskCacheNewerThenMemCache() {
         long target_mod_time = getModTime();
-        File thefile = new File(getTargetGenerator().getDisccachedir().resolve(), getTargetKey());
+        FileResource thefile = ResourceUtil.getFileResource(getTargetGenerator().getDisccachedir(), getTargetKey());
         long disk_mod_time = thefile.lastModified();
         if (CAT.isDebugEnabled()) {
             CAT.debug("File in DiskCache "+ getTargetGenerator().getDisccachedir() + File.separator

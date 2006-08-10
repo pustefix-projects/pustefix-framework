@@ -20,9 +20,7 @@
 package de.schlund.pfixcore.webservice.generate;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -58,6 +56,9 @@ import de.schlund.pfixcore.webservice.config.ConfigurationReader;
 import de.schlund.pfixcore.webservice.config.GlobalServiceConfig;
 import de.schlund.pfixcore.webservice.config.ServiceConfig;
 import de.schlund.pfixxml.PathFactory;
+import de.schlund.pfixxml.config.GlobalConfigurator;
+import de.schlund.pfixxml.resources.FileResource;
+import de.schlund.pfixxml.resources.ResourceUtil;
 
 /**
  * WebServiceTask.java
@@ -107,7 +108,12 @@ public class WebServiceTask extends Task {
     public void execute() throws BuildException {
         checkAttributes();
         if(!prjfile.exists()) throw new BuildException("Project configuration file "+prjfile.getAbsolutePath()+" doesn't exist");
-        PathFactory.getInstance().init(prjdir.getAbsolutePath());
+        try {
+            GlobalConfigurator.setDocroot(prjdir.getAbsolutePath());
+        } catch (IllegalStateException e) {
+            // Ignore exception as there is no problem
+            // if the docroot has already been configured
+        }
         try {
             Document doc=loadDoc(prjfile);
             NodeList nl=doc.getElementsByTagName("project");
@@ -115,7 +121,7 @@ public class WebServiceTask extends Task {
             for(int i=0;i<nl.getLength();i++) {
                 Element elem=(Element)nl.item(i);
                 String prjName=elem.getAttribute("name");
-                File wsConfFile=new File(prjdir,prjName+File.separator+"conf"+File.separator+"webservice.conf.xml");         
+                FileResource wsConfFile=ResourceUtil.getFileResource("file://"+prjdir.getAbsolutePath()+"/"+prjName+"/"+"conf"+"/"+"webservice.conf.xml");
                 //go on processing if webservices found
                 if(wsConfFile.exists()) {
                     if(!wsddSkel.exists()) throw new BuildException("Web service deployment descriptor skeleton "+
@@ -125,7 +131,7 @@ public class WebServiceTask extends Task {
                     Configuration srvConf=ConfigurationReader.read(wsConfFile);
                     GlobalServiceConfig globConf=srvConf.getGlobalServiceConfig();
                     //read last built webservice configuration
-                    File refWsConfFile=new File(tmpDir,"webservice.conf.xml");
+                    FileResource refWsConfFile=ResourceUtil.getFileResource("file://"+tmpDir.getAbsolutePath()+"/"+"webservice.conf.xml");
                     Configuration refSrvConf=null;
                     GlobalServiceConfig refGlobConf=null;
                     boolean globalConfChanged=false;
@@ -345,7 +351,7 @@ public class WebServiceTask extends Task {
                     }
                     
                     //Store current webservice configuration file
-                    copy(wsConfFile,refWsConfFile);
+                    ResourceUtil.copy(wsConfFile,refWsConfFile);
                     
                     if(wsdlCnt!=0) log("Generated "+wsdlCnt+"(of "+srvCnt+") WSDL file(s)");
                     if(wsddCnt!=0) log("Generated "+wsddCnt+"(of "+srvCnt+") WSDD file(s)");
@@ -527,19 +533,6 @@ public class WebServiceTask extends Task {
             }
         }
     
-        private void copy(File source,File target) throws IOException {
-            FileInputStream in=new FileInputStream(source);
-            FileOutputStream out=new FileOutputStream(target);
-            byte[] buffer=new byte[4096];
-            int no=0;
-            try {
-                while((no=in.read(buffer))!=-1) out.write(buffer,0,no);
-            } finally {
-                in.close();
-                out.close();
-            }
-        }
-        
         public void setFqdn(String fqdn) {
             this.fqdn=fqdn;
         }

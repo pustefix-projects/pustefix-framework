@@ -18,8 +18,9 @@
  */
 
 package de.schlund.pfixxml.targets;
-import java.util.*;
-import java.io.*;
+import java.util.TreeSet;
+
+import de.schlund.pfixxml.resources.FileResource;
 
 /**
  * SharedLeaf.java
@@ -33,18 +34,15 @@ import java.io.*;
  */
 
 public class SharedLeaf implements Comparable {
-    private String  path;
-    private String  dir;
+    private FileResource path;
     private TreeSet pageinfos = new TreeSet();
     private long    modtime   = 0;
     
-    protected SharedLeaf(String path) {
+    protected SharedLeaf(FileResource path) {
         this.path = path;
-        this.dir  = path.substring(0,path.lastIndexOf("/"));
     }
 
-    public String getDir() { return dir; }
-    public String getPath() { return path; }
+    public FileResource getPath() { return path; }
     
     public void addPageInfo(PageInfo info) {
         synchronized (pageinfos) {
@@ -64,9 +62,8 @@ public class SharedLeaf implements Comparable {
 
     public long getModTime() {
         if (modtime == 0) {
-            File doc = new File(getPath());
-            if (doc.exists() && doc.isFile()) {
-                setModTime(doc.lastModified());
+            if (path.exists() && path.isFile()) {
+                setModTime(path.lastModified());
             }
         }
         return modtime;
@@ -77,11 +74,7 @@ public class SharedLeaf implements Comparable {
     
     public int compareTo(Object inobj) {
         SharedLeaf in = (SharedLeaf) inobj;
-        if (dir.compareTo(in.getDir()) != 0) {  
-            return dir.compareTo(in.getDir());
-        } else { 
-            return path.compareTo(in.getPath());
-        }
+        return path.compareTo(in.path);
     }
 
 }// SharedLeaf

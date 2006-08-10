@@ -19,12 +19,18 @@
 
 package de.schlund.pfixcore.workflow;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.log4j.Category;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+
+import de.schlund.pfixxml.resources.FileResource;
 import de.schlund.pfixxml.util.XPath;
 import de.schlund.pfixxml.util.Xml;
-import java.io.File;
-import java.util.*;
-import org.apache.log4j.*;
-import org.w3c.dom.*;
 
 public class Navigation {
     private Category CAT = Category.getInstance(Navigation.class.getName());
@@ -32,7 +38,7 @@ public class Navigation {
     private NavigationElement                   pageroot = new NavigationElement("__NONE__", "__NONE__");
     private Map<String, NavigationElement> pagetonavi;
     
-    public Navigation(File navifile) throws Exception {
+    public Navigation(FileResource navifile) throws Exception {
         Document navitree = Xml.parseMutable(navifile);
         List     nl       = XPath.select(navitree, "/make/navigation/page");
         pagetonavi        = new HashMap<String, NavigationElement>();

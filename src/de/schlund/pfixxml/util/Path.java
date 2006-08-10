@@ -20,9 +20,13 @@ package de.schlund.pfixxml.util;
 
 import java.io.File;
 
+import de.schlund.pfixxml.resources.FileResource;
+
 /**
  * Similar to java.io.File, but the base directory for relative paths can be 
  * specified.  
+ * 
+ * @deprecated Use {@link FileResource} instead
  */
 public class Path implements Comparable {
     private static final String SEP = File.separator; 

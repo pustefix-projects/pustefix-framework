@@ -18,13 +18,12 @@
 
 package de.schlund.pfixxml.config;
 
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
 
 import org.apache.log4j.Logger;
 
-import de.schlund.pfixxml.PathFactory;
+import de.schlund.pfixxml.resources.ResourceUtil;
 
 /**
  * Provides easy access to properties stored at buildtime 
@@ -38,8 +37,7 @@ public class BuildTimeProperties {
         if (BuildTimeProperties.props == null) {
             Properties props = new Properties();
             try {
-                props.load(new FileInputStream(PathFactory.getInstance()
-                        .createPath("common/conf/buildtime.prop").resolve()));
+                props.load(ResourceUtil.getFileResourceFromDocroot("common/conf/buildtime.prop").getInputStream());
                 BuildTimeProperties.props = props;
             } catch (IOException e) {
                 Logger.getLogger(BuildTimeProperties.class).error(
