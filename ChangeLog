@@ -1,3 +1,9 @@
+2006-08-10  Sebastian Marsching  <sebastian.marsching@1und1.de>
+
+	* src/de/schlund/pfixcore/workflow/ContextImpl.java (handleRequest): 
+	Reset the variant stored within the context to the session variant before
+	returning the SPDocument
+
 2006-08-07  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
 	* src/de/schlund/pfixcore/editor2/core/spring/internal/ImageImpl.java: 
