@@ -18,9 +18,9 @@
  */
 package de.schlund.pfixxml.targets;
 
-import java.io.File;
-import java.io.FileOutputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.Iterator;
 import java.util.TreeMap;
 import java.util.TreeSet;
@@ -33,7 +33,8 @@ import org.apache.log4j.NDC;
 import org.w3c.dom.Document;
 
 import de.schlund.pfixxml.XMLException;
-import de.schlund.pfixxml.util.Path;
+import de.schlund.pfixxml.resources.FileResource;
+import de.schlund.pfixxml.resources.ResourceUtil;
 import de.schlund.pfixxml.util.Xslt;
 
 /**
@@ -101,8 +102,7 @@ public abstract class VirtualTarget extends TargetImpl {
         if (modtime == 0) {
             synchronized (this) {
                 if (modtime == 0) {
-                    File doc = new File(getTargetGenerator().getDisccachedir()
-                            .resolve(), getTargetKey());
+                    FileResource doc = ResourceUtil.getFileResource(getTargetGenerator().getDisccachedir(), getTargetKey());
                     if (doc.exists() && doc.isFile()) {
                         setModTime(doc.lastModified());
                     }
@@ -255,7 +255,8 @@ public abstract class VirtualTarget extends TargetImpl {
                         // a complete rebuild of this target the next try
                         storeValue(null);
                         setModTime(-1);
-                        File cachefile = new File(getTargetGenerator().getDisccachedir().resolve(), getTargetKey());
+                        FileResource cachefile = ResourceUtil.getFileResource(getTargetGenerator()
+                                .getDisccachedir(), getTargetKey());
                         if (cachefile.exists()) {
                             cachefile.delete();
                         }
@@ -283,13 +284,14 @@ public abstract class VirtualTarget extends TargetImpl {
         return getModTime();
     }
 
-    private void generateValue() throws XMLException, TransformerException, IOException {
+    private void generateValue() throws XMLException, TransformerException,
+            IOException {
         String key = getTargetKey();
         Target tmpxmlsource = getXMLSource();
         Target tmpxslsource = getXSLSource();
-        Path cachepath = getTargetGenerator().getDisccachedir();
-        File cachefile = new File(cachepath.resolve(), key);
-        new File(cachefile.getParent()).mkdirs();
+        FileResource cachepath = getTargetGenerator().getDisccachedir();
+        FileResource cachefile = ResourceUtil.getFileResource(cachepath, key);
+        cachefile.getParentAsFileResource().mkdirs();
         if (CAT.isDebugEnabled()) {
             CAT.debug(key + ": Getting " + getType() + " by XSLTrafo ("
                     + tmpxmlsource.getTargetKey() + " / "
@@ -308,24 +310,22 @@ public abstract class VirtualTarget extends TargetImpl {
         Templates templ = (Templates) ((TargetRW) tmpxslsource).getCurrValue();
         if (xmlobj == null)
             throw new XMLException("**** xml source "
-                                   + tmpxmlsource.getTargetKey() + " ("
-                                   + tmpxmlsource.getType() + ") doesn't have a value!");
+                    + tmpxmlsource.getTargetKey() + " ("
+                    + tmpxmlsource.getType() + ") doesn't have a value!");
         if (templ == null)
             throw new XMLException("**** xsl source "
-                                   + tmpxslsource.getTargetKey() + " ("
-                                   + tmpxslsource.getType() + ") doesn't have a value!");
+                    + tmpxslsource.getTargetKey() + " ("
+                    + tmpxslsource.getType() + ") doesn't have a value!");
         TreeMap tmpparams = getParams();
         tmpparams.put("themes", themes.getId());
 
-        // Store output in temporary file and overwrite cache file only
+        // Store output in temporary object and overwrite cache file only
         // when transformation was sucessfully finished
-        File tempFile = new File(cachepath.resolve(), ".#" + key + ".tmp");
-        Xslt.transform(xmlobj, templ, tmpparams, new StreamResult(new FileOutputStream(tempFile)));
-
-        if (!tempFile.renameTo(cachefile)) {
-            throw new RuntimeException("Could not rename temporary file '"
-                                       + tempFile + "' to file '" + cachefile + "'!");
-        }
+        ByteArrayOutputStream temp = new ByteArrayOutputStream();
+        Xslt.transform(xmlobj, templ, tmpparams, new StreamResult(temp));
+        OutputStream out = cachefile.getOutputStream();
+        out.write(temp.toByteArray());
+        out.close();
         
         // Load the target in memcache to make sure all load time
         // dependencies are being registered

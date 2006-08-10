@@ -19,7 +19,6 @@
 package de.schlund.pfixxml;
 
 
-import java.io.File;
 import java.text.MessageFormat;
 import java.util.List;
 
@@ -34,10 +33,13 @@ import org.xml.sax.SAXException;
 import com.icl.saxon.Context;
 import com.icl.saxon.om.NodeInfo;
 
+import de.schlund.pfixxml.config.GlobalConfig;
+import de.schlund.pfixxml.resources.DocrootResource;
+import de.schlund.pfixxml.resources.FileResource;
+import de.schlund.pfixxml.resources.ResourceUtil;
 import de.schlund.pfixxml.targets.TargetGenerator;
 import de.schlund.pfixxml.targets.TargetGeneratorFactory;
 import de.schlund.pfixxml.targets.VirtualTarget;
-import de.schlund.pfixxml.util.Path;
 import de.schlund.pfixxml.util.XPath;
 import de.schlund.pfixxml.util.Xml;
 
@@ -84,11 +86,10 @@ public final class IncludeDocumentExtension {
                                    String targetgen, String targetkey,
                                    String parent_part_in, String parent_theme_in, String computed_inc) throws Exception {
 
-        PathFactory pf              = PathFactory.getInstance();
-        String      parent_path_str = "";
-        String      parent_part     = "";
-        String      parent_theme    = "";
-        Path        tgen_path       = pf.createPath(targetgen);
+        String       parent_path_str = "";
+        String       parent_part     = "";
+        String       parent_theme    = "";
+        FileResource tgen_path       = ResourceUtil.getFileResource(targetgen);
         
         if (computed_inc.equals("false") && isIncludeDocument(context)) {
             parent_path_str = makeSystemIdRelative(context);
@@ -103,13 +104,12 @@ public final class IncludeDocumentExtension {
         // EEEEK! this code is in need of some serious beautifying....
         
         try {
-            Path            path        = pf.createPath(path_str);
-            Path            parent_path = "".equals(parent_path_str) ? null : pf.createPath(parent_path_str);
-            boolean         dolog       = !targetkey.equals(NOTARGET);
-            File            incfile     = path.resolve();
-            int             length      = 0;
-            IncludeDocument iDoc        = null;
-            Document        doc;
+            DocrootResource    path        = ResourceUtil.getFileResourceFromDocroot(path_str);
+            DocrootResource    parent_path = "".equals(parent_path_str) ? null : ResourceUtil.getFileResourceFromDocroot(parent_path_str);
+            boolean            dolog       = !targetkey.equals(NOTARGET);
+            int                length      = 0;
+            IncludeDocument    iDoc        = null;
+            Document           doc;
 
             TargetGenerator tgen = TargetGeneratorFactory.getInstance().createGenerator(tgen_path);
             VirtualTarget target = (VirtualTarget) tgen.getTarget(targetkey);
@@ -131,7 +131,7 @@ public final class IncludeDocumentExtension {
             
             String DEF_THEME = themes[(themes.length -1)];
 
-            if (!incfile.exists()) {
+            if (!path.exists()) {
                 if (dolog) {
                     DependencyTracker.logTyped("text", path, part, DEF_THEME,
                                                parent_path, parent_part, parent_theme, target);
@@ -274,10 +274,13 @@ public final class IncludeDocumentExtension {
     public static final String makeSystemIdRelative(Context context, String dummy) {
         NodeInfo citem   = context.getContextNodeInfo();
         String   sysid   = citem.getSystemId();
-        String   docroot = PathFactory.getInstance().createPath("dummy").getBase().getPath();
-
-        if (sysid.startsWith("file://" + docroot)) {
-            sysid = sysid.substring(("file://" + docroot).length());
+       
+        if (sysid.startsWith("pfixroot://")) {
+            sysid = sysid.substring(("pfixroot://").length());
+        }
+        String docroot_url = GlobalConfig.getDocrootAsURL().toString() + "/";
+        if (sysid.startsWith(docroot_url)) {
+            sysid = sysid.substring(docroot_url.length());
         }
         if (sysid.startsWith("/")) {
             sysid = sysid.substring(1);

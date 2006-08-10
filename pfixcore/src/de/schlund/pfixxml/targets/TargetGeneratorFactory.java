@@ -20,11 +20,12 @@
 package de.schlund.pfixxml.targets;
 
 
-import de.schlund.pfixxml.XMLException;
-import de.schlund.pfixxml.util.Path;
-import java.io.File;
 import java.util.HashMap;
+
 import org.apache.log4j.Category;
+
+import de.schlund.pfixxml.XMLException;
+import de.schlund.pfixxml.resources.FileResource;
 
 
 public class TargetGeneratorFactory {
@@ -36,24 +37,23 @@ public class TargetGeneratorFactory {
         return instance;
     }
 
-    public synchronized TargetGenerator createGenerator(Path cfilepath) throws Exception {
-        File cfile = cfilepath.resolve();
+    public synchronized TargetGenerator createGenerator(FileResource cfile) throws Exception {
         if (cfile.exists() && cfile.isFile() && cfile.canRead()) {
             String key = genKey(cfile);
             TargetGenerator generator = (TargetGenerator) generatormap.get(key);
             if (generator == null) {
                 CAT.debug("-- Init TargetGenerator --");
-                generator = new TargetGenerator(cfilepath);
+                generator = new TargetGenerator(cfile);
                 
                 // Check generator has unique name
                 String tgenName = generator.getName();
                 for (TargetGenerator tgen : generatormap.values()) {
                     if (tgen.getName().equals(tgenName)) {
                         String msg = "Cannot create TargetGenerator for config file \"" 
-                            + generator.getConfigPath().resolve() 
+                            + generator.getConfigPath().toString() 
                             + "\" as it is using the name \"" + tgenName
                             + "\" which is already being used by TargetGenerator with config file \""
-                            + tgen.getConfigPath().resolve() + "\"";
+                            + tgen.getConfigPath().toString() + "\"";
                         CAT.error(msg);
                         throw new Exception(msg);
                     }
@@ -65,18 +65,17 @@ public class TargetGeneratorFactory {
             }
             return generator;
         } else {
-            throw new XMLException("\nConfigfile '" + cfilepath.getRelative() +
+            throw new XMLException("\nConfigfile '" + cfile.toString() +
                                     "' isn't a file, can't be read or doesn't exist");
         }
     }
 
-    public void remove(Path genfilepath) {
-        File genfile = genfilepath.resolve();
+    public void remove(FileResource genfile) {
         generatormap.remove(genKey(genfile));
     }
 
-    private String genKey(File genfile) {
-        return genfile.getAbsolutePath();
+    private String genKey(FileResource genfile) {
+        return genfile.toString();
     }
     
     public void reset() {

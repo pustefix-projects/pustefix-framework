@@ -48,8 +48,8 @@ import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
 import org.xml.sax.helpers.XMLReaderFactory;
 
-import de.schlund.pfixxml.PathFactory;
 import de.schlund.pfixxml.config.CustomizationHandler;
+import de.schlund.pfixxml.config.GlobalConfigurator;
 import de.schlund.pfixxml.util.TransformerHandlerAdapter;
 
 /**
@@ -57,7 +57,7 @@ import de.schlund.pfixxml.util.TransformerHandlerAdapter;
  * 
  * @author Sebastian Marsching <sebastian.marsching@1und1.de>
  */
-public class XsltProjectsXmlTask extends XsltGenericTask {
+public class XsltCustomizeXmlTask extends XsltGenericTask {
 
     private String docroot;
     
@@ -70,7 +70,12 @@ public class XsltProjectsXmlTask extends XsltGenericTask {
         if (docroot == null) {
             throw new BuildException("Attribute docroot not set!");
         }
-        PathFactory.getInstance().init(docroot);
+        try {
+            GlobalConfigurator.setDocroot(docroot);
+        } catch (IllegalStateException e) {
+            // Ignore exception as there is no problem
+            // if the docroot has already been configured
+        }
     }
     
     public String getDocroot() {
@@ -91,7 +96,13 @@ public class XsltProjectsXmlTask extends XsltGenericTask {
             Transformer trans = TransformerFactory.newInstance()
                     .newTransformer(new StreamSource(stylefile));
             trans.setURIResolver(customizationResolver);
-            File temp = File.createTempFile("tempprojects", ".xml");
+            File temp;
+            try {
+                temp = File.createTempFile("temptransform", ".xml");
+            } catch (IOException e) {
+                throw new BuildException("Could not create temporary file", e);
+            }
+            temp.deleteOnExit();
             FileOutputStream fos = new FileOutputStream(temp);
             StreamResult sr = new StreamResult(fos);
             customize(in, sr);
@@ -114,7 +125,7 @@ public class XsltProjectsXmlTask extends XsltGenericTask {
         } catch (TransformerFactoryConfigurationError e) {
             throw new BuildException("Could not create transformer", e);
         } catch (IOException e) {
-            throw new BuildException("Could not create temporary file", e);
+            throw new BuildException("I/O-Error during transformation", e);
         } catch (TransformerException e) {
             throw new BuildException("Parsing of " + in + " failed!", e);
         }

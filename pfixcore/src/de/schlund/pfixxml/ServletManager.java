@@ -20,7 +20,6 @@
 package de.schlund.pfixxml;
 
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -56,6 +55,8 @@ import de.schlund.pfixxml.exceptionprocessor.ExceptionProcessor;
 import de.schlund.pfixxml.loader.AppLoader;
 import de.schlund.pfixxml.perflogging.PerfEvent;
 import de.schlund.pfixxml.perflogging.PerfEventType;
+import de.schlund.pfixxml.resources.FileResource;
+import de.schlund.pfixxml.resources.ResourceUtil;
 import de.schlund.pfixxml.serverutil.SessionAdmin;
 import de.schlund.pfixxml.serverutil.SessionHelper;
 import de.schlund.pfixxml.serverutil.SessionInfoStruct;
@@ -102,13 +103,13 @@ public abstract class ServletManager extends HttpServlet {
     private long             common_mtime                 = 0;
     private long             servlet_mtime                = 0;
     private long             loadindex                    = 0;
-    private File             commonpropfile;
-    private File             servletpropfile;
+    private FileResource     commonpropfile;
+    private FileResource     servletpropfile;
     private String           servletEncoding;
     private AtomicInteger    configLoadIndex              = new AtomicInteger(0);
     
     protected abstract ServletManagerConfig getServletManagerConfig();
-    protected abstract void reloadServletConfig(File configFile, Properties globalProperties) throws ServletException;
+    protected abstract void reloadServletConfig(FileResource configFile, Properties globalProperties) throws ServletException;
 
 //     protected Properties getProperties() {
 //         return this.properties;
@@ -755,9 +756,9 @@ public abstract class ServletManager extends HttpServlet {
         String commonpropfilename = config.getInitParameter("servlet.commonpropfile");
         if (commonpropfilename != null) {
             if (!commonpropfilename.startsWith("/")) {
-                commonpropfile = PathFactory.getInstance().createPath(commonpropfilename).resolve();
+                commonpropfile = ResourceUtil.getFileResourceFromDocroot(commonpropfilename);
             } else {
-                commonpropfile = new File(commonpropfilename);
+                commonpropfile = ResourceUtil.getFileResource("file://" + commonpropfilename);
             }
             // Load on first request
             common_mtime = loadPropertyfile(properties, commonpropfile);
@@ -766,9 +767,9 @@ public abstract class ServletManager extends HttpServlet {
         String servletpropfilename = config.getInitParameter("servlet.propfile");
         if (servletpropfilename != null) {
             if (!servletpropfilename.startsWith("/")) {
-                servletpropfile = PathFactory.getInstance().createPath(servletpropfilename).resolve();
+                servletpropfile = ResourceUtil.getFileResourceFromDocroot(servletpropfilename);
             } else {
-                servletpropfile = new File(servletpropfilename);
+                servletpropfile = ResourceUtil.getFileResource("file://" + servletpropfilename);
             }
         }
         
@@ -822,7 +823,7 @@ public abstract class ServletManager extends HttpServlet {
         }
     }
    
-    private long loadPropertyfile(Properties props, File propfile) throws ServletException {
+    private long loadPropertyfile(Properties props, FileResource propfile) throws ServletException {
         long mtime;
         try {
             mtime = propfile.lastModified();

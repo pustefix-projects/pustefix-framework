@@ -6,7 +6,7 @@
 	<classpathentry sourcepath="PFX_ANT_SRC" kind="var" path="PFX_ANT_LIB"/>
 	<classpathentry kind="lib" path="lib/activation-1.0.2.jar"/>
 	<classpathentry kind="lib" path="lib/commons-discovery-0.2.jar"/>
-	<classpathentry kind="lib" path="lib/commons-logging-1.0.2.jar"/>
+	<classpathentry kind="lib" path="lib/commons-logging-1.0.4.jar"/>
 	<classpathentry kind="lib" path="lib/jakarta-oro-2.0.7.jar"/>
 	<classpathentry kind="lib" path="lib/java-getopt-1.0.9.jar"/>
 	<classpathentry kind="lib" path="lib/jaxrpc-1.1.jar"/>

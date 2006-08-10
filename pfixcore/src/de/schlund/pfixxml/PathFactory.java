@@ -18,6 +18,7 @@
  */
 package de.schlund.pfixxml;
 
+import de.schlund.pfixxml.resources.ResourceUtil;
 import de.schlund.pfixxml.util.Path;
 import java.io.File;
 
@@ -29,6 +30,7 @@ import java.io.File;
  *
  * @author <a href="mailto:jtl@schlund.de">Jens Lautenbacher</a>
  * @version 1.0
+ * @deprecated Use {@link ResourceUtil} instead 
  */
 public class PathFactory {
     private static PathFactory instance = new PathFactory(); 

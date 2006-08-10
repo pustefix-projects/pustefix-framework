@@ -18,6 +18,14 @@
 
 package de.schlund.pfixcore.editor2.core.spring.internal;
 
+import java.io.File;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
+
+import org.apache.log4j.Logger;
+
 import de.schlund.pfixcore.editor2.core.dom.AbstractImage;
 import de.schlund.pfixcore.editor2.core.dom.Page;
 import de.schlund.pfixcore.editor2.core.dom.Project;
@@ -30,19 +38,12 @@ import de.schlund.pfixcore.editor2.core.spring.PathResolverService;
 import de.schlund.pfixcore.editor2.core.spring.ProjectFactoryService;
 import de.schlund.pfixcore.editor2.core.spring.SecurityManagerService;
 import de.schlund.pfixcore.editor2.core.spring.VariantFactoryService;
-import de.schlund.pfixxml.PathFactory;
+import de.schlund.pfixxml.resources.ResourceUtil;
 import de.schlund.pfixxml.targets.AuxDependency;
 import de.schlund.pfixxml.targets.AuxDependencyFactory;
-import de.schlund.pfixxml.targets.DependencyType;
 import de.schlund.pfixxml.targets.PageInfo;
-import de.schlund.pfixxml.targets.TargetGenerator;
 import de.schlund.pfixxml.targets.TargetDependencyRelation;
-import java.io.File;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
-import org.apache.log4j.Logger;
+import de.schlund.pfixxml.targets.TargetGenerator;
 
 public class ImageImpl extends AbstractImage {
 
@@ -74,8 +75,7 @@ public class ImageImpl extends AbstractImage {
         this.filesystem = filesystem;
         this.backup = backup;
         this.path = path;
-        this.auxdep = AuxDependencyFactory.getInstance().getAuxDependencyImage(
-                PathFactory.getInstance().createPath(path));
+        this.auxdep = AuxDependencyFactory.getInstance().getAuxDependencyImage(ResourceUtil.getFileResourceFromDocroot(path));
     }
 
     public String getPath() {

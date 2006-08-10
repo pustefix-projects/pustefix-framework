@@ -22,9 +22,7 @@ package de.schlund.pfixcore.lucefix;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.Properties;
 import java.util.Queue;
 import java.util.Vector;
 
@@ -41,9 +39,8 @@ import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.TermQuery;
 import org.xml.sax.SAXException;
 
-import de.schlund.pfixcore.lucefix.Tripel.Type;
-import de.schlund.pfixxml.PathFactory;
 import de.schlund.pfixxml.XMLException;
+import de.schlund.pfixxml.config.GlobalConfig;
 
 /**
  * @author schuppi
@@ -72,8 +69,7 @@ public class PfixQueueManager implements Runnable {
     public PfixQueueManager(Integer idletime) {
 
         waitms = idletime;
-        lucene_data_path = PathFactory.getInstance().createPath(".index")
-                .resolve().getAbsolutePath();
+        lucene_data_path = (new File(GlobalConfig.getDocroot(), ".index")).getAbsolutePath();
 
         documents2write = new Vector<Document>();
     }
@@ -120,8 +116,8 @@ public class PfixQueueManager implements Runnable {
                                 added++;
                                 cache.remove(newdoc);
                             } else if (hits.length() == 1) {
-                                File f = PathFactory.getInstance().createPath(
-                                        current.getFilename()).resolve();
+                                File f = new File(GlobalConfig.getDocroot(),
+                                        current.getFilename());
 
                                 // File f = new File(current.getPath());
                                 if (f.lastModified() == DateField

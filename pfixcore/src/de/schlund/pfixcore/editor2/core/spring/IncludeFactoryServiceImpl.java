@@ -31,6 +31,8 @@ import de.schlund.pfixcore.editor2.core.dom.Theme;
 import de.schlund.pfixcore.editor2.core.exception.EditorParsingException;
 import de.schlund.pfixcore.editor2.core.spring.internal.IncludeFileImpl;
 import de.schlund.pfixcore.editor2.core.spring.internal.IncludePartThemeVariantImpl;
+import de.schlund.pfixxml.resources.DocrootResource;
+import de.schlund.pfixxml.resources.FileResource;
 import de.schlund.pfixxml.targets.AuxDependency;
 import de.schlund.pfixxml.targets.AuxDependencyInclude;
 import de.schlund.pfixxml.targets.DependencyType;
@@ -144,7 +146,7 @@ public class IncludeFactoryServiceImpl implements IncludeFactoryService {
         if (auxdep.getType() == DependencyType.TEXT) {
             AuxDependencyInclude aux = (AuxDependencyInclude) auxdep;
             IncludePartThemeVariant variant = this.includefactory
-                    .getIncludeFile(aux.getPath().getRelative()).createPart(
+                    .getIncludeFile(aux.getPath().getRelativePath()).createPart(
                             aux.getPart()).createThemeVariant(
                             this.themefactory.getTheme(aux.getTheme()));
             return variant;

@@ -19,7 +19,6 @@
 
 package de.schlund.pfixxml;
 
-import java.io.File;
 import java.io.IOException;
 
 import javax.xml.transform.TransformerException;
@@ -27,7 +26,7 @@ import javax.xml.transform.TransformerException;
 import org.apache.log4j.Category;
 import org.xml.sax.SAXException;
 
-import de.schlund.pfixxml.util.Path;
+import de.schlund.pfixxml.resources.FileResource;
 import de.schlund.pfixxml.targets.SPCache;
 import de.schlund.pfixxml.targets.SPCacheFactory;
 
@@ -60,7 +59,7 @@ public class IncludeDocumentFactory {
     }
     
     // FIXME! Don't do the whole method synchronized!!
-    public synchronized IncludeDocument getIncludeDocument(Path path, boolean mutable) throws SAXException, IOException, TransformerException  {
+    public synchronized IncludeDocument getIncludeDocument(FileResource path, boolean mutable) throws SAXException, IOException, TransformerException  {
 
         IncludeDocument includeDocument = null;
         String          key             = getKey(path, mutable);
@@ -79,14 +78,13 @@ public class IncludeDocumentFactory {
         return cache.getValue(key) != null ? true : false;
     }
     
-    private String getKey(Path path, boolean mutable) {
-        return mutable ? path.getRelative() + "_mutable" : path.getRelative() + "_imutable";
+    private String getKey(FileResource path, boolean mutable) {
+        return mutable ? path.toURI().toString() + "_mutable" : path.toURI().toString() + "_imutable";
     }
 
-    private boolean isDocumentInCacheObsolete(Path path, String newkey) {
-        File file      = path.resolve();
+    private boolean isDocumentInCacheObsolete(FileResource path, String newkey) {
         long savedTime = ((IncludeDocument) cache.getValue(newkey)).getModTime();
-        return file.lastModified() > savedTime ? true : false;
+        return path.lastModified() > savedTime ? true : false;
     }
 
     public void reset() {

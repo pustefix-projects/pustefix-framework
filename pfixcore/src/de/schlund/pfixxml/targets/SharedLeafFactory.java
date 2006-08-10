@@ -20,6 +20,8 @@
 package de.schlund.pfixxml.targets;
 import java.util.TreeMap;
 
+import de.schlund.pfixxml.resources.FileResource;
+
 /**
  * SharedLeafFactory.java
  *
@@ -42,7 +44,7 @@ public class SharedLeafFactory {
         return instance;
     }
 
-    public synchronized SharedLeaf getSharedLeaf(String path) {
+    public synchronized SharedLeaf getSharedLeaf(FileResource path) {
         SharedLeaf ret = (SharedLeaf) sharedleaves.get(path);
         if (ret == null) {
             ret =  new SharedLeaf(path);

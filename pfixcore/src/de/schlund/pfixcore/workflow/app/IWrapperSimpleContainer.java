@@ -19,6 +19,20 @@
 
 package de.schlund.pfixcore.workflow.app;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Properties;
+import java.util.StringTokenizer;
+import java.util.TreeMap;
+import java.util.TreeSet;
+
+import javax.servlet.http.HttpSession;
+
+import org.apache.log4j.Category;
+import org.w3c.dom.Element;
+
 import de.schlund.pfixcore.generator.IHandler;
 import de.schlund.pfixcore.generator.IWrapper;
 import de.schlund.pfixcore.generator.IWrapperParam;
@@ -27,7 +41,6 @@ import de.schlund.pfixcore.generator.RequestData;
 import de.schlund.pfixcore.generator.StatusCodeInfo;
 import de.schlund.pfixcore.util.PropertiesUtils;
 import de.schlund.pfixcore.workflow.Context;
-import de.schlund.pfixxml.PathFactory;
 import de.schlund.pfixxml.PfixServletRequest;
 import de.schlund.pfixxml.RequestParam;
 import de.schlund.pfixxml.ResultDocument;
@@ -39,20 +52,8 @@ import de.schlund.pfixxml.loader.Reloader;
 import de.schlund.pfixxml.loader.StateTransfer;
 import de.schlund.pfixxml.perflogging.PerfEvent;
 import de.schlund.pfixxml.perflogging.PerfEventType;
-import de.schlund.util.statuscodes.StatusCode;
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Properties;
-import java.util.StringTokenizer;
-import java.util.TreeMap;
-import java.util.TreeSet;
-import javax.servlet.http.HttpSession;
-import org.apache.log4j.Category;
-import org.w3c.dom.Element;
+import de.schlund.pfixxml.resources.FileResource;
+import de.schlund.pfixxml.resources.ResourceUtil;
 
 /**
  * Default implementation of the <code>IWrapperContainer</code> interface.
@@ -584,13 +585,13 @@ public class IWrapperSimpleContainer implements IWrapperContainer, Reloader {
                 String logdir       = context.getProperties().getProperty(WRAPPER_LOGDIR);
                 String debugwrapper = config.getProperties().getProperty(WRAPPER_LOGLIST);
                 if (logdir != null && !logdir.equals("") && debugwrapper != null && !debugwrapper.equals("")) {
-                    File dir = PathFactory.getInstance().createPath(logdir).resolve();
+                    FileResource dir = ResourceUtil.getFileResourceFromDocroot(logdir);
                     if (dir.isDirectory() && dir.canWrite()) {
                         StringTokenizer tok = new StringTokenizer(debugwrapper);
                         for (; tok.hasMoreTokens(); ) {
                             String debwrp = tok.nextToken();
                             if (prefix.equals(debwrp)) {
-                                wrapper.initLogging(dir.getCanonicalPath(), context.getCurrentPageRequest().getName(),
+                                wrapper.initLogging(dir, context.getCurrentPageRequest().getName(),
                                                     context.getVisitId());
                                 break;
                             }

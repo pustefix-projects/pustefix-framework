@@ -6,6 +6,7 @@
 
   <xsl:param name="prjname"/>
   <xsl:param name="projectsxmlfile"/>
+  <xsl:param name="warmode"/>
 
   <xsl:variable name="project" select="document(concat('file://', $projectsxmlfile))/projects/project[@name=$prjname]" />
   <xsl:variable name="common" select="document(concat('file://', $projectsxmlfile))/projects/common" />
@@ -31,11 +32,13 @@
       </xsl:if>
     </xsl:for-each>
     
-    <!-- Default servlet for retrieving static files from /xml/* -->
-    <servlet-mapping>
-      <servlet-name>static-docroot</servlet-name>
-      <url-pattern>/xml/*</url-pattern>
-    </servlet-mapping>
+    <xsl:if test="not($warmode = 'true')">
+      <!-- Default servlet for retrieving static files from /xml/* -->
+      <servlet-mapping>
+        <servlet-name>static-docroot</servlet-name>
+        <url-pattern>/xml/*</url-pattern>
+      </servlet-mapping>
+    </xsl:if>
     
     <!-- Servlet for static files in / for standalone mode -->
     <servlet-mapping>

@@ -1,3 +1,112 @@
+2006-08-07  Sebastian Marsching  <sebastian.marsching@1und1.de>
+
+	* src/de/schlund/pfixcore/editor2/core/spring/internal/ImageImpl.java: 
+	* src/de/schlund/pfixcore/editor2/core/spring/internal/IncludePartThemeVariantImpl.java: 
+	* src/de/schlund/pfixcore/editor2/core/spring/internal/ProjectImpl.java: 
+	* src/de/schlund/pfixcore/editor2/core/spring/internal/TargetAuxDepImpl.java: 
+	* src/de/schlund/pfixcore/editor2/core/spring/internal/TargetPfixImpl.java: 
+	* src/de/schlund/pfixcore/editor2/core/spring/IncludeFactoryServiceImpl.java: 
+	* src/de/schlund/pfixcore/editor2/core/spring/PathResolverServiceImpl.java: 
+	* src/de/schlund/pfixcore/editor2/frontend/resources/ImagesResourceImpl.java: 
+	* src/de/schlund/pfixcore/editor2/frontend/util/EditorApplicationContextFactory.java: 
+	* src/de/schlund/pfixcore/generator/IWrapper.java: 
+	* src/de/schlund/pfixcore/lucefix/ContextSearchImpl.java: 
+	* src/de/schlund/pfixcore/lucefix/DocumentCache.java: 
+	* src/de/schlund/pfixcore/lucefix/IncludeFileHandler.java: 
+	* src/de/schlund/pfixcore/lucefix/PfixQueueManager.java: 
+	* src/de/schlund/pfixcore/lucefix/PfixReadjustment.java: 
+	* src/de/schlund/pfixcore/scriptedflow/compiler/Compiler.java: 
+	* src/de/schlund/pfixcore/scriptedflow/ScriptedFlowConfig.java: 
+	* src/de/schlund/pfixcore/scripting/ScriptingUtil.java: 
+	* src/de/schlund/pfixcore/util/CheckIncludes.java: 
+	* src/de/schlund/pfixcore/util/Cleanup.java: 
+	* src/de/schlund/pfixcore/util/DelLang.java: 
+	* src/de/schlund/pfixcore/util/GenerateSCodes.java: 
+	* src/de/schlund/pfixcore/util/TargetGeneratorTask.java: 
+	* src/de/schlund/pfixcore/util/XsltCustomizeXmlTask.java: 
+	* src/de/schlund/pfixcore/webservice/config/ConfigurationReader.java: 
+	* src/de/schlund/pfixcore/webservice/generate/WebServiceTask.java: 
+	* src/de/schlund/pfixcore/webservice/WebServiceServlet.java: 
+	* src/de/schlund/pfixcore/workflow/app/FileDownloadDOState.java: 
+	* src/de/schlund/pfixcore/workflow/app/IWrapperSimpleContainer.java: 
+	* src/de/schlund/pfixcore/workflow/Navigation.java: 
+	* src/de/schlund/pfixcore/workflow/NavigationFactory.java: 
+	* src/de/schlund/pfixxml/config/BuildTimeProperties.java: 
+	* src/de/schlund/pfixxml/config/ContextXMLServletConfig.java: 
+	* src/de/schlund/pfixxml/config/CustomizationHandler.java: 
+	* src/de/schlund/pfixxml/config/DirectOutputServletConfig.java: 
+	* src/de/schlund/pfixxml/config/GlobalConfig.java: 
+	* src/de/schlund/pfixxml/config/GlobalConfigurator.java: 
+	* src/de/schlund/pfixxml/config/XMLPropertiesUtil.java: 
+	* src/de/schlund/pfixxml/exceptionhandler/PropertyManager.java: 
+	* src/de/schlund/pfixxml/exceptionprocessor/UniversalExceptionProcessor.java: 
+	* src/de/schlund/pfixxml/jmx/Environment.java: 
+	* src/de/schlund/pfixxml/jmx/JmxServer.java: 
+	* src/de/schlund/pfixxml/jmx/JmxServerFactory.java: 
+	* src/de/schlund/pfixxml/loader/AppClassLoader.java: 
+	* src/de/schlund/pfixxml/loader/AppLoader.java: 
+	* src/de/schlund/pfixxml/loader/AppLoaderConfig.java: 
+	* src/de/schlund/pfixxml/resources/DocrootResource.java: 
+	* src/de/schlund/pfixxml/resources/DocrootResourceImpl.java: 
+	* src/de/schlund/pfixxml/resources/FileResource.java: 
+	* src/de/schlund/pfixxml/resources/FileSystemResource.java: 
+	* src/de/schlund/pfixxml/resources/FileSystemResourceImpl.java: 
+	* src/de/schlund/pfixxml/resources/ResourceUtil.java: 
+	* src/de/schlund/pfixxml/targets/cachestat/SPCacheStatistic.java: 
+	* src/de/schlund/pfixxml/targets/AuxDependencyFactory.java: 
+	* src/de/schlund/pfixxml/targets/AuxDependencyFile.java: 
+	* src/de/schlund/pfixxml/targets/AuxDependencyImage.java: 
+	* src/de/schlund/pfixxml/targets/AuxDependencyInclude.java: 
+	* src/de/schlund/pfixxml/targets/AuxDependencyManager.java: 
+	* src/de/schlund/pfixxml/targets/AuxDependencyTarget.java: 
+	* src/de/schlund/pfixxml/targets/LeafTarget.java: 
+	* src/de/schlund/pfixxml/targets/SharedLeaf.java: 
+	* src/de/schlund/pfixxml/targets/SharedLeafFactory.java: 
+	* src/de/schlund/pfixxml/targets/TargetGenerator.java: 
+	* src/de/schlund/pfixxml/targets/TargetGeneratorFactory.java: 
+	* src/de/schlund/pfixxml/targets/TargetImpl.java: 
+	* src/de/schlund/pfixxml/targets/VirtualTarget.java: 
+	* src/de/schlund/pfixxml/targets/XMLLeafTarget.java: 
+	* src/de/schlund/pfixxml/targets/XMLVirtualTarget.java: 
+	* src/de/schlund/pfixxml/targets/XSLLeafTarget.java: 
+	* src/de/schlund/pfixxml/targets/XSLVirtualTarget.java: 
+	* src/de/schlund/pfixxml/util/logging/ProxyLogAppender.java: 
+	* src/de/schlund/pfixxml/util/logging/ProxyLogFactory.java: 
+	* src/de/schlund/pfixxml/util/logging/ProxyLogObject.java: 
+	* src/de/schlund/pfixxml/util/logging/ProxyLogUtil.java: 
+	* src/de/schlund/pfixxml/util/Xml.java: 
+	* src/de/schlund/pfixxml/util/Xslt.java: 
+	* src/de/schlund/pfixxml/AbstractXMLServer.java: 
+	* src/de/schlund/pfixxml/ContextXMLServer.java: 
+	* src/de/schlund/pfixxml/DependencyTracker.java: 
+	* src/de/schlund/pfixxml/DerefServer.java: 
+	* src/de/schlund/pfixxml/DirectOutputServlet.java: 
+	* src/de/schlund/pfixxml/FactoryInitServlet.java: 
+	* src/de/schlund/pfixxml/ImageGeometry.java: 
+	* src/de/schlund/pfixxml/ImageGeometryData.java: 
+	* src/de/schlund/pfixxml/ImageThemedSrc.java: 
+	* src/de/schlund/pfixxml/IncludeDocument.java: 
+	* src/de/schlund/pfixxml/IncludeDocumentExtension.java: 
+	* src/de/schlund/pfixxml/IncludeDocumentFactory.java: 
+	* src/de/schlund/pfixxml/ProjectInitFactory.java: 
+	* src/de/schlund/pfixxml/ResultDocument.java: 
+	* src/de/schlund/pfixxml/ServletManager.java: 
+	* src/de/schlund/util/statuscodes/StatusCode.java: 
+	* lib/commons-logging-1.0.4.jar: 
+	* projects/common/conf/factory.xml: 
+	* projects/core/build/create_webxml.xsl: 
+	* projects/webservice/xml/two_frames.xml: 
+	* skel/build-skel.xml: 
+	* tests/junit/de/schlund/pfixxml/targets/TargetGeneratorTest.java: 
+	* tests/junit/de/schlund/pfixxml/util/XsltTest.java: 
+	Deprecated PathFactory in favor of the new ResourceUtil class which provides
+	a cleaner and more universal approach to access file resources. However
+	the PathFactory and its corresponding Path class can still be used by 
+	application developers, although they are disencouraged to do so. Pfixcore
+	itself does not use the PathFactory any more.
+	The Xslt#loadTemplates(...) methods now are not synchronized. Instead the
+	TransformerFactory is stored in ThreadLocal.
+
 2006-08-03  Martin Leidig  <mleidig@schlund.de>
 
 	Replaced json.org and json-rpc libraries by our own

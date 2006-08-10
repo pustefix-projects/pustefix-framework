@@ -58,8 +58,9 @@ import de.schlund.pfixcore.webservice.fault.FaultHandler;
 import de.schlund.pfixcore.webservice.jsonws.JSONWSProcessor;
 import de.schlund.pfixcore.webservice.monitor.MonitorHistory;
 import de.schlund.pfixcore.webservice.monitor.MonitorRecord;
-import de.schlund.pfixxml.PathFactory;
 import de.schlund.pfixxml.loader.AppLoader;
+import de.schlund.pfixxml.resources.FileResource;
+import de.schlund.pfixxml.resources.ResourceUtil;
 
 /**
  * WebServiceServlet.java 
@@ -70,7 +71,7 @@ import de.schlund.pfixxml.loader.AppLoader;
  */
 public class WebServiceServlet extends AxisServlet implements ServiceProcessor {
 
-    private Category LOG=Logger.getLogger(getClass().getName());
+    private Logger LOG=Logger.getLogger(getClass().getName());
     private boolean DEBUG=LOG.isDebugEnabled();
     
     private static Object initLock=new Object();
@@ -121,7 +122,7 @@ public class WebServiceServlet extends AxisServlet implements ServiceProcessor {
         	if(runtime==null) {
         		String servletProp=config.getInitParameter(Constants.PROP_SERVLET_FILE);
         		if(servletProp!=null) {
-        			File wsConfFile=PathFactory.getInstance().createPath(servletProp).resolve();
+        			FileResource wsConfFile=ResourceUtil.getFileResourceFromDocroot(servletProp);
         			try {
         				Configuration srvConf=ConfigurationReader.read(wsConfFile);
         				runtime=new ServiceRuntime();

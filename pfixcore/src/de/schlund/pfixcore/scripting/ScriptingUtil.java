@@ -19,21 +19,19 @@
     
 package de.schlund.pfixcore.scripting;
 
-import de.schlund.pfixxml.util.Path;
-import de.schlund.pfixxml.PathFactory;
-
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.io.StringWriter;
-import java.util.Map;
 import java.util.Hashtable;
+import java.util.Map;
 
-import org.apache.bsf.BSFException;
 import org.apache.bsf.BSFEngine;
+import org.apache.bsf.BSFException;
 import org.apache.log4j.Logger;
+
+import de.schlund.pfixxml.resources.FileResource;
+import de.schlund.pfixxml.resources.ResourceUtil;
 
 
 /**
@@ -140,8 +138,8 @@ public class ScriptingUtil {
           
             LOG.debug("Fetching Script for path '"+relativePath+"' from file");
             
-            File file = PathFactory.getInstance().createPath(relativePath).resolve();
-            script = copy(new FileInputStream(file));
+            FileResource file = ResourceUtil.getFileResourceFromDocroot(relativePath);
+            script = copy(file.getInputStream());
             
             scriptCache.put(relativePath, new Object[] {new Long(file.lastModified()), script});
             
@@ -163,7 +161,7 @@ public class ScriptingUtil {
             Object[] cacheEntry = (Object[]) scriptCache.get(path);
             long lastMod = ((Long) cacheEntry[0]).longValue();
             
-            File file = PathFactory.getInstance().createPath(path).resolve();
+            FileResource file = ResourceUtil.getFileResourceFromDocroot(path);
             if ( file.lastModified() <= lastMod ) 
                 isCurrent = true;
         } 
