@@ -445,6 +445,11 @@ public class ContextImpl implements Context, AccessibilityChecker {
             }
 
             spdoc.setProperty("__context__", this);
+            
+            // Reset stored variant so the session variant is being used
+            // to check the visibility of other pages when rendering the output
+            this.variant = scontext.getVariant();
+            
             return spdoc;
         } catch (Exception e) {
             throw e;
