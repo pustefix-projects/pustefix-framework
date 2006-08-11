@@ -411,6 +411,10 @@ public class Context implements AppContext {
         currentpservreq.getSession(false).setAttribute(AbstractXMLServer.SESS_LANG, lang);        
     }
 
+    public String getLanguage() {
+        return (String) currentpservreq.getSession(false).getAttribute(AbstractXMLServer.SESS_LANG);
+    }
+
     public void addCookie(Cookie cookie) {
         cookielist.add(cookie);
     }
