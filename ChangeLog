@@ -1,3 +1,9 @@
+2006-08-11  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixcore/workflow/ContextImpl.java: cosmetics
+	* src/de/schlund/pfixcore/workflow/Context.java: added missing
+	method getLanguage() to interface
+
 2006-08-10  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
 	* src/de/schlund/pfixcore/workflow/ContextImpl.java (handleRequest): 
