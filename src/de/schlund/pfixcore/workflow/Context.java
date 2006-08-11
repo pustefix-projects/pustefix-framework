@@ -46,6 +46,7 @@ public interface Context {
     void                   prohibitContinue();
     Cookie[]               getRequestCookies();
     void                   setLanguage(String lang);
+    String                 getLanguage();
     void                   addCookie(Cookie cookie);
     Variant                getVariant();
     void                   setVariant(Variant variant);
