@@ -1,3 +1,7 @@
+2006-08-11  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixcore/workflow/Context.java (Context::getLanguage): added missing method.
+
 2006-07-24  Martin Leidig  <mleidig@schlund.de>
 
 	Connected webservice fault handling to general exception processing
