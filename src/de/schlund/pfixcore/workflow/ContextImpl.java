@@ -56,71 +56,47 @@ import de.schlund.util.statuscodes.StatusCode;
  * @author Sebastian Marsching <sebastian.marsching@1und1.de>
  */
 public class ContextImpl implements Context, AccessibilityChecker {
-    private final static String PARAM_JUMPPAGE = "__jumptopage";
 
-    private final static String PARAM_JUMPPAGEFLOW = "__jumptopageflow";
-
-    private final static String PARAM_FLOW = "__pageflow";
-
-    private final static String PARAM_LASTFLOW = "__lf";
-
+    private final static Logger LOG                 = Logger.getLogger(ContextImpl.class);
+    private final static String PARAM_JUMPPAGE      = "__jumptopage";
+    private final static String PARAM_JUMPPAGEFLOW  = "__jumptopageflow";
+    private final static String PARAM_FLOW          = "__pageflow";
+    private final static String PARAM_LASTFLOW      = "__lf";
     private final static String PARAM_STARTWITHFLOW = "__startwithflow";
+    private final static String PARAM_FORCESTOP     = "__forcestop";
 
-    private final static String PARAM_FORCESTOP = "__forcestop";
-
-    private final static Logger LOG = Logger.getLogger(ContextImpl.class);
-
-    private PageFlowManager pageflowmanager;
-
-    private VariantManager variantmanager;
-
-    private PageMap pagemap;
-
-    private ServerContextImpl context;
-
+    private ServerContextImpl  context;
     private SessionContextImpl scontext;
+    private PageFlowManager    pageflowmanager;
+    private VariantManager     variantmanager;
+    private PageMap            pagemap;
 
-    private PageRequest currentpagerequest = null;
+    private Variant variant  = null;
+    private String  language = null;
 
-    private PageFlow currentpageflow = null;
+    private PageRequest        currentpagerequest = null;
+    private PageFlow           currentpageflow    = null;
+    private PfixServletRequest currentpservreq    = null;
 
-    private String jumptopage = null;
-
+    private String jumptopage     = null;
     private String jumptopageflow = null;
+    
+    private PageRequest authpage                   = null;
+    private boolean     prohibitcontinue           = false;
+    private boolean     stopnextforcurrentrequest  = false;
+    private boolean     on_jumptopage              = false;
+    private boolean     pageflow_requested_by_user = false;
+    private boolean     startwithflow              = false;
 
-    private PageRequest authpage = null;
-
-    private PfixServletRequest currentpservreq = null;
-
-    private Variant variant = null;
-
-    private String language = null;
-
-    private boolean prohibitcontinue = false;
-
-    private boolean stopnextforcurrentrequest = false;
-
-    private boolean on_jumptopage = false;
-
-    private boolean pageflow_requested_by_user = false;
-
-    private boolean startwithflow = false;
-
-    private boolean autoinvalidate_navi = true;
-
-    private boolean forceinvalidate_navi = false;
-
-    private List<StatusCodeInfo> messages = new ArrayList<StatusCodeInfo>();
-
-    private List<Cookie> cookielist = new ArrayList<Cookie>();
+    private List<StatusCodeInfo> messages   = new ArrayList<StatusCodeInfo>();
+    private List<Cookie>         cookielist = new ArrayList<Cookie>();
 
     public ContextImpl(ServerContextImpl context, SessionContextImpl scontext) throws Exception {
-        pageflowmanager = context.getPageFlowManager();
-        variantmanager = context.getVariantManager();
-        pagemap = context.getPageMap();
-
-        this.context = context;
-        this.scontext = scontext;
+        this.pageflowmanager = context.getPageFlowManager();
+        this.variantmanager  = context.getVariantManager();
+        this.pagemap         = context.getPageMap();
+        this.context         = context;
+        this.scontext        = scontext;
 
         // Look for last request in session
         // this is done to get a behaviour similar to the old one
@@ -128,8 +104,10 @@ public class ContextImpl implements Context, AccessibilityChecker {
         String lastpage = null;
         String lastpageflow = null;
         if (scontext != null) {
-            lastpage = scontext.getLastPageName();
-            lastpageflow = scontext.getLastPageFlowName();    
+            lastpage     = scontext.getLastPageName();
+            lastpageflow = scontext.getLastPageFlowName();
+            this.variant      = scontext.getVariant();
+            this.language     = scontext.getLanguage();
         }
         if (lastpage != null && lastpageflow != null) {
             PageFlow tempflow = pageflowmanager.getPageFlowByName(lastpageflow, getVariant());
@@ -138,7 +116,7 @@ public class ContextImpl implements Context, AccessibilityChecker {
             // we access the properties in an unsynchronized
             // way and so they may be inconsistent
             if (tempflow.containsPage(lastpage)) {
-                currentpageflow = tempflow;
+                currentpageflow    = tempflow;
                 currentpagerequest = createPageRequest(lastpage);
             }
         }
@@ -147,11 +125,6 @@ public class ContextImpl implements Context, AccessibilityChecker {
         }
         if (currentpagerequest == null) {
             currentpagerequest = createPageRequest(currentpageflow.getFirstStep().getPageName());
-        }
-
-        if (scontext !=  null) {
-            this.variant = scontext.getVariant();
-            this.language = scontext.getLanguage();
         }
 
         checkForAuthenticationMode();
@@ -189,7 +162,7 @@ public class ContextImpl implements Context, AccessibilityChecker {
         PageFlow tmp = pageflowmanager.getPageFlowByName(pageflow, getVariant());
         if (tmp != null) {
             LOG.debug("===> Setting currentpageflow to user-requested flow " + pageflow);
-            currentpageflow = tmp;
+            currentpageflow            = tmp;
             pageflow_requested_by_user = true;
         } else {
             LOG.warn("*** Trying to set currentpageflow to " + pageflow + ", but it's not defined ***");
@@ -200,7 +173,6 @@ public class ContextImpl implements Context, AccessibilityChecker {
         if (currentpservreq == null) {
             throw new IllegalStateException("JumpToPage is only available witihin request handling");
         }
-        
         return jumptopage;
     }
 
@@ -226,7 +198,6 @@ public class ContextImpl implements Context, AccessibilityChecker {
         if (currentpservreq == null) {
             throw new IllegalStateException("JumpToPageFlow is only available witihin request handling");
         }
-        
         return jumptopageflow;
     }
 
@@ -300,7 +271,6 @@ public class ContextImpl implements Context, AccessibilityChecker {
         if (currentpservreq == null) {
             throw new IllegalStateException("PageFlow information is only availabe during request handling");
         }
-        
         return (currentpagerequest.getStatus() == PageRequestStatus.FINAL);
     }
 
@@ -435,16 +405,15 @@ public class ContextImpl implements Context, AccessibilityChecker {
             } else {
                 spdoc = handleRequestWorker(preq);
             }
-
             // Make sure SSL pages are only returned using SSL.
             // This rule does not apply to pages with the nostore
             // flag, as we would not be able to return such a page
             // after the redirect
-            if (getConfigForCurrentPageRequest() != null && spdoc != null && getConfigForCurrentPageRequest().isSSL() && !spdoc.getNostore() && !preq.getOriginalScheme().equals("https")) {
-                spdoc.setSSLRedirect("https://" + ServletManager.getServerName(preq.getRequest()) + preq.getContextPath() + preq.getServletPath() + ";jsessionid=" + preq.getSession(false).getId() + "?__reuse=" + spdoc.getTimestamp());
+            if (getConfigForCurrentPageRequest() != null && spdoc != null && getConfigForCurrentPageRequest().isSSL()
+                && !spdoc.getNostore() && !preq.getOriginalScheme().equals("https")) {
+                spdoc.setSSLRedirect("https://" + ServletManager.getServerName(preq.getRequest()) + preq.getContextPath() +
+                                     preq.getServletPath() + ";jsessionid=" + preq.getSession(false).getId() + "?__reuse=" + spdoc.getTimestamp());
             }
-
-            spdoc.setProperty("__context__", this);
             
             // Reset stored variant so the session variant is being used
             // to check the visibility of other pages when rendering the output
@@ -457,14 +426,14 @@ public class ContextImpl implements Context, AccessibilityChecker {
     }
 
     private SPDocument handleRequestWorker(PfixServletRequest preq) throws Exception {
-        currentpservreq = preq;
-        prohibitcontinue = false;
-        stopnextforcurrentrequest = false;
-        jumptopage = null;
-        jumptopageflow = null;
-        on_jumptopage = false;
+        currentpservreq            = preq;
+        prohibitcontinue           = false;
+        stopnextforcurrentrequest  = false;
+        jumptopage                 = null;
+        jumptopageflow             = null;
+        on_jumptopage              = false;
         pageflow_requested_by_user = false;
-        startwithflow = false;
+        startwithflow              = false;
 
         RequestParam fstop = currentpservreq.getRequestParam(PARAM_FORCESTOP);
         if (fstop != null && fstop.getValue().equals("true")) {
@@ -541,6 +510,7 @@ public class ContextImpl implements Context, AccessibilityChecker {
             LOG.debug("\n");
             insertPageMessages(spdoc);
             storeCookies(spdoc);
+            spdoc.setProperty("__context__", this);
         }
 
         processIC(context.getEndInterceptors());
