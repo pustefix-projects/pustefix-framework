@@ -1,5 +1,13 @@
 2006-08-11  Jens Lautenbacher  <jtl@schlund.de>
 
+	* src/de/schlund/pfixxml/ServletManager.java
+	(ServletManager::doGet): refactored the refuse_cookies handling so
+	it finally works :-(.
+	(ServletManager::redirectToSession): 
+	(ServletManager::redirectToSecureSSLSession): 
+	(ServletManager::redirectToInsecureSSLSession): don't create a test
+	cookie when refuse_cookies
+
 	* src/de/schlund/pfixcore/workflow/Context.java (Context::getLanguage): added missing method.
 
 2006-07-24  Martin Leidig  <mleidig@schlund.de>
