@@ -1,3 +1,9 @@
+2006-08-15  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixcore/workflow/ContextImpl.java
+	(ContextImpl::documentFromFlow): set pageflow to correct variant
+	before running flow.
+
 2006-08-15  Sebastian Marsching <sebastian.marsching@1und1.de>
 
 	* skel/build-skel.xml: 
