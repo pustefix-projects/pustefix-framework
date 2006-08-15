@@ -261,7 +261,7 @@ public abstract class ServletManager extends HttpServlet {
                             } else {
                                 CAT.debug("*** Found NO matching cookie at all, but client does cookies: ***");
                                 CAT.error("*** NOSECSESSIDFROMCOOKIE: " + req.getRemoteAddr()
-                                          + "|" + session.getId() + "|" + req.getHeader("Cookies"));
+                                          + "|" + session.getId() + "|" + req.getHeader("Cookie"));
                                 // Most time when this happens, we are not under attack, but one of
                                 // two things happened: a) a stupid behaviour (bug?)  of IE or opera
                                 // strikes us bad: With these two browsers, if we accept the
