@@ -85,6 +85,7 @@ public abstract class ServletManager extends HttpServlet {
     private   static final String PARAM_FORCELOCAL              = "__forcelocal";
     public    static final String PROP_COOKIE_SEC_NOT_ENFORCED  = "servletmanager.cookie_security_not_enforced";
     private   static final String PROP_EXCEPTION                = "exception";
+    public    static final String PROP_SSL_REDIRECT_PORT        = "pfixcore.ssl_redirect_port.for.";
     protected static final String DEF_CONTENT_TYPE              = "text/html";
     private   static final String DEFAULT_ENCODING              = "UTF-8";
     private   static final String SERVLET_ENCODING              = "servlet.encoding";
@@ -116,7 +117,7 @@ public abstract class ServletManager extends HttpServlet {
 //     }
     
     protected boolean runningUnderSSL(HttpServletRequest req) {
-        return req.getScheme().equals("https") && (isSslPort(req.getServerPort()));
+        return req.isSecure();
     }
 
     protected boolean needsSSL(PfixServletRequest preq) throws ServletException {
@@ -405,13 +406,13 @@ public abstract class ServletManager extends HttpServlet {
 
     private void redirectToClearedRequest(HttpServletRequest req, HttpServletResponse res) {
         CAT.debug("===> Redirecting to cleared Request URL");
-        String redirect_uri = SessionHelper.getClearedURL(req.getScheme(), getServerName(req), req);
+        String redirect_uri = SessionHelper.getClearedURL(req.getScheme(), getServerName(req), req, getServletManagerConfig().getProperties());
         relocate(res, redirect_uri);
     }
 
     private void redirectToSSL(HttpServletRequest req, HttpServletResponse res) {
         CAT.debug("===> Redirecting to session-less request URL under SSL");
-        String redirect_uri = SessionHelper.getClearedURL("https", getServerName(req), req);
+        String redirect_uri = SessionHelper.getClearedURL("https", getServerName(req), req, getServletManagerConfig().getProperties());
         relocate(res, redirect_uri);
     }
 
@@ -436,7 +437,7 @@ public abstract class ServletManager extends HttpServlet {
                     if (cookie.getValue().equals(sec_testid)) {
                         CAT.debug("   ... and the value is correct! (" + cookie.getValue() + ")");
                         CAT.debug("==> Redirecting to the secure SSL URL with the already running secure session " + secure_id);
-                        String redirect_uri = SessionHelper.encodeURL("https", getServerName(req), req,  secure_id);
+                        String redirect_uri = SessionHelper.encodeURL("https", getServerName(req), req,  secure_id, getServletManagerConfig().getProperties());
                         relocate(res, redirect_uri);
                         return;
                     } else {
@@ -509,7 +510,7 @@ public abstract class ServletManager extends HttpServlet {
         }
 
         CAT.debug("===> Redirecting to secure SSL URL with session (Id: " + session.getId() + ")");
-        String redirect_uri = SessionHelper.encodeURL("https", getServerName(req), req);
+        String redirect_uri = SessionHelper.encodeURL("https", getServerName(req), req, getServletManagerConfig().getProperties());
         relocate(res, redirect_uri);
     }
 
@@ -542,7 +543,7 @@ public abstract class ServletManager extends HttpServlet {
         }
 
         CAT.debug("===> Redirecting to insecure SSL URL with session (Id: " + session.getId() + ")");
-        String redirect_uri = SessionHelper.encodeURL("https", getServerName(req), req);
+        String redirect_uri = SessionHelper.encodeURL("https", getServerName(req), req, getServletManagerConfig().getProperties());
         relocate(res, redirect_uri);
     }
 
@@ -567,7 +568,7 @@ public abstract class ServletManager extends HttpServlet {
         }
 
         CAT.debug("===> Redirecting to SSL URL with session (Id: " + session.getId() + ")");
-        String redirect_uri = SessionHelper.encodeURL("https", getServerName(req), req);
+        String redirect_uri = SessionHelper.encodeURL("https", getServerName(req), req, getServletManagerConfig().getProperties());
         relocate(res, redirect_uri);
     }
 
@@ -595,7 +596,7 @@ public abstract class ServletManager extends HttpServlet {
         SessionAdmin.getInstance().registerSession(session, traillog, getServerName(req), req.getRemoteAddr());
         CAT.debug("===> Redirecting with session (Id: " + session.getId() + ") using OLD VISIT_ID: " + curr_visit_id);
         session.setAttribute(STORED_REQUEST, preq);
-        String redirect_uri = SessionHelper.encodeURL(req.getScheme(), getServerName(req), req);
+        String redirect_uri = SessionHelper.encodeURL(req.getScheme(), getServerName(req), req, getServletManagerConfig().getProperties());
         relocate(res, redirect_uri);
     }
 
@@ -614,7 +615,7 @@ public abstract class ServletManager extends HttpServlet {
 
         CAT.debug("===> Redirecting to URL with session (Id: " + session.getId() + ")");
         session.setAttribute(STORED_REQUEST, preq);
-        String redirect_uri = SessionHelper.encodeURL(req.getScheme(), getServerName(req), req);
+        String redirect_uri = SessionHelper.encodeURL(req.getScheme(), getServerName(req), req, getServletManagerConfig().getProperties());
         relocate(res, redirect_uri);
     }
 
@@ -1021,17 +1022,17 @@ public abstract class ServletManager extends HttpServlet {
     
     protected abstract void process(PfixServletRequest preq, HttpServletResponse res) throws Exception;
 
-    // TODO: replace constants - ask tomcat 
-    public static final int HTTP_PORT       = 80;
-    public static final int APACHE_SSL_PORT = 443;
-    public static final int TOMCAT_SSL_PORT = 8443;
+    public static final int HTTP_PORT  = 80;
+    public static final int HTTPS_PORT = 443;
     
-    public static boolean isDefault(int port) {
-        return port == HTTP_PORT || port == APACHE_SSL_PORT;
-    }
-
-    public static boolean isSslPort(int port) {
-        return port == APACHE_SSL_PORT || port == TOMCAT_SSL_PORT;
+    public static boolean isDefault(String scheme, int port) {
+        if (scheme.equals("http") && port == HTTP_PORT) {
+            return true;
+        } else if (scheme.equals("https") && port == HTTPS_PORT) {
+            return true;
+        } else {
+            return false;
+        }
     }
     
 }// ServletManager

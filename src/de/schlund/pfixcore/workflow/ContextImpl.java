@@ -64,7 +64,7 @@ public class ContextImpl implements Context, AccessibilityChecker {
     private final static String PARAM_LASTFLOW      = "__lf";
     private final static String PARAM_STARTWITHFLOW = "__startwithflow";
     private final static String PARAM_FORCESTOP     = "__forcestop";
-
+    
     private ServerContextImpl  context;
     private SessionContextImpl scontext;
     private PageFlowManager    pageflowmanager;
@@ -411,7 +411,13 @@ public class ContextImpl implements Context, AccessibilityChecker {
             // after the redirect
             if (getConfigForCurrentPageRequest() != null && spdoc != null && getConfigForCurrentPageRequest().isSSL()
                 && !spdoc.getNostore() && !preq.getOriginalScheme().equals("https")) {
-                spdoc.setSSLRedirect("https://" + ServletManager.getServerName(preq.getRequest()) + preq.getContextPath() +
+                String redirectPort = getProperties().getProperty(ServletManager.PROP_SSL_REDIRECT_PORT + String.valueOf(preq.getOriginalServerPort()));
+                if (redirectPort == null) {
+                    redirectPort = "";
+                } else {
+                    redirectPort = ":" + redirectPort;
+                }
+                spdoc.setSSLRedirect("https://" + ServletManager.getServerName(preq.getRequest()) + redirectPort + preq.getContextPath() +
                                      preq.getServletPath() + ";jsessionid=" + preq.getSession(false).getId() + "?__reuse=" + spdoc.getTimestamp());
             }
             
