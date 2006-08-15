@@ -642,6 +642,10 @@ public class ContextImpl implements Context, AccessibilityChecker {
                 step.applyActionsOnContinue(this, resdoc);
             }
 
+            if (currentpageflow != null) {
+                setCurrentPageFlow(currentpageflow.getRootName());
+            }
+            
             if (prohibitcontinue) {
                 LOG.debug("* [" + currentpagerequest + "] returned document to show, skipping page flow.");
                 document = resdoc.getSPDocument();
