@@ -762,6 +762,10 @@ public class Context implements AppContext {
                 step.applyActionsOnContinue(this, resdoc);
             }
 
+            if (currentpageflow != null) {
+                setPageFlow(currentpageflow.getRootName());
+            }
+
             if (prohibitcontinue) {
                 LOG.debug("* [" + currentpagerequest + "] returned document to show, skipping page flow.");
                 document = resdoc.getSPDocument();
