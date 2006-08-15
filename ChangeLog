@@ -1,3 +1,10 @@
+2006-08-15  Sebastian Marsching <sebastian.marsching@1und1.de>
+
+	* skel/build-skel.xml: 
+	Create a META-INF/context.xml file when deploying an application as a
+	WAR file to make sure session cookies are deactivated for the application
+	context.
+
 2006-08-11  Jens Lautenbacher  <jtl@schlund.de>
 
 	* src/de/schlund/pfixxml/ServletManager.java

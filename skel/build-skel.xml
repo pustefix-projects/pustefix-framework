@@ -917,6 +917,12 @@ or delete the DOCTYPE definition -->
       <param name="path" value="/xml"/>
       <param name="docbase" value="."/>
     </antcall>
+   
+    <!-- Create context.xml for Tomcat to disable use of session cookies -->
+    <mkdir dir="${webapp.dir}/META-INF"/>
+    <echo file="${webapp.dir}/META-INF/context.xml">
+    <![CDATA[ <Context cookies="false"></Context> ]]>
+    </echo> 
     
     <war destfile="${engine.dir}/${webapp.name}.war" webxml="${webapp.dir}/WEB-INF/web.xml">
         <fileset dir="${webapp.dir}"/>
