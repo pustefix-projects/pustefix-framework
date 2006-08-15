@@ -1,3 +1,14 @@
+2006-08-15  Sebastian Marsching  <sebastian.marsching@1und1.de>
+
+	* src/de/schlund/pfixcore/workflow/ContextImpl.java: 
+	* src/de/schlund/pfixxml/serverutil/SessionHelper.java: 
+	* src/de/schlund/pfixxml/ServletManager.java: 
+	* projects/common/conf/pustefix.xml: 
+	Rewriting SSL redirect to support non-default SSL ports. Now a
+	pfixcore.ssl_redirect_port.for.<HTTP port> property can be set
+	in common/conf/pustefix.xml to specify a SSL port corresponding
+	to the used HTTP port.
+
 2006-08-15  Jens Lautenbacher  <jtl@schlund.de>
 
 	* src/de/schlund/pfixcore/workflow/ContextImpl.java

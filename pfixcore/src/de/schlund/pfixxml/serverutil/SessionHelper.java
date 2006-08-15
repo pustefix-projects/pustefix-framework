@@ -20,25 +20,28 @@
 package de.schlund.pfixxml.serverutil;
 
 import de.schlund.pfixxml.*;
+
 import java.util.*;
 import javax.servlet.http.*;
 import org.apache.log4j.*;
 
 public class SessionHelper {
-    
+
     private static Category CAT = Category.getInstance(SessionHelper.class);
+
     public static final String SESSION_ID_URL = "__SESSION_ID_URL__";
+
     private static final String ENC_STR = "jsessionid";
 
     public static void saveSessionData(Map store, HttpSession session) {
         try {
             Enumeration enm = session.getAttributeNames();
             while (enm.hasMoreElements()) {
-                String valName = (String)enm.nextElement();
+                String valName = (String) enm.nextElement();
                 store.put(valName, session.getAttribute(valName));
             }
         } catch (NullPointerException e) {
-            CAT.warn("Caught NP-Exception: "+e.getMessage());
+            CAT.warn("Caught NP-Exception: " + e.getMessage());
         }
     }
 
@@ -48,7 +51,7 @@ public class SessionHelper {
             String key = null;
             Object value = null;
             while (iter.hasNext()) {
-                key = (String)iter.next();
+                key = (String) iter.next();
                 value = store.get(key);
                 if (value instanceof NoCopySessionData) {
                     CAT.debug("*** Will not copy a object implementing NoCopySessionData!!! ***");
@@ -57,7 +60,7 @@ public class SessionHelper {
                 }
             }
         } catch (NullPointerException e) {
-            CAT.warn("Caught NP-Exception: "+e.getMessage());
+            CAT.warn("Caught NP-Exception: " + e.getMessage());
         }
     }
 
@@ -74,9 +77,15 @@ public class SessionHelper {
     }
 
     public static String getClearedURL(String scheme, String host, HttpServletRequest req) {
-        if (scheme == null) scheme = req.getScheme();
-        if (host == null) host = req.getServerName();
-        StringBuffer rcBuf = createPrefix(scheme, host, req);
+        return getClearedURL(scheme, host, req, null);
+    }
+    
+    public static String getClearedURL(String scheme, String host, HttpServletRequest req, Properties props) {
+        if (scheme == null)
+            scheme = req.getScheme();
+        if (host == null)
+            host = req.getServerName();
+        StringBuffer rcBuf = createPrefix(scheme, host, req, props);
         stripUriSessionId(null, req.getRequestURI(), rcBuf);
 
         String query = req.getQueryString();
@@ -95,7 +104,7 @@ public class SessionHelper {
         StringBuffer rcBuf = new StringBuffer();
 
         String oldSessionId = stripUriSessionId(null, req.getRequestURI(), rcBuf);
-        
+
         HttpSession session = req.getSession(false);
         if (session != null) {
             rcBuf.append(';').append(ENC_STR).append('=').append(session.getId());
@@ -107,15 +116,26 @@ public class SessionHelper {
     }
 
     public static String encodeURL(String scheme, String host, HttpServletRequest req) {
-        return encodeURL(scheme, host, req, null);
+        return encodeURL(scheme, host, req, null, null);
     }
+    
+    public static String encodeURL(String scheme, String host, HttpServletRequest req, Properties props) {
+        return encodeURL(scheme, host, req, null, props);
+    }
+    
     public static String encodeURL(String scheme, String host, HttpServletRequest req, String sessid) {
-        if (scheme == null) scheme = req.getScheme();
-        if (host == null) host     = req.getServerName();
-        StringBuffer rcBuf         = createPrefix(scheme, host, req);
-        String       oldSessionId  = stripUriSessionId(null, req.getRequestURI(), rcBuf);
-        HttpSession  session       = req.getSession(false);
-        
+        return encodeURL(scheme, host, req, sessid, null);
+    }
+    
+    public static String encodeURL(String scheme, String host, HttpServletRequest req, String sessid, Properties props) {
+        if (scheme == null)
+            scheme = req.getScheme();
+        if (host == null)
+            host = req.getServerName();
+        StringBuffer rcBuf = createPrefix(scheme, host, req, props);
+        String oldSessionId = stripUriSessionId(null, req.getRequestURI(), rcBuf);
+        HttpSession session = req.getSession(false);
+
         if (sessid != null) {
             rcBuf.append(';').append(ENC_STR).append('=').append(sessid);
         } else if (session != null) {
@@ -123,7 +143,7 @@ public class SessionHelper {
         } else if (oldSessionId != null && 0 < oldSessionId.length()) {
             rcBuf.append(';').append(ENC_STR).append('=').append(oldSessionId);
         }
-       
+
         String query = req.getQueryString();
         if (query != null && 0 < query.length()) {
             rcBuf.append('?').append(query);
@@ -131,19 +151,27 @@ public class SessionHelper {
         return rcBuf.toString();
     }
 
-
-    
-    private static StringBuffer createPrefix(String scheme, String host, HttpServletRequest req) {
+    private static StringBuffer createPrefix(String scheme, String host, HttpServletRequest req, Properties props) {
         StringBuffer rcBuf;
 
         rcBuf = new StringBuffer();
         rcBuf.append(scheme).append("://").append(host);
-        if (ServletManager.isDefault(req.getServerPort())) {
+        if (ServletManager.isDefault(req.getScheme(), req.getServerPort())) {
             // don't care about port -- stick with defaults
         } else {
-            // we're running with none-default ports: repeat port in encoded url
-            if ("https".equals(scheme)) {
-                rcBuf.append(":" + ServletManager.TOMCAT_SSL_PORT); // TODO: ask tomcat's ssl port
+            // we are using non-default ports and are redirecting to ssl:
+            // try to get the right ssl port from the configuration
+            if ("https".equals(scheme) && !req.isSecure()) {
+                if (props != null) {
+                    String redirectPort = props.getProperty(ServletManager.PROP_SSL_REDIRECT_PORT + String.valueOf(req.getServerPort()));
+                    if (redirectPort == null) {
+                        // we have not found the right port, so try the default one
+                        redirectPort = "";
+                    } else {
+                        redirectPort = ":" + redirectPort;
+                    }
+                    rcBuf.append(redirectPort);
+                }
             } else {
                 rcBuf.append(":").append(req.getServerPort());
             }
@@ -159,7 +187,7 @@ public class SessionHelper {
                 rc = uri.substring(semiIdx + 1);
                 uri = uri.substring(0, semiIdx);
             }
-            
+
             if (uri.startsWith("/jsessionid")) {
                 int nextSlash = uri.indexOf('/', 1);
                 if (0 < nextSlash) {
@@ -170,11 +198,12 @@ public class SessionHelper {
                 }
             }
 
-            if (uri.length() == 0) uri = "/";
+            if (uri.length() == 0)
+                uri = "/";
 
             rcUri.append(uri);
         } catch (NullPointerException e) {
-            CAT.warn("Caught NP-Exception: "+e.getMessage());
+            CAT.warn("Caught NP-Exception: " + e.getMessage());
         }
         return rc;
     }
