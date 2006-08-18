@@ -19,34 +19,6 @@
 
 package de.schlund.pfixxml;
 
-
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.nio.charset.Charset;
-import java.text.NumberFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.Map;
-import java.util.Properties;
-import java.util.concurrent.atomic.AtomicInteger;
-
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-
-import org.apache.log4j.Category;
-import org.xml.sax.SAXException;
-
 import de.schlund.pfixxml.config.ServletManagerConfig;
 import de.schlund.pfixxml.config.XMLPropertiesUtil;
 import de.schlund.pfixxml.exceptionhandler.ExceptionHandler;
@@ -61,6 +33,31 @@ import de.schlund.pfixxml.serverutil.SessionAdmin;
 import de.schlund.pfixxml.serverutil.SessionHelper;
 import de.schlund.pfixxml.serverutil.SessionInfoStruct;
 import de.schlund.pfixxml.util.MD5Utils;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.text.NumberFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.Map;
+import java.util.Properties;
+import java.util.TreeSet;
+import java.util.concurrent.atomic.AtomicInteger;
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import org.apache.log4j.Category;
+import org.xml.sax.SAXException;
 
 /**
  * ServletManager.java
@@ -89,6 +86,7 @@ public abstract class ServletManager extends HttpServlet {
     protected static final String DEF_CONTENT_TYPE              = "text/html";
     private   static final String DEFAULT_ENCODING              = "UTF-8";
     private   static final String SERVLET_ENCODING              = "servlet.encoding";
+    private   static final int    MAX_PARALLEL_SEC_SESSIONS     = 10;
     private   static       String TIMESTAMP_ID                  = "";
     private   static       int    INC_ID                        = 0;
 
@@ -247,11 +245,21 @@ public abstract class ServletManager extends HttpServlet {
                             String sec_testid = (String) session.getAttribute(SECURE_SESS_COOKIE + MD5Utils.hex_md5(session.getId()));
                             CAT.debug("*** Session expects to see the cookie value " + sec_testid);
                             Cookie cookie = getSecureSessionCookie(req, session.getId());
+                            cleanupCookies(req, res, cookie);
                             if (cookie != null) {
                                 CAT.debug("*** Found a matching cookie ...");
-                                if (cookie.getValue().equals(sec_testid)) {
-                                    CAT.debug("   ... and the value is correct! (" + cookie.getValue() + ")");
+                                String tmp     = cookie.getValue();
+                                String tmp_sec = tmp.substring(tmp.indexOf(":") + 1);
+                                if (tmp_sec.equals(sec_testid)) {
+                                    CAT.debug("   ... and the value is correct! (" + tmp_sec + ")");
                                     has_ssl_session_secure = true;
+                                    Cookie cookie_new      = new Cookie(cookie.getName(), System.currentTimeMillis() + ":" + tmp_sec);
+                                    setCookiePath(req, cookie_new);
+                                    // FIXME FIXME (see comment in cleanupCookies
+                                    // cookie_new.setMaxAge(session.getMaxInactiveInterval());
+                                    cookie_new.setMaxAge(-1);
+                                    cookie_new.setSecure(true);
+                                    res.addCookie(cookie_new);
                                 } else {
                                     CAT.debug("   ... but the value is WRONG!");
                                     CAT.error("*** Wrong Session-ID for running secure session from cookie. " +
@@ -262,7 +270,7 @@ public abstract class ServletManager extends HttpServlet {
                             } else {
                                 CAT.debug("*** Found NO matching cookie at all, but client does cookies: ***");
                                 CAT.error("*** NOSECSESSIDFROMCOOKIE: " + req.getRemoteAddr()
-                                          + "|" + session.getId() + "|" + req.getHeader("Cookie"));
+                                          + "|" + session.getId() + "|" + req.getHeader("User-Agent") + "|" + req.getHeader("Cookie"));
                                 // Most time when this happens, we are not under attack, but one of
                                 // two things happened: a) a stupid behaviour (bug?)  of IE or opera
                                 // strikes us bad: With these two browsers, if we accept the
@@ -434,8 +442,10 @@ public abstract class ServletManager extends HttpServlet {
                 Cookie cookie = getSecureSessionCookie(req, secure_id);
                 if (cookie != null) {
                     CAT.debug("*** Found a matching cookie ...");
-                    if (cookie.getValue().equals(sec_testid)) {
-                        CAT.debug("   ... and the value is correct! (" + cookie.getValue() + ")");
+                    String tmp     = cookie.getValue();
+                    String tmp_sec = tmp.substring(tmp.indexOf(":") + 1);
+                    if (tmp_sec.equals(sec_testid)) {
+                        CAT.debug("   ... and the value is correct! (" + tmp_sec + ")");
                         CAT.debug("==> Redirecting to the secure SSL URL with the already running secure session " + secure_id);
                         String redirect_uri = SessionHelper.encodeURL("https", getServerName(req), req,  secure_id, getServletManagerConfig().getProperties());
                         relocate(res, redirect_uri);
@@ -491,16 +501,21 @@ public abstract class ServletManager extends HttpServlet {
         if (msanc == null) {
             Cookie cookie = getSecureSessionCookie(req, session.getId());
             if (cookie != null) {
+                setCookiePath(req, cookie);
                 cookie.setMaxAge(0);
+                cookie.setSecure(true);
                 res.addCookie(cookie);
             }
             
-            String sec_testid = req.getRemoteAddr() + ":" + Long.toHexString((long) (Math.random() * Long.MAX_VALUE));
+            String sec_testid = Long.toHexString((long) (Math.random() * Long.MAX_VALUE));
             CAT.debug("*** Secure Test-ID used in session and cookie: " + sec_testid);
             String sec_cookie = MD5Utils.hex_md5(session.getId());
             session.setAttribute(SECURE_SESS_COOKIE + sec_cookie, sec_testid);
-            cookie = new Cookie(SECURE_SESS_COOKIE + sec_cookie, sec_testid);
-            cookie.setPath("/");
+
+            cookie = new Cookie(SECURE_SESS_COOKIE + sec_cookie, System.currentTimeMillis() + ":" + sec_testid);
+            setCookiePath(req, cookie);
+            // FIXME FIXME (see comment in cleanupCookies
+            //cookie.setMaxAge(session.getMaxInactiveInterval());
             cookie.setMaxAge(-1);
             cookie.setSecure(true);
             res.addCookie(cookie);
@@ -678,17 +693,13 @@ public abstract class ServletManager extends HttpServlet {
         if (sess != null) {
             rand = (String) sess.getAttribute(RAND_SESS_COOKIE_VALUE);
             if (rand != null) {
-                CAT.debug("*** Already found a test cookie name in session: " + rand);
+                CAT.debug("*** Already found a test cookie value in session: " + rand);
             } else {
                 rand = Long.toHexString((long) (Math.random() * Long.MAX_VALUE));
-                CAT.debug("*** Creating a random test cookie name: " + rand);
+                CAT.debug("*** Creating a random test cookie value: " + rand);
             }
             Cookie newprobe = new Cookie(TEST_COOKIE, rand);
-            if (req.getContextPath().length() > 0) {
-                newprobe.setPath(req.getContextPath());
-            } else {
-                newprobe.setPath("/");
-            }
+            setCookiePath(req, newprobe);
             res.addCookie(newprobe);
             sess.setAttribute(RAND_SESS_COOKIE_VALUE, rand);
             return true;
@@ -1035,4 +1046,99 @@ public abstract class ServletManager extends HttpServlet {
         }
     }
     
+
+    private class SortableCookie implements Comparable {
+        public final Cookie cookie;
+        public final long   lasttouch;
+        
+        public final int compareTo(final Object object) {
+            assert(object instanceof SortableCookie) : "Can only compare SortableCookie objects";
+            SortableCookie in = (SortableCookie) object;
+            if (in.lasttouch > lasttouch) return -1;
+            if (in.lasttouch < lasttouch) return 1;
+            else return 0;
+        }
+    
+        public SortableCookie(Cookie cookie, long lasttouch) {
+            this.cookie    = cookie;
+            this.lasttouch = lasttouch;
+            assert(cookie != null) : "cookie argument must not be null";
+            assert(lasttouch > 0) : "lasttouch argument must be > 0";
+        }
+    }
+
+    private void cleanupCookies(HttpServletRequest req, HttpServletResponse res, Cookie cookie) {
+        HttpSession session = req.getSession(false);
+        assert(session !=null) : "session can't be null here...";
+        
+        Long timeout = System.currentTimeMillis() - (1000 * session.getMaxInactiveInterval());
+        assert(timeout > 0) : "timeout can't be negative...";
+        
+        Cookie[] cookies = req.getCookies();
+        if (cookies != null && cookies.length > 0) {
+            TreeSet<SortableCookie> cset = new TreeSet<SortableCookie>();
+
+            for (int i = 0; i < cookies.length; i++) {
+                Cookie tmp = cookies[i];
+                if (tmp.getName().startsWith(SECURE_SESS_COOKIE) &&
+                    (cookie == null || !tmp.getName().equals(cookie.getName()))) {
+                    String value = tmp.getValue();
+                    String stamp = value.substring(0, value.indexOf(":"));
+                    try {
+                        long lasttouch = Long.parseLong(stamp);
+                        cset.add(new SortableCookie(tmp, lasttouch));
+                        CAT.debug("~~~ Adding cookie " + lasttouch + "->" + tmp.getName());
+                    } catch (NumberFormatException e) {
+                        setCookiePath(req, tmp);
+                        tmp.setMaxAge(0);
+                        tmp.setSecure(true);
+                        res.addCookie(tmp);
+                    }
+                }
+            }
+            int count  = 0;
+            int length = cset.size();
+            for (Iterator<SortableCookie> iter = cset.iterator(); iter.hasNext(); count++) {
+                SortableCookie current        = iter.next();
+                Cookie         curr_cookie    = current.cookie;
+                long           curr_lasttouch = current.lasttouch;
+                
+                CAT.debug("--- Checking cookie " + count + "->" + curr_lasttouch + "->" + curr_cookie.getName());
+                
+                if (count <= (length - MAX_PARALLEL_SEC_SESSIONS)) {
+                    CAT.debug("   -> removing cookie because number of secure session cookies too high");
+                    curr_cookie.setMaxAge(0);
+                    curr_cookie.setSecure(true);
+                    setCookiePath(req, curr_cookie);
+                    res.addCookie(curr_cookie);
+                } else if  (curr_lasttouch < timeout) {          
+                    // FIXME FIXME We shoudln't need to check for "old" cookies here, because the
+                    // lifetime of a cookie should ideally be set to the max. inactive time of the
+                    // session, so the browser would stop sending old cookies by itself. But I'm not
+                    // entirely sure if we can really depend on having the time set right on all
+                    // clients... What happens if the client clock is set half an hour too early?
+                    // Will the browser stop sending the cookie half an hour before the session is
+                    // really invalidated? As we need the timestamp info anyway to sort the cookies,
+                    // we can also do the timeout removing here.
+                    CAT.debug("   -> removing cookie because timestamp too old");
+                    curr_cookie.setMaxAge(0);
+                    curr_cookie.setSecure(true);
+                    setCookiePath(req, curr_cookie);
+                    res.addCookie(curr_cookie);
+                } else {
+                    break;
+                }
+            }
+        }
+    }
+
+
+    private void setCookiePath(HttpServletRequest req, Cookie cookie) {
+        if (req.getContextPath().length() > 0) {
+            cookie.setPath(req.getContextPath());
+        } else {
+            cookie.setPath("/");
+        }
+    }
+
 }// ServletManager
