@@ -61,6 +61,9 @@
   <xsl:param name="outputdoctype-public"/>
   <xsl:param name="outputdoctype-system"/>
   
+  <!-- <xsl:param name="additional_custom_namespaces"/> -->
+  <!-- <xsl:param name="exclude_custom_ns_prefixes"/> -->
+  
   <!-- Needed for includes to work. Remember to include this in the resulting stylesheet, too! -->
   <xsl:param name="lang"><cus:lang/></xsl:param>
   <xsl:param name="product"><cus:product/></xsl:param>
@@ -76,11 +79,27 @@
   <xsl:key name="frame_key"    match="pfx:frame"    use="'frame'"/>
 
   <xsl:template match="/">
+    <!-- <xsl:text disable-output-escaping="yes"> -->
+    <!--   &lt;ixsl:stylesheet version="1.1" -->
+    <!--                  xmlns:xsl="http://www.w3.org/1999/XSL/Transform" -->
+    <!--                  xmlns:cus="http://www.schlund.de/pustefix/customize" -->
+    <!--                  xmlns:pfx="http://www.schlund.de/pustefix/core" -->
+    <!--                  xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" -->
+    <!--                  xmlns:url="xalan://java.net.URLEncoder" -->
+    <!--                  xmlns:deref="xalan://de.schlund.pfixxml.DerefServer" -->
+    <!--                  xmlns:callback="xalan://de.schlund.pfixcore.util.TransformerCallback" -->
+    <!-- </xsl:text> -->
+    <!-- <xsl:value-of select="$additional_custom_namespaces"/> -->
+    <!-- <xsl:text disable-output-escaping="yes"> -->
+    <!--   exclude-result-prefixes="pfx cus xsl url deref callback </xsl:text><xsl:value-of select="$exclude_custom_ns_prefixes"/><xsl:text disable-output-escaping="yes">"></xsl:text> -->
     <ixsl:stylesheet version="1.1"
+                     xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+                     xmlns:cus="http://www.schlund.de/pustefix/customize"
+                     xmlns:pfx="http://www.schlund.de/pustefix/core"
                      xmlns:url="xalan://java.net.URLEncoder"
                      xmlns:deref="xalan://de.schlund.pfixxml.DerefServer"
                      xmlns:callback="xalan://de.schlund.pfixcore.util.TransformerCallback"
-                     exclude-result-prefixes="url pfx cus xsl deref">
+                     exclude-result-prefixes="pfx cus xsl url deref callback">
 
       <ixsl:import href="core/xsl/default_copy.xsl"/>
       <ixsl:import href="core/xsl/include.xsl"/>
@@ -216,6 +235,9 @@
           </xsl:otherwise>
         </xsl:choose>
       </ixsl:template>
+      <!-- <xsl:text disable-output-escaping="yes"> -->
+      <!-- &lt;/ixsl:stylesheet> -->
+      <!-- </xsl:text> -->
     </ixsl:stylesheet>
   </xsl:template>
 
