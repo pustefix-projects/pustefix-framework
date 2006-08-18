@@ -1,3 +1,9 @@
+2006-08-18  Jens Lautenbacher  <jtl@schlund.de>
+
+	* projects/sample1/conf/depend.xml: 
+	* projects/core/xsl/master.xsl: not yet ready changes to maybe
+	support customizing the excluded namespace prefixes
+	
 2006-08-15  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
 	* src/de/schlund/pfixcore/workflow/ContextImpl.java: 
