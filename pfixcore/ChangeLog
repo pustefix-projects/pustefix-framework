@@ -1,3 +1,15 @@
+2006-08-18  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixxml/ServletManager.java
+	(ServletManager::setCookiePath, ServletManager::cleanupCookies):
+	new methods.
+	(ServletManager::SortableCookie): new private inner class
+	(ServletManager::createTestCookie) 
+	(ServletManager::redirectToSecureSSLSession)
+	(ServletManager::doGet) changed to work with setCookiePath, and to
+	cleanup Cookies if needed (more than 10 sec session cookies, or
+	cookies too old.)
+
 2006-08-15  Jens Lautenbacher  <jtl@schlund.de>
 
 	* src/de/schlund/pfixcore/workflow/Context.java
