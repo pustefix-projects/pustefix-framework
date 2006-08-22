@@ -582,22 +582,14 @@ public class IWrapperSimpleContainer implements IWrapperContainer, Reloader {
                 wrappers.put(prefix, wrapper);
                 wrapper.init(prefix);
 
-                String logdir       = context.getProperties().getProperty(WRAPPER_LOGDIR);
-                String debugwrapper = config.getProperties().getProperty(WRAPPER_LOGLIST);
-                if (logdir != null && !logdir.equals("") && debugwrapper != null && !debugwrapper.equals("")) {
+                String  logdir  = context.getProperties().getProperty(WRAPPER_LOGDIR);
+                boolean dolog   = iConfig.getLogging();
+                if (dolog && logdir != null && !logdir.equals("")) {
                     FileResource dir = ResourceUtil.getFileResourceFromDocroot(logdir);
                     if (dir.isDirectory() && dir.canWrite()) {
-                        StringTokenizer tok = new StringTokenizer(debugwrapper);
-                        for (; tok.hasMoreTokens(); ) {
-                            String debwrp = tok.nextToken();
-                            if (prefix.equals(debwrp)) {
-                                wrapper.initLogging(dir, context.getCurrentPageRequest().getName(),
-                                                    context.getVisitId());
-                                break;
-                            }
-                        }
+                        wrapper.initLogging(dir, context.getCurrentPageRequest().getName(), context.getVisitId());
                     }
-                }    
+                }
             }
             
             AppLoader appLoader = AppLoader.getInstance();

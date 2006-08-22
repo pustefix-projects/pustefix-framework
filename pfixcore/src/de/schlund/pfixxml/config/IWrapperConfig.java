@@ -31,6 +31,7 @@ public class IWrapperConfig {
     private boolean continueOnSubmit = false;
     private boolean activeIgnore = false;
     private boolean alwaysRetrieve = false;
+    private boolean dologging = false;
     
     public String getPrefix() {
         return this.prefix;
@@ -70,5 +71,13 @@ public class IWrapperConfig {
     
     public boolean isAlwaysRetrieve() {
         return this.alwaysRetrieve;
+    }
+
+    public void setLogging(boolean dologging) {
+        this.dologging = dologging;
+    }
+
+    public boolean getLogging() {
+        return this.dologging;
     }
 }
