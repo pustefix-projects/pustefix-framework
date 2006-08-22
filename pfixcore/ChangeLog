@@ -1,3 +1,17 @@
+2006-08-22  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixxml/config/PagerequestInputInterfaceRule.java
+	(PagerequestInputInterfaceRule): also handle loggin attribute in
+	<interface> node.
+	(PagerequestInputInterfaceRule::wantsAttributes): dito.
+
+	* src/de/schlund/pfixxml/config/IWrapperConfig.java (IWrapperConfig::setLogging)
+	(IWrapperConfig::getLogging): new methods. Reimplementation.
+
+	* src/de/schlund/pfixcore/workflow/app/IWrapperSimpleContainer.java
+	(IWrapperSimpleContainer::readIWrappersConfigFromProperties): 
+	handle logging attribute from <inteface> (aka iwrapper) node
+
 2006-08-18  Jens Lautenbacher  <jtl@schlund.de>
 
 	* src/de/schlund/pfixxml/ServletManager.java

@@ -67,6 +67,12 @@ public class PagerequestInputInterfaceRule extends CheckedRule {
         } else {
             wrapperConfig.setAlwaysRetrieve(false);
         }
+        String dologging = attributes.getValue("logging");
+        if (dologging != null) {
+            wrapperConfig.setLogging(Boolean.parseBoolean(dologging));
+        } else {
+            wrapperConfig.setLogging(false);
+        }
         pageConfig.addIWrapper(wrapperConfig);
     }
     
@@ -77,6 +83,7 @@ public class PagerequestInputInterfaceRule extends CheckedRule {
         atts.put("activeignore", false);
         atts.put("continue", false);
         atts.put("alwaysretrieve", false);
+        atts.put("logging", false);
         return atts;
     }
 }
