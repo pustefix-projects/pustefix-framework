@@ -770,7 +770,7 @@ public class Context implements AppContext {
             }
 
             if (currentpageflow != null) {
-                setPageFlow(currentpageflow.getRootName());
+                currentpageflow = pageflowmanager.getPageFlowByName(currentpageflow.getRootName(), getVariant());
             }
 
             if (prohibitcontinue) {
