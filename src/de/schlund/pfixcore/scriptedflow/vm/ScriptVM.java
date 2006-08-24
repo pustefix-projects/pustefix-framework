@@ -18,16 +18,17 @@
 
 package de.schlund.pfixcore.scriptedflow.vm;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
-
 import de.schlund.pfixcore.scriptedflow.vm.pvo.ParamValueObject;
 import de.schlund.pfixcore.workflow.ContextImpl;
 import de.schlund.pfixxml.PfixServletRequest;
 import de.schlund.pfixxml.SPDocument;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import javax.servlet.http.HttpServletRequest;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Text;
 
 /**
  * Executes scripts that have been compiled previously.  
@@ -53,18 +54,17 @@ public class ScriptVM {
 
     public void setScript(Script script) {
         if (this.script != null) {
-            throw new IllegalStateException(
-                    "Script can only be set once per VM instance");
+            throw new IllegalStateException("Script can only be set once per VM instance");
         }
         this.script = script;
-        this.il = script.getInstructions();
-        this.ip = 0;
+        this.il     = script.getInstructions();
+        this.ip     = 0;
     }
 
     public void loadVMState(VMState state) {
         this.script = state.getScript();
-        this.il = script.getInstructions();
-        this.ip = state.getIp();
+        this.il     = script.getInstructions();
+        this.ip     = state.getIp();
         this.registerVariables.clear();
         this.registerVariables.putAll(state.getVariables());
     }
@@ -77,10 +77,9 @@ public class ScriptVM {
         return state;
     }
 
-    public SPDocument run(PfixServletRequest preq, SPDocument spdoc,
-            ContextImpl rcontext, Map<String, String> params) throws Exception {
+    public SPDocument run(PfixServletRequest preq, SPDocument spdoc, ContextImpl rcontext, Map<String, String> params) throws Exception {
         isRunning = true;
-
+        
         // Make sure resolver and registers are set up
         // with correct data
         resolver.setParams(params);
@@ -90,32 +89,51 @@ public class ScriptVM {
         // Check whether a script has been loaded
         if (script == null) {
             isRunning = false;
-            throw new IllegalStateException(
-                    "Script has to be loaded before running the machine");
+            throw new IllegalStateException("Script has to be loaded before running the machine");
         }
-
+        
         mainloop: while (ip < il.length) {
             Instruction instr = il[ip];
-
+            
             if (instr instanceof ExitInstruction) {
-                isRunning = false;
-                return registerSPDoc;
+                ExitInstruction in = (ExitInstruction) instr;
+                Map<String, String[]> formparams = new HashMap<String, String[]>();
+                for (String key : in.getParams().keySet()) {
+                    List<ParamValueObject> pvolist = in.getParams().get(key);
+                    String[] rlist = new String[pvolist.size()];
+                    for (int i = 0; i < pvolist.size(); i++) {
+                        rlist[i] = pvolist.get(i).resolve(resolver);
+                    }
+                    formparams.put(key, rlist);
+                }
 
+                isRunning = false;
+                return mangleDoc(registerSPDoc, formparams);
+                
             } else if (instr instanceof InteractiveRequestInstruction) {
-                ip++;
-                if (registerSPDoc != null) {
-                    return registerSPDoc;
-                } else {
-                    SPDocument returndoc;
+                InteractiveRequestInstruction in = (InteractiveRequestInstruction) instr;
+                if (registerSPDoc == null) {
                     try {
-                        returndoc = rcontext.handleRequest(preq);
+                        updateRegisterSPDoc(rcontext.handleRequest(preq));
                     } finally {
                         // Make sure scripted flow is canceled on error
                         isRunning = false;
                     }
-                    isRunning = true;
-                    return returndoc;
+                }            
+                ip++;
+
+                Map<String, String[]> formparams = new HashMap<String, String[]>();
+                for (String key : in.getParams().keySet()) {
+                    List<ParamValueObject> pvolist = in.getParams().get(key);
+                    String[] rlist = new String[pvolist.size()];
+                    for (int i = 0; i < pvolist.size(); i++) {
+                        rlist[i] = pvolist.get(i).resolve(resolver);
+                    }
+                    formparams.put(key, rlist);
                 }
+                
+                isRunning = true;
+                return mangleDoc(registerSPDoc, formparams);
                 
             } else if (instr instanceof SetVariableInstruction) {
                 SetVariableInstruction in = (SetVariableInstruction) instr;
@@ -123,7 +141,7 @@ public class ScriptVM {
                 String varValue = in.getVariableValue().resolve(resolver);
                 registerVariables.put(varName, varValue);
                 ip++;
-
+                
             } else if (instr instanceof JumpCondFalseInstruction) {
                 JumpCondFalseInstruction in = (JumpCondFalseInstruction) instr;
                 if (resolver.evalXPathBoolean(in.getCondition())) {
@@ -138,10 +156,9 @@ public class ScriptVM {
                         }
                     }
                     isRunning = false;
-                    throw new RuntimeException(
-                            "Jump references non-existing target!");
+                    throw new RuntimeException("Jump references non-existing target!");
                 }
-
+                
             } else if (instr instanceof JumpUncondInstruction) {
                 JumpUncondInstruction in = (JumpUncondInstruction) instr;
                 Instruction target = in.getTargetInstruction();
@@ -152,9 +169,8 @@ public class ScriptVM {
                     }
                 }
                 isRunning = false;
-                throw new RuntimeException(
-                        "Jump references non-existing target!");
-
+                throw new RuntimeException("Jump references non-existing target!");
+                
             } else if (instr instanceof NopInstruction) {
                 ip++;
                 continue;
@@ -182,29 +198,49 @@ public class ScriptVM {
 
             } else {
                 isRunning = false;
-                throw new RuntimeException(
-                        "Found instruction not understood by the VM!");
+                throw new RuntimeException("Found instruction not understood by the VM!");
             }
         }
 
         // Reached end of script
         isRunning = false;
-        return registerSPDoc;
+        return mangleDoc(registerSPDoc, null);
     }
 
     public boolean isExitState() {
         return !isRunning;
     }
 
-    private void doVirtualRequest(String pagename,
-            Map<String, String[]> reqParams, PfixServletRequest origPreq,
-            ContextImpl rcontext) throws Exception {
-        HttpServletRequest vhttpreq = new VirtualHttpServletRequest(origPreq
-                .getRequest(), pagename, reqParams);
+    private SPDocument mangleDoc(SPDocument spdoc, Map<String, String[]> formparams) {
+        Document doc = spdoc.getDocument();
+        if (doc != null) {
+            Element root = doc.getDocumentElement();
+            root.setAttribute("scriptedflowname", script.getName());
+            root.setAttribute("scriptedflowrunning", "" + isRunning);
 
-        PfixServletRequest vpreq = new PfixServletRequest(vhttpreq, System
-                .getProperties());
+            if (formparams != null) {
+                Element formvalues = (Element) resolver.evalXPathNode("/formresult/formvalues");
+                for (String pname : formparams.keySet()) {
+                    String[] values = formparams.get(pname);
+                    if (values != null && values.length > 0) {
+                        for (String value : values) {
+                            Element param = doc.createElement("param");
+                            param.setAttribute("name", pname);
+                            param.appendChild(doc.createTextNode(value));
+                            formvalues.appendChild(param);
+                        }
+                    }
+                }
+            }
+        }
+        return spdoc;
+    }
+    
+    private void doVirtualRequest(String pagename, Map<String, String[]> reqParams, PfixServletRequest origPreq, ContextImpl rcontext) throws Exception {
 
+        HttpServletRequest vhttpreq = new VirtualHttpServletRequest(origPreq.getRequest(), pagename, reqParams);
+        PfixServletRequest vpreq    = new PfixServletRequest(vhttpreq, System.getProperties());
+        
         // Send request to the context and use returned SPDocument
         // for further processing
         SPDocument newdoc = rcontext.handleRequest(vpreq);

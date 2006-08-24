@@ -24,10 +24,17 @@ package de.schlund.pfixcore.scriptedflow.vm;
  * @author Sebastian Marsching <sebastian.marsching@1und1.de>
  */
 public class Script {
+    private String name;
+    
     private Instruction[] instructions;
 
-    public Script(Instruction[] instructions) {
+    public Script(Instruction[] instructions, String name) {
         this.instructions = instructions;
+        this.name = name;
+    }
+
+    public String getName() {
+        return name;
     }
     
     Instruction[] getInstructions() {

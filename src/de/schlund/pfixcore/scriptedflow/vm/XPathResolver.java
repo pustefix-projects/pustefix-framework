@@ -18,19 +18,20 @@
 
 package de.schlund.pfixcore.scriptedflow.vm;
 
-import java.util.Map;
 
+
+
+import de.schlund.pfixxml.SPDocument;
+import de.schlund.pfixxml.util.Xml;
+import java.util.Map;
 import javax.xml.namespace.QName;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 import javax.xml.xpath.XPathVariableResolver;
-
 import org.w3c.dom.Document;
-
-import de.schlund.pfixxml.SPDocument;
-import de.schlund.pfixxml.util.Xml;
+import org.w3c.dom.Node;
 
 /**
  * Used by the VM to evaluate XPath expressions for different instructions.  
@@ -134,4 +135,21 @@ public class XPathResolver {
                     + "\"", e);
         }
     }
+
+
+    public Node evalXPathNode(String expr) {
+        Document doc;
+        if (spdoc == null) {
+            doc = Xml.createDocument();
+        } else {
+            doc = spdoc.getDocument();
+        }
+        try {
+            Node ret = (Node) xpath.evaluate(expr, doc, XPathConstants.NODE);
+            return ret;
+        } catch (XPathExpressionException e) {
+            throw new RuntimeException("Invalid XPath expression: \"" + expr + "\"", e);
+        }
+    }
+
 }

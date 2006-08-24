@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<scriptedflow version="1.0" xmlns="http://pustefix.sourceforge.net/scriptedflow200602">
+<scriptedflow version="1.0" xmlns="http://pustefix.sourceforge.net/scriptedflow200602" name="OrderShirtScript">
   <!-- 
        Simple example that tries to order a shirt size XL
        in the color provided during the request.
        Open 
-         http://sample1.<yourhost>/xml/order/?__scriptedflow=ordershirt&color=4
+         http://sample1.<yourhost>/xml/config?__scriptedflow=ordershirt&color=4
        in your browser to see a demonstration.
   -->
   
@@ -14,7 +14,9 @@
     <if test="not($__pagename = 'home')">
       <exit/>
     </if>
-    <interactive-request/>
+    <interactive-request>
+      <param name="info.Adult">foobar</param>
+    </interactive-request>
   </while>
   
   <!-- Check whether a color was given when starting the flow, otherwise

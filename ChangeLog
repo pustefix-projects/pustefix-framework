@@ -1,3 +1,41 @@
+2006-08-24  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixcore/scriptedflow/vm/ScriptVM.java
+	(ScriptVM::run): handle form params
+	(ScriptVM::mangleDoc): new method. insert name, state, form params in
+	returned doc
+
+	* src/de/schlund/pfixcore/scriptedflow/vm/Script.java
+	(Script::Script): handle name argument
+	
+	* src/de/schlund/pfixcore/scriptedflow/compiler/InteractiveRequestStatement.java 
+	(InteractiveRequestStatement::addParam): new method
+	* src/de/schlund/pfixcore/scriptedflow/compiler/ExitStatement.java
+	(ExitStatement::addParam): new method
+
+	* src/de/schlund/pfixcore/scriptedflow/vm/InteractiveRequestInstruction.java 
+	(InteractiveRequestInstruction::getParams): 	
+	* src/de/schlund/pfixcore/scriptedflow/vm/ExitInstruction.java
+	(ExitInstruction::getParams): handle them
+
+	* src/de/schlund/pfixcore/scriptedflow/compiler/Compiler.java: cosmetics...
+	(Compiler::compile): added handling of script name
+	(Compiler::addParametersToStatement): new method, used for virtual
+	requests, interactive requests and exit.
+
+	* src/de/schlund/pfixcore/scriptedflow/vm/XPathResolver.java
+	(XPathResolver::evalXPathNode): new method to get back a node.
+
+	* src/de/schlund/pfixxml/ContextXMLServer.java: cosmetics
+
+	* projects/sample1/conf/scriptedflow/ordershirt.script.xml: add
+	name, bug fix in comment. Use new form parameter.
+
+	* src/de/schlund/pfixcore/scriptedflow/compiler/ParameterizedStatement.java:
+	new interface
+	* src/de/schlund/pfixcore/scriptedflow/compiler/VirtualRequestStatement.java (VirtualRequestStatement): 
+	implement it.
+
 2006-08-23  Jens Lautenbacher  <jtl@schlund.de>
 
 	* src/de/schlund/pfixcore/workflow/ContextImpl.java
