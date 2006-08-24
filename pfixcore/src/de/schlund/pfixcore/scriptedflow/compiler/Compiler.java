@@ -54,17 +54,14 @@ public class Compiler {
         try {
             doc = Xml.parse(scriptFile);
         } catch (TransformerException e) {
-            throw new CompilerException("XML parser could not parse file "
-                    + scriptFile.toString(), e);
+            throw new CompilerException("XML parser could not parse file " + scriptFile.toString(), e);
         }
-
+        
         Element root = doc.getDocumentElement();
-        if (!root.getLocalName().equals("scriptedflow")
-                || !root.getNamespaceURI().equals(NS_SCRIPTEDFLOW)) {
-            throw new CompilerException("Input file "
-                    + scriptFile.toString() + " is not a scripted flow!");
+        if (!root.getLocalName().equals("scriptedflow") || !root.getNamespaceURI().equals(NS_SCRIPTEDFLOW)) {
+            throw new CompilerException("Input file " + scriptFile.toString() + " is not a scripted flow!");
         }
-
+        
         // Check version
         String version = root.getAttribute("version");
 
@@ -72,15 +69,21 @@ public class Compiler {
         if (version == null) {
             version = "1.0";
         }
-
+        
         if (!version.equals("1.0")) {
-            throw new CompilerException("Script file \""
-                    + scriptFile.toString() + "\" uses version "
-                    + version + " but compiler only supports version 1.0");
+            throw new CompilerException("Script file \"" + scriptFile.toString() + "\" uses version "
+                                        + version + " but compiler only supports version 1.0");
         }
-
+        
+        // Check name
+        String name = root.getAttribute("name");
+        
+        if (name == null || name.equals("")) {
+            name = "anonymous";
+        }
+        
         NodeList children = root.getChildNodes();
-
+        
         // root block containing all instructions
         BlockStatement block = blockStatementFromNodeList(null, children);
         // make sure block ends with exit instruction
@@ -90,15 +93,15 @@ public class Compiler {
         Instruction[] temp = block.getInstructions();
         temp = removeNops(temp);
 
-        return new Script(temp);
+        return new Script(temp, name);
     }
-
+    
     private static Instruction[] removeNops(Instruction[] instructions) {
         List<Instruction> instr = new ArrayList<Instruction>();
         for (int i = 0; i < instructions.length; i++) {
             instr.add(instructions[i]);
         }
-
+        
         for (int i = 0; i < instr.size(); i++) {
             Instruction in = instr.get(i);
             if (in instanceof NopInstruction) {
@@ -106,7 +109,7 @@ public class Compiler {
                 // This is save as we know that 
                 // last instruction is never a NOP
                 Instruction in2 = instr.get(i + 1);
-
+                
                 // Update references
                 for (Instruction ref : instr) {
                     if (ref instanceof JumpInstruction) {
@@ -164,65 +167,55 @@ public class Compiler {
         }
     }
 
-    private static VirtualRequestStatement virtualRequestStatementFromElement(
-            Statement parent, Element element) throws CompilerException {
-        String pagename = element.getAttribute("page");
-        if ((pagename == null && element.getAttributes() != null && element
-                .getAttributes().getLength() != 0)
-                || (pagename != null && element.getAttributes().getLength() != 1)) {
-            throw new CompilerException(
-                    "\"virtual-request\" command only allows \"page\" attribute");
-        }
-
-        VirtualRequestStatement stmt = new VirtualRequestStatement(parent);
-        stmt.setPagename(pagename);
-
+    private static void addParametersToStatement(Element element, ParameterizedStatement stmt) throws CompilerException {
         NodeList list = element.getChildNodes();
         for (int i = 0; i < list.getLength(); i++) {
             Node childNode = list.item(i);
             if (childNode.getNodeType() == Node.ELEMENT_NODE) {
                 Element child = (Element) childNode;
                 if (!child.getNamespaceURI().equals(NS_SCRIPTEDFLOW)) {
-                    throw new CompilerException("Namespace "
-                            + child.getNamespaceURI()
-                            + " cannot be handled by the compiler");
+                    throw new CompilerException("Namespace " + child.getNamespaceURI() + " cannot be handled by the compiler");
                 }
                 if (child.getLocalName().equals("param")) {
                     String paramName = child.getAttribute("name");
                     if (paramName == null || paramName.length() == 0) {
-                        throw new CompilerException(
-                                "\"name\" attribute has to be set for \"param\" command");
+                        throw new CompilerException("\"name\" attribute has to be set for \"param\" command");
                     }
                     if (child.getAttributes().getLength() != 1) {
-                        throw new CompilerException(
-                                "\"param\" command has exactly one attribute");
+                        throw new CompilerException("\"param\" command has exactly one attribute");
                     }
-                    ParamValueObject paramValue = paramValueObjectFromNodeList(child
-                            .getChildNodes());
+                    ParamValueObject paramValue = paramValueObjectFromNodeList(child.getChildNodes());
                     stmt.addParam(paramName, paramValue);
                 } else {
-                    throw new CompilerException(
-                            "Element \""
-                                    + child.getLocalName()
-                                    + "\" is not allowed below \"virtual-request\" command");
+                    throw new CompilerException("Element \"" + child.getLocalName() + "\" is not allowed below \"" + element.getNodeName() + "\" command");
                 }
             } else if (childNode.getNodeType() == Node.TEXT_NODE) {
                 if (!childNode.getNodeValue().matches("\\s*")) {
-                    throw new CompilerException("Found illegal text data \""
-                            + childNode.getNodeValue() + "\"!");
+                    throw new CompilerException("Found illegal text data \"" + childNode.getNodeValue() + "\"!");
                 }
             }
         }
+    }
+    
+    private static VirtualRequestStatement virtualRequestStatementFromElement(Statement parent, Element element) throws CompilerException {
+        String pagename = element.getAttribute("page");
+        if ((pagename == null && element.getAttributes() != null && element.getAttributes().getLength() != 0)
+            || (pagename != null && element.getAttributes().getLength() != 1)) {
+            throw new CompilerException("\"virtual-request\" command only allows \"page\" attribute");
+        }
+        
+        VirtualRequestStatement stmt = new VirtualRequestStatement(parent);
+        stmt.setPagename(pagename);
 
+        addParametersToStatement(element, stmt);
+        
         return stmt;
     }
 
-    private static SetVariableStatement setVariableStatementFromElement(
-            Statement parent, Element element) throws CompilerException {
+    private static SetVariableStatement setVariableStatementFromElement(Statement parent, Element element) throws CompilerException {
         String varname = element.getAttribute("name");
         if (varname == null || element.getAttributes().getLength() != 1) {
-            throw new CompilerException(
-                    "\"name\" attribute has to be set for \"set-variable\" command");
+            throw new CompilerException("\"name\" attribute has to be set for \"set-variable\" command");
         }
 
         SetVariableStatement stmt = new SetVariableStatement(parent);
@@ -234,8 +227,7 @@ public class Compiler {
         return stmt;
     }
 
-    private static ParamValueObject paramValueObjectFromNodeList(NodeList list)
-            throws CompilerException {
+    private static ParamValueObject paramValueObjectFromNodeList(NodeList list) throws CompilerException {
         if (list.getLength() == 0) {
             return new StaticObject("");
         }
@@ -244,16 +236,12 @@ public class Compiler {
             Node node = list.item(0);
             if (node.getNodeType() == Node.ELEMENT_NODE) {
                 if (!node.getNamespaceURI().equals(NS_SCRIPTEDFLOW)) {
-                    throw new CompilerException("Namespace "
-                            + node.getNamespaceURI()
-                            + " cannot be handled by the compiler");
+                    throw new CompilerException("Namespace " + node.getNamespaceURI() + " cannot be handled by the compiler");
                 }
                 if (node.getLocalName().equals("value-of")) {
                     return dynamicParamFromElement((Element) node);
                 } else {
-                    throw new CompilerException("Element \""
-                            + node.getNodeName()
-                            + "\" is not allowed below \"param\"");
+                    throw new CompilerException("Element \"" + node.getNodeName() + "\" is not allowed below \"param\"");
                 }
 
             } else if (node.getNodeType() == Node.TEXT_NODE) {
@@ -271,18 +259,14 @@ public class Compiler {
             Node node = list.item(i);
             if (node.getNodeType() == Node.ELEMENT_NODE) {
                 if (!node.getNamespaceURI().equals(NS_SCRIPTEDFLOW)) {
-                    throw new CompilerException("Namespace "
-                            + node.getNamespaceURI()
-                            + " cannot be handled by the compiler");
+                    throw new CompilerException("Namespace " + node.getNamespaceURI() + " cannot be handled by the compiler");
                 }
                 if (node.getLocalName().equals("value-of")) {
                     lo.addObject(dynamicParamFromElement((Element) node));
                 } else {
-                    throw new CompilerException("Element \""
-                            + node.getNodeName()
-                            + "\" is not allowed below \"param\"");
+                    throw new CompilerException("Element \"" + node.getNodeName() + "\" is not allowed below \"param\"");
                 }
-
+                
             } else if (node.getNodeType() == Node.TEXT_NODE) {
                 String value = node.getNodeValue();
                 if (!isWhitespace(value)) {
@@ -293,47 +277,45 @@ public class Compiler {
         return lo;
     }
 
-    private static ParamValueObject dynamicParamFromElement(Element element)
-            throws CompilerException {
+    private static ParamValueObject dynamicParamFromElement(Element element) throws CompilerException {
         String expr = element.getAttribute("select");
         if (expr == null || expr.length() == 0) {
-            throw new CompilerException(
-                    "\"select\" attribute has to be set on \"value-of\" command");
+            throw new CompilerException("\"select\" attribute has to be set on \"value-of\" command");
         }
         if (element.getAttributes().getLength() != 1) {
-            throw new CompilerException(
-                    "\"value-of\" command has exactly one attribute");
+            throw new CompilerException("\"value-of\" command has exactly one attribute");
         }
         return new DynamicObject(expr);
     }
 
-    private static InteractiveRequestStatement interactiveRequestStatementFromElement(
-            Statement parent, Element element) throws CompilerException {
-        if (element.getAttributes() != null
-                && element.getAttributes().getLength() != 0) {
-            throw new CompilerException(
-                    "\"interactive-request\" command has no attributes");
+    private static InteractiveRequestStatement interactiveRequestStatementFromElement(Statement parent, Element element) throws CompilerException {
+        if (element.getAttributes() != null && element.getAttributes().getLength() != 0) {
+            throw new CompilerException("\"interactive-request\" command has no attributes");
         }
-        return new InteractiveRequestStatement(parent);
-    }
+        InteractiveRequestStatement stmt = new InteractiveRequestStatement(parent);
 
-    private static ExitStatement exitStatementFromElement(Statement parent,
-            Element element) throws CompilerException {
-        if (element.getAttributes() != null
-                && element.getAttributes().getLength() != 0) {
+        addParametersToStatement(element, stmt);
+            
+        return stmt;
+    }
+    
+    private static ExitStatement exitStatementFromElement(Statement parent, Element element) throws CompilerException {
+        if (element.getAttributes() != null && element.getAttributes().getLength() != 0) {
             throw new CompilerException("\"exit\" command has no attributes");
         }
-        return new ExitStatement(parent);
+        ExitStatement stmt = new ExitStatement(parent);
+
+        addParametersToStatement(element, stmt);
+
+        return stmt;
     }
 
-    private static ChooseStatement chooseStatementFromElement(Statement parent,
-            Element element) throws CompilerException {
-        if (element.getAttributes() != null
-                && element.getAttributes().getLength() != 0) {
+    private static ChooseStatement chooseStatementFromElement(Statement parent, Element element) throws CompilerException {
+        if (element.getAttributes() != null && element.getAttributes().getLength() != 0) {
             throw new CompilerException("\"choose\" command has no attributes");
         }
         ChooseStatement stmt = new ChooseStatement(parent);
-
+        
         NodeList list = element.getChildNodes();
         boolean foundOtherwise = false;
         for (int i = 0; i < list.getLength(); i++) {
@@ -341,117 +323,88 @@ public class Compiler {
             if (childNode.getNodeType() == Node.ELEMENT_NODE) {
                 Element child = (Element) childNode;
                 if (!child.getNamespaceURI().equals(NS_SCRIPTEDFLOW)) {
-                    throw new CompilerException("Namespace "
-                            + child.getNamespaceURI()
-                            + " cannot be handled by the compiler");
+                    throw new CompilerException("Namespace " + child.getNamespaceURI() + " cannot be handled by the compiler");
                 }
                 if (child.getLocalName().equals("when")) {
                     if (foundOtherwise) {
-                        throw new CompilerException(
-                                "No \"when\" allowed after \"otherwise\"");
+                        throw new CompilerException("No \"when\" allowed after \"otherwise\"");
                     }
                     String condition = child.getAttribute("test");
                     if (condition == null || condition.length() == 0) {
-                        throw new CompilerException(
-                                "\"test\" attribute has to be set for \"when\" command");
+                        throw new CompilerException("\"test\" attribute has to be set for \"when\" command");
                     }
                     if (child.getAttributes().getLength() != 1) {
-                        throw new CompilerException(
-                                "\"when\" command has exactly one attribute");
+                        throw new CompilerException("\"when\" command has exactly one attribute");
                     }
-                    Statement block = blockStatementFromNodeList(stmt, child
-                            .getChildNodes());
+                    Statement block = blockStatementFromNodeList(stmt, child.getChildNodes());
                     stmt.addBranch(condition, block);
                 } else if (child.getLocalName().equals("otherwise")) {
                     foundOtherwise = true;
-                    if (child.getAttributes() != null
-                            && child.getAttributes().getLength() != 0) {
-                        throw new CompilerException(
-                                "\"otherwise\" command has no attributes");
+                    if (child.getAttributes() != null && child.getAttributes().getLength() != 0) {
+                        throw new CompilerException("\"otherwise\" command has no attributes");
                     }
-                    Statement block = blockStatementFromNodeList(stmt, child
-                            .getChildNodes());
+                    Statement block = blockStatementFromNodeList(stmt, child.getChildNodes());
                     stmt.addBranch(null, block);
                 } else {
-                    throw new CompilerException("Element \""
-                            + child.getLocalName()
-                            + "\" is not allowed below \"choose\" command");
+                    throw new CompilerException("Element \"" + child.getLocalName() + "\" is not allowed below \"choose\" command");
                 }
             } else if (childNode.getNodeType() == Node.TEXT_NODE) {
                 if (!childNode.getNodeValue().matches("\\s*")) {
-                    throw new CompilerException("Found illegal text data \""
-                            + childNode.getNodeValue() + "\"!");
+                    throw new CompilerException("Found illegal text data \"" + childNode.getNodeValue() + "\"!");
                 }
             }
         }
         return stmt;
     }
 
-    private static BreakStatement breakStatementFromElement(Statement parent,
-            Element element) throws CompilerException {
-        if (element.getAttributes() != null
-                && element.getAttributes().getLength() != 0) {
+    private static BreakStatement breakStatementFromElement(Statement parent, Element element) throws CompilerException {
+        if (element.getAttributes() != null && element.getAttributes().getLength() != 0) {
             throw new CompilerException("\"break\" command has no attributes");
         }
         try {
             return new BreakStatement(parent);
         } catch (RuntimeException e) {
-            throw new CompilerException(
-                    "\"break\" is only allowed below a \"while\" block");
+            throw new CompilerException("\"break\" is only allowed below a \"while\" block");
         }
     }
 
-    private static WhileStatement whileStatementFromElement(Statement parent,
-            Element element) throws CompilerException {
+    private static WhileStatement whileStatementFromElement(Statement parent, Element element) throws CompilerException {
         String condition = element.getAttribute("test");
         if (condition == null || condition.length() == 0) {
-            throw new CompilerException(
-                    "\"test\" attribute has to be set for \"while\" command");
+            throw new CompilerException("\"test\" attribute has to be set for \"while\" command");
         }
         if (element.getAttributes().getLength() != 1) {
-            throw new CompilerException(
-                    "\"while\" command has exactly one attribute");
+            throw new CompilerException("\"while\" command has exactly one attribute");
         }
         WhileStatement stmt = new WhileStatement(parent);
         stmt.setCondition(condition);
-        stmt
-                .setChild(blockStatementFromNodeList(stmt, element
-                        .getChildNodes()));
+        stmt.setChild(blockStatementFromNodeList(stmt, element.getChildNodes()));
         return stmt;
     }
 
-    private static IfStatement ifStatementFromElement(Statement parent,
-            Element element) throws CompilerException {
+    private static IfStatement ifStatementFromElement(Statement parent, Element element) throws CompilerException {
         String condition = element.getAttribute("test");
         if (condition == null || condition.length() == 0) {
-            throw new CompilerException(
-                    "\"test\" attribute has to be set for \"if\" command");
+            throw new CompilerException("\"test\" attribute has to be set for \"if\" command");
         }
         if (element.getAttributes().getLength() != 1) {
-            throw new CompilerException(
-                    "\"if\" command has exactly one attribute");
+            throw new CompilerException("\"if\" command has exactly one attribute");
         }
         IfStatement stmt = new IfStatement(parent);
         stmt.setCondition(condition);
-        stmt
-                .setChild(blockStatementFromNodeList(stmt, element
-                        .getChildNodes()));
+        stmt.setChild(blockStatementFromNodeList(stmt, element.getChildNodes()));
         return stmt;
     }
-
-    private static BlockStatement blockStatementFromNodeList(Statement parent,
-            NodeList list) throws CompilerException {
+    
+    private static BlockStatement blockStatementFromNodeList(Statement parent, NodeList list) throws CompilerException {
         BlockStatement block = new BlockStatement(parent);
         for (int i = 0; i < list.getLength(); i++) {
             Node child = list.item(i);
             if (child.getNodeType() == Node.ELEMENT_NODE) {
-                block
-                        .addStatement(statementFromElement(block,
-                                (Element) child));
+                block.addStatement(statementFromElement(block, (Element) child));
             } else if (child.getNodeType() == Node.TEXT_NODE) {
                 if (!isWhitespace(child.getNodeValue())) {
-                    throw new CompilerException("Found illegal text data \""
-                            + child.getNodeValue() + "\"!");
+                    throw new CompilerException("Found illegal text data \"" + child.getNodeValue() + "\"!");
                 }
             }
         }
