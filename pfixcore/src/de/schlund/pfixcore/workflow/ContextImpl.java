@@ -649,7 +649,7 @@ public class ContextImpl implements Context, AccessibilityChecker {
             }
 
             if (currentpageflow != null) {
-                setCurrentPageFlow(currentpageflow.getRootName());
+                currentpageflow = pageflowmanager.getPageFlowByName(currentpageflow.getRootName(), getVariant());
             }
             
             if (prohibitcontinue) {

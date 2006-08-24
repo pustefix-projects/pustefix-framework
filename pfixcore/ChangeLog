@@ -1,3 +1,11 @@
+2006-08-23  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixcore/workflow/ContextImpl.java
+	(ContextImpl::documentFromFlow): don't think pageflow that is set
+	because the variant may have changed is also user requested. This
+	broke MANY pages :-(
+	
+
 2006-08-22  Jens Lautenbacher  <jtl@schlund.de>
 
 	* src/de/schlund/pfixxml/config/PagerequestInputInterfaceRule.java
