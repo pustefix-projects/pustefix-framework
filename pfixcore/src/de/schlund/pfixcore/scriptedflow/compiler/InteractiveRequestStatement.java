@@ -20,6 +20,11 @@ package de.schlund.pfixcore.scriptedflow.compiler;
 
 import de.schlund.pfixcore.scriptedflow.vm.Instruction;
 import de.schlund.pfixcore.scriptedflow.vm.InteractiveRequestInstruction;
+import de.schlund.pfixcore.scriptedflow.vm.pvo.ParamValueObject;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Return the current document to the browser, but go on with the execution
@@ -27,16 +32,28 @@ import de.schlund.pfixcore.scriptedflow.vm.InteractiveRequestInstruction;
  * 
  * @author Sebastian Marsching <sebastian.marsching@1und1.de>
  */
-public class InteractiveRequestStatement extends AbstractStatement {
+public class InteractiveRequestStatement extends AbstractStatement implements ParameterizedStatement {
+
+    private Map<String, List<ParamValueObject>> params = new HashMap<String, List<ParamValueObject>>();
+    
     private Instruction instr = null;
     
     public InteractiveRequestStatement(Statement parent) {
         super(parent);
     }
     
+    public void addParam(String param, ParamValueObject value) {
+        List<ParamValueObject> list = this.params.get(param);
+        if (list == null) {
+            list = new ArrayList<ParamValueObject>();
+            this.params.put(param, list);
+        }
+        list.add(value);
+    }
+
     public Instruction[] getInstructions() {
         if (instr == null) {
-            instr = new InteractiveRequestInstruction();
+            instr = new InteractiveRequestInstruction(params);
         }
         return new Instruction[] {instr};
     }

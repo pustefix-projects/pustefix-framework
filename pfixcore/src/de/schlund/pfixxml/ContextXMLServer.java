@@ -23,8 +23,6 @@ import java.util.Iterator;
 import java.util.WeakHashMap;
 
 import javax.servlet.ServletConfig;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Category;
 
@@ -33,6 +31,13 @@ import de.schlund.pfixcore.scriptedflow.ScriptedFlowInfo;
 import de.schlund.pfixcore.scriptedflow.vm.Script;
 import de.schlund.pfixcore.scriptedflow.vm.ScriptVM;
 import de.schlund.pfixcore.scriptedflow.vm.VirtualHttpServletRequest;
+import java.io.IOException;
+import java.util.Properties;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpSession;
+import org.apache.log4j.Logger;
+import org.xml.sax.SAXException;
+import org.w3c.dom.Document;
 
 /**
  * @author jtl

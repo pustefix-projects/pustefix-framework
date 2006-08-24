@@ -16,22 +16,14 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-package de.schlund.pfixcore.scriptedflow.vm;
+package de.schlund.pfixcore.scriptedflow.compiler;
 
 import de.schlund.pfixcore.scriptedflow.vm.pvo.ParamValueObject;
-import java.util.List;
-import java.util.Map;
 
-public class InteractiveRequestInstruction implements Instruction {
+/**
+ * @author Jens Lautenbacher <jtl@schlund.de>
+ */
 
-    private Map<String, List<ParamValueObject>> params;
-    
-    public InteractiveRequestInstruction(Map<String, List<ParamValueObject>> params) {
-        this.params = params;
-    }
-    
-    Map<String, List<ParamValueObject>> getParams() {
-        return params;
-    }
-
+public interface ParameterizedStatement {
+    public void addParam(String param, ParamValueObject value);
 }

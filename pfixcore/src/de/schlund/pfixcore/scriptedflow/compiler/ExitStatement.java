@@ -20,6 +20,11 @@ package de.schlund.pfixcore.scriptedflow.compiler;
 
 import de.schlund.pfixcore.scriptedflow.vm.ExitInstruction;
 import de.schlund.pfixcore.scriptedflow.vm.Instruction;
+import de.schlund.pfixcore.scriptedflow.vm.pvo.ParamValueObject;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 
@@ -27,16 +32,28 @@ import de.schlund.pfixcore.scriptedflow.vm.Instruction;
  * 
  * @author Sebastian Marsching <sebastian.marsching@1und1.de>
  */
-public class ExitStatement extends AbstractStatement {
+public class ExitStatement extends AbstractStatement implements ParameterizedStatement {
+
+    private Map<String, List<ParamValueObject>> params = new HashMap<String, List<ParamValueObject>>();
+
     private Instruction instr = null;
     
     public ExitStatement(Statement parent) {
         super(parent);
     }
     
+    public void addParam(String param, ParamValueObject value) {
+        List<ParamValueObject> list = this.params.get(param);
+        if (list == null) {
+            list = new ArrayList<ParamValueObject>();
+            this.params.put(param, list);
+        }
+        list.add(value);
+    }
+
     public Instruction[] getInstructions() {
         if (instr == null) {
-            instr = new ExitInstruction();
+            instr = new ExitInstruction(params);
         }
         return new Instruction[] {instr};
     }
