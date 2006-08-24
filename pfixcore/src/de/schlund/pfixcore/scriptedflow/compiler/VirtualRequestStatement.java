@@ -33,7 +33,7 @@ import de.schlund.pfixcore.scriptedflow.vm.pvo.ParamValueObject;
  * 
  * @author Sebastian Marsching <sebastian.marsching@1und1.de>
  */
-public class VirtualRequestStatement extends AbstractStatement {
+public class VirtualRequestStatement extends AbstractStatement implements ParameterizedStatement {
     private String pagename = null;
 
     private Map<String, List<ParamValueObject>> params = new HashMap<String, List<ParamValueObject>>();
