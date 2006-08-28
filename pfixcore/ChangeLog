@@ -1,3 +1,19 @@
+2006-08-28  Sebastian Marsching  <sebastian.marsching@1und1.de>
+
+	* projects/testsuite/txt/pages/main_Start.xml: 
+	* projects/testsuite/txt/pages/test_Test3.xml: 
+	* projects/testsuite/txt/pages/test_Test3Default.xml: 
+	* projects/testsuite/txt/pages/test_Test3SetVariant.xml: 
+	* projects/testsuite/txt/pages/test_Test3VariantA.xml: 
+	* projects/testsuite/txt/pages/test_Test4.xml: 
+	* projects/testsuite/txt/pages/test_Test4Failed.xml: 
+	* projects/testsuite/txt/pages/test_Test4Succeeded.xml: 
+	* projects/testsuite/conf/depend.xml: 
+	* projects/testsuite/conf/test1.conf.xml: 
+	* src/de/schlund/pfixcore/testsuite/handler/Test3SetVariantHandler.java: 
+	* src/de/schlund/pfixcore/testsuite/wrapper/Test3SetVariant.iwrp: 
+	Adding new tests
+
 2006-08-24  Jens Lautenbacher  <jtl@schlund.de>
 
 	* src/de/schlund/pfixcore/scriptedflow/vm/ScriptVM.java

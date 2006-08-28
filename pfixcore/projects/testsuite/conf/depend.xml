@@ -7,6 +7,13 @@
     <page name="Test2" handler="/xml/test1"/>
     <page name="Test2Failed" handler="/xml/test1"/>
     <page name="Test2Succeeded" handler="/xml/test1"/>
+    <page name="Test3" handler="/xml/test1"/>
+    <page name="Test3SetVariant" handler="/xml/test1"/>
+    <page name="Test3Default" handler="/xml/test1"/>
+    <page name="Test3VariantA" handler="/xml/test1"/>
+    <page name="Test4" handler="/xml/test1"/>
+    <page name="Test4Failed" handler="/xml/test1"/>
+    <page name="Test4Succeeded" handler="/xml/test1"/>
   </navigation>
   
   <standardmaster/>
@@ -20,4 +27,12 @@
   <standardpage name="Test2Failed" xml="testsuite/xml/test.xml"/>
   <standardpage name="Test2Succeeded" xml="testsuite/xml/test.xml"/>
   
+  <standardpage name="Test3" xml="testsuite/xml/test.xml"/>
+  <standardpage name="Test3SetVariant" xml="testsuite/xml/test.xml"/>
+  <standardpage name="Test3Default" xml="testsuite/xml/test.xml"/>
+  <standardpage name="Test3VariantA" xml="testsuite/xml/test.xml"/>
+  
+  <standardpage name="Test4" xml="testsuite/xml/test.xml"/>
+  <standardpage name="Test4Failed" xml="testsuite/xml/test.xml"/>
+  <standardpage name="Test4Succeeded" xml="testsuite/xml/test.xml"/>
 </make>
