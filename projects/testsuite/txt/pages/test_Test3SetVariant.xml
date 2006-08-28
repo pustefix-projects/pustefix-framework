@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
+  <part name="title">
+    <theme name="default">
+      <pfx:include href="testsuite/txt/pages/test_Test3.xml" part="title"/>
+    </theme>
+  </part>
+  <part name="content">
+    <theme name="default">
+      <p>
+        Begin by selecting the variant &quot;Test3VariantA&quot; and then, when
+        you come back here after passing this part of the test, select the default
+        variant.
+      </p>
+      <p>
+        <pfx:forminput>
+          <pfx:xinp type="select" name="variant.name">
+            <pfx:option value="Test3VariantA">Test3VariantA</pfx:option>
+            <pfx:option value="default">&lt;default&gt;</pfx:option>
+          </pfx:xinp>
+          <pfx:xinp type="submit">Continue</pfx:xinp>
+        </pfx:forminput>
+      </p>
+    </theme>
+  </part>
+</include_parts>

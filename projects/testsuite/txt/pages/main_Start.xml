@@ -13,6 +13,8 @@
       <ul>
         <li><pfx:button page="Test1">Test 1</pfx:button>: 404 error for nonexistent page</li>
         <li><pfx:button page="Test2">Test 2</pfx:button>: Pageflow action</li>
+        <li><pfx:button page="Test3">Test 3</pfx:button>: Pageflow variants</li>
+        <li><pfx:button page="Test4">Test 4</pfx:button>: Jump to page after form submit</li>
       </ul>
     </theme>
   </part>
