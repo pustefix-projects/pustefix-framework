@@ -1,3 +1,7 @@
+2006-09-06  Martin Leidig  <mleidig@schlund.de>                                       
+	* projects/core/build/iwrapper.xsl: changed generation of toString() method 
+	to output inherited params for extended iwrappers by calling super.toString()
+
 2006-09-06  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
 	* src/de/schlund/pfixcore/util/GenerateSCodes.java (main): 
