@@ -205,13 +205,7 @@ public class FactoryInitServlet extends HttpServlet implements Reloader {
                     throw new ServletException(
                             "*** FATAL: Need the pustefix.log4j.config property in factory.xml! ***");
                 }
-                // Look for .in file for compatibility reasons
-                File l4jfile = PathFactory.getInstance()
-                        .createPath(log4jconfig + ".in").resolve();
-                if (!l4jfile.exists()) {
-                    l4jfile = PathFactory.getInstance()
-                    .createPath(log4jconfig).resolve();
-                }
+                File l4jfile = PathFactory.getInstance().createPath(log4jconfig).resolve();
                 try {
                     configureLog4j(l4jfile);
                 } catch (FileNotFoundException e) {
