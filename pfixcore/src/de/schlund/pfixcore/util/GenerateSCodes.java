@@ -19,12 +19,12 @@
 package de.schlund.pfixcore.util;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Properties;
 
 import javax.xml.transform.TransformerException;
@@ -52,7 +52,11 @@ public class GenerateSCodes {
         // Initialize PathFactory as it is needed by XMLPropertiesUtil
         PathFactory.getInstance().init(args[2]);
         Properties tmp = new Properties();
-        XMLPropertiesUtil.loadPropertiesFromXMLFile(new File(args[1]), tmp);
+        if (args[1].endsWith(".prop") || args[1].endsWith(".properties")) {
+            tmp.load(new FileInputStream(args[1]));
+        } else {
+            XMLPropertiesUtil.loadPropertiesFromXMLFile(new File(args[1]), tmp);
+        }
         
         new GenerateSCodes (new File(args[0]), tmp, args[2]).run();
     }
