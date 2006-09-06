@@ -324,7 +324,10 @@ public <xsl:if test="not(/iwrp:interface/iwrp:ihandler) and not(@extends)">abstr
     @Override
     public String toString() {
         StringBuffer sb = new StringBuffer(255);
-        sb.append("\n*** All wrapper-data for <xsl:value-of select="$classname"/> ***\n");
+        sb.append("*** All wrapper-data for <xsl:value-of select="$classname"/> {\n");
+        <xsl:if test="/iwrp:interface/@extends">
+          sb.append(super.toString());
+        </xsl:if>
         <xsl:for-each select="/iwrp:interface/iwrp:param">
           <xsl:variable name="freq">
             <xsl:choose>
@@ -352,6 +355,7 @@ public <xsl:if test="not(/iwrp:interface/iwrp:ihandler) and not(@extends)">abstr
             </xsl:otherwise>
            </xsl:choose> 
         </xsl:for-each>
+        sb.append("}\n");
         return sb.toString();
     }
   
