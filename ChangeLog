@@ -1,5 +1,6 @@
-e2006-09-08  Jens Lautenbacher  <jtl@schlund.de>
+2006-09-08  Jens Lautenbacher  <jtl@schlund.de>
 
+	* projects/sample1/conf/depend.xml: added more comments
 	* projects/sample1/conf/depend.xml: cosmetics
 
 2006-09-06  Martin Leidig  <mleidig@schlund.de>                                       
