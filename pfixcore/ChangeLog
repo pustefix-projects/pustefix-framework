@@ -1,3 +1,7 @@
+2006-09-08  Jens Lautenbacher  <jtl@schlund.de>
+
+	* projects/sample1/conf/depend.xml: added more comments
+
 2006-09-06  Martin Leidig  <mleidig@schlund.de>
 
 	* projects/core/build/iwrapper.xsl: changed generation of toString() method 
