@@ -8,6 +8,7 @@
     <param name="outputdoctype-public" value="-//W3C//DTD HTML 4.01//EN"/>
     <param name="outputdoctype-system" value="http://www.w3.org/TR/html40/strict.dtd"/>
     <!-- FIXME: This below doesn't work currently ! -->
+    <!-- FIXME: We need to decide how to add this stuff to master.xsl -->
     <!-- <param name="additional_custom_namespaces" value='xmlns:foo="http://foo.bar.baz"'/> -->
     <!-- <param name="exclude_custom_ns_prefixes" value="foo"/> -->
   </global>
