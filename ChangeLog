@@ -1,3 +1,8 @@
+2006-09-12  Sebastian Marsching  <sebastian.marsching@1und1.de>
+
+	* projects/core/xsl/forminput.xsl: Avoiding event propagation when closing
+	IWrapper warning messages
+
 2006-09-08  Jens Lautenbacher  <jtl@schlund.de>
 
 	* projects/sample1/conf/depend.xml: added more comments
