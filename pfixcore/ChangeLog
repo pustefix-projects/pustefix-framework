@@ -1,5 +1,8 @@
 2006-09-12  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
+	* projects/core/xsl/forminput.xsl: Avoiding event propagation when closing
+	IWrapper warning messages
+
 	* src/de/schlund/pfixcore/util/GenerateSCodes.java (main): 
 	Added support for reading files in traditional property files format. This mode
 	is applied automatically, if the specified file has the suffix ".prop" or 

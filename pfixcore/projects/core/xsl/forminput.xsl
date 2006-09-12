@@ -641,26 +641,26 @@
                 <!-- don't check wrappers that are marked as not to check...-->
                 <ixsl:when test="/formresult/iwrapperinfo/wrapper[@prefix = '{$prefix}']/@docheck = 'false'"/>
                 <ixsl:when test="not(/formresult/iwrapperinfo/wrapper[@prefix = '{$prefix}'])">
-                  <div style="{$style_err}" onclick="this.style.display='none'">
+                  <div style="{$style_err}" onclick="if (event.stopPropagation) event.stopPropagation(); else if (typeof event.cancelBubble != 'undefined') event.cancelBubble = true; this.style.display='none';">
                     Warning: Unknown wrapper <b><xsl:value-of select="$prefix"/></b>
                   </div>
                 </ixsl:when>
                 <ixsl:when test="not(/formresult/iwrapperinfo/wrapper[@prefix = '{$prefix}']/param[@name = '{$name}'])">
-                  <div style="{$style_err}" onclick="this.style.display='none'">
+                  <div style="{$style_err}" onclick="if (event.stopPropagation) event.stopPropagation(); else if (typeof event.cancelBubble != 'undefined') event.cancelBubble = true; this.style.display='none';">
                     Warning: Unknown parameter <b><xsl:value-of select="$name"/></b> in wrapper <b><xsl:value-of select="$prefix"/></b>
                   </div>
                 </ixsl:when>
                 <xsl:choose>
                   <xsl:when test="$index">
                     <ixsl:when test="not(/formresult/iwrapperinfo/wrapper[@prefix = '{$prefix}']/param[@name = '{$name}' and @occurance = 'indexed'])">
-                      <div style="{$style_err}" onclick="this.style.display='none'">
+                      <div style="{$style_err}" onclick="if (event.stopPropagation) event.stopPropagation(); else if (typeof event.cancelBubble != 'undefined') event.cancelBubble = true; this.style.display='none';">
                         Warning: No indexed parameter <b><xsl:value-of select="$name"/></b> in wrapper <b><xsl:value-of select="$prefix"/></b>
                       </div>
                     </ixsl:when>
                   </xsl:when>
                   <xsl:otherwise>
                     <ixsl:when test="not(/formresult/iwrapperinfo/wrapper[@prefix = '{$prefix}']/param[@name = '{$name}' and @occurance != 'indexed'])">
-                      <div style="{$style_err}" onclick="this.style.display='none'">
+                      <div style="{$style_err}" onclick="if (event.stopPropagation) event.stopPropagation(); else if (typeof event.cancelBubble != 'undefined') event.cancelBubble = true; this.style.display='none';">
                         Warning: Parameter <b><xsl:value-of select="$name"/></b> in wrapper <b><xsl:value-of select="$prefix"/> must be indexed</b>
                       </div>
                     </ixsl:when>
@@ -671,7 +671,7 @@
           </ixsl:if>
         </xsl:when>
         <xsl:otherwise>
-          <div style="{$style}" onclick="this.style.display='none'">
+          <div style="{$style}" onclick="if (event.stopPropagation) event.stopPropagation(); else if (typeof event.cancelBubble != 'undefined') event.cancelBubble = true; this.style.display='none';">
             <xsl:apply-templates/>
           </div>
         </xsl:otherwise>
