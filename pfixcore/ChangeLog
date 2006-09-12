@@ -1,3 +1,10 @@
+2006-09-12  Sebastian Marsching  <sebastian.marsching@1und1.de>
+
+	* src/de/schlund/pfixcore/util/GenerateSCodes.java (main): 
+	Added support for reading files in traditional property files format. This mode
+	is applied automatically, if the specified file has the suffix ".prop" or 
+	".properties".
+
 2006-09-08  Jens Lautenbacher  <jtl@schlund.de>
 
 	* projects/sample1/conf/depend.xml: added more comments
