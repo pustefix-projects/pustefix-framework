@@ -15,6 +15,7 @@
         <li><pfx:button page="Test2">Test 2</pfx:button>: Pageflow action</li>
         <li><pfx:button page="Test3">Test 3</pfx:button>: Pageflow variants</li>
         <li><pfx:button page="Test4">Test 4</pfx:button>: Jump to page after form submit</li>
+        <li><pfx:button page="Test5" pageflow="Test5Failed">Test 5</pfx:button>: Stay on page if it is not in pageflow</li>
       </ul>
     </theme>
   </part>
