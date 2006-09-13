@@ -24,6 +24,9 @@ import java.net.UnknownHostException;
 import java.util.Properties;
 import java.util.TreeMap;
 
+import javax.management.MBeanServer;
+import javax.management.MBeanServerFactory;
+
 import org.apache.log4j.Logger;
 import org.apache.oro.text.regex.MalformedPatternException;
 import org.apache.oro.text.regex.PatternMatcher;
@@ -52,18 +55,19 @@ public class JmxServerFactory {
     }
     
     public static JmxServer getServer() {
-    	if (instance.server == null) {
+    	if (instance.jmxServer == null) {
             throw new RuntimeException();
     	}
-    	return instance.server;
+    	return instance.jmxServer;
     }
     
-    private JmxServer server;
+    private MBeanServer mbeanServer;
+    private JmxServer jmxServer;
     private int port;
     private String host;
     
     public JmxServerFactory() {
-    	server = null;
+    	jmxServer = null;
     }
     
     public void init(Properties props) throws Exception {
@@ -72,11 +76,15 @@ public class JmxServerFactory {
         if(port <= 0) {
             LOG.error("Got port <=0["+port+"]. Not starting jmx-server!");
         } else {
-            
+            /* 
+             * This is the code to use the platform MBeanServer:
+             * mbeanServer = ManagementFactory.getPlatformMBeanServer();
+             */
+            mbeanServer = MBeanServerFactory.createMBeanServer();
             String keystore = props.getProperty(PROP_USE_KEYSTORE, null);
             LOG.info("Trying to start jmx-server on "+host+":"+port+" using keystore:"+keystore);
-            server = new JmxServer();
-            server.start(host, port, keystore);
+            jmxServer = new JmxServer(mbeanServer);
+            jmxServer.start(host, port, keystore);
             
             LOG.info("jmx-server started");
         }
@@ -88,6 +96,10 @@ public class JmxServerFactory {
 
     public int getPort() {
         return port;
+    }
+    
+    public MBeanServer getMBeanServer() {
+        return mbeanServer;
     }
 
     private static String getHost(Properties props) throws UnknownHostException {

@@ -1,5 +1,10 @@
 2006-09-13  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
+	* src/de/schlund/pfixxml/jmx/JmxServer.java (start): 
+	* src/de/schlund/pfixxml/jmx/JmxServerFactory.java: 
+	Now the MBeanServer is created by JmxServerFactory so that other
+	components can register their MBeans.
+	
 	* projects/testsuite/conf/depend.xml: 
 	* projects/testsuite/conf/test1.conf.xml: 
 	* src/de/schlund/pfixcore/testsuite/handler/Test5PageMessageHandler.java: 

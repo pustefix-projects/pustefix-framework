@@ -29,7 +29,6 @@ import java.util.Map;
 import javax.management.InstanceAlreadyExistsException;
 import javax.management.MBeanRegistrationException;
 import javax.management.MBeanServer;
-import javax.management.MBeanServerFactory;
 import javax.management.MalformedObjectNameException;
 import javax.management.NotCompliantMBeanException;
 import javax.management.Notification;
@@ -62,12 +61,8 @@ public class JmxServer implements JmxServerMBean {
     private final MBeanServer server;
     private final List knownClients;
     
-    public JmxServer() {
-        this.server = MBeanServerFactory.createMBeanServer();
-        /* 
-         * This is the code to use the platform MBeanServer:
-         * this.server = ManagementFactory.getPlatformMBeanServer();
-         */
+    public JmxServer(MBeanServer srv) {
+        this.server = srv;
         this.knownClients = new ArrayList();
     }
     
