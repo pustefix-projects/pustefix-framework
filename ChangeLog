@@ -1,3 +1,10 @@
+2006-09-13  Sebastian Marsching  <sebastian.marsching@1und1.de>
+
+	* src/de/schlund/pfixxml/jmx/JmxServer.java (start): 
+	* src/de/schlund/pfixxml/jmx/JmxServerFactory.java: 
+	Now the MBeanServer is created by JmxServerFactory so that other
+	components can register their MBeans.
+
 2006-09-12  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
 	* projects/core/xsl/forminput.xsl: Avoiding event propagation when closing
