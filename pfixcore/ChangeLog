@@ -1,3 +1,15 @@
+2006-09-13  Sebastian Marsching  <sebastian.marsching@1und1.de>
+
+	* src/de/schlund/pfixcore/testsuite/handler/Test5PageMessageHandler.java: 
+	* src/de/schlund/pfixcore/testsuite/wrapper/Test5PageMessage.iwrp: 
+	* projects/common/conf/factory.xml: 
+	* projects/testsuite/dyntxt/statusmessages.xml: 
+	* projects/testsuite/txt/pages/main_Start.xml: 
+	* projects/testsuite/txt/pages/test_Test5.xml: 
+	* projects/testsuite/txt/pages/test_Test5Failed.xml: 
+	* projects/testsuite/txt/pages/test_Test5Form.xml: 
+	Added test for pageflow handling
+
 2006-09-12  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
 	* projects/core/xsl/forminput.xsl: Avoiding event propagation when closing

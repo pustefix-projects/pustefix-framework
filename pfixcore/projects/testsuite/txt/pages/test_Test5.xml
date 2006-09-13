@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
+  <part name="title">
+    <theme name="default">
+      Test5: Stay on page if it is not in pageflow
+    </theme>
+  </part>
+  <part name="content">
+    <theme name="default">
+      <p>
+        This test will check that after submitting a form, the current page is
+        kept if it is not in any pageflow. Follow the link to start the test.
+      </p>
+      <p>
+        <pfx:button page="Test5Form">Go!</pfx:button>
+      </p>
+    </theme>
+  </part>
+</include_parts>
