@@ -45,6 +45,11 @@
     <flowstep name="Test4Failed"/>
   </pageflow>
   
+  <pageflow name="Test5Flow">
+    <flowstep name="Test5"/>
+    <flowstep name="Test5Failed"/>
+  </pageflow>
+  
   <pagerequest name="Start"/>
   
   <pagerequest name="Test1"/>
@@ -73,5 +78,13 @@
   </pagerequest>
   <pagerequest name="Test4Failed"/>
   <pagerequest name="Test4Succeeded"/>
+  
+  <pagerequest name="Test5"/>
+  <pagerequest name="Test5Form">
+    <input>
+      <interface prefix="test" class="de.schlund.pfixcore.testsuite.wrapper.Test5PageMessage"/>
+    </input>
+  </pagerequest>
+  <pagerequest name="Test5Failed"/>
   
 </contextxmlserver>

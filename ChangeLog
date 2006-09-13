@@ -1,5 +1,7 @@
 2006-09-13  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
+	* projects/testsuite/conf/depend.xml: 
+	* projects/testsuite/conf/test1.conf.xml: 
 	* src/de/schlund/pfixcore/testsuite/handler/Test5PageMessageHandler.java: 
 	* src/de/schlund/pfixcore/testsuite/wrapper/Test5PageMessage.iwrp: 
 	* projects/common/conf/factory.xml: 

@@ -14,6 +14,9 @@
     <page name="Test4" handler="/xml/test1"/>
     <page name="Test4Failed" handler="/xml/test1"/>
     <page name="Test4Succeeded" handler="/xml/test1"/>
+    <page name="Test5" handler="/xml/test1"/>
+    <page name="Test5Form" handler="/xml/test1"/>
+    <page name="Test5Failed" handler="/xml/test1"/>
   </navigation>
   
   <standardmaster/>
@@ -35,4 +38,8 @@
   <standardpage name="Test4" xml="testsuite/xml/test.xml"/>
   <standardpage name="Test4Failed" xml="testsuite/xml/test.xml"/>
   <standardpage name="Test4Succeeded" xml="testsuite/xml/test.xml"/>
+  
+  <standardpage name="Test5" xml="testsuite/xml/test.xml"/>
+  <standardpage name="Test5Form" xml="testsuite/xml/test.xml"/>
+  <standardpage name="Test5Failed" xml="testsuite/xml/test.xml"/>
 </make>
