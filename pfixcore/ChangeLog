@@ -1,3 +1,8 @@
+2006-09-14  Martin Leidig  <mleidig@schlund.de>
+
+	* projects/core/xsl/deprecated/deprecated_master.xsl: Fixed __contextpath
+	problem: moved variable from xsl to ixsl scope.
+
 2006-09-13  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
 	* src/de/schlund/pfixxml/jmx/JmxServer.java (start): 
