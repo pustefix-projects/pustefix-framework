@@ -50,7 +50,7 @@ public class PropertyRule extends CheckedRule {
         if (props.getProperty(propName) != null) {
             LOG.warn("Overwriting already set property \"" + propName + "\" with value \"" + propValue.trim() + "\"!");
         }
-        props.setProperty(propName, propValue.trim());
+        props.setProperty(propName, XMLPropertiesUtil.unesacpePropertyValue(propValue.trim()));
     }
 
     public void body(String namespace, String name, String text) throws Exception {
