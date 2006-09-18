@@ -46,7 +46,7 @@ public class DirectPagerequestPropertyRule extends CheckedRule {
 
     public void end(String namespace, String name) throws Exception {
         DirectOutputPageRequestConfig reqConfig = (DirectOutputPageRequestConfig) this.getDigester().peek();
-        reqConfig.getProperties().setProperty(propName, propValue.trim());
+        reqConfig.getProperties().setProperty(propName, XMLPropertiesUtil.unesacpePropertyValue(propValue.trim()));
     }
 
     public void body(String namespace, String name, String text) throws Exception {

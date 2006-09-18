@@ -45,7 +45,7 @@ public class PropertyRule extends CheckedRule {
     }
     
     public void end(String namespace, String name) throws Exception {
-        props.setProperty(propName, propValue.trim());
+        props.setProperty(propName, XMLPropertiesUtil.unesacpePropertyValue(propValue.trim()));
     }
 
     public void body(String namespace, String name, String text) throws Exception {
