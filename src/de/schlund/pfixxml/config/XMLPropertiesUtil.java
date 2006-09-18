@@ -45,8 +45,9 @@ import de.schlund.pfixxml.resources.FileResource;
  */
 public abstract class XMLPropertiesUtil {
     private static final String PROPS_NS = "http://pustefix.sourceforge.net/properties200401";
+
     private static final String CUS_NS = "http://www.schlund.de/pustefix/customize";
-    
+
     private static final Logger LOG = Logger.getLogger(XMLPropertiesUtil.class);
 
     // Define PropertyRule inline
@@ -65,13 +66,11 @@ public abstract class XMLPropertiesUtil {
         /* (non-Javadoc)
          * @see org.apache.commons.digester.Rule#begin(java.lang.String, java.lang.String, org.xml.sax.Attributes)
          */
-        public void begin(String namespace, String name, Attributes attributes)
-                throws Exception {
+        public void begin(String namespace, String name, Attributes attributes) throws Exception {
             this.propName = attributes.getValue("name");
             this.propValue = "";
             if (propName == null) {
-                throw new SAXException(
-                        "Mandatory attribute \"name\" is missing!");
+                throw new SAXException("Mandatory attribute \"name\" is missing!");
             }
         }
 
@@ -82,61 +81,55 @@ public abstract class XMLPropertiesUtil {
             if (props.getProperty(propName) != null) {
                 LOG.warn("Overwriting already set property \"" + propName + "\" with value \"" + propValue.trim() + "\"!");
             }
-            props.setProperty(propName, propValue.trim());
+            props.setProperty(propName, unesacpePropertyValue(propValue.trim()));
         }
 
         /* (non-Javadoc)
          * @see org.apache.commons.digester.Rule#body(java.lang.String, java.lang.String, java.lang.String)
          */
-        public void body(String namespace, String name, String text)
-                throws Exception {
+        public void body(String namespace, String name, String text) throws Exception {
             this.propValue += text;
         }
 
     }
 
-    public static Properties loadPropertiesFromXMLFile(File file)
-            throws SAXException, IOException {
+    public static Properties loadPropertiesFromXMLFile(File file) throws SAXException, IOException {
         Properties props = new Properties();
         loadPropertiesFromXMLFile(file, props);
         return props;
     }
-    
-    public static Properties loadPropertiesFromXMLFile(FileResource file) 
-            throws SAXException, IOException {
+
+    public static Properties loadPropertiesFromXMLFile(FileResource file) throws SAXException, IOException {
         Properties props = new Properties();
         loadPropertiesFromXMLFile(file, props);
         return props;
     }
-    
-    public static void loadPropertiesFromXMLFile(FileResource file, Properties props)
-            throws SAXException, IOException {
+
+    public static void loadPropertiesFromXMLFile(FileResource file, Properties props) throws SAXException, IOException {
         loadPropertiesFromXMLStream(file.getInputStream(), props);
     }
-    
-    public static void loadPropertiesFromXMLFile(File file, Properties props)
-            throws SAXException, IOException {
+
+    public static void loadPropertiesFromXMLFile(File file, Properties props) throws SAXException, IOException {
         loadPropertiesFromXMLStream(new FileInputStream(file), props);
     }
-    
-    public static void loadPropertiesFromXMLStream(InputStream input, Properties props)
-            throws SAXException, IOException {
+
+    public static void loadPropertiesFromXMLStream(InputStream input, Properties props) throws SAXException, IOException {
         Digester digester = new Digester();
-        
+
         WithDefaultsRulesWrapper rules = new WithDefaultsRulesWrapper(new RulesBase());
         rules.addDefault(new DefaultMatchRule());
         digester.setRules(rules);
         digester.setRuleNamespaceURI(PROPS_NS);
-  
-        Rule propertyRule = new PropertyRule(props);   
-        Rule dummyRule = new Rule() {};
+
+        Rule propertyRule = new PropertyRule(props);
+        Rule dummyRule = new Rule() {
+        };
 
         digester.addRule("standardprops", dummyRule);
         digester.addRule("standardprops/properties", dummyRule);
         digester.addRule("standardprops/properties/prop", propertyRule);
 
-        CustomizationHandler cushandler = new CustomizationHandler(digester,
-                PROPS_NS, CUS_NS, new String[] {"/standardprops/properties"});
+        CustomizationHandler cushandler = new CustomizationHandler(digester, PROPS_NS, CUS_NS, new String[] { "/standardprops/properties" });
         SAXParser parser;
         try {
             SAXParserFactory spfac = SAXParserFactory.newInstance();
@@ -146,5 +139,77 @@ public abstract class XMLPropertiesUtil {
         } catch (ParserConfigurationException e) {
             throw new RuntimeException("Could not initialize SAXParser!");
         }
+    }
+
+    protected static String unesacpePropertyValue(String value) {
+        StringBuffer newValue = new StringBuffer(value.length());
+        char aChar;
+        int off = 0;
+        int end = value.length();
+
+        while (off < end) {
+            aChar = value.charAt(off++);
+            if (aChar == '\\') {
+                aChar = value.charAt(off++);
+                if (aChar == 'u') {
+                    // Read the xxxx
+                    int val = 0;
+                    for (int i = 0; i < 4; i++) {
+                        try  {
+                            aChar = value.charAt(off++);
+                        } catch (StringIndexOutOfBoundsException e) {
+                            throw new IllegalArgumentException("Malformed \\uxxxx encoding.");
+                        }
+                        switch (aChar) {
+                            case '0':
+                            case '1':
+                            case '2':
+                            case '3':
+                            case '4':
+                            case '5':
+                            case '6':
+                            case '7':
+                            case '8':
+                            case '9':
+                                val = (val << 4) + aChar - '0';
+                                break;
+                            case 'a':
+                            case 'b':
+                            case 'c':
+                            case 'd':
+                            case 'e':
+                            case 'f':
+                                val = (val << 4) + 10 + aChar - 'a';
+                                break;
+                            case 'A':
+                            case 'B':
+                            case 'C':
+                            case 'D':
+                            case 'E':
+                            case 'F':
+                                val = (val << 4) + 10 + aChar - 'A';
+                                break;
+                            default:
+                                throw new IllegalArgumentException("Malformed \\uxxxx encoding.");
+                        }
+                    }
+                    newValue.append((char) val);
+                } else {
+                    if (aChar == 't')
+                        aChar = '\t';
+                    else if (aChar == 'r')
+                        aChar = '\r';
+                    else if (aChar == 'n')
+                        aChar = '\n';
+                    else if (aChar == 'f')
+                        aChar = '\f';
+                    newValue.append(aChar);
+                }
+            } else {
+                newValue.append(aChar);
+            }
+        }
+        
+        return newValue.toString();
     }
 }

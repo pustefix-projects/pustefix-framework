@@ -51,7 +51,7 @@ public class DirectPagerequestPropertyRule extends CheckedRule {
         if (reqConfig.getProperties().getProperty(propName) != null) {
             LOG.warn("Overwriting already set property \"" + propName + "\" with value \"" + propValue.trim() + "\"!");
         }
-        reqConfig.getProperties().setProperty(propName, propValue.trim());
+        reqConfig.getProperties().setProperty(propName, XMLPropertiesUtil.unesacpePropertyValue(propValue.trim()));
     }
 
     public void body(String namespace, String name, String text) throws Exception {
