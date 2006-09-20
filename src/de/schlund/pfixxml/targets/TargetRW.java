@@ -21,8 +21,6 @@ package de.schlund.pfixxml.targets;
 
 import javax.xml.transform.TransformerException;
 
-import org.w3c.dom.Document;
-
 /**
  *
  *
@@ -31,7 +29,7 @@ import org.w3c.dom.Document;
 public interface TargetRW extends Target {
     void   setXMLSource(Target source);
     void   setXSLSource(Target source);
-    void   addParam(String key, String val);
+    void   addParam(String key, Object val);
     void   resetParams();
     void   addPageInfo(PageInfo info);
     Object getCurrValue() throws TransformerException;

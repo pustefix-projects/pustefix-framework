@@ -22,6 +22,15 @@ package de.schlund.pfixxml;
 
 
 
+import java.io.IOException;
+import java.util.Properties;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpSession;
+
+import org.apache.log4j.Logger;
+import org.xml.sax.SAXException;
+
 import de.schlund.pfixcore.scriptedflow.ScriptedFlowConfig;
 import de.schlund.pfixcore.scriptedflow.ScriptedFlowInfo;
 import de.schlund.pfixcore.scriptedflow.vm.Script;
@@ -34,13 +43,6 @@ import de.schlund.pfixxml.config.AbstractXMLServletConfig;
 import de.schlund.pfixxml.config.ContextXMLServletConfig;
 import de.schlund.pfixxml.config.PageRequestConfig;
 import de.schlund.pfixxml.resources.FileResource;
-import java.io.IOException;
-import java.util.Properties;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpSession;
-import org.apache.log4j.Logger;
-import org.xml.sax.SAXException;
-import org.w3c.dom.Document;
 
 /**
  * @author jtl

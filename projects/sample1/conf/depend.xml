@@ -33,6 +33,8 @@
     <page name="B"  handler="/xml/config"/>
     <page name="C"  handler="/xml/config"/>
     
+    <config-include file="sample1/conf/fragments.xml" section="navigation"/>
+    
   </navigation>
 
   <standardmaster>
@@ -42,6 +44,8 @@
   <standardmetatags>
     <include stylesheet="sample1/xsl/metatags.xsl"/>
   </standardmetatags>
+  
+  <config-include file="sample1/conf/fragments.xml" section="targets"/>
 
   <standardpage name="home"     xml="sample1/xml/one_frame_navi.xml"/>
   <standardpage name="home"     xml="sample1/xml/one_frame_navi.xml" variant="foo"/>

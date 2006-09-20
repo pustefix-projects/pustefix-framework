@@ -14,28 +14,24 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with PFIXCORE; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- *
  */
 
-package de.schlund.pfixxml;
+package de.schlund.pfixxml.config.includes;
 
-/**
- *
- *
- */
+import java.util.EventObject;
 
-public class XMLException extends Exception {
+import de.schlund.pfixxml.resources.FileResource;
 
-    public XMLException() {
-        super();
-    }
+public class FileIncludeEvent extends EventObject {
+    private static final long serialVersionUID = -3702684169219524940L;
+    private FileResource includedFile;
 
-    public XMLException(String desc) {
-        super(desc);
+    protected FileIncludeEvent(Object source, FileResource file) {
+        super(source);
+        this.includedFile = file;
     }
     
-    public XMLException(String desc, Exception e) {
-        super(desc, e);
+    public FileResource getIncludedFile() {
+        return includedFile;
     }
-    
 }
