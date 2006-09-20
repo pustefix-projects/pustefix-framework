@@ -18,6 +18,7 @@
  */
 package de.schlund.pfixxml;
 
+import de.schlund.pfixcore.workflow.NavigationFactory;
 import de.schlund.pfixxml.config.AbstractXMLServletConfig;
 import de.schlund.pfixxml.config.ServletManagerConfig;
 import de.schlund.pfixxml.jmx.JmxServerFactory;
@@ -365,7 +366,7 @@ public abstract class AbstractXMLServer extends ServletManager {
                 }
             }
         }
-
+        
         // Now we will store the time needed from the creation of the request up to now
         preproctime = System.currentTimeMillis() - preq.getCreationTimeStamp();
         preq.getRequest().setAttribute(PREPROCTIME, preproctime);
@@ -679,7 +680,7 @@ public abstract class AbstractXMLServer extends ServletManager {
         }
     }
 
-    private TreeMap constructParameters(SPDocument spdoc, Properties gen_params, HttpSession session) {
+    private TreeMap constructParameters(SPDocument spdoc, Properties gen_params, HttpSession session) throws Exception {
         TreeMap paramhash = new TreeMap();
         HashMap params = spdoc.getProperties();
         // These are properties which have been set in the process method
@@ -706,6 +707,7 @@ public abstract class AbstractXMLServer extends ServletManager {
         }
         paramhash.put(TargetGenerator.XSLPARAM_TG, targetconf.toURI().toString());
         paramhash.put(TargetGenerator.XSLPARAM_TKEY, VALUE_NONE);
+        paramhash.put(TargetGenerator.XSLPARAM_NAVITREE, NavigationFactory.getInstance().getNavigation(targetconf));
 
         String session_to_link_from_external = SessionAdmin.getInstance().getExternalSessionId(session);
         paramhash.put("__external_session_ref", session_to_link_from_external);

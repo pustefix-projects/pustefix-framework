@@ -21,7 +21,7 @@ package de.schlund.pfixcore.workflow;
 
 import java.util.HashMap;
 
-import org.apache.log4j.Category;
+import org.apache.log4j.Logger;
 
 import de.schlund.pfixxml.resources.FileResource;
 import de.schlund.pfixxml.resources.ResourceUtil;
@@ -33,9 +33,8 @@ import de.schlund.pfixxml.resources.ResourceUtil;
  */
 
 public class NavigationFactory {
-    private static Category          CAT      = Category.getInstance(NavigationFactory.class.getName());
+    private static Logger            LOG      = Logger.getLogger(NavigationFactory.class);
     private static HashMap           navis    = new HashMap();
-    private static HashMap           modts    = new HashMap();
     private static NavigationFactory instance = new NavigationFactory();
     
     public static NavigationFactory getInstance() {
@@ -49,20 +48,13 @@ public class NavigationFactory {
             
     public synchronized Navigation getNavigation(FileResource navifile) throws Exception {
         Navigation navi = null;
-        long       modfile  = navifile.lastModified();
-        long       currmod  = modfile;
         
         navi = (Navigation) navis.get(navifile.toURI().toString());
-        if (navi != null) {
-            currmod = ((Long) modts.get(navifile.toURI().toString())).longValue();
-        }
         
-        if (navi == null || (currmod < modfile)) {
-            CAT.warn("***** Creating Navigation object *******");
-            long now = System.currentTimeMillis();
+        if (navi == null || navi.needsReload()) {
+            LOG.warn("***** Creating Navigation object *******");
             navi     = new Navigation(navifile);
             navis.put(navifile.toURI().toString(), navi);
-            modts.put(navifile.toURI().toString(), new Long(now));
         }
         
         return navi;

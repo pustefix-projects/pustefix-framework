@@ -89,7 +89,7 @@ public abstract class VirtualTarget extends TargetImpl {
     /**
      * @see de.schlund.pfixxml.targets.TargetRW#addParam(java.lang.String, java.lang.String)
      */
-    public void addParam(String key, String val) {
+    public void addParam(String key, Object val) {
         synchronized (params) {
             params.put(key, val);
         }
@@ -240,6 +240,10 @@ public abstract class VirtualTarget extends TargetImpl {
                 maxmodtime = Math.max(tmpmodtime, maxmodtime);
             }
         }
+        
+        // check target generator config / navigation tree
+        tmpmodtime = getTargetGenerator().getConfigMaxModTime();
+        maxmodtime = Math.max(tmpmodtime, maxmodtime);
 
         if ((maxmodtime > getModTime()) || forceupdate) {
             synchronized (this) {
