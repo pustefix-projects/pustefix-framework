@@ -803,7 +803,8 @@ public abstract class ServletManager extends HttpServlet {
 
     protected boolean tryReloadProperties(PfixServletRequest preq) throws ServletException {
         if ((commonpropfile  != null && commonpropfile.lastModified()  > common_mtime) ||
-            (servletpropfile != null && servletpropfile.lastModified() > servlet_mtime)) {
+            (servletpropfile != null && servletpropfile.lastModified() > servlet_mtime) ||
+            (this.getServletManagerConfig() != null && this.getServletManagerConfig().needsReload())) {
             
             int currLoadIndex = configLoadIndex.incrementAndGet();
             

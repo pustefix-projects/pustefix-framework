@@ -32,9 +32,8 @@ import org.apache.log4j.*;
  */
 
 public class NavigationFactory {
-    private static Category          CAT      = Category.getInstance(NavigationFactory.class.getName());
+    private static Logger            LOG      = Logger.getLogger(NavigationFactory.class);
     private static HashMap           navis    = new HashMap();
-    private static HashMap           modts    = new HashMap();
     private static NavigationFactory instance = new NavigationFactory();
     
     public static NavigationFactory getInstance() {
@@ -45,20 +44,13 @@ public class NavigationFactory {
         Navigation navi = null;
         Path       navipath = PathFactory.getInstance().createPath(navifilename);
         File       navifile = navipath.resolve();
-        long       modfile  = navifile.lastModified();
-        long       currmod  = modfile;
         
         navi = (Navigation) navis.get(navifilename);
-        if (navi != null) {
-            currmod = ((Long) modts.get(navifilename)).longValue();
-        }
         
-        if (navi == null || (currmod < modfile)) {
-            CAT.warn("***** Creating Navigation object *******");
-            long now = System.currentTimeMillis();
+        if (navi == null || navi.needsReload()) {
+            LOG.warn("***** Creating Navigation object *******");
             navi     = new Navigation(navifile);
             navis.put(navifilename, navi);
-            modts.put(navifilename, new Long(now));
         }
         
         return navi;

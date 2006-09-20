@@ -34,4 +34,7 @@ public class XMLException extends Exception {
         super(desc);
     }
     
+    public XMLException(String desc, Exception e) {
+        super(desc, e);
+    }
 }

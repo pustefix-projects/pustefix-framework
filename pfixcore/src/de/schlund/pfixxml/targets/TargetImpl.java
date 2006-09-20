@@ -194,7 +194,7 @@ public abstract class TargetImpl implements TargetRW, Comparable {
 
     public abstract void setXSLSource(Target source);
     
-    public abstract void addParam(String key, String val);
+    public abstract void addParam(String key, Object val);
     
     public abstract void storeValue(Object obj);
 

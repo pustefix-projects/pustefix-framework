@@ -423,11 +423,20 @@ public class TargetPfixImpl extends AbstractTarget {
     }
 
     public Map<String, String> getParameters() {
-        Map<String, String> map = this.pfixTarget.getParams();
-        if (map != null)
-            return map;
-        else
+        Map map = this.pfixTarget.getParams();
+        if (map != null) {
+            Map<String, String> rv = new HashMap<String, String>();
+            // Remove non-String values, as they cannot be handeled correctly
+            for (Object key : map.keySet()) {
+                Object val = map.get(key);
+                if (val instanceof String) {
+                    rv.put((String) key, (String) val);
+                }
+            }
+            return rv;
+        } else {
             return new HashMap<String, String>();
+        }
     }
 
     public ThemeList getThemeList() {

@@ -1,3 +1,31 @@
+2006-09-20  Sebastian Marsching  <sebastian.marsching@1und1.de>
+
+	* src/de/schlund/pfixcore/editor2/core/spring/internal/TargetPfixImpl.java: 
+	* src/de/schlund/pfixcore/workflow/Navigation.java: 
+	* src/de/schlund/pfixcore/workflow/NavigationFactory.java: 
+	* src/de/schlund/pfixxml/config/includes/FileIncludeEvent.java: 
+	* src/de/schlund/pfixxml/config/includes/FileIncludeEventListener.java: 
+	* src/de/schlund/pfixxml/config/includes/IncludesResolver.java: 
+	* src/de/schlund/pfixxml/config/includes/SimpleNamespaceContext.java: 
+	* src/de/schlund/pfixxml/config/ContextXMLServletConfig.java: 
+	* src/de/schlund/pfixxml/config/ServletManagerConfig.java: 
+	* src/de/schlund/pfixxml/targets/LeafTarget.java: 
+	* src/de/schlund/pfixxml/targets/TargetGenerator.java: 
+	* src/de/schlund/pfixxml/targets/TargetImpl.java: 
+	* src/de/schlund/pfixxml/targets/TargetRW.java: 
+	* src/de/schlund/pfixxml/targets/VirtualTarget.java: 
+	* src/de/schlund/pfixxml/AbstractXMLServer.java: 
+	* src/de/schlund/pfixxml/ContextXMLServer.java: 
+	* src/de/schlund/pfixxml/ServletManager.java: 
+	* src/de/schlund/pfixxml/XMLException.java: 
+	* projects/core/xsl/master.xsl: 
+	* projects/core/xsl/metatags.xsl: 
+	* projects/sample1/conf/config.conf.xml: 
+	* projects/sample1/conf/depend.xml: 
+	* projects/sample1/conf/fragments.xml: 
+	Adding support for includes in configuration files (target generator config
+	and context xml server config).
+
 2006-09-18  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
 	* src/de/schlund/pfixxml/config/ContextResourcePropertyRule.java (end): 

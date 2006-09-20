@@ -19,26 +19,72 @@
 
 package de.schlund.pfixcore.workflow;
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+
+import de.schlund.pfixxml.config.includes.FileIncludeEvent;
+import de.schlund.pfixxml.config.includes.FileIncludeEventListener;
+import de.schlund.pfixxml.config.includes.IncludesResolver;
 import de.schlund.pfixxml.util.XPath;
 import de.schlund.pfixxml.util.Xml;
-import java.io.File;
-import java.util.*;
-import org.apache.log4j.*;
-import org.w3c.dom.*;
 
 public class Navigation {
-    private Category CAT = Category.getInstance(Navigation.class.getName());
-
     private NavigationElement                   pageroot = new NavigationElement("__NONE__", "__NONE__");
     private Map<String, NavigationElement> pagetonavi;
     
+    private Set<File> fileDependencies = new HashSet<File>();
+    private long loadTime = 0;
+    
+    private Element navigationXMLElement = null;
+    
     public Navigation(File navifile) throws Exception {
+        loadTime = System.currentTimeMillis();
         Document navitree = Xml.parseMutable(navifile);
+        
+        IncludesResolver iresolver = new IncludesResolver(null, "config-include");
+        // Make sure list of dependencies only contains the file itself
+        fileDependencies.clear();
+        fileDependencies.add(navifile);
+        FileIncludeEventListener listener = new FileIncludeEventListener() {
+
+            public void fileIncluded(FileIncludeEvent event) {
+                fileDependencies.add(event.getIncludedFile());
+            }
+
+        };
+        iresolver.registerListener(listener);
+        iresolver.resolveIncludes(navitree);
+        
+        // We need a Saxon node here
+        navigationXMLElement = (Element) XPath.selectOne(Xml.parse(navitree), "/make/navigation");
+        
         List     nl       = XPath.select(navitree, "/make/navigation/page");
         pagetonavi        = new HashMap<String, NavigationElement>();
         recursePagetree(pageroot, nl);
     }
-
+    
+    public boolean needsReload() {
+        for (File file : fileDependencies) {
+            long lastModified = file.lastModified();
+            if (lastModified > loadTime) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    public Element getNavigationXMLElement() {
+        return navigationXMLElement;
+    }
+    
     private void recursePagetree(NavigationElement parent, List nl) throws Exception {
         for (int i = 0; i < nl.size(); i++) {
             Element page    = (Element) nl.get(i);
