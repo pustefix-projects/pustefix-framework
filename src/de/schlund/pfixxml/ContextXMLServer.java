@@ -29,7 +29,7 @@ import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpSession;
 
-import org.apache.log4j.Category;
+import org.apache.log4j.Logger;
 import org.xml.sax.SAXException;
 
 import de.schlund.pfixcore.scriptedflow.ScriptedFlowConfig;
@@ -39,7 +39,6 @@ import de.schlund.pfixcore.scriptedflow.vm.ScriptVM;
 import de.schlund.pfixcore.scriptedflow.vm.VirtualHttpServletRequest;
 import de.schlund.pfixxml.config.AbstractXMLServletConfig;
 import de.schlund.pfixxml.config.ContextXMLServletConfig;
-import org.w3c.dom.Document;
 
 /**
  * @author jtl
@@ -47,7 +46,7 @@ import org.w3c.dom.Document;
  */
 
 public class ContextXMLServer extends AbstractXMLServer {
-    private Category CAT = Category.getInstance(ContextXMLServer.class.getName());
+    private final static Logger LOG = Logger.getLogger(ContextXMLServer.class);
 
     public final static String CONTEXT_SUFFIX = "__CONTEXT__";
 

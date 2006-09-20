@@ -48,7 +48,7 @@ public abstract class LeafTarget extends TargetImpl {
         throw new RuntimeException("Can't add a XSLSource to a leaf");
     }
 
-    public void addParam(String key, String val) {
+    public void addParam(String key, Object val) {
         throw new RuntimeException("Can't add a stylesheet parameter to a leaf");
     }
 

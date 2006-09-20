@@ -14,24 +14,12 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with PFIXCORE; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- *
  */
 
-package de.schlund.pfixxml.targets;
+package de.schlund.pfixxml.config.includes;
 
-import javax.xml.transform.TransformerException;
+import java.util.EventListener;
 
-/**
- *
- *
- */
-
-public interface TargetRW extends Target {
-    void   setXMLSource(Target source);
-    void   setXSLSource(Target source);
-    void   addParam(String key, Object val);
-    void   resetParams();
-    void   addPageInfo(PageInfo info);
-    Object getCurrValue() throws TransformerException;
-    void   storeValue(Object obj);
+public interface FileIncludeEventListener extends EventListener {
+    void fileIncluded(FileIncludeEvent event);
 }

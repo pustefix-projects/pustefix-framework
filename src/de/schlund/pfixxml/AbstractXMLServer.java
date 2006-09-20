@@ -46,6 +46,7 @@ import javax.xml.transform.stream.StreamResult;
 import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
 
+import de.schlund.pfixcore.workflow.NavigationFactory;
 import de.schlund.pfixxml.config.AbstractXMLServletConfig;
 import de.schlund.pfixxml.config.ServletManagerConfig;
 import de.schlund.pfixxml.jmx.JmxServerFactory;
@@ -680,7 +681,7 @@ public abstract class AbstractXMLServer extends ServletManager {
         }
     }
 
-    private TreeMap constructParameters(SPDocument spdoc, Properties gen_params, HttpSession session) {
+    private TreeMap constructParameters(SPDocument spdoc, Properties gen_params, HttpSession session) throws Exception {
         TreeMap    paramhash = new TreeMap();
         Properties params = spdoc.getProperties();
         // These are properties which have been set in the process method
@@ -707,6 +708,7 @@ public abstract class AbstractXMLServer extends ServletManager {
         }
         paramhash.put(TargetGenerator.XSLPARAM_TG, targetconf.getRelative());
         paramhash.put(TargetGenerator.XSLPARAM_TKEY, VALUE_NONE);
+        paramhash.put(TargetGenerator.XSLPARAM_NAVITREE, NavigationFactory.getInstance().getNavigation(targetconf.getRelative()));
 
         String session_to_link_from_external = SessionAdmin.getInstance().getExternalSessionId(session);
         paramhash.put("__external_session_ref",session_to_link_from_external);

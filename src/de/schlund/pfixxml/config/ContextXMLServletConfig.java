@@ -20,7 +20,10 @@ package de.schlund.pfixxml.config;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.StringReader;
+import java.util.HashSet;
 import java.util.Properties;
+import java.util.Set;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
@@ -30,9 +33,15 @@ import org.apache.commons.digester.Digester;
 import org.apache.commons.digester.Rule;
 import org.apache.commons.digester.RulesBase;
 import org.apache.commons.digester.WithDefaultsRulesWrapper;
+import org.w3c.dom.Document;
+import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 import de.schlund.pfixcore.scriptedflow.ScriptedFlowConfig;
+import de.schlund.pfixxml.config.includes.FileIncludeEvent;
+import de.schlund.pfixxml.config.includes.FileIncludeEventListener;
+import de.schlund.pfixxml.config.includes.IncludesResolver;
+import de.schlund.pfixxml.util.Xml;
 
 /**
  * Stores configuration for a Pustefix servlet
@@ -45,7 +54,7 @@ public class ContextXMLServletConfig extends AbstractXMLServletConfig implements
 
     private final static Class DEFAULT_STATIC_STATE = de.schlund.pfixcore.workflow.app.StaticState.class;
 
-    private final static String CONFIG_NS = "http://pustefix.sourceforge.net/properties200401";
+    public final static String CONFIG_NS = "http://pustefix.sourceforge.net/properties200401";
 
     private final static String CUS_NS = "http://www.schlund.de/pustefix/customize";
 
@@ -56,10 +65,14 @@ public class ContextXMLServletConfig extends AbstractXMLServletConfig implements
     private ContextConfig contextConfig;
 
     private ScriptedFlowConfig scriptedFlowConfig = new ScriptedFlowConfig();
+    
+    private Set<File> fileDependencies = new HashSet<File>();
+
+    private long loadTime = 0;
 
     public static ContextXMLServletConfig readFromFile(File file,
             Properties globalProperties) throws SAXException, IOException {
-        ContextXMLServletConfig config = new ContextXMLServletConfig();
+        final ContextXMLServletConfig config = new ContextXMLServletConfig();
 
         // Initialize configuration properties with global default properties
         config.setProperties(globalProperties);
@@ -271,12 +284,31 @@ public class ContextXMLServletConfig extends AbstractXMLServletConfig implements
                         "/contextxmlserver/pagerequest/default/properties",
                         "/contextxmlserver/pagerequest/variant/properties",
                         "/contextxmlserver/properties" });
+        String confDocXml = null;
+        config.loadTime = System.currentTimeMillis();
+
+        Document confDoc = Xml.parseMutable(file);
+        IncludesResolver iresolver = new IncludesResolver(CONFIG_NS, "config-include");
+        // Make sure list of dependencies only contains the file itself
+        config.fileDependencies.clear();
+        config.fileDependencies.add(file);
+        FileIncludeEventListener listener = new FileIncludeEventListener() {
+
+            public void fileIncluded(FileIncludeEvent event) {
+                config.fileDependencies.add(event.getIncludedFile());
+            }
+
+        };
+        iresolver.registerListener(listener);
+        iresolver.resolveIncludes(confDoc);
+        confDocXml = Xml.serialize(confDoc, false, true);
+
         SAXParser parser;
         try {
             SAXParserFactory spfac = SAXParserFactory.newInstance();
             spfac.setNamespaceAware(true);
             parser = spfac.newSAXParser();
-            parser.parse(file, cushandler);
+            parser.parse(new InputSource(new StringReader(confDocXml)), cushandler);
         } catch (ParserConfigurationException e) {
             throw new RuntimeException("Could not initialize SAXParser!");
         }
@@ -326,5 +358,14 @@ public class ContextXMLServletConfig extends AbstractXMLServletConfig implements
 
     public ScriptedFlowConfig getScriptedFlowConfig() {
         return this.scriptedFlowConfig;
+    }
+    
+    public boolean needsReload() {
+        for (File file : fileDependencies) {
+            if (file.lastModified() > loadTime) {
+                return true;
+            }
+        }
+        return false;
     }
 }

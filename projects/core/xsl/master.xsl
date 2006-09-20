@@ -68,7 +68,8 @@
   <!-- Needed for navibuttons to work. Normally not needed in the resulting stylesheet -->
   <xsl:param name="navigation"><cus:navigation/></xsl:param>
   <xsl:param name="page"/>
-  <xsl:param name="navitree" select="document($navigation)/make/navigation"/>
+  <xsl:param name="__navitree"/>
+  <xsl:param name="navitree" select="$__navitree"/>
 
   <xsl:param name="stylesheets_to_include"/>
 

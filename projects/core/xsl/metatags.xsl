@@ -13,7 +13,8 @@
 
   <xsl:param name="page"/>
   <xsl:param name="navigation"><cus:navigation/></xsl:param>
-  <xsl:param name="navitree" select="document($navigation)/make/navigation"/>
+  <xsl:param name="__navitree"/>
+  <xsl:param name="navitree" select="$__navitree"/>
   
   <xsl:param name="lang"><cus:lang/></xsl:param>
   <xsl:variable name="product"><cus:product/></xsl:variable>
