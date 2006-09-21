@@ -84,11 +84,12 @@ or delete the DOCTYPE definition -->
         <not><equals arg1="${env.MACHINE}" arg2=""/></not>
       </and>
     </condition>
-    <exec outputproperty="machine" executable="hostname" os="Linux"><arg value="-s"/></exec>
+    <exec outputproperty="machine" executable="hostname" os="Linux, Mac OS X"><arg value="-s"/></exec>
     <fail message="Property &quot;machine&quot; not set. Either set environment variable MACHINE or property machine to the localpart of your fully qualified hostname." unless="machine"/>
 
     <exec outputproperty="dnsdomainname"    executable="hostname" os="Linux"><arg value="-d"/></exec>
-    <condition property="fqdn"     value="${machine}.${dnsdomainname}">
+    <exec outputproperty="dnsdomainname"    executable="sh" os="Mac OS X"><arg value="-c"/><arg value="hostname|cut -d. -f2-"/></exec>
+  	<condition property="fqdn"     value="${machine}.${dnsdomainname}">
       <isset property="dnsdomainname"/>
     </condition>
     <condition property="fqdn"     value="${machine}">
@@ -96,6 +97,9 @@ or delete the DOCTYPE definition -->
     </condition>
 
     <exec outputproperty="trusted.tomcat" executable="hostname" os="Linux"><arg value="-i"/></exec>
+  	<condition property="trusted.tomcat" value="127.0.0.1">
+  	  <os name="Mac OS X"/>
+  	</condition>
   </target>
   
   <path id="cp.libs">
@@ -266,7 +270,7 @@ or delete the DOCTYPE definition -->
     <!-- As task delete does not delete symbolic links, deleting symlinks using native tools. -->
     <!-- Deleting symlinks pointing to non existent files, assuming jar files -->
     <!-- replaced by new versions (with new filenames) do not exist anymore -->
-    <exec executable="find" os="Linux">
+    <exec executable="find" os="Linux, Mac OS X">
       <arg file="${dir.projects}/servletconf/tomcat/shared/lib"/>
       <arg line="-iname *.jar -a -type l -exec rm -v {} ;"/>
     </exec>
@@ -480,7 +484,7 @@ or delete the DOCTYPE definition -->
   </target>
   
   <target name="check-permissions">
-    <apply executable="chmod" os="Linux">
+    <apply executable="chmod" os="Linux, Mac OS X">
       <arg line="a+x"/>
       <fileset dir="${basedir}" includes="apploader.sh newproject.sh startTomcat.sh skel/apploader.sh skel/newproject.sh skel/startTomcat.sh bin/setClassPath.sh bin/setvars.sh stuff/**/*.sh stuff/**/bin/*"/>
       <fileset dir="${dir.projects}" includes="**/*.sh"/>
@@ -965,7 +969,7 @@ or delete the DOCTYPE definition -->
       <param name="portbase"   expression="${portbase.tomcat}"/>
     </pfx-xslt>
    
-    <apply executable="chmod" os="Linux">
+    <apply executable="chmod" os="Linux, Mac OS X">
       <arg line="a+x"/>
       <fileset dir="${webapp.tomcat.dir}" includes="**/*.sh"/>
     </apply>
