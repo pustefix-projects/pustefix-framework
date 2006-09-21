@@ -2,7 +2,6 @@ package de.schlund.pfixcore.webservice.fault;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.IOException;
 import java.util.Properties;
 
 import javax.servlet.http.HttpServletRequest;
@@ -10,9 +9,11 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
+import org.xml.sax.SAXException;
 
 import de.schlund.pfixxml.PathFactory;
 import de.schlund.pfixxml.PfixServletRequest;
+import de.schlund.pfixxml.config.XMLPropertiesUtil;
 import de.schlund.pfixxml.exceptionprocessor.ExceptionConfig;
 import de.schlund.pfixxml.exceptionprocessor.ExceptionProcessor;
 
@@ -38,8 +39,8 @@ public class ExceptionProcessorAdapter extends FaultHandler {
         File configFile=PathFactory.getInstance().createPath(config).resolve();
         exProcProps=new Properties();
         try {
-            exProcProps.load(new FileInputStream(configFile));
-        } catch(IOException x) {
+            XMLPropertiesUtil.loadPropertiesFromXMLFile(configFile,exProcProps);
+        } catch(Exception x) {
             throw new RuntimeException("Can't load properties from "+configFile.getAbsolutePath(),x);
         }
         String procName=exProcProps.getProperty(PROP_EXPROC);
