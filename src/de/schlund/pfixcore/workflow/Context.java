@@ -1212,5 +1212,10 @@ public class Context implements AppContext {
         }
     }
 
-    
+    public synchronized void updateConfig(ContextConfig newConfig) {
+        if (newConfig != config) {
+            config = newConfig;
+            reset();
+        }
+    }
 }

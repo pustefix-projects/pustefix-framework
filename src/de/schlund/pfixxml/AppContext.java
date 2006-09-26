@@ -30,6 +30,7 @@ import de.schlund.pfixxml.config.ContextConfig;
 
 public interface AppContext {
     void       init(ContextConfig config, String name) throws Exception;
+    void       updateConfig(ContextConfig config);
     SPDocument handleRequest(PfixServletRequest preq) throws Exception;
     void       reset() throws Exception;
     boolean    currentPageNeedsSSL(PfixServletRequest preq) throws Exception;
