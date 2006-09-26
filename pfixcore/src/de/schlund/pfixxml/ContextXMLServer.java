@@ -149,6 +149,9 @@ public class ContextXMLServer extends AbstractXMLServer {
     public SPDocument getDom(PfixServletRequest preq) throws Exception {
         AppContext context = getContext(preq);
         SPDocument spdoc;
+        
+        // Make sure context has newest config
+        context.updateConfig(getContextXMLServletConfig().getContextConfig());
 
         ScriptedFlowInfo info = getScriptedFlowInfo(preq);
         if (preq.getRequestParam(PARAM_SCRIPTEDFLOW) != null && preq.getRequestParam(PARAM_SCRIPTEDFLOW).getValue() != null) {

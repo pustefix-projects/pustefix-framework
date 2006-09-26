@@ -1,5 +1,11 @@
 2006-09-26  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
+	* src/de/schlund/pfixcore/workflow/Context.java: 
+	* src/de/schlund/pfixxml/AppContext.java: 
+	* src/de/schlund/pfixxml/ContextXMLServer.java: 
+	Reload ContextConfig for each Context instance when server configuration
+	is reloaded.
+	
 	* src/de/schlund/pfixxml/config/includes/IncludesResolver.java: 
 	Removed reference to ContextXMLServletConfig to solve compile-time
 	dependency issues.
