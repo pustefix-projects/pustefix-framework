@@ -1,3 +1,9 @@
+2006-09-26  Sebastian Marsching  <sebastian.marsching@1und1.de>
+
+	* src/de/schlund/pfixxml/config/includes/IncludesResolver.java: 
+	Removed reference to ContextXMLServletConfig to solve compile-time
+	dependency issues.
+
 2006-09-21  Sebastian Marsching  <sebastian.marsching@1und1.de>
 	* skel/build-skel.xml: Adjusted shell script parts to work
 	on Mac OS X, too.

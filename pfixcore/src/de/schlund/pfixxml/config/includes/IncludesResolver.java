@@ -35,7 +35,6 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-import de.schlund.pfixxml.config.ContextXMLServletConfig;
 import de.schlund.pfixxml.resources.FileResource;
 import de.schlund.pfixxml.resources.ResourceUtil;
 import de.schlund.pfixxml.util.XPath;
@@ -55,6 +54,8 @@ public class IncludesResolver {
     private final static String CONFIG_FRAGMENTS_NS = "http://pustefix.sourceforge.net/configfragments200609";
     
     private final static String CONFIG_FRAGMENTS_ROOT_TAG = "config-fragments";
+    
+    private final static String CONTEXTXML_NS = "http://pustefix.sourceforge.net/properties200401";
 
     private ThreadLocal<Set<Tupel<String, String>>> includesList = new ThreadLocal<Set<Tupel<String, String>>>();
 
@@ -67,7 +68,7 @@ public class IncludesResolver {
         this.includeTag = includeTag;
         this.nsContext = new SimpleNamespaceContext();
         this.nsContext.addNamespace("fr", CONFIG_FRAGMENTS_NS);
-        this.nsContext.addNamespace("pr", ContextXMLServletConfig.CONFIG_NS);
+        this.nsContext.addNamespace("pr", CONTEXTXML_NS);
     }
 
     public void registerListener(FileIncludeEventListener listener) {
