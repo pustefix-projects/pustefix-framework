@@ -21,9 +21,7 @@ package de.schlund.pfixcore.workflow.context;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Properties;
-import java.util.TreeMap;
 
-import de.schlund.pfixcore.util.PropertiesUtils;
 import de.schlund.pfixcore.workflow.ContextInterceptor;
 import de.schlund.pfixcore.workflow.ContextInterceptorFactory;
 import de.schlund.pfixcore.workflow.ContextResource;
@@ -41,9 +39,6 @@ import de.schlund.pfixxml.config.ContextConfig;
  * @author Sebastian Marsching <sebastian.marsching@1und1.de>
  */
 public class ServerContextImpl implements ServerContext {
-    private final static String STARTIC = "context.startinterceptor";
-    private final static String ENDIC = "context.endinterceptor";
-    
     private ContextConfig config;
     
     private String name;
@@ -67,32 +62,19 @@ public class ServerContextImpl implements ServerContext {
     }
     
     private void createInterceptors() throws Exception {
-        Properties props = config.getProperties();
-        TreeMap<String, String> sic = PropertiesUtils.selectPropertiesSorted(props, STARTIC);
-        TreeMap<String, String> eic = PropertiesUtils.selectPropertiesSorted(props, ENDIC);
-        
-        
-        if (sic != null && sic.size() > 0) {
-            ArrayList<ContextInterceptor> list = new ArrayList<ContextInterceptor>();
-            for (Iterator<String> i = sic.keySet().iterator(); i.hasNext();) {
-                String key = (String) i.next();
-                String classname = (String) sic.get(key);
-                list.add(ContextInterceptorFactory.getInstance().getInterceptor(classname));
-            }
-            startInterceptors = (ContextInterceptor[]) list.toArray(new ContextInterceptor[]{});
-        } else {
-            startInterceptors = null;
+        ArrayList<ContextInterceptor> list = new ArrayList<ContextInterceptor>();
+        for (Iterator<Class> i = config.getStartInterceptors().iterator(); i.hasNext();) {
+            String classname = i.next().getName();
+            list.add(ContextInterceptorFactory.getInstance().getInterceptor(classname));
         }
-        
-        if (eic != null && eic.size() > 0) {
-            ArrayList<ContextInterceptor> list = new ArrayList<ContextInterceptor>();
-            for (Iterator<String> i = eic.keySet().iterator(); i.hasNext();) {
-                list.add(ContextInterceptorFactory.getInstance().getInterceptor((String) eic.get((String) i.next())));
-            }
-            endInterceptors = (ContextInterceptor[]) list.toArray(new ContextInterceptor[]{});
-        } else {
-            endInterceptors = null;
+        startInterceptors = (ContextInterceptor[]) list.toArray(new ContextInterceptor[] {});
+
+        list.clear();
+        for (Iterator<Class> i = config.getEndInterceptors().iterator(); i.hasNext();) {
+            String classname = i.next().getName();
+            list.add(ContextInterceptorFactory.getInstance().getInterceptor(classname));
         }
+        endInterceptors = (ContextInterceptor[]) list.toArray(new ContextInterceptor[] {});
     }
 
     public Properties getProperties() {
