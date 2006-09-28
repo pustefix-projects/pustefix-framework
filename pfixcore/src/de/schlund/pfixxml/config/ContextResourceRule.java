@@ -45,7 +45,7 @@ public class ContextResourceRule extends CheckedRule {
         } catch (ClassNotFoundException e) {
             throw new SAXException("Could not load class \"" + className + "\"!", e);
         }
-        ContextResourceConfig crConfig = new ContextResourceConfig(clazz);
+        ContextResourceConfig crConfig = new ContextResourceConfig(clazz, config.getContextConfig());
         ctxConfig.addContextResource(crConfig);
         this.getDigester().push(crConfig);        
     }

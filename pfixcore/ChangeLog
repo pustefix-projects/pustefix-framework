@@ -1,3 +1,15 @@
+2006-09-28  Sebastian Marsching  <sebastian.marsching@1und1.de>
+
+	* src/de/schlund/pfixcore/workflow/context/ServerContextImpl.java: 
+	* src/de/schlund/pfixcore/workflow/ContextResourceManager.java: 
+	* src/de/schlund/pfixxml/config/includes/IncludesResolver.java: 
+	* src/de/schlund/pfixxml/config/ContextConfig.java: 
+	* src/de/schlund/pfixxml/config/ContextInterceptorRule.java: 
+	* src/de/schlund/pfixxml/config/ContextResourceConfig.java: 
+	* src/de/schlund/pfixxml/config/ContextResourceRule.java: 
+	Extended config include mechanism to support inclusion of context resources
+	and context interceptors.
+
 2006-09-26  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
 	* src/de/schlund/pfixxml/config/includes/IncludesResolver.java: 

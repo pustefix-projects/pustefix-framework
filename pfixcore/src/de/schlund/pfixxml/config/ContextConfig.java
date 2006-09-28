@@ -20,13 +20,17 @@ package de.schlund.pfixxml.config;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Enumeration;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.Map.Entry;
+
+import org.apache.log4j.Logger;
 
 /**
  * Stores configuration for a Context
@@ -35,11 +39,16 @@ import java.util.Map.Entry;
  */
 public class ContextConfig {
     
+    private final static Logger LOG = Logger.getLogger(ContextConfig.class);
+    
     private String authPage = null;
     private String defaultFlow = null;
     private LinkedHashMap<Class, ContextResourceConfig> resources = new LinkedHashMap<Class, ContextResourceConfig>();
+    protected HashMap<Class, ContextResourceConfig> interfaceToResource = new HashMap<Class, ContextResourceConfig>(); 
     private HashMap<String, PageFlowConfig> pageflows = new HashMap<String, PageFlowConfig>();
     private HashMap<String, PageRequestConfig> pagerequests = new HashMap<String, PageRequestConfig>();
+    private ArrayList<Class> startinterceptors = new ArrayList<Class>();
+    private ArrayList<Class> endinterceptors = new ArrayList<Class>();
     private String navigationFile = null;
     private Properties props = new Properties();
     private boolean synchronize = true;
@@ -61,6 +70,9 @@ public class ContextConfig {
     }
     
     public void addContextResource(ContextResourceConfig config) {
+        if (resources.containsKey(config.getContextResourceClass())) {
+            LOG.warn("Overwriting configuration for context resource " + config.getContextResourceClass().getName());
+        }
         resources.put(config.getContextResourceClass(), config);
     }
     
@@ -72,7 +84,18 @@ public class ContextConfig {
         return this.resources.get(clazz);
     }
     
+    public ContextResourceConfig getContextResourceConfigForInterface(Class clazz) {
+        return interfaceToResource.get(clazz);
+    }
+    
+    public Map<Class, ContextResourceConfig> getInterfaceToContextResourceMap() {
+        return Collections.unmodifiableMap(interfaceToResource);
+    }
+    
     public void addPageFlow(PageFlowConfig config) {
+        if (this.pageflows.containsKey(config.getFlowName())) {
+            LOG.warn("Overwriting configuration for pageflow " + config.getFlowName());
+        }
         this.pageflows.put(config.getFlowName(), config);
     }
     
@@ -90,6 +113,9 @@ public class ContextConfig {
     }
     
     public void addPageRequest(PageRequestConfig config) {
+        if (this.pagerequests.containsKey(config.getPageName())) {
+            LOG.warn("Overwriting configuration for pagerequest" + config.getPageName());
+        }
         this.pagerequests.put(config.getPageName(), config);
     }
     
@@ -104,6 +130,30 @@ public class ContextConfig {
     
     public PageRequestConfig getPageRequestConfig(String name) {
         return this.pagerequests.get(name);
+    }
+    
+    public void addStartInterceptor(Class clazz) {
+        if (this.startinterceptors.contains(clazz)) {
+            LOG.warn("Context interceptor " + clazz.getName() + " not added - it is already present");
+        } else {
+            this.startinterceptors.add(clazz);
+        }
+    }
+    
+    public List<Class> getStartInterceptors() {
+        return Collections.unmodifiableList(startinterceptors);
+    }
+    
+    public List<Class> getEndInterceptors() {
+        return Collections.unmodifiableList(endinterceptors);
+    }
+    
+    public void addEndInterceptor(Class clazz) {
+        if (this.endinterceptors.contains(clazz)) {
+            LOG.warn("Context interceptor " + clazz.getName() + " not added - it is already present");
+        } else {
+            this.endinterceptors.add(clazz);
+        }       
     }
     
     public void setNavigationFile(String filename) {
