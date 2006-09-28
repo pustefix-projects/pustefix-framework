@@ -28,10 +28,23 @@
       <xs:element name="servletinfo" type="prop:contextxmlserverservletinfoType"/>
       <xs:element ref="prop:context"/>
       <xs:element ref="prop:interceptors" maxOccurs="1" minOccurs="0"/>
-      <xs:element ref="prop:scriptedflow" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="prop:scriptedflow"/>
+        <xs:element name="config-include">
+          <xs:complexType>
+            <xs:attribute name="refid"></xs:attribute>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="config-include">
+          <xs:complexType>
+            <xs:attribute name="xpath"></xs:attribute>
+          </xs:complexType>
+        </xs:element>
+      </xs:choice>
       <xs:choice minOccurs="1" maxOccurs="unbounded">
         <xs:element ref="prop:pageflow"/>
         <xs:element ref="prop:pagerequest"/>
+        <xs:element ref="prop:config-include"/>
       </xs:choice>
       <xs:element ref="prop:exception" minOccurs="0" maxOccurs="unbounded"/>
       <xs:element ref="prop:properties" minOccurs="0"/>
@@ -98,36 +111,38 @@
   <xs:complexType name="contextxmlserverservletinfoType">
     <xs:complexContent>
       <xs:extension base="prop:servletinfoType">
-        <xs:all>
-       	  <xs:element ref="prop:encoding" minOccurs="0"/>
-          <xs:element ref="prop:editmode" minOccurs="0"/>
-          <xs:element ref="prop:ssl" minOccurs="0"/>
-          <xs:element ref="prop:defaultstate" minOccurs="0"/>
-          <xs:element ref="prop:defaultihandlerstate" minOccurs="0"/>
-          <xs:element name="choose">
-            <xs:complexType>
-              <xs:sequence>
-                <xs:element name="when" minOccurs="1" maxOccurs="unbounded">
-                  <xs:complexType>
-                    <xs:all>
-                      <xs:element ref="prop:editmode" minOccurs="0"/>
-                      <xs:element ref="prop:ssl" minOccurs="0"/>                      
-                    </xs:all>
-                    <xs:attribute name="test" use="required"/>
-                  </xs:complexType>
-                </xs:element>
-                <xs:element name="otherwise" minOccurs="0" maxOccurs="1">
-                  <xs:complexType>
-                    <xs:all>
-                      <xs:element ref="prop:editmode" minOccurs="0"/>
-                      <xs:element ref="prop:ssl" minOccurs="0"/>                      
-                    </xs:all>
-                  </xs:complexType>
-                </xs:element>
-              </xs:sequence>
-            </xs:complexType>
-          </xs:element>
-        </xs:all>
+        <xs:sequence>
+          <xs:choice minOccurs="0" maxOccurs="unbounded">
+       	    <xs:element ref="prop:encoding" minOccurs="0"/>
+            <xs:element ref="prop:editmode" minOccurs="0"/>
+            <xs:element ref="prop:ssl" minOccurs="0"/>
+            <xs:element ref="prop:defaultstate" minOccurs="0"/>
+            <xs:element ref="prop:defaultihandlerstate" minOccurs="0"/>
+            <xs:element name="choose">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:element name="when" minOccurs="1" maxOccurs="unbounded">
+                    <xs:complexType>
+                      <xs:all>
+                        <xs:element ref="prop:editmode" minOccurs="0"/>
+                        <xs:element ref="prop:ssl" minOccurs="0"/>                      
+                      </xs:all>
+                      <xs:attribute name="test" use="required"/>
+                    </xs:complexType>
+                  </xs:element>
+                  <xs:element name="otherwise" minOccurs="0" maxOccurs="1">
+                    <xs:complexType>
+                      <xs:all>
+                        <xs:element ref="prop:editmode" minOccurs="0"/>
+                        <xs:element ref="prop:ssl" minOccurs="0"/>                      
+                      </xs:all>
+                    </xs:complexType>
+                  </xs:element>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+          </xs:choice>
+        </xs:sequence>
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
@@ -189,7 +204,10 @@
   </xs:element>
   <xs:complexType name="contextType">
     <xs:sequence>
-      <xs:element ref="prop:resource" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="prop:resource"/>
+        <xs:element ref="prop:config-include"/>
+      </xs:choice>
     </xs:sequence>
     <xs:attribute name="class"/>
     <xs:attribute name="defaultflow" use="required"/>
@@ -227,8 +245,11 @@
 
 
   <xs:complexType name="interceptorGroupType">
-	<xs:sequence>
-		<xs:element ref="prop:interceptor" maxOccurs="unbounded" minOccurs="0"/>
+	<xs:sequence maxOccurs="unbounded" minOccurs="0">
+      <xs:choice>
+		<xs:element ref="prop:interceptor"/>
+        <xs:element ref="prop:config-include"/>
+      </xs:choice>
 	</xs:sequence>
   </xs:complexType>
   
@@ -476,6 +497,7 @@
       <xs:choice minOccurs="1" maxOccurs="unbounded">
         <xs:element ref="prop:prop"/>
         <xs:element ref="prop:choose"/>
+        <xs:element ref="prop:config-include"/>
       </xs:choice>
     </xs:sequence>
   </xs:complexType>
@@ -495,7 +517,10 @@
       <xs:element name="when" minOccurs="1" maxOccurs="unbounded">
         <xs:complexType>
           <xs:sequence>
-            <xs:element ref="prop:prop" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:choice minOccurs="0" maxOccurs="unbounded">
+              <xs:element ref="prop:prop"/>
+              <xs:element ref="prop:config-include"/>
+            </xs:choice>
           </xs:sequence>
           <xs:attribute name="test" use="required"/>
         </xs:complexType>
@@ -503,7 +528,10 @@
       <xs:element name="otherwise" minOccurs="0" maxOccurs="1">
         <xs:complexType>
           <xs:sequence>
-            <xs:element ref="prop:prop" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:choice minOccurs="0" maxOccurs="unbounded">
+              <xs:element ref="prop:prop"/>
+              <xs:element ref="prop:config-include"/>
+            </xs:choice>
           </xs:sequence>
         </xs:complexType>
       </xs:element>
@@ -551,6 +579,26 @@
     <xs:attribute name="version" type="xs:token" use="required"/>
   </xs:complexType>
 
+  <xs:element name="config-include" type="prop:configIncludeType"/>
+  <xs:complexType name="configIncludeType">
+    <xs:attribute name="file" type="xs:string" use="required"></xs:attribute>
+    <xs:attribute name="section" use="optional">
+      <xs:simpleType>
+        <xs:restriction base="xs:token">
+          <xs:enumeration value="navigation"/>
+          <xs:enumeration value="targets"/>
+          <xs:enumeration value="resources"/>
+          <xs:enumeration value="pageflows"/>
+          <xs:enumeration value="pagerequests"/>
+          <xs:enumeration value="properties"/>
+          <xs:enumeration value="interceptors"/>
+          <xs:enumeration value="scriptedflows"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="refid" type="xs:NCName" use="optional"></xs:attribute>
+    <xs:attribute name="xpath" type="xs:string" use="optional"></xs:attribute>
+  </xs:complexType>
 
   <!--
   <xs:group name="cuspagerequestGroup">
