@@ -1,5 +1,9 @@
 2006-09-28  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
+	* projects/core/schema/configfragments200609.xsd: 
+	* projects/core/schema/properties200401.xsd: 
+	Added config includes to XML Schema
+	
 	* projects/core/editor2/conf/edit.conf.xml: 
 	Removed end interceptor as it was incompatible with the new navigation
 	state rendering system
