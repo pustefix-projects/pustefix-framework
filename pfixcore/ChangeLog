@@ -1,5 +1,9 @@
 2006-09-28  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
+	* projects/core/editor2/conf/edit.conf.xml: 
+	Removed end interceptor as it was incompatible with the new navigation
+	state rendering system
+	
 	* src/de/schlund/pfixcore/workflow/context/ServerContextImpl.java: 
 	* src/de/schlund/pfixcore/workflow/ContextResourceManager.java: 
 	* src/de/schlund/pfixxml/config/includes/IncludesResolver.java: 
