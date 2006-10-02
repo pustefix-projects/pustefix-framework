@@ -20,6 +20,7 @@
 package de.schlund.pfixcore.workflow;
 
 import java.io.File;
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -27,12 +28,23 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMResult;
+import javax.xml.transform.sax.SAXTransformerFactory;
+import javax.xml.transform.sax.TransformerHandler;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.xml.sax.InputSource;
+import org.xml.sax.XMLReader;
+import org.xml.sax.helpers.DefaultHandler;
+import org.xml.sax.helpers.XMLReaderFactory;
 
+import de.schlund.pfixxml.config.CustomizationHandler;
 import de.schlund.pfixxml.config.includes.FileIncludeEvent;
 import de.schlund.pfixxml.config.includes.FileIncludeEventListener;
 import de.schlund.pfixxml.config.includes.IncludesResolver;
+import de.schlund.pfixxml.util.TransformerHandlerAdapter;
 import de.schlund.pfixxml.util.XPath;
 import de.schlund.pfixxml.util.Xml;
 
@@ -62,6 +74,33 @@ public class Navigation {
         };
         iresolver.registerListener(listener);
         iresolver.resolveIncludes(navitree);
+        
+        TransformerFactory tf = TransformerFactory.newInstance();
+        if (tf.getFeature(SAXTransformerFactory.FEATURE)) {
+            SAXTransformerFactory stf = (SAXTransformerFactory) tf;
+            TransformerHandler th = stf.newTransformerHandler();
+            DOMResult dr = new DOMResult();
+            th.setResult(dr);
+            DefaultHandler dh = new TransformerHandlerAdapter(th);
+            DefaultHandler ch = new CustomizationHandler(dh);
+            XMLReader xreader = XMLReaderFactory.createXMLReader();
+            xreader.setContentHandler(ch);
+            xreader.setDTDHandler(ch);
+            xreader.setEntityResolver(ch);
+            xreader.setErrorHandler(ch);
+            xreader.parse(new InputSource(new StringReader(Xml.serialize(navitree,false, true))));
+            navitree = dr.getNode().getOwnerDocument();
+            if (navitree == null) {
+                if (dr.getNode() instanceof Document) {
+                    navitree = (Document) dr.getNode();
+                } else {
+                    throw new RuntimeException("XML result is not a Document though it should be");
+                }
+            }
+        } else {
+            throw new RuntimeException("TransformerFactory instance does not provide SAXTransformerFactory!");
+        }
+        
         
         // We need a Saxon node here
         navigationXMLElement = (Element) XPath.selectOne(Xml.parse(navitree), "/make/navigation");

@@ -19,8 +19,22 @@
 
 package de.schlund.pfixcore.workflow;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
+
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.log4j.Logger;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+
 import de.schlund.pfixcore.generator.StatusCodeInfo;
-import de.schlund.pfixcore.util.PropertiesUtils;
 import de.schlund.pfixcore.workflow.Navigation.NavigationElement;
 import de.schlund.pfixxml.AbstractXMLServer;
 import de.schlund.pfixxml.AppContext;
@@ -37,20 +51,6 @@ import de.schlund.pfixxml.config.PageRequestConfig;
 import de.schlund.pfixxml.perflogging.PerfEvent;
 import de.schlund.pfixxml.perflogging.PerfEventType;
 import de.schlund.util.statuscodes.StatusCode;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
-import java.util.TreeMap;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import org.apache.log4j.Category;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 
 /**
  * This class is the corner piece of our workflow concept.
@@ -62,9 +62,7 @@ import org.w3c.dom.Element;
  *
  */
 public class Context implements AppContext {
-    private final static Category LOG                 = Category.getInstance(Context.class.getName());
-    private final static String   STARTIC             = "context.startinterceptor";
-    private final static String   ENDIC               = "context.endinterceptor";
+    private final static Logger   LOG                 = Logger.getLogger(Context.class);
     private final static String   PROP_NAVI_AUTOINV   = "navigation.autoinvalidate";
     private final static String   PARAM_JUMPPAGE      = "__jumptopage";
     private final static String   PARAM_JUMPPAGEFLOW  = "__jumptopageflow";
@@ -275,31 +273,19 @@ public class Context implements AppContext {
     }
 
     private void createInterceptors(Properties props) throws Exception {
-        TreeMap sic = PropertiesUtils.selectPropertiesSorted(props, STARTIC);
-        TreeMap eic = PropertiesUtils.selectPropertiesSorted(props, ENDIC);
-        
-        
-        if (sic != null && sic.size() > 0) {
-            ArrayList list = new ArrayList();
-            for (Iterator i = sic.keySet().iterator(); i.hasNext();) {
-                String key = (String) i.next();
-                String classname = (String) sic.get(key);
-                list.add(ContextInterceptorFactory.getInstance().getInterceptor(classname));
-            }
-            startIC = (ContextInterceptor[]) list.toArray(new ContextInterceptor[]{});
-        } else {
-            startIC = null;
+        ArrayList<ContextInterceptor> list = new ArrayList<ContextInterceptor>();
+        for (Iterator<Class> i = config.getStartInterceptors().iterator(); i.hasNext();) {
+            String classname = i.next().getName();
+            list.add(ContextInterceptorFactory.getInstance().getInterceptor(classname));
         }
-        
-        if (eic != null && eic.size() > 0) {
-            ArrayList list = new ArrayList();
-            for (Iterator i = eic.keySet().iterator(); i.hasNext();) {
-                list.add(ContextInterceptorFactory.getInstance().getInterceptor((String) eic.get((String) i.next())));
-            }
-            endIC = (ContextInterceptor[]) list.toArray(new ContextInterceptor[]{});
-        } else {
-            endIC = null;
+        startIC = (ContextInterceptor[]) list.toArray(new ContextInterceptor[] {});
+
+        list.clear();
+        for (Iterator<Class> i = config.getEndInterceptors().iterator(); i.hasNext();) {
+            String classname = i.next().getName();
+            list.add(ContextInterceptorFactory.getInstance().getInterceptor(classname));
         }
+        endIC = (ContextInterceptor[]) list.toArray(new ContextInterceptor[] {});
     }
     
     private void processIC(ContextInterceptor[] icarr) {

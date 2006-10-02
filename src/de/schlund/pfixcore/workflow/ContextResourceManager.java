@@ -23,11 +23,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Set;
+import java.util.Map;
 
 import javax.servlet.ServletException;
 
-import org.apache.log4j.Category;
+import org.apache.log4j.Logger;
 
 import de.schlund.pfixxml.config.ContextConfig;
 import de.schlund.pfixxml.config.ContextResourceConfig;
@@ -44,10 +44,8 @@ import de.schlund.pfixxml.loader.StateTransfer;
  */
 
 public class ContextResourceManager implements Reloader {
-    private Category CAT = Category.getInstance(ContextResourceManager.class.getName());
-    private HashMap  resources = new HashMap();
-    private final static String PROP_RESOURCE = "context.resource";
-    private final static String SEPERATOR     = ", ";
+    private final static Logger LOG = Logger.getLogger(ContextResourceManager.class);
+    private HashMap<String, ContextResource>  resources = new HashMap<String, ContextResource>();
     
     /**
      * Instanciates the objects and registers the interfaces which
@@ -87,9 +85,10 @@ public class ContextResourceManager implements Reloader {
      */
     
      public void init(Context context, ContextConfig config) throws Exception{
-        CAT.debug("initialize ContextResources...");
+        LOG.debug("initialize ContextResources...");
         
-        Collection<ContextResource> resourcesToInitialize = new ArrayList();
+        Collection<ContextResource> resourcesToInitialize = new ArrayList<ContextResource>();
+        Map<String, ContextResource> resourceClassToInstance = new HashMap<String, ContextResource>();
         
         Collection<ContextResourceConfig> resourceConfigs = config.getContextResourceConfigs();
         
@@ -98,7 +97,7 @@ public class ContextResourceManager implements Reloader {
             ContextResource cr = null;
             String classname = resourceConfig.getContextResourceClass().getName();
             try {
-                CAT.debug("Creating object with name [" + classname + "]");
+                LOG.debug("Creating object with name [" + classname + "]");
                 AppLoader appLoader = AppLoader.getInstance();
                 if (appLoader.isEnabled()) {
                     cr = (ContextResource) appLoader.loadClass(classname).newInstance();
@@ -111,21 +110,17 @@ public class ContextResourceManager implements Reloader {
             }
             
             resourcesToInitialize.add(cr);
-            
-            // Register interfaces
-            Set<Class> interfaces = resourceConfig.getInterfaces();
-            
-            if (interfaces.size() == 0) {
-                throw new ServletException("No interfaces given for object of class [" + classname + "]");
-            }
-            
-            for (Iterator<Class> j = interfaces.iterator(); j.hasNext();) {
-                Class iface = j.next();
-                String interfacename = iface.getName();
-                checkInterface(cr, interfacename);
-                CAT.debug("* Registering [" + classname + "] for interface [" + interfacename + "]");
-                resources.put(interfacename, cr);
-            }
+            resourceClassToInstance.put(cr.getClass().getName(), cr);
+        }
+        
+        Map<Class, ContextResourceConfig> interfaces = config.getInterfaceToContextResourceMap();
+        for (Class clazz : interfaces.keySet()) {
+            String interfacename = clazz.getName();
+            String resourceclass = interfaces.get(clazz).getContextResourceClass().getName();
+            ContextResource cr = resourceClassToInstance.get(resourceclass);
+            checkInterface(cr, interfacename);
+            LOG.debug("* Registering [" + cr.getClass().getName() + "] for interface [" + interfacename + "]");
+            resources.put(interfacename, cr);
         }
         
         for (Iterator i = resourcesToInitialize.iterator(); i.hasNext();) {
@@ -167,14 +162,14 @@ public class ContextResourceManager implements Reloader {
                                        "while checking for interface");
         }
 	
-        CAT.debug("Check if requested interface [" + interfacename + 
+        LOG.debug("Check if requested interface [" + interfacename + 
                   "] is implemented by [" + obj.getClass().getName() + "]");
         
         // Check for all implemented interfaces, if it equals the interface that
         // we want, than break.
         
         if (wantedinterface.isInstance(obj)) {
-            CAT.debug("Got requested interface " + interfacename);
+            LOG.debug("Got requested interface " + interfacename);
         } else {
             // Uh, the requested interface is not implemented by the
             // object, that's not nice!
@@ -201,7 +196,7 @@ public class ContextResourceManager implements Reloader {
     }
     
     public void reload() {
-        HashMap  resNew = new HashMap();
+        HashMap<String, ContextResource>  resNew = new HashMap<String, ContextResource>();
         Iterator it     = resources.keySet().iterator();
         while (it.hasNext()) {
             String str = (String) it.next();
