@@ -1,3 +1,8 @@
+2006-10-02  Sebastian Marsching  <sebastian.marsching@1und1.de>
+
+	* src/de/schlund/pfixcore/workflow/Navigation.java: 
+	Adding customization support for navigation structure.
+
 2006-09-28  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
 	* projects/core/schema/configfragments200609.xsd: 
