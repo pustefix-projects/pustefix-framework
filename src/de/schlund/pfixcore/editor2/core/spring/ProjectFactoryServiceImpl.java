@@ -49,6 +49,8 @@ import de.schlund.pfixxml.util.XPath;
  * @author Sebastian Marsching <sebastian.marsching@1und1.de>
  */
 public class ProjectFactoryServiceImpl implements ProjectFactoryService {
+    private final static Logger LOG = Logger.getLogger(ProjectFactoryServiceImpl.class);
+    
     private PathResolverService pathresolver;
 
     private VariantFactoryService variantfactory;
@@ -165,12 +167,13 @@ public class ProjectFactoryServiceImpl implements ProjectFactoryService {
                 throw new EditorInitializationException(err);
             }
             String projectDependFile = tempNode.getNodeValue();
-            ProjectImpl project = new ProjectImpl(variantfactory, themefactory,
-                    pagefactory, includefactory, imagefactory, targetfactory,
-                    updater, projectName, projectComment, projectDependFile);
-            this.projects.put(projectName, project);
-            this.generatorToProjectNameMap.put(project.getTargetGenerator()
-                    .getName(), projectName);
+            try {
+                ProjectImpl project = new ProjectImpl(variantfactory, themefactory, pagefactory, includefactory, imagefactory, targetfactory, updater, projectName, projectComment, projectDependFile);
+                this.projects.put(projectName, project);
+                this.generatorToProjectNameMap.put(project.getTargetGenerator().getName(), projectName);
+            } catch (Throwable e) {
+                LOG.error("Initialization of project " + projectName + " failed!", e);
+            }
         }
         this.initialized = true;
     }
