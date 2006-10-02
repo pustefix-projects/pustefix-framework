@@ -1,5 +1,9 @@
 2006-10-02  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
+	* src/de/schlund/pfixcore/editor2/core/spring/ProjectFactoryServiceImpl.java: 
+	Adding try/catch-block to ensure that editor is initialized for other projects
+	even if one project fails.
+
 	* src/de/schlund/pfixcore/workflow/Context.java: 
 	* src/de/schlund/pfixcore/workflow/ContextResourceManager.java: 
 	* src/de/schlund/pfixcore/workflow/Navigation.java: 
