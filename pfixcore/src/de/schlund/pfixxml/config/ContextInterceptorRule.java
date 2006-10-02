@@ -28,24 +28,31 @@ public class ContextInterceptorRule extends CheckedRule {
 
     private ContextXMLServletConfig config;
     private String type;
-    private int count;
 
     public ContextInterceptorRule(ContextXMLServletConfig config, String type) {
         this.config = config;
+        if (!(type.equals("start") || type.equals("end"))) {
+            throw new IllegalArgumentException("\"" + type + "\" is not a valid context interceptor type!");
+        }
         this.type = type;
-        this.count = 0;
     }
 
     public void begin(String namespace, String name, Attributes attributes) throws Exception {
         check(namespace, name, attributes);
         // Use properties until interceptors have been added to XSD
-        String propvalue = attributes.getValue("class");
-        if (propvalue == null) {
-            throw new SAXException("Mandatory attribute \"class\" is missing!");
+        String classname = attributes.getValue("class");
+        Class clazz;
+        try {
+            clazz = Class.forName(classname);
+        } catch (ClassNotFoundException e) {
+            throw new SAXException("Could not load interceptor class " + classname, e);
         }
-        count++;
-        String propname = "context." + type + "interceptor." + count;
-        config.getProperties().setProperty(propname, propvalue);
+        if (type.equals("start")) {
+            config.getContextConfig().addStartInterceptor(clazz);
+        }
+        if (type.equals("end")) {
+            config.getContextConfig().addEndInterceptor(clazz);
+        }
     }
 
     protected Map<String, Boolean> wantsAttributes() {

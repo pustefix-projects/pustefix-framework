@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<fr:config-fragments xmlns:fr="http://pustefix.sourceforge.net/configfragments200609" xmlns:pr="http://pustefix.sourceforge.net/properties200401">
+<fr:config-fragments xmlns:fr="http://pustefix.sourceforge.net/configfragments200609" xmlns:pr="http://pustefix.sourceforge.net/properties200401" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://pustefix.sourceforge.net/configfragments200609 http://pustefix.sourceforge.net/configfragments200609.xsd">
   <fr:navigation>
     <page name="IncludeConfPage" handler="/xml/config"/>
   </fr:navigation>

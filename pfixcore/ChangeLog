@@ -1,3 +1,19 @@
+2006-10-02  Sebastian Marsching  <sebastian.marsching@1und1.de>
+
+	* src/de/schlund/pfixcore/workflow/Context.java: 
+	* src/de/schlund/pfixcore/workflow/ContextResourceManager.java: 
+	* src/de/schlund/pfixcore/workflow/Navigation.java: 
+	* src/de/schlund/pfixxml/config/includes/IncludesResolver.java: 
+	* src/de/schlund/pfixxml/config/ContextConfig.java: 
+	* src/de/schlund/pfixxml/config/ContextInterceptorRule.java: 
+	* src/de/schlund/pfixxml/config/ContextResourceConfig.java: 
+	* src/de/schlund/pfixxml/config/ContextResourceRule.java: 
+	* projects/core/schema/properties200401.xsd: 
+	* projects/core/schema/configfragments200609.xsd: 
+	* projects/sample1/conf/fragments.xml: 
+	Support customization in navigation structure.
+	Moved context interceptor configuration from properties to (XML) objects.
+
 2006-09-26  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
 	* src/de/schlund/pfixcore/workflow/Context.java: 
