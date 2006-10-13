@@ -83,7 +83,7 @@ if( _isOpera ) {
 //--------
 
 HTTP_Request.msXmlHttp = null;
-if( !_isOpera && window.ActiveXObject ) {
+if( !HTTP_Request.builtin && !_isOpera && window.ActiveXObject ) {
   // determine working ActiveX XMLHTTP component
   // both security settings needed (secure(1.) and plugins(3.))
   // if successful, HTTP_Request.msXmlHttp is of type "string", 
