@@ -4,13 +4,9 @@
 package de.schlund.pfixcore.example.webservices;
 
 import java.util.Calendar;
+import java.util.HashMap;
 
 import org.w3c.dom.Element;
-
-import de.schlund.pfixcore.webservice.annotation.Service;
-import de.schlund.pfixcore.webservice.annotation.ServiceMethod;
-
-import java.util.HashMap;
 
 /**
  * TypeTest.java 
@@ -19,12 +15,18 @@ import java.util.HashMap;
  * 
  * @author mleidig
  */
-@Service(name="TypeTest")
 public interface TypeTest {
     
     public String info();
     
-    @ServiceMethod(name="foo")
+    public byte echoByte(byte val);
+    
+    public Byte echoByteObj(Byte val);
+    
+    public short echoShort(short val);
+    
+    public Short echoShortObj(Short val);
+    
     public int echoInt(int val);
     
     public Integer echoIntObj(Integer val);
@@ -36,12 +38,16 @@ public interface TypeTest {
     public Long echoLongObj(Long val);
     
     public long[] echoLongArray(long[] vals);
-    
+   
     public float echoFloat(float val);
     
     public Float echoFloatObj(Float val);
     
     public float[] echoFloatArray(float[] vals);
+   
+    public double echoDouble(double val);
+    
+    public Double echoDoubleObj(Double val);
     
     public boolean echoBoolean(boolean val);
     

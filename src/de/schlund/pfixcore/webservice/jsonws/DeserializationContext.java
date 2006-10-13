@@ -33,6 +33,7 @@ public class DeserializationContext {
     }
     
     public Object deserialize(Object jsonObj,Class targetClass) throws DeserializationException {
+        if(jsonObj==null) return null;
         Deserializer deser=deserReg.getDeserializer(targetClass);
         return deser.deserialize(this,jsonObj,targetClass);
     }

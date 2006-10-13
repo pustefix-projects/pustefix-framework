@@ -188,6 +188,8 @@ function XML_Types() {
   this.XSD_DOUBLE=new XML_QName(XML_NS_XSD,"double");
   this.XSD_FLOAT=new XML_QName(XML_NS_XSD,"float");
   this.XSD_HEXBINARY=new XML_QName(XML_NS_XSD,"hexBinary");
+  this.XSD_BYTE=new XML_QName(XML_NS_XSD,"byte");
+  this.XSD_SHORT=new XML_QName(XML_NS_XSD,"short");
   this.XSD_INT=new XML_QName(XML_NS_XSD,"int");
   this.XSD_INTEGER=new XML_QName(XML_NS_XSD,"integer");
   this.XSD_LONG=new XML_QName(XML_NS_XSD,"long");
@@ -197,8 +199,8 @@ function XML_Types() {
   
   this.SOAP_ARRAY=new XML_QName(XML_NS_SOAPENC,"Array");
   this.SOAP_BASE64=new XML_QName(XML_NS_SOAPENC,"base64");
-  this.SOAP_BOOLEAN=new XML_QName(XML_NS_SOAPENC,"boolean");
   this.SOAP_BYTE=new XML_QName(XML_NS_SOAPENC,"byte");
+  this.SOAP_BOOLEAN=new XML_QName(XML_NS_SOAPENC,"boolean");
   this.SOAP_DOUBLE=new XML_QName(XML_NS_SOAPENC,"double");
   this.SOAP_FLOAT=new XML_QName(XML_NS_SOAPENC,"float");
   this.SOAP_INT=new XML_QName(XML_NS_SOAPENC,"int");
@@ -385,6 +387,7 @@ var SOAP_ENCUSE_ENCODED="encoded";
 var SOAP_ENCUSE_LITERAL="literal";
 
 var SOAP_XSI_TYPE=new XML_QName(XML_NS_XSI,"type");
+var SOAP_XSI_NIL=new XML_QName(XML_NS_XSI,"nil");
 var SOAP_ARRAY_TYPE=new XML_QName(XML_NS_SOAPENC,"arrayType");
 
 
@@ -443,7 +446,8 @@ SOAP_SimpleSerializer.prototype.serialize=function(value,name,typeInfo,writer,ct
   if(ctx.use==SOAP_ENCUSE_ENCODED) {
     writer.writeAttribute(SOAP_XSI_TYPE,prefix+":"+typeInfo.xmlType.localpart);
   }
-  writer.writeChars(""+value);
+  if(value==null) writer.writeAttribute(SOAP_XSI_NIL,"true");
+  else writer.writeChars(""+value);
   writer.endElement(name);
 }
 //deserialize(typeInfo,element)
@@ -463,15 +467,16 @@ function SOAP_NumberSerializer(xmlType) {
 
 SOAP_NumberSerializer.extend(SOAP_SimpleSerializer);
 SOAP_NumberSerializer.prototype.serialize=function(value,name,typeInfo,writer,ctx) {
+  if(value!=null) {
   if(typeof value!="number") throw new SOAP_SerializeEx("Illegal type: "+(typeof value),"SOAP_NumberSerializer.serialize");
   if(isNaN(value)) throw new SOAP_SerializeEx("Illegal value: "+value,"SOAP_NumberSerializer.serialize");
+  }
   this.superclass.serialize(value,name,typeInfo,writer,ctx);
 }
 SOAP_NumberSerializer.prototype.deserialize=function(typeInfo,element) {
   var val=parseInt(this.superclass.deserialize.call(this,typeInfo,element));
   if( isNaN(val) ) {
-    //if ( element.getAttributeNS(XML_NS_XSI, 'nil') == 'true' ) return null;
-    //else 
+    if(element.getAttribute(XML_NS_PREFIX_MAP[XML_NS_XSI]+":nil")) return null;
     throw new SOAP_SerializeEx("Illegal value: "+val,"SOAP_NumberSerializer.deserialize");
   }
   return val;
@@ -737,6 +742,10 @@ SOAP_TypeMapping.prototype.init=function() {
   this.mappings[XML_Types.XSD_BOOLEAN.hashKey()]=boolSer;
   this.mappings[XML_Types.SOAP_BOOLEAN.hashKey()]=boolSer;
   var numSer=new SOAP_NumberSerializer();
+  this.mappings[XML_Types.XSD_BYTE.hashKey()]=numSer;
+  this.mappings[XML_Types.SOAP_BYTE.hashKey()]=numSer;
+  this.mappings[XML_Types.XSD_SHORT.hashKey()]=numSer;
+  this.mappings[XML_Types.SOAP_SHORT.hashKey()]=numSer;
   this.mappings[XML_Types.XSD_INT.hashKey()]=numSer;
   this.mappings[XML_Types.SOAP_INT.hashKey()]=numSer;
   this.mappings[XML_Types.XSD_LONG.hashKey()]=numSer;
@@ -744,6 +753,8 @@ SOAP_TypeMapping.prototype.init=function() {
   var floatSer=new SOAP_FloatSerializer();  
   this.mappings[XML_Types.XSD_FLOAT.hashKey()]=floatSer;
   this.mappings[XML_Types.SOAP_FLOAT.hashKey()]=floatSer;
+  this.mappings[XML_Types.XSD_DOUBLE.hashKey()]=floatSer;
+  this.mappings[XML_Types.SOAP_DOUBLE.hashKey()]=floatSer;
   var strSer=new SOAP_StringSerializer();
   this.mappings[XML_Types.XSD_STRING.hashKey()]=strSer;
   this.mappings[XML_Types.SOAP_STRING.hashKey()]=strSer;

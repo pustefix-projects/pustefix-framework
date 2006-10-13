@@ -21,6 +21,22 @@ public class TypeTestImpl implements TypeTest {
         return "TypeTest";
     }
     
+    public byte echoByte(byte val) {
+        return val;
+    }
+    
+    public Byte echoByteObj(Byte val) {
+        return val;
+    }
+    
+    public short echoShort(short val) {
+        return val;
+    }
+    
+    public Short echoShortObj(Short val) {
+        return val;
+    }
+    
     public int echoInt(int val) {
         return val;
     }
@@ -55,6 +71,14 @@ public class TypeTestImpl implements TypeTest {
     
     public float[] echoFloatArray(float[] vals) {
         return vals;
+    }
+    
+    public double echoDouble(double val) {
+        return val;
+    }
+    
+    public Double echoDoubleObj(Double val) {
+        return val;
     }
     
     public boolean echoBoolean(boolean val) {
