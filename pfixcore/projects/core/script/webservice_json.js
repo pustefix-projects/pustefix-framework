@@ -123,7 +123,7 @@ WS_Webservice.prototype._serialize=function(obj) {
 			}
 			json="{"+arr.join(",")+"}";
 		}
-	}
+	} else json="null";
 	return json;
 };
 

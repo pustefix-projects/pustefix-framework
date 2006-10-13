@@ -19,6 +19,7 @@
 
 package de.schlund.pfixcore.webservice.jsonws.deserializers;
 
+import de.schlund.pfixcore.webservice.json.JSONValue;
 import de.schlund.pfixcore.webservice.jsonws.DeserializationContext;
 import de.schlund.pfixcore.webservice.jsonws.DeserializationException;
 import de.schlund.pfixcore.webservice.jsonws.Deserializer;

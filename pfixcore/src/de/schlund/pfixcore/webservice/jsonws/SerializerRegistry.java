@@ -44,15 +44,17 @@ public class SerializerRegistry {
         
         serializers.put(String.class,new StringSerializer());
         Serializer ser=new NumberSerializer();
+        serializers.put(Byte.class,ser);
+        serializers.put(Short.class,ser);
         serializers.put(Integer.class,ser);
         serializers.put(Long.class,ser);
         serializers.put(Float.class,ser);
+        serializers.put(Double.class,ser);
         serializers.put(Boolean.class,new BooleanSerializer());
         ser=new CalendarSerializer();
         serializers.put(Calendar.class,ser);
         serializers.put(GregorianCalendar.class,ser);
-        ser=new ArraySerializer();
-        serializers.put(float[].class,ser);
+      
     }
     
     public Serializer getSerializer(Object obj) {

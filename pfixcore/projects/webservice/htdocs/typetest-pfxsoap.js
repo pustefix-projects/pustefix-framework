@@ -84,7 +84,59 @@ function serviceCall() {
 	var ws=soapEnabled()?wsTypeTest:jwsTypeTest;
 	
 		var total1=(new Date()).getTime();
-	
+		
+		//echoByte
+		var t1=(new Date()).getTime();
+		try {
+			var byteVal=parseInt(1);
+			var resVal=ws.echoByte(byteVal);
+			var t2=(new Date()).getTime();
+			if(resVal!=byteVal) throw "Wrong result";
+			consolePrint("echoByte",(t2-t1));
+		} catch(ex) {
+			var t2=(new Date()).getTime();
+			consolePrint("echoByte",(t2-t1),ex);
+		}
+		
+		//echoByteObj
+		var t1=(new Date()).getTime();
+		try {
+			var byteVal=parseInt(1);
+			var resVal=ws.echoByteObj(byteVal);
+			var t2=(new Date()).getTime();
+			if(resVal!=byteVal) throw "Wrong result";
+			consolePrint("echoByteObj",(t2-t1));
+		} catch(ex) {
+			var t2=(new Date()).getTime();
+			consolePrint("echoByteObj",(t2-t1),ex);
+		}
+		
+		//echoShort
+		var t1=(new Date()).getTime();
+		try {
+			var shortVal=parseInt(1);
+			var resVal=ws.echoShort(shortVal);
+			var t2=(new Date()).getTime();
+			if(resVal!=shortVal) throw "Wrong result";
+			consolePrint("echoShort",(t2-t1));
+		} catch(ex) {
+			var t2=(new Date()).getTime();
+			consolePrint("echoShort",(t2-t1),ex);
+		}
+		
+		//echoShortObj
+		var t1=(new Date()).getTime();
+		try {
+			var shortVal=parseInt(1);
+			var resVal=ws.echoShortObj(shortVal);
+			var t2=(new Date()).getTime();
+			if(resVal!=shortVal) throw "Wrong result";
+			consolePrint("echoShortObj",(t2-t1));
+		} catch(ex) {
+			var t2=(new Date()).getTime();
+			consolePrint("echoShortObj",(t2-t1),ex);
+		}
+
 		//echoInt
 		var t1=(new Date()).getTime();
 		try {
@@ -109,6 +161,19 @@ function serviceCall() {
 		} catch(ex) {
 			var t2=(new Date()).getTime();
 			consolePrint("echoIntObj",(t2-t1),ex);
+		}
+		
+		//echoIntObj
+		var t1=(new Date()).getTime();
+		try {
+			var intVal=null;
+			var resVal=ws.echoIntObj(intVal);
+			var t2=(new Date()).getTime();
+			if(resVal!=intVal) throw "Wrong result";
+			consolePrint("echoIntObj(null)",(t2-t1));
+		} catch(ex) {
+			var t2=(new Date()).getTime();
+			consolePrint("echoIntObj(null)",(t2-t1),ex);
 		}
 
 		//echoIntArray
@@ -200,6 +265,32 @@ function serviceCall() {
 		} catch(ex) {
 			var t2=(new Date()).getTime();
 			consolePrint("echoFloatArray",(t2-t1),ex);
+		}
+		
+		//echoDouble
+		t1=(new Date()).getTime();
+		try {
+			var doubleVal=parseFloat(2.1);
+			var resVal=ws.echoDouble(doubleVal);
+			var t2=(new Date()).getTime();
+			if(resVal!=doubleVal) throw "Wrong result";
+			consolePrint("echoDouble",(t2-t1));
+		} catch(ex) {
+			var t2=(new Date()).getTime();
+			consolePrint("echoDouble",(t2-t1),ex);
+		}
+		
+		//echoDoubleObj
+		t1=(new Date()).getTime();
+		try {
+			var doubleVal=parseFloat(2.1);
+			var resVal=ws.echoDoubleObj(doubleVal);
+			var t2=(new Date()).getTime();
+			if(resVal!=doubleVal) throw "Wrong result";
+			consolePrint("echoDoubleObj",(t2-t1));
+		} catch(ex) {
+			var t2=(new Date()).getTime();
+			consolePrint("echoDoubleObj",(t2-t1),ex);
 		}
 		
 		//echoString

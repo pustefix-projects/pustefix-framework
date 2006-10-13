@@ -435,7 +435,7 @@ public class WebServiceServlet extends AxisServlet implements ServiceProcessor {
                 String id="entry"+i;
                 String styleClass="nosel";
                 if(i==records.length-1) styleClass="sel";
-                writer.println("<tr name=\"row_entry\" class=\""+styleClass+"\" onclick=\"toggleDetails(this,'"+id+"')\">");
+                writer.println("<tr class=\""+styleClass+"\" onclick=\"toggleDetails(this,'"+id+"')\">");
                 writer.println("<td align=\"left\">"+format.format(new Date(record.getStartTime()))+"</td>");
                 writer.println("<td align=\"right\">"+record.getTime()+"</td>");
                 writer.println("<td align=\"left\">"+record.getService()+"</td>");
@@ -448,15 +448,15 @@ public class WebServiceServlet extends AxisServlet implements ServiceProcessor {
                 String id="entry"+i;
                 String display="none";
                 if(i==records.length-1) display="block";
-                writer.println("<div name=\"detail_entry\" id=\""+id+"\" style=\"display:"+display+"\">");
-                writer.println("<table width=\"100%\">");
+                writer.println("<div class=\"detail_entry\" id=\""+id+"\" style=\"display:"+display+"\">");
+                writer.println("<table width=\"800px\">");
                 writer.println("<tr>");
-                writer.println("<td width=\"50%\"><b>Request:</b><br/><div class=\"body\"><pre>");
+                writer.println("<td width=\"400px\"><b>Request:</b><br/><div class=\"body\"><pre>");
                 String reqMsg=record.getRequestMessage();
                 if(reqMsg==null) reqMsg="Not available";
                 writer.println(htmlEscape(reqMsg));
                 writer.println("</pre></div></td>");
-                writer.println("<td width=\"50%\"><b>Response:</b><br/><div class=\"body\"><pre>");
+                writer.println("<td width=\"400px\"><b>Response:</b><br/><div class=\"body\"><pre>");
                 String resMsg=record.getResponseMessage();
                 if(resMsg==null) resMsg="Not available";
                 writer.println(htmlEscape(resMsg));
@@ -464,7 +464,7 @@ public class WebServiceServlet extends AxisServlet implements ServiceProcessor {
                 writer.println("</tr>");
                 
                 writer.println("</table>");
-                writer.println("</div");
+                writer.println("</div>");
             }
             writer.println("</div></body></html>");
             writer.close();
@@ -475,23 +475,25 @@ public class WebServiceServlet extends AxisServlet implements ServiceProcessor {
         //TODO: source out js
         String js=
             "<script type=\"text/javascript\">" +
-            "function toggleDetails(src,id) {" +
-            "   var elems=document.getElementsByName('row_entry');"+
-            "   for(var i=0;i<elems.length;i++) {" +
-            "       elems[i].className='nosel';" +
-            "   }" +
-            "   src.className='sel';" +
-            "   elems=document.getElementsByName('detail_entry');"+
-            "   for(var i=0;i<elems.length;i++) {" +
-            "       elems[i].style.display='none';" +
-            "   }" +
-            "   var elem=document.getElementById(id);" +
-            "   if(elem.style.display=='none') {" +
-            "       elem.style.display='block';" +
-            "   } else {" +
-            "       elem.style.display='none';" +
-            "   }" +
-            "}" +
+            "  function toggleDetails(src,id) {" +
+            "    var elems=document.getElementsByTagName('tr');" +
+            "    for(var i=0;i<elems.length;i++) {" +
+            "      if(elems[i].className=='sel') {" +
+            "        elems[i].className='nosel';" +
+            "      }" +
+            "    }" +
+            "    src.className='sel';" +
+            "    elems=document.getElementsByTagName('div');" +
+            "    for(var i=0;i<elems.length;i++) {" +
+            "      if(elems[i].className=='detail_entry') {" +
+            "        if(elems[i].id==id) {" +
+            "          elems[i].style.display='block';" +
+            "        } else {" +
+            "          elems[i].style.display='none';" +
+            "        }" +
+            "      }" +
+            "    }" +
+            "  }" +
             "</script>";
         return js;
     }
@@ -511,10 +513,11 @@ public class WebServiceServlet extends AxisServlet implements ServiceProcessor {
             "   div.content {padding:5pt;}" +
             "   div.title {padding:5pt;font-size:18pt;width:100%;background-color:black;color:white}" +
             "   table.overview td,th {padding-bottom:5pt;padding-right:15pt}" +
-            "   table.overview tr.nosel {cursor:pointer;color:#000000;}" +
-            "   table.overview tr.sel {cursor:pointer;color:#666666;}" +
-            "   div.body {width:100%;height:300px;overflow:auto;background-color:#FFFFFF;border:1px solid #000000;}" +
-            "   div.headers {width:100%;height:100px;overflow:auto;background-color:#FFFFFF;border:1px solid #000000;}" +
+            "   table.overview tr.nosel {cursor:pointer;color:#666666;}" +
+            "   table.overview tr.sel {cursor:pointer;color:#000000;}" +
+            "   div.body {width:500px;height:300px;overflow:auto;background-color:#FFFFFF;border:1px solid #000000;}" +
+            "   div.headers {width:500px;height:100px;overflow:auto;background-color:#FFFFFF;border:1px solid #000000;}" +
+            "   div.detail_entry {display:none;} "+
             "</style>";
         return css;
     }
