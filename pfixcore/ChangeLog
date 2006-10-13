@@ -1,5 +1,20 @@
 2006-10-13  Martin Leidig  <mleidig@schlund.de>
 
+	Added SOAP support for all types supported by JSON. Fixed problem with
+	primitive wrapper types. Fixed webservice monitoring tool bugs (under IE).
+
+	* projects/core/script/webservice_json.js
+	* projects/core/script/webservice.js
+	* projects/webservice/htdocs/typetest-pfxsoap.js
+	* src/de/schlund/pfixcore/example/webservices/TypeTest.java
+	* src/de/schlund/pfixcore/example/webservices/TypeTestImpl.java
+	* src/de/schlund/pfixcore/webservice/WebServiceServlet.java
+	* src/de/schlund/pfixcore/webservice/jsonws/SerializerRegistry.java
+	* src/de/schlund/pfixcore/webservice/jsonws/deserializers/NumberDeserializer.java
+	* src/de/schlund/pfixcore/webservice/jsonws/DeserializationContext.java
+
+2006-10-13  Martin Leidig  <mleidig@schlund.de>
+
 	Added support for IE7's "native" XMLHttpRequest
 	* projects/core/script/xmlRequest.js
 	* projects/core/script/httpRequest.js 
