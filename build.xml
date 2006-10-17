@@ -17,7 +17,7 @@ or delete the DOCTYPE definition -->
   <property name="dir.metainf"              location="META-INF"/>
   <property name="dir.dist"               location="dist"/>
   <property name="file.jnipkg"            location="${dir.jni}/${name.jnipkg}"/>
-  <property name="project.version"        value="0.9.1" description="the version to use for pfixcore-*.*"/>
+  <property name="project.version"        value="0.9.2-pre" description="the version to use for pfixcore-*.*"/>
   <property name="dir.toconf"             value="${dir.projects}/common/conf/"/>
   <property name="name.pfixcore_jar"      value="${project.name}-${project.version}.jar"/>
   <property name="file.pfixcore_jar"      location="${dir.dist}/${name.pfixcore_jar}"/>
