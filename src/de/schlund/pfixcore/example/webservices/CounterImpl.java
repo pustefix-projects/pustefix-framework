@@ -28,7 +28,6 @@ public class CounterImpl extends AbstractService implements Counter {
     
     public int addValue(int value) throws Exception {
         ContextCounter counter=(ContextCounter)getContextResourceManager().getResource(ContextCounter.class.getName());
-        if(counter.getCounter()==5) throw new Exception("Test exception");
         counter.addToCounter(value);
         return counter.getCounter();
     }
