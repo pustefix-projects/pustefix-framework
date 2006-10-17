@@ -18,9 +18,8 @@
  */
 package de.schlund.pfixxml;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -34,9 +33,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
@@ -44,34 +40,26 @@ import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.sax.SAXTransformerFactory;
 import javax.xml.transform.sax.TransformerHandler;
-import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
+import org.apache.log4j.Category;
 import org.apache.log4j.Logger;
 import org.apache.log4j.spi.ThrowableInformation;
 import org.apache.log4j.xml.DOMConfigurator;
-import org.w3c.dom.Document;
-import org.xml.sax.EntityResolver;
-import org.xml.sax.ErrorHandler;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
-import org.xml.sax.SAXParseException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
 import org.xml.sax.helpers.XMLReaderFactory;
 
 import de.schlund.pfixcore.util.PropertiesUtils;
 import de.schlund.pfixxml.config.CustomizationHandler;
-import de.schlund.pfixxml.config.GlobalConfigurator;
 import de.schlund.pfixxml.config.XMLPropertiesUtil;
 import de.schlund.pfixxml.loader.AppLoader;
 import de.schlund.pfixxml.loader.Reloader;
 import de.schlund.pfixxml.loader.StateTransfer;
-import de.schlund.pfixxml.resources.FileResource;
-import de.schlund.pfixxml.resources.ResourceUtil;
 import de.schlund.pfixxml.util.Misc;
 import de.schlund.pfixxml.util.TransformerHandlerAdapter;
-import de.schlund.pfixxml.util.logging.ProxyLogUtil;
 
 /**
  * This Servlet is just there to have it's init method called on startup of the
@@ -88,11 +76,10 @@ public class FactoryInitServlet extends HttpServlet implements Reloader {
 
     private static String PROP_LOG4J = "pustefix.log4j.config";
 
-    private static String PROP_PREFER_CONTAINER_LOGGING = "pustefix.logging.prefercontainer";
-
     private Object LOCK = new Object();
 
-    private static Logger LOG = Logger.getLogger(FactoryInitServlet.class);
+    private static Category CAT = Category.getInstance(FactoryInitServlet.class
+            .getName());
 
     private static boolean configured = false;
 
@@ -101,9 +88,6 @@ public class FactoryInitServlet extends HttpServlet implements Reloader {
     private static String log4jconfig = null;
 
     private static long log4jmtime = -1;
-    
-    private boolean warMode = false;
-    private boolean standaloneMode = false;
 
     // ~ Methods
     // ....................................................................................
@@ -136,10 +120,11 @@ public class FactoryInitServlet extends HttpServlet implements Reloader {
 
     public static void tryReloadLog4j() {
         if (log4jconfig != null) {
-            FileResource l4jfile = ResourceUtil.getFileResourceFromDocroot(log4jconfig);
+            File l4jfile = PathFactory.getInstance().createPath(log4jconfig)
+                    .resolve();
             long tmpmtime = l4jfile.lastModified();
             if (tmpmtime > log4jmtime) {
-                LOG.error("\n\n################################\n"
+                CAT.error("\n\n################################\n"
                         + "#### Reloading log4j config ####\n"
                         + "################################\n");
                 try {
@@ -175,31 +160,24 @@ public class FactoryInitServlet extends HttpServlet implements Reloader {
         Properties properties = new Properties(System.getProperties());
         // old webapps specify docroot -- true webapps don't
         String docrootstr = Config.getInitParameter(PROP_DOCROOT);
-        if (docrootstr != null && !docrootstr.equals("")) {
-            standaloneMode = true;
-        } else {
-            docrootstr = Config.getServletContext().getRealPath("/WEB-INF/pfixroot");
-            if (docrootstr == null) {
-                warMode = true;
+        if (docrootstr == null || docrootstr.equals("")) {
+            docrootstr = Config.getServletContext().getRealPath("/WEB-INF/pfixroot/.");
+            if (!docrootstr.endsWith("/.")) {
+                throw new IllegalStateException(docrootstr);
             }
-        }
-
-        // Setup global configuration before doing anything else
-        if (docrootstr != null) {
-            GlobalConfigurator.setDocroot(docrootstr);
-        }
-        if (warMode) {
-            GlobalConfigurator.setServletContext(getServletContext());
+            docrootstr = docrootstr.substring(0, docrootstr.length() - 1);
         }
         
-        if (docrootstr != null) {
-            // For compatibility with old apps, initialize PathFactory
-            PathFactory.getInstance().init(docrootstr);
-        }
-
+        // PathFactory is needed to read the global properties file, so
+        // do initialization first
+        PathFactory.getInstance().init(docrootstr);
+        
         String confname = Config.getInitParameter("servlet.propfile");
         if (confname != null) {
-            FileResource confFile = ResourceUtil.getFileResourceFromDocroot(confname);
+            if (!confname.startsWith("/")) {
+                confname = docrootstr + "/" + confname;
+            }
+            File confFile = new File(confname);
             try {
                 XMLPropertiesUtil.loadPropertiesFromXMLFile(confFile, properties);
             } catch (FileNotFoundException e) {
@@ -216,18 +194,32 @@ public class FactoryInitServlet extends HttpServlet implements Reloader {
             throw new ServletException(
                     "*** FATAL: Need the servlet.propfile property as init parameter! ***");
         }
-        
-        if (docrootstr != null) {
-            // this is for stuff that can't use the PathFactory. Should not be used
-            // when possible...
-            properties.setProperty("pustefix.docroot", docrootstr);
-        }
+        // this is for stuff that can't use the PathFactory. Should not be used
+        // when possible...
+        properties.setProperty("pustefix.docroot", docrootstr);
 
         synchronized (LOCK) {
             if (!configured) {
-                configureLogging(properties);
+                log4jconfig = properties.getProperty(PROP_LOG4J);
+                if (log4jconfig == null || log4jconfig.equals("")) {
+                    throw new ServletException(
+                            "*** FATAL: Need the pustefix.log4j.config property in factory.xml! ***");
+                }
+                File l4jfile = PathFactory.getInstance().createPath(log4jconfig).resolve();
+                try {
+                    configureLog4j(l4jfile);
+                } catch (FileNotFoundException e) {
+                    throw new ServletException(
+                            "File for log4j configuration not found!", e);
+                } catch (SAXException e) {
+                    throw new ServletException(
+                            "Error on parsing log4j configuration file!", e);
+                } catch (IOException e) {
+                    throw new ServletException(
+                            "Error on reading log4j configuration file!", e);
+                }
 
-                LOG.debug(">>>> LOG4J Init OK <<<<");
+                CAT.debug(">>>> LOG4J Init OK <<<<");
                 HashMap to_init = PropertiesUtils.selectProperties(properties,
                         "factory.initialize");
                 if (to_init != null) {
@@ -237,7 +229,7 @@ public class FactoryInitServlet extends HttpServlet implements Reloader {
                         String key = (String) i.next();
                         String the_class = (String) to_init.get(key);
                         try {
-                            LOG.debug(">>>> Init key: [" + key + "] class: ["
+                            CAT.debug(">>>> Init key: [" + key + "] class: ["
                                     + the_class + "] <<<<");
                             AppLoader appLoader = AppLoader.getInstance();
                             long start = 0;
@@ -248,14 +240,14 @@ public class FactoryInitServlet extends HttpServlet implements Reloader {
                                 Object factory = clazz.getMethod("getInstance",
                                         Misc.NO_CLASSES).invoke(null,
                                         Misc.NO_OBJECTS);
-                                LOG.debug("     Object ID: " + factory);
+                                CAT.debug("     Object ID: " + factory);
                                 start = System.currentTimeMillis();
                                 clazz.getMethod("init",
                                         new Class[] { Properties.class })
                                         .invoke(factory,
                                                 new Object[] { properties });
                                 stop = System.currentTimeMillis();
-                                LOG.debug("Init of " + factory + " took "
+                                CAT.debug("Init of " + factory + " took "
                                         + (stop - start) + " ms");
                                 if (factories == null) {
                                     factories = new ArrayList();
@@ -266,18 +258,18 @@ public class FactoryInitServlet extends HttpServlet implements Reloader {
                                 Object factory = clazz.getMethod("getInstance",
                                         Misc.NO_CLASSES).invoke(null,
                                         Misc.NO_OBJECTS);
-                                LOG.debug("     Object ID: " + factory);
+                                CAT.debug("     Object ID: " + factory);
                                 start = System.currentTimeMillis();
                                 clazz.getMethod("init",
                                         new Class[] { Properties.class })
                                         .invoke(factory,
                                                 new Object[] { properties });
                                 stop = System.currentTimeMillis();
-                                LOG.debug("Init of " + factory + " took "
+                                CAT.debug("Init of " + factory + " took "
                                         + (stop - start) + " ms");
                             }
                         } catch (Exception e) {
-                            LOG.error(e.toString());
+                            CAT.error(e.toString());
                             ThrowableInformation info = new ThrowableInformation(
                                     e);
                             String[] trace = info.getThrowableStrRep();
@@ -285,14 +277,14 @@ public class FactoryInitServlet extends HttpServlet implements Reloader {
                             for (int ii = 0; ii < trace.length; ii++) {
                                 strerror.append("->" + trace[ii] + "\n");
                             }
-                            LOG.error(strerror.toString());
+                            CAT.error(strerror.toString());
                             throw new ServletException(e.toString());
                         }
                     }
                 }
             }
             configured = true;
-            LOG.debug("***** INIT of FactoryInitServlet done *****");
+            CAT.debug("***** INIT of FactoryInitServlet done *****");
 
             AppLoader appLoader = AppLoader.getInstance();
             if (appLoader.isEnabled())
@@ -300,50 +292,8 @@ public class FactoryInitServlet extends HttpServlet implements Reloader {
         }
     }
 
-    private Class classFromContainer(Class clazz) {
-        ClassLoader webappLoader = clazz.getClassLoader();
-        ClassLoader cl = webappLoader.getParent();
-        while (cl != null) {
-            Class containerClazz;
-            try {
-                containerClazz = cl.loadClass(clazz.getName());
-            } catch (ClassNotFoundException e) {
-                cl = cl.getParent();
-                continue;
-            }
-            if (clazz != containerClazz) {
-                return containerClazz;
-            }
-            cl = cl.getParent();
-        }
-        return null;
-    }
-
-    private void configureLogging(Properties properties) throws ServletException {
-        String containerProp = properties.getProperty(PROP_PREFER_CONTAINER_LOGGING);
-        if (warMode || (!standaloneMode && (containerProp != null && containerProp.toLowerCase().equals("true")))) {
-            ProxyLogUtil.getInstance().configureLog4jProxy();
-            ProxyLogUtil.getInstance().setServletContext(getServletContext());
-        } else {
-            log4jconfig = properties.getProperty(PROP_LOG4J);
-            if (log4jconfig == null || log4jconfig.equals("")) {
-                throw new ServletException("*** FATAL: Need the pustefix.log4j.config property in factory.xml! ***");
-            }
-            FileResource l4jfile = ResourceUtil.getFileResourceFromDocroot(log4jconfig);
-            try {
-                configureLog4j(l4jfile);
-            } catch (FileNotFoundException e) {
-                throw new ServletException("File for log4j configuration not found!", e);
-            } catch (SAXException e) {
-                throw new ServletException("Error on parsing log4j configuration file!", e);
-            } catch (IOException e) {
-                throw new ServletException("Error on reading log4j configuration file!", e);
-            }
-
-        }
-    }
-
-    private static void configureLog4j(FileResource configFile) throws SAXException, FileNotFoundException, IOException {
+    private static void configureLog4j(File configFile) throws SAXException,
+            FileNotFoundException, IOException {
         log4jmtime = configFile.lastModified();
         XMLReader xreader = XMLReaderFactory.createXMLReader();
         TransformerFactory tf = SAXTransformerFactory.newInstance();
@@ -365,61 +315,22 @@ public class FactoryInitServlet extends HttpServlet implements Reloader {
             xreader.setDTDHandler(cushandler);
             xreader.setErrorHandler(cushandler);
             xreader.setEntityResolver(cushandler);
-            xreader.parse(new InputSource(configFile.getInputStream()));
-            ByteArrayOutputStream bufferStream = new ByteArrayOutputStream();
+            xreader.parse(new InputSource(new FileInputStream(configFile)));
             try {
                 tf
                         .newTransformer(
                                 new StreamSource(
-                                        ResourceUtil.getFileResourceFromDocroot("core/build/create_log4j_config.xsl").toURL()
-                                        .toString())).transform(
-                                new DOMSource(dr.getNode()), new StreamResult(bufferStream));
+                                        PathFactory
+                                                .getInstance()
+                                                .createPath(
+                                                        "core/build/create_log4j_config.xsl")
+                                                .resolve())).transform(
+                                new DOMSource(dr.getNode()), dr2);
             } catch (TransformerException e) {
                 throw new SAXException(e);
             }
-            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-            dbf.setValidating(true);
-            dbf.setNamespaceAware(true);
-            Document confDoc;
-            try {
-                DocumentBuilder db = dbf.newDocumentBuilder();
-                db.setEntityResolver(new EntityResolver() {
-
-                    public InputSource resolveEntity(String publicId, String systemId) throws SAXException, IOException {
-                        if (systemId.equals("http://logging.apache.org/log4j/docs/api/org/apache/log4j/xml/log4j.dtd")) {
-                            return new InputSource(ResourceUtil.getFileResourceFromDocroot("core/schema/log4j.dtd").getInputStream());
-                        }
-                        return null;
-                    }
-                    
-                });
-                db.setErrorHandler(new ErrorHandler() {
-
-                    public void warning(SAXParseException exception) throws SAXException {
-                        System.err.println("Warning while parsing log4j configuration: ");
-                        exception.printStackTrace(System.err);
-                    }
-
-                    public void error(SAXParseException exception) throws SAXException {
-                        System.err.println("Error while parsing log4j configuration: ");
-                        exception.printStackTrace(System.err);
-                    }
-
-                    public void fatalError(SAXParseException exception) throws SAXException {
-                        System.err.println("Fatal error while parsing log4j configuration: ");
-                        exception.printStackTrace(System.err);                    }
-                    
-                });
-                confDoc = db.parse(new ByteArrayInputStream(bufferStream.toByteArray()));
-            } catch (SAXException e) {
-                throw e;
-            } catch (IOException e) {
-                throw e;
-            } catch (ParserConfigurationException e) {
-                String msg = "Error while trying to create DOM document";
-                throw new RuntimeException(msg, e);
-            }
-            DOMConfigurator.configure(confDoc.getDocumentElement());
+            DOMConfigurator.configure(dr2.getNode().getOwnerDocument()
+                    .getDocumentElement());
         } else {
             throw new RuntimeException(
                     "Could not get instance of SAXTransformerFactory!");

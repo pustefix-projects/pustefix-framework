@@ -19,6 +19,7 @@
 
 package de.schlund.pfixxml;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Properties;
 
@@ -31,17 +32,12 @@ import org.apache.log4j.Category;
 import org.xml.sax.SAXException;
 
 import de.schlund.pfixcore.workflow.Context;
-import de.schlund.pfixcore.workflow.ContextImpl;
 import de.schlund.pfixcore.workflow.ContextResourceManager;
 import de.schlund.pfixcore.workflow.DirectOutputPageMap;
 import de.schlund.pfixcore.workflow.DirectOutputState;
 import de.schlund.pfixcore.workflow.PageRequest;
-import de.schlund.pfixcore.workflow.State;
-import de.schlund.pfixcore.workflow.context.ServerContextImpl;
-import de.schlund.pfixcore.workflow.context.SessionContextImpl;
 import de.schlund.pfixxml.config.DirectOutputServletConfig;
 import de.schlund.pfixxml.config.ServletManagerConfig;
-import de.schlund.pfixxml.resources.FileResource;
 
 /**
  * The <code>DirectOutputServlet</code> is a servlet that hijacks the {@link de.schlund.pfixcore.workflow.Context} of a
@@ -125,44 +121,19 @@ public class DirectOutputServlet extends ServletManager {
              return;
          }
          
-         ServerContextImpl context = (ServerContextImpl) getServletContext().getAttribute(name);
-         ContextImpl scontext = (ContextImpl) session.getAttribute(name);
-         if (context == null || scontext == null) {
+         Context context = (Context) session.getAttribute(name);
+         if (context == null) {
              throw new RuntimeException("*** didn't find Context " + name + " in Session " + session.getId() +
                                         " , maybe it's not yet initialized??? ***");
          }
-         
-         // Make sure the context is initialized and deinitialized for
-         // this thread
-         
-         scontext.prepareForRequest(context);
-         try {
-            if (config.isSynchronized()) {
-                synchronized (scontext) {
-                    doProcess(preq, res, context, scontext);
-                }
-            } else {
-                doProcess(preq, res, context, scontext);
-            }
-         } finally {
-            scontext.cleanupAfterRequest();
-         }
-    }
-    
-    protected void doProcess(PfixServletRequest preq, HttpServletResponse res, ServerContextImpl context, ContextImpl scontext) throws Exception {
-         ContextResourceManager crm = scontext.getContextResourceManager();
+
+         ContextResourceManager crm = context.getContextResourceManager();
 
          // check the authentification first....
-         State authstate = context.getAuthState();
-         if (authstate != null) {
-             if (!authstate.isAccessible(scontext, preq)) {
-                 throw new XMLException("State of authpage is not accessible!");
-             }
-             if (authstate.needsData(scontext, preq)) {
-                 CAT.info("Got request without authorization");
-                 res.sendError(HttpServletResponse.SC_FORBIDDEN, "Must authenticate first");
-                 return;
-             }
+         if (context.checkAuthorization(false) != null) {
+             CAT.info("Got request without authorization");
+             res.sendError(HttpServletResponse.SC_FORBIDDEN, "Must authenticate first");
+             return;
          }
          
          String            pagename = preq.getPageName();
@@ -231,13 +202,13 @@ public class DirectOutputServlet extends ServletManager {
         return this.config;
     }
 
-    protected void reloadServletConfig(FileResource configFile, Properties globalProperties) throws ServletException {
+    protected void reloadServletConfig(File configFile, Properties globalProperties) throws ServletException {
         try {
             this.config = DirectOutputServletConfig.readFromFile(configFile, globalProperties);
         } catch (SAXException e) {
-            throw new ServletException("Error on reading config file " + configFile.toURI(), e);
+            throw new ServletException("Error on reading config file " + configFile.getAbsolutePath(), e);
         } catch (IOException e) {
-            throw new ServletException("Could not read file " + configFile.toURI(), e);
+            throw new ServletException("Could not read file " + configFile.getAbsolutePath(), e);
         }
         
     }

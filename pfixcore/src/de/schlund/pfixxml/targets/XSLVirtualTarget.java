@@ -19,16 +19,14 @@
 
 package de.schlund.pfixxml.targets;
 
-import java.util.TreeMap;
+import de.schlund.pfixxml.PathFactory;
+import de.schlund.pfixxml.util.*;
 
+import java.io.File;
+import java.util.TreeMap;
 import javax.xml.transform.TransformerException;
 
 import org.w3c.dom.Document;
-
-import de.schlund.pfixxml.resources.FileResource;
-import de.schlund.pfixxml.resources.ResourceUtil;
-import de.schlund.pfixxml.util.Xml;
-import de.schlund.pfixxml.util.Xslt;
 
 /**
  * XSLVirtualTarget.java
@@ -56,9 +54,12 @@ public class XSLVirtualTarget extends VirtualTarget {
      * @see de.schlund.pfixxml.targets.TargetImpl#getValueFromDiscCache()
      */
     protected Object getValueFromDiscCache() throws TransformerException {
-        FileResource thefile = ResourceUtil.getFileResource(getTargetGenerator().getDisccachedir(), getTargetKey());
+        Path thepath = PathFactory.getInstance().createPath(
+                getTargetGenerator().getDisccachedir().getRelative()
+                        + File.separator + getTargetKey());
+        File thefile = thepath.resolve();
         if (thefile.exists() && thefile.isFile()) {
-            return Xslt.loadTemplates(thefile, this);
+            return Xslt.loadTemplates(thepath, this);
         } else {
             return null;
         }
@@ -68,7 +69,7 @@ public class XSLVirtualTarget extends VirtualTarget {
         // Make sure we have an up-to-date version
         this.getValue();
         
-        FileResource thefile = ResourceUtil.getFileResource(getTargetGenerator().getDisccachedir(), getTargetKey());
+        File thefile = new File(getTargetGenerator().getDisccachedir().resolve(), getTargetKey());
         if (thefile.exists() && thefile.isFile()) {
             try {
                 return Xml.parse(thefile);

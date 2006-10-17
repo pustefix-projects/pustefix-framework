@@ -280,7 +280,7 @@ public class SPCacheStatistic {
             for (Iterator i = targetsincache.getSharedTargets().iterator(); i.hasNext();) {
                 Element entry_ele = doc.createElement("sharedtarget");
                 SharedLeaf sleaf = (SharedLeaf) i.next();
-                entry_ele.setAttribute("id", sleaf.getPath().toString());
+                entry_ele.setAttribute("id", sleaf.getPath());
                 ele_shared.appendChild(entry_ele);
             }
             ele_hitmiss.appendChild(ele_shared);

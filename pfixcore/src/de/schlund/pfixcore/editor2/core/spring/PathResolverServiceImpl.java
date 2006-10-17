@@ -18,13 +18,13 @@
 
 package de.schlund.pfixcore.editor2.core.spring;
 
-import de.schlund.pfixxml.config.GlobalConfig;
+import de.schlund.pfixxml.PathFactory;
 
 /**
- * Implementation using {@link de.schlund.pfixxml.config.GlobalConfig} to get
- * Pustefix docroot
+ * Implementation using <code>PathFactory</code> to get Pustefix docroot
  * 
  * @author Sebastian Marsching <sebastian.marsching@1und1.de>
+ * @see de.schlund.pfixxml.PathFactory
  */
 public class PathResolverServiceImpl implements PathResolverService {
     private String docroot;
@@ -33,7 +33,8 @@ public class PathResolverServiceImpl implements PathResolverService {
      * Constructor makes use of <code>PathFactory</code> to get docroot.
      */
     public PathResolverServiceImpl() {
-        docroot = GlobalConfig.getDocroot();
+        docroot = PathFactory.getInstance().createPath("").getBase()
+                .getAbsolutePath();
     }
 
     /*

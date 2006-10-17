@@ -22,24 +22,23 @@ package de.schlund.pfixxml.exceptionhandler;
 
 
 
+import de.schlund.pfixxml.PathFactory;
+import de.schlund.pfixxml.config.XMLPropertiesUtil;
+
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Properties;
 import java.util.Vector;
-
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
-
 import org.apache.log4j.Category;
 import org.apache.oro.text.perl.MalformedPerl5PatternException;
 import org.apache.oro.text.perl.Perl5Util;
 import org.xml.sax.SAXException;
-
-import de.schlund.pfixxml.config.XMLPropertiesUtil;
-import de.schlund.pfixxml.resources.FileResource;
-import de.schlund.pfixxml.resources.ResourceUtil;
 
 
 /**
@@ -53,7 +52,7 @@ class PropertyManager {
 
     private static PropertyManager instance_=null;
     private int exrulecount_                =0;
-    private FileResource file_              =null;
+    private File file_                      =null;
     private boolean initialised_            =false;
     private long mtime_                     =0;
     private Properties properties_          =null;
@@ -217,7 +216,7 @@ class PropertyManager {
      */
     void init(String propfile) throws PFConfigurationException {
         initialised_            = false;
-        file_                   = ResourceUtil.getFileResourceFromDocroot(propfile);
+        file_                   = PathFactory.getInstance().createPath(propfile).resolve();
         
         try {
             properties_ = XMLPropertiesUtil.loadPropertiesFromXMLFile(file_);

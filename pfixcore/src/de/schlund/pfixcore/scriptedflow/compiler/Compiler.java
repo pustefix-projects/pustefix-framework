@@ -18,6 +18,7 @@
 
 package de.schlund.pfixcore.scriptedflow.compiler;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,7 +37,6 @@ import de.schlund.pfixcore.scriptedflow.vm.pvo.DynamicObject;
 import de.schlund.pfixcore.scriptedflow.vm.pvo.ListObject;
 import de.schlund.pfixcore.scriptedflow.vm.pvo.ParamValueObject;
 import de.schlund.pfixcore.scriptedflow.vm.pvo.StaticObject;
-import de.schlund.pfixxml.resources.FileResource;
 import de.schlund.pfixxml.util.Xml;
 
 /**
@@ -49,17 +49,17 @@ import de.schlund.pfixxml.util.Xml;
 public class Compiler {
     public final static String NS_SCRIPTEDFLOW = "http://pustefix.sourceforge.net/scriptedflow200602";
 
-    public static Script compile(FileResource scriptFile) throws CompilerException {
+    public static Script compile(File scriptFile) throws CompilerException {
         Document doc;
         try {
             doc = Xml.parse(scriptFile);
         } catch (TransformerException e) {
-            throw new CompilerException("XML parser could not parse file " + scriptFile.toString(), e);
+            throw new CompilerException("XML parser could not parse file " + scriptFile.getAbsolutePath(), e);
         }
         
         Element root = doc.getDocumentElement();
         if (!root.getLocalName().equals("scriptedflow") || !root.getNamespaceURI().equals(NS_SCRIPTEDFLOW)) {
-            throw new CompilerException("Input file " + scriptFile.toString() + " is not a scripted flow!");
+            throw new CompilerException("Input file " + scriptFile.getAbsolutePath() + " is not a scripted flow!");
         }
         
         // Check version
@@ -71,7 +71,7 @@ public class Compiler {
         }
         
         if (!version.equals("1.0")) {
-            throw new CompilerException("Script file \"" + scriptFile.toString() + "\" uses version "
+            throw new CompilerException("Script file \"" + scriptFile.getAbsolutePath() + "\" uses version "
                                         + version + " but compiler only supports version 1.0");
         }
         

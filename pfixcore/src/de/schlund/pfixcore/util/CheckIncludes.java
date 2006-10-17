@@ -17,32 +17,14 @@
  *
  */
 package de.schlund.pfixcore.util;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.TreeSet;
-
-import org.apache.log4j.xml.DOMConfigurator;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-
-import de.schlund.pfixxml.IncludeDocumentFactory;
-import de.schlund.pfixxml.config.GlobalConfigurator;
-import de.schlund.pfixxml.resources.DocrootResource;
-import de.schlund.pfixxml.resources.ResourceUtil;
-import de.schlund.pfixxml.targets.AuxDependency;
-import de.schlund.pfixxml.targets.AuxDependencyFactory;
-import de.schlund.pfixxml.targets.AuxDependencyFile;
-import de.schlund.pfixxml.targets.AuxDependencyImage;
-import de.schlund.pfixxml.targets.AuxDependencyInclude;
-import de.schlund.pfixxml.targets.DependencyType;
-import de.schlund.pfixxml.targets.TargetDependencyRelation;
-import de.schlund.pfixxml.targets.TargetGenerator;
+import de.schlund.pfixxml.*;
+import de.schlund.pfixxml.targets.*;
+import de.schlund.pfixxml.util.Path;
 import de.schlund.pfixxml.util.Xml;
+import java.io.*;
+import java.util.*;
+import org.apache.log4j.xml.*;
+import org.w3c.dom.*;
 
 /**
  * CheckIncludes.java
@@ -78,21 +60,21 @@ public class CheckIncludes {
         input = new BufferedReader(new FileReader(allincs));
         while ((line = input.readLine()) != null) {
             // line = new File(pwd + line).getCanonicalPath();
-            includefilenames.add(ResourceUtil.getFileResourceFromDocroot(line.substring(2)));
+            includefilenames.add(PathFactory.getInstance().createPath(line.substring(2)));
         }
         input.close();
 
         input = new BufferedReader(new FileReader(allimgs));
         while ((line = input.readLine()) != null) {
             // line = new File(pwd + line).getCanonicalPath();
-            imagefilenames.add(ResourceUtil.getFileResourceFromDocroot(line.substring(2)));
+            imagefilenames.add(PathFactory.getInstance().createPath(line.substring(2)));
         }
         input.close();
         
         input = new BufferedReader(new FileReader(allprj));
         while ((line = input.readLine()) != null) {
             // line = pwd + line;
-            TargetGenerator gen = new TargetGenerator(ResourceUtil.getFileResourceFromDocroot(line));
+            TargetGenerator gen = new TargetGenerator(PathFactory.getInstance().createPath(line));
             generators.put(pwd + line, gen);
         }
         input.close();
@@ -136,7 +118,7 @@ public class CheckIncludes {
         String dir = new File(".").getCanonicalPath() + "/";
         
         DOMConfigurator.configure(dir + "core/conf/generator_quiet.xml");
-        GlobalConfigurator.setDocroot(dir);
+        PathFactory.getInstance().init(dir);
         
         CheckIncludes instance = new CheckIncludes(dir, output, new File(allprjarg), new File(allincarg), new File(allimgarg));
         instance.doCheck();
@@ -171,15 +153,14 @@ public class CheckIncludes {
                     Element elem = result.createElement("MISSING");
                     prj_elem.appendChild(elem);
                     elem.setAttribute("type", aux.getType().toString());
-                    String path = ((AuxDependencyFile) aux).getPath().getRelativePath();
                     if (aux.getType().equals(DependencyType.TEXT)) {
                         AuxDependencyInclude a = (AuxDependencyInclude) aux;
-                        elem.setAttribute("path", path);
+                        elem.setAttribute("path", a.getPath().getRelative());
                         elem.setAttribute("part", a.getPart());
                         elem.setAttribute("theme", a.getTheme());
                     } else if (aux.getType().equals(DependencyType.IMAGE)) {
                         AuxDependencyImage a = (AuxDependencyImage) aux;
-                        elem.setAttribute("path", a.getPath().getRelativePath());
+                        elem.setAttribute("path", a.getPath().getRelative());
                     }
                 }
             }
@@ -189,14 +170,16 @@ public class CheckIncludes {
     private void checkForUnusedImages(Document result, Element res_root) throws Exception {
         IncludeDocumentFactory incfac = IncludeDocumentFactory.getInstance();
         for (Iterator i = imagefilenames.iterator(); i.hasNext();) {
-            DocrootResource img = (DocrootResource) i.next();
+            Path path = (Path) i.next();
+            File img  = path.resolve();
+            String fullpath = img.getCanonicalPath();
 
             Element res_image = result.createElement("image");
-            res_image.setAttribute("name", img.getRelativePath());
+            res_image.setAttribute("name", path.getRelative());
             
             res_root.appendChild(res_image);
             
-            AuxDependency aux =  AuxDependencyFactory.getInstance().getAuxDependencyImage(img);
+            AuxDependency aux =  AuxDependencyFactory.getInstance().getAuxDependencyImage(path);
             if (!includes.contains(aux)) {
                 res_image.setAttribute("UNUSED", "true");
                 continue;
@@ -208,15 +191,15 @@ public class CheckIncludes {
     
     private void checkForUnusedIncludes(Document result, Element res_root) throws Exception {
         for (Iterator i = includefilenames.iterator(); i.hasNext();) {
-            DocrootResource path = (DocrootResource) i.next();
+            Path path = (Path) i.next();
             Document doc;
 
             Element res_incfile = result.createElement("incfile");
             res_root.appendChild(res_incfile);
-            res_incfile.setAttribute("name", path.getRelativePath());
+            res_incfile.setAttribute("name", path.getRelative());
             
             try {
-                doc = Xml.parseMutable(path);
+                doc = Xml.parseMutable(path.resolve());
             } catch (Exception e) {
                 Element error = result.createElement("ERROR");
                 res_incfile.appendChild(error);
@@ -240,7 +223,7 @@ public class CheckIncludes {
                     if (!partelem.getNodeName().equals("part")) {
                         Element error = result.createElement("ERROR");
                         res_incfile.appendChild(error);
-                        error.setAttribute("cause", "invalid node in include file (child of root != part): " + path.toURI().getPath().substring(1) + "/" + partelem.getNodeName());
+                        error.setAttribute("cause", "invalid node in include file (child of root != part): " + path.getRelative() + "/" + partelem.getNodeName());
                         continue;
                     }
 
@@ -256,7 +239,7 @@ public class CheckIncludes {
                                 Element error = result.createElement("ERROR");
                                 res_part.appendChild(error);
                                 error.setAttribute("cause", "invalid node in part (child of part != theme): " +
-                                                   path.toURI().getPath().substring(1) + "/" + partelem.getNodeName() + "/" + themeelem.getNodeName());
+                                                   path.getRelative() + "/" + partelem.getNodeName() + "/" + themeelem.getNodeName());
                                 continue;
                             }
 

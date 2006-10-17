@@ -18,10 +18,11 @@
 
 package de.schlund.pfixxml.targets;
 
+import java.io.File;
 import java.util.Iterator;
 import java.util.TreeSet;
 
-import de.schlund.pfixxml.resources.DocrootResource;
+import de.schlund.pfixxml.util.Path;
 
 /**
  * Dependency referencing a static file on the filesystem
@@ -29,16 +30,16 @@ import de.schlund.pfixxml.resources.DocrootResource;
  * @author Sebastian Marsching <sebastian.marsching@1und1.de>
  */
 public class AuxDependencyFile extends AbstractAuxDependency {
-    private DocrootResource path;
+    private Path path;
 
     private long last_lastModTime = -1;
     
     protected int hashCode;
     
-    public AuxDependencyFile(DocrootResource path) {
+    public AuxDependencyFile(Path path) {
         this.type = DependencyType.FILE;
         this.path = path;
-        this.hashCode = (type.getTag() + ":" + path.toString()).hashCode();
+        this.hashCode = (type.getTag() + ":" + path.getRelative()).hashCode();
     }
     
     /**
@@ -46,12 +47,13 @@ public class AuxDependencyFile extends AbstractAuxDependency {
      * 
      * @return path to the include file
      */
-    public DocrootResource getPath() {
+    public Path getPath() {
         return path;
     }
     
     public long getModTime() {
-        if (path.exists() && path.canRead() && path.isFile()) {
+        File check = path.resolve();
+        if (check.exists() && check.canRead() && check.isFile()) {
             if (last_lastModTime == 0) {
                 // We change from the file being checked once to not exist to "it exists now".
                 // so we need to make sure that all targets using it will be rebuild.
@@ -62,7 +64,7 @@ public class AuxDependencyFile extends AbstractAuxDependency {
                     target.setForceUpdate();
                 }
             }
-            last_lastModTime = path.lastModified();
+            last_lastModTime = check.lastModified();
             return last_lastModTime;
         } else {
             if (last_lastModTime > 0) {
@@ -105,7 +107,7 @@ public class AuxDependencyFile extends AbstractAuxDependency {
     }
 
     public String toString() {
-        return "[AUX/" + getType() + " " + getPath().getRelativePath() + "]";
+        return "[AUX/" + getType() + " " + getPath().getRelative() + "]";
     }
 
 }

@@ -84,12 +84,11 @@ or delete the DOCTYPE definition -->
         <not><equals arg1="${env.MACHINE}" arg2=""/></not>
       </and>
     </condition>
-    <exec outputproperty="machine" executable="hostname" os="Linux, Mac OS X"><arg value="-s"/></exec>
+    <exec outputproperty="machine" executable="hostname" os="Linux"><arg value="-s"/></exec>
     <fail message="Property &quot;machine&quot; not set. Either set environment variable MACHINE or property machine to the localpart of your fully qualified hostname." unless="machine"/>
 
     <exec outputproperty="dnsdomainname"    executable="hostname" os="Linux"><arg value="-d"/></exec>
-    <exec outputproperty="dnsdomainname"    executable="sh" os="Mac OS X"><arg value="-c"/><arg value="hostname|cut -d. -f2-"/></exec>
-  	<condition property="fqdn"     value="${machine}.${dnsdomainname}">
+    <condition property="fqdn"     value="${machine}.${dnsdomainname}">
       <isset property="dnsdomainname"/>
     </condition>
     <condition property="fqdn"     value="${machine}">
@@ -97,9 +96,6 @@ or delete the DOCTYPE definition -->
     </condition>
 
     <exec outputproperty="trusted.tomcat" executable="hostname" os="Linux"><arg value="-i"/></exec>
-  	<condition property="trusted.tomcat" value="127.0.0.1">
-  	  <os name="Mac OS X"/>
-  	</condition>
   </target>
   
   <path id="cp.libs">
@@ -126,11 +122,6 @@ or delete the DOCTYPE definition -->
     <mkdir dir="${dir.build}"/>
     <mkdir dir="${dir.src}"/>
     <echo message="using machine=${machine} fqdn=${fqdn}" level="verbose"/>
-   
-    <!-- Create commons-logging configuration info -->
-    <mkdir dir="${dir.build}/META-INF/services"/> 
-    <echo file="${dir.build}/META-INF/services/org.apache.commons.logging.LogFactory">de.schlund.pfixxml.util.logging.ProxyLogFactory</echo>
-    
     <!-- pathconvert dumps classpath on ant -verbose -->
     <!-- failed on 2005-10-21 with "example/servletconf/tomcat/common not found"
     <pathconvert property="dev.null" refid="cp.classpath" pathsep="&#013;"/>
@@ -184,7 +175,7 @@ or delete the DOCTYPE definition -->
   </target>
 
   <target name="all"
-          depends="init, compile, post-compile, installjars, check-permissions, compile-xml"
+          depends="compile, post-compile, installjars, check-permissions, compile-xml"
           description="builds all files required to run"
           />
 
@@ -270,7 +261,7 @@ or delete the DOCTYPE definition -->
     <!-- As task delete does not delete symbolic links, deleting symlinks using native tools. -->
     <!-- Deleting symlinks pointing to non existent files, assuming jar files -->
     <!-- replaced by new versions (with new filenames) do not exist anymore -->
-    <exec executable="find" os="Linux, Mac OS X">
+    <exec executable="find" os="Linux">
       <arg file="${dir.projects}/servletconf/tomcat/shared/lib"/>
       <arg line="-iname *.jar -a -type l -exec rm -v {} ;"/>
     </exec>
@@ -285,7 +276,7 @@ or delete the DOCTYPE definition -->
     </apply>
   </target>
 
-  <target name="ant-tasks" depends="tomcat.dir.opt" description="declares the ant task used for generating java source code. This target needs to be run prior to the actual compile.">
+  <target name="ant-tasks" depends="init" description="declares the ant task used for generating java source code. This target needs to be run prior to the actual compile.">
     <taskdef
      name="pfx-xslt"
      classname="de.schlund.pfixcore.util.XsltGenericTask"
@@ -308,11 +299,11 @@ or delete the DOCTYPE definition -->
      description="Creates WEB-INF/web.xml config files for each project"
      />
     <taskdef
-     name="pfx-xsltcus"
-     classname="de.schlund.pfixcore.util.XsltCustomizeXmlTask"
+     name="pfx-projectsxml"
+     classname="de.schlund.pfixcore.util.XsltProjectsXmlTask"
      classpathref="cp.classpath"
      loaderref="pfx-loader"
-     description="Performs XSLT transformations and evaluates customization tags"
+     description="Performs projects.xml XSLT transformations"
      />
     <taskdef
      name="pfx-generate"
@@ -342,11 +333,6 @@ or delete the DOCTYPE definition -->
   	 loaderref="pfx-loader"
   	 description="Stores properties used at buildtime to be used later at runtime"
   	 />
-    <taskdef
-     resource="net/sf/antcontrib/antlib.xml"
-     classpathref="cp.classpath"
-     loaderref="pfx-loader"   
-     /> 
   </target>
 
   <target name="dtd" depends="dtd-check, ant-tasks" unless="upd.dtd" description="creates a DTD for this build file">
@@ -378,17 +364,17 @@ or delete the DOCTYPE definition -->
   <target name="clean-project" description="deletes files from ${dir.projects}">
     <mkdir dir="${dir.webapps}"/>
     <delete>
-      <fileset dir="${dir.projects}" includes="**/*.xsl" excludes="modules/**">
+      <fileset dir="${dir.projects}" includes="**/*.xsl">
         <present present="both" targetdir="${dir.projects}">
           <mapper type="glob" from="*.xsl" to="*.xsl.in"/>
         </present>
       </fileset>
-      <fileset dir="${dir.projects}" includes="**/*.prop" excludes="modules/**">
+      <fileset dir="${dir.projects}" includes="**/*.prop">
         <present present="both" targetdir="${dir.projects}">
           <mapper type="glob" from="*.prop" to="*.prop.in"/>
         </present>
       </fileset>
-      <fileset dir="${dir.projects}" includes="**/webservice.conf" excludes="modules/**">
+      <fileset dir="${dir.projects}" includes="**/webservice.conf">
         <present present="both" targetdir="${dir.projects}">
           <mapper type="glob" from="*webservice.conf" to="*webservice.conf.in"/>
         </present>
@@ -419,31 +405,13 @@ or delete the DOCTYPE definition -->
     <delete dir="${dir.projects}/core"/>
   </target>
         
-  <target name="extract-modules-check">
-    <!-- extract only if there are newer jars in the src directory than the target directory -->
-    <uptodate property="upd.extract-modules" targetfile="${dir.extract.modules}/TIMESTAMP">
-      <srcfiles dir= "${dir.src.modules}" includes="**/*.jar"/>
-    </uptodate>
-  </target>
-
-  <target name="extract-modules" depends="extract-modules-check, ant-tasks" unless="upd.extract-modules" description="extracts all *.jar files in ${dir.extract.modules}">
-    <antcall target="clean-modules"/>
+  <target name="extract-modules" depends="clean-modules" description="extracts all *.jar files in ${dir.extract.modules}">
+    <echo>Unpacking *.jar-Modules from ${dir.src.modules}</echo>
     <mkdir dir="${dir.extract.modules}"/>
     <unjar dest="${dir.extract.modules}">
       <fileset dir="${dir.src.modules}" includes="*.jar" />
     </unjar>
     <chmod perm="444"><fileset dir="${dir.extract.modules}" includes="**/*"/></chmod>
-    <touch file="${dir.extract.modules}/TIMESTAMP"/>
-    <foreach param="tmp.modules.buildxml" target="extract-modules-call-ant" inheritall="true" inheritrefs="true">
-      <fileset dir="${dir.extract.modules}">
-        <include name="*/build.xml"/>
-      </fileset>   
-    </foreach> 
-  </target>
-  
-  <target name="extract-modules-call-ant">
-    <dirname property="tmp.modules.modulepath" file="${tmp.modules.buildxml}"/> 
-    <ant antfile="${tmp.modules.buildxml}" dir="${tmp.modules.modulepath}" inheritAll="false"/>
   </target>
   
   <target name="init-data-check" unless="pfx.force">
@@ -484,7 +452,7 @@ or delete the DOCTYPE definition -->
   </target>
   
   <target name="check-permissions">
-    <apply executable="chmod" os="Linux, Mac OS X">
+    <apply executable="chmod" os="Linux">
       <arg line="a+x"/>
       <fileset dir="${basedir}" includes="apploader.sh newproject.sh startTomcat.sh skel/apploader.sh skel/newproject.sh skel/startTomcat.sh bin/setClassPath.sh bin/setvars.sh stuff/**/*.sh stuff/**/bin/*"/>
       <fileset dir="${dir.projects}" includes="**/*.sh"/>
@@ -559,7 +527,6 @@ or delete the DOCTYPE definition -->
      srcdir="${dir.projects}"
      destdir="${dir.projects}"
      includes="**/*.prop.in"
-     excludes="modules/**"   
      extension=""
      validate="${validate}"
      catalogfile="${catalogfile}"
@@ -572,7 +539,7 @@ or delete the DOCTYPE definition -->
     </pfx-xslt>
   </target>
 
-  <target name="projects_xml" depends="ant-tasks, init" description="creates projects.xml out of projects.xml.in and multiple project.xml files" >
+  <target name="projects_xml" depends="ant-tasks" description="creates projects.xml out of projects.xml.in and multiple project.xml files" >
     <fileset id="id.fileset.projectxmlin" dir="${dir.projects}" includes="**/project.xml.in"/>
     <pathconvert property="projectxmlins" refid="id.fileset.projectxmlin" pathsep="|">
       <map from="${dir.projects}/" to=""/>
@@ -582,7 +549,7 @@ or delete the DOCTYPE definition -->
       <srcfileset refid="id.fileset.projectxmlin"/>
       <targetfileset dir="${dir.projects}/servletconf" includes="projects.xml"/>
     </dependset>
-    <pfx-xsltcus
+    <pfx-projectsxml
      style="${dir.projects}/core/build/create_projects.xsl"
      docroot="${dir.projects}"
      srcdir="${dir.projects}"
@@ -595,7 +562,7 @@ or delete the DOCTYPE definition -->
       <param name="uid"     expression="${uid}"/>
       <param name="machine" expression="${machine}"/>
       <param name="mode"    expression="${makemode}"/>
-    </pfx-xsltcus>
+    </pfx-projectsxml>
   </target>
 
   <target name="web_xml" depends="ant-tasks, projects_xml, defaultwebxml" description="creates servletconf/tomcat/webapps/**/WEB-INF/web.xml">
@@ -616,13 +583,12 @@ or delete the DOCTYPE definition -->
     </pfx-webxml>
   </target>
 
-  <target name="stylesheets" depends="ant-tasks, init" description="creates **/*.xsl from **/*.xsl.in with create_stylesheet.xsl">
+  <target name="stylesheets" depends="ant-tasks" description="creates **/*.xsl from **/*.xsl.in with create_stylesheet.xsl">
     <pfx-xslt
      style="${dir.projects}/core/build/create_stylesheet.xsl"
      srcdir="${dir.projects}"
      destdir="${dir.projects}"
      includes="**/*.xsl.in"
-     excludes="modules/**"   
      extension=""
      >
       <param name="docroot" expression="${dir.docroot}"/>
@@ -634,11 +600,11 @@ or delete the DOCTYPE definition -->
   </target>
 
   <target name="pfixlog_xml" depends="ant-tasks" description="creates common/conf/pfixlog.xml from common/conf/pfixlog.xml.in with core/build/create_log4j_config.xsl">
-    <pfx-xsltcus
+    <pfx-xslt
      style="${dir.projects}/core/build/create_log4j_config.xsl"
-     infile="${dir.projects}/common/conf/pfixlog.xml"
-     outfile="${dir.projects}/servletconf/tomcat/conf/log4j.xml"
-     docroot="${dir.projects}"
+     srcdir="${dir.projects}"
+     destdir="${dir.projects}"
+     includes="common/conf/pfixlog.xml.in"
      extension=""
      >
       <param name="docroot" expression="${dir.docroot}"/>
@@ -646,7 +612,7 @@ or delete the DOCTYPE definition -->
       <param name="uid"     expression="${uid}"/>
       <param name="machine" expression="${machine}"/>
       <param name="mode"    expression="${makemode}"/>
-    </pfx-xsltcus>
+    </pfx-xslt>
   </target>
 
   <target name="apache_conf" depends="ant-tasks, projects_xml" description="creates servletconf/tomcat/apache.conf from servletconf/projects.xml with core/build/create_apacheconf.xsl">
@@ -820,7 +786,7 @@ or delete the DOCTYPE definition -->
       fqdn="${fqdn}" 
       tmpdir="${dir.projects}/.webservice"
       prjdir="${dir.projects}"
-      wsddskel="${dir.projects}/common/conf/server-config.wsdd"
+      wsddskel="${dir.projects}/core/conf/server-config.wsdd"
       prjfile="${file.projects_xml}" 
       srcdir="${dir.src}"
       builddir="${dir.build}"
@@ -844,27 +810,23 @@ or delete the DOCTYPE definition -->
     <property name="webapp.tomcat.dir" location="${basedir}/dist/tomcat"/>
   </target>    
 
-  <target name="webapp.dir" depends="webapp.init, webservice, generate">
+  <target name="webapp.dir" depends="webapp.init, webservice">
     <delete dir="${webapp.dir}"/>
     <mkdir dir="${webapp.dir}"/> 
     <mkdir dir="${webapp.pfixroot}"/>
-    <mkdir dir="${webapp.pfixroot}/servletconf"/> 
-    <mkdir dir="${webapp.pfixroot}/servletconf/log"/> 
     <mkdir dir="${webapp.dir}/xml"/>
     <mkdir dir="${webapp.dir}/WEB-INF/classes"/>
     <mkdir dir="${webapp.dir}/WEB-INF/lib"/>
-    
     <copy todir="${webapp.dir}/WEB-INF/lib" flatten="true">
-        <fileset dir="${basedir}">
+        <fileset dir="${dir.lib}">
            <include name="${lib.includes}"/>
         </fileset>
     </copy>
-    
     <copy todir="${webapp.dir}/WEB-INF/classes">
         <fileset dir="${dir.build}">
         </fileset>
     </copy>
-   
+    
     <copy todir="${webapp.dir}/xml">
         <fileset dir="${dir.tomcat}/webapps/${webapp.name}">
             <include name="**/*"/>
@@ -879,7 +841,7 @@ or delete the DOCTYPE definition -->
     </copy>
 
     <xslt style="${dir.projects}/core/build/create_webapp_projectsxml.xsl" in="${dir.projects}/servletconf/projects.xml"
-     out="${webapp.pfixroot}/servletconf/projects.xml">
+     out="${webapp.pfixroot}/projects.xml">
         <param name="projectname"  expression="${webapp.name}"/>    
         <param name="docroot"  expression="${webapp.dir}"/>    
     </xslt>
@@ -887,7 +849,7 @@ or delete the DOCTYPE definition -->
     <pfx-passthroughcopy 
       srcdir="${dir.projects}"
       destdir="${webapp.dir}"
-      projectsxml="${webapp.pfixroot}/servletconf/projects.xml"
+      projectsxml="${webapp.pfixroot}/projects.xml"
       projectname="${webapp.name}"
     />
      
@@ -905,7 +867,7 @@ or delete the DOCTYPE definition -->
       srcdir="${webapp.pfixroot}"
       destdir="dist"
       extension=".xml"
-      projects="servletconf/projects.xml"
+      projects="projects.xml"
       corewebxml="core/conf/web.xml"
      >
       <param name="docroot" expression="${dir.docroot}"/>
@@ -913,7 +875,6 @@ or delete the DOCTYPE definition -->
       <param name="uid"     expression="${uid}"/>
       <param name="machine" expression="${machine}"/>
       <param name="mode"    expression="${makemode}"/>
-      <param name="warmode" expression="true"/>   
     </pfx-webxml>
    
     <antcall target="-webapp.context">
@@ -921,12 +882,6 @@ or delete the DOCTYPE definition -->
       <param name="path" value="/xml"/>
       <param name="docbase" value="."/>
     </antcall>
-   
-    <!-- Create context.xml for Tomcat to disable use of session cookies -->
-    <mkdir dir="${webapp.dir}/META-INF"/>
-    <echo file="${webapp.dir}/META-INF/context.xml">
-    <![CDATA[ <Context cookies="false"></Context> ]]>
-    </echo> 
     
     <war destfile="${engine.dir}/${webapp.name}.war" webxml="${webapp.dir}/WEB-INF/web.xml">
         <fileset dir="${webapp.dir}"/>
@@ -955,7 +910,7 @@ or delete the DOCTYPE definition -->
       <param name="dir.tomcat" value="${webapp.tomcat.dir}"/>
     </antcall> 
     <pfx-xslt
-     infile="${webapp.pfixroot}/servletconf/projects.xml"
+     infile="${webapp.pfixroot}/projects.xml"
      outfile="${webapp.tomcat.dir}/conf/server.xml"
      style="${dir.projects}/core/build/create_webapp_serverxml.xsl"
      >
@@ -969,7 +924,7 @@ or delete the DOCTYPE definition -->
       <param name="portbase"   expression="${portbase.tomcat}"/>
     </pfx-xslt>
    
-    <apply executable="chmod" os="Linux, Mac OS X">
+    <apply executable="chmod" os="Linux">
       <arg line="a+x"/>
       <fileset dir="${webapp.tomcat.dir}" includes="**/*.sh"/>
     </apply>

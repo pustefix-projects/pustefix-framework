@@ -19,22 +19,12 @@
 
 package de.schlund.pfixxml.loader;
 
+import de.schlund.pfixxml.serverutil.*;
+import java.io.*;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Properties;
-import java.util.WeakHashMap;
-
+import java.util.*;
 import javax.servlet.http.HttpSession;
-
 import org.apache.log4j.Category;
-
-import de.schlund.pfixxml.resources.FileResource;
-import de.schlund.pfixxml.serverutil.SessionAdmin;
-import de.schlund.pfixxml.serverutil.SessionInfoStruct;
 
 /**
  * AppLoader.java 
@@ -70,7 +60,7 @@ public class AppLoader implements Runnable {
     private ArrayList travExcludes=new ArrayList();
     private HashSet travIncludes=new HashSet();
     private HashMap policies=new HashMap();
-    private FileResource repository;
+    private File repository;
     private Thread modThread;
     private boolean isLoading;
     
@@ -120,11 +110,11 @@ public class AppLoader implements Runnable {
         this.listener=listener;
     }
     
-    protected void setRepository(FileResource repository) {
+    protected void setRepository(File repository) {
         this.repository=repository;
     }
 
-    protected FileResource getRepository() {
+    protected File getRepository() {
         return repository;
     }
 

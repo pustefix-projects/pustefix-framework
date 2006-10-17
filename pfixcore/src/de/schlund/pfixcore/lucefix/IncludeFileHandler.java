@@ -29,8 +29,7 @@ import org.xml.sax.SAXException;
 import org.xml.sax.ext.LexicalHandler;
 import org.xml.sax.helpers.DefaultHandler;
 
-import de.schlund.pfixxml.resources.DocrootResource;
-import de.schlund.pfixxml.resources.FileResource;
+import de.schlund.pfixxml.PathFactory;
 
 /**
  * @author schuppi
@@ -39,13 +38,9 @@ import de.schlund.pfixxml.resources.FileResource;
 public class IncludeFileHandler extends DefaultHandler implements LexicalHandler {
 
 
-    public IncludeFileHandler(FileResource file) {
-        this.lasttouch = file.lastModified();
-        if (file instanceof DocrootResource) {
-            this.path = ((DocrootResource) file).getRelativePath();
-        } else {
-            throw new IllegalArgumentException("Parameter is non-docroot path: " + file.toURI());
-        }
+    public IncludeFileHandler(String path, long lastTouchOfFile) {
+        this.lasttouch = lastTouchOfFile;
+        this.path = PathFactory.getInstance().makePathStringRelative(path);
         alleDokumente = new Vector();
     }
 

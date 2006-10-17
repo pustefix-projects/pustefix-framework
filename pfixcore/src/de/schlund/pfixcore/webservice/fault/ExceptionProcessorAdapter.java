@@ -1,5 +1,6 @@
 package de.schlund.pfixcore.webservice.fault;
 
+import java.io.File;
 import java.util.Properties;
 
 import javax.servlet.http.HttpServletRequest;
@@ -8,12 +9,11 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
 
+import de.schlund.pfixxml.PathFactory;
 import de.schlund.pfixxml.PfixServletRequest;
 import de.schlund.pfixxml.config.XMLPropertiesUtil;
 import de.schlund.pfixxml.exceptionprocessor.ExceptionConfig;
 import de.schlund.pfixxml.exceptionprocessor.ExceptionProcessor;
-import de.schlund.pfixxml.resources.FileResource;
-import de.schlund.pfixxml.resources.ResourceUtil;
 
 public class ExceptionProcessorAdapter extends FaultHandler {
 
@@ -34,12 +34,12 @@ public class ExceptionProcessorAdapter extends FaultHandler {
     public void init() {
         String config=getParam(PARAM_CONFIG);
         if(config==null) throw new IllegalArgumentException("Parameter '"+PARAM_CONFIG+"' is missing.");
-        FileResource configFile=ResourceUtil.getFileResourceFromDocroot(config);
+        File configFile=PathFactory.getInstance().createPath(config).resolve();
         exProcProps=new Properties();
         try {
             XMLPropertiesUtil.loadPropertiesFromXMLFile(configFile,exProcProps);
         } catch(Exception x) {
-            throw new RuntimeException("Can't load properties from "+configFile,x);
+            throw new RuntimeException("Can't load properties from "+configFile.getAbsolutePath(),x);
         }
         String procName=exProcProps.getProperty(PROP_EXPROC);
         if(procName!=null) {

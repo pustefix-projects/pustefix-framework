@@ -33,12 +33,12 @@ import javax.xml.transform.stream.StreamResult;
 import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
 
+import de.schlund.pfixxml.PathFactory;
 import de.schlund.pfixxml.PfixServletRequest;
 import de.schlund.pfixxml.exceptionprocessor.util.ExceptionDataValue;
 import de.schlund.pfixxml.exceptionprocessor.util.ExceptionDataValueHelper;
 import de.schlund.pfixxml.exceptionprocessor.util.TextCreatorVisitor;
 import de.schlund.pfixxml.exceptionprocessor.util.XMLCreatorVisitor;
-import de.schlund.pfixxml.resources.ResourceUtil;
 import de.schlund.pfixxml.targets.TargetGenerationException;
 import de.schlund.pfixxml.targets.TargetGeneratorFactory;
 import de.schlund.pfixxml.util.Xml;
@@ -98,7 +98,7 @@ public class UniversalExceptionProcessor implements ExceptionProcessor {
 
         try {
             stvalue = (Templates) TargetGeneratorFactory.getInstance().createGenerator(
-                    ResourceUtil.getFileResourceFromDocroot(depxml)).createXSLLeafTarget(ERROR_STYLESHEET).getValue();
+                    PathFactory.getInstance().createPath(depxml)).createXSLLeafTarget(ERROR_STYLESHEET).getValue();
         } catch (Exception e) {
             throw new ServletException(e);
         }

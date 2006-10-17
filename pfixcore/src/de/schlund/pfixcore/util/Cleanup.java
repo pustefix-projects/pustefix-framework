@@ -14,8 +14,7 @@ import org.w3c.dom.NodeList;
 
 import de.schlund.pfixxml.IncludeDocument;
 import de.schlund.pfixxml.IncludeDocumentFactory;
-import de.schlund.pfixxml.config.GlobalConfigurator;
-import de.schlund.pfixxml.resources.ResourceUtil;
+import de.schlund.pfixxml.PathFactory;
 import de.schlund.pfixxml.util.XPath;
 import de.schlund.pfixxml.util.Xml;
 
@@ -41,7 +40,7 @@ public class Cleanup{
 
     public static void main(String[] args) throws Exception {
         String pwd = new File(".").getCanonicalPath();
-        GlobalConfigurator.setDocroot(pwd);
+        PathFactory.getInstance().init(pwd);
         Cleanup cleanup = new Cleanup();
         cleanup.clean();
     }
@@ -64,7 +63,7 @@ public class Cleanup{
                         Document doc = (Document) changed.get(path);
                         if (doc == null && (type.equals("part") || type.equals("theme"))) {
                             IncludeDocument incdoc = IncludeDocumentFactory.getInstance().
-                                getIncludeDocument(ResourceUtil.getFileResourceFromDocroot(path), true);
+                                getIncludeDocument(PathFactory.getInstance().createPath(path), true);
                             doc                    = incdoc.getDocument();
                             System.out.println(doc.hashCode());
                             doc.getDocumentElement().removeAttribute("incpath");

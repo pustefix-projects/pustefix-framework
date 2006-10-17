@@ -22,21 +22,24 @@ package de.schlund.pfixcore.workflow;
 import java.util.HashMap;
 import java.util.Iterator;
 
-import org.apache.log4j.Logger;
+import org.apache.log4j.Category;
 
+import de.schlund.pfixxml.ConfigurableObject;
 import de.schlund.pfixxml.config.ContextConfig;
 import de.schlund.pfixxml.config.PageRequestConfig;
 import de.schlund.pfixxml.loader.AppLoader;
 import de.schlund.pfixxml.loader.Reloader;
 import de.schlund.pfixxml.loader.StateTransfer;
 
-public class PageMap implements Reloader {
+public class PageMap implements ConfigurableObject, Reloader {
 
     protected            HashMap<String, State> pagemap = new HashMap<String, State>();
-    private final static Logger                 LOG = Logger.getLogger(PageMap.class);
+    private final static Category               CAT     = Category.getInstance(PageMap.class.getName());
     
-    public PageMap(ContextConfig config) {
+    public void init(Object confObj) throws Exception {
 
+        //Get PageRequestProperties object from PropertyObjectManager 
+        ContextConfig       config = (ContextConfig) confObj;
         PageRequestConfig[] pages  = config.getPageRequestConfigs();
         
         for (int i = 0; i < pages.length; i++) {
@@ -45,7 +48,7 @@ public class PageMap implements Reloader {
             State  state      = StateFactory.getInstance().getState(stateClass.getName());
 
             if (state == null) {
-                LOG.error("***** Skipping page '" + page + "' as it's corresponding class " + stateClass.getName() +
+                CAT.error("***** Skipping page '" + page + "' as it's corresponding class " + stateClass.getName() +
                           "couldn't be initialized by the StateFactory");
             } else {
                 pagemap.put(page, state);

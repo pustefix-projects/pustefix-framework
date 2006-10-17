@@ -24,6 +24,7 @@ import java.util.HashMap;
 
 import org.apache.log4j.Logger;
 
+import de.schlund.pfixxml.ConfigurableObject;
 import de.schlund.pfixxml.Variant;
 import de.schlund.pfixxml.config.ContextConfig;
 
@@ -37,13 +38,13 @@ import de.schlund.pfixxml.config.ContextConfig;
  *
  */
 
-public class VariantManager {
+public class VariantManager implements ConfigurableObject {
     private ContextConfig           contextConfig;
     private HashMap<String, String> variantpagecache = new HashMap<String, String>();
     private Logger                  LOG              = Logger.getLogger(this.getClass());
     
-    public VariantManager(ContextConfig config) {
-        contextConfig = config;
+    public void init(Object confObj) throws Exception {
+        contextConfig = (ContextConfig) confObj;
     }
 
     public String getVariantMatchingPageRequestName(String name, Variant variant) {

@@ -20,9 +20,9 @@ public class Fault {
 	Logger LOG=Logger.getLogger(getClass().getName());
 	
 	String serviceName;
-	HttpServletRequest srvReq;
+    HttpServletRequest srvReq;
     HttpServletResponse srvRes;
-    String requestURI;
+	String requestURI;
 	String reqMsg;
     String serverName;
     Context context;
@@ -41,12 +41,12 @@ public class Fault {
     
 	public HttpServletRequest getRequest() {
 	    return srvReq;
-    }
-    
-    public HttpServletResponse getResponse() {
-        return srvRes;
-    }
-    
+	}
+                                                                                                                                                      
+	public HttpServletResponse getResponse() {
+	    return srvRes;
+	}
+
     public Throwable getThrowable() {
         return throwable;
     }

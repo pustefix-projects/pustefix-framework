@@ -20,6 +20,8 @@
 package de.schlund.pfixcore.webservice.config;
 
 import java.io.CharArrayWriter;
+import java.io.File;
+import java.io.FileInputStream;
 import java.util.Stack;
 
 import javax.xml.parsers.SAXParser;
@@ -32,20 +34,19 @@ import org.xml.sax.helpers.DefaultHandler;
 import de.schlund.pfixcore.webservice.Constants;
 import de.schlund.pfixcore.webservice.fault.FaultHandler;
 import de.schlund.pfixxml.config.CustomizationHandler;
-import de.schlund.pfixxml.resources.FileResource;
 
 /**
  * @author mleidig@schlund.de
  */
 public class ConfigurationReader extends DefaultHandler {
 
-	FileResource configFile;
+	File configFile;
 	Configuration config;
 	Stack<Object> contextStack=new Stack<Object>();
 	Object context;
 	CharArrayWriter content=new CharArrayWriter();
 
-	public static Configuration read(FileResource file) throws Exception {
+	public static Configuration read(File file) throws Exception {
 		ConfigurationReader reader=new ConfigurationReader(file);
 		reader.read();
 		return reader.getConfiguration();
@@ -55,7 +56,7 @@ public class ConfigurationReader extends DefaultHandler {
 		return config;
 	}
 	
-	public ConfigurationReader(FileResource configFile) {
+	public ConfigurationReader(File configFile) {
 		this.configFile=configFile;
 	}
 	
@@ -64,7 +65,7 @@ public class ConfigurationReader extends DefaultHandler {
         SAXParserFactory spf=SAXParserFactory.newInstance();
         spf.setNamespaceAware(true);
         SAXParser parser=spf.newSAXParser();
-        parser.parse(configFile.getInputStream(),cushandler);
+        parser.parse(new FileInputStream(configFile),cushandler);
 	}
 	
 	private void setContext(Object obj) {

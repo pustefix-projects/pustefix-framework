@@ -19,22 +19,28 @@
 
 package de.schlund.pfixxml;
 
+import de.schlund.pfixxml.config.ServletManagerConfig;
+import de.schlund.pfixxml.serverutil.SessionHelper;
+import de.schlund.pfixxml.util.MD5Utils;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.Properties;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
+import javax.servlet.http.HttpSession;
 import org.apache.axis.encoding.Base64;
 import org.apache.log4j.Category;
-
-import de.schlund.pfixxml.config.ServletManagerConfig;
-import de.schlund.pfixxml.resources.FileResource;
-import de.schlund.pfixxml.serverutil.SessionHelper;
-import de.schlund.pfixxml.util.MD5Utils;
 
 /**
  * This class implements a "Dereferer" servlet to get rid of Referer
@@ -138,6 +144,12 @@ public class DerefServer extends ServletManager {
                 SessionHelper.getClearedURI(preq) + "?enclink=" + URLEncoder.encode(enclink, "utf8") +
                 "&sign=" + signString(enclink, key);
             
+            // Log the occurrence of such a case to check if we can enable the feature in the future
+            if (!signed && !link.startsWith("/")) {
+                CAT.warn("NOSIGNEDDEREFIGNORED: " + preq.getServerName() + "|"
+                         + link +  "|" + preq.getRequest().getHeader("Referer"));
+            }
+
             CAT.debug("===> Meta refresh to link: " + reallink);
             DEREFLOG.info(preq.getServerName() + "|" + link + "|" + preq.getRequest().getHeader("Referer"));
             
@@ -178,7 +190,7 @@ public class DerefServer extends ServletManager {
         return this.config;
     }
 
-    protected void reloadServletConfig(FileResource configFile, Properties globalProperties) throws ServletException {
+    protected void reloadServletConfig(File configFile, Properties globalProperties) throws ServletException {
         // Deref server does not use a servlet specific configuration
         // So simply initialize configuration with global properties
         ServletManagerConfig sConf = new ServletManagerConfig();

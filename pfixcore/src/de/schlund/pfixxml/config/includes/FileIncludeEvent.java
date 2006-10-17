@@ -18,20 +18,19 @@
 
 package de.schlund.pfixxml.config.includes;
 
+import java.io.File;
 import java.util.EventObject;
-
-import de.schlund.pfixxml.resources.FileResource;
 
 public class FileIncludeEvent extends EventObject {
     private static final long serialVersionUID = -3702684169219524940L;
-    private FileResource includedFile;
+    private File includedFile;
 
-    protected FileIncludeEvent(Object source, FileResource file) {
+    protected FileIncludeEvent(Object source, File file) {
         super(source);
         this.includedFile = file;
     }
     
-    public FileResource getIncludedFile() {
+    public File getIncludedFile() {
         return includedFile;
     }
 }

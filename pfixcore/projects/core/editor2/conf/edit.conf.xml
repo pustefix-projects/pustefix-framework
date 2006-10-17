@@ -49,7 +49,7 @@
     </start>
     <end>
       <!-- This ContextInterceptor has to be called AFTER all other interceptors -->
-      <!-- <interceptor class="de.schlund.pfixcore.editor2.frontend.util.SpringHelperEndContextInterceptor"/>-->
+      <interceptor class="de.schlund.pfixcore.editor2.frontend.util.SpringHelperEndContextInterceptor"/>
     </end>
   </interceptors>  
   

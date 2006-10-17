@@ -27,12 +27,11 @@ import de.schlund.pfixxml.exceptionprocessor.ExceptionProcessor;
 import de.schlund.pfixxml.loader.AppLoader;
 import de.schlund.pfixxml.perflogging.PerfEvent;
 import de.schlund.pfixxml.perflogging.PerfEventType;
-import de.schlund.pfixxml.resources.FileResource;
-import de.schlund.pfixxml.resources.ResourceUtil;
 import de.schlund.pfixxml.serverutil.SessionAdmin;
 import de.schlund.pfixxml.serverutil.SessionHelper;
 import de.schlund.pfixxml.serverutil.SessionInfoStruct;
 import de.schlund.pfixxml.util.MD5Utils;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -59,6 +58,7 @@ import javax.servlet.http.HttpSession;
 import org.apache.log4j.Category;
 import org.xml.sax.SAXException;
 
+
 /**
  * ServletManager.java
  *
@@ -82,7 +82,6 @@ public abstract class ServletManager extends HttpServlet {
     private   static final String PARAM_FORCELOCAL              = "__forcelocal";
     public    static final String PROP_COOKIE_SEC_NOT_ENFORCED  = "servletmanager.cookie_security_not_enforced";
     private   static final String PROP_EXCEPTION                = "exception";
-    public    static final String PROP_SSL_REDIRECT_PORT        = "pfixcore.ssl_redirect_port.for.";
     protected static final String DEF_CONTENT_TYPE              = "text/html";
     private   static final String DEFAULT_ENCODING              = "UTF-8";
     private   static final String SERVLET_ENCODING              = "servlet.encoding";
@@ -102,20 +101,20 @@ public abstract class ServletManager extends HttpServlet {
     private long             common_mtime                 = 0;
     private long             servlet_mtime                = 0;
     private long             loadindex                    = 0;
-    private FileResource     commonpropfile;
-    private FileResource     servletpropfile;
+    private File             commonpropfile;
+    private File             servletpropfile;
     private String           servletEncoding;
     private AtomicInteger    configLoadIndex              = new AtomicInteger(0);
     
     protected abstract ServletManagerConfig getServletManagerConfig();
-    protected abstract void reloadServletConfig(FileResource configFile, Properties globalProperties) throws ServletException;
+    protected abstract void reloadServletConfig(File configFile, Properties globalProperties) throws ServletException;
 
 //     protected Properties getProperties() {
 //         return this.properties;
 //     }
     
     protected boolean runningUnderSSL(HttpServletRequest req) {
-        return req.isSecure();
+        return req.getScheme().equals("https") && (isSslPort(req.getServerPort()));
     }
 
     protected boolean needsSSL(PfixServletRequest preq) throws ServletException {
@@ -414,13 +413,13 @@ public abstract class ServletManager extends HttpServlet {
 
     private void redirectToClearedRequest(HttpServletRequest req, HttpServletResponse res) {
         CAT.debug("===> Redirecting to cleared Request URL");
-        String redirect_uri = SessionHelper.getClearedURL(req.getScheme(), getServerName(req), req, getServletManagerConfig().getProperties());
+        String redirect_uri = SessionHelper.getClearedURL(req.getScheme(), getServerName(req), req);
         relocate(res, redirect_uri);
     }
 
     private void redirectToSSL(HttpServletRequest req, HttpServletResponse res) {
         CAT.debug("===> Redirecting to session-less request URL under SSL");
-        String redirect_uri = SessionHelper.getClearedURL("https", getServerName(req), req, getServletManagerConfig().getProperties());
+        String redirect_uri = SessionHelper.getClearedURL("https", getServerName(req), req);
         relocate(res, redirect_uri);
     }
 
@@ -447,7 +446,7 @@ public abstract class ServletManager extends HttpServlet {
                     if (tmp_sec.equals(sec_testid)) {
                         CAT.debug("   ... and the value is correct! (" + tmp_sec + ")");
                         CAT.debug("==> Redirecting to the secure SSL URL with the already running secure session " + secure_id);
-                        String redirect_uri = SessionHelper.encodeURL("https", getServerName(req), req,  secure_id, getServletManagerConfig().getProperties());
+                        String redirect_uri = SessionHelper.encodeURL("https", getServerName(req), req,  secure_id);
                         relocate(res, redirect_uri);
                         return;
                     } else {
@@ -525,7 +524,7 @@ public abstract class ServletManager extends HttpServlet {
         }
 
         CAT.debug("===> Redirecting to secure SSL URL with session (Id: " + session.getId() + ")");
-        String redirect_uri = SessionHelper.encodeURL("https", getServerName(req), req, getServletManagerConfig().getProperties());
+        String redirect_uri = SessionHelper.encodeURL("https", getServerName(req), req);
         relocate(res, redirect_uri);
     }
 
@@ -558,7 +557,7 @@ public abstract class ServletManager extends HttpServlet {
         }
 
         CAT.debug("===> Redirecting to insecure SSL URL with session (Id: " + session.getId() + ")");
-        String redirect_uri = SessionHelper.encodeURL("https", getServerName(req), req, getServletManagerConfig().getProperties());
+        String redirect_uri = SessionHelper.encodeURL("https", getServerName(req), req);
         relocate(res, redirect_uri);
     }
 
@@ -583,7 +582,7 @@ public abstract class ServletManager extends HttpServlet {
         }
 
         CAT.debug("===> Redirecting to SSL URL with session (Id: " + session.getId() + ")");
-        String redirect_uri = SessionHelper.encodeURL("https", getServerName(req), req, getServletManagerConfig().getProperties());
+        String redirect_uri = SessionHelper.encodeURL("https", getServerName(req), req);
         relocate(res, redirect_uri);
     }
 
@@ -611,7 +610,7 @@ public abstract class ServletManager extends HttpServlet {
         SessionAdmin.getInstance().registerSession(session, traillog, getServerName(req), req.getRemoteAddr());
         CAT.debug("===> Redirecting with session (Id: " + session.getId() + ") using OLD VISIT_ID: " + curr_visit_id);
         session.setAttribute(STORED_REQUEST, preq);
-        String redirect_uri = SessionHelper.encodeURL(req.getScheme(), getServerName(req), req, getServletManagerConfig().getProperties());
+        String redirect_uri = SessionHelper.encodeURL(req.getScheme(), getServerName(req), req);
         relocate(res, redirect_uri);
     }
 
@@ -630,7 +629,7 @@ public abstract class ServletManager extends HttpServlet {
 
         CAT.debug("===> Redirecting to URL with session (Id: " + session.getId() + ")");
         session.setAttribute(STORED_REQUEST, preq);
-        String redirect_uri = SessionHelper.encodeURL(req.getScheme(), getServerName(req), req, getServletManagerConfig().getProperties());
+        String redirect_uri = SessionHelper.encodeURL(req.getScheme(), getServerName(req), req);
         relocate(res, redirect_uri);
     }
 
@@ -777,9 +776,9 @@ public abstract class ServletManager extends HttpServlet {
         String commonpropfilename = config.getInitParameter("servlet.commonpropfile");
         if (commonpropfilename != null) {
             if (!commonpropfilename.startsWith("/")) {
-                commonpropfile = ResourceUtil.getFileResourceFromDocroot(commonpropfilename);
+                commonpropfile = PathFactory.getInstance().createPath(commonpropfilename).resolve();
             } else {
-                commonpropfile = ResourceUtil.getFileResource("file://" + commonpropfilename);
+                commonpropfile = new File(commonpropfilename);
             }
             // Load on first request
             common_mtime = loadPropertyfile(properties, commonpropfile);
@@ -788,9 +787,9 @@ public abstract class ServletManager extends HttpServlet {
         String servletpropfilename = config.getInitParameter("servlet.propfile");
         if (servletpropfilename != null) {
             if (!servletpropfilename.startsWith("/")) {
-                servletpropfile = ResourceUtil.getFileResourceFromDocroot(servletpropfilename);
+                servletpropfile = PathFactory.getInstance().createPath(servletpropfilename).resolve();
             } else {
-                servletpropfile = ResourceUtil.getFileResource("file://" + servletpropfilename);
+                servletpropfile = new File(servletpropfilename);
             }
         }
         
@@ -806,7 +805,7 @@ public abstract class ServletManager extends HttpServlet {
         if ((commonpropfile  != null && commonpropfile.lastModified()  > common_mtime) ||
             (servletpropfile != null && servletpropfile.lastModified() > servlet_mtime) ||
             (this.getServletManagerConfig() != null && this.getServletManagerConfig().needsReload())) {
-
+            
             int currLoadIndex = configLoadIndex.incrementAndGet();
             
             CAT.warn("\n\n##############################\n" +
@@ -845,7 +844,7 @@ public abstract class ServletManager extends HttpServlet {
         }
     }
    
-    private long loadPropertyfile(Properties props, FileResource propfile) throws ServletException {
+    private long loadPropertyfile(Properties props, File propfile) throws ServletException {
         long mtime;
         try {
             mtime = propfile.lastModified();
@@ -1034,17 +1033,17 @@ public abstract class ServletManager extends HttpServlet {
     
     protected abstract void process(PfixServletRequest preq, HttpServletResponse res) throws Exception;
 
-    public static final int HTTP_PORT  = 80;
-    public static final int HTTPS_PORT = 443;
+    // TODO: replace constants - ask tomcat 
+    public static final int HTTP_PORT       = 80;
+    public static final int APACHE_SSL_PORT = 443;
+    public static final int TOMCAT_SSL_PORT = 8443;
     
-    public static boolean isDefault(String scheme, int port) {
-        if (scheme.equals("http") && port == HTTP_PORT) {
-            return true;
-        } else if (scheme.equals("https") && port == HTTPS_PORT) {
-            return true;
-        } else {
-            return false;
-        }
+    public static boolean isDefault(int port) {
+        return port == HTTP_PORT || port == APACHE_SSL_PORT;
+    }
+
+    public static boolean isSslPort(int port) {
+        return port == APACHE_SSL_PORT || port == TOMCAT_SSL_PORT;
     }
     
 

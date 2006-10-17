@@ -19,13 +19,13 @@
 
 package de.schlund.util.statuscodes;
 
-import de.schlund.pfixxml.resources.DocrootResource;
+import de.schlund.pfixxml.util.Path;
 
 public class StatusCode {
     private final String part;
-    private final DocrootResource path;
+    private final Path path;
     
-    protected StatusCode(String part, DocrootResource path) { 
+    protected StatusCode(String part, Path path) { 
         this.part = part;
         this.path = path;
     }
@@ -34,12 +34,12 @@ public class StatusCode {
         return part;
     }
 
-    public DocrootResource getStatusCodePath() {
+    public Path getStatusCodePath() {
         return path;
     }
 
     public String toString() {
-        return "StatusCode:" + getStatusCodeId() + "@" + getStatusCodePath().getRelativePath();
+        return "StatusCode:" + getStatusCodeId() + "@" + getStatusCodePath().getRelative();
     }
 
     public static String convertToFieldName(String part) {

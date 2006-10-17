@@ -19,13 +19,17 @@
 
 package de.schlund.pfixcore.lucefix;
 
+import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Vector;
+import java.util.logging.Logger;
 
 import org.apache.log4j.Category;
 import org.apache.lucene.document.Document;
@@ -35,8 +39,7 @@ import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.XMLReaderFactory;
 
 import de.schlund.pfixcore.lucefix.Tripel.Type;
-import de.schlund.pfixxml.resources.FileResource;
-import de.schlund.pfixxml.resources.ResourceUtil;
+import de.schlund.pfixxml.PathFactory;
 
 /**
  * @author schuppi
@@ -65,8 +68,8 @@ public class DocumentCache {
             String filename = stripAddition(path);
             // file was not scanned
             flush(); 
-            Collection newest = DocumentCache.getDocumentsFromFileAsCollection(ResourceUtil.getFileResourceFromDocroot(
-                    filename));
+            Collection newest = DocumentCache.getDocumentsFromFileAsCollection(PathFactory.getInstance().createPath(
+                    filename).resolve());
             for (Iterator iter = newest.iterator(); iter.hasNext();) {
                 Document element = (Document) iter.next();
                 if (type != Type.EDITORUPDATE){
@@ -112,17 +115,17 @@ public class DocumentCache {
         cache.clear();
     }
 
-    private static Collection getDocumentsFromFileAsCollection(FileResource f) throws FileNotFoundException, IOException,
+    private static Collection getDocumentsFromFileAsCollection(File f) throws FileNotFoundException, IOException,
             SAXException {
         XMLReader xmlreader = XMLReaderFactory.createXMLReader();
-        IncludeFileHandler handler = new IncludeFileHandler(f);
+        IncludeFileHandler handler = new IncludeFileHandler(f.getAbsolutePath(), f.lastModified());
         xmlreader.setContentHandler(handler);
         xmlreader.setDTDHandler(handler);
         xmlreader.setEntityResolver(handler);
         xmlreader.setErrorHandler(handler);
         xmlreader.setProperty("http://xml.org/sax/properties/lexical-handler", handler);
         try {
-            xmlreader.parse(new InputSource(f.getInputStream()));
+            xmlreader.parse(new InputSource(new FileReader(f)));
         } catch (Exception e) {
 //            org.apache.log4j.Logger.getLogger(DocumentCache.class).warn("bad xml: " + f);
             return new Vector();

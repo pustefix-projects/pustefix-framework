@@ -7,6 +7,7 @@
 package de.schlund.pfixcore.example.webservices.chat;
 
 import java.util.Calendar;
+import java.util.Date;
 
 /**
  * @author ml

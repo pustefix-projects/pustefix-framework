@@ -1,105 +1,181 @@
-2006-10-17  Sebastian Marsching  <sebastian.marsching@1und1.de>
+2006-10-17  Sebastian Marsching <sebastian.marsching@1und1.de>
 
-	* Preparing release 0.9.1
+	* build.xml: Changed version number to 0.9.1 for release
 
-	* src/de/schlund/pfixcore/util/DummyContextFactory.java: 
-	* src/de/schlund/pfixcore/util/TransformerCallback.java (isAccessible): 
-	* src/de/schlund/pfixcore/webservice/fault/Fault.java: 
-	* src/de/schlund/pfixcore/webservice/handler/ErrorHandler.java: 
-	* src/de/schlund/pfixcore/webservice/AbstractService.java: 
-	* src/de/schlund/pfixcore/webservice/ServiceCallContext.java: 
-	* src/de/schlund/pfixcore/webservice/ServiceRuntime.java: 
-	* src/de/schlund/pfixcore/workflow/context/SessionContextImpl.java: 
-	* src/de/schlund/pfixcore/workflow/ContextImpl.java: 
-	* src/de/schlund/pfixcore/workflow/RequestContextImpl.java: 
-	* src/de/schlund/pfixxml/ContextXMLServer.java: 
-	* src/de/schlund/pfixxml/DirectOutputServlet.java: 
-	Store request-specific context in a thread-local, so that the same session-context
-	can be used everywhere to access the current request.
-	
+2006-10-16  Martin Leidig  <mleidig@schlund.de>
 
-2006-10-17  Martin Leidig  <mleidig@schlund.de>
-
-	Added adapter for external webservice exception processor. Made general
-	code cleanup.
-
-	Added:
-	* src/de/schlund/pfixcore/webservice/fault/ExceptionProcessorAdapter.java
+	Updated webservice/AJAX stuff to the trunk's current state (JSON support 
+	and other improvements - for details see trunk's changelog).
 
 	Modified:
 	* src/de/schlund/pfixcore/example/webservices/chat/Message.java
 	* src/de/schlund/pfixcore/example/webservices/chat/ChatServer.java
-	* src/de/schlund/pfixcore/example/webservices/chat/ContextChatImpl.java
-	* src/de/schlund/pfixcore/example/webservices/ContextDataImpl.java
-	* src/de/schlund/pfixcore/example/webservices/CounterImpl.java
+	* src/de/schlund/pfixcore/example/webservices/TypeTest.java
+	* src/de/schlund/pfixcore/example/webservices/TypeTestImpl.java
+	* src/de/schlund/pfixcore/example/webservices/CalculatorImpl.java
 	* src/de/schlund/pfixcore/webservice/WebServiceServlet.java
-	* src/de/schlund/pfixcore/webservice/ServiceRuntime.java
+	* src/de/schlund/pfixcore/webservice/monitor/MonitorRecord.java
+	* src/de/schlund/pfixcore/webservice/monitor/Monitor.java
+	* src/de/schlund/pfixcore/webservice/monitor/MonitorHistory.java
 	* src/de/schlund/pfixcore/webservice/generate/WebServiceTask.java
+	* src/de/schlund/pfixcore/webservice/Constants.java
+	* src/de/schlund/pfixcore/webservice/AbstractService.java
+	* src/de/schlund/pfixcore/webservice/config/ConfigException.java
 	* src/de/schlund/pfixcore/webservice/config/ServiceConfig.java
-	* src/de/schlund/pfixcore/webservice/config/ConfigurationReader.java
+	* src/de/schlund/pfixcore/webservice/config/Configuration.java
+	* src/de/schlund/pfixcore/webservice/config/GlobalServiceConfig.java
+	* src/de/schlund/pfixcore/webservice/fault/FaultHandler.java
 	* src/de/schlund/pfixcore/webservice/fault/Fault.java
 	* src/de/schlund/pfixcore/webservice/handler/AbstractHandler.java
 	* src/de/schlund/pfixcore/webservice/handler/ErrorHandler.java
-
-2006-10-13  Martin Leidig  <mleidig@schlund.de>
-
-	Added SOAP support for all types supported by JSON. Fixed problem with
-	primitive wrapper types. Fixed webservice monitoring tool bugs (under IE).
-
-	* projects/core/script/webservice_json.js
 	* projects/core/script/webservice.js
+	* projects/webservice/txt/pages/main_chat.xml
+	* projects/webservice/txt/pages/main_counter.xml
+	* projects/webservice/txt/pages/main_typetest.xml
+	* projects/webservice/txt/pages/main_calculator.xml
+	* projects/webservice/txt/pages/main_data.xml
+	* projects/webservice/xml/two_frames.xml
+	* projects/webservice/htdocs/webservice.css
+	* projects/webservice/htdocs/calc-pfxsoap.js
+	* projects/webservice/htdocs/data-pfxsoap.js
+	* projects/webservice/htdocs/chat-pfxsoap.js
+	* projects/webservice/htdocs/counter-pfxsoap
 	* projects/webservice/htdocs/typetest-pfxsoap.js
-	* src/de/schlund/pfixcore/example/webservices/TypeTest.java
-	* src/de/schlund/pfixcore/example/webservices/TypeTestImpl.java
-	* src/de/schlund/pfixcore/webservice/WebServiceServlet.java
+	* projects/webservice/htdocs/application.js
+	* projects/webservice/conf/webservice.conf.xml
+	* skel/build-skel.xml
+
+	Added:
+	* src/de/schlund/pfixcore/webservice/ServiceDescriptor.java
+	* src/de/schlund/pfixcore/webservice/ServiceProcessor.java
+	* src/de/schlund/pfixcore/webservice/ServiceCallContext.java
+	* src/de/schlund/pfixcore/webservice/jsonws
 	* src/de/schlund/pfixcore/webservice/jsonws/SerializerRegistry.java
+	* src/de/schlund/pfixcore/webservice/jsonws/JSONSerializer.java
+	* src/de/schlund/pfixcore/webservice/jsonws/BeanDescriptor.java
+	* src/de/schlund/pfixcore/webservice/jsonws/Bean.java
+	* src/de/schlund/pfixcore/webservice/jsonws/DeserializationException.java
+	* src/de/schlund/pfixcore/webservice/jsonws/Serializer.java
+	* src/de/schlund/pfixcore/webservice/jsonws/DeserializerRegistry.java
+	* src/de/schlund/pfixcore/webservice/jsonws/serializers
+	* src/de/schlund/pfixcore/webservice/jsonws/serializers/BeanSerializer.java
+	* src/de/schlund/pfixcore/webservice/jsonws/serializers/StringSerializer.java
+	* src/de/schlund/pfixcore/webservice/jsonws/serializers/NumberSerializer.java
+	* src/de/schlund/pfixcore/webservice/jsonws/serializers/CalendarSerializer.java
+	* src/de/schlund/pfixcore/webservice/jsonws/serializers/ArraySerializer.java
+	* src/de/schlund/pfixcore/webservice/jsonws/serializers/BooleanSerializer.java
+	* src/de/schlund/pfixcore/webservice/jsonws/JSONDeserializer.java
+	* src/de/schlund/pfixcore/webservice/jsonws/Deserializer.java
+	* src/de/schlund/pfixcore/webservice/jsonws/JSONRequest.java
+	* src/de/schlund/pfixcore/webservice/jsonws/SerializationContext.java
+	* src/de/schlund/pfixcore/webservice/jsonws/JSONWSProcessor.java
+	* src/de/schlund/pfixcore/webservice/jsonws/deserializers
+	* src/de/schlund/pfixcore/webservice/jsonws/deserializers/ArrayDeserializer.java
+	* src/de/schlund/pfixcore/webservice/jsonws/deserializers/BooleanDeserializer.java
+	* src/de/schlund/pfixcore/webservice/jsonws/deserializers/BeanDeserializer.java
+	* src/de/schlund/pfixcore/webservice/jsonws/deserializers/StringDeserializer.java
 	* src/de/schlund/pfixcore/webservice/jsonws/deserializers/NumberDeserializer.java
+	* src/de/schlund/pfixcore/webservice/jsonws/deserializers/CalendarDeserializer.java
+	* src/de/schlund/pfixcore/webservice/jsonws/RequestDeserializer.java
 	* src/de/schlund/pfixcore/webservice/jsonws/DeserializationContext.java
+	* src/de/schlund/pfixcore/webservice/jsonws/CustomJSONObject.java
+	* src/de/schlund/pfixcore/webservice/jsonws/SerializationException.java
+	* src/de/schlund/pfixcore/webservice/jsonws/BeanDescriptorFactory.java
+	* src/de/schlund/pfixcore/webservice/ServiceRuntime.java
+	* src/de/schlund/pfixcore/webservice/HttpServiceRequest.java
+	* src/de/schlund/pfixcore/webservice/ServiceRequest.java
+	* src/de/schlund/pfixcore/webservice/ServiceRequestWrapper.java
+	* src/de/schlund/pfixcore/webservice/ServiceProcessingException.java
+	* src/de/schlund/pfixcore/webservice/ServiceResponse.java
+	* src/de/schlund/pfixcore/webservice/HttpServiceResponse.java
+	* src/de/schlund/pfixcore/webservice/ServiceException.java
+	* src/de/schlund/pfixcore/webservice/ServiceResponseWrapper.java
+	* src/de/schlund/pfixcore/webservice/utils
+	* src/de/schlund/pfixcore/webservice/utils/RecordingReader.java
+	* src/de/schlund/pfixcore/webservice/utils/XMLFormatter.java
+	* src/de/schlund/pfixcore/webservice/utils/RecordingRequestWrapper.java
+	* src/de/schlund/pfixcore/webservice/utils/RecordingInputStream.java
+	* src/de/schlund/pfixcore/webservice/utils/RecordingOutputStream.java
+	* src/de/schlund/pfixcore/webservice/utils/RecordingWriter.java
+	* src/de/schlund/pfixcore/webservice/utils/RecordingResponseWrapper.java
+	* src/de/schlund/pfixcore/webservice/config/ConfigurationReader.java
+	* src/de/schlund/pfixcore/webservice/ServiceRegistry.java
+	* src/de/schlund/pfixcore/webservice/json
+	* src/de/schlund/pfixcore/webservice/json/JSONObject.java
+	* src/de/schlund/pfixcore/webservice/json/JSONValue.java
+	* src/de/schlund/pfixcore/webservice/json/JSONArray.java
+	* src/de/schlund/pfixcore/webservice/json/JSONParser.jj
+	* src/de/schlund/pfixcore/webservice/json/parser
+	* src/de/schlund/pfixcore/webservice/json/parser/Token.java
+	* src/de/schlund/pfixcore/webservice/json/parser/TokenMgrError.java
+	* src/de/schlund/pfixcore/webservice/json/parser/JSONParserTokenManager.java
+	* src/de/schlund/pfixcore/webservice/json/parser/JSONParserConstants.java
+	* src/de/schlund/pfixcore/webservice/json/parser/SimpleCharStream.java
+	* src/de/schlund/pfixcore/webservice/json/parser/JSONParser.java
+	* src/de/schlund/pfixcore/webservice/json/parser/ParseException.java
+	* src/de/schlund/pfixcore/webservice/json/ParserUtils.java
+	* src/de/schlund/pfixcore/webservice/annotation
+	* src/de/schlund/pfixcore/webservice/annotation/Service.java
+	* src/de/schlund/pfixcore/webservice/annotation/ServiceMethod.java
+	* src/de/schlund/pfixcore/webservice/handler/RecordingHandler.java
+	* projects/core/script/webservice_json.js
+	* projects/core/script/httpRequest.js
+	* projects/core/conf/server-config.wsdd
+	* projects/webservice/txt/common.xml
+
+	Removed:
+	* src/de/schlund/pfixcore/webservice/config/ConfigProperties.java
+	* src/de/schlund/pfixcore/webservice/config/AbstractConfig.java
+	* src/de/schlund/pfixcore/webservice/WebServiceContext.java
+	* src/de/schlund/pfixcore/webservice/handler/MonitoringHandler.java
+	* src/de/schlund/pfixcore/webservice/handler/LoggingHandler.java
+	* src/de/schlund/pfixcore/webservice/handler/AuthenticationHandler.java
+	* projects/common/conf/server-config.wsdd
+	* projects/webservice/htdocs/calc-mysoap.js
+	* projects/webservice/htdocs/calc-wsdl.js
+	* projects/webservice/htdocs/data-soap.js
+	* projects/webservice/htdocs/counter-soap.js
+	* projects/webservice/htdocs/data-wsdl.js
+	* projects/webservice/htdocs/counter-wsdl.js
+	* projects/webservice/htdocs/webservice.htc
+	* projects/webservice/htdocs/calc-soap.js
 
 2006-10-13  Martin Leidig  <mleidig@schlund.de>
 
 	Added support for IE7's "native" XMLHttpRequest
 	* projects/core/script/xmlRequest.js
-	* projects/core/script/httpRequest.js 
 
 2006-10-02  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
 	* src/de/schlund/pfixcore/editor2/core/spring/ProjectFactoryServiceImpl.java: 
 	Adding try/catch-block to ensure that editor is initialized for other projects
 	even if one project fails.
-	
-	* src/de/schlund/pfixcore/workflow/Navigation.java: 
-	Adding customization support for navigation structure.
 
-2006-09-28  Sebastian Marsching  <sebastian.marsching@1und1.de>
-
-	* projects/core/schema/configfragments200609.xsd: 
-	* projects/core/schema/properties200401.xsd: 
-	Added config includes to XML Schema
-	
-	* projects/core/editor2/conf/edit.conf.xml: 
-	Removed end interceptor as it was incompatible with the new navigation
-	state rendering system
-	
-	* src/de/schlund/pfixcore/workflow/context/ServerContextImpl.java: 
+	* src/de/schlund/pfixcore/workflow/Context.java: 
 	* src/de/schlund/pfixcore/workflow/ContextResourceManager.java: 
+	* src/de/schlund/pfixcore/workflow/Navigation.java: 
 	* src/de/schlund/pfixxml/config/includes/IncludesResolver.java: 
 	* src/de/schlund/pfixxml/config/ContextConfig.java: 
 	* src/de/schlund/pfixxml/config/ContextInterceptorRule.java: 
 	* src/de/schlund/pfixxml/config/ContextResourceConfig.java: 
 	* src/de/schlund/pfixxml/config/ContextResourceRule.java: 
-	Extended config include mechanism to support inclusion of context resources
-	and context interceptors.
+	* projects/core/schema/properties200401.xsd: 
+	* projects/core/schema/configfragments200609.xsd: 
+	* projects/sample1/conf/fragments.xml: 
+	Support customization in navigation structure.
+	Moved context interceptor configuration from properties to (XML) objects.
 
 2006-09-26  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
+	* src/de/schlund/pfixcore/workflow/Context.java: 
+	* src/de/schlund/pfixxml/AppContext.java: 
+	* src/de/schlund/pfixxml/ContextXMLServer.java: 
+	Reload ContextConfig for each Context instance when server configuration
+	is reloaded.
+	
 	* src/de/schlund/pfixxml/config/includes/IncludesResolver.java: 
 	Removed reference to ContextXMLServletConfig to solve compile-time
 	dependency issues.
-
-2006-09-21  Sebastian Marsching  <sebastian.marsching@1und1.de>
-	* skel/build-skel.xml: Adjusted shell script parts to work
-	on Mac OS X, too.
 
 2006-09-20  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
@@ -140,59 +216,43 @@
 	(PropertyRule#end): 
 	Unescape special sequences (e.g. "\n", "\t") in property values
 
+2006-09-14  Martin Leidig  <mleidig@schlund.de>
+
+	* projects/core/xsl/deprecated/deprecated_master.xsl: Fixed __contextpath
+	problem: moved variable from xsl to ixsl scope.
+
 2006-09-13  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
 	* src/de/schlund/pfixxml/jmx/JmxServer.java (start): 
 	* src/de/schlund/pfixxml/jmx/JmxServerFactory.java: 
 	Now the MBeanServer is created by JmxServerFactory so that other
 	components can register their MBeans.
-	
-	* projects/testsuite/conf/depend.xml: 
-	* projects/testsuite/conf/test1.conf.xml: 
-	* src/de/schlund/pfixcore/testsuite/handler/Test5PageMessageHandler.java: 
-	* src/de/schlund/pfixcore/testsuite/wrapper/Test5PageMessage.iwrp: 
-	* projects/common/conf/factory.xml: 
-	* projects/testsuite/dyntxt/statusmessages.xml: 
-	* projects/testsuite/txt/pages/main_Start.xml: 
-	* projects/testsuite/txt/pages/test_Test5.xml: 
-	* projects/testsuite/txt/pages/test_Test5Failed.xml: 
-	* projects/testsuite/txt/pages/test_Test5Form.xml: 
-	Added test for pageflow handling
 
 2006-09-12  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
 	* projects/core/xsl/forminput.xsl: Avoiding event propagation when closing
 	IWrapper warning messages
 
+2006-09-08  Jens Lautenbacher  <jtl@schlund.de>
+
+	* projects/sample1/conf/depend.xml: added more comments
+	* projects/sample1/conf/depend.xml: cosmetics
+
+2006-09-06  Martin Leidig  <mleidig@schlund.de>                                       
+	* projects/core/build/iwrapper.xsl: changed generation of toString() method 
+	to output inherited params for extended iwrappers by calling super.toString()
+
+2006-09-06  Sebastian Marsching  <sebastian.marsching@1und1.de>
+
 	* src/de/schlund/pfixcore/util/GenerateSCodes.java (main): 
 	Added support for reading files in traditional property files format. This mode
 	is applied automatically, if the specified file has the suffix ".prop" or 
 	".properties".
-
-2006-09-08  Jens Lautenbacher  <jtl@schlund.de>
-
-	* projects/sample1/conf/depend.xml: added more comments
-
-2006-09-06  Martin Leidig  <mleidig@schlund.de>
-
-	* projects/core/build/iwrapper.xsl: changed generation of toString() method 
-	to output inherited params for extended iwrappers by calling super.toString()
-
-2006-08-28  Sebastian Marsching  <sebastian.marsching@1und1.de>
-
-	* projects/testsuite/txt/pages/main_Start.xml: 
-	* projects/testsuite/txt/pages/test_Test3.xml: 
-	* projects/testsuite/txt/pages/test_Test3Default.xml: 
-	* projects/testsuite/txt/pages/test_Test3SetVariant.xml: 
-	* projects/testsuite/txt/pages/test_Test3VariantA.xml: 
-	* projects/testsuite/txt/pages/test_Test4.xml: 
-	* projects/testsuite/txt/pages/test_Test4Failed.xml: 
-	* projects/testsuite/txt/pages/test_Test4Succeeded.xml: 
-	* projects/testsuite/conf/depend.xml: 
-	* projects/testsuite/conf/test1.conf.xml: 
-	* src/de/schlund/pfixcore/testsuite/handler/Test3SetVariantHandler.java: 
-	* src/de/schlund/pfixcore/testsuite/wrapper/Test3SetVariant.iwrp: 
-	Adding new tests
+	
+	* src/de/schlund/pfixxml/FactoryInitServlet.java (init): 
+	Removed code that looks for a "pfixlog.xml.in" before looking for "pfixlog.xml"
+	as this might cause problems in environments where the pfixlog.xml is
+	generated.
 
 2006-08-24  Jens Lautenbacher  <jtl@schlund.de>
 
@@ -234,11 +294,8 @@
 
 2006-08-23  Jens Lautenbacher  <jtl@schlund.de>
 
-	* src/de/schlund/pfixcore/workflow/ContextImpl.java
-	(ContextImpl::documentFromFlow): don't think pageflow that is set
-	because the variant may have changed is also user requested. This
-	broke MANY pages :-(
-	
+	* src/de/schlund/pfixcore/workflow/Context.java
+	(Context::documentFromFlow): bug fix for pageflow setting before flow
 
 2006-08-22  Jens Lautenbacher  <jtl@schlund.de>
 
@@ -266,33 +323,12 @@
 	cleanup Cookies if needed (more than 10 sec session cookies, or
 	cookies too old.)
 
-	* projects/sample1/conf/depend.xml: 
-	* projects/core/xsl/master.xsl: not yet ready changes to maybe
-	support customizing the excluded namespace prefixes
-	
-2006-08-15  Sebastian Marsching  <sebastian.marsching@1und1.de>
-
-	* src/de/schlund/pfixcore/workflow/ContextImpl.java: 
-	* src/de/schlund/pfixxml/serverutil/SessionHelper.java: 
-	* src/de/schlund/pfixxml/ServletManager.java: 
-	* projects/common/conf/pustefix.xml: 
-	Rewriting SSL redirect to support non-default SSL ports. Now a
-	pfixcore.ssl_redirect_port.for.<HTTP port> property can be set
-	in common/conf/pustefix.xml to specify a SSL port corresponding
-	to the used HTTP port.
-
 2006-08-15  Jens Lautenbacher  <jtl@schlund.de>
 
-	* src/de/schlund/pfixcore/workflow/ContextImpl.java
-	(ContextImpl::documentFromFlow): set pageflow to correct variant
-	before running flow.
-
-2006-08-15  Sebastian Marsching <sebastian.marsching@1und1.de>
-
-	* skel/build-skel.xml: 
-	Create a META-INF/context.xml file when deploying an application as a
-	WAR file to make sure session cookies are deactivated for the application
-	context.
+	* src/de/schlund/pfixcore/workflow/Context.java
+	(Context::documentFromFlow): set pageflow to correct variant
+	before running flow
+	
 
 2006-08-11  Jens Lautenbacher  <jtl@schlund.de>
 
@@ -304,257 +340,33 @@
 	(ServletManager::redirectToInsecureSSLSession): don't create a test
 	cookie when refuse_cookies
 
-	* src/de/schlund/pfixcore/workflow/ContextImpl.java: cosmetics
-	* src/de/schlund/pfixcore/workflow/Context.java: added missing
-	method getLanguage() to interface
+	* src/de/schlund/pfixcore/workflow/Context.java (Context::getLanguage): added missing method.
 
-2006-08-10  Sebastian Marsching  <sebastian.marsching@1und1.de>
+2006-07-24  Martin Leidig  <mleidig@schlund.de>
 
-	* src/de/schlund/pfixcore/workflow/ContextImpl.java (handleRequest): 
-	Reset the variant stored within the context to the session variant before
-	returning the SPDocument
-
-2006-08-07  Sebastian Marsching  <sebastian.marsching@1und1.de>
-
-	* src/de/schlund/pfixcore/editor2/core/spring/internal/ImageImpl.java: 
-	* src/de/schlund/pfixcore/editor2/core/spring/internal/IncludePartThemeVariantImpl.java: 
-	* src/de/schlund/pfixcore/editor2/core/spring/internal/ProjectImpl.java: 
-	* src/de/schlund/pfixcore/editor2/core/spring/internal/TargetAuxDepImpl.java: 
-	* src/de/schlund/pfixcore/editor2/core/spring/internal/TargetPfixImpl.java: 
-	* src/de/schlund/pfixcore/editor2/core/spring/IncludeFactoryServiceImpl.java: 
-	* src/de/schlund/pfixcore/editor2/core/spring/PathResolverServiceImpl.java: 
-	* src/de/schlund/pfixcore/editor2/frontend/resources/ImagesResourceImpl.java: 
-	* src/de/schlund/pfixcore/editor2/frontend/util/EditorApplicationContextFactory.java: 
-	* src/de/schlund/pfixcore/generator/IWrapper.java: 
-	* src/de/schlund/pfixcore/lucefix/ContextSearchImpl.java: 
-	* src/de/schlund/pfixcore/lucefix/DocumentCache.java: 
-	* src/de/schlund/pfixcore/lucefix/IncludeFileHandler.java: 
-	* src/de/schlund/pfixcore/lucefix/PfixQueueManager.java: 
-	* src/de/schlund/pfixcore/lucefix/PfixReadjustment.java: 
-	* src/de/schlund/pfixcore/scriptedflow/compiler/Compiler.java: 
-	* src/de/schlund/pfixcore/scriptedflow/ScriptedFlowConfig.java: 
-	* src/de/schlund/pfixcore/scripting/ScriptingUtil.java: 
-	* src/de/schlund/pfixcore/util/CheckIncludes.java: 
-	* src/de/schlund/pfixcore/util/Cleanup.java: 
-	* src/de/schlund/pfixcore/util/DelLang.java: 
-	* src/de/schlund/pfixcore/util/GenerateSCodes.java: 
-	* src/de/schlund/pfixcore/util/TargetGeneratorTask.java: 
-	* src/de/schlund/pfixcore/util/XsltCustomizeXmlTask.java: 
-	* src/de/schlund/pfixcore/webservice/config/ConfigurationReader.java: 
-	* src/de/schlund/pfixcore/webservice/generate/WebServiceTask.java: 
-	* src/de/schlund/pfixcore/webservice/WebServiceServlet.java: 
-	* src/de/schlund/pfixcore/workflow/app/FileDownloadDOState.java: 
-	* src/de/schlund/pfixcore/workflow/app/IWrapperSimpleContainer.java: 
-	* src/de/schlund/pfixcore/workflow/Navigation.java: 
-	* src/de/schlund/pfixcore/workflow/NavigationFactory.java: 
-	* src/de/schlund/pfixxml/config/BuildTimeProperties.java: 
-	* src/de/schlund/pfixxml/config/ContextXMLServletConfig.java: 
-	* src/de/schlund/pfixxml/config/CustomizationHandler.java: 
-	* src/de/schlund/pfixxml/config/DirectOutputServletConfig.java: 
-	* src/de/schlund/pfixxml/config/GlobalConfig.java: 
-	* src/de/schlund/pfixxml/config/GlobalConfigurator.java: 
-	* src/de/schlund/pfixxml/config/XMLPropertiesUtil.java: 
-	* src/de/schlund/pfixxml/exceptionhandler/PropertyManager.java: 
-	* src/de/schlund/pfixxml/exceptionprocessor/UniversalExceptionProcessor.java: 
-	* src/de/schlund/pfixxml/jmx/Environment.java: 
-	* src/de/schlund/pfixxml/jmx/JmxServer.java: 
-	* src/de/schlund/pfixxml/jmx/JmxServerFactory.java: 
-	* src/de/schlund/pfixxml/loader/AppClassLoader.java: 
-	* src/de/schlund/pfixxml/loader/AppLoader.java: 
-	* src/de/schlund/pfixxml/loader/AppLoaderConfig.java: 
-	* src/de/schlund/pfixxml/resources/DocrootResource.java: 
-	* src/de/schlund/pfixxml/resources/DocrootResourceImpl.java: 
-	* src/de/schlund/pfixxml/resources/FileResource.java: 
-	* src/de/schlund/pfixxml/resources/FileSystemResource.java: 
-	* src/de/schlund/pfixxml/resources/FileSystemResourceImpl.java: 
-	* src/de/schlund/pfixxml/resources/ResourceUtil.java: 
-	* src/de/schlund/pfixxml/targets/cachestat/SPCacheStatistic.java: 
-	* src/de/schlund/pfixxml/targets/AuxDependencyFactory.java: 
-	* src/de/schlund/pfixxml/targets/AuxDependencyFile.java: 
-	* src/de/schlund/pfixxml/targets/AuxDependencyImage.java: 
-	* src/de/schlund/pfixxml/targets/AuxDependencyInclude.java: 
-	* src/de/schlund/pfixxml/targets/AuxDependencyManager.java: 
-	* src/de/schlund/pfixxml/targets/AuxDependencyTarget.java: 
-	* src/de/schlund/pfixxml/targets/LeafTarget.java: 
-	* src/de/schlund/pfixxml/targets/SharedLeaf.java: 
-	* src/de/schlund/pfixxml/targets/SharedLeafFactory.java: 
-	* src/de/schlund/pfixxml/targets/TargetGenerator.java: 
-	* src/de/schlund/pfixxml/targets/TargetGeneratorFactory.java: 
-	* src/de/schlund/pfixxml/targets/TargetImpl.java: 
-	* src/de/schlund/pfixxml/targets/VirtualTarget.java: 
-	* src/de/schlund/pfixxml/targets/XMLLeafTarget.java: 
-	* src/de/schlund/pfixxml/targets/XMLVirtualTarget.java: 
-	* src/de/schlund/pfixxml/targets/XSLLeafTarget.java: 
-	* src/de/schlund/pfixxml/targets/XSLVirtualTarget.java: 
-	* src/de/schlund/pfixxml/util/logging/ProxyLogAppender.java: 
-	* src/de/schlund/pfixxml/util/logging/ProxyLogFactory.java: 
-	* src/de/schlund/pfixxml/util/logging/ProxyLogObject.java: 
-	* src/de/schlund/pfixxml/util/logging/ProxyLogUtil.java: 
-	* src/de/schlund/pfixxml/util/Xml.java: 
-	* src/de/schlund/pfixxml/util/Xslt.java: 
-	* src/de/schlund/pfixxml/AbstractXMLServer.java: 
-	* src/de/schlund/pfixxml/ContextXMLServer.java: 
-	* src/de/schlund/pfixxml/DependencyTracker.java: 
-	* src/de/schlund/pfixxml/DerefServer.java: 
-	* src/de/schlund/pfixxml/DirectOutputServlet.java: 
-	* src/de/schlund/pfixxml/FactoryInitServlet.java: 
-	* src/de/schlund/pfixxml/ImageGeometry.java: 
-	* src/de/schlund/pfixxml/ImageGeometryData.java: 
-	* src/de/schlund/pfixxml/ImageThemedSrc.java: 
-	* src/de/schlund/pfixxml/IncludeDocument.java: 
-	* src/de/schlund/pfixxml/IncludeDocumentExtension.java: 
-	* src/de/schlund/pfixxml/IncludeDocumentFactory.java: 
-	* src/de/schlund/pfixxml/ProjectInitFactory.java: 
-	* src/de/schlund/pfixxml/ResultDocument.java: 
-	* src/de/schlund/pfixxml/ServletManager.java: 
-	* src/de/schlund/util/statuscodes/StatusCode.java: 
-	* lib/commons-logging-1.0.4.jar: 
-	* projects/common/conf/factory.xml: 
-	* projects/core/build/create_webxml.xsl: 
-	* projects/webservice/xml/two_frames.xml: 
-	* skel/build-skel.xml: 
-	* tests/junit/de/schlund/pfixxml/targets/TargetGeneratorTest.java: 
-	* tests/junit/de/schlund/pfixxml/util/XsltTest.java: 
-	Deprecated PathFactory in favor of the new ResourceUtil class which provides
-	a cleaner and more universal approach to access file resources. However
-	the PathFactory and its corresponding Path class can still be used by 
-	application developers, although they are disencouraged to do so. Pfixcore
-	itself does not use the PathFactory any more.
-	The Xslt#loadTemplates(...) methods now are not synchronized. Instead the
-	TransformerFactory is stored in ThreadLocal.
-
-2006-08-03  Martin Leidig  <mleidig@schlund.de>
-
-	Replaced json.org and json-rpc libraries by our own
-	JSON parsing/serialization/deserialization implementations.
-
-	The new package de.schlund.pfixcore.webservice.json contains
-	a JSON parser and an abstract Java model representing JSON
-	data (replaces the json.org library).
-
-	The new package de.schlund.pfixcore.webservice.jsonws contains
-	a JSON serialization/deserialization framework and a ServiceProcessor
-	implementation (replaces the json-rpc library).
-
-	Modified:
-
-	* src/de/schlund/pfixcore/example/webservices/chat/Message.java
-	* src/de/schlund/pfixcore/example/webservices/TypeTest.java
-	* src/de/schlund/pfixcore/webservice/ServiceDescriptor.java
-	* src/de/schlund/pfixcore/webservice/WebServiceServlet.java
-	* src/de/schlund/pfixcore/webservice/ServiceRuntime.java
-	* src/de/schlund/pfixcore/webservice/ServiceRegistry.java
-	* projects/core/script/webservice_json.js
-	* projects/webservice/htdocs/chat-pfxsoap.js
-	* projects/webservice/htdocs/application.js
-	* build.xml
-	* .classpath
+	Connected webservice fault handling to general exception processing
+	mechanism. ExceptionProcessorAdapter is a special FaultHandler
+	implementation which can be used to forward webservice exceptions
+	to the ExceptionProcessor implementation, which is used to handle
+	the normal exceptions. Like any other FaultHandler it can be set
+	and configured per webservice or globally in the webservice configuration
+	file.
 
 	Added:
+	* src/de/schlund/pfixcore/webservice/fault/ExceptionProcessorAdapter.java
 
-	* src/de/schlund/pfixcore/webservice/jsonws
-	* src/de/schlund/pfixcore/webservice/jsonws/SerializerRegistry.java
-	* src/de/schlund/pfixcore/webservice/jsonws/JSONSerializer.java
-	* src/de/schlund/pfixcore/webservice/jsonws/BeanDescriptor.java
-	* src/de/schlund/pfixcore/webservice/jsonws/DeserializationException.java
-	* src/de/schlund/pfixcore/webservice/jsonws/Bean.java
-	* src/de/schlund/pfixcore/webservice/jsonws/Serializer.java
-	* src/de/schlund/pfixcore/webservice/jsonws/DeserializerRegistry.java
-	* src/de/schlund/pfixcore/webservice/jsonws/serializers
-	* src/de/schlund/pfixcore/webservice/jsonws/serializers/BeanSerializer.java
-	* src/de/schlund/pfixcore/webservice/jsonws/serializers/StringSerializer.java
-	* src/de/schlund/pfixcore/webservice/jsonws/serializers/NumberSerializer.java
-	* src/de/schlund/pfixcore/webservice/jsonws/serializers/CalendarSerializer.java
-	* src/de/schlund/pfixcore/webservice/jsonws/serializers/ArraySerializer.java
-	* src/de/schlund/pfixcore/webservice/jsonws/serializers/BooleanSerializer.java
-	* src/de/schlund/pfixcore/webservice/jsonws/JSONDeserializer.java
-	* src/de/schlund/pfixcore/webservice/jsonws/SerializationContext.java
-	* src/de/schlund/pfixcore/webservice/jsonws/JSONRequest.java
-	* src/de/schlund/pfixcore/webservice/jsonws/Deserializer.java
-	* src/de/schlund/pfixcore/webservice/jsonws/JSONWSProcessor.java
-	* src/de/schlund/pfixcore/webservice/jsonws/deserializers
-	* src/de/schlund/pfixcore/webservice/jsonws/deserializers/ArrayDeserializer.java
-	* src/de/schlund/pfixcore/webservice/jsonws/deserializers/BooleanDeserializer.java
-	* src/de/schlund/pfixcore/webservice/jsonws/deserializers/BeanDeserializer.java
-	* src/de/schlund/pfixcore/webservice/jsonws/deserializers/StringDeserializer.java
-	* src/de/schlund/pfixcore/webservice/jsonws/deserializers/NumberDeserializer.java
-	* src/de/schlund/pfixcore/webservice/jsonws/deserializers/CalendarDeserializer.java
-	* src/de/schlund/pfixcore/webservice/jsonws/RequestDeserializer.java
-	* src/de/schlund/pfixcore/webservice/jsonws/DeserializationContext.java
-	* src/de/schlund/pfixcore/webservice/jsonws/CustomJSONObject.java
-	* src/de/schlund/pfixcore/webservice/jsonws/SerializationException.java
-	* src/de/schlund/pfixcore/webservice/jsonws/BeanDescriptorFactory.java
-	* src/de/schlund/pfixcore/webservice/json
-	* src/de/schlund/pfixcore/webservice/json/JSONObject.java
-	* src/de/schlund/pfixcore/webservice/json/JSONValue.java
-	* src/de/schlund/pfixcore/webservice/json/JSONParser.jj
-	* src/de/schlund/pfixcore/webservice/json/JSONArray.java
-	* src/de/schlund/pfixcore/webservice/json/parser
-	* src/de/schlund/pfixcore/webservice/json/parser/TokenMgrError.java
-	* src/de/schlund/pfixcore/webservice/json/parser/Token.java
-	* src/de/schlund/pfixcore/webservice/json/parser/JSONParserTokenManager.java
-	* src/de/schlund/pfixcore/webservice/json/parser/SimpleCharStream.java
-	* src/de/schlund/pfixcore/webservice/json/parser/JSONParserConstants.java
-	* src/de/schlund/pfixcore/webservice/json/parser/JSONParser.java
-	* src/de/schlund/pfixcore/webservice/json/parser/ParseException.java
-	* src/de/schlund/pfixcore/webservice/json/ParserUtils.java
-	* src/de/schlund/pfixcore/webservice/annotation/ServiceMethod.java
-
-	Removed:
-
-	* src/de/schlund/pfixcore/webservice/jsonrpc
-	* src/de/schlund/pfixcore/webservice/jsonrpc/CalendarSerializer.java
-	* src/de/schlund/pfixcore/webservice/jsonrpc/CustomJSONObject.java
-	* src/de/schlund/pfixcore/webservice/jsonrpc/JSONRPCProcessor.java
-	* lib/jsonrpc-1.0-patched.jar
-
-2006-08-01  Sebastian Marsching  <sebastian.marsching@1und1.de>
-
-	* src/de/schlund/pfixxml/FactoryInitServlet.java (init): 
-	Removed check for old "pfixlog.xml.in" file, now only the specified
-	filename is tried, no ".in" suffix is added anymore.
-	
-	* src/de/schlund/pfixxml/config/ContextResourcePropertyRule.java (end): 
-	* src/de/schlund/pfixxml/config/DirectPagerequestPropertyRule.java (end): 
-	* src/de/schlund/pfixxml/config/PagerequestPropertyRule.java (end): 
-	* src/de/schlund/pfixxml/config/PropertyRule.java (end): 
-	* src/de/schlund/pfixxml/config/ServletPropertyRule.java (end): 
-	* src/de/schlund/pfixxml/config/XMLPropertiesUtil.java (end): 
-	Added code for logging a warning when an already set property is overwritten
-	with a new value.
-
-	* src/de/schlund/pfixxml/config/PageRequestConfig.java: 
-	Removed setProperty() method
-
-	* skel/build-skel.xml: Adding dependency on "tomcat.dir.opt" in target "ant-tasks"
-	because this is needed when building a fresh skeleton environment.
-
-2006-07-30  Sebastian Marsching  <sebastian.marsching@1und1.de>
-
-	* projects/core/xsl/include.xsl: Fixing typo in include.xsl ("src=" is not a valid 
-	attribute name!)
-
-2006-07-28  Sebastian Marsching  <sebastian.marsching@1und1.de>
-
-	* projects/core/xsl/include.xsl: 
-	Changed templates so "__contextpath" stuff works, if the templates are used
-	at runtime.
-	
-	* projects/core/xsl/deprecated/deprecated_master.xsl: 
-	Moving use of "__contextpath" from xsl to ixsl-namespace, as __contextpath
-	is a runtime setting.
-
-2006-07-24  Sebastian Marsching  <sebastian.marsching@1und1.de>
-
-	* src/de/schlund/pfixxml/FactoryInitServlet.java (init): 
-	Removed compatibility code, that looked for a "pfixlog.xml.in"
+	Modified:
+	* src/de/schlund/pfixcore/webservice/WebServiceServlet.java
+	* src/de/schlund/pfixcore/webservice/generate/WebServiceTask.java
+	* src/de/schlund/pfixcore/webservice/fault/Fault.java
+	* src/de/schlund/pfixcore/webservice/handler/AbstractHandler.java
+	* src/de/schlund/pfixcore/webservice/handler/ErrorHandler.java
 
 2006-07-20  Martin Leidig  <mleidig@schlund.de>
 
 	* projects/core/xsl/include.xsl: fixed pfx:image problem concerning
 	runtime transformations (uninterpreted __contextpath variable when
 	transformed at runtime, which was leading to broken image paths)
-
 
 2006-07-17  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
@@ -564,7 +376,7 @@
 	Changed ContextConfig to take a reference to a Properties object instead of
 	creating its own thus allowing modifications to the object to propagate to
 	the context. Reintroduced special property "__PROPERTIES_LOAD_INDEX".
-	
+
 	* src/de/schlund/pfixxml/config/ServletManagerConfig.java (setProperties): 
 	* src/de/schlund/pfixxml/config/PageRequestConfig.java (setProperties): 
 	* src/de/schlund/pfixxml/config/DirectOutputPageRequestConfig.java (setProperties): 
@@ -574,160 +386,14 @@
 	with buggy code using the inappropriate Properties#get(Object) method instead
 	of Properties#getProperty(String)
 
-2006-07-14  Sebastian Marsching  <sebastian.marsching@1und1.de>
-
-	* projects/core/schema/properties200401.xsd: 
-	Updating XML schema to match new configuration file format
-
 2006-07-10  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
 	* stuff/migration-tool/src/do_migration.sh: 
 	Fixing classpath problems
 	
-	* src/de/schlund/pfixxml/ContextXMLServer.java (getDom): 
-	Moved check for VM exit state in finally block, so it is honored even
-	if an exception is thrown
-	
 	* src/de/schlund/pfixcore/scriptedflow/vm/ScriptVM.java (run): 
-	Made sure that scripted flow is canceled when an exception occurs
-
-2006-07-07  Martin Leidig  <mleidig@schlund.de>
-
-	Added support for JSON as (web)service protocol. It can be
-	used just as a SOAP service: you just have to instantiate a
-	stub and can call the remote methods. In contrast to SOAP stubs
-	the JSON stubs are Dynamic Proxies which request the method
-	descriptions from the server and dynamically create according
-	Javascript methods. JSON and SOAP stubs are largely compatible
-	for the caller, so they can be used together and migrating in
-	between should work without code changes.
-
-	Introduced general service runtime and processing layer, into
-	which different service protocols can be plugged by implementing
-	the ServiceProcessor interface.
-	Refactored monitoring and logging facilities. Made them service
-	independent and transparent for service processors. Authentication
-	now also is done on service runtime level (removed all special
-	handling within according Axis request/response handlers).
-	Refactored the webservice configuration system, now it's completely
-	XML based, no more property stuff.
-	The JSON services use parts of the JSON-RPC framework for
-	serialization/deserialization. Added some patches to it: fixed
-	problem with float number precision in the included json.org code,
-	moved the org.json package down in the package hierarchy to 
-	support other implementations, added support for sending the
-	exceptions names as part of the JSON response.
-	Integrated the JSON framework: added special Date handler for
-	Calendar support (compatibility with SOAP-Java-Binding). 
-	Implemented general service registry mechanism for service
-	description and instance creation/management.
-
-	Refactored all webservice sample applications, added switchable 
-	support for SOAP and JSON protocol, removed proprietary/browser
-	dependent stuff. 
-	
-
-	Added:
-
-	* src/de/schlund/pfixcore/webservice/ServiceDescriptor.java
-	* src/de/schlund/pfixcore/webservice/ServiceProcessor.java
-	* src/de/schlund/pfixcore/webservice/ServiceCallContext.java
-	* src/de/schlund/pfixcore/webservice/ServiceRuntime.java
-	* src/de/schlund/pfixcore/webservice/HttpServiceRequest.java
-	* src/de/schlund/pfixcore/webservice/ServiceRequest.java
-	* src/de/schlund/pfixcore/webservice/ServiceRequestWrapper.java
-	* src/de/schlund/pfixcore/webservice/ServiceProcessingException.java
-	* src/de/schlund/pfixcore/webservice/HttpServiceResponse.java
-	* src/de/schlund/pfixcore/webservice/ServiceResponse.java
-	* src/de/schlund/pfixcore/webservice/ServiceException.java
-	* src/de/schlund/pfixcore/webservice/ServiceResponseWrapper.java
-	* src/de/schlund/pfixcore/webservice/utils
-	* src/de/schlund/pfixcore/webservice/utils/RecordingReader.java
-	* src/de/schlund/pfixcore/webservice/utils/XMLFormatter.java
-	* src/de/schlund/pfixcore/webservice/utils/RecordingRequestWrapper.java
-	* src/de/schlund/pfixcore/webservice/utils/RecordingInputStream.java
-	* src/de/schlund/pfixcore/webservice/utils/RecordingOutputStream.java
-	* src/de/schlund/pfixcore/webservice/utils/RecordingWriter.java
-	* src/de/schlund/pfixcore/webservice/utils/RecordingResponseWrapper.java
-	* src/de/schlund/pfixcore/webservice/config/ConfigurationReader.java
-	* src/de/schlund/pfixcore/webservice/ServiceRegistry.java
-	* src/de/schlund/pfixcore/webservice/annotation
-	* src/de/schlund/pfixcore/webservice/annotation/Service.java
-	* src/de/schlund/pfixcore/webservice/handler/RecordingHandler.java
-	* src/de/schlund/pfixcore/webservice/jsonrpc
-	* src/de/schlund/pfixcore/webservice/jsonrpc/CalendarSerializer.java
-	* src/de/schlund/pfixcore/webservice/jsonrpc/CustomJSONObject.java
-	* src/de/schlund/pfixcore/webservice/jsonrpc/JSONRPCProcessor.java
-	* projects/core/script/webservice_json.js
-	* projects/core/script/httpRequest.js
-	* projects/webservice/txt/common.xml
-	* lib/jsonrpc-1.0-patched.jar
-
-	Modified:
-
-	* src/de/schlund/pfixcore/example/webservices/chat/Message.java
-	* src/de/schlund/pfixcore/example/webservices/chat/ChatServer.java
-	* src/de/schlund/pfixcore/example/webservices/TypeTest.java
-	* src/de/schlund/pfixcore/example/webservices/TypeTestImpl.java
-	* src/de/schlund/pfixcore/example/webservices/CalculatorImpl.java
-	* src/de/schlund/pfixcore/webservice/WebServiceServlet.java
-	* src/de/schlund/pfixcore/webservice/monitor/MonitorRecord.java
-	* src/de/schlund/pfixcore/webservice/monitor/Monitor.java
-	* src/de/schlund/pfixcore/webservice/monitor/MonitorHistory.java
-	* src/de/schlund/pfixcore/webservice/generate/WebServiceTask.java
-	* src/de/schlund/pfixcore/webservice/Constants.java
-	* src/de/schlund/pfixcore/webservice/AbstractService.java
-	* src/de/schlund/pfixcore/webservice/config/ConfigException.java
-	* src/de/schlund/pfixcore/webservice/config/ServiceConfig.java
-	* src/de/schlund/pfixcore/webservice/config/Configuration.java
-	* src/de/schlund/pfixcore/webservice/config/GlobalServiceConfig.java
-	* src/de/schlund/pfixcore/webservice/fault/FaultHandler.java
-	* src/de/schlund/pfixcore/webservice/fault/Fault.java
-	* src/de/schlund/pfixcore/webservice/handler/AbstractHandler.java
-	* src/de/schlund/pfixcore/webservice/handler/ErrorHandler.java
-	* projects/common/conf/server-config.wsdd
-	* projects/core/schema/wsconfig200401.xsd
-	* projects/webservice/txt/pages/main_chat.xml
-	* projects/webservice/txt/pages/main_counter.xml
-	* projects/webservice/txt/pages/main_typetest.xml
-	* projects/webservice/txt/pages/main_calculator.xml
-	* projects/webservice/txt/pages/main_data.xml
-	* projects/webservice/xml/two_frames.xml
-	* projects/webservice/htdocs/webservice.css
-	* projects/webservice/htdocs/calc-pfxsoap.js
-	* projects/webservice/htdocs/data-pfxsoap.js
-	* projects/webservice/htdocs/counter-pfxsoap.js
-	* projects/webservice/htdocs/chat-pfxsoap.js
-	* projects/webservice/htdocs/typetest-pfxsoap.js
-	* projects/webservice/htdocs/application.js
-	* projects/webservice/conf/webservice.conf.xml
-	* .classpath
-
-	Removed:
-
-	* src/de/schlund/pfixcore/webservice/WebServiceContext.java
-	* src/de/schlund/pfixcore/webservice/config/ConfigProperties.java
-	* src/de/schlund/pfixcore/webservice/config/AbstractConfig.java
-	* src/de/schlund/pfixcore/webservice/handler/MonitoringHandler.java
-	* src/de/schlund/pfixcore/webservice/handler/LoggingHandler.java
-	* src/de/schlund/pfixcore/webservice/handler/AuthenticationHandler.java
-	* projects/webservice/htdocs/calc-mysoap.js
-	* projects/webservice/htdocs/data-soap.js
-	* projects/webservice/htdocs/calc-wsdl.js
-	* projects/webservice/htdocs/counter-soap.js
-	* projects/webservice/htdocs/data-wsdl.js
-	* projects/webservice/htdocs/counter-wsdl.js
-	* projects/webservice/htdocs/webservice.htc
-	* projects/webservice/htdocs/calc-soap.js
-
-
-2006-07-07  Sebastian Marsching  <sebastian.marsching@1und1.de>
-
-	* lib/ant-contrib-1.0b2.jar: 
-	* skel/build-skel.xml: 
-	Changed conversion tasks to exclude modules directory. Added a feature
-	to allow modules to distribute their own "build.xml" which will be run
-	after the module has been unpacked
+	* src/de/schlund/pfixxml/ContextXMLServer.java (getDom): 
+	Backporting exception fix from trunk
 
 2006-07-06  Jens Lautenbacher  <jtl@schlund.de>
 
@@ -735,76 +401,6 @@
 	(ServletManager::getServerName): make public static
 	* src/de/schlund/pfixcore/workflow/ContextImpl.java (ContextImpl::handleRequest): 
 	use it here in the redirect to SSL processing
-
-2006-07-04  Jens Lautenbacher  <jtl@schlund.de>
-
-	* projects/core/xsl/master.xsl: make sure that $navitree is also
-	valid in the final generated stylesheet (that means: at runtime)
-	so it's still possible to iterate over the pages in runtime code.
-
-	* projects/sample1/txt/pages/main_home.xml: fix accordingly (use
-	$navitree//pages instead of /formresult/navigation//pages)
-
-	* src/de/schlund/pfixcore/workflow/Context.java
-	* src/de/schlund/pfixcore/workflow/ContextImpl.java
-	* src/de/schlund/pfixcore/workflow/app/DefaultAuthIWrapperState.java
-	* src/de/schlund/pfixcore/workflow/app/DefaultIWrapperState.java
-	* src/de/schlund/pfixcore/workflow/app/StaticState.java
-	* src/de/schlund/pfixcore/workflow/context/SessionContextImpl.java
-	* src/de/schlund/pfixxml/AbstractXMLServer.java: removed all the
-	navigation generating and handling stuff
-
-	* src/de/schlund/pfixxml/SessionCleaner.java: 
-	* src/de/schlund/pfixxml/AbstractXMLServer.java: changed to handle
-	storing of more than one SPDocument in a LRUCache, make sure that
-	they are cleared with a TimerTask when needed and other little
-	fixes to make the callback to not store a spdoc work in the case
-	of an SSL redirect. 
-
-	* src/de/schlund/pfixcore/workflow/ContextImpl.java
-	(ContextImpl::handleRequest): set the Context as a xslt param in
-	the spdoc.
-	(ContextImpl::handleRequestWorker): no longer synchronized.
-	(ContextImpl::isPageAccessible): synchronize if config says so.
-	(ContextImpl::isPageAccessibleWorker): used from mthod above.
-	(ContextImpl::isPageAlreadyVisited): new method: check to see if
-	page has already been visited in this session.
-
-	* projects/core/xsl/master.xsl: 2 new params __context__ and
-	__spdoc__ containing opaque java objects used in callbacks. 
-	Set the nostore flag in the spdoc whenever we don't use frames AND
-	$prohibitEdit != 'no'.
-
-	* projects/core/xsl/navigation.xsl: 
-	* projects/core/xsl/forminput.xsl: use callbacks instead of /formresult/navigation
-
-	* projects/core/xsl/xmlfontify.xsl: no longer handle /formresult/navigation
-
-	* src/de/schlund/pfixcore/util/TransformerCallback.java: new
-	class, used as XSLT callbacks
-
-	* src/de/schlund/pfixcore/workflow/context/AccessibilityChecker.java
-	(AccessibilityChecker::isPageAlreadyVisited): new method
-
-	* src/de/schlund/pfixxml/util/SimpleCacheLRU.java: new
-	class. Implement a LRU Cache with a remove method...
-
-	* src/de/schlund/pfixxml/util/Xslt.java (Xslt::transform): 	
-	* src/de/schlund/pfixxml/ContextXMLServer.java (ContextXMLServer::getDom): cosmetics
-
-2006-07-04  Sebastian Marsching  <sebastian.marsching@1und1.de>
-
-	* build.xml: Exclude testsuite classes from being bundled with
-	the JAR generated for distribution purposes
-	
-	* src/de/schlund/pfixcore/testsuite/*: 
-	* projects/testsuite/*: 
-	Created new project containing tests for pfixcore
-
-2006-07-04  Ute Platzer <up@schlund.de>
-        * skel/build-skel.xml:
-	fix problem with clean-modules/extract-modules targets: use a
-	timestamp to determine when to delete and re-extract the modules.
 
 2006-07-03  Jens Lautenbacher  <jtl@schlund.de>
 
@@ -816,39 +412,9 @@
 
 2006-07-03  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
-	* src/de/schlund/pfixcore/scriptedflow/vm/ScriptVM.java: 
-	* src/de/schlund/pfixcore/util/DummyContextFactory.java: 
-	* src/de/schlund/pfixcore/webservice/handler/AuthenticationHandler.java: 
-	* src/de/schlund/pfixcore/webservice/WebServiceServlet.java: 
-	* src/de/schlund/pfixcore/workflow/app/DefaultIWrapperState.java: 
-	* src/de/schlund/pfixcore/workflow/context/AccessibilityChecker.java: 
-	* src/de/schlund/pfixcore/workflow/context/ServerContextImpl.java: 
-	* src/de/schlund/pfixcore/workflow/context/SessionContextImpl.java: 
-	* src/de/schlund/pfixcore/workflow/Context.java: 
-	* src/de/schlund/pfixcore/workflow/ContextImpl.java: 
-	* src/de/schlund/pfixcore/workflow/FlowStepJumpToAction.java: 
-	* src/de/schlund/pfixcore/workflow/FlowStepSetFlowAction.java: 
-	* src/de/schlund/pfixcore/workflow/PageFlow.java: 
-	* src/de/schlund/pfixcore/workflow/PageFlowManager.java: 
-	* src/de/schlund/pfixcore/workflow/PageMap.java: 
-	* src/de/schlund/pfixcore/workflow/VariantManager.java: 
-	* src/de/schlund/pfixxml/contextxmlserver/*: 
-	* src/de/schlund/pfixxml/ContextXMLServer.java: 
-	* src/de/schlund/pfixxml/DirectOutputServlet.java: 
-	Moved context related code back to de.schlund.pfixcore.workflow package.
-	Removed ContextWrapper class and RequestContext interface, renaming
-	RequestContextImpl to ContextImpl and made it directly implement Context.
-	
 	* skel/build-skel.xml: Creating a dummy log4j config when
 	Tomcat is extracted in order to decrease the time Tomcat 
 	needs for starting
-
-2006-06-30  Sebastian Marsching  <sebastian.marsching@1und1.de>
-
-	* src/de/schlund/pfixxml/FactoryInitServlet.java (fatalError): 
-	* projects/core/build/create_log4j_config.xsl: 
-	* projects/core/schema/log4j.dtd: 
-	Enabling DTD validation for log4j configuration
 
 2006-06-29 Niels Schelbach <niels@schlund.de>
 	* projects/core/build/create_apacheconf.xsl: add extendedvhost
@@ -858,63 +424,16 @@
 
 2006-06-27  Jens Lautenbacher  <jtl@schlund.de>
 
-	* projects/core/schema/properties200401.xsd: add synchronized
-	attribute for context tag
-
 	* src/de/schlund/pfixxml/ServletManager.java
 	(ServletManager::getServerName): new method. Will return
 	req.getServername() but prefer the value of the header
 	X-Forwarded-Server if it is set.
-
-2006-06-26  Sebastian Marsching  <sebastian.marsching@1und1.de>
-
-	* src/de/schlund/pfixcore/example/ContextCounterImpl.java: 
-	* src/de/schlund/pfixcore/example/CounterHandler.java: 
-	* src/de/schlund/pfixcore/example/CounterSetHandler.java: 
-	Changed bad example for page messages in order to better 
-	reflect the actual way page messages should be used.
-	
-	* src/de/schlund/pfixxml/config/ContextConfig.java: 
-	* src/de/schlund/pfixxml/config/ContextRule.java: 
-	* src/de/schlund/pfixxml/config/DirectForeignContextRule.java: 
-	* src/de/schlund/pfixxml/config/DirectOutputServletConfig.java: 
-	* src/de/schlund/pfixxml/contextxmlserver/RequestContextImpl.java: 
-	* src/de/schlund/pfixxml/DirectOutputServlet.java: 
-	Made synchronization of requests switchable
 
 2006-06-19  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
 	* projects/core/xsl/include.xsl: 
 	Fixed editor links for dynincludes.
 	
-	* src/de/schlund/pfixcore/webservice/WebServiceServlet.java (doPost): 
-	* src/de/schlund/pfixcore/scriptedflow/vm/ScriptVM.java: 
-	* src/de/schlund/pfixcore/webservice/handler/AuthenticationHandler.java: 
-	* src/de/schlund/pfixcore/workflow/context/RequestContext.java: 
-	* src/de/schlund/pfixcore/workflow/context/ServerContext.java: 
-	* src/de/schlund/pfixcore/workflow/context/SessionContext.java: 
-	* src/de/schlund/pfixcore/workflow/AuthContext.java: 
-	* src/de/schlund/pfixcore/workflow/Context.java: 
-	* src/de/schlund/pfixcore/workflow/PageFlow.java: 
-	* src/de/schlund/pfixxml/config/ContextConfig.java: 
-	* src/de/schlund/pfixxml/config/ContextRule.java: 
-	* src/de/schlund/pfixxml/contextxmlserver/AccessibilityChecker.java: 
-	* src/de/schlund/pfixxml/contextxmlserver/ContextWrapper.java: 
-	* src/de/schlund/pfixxml/contextxmlserver/PageFlowManager.java: 
-	* src/de/schlund/pfixxml/contextxmlserver/PageMap.java: 
-	* src/de/schlund/pfixxml/contextxmlserver/RequestContextImpl.java: 
-	* src/de/schlund/pfixxml/contextxmlserver/ServerContextImpl.java: 
-	* src/de/schlund/pfixxml/contextxmlserver/SessionContextImpl.java: 
-	* src/de/schlund/pfixxml/contextxmlserver/VariantManager.java: 
-	* src/de/schlund/pfixxml/ContextXMLServer.java: 
-	* src/de/schlund/pfixxml/DirectOutputServlet.java: 
-	* projects/core/xsl/forminput.xsl: 
-	Splitting context implementation in server, session and request specific part.
-	Changed de.schlund.pfixcore.workflow.Context to be an interface to provide
-	a compatibility layer for applications. Removed AuthContext as now the 
-	Context implementation is bound to the ContextXMLServer and cannot be replaced
-	by an application anymore.
-
 2006-06-13  Jens Lautenbacher  <jtl@schlund.de>
 
 	* projects/sample1/txt/pages/*: 

@@ -51,7 +51,7 @@ public class ServletManagerConfig {
     public Properties getProperties() {
         return this.props;
     }
-    
+
     public boolean needsReload() {
         // Override this method in child implementations
         // which may have to check for changes in more

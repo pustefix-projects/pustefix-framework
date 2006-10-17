@@ -20,13 +20,12 @@
 package de.schlund.pfixxml.targets;
 
 
+import de.schlund.pfixxml.PathFactory;
+import de.schlund.pfixxml.util.*;
+import java.io.File;
 import javax.xml.transform.TransformerException;
 
 import org.w3c.dom.Document;
-
-import de.schlund.pfixxml.resources.FileResource;
-import de.schlund.pfixxml.resources.ResourceUtil;
-import de.schlund.pfixxml.util.Xml;
 
 /**
  * XMLLeafTarget.java
@@ -46,8 +45,8 @@ public class XMLLeafTarget extends LeafTarget {
         this.generator = gen;
         this.targetkey = key;
         this.themes    = themes;
-        FileResource targetpath = ResourceUtil.getFileResourceFromDocroot(key);
-        this.sharedleaf = SharedLeafFactory.getInstance().getSharedLeaf(targetpath);
+        Path targetpath = PathFactory.getInstance().createPath(key);
+        this.sharedleaf = SharedLeafFactory.getInstance().getSharedLeaf(targetpath.resolve().getPath());
         // Create empty manager to avoid null pointer exceptions
         this.auxdepmanager = new AuxDependencyManager(this);
     }
@@ -56,7 +55,8 @@ public class XMLLeafTarget extends LeafTarget {
      * @see de.schlund.pfixxml.targets.TargetImpl#getValueFromDiscCache()
      */
     protected Object getValueFromDiscCache() throws TransformerException {
-        FileResource thefile = ResourceUtil.getFileResourceFromDocroot(getTargetKey());
+        Path thepath = PathFactory.getInstance().createPath(getTargetKey());
+        File thefile = thepath.resolve();
         if (thefile.exists() && thefile.isFile()) {
             return Xml.parse(thefile);
         } else {

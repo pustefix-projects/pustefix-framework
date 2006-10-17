@@ -63,6 +63,7 @@ DirectoryIndex index.cgi
 AddHandler cgi-script .cgi
 &lt;/VirtualHost&gt;
       
+  <xsl:apply-templates select="ancestor::project/extendedvhost"/>   
   </xsl:template>
 
   <xsl:template match="extendedvhost">
@@ -77,7 +78,6 @@ AddHandler cgi-script .cgi
 
     <xsl:if test="normalize-space($active) = 'true'">
       <xsl:apply-templates select="ports/*"/>
-      <xsl:apply-templates select="extendedvhost"/>   
     </xsl:if>
   </xsl:template>
   

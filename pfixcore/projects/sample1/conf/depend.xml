@@ -38,7 +38,7 @@
   </navigation>
 
   <standardmaster>
-<!--     <include stylesheet="sample1/xsl/skin.xsl"/> -->
+    <!-- <include stylesheet="sample1/xsl/skin.xsl"/> -->
   </standardmaster>
   
   <standardmetatags>

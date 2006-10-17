@@ -20,6 +20,7 @@
 package de.schlund.pfixcore.webservice;
 
 import java.io.BufferedInputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
@@ -55,9 +56,9 @@ import de.schlund.pfixcore.webservice.fault.FaultHandler;
 import de.schlund.pfixcore.webservice.jsonws.JSONWSProcessor;
 import de.schlund.pfixcore.webservice.monitor.MonitorHistory;
 import de.schlund.pfixcore.webservice.monitor.MonitorRecord;
+import de.schlund.pfixxml.PathFactory;
 import de.schlund.pfixxml.loader.AppLoader;
-import de.schlund.pfixxml.resources.FileResource;
-import de.schlund.pfixxml.resources.ResourceUtil;
+
 
 /**
  * WebServiceServlet.java 
@@ -119,7 +120,7 @@ public class WebServiceServlet extends AxisServlet implements ServiceProcessor {
         	if(runtime==null) {
         		String servletProp=config.getInitParameter(Constants.PROP_SERVLET_FILE);
         		if(servletProp!=null) {
-        			FileResource wsConfFile=ResourceUtil.getFileResourceFromDocroot(servletProp);
+                    File wsConfFile = PathFactory.getInstance().createPath(servletProp).resolve();
         			try {
         				Configuration srvConf=ConfigurationReader.read(wsConfFile);
         				runtime=new ServiceRuntime();

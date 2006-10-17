@@ -18,10 +18,6 @@
 
 package de.schlund.pfixcore.scriptedflow.vm;
 
-import de.schlund.pfixcore.scriptedflow.vm.pvo.ParamValueObject;
-import de.schlund.pfixcore.workflow.ContextImpl;
-import de.schlund.pfixxml.PfixServletRequest;
-import de.schlund.pfixxml.SPDocument;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,6 +25,11 @@ import javax.servlet.http.HttpServletRequest;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Text;
+
+import de.schlund.pfixcore.scriptedflow.vm.pvo.ParamValueObject;
+import de.schlund.pfixxml.AppContext;
+import de.schlund.pfixxml.PfixServletRequest;
+import de.schlund.pfixxml.SPDocument;
 
 /**
  * Executes scripts that have been compiled previously.  
@@ -77,7 +78,7 @@ public class ScriptVM {
         return state;
     }
 
-    public SPDocument run(PfixServletRequest preq, SPDocument spdoc, ContextImpl rcontext, Map<String, String> params) throws Exception {
+    public SPDocument run(PfixServletRequest preq, SPDocument spdoc, AppContext context, Map<String, String> params) throws Exception {
         isRunning = true;
         
         // Make sure resolver and registers are set up
@@ -114,7 +115,7 @@ public class ScriptVM {
                 InteractiveRequestInstruction in = (InteractiveRequestInstruction) instr;
                 if (registerSPDoc == null) {
                     try {
-                        updateRegisterSPDoc(rcontext.handleRequest(preq));
+                        updateRegisterSPDoc(context.handleRequest(preq));
                     } finally {
                         // Make sure scripted flow is canceled on error
                         isRunning = false;
@@ -187,7 +188,7 @@ public class ScriptVM {
                     reqParams.put(key, rlist);
                 }
                 try {
-                    doVirtualRequest(in.getPagename(), reqParams, preq, rcontext);
+                    doVirtualRequest(in.getPagename(), reqParams, preq, context);
                 } finally {
                     // Make sure scripted flow is canceled on error
                     isRunning = false;
@@ -236,14 +237,14 @@ public class ScriptVM {
         return spdoc;
     }
     
-    private void doVirtualRequest(String pagename, Map<String, String[]> reqParams, PfixServletRequest origPreq, ContextImpl rcontext) throws Exception {
+    private void doVirtualRequest(String pagename, Map<String, String[]> reqParams, PfixServletRequest origPreq, AppContext context) throws Exception {
 
         HttpServletRequest vhttpreq = new VirtualHttpServletRequest(origPreq.getRequest(), pagename, reqParams);
         PfixServletRequest vpreq    = new PfixServletRequest(vhttpreq, System.getProperties());
         
         // Send request to the context and use returned SPDocument
         // for further processing
-        SPDocument newdoc = rcontext.handleRequest(vpreq);
+        SPDocument newdoc = context.handleRequest(vpreq);
         if (newdoc != null) {
             updateRegisterSPDoc(newdoc);
         }

@@ -19,12 +19,11 @@
 
 package de.schlund.pfixcore.workflow;
 
-import java.util.HashMap;
-
-import org.apache.log4j.Logger;
-
-import de.schlund.pfixxml.resources.FileResource;
-import de.schlund.pfixxml.resources.ResourceUtil;
+import de.schlund.pfixxml.PathFactory;
+import de.schlund.pfixxml.util.Path;
+import java.io.*;
+import java.util.*;
+import org.apache.log4j.*;
 
 
 /**
@@ -40,21 +39,18 @@ public class NavigationFactory {
     public static NavigationFactory getInstance() {
         return instance;
     }
-    
-    public synchronized Navigation getNavigation(String navifilename) throws Exception {
-        FileResource navifile = ResourceUtil.getFileResourceFromDocroot(navifilename);
-        return getNavigation(navifile);
-    }
             
-    public synchronized Navigation getNavigation(FileResource navifile) throws Exception {
+    public synchronized Navigation getNavigation(String navifilename) throws Exception {
         Navigation navi = null;
+        Path       navipath = PathFactory.getInstance().createPath(navifilename);
+        File       navifile = navipath.resolve();
         
-        navi = (Navigation) navis.get(navifile.toURI().toString());
+        navi = (Navigation) navis.get(navifilename);
         
         if (navi == null || navi.needsReload()) {
             LOG.warn("***** Creating Navigation object *******");
             navi     = new Navigation(navifile);
-            navis.put(navifile.toURI().toString(), navi);
+            navis.put(navifilename, navi);
         }
         
         return navi;

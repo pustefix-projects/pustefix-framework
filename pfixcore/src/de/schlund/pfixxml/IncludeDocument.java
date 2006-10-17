@@ -19,6 +19,7 @@
 
 package de.schlund.pfixxml;
 
+import java.io.File;
 import java.io.IOException;
 
 import javax.xml.transform.TransformerException;
@@ -27,7 +28,7 @@ import org.apache.log4j.Category;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
-import de.schlund.pfixxml.resources.FileResource;
+import de.schlund.pfixxml.util.Path;
 import de.schlund.pfixxml.util.Xml;
 
 
@@ -63,13 +64,14 @@ public class IncludeDocument {
      * @param mutable determine if the document is mutable or not. Any attempts
      * to modify an immutable document will cause an exception.
      */
-    public void createDocument(FileResource path, boolean mutable) throws SAXException, IOException, TransformerException {
-        modTime  = path.lastModified();
+    public void createDocument(Path path, boolean mutable) throws SAXException, IOException, TransformerException {
+        File tmp = path.resolve();
+        modTime  = tmp.lastModified();
 
         if (mutable) {
-            doc = Xml.parseMutable(path);
+            doc = Xml.parseMutable(tmp);
         } else {
-            doc = Xml.parse(path);
+            doc = Xml.parse(tmp);
         }
     }
 

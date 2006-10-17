@@ -18,6 +18,7 @@
 
 package de.schlund.pfixxml.config;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -34,8 +35,6 @@ import org.apache.commons.digester.Rule;
 import org.apache.commons.digester.RulesBase;
 import org.apache.commons.digester.WithDefaultsRulesWrapper;
 import org.xml.sax.SAXException;
-
-import de.schlund.pfixxml.resources.FileResource;
 
 /**
  * Stores configuration for a Pustefix servlet
@@ -55,12 +54,10 @@ public class DirectOutputServletConfig extends ServletManagerConfig implements
     private boolean editMode = false;
 
     private String externalName;
-    
-    private boolean sync = true;
 
     private HashMap<String, DirectOutputPageRequestConfig> pages = new HashMap<String, DirectOutputPageRequestConfig>();
 
-    public static DirectOutputServletConfig readFromFile(FileResource file,
+    public static DirectOutputServletConfig readFromFile(File file,
             Properties globalProperties) throws SAXException, IOException {
         DirectOutputServletConfig config = new DirectOutputServletConfig();
 
@@ -121,7 +118,7 @@ public class DirectOutputServletConfig extends ServletManagerConfig implements
             SAXParserFactory spfac = SAXParserFactory.newInstance();
             spfac.setNamespaceAware(true);
             parser = spfac.newSAXParser();
-            parser.parse(file.getInputStream(), cushandler);
+            parser.parse(file, cushandler);
         } catch (ParserConfigurationException e) {
             throw new RuntimeException("Could not initialize SAXParser!");
         }
@@ -169,14 +166,6 @@ public class DirectOutputServletConfig extends ServletManagerConfig implements
 
     public String getExternalServletName() {
         return this.externalName;
-    }
-    
-    public void setSynchronized(boolean sync) {
-        this.sync = sync;
-    }
-    
-    public boolean isSynchronized() {
-        return sync;
     }
 
     public void addPageRequest(String name, DirectOutputPageRequestConfig config) {

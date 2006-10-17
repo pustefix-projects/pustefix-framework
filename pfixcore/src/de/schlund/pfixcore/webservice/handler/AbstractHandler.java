@@ -59,7 +59,7 @@ public abstract class AbstractHandler extends BasicHandler {
         HttpServletResponse res=(HttpServletResponse)msgContext.getProperty(HTTPConstants.MC_HTTP_SERVLETRESPONSE);
         return res;
     }
-    
+
     protected HttpSession getSession(MessageContext msgContext) {
         HttpSession session=null;
         HttpServletRequest req=getServletRequest(msgContext);

@@ -158,6 +158,10 @@ public class PageRequestConfig implements SSLOption, Cloneable {
         return this.resources;
     }
     
+    public void setProperty(String key, String value) {
+        this.props.setProperty(key, value);
+    }
+    
     public void setProperties(Properties props) {
         this.props = new Properties();
         Enumeration e = props.propertyNames();

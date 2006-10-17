@@ -19,6 +19,7 @@
 
 package de.schlund.pfixxml;
 
+import java.io.File;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
@@ -27,8 +28,6 @@ import java.util.StringTokenizer;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
-import de.schlund.pfixxml.resources.FileResource;
-import de.schlund.pfixxml.resources.ResourceUtil;
 import de.schlund.pfixxml.targets.TargetGeneratorFactory;
 import de.schlund.pfixxml.util.XPath;
 import de.schlund.pfixxml.util.Xml;
@@ -53,7 +52,8 @@ public class ProjectInitFactory {
     }
 
     public void init(Properties props) throws Exception {
-        FileResource projectsFile = ResourceUtil.getFileResourceFromDocroot(PROJECTS_XML);
+        File projectsFile = PathFactory.getInstance().createPath(PROJECTS_XML)
+                .resolve();
         Document doc = Xml.parse(projectsFile);
 
         String projectlist = props.getProperty("projectinit.projectlist");
@@ -67,7 +67,7 @@ public class ProjectInitFactory {
                 // Create TargetGenerator to make sure it is cached
                 // by TargetGeneratorFactory
                 TargetGeneratorFactory.getInstance().createGenerator(
-                        ResourceUtil.getFileResourceFromDocroot(dependPath));
+                        PathFactory.getInstance().createPath(dependPath));
             }
         } else {
             // Get TargetGenerator for each project specified
@@ -89,7 +89,7 @@ public class ProjectInitFactory {
                 // Create TargetGenerator to make sure it is cached
                 // by TargetGeneratorFactory
                 TargetGeneratorFactory.getInstance().createGenerator(
-                        ResourceUtil.getFileResourceFromDocroot(dependPath));
+                        PathFactory.getInstance().createPath(dependPath));
             }
         }
     }

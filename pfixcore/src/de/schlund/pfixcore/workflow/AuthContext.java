@@ -14,20 +14,17 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with PFIXCORE; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
  */
 
-package de.schlund.pfixxml.resources;
+package de.schlund.pfixcore.workflow;
 
 /**
- * Provides access to a resource that is located on the local filesystem.  
- * 
- * @author Sebastian Marsching <sebastian.marsching@1und1.de>
+ * @author jtl
  */
-public interface FileSystemResource extends FileResource {
-    /**
-     * Returns the absolute path of the resource on the local filesystem.
-     * 
-     * @return Absolute path of this resource
-     */
-    String getPathOnFileSystem();
+public class AuthContext extends Context {
+
+    // This is only a dummy now. This clas will be removed.
+
+
 }

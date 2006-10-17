@@ -42,18 +42,11 @@ public class DirectForeignContextRule extends CheckedRule {
             throw new SAXException("Mandatory attribute \"externalservletname\" is missing!");
         }
         this.config.setExternalServletName(servletName);
-        String syncStr = attributes.getValue("synchronized");
-        if (syncStr != null && !Boolean.parseBoolean(syncStr)) {
-            this.config.setSynchronized(false);
-        } else {
-            this.config.setSynchronized(true);
-        }
     }
     
     protected Map<String, Boolean> wantsAttributes() {
         HashMap<String, Boolean> atts = new HashMap<String, Boolean>();
         atts.put("externalservletname", true);
-        atts.put("synchronized", false);
         return atts;
     }
 }

@@ -18,11 +18,8 @@
  */
 
 package de.schlund.pfixxml.targets;
-import java.util.Iterator;
-import java.util.TreeMap;
-import java.util.TreeSet;
-
-import de.schlund.pfixxml.resources.DocrootResource;
+import java.util.*;
+import de.schlund.pfixxml.util.Path;
 
 /**
  * AuxDependencyFactory.java
@@ -66,8 +63,8 @@ public class AuxDependencyFactory {
         return root;
     }
     
-    public synchronized AuxDependencyInclude getAuxDependencyInclude(DocrootResource path, String part, String theme) {
-        String key = DependencyType.TEXT.getTag() + "@" + path.toString() + "@" + part + "@" + theme;
+    public synchronized AuxDependencyInclude getAuxDependencyInclude(Path path, String part, String theme) {
+        String key = DependencyType.TEXT.getTag() + "@" + path.getRelative() + "@" + part + "@" + theme;
         AuxDependencyInclude ret = (AuxDependencyInclude) includeparts.get(key);
         if (ret == null) {
             ret = new AuxDependencyInclude(path, part, theme);
@@ -76,8 +73,8 @@ public class AuxDependencyFactory {
         return ret;
     }
     
-    public synchronized AuxDependencyImage getAuxDependencyImage(DocrootResource path) {
-        String key = path.toString();
+    public synchronized AuxDependencyImage getAuxDependencyImage(Path path) {
+        String key = path.getRelative();
         AuxDependencyImage ret = (AuxDependencyImage) images.get(key);
         if (ret == null) {
             ret = new AuxDependencyImage(path);
@@ -86,8 +83,8 @@ public class AuxDependencyFactory {
         return ret;
     }
     
-    public synchronized AuxDependencyFile getAuxDependencyFile(DocrootResource path) {
-        String key = path.toString();
+    public synchronized AuxDependencyFile getAuxDependencyFile(Path path) {
+        String key = path.getRelative();
         AuxDependencyFile ret = (AuxDependencyFile) files.get(key);
         if (ret == null) {
             ret = new AuxDependencyFile(path);
@@ -97,7 +94,7 @@ public class AuxDependencyFactory {
     }
     
     public synchronized AuxDependencyTarget getAuxDependencyTarget(TargetGenerator tgen, String targetkey) {
-        String key = tgen.getConfigPath().toString() + ":" + targetkey;
+        String key = tgen.getConfigPath().getRelative() + ":" + targetkey;
         AuxDependencyTarget ret = (AuxDependencyTarget) targets.get(key);
         if (ret == null) {
             ret = new AuxDependencyTarget(tgen, targetkey);

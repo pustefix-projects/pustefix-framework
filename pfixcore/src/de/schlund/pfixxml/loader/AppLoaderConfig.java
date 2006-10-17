@@ -19,16 +19,13 @@
 
 package de.schlund.pfixxml.loader;
 
-import java.io.IOException;
-import java.util.Enumeration;
-import java.util.Properties;
+import de.schlund.pfixxml.PathFactory;
+import de.schlund.pfixxml.config.XMLPropertiesUtil;
 
+import java.io.*;
+import java.util.*;
 import org.apache.log4j.Category;
 import org.xml.sax.SAXException;
-
-import de.schlund.pfixxml.config.XMLPropertiesUtil;
-import de.schlund.pfixxml.resources.FileResource;
-import de.schlund.pfixxml.resources.ResourceUtil;
 
 /**
  * AppLoaderConfig.java 
@@ -53,7 +50,7 @@ public class AppLoaderConfig {
             Properties props=new Properties();
             String fileName=getProperty(globProps, "apploader.propertyfile");
             try {
-                XMLPropertiesUtil.loadPropertiesFromXMLFile(ResourceUtil.getFileResourceFromDocroot(fileName), props);
+                XMLPropertiesUtil.loadPropertiesFromXMLFile(PathFactory.getInstance().createPath(fileName).resolve(), props);
             } catch(IOException x) {
                 throw new AppLoaderConfigException("AppLoader config file '"+fileName+"' can't be loaded.");
             } catch (SAXException e) {
@@ -146,7 +143,7 @@ public class AppLoaderConfig {
             //repository
             name="apploader.repository";
             val=getProperty(props, name);
-            FileResource file = ResourceUtil.getFileResourceFromDocroot(val);
+            File file=PathFactory.getInstance().createPath(val).resolve();
             if(file.exists()) {
                 loader.setRepository(file);
             } else {

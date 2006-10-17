@@ -25,8 +25,6 @@ import org.w3c.dom.NodeList;
 import com.icl.saxon.om.AbstractNode;
 import com.icl.saxon.om.NodeInfo;
 
-import de.schlund.pfixxml.resources.ResourceUtil;
-
 public class XsltTest extends TestCase {
     //-- make sure we have several bug fixes
     
@@ -76,7 +74,7 @@ public class XsltTest extends TestCase {
         Templates trafo;
         
         doc    = Xml.parse(new File(PREFIX + xml));
-        trafo  = Xslt.loadTemplates(ResourceUtil.getFileResource("file://" + (new File(PREFIX + xsl)).getAbsolutePath()));
+        trafo  = Xslt.loadTemplates(Path.create(PREFIX + xsl));
         Xslt.transform(doc, trafo, null, result);
     }
     

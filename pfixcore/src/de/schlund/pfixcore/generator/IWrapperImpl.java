@@ -36,8 +36,7 @@ import java.util.TreeSet;
 
 import org.apache.log4j.Category;
 
-import de.schlund.pfixxml.resources.FileResource;
-import de.schlund.pfixxml.resources.ResourceUtil;
+import de.schlund.util.statuscodes.StatusCode;
 
 /**
  * IWrapperImpl.java
@@ -55,7 +54,7 @@ public abstract class IWrapperImpl implements IWrapper {
     protected String      prefix   = "__undef";
     protected Integer     order    = new Integer(0);
     private   Category    CAT      = Category.getInstance(this.getClass().getName());
-    private   FileResource logdir  = null; 
+    private   String      logdir   = null; 
     private   String      pagename = null;
     private   String      visitid  = null;
     
@@ -65,7 +64,7 @@ public abstract class IWrapperImpl implements IWrapper {
     protected IHandler    handler  = null; // Make sure that you set the handler in the
                                            // constructor of a derived class
     
-    public void initLogging(FileResource logdir, String pagename, String visitid) {
+    public void initLogging(String logdir, String pagename, String visitid) {
         CAT.debug("*** Logging input for " + prefix + " into " + logdir + " " + pagename + " " + visitid + " ***");
         this.logdir   = logdir;
         this.pagename = pagename;
@@ -74,8 +73,8 @@ public abstract class IWrapperImpl implements IWrapper {
 
     public void tryErrorLogging() throws IOException {
         if (logdir != null && pagename != null && visitid != null) {
-            FileResource    log    = ResourceUtil.getFileResource(logdir, pagename + "#" + prefix);
-            Writer          out    = new OutputStreamWriter(new BufferedOutputStream(log.getOutputStream()));
+            File            log    = new File(logdir + "/" + pagename + "#" + prefix);
+            Writer          out    = new OutputStreamWriter(new BufferedOutputStream(new FileOutputStream(log, true)));
             IWrapperParam[] tmperrors = gimmeAllParamsWithErrors();
             if (tmperrors != null && tmperrors.length > 0) {
                 StringBuffer buff = getLogBuffer("ERRORS");

@@ -18,9 +18,9 @@
  */
 package de.schlund.pfixxml.targets;
 
-import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.util.Iterator;
 import java.util.TreeMap;
 import java.util.TreeSet;
@@ -33,8 +33,7 @@ import org.apache.log4j.NDC;
 import org.w3c.dom.Document;
 
 import de.schlund.pfixxml.XMLException;
-import de.schlund.pfixxml.resources.FileResource;
-import de.schlund.pfixxml.resources.ResourceUtil;
+import de.schlund.pfixxml.util.Path;
 import de.schlund.pfixxml.util.Xslt;
 
 /**
@@ -102,7 +101,8 @@ public abstract class VirtualTarget extends TargetImpl {
         if (modtime == 0) {
             synchronized (this) {
                 if (modtime == 0) {
-                    FileResource doc = ResourceUtil.getFileResource(getTargetGenerator().getDisccachedir(), getTargetKey());
+                    File doc = new File(getTargetGenerator().getDisccachedir()
+                            .resolve(), getTargetKey());
                     if (doc.exists() && doc.isFile()) {
                         setModTime(doc.lastModified());
                     }
@@ -259,8 +259,8 @@ public abstract class VirtualTarget extends TargetImpl {
                         // a complete rebuild of this target the next try
                         storeValue(null);
                         setModTime(-1);
-                        FileResource cachefile = ResourceUtil.getFileResource(getTargetGenerator()
-                                .getDisccachedir(), getTargetKey());
+                        File cachefile = new File(getTargetGenerator()
+                                .getDisccachedir().resolve(), getTargetKey());
                         if (cachefile.exists()) {
                             cachefile.delete();
                         }
@@ -293,9 +293,9 @@ public abstract class VirtualTarget extends TargetImpl {
         String key = getTargetKey();
         Target tmpxmlsource = getXMLSource();
         Target tmpxslsource = getXSLSource();
-        FileResource cachepath = getTargetGenerator().getDisccachedir();
-        FileResource cachefile = ResourceUtil.getFileResource(cachepath, key);
-        cachefile.getParentAsFileResource().mkdirs();
+        Path cachepath = getTargetGenerator().getDisccachedir();
+        File cachefile = new File(cachepath.resolve(), key);
+        new File(cachefile.getParent()).mkdirs();
         if (CAT.isDebugEnabled()) {
             CAT.debug(key + ": Getting " + getType() + " by XSLTrafo ("
                     + tmpxmlsource.getTargetKey() + " / "
@@ -323,13 +323,16 @@ public abstract class VirtualTarget extends TargetImpl {
         TreeMap tmpparams = getParams();
         tmpparams.put("themes", themes.getId());
 
-        // Store output in temporary object and overwrite cache file only
+        // Store output in temporary file and overwrite cache file only
         // when transformation was sucessfully finished
-        ByteArrayOutputStream temp = new ByteArrayOutputStream();
-        Xslt.transform(xmlobj, templ, tmpparams, new StreamResult(temp));
-        OutputStream out = cachefile.getOutputStream();
-        out.write(temp.toByteArray());
-        out.close();
+        File tempFile = new File(cachepath.resolve(), ".#" + key + ".tmp");
+        Xslt.transform(xmlobj, templ, tmpparams, new StreamResult(
+                new FileOutputStream(tempFile)));
+
+        if (!tempFile.renameTo(cachefile)) {
+            throw new RuntimeException("Could not rename temporary file '"
+                    + tempFile + "' to file '" + cachefile + "'!");
+        }
         
         // Load the target in memcache to make sure all load time
         // dependencies are being registered

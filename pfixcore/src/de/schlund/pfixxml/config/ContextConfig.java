@@ -41,17 +41,25 @@ public class ContextConfig {
     
     private final static Logger LOG = Logger.getLogger(ContextConfig.class);
     
+    private Class contextClass = null;
     private String authPage = null;
     private String defaultFlow = null;
     private LinkedHashMap<Class, ContextResourceConfig> resources = new LinkedHashMap<Class, ContextResourceConfig>();
-    protected HashMap<Class, ContextResourceConfig> interfaceToResource = new HashMap<Class, ContextResourceConfig>(); 
+    protected HashMap<Class, ContextResourceConfig> interfaceToResource = new HashMap<Class, ContextResourceConfig>();
     private HashMap<String, PageFlowConfig> pageflows = new HashMap<String, PageFlowConfig>();
     private HashMap<String, PageRequestConfig> pagerequests = new HashMap<String, PageRequestConfig>();
     private ArrayList<Class> startinterceptors = new ArrayList<Class>();
     private ArrayList<Class> endinterceptors = new ArrayList<Class>();
     private String navigationFile = null;
     private Properties props = new Properties();
-    private boolean synchronize = true;
+
+    public void setContextClass(Class clazz) {
+        this.contextClass = clazz; 
+    }
+    
+    public Class getContextClass() {
+        return this.contextClass;
+    }
 
     public void setAuthPage(String page) {
         this.authPage = page;
@@ -170,14 +178,6 @@ public class ContextConfig {
     
     public Properties getProperties() {
         return this.props;
-    }
-    
-    public void setSynchronized(boolean sync) {
-        this.synchronize = sync;
-    }
-    
-    public boolean isSynchronized() {
-        return this.synchronize;
     }
 
     public void doFinishing() {

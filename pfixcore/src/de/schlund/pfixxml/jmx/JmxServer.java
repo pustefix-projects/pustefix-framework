@@ -19,6 +19,7 @@
 
 package de.schlund.pfixxml.jmx;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
@@ -45,11 +46,11 @@ import javax.xml.transform.TransformerException;
 import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
 
+import de.schlund.pfixxml.PathFactory;
 import de.schlund.pfixxml.perflogging.PerfLogging;
-import de.schlund.pfixxml.resources.FileResource;
-import de.schlund.pfixxml.resources.ResourceUtil;
 import de.schlund.pfixxml.serverutil.SessionAdmin;
 import de.schlund.pfixxml.serverutil.SessionInfoStruct;
+import de.schlund.pfixxml.util.Path;
 import de.schlund.pfixxml.util.Xml;
 
 /** 
@@ -61,7 +62,7 @@ public class JmxServer implements JmxServerMBean {
     private final MBeanServer server;
     private final List knownClients;
     
-    public JmxServer(MBeanServer srv) {
+    protected JmxServer(MBeanServer srv) {
         this.server = srv;
         this.knownClients = new ArrayList();
     }
@@ -70,7 +71,7 @@ public class JmxServer implements JmxServerMBean {
     
     public void start(String host, int port, String pathtokeystore) throws Exception {
         JMXConnectorServer connector;
-        FileResource keystore;
+        Path keystore;
         
         
         final ObjectName createServerName = createServerName();
@@ -85,9 +86,9 @@ public class JmxServer implements JmxServerMBean {
         
         Map env = null;
         if(pathtokeystore != null) {
-            keystore = ResourceUtil.getFileResourceFromDocroot(pathtokeystore);
+            keystore = PathFactory.getInstance().createPath(pathtokeystore);
             Environment.assertCipher();
-            env = Environment.create(keystore, true);
+            env = Environment.create(keystore.resolve(), true);
         }  else {
             env = Environment.create(null, false);
         }
@@ -153,10 +154,10 @@ public class JmxServer implements JmxServerMBean {
     }
     
     public ApplicationList getApplicationList(boolean tomcat, String sessionSuffix) {
-        FileResource file;
+        File file;
         Document doc;
         
-        file = ResourceUtil.getFileResourceFromDocroot("servletconf/projects.xml");
+        file = PathFactory.getInstance().createPath("servletconf/projects.xml").resolve();
         try {
             doc = Xml.parse(file);
             return ApplicationList.load(Xml.parse(file), tomcat, sessionSuffix);

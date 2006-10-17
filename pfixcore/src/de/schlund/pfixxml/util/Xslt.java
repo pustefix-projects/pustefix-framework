@@ -20,9 +20,9 @@ package de.schlund.pfixxml.util;
 
 import java.io.File;
 import java.io.StringReader;
-import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -39,25 +39,25 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.sax.SAXSource;
 import javax.xml.transform.stream.StreamSource;
 
-import org.apache.log4j.Logger;
+import org.apache.log4j.Category;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 
 import com.icl.saxon.TransformerFactoryImpl;
 import com.icl.saxon.tinytree.TinyDocumentImpl;
 
-import de.schlund.pfixxml.resources.FileResource;
-import de.schlund.pfixxml.resources.ResourceUtil;
+import de.schlund.pfixxml.PathFactory;
+import de.schlund.pfixxml.targets.DependencyType;
 import de.schlund.pfixxml.targets.Target;
 import de.schlund.pfixxml.targets.TargetGenerationException;
 import de.schlund.pfixxml.targets.TargetImpl;
 
 public class Xslt {
-    private static final Logger LOG = Logger.getLogger(Xslt.class);
+    private static final Category CAT = Category.getInstance(Xslt.class.getName());
 
     private static final TransformerFactory ifactory = new TransformerFactoryImpl();
 
-    private static final ThreadLocal<TransformerFactory> threadfactory = new ThreadLocal<TransformerFactory>();
+    private static final HashMap factorymap = new HashMap();
 
     //-- load documents
 
@@ -100,42 +100,24 @@ public class Xslt {
             throw new RuntimeException(e);
         }
     }
-    
-    /**
-     * @deprecated Use {@link #loadTemplates(FileResource)} instead
-     */
-    public static Templates loadTemplates(Path path) throws TransformerConfigurationException {
-        return loadTemplates(new InputSource("file://" + path.resolve().getAbsolutePath()), null);
-    }
 
-    public static Templates loadTemplates(FileResource path) throws TransformerConfigurationException {
+    public static synchronized Templates loadTemplates(Path path) throws TransformerConfigurationException {
         return loadTemplates(path, null);
     }
 
-    public static Templates loadTemplates(FileResource path, TargetImpl parent) throws TransformerConfigurationException {
-        InputSource input;
-        try {
-            input = new InputSource(path.toURL().toString());
-        } catch (MalformedURLException e) {
-            throw new TransformerConfigurationException("\"" + path.toString() + "\" does not respresent a valid file", e);
-        }
-        return loadTemplates(input, parent);
-    }
-    
-    private static Templates loadTemplates(InputSource input, TargetImpl parent) throws TransformerConfigurationException {
+    public static synchronized Templates loadTemplates(Path path, TargetImpl parent) throws TransformerConfigurationException {
+        InputSource input = new InputSource("file://" + path.getBase() + "/" + path.getRelative());
         Source src = new SAXSource(Xml.createXMLReader(), input);
-        TransformerFactory factory = threadfactory.get();
+        TransformerFactory factory = (TransformerFactory) factorymap.get(path.getBase());
 
         if (factory == null) {
-            // Create a new factory. As we have to use a new URIResolver
-            // for each transformation, we cannot reuse the same factory
-            // in other threads
+            // Create a new factory with the correct URIResolver.
             factory = new TransformerFactoryImpl();
             factory.setErrorListener(new PFErrorListener());
-            threadfactory.set(factory);
+            factorymap.put(path.getBase(), factory);
         }
 
-        factory.setURIResolver(new FileResolver(parent));
+        factory.setURIResolver(new FileResolver(path.getBase(), parent));
 
         try {
             Templates retval = factory.newTemplates(src);
@@ -143,13 +125,13 @@ public class Xslt {
         } catch (TransformerConfigurationException e) {
             StringBuffer sb = new StringBuffer();
             sb.append("TransformerConfigurationException in doLoadTemplates!\n");
-            sb.append("Path: ").append(input.getSystemId()).append("\n");
+            sb.append("Path: ").append(path).append("\n");
             sb.append("Message and Location: ").append(e.getMessageAndLocation()).append("\n");
             Throwable cause = e.getException();
             if (cause == null)
                 cause = e.getCause();
             sb.append("Cause: ").append((cause != null) ? cause.getMessage() : "none").append("\n");
-            LOG.error(sb.toString());
+            CAT.error(sb.toString());
             throw e;
         }
     }
@@ -161,19 +143,19 @@ public class Xslt {
         long start = 0;
         if (params != null) {
             for (Iterator e = params.keySet().iterator(); e.hasNext();) {
-                String name  = (String) e.next();
+                String name = (String) e.next();
                 Object value = params.get(name);
                 if (name != null && value != null) {
                     trafo.setParameter(name, value);
                 }
             }
         }
-        if (LOG.isDebugEnabled())
+        if (CAT.isDebugEnabled())
             start = System.currentTimeMillis();
         trafo.transform((TinyDocumentImpl) Xml.parse(xml), result);
-        if (LOG.isDebugEnabled()) {
+        if (CAT.isDebugEnabled()) {
             long stop = System.currentTimeMillis();
-            LOG.debug("      ===========> Transforming and serializing took " + (stop - start) + " ms.");
+            CAT.debug("      ===========> Transforming and serializing took " + (stop - start) + " ms.");
         }
     }
 
@@ -182,9 +164,12 @@ public class Xslt {
     static class FileResolver implements URIResolver {
         private static final String SEP = File.separator;
         
+        private final File root;
+        
         private TargetImpl parent;
 
-        public FileResolver(TargetImpl parent) {
+        public FileResolver(File root, TargetImpl parent) {
+            this.root = root;
             this.parent = parent;
         }
 
@@ -196,25 +181,18 @@ public class Xslt {
         public Source resolve(String href, String base) throws TransformerException {
             URI uri;
             String path;
-            FileResource file;
-            boolean forcePfixroot = false;
+            File file;
             
             try {
                 uri = new URI(href);
             } catch (URISyntaxException e) {
                 return new StreamSource(href);
             }
-            if (uri.getScheme() != null && !uri.getScheme().equals("pfixroot")) {
+            if (uri.getScheme() != null) {
                 // we don't handle uris with an explicit scheme
                 return new StreamSource(href);
             }
             path = uri.getPath();
-            if (uri.getScheme() != null && uri.getScheme().equals("pfixroot")) {
-                forcePfixroot = true;
-                if (path.startsWith("/")) {
-                    path = path.substring(1);
-                }
-            }
             
             if (parent != null) {
                 Target target = parent.getTargetGenerator().getTarget(path);
@@ -241,20 +219,21 @@ public class Xslt {
                 // There is a bug in Saxon 6.5.3 which causes
                 // a NullPointerException to be thrown, if systemId
                 // is not set
-                source.setSystemId(target.getTargetGenerator().getDisccachedir().toURI().toString() + "/" + path);
+                source.setSystemId("file://" +
+                                   PathFactory.getInstance().createPath(target.getTargetGenerator().getDisccachedir().getRelative()
+                                                                        + File.separator + path).resolve().getAbsolutePath());
                 
                 // Register included stylesheet with target
                 parent.getAuxDependencyManager().addDependencyTarget(target.getTargetKey());
                 return source;
             }
             
-            file = ResourceUtil.getFileResourceFromDocroot(path);
             try {
-                Source source = new StreamSource(file.toURL().toString());
-                return source;
-            } catch (MalformedURLException e) {
-                return null;
+                file = Path.create(root, path).resolve();
+            } catch (IllegalArgumentException e) {
+                throw new TransformerException("cannot resolve " + href, e);
             }
+            return new StreamSource(file);
         }
     }
 

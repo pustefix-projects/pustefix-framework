@@ -4,10 +4,6 @@
   <properties>
     
     <prop name="pustefix.log4j.config">common/conf/pfixlog.xml</prop>
-    <!-- Set this property to use container logging when application
-         is deployed as a WAR-archive, even if application is unpacked
-         and can use its own logging mechanism                         -->
-    <!--<prop name="pustefix.logging.prefercontainer">true</prop>-->
     
     <!-- List of all factories to init -->
     <prop name="factory.initialize.00">de.schlund.pfixxml.loader.AppLoader</prop>
@@ -48,7 +44,6 @@
     <!-- part index -->
     <prop name="partindex.scodefile.1">core/dyntxt/statusmessages.xml</prop>
     <prop name="partindex.scodefile.2">sample1/dyntxt/statusmessages.xml</prop>
-    <prop name="partindex.scodefile.3">testsuite/dyntxt/statusmessages.xml</prop>
     
     <!-- SPCacheFactory -->
     <prop name="targetcache.cacheclass">de.schlund.pfixxml.targets.LRUCache</prop>

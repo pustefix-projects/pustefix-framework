@@ -21,12 +21,10 @@ package de.schlund.pfixxml.config;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
 public class DirectPagerequestPropertyRule extends CheckedRule {
-    private final static Logger LOG = Logger.getLogger(DirectPagerequestPropertyRule.class);
 
     private DirectOutputServletConfig config;
     private String propName;
@@ -48,9 +46,6 @@ public class DirectPagerequestPropertyRule extends CheckedRule {
 
     public void end(String namespace, String name) throws Exception {
         DirectOutputPageRequestConfig reqConfig = (DirectOutputPageRequestConfig) this.getDigester().peek();
-        if (reqConfig.getProperties().getProperty(propName) != null) {
-            LOG.warn("Overwriting already set property \"" + propName + "\" with value \"" + propValue.trim() + "\"!");
-        }
         reqConfig.getProperties().setProperty(propName, XMLPropertiesUtil.unesacpePropertyValue(propValue.trim()));
     }
 

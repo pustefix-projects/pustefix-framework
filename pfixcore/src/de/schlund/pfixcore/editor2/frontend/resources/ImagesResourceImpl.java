@@ -33,8 +33,8 @@ import de.schlund.pfixcore.editor2.core.exception.EditorSecurityException;
 import de.schlund.pfixcore.editor2.frontend.util.EditorResourceLocator;
 import de.schlund.pfixcore.editor2.frontend.util.SpringBeanLocator;
 import de.schlund.pfixcore.workflow.Context;
+import de.schlund.pfixxml.PathFactory;
 import de.schlund.pfixxml.ResultDocument;
-import de.schlund.pfixxml.config.GlobalConfig;
 
 /**
  * Implementation of ImagesResource
@@ -132,7 +132,8 @@ public class ImagesResourceImpl implements ImagesResource {
                     filename = path;
                 }
                 currentImage.setAttribute("filename", filename);
-                File imageFile = new File(GlobalConfig.getDocroot(), path);
+                File imageFile = PathFactory.getInstance().createPath(path)
+                        .resolve();
                 long modtime = imageFile.lastModified();
                 currentImage.setAttribute("modtime", Long.toString(modtime));
                 if (SpringBeanLocator.getSecurityManagerService().mayEditImage(

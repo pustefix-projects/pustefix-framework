@@ -1,4 +1,6 @@
 package de.schlund.pfixxml.jmx;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.security.KeyStore;
@@ -8,11 +10,10 @@ import java.util.HashMap;
 import javax.net.ssl.KeyManager;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLEngine;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
-
-import de.schlund.pfixxml.resources.FileResource;
 
 /**
  * Configures client-server communication:
@@ -38,7 +39,7 @@ public class Environment {
     }
     
     /** you might want to switch off security to access with jmx consoles */
-    public static HashMap create(FileResource keystore, boolean secure) {
+    public static HashMap create(File keystore, boolean secure) {
         HashMap env = new HashMap();
 
 		env.put("jmx.remote.server.address.wildcard", "false");
@@ -59,7 +60,7 @@ public class Environment {
     private static final String PASSWORD = "password";
     private static final String SUN = "SunX509";
     
-    private static SSLSocketFactory createSSLFactory(FileResource keystore) {
+    private static SSLSocketFactory createSSLFactory(File keystore) {
         SSLContext ctx;
         
         try {
@@ -73,24 +74,24 @@ public class Environment {
         return ctx.getSocketFactory();
     }
 
-    private static KeyManager[] getKeyManagers(FileResource keystore)  throws GeneralSecurityException, IOException {
+    private static KeyManager[] getKeyManagers(File keystore)  throws GeneralSecurityException, IOException {
         KeyStore ks = loadKeystore(keystore);
         KeyManagerFactory kmf = KeyManagerFactory.getInstance(SUN);
         kmf.init(ks, PASSWORD.toCharArray());
         return kmf.getKeyManagers();
     }
     
-    private static TrustManager[] getTrustManagers(FileResource keystore) throws GeneralSecurityException, IOException {
+    private static TrustManager[] getTrustManagers(File keystore) throws GeneralSecurityException, IOException {
         KeyStore ks = loadKeystore(keystore);
         TrustManagerFactory tmf = TrustManagerFactory.getInstance(SUN);
         tmf.init(ks);
         return tmf.getTrustManagers();
     }
 
-    private static KeyStore loadKeystore(FileResource file) throws GeneralSecurityException, IOException {
+    private static KeyStore loadKeystore(File file) throws GeneralSecurityException, IOException {
         char keystorepass[] = PASSWORD.toCharArray();
         KeyStore ks = KeyStore.getInstance("JKS");
-        ks.load(file.getInputStream(), keystorepass);
+        ks.load(new FileInputStream(file), keystorepass);
         return ks;
     }
 

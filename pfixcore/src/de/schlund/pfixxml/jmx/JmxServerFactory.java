@@ -76,10 +76,6 @@ public class JmxServerFactory {
         if(port <= 0) {
             LOG.error("Got port <=0["+port+"]. Not starting jmx-server!");
         } else {
-            /* 
-             * This is the code to use the platform MBeanServer:
-             * mbeanServer = ManagementFactory.getPlatformMBeanServer();
-             */
             mbeanServer = MBeanServerFactory.createMBeanServer();
             String keystore = props.getProperty(PROP_USE_KEYSTORE, null);
             LOG.info("Trying to start jmx-server on "+host+":"+port+" using keystore:"+keystore);

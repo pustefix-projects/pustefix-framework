@@ -18,41 +18,18 @@
  */
 package de.schlund.pfixxml;
 
-import de.schlund.pfixcore.workflow.NavigationFactory;
-import de.schlund.pfixxml.config.AbstractXMLServletConfig;
-import de.schlund.pfixxml.config.ServletManagerConfig;
-import de.schlund.pfixxml.jmx.JmxServerFactory;
-import de.schlund.pfixxml.jmx.TrailLogger;
-import de.schlund.pfixxml.perflogging.AdditionalTrailInfo;
-import de.schlund.pfixxml.perflogging.AdditionalTrailInfoFactory;
-import de.schlund.pfixxml.perflogging.PerfEvent;
-import de.schlund.pfixxml.perflogging.PerfEventType;
-import de.schlund.pfixxml.resources.FileResource;
-import de.schlund.pfixxml.resources.ResourceUtil;
-import de.schlund.pfixxml.serverutil.SessionAdmin;
-import de.schlund.pfixxml.serverutil.SessionHelper;
-import de.schlund.pfixxml.targets.PageInfo;
-import de.schlund.pfixxml.targets.PageInfoFactory;
-import de.schlund.pfixxml.targets.PageTargetTree;
-import de.schlund.pfixxml.targets.Target;
-import de.schlund.pfixxml.targets.TargetGenerationException;
-import de.schlund.pfixxml.targets.TargetGenerator;
-import de.schlund.pfixxml.targets.TargetGeneratorFactory;
-import de.schlund.pfixxml.util.SimpleCacheLRU;
-import de.schlund.pfixxml.util.Xml;
-import de.schlund.pfixxml.util.Xslt;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.SocketException;
-import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
 import java.util.TreeMap;
+
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;
@@ -65,8 +42,31 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+
 import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
+
+import de.schlund.pfixcore.workflow.NavigationFactory;
+import de.schlund.pfixxml.config.AbstractXMLServletConfig;
+import de.schlund.pfixxml.config.ServletManagerConfig;
+import de.schlund.pfixxml.jmx.JmxServerFactory;
+import de.schlund.pfixxml.jmx.TrailLogger;
+import de.schlund.pfixxml.perflogging.AdditionalTrailInfo;
+import de.schlund.pfixxml.perflogging.AdditionalTrailInfoFactory;
+import de.schlund.pfixxml.perflogging.PerfEvent;
+import de.schlund.pfixxml.perflogging.PerfEventType;
+import de.schlund.pfixxml.serverutil.SessionAdmin;
+import de.schlund.pfixxml.serverutil.SessionHelper;
+import de.schlund.pfixxml.targets.PageInfo;
+import de.schlund.pfixxml.targets.PageInfoFactory;
+import de.schlund.pfixxml.targets.PageTargetTree;
+import de.schlund.pfixxml.targets.Target;
+import de.schlund.pfixxml.targets.TargetGenerationException;
+import de.schlund.pfixxml.targets.TargetGenerator;
+import de.schlund.pfixxml.targets.TargetGeneratorFactory;
+import de.schlund.pfixxml.util.Path;
+import de.schlund.pfixxml.util.Xml;
+import de.schlund.pfixxml.util.Xslt;
 
 
 /**
@@ -87,8 +87,6 @@ public abstract class AbstractXMLServer extends ServletManager {
     private static final int RENDER_FONTIFY  = 2;
     private static final int RENDER_XMLONLY  = 3;
 
-    private static final int MAX_STORED_DOMS = 5;
-    
     public static String        DEF_PROP_TMPDIR       = "java.io.tmpdir";
     private static final String FONTIFY_SSHEET        = "core/xsl/xmlfontify.xsl";
     public  static final String SESS_LANG             = "__SELECTED_LANGUAGE__";
@@ -100,8 +98,9 @@ public abstract class AbstractXMLServer extends ServletManager {
     private static final String PARAM_EDITMODE        = "__editmode";
     private static final String PARAM_LANG            = "__language";
     private static final String PARAM_FRAME           = "__frame";
+    // private static final String   PARAM_NOSTORE    = "__nostore";
     private static final String PARAM_REUSE           = "__reuse"; // internally used
-    
+
     private static final String   XSLPARAM_LANG           = "lang";
     private static final String   XSLPARAM_DEREFKEY       = "__derefkey";
     private static final String   XSLPARAM_SESSID         = "__sessid";
@@ -151,7 +150,7 @@ public abstract class AbstractXMLServer extends ServletManager {
     /**
      * The configuration file for the TargetGeneratorFacory.
      */
-    private FileResource targetconf                 = null;
+    private Path    targetconf                 = null;
     private boolean render_external            = false;
     private boolean editmodeAllowed            = false;
     private boolean skip_getmodtimemaybeupdate = false;
@@ -185,8 +184,18 @@ public abstract class AbstractXMLServer extends ServletManager {
         verifyDirExists(System.getProperty(DEF_PROP_TMPDIR));
     }
 
+//     private String getProperty(String name) throws ServletException {
+//         String value;
+        
+//         value = getProperties().getProperty(name);
+//         if (value == null) {
+//             throw new ServletException("Need property '" + name + "'");
+//         }
+//         return value;
+//     }
+
     private void initValues() throws ServletException {
-        targetconf  = ResourceUtil.getFileResourceFromDocroot(this.getAbstractXMLServletConfig().getDependFile());
+        targetconf  = PathFactory.getInstance().createPath(this.getAbstractXMLServletConfig().getDependFile());
         servletname = this.getAbstractXMLServletConfig().getServletName();
 
         try {
@@ -286,21 +295,10 @@ public abstract class AbstractXMLServer extends ServletManager {
      * @exception Exception
      */
     protected void process(PfixServletRequest preq, HttpServletResponse res) throws Exception {
-        Properties  params     = new Properties();
-        HttpSession session    = preq.getSession(false);
-        Map         storeddoms = null;
-        if (session != null) {
-            storeddoms = (Map) session.getAttribute(servletname + SUFFIX_SAVEDDOM);
-            if (storeddoms == null) {
-                storeddoms = Collections.synchronizedMap(new SimpleCacheLRU(MAX_STORED_DOMS));
-                session.setAttribute(servletname + SUFFIX_SAVEDDOM, storeddoms);
-            }
-        }
-        SPDocument spdoc   = doReuse(preq, storeddoms);
-        boolean    doreuse = false;
-        if (spdoc != null) {
-            doreuse = true;
-        }
+        Properties   params      = new Properties();
+        HttpSession  session     = preq.getSession(false);
+        boolean      doreuse     = doReuse(preq);
+        SPDocument   spdoc       = null;
         RequestParam value;
         long         currtime;
         long         preproctime = -1;
@@ -340,6 +338,7 @@ public abstract class AbstractXMLServer extends ServletManager {
                        session.getAttribute(SessionHelper.SESSION_ID_URL));
             if (doreuse) {
                 synchronized (session) {
+                    spdoc = (SPDocument) session.getAttribute(servletname + SUFFIX_SAVEDDOM);
                     // Make sure redirect is only done once
                     // See also: SSL redirect implementation in Context
                     spdoc.resetSSLRedirectURL();
@@ -366,7 +365,7 @@ public abstract class AbstractXMLServer extends ServletManager {
                 }
             }
         }
-        
+
         // Now we will store the time needed from the creation of the request up to now
         preproctime = System.currentTimeMillis() - preq.getCreationTimeStamp();
         preq.getRequest().setAttribute(PREPROCTIME, preproctime);
@@ -401,6 +400,14 @@ public abstract class AbstractXMLServer extends ServletManager {
                 }
             }
 
+            if (!spdoc.getNostore()) {
+                // RequestParam store = preq.getRequestParam(PARAM_NOSTORE);
+                // if (session != null && (store == null || store.getValue() == null || ! store.getValue().equals("1"))) {
+                SessionCleaner.getInstance().storeSPDocument(spdoc, session, servletname + SUFFIX_SAVEDDOM, scleanertimeout);
+                // }
+            } else {
+                LOGGER.info("*** Got NOSTORE from SPDocument! ****");
+            }
             // this will remain at -1 when we don't have to enter the businesslogic codepathv
             // (whenever there is a stored spdoc already)
             getdomtime = System.currentTimeMillis() - currtime;
@@ -411,12 +418,6 @@ public abstract class AbstractXMLServer extends ServletManager {
             params.put(XSLPARAM_LANG, session.getAttribute(SESS_LANG));
         }
         handleDocument(preq, res, spdoc, params, doreuse);
-
-        if (!spdoc.getNostore() || spdoc.isSSLRedirect()) {
-            SessionCleaner.getInstance().storeSPDocument(spdoc, storeddoms, scleanertimeout);
-        } else {
-            LOGGER.info("*** Got NOSTORE from SPDocument! ****");
-        }
     }
 
     protected void handleDocument(PfixServletRequest preq, HttpServletResponse res,
@@ -681,14 +682,14 @@ public abstract class AbstractXMLServer extends ServletManager {
     }
 
     private TreeMap constructParameters(SPDocument spdoc, Properties gen_params, HttpSession session) throws Exception {
-        TreeMap paramhash = new TreeMap();
-        HashMap params = spdoc.getProperties();
+        TreeMap    paramhash = new TreeMap();
+        Properties params = spdoc.getProperties();
         // These are properties which have been set in the process method
         //  e.g. Frame handling is stored here
         if (gen_params != null) {
             for (Enumeration e = gen_params.keys(); e.hasMoreElements();) {
                 String name  = (String) e.nextElement();
-                Object value = gen_params.get(name);
+                String value = (String) gen_params.get(name);
                 if (name != null && value != null) {
                     paramhash.put(name, value);
                 }
@@ -697,21 +698,20 @@ public abstract class AbstractXMLServer extends ServletManager {
         // These are the parameters that may be set by the DOM tree producing
         // method of the servlet (something that implements the abstract method getDom())
         if (params != null) {
-            for (Iterator iter = params.keySet().iterator(); iter.hasNext(); ) {
-                String name  = (String) iter.next();
-                Object value = params.get(name);
+            for (Enumeration e = params.keys(); e.hasMoreElements();) {
+                String name  = (String) e.nextElement();
+                String value = (String) params.get(name);
                 if (name != null && value != null) {
                     paramhash.put(name, value);
                 }
             }
         }
-        paramhash.put(TargetGenerator.XSLPARAM_TG, targetconf.toURI().toString());
+        paramhash.put(TargetGenerator.XSLPARAM_TG, targetconf.getRelative());
         paramhash.put(TargetGenerator.XSLPARAM_TKEY, VALUE_NONE);
-        paramhash.put(TargetGenerator.XSLPARAM_NAVITREE, NavigationFactory.getInstance().getNavigation(targetconf));
+        paramhash.put(TargetGenerator.XSLPARAM_NAVITREE, NavigationFactory.getInstance().getNavigation(targetconf.getRelative()));
 
         String session_to_link_from_external = SessionAdmin.getInstance().getExternalSessionId(session);
-        paramhash.put("__external_session_ref", session_to_link_from_external);
-        paramhash.put("__spdoc__", spdoc);
+        paramhash.put("__external_session_ref",session_to_link_from_external);
         return paramhash;
     }
     
@@ -755,17 +755,25 @@ public abstract class AbstractXMLServer extends ServletManager {
         }
     }
 
-    private SPDocument doReuse(PfixServletRequest preq, Map storeddoms) {
+    private boolean doReuse(PfixServletRequest preq) {
         HttpSession session = preq.getSession(false);
         if (session != null) {
             RequestParam reuse = preq.getRequestParam(PARAM_REUSE);
             if (reuse != null && reuse.getValue() != null) {
-                return (SPDocument) storeddoms.get(reuse.getValue());
+                SPDocument saved = (SPDocument) session.getAttribute(servletname + SUFFIX_SAVEDDOM);
+                if (saved == null)
+                    return false;
+                String stamp = saved.getTimestamp() + "";
+                if (reuse.getValue().equals(stamp)) {
+                    return true;
+                } else {
+                    return false;
+                }
             } else {
-                return null;
+                return false;
             }
         } else {
-            return null;
+            return false;
         }
     }
 
@@ -794,3 +802,5 @@ public abstract class AbstractXMLServer extends ServletManager {
     }
     
 }
+
+

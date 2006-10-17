@@ -20,9 +20,6 @@
 package de.schlund.pfixxml.targets;
 
 import de.schlund.pfixxml.*;
-import de.schlund.pfixxml.resources.FileResource;
-import de.schlund.pfixxml.resources.ResourceUtil;
-
 import java.io.*;
 import java.util.*;
 
@@ -72,7 +69,8 @@ public abstract class LeafTarget extends TargetImpl {
     public boolean needsUpdate() throws Exception {
         synchronized (sharedleaf) {
             long mymodtime = sharedleaf.getModTime();
-            FileResource doc = ResourceUtil.getFileResourceFromDocroot(getTargetKey());
+            File doc = PathFactory.getInstance().createPath(getTargetKey())
+                    .resolve();
             long maxmodtime = doc.lastModified();
             boolean depup = true;
 
@@ -122,7 +120,8 @@ public abstract class LeafTarget extends TargetImpl {
     protected long getModTimeMaybeUpdate() throws TargetGenerationException,
             XMLException, IOException {
         long mymodtime = getModTime();
-        long maxmodtime = ResourceUtil.getFileResourceFromDocroot(getTargetKey()).lastModified();
+        long maxmodtime = PathFactory.getInstance().createPath(getTargetKey())
+                .resolve().lastModified();
         NDC.push("    ");
         TREE.debug("> " + getTargetKey());
 

@@ -22,12 +22,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
-import org.apache.log4j.Logger;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
 public class PropertyRule extends CheckedRule {
-    private final static Logger LOG = Logger.getLogger(PropertyRule.class);
 
     private Properties props;
     private String propName;
@@ -47,9 +45,6 @@ public class PropertyRule extends CheckedRule {
     }
     
     public void end(String namespace, String name) throws Exception {
-        if (props.getProperty(propName) != null) {
-            LOG.warn("Overwriting already set property \"" + propName + "\" with value \"" + propValue.trim() + "\"!");
-        }
         props.setProperty(propName, XMLPropertiesUtil.unesacpePropertyValue(propValue.trim()));
     }
 

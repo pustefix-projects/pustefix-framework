@@ -23,9 +23,6 @@ import java.io.*;
 import java.util.*;
 import org.apache.log4j.*;
 
-import de.schlund.pfixxml.resources.FileResource;
-import de.schlund.pfixxml.resources.ResourceUtil;
-
 
 /**
  * ImageGeometry.java
@@ -71,7 +68,7 @@ public class ImageGeometry {
 
     private static ImageGeometryData getImageGeometryData(String path) {
         synchronized (imageinfo) {
-            FileResource img = ResourceUtil.getFileResourceFromDocroot(path);
+            File img = PathFactory.getInstance().createPath(path).resolve();
             if (img.exists() && img.canRead() && img.isFile()) {
                 long              mtime = img.lastModified();
                 ImageGeometryData tmp = (ImageGeometryData) imageinfo.get(path);

@@ -19,9 +19,7 @@
 package de.schlund.pfixxml.config;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.Properties;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -32,11 +30,8 @@ import org.apache.commons.digester.Digester;
 import org.apache.commons.digester.Rule;
 import org.apache.commons.digester.RulesBase;
 import org.apache.commons.digester.WithDefaultsRulesWrapper;
-import org.apache.log4j.Logger;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
-
-import de.schlund.pfixxml.resources.FileResource;
 
 /**
  * Loads properties from a XML file
@@ -45,10 +40,7 @@ import de.schlund.pfixxml.resources.FileResource;
  */
 public abstract class XMLPropertiesUtil {
     private static final String PROPS_NS = "http://pustefix.sourceforge.net/properties200401";
-
     private static final String CUS_NS = "http://www.schlund.de/pustefix/customize";
-
-    private static final Logger LOG = Logger.getLogger(XMLPropertiesUtil.class);
 
     // Define PropertyRule inline
     public static class PropertyRule extends Rule {
@@ -66,11 +58,13 @@ public abstract class XMLPropertiesUtil {
         /* (non-Javadoc)
          * @see org.apache.commons.digester.Rule#begin(java.lang.String, java.lang.String, org.xml.sax.Attributes)
          */
-        public void begin(String namespace, String name, Attributes attributes) throws Exception {
+        public void begin(String namespace, String name, Attributes attributes)
+                throws Exception {
             this.propName = attributes.getValue("name");
             this.propValue = "";
             if (propName == null) {
-                throw new SAXException("Mandatory attribute \"name\" is missing!");
+                throw new SAXException(
+                        "Mandatory attribute \"name\" is missing!");
             }
         }
 
@@ -78,69 +72,55 @@ public abstract class XMLPropertiesUtil {
          * @see org.apache.commons.digester.Rule#end(java.lang.String, java.lang.String)
          */
         public void end(String namespace, String name) throws Exception {
-            if (props.getProperty(propName) != null) {
-                LOG.warn("Overwriting already set property \"" + propName + "\" with value \"" + propValue.trim() + "\"!");
-            }
             props.setProperty(propName, unesacpePropertyValue(propValue.trim()));
         }
 
         /* (non-Javadoc)
          * @see org.apache.commons.digester.Rule#body(java.lang.String, java.lang.String, java.lang.String)
          */
-        public void body(String namespace, String name, String text) throws Exception {
+        public void body(String namespace, String name, String text)
+                throws Exception {
             this.propValue += text;
         }
 
     }
 
-    public static Properties loadPropertiesFromXMLFile(File file) throws SAXException, IOException {
+    public static Properties loadPropertiesFromXMLFile(File file)
+            throws SAXException, IOException {
         Properties props = new Properties();
         loadPropertiesFromXMLFile(file, props);
         return props;
     }
 
-    public static Properties loadPropertiesFromXMLFile(FileResource file) throws SAXException, IOException {
-        Properties props = new Properties();
-        loadPropertiesFromXMLFile(file, props);
-        return props;
-    }
-
-    public static void loadPropertiesFromXMLFile(FileResource file, Properties props) throws SAXException, IOException {
-        loadPropertiesFromXMLStream(file.getInputStream(), props);
-    }
-
-    public static void loadPropertiesFromXMLFile(File file, Properties props) throws SAXException, IOException {
-        loadPropertiesFromXMLStream(new FileInputStream(file), props);
-    }
-
-    public static void loadPropertiesFromXMLStream(InputStream input, Properties props) throws SAXException, IOException {
+    public static void loadPropertiesFromXMLFile(File file, Properties props)
+            throws SAXException, IOException {
         Digester digester = new Digester();
-
+        
         WithDefaultsRulesWrapper rules = new WithDefaultsRulesWrapper(new RulesBase());
         rules.addDefault(new DefaultMatchRule());
         digester.setRules(rules);
         digester.setRuleNamespaceURI(PROPS_NS);
-
-        Rule propertyRule = new PropertyRule(props);
-        Rule dummyRule = new Rule() {
-        };
+  
+        Rule propertyRule = new PropertyRule(props);   
+        Rule dummyRule = new Rule() {};
 
         digester.addRule("standardprops", dummyRule);
         digester.addRule("standardprops/properties", dummyRule);
         digester.addRule("standardprops/properties/prop", propertyRule);
 
-        CustomizationHandler cushandler = new CustomizationHandler(digester, PROPS_NS, CUS_NS, new String[] { "/standardprops/properties" });
+        CustomizationHandler cushandler = new CustomizationHandler(digester,
+                PROPS_NS, CUS_NS, new String[] {"/standardprops/properties"});
         SAXParser parser;
         try {
             SAXParserFactory spfac = SAXParserFactory.newInstance();
             spfac.setNamespaceAware(true);
             parser = spfac.newSAXParser();
-            parser.parse(input, cushandler);
+            parser.parse(file, cushandler);
         } catch (ParserConfigurationException e) {
             throw new RuntimeException("Could not initialize SAXParser!");
         }
     }
-
+    
     protected static String unesacpePropertyValue(String value) {
         StringBuffer newValue = new StringBuffer(value.length());
         char aChar;

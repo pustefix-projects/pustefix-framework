@@ -42,10 +42,6 @@
         <prop name="exception.java.lang.Throwable.processor">de.schlund.pfixxml.exceptionprocessor.UniversalExceptionProcessor</prop>
       </when>      
     </choose>
-    
-    <!-- Defines SSL ports used for redirect corresponding to the unsecure ports -->
-    <prop name="pfixcore.ssl_redirect_port.for.8080">8443</prop>
-    <prop name="pfixcore.ssl_redirect_port.for.9080">9443</prop>
 
   </properties>
 

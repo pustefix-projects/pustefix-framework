@@ -19,10 +19,11 @@
 
 package de.schlund.pfixxml;
 
-import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
+
 import javax.servlet.http.HttpSession;
+
 import org.apache.log4j.Category;
 
 /**
@@ -39,9 +40,10 @@ import org.apache.log4j.Category;
  * @version $Id$
  */
 public class SessionCleaner {
-    private static SessionCleaner instance = new SessionCleaner();
-    private        Timer          timer    = new Timer(true);
-    Category                      CAT      = Category.getInstance(this.getClass());
+    private static SessionCleaner instance     = new SessionCleaner();
+    private        Timer          timer        = new Timer(true);
+    private        String         TASK_POSTFIX = "__TIMER_TASK";
+    Category       CAT          = Category.getInstance(this.getClass());
     
     private SessionCleaner() {}
 
@@ -53,48 +55,56 @@ public class SessionCleaner {
     }
 
     /**
-     * Called from the AbstractXMLServer to store a SPDocument into the supplied SPCache structure
-     * (which in turn is stored in the HTTPSession).  This will also start a TimerTask that removes
-     * the stored SPDocument after the given timeout.
+     * Called from the AbstractXMLServer to store a SPDocument into the supplied HttpSession.
+     * This will also start a TimerTask that removes the stored SPDocument after the given timeout.
      *
      * @param spdoc a <code>SPDocument</code> value
-     * @param storeddoms a <code>Map</code> value
+     * @param session a <code>HttpSession</code> value
+     * @param conutil a <code>ContainerUtil</code> value
+     * @param key a <code>String</code> value. The key under which the SPDocument will be stored in the session.
      * @param timeoutsecs a <code>int</code> value. The timeout when the document should be removed.
      */
-    public void storeSPDocument(SPDocument spdoc, Map storeddoms, int timeoutsecs) {
-        String key = spdoc.getTimestamp() + "";
+    public void storeSPDocument(SPDocument spdoc, HttpSession session,String key, int timeoutsecs) {
+        String taskkey = key + TASK_POSTFIX; 
 
-        CAT.info("*** Create new TimerTask with timeout: " + timeoutsecs);
-        TimerTask task = new SessionCleanerTask(storeddoms, key);
-        timer.schedule(task, timeoutsecs * 1000);
-        // Save the needed info
-        storeddoms.put(key, spdoc);
+        synchronized (session) {
+            SessionCleanerTask task   = (SessionCleanerTask)session.getAttribute(taskkey);
+            if (task != null) {
+                CAT.info("*** Found old TimerTask, trying to cancel... ");
+                try {
+                    task.cancel();
+                    CAT.info("*** DONE. ***");
+                } catch (IllegalStateException e) {
+                    CAT.info("*** Could not cancel: " + e.getMessage() + " ***");
+                }
+            }
+            CAT.info("*** Create new TimerTask with timeout: " + timeoutsecs);
+            task = new SessionCleanerTask(session,key);
+            timer.schedule(task, timeoutsecs * 1000);
+            session.setAttribute(taskkey, task);
+            
+            session.setAttribute(key, spdoc);
+        }
     }
 
     private class SessionCleanerTask extends TimerTask {
-        String key;
-        Map    storeddoms;
+        String        key;
+        HttpSession   session;
         
-        public SessionCleanerTask(Map storeddoms, String key) {
-            this.storeddoms = storeddoms;
-            this.key        = key;
+        public SessionCleanerTask(HttpSession session,String key) {
+            this.session = session;
+            this.key     = key;
         }
 
         public void run() {
             try {
-                if (storeddoms.containsKey(key)) {
-                    storeddoms.remove(key);
-                    CAT.info("*** CALLING TIMERTASK: Removing SPDoc '" + key + 
-                             "' in session from cache (Curr. Size: " + storeddoms.size() + ")");
-                } else {
-                    CAT.info("*** CALLING TIMERTASK: nothing to do.");
-                }
-
+                CAT.info("*** CALLING TIMERTASK: Removing SPDoc '" + key + "' from session " + session.getId());
+                synchronized (session) { session.setAttribute(key, null); }
             } catch (IllegalStateException e) {
-                CAT.warn("*** Couldn't remove from cache... " + e.getMessage() + " ***");
+                CAT.info("*** Couldn't remove from session... " + e.getMessage() + " ***");
             }
-            key        = null;
-            storeddoms = null;
+            session = null; // we don't want to hold any spurious references to the session that may prohibit it being gc'ed
+            key     = null;
         }
     }
 } // SessionCleaner

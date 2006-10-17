@@ -2,6 +2,7 @@ package de.schlund.pfixcore.example.webservices;
 
 import java.util.Random;
 
+import org.apache.log4j.Category;
 import org.w3c.dom.Element;
 
 import de.schlund.pfixcore.workflow.Context;
@@ -10,7 +11,8 @@ import de.schlund.pfixxml.ResultDocument;
 
 
 public class ContextDataImpl implements ContextResource, ContextData {
-
+    
+    Category CAT = Category.getInstance(this.getClass().getName());
     String data;
     String[] dataArray;
     

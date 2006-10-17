@@ -18,6 +18,7 @@
 
 package de.schlund.pfixxml.config.includes;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -35,8 +36,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-import de.schlund.pfixxml.resources.FileResource;
-import de.schlund.pfixxml.resources.ResourceUtil;
+import de.schlund.pfixxml.PathFactory;
 import de.schlund.pfixxml.util.XPath;
 import de.schlund.pfixxml.util.Xml;
 
@@ -44,17 +44,17 @@ public class IncludesResolver {
     private List<FileIncludeEventListener> listeners = new ArrayList<FileIncludeEventListener>();
 
     private String namespace;
-    
+
     private String includeTag;
-    
+
     private SimpleNamespaceContext nsContext;
 
     private final static String TAGNAME = "config-include";
-    
+
     private final static String CONFIG_FRAGMENTS_NS = "http://pustefix.sourceforge.net/configfragments200609";
-    
+
     private final static String CONFIG_FRAGMENTS_ROOT_TAG = "config-fragments";
-    
+
     private final static String CONTEXTXML_NS = "http://pustefix.sourceforge.net/properties200401";
 
     private ThreadLocal<Set<Tupel<String, String>>> includesList = new ThreadLocal<Set<Tupel<String, String>>>();
@@ -62,7 +62,7 @@ public class IncludesResolver {
     public IncludesResolver(String namespace) {
         this(namespace, TAGNAME);
     }
-    
+
     public IncludesResolver(String namespace, String includeTag) {
         this.namespace = namespace;
         this.includeTag = includeTag;
@@ -89,7 +89,7 @@ public class IncludesResolver {
 
             String xpath = null, refid = null, section = null;
             if (elem.hasAttribute("xpath")) {
-                    xpath = elem.getAttribute("xpath");
+                xpath = elem.getAttribute("xpath");
             }
             if (elem.hasAttribute("refid")) {
                 refid = elem.getAttribute("refid");
@@ -97,7 +97,7 @@ public class IncludesResolver {
             if (elem.hasAttribute("section")) {
                 section = elem.getAttribute("section");
             }
-            
+
             if (xpath != null) {
                 if (refid != null || section != null) {
                     throw new SAXException("Only one of the \"xpath\", \"refid\" or \"section\" attributes may be supplied to the include tag!");
@@ -137,15 +137,15 @@ public class IncludesResolver {
             if (list.contains(filepath + "#" + xpath)) {
                 throw new SAXException("Cyclic dependency in include detected: " + filepath.toString());
             }
-            
-            FileResource includeFile = ResourceUtil.getFileResourceFromDocroot(filepath);
+
+            File includeFile = PathFactory.getInstance().createPath(filepath).resolve();
             Document includeDocument;
             try {
                 includeDocument = Xml.parseMutable(includeFile);
             } catch (IOException e) {
                 throw new SAXException("I/O exception on included file " + includeFile.toString());
             }
-            
+
             if (!CONFIG_FRAGMENTS_NS.equals(includeDocument.getDocumentElement().getNamespaceURI()) || !CONFIG_FRAGMENTS_ROOT_TAG.equals(includeDocument.getDocumentElement().getLocalName())) {
                 throw new SAXException("File " + filepath + " seems not to be a valid configuration fragments file!");
             }
@@ -156,7 +156,7 @@ public class IncludesResolver {
             } finally {
                 list.remove(new Tupel<String, String>(filepath, xpath));
             }
-            
+
             NodeList includeNodes;
             try {
                 javax.xml.xpath.XPath xpathProc = XPathFactory.newInstance().newXPath();
@@ -165,14 +165,14 @@ public class IncludesResolver {
             } catch (XPathExpressionException e) {
                 throw new SAXException("XPath Expression invalid: " + xpath);
             }
-            
-            for (int i=0; i < includeNodes.getLength(); i++) {
+
+            for (int i = 0; i < includeNodes.getLength(); i++) {
                 Node node = includeNodes.item(i);
                 Node newNode = doc.importNode(node, true);
                 elem.getParentNode().insertBefore(newNode, elem);
             }
             elem.getParentNode().removeChild(elem);
-            
+
             // Trigger event
             FileIncludeEvent ev = new FileIncludeEvent(this, includeFile);
             for (FileIncludeEventListener listener : listeners) {
@@ -188,29 +188,30 @@ public class IncludesResolver {
             return false;
         }
     }
-    
+
     private class Tupel<A, B> {
         private A obj1;
+
         private B obj2;
-        
+
         public Tupel(A v1, B v2) {
             obj1 = v1;
             obj2 = v2;
         }
-        
+
         public boolean equals(Object obj) {
             if (obj == null) {
                 return false;
             }
-            
+
             if (!(obj instanceof Tupel)) {
                 return false;
             }
             Tupel tupel = (Tupel) obj;
-            
+
             return obj1.equals(tupel.obj1) && obj2.equals(tupel.obj2);
         }
-        
+
         public int hashCode() {
             return obj1.hashCode() + obj2.hashCode();
         }

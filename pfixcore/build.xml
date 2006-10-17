@@ -179,7 +179,6 @@ or delete the DOCTYPE definition -->
         <exclude name="de/schlund/pfixcore/example/ContextDemoText.class"/>
         <exclude name="de/schlund/pfixcore/example/ContextDemoTextImpl.class"/>
         <exclude name="de/schlund/pfixcore/example/DemoTextHandler.class"/>
-        <exclude name="de/schlund/pfixcore/testsuite/**/*.class"/> 
       </fileset>
       <fileset dir="${dir.jni}" includes="${name.jnipkg}"/>
     </jar>
@@ -212,16 +211,5 @@ or delete the DOCTYPE definition -->
     <exec dir="${dir.testskel}/skel" executable="ant" failonerror="true">
     </exec>
   </target>
-
-  <!-- generate jsonparser from javacc grammar, produced source files are
-  under svn control, so target only has to be called when grammar changed-->
-  <target name="javacc" if="env.JAVACC_HOME">
-    <javacc
-      target="${dir.src}/de/schlund/pfixcore/webservice/json/JSONParser.jj"
-      outputdirectory="${dir.src}/de/schlund/pfixcore/webservice/json/parser"
-      javacchome="${env.JAVACC_HOME}"
-    />
-  </target>
-
 </project>
 

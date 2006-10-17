@@ -33,11 +33,9 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
-import de.schlund.pfixxml.config.GlobalConfigurator;
+import de.schlund.pfixxml.PathFactory;
 import de.schlund.pfixxml.config.XMLPropertiesUtil;
-import de.schlund.pfixxml.resources.DocrootResource;
-import de.schlund.pfixxml.resources.FileResource;
-import de.schlund.pfixxml.resources.ResourceUtil;
+import de.schlund.pfixxml.util.Path;
 import de.schlund.pfixxml.util.Xml;
 import de.schlund.util.statuscodes.StatusCode;
 
@@ -52,7 +50,7 @@ public class GenerateSCodes {
 
         //System.out.println("**** prop " + args[1]);
         // Initialize PathFactory as it is needed by XMLPropertiesUtil
-        GlobalConfigurator.setDocroot(args[2]);
+        PathFactory.getInstance().init(args[2]);
         Properties tmp = new Properties();
         if (args[1].endsWith(".prop") || args[1].endsWith(".properties")) {
             tmp.load(new FileInputStream(args[1]));
@@ -64,7 +62,7 @@ public class GenerateSCodes {
     }
     
     File          dest;
-    HashSet<DocrootResource> scfiles;
+    HashSet<Path> scfiles;
     String        docroot;
     
     
@@ -72,13 +70,15 @@ public class GenerateSCodes {
         this.dest    = dest;
         this.docroot = docroot;
 
-        scfiles          = new HashSet<DocrootResource>();
+        PathFactory pfac = PathFactory.getInstance();
+        pfac.init(docroot);
+        scfiles          = new HashSet<Path>();
         
         HashSet<String> propfiles = new HashSet<String>(PropertiesUtils.selectProperties(prop, SCODEFILES).values());
 
         for (String tmp: propfiles) {
             //System.out.println("**** scfile: " + tmp);
-            scfiles.add(ResourceUtil.getFileResourceFromDocroot(tmp));
+            scfiles.add(pfac.createPath(tmp));
         }
     }
     
@@ -99,9 +99,10 @@ public class GenerateSCodes {
         }
 
         
-        for (FileResource path: scfiles) {
+        for (Path path: scfiles) {
+            File tmp = path.resolve();
             //System.out.println("**** look at " + tmp.getCanonicalPath());
-            if (path.exists() && path.lastModified() > targetmodtime) {
+            if (tmp.exists() && tmp.lastModified() > targetmodtime) {
                 dogen = true;
                 break;
             }
@@ -114,7 +115,8 @@ public class GenerateSCodes {
             Writer writer = new OutputStreamWriter(new FileOutputStream(dest), "ascii");
             createHeader(writer);
             
-            for (DocrootResource input: scfiles) {
+            for (Path inpath: scfiles) {
+                File     input = inpath.resolve();
                 Document doc   = Xml.parse(input);
                 NodeList list  = doc.getElementsByTagName("part");
                 for (int i = 0; i < list.getLength() ; i++) {
@@ -122,7 +124,7 @@ public class GenerateSCodes {
                     String  name      = node.getAttribute("name");
                     String  classname = StatusCode.convertToFieldName(name);
                     writer.write("  public static final StatusCode " + classname +
-                                 " = new StatusCode(\"" + name + "\", ResourceUtil.getFileResourceFromDocroot(\"" + input.getRelativePath() + "\"));\n");
+                                 " = new StatusCode(\"" + name + "\", PathFactory.getInstance().createPath(\"" + inpath.getRelative() + "\"));\n");
                 }
             }
             
@@ -139,7 +141,7 @@ public class GenerateSCodes {
         writer.write("\n");
         writer.write("\n");
         writer.write("package de.schlund.util.statuscodes;\n");
-        writer.write("import de.schlund.pfixxml.resources.ResourceUtil;\n");
+        writer.write("import de.schlund.pfixxml.PathFactory;\n");
         writer.write("import java.lang.reflect.Field;\n");
         writer.write("\n");
         writer.write("public class StatusCodeLib {\n");

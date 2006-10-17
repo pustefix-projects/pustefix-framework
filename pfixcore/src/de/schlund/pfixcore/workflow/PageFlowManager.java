@@ -27,6 +27,7 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 
+import de.schlund.pfixxml.ConfigurableObject;
 import de.schlund.pfixxml.PropertyObjectManager;
 import de.schlund.pfixxml.Variant;
 import de.schlund.pfixxml.config.ContextConfig;
@@ -38,7 +39,7 @@ import de.schlund.pfixxml.config.PageFlowStepConfig;
  *
  */
 
-public class PageFlowManager {
+public class PageFlowManager implements ConfigurableObject {
     private Map<String, Set<String>> pagetoflowmap = new HashMap<String, Set<String>>();
     private Map<String, PageFlow> flowmap = new HashMap<String, PageFlow>();
     
@@ -48,8 +49,9 @@ public class PageFlowManager {
 
     public final static String PROP_PREFIX = "context.pageflow";
 
-    public PageFlowManager(ContextConfig config, VariantManager variantmanager) {
-        vmanager = variantmanager;
+    public void init(Object confObj) throws Exception {
+        ContextConfig config = (ContextConfig) confObj;
+        vmanager = (VariantManager) PropertyObjectManager.getInstance().getConfigurableObject(config, VariantManager.class);
         PageFlowConfig[] pageflows = config.getPageFlowConfigs();
 
         // Initialize map mapping each page name to a list of

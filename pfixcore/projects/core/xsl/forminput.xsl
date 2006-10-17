@@ -20,8 +20,7 @@
         </ixsl:if>
       </xsl:when>
       <xsl:when test="not($pg = '')">
-<!--         <ixsl:if test="/formresult/navigation//page[@name = '{$pg}' and @visible = '1']"> -->
-        <ixsl:if test="callback:isAccessible($__context__, '{$pg}') = 1">
+        <ixsl:if test="/formresult/navigation//page[@name = '{$pg}' and @visible = '1']">
           <xsl:apply-templates/>
         </ixsl:if>
       </xsl:when>
@@ -44,8 +43,7 @@
         </ixsl:if>
       </xsl:when>
       <xsl:when test="not($pg = '')">
-<!--         <ixsl:if test="/formresult/navigation//page[@name = '{$pg}' and @visible = '0']"> -->
-        <ixsl:if test="callback:isAccessible($__context__, '{$pg}') = 0">
+        <ixsl:if test="/formresult/navigation//page[@name = '{$pg}' and @visible = '0']">
           <xsl:apply-templates/>
         </ixsl:if>
       </xsl:when>
@@ -201,21 +199,7 @@
             <xsl:value-of select="concat($thehandler, '/', $send-to-page)"/>;<ixsl:value-of select="$__sessid"/><xsl:if test="not($theframe = '')"></xsl:if>?__frame=<xsl:value-of select="$theframe"/>
           </xsl:when>
           <xsl:otherwise>
-            <xsl:choose>
-              <xsl:when test="@type='auth'">
-                <ixsl:choose>
-                  <ixsl:when test="/formresult/@authoriginalpage">
-                    <xsl:value-of select="$thehandler"/>/<ixsl:value-of select="/formresult/@authoriginalpage"/>;<ixsl:value-of select="$__sessid"/>
-                  </ixsl:when>
-                  <ixsl:otherwise>
-                    <xsl:value-of select="concat($thehandler, '/', $page)"/>;<ixsl:value-of select="$__sessid"/><xsl:if test="not($theframe = '')"></xsl:if>?__frame=<xsl:value-of select="$theframe"/>
-                  </ixsl:otherwise>
-                </ixsl:choose>
-              </xsl:when>
-              <xsl:otherwise>
-                <xsl:value-of select="concat($thehandler, '/', $page)"/>;<ixsl:value-of select="$__sessid"/><xsl:if test="not($theframe = '')"></xsl:if>?__frame=<xsl:value-of select="$theframe"/>
-              </xsl:otherwise>
-            </xsl:choose>
+            <xsl:value-of select="concat($thehandler, '/', $page)"/>;<ixsl:value-of select="$__sessid"/><xsl:if test="not($theframe = '')"></xsl:if>?__frame=<xsl:value-of select="$theframe"/>
           </xsl:otherwise>
         </xsl:choose>
       </ixsl:attribute>

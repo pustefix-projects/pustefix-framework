@@ -19,6 +19,7 @@
 
 package de.schlund.pfixcore.workflow;
 
+import java.io.File;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -43,7 +44,6 @@ import de.schlund.pfixxml.config.CustomizationHandler;
 import de.schlund.pfixxml.config.includes.FileIncludeEvent;
 import de.schlund.pfixxml.config.includes.FileIncludeEventListener;
 import de.schlund.pfixxml.config.includes.IncludesResolver;
-import de.schlund.pfixxml.resources.FileResource;
 import de.schlund.pfixxml.util.TransformerHandlerAdapter;
 import de.schlund.pfixxml.util.XPath;
 import de.schlund.pfixxml.util.Xml;
@@ -52,12 +52,12 @@ public class Navigation {
     private NavigationElement                   pageroot = new NavigationElement("__NONE__", "__NONE__");
     private Map<String, NavigationElement> pagetonavi;
     
-    private Set<FileResource> fileDependencies = new HashSet<FileResource>();
+    private Set<File> fileDependencies = new HashSet<File>();
     private long loadTime = 0;
     
     private Element navigationXMLElement = null;
     
-    public Navigation(FileResource navifile) throws Exception {
+    public Navigation(File navifile) throws Exception {
         loadTime = System.currentTimeMillis();
         Document navitree = Xml.parseMutable(navifile);
         
@@ -101,6 +101,7 @@ public class Navigation {
             throw new RuntimeException("TransformerFactory instance does not provide SAXTransformerFactory!");
         }
         
+        
         // We need a Saxon node here
         navigationXMLElement = (Element) XPath.selectOne(Xml.parse(navitree), "/make/navigation");
         
@@ -110,7 +111,7 @@ public class Navigation {
     }
     
     public boolean needsReload() {
-        for (FileResource file : fileDependencies) {
+        for (File file : fileDependencies) {
             long lastModified = file.lastModified();
             if (lastModified > loadTime) {
                 return true;
@@ -122,7 +123,7 @@ public class Navigation {
     public Element getNavigationXMLElement() {
         return navigationXMLElement;
     }
-
+    
     private void recursePagetree(NavigationElement parent, List nl) throws Exception {
         for (int i = 0; i < nl.size(); i++) {
             Element page    = (Element) nl.get(i);

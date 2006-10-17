@@ -21,17 +21,16 @@ package de.schlund.pfixxml.targets;
 
 
 
+import de.schlund.pfixxml.PathFactory;
+import de.schlund.pfixxml.util.*;
+
+import java.io.File;
 import java.io.IOException;
 
 import javax.xml.transform.Templates;
 import javax.xml.transform.TransformerException;
 
 import org.w3c.dom.Document;
-
-import de.schlund.pfixxml.resources.FileResource;
-import de.schlund.pfixxml.resources.ResourceUtil;
-import de.schlund.pfixxml.util.Xml;
-import de.schlund.pfixxml.util.Xslt;
 
 /**
  * XSLLeafTarget.java
@@ -51,8 +50,8 @@ public class XSLLeafTarget extends LeafTarget {
         this.generator = gen;
         this.targetkey = key;
         this.themes    = themes;
-        FileResource targetpath = ResourceUtil.getFileResourceFromDocroot(key);
-        this.sharedleaf = SharedLeafFactory.getInstance().getSharedLeaf(targetpath);
+        Path targetpath = PathFactory.getInstance().createPath(key);
+        this.sharedleaf = SharedLeafFactory.getInstance().getSharedLeaf(targetpath.resolve().getPath());
         this.auxdepmanager = new AuxDependencyManager(this);
         this.auxdepmanager.tryInitAuxdepend();
     }
@@ -61,12 +60,13 @@ public class XSLLeafTarget extends LeafTarget {
      * @see de.schlund.pfixxml.targets.TargetImpl#getValueFromDiscCache()
      */
     protected Object getValueFromDiscCache() throws TransformerException {
-        FileResource thefile = ResourceUtil.getFileResourceFromDocroot(getTargetKey());
+        Path thepath = PathFactory.getInstance().createPath(getTargetKey());
+        File thefile = thepath.resolve();
         if (thefile.exists() && thefile.isFile()) {
             // reset the target dependency list as they will be set up again
             this.getAuxDependencyManager().reset();
             
-            Templates tmpl = Xslt.loadTemplates(thefile, this);
+            Templates tmpl = Xslt.loadTemplates(thepath, this);
             
             // save aux dependencies
             try {
@@ -83,7 +83,7 @@ public class XSLLeafTarget extends LeafTarget {
     }
 
     public Document getDOM() throws TargetGenerationException {
-        FileResource thefile = ResourceUtil.getFileResourceFromDocroot(getTargetKey());
+        File thefile = PathFactory.getInstance().createPath(getTargetKey()).resolve();
         if (thefile.exists() && thefile.isFile()) {
             try {
                 return Xml.parse(thefile);
