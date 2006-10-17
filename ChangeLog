@@ -1,5 +1,7 @@
 2006-10-17  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
+	* Preparing release 0.9.1
+
 	* src/de/schlund/pfixcore/util/DummyContextFactory.java: 
 	* src/de/schlund/pfixcore/util/TransformerCallback.java (isAccessible): 
 	* src/de/schlund/pfixcore/webservice/fault/Fault.java: 
