@@ -1,3 +1,26 @@
+2006-10-17  Martin Leidig  <mleidig@schlund.de>
+
+	Added adapter for external webservice exception processor. Made general
+	code cleanup.
+
+	Added:
+	* src/de/schlund/pfixcore/webservice/fault/ExceptionProcessorAdapter.java
+
+	Modified:
+	* src/de/schlund/pfixcore/example/webservices/chat/Message.java
+	* src/de/schlund/pfixcore/example/webservices/chat/ChatServer.java
+	* src/de/schlund/pfixcore/example/webservices/chat/ContextChatImpl.java
+	* src/de/schlund/pfixcore/example/webservices/ContextDataImpl.java
+	* src/de/schlund/pfixcore/example/webservices/CounterImpl.java
+	* src/de/schlund/pfixcore/webservice/WebServiceServlet.java
+	* src/de/schlund/pfixcore/webservice/ServiceRuntime.java
+	* src/de/schlund/pfixcore/webservice/generate/WebServiceTask.java
+	* src/de/schlund/pfixcore/webservice/config/ServiceConfig.java
+	* src/de/schlund/pfixcore/webservice/config/ConfigurationReader.java
+	* src/de/schlund/pfixcore/webservice/fault/Fault.java
+	* src/de/schlund/pfixcore/webservice/handler/AbstractHandler.java
+	* src/de/schlund/pfixcore/webservice/handler/ErrorHandler.java
+
 2006-10-13  Martin Leidig  <mleidig@schlund.de>
 
 	Added SOAP support for all types supported by JSON. Fixed problem with

@@ -40,9 +40,9 @@ public class ServiceConfig {
     String  ctxName;
     boolean ctxSync;
     String  sessType=Constants.SESSION_TYPE_SERVLET;
-    String scopeType;
+    String scopeType=Constants.SERVICE_SCOPE_APPLICATION;
     boolean sslForce;
-    String protocolType;
+    String protocolType=Constants.PROTOCOL_TYPE_ANY;
     String  encStyle;
     String  encUse;
     FaultHandler faultHandler;

@@ -20,7 +20,6 @@
 package de.schlund.pfixcore.webservice;
 
 import java.io.BufferedInputStream;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
@@ -45,7 +44,6 @@ import org.apache.axis.ConfigurationException;
 import org.apache.axis.description.OperationDesc;
 import org.apache.axis.description.ServiceDesc;
 import org.apache.axis.transport.http.AxisServlet;
-import org.apache.log4j.Category;
 import org.apache.log4j.Logger;
 
 import de.schlund.pfixcore.webservice.config.Configuration;
@@ -54,7 +52,6 @@ import de.schlund.pfixcore.webservice.config.GlobalServiceConfig;
 import de.schlund.pfixcore.webservice.config.ServiceConfig;
 import de.schlund.pfixcore.webservice.fault.Fault;
 import de.schlund.pfixcore.webservice.fault.FaultHandler;
-
 import de.schlund.pfixcore.webservice.jsonws.JSONWSProcessor;
 import de.schlund.pfixcore.webservice.monitor.MonitorHistory;
 import de.schlund.pfixcore.webservice.monitor.MonitorRecord;
