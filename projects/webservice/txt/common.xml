@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
+
+   <part name="protocol_select">
+      <theme name="default">
+         <div class="protocol_select">
+            Protocol:
+            <span><input id="protocol_soap" type="radio" name="protocol" value="SOAP" checked="checked">SOAP</input></span>
+            <span><input id="protocol_json" type="radio" name="protocol" value="JSON">JSON</input></span>
+         </div>
+      </theme>
+   </part>
+   
+   <part name="service_time">
+      <theme name="default">
+         <div id="service_time">Request time (in ms): <span id="service_time_value"/></div>
+      </theme>
+   </part>
+   
+   <part name="service_error">
+      <theme name="default">
+         <div id="service_error"></div>
+      </theme>
+   </part>
+   
+   <part name="service_result">
+      <theme name="default">
+         <div id="service_result"></div>
+      </theme>
+   </part>
+
+</include_parts>

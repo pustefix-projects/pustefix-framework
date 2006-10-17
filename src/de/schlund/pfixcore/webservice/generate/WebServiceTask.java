@@ -1,6 +1,22 @@
 /*
- * de.schlund.pfixcore.webservice.WebServiceTask
+ * This file is part of PFIXCORE.
+ *
+ * PFIXCORE is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * PFIXCORE is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with PFIXCORE; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
  */
+
 package de.schlund.pfixcore.webservice.generate;
 
 import java.io.File;
@@ -11,19 +27,13 @@ import java.lang.reflect.Method;
 import java.util.HashSet;
 import java.util.Iterator;
 
-import javax.servlet.ServletException;
 import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.sax.SAXTransformerFactory;
-import javax.xml.transform.sax.TransformerHandler;
 import javax.xml.transform.stream.StreamResult;
-import javax.xml.transform.stream.StreamSource;
 
 import org.apache.axis.deployment.wsdd.WSDDDocument;
 import org.apache.axis.deployment.wsdd.WSDDHandler;
@@ -42,26 +52,19 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
-import org.xml.sax.XMLReader;
-import org.xml.sax.helpers.DefaultHandler;
-import org.xml.sax.helpers.XMLReaderFactory;
 
-import de.schlund.pfixcore.webservice.config.ConfigProperties;
 import de.schlund.pfixcore.webservice.config.Configuration;
+import de.schlund.pfixcore.webservice.config.ConfigurationReader;
 import de.schlund.pfixcore.webservice.config.GlobalServiceConfig;
 import de.schlund.pfixcore.webservice.config.ServiceConfig;
 import de.schlund.pfixxml.PathFactory;
-import de.schlund.pfixxml.config.CustomizationHandler;
-import de.schlund.pfixxml.util.TransformerHandlerAdapter;
 
 /**
  * WebServiceTask.java
  * 
  * Created: 28.07.2004
  * 
- * @author mleidig
+ * @author mleidig@schlund.de
  */
 public class WebServiceTask extends Task {
    
@@ -102,101 +105,38 @@ public class WebServiceTask extends Task {
     }
     
     public void execute() throws BuildException {
-        
         checkAttributes();
-        
-        PathFactory.getInstance().init(prjdir.getAbsolutePath());
-        
         if(!prjfile.exists()) throw new BuildException("Project configuration file "+prjfile.getAbsolutePath()+" doesn't exist");
-        
+        PathFactory.getInstance().init(prjdir.getAbsolutePath());
         try {
-
             Document doc=loadDoc(prjfile);
             NodeList nl=doc.getElementsByTagName("project");
-              
             //iterate over projects
             for(int i=0;i<nl.getLength();i++) {
-                
                 Element elem=(Element)nl.item(i);
                 String prjName=elem.getAttribute("name");
-                File wsConfFile=new File(prjdir,prjName+File.separator+"conf"+File.separator+"webservice.conf.xml");         
-                
+                File wsConfFile=new File(prjdir,prjName+File.separator+"conf"+File.separator+"webservice.conf.xml");
                 //go on processing if webservices found
                 if(wsConfFile.exists()) {
-                    
-                    if(!wsddSkel.exists()) throw new BuildException("Web service deployment descriptor skeleton"+
-                            wsddSkel.getAbsolutePath()+"doesn't exist.");
-                
+                    if(!wsddSkel.exists()) throw new BuildException("Web service deployment descriptor skeleton "+
+                            wsddSkel.getAbsolutePath()+" doesn't exist.");
                     File tmpDir=getTmpDir(prjName);
-                    File globPropsFile=new File(tmpDir,"global.props");
-                    boolean propsChanged=false;
-                    if(!globPropsFile.exists() || globPropsFile.lastModified()<wsConfFile.lastModified()) propsChanged=true;
-                    
-                    // Transform XML, creating temporary property file
-                    PathFactory.getInstance().init(prjdir.getAbsolutePath());
-                    File tempFile = null;
-                    XMLReader xreader;
-                    try {
-                        xreader = XMLReaderFactory.createXMLReader();
-                    } catch (SAXException e) {
-                        throw new ServletException("Could not create XMLReader", e);
-                    }
-                    TransformerFactory tf = SAXTransformerFactory.newInstance();
-                    if (tf.getFeature(SAXTransformerFactory.FEATURE)) {
-                        SAXTransformerFactory stf = (SAXTransformerFactory) tf;
-                        TransformerHandler th;
-                        try {
-                            th = stf.newTransformerHandler();
-                        } catch (TransformerConfigurationException e) {
-                            throw new RuntimeException(
-                                    "Failed to configure TransformerFactory!", e);
-                        }
-                        DOMResult dr = new DOMResult();
-                        try {
-                            tempFile = File.createTempFile("webservice", ".prop");
-                        } catch (IOException e) {
-                            throw new ServletException("Could not create temporary file", e);
-                        }
-                        StreamResult sr = new StreamResult(new FileOutputStream(tempFile));
-                        th.setResult(dr);
-                        DefaultHandler dh = new TransformerHandlerAdapter(th);
-                        DefaultHandler cushandler = new CustomizationHandler(dh, WS_CONF_NS, CUS_NS);
-                        xreader.setContentHandler(cushandler);
-                        xreader.setDTDHandler(cushandler);
-                        xreader.setErrorHandler(cushandler);
-                        xreader.setEntityResolver(cushandler);
-                        try {
-                            xreader.parse(new InputSource(new FileInputStream(wsConfFile)));
-                            Transformer trans = tf.newTransformer(new StreamSource(
-                                    PathFactory.getInstance().createPath(
-                                            "core/build/create_webservice.xsl").resolve()));
-                            trans.setParameter("docroot", PathFactory.getInstance().createPath("").resolve().getAbsolutePath());
-                            trans.transform(new DOMSource(dr.getNode()), sr);
-                        } catch (Exception e) {
-                            throw new BuildException("Error on reading config file " + wsConfFile.getAbsolutePath(), e);
-                        }
-                    } else {
-                        throw new BuildException(
-                                "Could not get instance of SAXTransformerFactory!");
-                    }
-                    
-                    ConfigProperties cfgProps=new ConfigProperties(new File[] {tempFile});
-                    Configuration srvConf=new Configuration(cfgProps);
+                    //read webservice configuration
+                    Configuration srvConf=ConfigurationReader.read(wsConfFile);
                     GlobalServiceConfig globConf=srvConf.getGlobalServiceConfig();
-                    
-                    //Get default webservice scope
-                    deployScope=globConf.getScopeType();
-                    
-                    //Get default message style
-                    encStyle=globConf.getEncodingStyle();
-                    encUse=globConf.getEncodingUse();
-                   
+                    //read last built webservice configuration
+                    File refWsConfFile=new File(tmpDir.getAbsolutePath()+"/"+"webservice.conf.xml");
+                    Configuration refSrvConf=null;
+                    GlobalServiceConfig refGlobConf=null;
+                    boolean globalConfChanged=false;
+                    if(refWsConfFile.exists()) {
+                    	refSrvConf=ConfigurationReader.read(refWsConfFile);
+                    	refGlobConf=refSrvConf.getGlobalServiceConfig();
+                    	if(!globConf.equals(refGlobConf)) globalConfChanged=true;
+                    }
+                    //Setup WSDL repository
                     File appDir=new File(webappsdir,prjName);
                     if(!appDir.exists()) throw new BuildException("Web application directory of project '"+prjName+"' doesn't exist");
-                    File webInfDir=new File(appDir,"WEB-INF");
-                    if(!webInfDir.exists()) throw new BuildException("Web application WEB-INF subdirectory of project '"+prjName+"' doesn't exist");
-                    
-                    //Setup WSDL repository
                     File wsdlDir=tmpDir;
                     if(globConf.getWSDLSupportEnabled()) {
                         String wsdlRepo=globConf.getWSDLRepository();
@@ -207,7 +147,6 @@ public class WebServiceTask extends Task {
                             if(!ok) throw new BuildException("Can't create WSDL directory "+wsdlDir.getAbsolutePath());
                         }
                     }
-                    
                     //Setup javascript stub repository
                     File stubDir=tmpDir;
                     if(globConf.getStubGenerationEnabled()) {
@@ -220,6 +159,16 @@ public class WebServiceTask extends Task {
                         }
                     }
                     
+                    //Get default webservice scope
+                    deployScope=globConf.getScopeType();
+                    
+                    //Get default message style
+                    encStyle=globConf.getEncodingStyle();
+                    encUse=globConf.getEncodingUse();
+                   
+                   
+                    File webInfDir=new File(appDir,"WEB-INF");
+                    if(!webInfDir.exists()) throw new BuildException("Web application WEB-INF subdirectory of project '"+prjName+"' doesn't exist");
                     File srvWsddFile=new File(webInfDir,"server-config.wsdd");
                     boolean isNewWsdd=false;
                     boolean wsddChanged=false;
@@ -244,21 +193,11 @@ public class WebServiceTask extends Task {
                     }
                     
                     if(globConf.getLoggingEnabled() || globConf.getMonitoringEnabled()) {         
-                        if(globConf.getLoggingEnabled()) {
-                            WSDDHandler loggingHandler=new WSDDHandler();
-                            loggingHandler.setType(new QName("LoggingHandler"));
-                            reqFlow.addHandler(loggingHandler);
-                            resFlow.addHandler(loggingHandler);
-                        }
-                        if(globConf.getMonitoringEnabled()) {
-                            WSDDHandler monitorHandler=new WSDDHandler();
-                            monitorHandler.setType(new QName("MonitoringHandler"));
-                            reqFlow.addHandler(monitorHandler);
-                            resFlow.addHandler(monitorHandler);
-                        }
+                    	WSDDHandler recHandler=new WSDDHandler();
+                    	recHandler.setType(new QName("RecordingHandler"));
+                    	reqFlow.addHandler(recHandler);
+                    	resFlow.addHandler(recHandler);
                     }
-                    
-                    
                     	
                     Element srvElem=(Element)elem.getElementsByTagName("servername").item(0);
                     if(srvElem==null) throw new BuildException("Missing servername element in configuration of project '"+prjName+"'");
@@ -277,6 +216,9 @@ public class WebServiceTask extends Task {
                         srvCnt++;
                         ServiceConfig conf=(ServiceConfig)it.next();
                         String wsName=conf.getName();
+                        ServiceConfig refConf=null;
+                        if(refSrvConf!=null) refConf=refSrvConf.getServiceConfig(wsName);
+                        
                         String wsItf=conf.getInterfaceName();
                         String wsImpl=conf.getImplementationName();
                         //String wsItfPkg=getPackageName(wsItf);
@@ -291,7 +233,6 @@ public class WebServiceTask extends Task {
                         String wsEncUse=encUse;
                         if(conf.getEncodingUse()!=null) wsEncUse=conf.getEncodingUse();
                         
-                        File confPropsFile=new File(tmpDir,wsName+".props");
                         String wsItfPath=wsItf.replace('.',File.separatorChar)+".java";
                         File wsItfFile=new File(srcdir,wsItfPath);
                         if(!wsItfFile.exists()) throw new BuildException("Web service interface source '"+wsItfFile.getAbsolutePath()+"' doesn't exist.");
@@ -299,9 +240,8 @@ public class WebServiceTask extends Task {
                         File wsdlFile=new File(wsdlDir,wsName+".wsdl");
                         
                         //Generate WSDL
-                        if(!wsdlFile.exists() || checkChanges(wsItf,wsdlFile) || !confPropsFile.exists() || 
-                                propsChanged || conf.doesDiff(new ServiceConfig(new ConfigProperties(new File[] {confPropsFile}),wsName))) {
-                            
+                        if(refConf==null || !wsdlFile.exists() || globalConfChanged || !conf.equals(refConf) || checkChanges(wsItf,wsdlFile)) { 
+                             
                                 checkInterface(wsItf);
                             
                                 wsdlCnt++;
@@ -319,7 +259,6 @@ public class WebServiceTask extends Task {
                                 task.setUse(wsEncUse);
                                 task.generate();
                                 log("Created webservice definition file "+wsdlFile.getAbsolutePath(),Project.MSG_VERBOSE);
-                                conf.saveProperties(new File(tmpDir,wsName+".props"));
                         }                
                      
                         //Generate javascript stubs            
@@ -358,10 +297,7 @@ public class WebServiceTask extends Task {
                             if(!origWsddFile.exists()) throw new BuildException("Can't locate deployment descriptor file "+origWsddFile.getAbsolutePath());
                             origWsddFile.renameTo(wsddFile);
                             log("Created deployment descriptor file "+wsddFile.getAbsolutePath(),Project.MSG_VERBOSE);
-                            
-                            
-                           
-                            
+                               
                             Document wsddDoc=loadDoc(wsddFile);
                             WSDDDocument wsdd=new WSDDDocument(wsddDoc);
                             WSDDService[] wsddServices=wsdd.getDeployment().getServices();
@@ -398,13 +334,9 @@ public class WebServiceTask extends Task {
                                 //Update server deployment descriptor
                                 srvWsdd.getDeployment().deployService(wsddServices[j]);
                                 wsddChanged=true;
-                            }
-                            
-                        }
-                        
+                            }   
+                        }   
                     }
-                    
-                   
                     
                     //Store changed server deployment descriptor
                     if(wsddChanged) {
@@ -412,25 +344,19 @@ public class WebServiceTask extends Task {
                         log("Created server deployment descriptor file "+srvWsddFile.getAbsolutePath(),Project.MSG_VERBOSE);
                     }
                     
-                    //Store current global webservice properties
-                    globConf.saveProperties(globPropsFile);
+                    //Store current webservice configuration file
+                    copy(wsConfFile,refWsConfFile);
                     
                     if(wsdlCnt!=0) log("Generated "+wsdlCnt+"(of "+srvCnt+") WSDL file(s)");
                     if(wsddCnt!=0) log("Generated "+wsddCnt+"(of "+srvCnt+") WSDD file(s)");
                     if(stubCnt!=0) log("Generated "+stubCnt+"(of "+srvCnt+") WS stub file(s)");
                     if(wsddChanged) log("Generated server WSDD file");
-                    
-                    
+                      
                 }
-                
             }
-               
-        
-        } catch(Exception x) {
-            throw new BuildException(x);
-        }
-
-        
+	        } catch(Exception x) {
+	            throw new BuildException(x);
+	        }
         }
     
         private String getPackageName(String className) {
@@ -631,6 +557,19 @@ public class WebServiceTask extends Task {
         
         public void setWebappsdir(File webappsdir) {
             this.webappsdir=webappsdir;
+        }
+        
+        private static void copy(File source,File target) throws IOException {
+            FileInputStream in=new FileInputStream(source);
+            FileOutputStream out=new FileOutputStream(target);
+            byte[] buffer=new byte[4096];
+            int no=0;
+            try {
+                while((no=in.read(buffer))!=-1) out.write(buffer,0,no);
+            } finally {
+                in.close();
+                out.close();
+            }
         }
         
 }

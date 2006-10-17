@@ -6,7 +6,7 @@
  */
 package de.schlund.pfixcore.example.webservices.chat;
 
-import java.util.Date;
+import java.util.Calendar;
 import java.util.Iterator;
 import java.util.WeakHashMap;
 
@@ -59,7 +59,8 @@ public class ChatServer {
     }
     
     public synchronized void publish(String from,String txt,String[] to) {
-    	Message msg=new Message(from,txt,new Date());
+        Calendar cal=Calendar.getInstance();
+    	Message msg=new Message(from,txt,cal);
         publish(msg,to);
     }
     

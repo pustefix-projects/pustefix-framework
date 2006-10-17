@@ -39,14 +39,14 @@ public class Fault {
         this.context=context;
 	}
     
-    public HttpServletRequest getRequest() {
-        return srvReq;
-    }
-    
-    public HttpServletResponse getResponse() {
-        return srvRes;
-    }
-    
+	public HttpServletRequest getRequest() {
+	    return srvReq;
+	}
+                                                                                                                                                      
+	public HttpServletResponse getResponse() {
+	    return srvRes;
+	}
+
     public Throwable getThrowable() {
         return throwable;
     }

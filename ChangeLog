@@ -1,3 +1,141 @@
+2006-10-16  Martin Leidig  <mleidig@schlund.de>
+
+	Updated webservice/AJAX stuff to the trunk's current state (JSON support 
+	and other improvements - for details see trunk's changelog).
+
+	Modified:
+	* src/de/schlund/pfixcore/example/webservices/chat/Message.java
+	* src/de/schlund/pfixcore/example/webservices/chat/ChatServer.java
+	* src/de/schlund/pfixcore/example/webservices/TypeTest.java
+	* src/de/schlund/pfixcore/example/webservices/TypeTestImpl.java
+	* src/de/schlund/pfixcore/example/webservices/CalculatorImpl.java
+	* src/de/schlund/pfixcore/webservice/WebServiceServlet.java
+	* src/de/schlund/pfixcore/webservice/monitor/MonitorRecord.java
+	* src/de/schlund/pfixcore/webservice/monitor/Monitor.java
+	* src/de/schlund/pfixcore/webservice/monitor/MonitorHistory.java
+	* src/de/schlund/pfixcore/webservice/generate/WebServiceTask.java
+	* src/de/schlund/pfixcore/webservice/Constants.java
+	* src/de/schlund/pfixcore/webservice/AbstractService.java
+	* src/de/schlund/pfixcore/webservice/config/ConfigException.java
+	* src/de/schlund/pfixcore/webservice/config/ServiceConfig.java
+	* src/de/schlund/pfixcore/webservice/config/Configuration.java
+	* src/de/schlund/pfixcore/webservice/config/GlobalServiceConfig.java
+	* src/de/schlund/pfixcore/webservice/fault/FaultHandler.java
+	* src/de/schlund/pfixcore/webservice/fault/Fault.java
+	* src/de/schlund/pfixcore/webservice/handler/AbstractHandler.java
+	* src/de/schlund/pfixcore/webservice/handler/ErrorHandler.java
+	* projects/core/script/webservice.js
+	* projects/webservice/txt/pages/main_chat.xml
+	* projects/webservice/txt/pages/main_counter.xml
+	* projects/webservice/txt/pages/main_typetest.xml
+	* projects/webservice/txt/pages/main_calculator.xml
+	* projects/webservice/txt/pages/main_data.xml
+	* projects/webservice/xml/two_frames.xml
+	* projects/webservice/htdocs/webservice.css
+	* projects/webservice/htdocs/calc-pfxsoap.js
+	* projects/webservice/htdocs/data-pfxsoap.js
+	* projects/webservice/htdocs/chat-pfxsoap.js
+	* projects/webservice/htdocs/counter-pfxsoap
+	* projects/webservice/htdocs/typetest-pfxsoap.js
+	* projects/webservice/htdocs/application.js
+	* projects/webservice/conf/webservice.conf.xml
+	* skel/build-skel.xml
+
+	Added:
+	* src/de/schlund/pfixcore/webservice/ServiceDescriptor.java
+	* src/de/schlund/pfixcore/webservice/ServiceProcessor.java
+	* src/de/schlund/pfixcore/webservice/ServiceCallContext.java
+	* src/de/schlund/pfixcore/webservice/jsonws
+	* src/de/schlund/pfixcore/webservice/jsonws/SerializerRegistry.java
+	* src/de/schlund/pfixcore/webservice/jsonws/JSONSerializer.java
+	* src/de/schlund/pfixcore/webservice/jsonws/BeanDescriptor.java
+	* src/de/schlund/pfixcore/webservice/jsonws/Bean.java
+	* src/de/schlund/pfixcore/webservice/jsonws/DeserializationException.java
+	* src/de/schlund/pfixcore/webservice/jsonws/Serializer.java
+	* src/de/schlund/pfixcore/webservice/jsonws/DeserializerRegistry.java
+	* src/de/schlund/pfixcore/webservice/jsonws/serializers
+	* src/de/schlund/pfixcore/webservice/jsonws/serializers/BeanSerializer.java
+	* src/de/schlund/pfixcore/webservice/jsonws/serializers/StringSerializer.java
+	* src/de/schlund/pfixcore/webservice/jsonws/serializers/NumberSerializer.java
+	* src/de/schlund/pfixcore/webservice/jsonws/serializers/CalendarSerializer.java
+	* src/de/schlund/pfixcore/webservice/jsonws/serializers/ArraySerializer.java
+	* src/de/schlund/pfixcore/webservice/jsonws/serializers/BooleanSerializer.java
+	* src/de/schlund/pfixcore/webservice/jsonws/JSONDeserializer.java
+	* src/de/schlund/pfixcore/webservice/jsonws/Deserializer.java
+	* src/de/schlund/pfixcore/webservice/jsonws/JSONRequest.java
+	* src/de/schlund/pfixcore/webservice/jsonws/SerializationContext.java
+	* src/de/schlund/pfixcore/webservice/jsonws/JSONWSProcessor.java
+	* src/de/schlund/pfixcore/webservice/jsonws/deserializers
+	* src/de/schlund/pfixcore/webservice/jsonws/deserializers/ArrayDeserializer.java
+	* src/de/schlund/pfixcore/webservice/jsonws/deserializers/BooleanDeserializer.java
+	* src/de/schlund/pfixcore/webservice/jsonws/deserializers/BeanDeserializer.java
+	* src/de/schlund/pfixcore/webservice/jsonws/deserializers/StringDeserializer.java
+	* src/de/schlund/pfixcore/webservice/jsonws/deserializers/NumberDeserializer.java
+	* src/de/schlund/pfixcore/webservice/jsonws/deserializers/CalendarDeserializer.java
+	* src/de/schlund/pfixcore/webservice/jsonws/RequestDeserializer.java
+	* src/de/schlund/pfixcore/webservice/jsonws/DeserializationContext.java
+	* src/de/schlund/pfixcore/webservice/jsonws/CustomJSONObject.java
+	* src/de/schlund/pfixcore/webservice/jsonws/SerializationException.java
+	* src/de/schlund/pfixcore/webservice/jsonws/BeanDescriptorFactory.java
+	* src/de/schlund/pfixcore/webservice/ServiceRuntime.java
+	* src/de/schlund/pfixcore/webservice/HttpServiceRequest.java
+	* src/de/schlund/pfixcore/webservice/ServiceRequest.java
+	* src/de/schlund/pfixcore/webservice/ServiceRequestWrapper.java
+	* src/de/schlund/pfixcore/webservice/ServiceProcessingException.java
+	* src/de/schlund/pfixcore/webservice/ServiceResponse.java
+	* src/de/schlund/pfixcore/webservice/HttpServiceResponse.java
+	* src/de/schlund/pfixcore/webservice/ServiceException.java
+	* src/de/schlund/pfixcore/webservice/ServiceResponseWrapper.java
+	* src/de/schlund/pfixcore/webservice/utils
+	* src/de/schlund/pfixcore/webservice/utils/RecordingReader.java
+	* src/de/schlund/pfixcore/webservice/utils/XMLFormatter.java
+	* src/de/schlund/pfixcore/webservice/utils/RecordingRequestWrapper.java
+	* src/de/schlund/pfixcore/webservice/utils/RecordingInputStream.java
+	* src/de/schlund/pfixcore/webservice/utils/RecordingOutputStream.java
+	* src/de/schlund/pfixcore/webservice/utils/RecordingWriter.java
+	* src/de/schlund/pfixcore/webservice/utils/RecordingResponseWrapper.java
+	* src/de/schlund/pfixcore/webservice/config/ConfigurationReader.java
+	* src/de/schlund/pfixcore/webservice/ServiceRegistry.java
+	* src/de/schlund/pfixcore/webservice/json
+	* src/de/schlund/pfixcore/webservice/json/JSONObject.java
+	* src/de/schlund/pfixcore/webservice/json/JSONValue.java
+	* src/de/schlund/pfixcore/webservice/json/JSONArray.java
+	* src/de/schlund/pfixcore/webservice/json/JSONParser.jj
+	* src/de/schlund/pfixcore/webservice/json/parser
+	* src/de/schlund/pfixcore/webservice/json/parser/Token.java
+	* src/de/schlund/pfixcore/webservice/json/parser/TokenMgrError.java
+	* src/de/schlund/pfixcore/webservice/json/parser/JSONParserTokenManager.java
+	* src/de/schlund/pfixcore/webservice/json/parser/JSONParserConstants.java
+	* src/de/schlund/pfixcore/webservice/json/parser/SimpleCharStream.java
+	* src/de/schlund/pfixcore/webservice/json/parser/JSONParser.java
+	* src/de/schlund/pfixcore/webservice/json/parser/ParseException.java
+	* src/de/schlund/pfixcore/webservice/json/ParserUtils.java
+	* src/de/schlund/pfixcore/webservice/annotation
+	* src/de/schlund/pfixcore/webservice/annotation/Service.java
+	* src/de/schlund/pfixcore/webservice/annotation/ServiceMethod.java
+	* src/de/schlund/pfixcore/webservice/handler/RecordingHandler.java
+	* projects/core/script/webservice_json.js
+	* projects/core/script/httpRequest.js
+	* projects/core/conf/server-config.wsdd
+	* projects/webservice/txt/common.xml
+
+	Removed:
+	* src/de/schlund/pfixcore/webservice/config/ConfigProperties.java
+	* src/de/schlund/pfixcore/webservice/config/AbstractConfig.java
+	* src/de/schlund/pfixcore/webservice/WebServiceContext.java
+	* src/de/schlund/pfixcore/webservice/handler/MonitoringHandler.java
+	* src/de/schlund/pfixcore/webservice/handler/LoggingHandler.java
+	* src/de/schlund/pfixcore/webservice/handler/AuthenticationHandler.java
+	* projects/common/conf/server-config.wsdd
+	* projects/webservice/htdocs/calc-mysoap.js
+	* projects/webservice/htdocs/calc-wsdl.js
+	* projects/webservice/htdocs/data-soap.js
+	* projects/webservice/htdocs/counter-soap.js
+	* projects/webservice/htdocs/data-wsdl.js
+	* projects/webservice/htdocs/counter-wsdl.js
+	* projects/webservice/htdocs/webservice.htc
+	* projects/webservice/htdocs/calc-soap.js
+
 2006-10-13  Martin Leidig  <mleidig@schlund.de>
 
 	Added support for IE7's "native" XMLHttpRequest

@@ -1,4 +1,4 @@
-function pfxsoapPrint(result,time) {
+function dataPrint(result,time) {
 	var res="";
 	if(result instanceof Array) {
 		for(var i=0;i<result.length;i++) {
@@ -6,9 +6,7 @@ function pfxsoapPrint(result,time) {
 		}
 		result=res;
 	}
-	document.getElementById('pfxsoap_result').value=result;
-  	document.getElementById('pfxsoap_time').innerHTML=time;
-  	document.getElementById('pfxsoap_error').innerHTML="";
+	document.getElementById('data_result').value=result;
 }
 
 function pfxsoapPrintError(msg,time) {
@@ -18,32 +16,31 @@ function pfxsoapPrintError(msg,time) {
 }
 
 var wsData=new WS_Data();
+var jwsData=new WS_Webservice("Data");
 
-var t1=null;
+var timer=new Timer();
 
-function pfxsoapCallback(result,exception) {
-	var d2=new Date();
-   var t2=d2.getTime();
-   var t=t2-t1;
-  	if(exception==undefined) pfxsoapPrint(result,t);
-  	else pfxsoapPrintError(exception.toString(),t);
+function serviceCallback(result,exception) {
+	timer.stop();
+	printTime(timer.getTime());
+	if(exception==undefined || exception==null) dataPrint(result);
+  	else printError(exception.toString());
 }
 
-function pfxsoapCall(method,val1,val2,val3,val4) {
+function serviceCall(method,val1,val2,val3,val4) {
 
-	var d1=new Date();
-	t1=d1.getTime();
-
+	timer.start();
+	var ws=soapEnabled()?wsData:jwsData;
+	
 	var result=null;
 	
-	try {
-		if(method=="exchangeData") {
+	if(method=="exchangeData") {
 			var reqStrSize=parseInt(val1);
 			var resStrSize=parseInt(val2);
 			var str="";
 			for(var i=0;i<reqStrSize;i++) str+="X";
-			result=wsData.exchangeData(str,resStrSize);
-		} else if(method=="exchangeDataArray") {
+			ws.exchangeData(str,resStrSize,serviceCallback);
+	} else if(method=="exchangeDataArray") {
 			var reqArrSize=parseInt(val1);
 			var reqStrSize=parseInt(val2);
 			var resArrSize=parseInt(val3);
@@ -52,22 +49,7 @@ function pfxsoapCall(method,val1,val2,val3,val4) {
 			for(var i=0;i<reqStrSize;i++) str+="X";
 			var arr=new Array(reqArrSize);
 			for(var i=0;i<reqArrSize;i++) arr[i]=str;
-			result=wsData.exchangeDataArray(arr,resArrSize,resStrSize,pfxsoapCallback);
-		}
-		var d2=new Date();
-   	var t2=d2.getTime();
-   	var t=t2-t1;
-   	if(method!="exchangeDataArray") pfxsoapPrint(result,t);
-	} catch(x) {
-		var msg="";
-                if(x.message) msg=x.message;
-                else msg=x.toString();
-		var d2=new Date();
-   	var t2=d2.getTime();
-   	var t=t2-t1;
-		pfxsoapPrintError(msg,t);
-	}
-
-	
+			ws.exchangeDataArray(arr,resArrSize,resStrSize,serviceCallback);
+	}	
 
 }
