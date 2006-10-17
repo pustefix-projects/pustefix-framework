@@ -126,32 +126,39 @@ public class DirectOutputServlet extends ServletManager {
          }
          
          ServerContextImpl context = (ServerContextImpl) getServletContext().getAttribute(name);
-         SessionContextImpl scontext = (SessionContextImpl) session.getAttribute(name);
+         ContextImpl scontext = (ContextImpl) session.getAttribute(name);
          if (context == null || scontext == null) {
              throw new RuntimeException("*** didn't find Context " + name + " in Session " + session.getId() +
                                         " , maybe it's not yet initialized??? ***");
          }
          
-         if (config.isSynchronized()) {
-             synchronized (scontext) {
-                 doProcess(preq, res, context, scontext);
+         // Make sure the context is initialized and deinitialized for
+         // this thread
+         
+         scontext.prepareForRequest(context);
+         try {
+            if (config.isSynchronized()) {
+                synchronized (scontext) {
+                    doProcess(preq, res, context, scontext);
+                }
+            } else {
+                doProcess(preq, res, context, scontext);
             }
-         } else {
-             doProcess(preq, res, context, scontext);
+         } finally {
+            scontext.cleanupAfterRequest();
          }
     }
     
-    protected void doProcess(PfixServletRequest preq, HttpServletResponse res, ServerContextImpl context, SessionContextImpl scontext) throws Exception {
+    protected void doProcess(PfixServletRequest preq, HttpServletResponse res, ServerContextImpl context, ContextImpl scontext) throws Exception {
          ContextResourceManager crm = scontext.getContextResourceManager();
 
          // check the authentification first....
          State authstate = context.getAuthState();
          if (authstate != null) {
-             Context wcontext = new ContextImpl(context, scontext);
-             if (!authstate.isAccessible(wcontext, preq)) {
+             if (!authstate.isAccessible(scontext, preq)) {
                  throw new XMLException("State of authpage is not accessible!");
              }
-             if (authstate.needsData(wcontext, preq)) {
+             if (authstate.needsData(scontext, preq)) {
                  CAT.info("Got request without authorization");
                  res.sendError(HttpServletResponse.SC_FORBIDDEN, "Must authenticate first");
                  return;

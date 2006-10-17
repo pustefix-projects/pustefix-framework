@@ -1,7 +1,8 @@
 package de.schlund.pfixcore.util;
 
+import de.schlund.pfixcore.workflow.ContextImpl;
+import de.schlund.pfixcore.workflow.RequestContextImpl;
 import de.schlund.pfixcore.workflow.context.AccessibilityChecker;
-import de.schlund.pfixcore.workflow.Context;
 import de.schlund.pfixxml.SPDocument;
 
 /**
@@ -19,28 +20,84 @@ public class TransformerCallback {
         spdoc.setNostore(true);
     }
 
-    public static int isAccessible(Context context, String pagename) throws Exception {
-        if (context.getContextConfig().getPageRequestConfig(pagename) != null) {
-            AccessibilityChecker check = (AccessibilityChecker) context;
-            if (check.isPageAccessible(pagename)) {
-                return 1;
-            } else {
-                return 0;
+    public static int isAccessible(RequestContextImpl context, String pagename) throws Exception {
+        ContextImpl pcontext = context.getParentContext();
+        if (pcontext != null) {
+            RequestContextImpl oldContext = pcontext.getRequestContextForCurrentThread();
+            try {
+                pcontext.setRequestContextForCurrentThread(context);
+                if (pcontext.getContextConfig().getPageRequestConfig(pagename) != null) {
+                    AccessibilityChecker check = (AccessibilityChecker) pcontext;
+                    boolean retval;
+                    if (pcontext.getContextConfig().isSynchronized()) {
+                        synchronized(pcontext) {
+                            retval = check.isPageAccessible(pagename);
+                        }
+                    } else {
+                        retval = check.isPageAccessible(pagename);
+                    }
+                    if (retval) {
+                        return 1;
+                    } else {
+                        return 0;
+                    }
+                }
+                return -1;
+            } finally {
+                pcontext.setRequestContextForCurrentThread(oldContext);
             }
-        }  
-        return -1;
+
+        } else {
+            if (context.getContextConfig().getPageRequestConfig(pagename) != null) {
+                AccessibilityChecker check = (AccessibilityChecker) context;
+                if (check.isPageAccessible(pagename)) {
+                    return 1;
+                } else {
+                    return 0;
+                }
+            }
+            return -1;
+        }
     }
 
-    public static int isVisited(Context context, String pagename) throws Exception {
-        if (context.getContextConfig().getPageRequestConfig(pagename) != null) {
-            AccessibilityChecker check = (AccessibilityChecker) context;
-            if (check.isPageAlreadyVisited(pagename)) {
-                return 1;
-            } else {
-                return 0;
+    public static int isVisited(RequestContextImpl context, String pagename) throws Exception {
+        ContextImpl pcontext = context.getParentContext();
+        if (pcontext != null) {
+            RequestContextImpl oldContext = pcontext.getRequestContextForCurrentThread();
+            try {
+                pcontext.setRequestContextForCurrentThread(context);
+                if (pcontext.getContextConfig().getPageRequestConfig(pagename) != null) {
+                    AccessibilityChecker check = (AccessibilityChecker) pcontext;
+                    boolean retval;
+                    if (pcontext.getContextConfig().isSynchronized()) {
+                        synchronized(pcontext) {
+                            retval = check.isPageAlreadyVisited(pagename);
+                        }
+                    } else {
+                        retval = check.isPageAlreadyVisited(pagename);
+                    }
+                    if (retval) {
+                        return 1;
+                    } else {
+                        return 0;
+                    }
+                }
+                return -1;
+            } finally {
+                pcontext.setRequestContextForCurrentThread(oldContext);
             }
+
+        } else {
+            if (context.getContextConfig().getPageRequestConfig(pagename) != null) {
+                AccessibilityChecker check = (AccessibilityChecker) context;
+                if (check.isPageAlreadyVisited(pagename)) {
+                    return 1;
+                } else {
+                    return 0;
+                }
+            }
+            return -1;
         }
-        return -1;
     }
 
 }

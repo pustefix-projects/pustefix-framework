@@ -27,7 +27,7 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpSessionContext;
 
-import de.schlund.pfixcore.workflow.ContextImpl;
+import de.schlund.pfixcore.workflow.RequestContextImpl;
 import de.schlund.pfixcore.workflow.context.ServerContextImpl;
 import de.schlund.pfixcore.workflow.context.SessionContextImpl;
 import de.schlund.pfixxml.config.ContextXMLServletConfig;
@@ -39,10 +39,10 @@ import de.schlund.pfixxml.config.ContextXMLServletConfig;
  * @author Sebastian Marsching <sebastian.marsching@1und1.de>
  */
 public class DummyContextFactory {
-    public static ContextImpl getDummyContext(ContextXMLServletConfig config) throws Exception {
+    public static RequestContextImpl getDummyContext(ContextXMLServletConfig config) throws Exception {
         ServerContextImpl context = new ServerContextImpl(config.getContextConfig(), "Dummy");
         SessionContextImpl scontext = new SessionContextImpl(context, new DummySession());
-        return new ContextImpl(context, scontext);
+        return new RequestContextImpl(context, scontext);
     }
     
     private static class DummySession implements HttpSession {

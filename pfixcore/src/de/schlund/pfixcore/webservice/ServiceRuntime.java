@@ -92,6 +92,7 @@ public class ServiceRuntime {
 	}
 	
 	public void process(HttpServletRequest req,HttpServletResponse res) throws ServiceException {
+        ContextImpl pfxSessionContext=null;
 		try {
 			
 			ServiceRequest serviceReq=new HttpServiceRequest(req);
@@ -116,7 +117,6 @@ public class ServiceRuntime {
             }
             if(srvConf==null) throw new ServiceException("Service not found: "+serviceName);
     
-			SessionContextImpl pfxSessionContext=null;
 			ServiceCallContext callContext=null;
 			
 			if(srvConf.getContextName()!=null) {
@@ -131,14 +131,16 @@ public class ServiceRuntime {
 					}
 					String contextName=srvConf.getContextName()+"__CONTEXT__";
 					ServerContextImpl srvContext=(ServerContextImpl)req.getSession().getServletContext().getAttribute(contextName);
-					pfxSessionContext=(SessionContextImpl)session.getAttribute(contextName);
+					pfxSessionContext=(ContextImpl)session.getAttribute(contextName);
 					State authState=srvContext.getAuthState();
                     try {
-                        Context wcontext = new ContextImpl(srvContext,pfxSessionContext);
+                        // Prepare context for current thread.
+                        // Cleanup is performed in finally block.
+                        pfxSessionContext.prepareForRequest(srvContext);
                         if(authState!=null) {
                             PfixServletRequest preq=new PfixServletRequest(req,new Properties());
-                            if(!authState.isAccessible(wcontext,preq)) throw new ServiceException("Authorization failed: State of authpage is not accessible!");
-                            if(authState.needsData(wcontext,preq)) throw new ServiceException("Authorization failed: Must authenticate first!");                                                                                                                                  
+                            if(!authState.isAccessible(pfxSessionContext,preq)) throw new ServiceException("Authorization failed: State of authpage is not accessible!");
+                            if(authState.needsData(pfxSessionContext,preq)) throw new ServiceException("Authorization failed: Must authenticate first!");                                                                                                                                  
                         }
                     } catch(Exception x) {
                         throw new ServiceException("Authorization failed",x);
@@ -218,6 +220,9 @@ public class ServiceRuntime {
 			
 		} finally {
 			setCurrentContext(null);
+            if (pfxSessionContext != null) {
+                pfxSessionContext.cleanupAfterRequest();
+            }
 		}
 	}
 	
