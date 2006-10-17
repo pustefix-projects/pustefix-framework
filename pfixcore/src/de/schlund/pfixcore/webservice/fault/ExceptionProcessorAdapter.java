@@ -1,7 +1,6 @@
 package de.schlund.pfixcore.webservice.fault;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.util.Properties;
 
 import javax.servlet.http.HttpServletRequest;
@@ -9,7 +8,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
-import org.xml.sax.SAXException;
 
 import de.schlund.pfixxml.PathFactory;
 import de.schlund.pfixxml.PfixServletRequest;

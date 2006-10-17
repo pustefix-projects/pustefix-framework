@@ -3,16 +3,18 @@
   <part name="content">
     <theme name="default">
 
-		<h1>TypeTest service</h1>
+      <div class="service_caption">TypeTest service</div>
+      
+      <pfx:include href="webservice/txt/common.xml" part="protocol_select"/>
+      <pfx:include href="webservice/txt/common.xml" part="service_time"/>
+      <pfx:include href="webservice/txt/common.xml" part="service_error"/>
+      <pfx:include href="webservice/txt/common.xml" part="service_result"/>
 		
-		<div>
-			<h2>Pustefix SOAP</h2>
-			<p>Pustefix soap calls took <span id="pfxsoap_time">0</span> ms.</p>
-			<p><span class="error" id="pfxsoap_error"/></p>
-			<form action="" name="pfxsoap">
-				<input onclick="pfxsoapCall();" type="button" value="Start test"/>
+	   <div>
+			<form action="" name="service_form">
+				<input onclick="serviceCall();" type="button" value="Start test"/>
 			</form>
-			<p id="out"/>
+			<div id="console"/>
 		</div>
           
       </theme>

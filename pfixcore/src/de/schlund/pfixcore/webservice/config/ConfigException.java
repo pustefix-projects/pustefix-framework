@@ -1,52 +1,70 @@
 /*
- * de.schlund.pfixcore.webservice.config.ConfigException
+ * This file is part of PFIXCORE.
+ *
+ * PFIXCORE is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * PFIXCORE is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with PFIXCORE; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
  */
+
 package de.schlund.pfixcore.webservice.config;
+
+import org.xml.sax.SAXException;
 
 /**
  * ConfigException.java 
  * 
  * Created: 03.08.2004
  * 
- * @author mleidig
+ * @author mleidig@schlund.de
  */
-public class ConfigException extends Exception {
+public class ConfigException extends SAXException {
     
-    public final static int MISSING_PROPERTY=0;
-    public final static int ILLEGAL_PROPERTY_VALUE=1;
+    public final static int MISSING_ATTRIBUTE=0;
+    public final static int ILLEGAL_ATTRIBUTE_VALUE=1;
     
     private int type;
-    private String propName;
-    private String propVal;
+    private String attrName;
+    private String attrVal;
     private Throwable cause;
     
-    public ConfigException(int type,String propName) {
+    public ConfigException(int type,String attrName) {
         super();
         this.type=type;
-        this.propName=propName;
+        this.attrName=attrName;
     }
     
-    public ConfigException(int type,String propName,String propVal) {
+    public ConfigException(int type,String attrName,String attrVal) {
         super();
         this.type=type;
-        this.propName=propName;
-        this.propVal=propVal;
+        this.attrName=attrName;
+        this.attrVal=attrVal;
     }
     
-    public ConfigException(int type,String propName,String propVal,Throwable cause) {
+    public ConfigException(int type,String attrName,String attrVal,Throwable cause) {
     	super();
     	this.type=type;
-    	this.propName=propName;
-    	this.propVal=propVal;
+    	this.attrName=attrName;
+    	this.attrVal=attrVal;
     	this.cause=cause;
     }
     
     public String getMessage() {
     	String msg="";
-        if(type==MISSING_PROPERTY) {
-            msg="Mandatory property '"+propName+"' is not set.";
-        } else if(type==ILLEGAL_PROPERTY_VALUE) {
-            msg="Property '"+propName+"' has illegal value: '"+propVal+"'.";
+        if(type==MISSING_ATTRIBUTE) {
+            msg="Mandatory attribute '"+attrName+"' is not set.";
+        } else if(type==ILLEGAL_ATTRIBUTE_VALUE) {
+            msg="Attribute '"+attrName+"' has illegal value: '"+attrVal+"'.";
         } else msg="Unknown error";
         if(cause!=null) msg+="[Cause: "+cause.toString()+"]";
         return msg;

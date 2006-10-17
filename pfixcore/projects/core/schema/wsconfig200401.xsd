@@ -22,11 +22,6 @@
   <xsd:element name="webservice-global">
     <xsd:complexType>
       <xsd:sequence>
-        <xsd:element name="server">
-          <xsd:complexType>
-            <xsd:attribute name="name" type="ServerType"/>
-          </xsd:complexType>
-        </xsd:element>
         <xsd:element name="requestpath" type="xsd:string"/>
         <xsd:element name="wsdlsupport">
           <xsd:complexType>
@@ -40,6 +35,7 @@
             <xsd:attribute name="repository" type="xsd:string"/>
           </xsd:complexType>
         </xsd:element>
+        <xsd:element ref="protocol" minOccurs="0"/>
         <xsd:element ref="encoding"/>
         <xsd:element ref="session"/>
         <xsd:element ref="scope"/>
@@ -48,10 +44,15 @@
           <xsd:element name="choose">
             <xsd:complexType>
               <xsd:sequence>
-                <xsd:element name="test" maxOccurs="unbounded">
+                <xsd:element name="when" maxOccurs="unbounded">
                   <xsd:complexType>
                     <xsd:group ref="GlobalCustoms"/>
-                	<xsd:attribute name="mode" type="xsd:string"/>
+                	<xsd:attribute name="test" type="xsd:string"/>
+                  </xsd:complexType>
+                </xsd:element>
+                <xsd:element name="otherwise" minOccurs="0">
+                  <xsd:complexType>
+                     <xsd:group ref="GlobalCustoms"/>
                   </xsd:complexType>
                 </xsd:element>
               </xsd:sequence>
@@ -81,7 +82,7 @@
           <xsd:attribute name="enabled" type="xsd:boolean" default="false"/>
         </xsd:complexType>
       </xsd:element>
-      <xsd:element ref="faulthandler" minOccurs="0" maxOccurs="1"/>
+      <xsd:element name="faulthandler" minOccurs="0"/>
     </xsd:sequence>
   </xsd:group>
 
@@ -99,6 +100,7 @@
             <xsd:attribute name="name" type="ClassType" use="required"/>
     	  </xsd:complexType>    
     	</xsd:element>
+        <xsd:element ref="protocol" minOccurs="0"/>
         <xsd:element ref="encoding" minOccurs="0"/>
         <xsd:element ref="session" minOccurs="0"/>
         <xsd:element ref="scope" minOccurs="0"/>
@@ -115,6 +117,12 @@
     </xsd:complexType>
   </xsd:element>
 
+  <xsd:element name="protocol">
+    <xsd:complexType>
+      <xsd:attribute name="type" type="ProtocolType" use="required"/>
+    </xsd:complexType>
+  </xsd:element>
+
   <xsd:element name="encoding">
     <xsd:complexType>
       <xsd:attribute name="style" type="StyleType" use="required"/>
@@ -128,7 +136,7 @@
     </xsd:complexType>
   </xsd:element>
   
-	<xsd:element name="scope">
+  <xsd:element name="scope">
     <xsd:complexType>
       <xsd:attribute name="type" type="ScopeType" use="required"/>
     </xsd:complexType>
@@ -192,12 +200,6 @@
       <xsd:enumeration value="servlet"/>
     </xsd:restriction>
   </xsd:simpleType>
-    
-  <xsd:simpleType name="ServerType">
-    <xsd:restriction base="xsd:string">
-      <xsd:enumeration value="axis"/>
-    </xsd:restriction>
-  </xsd:simpleType>
 	
   <xsd:simpleType name="MonitorScopeType">
     <xsd:restriction base="xsd:string">
@@ -213,11 +215,20 @@
     </xsd:restriction>
   </xsd:simpleType>
   
-	<xsd:simpleType name="ScopeType">
+  <xsd:simpleType name="ScopeType">
     <xsd:restriction base="xsd:string">
       <xsd:enumeration value="application"/>
       <xsd:enumeration value="session"/>
       <xsd:enumeration value="request"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name="ProtocolType">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="SOAP"/>
+      <xsd:enumeration value="JSONRPC"/>
+      <xsd:enumeration value="JSONWS"/>
+      <xsd:enumeration value="ANY"/>
     </xsd:restriction>
   </xsd:simpleType>
 

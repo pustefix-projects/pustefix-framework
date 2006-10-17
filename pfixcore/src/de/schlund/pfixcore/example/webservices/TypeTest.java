@@ -4,9 +4,9 @@
 package de.schlund.pfixcore.example.webservices;
 
 import java.util.Calendar;
+import java.util.HashMap;
 
 import org.w3c.dom.Element;
-import java.util.HashMap;
 
 /**
  * TypeTest.java 
@@ -19,25 +19,41 @@ public interface TypeTest {
     
     public String info();
     
+    public byte echoByte(byte val);
+    
+    public Byte echoByteObj(Byte val);
+    
+    public short echoShort(short val);
+    
+    public Short echoShortObj(Short val);
+    
     public int echoInt(int val);
+    
+    public Integer echoIntObj(Integer val);
     
     public int[] echoIntArray(int[] vals);
     
     public long echoLong(long val);
     
+    public Long echoLongObj(Long val);
+    
+    public long[] echoLongArray(long[] vals);
+   
     public float echoFloat(float val);
     
-    public float[] echoFloatArray(float[] vals);
+    public Float echoFloatObj(Float val);
     
+    public float[] echoFloatArray(float[] vals);
+   
     public double echoDouble(double val);
     
-    public double[] echoDoubleArray(double[] vals);
+    public Double echoDoubleObj(Double val);
     
     public boolean echoBoolean(boolean val);
     
-    public boolean[] echoBooleanArray(boolean[] vals);
+    public Boolean echoBooleanObj(Boolean val);
     
-    public Boolean echoBooleanObject(Boolean val);
+    public boolean[] echoBooleanArray(boolean[] vals);
     
     public Calendar echoDate(Calendar date);
     

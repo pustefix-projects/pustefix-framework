@@ -3,12 +3,12 @@
   <part name="content">
     <theme name="default">
 
-		<h1>Chat service</h1>
-        <div>
-		  <h2>Pustefix SOAP</h2>
-			<p>Pustefix soap calls took <span id="pfxsoap_time">0</span> ms.</p>
-			<p><span class="error" id="pfxsoap_error"/></p>
-			
+      <div class="service_caption">Chat service</div>
+      
+      <pfx:include href="webservice/txt/common.xml" part="protocol_select"/>
+    
+      <div class="service_content"> 
+		  
             <table cellpadding="5" cellspacing="5" style="background-color:#b6cfe4;">
               <tr>
                 <td>

@@ -1,18 +1,21 @@
-var chatApp=new ChatApp();
-
-function refreshMessages() {
-	chatApp.getLastMessages();
-}
-
-function refreshNames() {
-	chatApp.getNickNames();
-}
+var wsChat=new WS_Chat();
+var jwsChat=new WS_Webservice("Chat");
 
 function ChatApp() {
 	this.name=null;
-	this.chat=new WS_Chat();
 	this.msgIv=null;
 	this.nameIv=null;
+	this.chat=null;
+}
+
+ChatApp.prototype.restartService=function() {
+	if(this.chat==null) {
+		if(soapEnabled()) this.chat=wsChat;
+		else this.chat=jwsChat;
+	} else {
+		if(soapEnabled()&&(this.chat instanceof WS_Webservice)) this.chat=wsChat;
+		else if(!soapEnabled()&&(this.chat instanceof WS_Chat)) this.chat=jwsChat;
+	}
 }
 	
 ChatApp.prototype.init=function(loggedin,nickname) {
@@ -27,6 +30,8 @@ ChatApp.prototype.init=function(loggedin,nickname) {
 }
 	
 ChatApp.prototype.login=function(name) {
+	this.restartService();
+	
 	var self=this;
 	var f=function(res,id,ex) {
 		if(ex!=undefined) {alert(ex.message);return;}
@@ -164,3 +169,15 @@ ChatApp.prototype.addNickName=function(name) {
 	div.appendChild(elem);
 	div.appendChild(document.createElement("br"));
 }
+
+
+var chatApp=new ChatApp();
+
+function refreshMessages() {
+	chatApp.getLastMessages();
+}
+
+function refreshNames() {
+	chatApp.getNickNames();
+}
+
