@@ -1,3 +1,21 @@
+2006-10-17  Sebastian Marsching  <sebastian.marsching@1und1.de>
+
+	* src/de/schlund/pfixcore/util/DummyContextFactory.java: 
+	* src/de/schlund/pfixcore/util/TransformerCallback.java (isAccessible): 
+	* src/de/schlund/pfixcore/webservice/fault/Fault.java: 
+	* src/de/schlund/pfixcore/webservice/handler/ErrorHandler.java: 
+	* src/de/schlund/pfixcore/webservice/AbstractService.java: 
+	* src/de/schlund/pfixcore/webservice/ServiceCallContext.java: 
+	* src/de/schlund/pfixcore/webservice/ServiceRuntime.java: 
+	* src/de/schlund/pfixcore/workflow/context/SessionContextImpl.java: 
+	* src/de/schlund/pfixcore/workflow/ContextImpl.java: 
+	* src/de/schlund/pfixcore/workflow/RequestContextImpl.java: 
+	* src/de/schlund/pfixxml/ContextXMLServer.java: 
+	* src/de/schlund/pfixxml/DirectOutputServlet.java: 
+	Store request-specific context in a thread-local, so that the same session-context
+	can be used everywhere to access the current request.
+	
+
 2006-10-17  Martin Leidig  <mleidig@schlund.de>
 
 	Added adapter for external webservice exception processor. Made general

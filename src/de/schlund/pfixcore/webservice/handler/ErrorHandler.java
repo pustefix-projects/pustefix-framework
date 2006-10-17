@@ -34,6 +34,7 @@ import de.schlund.pfixcore.webservice.config.GlobalServiceConfig;
 import de.schlund.pfixcore.webservice.config.ServiceConfig;
 import de.schlund.pfixcore.webservice.fault.Fault;
 import de.schlund.pfixcore.webservice.fault.FaultHandler;
+import de.schlund.pfixcore.workflow.Context;
 import de.schlund.pfixcore.workflow.context.SessionContext;
 
 /**
@@ -62,7 +63,7 @@ public class ErrorHandler extends AbstractHandler {
     	if(faultHandler!=null) {
            try {
         	   ServiceCallContext callContext=ServiceCallContext.getCurrentContext();
-        	   SessionContext context=null;
+        	   Context context=null;
         	   if(callContext!=null) context=callContext.getContext();
                HttpServletRequest srvReq=getServletRequest(msgCtx);
                HttpServletResponse srvRes=getServletResponse(msgCtx);

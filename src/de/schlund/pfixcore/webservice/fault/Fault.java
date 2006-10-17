@@ -13,7 +13,7 @@ import javax.servlet.http.HttpSession;
 import org.apache.log4j.Logger;
 
 import de.schlund.pfixcore.webservice.Constants;
-import de.schlund.pfixcore.workflow.context.SessionContext;
+import de.schlund.pfixcore.workflow.Context;
 
 public class Fault {
 	
@@ -25,11 +25,11 @@ public class Fault {
     String requestURI;
 	String reqMsg;
     String serverName;
-    SessionContext context;
+    Context context;
     Throwable throwable;
     String faultString;
 	
-	public Fault(String serviceName,HttpServletRequest srvReq,HttpServletResponse srvRes,String reqMsg,SessionContext context) {
+	public Fault(String serviceName,HttpServletRequest srvReq,HttpServletResponse srvRes,String reqMsg,Context context) {
 		this.serviceName=serviceName;
         this.srvReq=srvReq;
         this.srvRes=srvRes;
@@ -147,7 +147,7 @@ public class Fault {
         return srvReq.getServerName();
     }
     
-    public SessionContext getContext() {
+    public Context getContext() {
         return context;
     }
 	

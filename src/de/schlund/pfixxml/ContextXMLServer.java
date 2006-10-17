@@ -85,7 +85,7 @@ public class ContextXMLServer extends AbstractXMLServer {
                 } else {
                     String page = preq.getPageName();
                     if (page == null) {
-                        SessionContextImpl scontext = (SessionContextImpl) session.getAttribute(contextname);
+                        ContextImpl scontext = (ContextImpl) session.getAttribute(contextname);
                         if (scontext != null) {
                             page = scontext.getLastPageName();
                         }
@@ -131,79 +131,87 @@ public class ContextXMLServer extends AbstractXMLServer {
     }
 
     public SPDocument getDom(PfixServletRequest preq) throws Exception {
-        SessionContextImpl scontext = getSessionContext(preq);
-        ContextImpl rcontext = new ContextImpl(context, scontext);
-        SPDocument spdoc;
+        ContextImpl scontext = getContext(preq);
+        
+        // Prepare context for current thread
+        // Cleanup is performed in finally block
+        scontext.prepareForRequest(this.context);
+        
+        try {
+            SPDocument spdoc;
 
-        ScriptedFlowInfo info = getScriptedFlowInfo(preq);
-        if (preq.getRequestParam(PARAM_SCRIPTEDFLOW) != null && preq.getRequestParam(PARAM_SCRIPTEDFLOW).getValue() != null) {
-            String scriptedFlowName = preq.getRequestParam(PARAM_SCRIPTEDFLOW).getValue();
+            ScriptedFlowInfo info = getScriptedFlowInfo(preq);
+            if (preq.getRequestParam(PARAM_SCRIPTEDFLOW) != null && preq.getRequestParam(PARAM_SCRIPTEDFLOW).getValue() != null) {
+                String scriptedFlowName = preq.getRequestParam(PARAM_SCRIPTEDFLOW).getValue();
 
-            // Do a virtual request without any request parameters
-            // to get an initial SPDocument
-            PfixServletRequest vpreq = new PfixServletRequest(VirtualHttpServletRequest.getVoidRequest(preq.getRequest()), getContextXMLServletConfig().getProperties());
-            spdoc = rcontext.handleRequest(vpreq);
+                // Do a virtual request without any request parameters
+                // to get an initial SPDocument
+                PfixServletRequest vpreq = new PfixServletRequest(VirtualHttpServletRequest.getVoidRequest(preq.getRequest()), getContextXMLServletConfig().getProperties());
+                spdoc = scontext.handleRequest(vpreq);
 
-            // Reset current scripted flow state
-            info.reset();
+                // Reset current scripted flow state
+                info.reset();
 
-            // Lookup script name
-            Script script = getScriptedFlowByName(scriptedFlowName);
+                // Lookup script name
+                Script script = getScriptedFlowByName(scriptedFlowName);
 
-            if (script != null) {
-                // Remember running script
-                info.isScriptRunning(true);
+                if (script != null) {
+                    // Remember running script
+                    info.isScriptRunning(true);
 
-                // Get parameters for scripted flow:
-                // They have the form __scriptedflow.<name>=<value>
-                String[] paramNames = preq.getRequestParamNames();
-                for (int i = 0; i < paramNames.length; i++) {
-                    if (!paramNames[i].equals(PARAM_SCRIPTEDFLOW)) {
-                        String paramName = paramNames[i];
-                        String paramValue = preq.getRequestParam(paramName).getValue();
-                        info.addParam(paramName, paramValue);
+                    // Get parameters for scripted flow:
+                    // They have the form __scriptedflow.<name>=<value>
+                    String[] paramNames = preq.getRequestParamNames();
+                    for (int i = 0; i < paramNames.length; i++) {
+                        if (!paramNames[i].equals(PARAM_SCRIPTEDFLOW)) {
+                            String paramName = paramNames[i];
+                            String paramValue = preq.getRequestParam(paramName).getValue();
+                            info.addParam(paramName, paramValue);
+                        }
+                    }
+
+                    // Create VM and run script
+                    ScriptVM vm = new ScriptVM();
+                    vm.setScript(script);
+                    try {
+                        spdoc = vm.run(preq, spdoc, scontext, info.getParams());
+                    } finally {
+                        // Make sure this is done even if an error has occured
+                        if (vm.isExitState()) {
+                            info.reset();
+                        } else {
+                            info.setState(vm.saveVMState());
+                        }
                     }
                 }
 
+            } else if (info.isScriptRunning()) {
+                // First handle user request, then use result document
+                // as base for further processing
+                spdoc = scontext.handleRequest(preq);
+
                 // Create VM and run script
                 ScriptVM vm = new ScriptVM();
-                vm.setScript(script);
+                vm.loadVMState(info.getState());
                 try {
-                    spdoc = vm.run(preq, spdoc, rcontext, info.getParams());
+                    spdoc = vm.run(preq, spdoc, scontext, info.getParams());
                 } finally {
-                    // Make sure this is done even if an error has occured
                     if (vm.isExitState()) {
                         info.reset();
                     } else {
                         info.setState(vm.saveVMState());
                     }
                 }
+            } else {
+                // No scripted flow request
+                // handle as usual
+                spdoc = scontext.handleRequest(preq);
             }
 
-        } else if (info.isScriptRunning()) {
-            // First handle user request, then use result document
-            // as base for further processing
-            spdoc = rcontext.handleRequest(preq);
-
-            // Create VM and run script
-            ScriptVM vm = new ScriptVM();
-            vm.loadVMState(info.getState());
-            try {
-                spdoc = vm.run(preq, spdoc, rcontext, info.getParams());
-            } finally {
-                if (vm.isExitState()) {
-                    info.reset();
-                } else {
-                    info.setState(vm.saveVMState());
-                }
-            }
-        } else {
-            // No scripted flow request
-            // handle as usual
-            spdoc = rcontext.handleRequest(preq);
+            return spdoc;
+        } finally {
+            scontext.cleanupAfterRequest();
         }
-
-        return spdoc;
     }
 
     private Script getScriptedFlowByName(String scriptedFlowName) throws Exception {
@@ -222,8 +230,8 @@ public class ContextXMLServer extends AbstractXMLServer {
         }
         return info;
     }
-
-    private SessionContextImpl getSessionContext(PfixServletRequest preq) throws Exception {
+    
+    private ContextImpl getContext(PfixServletRequest preq) throws Exception {
         // Name of the attribute that is used to store the session context
         // within the session object.
         String contextname = makeContextName();
@@ -233,22 +241,22 @@ public class ContextXMLServer extends AbstractXMLServer {
             // The ServletManager class handles session creation
             throw new XMLException("No valid session found! Aborting...");
         }
-
-        SessionContextImpl context = (SessionContextImpl) session.getAttribute(contextname);
-
+        
+        ContextImpl context = (ContextImpl) session.getAttribute(contextname);
+        
         // Session does not have a context yet?
         if (context == null) {
             // Synchronize on session object to make sure only ONE
             // context per session is created
             synchronized (session) {
-                context = (SessionContextImpl) session.getAttribute(contextname);
+                context = (ContextImpl) session.getAttribute(contextname);
                 if (context == null) {
-                    context = new SessionContextImpl(this.context, session);
+                    context = new ContextImpl(this.context, session);
                     session.setAttribute(contextname, context);
                 }
             }
         }
-
+        
         return context;
     }
 

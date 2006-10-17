@@ -19,19 +19,15 @@
 package de.schlund.pfixcore.workflow.context;
 
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.Map;
 import java.util.Set;
 
 import javax.servlet.http.HttpSession;
 
-import de.schlund.pfixcore.workflow.ContextImpl;
 import de.schlund.pfixcore.workflow.ContextResource;
 import de.schlund.pfixcore.workflow.ContextResourceManager;
-// import de.schlund.pfixcore.workflow.Navigation;
-// import de.schlund.pfixcore.workflow.Navigation.NavigationElement;
+import de.schlund.pfixcore.workflow.RequestContextImpl;
 import de.schlund.pfixxml.AbstractXMLServer;
 import de.schlund.pfixxml.ServletManager;
 import de.schlund.pfixxml.Variant;
@@ -59,7 +55,7 @@ public class SessionContextImpl implements SessionContext {
     public SessionContextImpl(ServerContextImpl context, HttpSession session) throws Exception {
         this.session = session;
         this.crm = new ContextResourceManager();
-        crm.init(new ContextImpl(context, this), context.getContextConfig());
+        crm.init(new RequestContextImpl(context, this), context.getContextConfig());
     }
     
     public ContextResourceManager getContextResourceManager() {

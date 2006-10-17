@@ -19,7 +19,7 @@
 
 package de.schlund.pfixcore.webservice;
 
-import de.schlund.pfixcore.workflow.context.SessionContext;
+import de.schlund.pfixcore.workflow.Context;
 
 /**
  * @author mleidig@schlund.de
@@ -27,7 +27,7 @@ import de.schlund.pfixcore.workflow.context.SessionContext;
 public class ServiceCallContext {
 
 	ServiceRuntime runtime;
-	SessionContext context;
+	Context context;
 	
 	public ServiceCallContext(ServiceRuntime runtime) {
 		this.runtime=runtime;
@@ -41,11 +41,11 @@ public class ServiceCallContext {
 		return ServiceRuntime.getCurrentContext();
 	}
 	
-	protected void setContext(SessionContext context) {
+	protected void setContext(Context context) {
 		this.context=context;
 	}
 	
-	public SessionContext getContext() {
+	public Context getContext() {
 		return context;
 	}
 	

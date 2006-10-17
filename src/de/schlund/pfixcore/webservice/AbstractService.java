@@ -19,23 +19,23 @@
 
 package de.schlund.pfixcore.webservice;
 
+import de.schlund.pfixcore.workflow.Context;
 import de.schlund.pfixcore.workflow.ContextResource;
 import de.schlund.pfixcore.workflow.ContextResourceManager;
-import de.schlund.pfixcore.workflow.context.SessionContext;
 
 /**
  * @author mleidig@schlund.de
  */
 public abstract class AbstractService {
 
-	protected SessionContext getContext() {
+	protected Context getContext() {
 		ServiceCallContext callContext=ServiceCallContext.getCurrentContext();
 		if(callContext!=null) return callContext.getContext();
 		return null;
 	}
 	
     protected ContextResourceManager getContextResourceManager() {
-    	SessionContext context=getContext();
+    	Context context=getContext();
     	if(context!=null) return context.getContextResourceManager();
     	return null;
     }
