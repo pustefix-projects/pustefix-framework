@@ -1,3 +1,7 @@
+2006-10-17  Sebastian Marsching <sebastian.marsching@1und1.de>
+
+	* build.xml: Changed version number to 0.9.1 for release
+
 2006-10-16  Martin Leidig  <mleidig@schlund.de>
 
 	Updated webservice/AJAX stuff to the trunk's current state (JSON support 
