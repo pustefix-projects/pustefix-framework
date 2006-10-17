@@ -43,10 +43,6 @@
       </when>      
     </choose>
 
-    <prop name="ERROR_QUEUE_JNDI_FILE">common/conf/jndi.properties.fehlertool</prop>
-    <prop name="exception.java.lang.Throwable.processor">de.schlund.fehlertool.client.JmsQueueSenderExceptionProcessor</prop>
-      
-
   </properties>
 
 </standardprops>
