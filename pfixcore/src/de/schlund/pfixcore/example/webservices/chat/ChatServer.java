@@ -21,10 +21,10 @@ public class ChatServer {
     
     private static ChatServer instance=new ChatServer();
     
-    private WeakHashMap ctxMap;
+    private WeakHashMap<String,ContextChat> ctxMap;
     
     public ChatServer() {
-    	ctxMap=new WeakHashMap();
+    	ctxMap=new WeakHashMap<String,ContextChat>();
     }
     
     public static ChatServer getInstance() {

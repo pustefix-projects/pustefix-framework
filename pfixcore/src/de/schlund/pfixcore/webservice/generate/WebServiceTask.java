@@ -55,7 +55,6 @@ import de.schlund.pfixcore.webservice.config.Configuration;
 import de.schlund.pfixcore.webservice.config.ConfigurationReader;
 import de.schlund.pfixcore.webservice.config.GlobalServiceConfig;
 import de.schlund.pfixcore.webservice.config.ServiceConfig;
-import de.schlund.pfixxml.PathFactory;
 import de.schlund.pfixxml.config.GlobalConfigurator;
 import de.schlund.pfixxml.resources.FileResource;
 import de.schlund.pfixxml.resources.ResourceUtil;
@@ -87,9 +86,6 @@ public class WebServiceTask extends Task {
     private String encStyle="rpc";
     //SOAP encoding use: encoded|literal
     private String encUse="encoded";
-    
-    private final static String WS_CONF_NS = "http://pustefix.sourceforge.net/wsconfig200401";
-    private final static String CUS_NS = "http://www.schlund.de/pustefix/customize";
     
     public void checkAttributes() throws BuildException {
     	if(srcdir==null) throw new BuildException("No source directory specified.");
@@ -287,7 +283,7 @@ public class WebServiceTask extends Task {
                             String wsddPathPart=getPackageName(wsItf).replace('.',File.separatorChar);
                             wsddPath=new File(tmpDir,wsddPathPart);
                         }
-                        File wsddFile=wsddFile=new File(tmpDir,wsName+".wsdd");
+                        File wsddFile=new File(tmpDir,wsName+".wsdd");
                         if(!wsddFile.exists() || wsddFile.lastModified()<wsdlFile.lastModified()) {
                             
                             wsddCnt++;
@@ -438,7 +434,7 @@ public class WebServiceTask extends Task {
                 Class clazz=Class.forName(className);
                 if(!clazz.isInterface()) throw new BuildException("Web service interface class doesn't represent an interface type");
                 Method[] methods=clazz.getDeclaredMethods();
-                HashSet names=new HashSet();
+                HashSet<String> names=new HashSet<String>();
                 for(int i=0;i<methods.length;i++) {
                     String name=methods[i].getName();
                     if(names.contains(name)) throw new BuildException("Web service interface class '"+className+"' contains "+

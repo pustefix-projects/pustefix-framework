@@ -208,6 +208,8 @@ public class ConfigurationReader extends DefaultHandler {
 			} 
 		} else if(context instanceof FaultHandler) {
 			if(localName.equals("faulthandler")) {
+                FaultHandler faultHandler=(FaultHandler)context;
+                faultHandler.init();
 				resetContext();
 			}
 		}

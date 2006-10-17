@@ -22,13 +22,13 @@ package de.schlund.pfixcore.webservice.handler;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.apache.axis.MessageContext;
 import org.apache.axis.handlers.BasicHandler;
 import org.apache.axis.transport.http.HTTPConstants;
 
-import de.schlund.pfixcore.webservice.ServiceCallContext;
 import de.schlund.pfixcore.webservice.ServiceRuntime;
 
 /**
@@ -53,6 +53,11 @@ public abstract class AbstractHandler extends BasicHandler {
     protected HttpServletRequest getServletRequest(MessageContext msgContext) {
     	 HttpServletRequest req=(HttpServletRequest)msgContext.getProperty(HTTPConstants.MC_HTTP_SERVLETREQUEST);
          return req;
+    }
+    
+    protected HttpServletResponse getServletResponse(MessageContext msgContext) {
+        HttpServletResponse res=(HttpServletResponse)msgContext.getProperty(HTTPConstants.MC_HTTP_SERVLETRESPONSE);
+        return res;
     }
     
     protected HttpSession getSession(MessageContext msgContext) {

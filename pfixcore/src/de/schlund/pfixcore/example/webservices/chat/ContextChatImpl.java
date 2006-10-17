@@ -24,8 +24,8 @@ public class ContextChatImpl implements ContextResource,ContextChat {
 
     private boolean loggedIn;
     private String nickName;
-    private ArrayList messageCache;
-    private ArrayList lastMessages;
+    private ArrayList<Message> messageCache;
+    private ArrayList<Message> lastMessages;
     private int maxCache=100;
     
     public void init(Context context) {
@@ -34,8 +34,8 @@ public class ContextChatImpl implements ContextResource,ContextChat {
    
     public void reset() {
         loggedIn=false;
-        messageCache=new ArrayList();
-        lastMessages=new ArrayList();
+        messageCache=new ArrayList<Message>();
+        lastMessages=new ArrayList<Message>();
         nickName=null;
     }
 

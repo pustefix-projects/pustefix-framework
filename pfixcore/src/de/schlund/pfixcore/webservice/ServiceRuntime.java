@@ -162,7 +162,7 @@ public class ServiceRuntime {
 			}
 
 			if(protocolType.equals(Constants.PROTOCOL_TYPE_ANY)) protocolType=defaultProtocol;
-			ServiceProcessor processor=processor=processors.get(protocolType);
+			ServiceProcessor processor=processors.get(protocolType);
 			if(processor==null) throw new ServiceException("No ServiceProcessor found for protocol '"+protocolType+"'.");
 
 			GlobalServiceConfig globConf=getConfiguration().getGlobalServiceConfig();
