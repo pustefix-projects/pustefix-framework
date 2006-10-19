@@ -443,7 +443,14 @@ or delete the DOCTYPE definition -->
   
   <target name="extract-modules-call-ant">
     <dirname property="tmp.modules.modulepath" file="${tmp.modules.buildxml}"/> 
-    <ant antfile="${tmp.modules.buildxml}" dir="${tmp.modules.modulepath}" inheritAll="false"/>
+    <ant antfile="${tmp.modules.buildxml}" dir="${tmp.modules.modulepath}" inheritAll="false">
+      <property name="dir.docroot" value="${dir.docroot}"/>
+      <property name="dir.projects" value="${dir.projects}"/>   
+      <property name="makemode" value="${makemode}"/>
+      <property name="uid" value="${uid}"/>
+      <property name="fqdn" value="${fqdn}"/>
+      <property name="machine" value="${machine}"/>
+    </ant> 
   </target>
   
   <target name="init-data-check" unless="pfx.force">

@@ -25,6 +25,7 @@ import java.util.Set;
 
 import javax.servlet.http.HttpSession;
 
+import de.schlund.pfixcore.workflow.ContextImpl;
 import de.schlund.pfixcore.workflow.ContextResource;
 import de.schlund.pfixcore.workflow.ContextResourceManager;
 import de.schlund.pfixcore.workflow.RequestContextImpl;
@@ -52,12 +53,26 @@ public class SessionContextImpl implements SessionContext {
     // private Map<NavigationElement, Integer> navigationMap = new HashMap<NavigationElement, Integer>();
     private Set<String> visitedPages = Collections.synchronizedSet(new HashSet<String>());
     
+    public SessionContextImpl(ServerContextImpl context, ContextImpl scontext, HttpSession session) throws Exception {
+        this.session = session;
+        this.crm = new ContextResourceManager();
+        // We need a dummy request context during initialization
+        scontext.setRequestContextForCurrentThread(new RequestContextImpl(context, this, scontext));
+        try {
+            crm.init(scontext, scontext.getContextConfig());
+        } finally {
+            scontext.setRequestContextForCurrentThread(null);
+        }
+    }
+    
     public SessionContextImpl(ServerContextImpl context, HttpSession session) throws Exception {
         this.session = session;
         this.crm = new ContextResourceManager();
         crm.init(new RequestContextImpl(context, this), context.getContextConfig());
     }
-    
+
+
+
     public ContextResourceManager getContextResourceManager() {
         return crm;
     }

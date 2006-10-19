@@ -84,7 +84,7 @@ public class ContextResourceManager implements Reloader {
      *
      */
     
-     public void init(Context context, ContextConfig config) throws Exception{
+     public void init(Context context, ContextConfig config) throws Exception {
         LOG.debug("initialize ContextResources...");
         
         Collection<ContextResource> resourcesToInitialize = new ArrayList<ContextResource>();

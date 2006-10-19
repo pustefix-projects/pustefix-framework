@@ -18,6 +18,7 @@
  */
 package de.schlund.pfixxml;
 
+import de.schlund.pfixxml.config.GlobalConfigurator;
 import de.schlund.pfixxml.resources.ResourceUtil;
 import de.schlund.pfixxml.util.Path;
 import java.io.File;
@@ -66,6 +67,15 @@ public class PathFactory {
             throw new RuntimeException("**** docroot " + docrootstr + " must be a absolute! ****");
         }
         System.out.println("Docroot is: " + docroot.getPath());
+        
+        // Try to initialize the new resolution system for compatibility reasons
+        // - old code might only know PathFactory.
+        try {
+            GlobalConfigurator.setDocroot(docrootstr);
+        } catch (IllegalStateException e) {
+            // Ignore exception - this is absolutely okay, as this
+            // configuration might already have been performed by other code
+        }
     }
 
 }
