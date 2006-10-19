@@ -1,3 +1,20 @@
+2006-10-19  Sebastian Marsching  <sebastian.marsching@1und1.de>
+
+	* src/de/schlund/pfixcore/workflow/context/SessionContextImpl.java: 
+	* src/de/schlund/pfixcore/workflow/ContextImpl.java: 
+	* src/de/schlund/pfixcore/workflow/ContextResourceManager.java: 
+	* src/de/schlund/pfixcore/workflow/RequestContextImpl.java: 
+	* src/de/schlund/pfixxml/ContextXMLServer.java: 
+	* src/de/schlund/pfixxml/ServletManagerCompat.java: 
+	Fixed some issues with the thread bound context.
+
+	* skel/build-skel.xml:
+	Extended expand module task to supply some properties to the child Ant process.
+	
+	* src/de/schlund/pfixxml/PathFactory.java: 
+	Added compatibility code that initializes the ResourceUtil when PathFactory
+	is initialized.
+
 2006-10-17  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
 	* Marking development branch as 0.10.0-pre release

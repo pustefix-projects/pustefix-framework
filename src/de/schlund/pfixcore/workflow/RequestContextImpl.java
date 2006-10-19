@@ -587,7 +587,7 @@ public class RequestContextImpl implements Context, AccessibilityChecker {
     private void processIC(ContextInterceptor[] icarr) {
         if (icarr != null) {
             for (int i = 0; i < icarr.length; i++) {
-                icarr[i].process(this, currentpservreq);
+                icarr[i].process(((this.parentcontext != null) ? this.parentcontext : this), currentpservreq);
             }
         }
     }
@@ -650,7 +650,7 @@ public class RequestContextImpl implements Context, AccessibilityChecker {
             resdoc = documentFromCurrentStep();
             if (currentpageflow != null && currentpageflow.containsPage(currentpagerequest.getRootName())) {
                 FlowStep step = currentpageflow.getFlowStepForPage(currentpagerequest.getRootName());
-                step.applyActionsOnContinue(this, resdoc);
+                step.applyActionsOnContinue(((this.parentcontext != null) ? this.parentcontext : this), resdoc);
             }
 
             if (currentpageflow != null) {
@@ -837,7 +837,7 @@ public class RequestContextImpl implements Context, AccessibilityChecker {
 
         LOG.debug("** [" + currentpagerequest + "]: associated state: " + state.getClass().getName());
         LOG.debug("=> [" + currentpagerequest + "]: Calling getDocument()");
-        return state.getDocument(this, currentpservreq);
+        return state.getDocument(((this.parentcontext != null) ? this.parentcontext : this), currentpservreq);
     }
 
     private void trySettingPageRequestAndFlow() {
@@ -907,7 +907,7 @@ public class RequestContextImpl implements Context, AccessibilityChecker {
 
         PerfEvent pe = new PerfEvent(PerfEventType.PAGE_NEEDSDATA, page.getName());
         pe.start();
-        boolean retval = state.needsData(this, currentpservreq);
+        boolean retval = state.needsData(((this.parentcontext != null) ? this.parentcontext : this), currentpservreq);
         pe.save();
 
         currentpagerequest = saved;
@@ -926,7 +926,7 @@ public class RequestContextImpl implements Context, AccessibilityChecker {
 
             PerfEvent pe = new PerfEvent(PerfEventType.PAGE_ISACCESSIBLE, page.getName());
             pe.start();
-            boolean retval = state.isAccessible(this, currentpservreq);
+            boolean retval = state.isAccessible(((this.parentcontext != null) ? this.parentcontext : this), currentpservreq);
             pe.save();
 
             return retval;

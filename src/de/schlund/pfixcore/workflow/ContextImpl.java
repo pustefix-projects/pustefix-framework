@@ -23,6 +23,7 @@ import java.util.Properties;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpSession;
 
+import de.schlund.pfixcore.workflow.context.AccessibilityChecker;
 import de.schlund.pfixcore.workflow.context.ServerContextImpl;
 import de.schlund.pfixcore.workflow.context.SessionContextImpl;
 import de.schlund.pfixxml.PfixServletRequest;
@@ -32,16 +33,21 @@ import de.schlund.pfixxml.config.ContextConfig;
 import de.schlund.pfixxml.config.PageRequestConfig;
 import de.schlund.util.statuscodes.StatusCode;
 
-public class ContextImpl implements Context {
+public class ContextImpl implements Context, AccessibilityChecker {
     
     private SessionContextImpl scontext;
     private ThreadLocal<RequestContextImpl> rcontext = new ThreadLocal<RequestContextImpl>();
     
     public ContextImpl(ServerContextImpl context, HttpSession session) throws Exception {
-        this.scontext = new SessionContextImpl(context, session);
+        this.scontext = new SessionContextImpl(context, this, session);
     }
 
     public RequestContextImpl getRequestContextForCurrentThread() {
+        RequestContextImpl rcontext = this.rcontext.get();
+        return rcontext;
+    }
+
+    private RequestContextImpl getRequestContextForCurrentThreadWithError() {
         RequestContextImpl rcontext = this.rcontext.get();
         if (rcontext == null) {
             throw new IllegalStateException("Request object is not available for current thread");
@@ -50,183 +56,193 @@ public class ContextImpl implements Context {
     }
     
     public void addCookie(Cookie cookie) {
-        RequestContextImpl rcontext = getRequestContextForCurrentThread();
+        RequestContextImpl rcontext = getRequestContextForCurrentThreadWithError();
         rcontext.addCookie(cookie);
     }
 
     public void addPageMessage(StatusCode scode) {
-        RequestContextImpl rcontext = getRequestContextForCurrentThread();
+        RequestContextImpl rcontext = getRequestContextForCurrentThreadWithError();
         rcontext.addPageMessage(scode);
     }
 
     public void addPageMessage(StatusCode scode, String level) {
-        RequestContextImpl rcontext = getRequestContextForCurrentThread();
+        RequestContextImpl rcontext = getRequestContextForCurrentThreadWithError();
         rcontext.addPageMessage(scode, level);
     }
 
     public void addPageMessage(StatusCode scode, String[] args) {
-        RequestContextImpl rcontext = getRequestContextForCurrentThread();
+        RequestContextImpl rcontext = getRequestContextForCurrentThreadWithError();
         rcontext.addPageMessage(scode, args);
     }
 
     public void addPageMessage(StatusCode scode, String[] args, String level) {
-        RequestContextImpl rcontext = getRequestContextForCurrentThread();
+        RequestContextImpl rcontext = getRequestContextForCurrentThreadWithError();
         rcontext.addPageMessage(scode, args, level);
     }
 
     public boolean finalPageIsRunning() {
-        RequestContextImpl rcontext = getRequestContextForCurrentThread();
+        RequestContextImpl rcontext = getRequestContextForCurrentThreadWithError();
         return rcontext.finalPageIsRunning();
     }
 
     public boolean flowIsRunning() {
-        RequestContextImpl rcontext = getRequestContextForCurrentThread();
+        RequestContextImpl rcontext = getRequestContextForCurrentThreadWithError();
         return rcontext.flowIsRunning();
     }
 
     public boolean flowStepsBeforeCurrentStepNeedData() throws Exception {
-        RequestContextImpl rcontext = getRequestContextForCurrentThread();
+        RequestContextImpl rcontext = getRequestContextForCurrentThreadWithError();
         return rcontext.flowStepsBeforeCurrentStepNeedData();
     }
 
     public PageRequestConfig getConfigForCurrentPageRequest() {
-        RequestContextImpl rcontext = getRequestContextForCurrentThread();
+        RequestContextImpl rcontext = getRequestContextForCurrentThreadWithError();
         return rcontext.getConfigForCurrentPageRequest();
     }
 
     public ContextConfig getContextConfig() {
-        RequestContextImpl rcontext = getRequestContextForCurrentThread();
+        RequestContextImpl rcontext = getRequestContextForCurrentThreadWithError();
         return rcontext.getContextConfig();
     }
 
     public ContextResourceManager getContextResourceManager() {
-        RequestContextImpl rcontext = getRequestContextForCurrentThread();
+        RequestContextImpl rcontext = getRequestContextForCurrentThreadWithError();
         return rcontext.getContextResourceManager();
     }
 
     public PageFlow getCurrentPageFlow() {
-        RequestContextImpl rcontext = getRequestContextForCurrentThread();
+        RequestContextImpl rcontext = getRequestContextForCurrentThreadWithError();
         return rcontext.getCurrentPageFlow();
     }
 
     public PageRequest getCurrentPageRequest() {
-        RequestContextImpl rcontext = getRequestContextForCurrentThread();
+        RequestContextImpl rcontext = getRequestContextForCurrentThreadWithError();
         return rcontext.getCurrentPageRequest();
     }
 
     public String getLanguage() {
-        RequestContextImpl rcontext = getRequestContextForCurrentThread();
+        RequestContextImpl rcontext = getRequestContextForCurrentThreadWithError();
         return rcontext.getLanguage();
     }
 
     public Throwable getLastException() {
-        RequestContextImpl rcontext = getRequestContextForCurrentThread();
+        RequestContextImpl rcontext = getRequestContextForCurrentThreadWithError();
         return rcontext.getLastException();
     }
 
     public String getName() {
-        RequestContextImpl rcontext = getRequestContextForCurrentThread();
+        RequestContextImpl rcontext = getRequestContextForCurrentThreadWithError();
         return rcontext.getName();
     }
 
     public Properties getProperties() {
-        RequestContextImpl rcontext = getRequestContextForCurrentThread();
+        RequestContextImpl rcontext = getRequestContextForCurrentThreadWithError();
         return rcontext.getProperties();
     }
 
     public Properties getPropertiesForContextResource(ContextResource res) {
-        RequestContextImpl rcontext = getRequestContextForCurrentThread();
+        RequestContextImpl rcontext = getRequestContextForCurrentThreadWithError();
         return rcontext.getPropertiesForContextResource(res);
     }
 
     public Properties getPropertiesForCurrentPageRequest() {
-        RequestContextImpl rcontext = getRequestContextForCurrentThread();
+        RequestContextImpl rcontext = getRequestContextForCurrentThreadWithError();
         return rcontext.getPropertiesForCurrentPageRequest();
     }
 
     public Cookie[] getRequestCookies() {
-        RequestContextImpl rcontext = getRequestContextForCurrentThread();
+        RequestContextImpl rcontext = getRequestContextForCurrentThreadWithError();
         return rcontext.getRequestCookies();
     }
 
     public Variant getVariant() {
-        RequestContextImpl rcontext = getRequestContextForCurrentThread();
+        RequestContextImpl rcontext = getRequestContextForCurrentThreadWithError();
         return rcontext.getVariant();
     }
 
     public String getVisitId() {
-        RequestContextImpl rcontext = getRequestContextForCurrentThread();
+        RequestContextImpl rcontext = getRequestContextForCurrentThreadWithError();
         return rcontext.getVisitId();
     }
 
     public boolean isCurrentPageFlowRequestedByUser() {
-        RequestContextImpl rcontext = getRequestContextForCurrentThread();
+        RequestContextImpl rcontext = getRequestContextForCurrentThreadWithError();
         return rcontext.isCurrentPageFlowRequestedByUser();
     }
 
     public boolean isCurrentPageRequestInCurrentFlow() {
-        RequestContextImpl rcontext = getRequestContextForCurrentThread();
+        RequestContextImpl rcontext = getRequestContextForCurrentThreadWithError();
         return rcontext.isCurrentPageRequestInCurrentFlow();
     }
 
     public boolean isJumpToPageFlowSet() {
-        RequestContextImpl rcontext = getRequestContextForCurrentThread();
+        RequestContextImpl rcontext = getRequestContextForCurrentThreadWithError();
         return rcontext.isJumpToPageFlowSet();
     }
 
     public boolean isJumpToPageSet() {
-        RequestContextImpl rcontext = getRequestContextForCurrentThread();
+        RequestContextImpl rcontext = getRequestContextForCurrentThreadWithError();
         return rcontext.isJumpToPageSet();
     }
 
     public boolean isProhibitContinueSet() {
-        RequestContextImpl rcontext = getRequestContextForCurrentThread();
+        RequestContextImpl rcontext = getRequestContextForCurrentThreadWithError();
         return rcontext.isProhibitContinueSet();
     }
 
     public boolean jumpToPageIsRunning() {
-        RequestContextImpl rcontext = getRequestContextForCurrentThread();
+        RequestContextImpl rcontext = getRequestContextForCurrentThreadWithError();
         return rcontext.jumpToPageIsRunning();
     }
 
     public void prohibitContinue() {
-        RequestContextImpl rcontext = getRequestContextForCurrentThread();
+        RequestContextImpl rcontext = getRequestContextForCurrentThreadWithError();
         rcontext.prohibitContinue();
     }
 
     public void setCurrentPageFlow(String pageflow) {
-        RequestContextImpl rcontext = getRequestContextForCurrentThread();
+        RequestContextImpl rcontext = getRequestContextForCurrentThreadWithError();
         rcontext.setCurrentPageFlow(pageflow);
     }
 
     public void setJumpToPage(String pagename) {
-        RequestContextImpl rcontext = getRequestContextForCurrentThread();
+        RequestContextImpl rcontext = getRequestContextForCurrentThreadWithError();
         rcontext.setJumpToPage(pagename);
     }
 
     public void setJumpToPageFlow(String pageflow) {
-        RequestContextImpl rcontext = getRequestContextForCurrentThread();
+        RequestContextImpl rcontext = getRequestContextForCurrentThreadWithError();
         rcontext.setJumpToPageFlow(pageflow);
     }
 
     public void setLanguage(String lang) {
-        RequestContextImpl rcontext = getRequestContextForCurrentThread();
+        RequestContextImpl rcontext = getRequestContextForCurrentThreadWithError();
         rcontext.setLanguage(lang);
     }
 
     public void setVariant(Variant variant) {
-        RequestContextImpl rcontext = getRequestContextForCurrentThread();
+        RequestContextImpl rcontext = getRequestContextForCurrentThreadWithError();
         rcontext.setVariant(variant);
     }
 
     public void setVariantForThisRequestOnly(Variant variant) {
-        RequestContextImpl rcontext = getRequestContextForCurrentThread();
+        RequestContextImpl rcontext = getRequestContextForCurrentThreadWithError();
         rcontext.setVariantForThisRequestOnly(variant);
     }
 
     public boolean stateMustSupplyFullDocument() {
-        RequestContextImpl rcontext = getRequestContextForCurrentThread();
+        RequestContextImpl rcontext = getRequestContextForCurrentThreadWithError();
         return rcontext.stateMustSupplyFullDocument();
+    }
+    
+    public boolean isPageAccessible(String pagename) throws Exception {
+        RequestContextImpl rcontext = getRequestContextForCurrentThreadWithError();
+        return rcontext.isPageAccessible(pagename);
+    }
+
+    public boolean isPageAlreadyVisited(String pagename) throws Exception {
+        RequestContextImpl rcontext = getRequestContextForCurrentThreadWithError();
+        return rcontext.isPageAlreadyVisited(pagename);
     }
     
     public String getLastPageName() {
@@ -234,11 +250,11 @@ public class ContextImpl implements Context {
     }
     
     public void prepareForRequest(ServerContextImpl context) throws Exception {
-        this.rcontext.set(new RequestContextImpl(context, scontext));
+        this.rcontext.set(new RequestContextImpl(context, scontext, this));
     }
     
     public SPDocument handleRequest(PfixServletRequest preq) throws Exception {
-        return this.getRequestContextForCurrentThread().handleRequest(preq);
+        return this.getRequestContextForCurrentThreadWithError().handleRequest(preq);
     }
     
     public void cleanupAfterRequest() {

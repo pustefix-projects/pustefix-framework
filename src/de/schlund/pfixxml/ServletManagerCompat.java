@@ -18,7 +18,6 @@
 
 package de.schlund.pfixxml;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.Properties;
 
@@ -28,6 +27,7 @@ import org.xml.sax.SAXException;
 
 import de.schlund.pfixxml.config.ServletManagerConfig;
 import de.schlund.pfixxml.config.XMLPropertiesUtil;
+import de.schlund.pfixxml.resources.FileResource;
 
 /**
  * This servlet is a compatibility layer for legacy servlets based on the old
@@ -44,15 +44,15 @@ public abstract class ServletManagerCompat extends ServletManager {
         return config;
     }
 
-    protected void reloadServletConfig(File configFile, Properties globalProperties) throws ServletException {
+    protected void reloadServletConfig(FileResource configFile, Properties globalProperties) throws ServletException {
         Properties props = new Properties(globalProperties);
         if (configFile != null) {
             try {
                 XMLPropertiesUtil.loadPropertiesFromXMLFile(configFile, props);
             } catch (SAXException e) {
-                throw new ServletException("Parsing error while reading configuration file " + configFile.getAbsolutePath());
+                throw new ServletException("Parsing error while reading configuration file " + configFile.toString());
             } catch (IOException e) {
-                throw new ServletException("Could not read configuration file " + configFile.getAbsolutePath());
+                throw new ServletException("Could not read configuration file " + configFile.toString());
             }
         }
         this.config = new ServletManagerConfig();
