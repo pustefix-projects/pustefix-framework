@@ -35,7 +35,6 @@ import de.schlund.pfixcore.webservice.config.ServiceConfig;
 import de.schlund.pfixcore.webservice.fault.Fault;
 import de.schlund.pfixcore.webservice.fault.FaultHandler;
 import de.schlund.pfixcore.workflow.Context;
-import de.schlund.pfixcore.workflow.context.SessionContext;
 
 /**
  * @author mleidig@schlund.de
