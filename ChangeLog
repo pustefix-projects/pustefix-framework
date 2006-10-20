@@ -1,3 +1,12 @@
+2006-10-19  Joerg Haecker <haecker@schlund.de>
+
+	* src/de/schlund/pfixxml/exceptionhandler: removed old
+	exceptionhandler classes since they are not needed any more.
+	If still needed let theam implement the exceptionprocessor
+	interface to make it pluggable.
+	* src/de/schlund/pfixxml/ServletManager.java: removed
+	dependencies to old exceptionhandler classes.
+
 2006-10-19  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
 	* src/de/schlund/pfixcore/workflow/context/SessionContextImpl.java: 
