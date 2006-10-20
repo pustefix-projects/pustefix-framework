@@ -38,7 +38,7 @@ import de.schlund.pfixxml.config.ContextConfig;
  * 
  * @author Sebastian Marsching <sebastian.marsching@1und1.de>
  */
-public class ServerContextImpl implements ServerContext {
+public class ServerContextImpl {
     private ContextConfig config;
     
     private String name;

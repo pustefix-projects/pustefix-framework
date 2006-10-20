@@ -1,3 +1,29 @@
+2006-10-20  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixcore/workflow/context/SessionContext.java:
+	* src/de/schlund/pfixcore/workflow/context/ServerContext.java: removed
+
+	* src/de/schlund/pfixcore/workflow/context/SessionContextImpl.java (SessionContextImpl): 
+	no longer implement the specific interface, cosmetics
+
+	* src/de/schlund/pfixcore/workflow/context/ServerContextImpl.java (ServerContextImpl): 
+	no longer implement the specific interface
+
+	* src/de/schlund/pfixcore/workflow/RequestContextImpl.java (RequestContextImpl): removed context-less constructor.
+	cosmetics.
+
+	* src/de/schlund/pfixcore/workflow/Context.java (Context): added handleRequest method, cosmetics
+
+	* src/de/schlund/pfixxml/ContextXMLServer.java:
+	* src/de/schlund/pfixcore/workflow/ContextImpl.java (ContextImpl): 
+	* src/de/schlund/pfixcore/util/TransformerCallback.java (TransformerCallback): cosmetics
+
+	* src/de/schlund/pfixcore/util/DummyContextFactory.java (DummyContextFactory::getDummyContext): 
+	cosmetics and FIXME comments...
+
+	* src/de/schlund/pfixcore/scriptedflow/vm/ScriptVM.java: 
+	use Context, not ContextImpl
+	
 2006-10-19  Joerg Haecker <haecker@schlund.de>
 
 	* src/de/schlund/pfixxml/exceptionhandler: removed old

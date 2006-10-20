@@ -40,7 +40,7 @@ import de.schlund.pfixxml.Variant;
  * 
  * @author Sebastian Marsching <sebastian.marsching@1und1.de>
  */
-public class SessionContextImpl implements SessionContext {
+public class SessionContextImpl {
     private HttpSession session;
     
     private String lastPageName = null;
@@ -53,22 +53,24 @@ public class SessionContextImpl implements SessionContext {
     // private Map<NavigationElement, Integer> navigationMap = new HashMap<NavigationElement, Integer>();
     private Set<String> visitedPages = Collections.synchronizedSet(new HashSet<String>());
     
-    public SessionContextImpl(ServerContextImpl context, ContextImpl scontext, HttpSession session) throws Exception {
+    public SessionContextImpl(ServerContextImpl servercontext, ContextImpl context, HttpSession session) throws Exception {
         this.session = session;
         this.crm = new ContextResourceManager();
         // We need a dummy request context during initialization
-        scontext.setRequestContextForCurrentThread(new RequestContextImpl(context, this, scontext));
+        context.setRequestContextForCurrentThread(new RequestContextImpl(servercontext, this, context));
         try {
-            crm.init(scontext, scontext.getContextConfig());
+            crm.init(context, context.getContextConfig());
         } finally {
-            scontext.setRequestContextForCurrentThread(null);
+            context.setRequestContextForCurrentThread(null);
         }
     }
-    
-    public SessionContextImpl(ServerContextImpl context, HttpSession session) throws Exception {
+
+
+    // FIXME_JTL: see DummyContextFactory...
+    public SessionContextImpl(ServerContextImpl servercontext, HttpSession session) throws Exception {
         this.session = session;
         this.crm = new ContextResourceManager();
-        crm.init(new RequestContextImpl(context, this), context.getContextConfig());
+        crm.init(new RequestContextImpl(servercontext, this, null), servercontext.getContextConfig());
     }
 
 

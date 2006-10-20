@@ -39,10 +39,13 @@ import de.schlund.pfixxml.config.ContextXMLServletConfig;
  * @author Sebastian Marsching <sebastian.marsching@1und1.de>
  */
 public class DummyContextFactory {
+
     public static RequestContextImpl getDummyContext(ContextXMLServletConfig config) throws Exception {
-        ServerContextImpl context = new ServerContextImpl(config.getContextConfig(), "Dummy");
-        SessionContextImpl scontext = new SessionContextImpl(context, new DummySession());
-        return new RequestContextImpl(context, scontext);
+        ServerContextImpl servercontext = new ServerContextImpl(config.getContextConfig(), "Dummy");
+        // FIXME_JTL: why don't we use a dummy ContextImpl and create the sessioncontext the usual way?
+        SessionContextImpl sessioncontext = new SessionContextImpl(servercontext, new DummySession());
+        // FIXME_JTL: inside sessioncontext we already create a RequestContextImpl when using the current constructor
+        return new RequestContextImpl(servercontext, sessioncontext, null);
     }
     
     private static class DummySession implements HttpSession {
@@ -50,7 +53,7 @@ public class DummyContextFactory {
         private int maxInactiveInterval;
         
         private Map<String, Object> atts = Collections.synchronizedMap(new HashMap<String, Object>());
-
+        
         public long getCreationTime() {
             return 0;
         }
