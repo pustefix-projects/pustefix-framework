@@ -2,10 +2,13 @@
 
 	* src/de/schlund/pfixxml/exceptionhandler: removed old
 	exceptionhandler classes since they are not needed any more.
-	If still needed let theam implement the exceptionprocessor
+	If still needed let them implement the exceptionprocessor
 	interface to make it pluggable.
 	* src/de/schlund/pfixxml/ServletManager.java: removed
 	dependencies to old exceptionhandler classes.
+	* projects/common/conf/factory.xml: adjusted
+	* projects/common/conf/exceptionhandler.xml: removed
+
 
 2006-10-19  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
