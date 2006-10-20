@@ -19,7 +19,7 @@
 package de.schlund.pfixcore.scriptedflow.vm;
 
 import de.schlund.pfixcore.scriptedflow.vm.pvo.ParamValueObject;
-import de.schlund.pfixcore.workflow.ContextImpl;
+import de.schlund.pfixcore.workflow.Context;
 import de.schlund.pfixxml.PfixServletRequest;
 import de.schlund.pfixxml.SPDocument;
 import java.util.HashMap;
@@ -77,7 +77,7 @@ public class ScriptVM {
         return state;
     }
 
-    public SPDocument run(PfixServletRequest preq, SPDocument spdoc, ContextImpl rcontext, Map<String, String> params) throws Exception {
+    public SPDocument run(PfixServletRequest preq, SPDocument spdoc, Context rcontext, Map<String, String> params) throws Exception {
         isRunning = true;
         
         // Make sure resolver and registers are set up
@@ -236,7 +236,7 @@ public class ScriptVM {
         return spdoc;
     }
     
-    private void doVirtualRequest(String pagename, Map<String, String[]> reqParams, PfixServletRequest origPreq, ContextImpl rcontext) throws Exception {
+    private void doVirtualRequest(String pagename, Map<String, String[]> reqParams, PfixServletRequest origPreq, Context rcontext) throws Exception {
 
         HttpServletRequest vhttpreq = new VirtualHttpServletRequest(origPreq.getRequest(), pagename, reqParams);
         PfixServletRequest vpreq    = new PfixServletRequest(vhttpreq, System.getProperties());

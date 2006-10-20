@@ -22,26 +22,27 @@ package de.schlund.pfixxml;
 
 
 
-import java.io.IOException;
-import java.util.Properties;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpSession;
 
-import org.apache.log4j.Logger;
-import org.xml.sax.SAXException;
 
 import de.schlund.pfixcore.scriptedflow.ScriptedFlowConfig;
 import de.schlund.pfixcore.scriptedflow.ScriptedFlowInfo;
 import de.schlund.pfixcore.scriptedflow.vm.Script;
 import de.schlund.pfixcore.scriptedflow.vm.ScriptVM;
 import de.schlund.pfixcore.scriptedflow.vm.VirtualHttpServletRequest;
+import de.schlund.pfixcore.workflow.Context;
 import de.schlund.pfixcore.workflow.ContextImpl;
 import de.schlund.pfixcore.workflow.context.ServerContextImpl;
 import de.schlund.pfixxml.config.AbstractXMLServletConfig;
 import de.schlund.pfixxml.config.ContextXMLServletConfig;
 import de.schlund.pfixxml.config.PageRequestConfig;
 import de.schlund.pfixxml.resources.FileResource;
+import java.io.IOException;
+import java.util.Properties;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpSession;
+import org.apache.log4j.Logger;
+import org.xml.sax.SAXException;
 
 /**
  * @author jtl
@@ -61,7 +62,7 @@ public class ContextXMLServer extends AbstractXMLServer {
 
     private ContextXMLServletConfig config = null;
 
-    private ServerContextImpl context = null;
+    private ServerContextImpl servercontext = null;
 
     protected ContextXMLServletConfig getContextXMLServletConfig() {
         return this.config;
@@ -76,17 +77,17 @@ public class ContextXMLServer extends AbstractXMLServer {
             return true;
         } else {
             if (preq.getSession(false) != null && preq.isRequestedSessionIdValid()) {
-                String contextname = makeContextName();
-                HttpSession session = preq.getSession(false);
-                String already_ssl = (String) session.getAttribute(ALREADY_SSL);
+                String      contextname = makeContextName();
+                HttpSession session     = preq.getSession(false);
+                String      already_ssl = (String) session.getAttribute(ALREADY_SSL);
                 if (already_ssl != null && already_ssl.equals("true")) {
                     return true;
                 } else {
                     String page = preq.getPageName();
                     if (page == null) {
-                        ContextImpl scontext = (ContextImpl) session.getAttribute(contextname);
-                        if (scontext != null) {
-                            page = scontext.getLastPageName();
+                        ContextImpl context = (ContextImpl) session.getAttribute(contextname);
+                        if (context != null) {
+                            page = context.getLastPageName();
                         }
                     }
                     if (page != null) {
@@ -116,8 +117,8 @@ public class ContextXMLServer extends AbstractXMLServer {
     protected boolean tryReloadProperties(PfixServletRequest preq) throws ServletException {
         if (super.tryReloadProperties(preq)) {
             try {
-                this.context = new ServerContextImpl(getContextXMLServletConfig().getContextConfig(), makeContextName());
-                this.getServletContext().setAttribute(makeContextName(), this.context);
+                servercontext = new ServerContextImpl(getContextXMLServletConfig().getContextConfig(), makeContextName());
+                this.getServletContext().setAttribute(makeContextName(), servercontext);
             } catch (Exception e) {
                 String msg = "Error during reload of servlet configuration";
                 LOG.error(msg, e);
@@ -130,11 +131,11 @@ public class ContextXMLServer extends AbstractXMLServer {
     }
 
     public SPDocument getDom(PfixServletRequest preq) throws Exception {
-        ContextImpl scontext = getContext(preq);
+        Context context = getContext(preq);
         
         // Prepare context for current thread
         // Cleanup is performed in finally block
-        scontext.prepareForRequest(this.context);
+        ((ContextImpl) context).prepareForRequest(servercontext);
         
         try {
             SPDocument spdoc;
@@ -142,11 +143,11 @@ public class ContextXMLServer extends AbstractXMLServer {
             ScriptedFlowInfo info = getScriptedFlowInfo(preq);
             if (preq.getRequestParam(PARAM_SCRIPTEDFLOW) != null && preq.getRequestParam(PARAM_SCRIPTEDFLOW).getValue() != null) {
                 String scriptedFlowName = preq.getRequestParam(PARAM_SCRIPTEDFLOW).getValue();
-
+                
                 // Do a virtual request without any request parameters
                 // to get an initial SPDocument
                 PfixServletRequest vpreq = new PfixServletRequest(VirtualHttpServletRequest.getVoidRequest(preq.getRequest()), getContextXMLServletConfig().getProperties());
-                spdoc = scontext.handleRequest(vpreq);
+                spdoc = context.handleRequest(vpreq);
 
                 // Reset current scripted flow state
                 info.reset();
@@ -173,7 +174,7 @@ public class ContextXMLServer extends AbstractXMLServer {
                     ScriptVM vm = new ScriptVM();
                     vm.setScript(script);
                     try {
-                        spdoc = vm.run(preq, spdoc, scontext, info.getParams());
+                        spdoc = vm.run(preq, spdoc, context, info.getParams());
                     } finally {
                         // Make sure this is done even if an error has occured
                         if (vm.isExitState()) {
@@ -187,13 +188,13 @@ public class ContextXMLServer extends AbstractXMLServer {
             } else if (info.isScriptRunning()) {
                 // First handle user request, then use result document
                 // as base for further processing
-                spdoc = scontext.handleRequest(preq);
+                spdoc = context.handleRequest(preq);
 
                 // Create VM and run script
                 ScriptVM vm = new ScriptVM();
                 vm.loadVMState(info.getState());
                 try {
-                    spdoc = vm.run(preq, spdoc, scontext, info.getParams());
+                    spdoc = vm.run(preq, spdoc, context, info.getParams());
                 } finally {
                     if (vm.isExitState()) {
                         info.reset();
@@ -204,12 +205,12 @@ public class ContextXMLServer extends AbstractXMLServer {
             } else {
                 // No scripted flow request
                 // handle as usual
-                spdoc = scontext.handleRequest(preq);
+                spdoc = context.handleRequest(preq);
             }
 
             return spdoc;
         } finally {
-            scontext.cleanupAfterRequest();
+            ((ContextImpl) context).cleanupAfterRequest();
         }
     }
 
@@ -230,7 +231,7 @@ public class ContextXMLServer extends AbstractXMLServer {
         return info;
     }
     
-    private ContextImpl getContext(PfixServletRequest preq) throws Exception {
+    private Context getContext(PfixServletRequest preq) throws Exception {
         // Name of the attribute that is used to store the session context
         // within the session object.
         String contextname = makeContextName();
@@ -240,22 +241,21 @@ public class ContextXMLServer extends AbstractXMLServer {
             // The ServletManager class handles session creation
             throw new XMLException("No valid session found! Aborting...");
         }
-        
-        ContextImpl context = (ContextImpl) session.getAttribute(contextname);
-        
+
+        // FIXME: DCL is broken
+        Context context = (Context) session.getAttribute(contextname);
         // Session does not have a context yet?
         if (context == null) {
             // Synchronize on session object to make sure only ONE
             // context per session is created
             synchronized (session) {
-                context = (ContextImpl) session.getAttribute(contextname);
+                context = (Context) session.getAttribute(contextname);
                 if (context == null) {
-                    context = new ContextImpl(this.context, session);
+                    context = new ContextImpl(servercontext, session);
                     session.setAttribute(contextname, context);
                 }
             }
         }
-        
         return context;
     }
 

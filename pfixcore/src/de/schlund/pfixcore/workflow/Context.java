@@ -18,18 +18,18 @@
 
 package de.schlund.pfixcore.workflow;
 
-import java.util.Properties;
 
-import javax.servlet.http.Cookie;
 
+import de.schlund.pfixxml.PfixServletRequest;
+import de.schlund.pfixxml.SPDocument;
 import de.schlund.pfixxml.Variant;
 import de.schlund.pfixxml.config.ContextConfig;
 import de.schlund.pfixxml.config.PageRequestConfig;
 import de.schlund.util.statuscodes.StatusCode;
+import java.util.Properties;
+import javax.servlet.http.Cookie;
 
 /**
- * @see de.schlund.pfixcore.workflow.context.ServerContext
- * @see de.schlund.pfixcore.workflow.context.SessionContext
  * 
  * @author Sebastian Marsching <sebastian.marsching@1und1.de>
  */
@@ -70,4 +70,5 @@ public interface Context {
     void                   addPageMessage(StatusCode scode, String[] args, String level);
     Properties             getPropertiesForContextResource(ContextResource res);
     ContextConfig          getContextConfig();
+    SPDocument             handleRequest(PfixServletRequest preq) throws Exception;
 }

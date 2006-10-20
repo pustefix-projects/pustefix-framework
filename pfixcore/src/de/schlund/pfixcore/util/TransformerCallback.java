@@ -20,17 +20,17 @@ public class TransformerCallback {
         spdoc.setNostore(true);
     }
 
-    public static int isAccessible(RequestContextImpl context, String pagename) throws Exception {
-        ContextImpl pcontext = context.getParentContext();
-        if (pcontext != null) {
-            RequestContextImpl oldContext = pcontext.getRequestContextForCurrentThread();
+    public static int isAccessible(RequestContextImpl requestcontext, String pagename) throws Exception {
+        ContextImpl context = requestcontext.getParentContext();
+        if (context != null) {
+            RequestContextImpl oldrequestcontext = context.getRequestContextForCurrentThread();
             try {
-                pcontext.setRequestContextForCurrentThread(context);
-                if (pcontext.getContextConfig().getPageRequestConfig(pagename) != null) {
-                    AccessibilityChecker check = (AccessibilityChecker) pcontext;
+                context.setRequestContextForCurrentThread(requestcontext);
+                if (context.getContextConfig().getPageRequestConfig(pagename) != null) {
+                    AccessibilityChecker check = (AccessibilityChecker) context;
                     boolean retval;
-                    if (pcontext.getContextConfig().isSynchronized()) {
-                        synchronized(pcontext) {
+                    if (context.getContextConfig().isSynchronized()) {
+                        synchronized(context) {
                             retval = check.isPageAccessible(pagename);
                         }
                     } else {
@@ -44,12 +44,12 @@ public class TransformerCallback {
                 }
                 return -1;
             } finally {
-                pcontext.setRequestContextForCurrentThread(oldContext);
+                context.setRequestContextForCurrentThread(oldrequestcontext);
             }
 
         } else {
-            if (context.getContextConfig().getPageRequestConfig(pagename) != null) {
-                AccessibilityChecker check = (AccessibilityChecker) context;
+            if (requestcontext.getContextConfig().getPageRequestConfig(pagename) != null) {
+                AccessibilityChecker check = (AccessibilityChecker) requestcontext;
                 if (check.isPageAccessible(pagename)) {
                     return 1;
                 } else {
@@ -60,17 +60,17 @@ public class TransformerCallback {
         }
     }
 
-    public static int isVisited(RequestContextImpl context, String pagename) throws Exception {
-        ContextImpl pcontext = context.getParentContext();
-        if (pcontext != null) {
-            RequestContextImpl oldContext = pcontext.getRequestContextForCurrentThread();
+    public static int isVisited(RequestContextImpl requestcontext, String pagename) throws Exception {
+        ContextImpl context = requestcontext.getParentContext();
+        if (context != null) {
+            RequestContextImpl oldrequestcontext = context.getRequestContextForCurrentThread();
             try {
-                pcontext.setRequestContextForCurrentThread(context);
-                if (pcontext.getContextConfig().getPageRequestConfig(pagename) != null) {
-                    AccessibilityChecker check = (AccessibilityChecker) pcontext;
+                context.setRequestContextForCurrentThread(requestcontext);
+                if (context.getContextConfig().getPageRequestConfig(pagename) != null) {
+                    AccessibilityChecker check = (AccessibilityChecker) context;
                     boolean retval;
-                    if (pcontext.getContextConfig().isSynchronized()) {
-                        synchronized(pcontext) {
+                    if (context.getContextConfig().isSynchronized()) {
+                        synchronized(context) {
                             retval = check.isPageAlreadyVisited(pagename);
                         }
                     } else {
@@ -84,12 +84,12 @@ public class TransformerCallback {
                 }
                 return -1;
             } finally {
-                pcontext.setRequestContextForCurrentThread(oldContext);
+                context.setRequestContextForCurrentThread(oldrequestcontext);
             }
 
         } else {
-            if (context.getContextConfig().getPageRequestConfig(pagename) != null) {
-                AccessibilityChecker check = (AccessibilityChecker) context;
+            if (requestcontext.getContextConfig().getPageRequestConfig(pagename) != null) {
+                AccessibilityChecker check = (AccessibilityChecker) requestcontext;
                 if (check.isPageAlreadyVisited(pagename)) {
                     return 1;
                 } else {

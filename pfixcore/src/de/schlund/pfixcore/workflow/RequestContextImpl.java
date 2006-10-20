@@ -64,8 +64,9 @@ public class RequestContextImpl implements Context, AccessibilityChecker {
     private final static String PARAM_STARTWITHFLOW = "__startwithflow";
     private final static String PARAM_FORCESTOP     = "__forcestop";
     
-    private ServerContextImpl  context;
-    private SessionContextImpl scontext;
+    private ContextImpl        parentcontext;
+    private ServerContextImpl  servercontext;
+    private SessionContextImpl sessioncontext;
     private PageFlowManager    pageflowmanager;
     private VariantManager     variantmanager;
     private PageMap            pagemap;
@@ -89,30 +90,25 @@ public class RequestContextImpl implements Context, AccessibilityChecker {
 
     private List<StatusCodeInfo> messages   = new ArrayList<StatusCodeInfo>();
     private List<Cookie>         cookielist = new ArrayList<Cookie>();
-    private ContextImpl parentcontext;
 
-    public RequestContextImpl(ServerContextImpl context, SessionContextImpl scontext) throws Exception {
-        this(context, scontext, null);
-    }
-    
-    public RequestContextImpl(ServerContextImpl context, SessionContextImpl scontext, ContextImpl parent) throws Exception {
-        this.parentcontext = parent;
-        this.pageflowmanager = context.getPageFlowManager();
-        this.variantmanager  = context.getVariantManager();
-        this.pagemap         = context.getPageMap();
-        this.context         = context;
-        this.scontext        = scontext;
+    public RequestContextImpl(ServerContextImpl servercontext, SessionContextImpl sessioncontext, ContextImpl context) throws Exception {
+        this.parentcontext   = context;
+        this.sessioncontext  = sessioncontext;
+        this.servercontext   = servercontext;
+        this.pageflowmanager = servercontext.getPageFlowManager();
+        this.variantmanager  = servercontext.getVariantManager();
+        this.pagemap         = servercontext.getPageMap();
 
         // Look for last request in session
         // this is done to get a behaviour similar to the old one
         // when requests where only done synchronous
         String lastpage = null;
         String lastpageflow = null;
-        if (scontext != null) {
-            lastpage     = scontext.getLastPageName();
-            lastpageflow = scontext.getLastPageFlowName();
-            this.variant      = scontext.getVariant();
-            this.language     = scontext.getLanguage();
+        if (sessioncontext != null) {
+            lastpage      = sessioncontext.getLastPageName();
+            lastpageflow  = sessioncontext.getLastPageFlowName();
+            this.variant  = sessioncontext.getVariant();
+            this.language = sessioncontext.getLanguage();
         }
         if (lastpage != null && lastpageflow != null) {
             PageFlow tempflow = pageflowmanager.getPageFlowByName(lastpageflow, getVariant());
@@ -126,7 +122,7 @@ public class RequestContextImpl implements Context, AccessibilityChecker {
             }
         }
         if (currentpageflow == null) {
-            currentpageflow = pageflowmanager.getPageFlowByName(context.getContextConfig().getDefaultFlow(), getVariant());
+            currentpageflow = pageflowmanager.getPageFlowByName(servercontext.getContextConfig().getDefaultFlow(), getVariant());
         }
         if (currentpagerequest == null) {
             currentpagerequest = createPageRequest(currentpageflow.getFirstStep().getPageName());
@@ -137,7 +133,7 @@ public class RequestContextImpl implements Context, AccessibilityChecker {
 
     public Properties getPropertiesForCurrentPageRequest() {
         if (currentpagerequest != null) {
-            PageRequestConfig conf = context.getContextConfig().getPageRequestConfig(currentpagerequest.getName());
+            PageRequestConfig conf = servercontext.getContextConfig().getPageRequestConfig(currentpagerequest.getName());
             if (conf != null) {
                 return conf.getProperties();
             }
@@ -317,8 +313,8 @@ public class RequestContextImpl implements Context, AccessibilityChecker {
     }
 
     public void setLanguage(String lang) {
-        if (scontext != null) {
-            scontext.setLanguage(lang);
+        if (sessioncontext != null) {
+            sessioncontext.setLanguage(lang);
         }
         language = lang;
     }
@@ -328,12 +324,12 @@ public class RequestContextImpl implements Context, AccessibilityChecker {
     }
 
     public void setVariant(Variant variant) {
-        if (scontext == null && currentpservreq == null) {
+        if (sessioncontext == null && currentpservreq == null) {
             throw new IllegalStateException("A request or at least a session has to be present for variant handling");
         }
         this.variant = variant;
-        if (scontext != null) {
-            scontext.setVariant(variant);
+        if (sessioncontext != null) {
+            sessioncontext.setVariant(variant);
         }
     }
 
@@ -403,8 +399,8 @@ public class RequestContextImpl implements Context, AccessibilityChecker {
     public SPDocument handleRequest(PfixServletRequest preq) throws Exception {
         try {
             SPDocument spdoc;
-            if (context.getContextConfig().isSynchronized()) {
-                synchronized (scontext) {
+            if (servercontext.getContextConfig().isSynchronized()) {
+                synchronized (sessioncontext) {
                     spdoc = handleRequestWorker(preq);
                 }
             } else {
@@ -428,7 +424,7 @@ public class RequestContextImpl implements Context, AccessibilityChecker {
             
             // Reset stored variant so the session variant is being used
             // to check the visibility of other pages when rendering the output
-            this.variant = scontext.getVariant();
+            this.variant = sessioncontext.getVariant();
             
             return spdoc;
         } catch (Exception e) {
@@ -467,7 +463,7 @@ public class RequestContextImpl implements Context, AccessibilityChecker {
         // At least, the currentpageflow is updated to be the currently valid variant.
         RequestParam lastflow = currentpservreq.getRequestParam(PARAM_LASTFLOW);
 
-        processIC(context.getStartInterceptors());
+        processIC(servercontext.getStartInterceptors());
 
         if (lastflow != null && !lastflow.getValue().equals("")) {
             PageFlow tmp = pageflowmanager.getPageFlowByName(lastflow.getValue(), getVariant());
@@ -512,7 +508,7 @@ public class RequestContextImpl implements Context, AccessibilityChecker {
             }
 
             if (spdoc.getResponseError() == 0) {
-                scontext.addVisitedPage(spdoc.getPagename());
+                sessioncontext.addVisitedPage(spdoc.getPagename());
                 if (!getConfigForCurrentPageRequest().isStoreXML()) {
                     spdoc.setNostore(true);
                 }
@@ -524,11 +520,11 @@ public class RequestContextImpl implements Context, AccessibilityChecker {
             spdoc.setProperty("__context__", this);
         }
 
-        processIC(context.getEndInterceptors());
+        processIC(servercontext.getEndInterceptors());
         
         // Save pagerequest and pageflow
-        scontext.setLastPageName(getCurrentPageRequest().getRootName());
-        scontext.setLastPageFlowName(getCurrentPageFlow().getRootName());
+        sessioncontext.setLastPageName(getCurrentPageRequest().getRootName());
+        sessioncontext.setLastPageFlowName(getCurrentPageFlow().getRootName());
 
         return spdoc;
     }
@@ -551,7 +547,7 @@ public class RequestContextImpl implements Context, AccessibilityChecker {
                 while (iter.hasNext()) {
                     StatusCodeInfo sci = iter.next();
                     Element msg = doc.createElement("message");
-                    Element inc = ResultDocument.createIncludeFromStatusCode(doc, context.getContextConfig().getProperties(), sci.getStatusCode(), sci.getArgs());
+                    Element inc = ResultDocument.createIncludeFromStatusCode(doc, servercontext.getContextConfig().getProperties(), sci.getStatusCode(), sci.getArgs());
                     msg.appendChild(inc);
                     if (sci.getLevel() != null) {
                         msg.setAttribute("level", sci.getLevel());
@@ -605,7 +601,7 @@ public class RequestContextImpl implements Context, AccessibilityChecker {
         if (currentpservreq == null) {
             throw new IllegalStateException("PageRequest is only available witihin request handling");
         }
-        return context.getContextConfig().getPageRequestConfig(currentpagerequest.getName());
+        return servercontext.getContextConfig().getPageRequestConfig(currentpagerequest.getName());
     }
 
     private SPDocument documentFromFlow() throws Exception {
@@ -639,7 +635,7 @@ public class RequestContextImpl implements Context, AccessibilityChecker {
             // Now we need to make sure that the current page is accessible, and take the right measures if not.
             if (!checkIsAccessible(currentpagerequest, PageRequestStatus.DIRECT)) {
                 LOG.warn("[" + currentpagerequest + "]: not accessible! Trying first page of default flow.");
-                currentpageflow = pageflowmanager.getPageFlowByName(context.getContextConfig().getDefaultFlow(), getVariant());
+                currentpageflow = pageflowmanager.getPageFlowByName(servercontext.getContextConfig().getDefaultFlow(), getVariant());
                 PageRequest defpage = createPageRequest(currentpageflow.getFirstStep().getPageName());
                 currentpagerequest = defpage;
                 if (!checkIsAccessible(defpage, PageRequestStatus.DIRECT)) {
@@ -936,7 +932,7 @@ public class RequestContextImpl implements Context, AccessibilityChecker {
     }
 
     private void checkForAuthenticationMode() {
-        String authpagename = context.getContextConfig().getAuthPage();
+        String authpagename = servercontext.getContextConfig().getAuthPage();
         if (authpagename != null) {
             authpage = createPageRequest(authpagename);
         } else {
@@ -947,8 +943,8 @@ public class RequestContextImpl implements Context, AccessibilityChecker {
     // Must be public because it is declared in an interface,
     // however it should only be used within the same package
     public boolean isPageAccessible(String pagename) throws Exception {
-        if (context.getContextConfig().isSynchronized()) {
-            synchronized (scontext) {
+        if (servercontext.getContextConfig().isSynchronized()) {
+            synchronized (sessioncontext) {
                 return isPageAccessibleWorker(pagename);
             }
         } else {
@@ -959,19 +955,19 @@ public class RequestContextImpl implements Context, AccessibilityChecker {
     private boolean isPageAccessibleWorker(String pagename) throws Exception {
         PageRequest page = createPageRequest(pagename);
         Variant currentvariant = getVariant();
-        setVariant(scontext.getVariant());
+        setVariant(sessioncontext.getVariant());
         boolean retval = checkIsAccessible(page, PageRequestStatus.NAVIGATION);
         setVariant(currentvariant);
         return retval;
     }
 
     public boolean isPageAlreadyVisited(String pagename) throws Exception {
-        if (context.getContextConfig().isSynchronized()) {
-            synchronized (scontext) {
-                return scontext.isVisitedPage(pagename);
+        if (servercontext.getContextConfig().isSynchronized()) {
+            synchronized (sessioncontext) {
+                return sessioncontext.isVisitedPage(pagename);
             }
         } else {
-            return scontext.isVisitedPage(pagename);
+            return sessioncontext.isVisitedPage(pagename);
         }
     }
 
@@ -1006,41 +1002,41 @@ public class RequestContextImpl implements Context, AccessibilityChecker {
             contextbuf.append("       -> Status: " + currentpagerequest.getStatus() + "\n");
         }
         
-        if (scontext != null) {
-            contextbuf.append(scontext.toString());
+        if (sessioncontext != null) {
+            contextbuf.append(sessioncontext.toString());
         }
 
         return contextbuf.toString();
     }
 
     public ContextResourceManager getContextResourceManager() {
-        if (scontext == null) {
+        if (sessioncontext == null) {
             throw new IllegalStateException("ContextResourceManager is only availabe within a session");
         }
-        return scontext.getContextResourceManager();
+        return sessioncontext.getContextResourceManager();
     }
 
     public Properties getProperties() {
-        return context.getProperties();
+        return servercontext.getProperties();
     }
 
     public String getVisitId() {
-        if (scontext == null) {
+        if (sessioncontext == null) {
             throw new IllegalStateException("Session is needed for visit id");
         }
-        return scontext.getVisitId();
+        return sessioncontext.getVisitId();
     }
 
     public String getName() {
-        return context.getName();
+        return servercontext.getName();
     }
 
     public Properties getPropertiesForContextResource(ContextResource res) {
-        return context.getPropertiesForContextResource(res);
+        return servercontext.getPropertiesForContextResource(res);
     }
 
     public ContextConfig getContextConfig() {
-        return context.getContextConfig();
+        return servercontext.getContextConfig();
     }
     
     public ContextImpl getParentContext() {
