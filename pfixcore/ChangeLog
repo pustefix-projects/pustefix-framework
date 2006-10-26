@@ -1,5 +1,19 @@
 2006-10-26  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
+	* src/de/schlund/pfixcore/util/DummyContextFactory.java: 
+	* src/de/schlund/pfixcore/util/TransformerCallback.java: 
+	* src/de/schlund/pfixcore/workflow/context/PageFlow.java: 
+	* src/de/schlund/pfixcore/workflow/context/PageFlowManager.java: 
+	* src/de/schlund/pfixcore/workflow/context/RequestContextImpl.java: 
+	* src/de/schlund/pfixcore/workflow/context/ServerContextImpl.java: 
+	* src/de/schlund/pfixcore/workflow/Context.java: 
+	* src/de/schlund/pfixcore/workflow/ContextImpl.java (ContextImpl): 
+	Refactored context implementation: Pulled SessionContextImpl into
+	ContextImpl and removed dependencies on SessionContextImpl from 
+	RequestContextImpl. Moved pageflow classes and RequestContextImpl
+	into context package.
+	
+	* src/de/schlund/pfixcore/workflow/FlowStep.java (FlowStep): 
 	* src/de/schlund/pfixcore/webservice/ServiceRuntime.java: 
 	* src/de/schlund/pfixxml/DirectOutputServlet.java: 
 	Removed unused imports
