@@ -30,6 +30,7 @@ import javax.xml.transform.TransformerException;
 import org.apache.log4j.Category;
 import org.w3c.dom.Document;
 
+import de.schlund.pfixcore.workflow.context.PageFlow;
 import de.schlund.pfixxml.ResultDocument;
 import de.schlund.pfixxml.config.PageFlowStepActionConditionConfig;
 import de.schlund.pfixxml.config.PageFlowStepActionConfig;

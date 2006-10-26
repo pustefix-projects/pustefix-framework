@@ -17,13 +17,14 @@
  *
  */
 
-package de.schlund.pfixcore.workflow;
+package de.schlund.pfixcore.workflow.context;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.apache.log4j.Category;
 
+import de.schlund.pfixcore.workflow.FlowStep;
 import de.schlund.pfixxml.config.PageFlowConfig;
 import de.schlund.pfixxml.config.PageFlowStepConfig;
 
