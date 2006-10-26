@@ -36,11 +36,9 @@ import de.schlund.pfixcore.webservice.monitor.Monitor;
 import de.schlund.pfixcore.webservice.monitor.MonitorRecord;
 import de.schlund.pfixcore.webservice.utils.RecordingRequestWrapper;
 import de.schlund.pfixcore.webservice.utils.RecordingResponseWrapper;
-import de.schlund.pfixcore.workflow.Context;
 import de.schlund.pfixcore.workflow.ContextImpl;
 import de.schlund.pfixcore.workflow.State;
 import de.schlund.pfixcore.workflow.context.ServerContextImpl;
-import de.schlund.pfixcore.workflow.context.SessionContextImpl;
 import de.schlund.pfixxml.PfixServletRequest;
 import de.schlund.pfixxml.serverutil.SessionAdmin;
 

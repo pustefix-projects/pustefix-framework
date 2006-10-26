@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-package de.schlund.pfixcore.workflow;
+package de.schlund.pfixcore.workflow.context;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -31,9 +31,14 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import de.schlund.pfixcore.generator.StatusCodeInfo;
-import de.schlund.pfixcore.workflow.context.AccessibilityChecker;
-import de.schlund.pfixcore.workflow.context.ServerContextImpl;
-import de.schlund.pfixcore.workflow.context.SessionContextImpl;
+import de.schlund.pfixcore.workflow.ContextImpl;
+import de.schlund.pfixcore.workflow.ContextInterceptor;
+import de.schlund.pfixcore.workflow.FlowStep;
+import de.schlund.pfixcore.workflow.PageMap;
+import de.schlund.pfixcore.workflow.PageRequest;
+import de.schlund.pfixcore.workflow.PageRequestStatus;
+import de.schlund.pfixcore.workflow.State;
+import de.schlund.pfixcore.workflow.VariantManager;
 import de.schlund.pfixxml.PfixServletRequest;
 import de.schlund.pfixxml.RequestParam;
 import de.schlund.pfixxml.ResultDocument;
@@ -41,7 +46,6 @@ import de.schlund.pfixxml.SPDocument;
 import de.schlund.pfixxml.ServletManager;
 import de.schlund.pfixxml.Variant;
 import de.schlund.pfixxml.XMLException;
-import de.schlund.pfixxml.config.ContextConfig;
 import de.schlund.pfixxml.config.PageRequestConfig;
 import de.schlund.pfixxml.perflogging.PerfEvent;
 import de.schlund.pfixxml.perflogging.PerfEventType;
@@ -54,7 +58,7 @@ import de.schlund.util.statuscodes.StatusCode;
  * 
  * @author Sebastian Marsching <sebastian.marsching@1und1.de>
  */
-public class RequestContextImpl implements Context, AccessibilityChecker {
+public class RequestContextImpl {
 
     private final static Logger LOG                 = Logger.getLogger(ContextImpl.class);
     private final static String PARAM_JUMPPAGE      = "__jumptopage";
@@ -66,7 +70,6 @@ public class RequestContextImpl implements Context, AccessibilityChecker {
     
     private ContextImpl        parentcontext;
     private ServerContextImpl  servercontext;
-    private SessionContextImpl sessioncontext;
     private PageFlowManager    pageflowmanager;
     private VariantManager     variantmanager;
     private PageMap            pagemap;
@@ -91,9 +94,8 @@ public class RequestContextImpl implements Context, AccessibilityChecker {
     private List<StatusCodeInfo> messages   = new ArrayList<StatusCodeInfo>();
     private List<Cookie>         cookielist = new ArrayList<Cookie>();
 
-    public RequestContextImpl(ServerContextImpl servercontext, SessionContextImpl sessioncontext, ContextImpl context) throws Exception {
+    public RequestContextImpl(ServerContextImpl servercontext, ContextImpl context) throws Exception {
         this.parentcontext   = context;
-        this.sessioncontext  = sessioncontext;
         this.servercontext   = servercontext;
         this.pageflowmanager = servercontext.getPageFlowManager();
         this.variantmanager  = servercontext.getVariantManager();
@@ -104,12 +106,10 @@ public class RequestContextImpl implements Context, AccessibilityChecker {
         // when requests where only done synchronous
         String lastpage = null;
         String lastpageflow = null;
-        if (sessioncontext != null) {
-            lastpage      = sessioncontext.getLastPageName();
-            lastpageflow  = sessioncontext.getLastPageFlowName();
-            this.variant  = sessioncontext.getVariant();
-            this.language = sessioncontext.getLanguage();
-        }
+        lastpage      = parentcontext.getLastPageName();
+        lastpageflow  = parentcontext.getLastPageFlowName();
+        this.variant  = parentcontext.getSessionVariant();
+        this.language = parentcontext.getSessionLanguage();
         if (lastpage != null && lastpageflow != null) {
             PageFlow tempflow = pageflowmanager.getPageFlowByName(lastpageflow, getVariant());
 
@@ -129,6 +129,10 @@ public class RequestContextImpl implements Context, AccessibilityChecker {
         }
 
         checkForAuthenticationMode();
+    }
+    
+    public ServerContextImpl getServerContext() {
+        return servercontext;
     }
 
     public Properties getPropertiesForCurrentPageRequest() {
@@ -313,24 +317,11 @@ public class RequestContextImpl implements Context, AccessibilityChecker {
     }
 
     public void setLanguage(String lang) {
-        if (sessioncontext != null) {
-            sessioncontext.setLanguage(lang);
-        }
         language = lang;
     }
 
     public Variant getVariant() {
         return variant;
-    }
-
-    public void setVariant(Variant variant) {
-        if (sessioncontext == null && currentpservreq == null) {
-            throw new IllegalStateException("A request or at least a session has to be present for variant handling");
-        }
-        this.variant = variant;
-        if (sessioncontext != null) {
-            sessioncontext.setVariant(variant);
-        }
     }
 
     public void setVariantForThisRequestOnly(Variant variant) {
@@ -399,20 +390,15 @@ public class RequestContextImpl implements Context, AccessibilityChecker {
     public SPDocument handleRequest(PfixServletRequest preq) throws Exception {
         try {
             SPDocument spdoc;
-            if (servercontext.getContextConfig().isSynchronized()) {
-                synchronized (sessioncontext) {
-                    spdoc = handleRequestWorker(preq);
-                }
-            } else {
-                spdoc = handleRequestWorker(preq);
-            }
+            spdoc = handleRequestWorker(preq);
+
             // Make sure SSL pages are only returned using SSL.
             // This rule does not apply to pages with the nostore
             // flag, as we would not be able to return such a page
             // after the redirect
             if (getConfigForCurrentPageRequest() != null && spdoc != null && getConfigForCurrentPageRequest().isSSL()
                 && !spdoc.getNostore() && !preq.getOriginalScheme().equals("https")) {
-                String redirectPort = getProperties().getProperty(ServletManager.PROP_SSL_REDIRECT_PORT + String.valueOf(preq.getOriginalServerPort()));
+                String redirectPort = getServerContext().getProperties().getProperty(ServletManager.PROP_SSL_REDIRECT_PORT + String.valueOf(preq.getOriginalServerPort()));
                 if (redirectPort == null) {
                     redirectPort = "";
                 } else {
@@ -424,7 +410,7 @@ public class RequestContextImpl implements Context, AccessibilityChecker {
             
             // Reset stored variant so the session variant is being used
             // to check the visibility of other pages when rendering the output
-            this.variant = sessioncontext.getVariant();
+            this.variant = parentcontext.getSessionVariant();
             
             return spdoc;
         } catch (Exception e) {
@@ -508,7 +494,7 @@ public class RequestContextImpl implements Context, AccessibilityChecker {
             }
 
             if (spdoc.getResponseError() == 0) {
-                sessioncontext.addVisitedPage(spdoc.getPagename());
+                parentcontext.addVisitedPage(spdoc.getPagename());
                 if (!getConfigForCurrentPageRequest().isStoreXML()) {
                     spdoc.setNostore(true);
                 }
@@ -523,8 +509,8 @@ public class RequestContextImpl implements Context, AccessibilityChecker {
         processIC(servercontext.getEndInterceptors());
         
         // Save pagerequest and pageflow
-        sessioncontext.setLastPageName(getCurrentPageRequest().getRootName());
-        sessioncontext.setLastPageFlowName(getCurrentPageFlow().getRootName());
+        parentcontext.setLastPageName(getCurrentPageRequest().getRootName());
+        parentcontext.setLastPageFlowName(getCurrentPageFlow().getRootName());
 
         return spdoc;
     }
@@ -583,7 +569,7 @@ public class RequestContextImpl implements Context, AccessibilityChecker {
     private void processIC(ContextInterceptor[] icarr) {
         if (icarr != null) {
             for (int i = 0; i < icarr.length; i++) {
-                icarr[i].process(((this.parentcontext != null) ? this.parentcontext : this), currentpservreq);
+                icarr[i].process(parentcontext, currentpservreq);
             }
         }
     }
@@ -646,7 +632,7 @@ public class RequestContextImpl implements Context, AccessibilityChecker {
             resdoc = documentFromCurrentStep();
             if (currentpageflow != null && currentpageflow.containsPage(currentpagerequest.getRootName())) {
                 FlowStep step = currentpageflow.getFlowStepForPage(currentpagerequest.getRootName());
-                step.applyActionsOnContinue(((this.parentcontext != null) ? this.parentcontext : this), resdoc);
+                step.applyActionsOnContinue(parentcontext, resdoc);
             }
 
             if (currentpageflow != null) {
@@ -788,7 +774,7 @@ public class RequestContextImpl implements Context, AccessibilityChecker {
         return document;
     }
 
-    public synchronized SPDocument checkAuthorization(boolean forceauth) throws Exception {
+    public SPDocument checkAuthorization(boolean forceauth) throws Exception {
         if (authpage != null) {
             ResultDocument resdoc = null;
             LOG.debug("===> [" + authpage + "]: Checking authorisation");
@@ -833,7 +819,7 @@ public class RequestContextImpl implements Context, AccessibilityChecker {
 
         LOG.debug("** [" + currentpagerequest + "]: associated state: " + state.getClass().getName());
         LOG.debug("=> [" + currentpagerequest + "]: Calling getDocument()");
-        return state.getDocument(((this.parentcontext != null) ? this.parentcontext : this), currentpservreq);
+        return state.getDocument(parentcontext, currentpservreq);
     }
 
     private void trySettingPageRequestAndFlow() {
@@ -903,7 +889,7 @@ public class RequestContextImpl implements Context, AccessibilityChecker {
 
         PerfEvent pe = new PerfEvent(PerfEventType.PAGE_NEEDSDATA, page.getName());
         pe.start();
-        boolean retval = state.needsData(((this.parentcontext != null) ? this.parentcontext : this), currentpservreq);
+        boolean retval = state.needsData(parentcontext, currentpservreq);
         pe.save();
 
         currentpagerequest = saved;
@@ -922,7 +908,7 @@ public class RequestContextImpl implements Context, AccessibilityChecker {
 
             PerfEvent pe = new PerfEvent(PerfEventType.PAGE_ISACCESSIBLE, page.getName());
             pe.start();
-            boolean retval = state.isAccessible(((this.parentcontext != null) ? this.parentcontext : this), currentpservreq);
+            boolean retval = state.isAccessible(parentcontext, currentpservreq);
             pe.save();
 
             return retval;
@@ -940,35 +926,13 @@ public class RequestContextImpl implements Context, AccessibilityChecker {
         }
     }
 
-    // Must be public because it is declared in an interface,
-    // however it should only be used within the same package
     public boolean isPageAccessible(String pagename) throws Exception {
-        if (servercontext.getContextConfig().isSynchronized()) {
-            synchronized (sessioncontext) {
-                return isPageAccessibleWorker(pagename);
-            }
-        } else {
-            return isPageAccessibleWorker(pagename);
-        }
-    }
-
-    private boolean isPageAccessibleWorker(String pagename) throws Exception {
         PageRequest page = createPageRequest(pagename);
         Variant currentvariant = getVariant();
-        setVariant(sessioncontext.getVariant());
+        setVariantForThisRequestOnly(parentcontext.getSessionVariant());
         boolean retval = checkIsAccessible(page, PageRequestStatus.NAVIGATION);
-        setVariant(currentvariant);
+        setVariantForThisRequestOnly(currentvariant);
         return retval;
-    }
-
-    public boolean isPageAlreadyVisited(String pagename) throws Exception {
-        if (servercontext.getContextConfig().isSynchronized()) {
-            synchronized (sessioncontext) {
-                return sessioncontext.isVisitedPage(pagename);
-            }
-        } else {
-            return sessioncontext.isVisitedPage(pagename);
-        }
     }
 
     public Cookie[] getRequestCookies() {
@@ -1001,44 +965,10 @@ public class RequestContextImpl implements Context, AccessibilityChecker {
             contextbuf.append("       -> State: " + pagemap.getState(currentpagerequest) + "\n");
             contextbuf.append("       -> Status: " + currentpagerequest.getStatus() + "\n");
         }
-        
-        if (sessioncontext != null) {
-            contextbuf.append(sessioncontext.toString());
-        }
 
         return contextbuf.toString();
     }
 
-    public ContextResourceManager getContextResourceManager() {
-        if (sessioncontext == null) {
-            throw new IllegalStateException("ContextResourceManager is only availabe within a session");
-        }
-        return sessioncontext.getContextResourceManager();
-    }
-
-    public Properties getProperties() {
-        return servercontext.getProperties();
-    }
-
-    public String getVisitId() {
-        if (sessioncontext == null) {
-            throw new IllegalStateException("Session is needed for visit id");
-        }
-        return sessioncontext.getVisitId();
-    }
-
-    public String getName() {
-        return servercontext.getName();
-    }
-
-    public Properties getPropertiesForContextResource(ContextResource res) {
-        return servercontext.getPropertiesForContextResource(res);
-    }
-
-    public ContextConfig getContextConfig() {
-        return servercontext.getContextConfig();
-    }
-    
     public ContextImpl getParentContext() {
         return this.parentcontext;
     }

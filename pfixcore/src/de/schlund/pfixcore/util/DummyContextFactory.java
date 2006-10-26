@@ -18,19 +18,19 @@
 
 package de.schlund.pfixcore.util;
 
+
+
+import de.schlund.pfixcore.workflow.Context;
+import de.schlund.pfixcore.workflow.ContextImpl;
+import de.schlund.pfixcore.workflow.context.ServerContextImpl;
+import de.schlund.pfixxml.config.ContextXMLServletConfig;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
-
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpSessionContext;
-
-import de.schlund.pfixcore.workflow.RequestContextImpl;
-import de.schlund.pfixcore.workflow.context.ServerContextImpl;
-import de.schlund.pfixcore.workflow.context.SessionContextImpl;
-import de.schlund.pfixxml.config.ContextXMLServletConfig;
 
 /**
  * Helper class that provides a dummy context instance that can
@@ -40,12 +40,12 @@ import de.schlund.pfixxml.config.ContextXMLServletConfig;
  */
 public class DummyContextFactory {
 
-    public static RequestContextImpl getDummyContext(ContextXMLServletConfig config) throws Exception {
-        ServerContextImpl servercontext = new ServerContextImpl(config.getContextConfig(), "Dummy");
-        // FIXME_JTL: why don't we use a dummy ContextImpl and create the sessioncontext the usual way?
-        SessionContextImpl sessioncontext = new SessionContextImpl(servercontext, new DummySession());
-        // FIXME_JTL: inside sessioncontext we already create a RequestContextImpl when using the current constructor
-        return new RequestContextImpl(servercontext, sessioncontext, null);
+    public static Context getDummyContext(ContextXMLServletConfig config) throws Exception {
+        HttpSession        session        = new DummySession();
+        ServerContextImpl  servercontext  = new ServerContextImpl(config.getContextConfig(), "Dummy");
+        ContextImpl        context        = new ContextImpl(servercontext, session);
+        context.prepareForRequest(servercontext);
+        return context;
     }
     
     private static class DummySession implements HttpSession {

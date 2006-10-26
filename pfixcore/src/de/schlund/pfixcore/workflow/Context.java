@@ -20,6 +20,7 @@ package de.schlund.pfixcore.workflow;
 
 
 
+import de.schlund.pfixcore.workflow.context.PageFlow;
 import de.schlund.pfixxml.PfixServletRequest;
 import de.schlund.pfixxml.SPDocument;
 import de.schlund.pfixxml.Variant;
