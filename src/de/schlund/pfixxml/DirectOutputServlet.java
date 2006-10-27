@@ -68,9 +68,9 @@ import de.schlund.pfixxml.resources.FileResource;
  * @version $Id$
  */
 public class DirectOutputServlet extends ServletManager {
-    private        Category              CAT              = Category.getInstance(this.getClass());
-    private        String                ext_cname        = null;
-    private        DirectOutputPageMap   pagemap          = null;
+    private Category                  CAT       = Category.getInstance(this.getClass());
+    private String                    ext_cname = null;
+    private DirectOutputPageMap       pagemap   = null;
     private DirectOutputServletConfig config;
     
     /**
@@ -123,47 +123,46 @@ public class DirectOutputServlet extends ServletManager {
              return;
          }
          
-         ServerContextImpl context = (ServerContextImpl) getServletContext().getAttribute(name);
-         ContextImpl scontext = (ContextImpl) session.getAttribute(name);
-         if (context == null || scontext == null) {
-             throw new RuntimeException("*** didn't find Context " + name + " in Session " + session.getId() +
-                                        " , maybe it's not yet initialized??? ***");
+         ServerContextImpl servercontext = (ServerContextImpl) getServletContext().getAttribute(name);
+         ContextImpl       context       = (ContextImpl) session.getAttribute(name);
+         if (servercontext == null || context == null) {
+             throw new RuntimeException("*** didn't find Context " + name + " in Session " + session.getId()
+                                        + ", maybe it's not yet initialized??? ***");
          }
          
-         // Make sure the context is initialized and deinitialized for
-         // this thread
-         
-         scontext.prepareForRequest(context);
+         // Make sure the context is initialized and deinitialized this thread
+         context.setServerContext(servercontext);
+         context.prepareForRequest();
          try {
-            if (config.isSynchronized()) {
-                synchronized (scontext) {
-                    doProcess(preq, res, context, scontext);
-                }
-            } else {
-                doProcess(preq, res, context, scontext);
-            }
+             if (config.isSynchronized()) {
+                 synchronized (context) {
+                     doProcess(preq, res, servercontext, context);
+                 }
+             } else {
+                 doProcess(preq, res, servercontext, context);
+             }
          } finally {
-            scontext.cleanupAfterRequest();
+             context.cleanupAfterRequest();
          }
     }
     
-    protected void doProcess(PfixServletRequest preq, HttpServletResponse res, ServerContextImpl context, ContextImpl scontext) throws Exception {
-         ContextResourceManager crm = scontext.getContextResourceManager();
+    protected void doProcess(PfixServletRequest preq, HttpServletResponse res, ServerContextImpl servercontext, ContextImpl context) throws Exception {
+         ContextResourceManager crm = context.getContextResourceManager();
 
          // check the authentification first....
-         State authstate = context.getAuthState();
+         State authstate = servercontext.getAuthState();
          if (authstate != null) {
-             if (!authstate.isAccessible(scontext, preq)) {
+             if (!authstate.isAccessible(context, preq)) {
                  throw new XMLException("State of authpage is not accessible!");
              }
-             if (authstate.needsData(scontext, preq)) {
+             if (authstate.needsData(context, preq)) {
                  CAT.info("Got request without authorization");
                  res.sendError(HttpServletResponse.SC_FORBIDDEN, "Must authenticate first");
                  return;
              }
          }
          
-         String            pagename = preq.getPageName();
+         String pagename = preq.getPageName();
          if (pagename == null || pagename.length() == 0) {
              CAT.error("*** got request without page name ***");
              res.sendError(HttpServletResponse.SC_NOT_FOUND, "Must specify page name");
@@ -172,8 +171,8 @@ public class DirectOutputServlet extends ServletManager {
          PageRequest       page  = new PageRequest(pagename);
          DirectOutputState state = pagemap.getDirectOutputState(page);
          if (state != null) {
-             Properties        props = config.getPageRequest(page.getName()).getProperties();
-             boolean allowed = state.isAccessible(crm, props, preq);
+             Properties props   = config.getPageRequest(page.getName()).getProperties();
+             boolean    allowed = state.isAccessible(crm, props, preq);
              if (allowed) {
                  try {
                      state.handleRequest(crm, props, preq, res);
@@ -183,9 +182,8 @@ public class DirectOutputServlet extends ServletManager {
                      }
                  }
              } else {
-                 throw new RuntimeException("*** Called DirectOutputState " +
-                                            state.getClass().getName() + " for page " + page.getName() +
-                                            " without being accessible ***");  
+                 throw new RuntimeException("*** Called DirectOutputState " + state.getClass().getName() +
+                                            " for page " + page.getName() + " without being accessible ***");  
              }
          } else {
              CAT.error("*** No DirectOutputState for page " + page.getName() + " ***");
@@ -212,7 +210,7 @@ public class DirectOutputServlet extends ServletManager {
         }
 
         try {
-            pagemap   = (DirectOutputPageMap) PropertyObjectManager.getInstance().
+            pagemap = (DirectOutputPageMap) PropertyObjectManager.getInstance().
                 getConfigurableObject(this.config, de.schlund.pfixcore.workflow.DirectOutputPageMap.class);
         } catch (Exception e) {
             CAT.warn("==================> XPTN " + e.getMessage());

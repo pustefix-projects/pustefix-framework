@@ -47,57 +47,57 @@ import de.schlund.pfixxml.serverutil.SessionAdmin;
  */
 public class ServiceRuntime {
 	
-	private static Logger LOG=Logger.getLogger(ServiceRuntime.class);
-	
-	private static ThreadLocal<ServiceCallContext> currentContext=new ThreadLocal<ServiceCallContext>();
-	
-	private Configuration configuration;	
-	private Monitor monitor;
-	
-	private Map<String,ServiceProcessor> processors;
-	private String defaultProtocol;
-	
-	private ServiceRegistry appServiceRegistry;
-	
-	public ServiceRuntime() {
-		processors=new HashMap<String,ServiceProcessor>();
-	}
-	
-	public void addServiceProcessor(String protocol,ServiceProcessor processor) {
-		if(processors.isEmpty()) defaultProtocol=protocol;
-		processors.put(protocol,processor);
-	}
-	
-	public Configuration getConfiguration() {
-		return configuration;
-	}
-	
-	public void setConfiguration(Configuration configuration) {
-		this.configuration=configuration;
-		GlobalServiceConfig globConf=configuration.getGlobalServiceConfig();
-        if(globConf.getMonitoringEnabled()) {
-        	Monitor.Scope scope=Monitor.Scope.valueOf(globConf.getMonitoringScope().toUpperCase());
-           	monitor=new Monitor(scope,globConf.getMonitoringHistorySize());
-        }
-	}
-	
-	public void setApplicationServiceRegistry(ServiceRegistry appServiceRegistry) {
-	    this.appServiceRegistry=appServiceRegistry;
+    private static Logger LOG=Logger.getLogger(ServiceRuntime.class);
+    
+    private static ThreadLocal<ServiceCallContext> currentContext=new ThreadLocal<ServiceCallContext>();
+    
+    private Configuration configuration;	
+    private Monitor monitor;
+    
+    private Map<String,ServiceProcessor> processors;
+    private String defaultProtocol;
+    
+    private ServiceRegistry appServiceRegistry;
+    
+    public ServiceRuntime() {
+        processors=new HashMap<String,ServiceProcessor>();
     }
-	
-	public Monitor getMonitor() {
-		return monitor;
-	}
-	
-	public void process(HttpServletRequest req,HttpServletResponse res) throws ServiceException {
+    
+    public void addServiceProcessor(String protocol,ServiceProcessor processor) {
+        if(processors.isEmpty()) defaultProtocol=protocol;
+        processors.put(protocol,processor);
+    }
+    
+    public Configuration getConfiguration() {
+        return configuration;
+    }
+    
+    public void setConfiguration(Configuration configuration) {
+        this.configuration=configuration;
+        GlobalServiceConfig globConf=configuration.getGlobalServiceConfig();
+        if(globConf.getMonitoringEnabled()) {
+            Monitor.Scope scope=Monitor.Scope.valueOf(globConf.getMonitoringScope().toUpperCase());
+            monitor=new Monitor(scope,globConf.getMonitoringHistorySize());
+        }
+    }
+    
+    public void setApplicationServiceRegistry(ServiceRegistry appServiceRegistry) {
+        this.appServiceRegistry=appServiceRegistry;
+    }
+    
+    public Monitor getMonitor() {
+        return monitor;
+    }
+    
+    public void process(HttpServletRequest req,HttpServletResponse res) throws ServiceException {
         ContextImpl pfxSessionContext=null;
-		try {
-			
-			ServiceRequest serviceReq=new HttpServiceRequest(req);
-			ServiceResponse serviceRes=new HttpServiceResponse(res);
-			
-			String serviceName=serviceReq.getServiceName();
-			
+        try {
+            
+            ServiceRequest serviceReq=new HttpServiceRequest(req);
+            ServiceResponse serviceRes=new HttpServiceResponse(res);
+            
+            String serviceName=serviceReq.getServiceName();
+            
             HttpSession session=req.getSession(false);
             
             ServiceRegistry serviceReg=null;
@@ -114,27 +114,29 @@ public class ServiceRuntime {
                 } 
             }
             if(srvConf==null) throw new ServiceException("Service not found: "+serviceName);
-    
-			ServiceCallContext callContext=null;
-			
-			if(srvConf.getContextName()!=null) {
-				if(srvConf.getSessionType().equals(Constants.SESSION_TYPE_SERVLET)) {
-					if(session==null) throw new ServiceException("Authentication failed: No valid session.");
-					if(srvConf.getSSLForce() && !req.getScheme().equals("https")) 
-						throw new ServiceException("Authentication failed: SSL connection required");
-					if(req.getScheme().equals("https")) {
-						Boolean secure=(Boolean)session.getAttribute(SessionAdmin.SESSION_IS_SECURE);
-						if(secure==null || !secure.booleanValue()) 
-							throw new ServiceException("Authentication failed: No secure session");
-					}
-					String contextName=srvConf.getContextName()+"__CONTEXT__";
-					ServerContextImpl srvContext=(ServerContextImpl)req.getSession().getServletContext().getAttribute(contextName);
-					pfxSessionContext=(ContextImpl)session.getAttribute(contextName);
-					State authState=srvContext.getAuthState();
+            
+            ServiceCallContext callContext=null;
+            
+            if(srvConf.getContextName()!=null) {
+                if(srvConf.getSessionType().equals(Constants.SESSION_TYPE_SERVLET)) {
+                    if(session==null) throw new ServiceException("Authentication failed: No valid session.");
+                    if(srvConf.getSSLForce() && !req.getScheme().equals("https")) 
+                        throw new ServiceException("Authentication failed: SSL connection required");
+                    if(req.getScheme().equals("https")) {
+                        Boolean secure=(Boolean)session.getAttribute(SessionAdmin.SESSION_IS_SECURE);
+                        if(secure==null || !secure.booleanValue()) 
+                            throw new ServiceException("Authentication failed: No secure session");
+                    }
+                    String contextName = srvConf.getContextName()+"__CONTEXT__";
+                    ServerContextImpl srvContext = (ServerContextImpl)req.getSession().getServletContext().getAttribute(contextName);
+                    pfxSessionContext = (ContextImpl) session.getAttribute(contextName);
+                    
+                    State authState = srvContext.getAuthState();
                     try {
                         // Prepare context for current thread.
                         // Cleanup is performed in finally block.
-                        pfxSessionContext.prepareForRequest(srvContext);
+                        pfxSessionContext.setServerContext(srvContext);
+                        pfxSessionContext.prepareForRequest();
                         if(authState!=null) {
                             PfixServletRequest preq=new PfixServletRequest(req,new Properties());
                             if(!authState.isAccessible(pfxSessionContext,preq)) throw new ServiceException("Authorization failed: State of authpage is not accessible!");
@@ -143,94 +145,95 @@ public class ServiceRuntime {
                     } catch(Exception x) {
                         throw new ServiceException("Authorization failed",x);
                     }
+                    
                     callContext=new ServiceCallContext(this);
                     callContext.setContext(pfxSessionContext);
                     setCurrentContext(callContext);
-				}
+                }
             }
-                  
-        	String protocolType=srvConf.getProtocolType();
-        	if(protocolType==null) protocolType=getConfiguration().getGlobalServiceConfig().getProtocolType();
-			
-			String wsType=req.getHeader(Constants.HEADER_WSTYPE);
-			if(wsType==null) req.getParameter(Constants.PARAM_WSTYPE);
-			if(wsType!=null) {
-				wsType=wsType.toUpperCase();
-				if(!protocolType.equals(Constants.PROTOCOL_TYPE_ANY)&&!wsType.equals(protocolType))
-					throw new ServiceException("Service protocol '"+wsType+"' isn't supported.");
-				else protocolType=wsType;
-			}
-
-			if(protocolType.equals(Constants.PROTOCOL_TYPE_ANY)) protocolType=defaultProtocol;
-			ServiceProcessor processor=processors.get(protocolType);
-			if(processor==null) throw new ServiceException("No ServiceProcessor found for protocol '"+protocolType+"'.");
-
-			GlobalServiceConfig globConf=getConfiguration().getGlobalServiceConfig();
-			boolean doRecord=globConf.getMonitoringEnabled()||globConf.getLoggingEnabled();
-			long startTime=0;
-			long endTime=0;
-			if(doRecord) {
-				startTime=System.currentTimeMillis();
-				serviceReq=new RecordingRequestWrapper(serviceReq);
-				serviceRes=new RecordingResponseWrapper(serviceRes);
-			}
-			
-			
-			
-			if(LOG.isDebugEnabled()) LOG.debug("Process webservice request: "+serviceName+" "+processor);
-			if(pfxSessionContext!=null&&srvConf.doSynchronizeOnContext()) {
-    			synchronized(pfxSessionContext) {
-    				processor.process(serviceReq,serviceRes,serviceReg);
-    			}
-			} else {
-				processor.process(serviceReq,serviceRes,serviceReg);
-			}		    		
-			
-			 if(doRecord) {
-				 endTime=System.currentTimeMillis();
-				 RecordingRequestWrapper monitorReq=(RecordingRequestWrapper)serviceReq;
-				 RecordingResponseWrapper monitorRes=(RecordingResponseWrapper)serviceRes;
-				 String reqMsg=monitorReq.getRecordedMessage();
-				 String resMsg=monitorRes.getRecordedMessage();
-				 if(globConf.getMonitoringEnabled()) {
-					 MonitorRecord monitorRecord=new MonitorRecord();
-					 monitorRecord.setStartTime(startTime);
-					 monitorRecord.setEndTime(endTime);
-					 monitorRecord.setProtocol(protocolType);
-					 monitorRecord.setService(serviceName);
-					 monitorRecord.setRequestMessage(reqMsg);
-					 monitorRecord.setResponseMessage(resMsg);
-					 getMonitor().getMonitorHistory(req).addRecord(monitorRecord);
-				 }
-				 if(globConf.getLoggingEnabled()) {
-					 StringBuffer sb=new StringBuffer();
-					 sb.append("\nService: "+serviceName+"\n");
-					 sb.append("Protocol: "+protocolType+"\n");
-					 sb.append("Time: "+(endTime-startTime)+"\n");
-					 sb.append("Request:\n");
-					 sb.append(reqMsg==null?"":reqMsg);
-					 sb.append("\nResponse:\n");
-					 sb.append(resMsg);
-					 sb.append("\n");
-					 LOG.info(sb.toString());
-				 }
-			 }
-			
-		} finally {
-			setCurrentContext(null);
+            
+            String protocolType=srvConf.getProtocolType();
+            if(protocolType==null) protocolType=getConfiguration().getGlobalServiceConfig().getProtocolType();
+            
+            String wsType=req.getHeader(Constants.HEADER_WSTYPE);
+            if(wsType==null) req.getParameter(Constants.PARAM_WSTYPE);
+            if(wsType!=null) {
+                wsType=wsType.toUpperCase();
+                if(!protocolType.equals(Constants.PROTOCOL_TYPE_ANY)&&!wsType.equals(protocolType))
+                    throw new ServiceException("Service protocol '"+wsType+"' isn't supported.");
+                else protocolType=wsType;
+            }
+            
+            if(protocolType.equals(Constants.PROTOCOL_TYPE_ANY)) protocolType=defaultProtocol;
+            ServiceProcessor processor=processors.get(protocolType);
+            if(processor==null) throw new ServiceException("No ServiceProcessor found for protocol '"+protocolType+"'.");
+            
+            GlobalServiceConfig globConf=getConfiguration().getGlobalServiceConfig();
+            boolean doRecord=globConf.getMonitoringEnabled()||globConf.getLoggingEnabled();
+            long startTime=0;
+            long endTime=0;
+            if(doRecord) {
+                startTime=System.currentTimeMillis();
+                serviceReq=new RecordingRequestWrapper(serviceReq);
+                serviceRes=new RecordingResponseWrapper(serviceRes);
+            }
+            
+            
+            
+            if(LOG.isDebugEnabled()) LOG.debug("Process webservice request: "+serviceName+" "+processor);
+            if(pfxSessionContext!=null&&srvConf.doSynchronizeOnContext()) {
+                synchronized(pfxSessionContext) {
+                    processor.process(serviceReq,serviceRes,serviceReg);
+                }
+            } else {
+                processor.process(serviceReq,serviceRes,serviceReg);
+            }		    		
+            
+            if(doRecord) {
+                endTime=System.currentTimeMillis();
+                RecordingRequestWrapper monitorReq=(RecordingRequestWrapper)serviceReq;
+                RecordingResponseWrapper monitorRes=(RecordingResponseWrapper)serviceRes;
+                String reqMsg=monitorReq.getRecordedMessage();
+                String resMsg=monitorRes.getRecordedMessage();
+                if(globConf.getMonitoringEnabled()) {
+                    MonitorRecord monitorRecord=new MonitorRecord();
+                    monitorRecord.setStartTime(startTime);
+                    monitorRecord.setEndTime(endTime);
+                    monitorRecord.setProtocol(protocolType);
+                    monitorRecord.setService(serviceName);
+                    monitorRecord.setRequestMessage(reqMsg);
+                    monitorRecord.setResponseMessage(resMsg);
+                    getMonitor().getMonitorHistory(req).addRecord(monitorRecord);
+                }
+                if(globConf.getLoggingEnabled()) {
+                    StringBuffer sb=new StringBuffer();
+                    sb.append("\nService: "+serviceName+"\n");
+                    sb.append("Protocol: "+protocolType+"\n");
+                    sb.append("Time: "+(endTime-startTime)+"\n");
+                    sb.append("Request:\n");
+                    sb.append(reqMsg==null?"":reqMsg);
+                    sb.append("\nResponse:\n");
+                    sb.append(resMsg);
+                    sb.append("\n");
+                    LOG.info(sb.toString());
+                }
+            }
+            
+        } finally {
+            setCurrentContext(null);
             if (pfxSessionContext != null) {
                 pfxSessionContext.cleanupAfterRequest();
             }
-		}
-	}
-	
-	private static void setCurrentContext(ServiceCallContext callContext) {
-		currentContext.set(callContext);
-	}
-	
-	protected static ServiceCallContext getCurrentContext() {
-		return currentContext.get();
-	}
+        }
+    }
+    
+    private static void setCurrentContext(ServiceCallContext callContext) {
+        currentContext.set(callContext);
+    }
+    
+    protected static ServiceCallContext getCurrentContext() {
+        return currentContext.get();
+    }
 	
 	
 	

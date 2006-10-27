@@ -135,7 +135,7 @@ public class ContextXMLServer extends AbstractXMLServer {
         
         // Prepare context for current thread
         // Cleanup is performed in finally block
-        ((ContextImpl) context).prepareForRequest(servercontext);
+        ((ContextImpl) context).prepareForRequest();
         
         try {
             SPDocument spdoc;
@@ -243,16 +243,19 @@ public class ContextXMLServer extends AbstractXMLServer {
         }
 
         // FIXME: DCL is broken
-        Context context = (Context) session.getAttribute(contextname);
+        ContextImpl context = (ContextImpl) session.getAttribute(contextname);
         // Session does not have a context yet?
         if (context == null) {
             // Synchronize on session object to make sure only ONE
             // context per session is created
             synchronized (session) {
-                context = (Context) session.getAttribute(contextname);
+                context = (ContextImpl) session.getAttribute(contextname);
                 if (context == null) {
                     context = new ContextImpl(servercontext, session);
                     session.setAttribute(contextname, context);
+                } else {
+                    // update, as it may have changed
+                    context.setServerContext(servercontext);
                 }
             }
         }

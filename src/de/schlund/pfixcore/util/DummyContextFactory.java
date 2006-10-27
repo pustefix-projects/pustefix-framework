@@ -44,7 +44,7 @@ public class DummyContextFactory {
         HttpSession        session        = new DummySession();
         ServerContextImpl  servercontext  = new ServerContextImpl(config.getContextConfig(), "Dummy");
         ContextImpl        context        = new ContextImpl(servercontext, session);
-        context.prepareForRequest(servercontext);
+        context.prepareForRequest();
         return context;
     }
     

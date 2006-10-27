@@ -1,3 +1,22 @@
+2006-10-27  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixxml/DirectOutputServlet.java (DirectOutputServlet): fix naming to be in line with everything else, also fix
+	according to the stuff below.
+
+	* src/de/schlund/pfixxml/ContextXMLServer.java (ContextXMLServer::getContext): set the (possible new) servercontext into the context
+	(ContextXMLServer::getDom): fix call to prepareForRequest to not use the servercontext
+
+	* src/de/schlund/pfixcore/webservice/ServiceRuntime.java (ServiceRuntime):
+	much whitespace stuff :-(
+
+	* src/de/schlund/pfixcore/workflow/ContextImpl.java (ContextImpl::ContextImpl):
+	removed the dummy RequestContextImpl - I don't think this should
+	be needed anymore.  Everything a ContextRessource can use during
+	init is available from the ServletContextImpl in the Context instance
+	(ContextImpl::getRequestContextForCurrentThread): made private
+	(ContextImpl::setServerContext): new method
+	(ContextImpl::prepareForRequest): removed attribute, use method above.
+
 2006-10-26  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
 	* src/de/schlund/pfixcore/util/DummyContextFactory.java: 

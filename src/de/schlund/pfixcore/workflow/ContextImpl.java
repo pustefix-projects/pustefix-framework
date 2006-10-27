@@ -151,37 +151,9 @@ public class ContextImpl implements Context, AccessibilityChecker {
     public ContextImpl(ServerContextImpl servercontext, HttpSession session) throws Exception {
         this.servercontext = servercontext;
         this.sessioncontext = new SessionContextImpl(session);
-        
-        // Set a dummy request context for initialization
-        this.requestcontextstore.set(new RequestContextImpl(servercontext, this));
-        try {
-            sessioncontext.init(this);
-        } finally {
-            this.requestcontextstore.set(null);
-        }
+        sessioncontext.init(this);
     }
 
-    public RequestContextImpl getRequestContextForCurrentThread() {
-        return requestcontextstore.get();
-    }
-
-    private RequestContextImpl getRequestContextForCurrentThreadWithError() {
-        RequestContextImpl requestcontext = requestcontextstore.get();
-        if (requestcontext == null) {
-            throw new IllegalStateException("Request object is not available for current thread");
-        }
-        return requestcontext;
-    }
-    
-    private ServerContextImpl getServerContext() {
-        RequestContextImpl requestcontext = getRequestContextForCurrentThread();
-        if (requestcontext != null) {
-            return requestcontext.getServerContext();
-        } else {
-            return servercontext;
-        }
-    }
-    
     public void addCookie(Cookie cookie) {
         getRequestContextForCurrentThreadWithError().addCookie(cookie);
     }
@@ -373,10 +345,13 @@ public class ContextImpl implements Context, AccessibilityChecker {
     
     // ----------------
 
-    public void prepareForRequest(ServerContextImpl servercontext) throws Exception {
-        // Update configuration
+    public void setServerContext(ServerContextImpl servercontext) {
+        // Update current configuration
         this.servercontext = servercontext;
-        
+    }
+    
+    public void prepareForRequest() throws Exception {
+        // This allows to use OLDER servercontexts during requests
         requestcontextstore.set(new RequestContextImpl(servercontext, this));
     }
     
@@ -408,4 +383,29 @@ public class ContextImpl implements Context, AccessibilityChecker {
             return sessioncontext.toString();
         }
     }
+
+    // --------------
+    
+    private RequestContextImpl getRequestContextForCurrentThread() {
+        return requestcontextstore.get();
+    }
+
+    private RequestContextImpl getRequestContextForCurrentThreadWithError() {
+        RequestContextImpl requestcontext = requestcontextstore.get();
+        if (requestcontext == null) {
+            throw new IllegalStateException("Request object is not available for current thread");
+        }
+        return requestcontext;
+    }
+    
+    private ServerContextImpl getServerContext() {
+        RequestContextImpl requestcontext = getRequestContextForCurrentThread();
+        if (requestcontext != null) {
+            return requestcontext.getServerContext();
+        } else {
+            return servercontext;
+        }
+    }
+    
+
 }
