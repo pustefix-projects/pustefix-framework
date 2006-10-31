@@ -1,3 +1,7 @@
+2006-10-31  Martin Leidig  <mleidig@schlund.de>
+
+	* skel/build-skel.xml: let merge target "failonerror"
+
 2006-10-17  Sebastian Marsching <sebastian.marsching@1und1.de>
 
 	* build.xml: Changed version number to 0.9.2-pre to start development of next release
