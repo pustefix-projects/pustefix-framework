@@ -436,7 +436,7 @@ or delete the DOCTYPE definition -->
     <property name="merge.src" location="${dir.projects}/core/dyntxt/statusmessages.xml"/>
     <property name="merge.srcPath" location="/include_parts/part/theme[@name='default']"/>
     <property name="merge.dest" location="${dir.projects}/common/dyntxt/statusmessages-core-merged.xml"/>
-    <java classname="de.schlund.pfixcore.util.Merge" fork="true" classpathref="cp.classpath">
+    <java classname="de.schlund.pfixcore.util.Merge" fork="true" classpathref="cp.classpath" failonerror="true">
       <arg file="${merge.src}"/>
       <arg value="${merge.srcPath}"/>
       <arg file="${merge.dest}"/>
