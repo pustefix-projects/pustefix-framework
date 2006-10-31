@@ -1,3 +1,7 @@
+2006-10-31  Martin Leidig  <mleidig@schlund.de>
+
+	* skel/build-skel.xml: let merge target "failonerror"
+
 2006-10-27  Jens Lautenbacher  <jtl@schlund.de>
 
 	* src/de/schlund/pfixxml/DirectOutputServlet.java (DirectOutputServlet): fix naming to be in line with everything else, also fix
