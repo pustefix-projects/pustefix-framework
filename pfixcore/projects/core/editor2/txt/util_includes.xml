@@ -196,6 +196,7 @@
   
   <part name="uploadinclude">
     <theme name="default">
+      <!-- <pfx:editconsole/> -->
       <br/>
       <table class="editor_box" width="100%">
         <pfx:checkfield name="upload.Content">
@@ -230,29 +231,137 @@
         </ixsl:if>
         <tr>
           <td align="right" colspan="2">
-            <div id="wfxtb01" style="border:1px solid black"/>
-            <table border="0" cellpadding="0" cellspacing="0" width="100%">
-              <tbody>
-                <tr>
-                  <td width="50"><iframe frameborder="0" id="wfxline01" scrolling="no" src="about:blank" style="width:50px; height:384px; border:1px solid #000000; background-color:#ffffff; float:left"/></td>
-                  <td><iframe frameborder="0" id="wfxedit01" scrolling="yes" src="about:blank" style="width:100%; height:384px; border:1px solid #000000; background-color:#ffffff; float:right"/></td>
-                </tr>
-              </tbody>
-            </table>
-            <br/>
-            <input class="editor_submit" onclick="wfxed.submitContent('wfxta01', 'wfxsubmit01')" type="button" value="Upload Data"/>
-            <br/>
-            <div style="display:none">
-              Line: <input id="wfxed_line" size="3" type="text" value=""/>
-              Scroll: <input id="wfxed_column" size="3" type="text" value=""/>
-              Message: <input id="wfxed_msg" size="100" type="text" value=""/>
+            <div id="wfxbox">
+              <pfx:checkfield name="upload.Content">
+                <ixsl:if test="$pfx_scode/pfx:include/@part = 'pfixcore.editor.includesupload.INCLUDE_HAS_CHANGED'">
+                  <ul style="text-align:left; padding:0px; padding-bottom:1px; margin:0px;">
+                    <li style="display:inline; padding:0px; margin:0; border:0px solid black; list-style-type:none;"><span style="padding:4px 6px 2px 6px; border: 1px solid black; border-bottom: 0 none; color:#002276; background-color: #F5FAFF; font-weight:bold">Editor</span></li>
+                    <li onClick="document.getElementById('wfxbox').style.display='none';document.getElementById('comparebox').style.display='block';" style="display:inline; padding:0px; margin:0; border:0px solid black; list-style-type:none;"><span style="padding:2px 6px 1px 6px; border: 1px solid black; color:#002276; background-color: #EBF5FF; font-weight:normal; cursor:pointer;">Compare View</span></li>
+                  </ul>
+                </ixsl:if>
+              </pfx:checkfield>
+              <div id="wfxtb01" style="border:1px solid black"/>
+              <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                <tbody>
+                  <tr>
+                    <td width="50"><iframe frameborder="0" id="wfxline01" scrolling="no" src="about:blank" style="width:50px; height:384px; border:1px solid #000000; background-color:#ffffff; float:left"/></td>
+                    <td><iframe frameborder="0" id="wfxedit01" scrolling="yes" src="about:blank" style="width:100%; height:384px; border:1px solid #000000; background-color:#ffffff; float:right"/></td>
+                  </tr>
+                </tbody>
+              </table>
               <br/>
-              <textarea cols="130" id="ta_src" rows="10" style="display:none"/>
-              <textarea cols="130" id="ta_col" rows="10" style="display:none"/>
-              <textarea cols="130" id="dbg" rows="25" style="display:none"/>
+              <input class="editor_submit" onclick="wfxed.submitContent('wfxta01', 'wfxsubmit01')" type="button" value="Upload Data"/>
               <br/>
-              <pfx:xinp class="editor_textarea" id="wfxta01" name="upload.Content" type="area" wrap="off"/>
-              <pfx:xinp name="upload.Hash" type="hidden"/>
+              <div style="display:none">
+                Line: <input id="wfxed_line" size="3" type="text" value=""/>
+                Scroll: <input id="wfxed_column" size="3" type="text" value=""/>
+                Message: <input id="wfxed_msg" size="100" type="text" value=""/>
+                <br/>
+                <textarea cols="130" id="ta_src" rows="10" style="display:none"/>
+                <textarea cols="130" id="ta_col" rows="10" style="display:none"/>
+                <textarea cols="130" id="dbg" rows="25" style="display:none"/>
+                <br/>
+                <pfx:xinp class="editor_textarea" id="wfxta01" name="upload.Content" type="area" wrap="off"/>
+                <pfx:xinp name="upload.Hash" type="hidden"/>
+              </div>
+            </div>
+            <div id="comparebox" style="display:none">
+              <ul style="text-align:left; padding:0px; padding-bottom:1px; margin:0px;">
+                <li onClick="document.getElementById('comparebox').style.display='none';document.getElementById('wfxbox').style.display='block';" style="display:inline; padding:0px; margin:0; border:0px solid black; list-style-type:none;"><span style="padding:2px 6px 1px 6px; border: 1px solid black; color:#002276; background-color: #EBF5FF; font-weight:normal; cursor:pointer">Editor</span></li>
+                <li style="display:inline; padding:0px; margin:0; border:0px solid black; list-style-type:none;"><span style="padding:4px 6px 2px 6px; border: 1px solid black; border-bottom: 0 none; color:#002276; background-color: #F5FAFF; font-weight:bold">Compare View</span></li>
+              </ul>
+              <div style="border:1px solid black">
+                <table style="margin:0; padding:0; cell-spacing:0; border-collapse:collapse; width:100%">
+                  <tr>
+                    <td style="font-weight:bold; text-align:center; padding:4px 0 4px 0">
+                      Your version
+                    </td>
+                    <td style="font-weight:bold; text-align:center; padding:4px 0 4px 0">
+                      Server version
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="width:50%; padding:0; vertical-align:top;background-color:white;">
+                     <div id="pfx_editor_compare_left" style="font-family:monospace; height:400px; overflow-x:scroll; overflow-y:hidden; text-align:left; width:100%;">
+                       <table style="width:100%; margin:0; padding:0; cell-spacing:0; border-collapse:collapse; background-color:white;">
+                         <ixsl:for-each select="./currentinclude/compare/line">
+                           <tr>
+                             <td class="editor_compare_row" style="background-color:white;">
+                               <ixsl:if test="version1">
+                                 <ixsl:choose>
+                                   <ixsl:when test="@status = 'NOCHANGE'">
+                                     <ixsl:attribute name="style">background-color:#e0e0ff;</ixsl:attribute>
+                                   </ixsl:when>
+                                   <ixsl:when test="@status = 'CONFLICT'">
+                                     <ixsl:attribute name="style">background-color:#ffdddd;</ixsl:attribute>
+                                   </ixsl:when>
+                                   <ixsl:when test="@status = 'INSERTED' or @status = 'DELETED'">
+                                     <ixsl:attribute name="style">background-color:#ffffdd;</ixsl:attribute>
+                                   </ixsl:when>
+                                 </ixsl:choose>
+                               </ixsl:if>
+                               <ixsl:choose>
+                                 <ixsl:when test="version1/text()">
+                                   <ixsl:value-of select="translate(version1/text(), ' ', '&#160;')"/>
+                                 </ixsl:when>
+                                 <ixsl:otherwise>&#160;</ixsl:otherwise>
+                               </ixsl:choose>
+                             </td>
+                           </tr>
+                         </ixsl:for-each>
+                       </table>
+                     </div>
+                    </td>
+                    <td style="width:50%; padding:0; vertical-align:top; background-color:white;">
+                     <div style="height:400px; overflow:scroll; text-align:left; width:100%; border-left:1px solid black;" onScroll="document.getElementById('pfx_editor_compare_left').scrollTop = this.scrollTop;">
+                       <table style="width:100%; margin:0; padding:0; cell-spacing:0; border-collapse:collapse; background-color:white;">
+                         <ixsl:for-each select="./currentinclude/compare/line">
+                           <tr>
+                             <td class="editor_compare_row" style="background-color:white;">
+                               <ixsl:if test="version2">
+                                 <ixsl:choose>
+                                   <ixsl:when test="@status = 'NOCHANGE'">
+                                     <ixsl:attribute name="style">background-color:#e0e0ff;</ixsl:attribute>
+                                   </ixsl:when>
+                                   <ixsl:when test="@status = 'CONFLICT'">
+                                     <ixsl:attribute name="style">background-color:#ffdddd;</ixsl:attribute>
+                                   </ixsl:when>
+                                   <ixsl:when test="@status = 'INSERTED' or @status = 'DELETED'">
+                                     <ixsl:attribute name="style">background-color:#ffffdd;</ixsl:attribute>
+                                   </ixsl:when>
+                                 </ixsl:choose>
+                               </ixsl:if>
+                               <ixsl:choose>
+                                 <ixsl:when test="version2/text()">
+                                   <ixsl:value-of select="translate(version2/text(), ' ', '&#160;')"/>
+                                 </ixsl:when>
+                                 <ixsl:otherwise>&#160;</ixsl:otherwise>
+                               </ixsl:choose>
+                             </td>
+                           </tr>
+                         </ixsl:for-each>
+                       </table>
+                     </div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="text-align:center; padding:4px 0 4px 0;">
+                      <pfx:xinp type="hidden" name="upload.StoredContent"/>
+                      <pfx:xinp type="submit" value="Save this version, skipping changes made on server" class="editor_submit">
+                        <pfx:command name="SELWRP">upload</pfx:command> 
+                        <pfx:argument name="upload.DoOverwriteWithStoredContent">1</pfx:argument>
+                        <pfx:argument name="upload.DoUpload">1</pfx:argument>
+                      </pfx:xinp>
+                    </td>
+                    <td style="text-align:center; padding:4px 0 4px 0;">
+                      <pfx:xinp type="submit" value="Keep server version, skipping my changes" class="editor_submit">
+                        <pfx:command name="SELWRP">upload</pfx:command>
+                        <pfx:argument name="upload.DoUpload">0</pfx:argument>
+                      </pfx:xinp>
+                    </td>
+                  </tr>
+                </table>
+              </div>
             </div>
           </td>
         </tr>
