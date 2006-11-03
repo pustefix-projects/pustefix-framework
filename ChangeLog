@@ -1,3 +1,9 @@
+2006-11-03  Sebastian Marsching  <sebastian.marsching@1und1.de>
+
+	* projects/core/build/iwrapper.xsl: Fixing IWrapper generation: Now the
+	"occurrence" (with correct spelling) attribute is used by the stylesheet. The
+	old "occurence" and "occurance" attributes are still supported but deperecated.
+
 2006-10-31  Martin Leidig  <mleidig@schlund.de>
 
 	* skel/build-skel.xml: let merge target "failonerror"
