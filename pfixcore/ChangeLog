@@ -1,5 +1,8 @@
 2006-11-03  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
+	* projects/core/schema/properties200401.xsd: 
+	Added "properties" tag to schema for direct output server.
+
 	* src/de/schlund/pfixcore/editor2/core/spring/internal/CommonIncludePartThemeVariantImpl.java: 
 	* src/de/schlund/pfixcore/editor2/frontend/handlers/CommonUploadIncludePartHandler.java: 
 	* src/de/schlund/pfixcore/editor2/frontend/resources/CommonIncludesResourceImpl.java: 
