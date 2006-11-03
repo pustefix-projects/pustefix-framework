@@ -3,7 +3,9 @@ import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-import org.apache.log4j.Category;
+import org.apache.log4j.Logger;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 /*
  * Created on 05.07.2004
@@ -15,7 +17,7 @@ import org.apache.log4j.Category;
  */
 public class MD5Utils {
     
-    private static Category logger = Category.getInstance(MD5Utils.class);
+    private static Logger logger = Logger.getLogger(MD5Utils.class);
  
     
     public static final String CHARSET_UTF8 = "UTF-8";
@@ -60,4 +62,80 @@ public class MD5Utils {
         return result;
     }
     
+    public static String hex_md5(Node node) {
+        String val = serializeNode(node);
+        return hex_md5(val, "UTF-8");
+    }
+    
+    private static String serializeNode(Node node) {
+        StringBuffer buffer = new StringBuffer();
+        String nodeType = null;
+        Short nodeTypeNum = node.getNodeType();
+        switch (nodeTypeNum) {
+        case Node.ATTRIBUTE_NODE:
+            nodeType = "ATTRIBUTE";
+            break;
+        case Node.CDATA_SECTION_NODE:
+            nodeType = "CDATA";
+            break;
+        case Node.COMMENT_NODE:  
+            nodeType = "COMMENT";
+            break;
+        case Node.DOCUMENT_FRAGMENT_NODE:
+            nodeType = "FRAGMENT";
+            break;
+        case Node.DOCUMENT_NODE:
+            nodeType = "DOCUMENT";
+            break;
+        case Node.DOCUMENT_TYPE_NODE:
+            nodeType = "DOCUMENT_TYPE";
+            break;
+        case Node.ELEMENT_NODE:
+            nodeType = "ELEMENT";
+            break;
+        case Node.ENTITY_NODE:
+            nodeType = "ENTITY";
+            break;
+        case Node.ENTITY_REFERENCE_NODE:
+            nodeType = "ENTITY_REFERENCE";
+            break;
+        case Node.NOTATION_NODE:
+            nodeType = "NOTATION";
+            break;
+        case Node.PROCESSING_INSTRUCTION_NODE:
+            nodeType = "PROCESSING_INSTRUCTION";
+            break;
+        case Node.TEXT_NODE:
+            nodeType = "TEXT";
+            break;
+        default:
+            throw new RuntimeException("Unexpected node type!");
+        }
+        buffer.append(nodeType);
+        buffer.append('[');
+        String nodeNamespace = node.getNamespaceURI();
+        if (nodeNamespace != null) {
+            buffer.append("NAMESPACE[\"");
+            buffer.append(nodeNamespace);
+            buffer.append("\"]");
+        }
+        String nodeName = node.getNodeName();
+        if (nodeName != null) {
+            buffer.append("NAME[\"");
+            buffer.append(nodeName);
+            buffer.append("\"]");
+        }
+        String nodeValue = node.getNodeValue();
+        if (nodeValue != null) {
+            buffer.append("VALUE[\"");
+            buffer.append(nodeValue);
+            buffer.append("\"]");
+        }
+        NodeList children = node.getChildNodes();
+        for (int i = 0; i < children.getLength(); i++) {
+            buffer.append(serializeNode(children.item(i)));
+        }
+        buffer.append(']');
+        return buffer.toString();
+    }
 }

@@ -49,6 +49,7 @@ import de.schlund.pfixcore.editor2.frontend.util.ContextStore;
 import de.schlund.pfixcore.editor2.frontend.util.DiffUtil;
 import de.schlund.pfixcore.editor2.frontend.util.EditorResourceLocator;
 import de.schlund.pfixcore.editor2.frontend.util.SpringBeanLocator;
+import de.schlund.pfixcore.editor2.frontend.util.DiffUtil.ComparedLine;
 import de.schlund.pfixcore.workflow.Context;
 import de.schlund.pfixxml.ResultDocument;
 import de.schlund.pfixxml.util.Xml;
@@ -65,6 +66,8 @@ public abstract class CommonIncludesResourceImpl implements
 
     private Set<String> openFiles = Collections
             .synchronizedSet(new HashSet<String>());
+
+    private ComparedLine[] lastDiff;
 
     protected abstract boolean securityMayCreateIncludePartThemeVariant(
             IncludePart includePart, Theme theme);
@@ -213,6 +216,22 @@ public abstract class CommonIncludesResourceImpl implements
                         "content");
                 contentNode.appendChild(contentNode.getOwnerDocument()
                         .importNode(content, true));
+            }
+            
+            // Render compare view, if available
+            if (this.lastDiff != null) {
+                Element compareNode = resdoc.createSubNode(currentInclude, "compare");
+                for (int i = 0; i < this.lastDiff.length; i++) {
+                    ComparedLine line = this.lastDiff[i];
+                    Element lineNode = resdoc.createSubNode(compareNode, "line");
+                    lineNode.setAttribute("status", line.getStatus().toString());
+                    if (line.getVersion1() != null) {
+                        ResultDocument.addTextChild(lineNode, "version1", line.getVersion1());
+                    }
+                    if (line.getVersion2() != null) {
+                        ResultDocument.addTextChild(lineNode, "version2", line.getVersion2());
+                    }
+                }
             }
 
             // Render other users editing this include part at the same time
@@ -385,11 +404,14 @@ public abstract class CommonIncludesResourceImpl implements
 
     public void setContent(String content, String hash) throws SAXException,
             EditorException {
+        this.lastDiff = null;
+        
         // Check whether hashcode has changed
         if (!this.selectedIncludePart.getMD5().equals(hash)) {
             String newHash = this.getMD5();
             String newContent = this.getContent();
             String merged = DiffUtil.merge(content, newContent);
+            this.lastDiff = DiffUtil.compare(content, newContent);
             throw new EditorIncludeHasChangedException(merged, newHash);
         }
 
