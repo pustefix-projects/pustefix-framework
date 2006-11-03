@@ -51,15 +51,18 @@ public abstract class CommonUploadIncludePartHandler implements IHandler {
         
         if (input.getDoUpload() != null && input.getDoUpload().booleanValue()
                 && input.getContent() != null && input.getHash() != null) {
-            // System.out.println("In HSD: HASH: " + input.getHash());
+            String content = input.getContent();
             try {
                 String path = this.getResource(context).getSelectedIncludePart().getIncludePart().getIncludeFile().getPath();
                 if (path.lastIndexOf('/') == -1 || path.lastIndexOf('/') == 0) {
                     input.addSCodeContent(StatusCodeLib.PFIXCORE_EDITOR_INCLUDESUPLOAD_FILE_IS_IN_ROOT);
                     return;
                 }
-                this.getResource(context).setContent(input.getContent(),
-                        input.getHash());
+                if (input.getDoOverwriteWithStoredContent() != null && input.getDoOverwriteWithStoredContent().booleanValue() && input.getStoredContent() != null && input.getStoredContent().length() != 0) {
+                    content = input.getStoredContent();
+                    input.setContent(content);
+                }
+                this.getResource(context).setContent(content, input.getHash());
                 input.setHash(this.getResource(context).getMD5());
             } catch (SAXException e) {
                 Logger.getLogger(this.getClass()).warn(e);
@@ -67,6 +70,7 @@ public abstract class CommonUploadIncludePartHandler implements IHandler {
                         .addSCodeContent(StatusCodeLib.PFIXCORE_EDITOR_INCLUDESUPLOAD_PARSE_ERR);
             } catch (EditorIncludeHasChangedException e) {
                 input.setHash(e.getNewHash());
+                input.setStoredContent(content);
                 input.setContent(e.getMerged());
                 input
                         .addSCodeContent(StatusCodeLib.PFIXCORE_EDITOR_INCLUDESUPLOAD_INCLUDE_HAS_CHANGED);

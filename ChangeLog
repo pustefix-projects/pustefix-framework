@@ -1,5 +1,15 @@
 2006-11-03  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
+	* src/de/schlund/pfixcore/editor2/core/spring/internal/CommonIncludePartThemeVariantImpl.java: 
+	* src/de/schlund/pfixcore/editor2/frontend/handlers/CommonUploadIncludePartHandler.java: 
+	* src/de/schlund/pfixcore/editor2/frontend/resources/CommonIncludesResourceImpl.java: 
+	* src/de/schlund/pfixcore/editor2/frontend/util/DiffUtil.java: 
+	* src/de/schlund/pfixcore/editor2/frontend/wrappers/CommonUploadIncludePart.iwrp: 
+	* src/de/schlund/pfixxml/util/MD5Utils.java: 
+	* projects/core/editor2/txt/styles.xml: 
+	* projects/core/editor2/txt/util_includes.xml: 
+	Added a diff-view to editor.
+
 	* projects/core/build/iwrapper.xsl: Fixing IWrapper generation: Now the
 	"occurrence" (with correct spelling) attribute is used by the stylesheet. The
 	old "occurence" and "occurance" attributes are still supported but deperecated.

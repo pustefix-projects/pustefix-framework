@@ -338,6 +338,11 @@ div.editor_includes_sidebar_buttons span {
   color: #002276;
   cursor: pointer;
 }
+
+.editor_compare_row {
+  padding: 2px 6px 2px 6px;
+  font-family:monospace;
+}
        
 div.topbar{
   position:absolute;
