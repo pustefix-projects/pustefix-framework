@@ -24,10 +24,100 @@
 
 package de.schlund.pfixcore.editor2.frontend.util;
 
+import java.util.ArrayList;
 import java.util.Hashtable;
 
-public class DiffUtil {
+import de.schlund.pfixcore.editor2.frontend.util.DiffUtil.ComparedLine.CompareStatus;
 
+public class DiffUtil {
+    public static class ComparedLine {
+        private String version1 = null;
+        private String version2 = null;
+        private CompareStatus status = null;
+        
+        public ComparedLine(String v1, String v2, CompareStatus status) {
+            this.version1 = v1;
+            this.version2 = v2;
+            this.status = status;
+        }
+        
+        public String getVersion1() {
+            return version1;
+        }
+        
+        public String getVersion2() {
+            return version2;
+        }
+        
+        public CompareStatus getStatus() {
+            return status;
+        }
+        
+        public static enum CompareStatus {
+            NOCHANGE, DELETED, INSERTED, CONFLICT
+        }
+    }
+    /**
+     * This method compares two documents line by line. If a line is only present
+     * in one version, the result for the other version is <code>null</code>.
+     * 
+     * @param text1
+     *            The first version of the text
+     * @param text2
+     *            The second version of the text
+     * @return An array of compared lines
+     */
+    public static ComparedLine[] compare(String text1, String text2) {
+        String[] lines0 = text1.split("(\r\n)|(\n)|(\r)");
+        String[] lines1 = text2.split("(\r\n)|(\n)|(\r)");
+        
+        Diff diff = new Diff(lines0, lines1);
+        Diff.change hunk = diff.diff_2(false);
+        
+        int lastLine = 0;
+        ArrayList<ComparedLine> out = new ArrayList<ComparedLine>();
+        
+        while (hunk != null) {
+            for (int i = lastLine; i < hunk.line0; i++) {
+                out.add(new ComparedLine(lines0[i], lines0[i], CompareStatus.NOCHANGE));
+            }
+            if (hunk.inserted > 0 && hunk.deleted > 0) {
+                // Conflict
+                int i = 0, j = 0;
+                for (i = hunk.line0, j = hunk.line1; i < (hunk.line0 + hunk.deleted) && j < (hunk.line1 + hunk.inserted); i++, j++) {
+                    out.add(new ComparedLine(lines0[i], lines1[j], CompareStatus.CONFLICT));
+                }
+                // Add lines if left version is longer
+                for (i = i; i < (hunk.line0 + hunk.deleted); i++) {
+                    out.add(new ComparedLine(lines0[i], null, CompareStatus.CONFLICT));
+                }
+                // Add lines if right version is longer
+                for (j = j; j < (hunk.line1 + hunk.inserted); j++) {
+                    out.add(new ComparedLine(null, lines1[j], CompareStatus.CONFLICT));
+                }
+            } else if (hunk.inserted > 0) {
+                // Insert
+                for (int i = hunk.line1; i< (hunk.line1 + hunk.inserted); i++) {
+                    out.add(new ComparedLine(null, lines1[i], CompareStatus.INSERTED));
+                }
+            } else if (hunk.deleted > 0) {
+                // Delete
+                for (int i = hunk.line0; i < (hunk.line0 + hunk.deleted); i++) {
+                    out.add(new ComparedLine(lines0[i], null, CompareStatus.DELETED));
+                }
+            }
+            lastLine = hunk.line0 + hunk.deleted;
+            
+            hunk = hunk.link;
+        }
+        
+        for (int i = lastLine; i < lines0.length; i++) {
+            out.add(new ComparedLine(lines0[i], lines0[i], CompareStatus.NOCHANGE));
+        }
+        
+        return out.toArray(new ComparedLine[out.size()]);
+    }
+    
     /**
      * This method merges to documents line by line. For each difference found,
      * a hint is included in the output, thus allowing the user to decide which
@@ -50,13 +140,7 @@ public class DiffUtil {
         StringBuffer output = new StringBuffer();
         
         while (hunk != null) {
-            int nextLine;
-            if (hunk.line0 > hunk.line1) {
-                nextLine = hunk.line1;
-            } else {
-                nextLine = hunk.line0;
-            }
-            for (int i = lastLine; i < nextLine; i++) {
+            for (int i = lastLine; i < hunk.line0; i++) {
                 output.append(lines0[i] + "\n");
             }
             if (hunk.inserted > 0 && hunk.deleted > 0) {

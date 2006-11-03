@@ -364,7 +364,7 @@ public abstract class CommonIncludePartThemeVariantImpl extends
         if (xml == null) {
             return "0";
         }
-        String code = Xml.serialize(xml, true, true);
-        return MD5Utils.hex_md5(code, "UTF-8");
+        String md5 = MD5Utils.hex_md5(xml);
+        return md5;
     }
 }
