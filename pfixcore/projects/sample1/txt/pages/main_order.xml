@@ -201,7 +201,7 @@
               <pfx:xinp name="trouser.Feature" type="check" value="2"/>Windproof<br/>
             </td>
           </tr>
-          <errormsg name="trouser.Features"/>
+          <errormsg name="trouser.Feature"/>
         </table>
       </theme>
   </part>

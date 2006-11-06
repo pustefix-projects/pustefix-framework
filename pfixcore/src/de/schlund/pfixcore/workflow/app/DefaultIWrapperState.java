@@ -80,7 +80,7 @@ public class DefaultIWrapperState extends StateImpl {
         CAT.debug("[[[[[ " + context.getCurrentPageRequest().getName() + " ]]]]]"); 
 
         PerfEvent pe = new PerfEvent(PerfEventType.PAGE_INITIWRAPPERS, context.getCurrentPageRequest().toString());
-       
+        
         pe.start();
         container.initIWrappers(context, preq, resdoc);
         pe.save();
@@ -95,7 +95,6 @@ public class DefaultIWrapperState extends StateImpl {
          
             if (container.errorHappened()) {
                 CAT.debug("    => Can't continue, as errors happened during load/work.");
-                container.addErrorCodes();
                 rfinal.onWorkError(container);
                 context.prohibitContinue();
             } else {
@@ -150,6 +149,7 @@ public class DefaultIWrapperState extends StateImpl {
         // See the implementation of Context.stateMustSupplyFullDocument() for details.
         if (context.stateMustSupplyFullDocument()) {
             container.addStringValues();
+            container.addErrorCodes();
             container.addIWrapperStatus();
             renderContextResources(context, resdoc);
             addResponseHeadersAndType(context, resdoc);
