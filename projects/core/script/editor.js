@@ -297,7 +297,7 @@ function pfx_editor_XMLHttpRequest() {
   var self = this;
   
   if (this._req) {
-    this._req.onreadystatechange = function() {
+    this._onreadystatechange = function() {
       if (self._req.readyState == 4) {
         if (self._req.status == 200 && self._req.responseXML) {
           self._callback();
@@ -311,8 +311,9 @@ function pfx_editor_XMLHttpRequest() {
 }
 
 pfx_editor_XMLHttpRequest.prototype._sendRequest = function(action, params) {
-  this._req.open("GET", "/xml/edit/ws_" + pfx_editor_pagename + ";" + pfx_editor_sessid + "?__action=" + action + "&" + params);
-  this._req.send("");
+  this._req.open("GET", "/xml/edit/ws_" + pfx_editor_pagename + ";" + pfx_editor_sessid + "?__action=" + action + "&" + params, true);
+  this._req.onreadystatechange = this._onreadystatechange;
+  this._req.send(null);
   pfx_editor_actionCounter.increase();
 }
 
