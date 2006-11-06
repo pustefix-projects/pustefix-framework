@@ -13,6 +13,7 @@
   <xsl:param name="__target_gen"/>
   
   <xsl:param name="stylesheets_to_include"/>
+  <xsl:param name="exclude_result_prefixes"/>
 
   <xsl:template match="cus:custom_xsl">
     <xsl:call-template name="gen_xsl_import">
@@ -52,6 +53,67 @@
 
   <xsl:template match="/">
     <xsl:apply-templates/>
+  </xsl:template>
+
+  <xsl:template match="/xsl:stylesheet/xsl:template[@match='/']/ixsl:stylesheet">
+    <xsl:copy>
+      <xsl:copy-of select="./@*"/>
+      <xsl:attribute name="exclude-result-prefixes">
+        <xsl:value-of select="./@exclude-result-prefixes"/>
+        <xsl:if test="normalize-space($exclude_result_prefixes) != ''">
+          <xsl:text> </xsl:text>
+          <xsl:call-template name="gen_namespace_prefixes">
+            <xsl:with-param name="list"><xsl:value-of select="normalize-space($exclude_result_prefixes)"/></xsl:with-param>
+          </xsl:call-template>
+        </xsl:if>
+      </xsl:attribute>
+      <xsl:if test="normalize-space($exclude_result_prefixes) != ''">
+        <xsl:call-template name="gen_dummy_attributes">
+          <xsl:with-param name="list"><xsl:value-of select="normalize-space($exclude_result_prefixes)"/></xsl:with-param>
+        </xsl:call-template>
+      </xsl:if>
+      <xsl:apply-templates/>
+    </xsl:copy>
+  </xsl:template>
+
+
+  <xsl:template name="gen_dummy_attributes">
+    <xsl:param name="list"/>
+    <xsl:variable name="first">
+      <xsl:value-of select="normalize-space(substring-before(concat($list, ' '), ' '))"/>
+    </xsl:variable>
+    <xsl:variable name="rest">
+      <xsl:value-of select="normalize-space(substring-after($list, ' '))"/>
+    </xsl:variable>
+    <xsl:variable name="prefix"><xsl:value-of select="substring-before($first, ':')"/></xsl:variable>
+    <xsl:variable name="namespace"><xsl:value-of select="substring-after($first, ':')"/></xsl:variable>
+    <xsl:attribute name="{$prefix}:dummyattribute" namespace="{$namespace}"></xsl:attribute>
+    <xsl:if test="$rest != ''">
+      <xsl:call-template name="gen_dummy_attributes">
+        <xsl:with-param name="list">
+          <xsl:value-of select="$rest"/>
+        </xsl:with-param>
+      </xsl:call-template>
+    </xsl:if>
+  </xsl:template>
+  
+  <xsl:template name="gen_namespace_prefixes">
+    <xsl:param name="list"/>
+    <xsl:variable name="first">
+      <xsl:value-of select="normalize-space(substring-before(concat($list, ' '), ' '))"/>
+    </xsl:variable>
+    <xsl:variable name="rest">
+      <xsl:value-of select="normalize-space(substring-after($list, ' '))"/>
+    </xsl:variable>
+    <xsl:variable name="prefix"><xsl:value-of select="substring-before($first, ':')"/></xsl:variable>
+    <xsl:value-of select="$prefix"/><xsl:text> </xsl:text>
+    <xsl:if test="$rest != ''">
+      <xsl:call-template name="gen_namespace_prefixes">
+        <xsl:with-param name="list">
+          <xsl:value-of select="$rest"/>
+        </xsl:with-param>
+      </xsl:call-template>
+    </xsl:if>
   </xsl:template>
 
   <xsl:template match="cus:navigation">
