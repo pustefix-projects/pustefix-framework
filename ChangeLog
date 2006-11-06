@@ -1,5 +1,8 @@
 2006-11-06  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
+	* projects/core/xsl/customizemaster.xsl: 
+	Adding support for extra prefix excludes in result XML tree.
+	
 	* projects/core/script/editor.js: Fixing javascript problem that caused editor
 	webservice code to fail when Mozilla's FireBug extension was used to debug
 	XMLHttpRequests.
