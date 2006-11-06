@@ -1,3 +1,14 @@
+2006-11-06  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixcore/workflow/app/IWrapperSimpleContainer.java (IWrapperSimpleContainer::errorHappened): 
+	typo
+	(IWrapperSimpleContainer::addErrorCodes): don't require loading when calling this method, typo.
+
+	* src/de/schlund/pfixcore/workflow/app/DefaultIWrapperState.java (DefaultIWrapperState::getDocument): 
+	now call container.addErrorCodes() also for the directTrigger case.
+
+	* projects/sample1/txt/pages/main_order.xml: Typo
+
 2006-11-06  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
 	* projects/core/xsl/customizemaster.xsl: 

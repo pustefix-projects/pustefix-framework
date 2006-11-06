@@ -152,7 +152,7 @@ public class IWrapperSimpleContainer implements IWrapperContainer, Reloader {
     public boolean errorHappened() throws Exception {
         if (wrappers.isEmpty()) return false; // border case
 
-        if (!is_loaded) throw new XMLException("You first need to have called handleSubmittedData() here!");
+        if (!is_loaded) throw new XMLException("You must first call handleSubmittedData() here!");
         if (!is_splitted) splitIWrappers();
         IWrapper[] cwrappers = selectedwrappers.getIWrappers();
         for (int i = 0; i < cwrappers.length; i++) {
@@ -172,7 +172,8 @@ public class IWrapperSimpleContainer implements IWrapperContainer, Reloader {
      * @see de.schlund.pfixcore.workflow.app.IWrapperContainer#addErrorCodes()
      */
     public void addErrorCodes() throws Exception {
-        if (!is_loaded) throw new XMLException("You first need to have called handleSubmittedData() here!");
+        // COMMENT: is it OK to NOT enforce loading here? Needed to be able to set errors in retrieveCurrentStatus, too.
+        // if (!is_loaded) throw new XMLException("You must first call handleSubmittedData() here!");
         if (!is_splitted) splitIWrappers();
         IWrapper[] cwrappers = selectedwrappers.getIWrappers();
         for (int i = 0; i < cwrappers.length; i++) {
