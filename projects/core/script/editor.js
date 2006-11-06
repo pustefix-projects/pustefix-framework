@@ -297,7 +297,7 @@ function pfx_editor_XMLHttpRequest() {
   var self = this;
   
   if (this._req) {
-    this._onreadystatechange = function() {
+    this._req.onreadystatechange = function() {
       if (self._req.readyState == 4) {
         if (self._req.status == 200 && self._req.responseXML) {
           self._callback();
@@ -312,8 +312,7 @@ function pfx_editor_XMLHttpRequest() {
 
 pfx_editor_XMLHttpRequest.prototype._sendRequest = function(action, params) {
   this._req.open("GET", "/xml/edit/ws_" + pfx_editor_pagename + ";" + pfx_editor_sessid + "?__action=" + action + "&" + params, true);
-  this._req.onreadystatechange = this._onreadystatechange;
-  this._req.send(null);
+  this._req.send("");
   pfx_editor_actionCounter.increase();
 }
 
