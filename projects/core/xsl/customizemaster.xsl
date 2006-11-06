@@ -63,13 +63,13 @@
         <xsl:if test="normalize-space($exclude_result_prefixes) != ''">
           <xsl:text> </xsl:text>
           <xsl:call-template name="gen_namespace_prefixes">
-            <xsl:with-param name="list"><xsl:value-of select="$exclude_result_prefixes"/></xsl:with-param>
+            <xsl:with-param name="list"><xsl:value-of select="normalize-space($exclude_result_prefixes)"/></xsl:with-param>
           </xsl:call-template>
         </xsl:if>
       </xsl:attribute>
       <xsl:if test="normalize-space($exclude_result_prefixes) != ''">
         <xsl:call-template name="gen_dummy_attributes">
-          <xsl:with-param name="list"><xsl:value-of select="$exclude_result_prefixes"/></xsl:with-param>
+          <xsl:with-param name="list"><xsl:value-of select="normalize-space($exclude_result_prefixes)"/></xsl:with-param>
         </xsl:call-template>
       </xsl:if>
       <xsl:apply-templates/>
