@@ -11,6 +11,7 @@ package de.schlund.pfixcore.generator;
  */
 public interface IWrapperParamDefinition {
     String                   getName();
+    String                   getType();
     String                   getOccurance();
     String                   getFrequency();
     IWrapperParamCaster      getCaster();

@@ -1,3 +1,20 @@
+2006-11-07  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixcore/generator/IWrapperParamDefinition.java (IWrapperParamDefinition): new method getType()
+	* src/de/schlund/pfixcore/workflow/app/IWrapperSimpleContainer.java (IWrapperSimpleContainer::addIWrapperStatus):
+	use this method
+
+	* src/de/schlund/pfixcore/generator/IWrapperParam.java (IWrapperParam::IWrapperParam): 
+	* src/de/schlund/pfixcore/generator/IWrapperIndexedParam.java (IWrapperIndexedParam::IWrapperIndexedParam): 
+	add a type parameter to the constructor, store it and implement getType().
+
+	* projects/core/build/iwrapper.xsl: changed to use the new constructor.
+
+2006-11-06  Sebastian Marsching  <sebastian.marsching@1und1.de>
+
+	* projects/core/xsl/customizemaster.xsl: 
+	Adding support for extra prefix excludes in result XML tree.
+
 2006-11-06  Jens Lautenbacher  <jtl@schlund.de>
 
 	* src/de/schlund/pfixcore/workflow/app/IWrapperSimpleContainer.java (IWrapperSimpleContainer::errorHappened): 
