@@ -343,6 +343,7 @@ public class IWrapperSimpleContainer implements IWrapperContainer, Reloader {
                         
                         Element parelem = resdoc.createSubNode(wrpelem, "param");
                         parelem.setAttribute("name", tmpdef.getName());
+                        parelem.setAttribute("type", tmpdef.getType());
                         parelem.setAttribute("occurance", tmpdef.getOccurance());
                         parelem.setAttribute("frequency", tmpdef.getFrequency());
                         // FIXME: Use more information

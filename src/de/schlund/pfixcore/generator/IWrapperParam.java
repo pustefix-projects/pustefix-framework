@@ -40,6 +40,7 @@ public class IWrapperParam implements IWrapperParamCheck, IWrapperParamDefinitio
     private static final String TYPE_MULTIPLE  = "multiple";
     private static final String TYPE_SINGLE    = "single";
     private String              name;
+    private String              type;
     private boolean             optional;
     private boolean             multiple;
     private String[]            stringval      = null;
@@ -53,7 +54,8 @@ public class IWrapperParam implements IWrapperParamCheck, IWrapperParamDefinitio
     private StatusCodeInfo      missing        = new StatusCodeInfo(StatusCodeLib.PFIXCORE_GENERATOR_MISSING_PARAM, null, null);  
     private boolean             inrequest      = false;
     
-    public IWrapperParam(String name, boolean multiple, boolean optional, RequestParam[] defaultval) {
+    public IWrapperParam(String name, boolean multiple, boolean optional, RequestParam[] defaultval, String type) {
+        this.type       = type;
         this.name       = name;
         this.optional   = optional;
         this.multiple   = multiple;
@@ -118,6 +120,8 @@ public class IWrapperParam implements IWrapperParamCheck, IWrapperParamDefinitio
         scodeinfos.add(scinfo);
     }
     
+    public String getType() { return type; }
+
     public String getName() { return name; }
     
     public Object getValue() {
