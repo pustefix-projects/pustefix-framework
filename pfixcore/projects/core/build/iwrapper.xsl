@@ -89,6 +89,7 @@ public <xsl:if test="not(/iwrp:interface/iwrp:ihandler) and not(@extends)">abstr
         @SuppressWarnings("unused") 
         IWrapperParamPostCheck post;
     <xsl:for-each select="/iwrp:interface/iwrp:param">
+      <xsl:variable name="ptype" select="@type"/>
       <xsl:variable name="freqparam">
         <xsl:choose>
           <xsl:when test="@frequency = 'multiple'">true</xsl:when>
@@ -110,7 +111,7 @@ public <xsl:if test="not(/iwrp:interface/iwrp:ihandler) and not(@extends)">abstr
       <xsl:choose>
         <xsl:when test="$occurrence = 'indexed'">
         // <xsl:value-of select="$pname"/>
-        pindx  = new IWrapperIndexedParam("<xsl:value-of select="$pname"/>", <xsl:value-of select="$freqparam"/>);
+        pindx  = new IWrapperIndexedParam("<xsl:value-of select="$pname"/>", <xsl:value-of select="$freqparam"/>, "<xsl:value-of select="$ptype"/>");
         idxprms.put("<xsl:value-of select="$pname"/>", pindx);
           <xsl:if test="./iwrp:caster">
             <xsl:call-template name="fmt_caster">
@@ -147,7 +148,7 @@ public <xsl:if test="not(/iwrp:interface/iwrp:ihandler) and not(@extends)">abstr
               <xsl:text>}</xsl:text>
             </xsl:when>
             <xsl:otherwise>null</xsl:otherwise>
-          </xsl:choose>);
+          </xsl:choose>, "<xsl:value-of select="$ptype"/>");
           <xsl:if test="@missingscode and $occurrence = 'false'">
         pinfo.setCustomSCode("<xsl:value-of select="@missingscode"/>");
           </xsl:if>
