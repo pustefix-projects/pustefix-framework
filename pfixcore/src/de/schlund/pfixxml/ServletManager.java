@@ -21,7 +21,6 @@ package de.schlund.pfixxml;
 
 import de.schlund.pfixxml.config.ServletManagerConfig;
 import de.schlund.pfixxml.config.XMLPropertiesUtil;
-import de.schlund.pfixxml.exceptionhandler.ExceptionHandler;
 import de.schlund.pfixxml.exceptionprocessor.ExceptionConfig;
 import de.schlund.pfixxml.exceptionprocessor.ExceptionProcessor;
 import de.schlund.pfixxml.loader.AppLoader;
@@ -96,7 +95,6 @@ public abstract class ServletManager extends HttpServlet {
     private SessionAdmin     sessionadmin                 = SessionAdmin.getInstance();
     private Category         LOGGER_VISIT                 = Category.getInstance("LOGGER_VISIT");
     private Category         CAT                          = Category.getInstance(ServletManager.class);
-    private ExceptionHandler xhandler                     = ExceptionHandler.getInstance();
     private Map              exceptionConfigs             = new Hashtable();
     private long             common_mtime                 = 0;
     private long             servlet_mtime                = 0;
@@ -877,12 +875,7 @@ public abstract class ServletManager extends HttpServlet {
                                        getServletConfig().getServletContext(),
                                        req, res, this.getServletManagerConfig().getProperties());
                 
-            } else {
-                // This is the default case when no
-                // exceptionprocessors are defined.
-                xhandler.handle(e, preq, this.getServletManagerConfig().getProperties());
-            }
-            throw new ServletException("callProcess failed", e);
+            } 
         }
     }
     
