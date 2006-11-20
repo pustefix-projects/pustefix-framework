@@ -1,3 +1,17 @@
+2006-11-20  Sebastian Marsching  <sebastian.marsching@1und1.de>
+
+	* projects/core/xsl/functions.xsl: 
+	* projects/core/xsl/master.xsl: 
+	Introduced pfx:isVisible() and pfx:isVisited() runtime functions to
+	be able to check page status from application XSL code.
+	
+	* projects/core/xsl/customizemaster.xsl: 
+	Changed "exclude-result-prefixes" mechanism to use namespaces from servletconf/projects.xml
+	
+	* src/de/schlund/pfixxml/AbstractXMLServer.java: 
+	* projects/core/xsl/master.xsl: 
+	Fixed problem with "__navitree" XSL paramter.
+
 2006-11-07  Jens Lautenbacher  <jtl@schlund.de>
 
 	* src/de/schlund/pfixcore/generator/IWrapperParamDefinition.java (IWrapperParamDefinition): new method getType()
