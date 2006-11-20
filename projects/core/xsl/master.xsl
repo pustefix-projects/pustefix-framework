@@ -97,13 +97,15 @@
                      xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
                      xmlns:cus="http://www.schlund.de/pustefix/customize"
                      xmlns:pfx="http://www.schlund.de/pustefix/core"
+                     xmlns:func="http://exslt.org/functions"
                      xmlns:url="xalan://java.net.URLEncoder"
                      xmlns:deref="xalan://de.schlund.pfixxml.DerefServer"
                      xmlns:callback="xalan://de.schlund.pfixcore.util.TransformerCallback"
-                     exclude-result-prefixes="pfx cus xsl url deref callback">
+                     exclude-result-prefixes="pfx cus xsl url deref callback func">
 
       <ixsl:import href="core/xsl/default_copy.xsl"/>
       <ixsl:import href="core/xsl/include.xsl"/>
+      <ixsl:import href="core/xsl/functions.xsl"/>
 
       <!-- generate user defined imports -->
       <xsl:call-template name="gen_ixsl_import">
@@ -125,9 +127,8 @@
         </xsl:if>
       </ixsl:output>
 
-      <ixsl:param name="navitree">
-        <xsl:attribute name="select">document('<xsl:value-of select="$navigation"/>')/make/navigation</xsl:attribute>
-      </ixsl:param>
+      <ixsl:param name="__navitree"/>
+      <ixsl:param name="navitree" select="$__navitree"/>
       
       <!-- The next two parameters are opaque Java objects. Use them only to pass them to extension functions! -->
       <ixsl:param name="__context__"/>
@@ -172,7 +173,7 @@
       <ixsl:variable name="page"><xsl:value-of select="$page"/></ixsl:variable>
       <ixsl:variable name="product"><xsl:value-of select="$product"/></ixsl:variable>
       <ixsl:variable name="__root" select="/"/>
-
+      
       <ixsl:template name="__enc">
         <ixsl:param name="in"/>
         <ixsl:param name="enc">
