@@ -56,20 +56,29 @@
   </xsl:template>
 
   <xsl:template match="/xsl:stylesheet/xsl:template[@match='/']/ixsl:stylesheet">
+    <xsl:variable name="complete_exclude_result_prefixes">
+      <xsl:for-each select="document('servletconf/projects.xml')/projects/common/namespaces/namespace-declaration[@exclude-result-prefix='true']">
+        <xsl:value-of select="@prefix"/>
+        <xsl:text>:</xsl:text>
+        <xsl:value-of select="@url"/>
+        <xsl:text> </xsl:text>
+      </xsl:for-each>
+      <xsl:value-of select="$exclude_result_prefixes"/>
+    </xsl:variable>
     <xsl:copy>
       <xsl:copy-of select="./@*"/>
       <xsl:attribute name="exclude-result-prefixes">
         <xsl:value-of select="./@exclude-result-prefixes"/>
-        <xsl:if test="normalize-space($exclude_result_prefixes) != ''">
+        <xsl:if test="normalize-space($complete_exclude_result_prefixes) != ''">
           <xsl:text> </xsl:text>
           <xsl:call-template name="gen_namespace_prefixes">
-            <xsl:with-param name="list"><xsl:value-of select="normalize-space($exclude_result_prefixes)"/></xsl:with-param>
+            <xsl:with-param name="list"><xsl:value-of select="normalize-space($complete_exclude_result_prefixes)"/></xsl:with-param>
           </xsl:call-template>
         </xsl:if>
       </xsl:attribute>
-      <xsl:if test="normalize-space($exclude_result_prefixes) != ''">
+      <xsl:if test="normalize-space($complete_exclude_result_prefixes) != ''">
         <xsl:call-template name="gen_dummy_attributes">
-          <xsl:with-param name="list"><xsl:value-of select="normalize-space($exclude_result_prefixes)"/></xsl:with-param>
+          <xsl:with-param name="list"><xsl:value-of select="normalize-space($complete_exclude_result_prefixes)"/></xsl:with-param>
         </xsl:call-template>
       </xsl:if>
       <xsl:apply-templates/>

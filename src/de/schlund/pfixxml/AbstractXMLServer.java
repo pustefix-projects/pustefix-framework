@@ -708,7 +708,7 @@ public abstract class AbstractXMLServer extends ServletManager {
         }
         paramhash.put(TargetGenerator.XSLPARAM_TG, targetconf.getRelative());
         paramhash.put(TargetGenerator.XSLPARAM_TKEY, VALUE_NONE);
-        paramhash.put(TargetGenerator.XSLPARAM_NAVITREE, NavigationFactory.getInstance().getNavigation(targetconf.getRelative()));
+        paramhash.put(TargetGenerator.XSLPARAM_NAVITREE, NavigationFactory.getInstance().getNavigation(targetconf.getRelative()).getNavigationXMLElement());
 
         String session_to_link_from_external = SessionAdmin.getInstance().getExternalSessionId(session);
         paramhash.put("__external_session_ref",session_to_link_from_external);
