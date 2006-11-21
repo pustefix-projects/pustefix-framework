@@ -1,3 +1,17 @@
+2006-11-21  Sebastian Marsching  <sebastian.marsching@1und1.de>
+
+	* src/de/schlund/pfixcore/webservice/ServiceRuntime.java: 
+	* src/de/schlund/pfixcore/workflow/app/DefaultAuthIWrapperState.java: 
+	* src/de/schlund/pfixcore/workflow/context/RequestContextImpl.java: 
+	* src/de/schlund/pfixcore/workflow/Context.java: 
+	* src/de/schlund/pfixcore/workflow/ContextImpl.java: 
+	* src/de/schlund/pfixxml/DirectOutputServlet.java: 
+	Fixed authentication problem with DirectOutputServlet. Added method
+	isAuthorized() to ContextImpl in order to provide easier way to
+	check authentication from DirectOutputServlet and Webservices. Added
+	method forceStopAtNextStep() to Context to provide better compatibility
+	with old apps.
+
 2006-11-20  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
 	* projects/core/xsl/functions.xsl: 
