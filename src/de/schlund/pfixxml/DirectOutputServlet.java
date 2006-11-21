@@ -35,7 +35,6 @@ import de.schlund.pfixcore.workflow.ContextResourceManager;
 import de.schlund.pfixcore.workflow.DirectOutputPageMap;
 import de.schlund.pfixcore.workflow.DirectOutputState;
 import de.schlund.pfixcore.workflow.PageRequest;
-import de.schlund.pfixcore.workflow.State;
 import de.schlund.pfixcore.workflow.context.ServerContextImpl;
 import de.schlund.pfixxml.config.DirectOutputServletConfig;
 import de.schlund.pfixxml.config.ServletManagerConfig;
@@ -150,16 +149,10 @@ public class DirectOutputServlet extends ServletManager {
          ContextResourceManager crm = context.getContextResourceManager();
 
          // check the authentification first....
-         State authstate = servercontext.getAuthState();
-         if (authstate != null) {
-             if (!authstate.isAccessible(context, preq)) {
-                 throw new XMLException("State of authpage is not accessible!");
-             }
-             if (authstate.needsData(context, preq)) {
-                 CAT.info("Got request without authorization");
-                 res.sendError(HttpServletResponse.SC_FORBIDDEN, "Must authenticate first");
-                 return;
-             }
+         if (!context.isAuthorized()) {
+             CAT.info("Got request without authorization");
+             res.sendError(HttpServletResponse.SC_FORBIDDEN, "Must authenticate first");
+             return;
          }
          
          String pagename = preq.getPageName();

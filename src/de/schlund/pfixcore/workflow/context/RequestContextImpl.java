@@ -146,7 +146,7 @@ public class RequestContextImpl {
     }
 
     public PageRequest getCurrentPageRequest() {
-        if (currentpservreq == null) {
+        if (currentpagerequest == null) {
             throw new IllegalStateException("PageRequest is only available witihin request handling");
         }
         return currentpagerequest;
@@ -584,7 +584,7 @@ public class RequestContextImpl {
     }
 
     public PageRequestConfig getConfigForCurrentPageRequest() {
-        if (currentpservreq == null) {
+        if (currentpagerequest == null) {
             throw new IllegalStateException("PageRequest is only available witihin request handling");
         }
         return servercontext.getContextConfig().getPageRequestConfig(currentpagerequest.getName());
@@ -878,6 +878,10 @@ public class RequestContextImpl {
         }
     }
 
+    public void forceStopAtNextStep(boolean forcestop) {
+        this.stopnextforcurrentrequest = forcestop;
+    }
+    
     private boolean checkNeedsData(PageRequest page, PageRequestStatus status) throws Exception {
         PageRequest saved = currentpagerequest;
         currentpagerequest = page;

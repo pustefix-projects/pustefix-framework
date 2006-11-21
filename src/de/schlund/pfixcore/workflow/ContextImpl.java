@@ -308,6 +308,10 @@ public class ContextImpl implements Context, AccessibilityChecker {
         return getRequestContextForCurrentThreadWithError().stateMustSupplyFullDocument();
     }
     
+    public void forceStopAtNextStep(boolean forcestop) {
+        getRequestContextForCurrentThreadWithError().forceStopAtNextStep(forcestop);
+    }
+    
     public boolean isPageAccessible(String pagename) throws Exception {
         RequestContextImpl requestcontext = getRequestContextForCurrentThreadWithError();
         if (getContextConfig().isSynchronized()) {
@@ -348,6 +352,10 @@ public class ContextImpl implements Context, AccessibilityChecker {
     public void setServerContext(ServerContextImpl servercontext) {
         // Update current configuration
         this.servercontext = servercontext;
+    }
+    
+    public boolean isAuthorized() throws Exception {
+        return (this.getRequestContextForCurrentThreadWithError().checkAuthorization(false) == null);
     }
     
     public void prepareForRequest() throws Exception {

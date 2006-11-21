@@ -21,7 +21,6 @@ package de.schlund.pfixcore.webservice;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Properties;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -37,9 +36,7 @@ import de.schlund.pfixcore.webservice.monitor.MonitorRecord;
 import de.schlund.pfixcore.webservice.utils.RecordingRequestWrapper;
 import de.schlund.pfixcore.webservice.utils.RecordingResponseWrapper;
 import de.schlund.pfixcore.workflow.ContextImpl;
-import de.schlund.pfixcore.workflow.State;
 import de.schlund.pfixcore.workflow.context.ServerContextImpl;
-import de.schlund.pfixxml.PfixServletRequest;
 import de.schlund.pfixxml.serverutil.SessionAdmin;
 
 /**
@@ -131,17 +128,12 @@ public class ServiceRuntime {
                     ServerContextImpl srvContext = (ServerContextImpl)req.getSession().getServletContext().getAttribute(contextName);
                     pfxSessionContext = (ContextImpl) session.getAttribute(contextName);
                     
-                    State authState = srvContext.getAuthState();
                     try {
                         // Prepare context for current thread.
                         // Cleanup is performed in finally block.
                         pfxSessionContext.setServerContext(srvContext);
                         pfxSessionContext.prepareForRequest();
-                        if(authState!=null) {
-                            PfixServletRequest preq=new PfixServletRequest(req,new Properties());
-                            if(!authState.isAccessible(pfxSessionContext,preq)) throw new ServiceException("Authorization failed: State of authpage is not accessible!");
-                            if(authState.needsData(pfxSessionContext,preq)) throw new ServiceException("Authorization failed: Must authenticate first!");                                                                                                                                  
-                        }
+                        if(!pfxSessionContext.isAuthorized()) throw new ServiceException("Authorization failed: Must authenticate first!");                                                                                                                                  
                     } catch(Exception x) {
                         throw new ServiceException("Authorization failed",x);
                     }

@@ -73,9 +73,11 @@ public class DefaultAuthIWrapperState extends StateImpl {
         if (userhandler.needsData(context)) {
             return true;
         } else {
-            RequestData rdata = new RequestDataImpl(context, preq);
-            ArrayList   aux   = getAuxWrapper(context);
-            auxLoadData(aux, context, rdata);
+            if (preq != null) {
+                RequestData rdata = new RequestDataImpl(context, preq);
+                ArrayList   aux   = getAuxWrapper(context);
+                auxLoadData(aux, context, rdata);
+            }
             return false;
         }
     }
@@ -108,7 +110,12 @@ public class DefaultAuthIWrapperState extends StateImpl {
     }
 
     private IWrapper getAuthWrapper(Context context, boolean do_init) throws Exception {
-        String     pagename  = context.getCurrentPageRequest().getName();
+        String     pagename = null;
+        try {
+            pagename = context.getCurrentPageRequest().getName();
+        } catch (IllegalStateException e) {
+            pagename = "no pagename available";
+        }
         PageRequestConfig config = context.getConfigForCurrentPageRequest();
         AppLoader  appLoader = AppLoader.getInstance();
         

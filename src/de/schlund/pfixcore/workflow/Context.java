@@ -45,6 +45,7 @@ public interface Context {
     void                   setJumpToPage(String pagename);
     void                   setJumpToPageFlow(String pageflow);
     void                   prohibitContinue();
+    void                   forceStopAtNextStep(boolean forcestop);
     Cookie[]               getRequestCookies();
     void                   setLanguage(String lang);
     String                 getLanguage();
