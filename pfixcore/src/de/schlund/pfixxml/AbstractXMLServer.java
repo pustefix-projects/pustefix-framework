@@ -572,7 +572,7 @@ public abstract class AbstractXMLServer extends ServletManager {
             renderNormal(spdoc, res, paramhash, stylesheet);
             break;
         case RENDER_FONTIFY:
-            renderFontify(spdoc, res);
+            renderFontify(spdoc, res, paramhash);
             break;
         case RENDER_EXTERNAL:
             renderExternal(spdoc, res, paramhash, stylesheet);
@@ -643,10 +643,10 @@ public abstract class AbstractXMLServer extends ServletManager {
                                                                     new StreamResult(res.getOutputStream()));
     }
 
-    private void renderFontify(SPDocument spdoc, HttpServletResponse res) throws TargetGenerationException, IOException {
+    private void renderFontify(SPDocument spdoc, HttpServletResponse res, TreeMap paramhash) throws TargetGenerationException, IOException {
         Templates stylevalue = (Templates) generator.createXSLLeafTarget(FONTIFY_SSHEET).getValue();
         try {
-            Xslt.transform(spdoc.getDocument(), stylevalue, null, new StreamResult(res.getOutputStream()));
+            Xslt.transform(spdoc.getDocument(), stylevalue, paramhash, new StreamResult(res.getOutputStream()));
         } catch (TransformerException e) {
             LOGGER.warn("*** Ignored exception when trying to render XML tree ***");
         }
