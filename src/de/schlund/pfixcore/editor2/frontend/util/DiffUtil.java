@@ -88,11 +88,11 @@ public class DiffUtil {
                     out.add(new ComparedLine(lines0[i], lines1[j], CompareStatus.CONFLICT));
                 }
                 // Add lines if left version is longer
-                for (i = i; i < (hunk.line0 + hunk.deleted); i++) {
+                for (; i < (hunk.line0 + hunk.deleted); i++) {
                     out.add(new ComparedLine(lines0[i], null, CompareStatus.CONFLICT));
                 }
                 // Add lines if right version is longer
-                for (j = j; j < (hunk.line1 + hunk.inserted); j++) {
+                for (; j < (hunk.line1 + hunk.inserted); j++) {
                     out.add(new ComparedLine(null, lines1[j], CompareStatus.CONFLICT));
                 }
             } else if (hunk.inserted > 0) {

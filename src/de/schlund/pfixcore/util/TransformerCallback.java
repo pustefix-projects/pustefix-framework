@@ -7,10 +7,10 @@ import de.schlund.pfixxml.SPDocument;
 
 /**
  * Describe class TransformerCallback here.
- *
- *
- * Created: Tue Jul  4 14:45:43 2006
- *
+ * 
+ * 
+ * Created: Tue Jul 4 14:45:43 2006
+ * 
  * @author <a href="mailto:jtl@schlund.de">Jens Lautenbacher</a>
  * @version 1.0
  */
@@ -27,7 +27,7 @@ public class TransformerCallback {
             AccessibilityChecker check = (AccessibilityChecker) context;
             boolean retval;
             if (context.getContextConfig().isSynchronized()) {
-                synchronized(context) {
+                synchronized (context) {
                     retval = check.isPageAccessible(pagename);
                 }
             } else {
@@ -51,7 +51,7 @@ public class TransformerCallback {
             AccessibilityChecker check = (AccessibilityChecker) context;
             boolean retval;
             if (context.getContextConfig().isSynchronized()) {
-                synchronized(context) {
+                synchronized (context) {
                     retval = check.isPageAlreadyVisited(pagename);
                 }
             } else {
