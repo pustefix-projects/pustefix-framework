@@ -43,30 +43,29 @@ import de.schlund.util.statuscodes.StatusCode;
 public class ContextImpl implements Context, AccessibilityChecker {
 
     /**
-     * Implementation of the session part of the context used by ContextXMLServer,
-     * DirectOutputServer and WebServiceServlet. This class should never be directly
-     * used by application developers.
+     * Implementation of the session part of the context used by
+     * ContextXMLServer, DirectOutputServer and WebServiceServlet. This class
+     * should never be directly used by application developers.
      * 
      * @author Sebastian Marsching <sebastian.marsching@1und1.de>
      */
     private class SessionContextImpl {
-        private HttpSession session;
-        
-        private String lastPageName = null;
-        private String lastPageFlowName = null;
-        
-        private Variant variant = null;
-        private String visitId = null;
+        private HttpSession            session;
+        private String                 lastPageName     = null;
+        private String                 lastPageFlowName = null;
+        private Variant                variant          = null;
+        private String                 visitId          = null;
         private ContextResourceManager crm;
-        
-        // private Map<NavigationElement, Integer> navigationMap = new HashMap<NavigationElement, Integer>();
-        private Set<String> visitedPages = Collections.synchronizedSet(new HashSet<String>());
-        
+
+        // private Map<NavigationElement, Integer> navigationMap = new
+        // HashMap<NavigationElement, Integer>();
+        private Set<String>            visitedPages     = Collections.synchronizedSet(new HashSet<String>());
+
         public SessionContextImpl(HttpSession session) {
             this.session = session;
             this.crm = new ContextResourceManager();
         }
-        
+
         private void init(Context context) throws Exception {
             crm.init(context, context.getContextConfig());
         }
@@ -105,7 +104,7 @@ public class ContextImpl implements Context, AccessibilityChecker {
             }
             return visitId;
         }
-        
+
         public String getLastPageFlowName() {
             return lastPageFlowName;
         }
@@ -121,20 +120,20 @@ public class ContextImpl implements Context, AccessibilityChecker {
         public void setLastPageName(String lastPageName) {
             this.lastPageName = lastPageName;
         }
-        
+
         public void addVisitedPage(String pagename) {
             visitedPages.add(pagename);
         }
-        
+
         public boolean isVisitedPage(String pagename) {
             return visitedPages.contains(pagename);
         }
-        
+
         public String toString() {
             StringBuffer contextbuf = new StringBuffer("\n");
 
             contextbuf.append("     >>>> ContextResourcen <<<<\n");
-            for (Iterator i = crm.getResourceIterator(); i.hasNext(); ) {
+            for (Iterator i = crm.getResourceIterator(); i.hasNext();) {
                 ContextResource res = (ContextResource) i.next();
                 contextbuf.append("         " + res.getClass().getName() + ": ");
                 contextbuf.append(res.toString() + "\n");
