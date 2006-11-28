@@ -19,7 +19,6 @@
     
 package de.schlund.pfixcore.scripting;
 
-import de.schlund.pfixcore.util.StateUtil;
 import de.schlund.pfixcore.workflow.Context;
 import de.schlund.pfixcore.workflow.State;
 import de.schlund.pfixxml.PfixServletRequest;
