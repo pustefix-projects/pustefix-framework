@@ -1,3 +1,8 @@
+2006-11-29  Martin Leidig  <mleidig@schlund.de>
+
+	* skel/build-skel.xml: let clean-webservice target remove
+	generated WSDL and JS stuff too
+
 2006-11-20  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
 	* src/de/schlund/pfixxml/AbstractXMLServer.java (constructParameters): 

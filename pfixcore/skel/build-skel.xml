@@ -796,6 +796,11 @@ or delete the DOCTYPE definition -->
 
   <target name="clean-webservice">
     <delete dir="${dir.projects}/.webservice"/>
+    <delete includeEmptyDirs="true">
+      <fileset dir="${dir.tomcat}/webapps" includes="*/WEB-INF/server-config.wsdd"/>
+      <fileset dir="${dir.tomcat}/webapps" includes="*/wsdl/"/>
+      <fileset dir="${dir.tomcat}/webapps" includes="*/wsscript/"/>
+    </delete> 
   </target>
 
   <!-- all: depends on a readily built project -->
