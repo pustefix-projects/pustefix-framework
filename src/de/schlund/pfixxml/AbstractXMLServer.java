@@ -152,17 +152,14 @@ public abstract class AbstractXMLServer extends ServletManager {
      * The configuration file for the TargetGeneratorFacory.
      */
     private FileResource targetconf                 = null;
-    private boolean render_external            = false;
-    private boolean editmodeAllowed            = false;
-    private boolean skip_getmodtimemaybeupdate = false;
-    private int     scleanertimeout            = 300;
+    private boolean      render_external            = false;
+    private boolean      editmodeAllowed            = false;
+    private boolean      skip_getmodtimemaybeupdate = false;
+    private int          scleanertimeout            = 300;
     
-    private static Logger LOGGER_TRAIL    = Logger.getLogger("LOGGER_TRAIL");
-    private static Logger LOGGER = Logger.getLogger(AbstractXMLServer.class);
+    private static Logger LOGGER_TRAIL = Logger.getLogger("LOGGER_TRAIL");
+    private static Logger LOGGER       = Logger.getLogger(AbstractXMLServer.class);
     
-    private boolean allowInfo  = true;
-    private boolean allowDebug = true;
-
     private AdditionalTrailInfo addtrailinfo = null;
     
     //~ Methods ....................................................................................
@@ -195,15 +192,8 @@ public abstract class AbstractXMLServer extends ServletManager {
             LOGGER.error("Error: ", e);
             throw new ServletException("Couldn't get TargetGenerator", e);
         }
-        String prohibitDebug = getAbstractXMLServletConfig().getProperties().getProperty(PROP_PROHIBITDEBUG);
-        allowDebug           = (prohibitDebug != null && (prohibitDebug.equals("true") ||
-                                                          prohibitDebug.equals("1"))) ? false : true;
         
-        String prohibitInfo = getAbstractXMLServletConfig().getProperties().getProperty(PROP_PROHIBITINFO);
-        allowInfo           = (prohibitInfo != null && (prohibitInfo.equals("true") ||
-                                                        prohibitInfo.equals("1"))) ? false : true;
-
-        editmodeAllowed        = this.getAbstractXMLServletConfig().isEditMode();
+        editmodeAllowed = this.getAbstractXMLServletConfig().isEditMode();
 
         String render_external_prop = this.getAbstractXMLServletConfig().getProperties().getProperty(PROP_RENDER_EXT);
         render_external             = ((render_external_prop != null) && render_external_prop.equals("true"));
@@ -336,8 +326,7 @@ public abstract class AbstractXMLServer extends ServletManager {
         params.put(XSLPARAM_DEREFKEY, this.getAbstractXMLServletConfig().getProperties().getProperty(DerefServer.PROP_DEREFKEY));
 
         if (session != null) {
-            params.put(XSLPARAM_SESSID,
-                       session.getAttribute(SessionHelper.SESSION_ID_URL));
+            params.put(XSLPARAM_SESSID, session.getAttribute(SessionHelper.SESSION_ID_URL));
             if (doreuse) {
                 synchronized (session) {
                     // Make sure redirect is only done once
