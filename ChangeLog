@@ -1,5 +1,9 @@
 2006-12-01  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
+	* src/de/schlund/pfixcore/editor2/core/spring/internal/CommonIncludePartThemeVariantImpl.java (setXML): 
+	Changed code to create xmlns declarations in root node only, when the 
+	corresponding prefix is used in at least one part.
+	
 	* src/de/schlund/pfixcore/editor2/frontend/util/Diff.java: 
 	* src/de/schlund/pfixcore/editor2/frontend/util/DiffUtil.java: 
 	Replaced diff algorithm with own implementation.
