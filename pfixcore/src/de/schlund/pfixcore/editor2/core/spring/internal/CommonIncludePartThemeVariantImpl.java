@@ -19,10 +19,12 @@
 package de.schlund.pfixcore.editor2.core.spring.internal;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
-import java.util.Map;
 
 import javax.xml.transform.TransformerException;
 
@@ -31,7 +33,13 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.xml.sax.Attributes;
+import org.xml.sax.ContentHandler;
+import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
+import org.xml.sax.XMLReader;
+import org.xml.sax.helpers.DefaultHandler;
+import org.xml.sax.helpers.XMLReaderFactory;
 
 import de.schlund.pfixcore.editor2.core.dom.AbstractIncludePartThemeVariant;
 import de.schlund.pfixcore.editor2.core.dom.IncludePart;
@@ -175,16 +183,6 @@ public abstract class CommonIncludePartThemeVariantImpl extends
                 root = doc.createElement("include_parts");
                 doc.appendChild(root);
 
-                // Add predefined namespace mappings
-                Map nsMappings = this.configuration
-                        .getPrefixToNamespaceMappings();
-                for (Iterator i = nsMappings.keySet().iterator(); i.hasNext();) {
-                    String prefix = (String) i.next();
-                    String url = (String) nsMappings.get(prefix);
-                    root.setAttributeNS("http://www.w3.org/2000/xmlns/",
-                            "xmlns:" + prefix, url);
-                }
-
                 part = doc.createElement("part");
                 // Keep proper indention level
                 Node temp = doc.createTextNode("\n  ");
@@ -285,7 +283,18 @@ public abstract class CommonIncludePartThemeVariantImpl extends
                     parent.insertBefore(theme, temp);
                 }
             }
-
+            
+            // Create namespace declarations in root node if needed
+            Collection<String> partPrefixes = extractPrefixesFromTree(xml);
+            Collection<String> declaredPrefixes = extractPrefixDeclarationsFromFileRoot(xmlFile);
+            Collection<String> knownPrefixes = this.configuration.getPrefixToNamespaceMappings().keySet();
+            for (String prefix: partPrefixes) {
+                if (knownPrefixes.contains(prefix) && !declaredPrefixes.contains(prefix)) {
+                    String url = this.configuration.getPrefixToNamespaceMappings().get(prefix);
+                    root.setAttributeNS("http://www.w3.org/2000/xmlns/","xmlns:" + prefix, url);
+                }
+            }
+            
             // Copy over all nodes except attributes to the theme node
             // Keep indention
             Node temp = doc.createTextNode("\n");
@@ -357,6 +366,61 @@ public abstract class CommonIncludePartThemeVariantImpl extends
                             Tripel.Type.EDITORUPDATE));
 
         }
+    }
+
+    private Collection<String> extractPrefixDeclarationsFromFileRoot(File xmlFile) {
+        XMLReader xreader;
+        try {
+            xreader = XMLReaderFactory.createXMLReader();
+        } catch (SAXException e) {
+            throw new RuntimeException("Could not create XMLReader", e);
+        }
+        
+        final Collection<String> prefixes = new HashSet<String>();
+        ContentHandler nsPrefixHandler = new DefaultHandler() {
+            private boolean foundFirstElement = false;
+
+            public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
+                if (foundFirstElement == false) {
+                    foundFirstElement = true;
+                }
+            }
+
+            public void startPrefixMapping(String prefix, String uri) throws SAXException {
+                if (!foundFirstElement) {
+                    prefixes.add(prefix);
+                }
+            }
+        };
+        
+        xreader.setContentHandler(nsPrefixHandler);
+        try {
+            xreader.parse(new InputSource(new FileInputStream(xmlFile)));
+        } catch (FileNotFoundException e) {
+            // File might not yet be valid - ignore
+        } catch (IOException e) {
+            // File might not yet be valid - ignore
+        } catch (SAXException e) {
+            // File might not yet be valid - ignore
+        }
+        
+        return prefixes;
+    }
+
+    private Collection<String> extractPrefixesFromTree(Node xml) {
+        Collection<String> prefixes = new HashSet<String>();
+        String prefix = xml.getPrefix();
+        if (prefix != null) {
+            prefixes.add(prefix);
+        }
+        
+        NodeList childs = xml.getChildNodes();
+        for (int i = 0; i < childs.getLength(); i++) {
+            Node node = childs.item(i);
+            prefixes.addAll(extractPrefixesFromTree(node));
+        }
+        
+        return prefixes;
     }
 
     public String getMD5() {
