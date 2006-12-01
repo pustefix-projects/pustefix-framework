@@ -39,6 +39,7 @@ import de.schlund.pfixcore.workflow.PageRequest;
 import de.schlund.pfixcore.workflow.PageRequestStatus;
 import de.schlund.pfixcore.workflow.State;
 import de.schlund.pfixcore.workflow.VariantManager;
+import de.schlund.pfixxml.ContextXMLServer;
 import de.schlund.pfixxml.PfixServletRequest;
 import de.schlund.pfixxml.RequestParam;
 import de.schlund.pfixxml.ResultDocument;
@@ -58,7 +59,7 @@ import de.schlund.util.statuscodes.StatusCode;
  * 
  * @author Sebastian Marsching <sebastian.marsching@1und1.de>
  */
-public class RequestContextImpl {
+public class RequestContextImpl implements Cloneable {
 
     private final static Logger LOG                 = Logger.getLogger(ContextImpl.class);
     private final static String PARAM_JUMPPAGE      = "__jumptopage";
@@ -503,7 +504,7 @@ public class RequestContextImpl {
             LOG.debug("\n");
             insertPageMessages(spdoc);
             storeCookies(spdoc);
-            spdoc.setProperty("__context__", this);
+            spdoc.setProperty(ContextXMLServer.XSLPARAM_REQUESTCONTEXT, this);
         }
 
         processIC(servercontext.getEndInterceptors());
@@ -971,6 +972,29 @@ public class RequestContextImpl {
         }
 
         return contextbuf.toString();
+    }
+    
+    public Object clone() throws CloneNotSupportedException {
+        RequestContextImpl copy = (RequestContextImpl) super.clone();
+        if (currentpagerequest != null) {
+            copy.currentpagerequest = new PageRequest(currentpagerequest.getName());
+            copy.currentpagerequest.setStatus(currentpagerequest.getStatus());
+        }
+        if (authpage != null) {
+            copy.authpage = new PageRequest(authpage.getName());
+            copy.authpage.setStatus(authpage.getStatus());
+        }
+        copy.cookielist = new ArrayList<Cookie>(cookielist);
+        copy.messages = new ArrayList<StatusCodeInfo>(messages);
+        return copy;
+    }
+    
+    public void setPfixServletRequest(PfixServletRequest pservreq) {
+        // Usually the PfixServletRequest is supplied when
+        // calling handleSubmittedData(), however there might
+        // be situations when though there is no request to 
+        // handle a PfixServletRequest is needed.
+        this.currentpservreq = pservreq;
     }
 
     public ContextImpl getParentContext() {

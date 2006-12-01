@@ -32,6 +32,7 @@ import de.schlund.pfixcore.scriptedflow.vm.ScriptVM;
 import de.schlund.pfixcore.scriptedflow.vm.VirtualHttpServletRequest;
 import de.schlund.pfixcore.workflow.Context;
 import de.schlund.pfixcore.workflow.ContextImpl;
+import de.schlund.pfixcore.workflow.context.RequestContextImpl;
 import de.schlund.pfixcore.workflow.context.ServerContextImpl;
 import de.schlund.pfixxml.config.AbstractXMLServletConfig;
 import de.schlund.pfixxml.config.ContextXMLServletConfig;
@@ -39,6 +40,8 @@ import de.schlund.pfixxml.config.PageRequestConfig;
 import de.schlund.pfixxml.resources.FileResource;
 import java.io.IOException;
 import java.util.Properties;
+import java.util.TreeMap;
+
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpSession;
 import org.apache.log4j.Logger;
@@ -59,6 +62,8 @@ public class ContextXMLServer extends AbstractXMLServer {
     private final static String PARAM_SCRIPTEDFLOW = "__scriptedflow";
 
     private final static String SCRIPTEDFLOW_SUFFIX = "__SCRIPTEDFLOW__";
+    
+    public final static String XSLPARAM_REQUESTCONTEXT = "__context__";
 
     private ContextXMLServletConfig config = null;
 
@@ -275,4 +280,24 @@ public class ContextXMLServer extends AbstractXMLServer {
             throw new ServletException("Could not read servlet configuration from " + configFile.toURI(), e);
         }
     }
+
+    protected void hookBeforeRender(PfixServletRequest preq, SPDocument spdoc, TreeMap paramhash, String stylesheet) {
+        super.hookBeforeRender(preq, spdoc, paramhash, stylesheet);
+        RequestContextImpl oldRequestContext = (RequestContextImpl) spdoc.getProperties().get(XSLPARAM_REQUESTCONTEXT);
+        RequestContextImpl newRequestContext;
+        try {
+            newRequestContext = (RequestContextImpl) oldRequestContext.clone();
+        } catch (CloneNotSupportedException e) {
+            throw new RuntimeException("Unexpected CloneException", e);
+        }
+        newRequestContext.setPfixServletRequest(preq);
+        newRequestContext.getParentContext().setRequestContextForCurrentThread(newRequestContext);
+    }
+    
+    protected void hookAfterRender(PfixServletRequest preq, SPDocument spdoc, TreeMap paramhash, String stylesheet) {
+        super.hookAfterRender(preq, spdoc, paramhash, stylesheet);
+        RequestContextImpl rcontext = (RequestContextImpl) spdoc.getProperties().get(XSLPARAM_REQUESTCONTEXT);
+        rcontext.getParentContext().setRequestContextForCurrentThread(null);
+    }
+    
 }

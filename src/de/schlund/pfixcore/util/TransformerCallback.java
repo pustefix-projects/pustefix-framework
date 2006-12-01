@@ -3,6 +3,7 @@ package de.schlund.pfixcore.util;
 import de.schlund.pfixcore.workflow.ContextImpl;
 import de.schlund.pfixcore.workflow.context.AccessibilityChecker;
 import de.schlund.pfixcore.workflow.context.RequestContextImpl;
+import de.schlund.pfixxml.PfixServletRequest;
 import de.schlund.pfixxml.SPDocument;
 
 /**
@@ -22,7 +23,6 @@ public class TransformerCallback {
 
     public static int isAccessible(RequestContextImpl requestcontext, String pagename) throws Exception {
         ContextImpl context = requestcontext.getParentContext();
-        context.setRequestContextForCurrentThread(requestcontext);
         if (context.getContextConfig().getPageRequestConfig(pagename) != null) {
             AccessibilityChecker check = (AccessibilityChecker) context;
             boolean retval;
@@ -33,20 +33,17 @@ public class TransformerCallback {
             } else {
                 retval = check.isPageAccessible(pagename);
             }
-            context.cleanupAfterRequest();
             if (retval) {
                 return 1;
             } else {
                 return 0;
             }
         }
-        context.cleanupAfterRequest();
         return -1;
     }
 
     public static int isVisited(RequestContextImpl requestcontext, String pagename) throws Exception {
         ContextImpl context = requestcontext.getParentContext();
-        context.setRequestContextForCurrentThread(requestcontext);
         if (context.getContextConfig().getPageRequestConfig(pagename) != null) {
             AccessibilityChecker check = (AccessibilityChecker) context;
             boolean retval;
@@ -57,14 +54,12 @@ public class TransformerCallback {
             } else {
                 retval = check.isPageAlreadyVisited(pagename);
             }
-            context.cleanupAfterRequest();
             if (retval) {
                 return 1;
             } else {
                 return 0;
             }
         }
-        context.cleanupAfterRequest();
         return -1;
     }
 

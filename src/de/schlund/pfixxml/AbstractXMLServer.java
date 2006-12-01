@@ -495,14 +495,12 @@ public abstract class AbstractXMLServer extends ServletManager {
             }
         }
 
-        // String etag = preq.getRequest().getHeader("Etag");
-        // String id   = createIDForDocument(preq,spdoc, paramhash);
-        // if (etag != null && etag.equals(id)) {
-        //     res.sendError(res.SC_NOT_MODIFIED);
-        // } else {
-        //     res.setHeader("Etag", id);
-        render(spdoc, getRendering(preq), res, paramhash, stylesheet);
-        // }
+        try {
+            hookBeforeRender(preq, spdoc, paramhash, stylesheet);
+            render(spdoc, getRendering(preq), res, paramhash, stylesheet);
+        } finally {
+            hookAfterRender(preq, spdoc, paramhash, stylesheet);
+        }
         
         long handletime = System.currentTimeMillis() - currtime;
         preq.getRequest().setAttribute(TRAFOTIME, handletime);
@@ -552,7 +550,7 @@ public abstract class AbstractXMLServer extends ServletManager {
             // ignore
         }
     }
-    
+
     private void render(SPDocument spdoc, int rendering, HttpServletResponse res, TreeMap paramhash, String stylesheet) throws
         TargetGenerationException, IOException, TransformerException,
         TransformerConfigurationException, TransformerFactoryConfigurationError {
@@ -782,4 +780,34 @@ public abstract class AbstractXMLServer extends ServletManager {
         }
     }
     
+    
+    /**
+     * Called before the XML result tree is rendered. This method can
+     * be overidden in sub-implementations to do initializiation stuff,
+     * which might be needed for XSLT callback methods.
+     * 
+     * @param preq current servlet request
+     * @param spdoc XML document going to be rendered
+     * @param paramhash parameters supplied to XSLT code
+     * @param stylesheet name of the stylesheet being used
+     */
+    protected void hookBeforeRender(PfixServletRequest preq, SPDocument spdoc, TreeMap paramhash, String stylesheet) {
+        // Empty in default implementation
+    }
+
+    /**
+     * Called after the XML result tree is rendered. This method can
+     * be overidden in sub-implementations to do de-initializiation stuff.
+     * This method is guaranteed to be always called, when the corresponding
+     * before method has been called - even if an error occurs. 
+     * 
+     * @param preq current servlet request
+     * @param spdoc XML document going to be rendered
+     * @param paramhash parameters supplied to XSLT code
+     * @param stylesheet name of the stylesheet being used
+     */
+    protected void hookAfterRender(PfixServletRequest preq, SPDocument spdoc, TreeMap paramhash, String stylesheet) {
+        // Empty in default implementation
+    }
+
 }

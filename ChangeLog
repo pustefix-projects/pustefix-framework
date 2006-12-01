@@ -1,3 +1,17 @@
+2006-12-01  Sebastian Marsching  <sebastian.marsching@1und1.de>
+
+	* src/de/schlund/pfixcore/util/TransformerCallback.java: 
+	* src/de/schlund/pfixcore/workflow/context/RequestContextImpl.java: 
+	* src/de/schlund/pfixxml/AbstractXMLServer.java: 
+	* src/de/schlund/pfixxml/ContextXMLServer.java: 
+	Moved responsibility for setting the right RequestContext when
+	rendering a document from TransformerCallback to ContextXMLServer.
+	ContextXMLServer now uses hooks supplied by AbstractXMLServer before and
+	after rendering a XML document to create a copy of the RequestContextImpl
+	used to create a SPDocument and sets this copy for the current thread,
+	thus avoiding concurrency problems when different views of the
+	same document are rendered concurrently (e.g. frames).
+
 2006-11-29  Jens Lautenbacher  <jtl@schlund.de>
 
 	* src/de/schlund/pfixxml/AbstractXMLServer.java (AbstractXMLServer):
