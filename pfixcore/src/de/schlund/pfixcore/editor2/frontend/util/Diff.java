@@ -179,7 +179,7 @@ public class Diff {
         
         // If there is not a single match, both versions
         // are completely different
-        if (matchSeqs.size() < 0) {
+        if (matchSeqs.size() < 1) {
             ArrayList<Block> blocks = new ArrayList<Block>();
             Block block = new Block();
             block.startA = 0;
@@ -259,6 +259,48 @@ public class Diff {
                 nextA++;
                 nextB++;
             }
+        }
+        
+        // Finally save matching block that has not yet been saved
+        Block x = new Block();
+        x.startA = startA;
+        x.startB = startB;
+        x.lengthA = nextA - startA;
+        x.lengthB = nextB - startB;
+        x.status = BlockStatus.COMMON;
+        if (x.lengthA > 0 && x.lengthB > 0) {
+            blocks.add(x);
+        }
+        
+        // There might still be lines that are only present in only the left
+        // or the right version - check for them
+        if (nextA < a.size() && nextB < b.size()) {
+            // Conflict
+            x = new Block();
+            x.startA = nextA;
+            x.startB = nextB;
+            x.lengthA = a.size() - nextA;
+            x.lengthB = b.size() - nextB;
+            x.status = BlockStatus.CONFLICT;
+            blocks.add(x);
+        } else if (nextA < a.size()) {
+            // Only in left version
+            x = new Block();
+            x.startA = nextA;
+            x.startB = -1;
+            x.lengthA = a.size() - nextA;
+            x.lengthB = 0;
+            x.status = BlockStatus.ONLY_LEFT;
+            blocks.add(x);
+        } else if (nextB < b.size()) {
+            // Only in right version
+            x = new Block();
+            x.startA = -1;
+            x.startB = nextB;
+            x.lengthA = 0;
+            x.lengthB = b.size() - nextB;
+            x.status = BlockStatus.ONLY_RIGHT;
+            blocks.add(x);
         }
         
         return blocks;
