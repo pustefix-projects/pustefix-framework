@@ -1,3 +1,9 @@
+2006-12-05  Sebastian Marsching  <sebastian.marsching@1und1.de>
+
+	* src/de/schlund/pfixcore/editor2/frontend/util/Diff.java (diff): 
+	Fixed problem in diff algorithm causing parts at the end of a file
+	to be lost at compare operation.
+
 2006-12-01  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
 	* src/de/schlund/pfixcore/editor2/core/spring/internal/CommonIncludePartThemeVariantImpl.java (setXML): 
