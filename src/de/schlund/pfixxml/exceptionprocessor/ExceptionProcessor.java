@@ -39,7 +39,9 @@ import javax.servlet.ServletException;
  * Look at the
  * {@link processException(Throwable,ExceptionConfig,PfixServletRequest,ServletContext,HttpServletRequest,HttpServletResponse res) processException}-method
  * for further details how to implement this interface.
- *
+ * 
+ * If the implementation doesn't output a response, a ServletException is thrown.
+ * 
  * @author <a href="mailto:benjamin@schlund.de">Benjamin Reitzammer</a>
  * @version $Id$
  */
