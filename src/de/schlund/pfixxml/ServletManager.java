@@ -865,17 +865,16 @@ public abstract class ServletManager extends HttpServlet {
         } catch (Throwable e) {
             CAT.error("Exception in process", e);
             ExceptionConfig exconf = getExceptionConfigForThrowable(e);
-            
+         
             if(exconf != null && exconf.getProcessor()!= null) { 
-                if ( preq.getLastException() != null ) {
-                    return;
-                }
-                ExceptionProcessor eproc = exconf.getProcessor();
-                eproc.processException(e, exconf, preq,
+                if ( preq.getLastException() == null ) {  
+                    ExceptionProcessor eproc = exconf.getProcessor();
+                    eproc.processException(e, exconf, preq,
                                        getServletConfig().getServletContext(),
                                        req, res, this.getServletManagerConfig().getProperties());
-                
+                }
             } 
+            if(!res.isCommitted()) throw new ServletException("Exception in process.",e);
         }
     }
     
