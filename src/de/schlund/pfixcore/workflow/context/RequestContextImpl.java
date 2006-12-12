@@ -474,6 +474,8 @@ public class RequestContextImpl implements Cloneable {
 
         SPDocument spdoc = documentFromFlow();
 
+        processIC(servercontext.getEndInterceptors());
+
         if (spdoc != null) {
             if (spdoc.getPagename() == null) {
                 spdoc.setPagename(currentpagerequest.getRootName());
@@ -507,8 +509,6 @@ public class RequestContextImpl implements Cloneable {
             spdoc.setProperty(ContextXMLServer.XSLPARAM_REQUESTCONTEXT, this);
         }
 
-        processIC(servercontext.getEndInterceptors());
-        
         // Save pagerequest and pageflow
         parentcontext.setLastPageName(getCurrentPageRequest().getRootName());
         parentcontext.setLastPageFlowName(getCurrentPageFlow().getRootName());
