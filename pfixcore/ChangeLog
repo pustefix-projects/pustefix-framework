@@ -1,3 +1,11 @@
+2006-12-12  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixcore/workflow/context/RequestContextImpl.java
+	(RequestContextImpl::handleRequestWorker): move processing of end
+	interceptors a bit up before the code block that finally stores
+	the current values in the spdoc. This allows e.g. to set cookies
+	in end interceptors.
+
 2006-12-06   Martin Leidig  <mleidig@schlund.de> Joerg Haecker <haecker@schlund.de>
 
 	Fixed "empty error page" problem.

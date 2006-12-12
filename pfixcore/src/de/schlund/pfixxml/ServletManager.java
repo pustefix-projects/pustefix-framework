@@ -88,10 +88,6 @@ public abstract class ServletManager extends HttpServlet {
     private static final int             MAX_PARALLEL_SEC_SESSIONS     = 10;
     private static String                TIMESTAMP_ID                  = "";
     private static int                   INC_ID                        = 0;
-
-    //FIXME should be removed, is just here for legacy reasons, the real thing is in SessionAdmin
-    public static final String           SESSION_IS_SECURE             = "__SESSION_IS_SECURE__";
-
     private boolean                      cookie_security_not_enforced  = false;
     private Category                     LOGGER_VISIT                  = Logger.getLogger("LOGGER_VISIT");
     private Category                     CAT                           = Logger.getLogger(ServletManager.class);
@@ -106,10 +102,6 @@ public abstract class ServletManager extends HttpServlet {
     protected abstract ServletManagerConfig getServletManagerConfig();
 
     protected abstract void reloadServletConfig(FileResource configFile, Properties globalProperties) throws ServletException;
-
-    //     protected Properties getProperties() {
-    //         return this.properties;
-    //     }
 
     protected boolean runningUnderSSL(HttpServletRequest req) {
         return req.isSecure();
