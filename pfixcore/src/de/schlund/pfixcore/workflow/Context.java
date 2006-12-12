@@ -231,6 +231,8 @@ public class Context implements AppContext {
 
         SPDocument spdoc = documentFromFlow();
 
+        processIC(endIC);
+        
         if (spdoc != null) {
             if (spdoc.getPagename() == null) {
                 spdoc.setPagename(currentpagerequest.getRootName());
@@ -267,8 +269,6 @@ public class Context implements AppContext {
             storeCookies(spdoc);
         }
 
-        processIC(endIC);
-        
         return spdoc;
     }
 
