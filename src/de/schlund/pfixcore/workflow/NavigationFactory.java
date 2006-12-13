@@ -25,6 +25,7 @@ import org.apache.log4j.Logger;
 
 import de.schlund.pfixxml.resources.FileResource;
 import de.schlund.pfixxml.resources.ResourceUtil;
+import de.schlund.pfixxml.util.XsltVersion;
 
 
 /**
@@ -41,19 +42,20 @@ public class NavigationFactory {
         return instance;
     }
     
-    public synchronized Navigation getNavigation(String navifilename) throws Exception {
+    public synchronized Navigation getNavigation(String navifilename,XsltVersion xsltVersion) throws Exception {
         FileResource navifile = ResourceUtil.getFileResourceFromDocroot(navifilename);
-        return getNavigation(navifile);
+        return getNavigation(navifile,xsltVersion);
     }
             
-    public synchronized Navigation getNavigation(FileResource navifile) throws Exception {
+    public synchronized Navigation getNavigation(FileResource navifile,XsltVersion xsltVersion) throws Exception {
+       
         Navigation navi = null;
         
         navi = (Navigation) navis.get(navifile.toURI().toString());
         
         if (navi == null || navi.needsReload()) {
             LOG.warn("***** Creating Navigation object *******");
-            navi     = new Navigation(navifile);
+            navi     = new Navigation(navifile,xsltVersion);
             navis.put(navifile.toURI().toString(), navi);
         }
         

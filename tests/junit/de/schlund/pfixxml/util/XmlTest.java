@@ -18,6 +18,11 @@ import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 
 public class XmlTest extends TestCase {
+    
+    protected XsltVersion getXsltVersion() {
+        return XsltVersion.XSLT1;
+    }
+    
     public void testCreateDocument() {
         assertNotNull(Xml.createDocument());
     }
@@ -79,11 +84,11 @@ public class XmlTest extends TestCase {
         Transformer t;
         
         // make sure to get comments
-    	Document doc = Xml.parseString("<pfx:include xmlns:pfx='foo'><a/></pfx:include>");
+    	Document doc = Xml.parseString(getXsltVersion(), "<pfx:include xmlns:pfx='foo'><a/></pfx:include>");
     	Element root = doc.getDocumentElement();
     	NamedNodeMap lst = root.getAttributes();
     	assertEquals(0, lst.getLength());
-    	t = Xslt.createIdentityTransformer();
+    	t = Xslt.createIdentityTransformer(getXsltVersion());
     	t.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "no");
     	t.setOutputProperty(OutputKeys.INDENT, "no");
     	t.transform(new DOMSource(doc), new StreamResult(System.out));

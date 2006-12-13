@@ -29,6 +29,7 @@ import org.xml.sax.SAXException;
 import de.schlund.pfixxml.resources.FileResource;
 import de.schlund.pfixxml.targets.SPCache;
 import de.schlund.pfixxml.targets.SPCacheFactory;
+import de.schlund.pfixxml.util.XsltVersion;
 
 /**
  * IncludeDocumentFactory.java  
@@ -59,14 +60,15 @@ public class IncludeDocumentFactory {
     }
     
     // FIXME! Don't do the whole method synchronized!!
-    public synchronized IncludeDocument getIncludeDocument(FileResource path, boolean mutable) throws SAXException, IOException, TransformerException  {
-
+    public synchronized IncludeDocument getIncludeDocument(XsltVersion xsltVersion, FileResource path, boolean mutable) throws SAXException, IOException, TransformerException  {
+        //TODO: change method signature (create multiple methods) to reflect mutable vs. immutable document creation
+        if(xsltVersion==null&&!mutable) throw new IllegalArgumentException("XsltVersion has to be specified to create a immutable document.");
         IncludeDocument includeDocument = null;
-        String          key             = getKey(path, mutable);
+        String          key             = getKey(xsltVersion, path, mutable);
         
         if (!isDocumentInCache(key) || isDocumentInCacheObsolete(path, key)) {
             includeDocument = new IncludeDocument();
-            includeDocument.createDocument(path, mutable);
+            includeDocument.createDocument(xsltVersion, path, mutable);
             cache.setValue(key, includeDocument);
         } else {
             includeDocument = (IncludeDocument) cache.getValue(key);
@@ -78,8 +80,8 @@ public class IncludeDocumentFactory {
         return cache.getValue(key) != null ? true : false;
     }
     
-    private String getKey(FileResource path, boolean mutable) {
-        return mutable ? path.toURI().toString() + "_mutable" : path.toURI().toString() + "_imutable";
+    private String getKey(XsltVersion xsltVersion, FileResource path, boolean mutable) {
+        return mutable ? path.toURI().toString() + "_mutable" : path.toURI().toString() + "_imutable"+"_"+xsltVersion;
     }
 
     private boolean isDocumentInCacheObsolete(FileResource path, String newkey) {

@@ -4,9 +4,6 @@ import java.io.File;
 import java.io.Serializable;
 
 import junit.framework.TestCase;
-
-import org.w3c.dom.Document;
-
 import de.schlund.pfixxml.util.Xml;
 
 public class ApplicationListTest extends TestCase {
@@ -17,7 +14,6 @@ public class ApplicationListTest extends TestCase {
 
     public void testApplicationTomcat() throws Exception {
         Application app;
-        ApplicationList lst;
         
         app = new Application("foo", "bar", true, "/a", "mhm");
         assertEquals("https://bar:8443/foo;jsessionid=nosuchsession.mhm", app.getUrl(true, "/foo").toString());
@@ -26,7 +22,6 @@ public class ApplicationListTest extends TestCase {
 
     public void testApplicationApache() throws Exception {
         Application app;
-        ApplicationList lst;
         
         app = new Application("foo", "bar", false, "/a", "mhm");
         assertEquals("http://bar/back;jsessionid=nosuchsession.mhm", app.getUrl(false, "/back").toString());
@@ -48,11 +43,12 @@ public class ApplicationListTest extends TestCase {
     }
 
     public void testLoad() throws Exception {
-        Document doc;
+      
         ApplicationList lst;
         Application app;
 
-        lst = ApplicationList.load(Xml.parse(new File("tests/junit/de/schlund/pfixxml/jmx/projects.xml")), true, "foo");
+        lst = ApplicationList.load(Xml.parseMutable(new File("tests/junit/de/schlund/pfixxml/jmx/projects.xml")), true, "foo");
+       
         assertEquals(6, lst.size());
         app = (Application) lst.getApplications().get(0);
         assertEquals("sample1", app.getName());

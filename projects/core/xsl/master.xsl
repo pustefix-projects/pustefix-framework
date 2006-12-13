@@ -74,6 +74,12 @@
   <xsl:param name="__navitree"/>
   <xsl:param name="navitree" select="$__navitree"/>
 
+  <!--
+    Define __contextpath despite it's only evaluated/needed at runtime, cause Saxon2
+    doesn't allow the usage of undefined variables/params, even if they aren't evaluated
+  -->
+  <xsl:param name="__contextpath">$__contextpath</xsl:param>
+
   <xsl:param name="stylesheets_to_include"/>
 
   <xsl:key name="frameset_key" match="pfx:frameset" use="'fset'"/>

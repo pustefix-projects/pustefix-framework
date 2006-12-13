@@ -40,6 +40,7 @@ import de.schlund.pfixxml.exceptionprocessor.util.TextCreatorVisitor;
 import de.schlund.pfixxml.exceptionprocessor.util.XMLCreatorVisitor;
 import de.schlund.pfixxml.resources.ResourceUtil;
 import de.schlund.pfixxml.targets.TargetGenerationException;
+import de.schlund.pfixxml.targets.TargetGenerator;
 import de.schlund.pfixxml.targets.TargetGeneratorFactory;
 import de.schlund.pfixxml.util.Xml;
 import de.schlund.pfixxml.util.Xslt;
@@ -87,21 +88,30 @@ public class UniversalExceptionProcessor implements ExceptionProcessor {
             LOG.debug("Got following DOM for error-representation: " + Xml.serialize(doc, true, false));
         }
         
-        doc = Xml.parse(doc);
-	
-        Templates stvalue;
-        
         String depxml = props.getProperty("xmlserver.depend.xml");
         if(depxml == null) {
             throw new IllegalArgumentException("Need property xmlserver.depend.xml");
         }
 
+        TargetGenerator generator=null;
+        
         try {
-            stvalue = (Templates) TargetGeneratorFactory.getInstance().createGenerator(
-                    ResourceUtil.getFileResourceFromDocroot(depxml)).createXSLLeafTarget(ERROR_STYLESHEET).getValue();
-        } catch (Exception e) {
+            generator=TargetGeneratorFactory.getInstance().createGenerator(
+                ResourceUtil.getFileResourceFromDocroot(depxml));
+        } catch(Exception e) {
             throw new ServletException(e);
         }
+            
+        doc = Xml.parse(generator.getXsltVersion(),doc);
+        
+        Templates stvalue;
+        
+        try {
+            stvalue = (Templates) generator.createXSLLeafTarget(ERROR_STYLESHEET).getValue();
+        } catch (TargetGenerationException e) {
+            throw new ServletException(e);
+        }
+            
         try {
             Xslt.transform(doc, stvalue, null, new StreamResult(res.getOutputStream()));
         } catch (TransformerException e) {

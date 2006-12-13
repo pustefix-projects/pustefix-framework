@@ -22,8 +22,6 @@ package de.schlund.pfixxml;
 
 import org.apache.log4j.Category;
 
-import com.icl.saxon.Context;
-
 import de.schlund.pfixxml.resources.DocrootResource;
 import de.schlund.pfixxml.resources.FileResource;
 import de.schlund.pfixxml.resources.ResourceUtil;
@@ -31,12 +29,13 @@ import de.schlund.pfixxml.targets.DependencyType;
 import de.schlund.pfixxml.targets.TargetGenerator;
 import de.schlund.pfixxml.targets.TargetGeneratorFactory;
 import de.schlund.pfixxml.targets.VirtualTarget;
+import de.schlund.pfixxml.util.XsltContext;
 
 public class DependencyTracker {
     private static Category CAT = Category.getInstance(DependencyTracker.class.getName());
     
     /** xslt extension */
-    public static String logImage(Context context, String path,
+    public static String logImage(XsltContext context, String path,
                                   String parent_part_in, String parent_theme_in,
                                   String targetGen, String targetKey, String type) throws Exception {
 

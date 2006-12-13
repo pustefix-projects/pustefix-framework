@@ -47,7 +47,7 @@ public class Cleanup{
     }
 
     private void clean() throws Exception {
-        Document input = Xml.parse(new File(CLEANUP));
+        Document input = Xml.parseMutable(new File(CLEANUP));
         Element  root  = input.getDocumentElement();
         NodeList nl    = root.getChildNodes();
         for (int j = 0; j < nl.getLength(); j++) {
@@ -64,7 +64,7 @@ public class Cleanup{
                         Document doc = (Document) changed.get(path);
                         if (doc == null && (type.equals("part") || type.equals("theme"))) {
                             IncludeDocument incdoc = IncludeDocumentFactory.getInstance().
-                                getIncludeDocument(ResourceUtil.getFileResourceFromDocroot(path), true);
+                                getIncludeDocument(null, ResourceUtil.getFileResourceFromDocroot(path), true);
                             doc                    = incdoc.getDocument();
                             System.out.println(doc.hashCode());
                             doc.getDocumentElement().removeAttribute("incpath");

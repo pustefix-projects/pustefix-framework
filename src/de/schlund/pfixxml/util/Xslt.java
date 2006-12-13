@@ -19,7 +19,6 @@
 package de.schlund.pfixxml.util;
 
 import java.io.File;
-import java.io.StringReader;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -41,10 +40,8 @@ import javax.xml.transform.stream.StreamSource;
 
 import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
+import org.w3c.dom.Node;
 import org.xml.sax.InputSource;
-
-import com.icl.saxon.TransformerFactoryImpl;
-import com.icl.saxon.tinytree.TinyDocumentImpl;
 
 import de.schlund.pfixxml.resources.FileResource;
 import de.schlund.pfixxml.resources.ResourceUtil;
@@ -53,49 +50,23 @@ import de.schlund.pfixxml.targets.TargetGenerationException;
 import de.schlund.pfixxml.targets.TargetImpl;
 
 public class Xslt {
+    
     private static final Logger LOG = Logger.getLogger(Xslt.class);
-
-    private static final TransformerFactory ifactory = new TransformerFactoryImpl();
-
-    private static final ThreadLocal<TransformerFactory> threadfactory = new ThreadLocal<TransformerFactory>();
-
+    
     //-- load documents
 
-    public synchronized static Transformer createIdentityTransformer() {
+    public synchronized static Transformer createIdentityTransformer(XsltVersion xsltVersion) {
         try {
-            return ifactory.newTransformer();
+            TransformerFactory trfFact=XsltProvider.getXsltSupport(xsltVersion).getSharedTransformerFactory();
+            return trfFact.newTransformer();
         } catch (TransformerException e) {
             throw new RuntimeException(e);
         }
     }
     
-    // pretty-print script by M. Kay, see 
-    // http://www.cafeconleche.org/books/xmljava/chapters/ch17s02.html#d0e32721
-    private static final String ID = "<?xml version='1.0'?>"
-        + "<xsl:stylesheet xmlns:xsl='http://www.w3.org/1999/XSL/Transform' version='1.1'>"
-        + "  <xsl:output method='xml' indent='yes'/>"
-        + "  <xsl:strip-space elements='*'/>"
-        + "  <xsl:template match='/'>" + "    <xsl:copy-of select='.'/>"
-        + "  </xsl:template>" + "</xsl:stylesheet>";
-    
-    private static final Templates PP_XSLT;
-    
-    static {
-        Source src;
-        TransformerFactory factory;
-        
-        src = new SAXSource(Xml.createXMLReader(), new InputSource(new StringReader(ID)));
-        factory = new TransformerFactoryImpl();
+    public static synchronized Transformer createPrettyPrinter(XsltVersion xsltVersion) {
         try {
-            PP_XSLT = factory.newTemplates(src);
-        } catch (TransformerConfigurationException e) {
-            throw new RuntimeException(e);
-        }
-    }
-    
-    public static synchronized Transformer createPrettyPrinter() {
-        try {
-            return PP_XSLT.newTransformer();
+            return XsltProvider.getXsltSupport(xsltVersion).getPrettyPrinterTemplates().newTransformer();
         } catch (TransformerConfigurationException e) {
             throw new RuntimeException(e);
         }
@@ -105,38 +76,28 @@ public class Xslt {
      * @deprecated Use {@link #loadTemplates(FileResource)} instead
      */
     public static Templates loadTemplates(Path path) throws TransformerConfigurationException {
-        return loadTemplates(new InputSource("file://" + path.resolve().getAbsolutePath()), null);
+        return loadTemplates(XsltVersion.XSLT1, new InputSource("file://" + path.resolve().getAbsolutePath()), null);
     }
 
-    public static Templates loadTemplates(FileResource path) throws TransformerConfigurationException {
-        return loadTemplates(path, null);
+    public static Templates loadTemplates(XsltVersion xsltVersion, FileResource path) throws TransformerConfigurationException {
+        return loadTemplates(xsltVersion, path, null);
     }
 
-    public static Templates loadTemplates(FileResource path, TargetImpl parent) throws TransformerConfigurationException {
+    public static Templates loadTemplates(XsltVersion xsltVersion, FileResource path, TargetImpl parent) throws TransformerConfigurationException {
         InputSource input;
         try {
             input = new InputSource(path.toURL().toString());
         } catch (MalformedURLException e) {
             throw new TransformerConfigurationException("\"" + path.toString() + "\" does not respresent a valid file", e);
         }
-        return loadTemplates(input, parent);
+        return loadTemplates(xsltVersion, input, parent);
     }
     
-    private static Templates loadTemplates(InputSource input, TargetImpl parent) throws TransformerConfigurationException {
+    private static Templates loadTemplates(XsltVersion xsltVersion, InputSource input, TargetImpl parent) throws TransformerConfigurationException {
         Source src = new SAXSource(Xml.createXMLReader(), input);
-        TransformerFactory factory = threadfactory.get();
-
-        if (factory == null) {
-            // Create a new factory. As we have to use a new URIResolver
-            // for each transformation, we cannot reuse the same factory
-            // in other threads
-            factory = new TransformerFactoryImpl();
-            factory.setErrorListener(new PFErrorListener());
-            threadfactory.set(factory);
-        }
-
+        TransformerFactory factory = XsltProvider.getXsltSupport(xsltVersion).getThreadTransformerFactory();
+        if(factory.getErrorListener()==null) factory.setErrorListener(new PFErrorListener());
         factory.setURIResolver(new FileResolver(parent));
-
         try {
             Templates retval = factory.newTemplates(src);
             return retval;
@@ -157,6 +118,7 @@ public class Xslt {
     //-- apply transformation
     
     public static void transform(Document xml, Templates templates, Map params, Result result) throws TransformerException {
+        XsltVersion xsltVersion=getXsltVersion(templates);
         Transformer trafo = templates.newTransformer();
         long start = 0;
         if (params != null) {
@@ -170,7 +132,7 @@ public class Xslt {
         }
         if (LOG.isDebugEnabled())
             start = System.currentTimeMillis();
-        trafo.transform((TinyDocumentImpl) Xml.parse(xml), result);
+        trafo.transform(new DOMSource(Xml.parse(xsltVersion,xml)), result);
         if (LOG.isDebugEnabled()) {
             long stop = System.currentTimeMillis();
             LOG.debug("      ===========> Transforming and serializing took " + (stop - start) + " ms.");
@@ -179,6 +141,16 @@ public class Xslt {
 
     //--
 
+    private static XsltVersion getXsltVersion(Templates templates) {
+        Iterator<Map.Entry<XsltVersion,XsltSupport>> it=XsltProvider.getXsltSupport().entrySet().iterator();
+        while(it.hasNext()) {
+            Map.Entry<XsltVersion,XsltSupport> entry=it.next();
+            if(entry.getValue().isInternalTemplate(templates)) return entry.getKey();
+        }
+        return null;
+    }
+    
+    
     static class FileResolver implements URIResolver {
         private static final String SEP = File.separator;
         
@@ -198,7 +170,7 @@ public class Xslt {
             String path;
             FileResource file;
             boolean forcePfixroot = false;
-            
+   
             try {
                 uri = new URI(href);
             } catch (URISyntaxException e) {
@@ -263,14 +235,17 @@ public class Xslt {
      */
     static class PFErrorListener implements ErrorListener {
         public void warning(TransformerException arg) throws TransformerException {
+            System.err.println("WARNING: "+arg.getMessage());
             throw arg;
         }
 
         public void error(TransformerException arg) throws TransformerException {
+            System.err.println("ERROR: "+arg.getMessage());
             throw arg;
         }
 
         public void fatalError(TransformerException arg) throws TransformerException {
+            System.err.println("FATAL ERROR: "+arg.getMessage());
             throw arg;
         }
     }

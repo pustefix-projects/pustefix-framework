@@ -154,13 +154,11 @@ public class JmxServer implements JmxServerMBean {
     
     public ApplicationList getApplicationList(boolean tomcat, String sessionSuffix) {
         FileResource file;
-        Document doc;
         
         file = ResourceUtil.getFileResourceFromDocroot("servletconf/projects.xml");
         try {
-            doc = Xml.parse(file);
-            return ApplicationList.load(Xml.parse(file), tomcat, sessionSuffix);
-        } catch (TransformerException e) {
+            return ApplicationList.load(Xml.parseMutable(file), tomcat, sessionSuffix);
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }

@@ -58,7 +58,7 @@ public class XMLVirtualTarget extends VirtualTarget {
     protected Object getValueFromDiscCache() throws TransformerException {
         FileResource thefile = ResourceUtil.getFileResource(getTargetGenerator().getDisccachedir(), getTargetKey());
         if (thefile.exists() && thefile.isFile()) {
-            return Xml.parse(thefile);
+            return Xml.parse(generator.getXsltVersion(), thefile);
         } else {
             return null;
         }
