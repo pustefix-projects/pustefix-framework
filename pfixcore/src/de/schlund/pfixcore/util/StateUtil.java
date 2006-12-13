@@ -93,19 +93,33 @@ public class StateUtil {
      * 
      */
     public static void addResponseHeadersAndType(Context context, ResultDocument resdoc) {
-        Properties      props  = context.getPropertiesForCurrentPageRequest();
-        String          mime   = props.getProperty(MIMETYPE);
-        SPDocument      doc    = resdoc.getSPDocument();
+        Properties props = context.getPropertiesForCurrentPageRequest();
+        Properties contextprops = context.getProperties();
         
+        String mime = props.getProperty(MIMETYPE);
+        SPDocument doc = resdoc.getSPDocument();
+
         if (mime != null) {
             doc.setResponseContentType(mime);
         } else {
             doc.setResponseContentType(def_mime);
         }
-        
-        HashMap headers = PropertiesUtils.selectProperties(props, HEADER);
+
+        // Set global headers first
+        HashMap headers = PropertiesUtils.selectProperties(contextprops, HEADER);
         if (headers != null && !headers.isEmpty()) {
-            for (Iterator iter = headers.keySet().iterator(); iter.hasNext(); ) {
+            for (Iterator iter = headers.keySet().iterator(); iter.hasNext();) {
+                String key = (String) iter.next();
+                String val = (String) headers.get(key);
+                LOG.debug("* Adding response header: " + key + " => " + val);
+                doc.addResponseHeader(key, val);
+            }
+        }
+
+        // then set page specific headers
+        headers = PropertiesUtils.selectProperties(props, HEADER);
+        if (headers != null && !headers.isEmpty()) {
+            for (Iterator iter = headers.keySet().iterator(); iter.hasNext();) {
                 String key = (String) iter.next();
                 String val = (String) headers.get(key);
                 LOG.debug("* Adding response header: " + key + " => " + val);

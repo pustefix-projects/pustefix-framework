@@ -1,3 +1,8 @@
+2006-12-13  Sebastian Marsching  <sebastian.marsching@1und1.de>
+
+	* src/de/schlund/pfixcore/util/StateUtil.java (addResponseHeadersAndType): 
+	Added support for global response headers that are applied to all pages.
+
 2006-12-12  Jens Lautenbacher  <jtl@schlund.de>
 
 	* src/de/schlund/pfixcore/workflow/Context.java (Context::handleRequestWorker): move 
