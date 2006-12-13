@@ -3,7 +3,7 @@
 	Added support for simultaneous usage of different XSLT processors
 	and differnet XSLT versions. Supported are: Saxon/XSLT1 and Saxon/XSLT2.
 	The version can be switched in depend.xml, using the xsltversion
-	attribute at the root node (possible value are 1 or 2).
+	attribute at the root node (possible values are 1 or 2).
 
 	Made all XSLT processing classes XSLT processor independent, the Xml,
 	Xsl and XPath classes now work on interfaces which have to be implemented
@@ -31,7 +31,7 @@
 	* src/de/schlund/pfixxml/util/xsltimpl/XsltContextSaxon2.java
 
 	The following classes now work on the interfaces and retrieve
-	the implementations unsing the XsltVersion:
+	the implementations using the XsltVersion:
 
 	* src/de/schlund/pfixxml/util/Xml.java
 	* src/de/schlund/pfixxml/util/XPath.java
@@ -72,7 +72,7 @@
 	Cause the method signatures of Saxon1 and Saxon2 extension functions
 	containing the processor specific XPathContext aren't compatible, we
 	have to provide an own version for each processor. They wrap the
-	processor specific Context into a XsltContext object and thus use
+	processor specific Context into a XsltContext object and thus can use
 	the original extension functions:
 
 	* src/de/schlund/pfixxml/IncludeDocumentExtensionSaxon1.java
