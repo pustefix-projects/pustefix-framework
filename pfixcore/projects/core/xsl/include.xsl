@@ -3,10 +3,12 @@
                 xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
                 xmlns:ixsl="http://www.w3.org/1999/XSL/TransformOutputAlias"
                 xmlns:pfx="http://www.schlund.de/pustefix/core"
-                xmlns:include="xalan://de.schlund.pfixxml.IncludeDocumentExtension"
-                xmlns:image="xalan://de.schlund.pfixxml.ImageThemedSrc"
+                xmlns:include1="xalan://de.schlund.pfixxml.IncludeDocumentExtensionSaxon1"
+                xmlns:include2="xalan://de.schlund.pfixxml.IncludeDocumentExtensionSaxon2"
+                xmlns:image1="xalan://de.schlund.pfixxml.ImageThemedSrcSaxon1"
+                xmlns:image2="xalan://de.schlund.pfixxml.ImageThemedSrcSaxon2"
                 xmlns:geometry="xalan://de.schlund.pfixxml.ImageGeometry"
-                exclude-result-prefixes="include image geometry">
+                exclude-result-prefixes="include1 include2 image1 image2 geometry">
 
   <!-- The needed parameters must be set in the including stylesheet! -->
 
@@ -190,7 +192,6 @@
     <xsl:param name="noedit"><xsl:value-of select="@noedit"/></xsl:param>
     <xsl:param name="part"><xsl:value-of select="@part"/></xsl:param>
     <xsl:param name="href"><xsl:value-of select="@href"/></xsl:param>
-
     <xsl:variable name="href_int">
       <xsl:if test="$href">
         <xsl:choose>
@@ -210,7 +211,14 @@
           <xsl:value-of select="string($href_int)"/>
         </xsl:when>
         <xsl:otherwise>
-          <xsl:value-of select="include:makeSystemIdRelative()"/>
+          <xsl:choose>
+            <xsl:when test="system-property('xsl:version')='1'">
+              <xsl:value-of select="include1:makeSystemIdRelative()"/>
+            </xsl:when>
+            <xsl:otherwise>
+              <xsl:value-of select="include2:makeSystemIdRelative()"/>
+            </xsl:otherwise>
+          </xsl:choose>
         </xsl:otherwise>
       </xsl:choose>
     </xsl:variable>
@@ -219,8 +227,10 @@
         <b>[Error: &lt;pfx:include&gt; needs "part" attribute]</b>
       </xsl:when>
       <xsl:otherwise>
+        <xsl:choose>
+          <xsl:when test="system-property('xsl:version')='1'">
         <xsl:variable name="incnodes"
-                      select="include:get(string($realpath), string($part),
+                      select="include1:get(string($realpath), string($part),
                               string($__target_gen), string($__target_key),
                               string($parent_part), string($parent_theme), $computed_inc)"/>
         <!-- Start image of edited region -->
@@ -281,6 +291,73 @@
             </a>
           </xsl:when>
         </xsl:choose>
+          </xsl:when>
+          <xsl:otherwise>
+        <!-- DUPLICATED CODE FROM ABOVE JUST TO GET THE INCLUDES VIA INCLUDE2: -->
+        <xsl:variable name="incnodes"
+                      select="include2:get(string($realpath), string($part),
+                              string($__target_gen), string($__target_key),
+                              string($parent_part), string($parent_theme), $computed_inc)"/>
+        <!-- Start image of edited region -->
+        <xsl:choose>
+          <xsl:when test="$noedit = 'true'"/> <!-- Do NOTHING! -->
+          <xsl:when test="not($__target_key = '__NONE__') and $prohibitEdit = 'no'">
+            <ixsl:if test="$__editmode='admin'">
+              <img border="0" src="{{$__contextpath}}/core/img/edit_start.gif"/>
+            </ixsl:if>
+          </xsl:when>
+          <xsl:when test="$__target_key = '__NONE__' and $__editmode = 'admin'">
+            <img border="0" src="{$__contextpath}/core/img/edit_start.gif"/>
+          </xsl:when>
+        </xsl:choose>
+        <!-- -->
+        <xsl:variable name="used_theme">
+          <xsl:choose>
+            <xsl:when test="$incnodes and $incnodes[name() = 'theme' or name() = 'missing']">
+              <xsl:value-of select="$incnodes/@name"/>
+            </xsl:when>
+            <xsl:otherwise>
+              <xsl:message terminate="yes">
+                Error when calling extension function 'include:get' => Didn't get a valid nodeset.
+              </xsl:message>
+            </xsl:otherwise>
+          </xsl:choose>
+        </xsl:variable>
+        <xsl:choose>
+          <xsl:when test="$incnodes and $incnodes[name() = 'theme']">
+            <xsl:apply-templates select="$incnodes/node()">
+              <xsl:with-param name="__env" select="."/>
+            </xsl:apply-templates>
+          </xsl:when>
+          <xsl:when test="not($noerror = 'true')">
+            <xsl:call-template name="pfx:missinc">
+              <xsl:with-param name="href" select="$realpath"/>
+              <xsl:with-param name="part" select="$part"/>
+            </xsl:call-template>
+          </xsl:when>
+        </xsl:choose>
+        <!-- ===================================================== -->
+        <xsl:choose>
+          <xsl:when test="$noedit = 'true'"/> <!-- Do NOTHING! -->
+          <xsl:when test="not($__target_key = '__NONE__') and $prohibitEdit = 'no'">
+            <ixsl:if test="$__editmode = 'admin'">
+              <a href="">
+                <ixsl:attribute name="onclick">window.open('/xml/edit/includes;<ixsl:value-of select="$__sessid"/>?jump.Theme=<xsl:value-of select="string($used_theme)"/>&amp;jump.Path=<xsl:value-of select="string($realpath)"/>&amp;jump.Part=<xsl:value-of select="$part"/>&amp;jump.TargetGenerator=<xsl:value-of select="$product"/>&amp;jump.Type=include&amp;__anchor=left_navi|<xsl:value-of select="$realpath"/>','PustefixEditor','menubar=yes,status=yes,resizable=yes');return(false);</ixsl:attribute>
+                <img border="0" src="{{$__contextpath}}/core/img/edit.gif"
+                     alt="Edit include: '{$part}' in file '{$realpath}'"
+                     title="Edit include: '{$part}' in file '{$realpath}'"/>
+              </a>
+            </ixsl:if>
+          </xsl:when>
+          <xsl:when test="$__target_key='__NONE__' and $__editmode = 'admin'">
+            <a href="">
+              <xsl:attribute name="onClick">window.open('/xml/edit/dynincludes;<xsl:value-of select="$__sessid"/>?jump.Theme=<xsl:value-of select="string($used_theme)"/>&amp;jump.Path=<xsl:value-of select="$realpath"/>&amp;jump.Part=<xsl:value-of select="$part"/>&amp;jump.Name=<xsl:value-of select="$product"/>&amp;jump.TargetGenerator=<xsl:value-of select="$product"/>&amp;jump.Type=dyninclude&amp;__anchor=left_navi|{$realpath}','PustefixEditor','menubar=yes,status=yes,resizable=yes');return(false);</xsl:attribute>
+              <img border="0" src="{$__contextpath}/core/img/edit.gif" alt="Edit include: '{$part}' in file '{$realpath}'" title="Edit include: '{$part}' in file '{$realpath}'"/>
+            </a>
+          </xsl:when>
+        </xsl:choose>          
+          </xsl:otherwise>
+        </xsl:choose>
       </xsl:otherwise>
     </xsl:choose>
   </xsl:template>
@@ -295,9 +372,18 @@
                       ((not($src) or $src = '') and $themed-path and not($themed-path = '') and $themed-img and not($themed-img = ''))">
         <xsl:variable name="parent_part"><xsl:value-of select="ancestor::part[position() = 1]/@name"/></xsl:variable>
         <xsl:variable name="parent_theme"><xsl:value-of select="ancestor::theme[position() = 1]/@name"/></xsl:variable>
-        <xsl:value-of select="image:getSrc(string($src),string($themed-path),string($themed-img),
+        <xsl:choose>
+          <xsl:when test="system-property('xsl:version')='1'">
+        <xsl:value-of select="image1:getSrc(string($src),string($themed-path),string($themed-img),
                               string($parent_part),string($parent_theme),
                               string($__target_gen),string($__target_key))"/>
+          </xsl:when>
+          <xsl:otherwise>
+        <xsl:value-of select="image2:getSrc(string($src),string($themed-path),string($themed-img),
+                              string($parent_part),string($parent_theme),
+                              string($__target_gen),string($__target_key))"/>          
+          </xsl:otherwise>
+        </xsl:choose>
       </xsl:when>
       <xsl:otherwise>
         <xsl:message terminate="no">
@@ -383,6 +469,10 @@
         </xsl:if>
       </xsl:otherwise>
     </xsl:choose>
+  </xsl:template>
+
+  <xsl:template name="includeswitch">
+  
   </xsl:template>
 
 </xsl:stylesheet>

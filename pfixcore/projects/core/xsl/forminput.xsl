@@ -170,9 +170,10 @@
           </xsl:choose>
         </xsl:when>
         <xsl:otherwise>
+        <!--
           <xsl:if test="ancestor-or-self::pfx:frame[position()=1]/@name">
             <xsl:value-of select="ancestor-or-self::pfx:frame[position()=1]/@name"/>
-          </xsl:if>
+          </xsl:if>-->
         </xsl:otherwise>
       </xsl:choose>
     </xsl:variable>
@@ -671,7 +672,7 @@
           </ixsl:if>
         </xsl:when>
         <xsl:otherwise>
-          <div style="{$style}" onclick="if (event.stopPropagation) event.stopPropagation(); else if (typeof event.cancelBubble != 'undefined') event.cancelBubble = true; this.style.display='none';">
+          <div onclick="if (event.stopPropagation) event.stopPropagation(); else if (typeof event.cancelBubble != 'undefined') event.cancelBubble = true; this.style.display='none';">
             <xsl:apply-templates/>
           </div>
         </xsl:otherwise>

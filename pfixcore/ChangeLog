@@ -1,3 +1,153 @@
+2006-12-13   Martin Leidig  <mleidig@schlund.de>
+
+	Added support for simultaneous usage of different XSLT processors
+	and differnet XSLT versions. Supported are: Saxon/XSLT1 and Saxon/XSLT2.
+	The version can be switched in depend.xml, using the xsltversion
+	attribute at the root node (possible value are 1 or 2).
+
+	Made all XSLT processing classes XSLT processor independent, the Xml,
+	Xsl and XPath classes now work on interfaces which have to be implemented
+	by the XSLT processors (XmlSupport, XslSupport, XPathSupport). 
+	Implementations of these interfaces are managed by the XsltProvider class.
+	Thus all supported XSLT processors and their libraries are only required
+	at compile time. At runtime the really used processors are sufficient:
+
+	Interfaces: 
+
+	* src/de/schlund/pfixxml/util/XsltContext.java
+	* src/de/schlund/pfixxml/util/XPathSupport.java
+	* src/de/schlund/pfixxml/util/XsltSupport.java
+	* src/de/schlund/pfixxml/util/XmlSupport.java
+
+	Implementations:
+
+	* src/de/schlund/pfixxml/util/xsltimpl/XsltSaxon1.java
+	* src/de/schlund/pfixxml/util/xsltimpl/XsltSaxon2.java
+	* src/de/schlund/pfixxml/util/xsltimpl/XPathSaxon1.java
+	* src/de/schlund/pfixxml/util/xsltimpl/XPathSaxon2.java
+	* src/de/schlund/pfixxml/util/xsltimpl/XmlSaxon1.java
+	* src/de/schlund/pfixxml/util/xsltimpl/XmlSaxon2.java
+	* src/de/schlund/pfixxml/util/xsltimpl/XsltContextSaxon1.java
+	* src/de/schlund/pfixxml/util/xsltimpl/XsltContextSaxon2.java
+
+	The following classes now work on the interfaces and retrieve
+	the implementations unsing the XsltVersion:
+
+	* src/de/schlund/pfixxml/util/Xml.java
+	* src/de/schlund/pfixxml/util/XPath.java
+	* src/de/schlund/pfixxml/util/Xslt.java
+
+	Other changed or new XSLT classes:
+
+	* src/de/schlund/pfixxml/util/XsltVersion.java: Identifies the
+	used XSLT version, possible values are XsltVersion.XSLT1 for
+	Saxon/XSLT1 and XsltVersion.XSLT2 for Saxon/XSLT2
+	* src/de/schlund/pfixxml/util/XsltProvider.java: Manages XSLT
+	implementations: registers only implementations which can be
+	instantiated (if the according XSLT processor libraries are
+	available)
+	* src/de/schlund/pfixxml/util/XPathDefault.java: Implements the
+	XPathSupport via the JAXP XPath API
+	
+
+	Some classes which were reading in Saxon's internal DOM representation,
+	but only need an implementation independent W3C DOM, now are using the
+	default JAXP DOM. This reduces the dependencies to the internal DOM
+	representation, which now has to be specified explicitly, cause multiple
+	internal DOM models can be in use. If a class requires a Saxon DOM, it
+	either has to retrieve the currently configured XSLT version from the
+	target generator, implement an own configuration mechanism or can get
+	the preferred version via XsltProvider.getPreferredXsltVersion (in this
+	case the class has to ensure that it works with all models, cause the
+	preferred version can be subject to change). The following classes now
+	use a JAXP DOM:
+
+	* src/de/schlund/pfixcore/scriptedflow/compiler/Compiler.java
+	* src/de/schlund/pfixcore/util/Cleanup.java
+	* src/de/schlund/pfixcore/util/WebappCopyPassthroughHtdocsTask.java
+	* src/de/schlund/pfixcore/util/GenerateSCodes.java
+	* src/de/schlund/pfixxml/ProjectInitFactory.java
+	* src/de/schlund/pfixxml/jmx/JmxServer.java
+
+	Cause the method signatures of Saxon1 and Saxon2 extension functions
+	containing the processor specific XPathContext aren't compatible, we
+	have to provide an own version for each processor. They wrap the
+	processor specific Context into a XsltContext object and thus use
+	the original extension functions:
+
+	* src/de/schlund/pfixxml/IncludeDocumentExtensionSaxon1.java
+	* src/de/schlund/pfixxml/IncludeDocumentExtensionSaxon2.java
+	* src/de/schlund/pfixxml/ImageThemedSrcSaxon1.java
+	* src/de/schlund/pfixxml/ImageThemedSrcSaxon2.java
+	* src/de/schlund/pfixxml/DependencyTrackerSaxon1.java
+	* src/de/schlund/pfixxml/DependencyTrackerSaxon2.java
+
+	The following extension functions now use the abstract XsltContext
+	and are used by the Saxon processor specific extension functions:
+
+	* src/de/schlund/pfixxml/IncludeDocumentExtension.java
+	* src/de/schlund/pfixxml/DependencyTracker.java
+	* src/de/schlund/pfixxml/ImageThemedSrc.java	
+
+	Other changes:
+
+	* src/de/schlund/pfixcore/editor2/core/spring/internal/ProjectImpl.java:
+	pass XsltVersion
+	* src/de/schlund/pfixcore/workflow/Navigation.java: use passed XsltVersion
+	to build internal Saxon DOM node
+	* src/de/schlund/pfixcore/workflow/NavigationFactory.java: pass/use passed
+	XsltVersion co create Navigation objects
+	* src/de/schlund/pfixcore/util/Cleanup.java: method signature to get 
+	IncludeDocument changed (set no Xslt version, which means getting a
+	JAXP DOM)
+	* src/de/schlund/pfixxml/IncludeDocumentFactory.java: use XsltVersion to
+	retrieve Saxon dependent includes, add xslt version to key to allow
+	caching of the same include in different DOM versions	
+	* src/de/schlund/pfixxml/AbstractXMLServer.java: use XsltVersion to parse
+	Document and retrieve Navigation
+	* src/de/schlund/pfixxml/exceptionprocessor/UniversalExceptionProcessor.java:
+	use XsltVersion to parse Document
+	* src/de/schlund/pfixxml/IncludeDocument.java: now needs to get passed
+	XsltVersion to create the appropriate document
+	* src/de/schlund/pfixxml/targets/XMLLeafTarget.java: passes XsltVersion
+	* src/de/schlund/pfixxml/targets/XSLLeafTarget.java: passes XsltVersion
+	* src/de/schlund/pfixxml/targets/XMLVirtualTarget.java: passes XsltVersion
+	* src/de/schlund/pfixxml/targets/XSLVirtualTarget.java: passes XsltVersion
+	* src/de/schlund/pfixxml/targets/SharedLeafFactory.java: adds XsltVersion
+	to key
+	* src/de/schlund/pfixxml/targets/TargetGenerator.java: reads XsltVersion from
+	depend.xml, fallback is XsltVersion.XSLT1, passes version when creating navi,
+	is used by a lot of other classes to get current XsltVersion
+	* tests/junit/de/schlund/pfixxml/util/XPathTest.java: Added tests, class now
+	is used to test the JAXP XPath API, subclasses test the Saxon implementations
+	* tests/junit/de/schlund/pfixxml/util/XPathSaxon1Test.java: test Saxon1 XPaths
+	* tests/junit/de/schlund/pfixxml/util/XPathSaxon2Test.java: test Saxon2 XPaths
+	* tests/junit/de/schlund/pfixxml/util/XmlTest.java: tests Saxon1, test class
+	for Saxon2 should follow
+	* tests/junit/de/schlund/pfixxml/util/XsltTest.java: tests Saxon2, test class
+	for Saxon2 should follow
+	* tests/junit/de/schlund/pfixxml/jmx/ApplicationListTest.java: now tests with
+	default JAXP DOM
+
+	Changed some XSLT files to work with Saxon1 and Saxon2 (in backwards
+	compatibility mode):
+
+	* projects/core/xsl/master.xsl: Define __contextpath despite it's only 
+	evaluated/needed at runtime, cause Saxon2 doesn't allow the usage of undefined 
+	variables/params, even if they aren't evaluated
+	* projects/core/xsl/forminput.xsl: removed usage of undefined style variable
+	* projects/core/xsl/include.xsl: now uses extension functions for both, Saxon1
+	and Saxon2, and switches between them by detecting the xslt processor version
+	via the builtin property xslt:version. 
+	* projects/core/xsl/metatags.xsl: Define __contextpath param (see master.xsl)
+	
+	Added Saxon libraries for XSLT2 support:
+
+	* lib/saxon8.jar
+	* lib/saxon8-dom.jar
+	* lib/saxon8-xpath.jar
+	
+
 2006-12-12  Jens Lautenbacher  <jtl@schlund.de>
 
 	* src/de/schlund/pfixcore/workflow/context/RequestContextImpl.java

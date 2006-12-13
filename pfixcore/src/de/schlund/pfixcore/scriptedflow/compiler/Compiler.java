@@ -18,15 +18,15 @@
 
 package de.schlund.pfixcore.scriptedflow.compiler;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.xml.transform.TransformerException;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
 import de.schlund.pfixcore.scriptedflow.vm.Instruction;
 import de.schlund.pfixcore.scriptedflow.vm.JumpInstruction;
@@ -52,9 +52,11 @@ public class Compiler {
     public static Script compile(FileResource scriptFile) throws CompilerException {
         Document doc;
         try {
-            doc = Xml.parse(scriptFile);
-        } catch (TransformerException e) {
+            doc = Xml.parseMutable(scriptFile);
+        } catch (SAXException e) {
             throw new CompilerException("XML parser could not parse file " + scriptFile.toString(), e);
+        } catch (IOException e) {
+            throw new CompilerException("XML parser could not read file " + scriptFile.toString(), e);
         }
         
         Element root = doc.getDocumentElement();

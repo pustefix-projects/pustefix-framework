@@ -464,7 +464,7 @@ public abstract class AbstractXMLServer extends ServletManager {
             if (stylesheet.indexOf("::") > 0) {
                 spdoc.getDocument().getDocumentElement().setAttribute("used-pv", stylesheet);
             }
-            spdoc.setDocument(Xml.parse(spdoc.getDocument()));
+            spdoc.setDocument(Xml.parse(generator.getXsltVersion(), spdoc.getDocument()));
             spdoc.setDocIsUpdateable(false);
         }
 
@@ -694,7 +694,7 @@ public abstract class AbstractXMLServer extends ServletManager {
         }
         paramhash.put(TargetGenerator.XSLPARAM_TG, targetconf.toURI().toString());
         paramhash.put(TargetGenerator.XSLPARAM_TKEY, VALUE_NONE);
-        paramhash.put(TargetGenerator.XSLPARAM_NAVITREE, NavigationFactory.getInstance().getNavigation(targetconf).getNavigationXMLElement());
+        paramhash.put(TargetGenerator.XSLPARAM_NAVITREE, NavigationFactory.getInstance().getNavigation(targetconf,generator.getXsltVersion()).getNavigationXMLElement());
 
         String session_to_link_from_external = SessionAdmin.getInstance().getExternalSessionId(session);
         paramhash.put("__external_session_ref", session_to_link_from_external);

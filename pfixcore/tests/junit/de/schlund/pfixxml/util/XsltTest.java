@@ -28,6 +28,11 @@ import com.icl.saxon.om.NodeInfo;
 import de.schlund.pfixxml.resources.ResourceUtil;
 
 public class XsltTest extends TestCase {
+    
+    protected XsltVersion getXsltVersion() {
+        return XsltVersion.XSLT1;
+    }
+    
     //-- make sure we have several bug fixes
     
     public void testBugfix962737_IncorrectNsPrefix() throws Exception {
@@ -54,13 +59,13 @@ public class XsltTest extends TestCase {
         writer = new StringWriter();
         result = new StreamResult(writer);
         transform("html", result);
-        doc = Xml.parseString(writer.getBuffer().toString());
+        doc = Xml.parseString(getXsltVersion(), writer.getBuffer().toString());
         assertEquals("m%C3%BCller", ((Attr) XPath.selectNode(doc, "/html/a/@href")).getValue());
     }
     
     //-- helper code
     
-    private static Document transform(String name) throws Exception {
+    private Document transform(String name) throws Exception {
         DOMResult result;
 
         result = new DOMResult();
@@ -68,19 +73,19 @@ public class XsltTest extends TestCase {
         return (Document) result.getNode();
     }
 
-    private static void transform(String name, Result result) throws Exception {
+    private void transform(String name, Result result) throws Exception {
         final String PREFIX = "tests/junit/de/schlund/pfixxml/util/"; // TODO: windows
         final String xml = name + ".xml";
         final String xsl = name + ".xsl";
         Document doc;
         Templates trafo;
         
-        doc    = Xml.parse(new File(PREFIX + xml));
-        trafo  = Xslt.loadTemplates(ResourceUtil.getFileResource("file://" + (new File(PREFIX + xsl)).getAbsolutePath()));
+        doc    = Xml.parse(getXsltVersion(), new File(PREFIX + xml));
+        trafo  = Xslt.loadTemplates(getXsltVersion(), ResourceUtil.getFileResource("file://" + (new File(PREFIX + xsl)).getAbsolutePath()));
         Xslt.transform(doc, trafo, null, result);
     }
     
-	public static NodeInfo toDocumentExtension(String str) throws TransformerException {
-	    return (NodeInfo) Xml.parseString(str);
+	public NodeInfo toDocumentExtension(String str) throws TransformerException {
+	    return (NodeInfo) Xml.parseString(getXsltVersion(), str);
 	}
 }

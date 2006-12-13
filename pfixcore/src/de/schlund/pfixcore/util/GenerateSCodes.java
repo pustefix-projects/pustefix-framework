@@ -32,6 +32,7 @@ import javax.xml.transform.TransformerException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
 import de.schlund.pfixxml.config.GlobalConfigurator;
 import de.schlund.pfixxml.config.XMLPropertiesUtil;
@@ -84,7 +85,7 @@ public class GenerateSCodes {
     
 
     
-    public void run() throws IOException, TransformerException {
+    public void run() throws IOException, SAXException {
         boolean dogen         = false;
         long    targetmodtime = -1;
 
@@ -115,7 +116,7 @@ public class GenerateSCodes {
             createHeader(writer);
             
             for (DocrootResource input: scfiles) {
-                Document doc   = Xml.parse(input);
+                Document doc   = Xml.parseMutable(input);
                 NodeList list  = doc.getElementsByTagName("part");
                 for (int i = 0; i < list.getLength() ; i++) {
                     Element node      = (Element) list.item(i);

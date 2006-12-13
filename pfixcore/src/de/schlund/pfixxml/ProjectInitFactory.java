@@ -54,7 +54,7 @@ public class ProjectInitFactory {
 
     public void init(Properties props) throws Exception {
         FileResource projectsFile = ResourceUtil.getFileResourceFromDocroot(PROJECTS_XML);
-        Document doc = Xml.parse(projectsFile);
+        Document doc = Xml.parseMutable(projectsFile);
 
         String projectlist = props.getProperty("projectinit.projectlist");
         if (projectlist == null) {

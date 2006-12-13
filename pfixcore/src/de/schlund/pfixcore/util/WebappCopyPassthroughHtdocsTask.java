@@ -129,7 +129,7 @@ public class WebappCopyPassthroughHtdocsTask extends Task {
         HashSet<String> paths = new HashSet<String>();
 
         try {
-            Document doc = Xml.parse(projectsxml);
+            Document doc = Xml.parseMutable(projectsxml);
             List<Node> nodes = XPath
                     .select(
                             doc,
@@ -138,7 +138,7 @@ public class WebappCopyPassthroughHtdocsTask extends Task {
                 if (node.getNodeValue().length() > 0)
                     paths.add(node.getNodeValue());
             }
-        } catch (TransformerException e) {
+        } catch (Exception e) {
             throw new BuildException("Cannot parse " + projectsxml, e);
         }
 
@@ -147,7 +147,7 @@ public class WebappCopyPassthroughHtdocsTask extends Task {
 
     private String getHtdocs() throws BuildException {
         try {
-            Document doc = Xml.parse(projectsxml);
+            Document doc = Xml.parseMutable(projectsxml);
             Node node = XPath.selectNode(doc, "/projects/project[@name='"
                     + projectname + "']/documentroot/text()");
             if (node != null) {
@@ -160,7 +160,7 @@ public class WebappCopyPassthroughHtdocsTask extends Task {
             }
             return null;
 
-        } catch (TransformerException e) {
+        } catch (Exception e) {
             throw new BuildException("Cannot parse " + projectsxml, e);
         }
     }

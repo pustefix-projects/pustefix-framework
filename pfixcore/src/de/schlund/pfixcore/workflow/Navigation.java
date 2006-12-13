@@ -47,6 +47,7 @@ import de.schlund.pfixxml.resources.FileResource;
 import de.schlund.pfixxml.util.TransformerHandlerAdapter;
 import de.schlund.pfixxml.util.XPath;
 import de.schlund.pfixxml.util.Xml;
+import de.schlund.pfixxml.util.XsltVersion;
 
 public class Navigation {
     private NavigationElement                   pageroot = new NavigationElement("__NONE__", "__NONE__");
@@ -57,7 +58,7 @@ public class Navigation {
     
     private Element navigationXMLElement = null;
     
-    public Navigation(FileResource navifile) throws Exception {
+    public Navigation(FileResource navifile,XsltVersion xsltVersion) throws Exception {
         loadTime = System.currentTimeMillis();
         Document navitree = Xml.parseMutable(navifile);
         
@@ -102,7 +103,7 @@ public class Navigation {
         }
         
         // We need a Saxon node here
-        navigationXMLElement = (Element) XPath.selectOne(Xml.parse(navitree), "/make/navigation");
+        navigationXMLElement = (Element) XPath.selectOne(Xml.parse(xsltVersion,navitree), "/make/navigation");
         
         List     nl       = XPath.select(navitree, "/make/navigation/page");
         pagetonavi        = new HashMap<String, NavigationElement>();

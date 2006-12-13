@@ -30,9 +30,6 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
-import com.icl.saxon.Context;
-import com.icl.saxon.om.NodeInfo;
-
 import de.schlund.pfixxml.config.GlobalConfig;
 import de.schlund.pfixxml.resources.DocrootResource;
 import de.schlund.pfixxml.resources.FileResource;
@@ -42,6 +39,8 @@ import de.schlund.pfixxml.targets.TargetGeneratorFactory;
 import de.schlund.pfixxml.targets.VirtualTarget;
 import de.schlund.pfixxml.util.XPath;
 import de.schlund.pfixxml.util.Xml;
+import de.schlund.pfixxml.util.XsltContext;
+import de.schlund.pfixxml.util.XsltVersion;
 
 /**
  * IncludeDocumentExtension.java
@@ -82,7 +81,7 @@ public final class IncludeDocumentExtension {
      * @return a list of nodes understood by the current transformer(currently saxon)
      * @throws Exception on all errors
      */
-    public static final Object get(Context context, String path_str, String part,
+    public static final Object get(XsltContext context, String path_str, String part,
                                    String targetgen, String targetkey,
                                    String parent_part_in, String parent_theme_in, String computed_inc) throws Exception {
 
@@ -136,12 +135,12 @@ public final class IncludeDocumentExtension {
                     DependencyTracker.logTyped("text", path, part, DEF_THEME,
                                                parent_path, parent_part, parent_theme, target);
                 }
-                return errorNode(DEF_THEME);
+                return errorNode(context,DEF_THEME);
                 //return new EmptyNodeSet();
             }
             // get the includedocument
             try {
-                iDoc = IncludeDocumentFactory.getInstance().getIncludeDocument(path, false);
+                iDoc = IncludeDocumentFactory.getInstance().getIncludeDocument(context.getXsltVersion(), path, false);
             } catch (SAXException saxex) {
                 if (dolog)
                     DependencyTracker.logTyped("text", path, part, DEF_THEME,
@@ -168,7 +167,7 @@ public final class IncludeDocumentExtension {
                     DependencyTracker.logTyped("text", path, part, DEF_THEME,
                                                parent_path, parent_part, parent_theme, target);
                 }
-                return errorNode(DEF_THEME);
+                return errorNode(context,DEF_THEME);
                 //return new EmptyNodeSet();
             } else if (length > 1) {
                 // too many parts. Error!
@@ -219,7 +218,7 @@ public final class IncludeDocumentExtension {
                             ok = false;
                         }
                     }
-                    return ok? (Object) ns.get(0) : errorNode(curr_theme);
+                    return ok? (Object) ns.get(0) : errorNode(context,curr_theme);
                     //return ok? (Object) ns.get(0) : new EmptyNodeSet();
                 } else {
                     // too many specific themes found. Error!
@@ -244,7 +243,7 @@ public final class IncludeDocumentExtension {
                     ok = false;
                 }
             }
-            return errorNode(DEF_THEME);
+            return errorNode(context,DEF_THEME);
             //return new EmptyNodeSet();
             
         } catch (Exception e) {
@@ -257,23 +256,22 @@ public final class IncludeDocumentExtension {
         }
     }
 
-    private static final Node errorNode(String prodname) {
+    private static final Node errorNode(XsltContext context,String prodname) {
         Document retdoc  = Xml.createDocumentBuilder().newDocument();
         Element  retelem = retdoc.createElement("missing");
         retelem.setAttribute("name", prodname);
         retdoc.appendChild(retelem);
-        retdoc = Xml.parse(retdoc);
+        retdoc = Xml.parse(context.getXsltVersion(),retdoc);
         return retdoc.getDocumentElement();  
     }
     
     
-    public static final String makeSystemIdRelative(Context context) {
+    public static final String makeSystemIdRelative(XsltContext context) {
         return makeSystemIdRelative(context, "dummy");
     }
 
-    public static final String makeSystemIdRelative(Context context, String dummy) {
-        NodeInfo citem   = context.getContextNodeInfo();
-        String   sysid   = citem.getSystemId();
+    public static final String makeSystemIdRelative(XsltContext context, String dummy) {
+        String   sysid   = context.getSystemId();
        
         if (sysid.startsWith("pfixroot://")) {
             sysid = sysid.substring(("pfixroot://").length());
@@ -288,8 +286,7 @@ public final class IncludeDocumentExtension {
         return sysid;
     }
 
-    public static boolean isIncludeDocument(Context context) {
-        NodeInfo citem   = context.getContextNodeInfo();
-        return ((Document) citem.getDocumentRoot()).getDocumentElement().getNodeName().equals("include_parts");
+    public static boolean isIncludeDocument(XsltContext context) {
+        return context.getDocumentElementName().equals("include_parts");
     }
 }// end of class IncludeDocumentExtension

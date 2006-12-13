@@ -29,6 +29,7 @@ import org.xml.sax.SAXException;
 
 import de.schlund.pfixxml.resources.FileResource;
 import de.schlund.pfixxml.util.Xml;
+import de.schlund.pfixxml.util.XsltVersion;
 
 
 /**
@@ -63,13 +64,15 @@ public class IncludeDocument {
      * @param mutable determine if the document is mutable or not. Any attempts
      * to modify an immutable document will cause an exception.
      */
-    public void createDocument(FileResource path, boolean mutable) throws SAXException, IOException, TransformerException {
+    public void createDocument(XsltVersion xsltVersion, FileResource path, boolean mutable) throws SAXException, IOException, TransformerException {
         modTime  = path.lastModified();
 
         if (mutable) {
             doc = Xml.parseMutable(path);
         } else {
-            doc = Xml.parse(path);
+            //TODO: avoid exception by providing an appropriate method signature
+            if(xsltVersion==null) throw new IllegalArgumentException("XsltVersion is required!");
+            doc = Xml.parse(xsltVersion, path);
         }
     }
 

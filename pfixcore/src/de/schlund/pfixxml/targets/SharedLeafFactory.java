@@ -21,6 +21,7 @@ package de.schlund.pfixxml.targets;
 import java.util.TreeMap;
 
 import de.schlund.pfixxml.resources.FileResource;
+import de.schlund.pfixxml.util.XsltVersion;
 
 /**
  * SharedLeafFactory.java
@@ -44,11 +45,11 @@ public class SharedLeafFactory {
         return instance;
     }
 
-    public synchronized SharedLeaf getSharedLeaf(FileResource path) {
-        SharedLeaf ret = (SharedLeaf) sharedleaves.get(path);
+    public synchronized SharedLeaf getSharedLeaf(XsltVersion xsltVersion,FileResource path) {
+        SharedLeaf ret = (SharedLeaf) sharedleaves.get(xsltVersion+":"+path);
         if (ret == null) {
             ret =  new SharedLeaf(path);
-            sharedleaves.put(path, ret);
+            sharedleaves.put(xsltVersion+":"+path, ret);
         }
         return ret;
     }

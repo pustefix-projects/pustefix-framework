@@ -20,7 +20,6 @@ package de.schlund.pfixxml.util;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -29,6 +28,8 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.net.MalformedURLException;
+import java.util.Iterator;
+import java.util.Map;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -37,14 +38,12 @@ import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Result;
 import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
-import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.sax.SAXSource;
 import javax.xml.transform.stream.StreamResult;
 
-import org.apache.log4j.Category;
+import org.apache.log4j.Logger;
 import org.w3c.dom.Comment;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -56,9 +55,6 @@ import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 import org.xml.sax.XMLReader;
 
-import com.icl.saxon.expr.XPathException;
-import com.icl.saxon.output.SaxonOutputKeys;
-import com.icl.saxon.tinytree.TinyDocumentImpl;
 import com.sun.org.apache.xerces.internal.jaxp.DocumentBuilderFactoryImpl;
 import com.sun.org.apache.xerces.internal.parsers.SAXParser;
 
@@ -66,9 +62,10 @@ import de.schlund.pfixxml.SPDocument;
 import de.schlund.pfixxml.resources.FileResource;
 
 public class Xml {
-    private static final Category               CAT     = Category.getInstance(Xml.class.getName());
+    
+    static final Logger               CAT     = Logger.getLogger(Xml.class);
     private static final DocumentBuilderFactory factory = createDocumentBuilderFactory();
-
+    
     //-- this is where you configure the xml parser:
 
     public static XMLReader createXMLReader() {
@@ -95,9 +92,9 @@ public class Xml {
 
     //-- parse immutable
 
-    public static Document parseString(String str) throws TransformerException {
+    public static Document parseString(XsltVersion xsltVersion, String str) throws TransformerException {
         SAXSource src = new SAXSource(createXMLReader(), new InputSource(new StringReader(str)));
-        return parse(src);
+        return parse(xsltVersion,src);
     }
 
     /**
@@ -110,27 +107,27 @@ public class Xml {
      * @return a document as result of conversion(currently saxons TinyDocumentImpl)
      * @throws Exception on all errors
      */
-    public static Document parse(Document doc) {
-        if (doc instanceof TinyDocumentImpl) {
+    public static Document parse(XsltVersion xsltVersion,Document doc) {
+        if(XsltProvider.getXmlSupport(xsltVersion).isInternalDOM(doc)) {
             return doc;
         } else {
             DOMSource domsrc = new DOMSource(doc);
             try {
-                return parse(domsrc);
+                return parse(xsltVersion,domsrc);
             } catch (TransformerException e) {
                 throw new RuntimeException("a dom tree is always well-formed xml", e);
             }
         }
     }
     
-    public static Document parse(FileResource file) throws TransformerException {
+    public static Document parse(XsltVersion xsltVersion, FileResource file) throws TransformerException {
         SAXSource src;
         try {
             src = new SAXSource(createXMLReader(), new InputSource(file.toURL().toString()));
         } catch (MalformedURLException e) {
             throw new TransformerException("Cannot create URL for input file: " + file.toString(), e);
         }
-        return parse(src);
+        return parse(xsltVersion,src);
     }
 
     /**
@@ -139,9 +136,9 @@ public class Xml {
      * @return the created document(currenly saxons TinyDocumentImpl)
      * @throws TransformerException on errors
      */
-    public static Document parse(File file) throws TransformerException {
+    public static Document parse(XsltVersion xsltVersion,File file) throws TransformerException {
         SAXSource src = new SAXSource(createXMLReader(), new InputSource(toUri(file)));
-        return parse(src);
+        return parse(xsltVersion,src);
     }
 
     private static String toUri(File file) {
@@ -149,13 +146,11 @@ public class Xml {
         return "file://" + file.getAbsolutePath();
     }
 
-    public static Document parse(Source input) throws TransformerException, TransformerConfigurationException {
+    public static Document parse(XsltVersion xsltVersion, Source input) throws TransformerException {
         try {
-            Transformer trans  = Xslt.createIdentityTransformer();
-            DOMResult   result = new DOMResult();
-            trans.transform(input, result);
-            return (TinyDocumentImpl) result.getNode();
-        } catch (XPathException e) {
+            Document doc=XsltProvider.getXmlSupport(xsltVersion).createInternalDOM(input);
+            return doc;
+        } catch (TransformerException e) {
             StringBuffer sb = new StringBuffer();
             sb.append("TransformerException in xmlObjectFromDisc!\n");
             sb.append("Path: ").append(input.getSystemId()).append("\n");
@@ -166,7 +161,7 @@ public class Xml {
             throw e;
         }
     }
-
+    
     //-- parse mutable
 
     public static Document parseStringMutable(String text) throws SAXException {
@@ -364,10 +359,14 @@ public class Xml {
         if (!(node instanceof Document) && !(node instanceof Element)) {
             throw new IllegalArgumentException("unsupported node type: " + node.getClass());
         }
+        
+        XsltVersion xsltVersion=getXsltVersion(node);
+        if(xsltVersion==null) xsltVersion=XsltProvider.getPreferredXsltVersion();
+       
         if (pp) {
-            t = Xslt.createPrettyPrinter();
+            t = Xslt.createPrettyPrinter(xsltVersion);
         } else {
-            t = Xslt.createIdentityTransformer();
+            t = Xslt.createIdentityTransformer(xsltVersion);
         }
         t.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, decl? "no" : "yes");
         if (decl) {
@@ -376,7 +375,8 @@ public class Xml {
             // don't set encoding, I'd force an xml decl by setting it.
         }
         t.setOutputProperty(OutputKeys.INDENT, pp? "yes" : "no");
-        t.setOutputProperty(SaxonOutputKeys.INDENT_SPACES, "2");
+        t.setOutputProperty(XsltProvider.getXmlSupport(xsltVersion).getIndentOutputKey(), "2");
+
         src = new DOMSource(wrap(node));
         if (dest instanceof Writer) {
             result = new StreamResult((Writer) dest);
@@ -447,4 +447,14 @@ public class Xml {
         }
         return ele.substring(start + 1, end);
     }
+    
+    private static XsltVersion getXsltVersion(Node node) {
+        Iterator<Map.Entry<XsltVersion,XmlSupport>> it=XsltProvider.getXmlSupport().entrySet().iterator();
+        while(it.hasNext()) {
+            Map.Entry<XsltVersion,XmlSupport> entry=it.next();
+            if(entry.getValue().isInternalDOM(node)) return entry.getKey();
+        }
+        return null;
+    }
+    
 }

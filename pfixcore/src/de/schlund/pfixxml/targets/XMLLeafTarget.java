@@ -47,7 +47,7 @@ public class XMLLeafTarget extends LeafTarget {
         this.targetkey = key;
         this.themes    = themes;
         FileResource targetpath = ResourceUtil.getFileResourceFromDocroot(key);
-        this.sharedleaf = SharedLeafFactory.getInstance().getSharedLeaf(targetpath);
+        this.sharedleaf = SharedLeafFactory.getInstance().getSharedLeaf(generator.getXsltVersion(),targetpath);
         // Create empty manager to avoid null pointer exceptions
         this.auxdepmanager = new AuxDependencyManager(this);
     }
@@ -58,7 +58,7 @@ public class XMLLeafTarget extends LeafTarget {
     protected Object getValueFromDiscCache() throws TransformerException {
         FileResource thefile = ResourceUtil.getFileResourceFromDocroot(getTargetKey());
         if (thefile.exists() && thefile.isFile()) {
-            return Xml.parse(thefile);
+            return Xml.parse(generator.getXsltVersion(), thefile);
         } else {
             return null;
         }

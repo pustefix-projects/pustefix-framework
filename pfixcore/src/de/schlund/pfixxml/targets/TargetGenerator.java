@@ -72,6 +72,7 @@ import de.schlund.pfixxml.resources.ResourceUtil;
 import de.schlund.pfixxml.targets.cachestat.SPCacheStatistic;
 import de.schlund.pfixxml.util.TransformerHandlerAdapter;
 import de.schlund.pfixxml.util.Xml;
+import de.schlund.pfixxml.util.XsltVersion;
 
 /**
  * The TargetGenerator holds all the targets belonging to a certain
@@ -104,6 +105,8 @@ public class TargetGenerator implements Comparable {
     private Set<FileResource> configFileDependencies = new HashSet<FileResource>();
 
     private String name;
+    
+    private XsltVersion xsltVersion=XsltVersion.XSLT1; //default, can be overridden in depend.xml 
 
     private Themes global_themes;
 
@@ -133,6 +136,10 @@ public class TargetGenerator implements Comparable {
 
     public String getName() {
         return name;
+    }
+    
+    public XsltVersion getXsltVersion() {
+        return xsltVersion;
     }
 
     public Themes getGlobalThemes() {
@@ -321,6 +328,16 @@ public class TargetGenerator implements Comparable {
         }
 
         Element root = (Element) config.getElementsByTagName("make").item(0);
+        
+        String versionStr=root.getAttribute("xsltversion");
+        if(versionStr!=null&&!versionStr.equals("")) {
+            try {
+                xsltVersion=XsltVersion.valueOf("XSLT"+versionStr);
+            } catch(IllegalArgumentException x) {
+                throw new RuntimeException("XSLT version not supported: "+versionStr);
+            }
+        }
+        
         NodeList targetnodes = config.getElementsByTagName("target");
 
         name = getAttribute(root, "project");
@@ -487,6 +504,7 @@ public class TargetGenerator implements Comparable {
             HashMap params = struct.getParams();
             // we want to remove already defined params (needed when we do a reload)
             virtual.resetParams();
+            
             for (Iterator i = params.keySet().iterator(); i.hasNext();) {
                 String pname = (String) i.next();
                 String value = (String) params.get(pname);
@@ -496,11 +514,11 @@ public class TargetGenerator implements Comparable {
             virtual.addParam(XSLPARAM_TG, tgParam);
             virtual.addParam(XSLPARAM_TKEY, key);
             try {
-                virtual.addParam(XSLPARAM_NAVITREE, NavigationFactory.getInstance().getNavigation(this.config_path).getNavigationXMLElement());
+                virtual.addParam(XSLPARAM_NAVITREE, NavigationFactory.getInstance().getNavigation(this.config_path,getXsltVersion()).getNavigationXMLElement());
             } catch (Exception e) {
                 throw new XMLException("Cannot get navigation tree", e);
             }
-
+            
             if (!depxmls.contains(key) && !depxsls.contains(key)) {
                 // it's a toplevel target...
                 if (pagename == null) {

@@ -52,7 +52,7 @@ public class XSLLeafTarget extends LeafTarget {
         this.targetkey = key;
         this.themes    = themes;
         FileResource targetpath = ResourceUtil.getFileResourceFromDocroot(key);
-        this.sharedleaf = SharedLeafFactory.getInstance().getSharedLeaf(targetpath);
+        this.sharedleaf = SharedLeafFactory.getInstance().getSharedLeaf(generator.getXsltVersion(),targetpath);
         this.auxdepmanager = new AuxDependencyManager(this);
         this.auxdepmanager.tryInitAuxdepend();
     }
@@ -66,7 +66,7 @@ public class XSLLeafTarget extends LeafTarget {
             // reset the target dependency list as they will be set up again
             this.getAuxDependencyManager().reset();
             
-            Templates tmpl = Xslt.loadTemplates(thefile, this);
+            Templates tmpl = Xslt.loadTemplates(generator.getXsltVersion(), thefile, this);
             
             // save aux dependencies
             try {
@@ -86,7 +86,7 @@ public class XSLLeafTarget extends LeafTarget {
         FileResource thefile = ResourceUtil.getFileResourceFromDocroot(getTargetKey());
         if (thefile.exists() && thefile.isFile()) {
             try {
-                return Xml.parse(thefile);
+                return Xml.parse(generator.getXsltVersion(), thefile);
             } catch (TransformerException e) {
                 throw new TargetGenerationException("Error while reading DOM from disccache for target "
                                                     + getTargetKey(), e);

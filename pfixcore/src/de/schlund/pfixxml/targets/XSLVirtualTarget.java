@@ -58,7 +58,7 @@ public class XSLVirtualTarget extends VirtualTarget {
     protected Object getValueFromDiscCache() throws TransformerException {
         FileResource thefile = ResourceUtil.getFileResource(getTargetGenerator().getDisccachedir(), getTargetKey());
         if (thefile.exists() && thefile.isFile()) {
-            return Xslt.loadTemplates(thefile, this);
+            return Xslt.loadTemplates(generator.getXsltVersion(), thefile, this);
         } else {
             return null;
         }
@@ -71,7 +71,7 @@ public class XSLVirtualTarget extends VirtualTarget {
         FileResource thefile = ResourceUtil.getFileResource(getTargetGenerator().getDisccachedir(), getTargetKey());
         if (thefile.exists() && thefile.isFile()) {
             try {
-                return Xml.parse(thefile);
+                return Xml.parse(generator.getXsltVersion(), thefile);
             } catch (TransformerException e) {
                 throw new TargetGenerationException("Error while reading DOM from disccache for target "
                                                     + getTargetKey(), e);

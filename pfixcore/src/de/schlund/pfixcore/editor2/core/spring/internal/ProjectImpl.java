@@ -365,7 +365,7 @@ public class ProjectImpl extends AbstractProject {
 
     private Navigation getNavigation() {
         try {
-            return NavigationFactory.getInstance().getNavigation(this.dependPath);
+            return NavigationFactory.getInstance().getNavigation(this.dependPath,tgen.getXsltVersion());
         } catch (Exception e) {
             throw new RuntimeException(
                     "Could not get navigation object for prokec \""

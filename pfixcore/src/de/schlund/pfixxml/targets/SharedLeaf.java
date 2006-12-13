@@ -34,6 +34,7 @@ import de.schlund.pfixxml.resources.FileResource;
  */
 
 public class SharedLeaf implements Comparable {
+    
     private FileResource path;
     private TreeSet pageinfos = new TreeSet();
     private long    modtime   = 0;

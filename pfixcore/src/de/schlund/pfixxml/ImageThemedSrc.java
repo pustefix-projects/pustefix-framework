@@ -20,13 +20,12 @@
 package de.schlund.pfixxml;
 import org.apache.log4j.Category;
 
-import com.icl.saxon.Context;
-
 import de.schlund.pfixxml.resources.FileResource;
 import de.schlund.pfixxml.resources.ResourceUtil;
 import de.schlund.pfixxml.targets.TargetGenerator;
 import de.schlund.pfixxml.targets.TargetGeneratorFactory;
 import de.schlund.pfixxml.targets.VirtualTarget;
+import de.schlund.pfixxml.util.XsltContext;
     
 /**
  * Describe class ImageThemedSrc here.
@@ -41,7 +40,7 @@ public class ImageThemedSrc {
     private static Category CAT = Category.getInstance(ImageThemedSrc.class.getName());
 
     /** xslt extension */
-    public static String getSrc(Context context, String src, String themed_path, String themed_img,
+    public static String getSrc(XsltContext context, String src, String themed_path, String themed_img,
                                 String parent_part_in, String parent_product_in,
                                 String targetGen, String targetKey) throws Exception {
 
