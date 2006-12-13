@@ -48,6 +48,9 @@
   <pagerequest name="typetest">
   </pagerequest>
   
+  <pagerequest name="calltest">
+  </pagerequest>
+  
   <pagerequest name="gencss" nostore="true">
     <properties>
       <prop name="mimetype">text/css</prop>

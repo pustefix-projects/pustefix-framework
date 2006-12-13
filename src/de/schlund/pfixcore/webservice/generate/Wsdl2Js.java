@@ -147,8 +147,10 @@ public class Wsdl2Js {
                     
                     String stubClass=JSPREFIX_WS+portName;
                     
-                    JsClass jsClass=new JsClass(stubClass,"SOAP_Stub");
+                    JsParam[] constParams=new JsParam[] {new JsParam("cbObj")};
+                    JsClass jsClass=new JsClass(stubClass,"SOAP_Stub",constParams);
                     JsBlock block=jsClass.getConstructorBody();
+                    block.addStatement(new JsStatement("this._cbObj=cbObj"));
                     block.addStatement(new JsStatement("this._setURL(\""+soapAdr.getLocationURI()+"\")"));
                     
                     Binding binding=port.getBinding();

@@ -69,6 +69,13 @@
     <session type="none"/>
     <context name="pfixcore_project:webservice::servlet:config"/>
   </webservice>
+  
+  <webservice name="CallTest">
+    <interface name="de.schlund.pfixcore.example.webservices.CallTest"/>
+    <implementation name="de.schlund.pfixcore.example.webservices.CallTestImpl"/>
+    <session type="none"/>
+    <context name="pfixcore_project:webservice::servlet:config"/>
+  </webservice>
 
 </webservice-config>
 
