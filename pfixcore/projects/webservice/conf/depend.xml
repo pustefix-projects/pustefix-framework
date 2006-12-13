@@ -17,6 +17,7 @@
     <page name="counter" handler="/xml/config"/>
     <page name="data" handler="/xml/config"/>
     <page name="typetest" handler="/xml/config"/>
+    <page name="calltest" handler="/xml/config"/>
   </navigation>
 
   <standardmaster>
@@ -32,5 +33,6 @@
   <standardpage name="counter" xml="webservice/xml/two_frames.xml"/>
   <standardpage name="data" xml="webservice/xml/two_frames.xml"/>
   <standardpage name="typetest" xml="webservice/xml/two_frames.xml"/>
+  <standardpage name="calltest" xml="webservice/xml/two_frames.xml"/>
 
 </make>
