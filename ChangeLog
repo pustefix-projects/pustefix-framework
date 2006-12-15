@@ -1,5 +1,6 @@
 2006-12-15  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
+	* projects/core/xsl/include.xsl: 
 	* projects/core/xsl/utils.xsl: 
 	* projects/testsuite/conf/depend.xml: 
 	* projects/core/img/console_*.gif: 
