@@ -108,7 +108,7 @@ public class IncludesResolver {
                     throw new SAXException("Only one of the \"xpath\", \"refid\" or \"section\" attributes may be supplied to the include tag!");
                 }
                 // xpath = "/*[local-name()='config-fragments']/*[@id='" + refid + "']/node()";
-                xpath = "/fr:config-fragments/fr:section[@id='" + refid + "']/node()";
+                xpath = "/fr:config-fragments/*[@id='" + refid + "']/node()";
             } else if (section != null) {
                 if (xpath != null || refid != null) {
                     throw new SAXException("Only one of the \"xpath\", \"refid\" or \"section\" attributes may be supplied to the include tag!");
