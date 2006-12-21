@@ -80,6 +80,7 @@ public abstract class ServletManager extends HttpServlet {
     private   static final String CHECK_FOR_RUNNING_SSL_SESSION = "__CHECK_FOR_RUNNING_SSL_SESSION__";
     private   static final String PARAM_FORCELOCAL              = "__forcelocal";
     public    static final String PROP_COOKIE_SEC_NOT_ENFORCED  = "servletmanager.cookie_security_not_enforced";
+    public    static final String PROP_P3PHEADER                = "servletmanager.p3p";
     private   static final String PROP_EXCEPTION                = "exception";
     protected static final String DEF_CONTENT_TYPE              = "text/html";
     private   static final String DEFAULT_ENCODING              = "UTF-8";
@@ -186,6 +187,13 @@ public abstract class ServletManager extends HttpServlet {
         String      mark_session_as_no_cookies = null;
         boolean     does_cookies               = false;
         boolean     refuse_cookies             = false;
+        
+        // Set P3P-Header if needed to make sure it is 
+        // set for every response (even redirects).
+        String p3pHeader = getServletManagerConfig().getProperties().getProperty(PROP_P3PHEADER);
+        if (p3pHeader != null && p3pHeader.length() > 0) {
+            res.addHeader("P3P", p3pHeader);
+        }
         
         if (req.isRequestedSessionIdValid()) {
             session        = req.getSession(false);
