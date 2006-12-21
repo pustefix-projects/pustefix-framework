@@ -21,6 +21,7 @@ package de.schlund.pfixxml;
 
 import java.io.*;
 import java.util.*;
+
 import org.apache.log4j.*;
 
 
@@ -37,7 +38,7 @@ import org.apache.log4j.*;
 
 public class ImageGeometry {
     private static Map      imageinfo = new HashMap();
-    private static Category CAT       = Category.getInstance(ImageGeometry.class); 
+    private static Logger   LOG       = Logger.getLogger(ImageGeometry.class); 
     
     public static int getHeight(String path) {
         ImageGeometryData data = getImageGeometryData(path);
@@ -65,6 +66,60 @@ public class ImageGeometry {
             return data.getType();
         }
     }
+    
+    public static String getStyleStringForImage(String path, String userStyle, String userWidth, String userHeight) {
+        ImageGeometryData data = getImageGeometryData(path);
+        int targetWidth, targetHeight;
+        if (userWidth != null && userWidth.length() > 0) {
+            targetWidth = Integer.parseInt(userWidth);
+        } else {
+            targetWidth = data.getWidth();
+        }
+        if (userHeight != null && userHeight.length() > 0) {
+            targetHeight = Integer.parseInt(userHeight);
+        } else {
+            targetHeight = data.getHeight();
+        }
+        
+        boolean haveWidth = false, haveHeight = false;
+        
+        if (userStyle == null) {
+            userStyle = "";
+        }
+        StringBuffer genStyle = new StringBuffer(userStyle.trim());
+        
+        StringTokenizer st = new StringTokenizer(userStyle, ";");
+        while (st.hasMoreTokens()) {
+            String token = st.nextToken();
+            String propName = token.substring(0, token.indexOf(':'));
+            propName = propName.trim().toLowerCase();
+            if (propName.equals("width")) {
+                haveWidth = true;
+            } else if (propName.equals("height")) {
+                haveHeight = true;
+            }
+        }
+        
+        if (!haveWidth && targetWidth != -1) {
+            if (genStyle.length() > 0 && genStyle.charAt(genStyle.length()-1) != ';') {
+                genStyle.append(';');
+            }
+            genStyle.append("width:");
+            genStyle.append(targetWidth);
+            genStyle.append("px;");
+        }
+        
+        if (!haveHeight && targetHeight != -1) {
+            if (genStyle.length() > 0 && genStyle.charAt(genStyle.length()-1) != ';') {
+                genStyle.append(';');
+            }
+            genStyle.append("height:");
+            genStyle.append(targetHeight);
+            genStyle.append("px;");
+        }
+        
+        return genStyle.toString();
+    }
 
     private static ImageGeometryData getImageGeometryData(String path) {
         synchronized (imageinfo) {
@@ -77,11 +132,11 @@ public class ImageGeometry {
                     try {
                         tmp = new ImageGeometryData(img);
                     } catch (IOException e) {
-                        CAT.error("*** Couldn't get geometry for " + path, e);
+                        LOG.error("*** Couldn't get geometry for " + path, e);
                         return null;
                     }
                     if (!tmp.isOK()) {
-                        CAT.error("*** Image data wasn't recognized for " + path);
+                        LOG.error("*** Image data wasn't recognized for " + path);
                         return null;
                     }
                     imageinfo.put(path, tmp);
