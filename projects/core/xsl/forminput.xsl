@@ -285,7 +285,7 @@
     <xsl:param name="themed-img"  select="@themed-img"/>
     <xsl:param name="alt" select="@alt"/>
     <xsl:param name="exclude-attributes"/>
-    <xsl:variable name="always-exclude-attributes" select="'src|themed-path|themed-img|alt|type|name|jumptopage|jumptopageflow|forcestop|pageflow'"/>
+    <xsl:variable name="always-exclude-attributes" select="'src|themed-path|themed-img|alt|width|height|type|name|jumptopage|jumptopageflow|forcestop|pageflow'"/>
     <xsl:variable name="realsrc">
       <xsl:call-template name="pfx:image_register_src">
         <xsl:with-param name="src" select="$src"/>
@@ -297,7 +297,7 @@
     <input type="image" src="{{$__contextpath}}/{$realsrc}" alt="{$alt}"> 
       <xsl:copy-of select="@*[not(contains(concat('|',$always-exclude-attributes,'|',$exclude-attributes,'|') , concat('|',name(),'|')))]"/>
       <xsl:attribute name="class"><xsl:value-of select="@class"/> PfxInputImage</xsl:attribute>
-      <xsl:call-template name="pfx:image_geom_impl">
+      <xsl:call-template name="pfx:image_geom_impl_new">
         <xsl:with-param name="src" select="$realsrc"/>
       </xsl:call-template>
       <ixsl:attribute name="name">__SBMT:<ixsl:value-of select="$genname_{generate-id(.)}"/>:</ixsl:attribute>
