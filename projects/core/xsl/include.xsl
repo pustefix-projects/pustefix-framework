@@ -417,7 +417,7 @@
     </img>
     
   </xsl:template>
-
+  
   <xsl:template name="pfx:image_geom_impl">
     <xsl:param name="src">
       <xsl:value-of select="./@src"/>
@@ -465,6 +465,37 @@
         <xsl:if test="not($height = -1)">
           <xsl:attribute name="height">
             <xsl:value-of select="$height"/>
+          </xsl:attribute>
+        </xsl:if>
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:template>
+  
+  <xsl:template name="pfx:image_geom_impl_new">
+    <xsl:param name="src">
+      <xsl:value-of select="./@src"/>
+    </xsl:param>
+    <xsl:choose>
+      <xsl:when test="string($src) = ''">
+        <xsl:message terminate="no">**** Caution:      Error calling pfx:image_geom_impl: no src specified ****</xsl:message>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:variable name="path">
+          <xsl:choose>
+            <xsl:when test="starts-with($src, '/')">
+              <xsl:value-of select="substring-after($src, '/')"/>
+            </xsl:when>
+            <xsl:otherwise>
+              <xsl:value-of select="$src"/>
+            </xsl:otherwise>
+          </xsl:choose>
+        </xsl:variable>
+        <xsl:variable name="style">
+          <xsl:value-of select="geometry:getStyleStringForImage(string($path), string(./@style), string(./@width), string(./@height))"/>
+        </xsl:variable>
+        <xsl:if test="not($style = '')">
+          <xsl:attribute name="style">
+            <xsl:value-of select="$style"/>
           </xsl:attribute>
         </xsl:if>
       </xsl:otherwise>
