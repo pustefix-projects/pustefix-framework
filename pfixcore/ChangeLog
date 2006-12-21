@@ -1,5 +1,11 @@
 2006-12-21  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
+	* src/de/schlund/pfixxml/ImageGeometry.java: 
+	* projects/core/xsl/forminput.xsl: 
+	* projects/core/xsl/include.xsl: 
+	Use CSS style attribute instead of width/height attribute to be compatible
+	with W3C's HTML specifications for <input type="image" .../> tag.
+	
 	* src/de/schlund/pfixxml/config/includes/IncludesResolver.java (resolveIncludes): 
 	Fixed typo causing "refid" not to work.
 
