@@ -55,8 +55,7 @@
         </head>
         <body style="padding-left:10pt;">
           <pfx:maincontent part="content" path="webservice/txt/pages" prefix="main_"/> 
-          <pfx:editconsole/>
-          <pfx:webserviceconsole/>
+          <pfx:editconsole webserviceconsole="true"/>
         </body>
       </html>
     </pfx:frame>

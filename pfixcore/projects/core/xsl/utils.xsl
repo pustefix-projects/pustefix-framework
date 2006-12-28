@@ -219,6 +219,20 @@
                   <ixsl:value-of select="$__uri"/>?__reuse=<ixsl:value-of select="$__reusestamp"/>&amp;__xmlonly=1</ixsl:attribute>
                   <img border="0" alt="Show XML" title="Show last XML tree" src="{{$__contextpath}}/core/img/console_showxml.gif" style="margin-left:5px"/>
                 </a>
+                <xsl:if test="@webserviceconsole='true'">
+                  <a target="pfixcore_web_service_monitor">
+                    <ixsl:attribute name="href">
+                      <ixsl:value-of select="concat($__contextpath, '/xml/webservice;',$__sessid,'?monitor')"/>
+                    </ixsl:attribute>
+                    <img border="0" alt="Webservice monitor" title="Show webservice monitor" src="{{$__contextpath}}/core/img/console_webservicemonitor.gif" style="margin-left:5px"/>
+                  </a>
+                  <a target="pfixcore_web_service_admin">
+                    <ixsl:attribute name="href">
+                      <ixsl:value-of select="concat($__contextpath, '/xml/webservice;',$__sessid,'?admin')"/>
+                    </ixsl:attribute>
+                    <img border="0" alt="Webservice admin" title="Show webservice admin" src="{{$__contextpath}}/core/img/console_webserviceadmin.gif" style="margin-left:5px"/>
+                  </a>
+                </xsl:if>
               </div>
               <div style="padding-left:5px;padding-right:5px">
                 <span title="Page">P: <ixsl:value-of select="$page"/></span>
@@ -236,22 +250,6 @@
                     </ixsl:otherwise>
                   </ixsl:choose>
                 </span>
-              </div>
-              <div style="margin-top:5px;padding-left:5px;padding-right:5px">
-                Web service tools:
-                <br/>
-                <a target="pfixcore_web_service_monitor" style="font-size:12px;font-weight:bold;text-decoration:none;color:#ffffff;">
-                  <ixsl:attribute name="href">
-                    <ixsl:value-of select="concat($__contextpath, '/xml/webservice;',$__sessid,'?monitor')"/>
-                  </ixsl:attribute>
-                  Monitor
-                </a>
-                <a target="pfixcore_web_service_admin" style="margin-left:5px;font-size:12px;font-weight:bold;text-decoration:none;color:#ffffff;">
-                  <ixsl:attribute name="href">
-                    <ixsl:value-of select="concat($__contextpath, '/xml/webservice;',$__sessid,'?admin')"/>
-                  </ixsl:attribute>
-                  Admin
-                </a>
               </div>
             </div>
             <script type="text/javascript">
