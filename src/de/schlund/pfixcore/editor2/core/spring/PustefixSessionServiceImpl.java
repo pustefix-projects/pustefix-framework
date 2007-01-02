@@ -18,6 +18,8 @@
 
 package de.schlund.pfixcore.editor2.core.spring;
 
+import java.lang.ref.WeakReference;
+
 import org.apache.log4j.Logger;
 
 import de.schlund.pfixcore.editor2.frontend.resources.SpringHelperResource;
@@ -33,9 +35,8 @@ import de.schlund.pfixcore.workflow.Context;
  * @author Sebastian Marsching <sebastian.marsching@1und1.de>
  * @see de.schlund.pfixcore.editor2.frontend.util.SpringHelperStartContextInterceptor
  */
-public class PustefixSessionServiceImpl implements SessionService,
-        PustefixContextService {
-    ThreadLocal<Context> context = new ThreadLocal<Context>();
+public class PustefixSessionServiceImpl implements SessionService, PustefixContextService {
+    ThreadLocal<WeakReference<Context>> context = new ThreadLocal<WeakReference<Context>>();
 
     private SpringHelperResource getHelperResource() {
         if (this.getPustefixContext() == null) {
@@ -43,9 +44,7 @@ public class PustefixSessionServiceImpl implements SessionService,
             Logger.getLogger(this.getClass()).error(err);
             throw new RuntimeException(err);
         }
-        return (SpringHelperResource) this.getPustefixContext()
-                .getContextResourceManager().getResource(
-                        SpringHelperResource.class.getName());
+        return (SpringHelperResource) this.getPustefixContext().getContextResourceManager().getResource(SpringHelperResource.class.getName());
     }
 
     public Object get(String key) {
@@ -62,11 +61,23 @@ public class PustefixSessionServiceImpl implements SessionService,
 
     public void setPustefixContext(Context context) {
         // Store the context in a thread local variable
-        this.context.set(context);
+        // Use a weak-reference as the context object should
+        // be removed when the session is deleted - even
+        // if it is still attached to a thread.
+        if (context == null) {
+            this.context.set(null);
+        } else {
+            WeakReference<Context> wr = new WeakReference<Context>(context);
+            this.context.set(wr);
+        }
     }
 
     public Context getPustefixContext() {
-        return (Context) this.context.get();
+        try {
+            return (Context) this.context.get().get();
+        } catch (NullPointerException e) {
+            return null;
+        }
     }
 
 }
