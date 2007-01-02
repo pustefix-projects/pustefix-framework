@@ -47,10 +47,6 @@
       <!-- Resets edit state flag -->
       <interceptor class="de.schlund.pfixcore.editor2.frontend.util.EditViewResetContextInterceptor"/>
     </start>
-    <end>
-      <!-- This ContextInterceptor has to be called AFTER all other interceptors -->
-      <interceptor class="de.schlund.pfixcore.editor2.frontend.util.SpringHelperEndContextInterceptor"/>
-    </end>
   </interceptors>  
   
   <pageflow name="EditorFlow" final="start">

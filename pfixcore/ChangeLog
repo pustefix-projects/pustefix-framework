@@ -1,3 +1,13 @@
+2007-01-02  Sebastian Marsching  <sebastian.marsching@1und1.de>
+
+	* projects/core/editor2/conf/edit.conf.xml: 
+	* src/de/schlund/pfixcore/editor2/core/spring/PustefixSessionServiceImpl.java: 
+	* src/de/schlund/pfixcore/editor2/frontend/util/SpringHelperEndContextInterceptor.java (removed): 
+	Removed end interceptor because order in which end interceptors are called related
+	to navigation processing changed thus causing the editor to fail. No the context
+	is stored using a weak reference instead, so there is no need to manually remove
+	it from the thread.
+
 2006-12-28  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
 	* projects/webservice/xml/two_frames.xml: 
