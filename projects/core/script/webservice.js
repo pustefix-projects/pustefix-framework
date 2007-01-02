@@ -628,7 +628,6 @@ SOAP_ArraySerializer.prototype.serializeSub=function(value,name,typeInfo,dim,wri
 }
 
 SOAP_ArraySerializer.prototype.serialize=function(value,name,typeInfo,writer,ctx) {
-  //  alert("typeof value: " + typeof value + ", instance: " + (value instanceof Array) + ", constructor: " + (value.constructor==Array) + ", length: " + value.length + ", value[0]: " + value[0]);
   this.serializeSub(value,name,typeInfo,typeInfo.dimension,writer,ctx);
 }
 
@@ -863,6 +862,7 @@ function SOAP_Call() {
   this.params=new Array();
   this.retTypeInfo=null;
   this.userCallback=null;
+  this.userObject=null;
   this.requestID=null;
   this.request=null;
   this.style=null;
@@ -883,6 +883,10 @@ SOAP_Call.prototype.setEncoding=function(style,use) {
 
 SOAP_Call.prototype.setUserCallback=function(cb) {
   this.userCallback=cb;
+}
+
+SOAP_Call.prototype.setUserObject=function(cbObj) {
+  this.userObject=cbObj;
 }
 
 SOAP_Call.prototype.setRequestID=function(id) {
@@ -939,15 +943,13 @@ SOAP_Call.prototype.invoke=function() {
   soapMsg.write(writer);
   
   var resDoc;
-  if( !this.userCallback ) {
+  if( !this.userCallback && !this.userObject ) {
     // sync
     this.request=new XML_Request('POST',this.endpoint);
     resDoc=this.request.start(writer.xml); 
-   
     return this.callback(resDoc);
   } else {
     // async
-    
     try {
       this.request=new XML_Request( 'POST', this.endpoint, this.callback, this );
       if(this.requestID==null) this.request.start(writer.xml);
@@ -966,15 +968,18 @@ SOAP_Call.prototype.callback=function(xml,reqID) {
       ex.name=fault.faultString.substring(0,ind);
       ex.message=fault.faultString.substring(ind+1,fault.faultString.length);
       if(this.userCallback) this.userCallback(null,reqID,ex);
+      else if(this.userObject) this.userObject[this.opName].call(this.userObject,null,reqID,ex);
       else throw ex;
     } else {
       var rpc=new SOAP_RPCSerializer( this.opName, null, this.retTypeInfo);
       var res = rpc.deserialize(soapMsg.getSoapPart().getEnvelope().getBody().element);
       if(this.userCallback) this.userCallback(res,reqID,null);
+      else if(this.userObject) this.userObject[this.opName].call(this.userObject,res,reqID,null);
       else return res;
     }
   } catch(ex) {
     if(this.userCallback) this.userCallback(null,reqID,ex);
+    else if(this.userObject) this.userObject[this.opName].call(this.userObject,null,reqID,ex);
     else throw ex;
   }
 };
@@ -1286,13 +1291,16 @@ function SOAP_Stub() {
 SOAP_Stub.prototype._createCall=function() {
   var call=new SOAP_Call();
   call.setTargetEndpointAddress(this._url);
+  if(this._cbObj!=null) call.setUserObject(this._cbObj);
   return call;
 }
 
 SOAP_Stub.prototype._extractCallback=function(call,args,expLen) {
   var argLen=args.length;
-  if(argLen==expLen+1 && (typeof args[argLen-1]=="function" || typeof args[argLen-1]=="object" )) call.setUserCallback(args[argLen-1]);
-  else if(argLen==expLen+2 && (typeof args[argLen-2]=="function" || typeof args[argLen-2]=="object") && typeof args[argLen-1]=="string") {
+  if(argLen==expLen+1) {
+    if(typeof args[argLen-1]=="function" || typeof args[argLen-1]=="object" ) call.setUserCallback(args[argLen-1]);
+    else call.setRequestID(args[argLen-1]);
+  } else if(argLen==expLen+2 && (typeof args[argLen-2]=="function" || typeof args[argLen-2]=="object") && typeof args[argLen-1]=="string") {
     call.setUserCallback(args[argLen-2]);
     call.setRequestID(args[argLen-1]);
   } else if(argLen!=expLen) throw new CORE_IllegalArgsEx("Wrong number of arguments","SOAP_Stub._extractCallback");
