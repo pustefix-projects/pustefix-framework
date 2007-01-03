@@ -136,8 +136,7 @@ public class PustefixTargetUpdateServiceImpl implements
         synchronized (this.lock) {
             if (!this.tgenList.contains(tgen)) {
                 this.tgenList.add(tgen);
-                this.lowPriorityQueue.addAll(tgen.getPageTargetTree()
-                        .getToplevelTargets());
+                this.lowPriorityQueue.addAll(tgen.getPageTargetTree().getToplevelTargets());
                 this.firstRunDone = false;
                 this.lock.notifyAll();
             }
@@ -178,20 +177,17 @@ public class PustefixTargetUpdateServiceImpl implements
             while (!highCopy.isEmpty()) {
                 Target target = (Target) highCopy.get(0);
                 try {
-                    LOG.debug("  * Generating HighPrio target "
-                            + target.getFullName());
+                    LOG.debug("  * Generating HighPrio target " + target.getFullName());
                     target.getValue();
                 } catch (TargetGenerationException e) {
-                    LOG.warn("*** Exception generating HP "
-                            + target.getFullName() + ": " + e.getMessage());
+                    LOG.warn("*** Exception generating HP " + target.getFullName() + ": " + e.getMessage());
                 }
                 highCopy.remove(0);
                 synchronized (this.lock) {
                     try {
                         this.lock.wait(this.highRunDelay);
                     } catch (InterruptedException e) {
-                        LOG
-                                .debug("*** Interrupted while waiting in HighPrio loop");
+                        LOG.debug("*** Interrupted while waiting in HighPrio loop");
                         // Ignore interruption and continue
                     }
                 }
@@ -210,9 +206,7 @@ public class PustefixTargetUpdateServiceImpl implements
                             needsUpdate = target.needsUpdate();
                         } catch (Exception e) {
                             // Remove target from queue without generating it
-                            LOG.warn("*** Exception checking LP "
-                                    + target.getFullName() + ": "
-                                    + e.getMessage());
+                            LOG.warn("*** Exception checking LP " + target.getFullName() + ": " + e.getMessage());
                             lowCopy.remove(0);
                             synchronized (this.lock) {
                                 this.lowPriorityQueue.remove(0);
@@ -221,21 +215,17 @@ public class PustefixTargetUpdateServiceImpl implements
                         }
                         try {
                             if (needsUpdate) {
-                                LOG.debug("  * Generating LowPrio target "
-                                        + target.getFullName());
+                                LOG.debug("  * Generating LowPrio target " + target.getFullName());
                                 target.getValue();
                             }
                         } catch (TargetGenerationException e) {
-                            LOG.warn("*** Exception generating LP "
-                                    + target.getFullName() + ": "
-                                    + e.getMessage());
+                            LOG.warn("*** Exception generating LP " + target.getFullName() + ": " + e.getMessage());
                         }
                         lowCopy.remove(0);
                         synchronized (this.lock) {
                             this.lowPriorityQueue.remove(0);
                             if (!this.highPriorityQueue.isEmpty()) {
-                                LOG
-                                        .debug("*** Leaving LP loop for doing HP targets");
+                                LOG.debug("*** Leaving LP loop for doing HP targets");
                                 break;
                             }
 
@@ -249,8 +239,7 @@ public class PustefixTargetUpdateServiceImpl implements
                                     try {
                                         this.lock.wait(delay);
                                     } catch (InterruptedException e) {
-                                        LOG
-                                                .debug("*** Interrupted while waiting in LowPrio loop");
+                                        LOG.debug("*** Interrupted while waiting in LowPrio loop");
                                     }
                                 }
                             }
@@ -283,29 +272,22 @@ public class PustefixTargetUpdateServiceImpl implements
                                     // Ignore
                                 }
                                 synchronized (lock) {
-                                    LOG
-                                            .debug("##### Adding target list to LowPrio queue");
-                                    for (Iterator i = tgenList.iterator(); i
-                                            .hasNext();) {
-                                        TargetGenerator tgen = (TargetGenerator) i
-                                                .next();
-                                        lowPriorityQueue.addAll(tgen
-                                                .getPageTargetTree()
-                                                .getToplevelTargets());
+                                    LOG.debug("##### Adding target list to LowPrio queue");
+                                    for (Iterator i = tgenList.iterator(); i.hasNext();) {
+                                        TargetGenerator tgen = (TargetGenerator) i.next();
+                                        lowPriorityQueue.addAll(tgen.getPageTargetTree().getToplevelTargets());
                                     }
                                     waitingForRefill = false;
                                     lock.notifyAll();
                                 }
                             }
                         };
-                        Thread toolThread = new Thread(refillTool,
-                                "target-update-refill");
+                        Thread toolThread = new Thread(refillTool, "target-update-refill");
                         toolThread.start();
                     }
                 }
 
-                if (this.highPriorityQueue.isEmpty()
-                        && (!this.isEnabled || this.lowPriorityQueue.isEmpty())) {
+                if (this.highPriorityQueue.isEmpty() && (!this.isEnabled || this.lowPriorityQueue.isEmpty())) {
                     try {
                         LOG.debug("*** Going to Sleep...\n");
                         this.lock.wait();
@@ -314,8 +296,7 @@ public class PustefixTargetUpdateServiceImpl implements
                         // Ignore exception
                     }
                 } else {
-                    LOG
-                            .debug("*** HP or LP queue still not empty - continue directly");
+                    LOG.debug("*** HP or LP queue still not empty - continue directly");
                 }
             }
         }
