@@ -1,5 +1,10 @@
 2007-01-03  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
+	* src/de/schlund/pfixcore/editor2/core/spring/PustefixSessionServiceImpl.java: 
+	* src/de/schlund/pfixcore/editor2/frontend/util/SpringHelperEndContextInterceptor.java:
+	Wrapping reference to context held by Spring bean within a WeakReference to
+	make sure memory can be freed even if an unused thread still has a reference. 
+	
 	* src/de/schlund/pfixcore/exception/PustefixApplicationException.java (added): 
 	* src/de/schlund/pfixcore/exception/PustefixCoreException.java (added): 
 	* src/de/schlund/pfixcore/exception/PustefixException.java (added): 
