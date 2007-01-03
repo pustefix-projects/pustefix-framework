@@ -58,7 +58,7 @@ public class TrailLogger extends NotificationBroadcasterSupport implements Trail
     // maps visit_ids auf TrailLogger
     public static final Map map = new HashMap();
     
-    public static void log(PfixServletRequest preq, SPDocument resdoc, HttpSession session) throws IOException {
+    public static void log(PfixServletRequest preq, SPDocument resdoc, HttpSession session) {
         TrailLogger logger;
         String visit;
         

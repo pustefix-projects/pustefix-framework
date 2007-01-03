@@ -25,10 +25,11 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import javax.servlet.ServletException;
-
 import org.apache.log4j.Logger;
 
+import de.schlund.pfixcore.exception.PustefixApplicationException;
+import de.schlund.pfixcore.exception.PustefixCoreException;
+import de.schlund.pfixcore.exception.PustefixRuntimeException;
 import de.schlund.pfixxml.config.ContextConfig;
 import de.schlund.pfixxml.config.ContextResourceConfig;
 import de.schlund.pfixxml.loader.AppLoader;
@@ -81,10 +82,12 @@ public class ContextResourceManager implements Reloader {
      * <code>context.rescoure.2.de.foo.FooAndBarAndBazImpl = Bar,Baz</code>
      *
      * which is correct without any change in the code of the implementing classes.
+     * @throws PustefixApplicationException 
+     * @throws PustefixCoreException 
      *
      */
     
-     public void init(Context context, ContextConfig config) throws Exception {
+     public void init(Context context, ContextConfig config) throws PustefixApplicationException, PustefixCoreException {
         LOG.debug("initialize ContextResources...");
         
         Collection<ContextResource> resourcesToInitialize = new ArrayList<ContextResource>();
@@ -104,9 +107,12 @@ public class ContextResourceManager implements Reloader {
                 } else {
                     cr = (ContextResource) resourceConfig.getContextResourceClass().newInstance();
                 }
-            } catch (Exception e) {
-                throw new ServletException("Exception while creating object " +
-                        classname + ":" + e);
+            } catch (InstantiationException e) {
+                throw new PustefixRuntimeException("Exception while creating object " + classname + ":" + e);
+            } catch (IllegalAccessException e) {
+                throw new PustefixRuntimeException("Exception while creating object " + classname + ":" + e);
+            } catch (ClassNotFoundException e) {
+                throw new PustefixRuntimeException("Exception while creating object " + classname + ":" + e);
             }
             
             resourcesToInitialize.add(cr);
@@ -125,7 +131,11 @@ public class ContextResourceManager implements Reloader {
         
         for (Iterator i = resourcesToInitialize.iterator(); i.hasNext();) {
             ContextResource resource = (ContextResource) i.next();
-            resource.init(context);
+            try {
+                resource.init(context);
+            } catch (Exception e) {
+                throw new PustefixApplicationException("Exception while initializing context resource " + resource.getClass(), e);
+            }
         }
         
         AppLoader appLoader = AppLoader.getInstance();
@@ -145,7 +155,7 @@ public class ContextResourceManager implements Reloader {
         return  (ContextResource) resources.get(name);
     }
 
-    private void checkInterface(Object obj, String interfacename) throws ServletException {
+    private void checkInterface(Object obj, String interfacename) throws PustefixCoreException {
         Class wantedinterface = null;
         
         // Get the class of the requested interface and get all
@@ -158,7 +168,7 @@ public class ContextResourceManager implements Reloader {
                 wantedinterface = Class.forName(interfacename) ;
             }
         } catch (ClassNotFoundException e) {
-            throw new ServletException("Got ClassNotFoundException for classname " +  interfacename +
+            throw new PustefixRuntimeException("Got ClassNotFoundException for classname " +  interfacename +
                                        "while checking for interface");
         }
 	
@@ -173,14 +183,14 @@ public class ContextResourceManager implements Reloader {
         } else {
             // Uh, the requested interface is not implemented by the
             // object, that's not nice!
-            throw new ServletException("The class [" + obj.getClass().getName() +
+            throw new PustefixCoreException("The class [" + obj.getClass().getName() +
                                        "] doesn't implemented requested interface " +
                                        interfacename);
         }
         
         // Now check if the interface is already registered...
         if (resources.containsKey(interfacename)) {
-            throw new ServletException("Interface [" + interfacename +
+            throw new PustefixCoreException("Interface [" + interfacename +
                                        "] already registered for instance of [" +
                                        resources.get(interfacename).getClass().getName() + "]");
         }

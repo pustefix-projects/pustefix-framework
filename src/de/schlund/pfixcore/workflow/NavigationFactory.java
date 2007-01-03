@@ -19,9 +19,14 @@
 
 package de.schlund.pfixcore.workflow;
 
+import java.io.IOException;
 import java.util.HashMap;
 
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
+
 import org.apache.log4j.Logger;
+import org.xml.sax.SAXException;
 
 import de.schlund.pfixxml.resources.FileResource;
 import de.schlund.pfixxml.resources.ResourceUtil;
@@ -47,7 +52,7 @@ public class NavigationFactory {
         return getNavigation(navifile,xsltVersion);
     }
             
-    public synchronized Navigation getNavigation(FileResource navifile,XsltVersion xsltVersion) throws Exception {
+    public synchronized Navigation getNavigation(FileResource navifile,XsltVersion xsltVersion) throws NavigationInitializationException {
        
         Navigation navi = null;
         
@@ -55,7 +60,17 @@ public class NavigationFactory {
         
         if (navi == null || navi.needsReload()) {
             LOG.warn("***** Creating Navigation object *******");
-            navi     = new Navigation(navifile,xsltVersion);
+            try {
+                navi     = new Navigation(navifile,xsltVersion);
+            } catch (TransformerConfigurationException e) {
+                throw new NavigationInitializationException("Exception while loading navigation file " + navifile, e);
+            } catch (IOException e) {
+                throw new NavigationInitializationException("Exception while loading navigation file " + navifile, e);
+            } catch (SAXException e) {
+                throw new NavigationInitializationException("Exception while loading navigation file " + navifile, e);
+            } catch (TransformerException e) {
+                throw new NavigationInitializationException("Exception while loading navigation file " + navifile, e);
+            }
             navis.put(navifile.toURI().toString(), navi);
         }
         

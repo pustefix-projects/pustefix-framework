@@ -18,7 +18,10 @@
  */
 package de.schlund.pfixxml;
 
+import de.schlund.pfixcore.exception.PustefixApplicationException;
+import de.schlund.pfixcore.exception.PustefixCoreException;
 import de.schlund.pfixcore.workflow.NavigationFactory;
+import de.schlund.pfixcore.workflow.NavigationInitializationException;
 import de.schlund.pfixxml.config.AbstractXMLServletConfig;
 import de.schlund.pfixxml.config.ServletManagerConfig;
 import de.schlund.pfixxml.jmx.JmxServerFactory;
@@ -252,7 +255,7 @@ public abstract class AbstractXMLServer extends ServletManager {
      * @exception Exception Anything that can go wrong when constructing the resulting
      * SPDocument object
      */
-    protected abstract SPDocument getDom(PfixServletRequest preq) throws Exception;
+    protected abstract SPDocument getDom(PfixServletRequest preq) throws PustefixApplicationException, PustefixCoreException;
 
     /**
      * This is the method that is called for any servlet that inherits from ServletManager.
@@ -368,7 +371,18 @@ public abstract class AbstractXMLServer extends ServletManager {
             currtime        = System.currentTimeMillis();
             
             // Now get the document
-            spdoc = getDom(preq);
+            try {
+                spdoc = getDom(preq);
+            } catch (PustefixApplicationException e) {
+                // get original Exception thrown by Application
+                // and rethrow it so that it can be catched by the
+                // exception processor
+                if (e.getCause() != null && e.getCause() instanceof Exception) {
+                    throw (Exception) e.getCause();
+                } else {
+                    throw e;
+                }
+            }
             
             //Performance tracking
             pe.setIdentfier(spdoc.getPagename());
@@ -409,7 +423,7 @@ public abstract class AbstractXMLServer extends ServletManager {
     }
 
     protected void handleDocument(PfixServletRequest preq, HttpServletResponse res,
-                                  SPDocument spdoc, Properties params, boolean doreuse) throws Exception {
+                                  SPDocument spdoc, Properties params, boolean doreuse) throws PustefixCoreException {
         long currtime = System.currentTimeMillis();
         
         // Check the document for supplied headers...
@@ -438,13 +452,17 @@ public abstract class AbstractXMLServer extends ServletManager {
         // if the document contains a error code, do errorhandling here and no further processing.
         int    err;
         String errtxt;
-        if ((err = spdoc.getResponseError()) != 0) {
-            if ((errtxt = spdoc.getResponseErrorText()) != null) {
-                res.sendError(err, errtxt);
-            } else {
-                res.sendError(err);
+        try {
+            if ((err = spdoc.getResponseError()) != 0) {
+                if ((errtxt = spdoc.getResponseErrorText()) != null) {
+                    res.sendError(err, errtxt);
+                } else {
+                    res.sendError(err);
+                }
+                return;
             }
-            return;
+        } catch (IOException e) {
+            throw new PustefixCoreException("IOException while trying to send an error code", e);
         }
 
         // So no error happened, let's go on with normal processing.
@@ -452,7 +470,7 @@ public abstract class AbstractXMLServer extends ServletManager {
         TreeMap       paramhash  = constructParameters(spdoc, params, session);
         String        stylesheet = extractStylesheetFromSPDoc(spdoc);
         if (stylesheet == null) {
-            throw new XMLException("Wasn't able to extract any stylesheet specification from page '" +
+            throw new PustefixCoreException("Wasn't able to extract any stylesheet specification from page '" +
                                    spdoc.getPagename() + "' ... bailing out.");
         }
         
@@ -551,24 +569,32 @@ public abstract class AbstractXMLServer extends ServletManager {
         }
     }
 
-    private void render(SPDocument spdoc, int rendering, HttpServletResponse res, TreeMap paramhash, String stylesheet) throws
-        TargetGenerationException, IOException, TransformerException,
-        TransformerConfigurationException, TransformerFactoryConfigurationError {
+    private void render(SPDocument spdoc, int rendering, HttpServletResponse res, TreeMap paramhash, String stylesheet) throws RenderingException {
+        try {
         switch (rendering) {
-        case RENDER_NORMAL:
-            renderNormal(spdoc, res, paramhash, stylesheet);
-            break;
-        case RENDER_FONTIFY:
-            renderFontify(spdoc, res, paramhash);
-            break;
-        case RENDER_EXTERNAL:
-            renderExternal(spdoc, res, paramhash, stylesheet);
-            break;
-        case RENDER_XMLONLY:
-            renderXmlonly(spdoc, res);
-            break;
-        default:
-            throw new IllegalArgumentException("unkown rendering: " + rendering);
+            case RENDER_NORMAL:
+                renderNormal(spdoc, res, paramhash, stylesheet);
+                break;
+            case RENDER_FONTIFY:
+                renderFontify(spdoc, res, paramhash);
+                break;
+            case RENDER_EXTERNAL:
+                renderExternal(spdoc, res, paramhash, stylesheet);
+                break;
+            case RENDER_XMLONLY:
+                renderXmlonly(spdoc, res);
+                break;
+            default:
+                throw new IllegalArgumentException("unkown rendering: " + rendering);
+            }
+        } catch (TransformerConfigurationException e) {
+            throw new RenderingException("Exception while rendering page " + spdoc.getPagename() + " with stylesheet " + spdoc.getXSLKey(), e);
+        } catch (TargetGenerationException e) {
+            throw new RenderingException("Exception while rendering page " + spdoc.getPagename() + " with stylesheet " + spdoc.getXSLKey(), e);
+        } catch (IOException e) {
+            throw new RenderingException("Exception while rendering page " + spdoc.getPagename() + " with stylesheet " + spdoc.getXSLKey(), e);
+        } catch (TransformerException e) {
+            throw new RenderingException("Exception while rendering page " + spdoc.getPagename() + " with stylesheet " + spdoc.getXSLKey(), e);
         }
     }
 
@@ -667,7 +693,7 @@ public abstract class AbstractXMLServer extends ServletManager {
         }
     }
 
-    private TreeMap constructParameters(SPDocument spdoc, Properties gen_params, HttpSession session) throws Exception {
+    private TreeMap constructParameters(SPDocument spdoc, Properties gen_params, HttpSession session) throws NavigationInitializationException {
         TreeMap paramhash = new TreeMap();
         HashMap params = spdoc.getProperties();
         // These are properties which have been set in the process method

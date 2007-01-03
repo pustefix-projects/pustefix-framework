@@ -20,6 +20,8 @@ package de.schlund.pfixcore.workflow;
 
 
 
+import de.schlund.pfixcore.exception.PustefixApplicationException;
+import de.schlund.pfixcore.exception.PustefixCoreException;
 import de.schlund.pfixcore.workflow.context.PageFlow;
 import de.schlund.pfixxml.PfixServletRequest;
 import de.schlund.pfixxml.SPDocument;
@@ -54,7 +56,7 @@ public interface Context {
     void                   setVariant(Variant variant);
     void                   setVariantForThisRequestOnly(Variant variant);
     String                 getVisitId();
-    boolean                flowStepsBeforeCurrentStepNeedData() throws Exception;
+    boolean                flowStepsBeforeCurrentStepNeedData() throws PustefixApplicationException;
     boolean                finalPageIsRunning();
     boolean                jumpToPageIsRunning();
     boolean                flowIsRunning();
@@ -72,5 +74,5 @@ public interface Context {
     void                   addPageMessage(StatusCode scode, String[] args, String level);
     Properties             getPropertiesForContextResource(ContextResource res);
     ContextConfig          getContextConfig();
-    SPDocument             handleRequest(PfixServletRequest preq) throws Exception;
+    SPDocument             handleRequest(PfixServletRequest preq) throws PustefixApplicationException, PustefixCoreException;
 }

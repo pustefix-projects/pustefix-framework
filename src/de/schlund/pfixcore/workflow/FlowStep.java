@@ -30,6 +30,8 @@ import javax.xml.transform.TransformerException;
 import org.apache.log4j.Category;
 import org.w3c.dom.Document;
 
+import de.schlund.pfixcore.exception.PustefixApplicationException;
+import de.schlund.pfixcore.exception.PustefixCoreException;
 import de.schlund.pfixcore.workflow.context.PageFlow;
 import de.schlund.pfixxml.ResultDocument;
 import de.schlund.pfixxml.config.PageFlowStepActionConditionConfig;
@@ -75,17 +77,27 @@ public class FlowStep {
 
     }
 
-    public void applyActionsOnContinue(Context context, ResultDocument resdoc) throws Exception {
+    public void applyActionsOnContinue(Context context, ResultDocument resdoc) throws PustefixApplicationException, PustefixCoreException {
         if (!actions_oncontinue.isEmpty()) {
             for (int i = 0; i < actions_oncontinue.size(); i++) {
                 ArrayList actionList = (ArrayList) actions_oncontinue.get(i);
                 String         test   = (String) tests_oncontinue.get(i);
                 LOG.debug("*** [" + this.config.getPage() + "] Trying on-continue-action #" + i);
-                if (checkAction(test, resdoc.getSPDocument().getDocument())) {
+                boolean check;
+                try {
+                    check = checkAction(test, resdoc.getSPDocument().getDocument());
+                } catch (TransformerException e) {
+                    throw new PustefixCoreException("Error while testing XPath expression \"" + test + "\" for page " + this.getPageName(), e);
+                }
+                if (check) {
                     LOG.debug("    ===> Action applies, calling doAction now...");
                     for (Iterator j = actionList.iterator(); j.hasNext();) {
                         FlowStepAction action = (FlowStepAction) j.next();
-                        action.doAction(context, resdoc);
+                        try {
+                            action.doAction(context, resdoc);
+                        } catch (Exception e) {
+                            throw new PustefixApplicationException("Exception while running doAction() on action " + action.getClass() + " for page " + this.getPageName(), e);
+                        }
                     }
                     
                     if (!this.config.isApplyAllConditions()) {

@@ -27,6 +27,8 @@ import java.util.Set;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpSession;
 
+import de.schlund.pfixcore.exception.PustefixApplicationException;
+import de.schlund.pfixcore.exception.PustefixCoreException;
 import de.schlund.pfixcore.workflow.context.AccessibilityChecker;
 import de.schlund.pfixcore.workflow.context.PageFlow;
 import de.schlund.pfixcore.workflow.context.RequestContextImpl;
@@ -66,7 +68,7 @@ public class ContextImpl implements Context, AccessibilityChecker {
             this.crm = new ContextResourceManager();
         }
 
-        private void init(Context context) throws Exception {
+        private void init(Context context) throws PustefixApplicationException, PustefixCoreException {
             crm.init(context, context.getContextConfig());
         }
 
@@ -147,7 +149,7 @@ public class ContextImpl implements Context, AccessibilityChecker {
     private ServerContextImpl servercontext;
     private ThreadLocal<RequestContextImpl> requestcontextstore = new ThreadLocal<RequestContextImpl>();
     
-    public ContextImpl(ServerContextImpl servercontext, HttpSession session) throws Exception {
+    public ContextImpl(ServerContextImpl servercontext, HttpSession session) throws PustefixApplicationException, PustefixCoreException {
         this.servercontext = servercontext;
         this.sessioncontext = new SessionContextImpl(session);
         sessioncontext.init(this);
@@ -181,7 +183,7 @@ public class ContextImpl implements Context, AccessibilityChecker {
         return getRequestContextForCurrentThreadWithError().flowIsRunning();
     }
 
-    public boolean flowStepsBeforeCurrentStepNeedData() throws Exception {
+    public boolean flowStepsBeforeCurrentStepNeedData() throws PustefixApplicationException {
         return getRequestContextForCurrentThreadWithError().flowStepsBeforeCurrentStepNeedData();
     }
 
@@ -357,12 +359,12 @@ public class ContextImpl implements Context, AccessibilityChecker {
         return (this.getRequestContextForCurrentThreadWithError().checkAuthorization(false) == null);
     }
     
-    public void prepareForRequest() throws Exception {
+    public void prepareForRequest() {
         // This allows to use OLDER servercontexts during requests
         requestcontextstore.set(new RequestContextImpl(servercontext, this));
     }
     
-    public SPDocument handleRequest(PfixServletRequest preq) throws Exception {
+    public SPDocument handleRequest(PfixServletRequest preq) throws PustefixApplicationException, PustefixCoreException {
         if (getContextConfig().isSynchronized()) {
             synchronized (this) {
                 return getRequestContextForCurrentThreadWithError().handleRequest(preq);

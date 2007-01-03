@@ -30,6 +30,9 @@ import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import de.schlund.pfixcore.exception.PustefixApplicationException;
+import de.schlund.pfixcore.exception.PustefixCoreException;
+import de.schlund.pfixcore.exception.PustefixRuntimeException;
 import de.schlund.pfixcore.generator.StatusCodeInfo;
 import de.schlund.pfixcore.workflow.ContextImpl;
 import de.schlund.pfixcore.workflow.ContextInterceptor;
@@ -46,7 +49,6 @@ import de.schlund.pfixxml.ResultDocument;
 import de.schlund.pfixxml.SPDocument;
 import de.schlund.pfixxml.ServletManager;
 import de.schlund.pfixxml.Variant;
-import de.schlund.pfixxml.XMLException;
 import de.schlund.pfixxml.config.PageRequestConfig;
 import de.schlund.pfixxml.perflogging.PerfEvent;
 import de.schlund.pfixxml.perflogging.PerfEventType;
@@ -95,7 +97,7 @@ public class RequestContextImpl implements Cloneable {
     private List<StatusCodeInfo> messages   = new ArrayList<StatusCodeInfo>();
     private List<Cookie>         cookielist = new ArrayList<Cookie>();
 
-    public RequestContextImpl(ServerContextImpl servercontext, ContextImpl context) throws Exception {
+    public RequestContextImpl(ServerContextImpl servercontext, ContextImpl context) {
         this.parentcontext   = context;
         this.servercontext   = servercontext;
         this.pageflowmanager = servercontext.getPageFlowManager();
@@ -247,7 +249,7 @@ public class RequestContextImpl implements Cloneable {
         return isProhibitContinue();
     }
 
-    public boolean flowStepsBeforeCurrentStepNeedData() throws Exception {
+    public boolean flowStepsBeforeCurrentStepNeedData() throws PustefixApplicationException {
         if (currentpservreq == null) {
             throw new IllegalStateException("PageFlow information is only availabe during request handling");
         }
@@ -388,38 +390,34 @@ public class RequestContextImpl implements Cloneable {
         messages.add(new StatusCodeInfo(scode, args, level));
     }
 
-    public SPDocument handleRequest(PfixServletRequest preq) throws Exception {
-        try {
-            SPDocument spdoc;
-            spdoc = handleRequestWorker(preq);
+    public SPDocument handleRequest(PfixServletRequest preq) throws PustefixApplicationException, PustefixCoreException {
+        SPDocument spdoc;
+        spdoc = handleRequestWorker(preq);
 
-            // Make sure SSL pages are only returned using SSL.
-            // This rule does not apply to pages with the nostore
-            // flag, as we would not be able to return such a page
-            // after the redirect
-            if (getConfigForCurrentPageRequest() != null && spdoc != null && getConfigForCurrentPageRequest().isSSL()
-                && !spdoc.getNostore() && !preq.getOriginalScheme().equals("https")) {
-                String redirectPort = getServerContext().getProperties().getProperty(ServletManager.PROP_SSL_REDIRECT_PORT + String.valueOf(preq.getOriginalServerPort()));
-                if (redirectPort == null) {
-                    redirectPort = "";
-                } else {
-                    redirectPort = ":" + redirectPort;
-                }
-                spdoc.setSSLRedirect("https://" + ServletManager.getServerName(preq.getRequest()) + redirectPort + preq.getContextPath() +
-                                     preq.getServletPath() + ";jsessionid=" + preq.getSession(false).getId() + "?__reuse=" + spdoc.getTimestamp());
+        // Make sure SSL pages are only returned using SSL.
+        // This rule does not apply to pages with the nostore
+        // flag, as we would not be able to return such a page
+        // after the redirect
+        if (getConfigForCurrentPageRequest() != null && spdoc != null && getConfigForCurrentPageRequest().isSSL()
+            && !spdoc.getNostore() && !preq.getOriginalScheme().equals("https")) {
+            String redirectPort = getServerContext().getProperties().getProperty(ServletManager.PROP_SSL_REDIRECT_PORT + String.valueOf(preq.getOriginalServerPort()));
+            if (redirectPort == null) {
+                redirectPort = "";
+            } else {
+                redirectPort = ":" + redirectPort;
             }
-            
-            // Reset stored variant so the session variant is being used
-            // to check the visibility of other pages when rendering the output
-            this.variant = parentcontext.getSessionVariant();
-            
-            return spdoc;
-        } catch (Exception e) {
-            throw e;
+            spdoc.setSSLRedirect("https://" + ServletManager.getServerName(preq.getRequest()) + redirectPort + preq.getContextPath() +
+                                 preq.getServletPath() + ";jsessionid=" + preq.getSession(false).getId() + "?__reuse=" + spdoc.getTimestamp());
         }
+        
+        // Reset stored variant so the session variant is being used
+        // to check the visibility of other pages when rendering the output
+        this.variant = parentcontext.getSessionVariant();
+        
+        return spdoc;
     }
 
-    private SPDocument handleRequestWorker(PfixServletRequest preq) throws Exception {
+    private SPDocument handleRequestWorker(PfixServletRequest preq) throws PustefixApplicationException, PustefixCoreException {
         currentpservreq            = preq;
         prohibitcontinue           = false;
         stopnextforcurrentrequest  = false;
@@ -553,7 +551,7 @@ public class RequestContextImpl implements Cloneable {
         }
     }
 
-    private void addPageFlowInfo(PageFlow flow, SPDocument spdoc) throws Exception {
+    private void addPageFlowInfo(PageFlow flow, SPDocument spdoc) {
         Document doc = spdoc.getDocument();
         Element root = doc.createElement("pageflow");
         doc.getDocumentElement().appendChild(root);
@@ -591,7 +589,7 @@ public class RequestContextImpl implements Cloneable {
         return servercontext.getContextConfig().getPageRequestConfig(currentpagerequest.getName());
     }
 
-    private SPDocument documentFromFlow() throws Exception {
+    private SPDocument documentFromFlow() throws PustefixApplicationException, PustefixCoreException {
         SPDocument document = null;
 
         // First, check if the requested page is defined at all
@@ -626,7 +624,7 @@ public class RequestContextImpl implements Cloneable {
                 PageRequest defpage = createPageRequest(currentpageflow.getFirstStep().getPageName());
                 currentpagerequest = defpage;
                 if (!checkIsAccessible(defpage, PageRequestStatus.DIRECT)) {
-                    throw new XMLException("Even first page [" + defpage + "] of default flow was not accessible! Bailing out.");
+                    throw new PustefixCoreException("Even first page [" + defpage + "] of default flow was not accessible! Bailing out.");
                 }
             }
 
@@ -680,7 +678,7 @@ public class RequestContextImpl implements Cloneable {
         return document;
     }
 
-    private SPDocument runPageFlow(boolean startwithflow) throws Exception {
+    private SPDocument runPageFlow(boolean startwithflow) throws PustefixApplicationException, PustefixCoreException {
         ResultDocument resdoc = null;
         // We need to re-check the authorisation because the just handled submit could have changed the authorisation status.
         SPDocument document = checkAuthorization(false);
@@ -701,7 +699,7 @@ public class RequestContextImpl implements Cloneable {
                     currentpagerequest.setStatus(PageRequestStatus.WORKFLOW);
                     document = documentFromCurrentStep().getSPDocument();
                     if (document == null) {
-                        throw new XMLException("*** FATAL: [" + page + "] returns a 'null' SPDocument! ***");
+                        throw new PustefixCoreException("*** FATAL: [" + page + "] returns a 'null' SPDocument! ***");
                     }
                     LOG.debug("* [" + page + "] returned document => show it.");
                     break;
@@ -727,7 +725,7 @@ public class RequestContextImpl implements Cloneable {
                     resdoc = documentFromCurrentStep();
                     document = resdoc.getSPDocument();
                     if (document == null) {
-                        throw new XMLException("*** FATAL: [" + page + "] returns a 'null' SPDocument! ***");
+                        throw new PustefixCoreException("*** FATAL: [" + page + "] returns a 'null' SPDocument! ***");
                     }
                     LOG.debug("* [" + page + "] returned document => show it.");
                     break;
@@ -738,7 +736,7 @@ public class RequestContextImpl implements Cloneable {
                     resdoc = documentFromCurrentStep();
                     document = resdoc.getSPDocument();
                     if (document == null) {
-                        throw new XMLException("*** FATAL: [" + page + "] returns a 'null' SPDocument! ***");
+                        throw new PustefixCoreException("*** FATAL: [" + page + "] returns a 'null' SPDocument! ***");
                     }
                     LOG.debug("* [" + page + "] returned document => show it.");
                     break;
@@ -758,9 +756,9 @@ public class RequestContextImpl implements Cloneable {
                 LOG.debug("=> Pageflow [" + currentpageflow + "] defines page [" + finalpage + "] as final page");
             }
             if (finalpage == null) {
-                throw new XMLException("*** Reached end of page flow '" + currentpageflow.getName() + "' " + "with neither getting a non-null SPDocument or having a FINAL page defined ***");
+                throw new PustefixCoreException("*** Reached end of page flow '" + currentpageflow.getName() + "' " + "with neither getting a non-null SPDocument or having a FINAL page defined ***");
             } else if (!checkIsAccessible(finalpage, PageRequestStatus.FINAL)) {
-                throw new XMLException("*** Reached end of page flow '" + currentpageflow.getName() + "' " + "but FINAL page [" + finalpage + "] is inaccessible ***");
+                throw new PustefixCoreException("*** Reached end of page flow '" + currentpageflow.getName() + "' " + "but FINAL page [" + finalpage + "] is inaccessible ***");
             } else {
                 currentpagerequest = finalpage;
                 currentpageflow = pageflowmanager.pageFlowToPageRequest(currentpageflow, finalpage, getVariant());
@@ -768,19 +766,19 @@ public class RequestContextImpl implements Cloneable {
                 resdoc = documentFromCurrentStep();
                 document = resdoc.getSPDocument();
                 if (document == null) {
-                    throw new XMLException("*** FATAL: " + finalpage + " returns a 'null' SPDocument! ***");
+                    throw new PustefixCoreException("*** FATAL: " + finalpage + " returns a 'null' SPDocument! ***");
                 }
             }
         }
         return document;
     }
 
-    public SPDocument checkAuthorization(boolean forceauth) throws Exception {
+    public SPDocument checkAuthorization(boolean forceauth) throws PustefixApplicationException, PustefixCoreException {
         if (authpage != null) {
             ResultDocument resdoc = null;
             LOG.debug("===> [" + authpage + "]: Checking authorisation");
             if (!checkIsAccessible(authpage, PageRequestStatus.AUTH)) {
-                throw new XMLException("*** Authorisation page [" + authpage + "] is not accessible! ***");
+                throw new PustefixCoreException("*** Authorisation page [" + authpage + "] is not accessible! ***");
             }
             if (forceauth) {
                 LOG.debug("* [" + currentpagerequest + "] forceauth is TRUE ***");
@@ -802,7 +800,7 @@ public class RequestContextImpl implements Cloneable {
             if (resdoc != null && prohibitcontinue) {
                 // getting a document here means we need to show the authpage
                 if (resdoc.getSPDocument() == null) {
-                    throw new XMLException("*** FATAL: " + authpage + " returns a 'null' SPDocument! ***");
+                    throw new PustefixCoreException("*** FATAL: " + authpage + " returns a 'null' SPDocument! ***");
                 }
                 resdoc.getSPDocument().getDocument().getDocumentElement().setAttribute("authoriginalpage", saved.getRootName());
                 resdoc.getSPDocument().setPagename(authpage.getName());
@@ -812,15 +810,19 @@ public class RequestContextImpl implements Cloneable {
         return null;
     }
 
-    private ResultDocument documentFromCurrentStep() throws Exception {
+    private ResultDocument documentFromCurrentStep() throws PustefixApplicationException {
         State state = pagemap.getState(currentpagerequest);
         if (state == null) {
-            throw new XMLException("* Can't get a state in documentFromCurrentStep() for page " + currentpagerequest.getName());
+            throw new PustefixRuntimeException("* Can't get a state in documentFromCurrentStep() for page " + currentpagerequest.getName());
         }
 
         LOG.debug("** [" + currentpagerequest + "]: associated state: " + state.getClass().getName());
         LOG.debug("=> [" + currentpagerequest + "]: Calling getDocument()");
-        return state.getDocument(parentcontext, currentpservreq);
+        try {
+            return state.getDocument(parentcontext, currentpservreq);
+        } catch (Exception e) {
+            throw new PustefixApplicationException("Exception while running getDocument() for page " + currentpagerequest.getName(), e);
+        }
     }
 
     private void trySettingPageRequestAndFlow() {
@@ -883,37 +885,47 @@ public class RequestContextImpl implements Cloneable {
         this.stopnextforcurrentrequest = forcestop;
     }
     
-    private boolean checkNeedsData(PageRequest page, PageRequestStatus status) throws Exception {
+    private boolean checkNeedsData(PageRequest page, PageRequestStatus status) throws PustefixApplicationException {
         PageRequest saved = currentpagerequest;
         currentpagerequest = page;
         State state = pagemap.getState(page);
         if (state == null) {
-            throw new XMLException("*** Can't get a state to check needsData() for page " + page.getName() + " ***");
+            throw new PustefixRuntimeException("*** Can't get a state to check needsData() for page " + page.getName() + " ***");
         }
         page.setStatus(status);
 
         PerfEvent pe = new PerfEvent(PerfEventType.PAGE_NEEDSDATA, page.getName());
         pe.start();
-        boolean retval = state.needsData(parentcontext, currentpservreq);
+        boolean retval;
+        try {
+            retval = state.needsData(parentcontext, currentpservreq);
+        } catch (Exception e) {
+            throw new PustefixApplicationException("Exception while running needsData() for page " + page.getName(), e);
+        }
         pe.save();
 
         currentpagerequest = saved;
         return retval;
     }
 
-    private boolean checkIsAccessible(PageRequest page, PageRequestStatus status) throws Exception {
+    private boolean checkIsAccessible(PageRequest page, PageRequestStatus status) throws PustefixApplicationException {
         PageRequest saved = currentpagerequest;
         try {
             currentpagerequest = page;
             State state = pagemap.getState(page);
             if (state == null) {
-                throw new XMLException("* Can't get a state to check isAccessible() for page " + page.getName());
+                throw new PustefixRuntimeException("Can't get a state to check isAccessible() for page " + page.getName());
             }
             page.setStatus(status);
 
             PerfEvent pe = new PerfEvent(PerfEventType.PAGE_ISACCESSIBLE, page.getName());
             pe.start();
-            boolean retval = state.isAccessible(parentcontext, currentpservreq);
+            boolean retval;
+            try {
+                retval = state.isAccessible(parentcontext, currentpservreq);
+            } catch (Exception e) {
+                throw new PustefixApplicationException("Got exception from state for page " + page.getName() + " while calling isAccessible()", e);
+            }
             pe.save();
 
             return retval;
