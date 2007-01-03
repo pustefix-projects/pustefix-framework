@@ -18,6 +18,8 @@
 
 package de.schlund.pfixcore.editor2.core.spring;
 
+import java.lang.ref.WeakReference;
+
 import org.apache.log4j.Logger;
 
 import de.schlund.pfixcore.editor2.frontend.resources.SpringHelperResource;
@@ -35,7 +37,7 @@ import de.schlund.pfixcore.workflow.Context;
  */
 public class PustefixSessionServiceImpl implements SessionService,
         PustefixContextService {
-    ThreadLocal<Context> context = new ThreadLocal<Context>();
+    ThreadLocal<WeakReference<Context>> context = new ThreadLocal<WeakReference<Context>>();
 
     private SpringHelperResource getHelperResource() {
         if (this.getPustefixContext() == null) {
@@ -62,11 +64,23 @@ public class PustefixSessionServiceImpl implements SessionService,
 
     public void setPustefixContext(Context context) {
         // Store the context in a thread local variable
-        this.context.set(context);
+        // Use a weak-reference as the context object should
+        // be removed when the session is deleted - even
+        // if it is still attached to a thread.
+        if (context == null) {
+            this.context.set(null);
+        } else {
+            WeakReference<Context> wr = new WeakReference<Context>(context);
+            this.context.set(wr);
+        }
     }
 
     public Context getPustefixContext() {
-        return (Context) this.context.get();
+        try {
+            return this.context.get().get();
+        } catch (NullPointerException e) {
+            return null;
+        }
     }
 
 }
