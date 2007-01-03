@@ -19,6 +19,7 @@
 
 package de.schlund.pfixcore.workflow;
 
+import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -27,6 +28,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.sax.SAXTransformerFactory;
@@ -35,6 +38,7 @@ import javax.xml.transform.sax.TransformerHandler;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
 import org.xml.sax.helpers.XMLReaderFactory;
@@ -58,7 +62,7 @@ public class Navigation {
     
     private Element navigationXMLElement = null;
     
-    public Navigation(FileResource navifile,XsltVersion xsltVersion) throws Exception {
+    public Navigation(FileResource navifile,XsltVersion xsltVersion) throws IOException, SAXException, TransformerException, TransformerConfigurationException {
         loadTime = System.currentTimeMillis();
         Document navitree = Xml.parseMutable(navifile);
         
@@ -124,7 +128,7 @@ public class Navigation {
         return navigationXMLElement;
     }
 
-    private void recursePagetree(NavigationElement parent, List nl) throws Exception {
+    private void recursePagetree(NavigationElement parent, List nl) throws TransformerException {
         for (int i = 0; i < nl.size(); i++) {
             Element page    = (Element) nl.get(i);
             String  name    = page.getAttribute("name");

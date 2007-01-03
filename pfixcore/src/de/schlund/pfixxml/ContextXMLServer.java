@@ -19,14 +19,12 @@
 
 package de.schlund.pfixxml;
 
-
-
-
-
-
-
+import de.schlund.pfixcore.exception.PustefixApplicationException;
+import de.schlund.pfixcore.exception.PustefixCoreException;
+import de.schlund.pfixcore.exception.PustefixRuntimeException;
 import de.schlund.pfixcore.scriptedflow.ScriptedFlowConfig;
 import de.schlund.pfixcore.scriptedflow.ScriptedFlowInfo;
+import de.schlund.pfixcore.scriptedflow.compiler.CompilerException;
 import de.schlund.pfixcore.scriptedflow.vm.Script;
 import de.schlund.pfixcore.scriptedflow.vm.ScriptVM;
 import de.schlund.pfixcore.scriptedflow.vm.VirtualHttpServletRequest;
@@ -135,7 +133,7 @@ public class ContextXMLServer extends AbstractXMLServer {
         }
     }
 
-    public SPDocument getDom(PfixServletRequest preq) throws Exception {
+    public SPDocument getDom(PfixServletRequest preq) throws PustefixApplicationException, PustefixCoreException {
         Context context = getContext(preq);
         
         // Prepare context for current thread
@@ -158,7 +156,12 @@ public class ContextXMLServer extends AbstractXMLServer {
                 info.reset();
 
                 // Lookup script name
-                Script script = getScriptedFlowByName(scriptedFlowName);
+                Script script;
+                try {
+                    script = getScriptedFlowByName(scriptedFlowName);
+                } catch (CompilerException e) {
+                    throw new PustefixCoreException("Could not compile scripted flow " + scriptedFlowName, e);
+                }
 
                 if (script != null) {
                     // Remember running script
@@ -219,7 +222,7 @@ public class ContextXMLServer extends AbstractXMLServer {
         }
     }
 
-    private Script getScriptedFlowByName(String scriptedFlowName) throws Exception {
+    private Script getScriptedFlowByName(String scriptedFlowName) throws CompilerException {
         ScriptedFlowConfig config = getContextXMLServletConfig().getScriptedFlowConfig();
         return config.getScript(scriptedFlowName);
     }
@@ -236,7 +239,7 @@ public class ContextXMLServer extends AbstractXMLServer {
         return info;
     }
     
-    private Context getContext(PfixServletRequest preq) throws Exception {
+    private Context getContext(PfixServletRequest preq) throws PustefixApplicationException, PustefixCoreException {
         // Name of the attribute that is used to store the session context
         // within the session object.
         String contextname = makeContextName();
@@ -244,7 +247,7 @@ public class ContextXMLServer extends AbstractXMLServer {
         HttpSession session = preq.getSession(false);
         if (session == null) {
             // The ServletManager class handles session creation
-            throw new XMLException("No valid session found! Aborting...");
+            throw new PustefixRuntimeException("No valid session found! Aborting...");
         }
 
         // FIXME: DCL is broken
