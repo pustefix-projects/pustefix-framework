@@ -452,6 +452,7 @@ SOAP_SimpleSerializer.prototype.serialize=function(value,name,typeInfo,writer,ct
 }
 //deserialize(typeInfo,element)
 SOAP_SimpleSerializer.prototype.deserialize=function(typeInfo,element) {
+  if(element.getAttribute(XML_NS_PREFIX_MAP[XML_NS_XSI]+":nil")) return null;
   var val="";
   for(var i=0;i<element.childNodes.length;i++) val+=element.childNodes[i].nodeValue;
   return val; 
@@ -468,8 +469,8 @@ function SOAP_NumberSerializer(xmlType) {
 SOAP_NumberSerializer.extend(SOAP_SimpleSerializer);
 SOAP_NumberSerializer.prototype.serialize=function(value,name,typeInfo,writer,ctx) {
   if(value!=null) {
-  if(typeof value!="number") throw new SOAP_SerializeEx("Illegal type: "+(typeof value),"SOAP_NumberSerializer.serialize");
-  if(isNaN(value)) throw new SOAP_SerializeEx("Illegal value: "+value,"SOAP_NumberSerializer.serialize");
+    if(typeof value!="number") throw new SOAP_SerializeEx("Illegal type: "+(typeof value),"SOAP_NumberSerializer.serialize");
+    if(isNaN(value)) throw new SOAP_SerializeEx("Illegal value: "+value,"SOAP_NumberSerializer.serialize");
   }
   this.superclass.serialize(value,name,typeInfo,writer,ctx);
 }
@@ -491,15 +492,16 @@ function SOAP_FloatSerializer(xmlType) {
 }
 SOAP_FloatSerializer.extend(SOAP_SimpleSerializer);
 SOAP_FloatSerializer.prototype.serialize=function(value,name,typeInfo,writer,ctx) {
-  if(typeof value!="number") throw new SOAP_SerializeEx("Illegal type: "+(typeof value),"SOAP_FloatSerializer.serialize");
-  if(isNaN(value)) throw new SOAP_SerializeEx("Illegal value: "+value,"SOAP_FloatSerializer.serialize");
+  if(value!=null) {
+    if(typeof value!="number") throw new SOAP_SerializeEx("Illegal type: "+(typeof value),"SOAP_FloatSerializer.serialize");
+    if(isNaN(value)) throw new SOAP_SerializeEx("Illegal value: "+value,"SOAP_FloatSerializer.serialize");
+  }
   this.superclass.serialize(value,name,typeInfo,writer,ctx);
 }
 SOAP_FloatSerializer.prototype.deserialize=function(typeInfo,element) {
   var val=parseFloat(this.superclass.deserialize.call(this,typeInfo,element));
   if( isNaN(val) ) {
-    //if ( element.getAttributeNS(XML_NS_XSI, 'nil') == 'true' ) return null;
-    //else 
+    if(element.getAttribute(XML_NS_PREFIX_MAP[XML_NS_XSI]+":nil")) return null;
     throw new SOAP_SerializeEx("Illegal value: "+val,"SOAP_FloatSerializer.deserialize");
   }
   return val;
@@ -514,7 +516,7 @@ function SOAP_StringSerializer(xmlType) {
 }
 SOAP_StringSerializer.extend(SOAP_SimpleSerializer);
 SOAP_StringSerializer.prototype.serialize=function(value,name,typeInfo,writer,ctx) {
-  if(typeof value!="string") throw new SOAP_SerializeEx("Illegal type: "+(typeof value),"SOAP_StringSerializer.serialize");
+  if(value!=null && typeof value!="string") throw new SOAP_SerializeEx("Illegal type: "+(typeof value),"SOAP_StringSerializer.serialize");
   this.superclass.serialize(value,name,typeInfo,writer,ctx);
 }
 SOAP_StringSerializer.prototype.deserialize=function(typeInfo,element) {
@@ -530,14 +532,14 @@ function SOAP_BooleanSerializer(xmlType) {
 }
 SOAP_BooleanSerializer.extend(SOAP_SimpleSerializer);
 SOAP_BooleanSerializer.prototype.serialize=function(value,name,typeInfo,writer,ctx) {
-  if(typeof value!="boolean") throw new SOAP_SerializeEx("Illegal type: "+(typeof value),"SOAP_BooleanSerializer.serialize");
+  if(value!=null && typeof value!="boolean") throw new SOAP_SerializeEx("Illegal type: "+(typeof value),"SOAP_BooleanSerializer.serialize");
   this.superclass.serialize(value,name,typeInfo,writer,ctx);
 }
 SOAP_BooleanSerializer.prototype.deserialize=function(typeInfo,element) {
   var str=this.superclass.deserialize.call(this,typeInfo,element);
   if(str=='true') val=true;
   else if(str=='false') val=false;
-  //else if ( element.getAttributeNS(XML_NS_XSI, 'nil') == 'true' ) val = null;
+  else if(element.getAttribute(XML_NS_PREFIX_MAP[XML_NS_XSI]+":nil")) val=null;
   else throw new SOAP_SerializeEx("Illegal value: "+str,"SOAP_BooleanSerializer.deserialize");
   return val;
 }
@@ -966,6 +968,7 @@ SOAP_Call.prototype.callback=function(xml,reqID) {
       var ex=new Error();
       var ind=fault.faultString.indexOf(":");
       ex.name=fault.faultString.substring(0,ind);
+      if(fault.faultString.charAt(ind+1)==" ") ind++;
       ex.message=fault.faultString.substring(ind+1,fault.faultString.length);
       if(this.userCallback) this.userCallback(null,reqID,ex);
       else if(this.userObject) this.userObject[this.opName].call(this.userObject,null,reqID,ex);
