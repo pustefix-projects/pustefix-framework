@@ -79,7 +79,7 @@ public class DefaultIWrapperState extends StateImpl {
         
         CAT.debug("[[[[[ " + context.getCurrentPageRequest().getName() + " ]]]]]"); 
 
-        PerfEvent pe = new PerfEvent(PerfEventType.PAGE_INITIWRAPPERS, context.getCurrentPageRequest().toString());
+        PerfEvent pe = new PerfEvent(PerfEventType.PAGE_INIT_IWRAPPERS.name(), context.getCurrentPageRequest().toString());
         
         pe.start();
         container.initIWrappers(context, preq, resdoc);
@@ -88,7 +88,7 @@ public class DefaultIWrapperState extends StateImpl {
         if (isSubmitTrigger(context, preq)) {
             CAT.debug(">>> In SubmitHandling...");
             
-            pe = new PerfEvent(PerfEventType.PAGE_HANDLESUBMITTEDDATA, context.getCurrentPageRequest().toString());
+            pe = new PerfEvent(PerfEventType.PAGE_HANDLE_SUBMITTED_DATA.name(), context.getCurrentPageRequest().toString());
             pe.start();
             container.handleSubmittedData();
             pe.save();
@@ -108,7 +108,7 @@ public class DefaultIWrapperState extends StateImpl {
 
                 CAT.debug("    => end of submit reached successfully.");
                 CAT.debug("    => retrieving current status.");
-                pe = new PerfEvent(PerfEventType.PAGE_RETRIEVECURRENTSTATUS, context.getCurrentPageRequest().toString());
+                pe = new PerfEvent(PerfEventType.PAGE_RETRIEVE_CURRENT_STATUS.name(), context.getCurrentPageRequest().toString());
                 pe.start();
                 container.retrieveCurrentStatus();
                 pe.save();
@@ -118,7 +118,7 @@ public class DefaultIWrapperState extends StateImpl {
         } else if (isDirectTrigger(context, preq) || context.finalPageIsRunning() || context.flowIsRunning()) {
             CAT.debug(">>> Retrieving current status...");
             
-            pe = new PerfEvent(PerfEventType.PAGE_RETRIEVECURRENTSTATUS, context.getCurrentPageRequest().toString());
+            pe = new PerfEvent(PerfEventType.PAGE_RETRIEVE_CURRENT_STATUS.name(), context.getCurrentPageRequest().toString());
             pe.start();
             container.retrieveCurrentStatus();
             pe.save();

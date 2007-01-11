@@ -411,7 +411,7 @@ public abstract class ServletManager extends HttpServlet {
 
         CAT.debug("*** >>> End of redirection management, handling request now.... <<< ***\n");
 
-        PerfEvent pe = new PerfEvent(PerfEventType.XMLSERVER_CALLPROCESS, req.getRequestURI());
+        PerfEvent pe = new PerfEvent(PerfEventType.XMLSERVER_CALL_PROCESS.name(), req.getRequestURI());
         pe.start();
         callProcess(preq, req, res);
         pe.save();

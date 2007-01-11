@@ -400,7 +400,7 @@ public class IWrapperSimpleContainer implements IWrapperContainer, Reloader {
                 if (selectedwrappers.contains(wrapper)) {
                     wrapper.tryParamLogging();
                     if (!wrapper.errorHappened()) {
-                        PerfEvent pe = new PerfEvent(PerfEventType.IHANDLER_HANDLESUBMITTEDDATA, handler.getClass().getName());
+                        PerfEvent pe = new PerfEvent(PerfEventType.IHANDLER_HANDLE_SUBMITTED_DATA.name(), handler.getClass().getName());
                         pe.start();
                         handler.handleSubmittedData(context, wrapper);
                         pe.save();

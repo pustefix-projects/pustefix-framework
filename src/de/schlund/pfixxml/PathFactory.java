@@ -63,7 +63,6 @@ public class PathFactory {
         if (!docroot.isAbsolute()) {
             throw new RuntimeException("**** docroot " + docrootstr + " must be a absolute! ****");
         }
-        System.out.println("Docroot is: " + docroot.getPath());
     }
 
 }

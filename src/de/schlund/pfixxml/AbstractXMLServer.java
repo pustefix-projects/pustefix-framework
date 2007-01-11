@@ -29,7 +29,6 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
 import java.util.TreeMap;
-
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;
@@ -373,7 +372,7 @@ public abstract class AbstractXMLServer extends ServletManager {
         if (spdoc == null) {
             
             // Performace tracking
-            PerfEvent pe = new PerfEvent(PerfEventType.XMLSERVER_GETDOM);
+            PerfEvent pe = new PerfEvent(PerfEventType.XMLSERVER_GET_DOM.name());
             pe.start();
             currtime        = System.currentTimeMillis();
             
@@ -469,7 +468,7 @@ public abstract class AbstractXMLServer extends ServletManager {
         }
         
         //Performance tracking
-        PerfEvent pe = new PerfEvent(PerfEventType.XMLSERVER_HANDLEDOCUMENT, spdoc.getPagename());
+        PerfEvent pe = new PerfEvent(PerfEventType.XMLSERVER_HANDLE_DOCUMENT.name(), spdoc.getPagename());
         pe.start();
         
         if (spdoc.docIsUpdateable()) {

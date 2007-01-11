@@ -81,7 +81,7 @@ public class StateUtil {
                 throw new XMLException("ContextResource not found: " + classname);
             }
            
-            PerfEvent pe = new PerfEvent(PerfEventType.CONTEXTRESOURCE_INSERTSTATUS, classname);
+            PerfEvent pe = new PerfEvent(PerfEventType.CONTEXTRESOURCE_INSERT_STATUS.name(), classname);
             pe.start();
             cr.insertStatus(resdoc, resdoc.createNode(nodename));
             pe.save();
