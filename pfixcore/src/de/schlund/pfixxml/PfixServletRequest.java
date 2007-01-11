@@ -93,7 +93,7 @@ public class PfixServletRequest {
      * @param cUtil
      */
     public PfixServletRequest(HttpServletRequest req, Properties properties) {
-        PerfEvent pe = new PerfEvent(PerfEventType.PFIXSERVLETREQUEST_INIT);
+        PerfEvent pe = new PerfEvent(PerfEventType.PFIXSERVLETREQUEST_INIT.name());
         pe.start();
         
         starttime   = System.currentTimeMillis();

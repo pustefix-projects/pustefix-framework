@@ -112,7 +112,7 @@ public class IHandlerSimpleContainer implements IHandlerContainer, Reloader {
         
         for (Iterator iter = handlers.iterator(); iter.hasNext(); ) {
             IHandler handler = (IHandler) iter.next();
-            PerfEvent pe = new PerfEvent(PerfEventType.IHANDLER_PREREQUISITESMET, handler.getClass().getName());
+            PerfEvent pe = new PerfEvent(PerfEventType.IHANDLER_PREREQUISITES_MET.name(), handler.getClass().getName());
             pe.start();
             boolean  test = handler.prerequisitesMet(context);
             pe.save();
@@ -184,7 +184,7 @@ public class IHandlerSimpleContainer implements IHandlerContainer, Reloader {
      * @throws Exception
      */
     private boolean doIsActive(IHandler handler, Context ctx) throws Exception{
-        PerfEvent pe = new PerfEvent(PerfEventType.IHANDLER_ISACTIVE, handler.getClass().getName());
+        PerfEvent pe = new PerfEvent(PerfEventType.IHANDLER_IS_ACTIVE.name(), handler.getClass().getName());
         pe.start();
         boolean  test = handler.isActive(ctx);
         pe.save();
@@ -201,7 +201,7 @@ public class IHandlerSimpleContainer implements IHandlerContainer, Reloader {
      * @throws Exception
      */
     private boolean doNeedsData(IHandler handler, Context ctx) throws Exception{
-        PerfEvent pe = new PerfEvent(PerfEventType.IHANDLER_NEEDSDATA, handler.getClass().getName());
+        PerfEvent pe = new PerfEvent(PerfEventType.IHANDLER_NEEDS_DATA.name(), handler.getClass().getName());
         pe.start();
         boolean  test = handler.needsData(ctx);
         pe.save();

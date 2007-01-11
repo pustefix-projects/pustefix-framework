@@ -670,7 +670,7 @@ public class Context implements AppContext {
         page.setStatus(status);
       
         
-        PerfEvent pe = new PerfEvent(PerfEventType.PAGE_NEEDSDATA, page.getName());
+        PerfEvent pe = new PerfEvent(PerfEventType.PAGE_NEEDS_DATA.name(), page.getName());
         pe.start();
         boolean retval = state.needsData(this, currentpservreq);
         pe.save();
@@ -688,7 +688,7 @@ public class Context implements AppContext {
         }
         page.setStatus(status);
         
-        PerfEvent pe = new PerfEvent(PerfEventType.PAGE_ISACCESSIBLE, page.getName());
+        PerfEvent pe = new PerfEvent(PerfEventType.PAGE_IS_ACCESSIBLE.name(), page.getName());
         pe.start();
         boolean retval = state.isAccessible(this, currentpservreq);
         pe.save();
@@ -1008,13 +1008,13 @@ public class Context implements AppContext {
         if (autoinvalidate_navi || navi_visible_map == null) {
             LOG.debug("=> Add new navigation.");
             navi_visible_map = new HashMap<NavigationElement, Integer>();
-            PerfEvent pe = new PerfEvent(PerfEventType.CONTEXT_CREATENAVICOMPLETE, spdoc.getPagename());
+            PerfEvent pe = new PerfEvent(PerfEventType.CONTEXT_CREATE_NAVI_COMPLETE.name(), spdoc.getPagename());
             pe.start();
             recursePages(navi.getNavigationElements(), element, doc, true);
             pe.save();
         } else {
             LOG.debug("=> Reuse old navigation.");
-            PerfEvent pe = new PerfEvent(PerfEventType.CONTEXT_CREATENAVIREUSE, spdoc.getPagename());
+            PerfEvent pe = new PerfEvent(PerfEventType.CONTEXT_CREATE_NAVI_REUSE.name(), spdoc.getPagename());
             pe.start();
             recursePages(navi.getNavigationElements(), element, doc, false);
             pe.save();
