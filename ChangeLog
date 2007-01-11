@@ -1,3 +1,21 @@
+2007-01-11 Niels Schelbach <niels@schlund.de>
+
+	* src/de/schlund/pfixcore/workflow/app/DefaultIWrapperState.java:
+	* src/de/schlund/pfixcore/workflow/app/IHandlerSimpleContainer.java:
+	* src/de/schlund/pfixcore/workflow/app/IWrapperSimpleContainer.java:
+	* src/de/schlund/pfixcore/workflow/Context.java:
+	* src/de/schlund/pfixcore/util/StateUtil.java:
+	* src/de/schlund/pfixcore/webservice/ServiceRuntime.java:
+	* src/de/schlund/pfixxml/PathFactory.java:
+	* src/de/schlund/pfixxml/AbstractXMLServer.java:
+	* src/de/schlund/pfixxml/ServletManager.java:
+	* src/de/schlund/pfixxml/perflogging/PerfEventType.java:
+	* src/de/schlund/pfixxml/PfixServletRequest.java:
+	Changed PerfEventType to enum and added entzry for webservice calls
+	
+
+
+
 2007-01-10  Martin Leidig  <mleidig@schlund.de>
 
 	* projects/core/script/webservice.js: fixed null value handling bug
