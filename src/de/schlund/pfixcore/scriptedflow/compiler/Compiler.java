@@ -26,6 +26,7 @@ import javax.xml.transform.TransformerException;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
@@ -199,14 +200,25 @@ public class Compiler {
     
     private static VirtualRequestStatement virtualRequestStatementFromElement(Statement parent, Element element) throws CompilerException {
         String pagename = element.getAttribute("page");
-        if ((pagename == null && element.getAttributes() != null && element.getAttributes().getLength() != 0)
-            || (pagename != null && element.getAttributes().getLength() != 1)) {
-            throw new CompilerException("\"virtual-request\" command only allows \"page\" attribute");
-        }
-        
+        String interactive = element.getAttribute("dointeractive");
+
+        NamedNodeMap attribs = element.getAttributes();
+        for (int i = 0; i < attribs.getLength(); i++) {
+            Node attnode = attribs.item(i);
+            String name = attnode.getNodeName();
+            if (name.equals("page")) {
+                pagename = attnode.getNodeValue();
+            } else if (name.equals("dointeractive")) {
+                interactive = attnode.getNodeValue();
+            } else {
+                throw new CompilerException("\"virtual-request\" command only allows \"page\" and " + 
+                "\"dointeractive\" attribute");                
+            }
+        }        
+                
         VirtualRequestStatement stmt = new VirtualRequestStatement(parent);
         stmt.setPagename(pagename);
-
+        stmt.setDointeractive(interactive);
         addParametersToStatement(element, stmt);
         
         return stmt;
