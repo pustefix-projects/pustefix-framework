@@ -1,5 +1,5 @@
 var wsChat=new WS_Chat();
-var jwsChat=new WS_Webservice("Chat");
+var jwsChat=new JWS_Chat();
 
 function ChatApp() {
 	this.name=null;
@@ -9,15 +9,20 @@ function ChatApp() {
 }
 
 ChatApp.prototype.restartService=function() {
-	if(this.chat==null) {
-		if(soapEnabled()) this.chat=wsChat;
-		else this.chat=jwsChat;
-	} else {
-		if(soapEnabled()&&(this.chat instanceof WS_Webservice)) this.chat=wsChat;
-		else if(!soapEnabled()&&(this.chat instanceof WS_Chat)) this.chat=jwsChat;
-	}
+	
 }
 	
+ChatApp.prototype.getChat=function() {
+   if(this.chat==null) {
+      if(soapEnabled()) this.chat=wsChat;
+      else this.chat=jwsChat;
+   } else {
+      if(soapEnabled()&&this.chat==jwsChat) this.chat=wsChat;
+      else if(!soapEnabled()&&this.chat==wsChat) this.chat=jwsChat;
+   }
+   return this.chat;
+}
+   
 ChatApp.prototype.init=function(loggedin,nickname) {
 	if(loggedin=="true") {
 		this.name=nickname;
@@ -40,7 +45,7 @@ ChatApp.prototype.login=function(name) {
 		self.initText();
 		self.startUpdates();
 	}
-	this.chat.login(name,f); 
+	this.getChat().login(name,f); 
 }
 
 ChatApp.prototype.startUpdates=function() {
@@ -70,7 +75,7 @@ ChatApp.prototype.logout=function() {
 		self.logoutDisplay();
 		self.clearText();
 	}
-	this.chat.logout(f);
+	this.getChat().logout(f);
 }
 
 ChatApp.prototype.logoutDisplay=function() {
@@ -86,7 +91,7 @@ ChatApp.prototype.send=function(text) {
 	var f=function() {
 		document.getElementById("messageInput").value="";
 	}
-	this.chat.sendMessage(text,new Array(),f);
+	this.getChat().sendMessage(text,new Array(),f);
 }
 
 ChatApp.prototype.initText=function() {
@@ -116,7 +121,7 @@ ChatApp.prototype.getMessages=function() {
 			self.addMessage(msgs[i]);
 		}
 	}
-	this.chat.getMessages(f);
+	this.getChat().getMessages(f);
 }
 
 ChatApp.prototype.getLastMessages=function() {
@@ -126,7 +131,7 @@ ChatApp.prototype.getLastMessages=function() {
 			self.addMessage(msgs[i]);
 		}
 	}
-	this.chat.getLastMessages(f);
+	this.getChat().getLastMessages(f);
 }
 
 ChatApp.prototype.addMessage=function(msg) {	
@@ -154,7 +159,7 @@ ChatApp.prototype.getNickNames=function() {
 			self.addNickName(names[i]);
 		}
 	}
-	this.chat.getNickNames(f);
+	this.getChat().getNickNames(f);
 }
 
 ChatApp.prototype.clearNickNames=function() {

@@ -36,5 +36,5 @@ public interface ServiceResponse {
 	public void setMessage(String message) throws IOException;
 	public Writer getMessageWriter() throws IOException;
 	public OutputStream getMessageStream() throws IOException;
-	
+    
 }

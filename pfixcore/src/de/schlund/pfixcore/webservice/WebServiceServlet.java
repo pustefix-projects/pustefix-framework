@@ -19,19 +19,9 @@
 
 package de.schlund.pfixcore.webservice;
 
-import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.PrintWriter;
-import java.net.HttpURLConnection;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.Enumeration;
-import java.util.Iterator;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -39,11 +29,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.apache.axis.AxisEngine;
 import org.apache.axis.AxisFault;
-import org.apache.axis.ConfigurationException;
-import org.apache.axis.description.OperationDesc;
-import org.apache.axis.description.ServiceDesc;
 import org.apache.axis.transport.http.AxisServlet;
 import org.apache.log4j.Logger;
 
@@ -54,8 +40,7 @@ import de.schlund.pfixcore.webservice.config.ServiceConfig;
 import de.schlund.pfixcore.webservice.fault.Fault;
 import de.schlund.pfixcore.webservice.fault.FaultHandler;
 import de.schlund.pfixcore.webservice.jsonws.JSONWSProcessor;
-import de.schlund.pfixcore.webservice.monitor.MonitorHistory;
-import de.schlund.pfixcore.webservice.monitor.MonitorRecord;
+import de.schlund.pfixcore.webservice.jsonws.JSONWSStubGenerator;
 import de.schlund.pfixxml.PathFactory;
 import de.schlund.pfixxml.loader.AppLoader;
 
@@ -75,6 +60,7 @@ public class WebServiceServlet extends AxisServlet implements ServiceProcessor {
     private static Object initLock=new Object();
     private ServiceRuntime runtime;
    
+    private AdminWebapp adminWebapp;
    
     private ClassLoader currentLoader;
     
@@ -125,10 +111,12 @@ public class WebServiceServlet extends AxisServlet implements ServiceProcessor {
         				Configuration srvConf=ConfigurationReader.read(wsConfFile);
         				runtime=new ServiceRuntime();
         				runtime.setConfiguration(srvConf);
-        				runtime.setApplicationServiceRegistry(new ServiceRegistry(srvConf,ServiceRegistry.RegistryType.APPLICATION));
+        				runtime.setApplicationServiceRegistry(new ServiceRegistry(runtime.getConfiguration(),ServiceRegistry.RegistryType.APPLICATION));
         				runtime.addServiceProcessor(Constants.PROTOCOL_TYPE_SOAP,this);
         				runtime.addServiceProcessor(Constants.PROTOCOL_TYPE_JSONWS,new JSONWSProcessor());
+                        runtime.addServiceStubGenerator(Constants.PROTOCOL_TYPE_JSONWS,new JSONWSStubGenerator());
         				getServletContext().setAttribute(ServiceRuntime.class.getName(),runtime);
+                        adminWebapp=new AdminWebapp(runtime);
         			} catch(Exception x) {
         				LOG.error("Error while initializing ServiceRuntime",x);
         				throw new ServletException("Error while initializing ServiceRuntime",x);
@@ -138,38 +126,16 @@ public class WebServiceServlet extends AxisServlet implements ServiceProcessor {
         }
     }
     
-    protected void sendForbidden(HttpServletRequest req,HttpServletResponse res,PrintWriter writer) {
-        res.setStatus(HttpURLConnection.HTTP_FORBIDDEN);
-        res.setContentType("text/html");
-        writer.println("<h2>Forbidden!</h2>");
-        writer.close();
-    }
     
-    protected void sendBadRequest(HttpServletRequest req,HttpServletResponse res,PrintWriter writer) {
-        res.setStatus(HttpURLConnection.HTTP_BAD_REQUEST);
-        res.setContentType("text/html");
-        writer.println("<h2>Bad request!</h2>");
-        writer.close();
-    }
-    
-    protected void sendError(HttpServletRequest req,HttpServletResponse res,PrintWriter writer) {
-        res.setStatus(HttpURLConnection.HTTP_INTERNAL_ERROR);
-        res.setContentType("text/html");
-        writer.println("<h2>Internal server error!</h2>");
-        writer.close();
-    }
- 
     public void doPost(HttpServletRequest req,HttpServletResponse res) throws ServletException,IOException {
         AppLoader loader=AppLoader.getInstance();
         if(loader.isEnabled()) {
             ClassLoader newLoader=loader.getAppClassLoader();
-            //ClassLoader currentLoader=org.apache.axis.utils.ClassUtils.getDefaultClassLoader();
             Thread.currentThread().setContextClassLoader(newLoader);
         
             synchronized(this) {
                 if(newLoader!=currentLoader) {
                     if(DEBUG) LOG.debug("Reload Axis Engine.");
-                    //ClassUtils.setDefaultClassLoader(newLoader);
                     Thread.currentThread().setContextClassLoader(newLoader);
                     currentLoader=newLoader;
                     axisServer=null;
@@ -191,9 +157,13 @@ public class WebServiceServlet extends AxisServlet implements ServiceProcessor {
     	}
     }
     
+    public void doGet(HttpServletRequest req,HttpServletResponse res) throws ServletException,IOException {
+        adminWebapp.doGet(req,res);
+    }
+    
     public void init(ServiceRuntime runtime) {}
     
-    public void process(ServiceRequest serviceReq,ServiceResponse serviceRes,ServiceRegistry registry) throws ServiceException {
+    public void process(ServiceRequest serviceReq,ServiceResponse serviceRes,ServiceRuntime runtime,ServiceRegistry registry,ProcessingInfo procInfo) throws ServiceException {
  
         HttpServletRequest req=(HttpServletRequest)serviceReq.getUnderlyingRequest();
         HttpServletResponse res=(HttpServletResponse)serviceRes.getUnderlyingResponse();
@@ -230,70 +200,6 @@ public class WebServiceServlet extends AxisServlet implements ServiceProcessor {
     	
     }
     
-    public void doGet(HttpServletRequest req,HttpServletResponse res) throws ServletException,IOException {
-        HttpSession session=req.getSession(false);
-        PrintWriter writer = res.getWriter();
-        String qs=req.getQueryString();
-        if(qs==null) {
-            sendBadRequest(req,res,writer);
-        } else if(qs.equalsIgnoreCase("WSDL")) {
-            if(runtime.getConfiguration().getGlobalServiceConfig().getWSDLSupportEnabled()) {
-                String pathInfo=req.getPathInfo();
-                String serviceName;
-                if (pathInfo.startsWith("/")) {
-                    serviceName=pathInfo.substring(1);
-                } else {
-                    serviceName=pathInfo;
-                }
-                ServiceConfig conf=runtime.getConfiguration().getServiceConfig(serviceName);
-                String type=conf.getSessionType();
-                if(type.equals(Constants.SESSION_TYPE_SERVLET) && session==null) {
-                    sendForbidden(req,res,writer);
-                    return;
-                }
-                res.setContentType("text/xml");
-                String repoPath=runtime.getConfiguration().getGlobalServiceConfig().getWSDLRepository();
-                InputStream in=getServletContext().getResourceAsStream(repoPath+"/"+serviceName+".wsdl");
-                if(in!=null) {
-                    if(type.equals(Constants.SESSION_TYPE_SERVLET)) {
-                        StringBuffer sb=new StringBuffer();
-                        BufferedInputStream bis=new BufferedInputStream(in);
-                        int ch=0;
-                        while((ch=bis.read())!=-1) {
-                            sb.append((char)ch);
-                        }
-                        String str=sb.toString();
-                        String sid=Constants.SESSION_PREFIX+session.getId();
-                        Pattern pat=Pattern.compile("(wsdlsoap:address location=\"[^\"]*)");
-                        Matcher mat=pat.matcher(str);
-                        sb=new StringBuffer();
-                        while(mat.find()) {
-                            mat.appendReplacement(sb,mat.group(1)+sid);
-                        }
-                        mat.appendTail(sb);
-                        str=sb.toString();
-                        writer.println(str);
-                    } else {
-                        BufferedInputStream bis=new BufferedInputStream(in);
-                        int ch=0;
-                        while((ch=bis.read())!=-1) {
-                            writer.write(ch);
-                        }
-                    }
-                    writer.close();
-                } else sendError(req,res,writer);
-            } else sendForbidden(req,res,writer);
-        } else if(qs.equalsIgnoreCase("monitor")) {
-            if(session!=null && runtime.getConfiguration().getGlobalServiceConfig().getMonitoringEnabled()) {
-            	sendMonitor(req,res,writer);
-            } else sendForbidden(req,res,writer);
-        } else if(qs.equalsIgnoreCase("admin")) {
-            if(session!=null && runtime.getConfiguration().getGlobalServiceConfig().getAdminEnabled()) {
-                sendAdmin(req,res,writer);
-            } else sendForbidden(req,res,writer);
-        } else sendBadRequest(req,res,writer);
-    }
-    
     protected void processAxisFault(AxisFault axisFault) {
         Fault fault=getCurrentFault();
         if(fault==null) {
@@ -309,10 +215,6 @@ public class WebServiceServlet extends AxisServlet implements ServiceProcessor {
         	Configuration config=runtime.getConfiguration();
         	ServiceConfig serviceConfig=config.getServiceConfig(serviceName);
         	FaultHandler faultHandler=serviceConfig.getFaultHandler();
-        	if(faultHandler==null) {
-        		GlobalServiceConfig globalConfig=config.getGlobalServiceConfig();
-        		faultHandler=globalConfig.getFaultHandler();
-        	}
         	if(faultHandler!=null) {
         		fault.setThrowable(t);
         		faultHandler.handleFault(fault);
@@ -350,174 +252,6 @@ public class WebServiceServlet extends AxisServlet implements ServiceProcessor {
 			}
 		}
 		return sb.toString();
-	}
-    
-    public void sendAdmin(HttpServletRequest req,HttpServletResponse res,PrintWriter writer) {
-      
-        AppLoader loader=AppLoader.getInstance();
-        if(loader.isEnabled()) {
-          
-            ClassLoader newLoader=loader.getAppClassLoader();
-            if(newLoader!=null) {
-                //ClassLoader currentLoader=Thread.currentThread().getContextClassLoader();
-               
-                Thread.currentThread().setContextClassLoader(newLoader);
-             
-            }
-           
-        }
-        
-        //TODO: source out html
-        HttpSession session=req.getSession(false);
-        if(session!=null && runtime.getConfiguration().getGlobalServiceConfig().getAdminEnabled()) {
-            res.setStatus(HttpURLConnection.HTTP_OK);
-            res.setContentType("text/html");
-            writer.println("<html><head><title>Web service admin</title>"+getJS()+getCSS()+"</head><body>");
-            writer.println("<div class=\"title\">Web service admin</div><div class=\"content\">");
-            try {
-                AxisEngine engine=getEngine();
-                writer.println("<table>");
-                writer.println("<tr><td>");
-                Iterator it=engine.getConfig().getDeployedServices();
-                while(it.hasNext()) {
-                    ServiceDesc desc=(ServiceDesc)it.next();
-                    String name=desc.getName();
-                    writer.println("<p>");
-                    writer.println("<b>"+name+"</b>");
-                    String wsdlUri=req.getRequestURI()+"/"+name+";jsessionid="+session.getId()+"?WSDL";
-                    writer.println("&nbsp;&nbsp;<a style=\"color:#666666\" target=\"_blank\" href=\""+wsdlUri+"\">WSDL</a>");
-                    writer.println("<br/>");
-                    ArrayList operations=desc.getOperations();
-                    if(!operations.isEmpty()) {
-                        writer.println("<ul>");
-                        for (Iterator oit = operations.iterator(); oit.hasNext();) {
-                            OperationDesc opDesc = (OperationDesc) oit.next();
-                            writer.println("<li>" + opDesc.getName());
-                        }
-                        writer.println("</ul>");
-                    }
-                     writer.println("</p>");
-                    
-                }
-                writer.println("</td></tr>");
-                writer.println("</table");
-            } catch(AxisFault fault) {
-            
-            } catch(ConfigurationException x) {
-            
-            }
-            writer.println("</div></body></html>");
-            writer.close();
-        } else sendForbidden(req,res,writer);
-    }
-    
-    public void sendMonitor(HttpServletRequest req,HttpServletResponse res,PrintWriter writer) {
-        //TODO: source out html
-        if(runtime.getConfiguration().getGlobalServiceConfig().getMonitoringEnabled()) {
-            res.setStatus(HttpURLConnection.HTTP_OK);
-            res.setContentType("text/html");
-            MonitorHistory history=runtime.getMonitor().getMonitorHistory(req);
-            SimpleDateFormat format=new SimpleDateFormat("MM-dd-yyyy HH:mm:ss");
-            writer.println("<html><head><title>Web service monitor</title>"+getJS()+getCSS()+"</head><body>");
-            writer.println("<div class=\"title\">Web service monitor</div><div class=\"content\">");
-            writer.println("<table class=\"overview\">");
-            writer.println("<tr>");
-            writer.println("<th align=\"left\">Start</th>");
-            writer.println("<th align=\"left\">Time (in ms)</th>");
-            writer.println("<th align=\"left\">Service</th>");
-            writer.println("<th align=\"left\">Protocol</th>");
-            writer.println("</tr>");
-            MonitorRecord[] records=history.getRecords();
-            for(int i=0;i<records.length;i++) {
-                MonitorRecord record=records[i];
-                String id="entry"+i;
-                String styleClass="nosel";
-                if(i==records.length-1) styleClass="sel";
-                writer.println("<tr class=\""+styleClass+"\" onclick=\"toggleDetails(this,'"+id+"')\">");
-                writer.println("<td align=\"left\">"+format.format(new Date(record.getStartTime()))+"</td>");
-                writer.println("<td align=\"right\">"+record.getTime()+"</td>");
-                writer.println("<td align=\"left\">"+record.getService()+"</td>");
-                writer.println("<td align=\"left\">"+record.getProtocol()+"</td>");
-                writer.println("</tr>");
-            }
-            writer.println("</table>");
-            for(int i=0;i<records.length;i++) {
-                MonitorRecord record=records[i];
-                String id="entry"+i;
-                String display="none";
-                if(i==records.length-1) display="block";
-                writer.println("<div class=\"detail_entry\" id=\""+id+"\" style=\"display:"+display+"\">");
-                writer.println("<table width=\"800px\">");
-                writer.println("<tr>");
-                writer.println("<td width=\"400px\"><b>Request:</b><br/><div class=\"body\"><pre>");
-                String reqMsg=record.getRequestMessage();
-                if(reqMsg==null) reqMsg="Not available";
-                writer.println(htmlEscape(reqMsg));
-                writer.println("</pre></div></td>");
-                writer.println("<td width=\"400px\"><b>Response:</b><br/><div class=\"body\"><pre>");
-                String resMsg=record.getResponseMessage();
-                if(resMsg==null) resMsg="Not available";
-                writer.println(htmlEscape(resMsg));
-                writer.println("</pre></div></td>");
-                writer.println("</tr>");
-                
-                writer.println("</table>");
-                writer.println("</div>");
-            }
-            writer.println("</div></body></html>");
-            writer.close();
-        } else sendForbidden(req,res,writer);
-    }
-    
-    private String getJS() {
-        //TODO: source out js
-        String js=
-            "<script type=\"text/javascript\">" +
-            "  function toggleDetails(src,id) {" +
-            "    var elems=document.getElementsByTagName('tr');" +
-            "    for(var i=0;i<elems.length;i++) {" +
-            "      if(elems[i].className=='sel') {" +
-            "        elems[i].className='nosel';" +
-            "      }" +
-            "    }" +
-            "    src.className='sel';" +
-            "    elems=document.getElementsByTagName('div');" +
-            "    for(var i=0;i<elems.length;i++) {" +
-            "      if(elems[i].className=='detail_entry') {" +
-            "        if(elems[i].id==id) {" +
-            "          elems[i].style.display='block';" +
-            "        } else {" +
-            "          elems[i].style.display='none';" +
-            "        }" +
-            "      }" +
-            "    }" +
-            "  }" +
-            "</script>";
-        return js;
-    }
-    
-    private String htmlEscape(String text) {
-    	text=text.replaceAll("&","&amp;");
-    	text=text.replaceAll("<","&lt;");
-    	text=text.replaceAll(">","&gt;");
-    	return text;
-    }
-    
-    private String getCSS() {
-        //TODO: source out css
-        String css=
-            "<style type=\"text/css\">" +
-            "   body {margin:0pt;border:0pt;background-color:#b6cfe4}" +
-            "   div.content {padding:5pt;}" +
-            "   div.title {padding:5pt;font-size:18pt;width:100%;background-color:black;color:white}" +
-            "   table.overview td,th {padding-bottom:5pt;padding-right:15pt}" +
-            "   table.overview tr.nosel {cursor:pointer;color:#666666;}" +
-            "   table.overview tr.sel {cursor:pointer;color:#000000;}" +
-            "   div.body {width:500px;height:300px;overflow:auto;background-color:#FFFFFF;border:1px solid #000000;}" +
-            "   div.headers {width:500px;height:100px;overflow:auto;background-color:#FFFFFF;border:1px solid #000000;}" +
-            "   div.detail_entry {display:none;} "+
-            "</style>";
-        return css;
-    }
+	}    
 
 }

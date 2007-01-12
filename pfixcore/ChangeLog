@@ -1,3 +1,68 @@
+2007-01-12  Martin Leidig  <mleidig@schlund.de>
+
+	Refactored and added some new capabilities:
+	- Added Perf-Events for service processing and service method invocation
+	- Added logging of webservice "trails" (analogous to page request trails)
+	- Simplified the configuration file format (many settings now have
+	  reasonable default values and are optional)
+	- WS monitoring application now shows additional data (like invocation
+	  time and service method)
+	- WS admin application now provides links to view the generated stubs for
+	  the different protocol types
+	_ Added support for different JSON-WS programming models (dynamic,
+	  generated, low-level, etc.)
+	- Added server-side runtime generation of JSON-WS stubs
+	- Added JS namespace support to JSON and HTTP Javascript libraries
+
+	Added:
+	* src/de/schlund/pfixcore/webservice/ServiceStubGenerator.java
+	* src/de/schlund/pfixcore/webservice/AdminWebapp.java
+	* src/de/schlund/pfixcore/webservice/ProcessingInfo.java
+	* src/de/schlund/pfixcore/webservice/ServiceDescriptorCache.java
+	* src/de/schlund/pfixcore/webservice/jsonws/JSONWSStubGenerator.java
+	* src/de/schlund/pfixcore/webservice/utils/FileCache.java
+	* src/de/schlund/pfixcore/webservice/utils/FileCacheData.java
+
+	Modified:
+	* src/de/schlund/pfixcore/webservice/ServiceDescriptor.java
+	* src/de/schlund/pfixcore/webservice/ServiceProcessor.java
+	* src/de/schlund/pfixcore/webservice/ServiceCallContext.java
+	* src/de/schlund/pfixcore/webservice/WebServiceServlet.java
+	* src/de/schlund/pfixcore/webservice/jsonws/JSONWSProcessor.java
+	* src/de/schlund/pfixcore/webservice/ServiceRuntime.java
+	* src/de/schlund/pfixcore/webservice/monitor/MonitorRecord.java
+	* src/de/schlund/pfixcore/webservice/HttpServiceRequest.java
+	* src/de/schlund/pfixcore/webservice/generate/WebServiceTask.java
+	* src/de/schlund/pfixcore/webservice/Constants.java
+	* src/de/schlund/pfixcore/webservice/ServiceResponse.java
+	* src/de/schlund/pfixcore/webservice/config/ServiceConfig.java
+	* src/de/schlund/pfixcore/webservice/config/Configuration.java
+	* src/de/schlund/pfixcore/webservice/config/GlobalServiceConfig.java
+	* src/de/schlund/pfixcore/webservice/config/ConfigurationReader.java
+	* src/de/schlund/pfixcore/webservice/ServiceRegistry.java
+	* src/de/schlund/pfixcore/webservice/json/JSONObject.java
+	* src/de/schlund/pfixcore/webservice/fault/ExceptionProcessorAdapter.java
+	* src/de/schlund/pfixcore/webservice/fault/LoggingHandler.java
+	* src/de/schlund/pfixcore/webservice/fault/Fault.java
+	* src/de/schlund/pfixcore/webservice/fault/EmailNotifyingHandler.java
+	* src/de/schlund/pfixcore/webservice/handler/ErrorHandler.java
+	* src/de/schlund/pfixxml/perflogging/PerfEventType.java
+	* projects/common/conf/pfixlog.xml
+	* projects/core/schema/wsconfig200401.xsd
+	* projects/core/script/webservice_json.js
+	* projects/core/script/httpRequest.js
+	* projects/core/xsl/master.xsl
+	* projects/webservice/xml/two_frames.xml
+	* projects/webservice/htdocs/data-pfxsoap.js
+	* projects/webservice/htdocs/calltest-pfxsoap.js
+	* projects/webservice/htdocs/chat-pfxsoap.js
+	* projects/webservice/htdocs/counter-pfxsoap.js
+	* projects/webservice/htdocs/typetest-pfxsoap.js
+	* projects/webservice/htdocs/calc-pfxsoap.js
+	* projects/webservice/htdocs/application.js
+	* projects/webservice/conf/webservice.conf.xml
+	* projects/webservice/conf/config.conf.xml
+
 2007-01-12  jtl  <jtl@schlund.de>
 
 	* src/de/schlund/pfixcore/scriptedflow/vm/VirtualRequestInstruction.java: 

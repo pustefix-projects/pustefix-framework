@@ -24,7 +24,7 @@ var obj1={
   },
   testError: function(res,id,ex) {
     var test="asynchronous (with callback object and exception)";
-    if(ex.message==' Illegal value: error') consolePrint(test+" OK");
+    if(ex.name='java.lang.IllegalArgumentException' && ex.message=='Illegal value: error') consolePrint(test+" OK");
     else consolePrint(test+" Error");
   }
 };
@@ -37,7 +37,7 @@ var obj2={
   },
   testError: function(res,id,ex) {
     var test="asynchronous (with callback object and request id and exception)";
-    if(ex.message==' Illegal value: error' && id=='4') consolePrint(test+" OK");
+    if(ex.name='java.lang.IllegalArgumentException' && ex.message=='Illegal value: error' && id=='4') consolePrint(test+" OK");
     else consolePrint(test+" Error");
   }
 };
@@ -46,9 +46,29 @@ var wsCall=new WS_CallTest();
 var wsCallObj1=new WS_CallTest(obj1);
 var wsCallObj2=new WS_CallTest(obj2);
 
+var jwsCall=new JWS_CallTest();
+var jwsCallObj1=new JWS_CallTest(obj1);
+var jwsCallObj2=new JWS_CallTest(obj2);
+
+var ws=null;
+var wsObj1=null;
+var wsObj2=null;
+
+function initWS() {
+   if(soapEnabled()) {
+      ws=wsCall;
+      wsObj1=wsCallObj1;
+      wsObj2=wsCallObj2;
+   } else {
+      ws=jwsCall;
+      wsObj1=jwsCallObj1;
+      wsObj2=jwsCallObj2;
+   }
+}
+
 function testSync() {
   var test="synchronous";
-  var val=wsCall.test("success");
+  var val=ws.test("success");
   if(val=='success') consolePrint(test+" OK");
   else consolePrint(test+" Error");
 }
@@ -56,9 +76,9 @@ function testSync() {
 function testSyncEx() {
   var test="synchronous (with exception)";
   try {
-    wsCall.testError("error");
+    ws.testError("error");
   } catch(ex) {
-    if(ex.message='Illegal value: error') consolePrint(test+" OK");
+    if(ex.name='java.lang.IllegalArgumentException' && ex.message=='Illegal value: error') consolePrint(test+" OK");
     else consolePrint(test+" Error");
   }
 }
@@ -69,7 +89,7 @@ function testAsync() {
     if(res=='success') consolePrint(test+" OK");
     else consolePrint(test+" Error");
   }
-  wsCall.test("success",f); 
+  ws.test("success",f); 
 }
 
 function testAsyncId() {
@@ -78,45 +98,53 @@ function testAsyncId() {
     if(res=='success' && id=='1') consolePrint(test+" OK");
     else consolePrint(test+" Error");
   }
-  wsCall.test("success",f,"1");   
+  ws.test("success",f,"1");   
 }
 
 function testAsyncEx() {
   var test="asynchronous (with callback function and exception)";
   var f=function(res,id,ex) {
-    if(ex.message==' Illegal value: error') consolePrint(test+" OK");
+    if(ex.name='java.lang.IllegalArgumentException' && ex.message=='Illegal value: error') consolePrint(test+" OK");
     else consolePrint(test+" Error");
   }
-  wsCall.testError("error",f); 
+  ws.testError("error",f); 
 }
 
 function testAsyncIdEx() {
   var test="asynchronous (with callback function and request id and exception)";
   var f=function(res,id,ex) {
-    if(ex.message==' Illegal value: error' && id=='2') consolePrint(test+" OK");
+    if(ex.name='java.lang.IllegalArgumentException' && ex.message=='Illegal value: error' && id=='2') consolePrint(test+" OK");
     else consolePrint(test+" Error");
   }
-  wsCall.testError("error",f,"2");   
+  ws.testError("error",f,"2");   
 }
 
 function testAsyncObj() {
-  wsCallObj1.test("success");
+  wsObj1.test("success");
 }
 
 function testAsyncObjId() {
-  wsCallObj2.test("success","3");
+  wsObj2.test("success","3");
 }
 
 function testAsyncObjEx() {
-  wsCallObj1.testError("error");
+  wsObj1.testError("error");
 }
 
 function testAsyncObjExId() {
-  wsCallObj2.testError("error","4");
+  wsObj2.testError("error","4");
 }
 
+var timer=new Timer();
+
 function serviceCall() {
+
   consoleReset();
+  initWS();
+  
+  timer.reset();
+  timer.start();
+  
   testSync();
   testSyncEx();
   testAsync();
@@ -127,6 +155,9 @@ function serviceCall() {
   testAsyncObjId();
   testAsyncObjEx();
   testAsyncObjExId();
+  
+  timer.stop();
+  printTime(timer.getTime());
 }
 
 

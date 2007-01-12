@@ -37,6 +37,11 @@ public class JSONObject implements JSONValue {
     
     Map<String,Object> members;
     
+    public boolean hasMember(String memberName) {
+        if(members==null) return false;
+        return members.get(memberName)!=null;
+    }
+    
     public Iterator<String> getMemberNames() {
         if(members==null) return emptyIteratorList.iterator();
         return members.keySet().iterator();
