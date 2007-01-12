@@ -24,6 +24,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
 import org.w3c.dom.Text;
 
 import de.schlund.pfixcore.scriptedflow.vm.pvo.ParamValueObject;
@@ -109,7 +110,7 @@ public class ScriptVM {
                 }
 
                 isRunning = false;
-                return mangleDoc(registerSPDoc, formparams);
+                return mangleDoc(registerSPDoc, formparams, false, false);
                 
             } else if (instr instanceof InteractiveRequestInstruction) {
                 InteractiveRequestInstruction in = (InteractiveRequestInstruction) instr;
@@ -134,7 +135,7 @@ public class ScriptVM {
                 }
                 
                 isRunning = true;
-                return mangleDoc(registerSPDoc, formparams);
+                return mangleDoc(registerSPDoc, formparams, false, false);
                 
             } else if (instr instanceof SetVariableInstruction) {
                 SetVariableInstruction in = (SetVariableInstruction) instr;
@@ -187,16 +188,27 @@ public class ScriptVM {
                     }
                     reqParams.put(key, rlist);
                 }
+                boolean dointeractive = in.getDoInteractive();
+                boolean reuseparams = in.getReuseParamsForInteractive(); 
+                boolean retval = false;
                 try {
-                    doVirtualRequest(in.getPagename(), reqParams, preq, context);
+                    retval = doVirtualRequest(in.getPagename(), reqParams, preq, context);
                 } finally {
                     // Make sure scripted flow is canceled on error
                     isRunning = false;
                 }
                 isRunning = true;
                 ip++;
-                continue;
 
+                if (!retval && dointeractive) {
+                    if (reuseparams) {
+                        return mangleDoc(registerSPDoc, reqParams, true, true);
+                    } else {
+                        return mangleDoc(registerSPDoc, null, true, true);
+                    }
+                }
+                
+                continue;
             } else {
                 isRunning = false;
                 throw new RuntimeException("Found instruction not understood by the VM!");
@@ -205,20 +217,34 @@ public class ScriptVM {
 
         // Reached end of script
         isRunning = false;
-        return mangleDoc(registerSPDoc, null);
+        return mangleDoc(registerSPDoc, null, false, false);
     }
 
     public boolean isExitState() {
         return !isRunning;
     }
 
-    private SPDocument mangleDoc(SPDocument spdoc, Map<String, String[]> formparams) {
+    private SPDocument mangleDoc(SPDocument spdoc, Map<String, String[]> formparams, boolean removeerrors, boolean removevalues) {
         Document doc = spdoc.getDocument();
         if (doc != null) {
             Element root = doc.getDocumentElement();
             root.setAttribute("scriptedflowname", script.getName());
             root.setAttribute("scriptedflowrunning", "" + isRunning);
 
+            if (removevalues) {
+                Element formvalues = (Element) resolver.evalXPathNode("/formresult/formvalues");
+                NodeList children = formvalues.getChildNodes();
+                for (int i = 0; i < children.getLength(); i++) {
+                    formvalues.removeChild(children.item(i));
+                }
+            }
+            if (removeerrors) {
+                Element formerrors = (Element) resolver.evalXPathNode("/formresult/formerrors");
+                NodeList children = formerrors.getChildNodes();
+                for (int i = 0; i < children.getLength(); i++) {
+                    formerrors.removeChild(children.item(i));
+                }
+            }
             if (formparams != null) {
                 Element formvalues = (Element) resolver.evalXPathNode("/formresult/formvalues");
                 for (String pname : formparams.keySet()) {
@@ -237,7 +263,7 @@ public class ScriptVM {
         return spdoc;
     }
     
-    private void doVirtualRequest(String pagename, Map<String, String[]> reqParams, PfixServletRequest origPreq, AppContext context) throws Exception {
+    private boolean doVirtualRequest(String pagename, Map<String, String[]> reqParams, PfixServletRequest origPreq, AppContext context) throws Exception {
 
         HttpServletRequest vhttpreq = new VirtualHttpServletRequest(origPreq.getRequest(), pagename, reqParams);
         PfixServletRequest vpreq    = new PfixServletRequest(vhttpreq, System.getProperties());
@@ -247,6 +273,12 @@ public class ScriptVM {
         SPDocument newdoc = context.handleRequest(vpreq);
         if (newdoc != null) {
             updateRegisterSPDoc(newdoc);
+        }
+        
+        if (resolver.evalXPathBoolean("/formresult/formerrors/error")) {
+            return false;
+        } else {
+            return true;
         }
     }
 

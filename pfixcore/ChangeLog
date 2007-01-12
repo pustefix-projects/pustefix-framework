@@ -1,3 +1,12 @@
+2007-01-12  jtl  <jtl@schlund.de>
+
+	* src/de/schlund/pfixcore/scriptedflow/vm/VirtualRequestInstruction.java: 
+	* src/de/schlund/pfixcore/scriptedflow/compiler/VirtualRequestStatement.java: 
+	* src/de/schlund/pfixcore/scriptedflow/vm/ScriptVM.java: 
+	* src/de/schlund/pfixcore/scriptedflow/compiler/Compiler.java: added attribute "dointeractive=true|reuse"
+	to make an interactive request when the virtual request has an error with the (optionally given) parameters
+	used as preselection for the forms (in case "reuse" is used instead of just "true")
+
 2007-01-11 Niels Schelbach <niels@schlund.de>
 
 	* src/de/schlund/pfixcore/workflow/app/DefaultIWrapperState.java:
@@ -13,9 +22,6 @@
 	* src/de/schlund/pfixxml/PfixServletRequest.java:
 	Changed PerfEventType to enum and added entzry for webservice calls
 	
-
-
-
 2007-01-10  Martin Leidig  <mleidig@schlund.de>
 
 	* projects/core/script/webservice.js: fixed null value handling bug
