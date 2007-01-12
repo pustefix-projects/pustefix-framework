@@ -9,6 +9,8 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
 
+import de.schlund.pfixcore.webservice.ServiceRequest;
+import de.schlund.pfixcore.webservice.ServiceResponse;
 import de.schlund.pfixxml.PathFactory;
 import de.schlund.pfixxml.PfixServletRequest;
 import de.schlund.pfixxml.config.XMLPropertiesUtil;
@@ -64,15 +66,19 @@ public class ExceptionProcessorAdapter extends FaultHandler {
                 return;
             }
             Exception ex=(Exception)fault.getThrowable();
-            PfixServletRequest pfixReq=new PfixServletRequest(fault.getRequest(),new Properties());
-            HttpServletRequest req=fault.getRequest();
-            HttpServletResponse res=fault.getResponse();
-            HttpSession session=req.getSession(false);
-            if(session!=null) {
-                try {
-                    exProc.processException(ex, exConf, pfixReq, session.getServletContext(), req, res, exProcProps);
-                } catch(Exception x) {
-                    LOG.error("Can't process exception.",x);
+            ServiceRequest srvReq=fault.getRequest();
+            ServiceResponse srvRes=fault.getResponse();
+            if(srvReq.getUnderlyingRequest() instanceof HttpServletRequest) {
+                HttpServletRequest req=(HttpServletRequest)srvReq.getUnderlyingRequest();
+                HttpServletResponse res=(HttpServletResponse)srvRes.getUnderlyingResponse();
+                PfixServletRequest pfixReq=new PfixServletRequest(req,new Properties());
+                HttpSession session=req.getSession(false);
+                if(session!=null) {
+                    try {
+                        exProc.processException(ex, exConf, pfixReq, session.getServletContext(), req, res, exProcProps);
+                    } catch(Exception x) {
+                        LOG.error("Can't process exception.",x);
+                    }
                 }
             }
         }

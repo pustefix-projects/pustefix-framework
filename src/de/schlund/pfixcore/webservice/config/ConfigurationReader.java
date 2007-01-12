@@ -92,7 +92,7 @@ public class ConfigurationReader extends DefaultHandler {
 				config.setGlobalServiceConfig(globSrvConf);
 				setContext(globSrvConf);
 			} else if(localName.equals("webservice")) {
-				ServiceConfig srvConf=new ServiceConfig();
+				ServiceConfig srvConf=new ServiceConfig(config.getGlobalServiceConfig());
 				String name=getStringAttribute(atts,"name",true);
 				srvConf.setName(name);
 				config.addServiceConfig(srvConf);
@@ -101,48 +101,50 @@ public class ConfigurationReader extends DefaultHandler {
 		} else if(context instanceof GlobalServiceConfig) {
 			GlobalServiceConfig globSrvConf=(GlobalServiceConfig)context;
 			if(localName.equals("wsdlsupport")) {
-				boolean wsdlSupport=getBooleanAttribute(atts,"enabled",true,false);
-				globSrvConf.setWSDLSupportEnabled(wsdlSupport);
-				if(wsdlSupport) {
-					String wsdlRepo=getStringAttribute(atts,"repository",true);
-					globSrvConf.setWSDLRepository(wsdlRepo);
-				}
+				Boolean wsdlSupport=getBooleanAttribute(atts,"enabled");
+                if(wsdlSupport!=null) globSrvConf.setWSDLSupportEnabled(wsdlSupport);
+                String wsdlRepo=getStringAttribute(atts,"repository");
+				if(wsdlRepo!=null) globSrvConf.setWSDLRepository(wsdlRepo);
 			} else if(localName.equals("stubgeneration")) {
-				 boolean stubGeneration=getBooleanAttribute(atts,"enabled",true,false);
-				 globSrvConf.setStubGenerationEnabled(stubGeneration);
-				 if(stubGeneration) {
-					 String stubRepo=getStringAttribute(atts,"repository",true);
-					 globSrvConf.setStubRepository(stubRepo);
-				 }
+				 Boolean stubGeneration=getBooleanAttribute(atts,"enabled");
+				 if(stubGeneration!=null) globSrvConf.setStubGenerationEnabled(stubGeneration);
+				 String stubRepo=getStringAttribute(atts,"repository");
+				 if(stubRepo!=null)	 globSrvConf.setStubRepository(stubRepo);
 			} else if(localName.equals("protocol")) {
-				String proto=getStringAttribute(atts,"type",Constants.PROTOCOL_TYPES,Constants.PROTOCOL_TYPE_ANY);
-				globSrvConf.setProtocolType(proto);
+				String proto=getStringAttribute(atts,"type",Constants.PROTOCOL_TYPES);
+				if(proto!=null) globSrvConf.setProtocolType(proto);
 			} else if(localName.equals("encoding")) {
-				String encStyle=getStringAttribute(atts,"style",Constants.ENCODING_STYLES,true);
-				globSrvConf.setEncodingStyle(encStyle);
-		        String encUse=getStringAttribute(atts,"use",Constants.ENCODING_USES,true);
-		        globSrvConf.setEncodingUse(encUse);
+				String encStyle=getStringAttribute(atts,"style",Constants.ENCODING_STYLES);
+				if(encStyle!=null) globSrvConf.setEncodingStyle(encStyle);
+		        String encUse=getStringAttribute(atts,"use",Constants.ENCODING_USES);
+		        if(encUse!=null) globSrvConf.setEncodingUse(encUse);
 			} else if(localName.equals("session")) {
-				String sessType=getStringAttribute(atts,"type",Constants.SESSION_TYPES,GlobalServiceConfig.DEFAULT_SESSTYPE);
-				globSrvConf.setSessionType(sessType);
+				String sessType=getStringAttribute(atts,"type",Constants.SESSION_TYPES);
+				if(sessType!=null) globSrvConf.setSessionType(sessType);
 			} else if(localName.equals("scope")) {
-				String scopeType=getStringAttribute(atts,"type",Constants.SERVICE_SCOPES,GlobalServiceConfig.DEFAULT_SCOPETYPE);
-				globSrvConf.setScopeType(scopeType);
+				String scopeType=getStringAttribute(atts,"type",Constants.SERVICE_SCOPES);
+				if(scopeType!=null) globSrvConf.setScopeType(scopeType);
+            } else if(localName.equals("ssl")) {
+                Boolean sslForce=getBooleanAttribute(atts,"force");
+                if(sslForce!=null) globSrvConf.setSSLForce(sslForce);
+            } else if(localName.equals("context")) {
+                String ctxName=getStringAttribute(atts,"name",true);
+                globSrvConf.setContextName(ctxName);
+                Boolean ctxSync=getBooleanAttribute(atts,"synchronize");
+                if(ctxSync!=null) globSrvConf.setSynchronizeOnContext(ctxSync);
 			} else if(localName.equals("admin")) {
-				boolean admin=getBooleanAttribute(atts,"enabled",true,false);
-				globSrvConf.setAdminEnabled(admin);
+				Boolean admin=getBooleanAttribute(atts,"enabled");
+				if(admin!=null) globSrvConf.setAdminEnabled(admin);
 			} else if(localName.equals("monitoring")) {
-				boolean monitoring=getBooleanAttribute(atts,"enabled",true,false);
-				globSrvConf.setMonitoringEnabled(monitoring);
-		        if(monitoring) {
-		            String monitorScope=getStringAttribute(atts,"scope",Constants.MONITOR_SCOPES,true);
-		            globSrvConf.setMonitoringScope(monitorScope);
-		            int monitorSize=getIntegerAttribute(atts,"historysize",true,0);
-		            globSrvConf.setMonitoringHistorySize(monitorSize);
-		        }
+				Boolean monitoring=getBooleanAttribute(atts,"enabled");
+				if(monitoring!=null) globSrvConf.setMonitoringEnabled(monitoring);
+		        String monitorScope=getStringAttribute(atts,"scope",Constants.MONITOR_SCOPES);
+                if(monitorScope!=null) globSrvConf.setMonitoringScope(monitorScope);
+		        Integer monitorSize=getIntegerAttribute(atts,"historysize");
+		        if(monitorSize!=null) globSrvConf.setMonitoringHistorySize(monitorSize);
 			} else if(localName.equals("logging")) {
-				boolean logging=getBooleanAttribute(atts,"enabled",true,false);
-				globSrvConf.setLoggingEnabled(logging);
+				Boolean logging=getBooleanAttribute(atts,"enabled");
+				if(logging!=null) globSrvConf.setLoggingEnabled(logging);
 			} else if(localName.equals("faulthandler")) {
 				 FaultHandler faultHandler=(FaultHandler)getObjectAttribute(atts,"class",FaultHandler.class,false);
 				 globSrvConf.setFaultHandler(faultHandler);
@@ -157,25 +159,27 @@ public class ConfigurationReader extends DefaultHandler {
 				String name=getStringAttribute(atts,"name",true);
 				srvConf.setImplementationName(name);
 			} else if(localName.equals("protocol")) {
-				String proto=getStringAttribute(atts,"type",Constants.PROTOCOL_TYPES,Constants.PROTOCOL_TYPE_ANY);
-				srvConf.setProtocolType(proto);
+				String proto=getStringAttribute(atts,"type",Constants.PROTOCOL_TYPES);
+				if(proto!=null) srvConf.setProtocolType(proto);
 			} else if(localName.equals("encoding")) {
-				String encStyle=getStringAttribute(atts,"style",Constants.ENCODING_STYLES,true);
-				srvConf.setEncodingStyle(encStyle);
-		        String encUse=getStringAttribute(atts,"use",Constants.ENCODING_USES,true);
-		        srvConf.setEncodingUse(encUse);
+				String encStyle=getStringAttribute(atts,"style",Constants.ENCODING_STYLES);
+				if(encStyle!=null) srvConf.setEncodingStyle(encStyle);
+		        String encUse=getStringAttribute(atts,"use",Constants.ENCODING_USES);
+		        if(encUse!=null) srvConf.setEncodingUse(encUse);
 			} else if(localName.equals("session")) {
-				String sessType=getStringAttribute(atts,"type",Constants.SESSION_TYPES,GlobalServiceConfig.DEFAULT_SESSTYPE);
-				srvConf.setSessionType(sessType);
+				String sessType=getStringAttribute(atts,"type",Constants.SESSION_TYPES);
+				if(sessType!=null) srvConf.setSessionType(sessType);
 			} else if(localName.equals("scope")) {
-				String scopeType=getStringAttribute(atts,"type",Constants.SERVICE_SCOPES,GlobalServiceConfig.DEFAULT_SCOPETYPE);
-				srvConf.setScopeType(scopeType);
+				String scopeType=getStringAttribute(atts,"type",Constants.SERVICE_SCOPES);
+				if(scopeType!=null) srvConf.setScopeType(scopeType);
 			} else if(localName.equals("ssl")) {
-				boolean sslForce=getBooleanAttribute(atts,"force",true,true);
-				srvConf.setSSLForce(sslForce);
+				Boolean sslForce=getBooleanAttribute(atts,"force");
+				if(sslForce!=null) srvConf.setSSLForce(sslForce);
 			} else if(localName.equals("context")) {
 				String ctxName=getStringAttribute(atts,"name",true);
 				srvConf.setContextName(ctxName);
+                Boolean ctxSync=getBooleanAttribute(atts,"synchronize");
+                if(ctxSync!=null) srvConf.setSynchronizeOnContext(ctxSync);
 			} else if(localName.equals("faulthandler")) {
 				 FaultHandler faultHandler=(FaultHandler)getObjectAttribute(atts,"class",FaultHandler.class,false);
 				 srvConf.setFaultHandler(faultHandler);
@@ -201,7 +205,8 @@ public class ConfigurationReader extends DefaultHandler {
 			if(localName.equals("webservice-global")) {
 				resetContext();
 			} else if(localName.equals("requestpath")) {
-				globSrvConf.setRequestPath(getContent());
+                String path=getContent();
+                if(path!=null&&!path.equals("")) globSrvConf.setRequestPath(path);
 			}
 		} else if(context instanceof ServiceConfig) {
 			if(localName.equals("webservice")) {
@@ -220,67 +225,42 @@ public class ConfigurationReader extends DefaultHandler {
 		content.write(ch,start,length);
 	}
 	
-	/**
-	public void startDocument() throws SAXException {}
-	public void endDocument() throws SAXException {}
-	public void ignorableWhitespace(char[] ch, int start, int length) throws SAXException {}
-	public void processingInstruction(String target, String data) throws SAXException {}
-	public void setDocumentLocator(Locator locator) {}
-	public void skippedEntity(String name) throws SAXException {}
-	public void startPrefixMapping(String prefix, String uri) throws SAXException {}
-	public void endPrefixMapping(String prefix) throws SAXException {}
-	*/
-	
     public String getContent() {
-    	return content.toString();
+    	return content.toString().trim();
     }
 	
-    public String getStringAttribute(Attributes attributes,String attrName,boolean mandatory) throws ConfigException {
+    private String getStringAttribute(Attributes attributes,String attrName) throws ConfigException {
+        String val=attributes.getValue(attrName);
+        if(val!=null) val=val.trim();
+        return val;
+    }
+    
+    private String getStringAttribute(Attributes attributes,String attrName,boolean mandatory) throws ConfigException {
         String val=attributes.getValue(attrName);
         if(val==null && mandatory) throw new ConfigException(ConfigException.MISSING_ATTRIBUTE,attrName);
         return val.trim();
     }
     
-    public String getStringAttribute(Attributes attributes,String attrName,String[] allowedValues,boolean mandatory) throws ConfigException {
+    private String getStringAttribute(Attributes attributes,String attrName,String[] allowedValues) throws ConfigException {
         String val=attributes.getValue(attrName);
-        if(val==null) {
-            if(mandatory) throw new ConfigException(ConfigException.MISSING_ATTRIBUTE,attrName);
-            else return null;
-        }
+        if(val==null) return null;
         for(int i=0;i<allowedValues.length;i++) {
             if(val.equals(allowedValues[i])) return val;
         }
         throw new ConfigException(ConfigException.ILLEGAL_ATTRIBUTE_VALUE,attrName,val);
     }
-	
-    public String getStringAttribute(Attributes attributes,String attrName,String[] allowedValues,String defaultValue) throws ConfigException {
-        String val=attributes.getValue(attrName);
-        if(val==null) return defaultValue;
-        else {
-        	for(int i=0;i<allowedValues.length;i++) {
-        		if(val.equals(allowedValues[i])) return val;
-        	}
-        	throw new ConfigException(ConfigException.ILLEGAL_ATTRIBUTE_VALUE,attrName,val);
-        }
-    }
     
-    public boolean getBooleanAttribute(Attributes attributes,String attrName,boolean mandatory,boolean defaultVal) throws ConfigException {
+    private Boolean getBooleanAttribute(Attributes attributes,String attrName) throws ConfigException {
         String val=attributes.getValue(attrName);
-        if(val==null) {
-            if(mandatory) throw new ConfigException(ConfigException.MISSING_ATTRIBUTE,attrName);
-            else return defaultVal;
-        }
+        if(val==null) return null;
         if(val.equalsIgnoreCase("true")) return true;
         if(val.equalsIgnoreCase("false")) return false;
         throw new ConfigException(ConfigException.ILLEGAL_ATTRIBUTE_VALUE,attrName,val);
     }
     
-    public int getIntegerAttribute(Attributes attributes,String attrName,boolean mandatory,int defaultVal) throws ConfigException {
+    private Integer getIntegerAttribute(Attributes attributes,String attrName) throws ConfigException {
         String val=attributes.getValue(attrName);
-        if(val==null) {
-            if(mandatory) throw new ConfigException(ConfigException.MISSING_ATTRIBUTE,attrName);
-            else return defaultVal;
-        }
+        if(val==null) return null;
         try {
         	int intVal=Integer.parseInt(val);
             return intVal;
@@ -289,7 +269,7 @@ public class ConfigurationReader extends DefaultHandler {
         }
     }
     
-    public Object getObjectAttribute(Attributes attributes,String attrName,Class superClazz,boolean mandatory) throws ConfigException {
+    private Object getObjectAttribute(Attributes attributes,String attrName,Class superClazz,boolean mandatory) throws ConfigException {
     	String val=attributes.getValue(attrName);
     	if(val==null) {
     		if(mandatory) throw new ConfigException(ConfigException.MISSING_ATTRIBUTE,attrName);

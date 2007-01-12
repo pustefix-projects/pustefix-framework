@@ -279,5 +279,18 @@
       </xsl:call-template>
     </xsl:if>
   </xsl:template>
+  
+  
+  <xsl:template match="pfx:wsscript">
+    <script type="text/javascript">
+      <ixsl:attribute name="src">
+        <ixsl:value-of select="concat($__contextpath, '/xml/webservice/{@name};',$__sessid,'?wsscript=')"/>
+        <xsl:choose>
+          <xsl:when test="@type"><xsl:value-of select="@type"/></xsl:when>
+          <xsl:otherwise>jsonws</xsl:otherwise>
+        </xsl:choose>
+      </ixsl:attribute>
+    </script>
+  </xsl:template>
 
 </xsl:stylesheet>

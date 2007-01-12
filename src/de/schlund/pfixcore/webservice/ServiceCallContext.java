@@ -28,6 +28,8 @@ public class ServiceCallContext {
 
 	ServiceRuntime runtime;
 	Context context;
+    ServiceRequest request;
+    ServiceResponse response;
 	
 	public ServiceCallContext(ServiceRuntime runtime) {
 		this.runtime=runtime;
@@ -48,5 +50,25 @@ public class ServiceCallContext {
 	public Context getContext() {
 		return context;
 	}
+    
+    protected void setServiceRequest(ServiceRequest request) {
+        this.request=request;
+    }
+    
+    public ServiceRequest getServiceRequest() {
+        return request;
+    }
+    
+    protected void setServiceResponse(ServiceResponse response) {
+        this.response=response;
+    }
+    
+    public ServiceResponse getServiceResponse() {
+        return response;
+    }
+    
+    void setInvocationTime(long time) {
+        
+    }
 	
 }

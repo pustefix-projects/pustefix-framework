@@ -8,6 +8,8 @@ package de.schlund.pfixcore.webservice.fault;
 
 import org.apache.log4j.Logger;
 
+import de.schlund.pfixcore.webservice.HttpServiceRequest;
+
 public class LoggingHandler extends FaultHandler {
 
     private Logger LOG=Logger.getLogger(getClass().getName());
@@ -17,7 +19,8 @@ public class LoggingHandler extends FaultHandler {
     }
     
 	public void handleFault(Fault fault) {
-        LOG.error("Request URI: "+fault.getRequestURI());
+        HttpServiceRequest srvReq=(HttpServiceRequest)fault.getRequest();
+        LOG.error("Request URI: "+srvReq.getRequestURI());
         LOG.error("Service name: "+fault.getServiceName());
         LOG.error("Fault string: "+fault.getFaultString());
         LOG.error("Exception name: "+fault.getName());

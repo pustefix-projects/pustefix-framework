@@ -6,13 +6,10 @@
  */
 package de.schlund.pfixcore.webservice.fault;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-
 import org.apache.log4j.Logger;
 
-import de.schlund.pfixcore.webservice.Constants;
+import de.schlund.pfixcore.webservice.ServiceRequest;
+import de.schlund.pfixcore.webservice.ServiceResponse;
 import de.schlund.pfixcore.workflow.Context;
 
 public class Fault {
@@ -20,30 +17,26 @@ public class Fault {
 	Logger LOG=Logger.getLogger(getClass().getName());
 	
 	String serviceName;
-    HttpServletRequest srvReq;
-    HttpServletResponse srvRes;
-	String requestURI;
+    ServiceRequest srvReq;
+    ServiceResponse srvRes;
 	String reqMsg;
-    String serverName;
     Context context;
     Throwable throwable;
     String faultString;
 	
-	public Fault(String serviceName,HttpServletRequest srvReq,HttpServletResponse srvRes,String reqMsg,Context context) {
+	public Fault(String serviceName,ServiceRequest srvReq,ServiceResponse srvRes,String reqMsg,Context context) {
 		this.serviceName=serviceName;
         this.srvReq=srvReq;
         this.srvRes=srvRes;
-		this.requestURI=getRequestURI(srvReq);
-		this.serverName=getServerName(srvReq);
         this.reqMsg=reqMsg;
         this.context=context;
 	}
     
-	public HttpServletRequest getRequest() {
+	public ServiceRequest getRequest() {
 	    return srvReq;
 	}
                                                                                                                                                       
-	public HttpServletResponse getResponse() {
+	public ServiceResponse getResponse() {
 	    return srvRes;
 	}
 
@@ -113,40 +106,7 @@ public class Fault {
 	public String getServiceName() {
 		return serviceName;
 	}
-	
-    public String getRequestURI() {
-        return requestURI;
-    }
-    
-	private String getRequestURI(HttpServletRequest srvReq) {
-		StringBuffer sb=new StringBuffer();
-		sb.append(srvReq.getScheme());
-		sb.append("://");
-		sb.append(srvReq.getServerName());
-		sb.append(":");
-		sb.append(srvReq.getServerPort());
-		sb.append(srvReq.getRequestURI());
-		HttpSession session=srvReq.getSession(false);
-		if(session!=null) {
-			sb.append(Constants.SESSION_PREFIX);
-			sb.append(session.getId());
-		}
-		String s=srvReq.getQueryString();
-		if(s!=null&&!s.equals("")) {
-			sb.append("?");
-			sb.append(s);
-		}
-		return sb.toString();
-	}
-    
-    public String getServerName() {
-        return serverName;
-    }
-    
-    private String getServerName(HttpServletRequest srvReq) {
-        return srvReq.getServerName();
-    }
-    
+     
     public Context getContext() {
         return context;
     }

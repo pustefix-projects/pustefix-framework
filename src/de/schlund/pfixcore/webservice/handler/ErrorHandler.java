@@ -19,18 +19,16 @@
 
 package de.schlund.pfixcore.webservice.handler;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.axis.AxisFault;
 import org.apache.axis.MessageContext;
 import org.apache.axis.SOAPPart;
 import org.apache.log4j.Logger;
 
 import de.schlund.pfixcore.webservice.ServiceCallContext;
+import de.schlund.pfixcore.webservice.ServiceRequest;
+import de.schlund.pfixcore.webservice.ServiceResponse;
 import de.schlund.pfixcore.webservice.WebServiceServlet;
 import de.schlund.pfixcore.webservice.config.Configuration;
-import de.schlund.pfixcore.webservice.config.GlobalServiceConfig;
 import de.schlund.pfixcore.webservice.config.ServiceConfig;
 import de.schlund.pfixcore.webservice.fault.Fault;
 import de.schlund.pfixcore.webservice.fault.FaultHandler;
@@ -55,25 +53,22 @@ public class ErrorHandler extends AbstractHandler {
     	Configuration config=getServiceRuntime(msgCtx).getConfiguration();
     	ServiceConfig serviceConfig=config.getServiceConfig(serviceName);
     	FaultHandler faultHandler=serviceConfig.getFaultHandler();
-    	if(faultHandler==null) {
-    		GlobalServiceConfig globalConfig=config.getGlobalServiceConfig();
-    		faultHandler=globalConfig.getFaultHandler();
-    	}
     	if(faultHandler!=null) {
-           try {
-        	   ServiceCallContext callContext=ServiceCallContext.getCurrentContext();
-        	   Context context=null;
-        	   if(callContext!=null) context=callContext.getContext();
-               HttpServletRequest srvReq=getServletRequest(msgCtx);
-               HttpServletResponse srvRes=getServletResponse(msgCtx);
-               String reqMsg=((SOAPPart)msgCtx.getRequestMessage().getSOAPPart()).getAsString();
-               Fault fault=new Fault(serviceName,srvReq,srvRes,reqMsg,context);
-               WebServiceServlet.setCurrentFault(fault);
-               msgCtx.setResponseMessage(null);
-    		} catch(Exception x) {
-    			LOG.error("Error while processing fault.",x);
-    		}
-    	}
+    	    ServiceCallContext callContext=ServiceCallContext.getCurrentContext();
+    	    if(callContext!=null) {
+    	        try {
+                   Context context=callContext.getContext();
+                   ServiceRequest srvReq=callContext.getServiceRequest();
+                   ServiceResponse srvRes=callContext.getServiceResponse();
+                   String reqMsg=((SOAPPart)msgCtx.getRequestMessage().getSOAPPart()).getAsString();
+                   Fault fault=new Fault(serviceName,srvReq,srvRes,reqMsg,context);
+                   WebServiceServlet.setCurrentFault(fault);
+                   msgCtx.setResponseMessage(null);
+    	        } catch(Exception x) {
+    	            LOG.error("Error while processing fault.",x);
+    	        }
+    	    }
+        }
     }
     
 }

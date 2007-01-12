@@ -47,7 +47,7 @@ Timer.prototype.reset=function() {
 }
 
 Timer.prototype.start=function() {
-	//if(this.running==true) throw new Error("Timer is already running.");
+	if(this.running==true) throw new Error("Timer is already running.");
 	this.running=true;
 	this.t1=(new Date()).getTime();
 }

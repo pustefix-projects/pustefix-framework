@@ -21,22 +21,30 @@ package de.schlund.pfixcore.webservice.jsonws;
 
 import java.io.StringReader;
 import java.io.Writer;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Iterator;
 import java.util.List;
 
 import org.apache.log4j.Logger;
 
+import de.schlund.pfixcore.webservice.ProcessingInfo;
+import de.schlund.pfixcore.webservice.ServiceCallContext;
 import de.schlund.pfixcore.webservice.ServiceDescriptor;
 import de.schlund.pfixcore.webservice.ServiceException;
 import de.schlund.pfixcore.webservice.ServiceProcessor;
 import de.schlund.pfixcore.webservice.ServiceRegistry;
 import de.schlund.pfixcore.webservice.ServiceRequest;
 import de.schlund.pfixcore.webservice.ServiceResponse;
+import de.schlund.pfixcore.webservice.ServiceRuntime;
 import de.schlund.pfixcore.webservice.config.ServiceConfig;
+import de.schlund.pfixcore.webservice.fault.Fault;
+import de.schlund.pfixcore.webservice.fault.FaultHandler;
 import de.schlund.pfixcore.webservice.json.JSONArray;
 import de.schlund.pfixcore.webservice.json.JSONObject;
 import de.schlund.pfixcore.webservice.json.parser.JSONParser;
+import de.schlund.pfixxml.perflogging.PerfEvent;
+import de.schlund.pfixxml.perflogging.PerfEventType;
 
 /**
  * @author mleidig@schlund.de
@@ -48,154 +56,167 @@ public class JSONWSProcessor implements ServiceProcessor {
     public JSONWSProcessor() {
     }
     
-    public void process(ServiceRequest req, ServiceResponse res, ServiceRegistry registry) throws ServiceException {
+    public void process(ServiceRequest req,ServiceResponse res,ServiceRuntime runtime,ServiceRegistry registry,ProcessingInfo procInfo) throws ServiceException {
         try {
-            String jsonData = null;
-            JSONObject jsonRes = null;
-            String serviceName = req.getServiceName();
-            ServiceConfig srvConf = registry.getServiceConfig(serviceName);
-            if (srvConf == null)
-                throw new ServiceException("Unknown service: " + serviceName);
-
-            if (req.getParameter("json") != null) {
-                jsonRes = listMethods(srvConf, registry);
+            String serviceName=req.getServiceName();
+            ServiceConfig service=registry.getService(serviceName);
+            if(service==null) throw new ServiceException("Service not found: "+serviceName);
+            
+            if(req.getParameter("json")!=null) {
+                
+                //Get service description
+                JSONObject jsonRes=listMethods(service,runtime,registry);
                 res.setContentType("text/plain");
-                res.setCharacterEncoding("utf8");
+                res.setCharacterEncoding("utf-8");
                 res.setMessage(jsonRes.toJSONString());
+                
             } else {
-                jsonData = req.getMessage();
+                
+                Throwable error=null;
+                String jsonData=req.getMessage();
+                JSONObject jsonReq=null;
+                Object resultObject=null;
+                
+                //Parsing
+                try {
+                    long t1=System.currentTimeMillis();
+                    JSONParser parser=new JSONParser(new StringReader(jsonData));
+                    jsonReq=(JSONObject)parser.getJSONValue();
+                    long t2 = System.currentTimeMillis();
+                    if (LOG.isDebugEnabled()) LOG.debug("Parsing: "+(t2-t1)+"ms");
+                } catch(Throwable t) {
+                    error=new ServiceException("Error during parsing",t);
+                }
 
-                Object serviceObject = registry.getServiceObject(serviceName);
-                ServiceDescriptor serviceDesc = registry
-                        .getServiceDescriptor(serviceName);
-                String scope = srvConf.getScopeType();
-                if (scope == null)
-                    scope = registry.getGlobalServiceConfig().getScopeType();
-
-                JSONObject json_req = null;
-
-                // Parsing
-
-                long t1 = System.currentTimeMillis();
-
-                JSONParser parser = new JSONParser(new StringReader(jsonData));
-                json_req = (JSONObject) parser.getJSONValue();
-
-                long t2 = System.currentTimeMillis();
-                if (LOG.isDebugEnabled())
-                    LOG.debug("Parsing: " + (t2 - t1) + "ms");
-
-                String methodName = json_req.getStringMember("method");
-                JSONArray params = json_req.getArrayMember("params");
-
-                JSONDeserializer jsonDeser = new JSONDeserializer();
-
-                List<Method> methods = serviceDesc.getMethods(methodName);
-                Method method = null;
-                if (methods.size() == 0)
-                    throw new ServiceException("Method '" + methodName
-                            + "' not found!");
-                else if (methods.size() == 1)
-                    method = methods.get(0);
-                else {
-                    // ambiguous methods, guess the right one
-                    Iterator<Method> methIt = methods.iterator();
-                    while (methIt.hasNext() && method == null) {
-                        Method testMeth = methIt.next();
-                        Class[] types = testMeth.getParameterTypes();
-                        if (types.length == params.size()) {
-                            boolean canDeserialize = true;
-                            for (int i = 0; i < params.size() && canDeserialize; i++) {
-                                if (!jsonDeser.canDeserialize(params.get(i),
-                                        types[i]))
-                                    canDeserialize = false;
+                if(error==null) {
+                    
+                    //Service method lookup
+                    Method method=null;
+                    JSONArray params=jsonReq.getArrayMember("params");
+                    JSONDeserializer jsonDeser = new JSONDeserializer();
+                    try {
+                        String methodName=jsonReq.getStringMember("method");
+                        ServiceDescriptor serviceDesc=runtime.getServiceDescriptorCache().getServiceDescriptor(service);
+                        List<Method> methods=serviceDesc.getMethods(methodName);
+                        if(methods.size()==0) throw new ServiceException("Method not found: "+methodName);
+                        else if(methods.size()==1) method=methods.get(0);
+                        else {
+                            //ambiguous methods, guess the right one
+                            Iterator<Method> methIt=methods.iterator();
+                            while(methIt.hasNext() && method==null) {
+                                Method testMeth=methIt.next();
+                                Class[] types=testMeth.getParameterTypes();
+                                if(types.length==params.size()) {
+                                    boolean canDeserialize=true;
+                                    for(int i=0;i<params.size() && canDeserialize;i++) {
+                                        if(!jsonDeser.canDeserialize(params.get(i),types[i])) canDeserialize=false;
+                                    }
+                                    if(canDeserialize) method=testMeth;
+                                }
                             }
-                            if (canDeserialize)
-                                method = testMeth;
+                        }
+                        if(method==null) throw new ServiceException("No matching method found: "+methodName);
+                    } catch(Throwable t) {
+                        error=new ServiceException("Error during method lookup",t);
+                    }
+                   
+                    if(error==null) {
+                        
+                        //Deserialization
+                        Object[] paramObjects=null;
+                        try {
+                            long t1=System.currentTimeMillis();
+                            paramObjects=new Object[params.size()];
+                            Class[] types=method.getParameterTypes();
+                            for(int i=0;i<params.size();i++) {
+                                Object obj=params.get(i);
+                                Object deserObj=jsonDeser.deserialize(obj, types[i]);
+                                paramObjects[i]=deserObj;
+                            }
+                            long t2 = System.currentTimeMillis();
+                            if(LOG.isDebugEnabled()) LOG.debug("Deserialization: "+(t2-t1)+"ms");
+                        } catch(Throwable t) {
+                            error=new ServiceException("Error during deserialization",t);
+                        }
+                        
+                        if(error==null) {
+                            
+                            //Invocation
+                            try { 
+                                Object serviceObject=registry.getServiceObject(serviceName);
+                                procInfo.setService(serviceName);
+                                procInfo.setMethod(method.getName());
+                                procInfo.startInvocation();
+                                resultObject=method.invoke(serviceObject,paramObjects);
+                                procInfo.endInvocation();
+                                if(LOG.isDebugEnabled()) LOG.debug("Invocation: "+procInfo.getInvocationTime()+"ms");
+                            } catch(Throwable t) {
+                                if(t instanceof InvocationTargetException && t.getCause()!=null) error=t.getCause();
+                                else error=new ServiceException("Error during invocation",t);
+                            }
+                            
                         }
                     }
                 }
-
-                Class[] types = method.getParameterTypes();
-
-                // Deserialization
-
-                t1 = System.currentTimeMillis();
-
-                Object[] paramObjects = new Object[params.size()];
-                for (int i = 0; i < params.size(); i++) {
-                    Object obj = params.get(i);
-                    Object deserObj = jsonDeser.deserialize(obj, types[i]);
-                    paramObjects[i] = deserObj;
-
-                }
-
-                t2 = System.currentTimeMillis();
-                if (LOG.isDebugEnabled())
-                    LOG.debug("Deserialization: " + (t2 - t1) + "ms");
-
+                
                 res.setContentType("text/plain");
-                res.setCharacterEncoding("utf8");
-
-                Writer writer = null;
-
-                // res.setMessage(jsonRes.toJSONString());
-                writer = res.getMessageWriter();
-
-                // Invocation
-
-                t1 = System.currentTimeMillis();
-
-                Object resultObject = method
-                        .invoke(serviceObject, paramObjects);
-
-                t2 = System.currentTimeMillis();
-                if (LOG.isDebugEnabled())
-                    LOG.debug("Invocation: " + (t2 - t1) + "ms");
-
+                res.setCharacterEncoding("utf-8");
+                Writer writer=res.getMessageWriter();
                 writer.write("{");
-                writer.write("\"id\":");
-                writer.write(String.valueOf(json_req.getNumberMember("id")));
-                writer.write(",");
-                writer.write("\"result\":");
-
-                // Serialization
-
-                t1 = System.currentTimeMillis();
-
-                if (resultObject instanceof Void || resultObject == null) {
-                    writer.write("null");
-                } else {
-                    JSONSerializer jsonSer = new JSONSerializer();
-                    jsonSer.serialize(resultObject, writer);
+                if(jsonReq.hasMember("id")) {
+                    writer.write("\"id\":");
+                    writer.write(String.valueOf(jsonReq.getStringMember("id")));
+                    writer.write(",");
                 }
-
-                t2 = System.currentTimeMillis();
-                if (LOG.isDebugEnabled())
-                    LOG.debug("Serialization: " + (t2 - t1) + "ms");
-
+                if(error==null) {
+                    writer.write("\"result\":");
+                    //Serialization
+                    long t1=System.currentTimeMillis();
+                    if(resultObject instanceof Void || resultObject==null) {
+                        writer.write("null");
+                    } else {
+                        JSONSerializer jsonSer=new JSONSerializer();
+                        jsonSer.serialize(resultObject,writer);
+                    }
+                    long t2=System.currentTimeMillis();
+                    if(LOG.isDebugEnabled()) LOG.debug("Serialization: "+(t2-t1)+"ms");
+                } else {
+                    //Handle error
+                    ServiceCallContext callContext=ServiceCallContext.getCurrentContext();
+                    Fault fault=new Fault(serviceName,callContext.getServiceRequest(),
+                            callContext.getServiceResponse(),jsonData,callContext.getContext());
+                    fault.setThrowable(error);
+                    FaultHandler faultHandler=service.getFaultHandler();
+                    if(faultHandler==null) faultHandler=runtime.getConfiguration().getGlobalServiceConfig().getFaultHandler();
+                    if(faultHandler!=null) faultHandler.handleFault(fault);
+                    error=fault.getThrowable();
+                    JSONObject errobj=new JSONObject();
+                    errobj.putMember("name",error.getClass().getName());
+                    errobj.putMember("message",error.getMessage());
+                    writer.write("\"error\":");
+                    writer.write(errobj.toJSONString());   
+                }
                 writer.write("}");
-
                 writer.flush();
-                writer.close();
+                writer.close();    
             }
         } catch (Exception e) {
-            throw new ServiceException("Error while processing service request.",e);
+            ServiceException se=new ServiceException("Error while processing service request.",e);
+            LOG.error(se);
+            throw se;
         }
-
     }
-    
-    private JSONObject listMethods(ServiceConfig srvConf,ServiceRegistry srvReg) throws ServiceException {
+
+    private JSONObject listMethods(ServiceConfig service,ServiceRuntime runtime,ServiceRegistry srvReg) throws ServiceException {
         JSONArray meths=new JSONArray();
-        ServiceDescriptor desc=srvReg.getServiceDescriptor(srvConf.getName());
+        ServiceDescriptor desc=runtime.getServiceDescriptorCache().getServiceDescriptor(service);
         if(desc!=null) {
-            Iterator<String> methIt=desc.getMethods();
-            while(methIt.hasNext()) meths.add(methIt.next());
+            for(String methName:desc.getMethods()) meths.add(methName);
             JSONObject resObj=new JSONObject();
             resObj.putMember("result",meths);
             resObj.putMember("id",0);
             return resObj;
-        } else throw new ServiceException("Unknown service: "+srvConf.getName());
+        } else throw new ServiceException("Unknown service: "+service.getName());
     }
     
 }

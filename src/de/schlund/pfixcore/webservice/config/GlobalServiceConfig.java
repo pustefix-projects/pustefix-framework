@@ -34,26 +34,25 @@ import de.schlund.pfixcore.webservice.fault.FaultHandler;
  */
 public class GlobalServiceConfig {
     
-    final static String DEFAULT_SESSTYPE=Constants.SESSION_TYPE_SERVLET;
-    final static String DEFAULT_SCOPETYPE=Constants.SERVICE_SCOPE_APPLICATION;
-    final static String DEFAULT_PROTOCOLTYPE=Constants.PROTOCOL_TYPE_SOAP;
-    
     String server;
-    String reqPath;
-    boolean wsdlSupport;
-    String wsdlRepo;
-    boolean stubGeneration;
-    String stubRepo;
-    String protocolType;
-    String encStyle;
-    String encUse;
-    String sessType;
-    String scopeType;
-    boolean admin;
-    boolean monitoring;
-    String monitorScope;
-    int monitorSize;
-    boolean logging;
+    String reqPath="/xml/webservice";
+    Boolean wsdlSupport=Boolean.TRUE;
+    String wsdlRepo="/wsdl";
+    Boolean stubGeneration=Boolean.TRUE;
+    String stubRepo="/wsscript";
+    String protocolType=Constants.PROTOCOL_TYPE_ANY;
+    String encStyle=Constants.ENCODING_STYLE_RPC;
+    String encUse=Constants.ENCODING_USE_ENCODED;
+    String sessType=Constants.SESSION_TYPE_SERVLET;
+    String scopeType=Constants.SERVICE_SCOPE_APPLICATION;
+    Boolean sslForce=Boolean.FALSE;
+    String ctxName;
+    Boolean ctxSync=Boolean.TRUE;
+    Boolean admin=Boolean.FALSE;
+    Boolean monitoring=Boolean.FALSE;
+    String monitorScope=Constants.MONITOR_SCOPE_SESSION;
+    Integer monitorSize=20;
+    Boolean logging=Boolean.FALSE;
     FaultHandler faultHandler;
     
     public GlobalServiceConfig() {}
@@ -82,11 +81,11 @@ public class GlobalServiceConfig {
         this.wsdlRepo=wsdlRepo;
     }
     
-    public boolean getWSDLSupportEnabled() {
+    public Boolean getWSDLSupportEnabled() {
         return wsdlSupport;
     }
     
-    public void setWSDLSupportEnabled(boolean wsdlSupport) {
+    public void setWSDLSupportEnabled(Boolean wsdlSupport) {
         this.wsdlSupport=wsdlSupport;
     }
     
@@ -98,11 +97,11 @@ public class GlobalServiceConfig {
         this.stubRepo=stubRepo;
     }
     
-    public boolean getStubGenerationEnabled() {
+    public Boolean getStubGenerationEnabled() {
         return stubGeneration;
     }
     
-    public void setStubGenerationEnabled(boolean stubGeneration) {
+    public void setStubGenerationEnabled(Boolean stubGeneration) {
         this.stubGeneration=stubGeneration;
     }
     
@@ -146,19 +145,43 @@ public class GlobalServiceConfig {
         return scopeType;
     }
     
-    public boolean getAdminEnabled() {
+    public Boolean getSSLForce() {
+        return sslForce;
+    }
+    
+    public void setSSLForce(Boolean sslForce) {
+        this.sslForce=sslForce;
+    }
+    
+    public String getContextName() {
+        return ctxName;
+    }
+    
+    public void setContextName(String ctxName) {
+        this.ctxName=ctxName;
+    }
+    
+    public boolean getSynchronizeOnContext() {
+        return ctxSync;
+    }
+    
+    public void setSynchronizeOnContext(Boolean ctxSync) {
+        this.ctxSync=ctxSync;
+    }
+    
+    public Boolean getAdminEnabled() {
         return admin;
     }
     
-    public void setAdminEnabled(boolean admin) {
+    public void setAdminEnabled(Boolean admin) {
         this.admin=admin;
     }
     
-    public boolean getMonitoringEnabled() {
+    public Boolean getMonitoringEnabled() {
         return monitoring;
     }
     
-    public void setMonitoringEnabled(boolean monitoring) {
+    public void setMonitoringEnabled(Boolean monitoring) {
         this.monitoring=monitoring;
     }
     
@@ -170,19 +193,19 @@ public class GlobalServiceConfig {
         this.monitorScope=monitorScope;
     }
     
-    public int getMonitoringHistorySize() {
+    public Integer getMonitoringHistorySize() {
     	return monitorSize;
     }
     
-    public void setMonitoringHistorySize(int monitorSize) {
+    public void setMonitoringHistorySize(Integer monitorSize) {
         this.monitorSize=monitorSize;
     }
     
-    public boolean getLoggingEnabled() {
+    public Boolean getLoggingEnabled() {
         return logging;
     }
     
-    public void setLoggingEnabled(boolean logging) {
+    public void setLoggingEnabled(Boolean logging) {
         this.logging=logging;
     }
     
