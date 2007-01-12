@@ -35,7 +35,8 @@ import de.schlund.pfixcore.scriptedflow.vm.pvo.ParamValueObject;
  */
 public class VirtualRequestStatement extends AbstractStatement implements ParameterizedStatement {
     private String pagename = null;
-
+    private boolean dointeractive = false;
+    private boolean reuseparams = false;
     private Map<String, List<ParamValueObject>> params = new HashMap<String, List<ParamValueObject>>();
 
     private Instruction instr = null;
@@ -48,6 +49,19 @@ public class VirtualRequestStatement extends AbstractStatement implements Parame
         this.pagename = pagename;
     }
 
+    public void setDointeractive(String dointer) {
+        if (dointer != null && (dointer.equals("true"))) {
+            dointeractive = true;
+            reuseparams = false;
+        } else if (dointer != null && dointer.equals("reuse")) {
+            dointeractive = true;
+            reuseparams = true;
+        } else {
+            dointeractive = false;
+            reuseparams = false;
+        }
+    }
+    
     public void addParam(String param, ParamValueObject value) {
         List<ParamValueObject> list = this.params.get(param);
         if (list == null) {
@@ -59,7 +73,7 @@ public class VirtualRequestStatement extends AbstractStatement implements Parame
 
     public Instruction[] getInstructions() {
         if (instr == null) {
-            instr = new VirtualRequestInstruction(pagename, params);
+            instr = new VirtualRequestInstruction(pagename, params, reuseparams, dointeractive);
         }
         return new Instruction[] { instr };
     }
