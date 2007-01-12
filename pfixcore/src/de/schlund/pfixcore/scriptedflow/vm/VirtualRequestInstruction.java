@@ -25,17 +25,29 @@ import de.schlund.pfixcore.scriptedflow.vm.pvo.ParamValueObject;
 
 public class VirtualRequestInstruction implements Instruction {
     private String pagename;
-
+    private boolean reuseparams = false;
+    private boolean dointeractive = false;
+    
     private Map<String, List<ParamValueObject>> params;
 
     public VirtualRequestInstruction(String pagename,
-            Map<String, List<ParamValueObject>> params) {
+            Map<String, List<ParamValueObject>> params, boolean reuseparams, boolean dointeractive) {
         this.pagename = pagename;
         this.params = params;
+        this.reuseparams = reuseparams;
+        this.dointeractive = dointeractive;
     }
     
     String getPagename() {
         return pagename;
+    }
+    
+    boolean getDoInteractive() {
+        return dointeractive;
+    }
+    
+    boolean getReuseParamsForInteractive() {
+        return reuseparams;
     }
     
     Map<String, List<ParamValueObject>> getParams() {
