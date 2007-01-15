@@ -21,11 +21,13 @@ var obj1={
     var test="asynchronous (with callback object)";
     if(res=='success') consolePrint(test+" OK");
     else consolePrint(test+" Error");
+    stopTimer();
   },
   testError: function(res,id,ex) {
     var test="asynchronous (with callback object and exception)";
     if(ex.name='java.lang.IllegalArgumentException' && ex.message=='Illegal value: error') consolePrint(test+" OK");
     else consolePrint(test+" Error");
+    stopTimer();
   }
 };
 
@@ -34,11 +36,13 @@ var obj2={
     var test="asynchronous (with callback object and request id)";
     if(res=='success' && id=='3') consolePrint(test+" OK");
     else consolePrint(test+" Error");
+    stopTimer();
   },
   testError: function(res,id,ex) {
     var test="asynchronous (with callback object and request id and exception)";
     if(ex.name='java.lang.IllegalArgumentException' && ex.message=='Illegal value: error' && id=='4') consolePrint(test+" OK");
     else consolePrint(test+" Error");
+    stopTimer();
   }
 };
 
@@ -88,6 +92,7 @@ function testAsync() {
   var f=function(res,id,ex) {
     if(res=='success') consolePrint(test+" OK");
     else consolePrint(test+" Error");
+    stopTimer();
   }
   ws.test("success",f); 
 }
@@ -97,6 +102,7 @@ function testAsyncId() {
   var f=function(res,id,ex) {
     if(res=='success' && id=='1') consolePrint(test+" OK");
     else consolePrint(test+" Error");
+    stopTimer();
   }
   ws.test("success",f,"1");   
 }
@@ -106,6 +112,7 @@ function testAsyncEx() {
   var f=function(res,id,ex) {
     if(ex.name='java.lang.IllegalArgumentException' && ex.message=='Illegal value: error') consolePrint(test+" OK");
     else consolePrint(test+" Error");
+    stopTimer();
   }
   ws.testError("error",f); 
 }
@@ -115,6 +122,7 @@ function testAsyncIdEx() {
   var f=function(res,id,ex) {
     if(ex.name='java.lang.IllegalArgumentException' && ex.message=='Illegal value: error' && id=='2') consolePrint(test+" OK");
     else consolePrint(test+" Error");
+    stopTimer();
   }
   ws.testError("error",f,"2");   
 }
@@ -136,9 +144,12 @@ function testAsyncObjExId() {
 }
 
 var timer=new Timer();
+var cnt; 
+var totalCnt;
 
 function serviceCall() {
-
+  cnt=0;
+  totalCnt=8;
   consoleReset();
   initWS();
   
@@ -156,8 +167,13 @@ function serviceCall() {
   testAsyncObjEx();
   testAsyncObjExId();
   
-  timer.stop();
-  printTime(timer.getTime());
 }
 
+function stopTimer() {
+  cnt++;
+  if(cnt==totalCnt) {
+    timer.stop();
+    printTime(timer.getTime());
+  }
+}
 
