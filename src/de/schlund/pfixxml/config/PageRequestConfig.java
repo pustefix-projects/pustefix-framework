@@ -18,184 +18,135 @@
 
 package de.schlund.pfixxml.config;
 
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Properties;
-import java.util.Map.Entry;
 
 /**
- * Stores configuration for a PageRequest
+ * Provides configuration for a specific page.  
  * 
  * @author Sebastian Marsching <sebastian.marsching@1und1.de>
  */
-public class PageRequestConfig implements SSLOption, Cloneable {
-    
-    public enum Policy {
-        ANY, ALL, NONE
-    }
+public interface PageRequestConfig {
 
-    private String pageName = null;
-    private String copyFromPage = null;
-    private boolean storeXML = true;
-    private boolean ssl = false;
-    private Class stateClass = null;
-    private Class defaultStaticStateClass = null;
-    private Class defaultIWrapperStateClass = null;
-    private Class finalizer = null;
-    private String authPrefix = null;
-    private Class authClass = null;
-    private LinkedHashMap<String, Class> auxwrappers = new LinkedHashMap<String, Class>();
-    private LinkedHashMap<String, IWrapperConfig> iwrappers = new LinkedHashMap<String, IWrapperConfig>();
-    private LinkedHashMap<String, Class> resources = new LinkedHashMap<String, Class>();
-    private Properties props = new Properties();
-    private Policy policy = Policy.ANY;
-    
-    public void setPageName(String page) {
-        this.pageName = page;
-    }
-    
-    public String getPageName() {
-        return this.pageName;
-    }
-    
-    public void setStoreXML(boolean store) {
-        this.storeXML = store;
-    }
-    
-    public boolean isStoreXML() {
-        return this.storeXML;
-    }
-    
-    public void setSSL(boolean forceSSL) {
-        this.ssl = forceSSL;
-    }
-    
-    public boolean isSSL() {
-        return this.ssl;
-    }
-    
-    public void setState(Class clazz) {
-        this.stateClass = clazz;
-    }
-    
-    public Class getState() {
-        if (this.stateClass != null) {
-            return this.stateClass;
-        } else {
-            if (this.iwrappers.size() > 0) {
-                return this.defaultIWrapperStateClass;
-            } else {
-                return this.defaultStaticStateClass;
-            }
-        }
-    }
-    
-    public void setCopyFromPage(String page) {
-        this.copyFromPage = page;
-    }
-    
-    public String getCopyFromPage() {
-        return this.copyFromPage;
-    }
-    
-    public boolean isCopy() {
-        return (this.copyFromPage != null);
-    }
-    
-    public void setDefaultStaticState(Class clazz) {
-        this.defaultStaticStateClass = clazz;
-    }
-    
-    public void setDefaultIHandlerState(Class clazz) {
-        this.defaultIWrapperStateClass = clazz;
-    }
-    
-    public void setIWrapperPolicy(Policy policy) {
-        this.policy = policy;
-    }
-    
-    public Policy getIWrapperPolicy() {
-        return this.policy;
-    }
-    
-    public void setFinalizer(Class clazz) {
-        this.finalizer = clazz;
-    }
-    
-    public Class getFinalizer() {
-        return this.finalizer;
-    }
-    
-    public void addIWrapper(IWrapperConfig config) {
-        this.iwrappers.put(config.getPrefix(), config);
-    }
-    
-    public IWrapperConfig[] getIWrappers() {
-        ArrayList<IWrapperConfig> list = new ArrayList<IWrapperConfig>();
-        for (Iterator i = this.iwrappers.entrySet().iterator(); i.hasNext();) {
-            Entry entry = (Entry) i.next();
-            list.add((IWrapperConfig) entry.getValue());
-        }
-        return list.toArray(new IWrapperConfig[list.size()]);
-    }
-    
-    public void addAuxWrapper(String prefix, Class clazz) {
-        this.auxwrappers.put(prefix, clazz);
-    }
-    
-    public Map<String, Class> getAuxWrappers() {
-        return this.auxwrappers;
-    }
-    
-    public void addContextResource(String prefix, Class clazz) {
-        this.resources.put(prefix, clazz);
-    }
-    
-    public Map<String, Class> getContextResources() {
-        return this.resources;
-    }
-    
-    public void setProperties(Properties props) {
-        this.props = new Properties();
-        Enumeration e = props.propertyNames();
-        while (e.hasMoreElements()) {
-            String propname = (String) e.nextElement();
-            this.props.setProperty(propname, props.getProperty(propname));
-        }
-    }
-    
-    public Properties getProperties() {
-        return this.props;
-    }
-    
-    public void addAuthWrapper(String prefix, Class clazz) {
-        this.authPrefix = prefix;
-        this.authClass = clazz;
-        if (this.stateClass == null) {
-            // Create class object at runtime due to build dependency problems
-            try {
-                this.setState(Class.forName("de.schlund.pfixcore.workflow.app.DefaultAuthIWrapperState"));
-            } catch (ClassNotFoundException e) {
-                throw new RuntimeException("Class de.schlund.pfixcore.workflow.app.DefaultAuthIWrapperState could not be loaded!", e);
-            }
-        }
-    }
-    
-    public String getAuthWrapperPrefix() {
-        return this.authPrefix;
-    }
-    
-    public Class getAuthWrapperClass() {
-        return this.authClass;
-    }
-
-    /* (non-Javadoc)
-     * @see java.lang.Object#clone()
+    /**
+     * Enum type for activity handling policy. The policy will not be applied
+     * on handlers with activeignore set to true.
      */
-    protected Object clone() throws CloneNotSupportedException {
-        return super.clone();
+    public enum Policy {
+        /**
+         * Signal isActive() for the state if any handler is active.
+         */
+        ANY,
+        /**
+         * Signal isActive() for the state only if all handlers are active.
+         */
+        ALL,
+        /**
+         * Signal isActive() even if none of the handlers is active.
+         */
+        NONE
     }
- }
+    
+    /**
+     * Returns the name of the page. This name includes the variant
+     * string if applicable. The page name has to be unique for a servlet
+     * and should be unique for the whole project.
+     * 
+     * @return name of the page
+     */
+    String getPageName();
+
+    /**
+     * Whether to store the XML tree returned by the state. If <code>true</code>
+     * the XML tree is stored. In most cases, there is no need to explicitly
+     * store the XML tree.
+     * 
+     * @return flag indicating wheter to store the XML tree
+     * @see de.schlund.pfixxml.SPDocument
+     */
+    boolean isStoreXML();
+
+    /**
+     * If <code>true</code> a SSL connection is forced when this page
+     * is requested.
+     * 
+     * @return flag indicating whether to use a secure connection for this page
+     */
+    boolean isSSL();
+
+    /**
+     * Returns the class that is used to construct the state that
+     * serves this page.
+     * 
+     * @return class of the state for this page
+     */
+    Class getState();
+
+    /**
+     * Returns the policy for the <code>isActive()</code> method.
+     * 
+     * @return policy for isActive() check
+     */
+    Policy getIWrapperPolicy();
+
+    /**
+     * Returns the class of the finalizer for the page (use with caution).
+     * 
+     * @return finalizer class or <code>null</code> if there is no finalizer
+     */
+    Class getFinalizer();
+
+    /**
+     * Returns the list of IWrappers for this page. IWrappers are used
+     * for input handling. The map returned has the form prefix => IWrapperConfig.
+     * 
+     * @return list of IWrappers
+     */
+    Map<String, ? extends IWrapperConfig> getIWrappers();
+
+    /**
+     * Returns the lis of auxiliary IWrappers for the page. They are only
+     * used on an authentication page to supply additinal information. These
+     * wrappers are used on each request - not only on explicit authentication
+     * requests, so extreme care should be taken when choosing prefixes, as they
+     * are global.
+     * 
+     * @return map containinge prefix to authwrapper mappings
+     */
+    Map<String, Class> getAuxWrappers();
+
+    /**
+     * Returns context resources defined for this page. The map has the form
+     * tagname => context resource class. Each context resource specified here
+     * will be included in the result XML tree.
+     * 
+     * @return mapping of tagname to context resource class
+     */
+    Map<String, Class> getContextResources();
+
+    /**
+     * Returns properties defined for this page.
+     * 
+     * @return properties for this page
+     */
+    Properties getProperties();
+
+    /**
+     * Return prefix of the auth wrapper. This is only valid for an
+     * authentication page.
+     * 
+     * @return prefix for the auth wrapper or <code>null</code> if this
+     * is not an auth page
+     */
+    String getAuthWrapperPrefix();
+
+    /**
+     * Return class of the auth wrapper. This is only valid for an
+     * authentication page.
+     * 
+     * @return class of the auth wrapper or <code>null</code> if this
+     * is not an auth page
+     */
+    Class getAuthWrapperClass();
+    
+}

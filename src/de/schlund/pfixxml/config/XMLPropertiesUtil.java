@@ -36,6 +36,7 @@ import org.apache.log4j.Logger;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
+import de.schlund.pfixxml.config.impl.DefaultMatchRule;
 import de.schlund.pfixxml.resources.FileResource;
 
 /**

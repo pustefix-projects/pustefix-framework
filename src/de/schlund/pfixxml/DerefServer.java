@@ -32,6 +32,7 @@ import org.apache.axis.encoding.Base64;
 import org.apache.log4j.Category;
 
 import de.schlund.pfixxml.config.ServletManagerConfig;
+import de.schlund.pfixxml.config.impl.ServletManagerConfigImpl;
 import de.schlund.pfixxml.resources.FileResource;
 import de.schlund.pfixxml.serverutil.SessionHelper;
 import de.schlund.pfixxml.util.MD5Utils;
@@ -181,7 +182,7 @@ public class DerefServer extends ServletManager {
     protected void reloadServletConfig(FileResource configFile, Properties globalProperties) throws ServletException {
         // Deref server does not use a servlet specific configuration
         // So simply initialize configuration with global properties
-        ServletManagerConfig sConf = new ServletManagerConfig();
+        ServletManagerConfigImpl sConf = new ServletManagerConfigImpl();
         sConf.setProperties(globalProperties);
         sConf.setSSL(false);
         this.config = sConf;

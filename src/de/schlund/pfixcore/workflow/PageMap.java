@@ -37,11 +37,9 @@ public class PageMap implements Reloader {
     
     public PageMap(ContextConfig config) {
 
-        PageRequestConfig[] pages  = config.getPageRequestConfigs();
-        
-        for (int i = 0; i < pages.length; i++) {
-            String page       = pages[i].getPageName();
-            Class  stateClass = pages[i].getState();
+        for (PageRequestConfig pageConfig : config.getPageRequestConfigs()) {
+            String page       = pageConfig.getPageName();
+            Class  stateClass = pageConfig.getState();
             State  state      = StateFactory.getInstance().getState(stateClass.getName());
 
             if (state == null) {

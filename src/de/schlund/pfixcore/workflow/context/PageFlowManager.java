@@ -51,19 +51,17 @@ public class PageFlowManager {
 
     public PageFlowManager(ContextConfig config, VariantManager variantmanager) {
         vmanager = variantmanager;
-        PageFlowConfig[] pageflows = config.getPageFlowConfigs();
 
         // Initialize map mapping each page name to a list of
         // flows which contain this page in at least one variant
         // and create PageFlow object for each flow
-        for (int i = 0; i < pageflows.length; i++) {
-            PageFlow flow = new PageFlow(pageflows[i]);
+        for (PageFlowConfig pageflowConfig : config.getPageFlowConfigs()) {
+            PageFlow flow = new PageFlow(pageflowConfig);
             flowmap.put(flow.getName(), flow);
             
             String rootname = flow.getRootName();
-            PageFlowStepConfig[] steps = pageflows[i].getFlowSteps();
-            for (int j = 0; j < steps.length; j++) {
-                String pagename = steps[j].getPage();
+            for (PageFlowStepConfig stepConfig : pageflowConfig.getFlowSteps()) {
+                String pagename = stepConfig.getPage();
                 Set<String> names = pagetoflowmap.get(pagename);
                 if (names == null) {
                     names = new HashSet<String>();

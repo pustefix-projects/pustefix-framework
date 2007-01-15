@@ -54,10 +54,8 @@ public class PageFlow {
         
         finalpage = config.getFinalPage();
         
-        PageFlowStepConfig[] steps = config.getFlowSteps();
-        
-        for (int i = 0; i < steps.length; i++) {
-            FlowStep step = new FlowStep(steps[i]);
+        for (PageFlowStepConfig stepConfig : config.getFlowSteps()) {
+            FlowStep step = new FlowStep(stepConfig);
             allsteps.add(step);
             stepmap.put(step.getPageName(), step);
         }

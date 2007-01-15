@@ -18,50 +18,49 @@
 
 package de.schlund.pfixxml.config;
 
-import java.util.ArrayList;
+import java.util.List;
 
 /**
- * Stores configuration for a PageFlow.
+ * Provides configuration for a step of a page flow.
  * 
+ * @see PageFlowConfig
  * @author Sebastian Marsching <sebastian.marsching@1und1.de>
  */
-public class PageFlowStepConfig {
-    
-    private String page = null;
-    private boolean stopHere = false;
-    private ArrayList<PageFlowStepActionConditionConfig> continueConditions = new ArrayList<PageFlowStepActionConditionConfig>();
-    private boolean applyAllConditions = false;
+public interface PageFlowStepConfig {
 
-    
-    public void setPage(String page) {
-        this.page = page;
-    }
-    
-    public String getPage() {
-        return this.page;
-    }
-    
-    public void setStopHere(boolean stop) {
-        this.stopHere = stop;
-    }
-    
-    public boolean isStopHere() {
-        return this.stopHere;
-    }
-    
-    public void addActionCondition(PageFlowStepActionConditionConfig config) {
-        this.continueConditions.add(config);
-    }
-    
-    public PageFlowStepActionConditionConfig[] getActionConditions() {
-        return this.continueConditions.toArray(new PageFlowStepActionConditionConfig[0]);
-    }
-    
-    public void setApplyAllConditions(boolean applyAll) {
-        this.applyAllConditions  = applyAll;
-    }
-    
-    public boolean isApplyAllConditions() {
-        return this.applyAllConditions;
-    }
+    /**
+     * Returns the name of the page this flow step refers to.
+     * 
+     * @return name of the page used by this flow step
+     */
+    String getPage();
+
+    /**
+     * If <code>true</code> forces the pageflow to stop at this step when
+     * coming from a step before this step. If <code>false</code> the flow
+     * will only stop at this step if the page needs input.
+     * 
+     * @return flag indicating wheter to always stop at this step
+     */
+    boolean isStopHere();
+
+    /**
+     * Returns a list of conditions and their corresponding actions.
+     * 
+     * @return list of conditions for pageflow actions
+     */
+    List<? extends PageFlowStepActionConditionConfig> getActionConditions();
+
+    /**
+     * Signals whether to check for all conditions.
+     * If <code>true</code> all conditions for pageflow actions will be 
+     * checked and their corresponding actions be executed. If 
+     * <code>false</code> only the actions for the first matching condition
+     * will be executed. 
+     * 
+     * @return flag indicating whether to check all conditions for pageflow
+     * actions
+     */
+    boolean isApplyAllConditions();
+
 }

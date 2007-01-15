@@ -21,32 +21,26 @@ package de.schlund.pfixxml.config;
 import java.util.Properties;
 
 /**
- * Stores configuration for an action that is triggered by a PageFlow step.
+ * Provides configuration for a pageflow action. A pageflow action
+ * is attached to a condition.
  * 
+ * @see PageFlowStepActionConditionConfig 
  * @author Sebastian Marsching <sebastian.marsching@1und1.de>
  */
-public class PageFlowStepActionConfig {
-    
-    private Class actionType = null;
-    private Properties params = new Properties();
+public interface PageFlowStepActionConfig {
 
-    public void setActionType(Class clazz) {
-        this.actionType = clazz;
-    }
-    
-    public Class getActionType() {
-        return this.actionType;
-    }
-    
-    public void setParam(String name, String value) {
-        this.params.setProperty(name, value);
-    }
-    
-    public String getParam(String name) {
-        return this.params.getProperty(name);
-    }
-    
-    public Properties getParams() {
-        return this.params;
-    }
+    /**
+     * Returns the class that is used to construct the action object.
+     * 
+     * @return class of the action object
+     */
+    Class getActionType();
+
+    /**
+     * Returns a properties map containing parameters for the action.
+     * 
+     * @return parameters for the action
+     */
+    Properties getParams();
+
 }

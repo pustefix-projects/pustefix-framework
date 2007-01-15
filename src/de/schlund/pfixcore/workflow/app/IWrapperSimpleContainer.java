@@ -21,6 +21,7 @@ package de.schlund.pfixcore.workflow.app;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Properties;
@@ -541,16 +542,16 @@ public class IWrapperSimpleContainer implements IWrapperContainer, Reloader {
         //Properties props      = context.getPropertiesForCurrentPageRequest();
         //HashMap    interfaces = PropertiesUtils.selectProperties(props, PROP_INTERFACE);
         PageRequestConfig config = context.getConfigForCurrentPageRequest();
-        IWrapperConfig[] interfaces = config.getIWrappers();
+        Collection<? extends IWrapperConfig> interfaces = config.getIWrappers().values();
 
-        if (interfaces.length == 0) {
+        if (interfaces.size() == 0) {
             CAT.debug("*** Found no interfaces for this page (page=" + context.getCurrentPageRequest().getName() + ")");
         } else {
             // Initialize all wrappers
-            for (int i = 0; i < interfaces.length; i++) {
-                IWrapperConfig iConfig = interfaces[i];
+            int i = 0;
+            for (IWrapperConfig iConfig : interfaces) {
                 String prefix = iConfig.getPrefix();
-                int order = i;
+                int order = i++;
 
                 if (wrappers.get(prefix) != null) {
                     throw new XMLException("FATAL: you have already defined a wrapper with prefix " +
@@ -600,11 +601,9 @@ public class IWrapperSimpleContainer implements IWrapperContainer, Reloader {
     }
 
     private void createAlwaysRetrieveGroup() {
-        IWrapperConfig[] interfaces = context.getConfigForCurrentPageRequest().getIWrappers();
         always_retrieve     = new IWrapperGroup();
         
-        for (int i = 0; i < interfaces.length; i++) {
-            IWrapperConfig iConfig = interfaces[i];
+        for (IWrapperConfig iConfig : context.getConfigForCurrentPageRequest().getIWrappers().values()) {
             if (iConfig.isAlwaysRetrieve()) {
                 IWrapper wrapper = (IWrapper) wrappers.get(iConfig.getPrefix());
                 CAT.debug("*** Adding interface '" + iConfig.getPrefix() + "' to the always_retrieve group...");
@@ -614,11 +613,9 @@ public class IWrapperSimpleContainer implements IWrapperContainer, Reloader {
     }
 
     private void createRestrictedContinueGroup() {
-        IWrapperConfig[] interfaces = context.getConfigForCurrentPageRequest().getIWrappers();
         contwrappers = new IWrapperGroup();
         
-        for (int i = 0; i < interfaces.length; i++) {
-            IWrapperConfig iConfig = interfaces[i];
+        for (IWrapperConfig iConfig : context.getConfigForCurrentPageRequest().getIWrappers().values()) {
             if (iConfig.isContinue()) {
                 IWrapper wrapper = (IWrapper) wrappers.get(iConfig.getPrefix());
                 CAT.debug("*** Adding interface '" + iConfig.getPrefix() + "' to the restricted_continue group...");

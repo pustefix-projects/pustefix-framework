@@ -1,3 +1,27 @@
+2007-01-15  Sebastian Marsching  <sebastian.marsching@1und1.de>
+
+	* src/de/schlund/pfixcore/scriptedflow/ScriptedFlowConfig.java: 
+	* src/de/schlund/pfixcore/scriptedflow/ScriptedFlowConfigImpl.java: 
+	* src/de/schlund/pfixcore/util/DummyContextFactory.java: 
+	* src/de/schlund/pfixcore/workflow/app/IHandlerSimpleContainer.java: 
+	* src/de/schlund/pfixcore/workflow/app/IWrapperSimpleContainer.java: 
+	* src/de/schlund/pfixcore/workflow/context/PageFlow.java: 
+	* src/de/schlund/pfixcore/workflow/context/PageFlowManager.java: 
+	* src/de/schlund/pfixcore/workflow/ContextResourceManager.java: 
+	* src/de/schlund/pfixcore/workflow/DirectOutputPageMap.java: 
+	* src/de/schlund/pfixcore/workflow/FlowStep.java: 
+	* src/de/schlund/pfixcore/workflow/PageMap.java: 
+	* src/de/schlund/pfixxml/AbstractXMLServer.java: 
+	* src/de/schlund/pfixxml/ContextXMLServer.java: 
+	* src/de/schlund/pfixxml/DerefServer.java: 
+	* src/de/schlund/pfixxml/DirectOutputServlet.java: 
+	* src/de/schlund/pfixxml/ServletManagerCompat.java: 
+	* src/de/schlund/pfixxml/config/*:
+	Performed a lot of refactoring. All configuration objects were replaced
+	by interfaces. The dependency on the configuration system was reduced to
+	this interfaces and the new ConfigReader class that is used to create
+	configuration objects from configuration files.
+
 2007-01-15  Martin Leidig  <mleidig@schlund.de>
 
 	* src/de/schlund/pfixcore/webservice/jsonws/JSONWSProcessor.java: measure

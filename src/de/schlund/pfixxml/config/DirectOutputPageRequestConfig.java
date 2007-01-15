@@ -18,49 +18,37 @@
 
 package de.schlund.pfixxml.config;
 
-import java.util.Enumeration;
 import java.util.Properties;
 
-
 /**
- * Stores configuration for a DirectOutputServlet PageRequest
+ * Provides configuration for a direct output page. This configuration is 
+ * used by {@link de.schlund.pfixxml.DirectOutputServlet} to configure the
+ * pages provided.   
  * 
  * @author Sebastian Marsching <sebastian.marsching@1und1.de>
  */
-public class DirectOutputPageRequestConfig {
+public interface DirectOutputPageRequestConfig {
 
-    private String pageName = null;
+    /**
+     * Returns name identifying the page.
+     * 
+     * @return name of the page
+     */
+    String getPageName();
 
-    private Class stateClass = null;
-    
-    private Properties properties = new Properties();
+    /**
+     * Returns class used to construct the state. The state does the actual
+     * request handling for the page.
+     * 
+     * @return state associated with this page
+     */
+    Class getState();
 
-    public void setPageName(String page) {
-        this.pageName = page;
-    }
+    /**
+     * Returns extra configuration parameters.
+     * 
+     * @return configuration parameters
+     */
+    Properties getProperties();
 
-    public String getPageName() {
-        return this.pageName;
-    }
-
-    public void setState(Class clazz) {
-        this.stateClass = clazz;
-    }
-
-    public Class getState() {
-        return this.stateClass;
-    }
-    
-    public void setProperties(Properties props) {
-        this.properties = new Properties();
-        Enumeration e = props.propertyNames();
-        while (e.hasMoreElements()) {
-            String propname = (String) e.nextElement();
-            this.properties.setProperty(propname, props.getProperty(propname));
-        }
-    }
-    
-    public Properties getProperties() {
-        return this.properties;
-    }
 }

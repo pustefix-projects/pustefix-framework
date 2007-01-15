@@ -18,44 +18,37 @@
 
 package de.schlund.pfixxml.config;
 
-import java.util.Enumeration;
 import java.util.Properties;
 
 /**
- * Stores configuration used by ServletManager 
+ * Provides configuration for an instance of {@link de.schlund.pfixxml.ServletManager} or one of its
+ * child classes.  
  * 
  * @author Sebastian Marsching <sebastian.marsching@1und1.de>
  */
-public class ServletManagerConfig {
+public interface ServletManagerConfig {
 
-    private boolean ssl;
-    private Properties props = new Properties();
+    /**
+     * If <code>true</code> a secure communication channel should be used for
+     * the servlet.
+     * 
+     * @return flag indicating whether to force SSL for the servlet
+     */
+    boolean isSSL();
 
-    public void setSSL(boolean b) {
-        this.ssl = b;
-    }
+    /**
+     * Returns configuration properties for the servlet.
+     * 
+     * @return configuration parameters
+     */
+    Properties getProperties();
 
-    public boolean isSSL() {
-        return this.ssl;
-    }
+    /**
+     * Returns true if the data base that was used to create this configuration
+     * instance has changed and the configuration should be reloaded.
+     * 
+     * @return flag indicating whether the configuration should be reloaded
+     */
+    boolean needsReload();
 
-    public void setProperties(Properties props) {
-        this.props = new Properties();
-        Enumeration e = props.propertyNames();
-        while (e.hasMoreElements()) {
-            String propname = (String) e.nextElement();
-            this.props.setProperty(propname, props.getProperty(propname));
-        }
-    }
-    
-    public Properties getProperties() {
-        return this.props;
-    }
-    
-    public boolean needsReload() {
-        // Override this method in child implementations
-        // which may have to check for changes in more
-        // files than the main config file
-        return false;
-    }
 }

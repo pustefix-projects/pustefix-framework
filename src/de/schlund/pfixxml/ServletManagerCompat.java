@@ -27,6 +27,7 @@ import org.xml.sax.SAXException;
 
 import de.schlund.pfixxml.config.ServletManagerConfig;
 import de.schlund.pfixxml.config.XMLPropertiesUtil;
+import de.schlund.pfixxml.config.impl.ServletManagerConfigImpl;
 import de.schlund.pfixxml.resources.FileResource;
 
 /**
@@ -38,7 +39,7 @@ import de.schlund.pfixxml.resources.FileResource;
  * @author Sebastian Marsching <sebastian.marsching@1und1.de>
  */
 public abstract class ServletManagerCompat extends ServletManager {
-    private ServletManagerConfig config;
+    private ServletManagerConfigImpl config;
 
     protected ServletManagerConfig getServletManagerConfig() {
         return config;
@@ -55,7 +56,7 @@ public abstract class ServletManagerCompat extends ServletManager {
                 throw new ServletException("Could not read configuration file " + configFile.toString());
             }
         }
-        this.config = new ServletManagerConfig();
+        this.config = new ServletManagerConfigImpl();
         this.config.setProperties(props);
         String needs_ssl = props.getProperty("servlet.needsSSL");
         if (needs_ssl != null && (needs_ssl.equals("true") || needs_ssl.equals("yes") || needs_ssl.equals("1"))) {
