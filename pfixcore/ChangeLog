@@ -1,3 +1,8 @@
+2007-01-15  Sebastian Marsching  <sebastian.marsching@1und1.de>
+
+	* src/de/schlund/pfixxml/config/ContextConfig.java (doFinishing): 
+	Fixed bug in "copyfrom" implementation for pagerequest configurations.
+
 2007-01-15  Martin Leidig  <mleidig@schlund.de>
 
 	* src/de/schlund/pfixcore/webservice/jsonws/JSONWSProcessor.java: measure

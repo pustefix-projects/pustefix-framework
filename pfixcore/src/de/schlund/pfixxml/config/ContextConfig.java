@@ -181,6 +181,8 @@ public class ContextConfig {
     }
 
     public void doFinishing() {
+        // FIXME page copies cannot work
+        
         // Handle page copies
         HashSet<PageRequestConfig> newPages = new HashSet<PageRequestConfig>();
         
@@ -200,6 +202,10 @@ public class ContextConfig {
                     }
                 }
             }
+        }
+        
+        for (PageRequestConfig page : newPages) {
+            this.pagerequests.put(page.getPageName(), page);
         }
     }
 
