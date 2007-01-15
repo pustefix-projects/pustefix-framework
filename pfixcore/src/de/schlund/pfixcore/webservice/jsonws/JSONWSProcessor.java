@@ -43,8 +43,6 @@ import de.schlund.pfixcore.webservice.fault.FaultHandler;
 import de.schlund.pfixcore.webservice.json.JSONArray;
 import de.schlund.pfixcore.webservice.json.JSONObject;
 import de.schlund.pfixcore.webservice.json.parser.JSONParser;
-import de.schlund.pfixxml.perflogging.PerfEvent;
-import de.schlund.pfixxml.perflogging.PerfEventType;
 
 /**
  * @author mleidig@schlund.de
@@ -141,20 +139,21 @@ public class JSONWSProcessor implements ServiceProcessor {
                         
                         if(error==null) {
                             
+                            procInfo.setService(serviceName);
+                            procInfo.setMethod(method.getName());
+                            procInfo.startInvocation();
+                            
                             //Invocation
                             try { 
                                 Object serviceObject=registry.getServiceObject(serviceName);
-                                procInfo.setService(serviceName);
-                                procInfo.setMethod(method.getName());
-                                procInfo.startInvocation();
                                 resultObject=method.invoke(serviceObject,paramObjects);
-                                procInfo.endInvocation();
                                 if(LOG.isDebugEnabled()) LOG.debug("Invocation: "+procInfo.getInvocationTime()+"ms");
                             } catch(Throwable t) {
                                 if(t instanceof InvocationTargetException && t.getCause()!=null) error=t.getCause();
                                 else error=new ServiceException("Error during invocation",t);
-                            }
+                            } 
                             
+                            procInfo.endInvocation();
                         }
                     }
                 }
