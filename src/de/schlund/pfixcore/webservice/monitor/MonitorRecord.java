@@ -25,9 +25,11 @@ package de.schlund.pfixcore.webservice.monitor;
 public class MonitorRecord {
 	
 	String service;
+    String method;
 	String protocol;
     long startTime;
-    long endTime;
+    long procTime;
+    long invocTime;
     String reqMsg;
     String resMsg;
     
@@ -41,6 +43,14 @@ public class MonitorRecord {
     
     public void setService(String service) {
     	this.service=service;
+    }
+    
+    public String getMethod() {
+        return method;
+    }
+    
+    public void setMethod(String method) {
+        this.method=method;
     }
     
     public String getProtocol() {
@@ -59,16 +69,20 @@ public class MonitorRecord {
     	this.startTime=startTime;
     }
     
-    public long getEndTime() {
-    	return endTime;
+    public long getProcessingTime() {
+    	return procTime;
     }
     
-    public void setEndTime(long endTime) {
-    	this.endTime=endTime;
+    public void setProcessingTime(long procTime) {
+        this.procTime=procTime;
     }
     
-    public long getTime() {
-    	return endTime-startTime;
+    public long getInvocationTime() {
+    	return invocTime;
+    }
+    
+    public void setInvocationTime(long invocTime) {
+        this.invocTime=invocTime;
     }
     
     public String getRequestMessage() {

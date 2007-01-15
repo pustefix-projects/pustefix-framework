@@ -22,23 +22,25 @@
   <xsd:element name="webservice-global">
     <xsd:complexType>
       <xsd:sequence>
-        <xsd:element name="requestpath" type="xsd:string"/>
-        <xsd:element name="wsdlsupport">
+        <xsd:element name="requestpath" type="xsd:string" minOccurs="0"/>
+        <xsd:element name="wsdlsupport" minOccurs="0">
           <xsd:complexType>
             <xsd:attribute name="enabled" type="xsd:boolean"/>
             <xsd:attribute name="repository" type="xsd:string"/>
           </xsd:complexType>
         </xsd:element>
-        <xsd:element name="stubgeneration">
+        <xsd:element name="stubgeneration" minOccurs="0">
           <xsd:complexType>
             <xsd:attribute name="enabled" type="xsd:boolean"/>
             <xsd:attribute name="repository" type="xsd:string"/>
           </xsd:complexType>
         </xsd:element>
         <xsd:element ref="protocol" minOccurs="0"/>
-        <xsd:element ref="encoding"/>
-        <xsd:element ref="session"/>
-        <xsd:element ref="scope"/>
+        <xsd:element ref="encoding" minOccurs="0"/>
+        <xsd:element ref="session" minOccurs="0"/>
+        <xsd:element ref="scope" minOccurs="0"/>
+        <xsd:element ref="ssl" minOccurs="0"/>
+        <xsd:element ref="context" minOccurs="0"/>
         <xsd:choice>
           <xsd:group ref="GlobalCustoms"/>
           <xsd:element name="choose">
@@ -65,19 +67,19 @@
 
   <xsd:group name="GlobalCustoms">
 	<xsd:sequence>
-	  <xsd:element name="admin">
+	  <xsd:element name="admin" minOccurs="0">
 		<xsd:complexType>
 		  <xsd:attribute name="enabled" type="xsd:boolean" default="false"/>
 		</xsd:complexType>
 	  </xsd:element>
-	  <xsd:element name="monitoring">
+	  <xsd:element name="monitoring" minOccurs="0">
 	    <xsd:complexType>
 		  <xsd:attribute name="enabled" type="xsd:boolean" default="false"/>
 		  <xsd:attribute name="scope" type="MonitorScopeType" default="session"/>
-		  <xsd:attribute name="historysize" type="MonitorSizeType" default="10"/>
+		  <xsd:attribute name="historysize" type="MonitorSizeType" default="20"/>
 		</xsd:complexType>
 	  </xsd:element>
-      <xsd:element name="logging">
+      <xsd:element name="logging" minOccurs="0">
         <xsd:complexType>
           <xsd:attribute name="enabled" type="xsd:boolean" default="false"/>
         </xsd:complexType>
@@ -105,12 +107,7 @@
         <xsd:element ref="session" minOccurs="0"/>
         <xsd:element ref="scope" minOccurs="0"/>
         <xsd:element ref="ssl" minOccurs="0"/>
-        <xsd:element name="context" minOccurs="0">
-          <xsd:complexType>
-            <xsd:attribute name="name" type="xsd:string"/>
-            <xsd:attribute name="synchronize" type="xsd:boolean" default="true"/>
-          </xsd:complexType>
-        </xsd:element>
+        <xsd:element ref="context" minOccurs="0"/>
         <xsd:element ref="faulthandler" minOccurs="0"/>
       </xsd:all>
       <xsd:attribute name="name" type="NameType" use="required"/>
@@ -139,6 +136,13 @@
   <xsd:element name="scope">
     <xsd:complexType>
       <xsd:attribute name="type" type="ScopeType" use="required"/>
+    </xsd:complexType>
+  </xsd:element>
+  
+  <xsd:element name="context">
+    <xsd:complexType>
+      <xsd:attribute name="name" type="xsd:string"/>
+      <xsd:attribute name="synchronize" type="xsd:boolean" default="true"/>
     </xsd:complexType>
   </xsd:element>
   

@@ -22,10 +22,12 @@ package de.schlund.pfixcore.webservice;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import de.schlund.pfixcore.webservice.config.ServiceConfig;
 
@@ -48,10 +50,15 @@ public class ServiceDescriptor {
             Class itf=Class.forName(serviceConfig.getInterfaceName(),true,cl);
             Class clazz=Class.forName(serviceConfig.getImplementationName(),true,cl);
             serviceMethods=introspect(clazz,itf);
+            serviceClass=itf;
         } catch (ClassNotFoundException x) {
             throw new ServiceException("Can't instantiate service class.",x);
         }
 	}
+    
+    public Class getServiceClass() {
+        return serviceClass;
+    }
     
 	private Map<String,List<Method>> introspect(Class<?> clazz,Class<?> itf) throws ServiceException {
         if(itf!=null) {
@@ -101,12 +108,12 @@ public class ServiceDescriptor {
         return methods;
     }
 	
-	public Iterator<String> getMethods() {
-		return serviceMethods.keySet().iterator();
+	public Set<String> getMethods() {
+		return Collections.unmodifiableSet(serviceMethods.keySet());
 	}
     
     public List<Method> getMethods(String name) {
-        return serviceMethods.get(name);
+        return Collections.unmodifiableList(serviceMethods.get(name));
     }
 	
 	public String toString() {
@@ -118,5 +125,5 @@ public class ServiceDescriptor {
 		}
 		return sb.toString();
 	}
-	
+    
 }

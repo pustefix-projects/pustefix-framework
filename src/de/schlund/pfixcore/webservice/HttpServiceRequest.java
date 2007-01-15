@@ -29,6 +29,7 @@ import java.io.Reader;
 import java.io.StringReader;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 /**
  * @author mleidig@schlund.de
@@ -37,28 +38,32 @@ public class HttpServiceRequest implements ServiceRequest {
 
 	HttpServletRequest httpRequest;
 	String serviceName;
+    String requestURI;
 	
 	public HttpServiceRequest(HttpServletRequest httpRequest) {
 		this.httpRequest=httpRequest;
 	}
 	
-	public String getServiceName() {
-		if(serviceName==null) {
-			String name=httpRequest.getPathInfo();
-			if(name==null) throw new IllegalArgumentException("No service name found.");
-			int ind=name.lastIndexOf('/');
-			if(ind<0) throw new IllegalArgumentException("No service name found.");
-			else {
-				if(!((name.length()-ind)>1)) throw new IllegalArgumentException("No service name found.");
-				serviceName=name.substring(ind+1);
-			}
-		}
-		return serviceName;
-	}
-	
-	public Object getServiceObject() {
-		// TODO Auto-generated method stub
-		return null;
+    public String getServiceName() {
+        if(serviceName==null) {
+            serviceName=extractServiceName(httpRequest);
+            if(serviceName==null) throw new IllegalArgumentException("No service name found.");
+        }
+        return serviceName;
+    }
+    
+	public static String extractServiceName(HttpServletRequest httpRequest) {
+        String extName=null;		
+        String name=httpRequest.getPathInfo();
+        if(name!=null) {
+            int ind=name.lastIndexOf('/');
+            if(ind>-1) {
+                if((name.length()-ind)>1) {
+                    extName=name.substring(ind+1);
+                }
+            }
+        }
+		return extName;
 	}
 	
 	public Object getUnderlyingRequest() {
@@ -115,5 +120,37 @@ public class HttpServiceRequest implements ServiceRequest {
 			return httpRequest.getInputStream();
 		}
 	}
+    
+    public String getRequestURI() {
+        if(requestURI==null) {
+            requestURI=getRequestURI(httpRequest);
+        }
+        return requestURI;
+    }
+    
+    private static String getRequestURI(HttpServletRequest srvReq) {
+        StringBuffer sb=new StringBuffer();
+        sb.append(srvReq.getScheme());
+        sb.append("://");
+        sb.append(srvReq.getServerName());
+        sb.append(":");
+        sb.append(srvReq.getServerPort());
+        sb.append(srvReq.getRequestURI());
+        HttpSession session=srvReq.getSession(false);
+        if(session!=null) {
+            sb.append(Constants.SESSION_PREFIX);
+            sb.append(session.getId());
+        }
+        String s=srvReq.getQueryString();
+        if(s!=null&&!s.equals("")) {
+            sb.append("?");
+            sb.append(s);
+        }
+        return sb.toString();
+    }
 	
+    public String getServerName() {
+        return httpRequest.getServerName();
+    }
+    
 }

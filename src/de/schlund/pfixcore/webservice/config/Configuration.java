@@ -53,8 +53,8 @@ public class Configuration {
         return (ServiceConfig)srvsConf.get(name);
     }
     
-    public Iterator<ServiceConfig> getServiceConfig() {
-        return srvsConf.values().iterator();
+    public Collection<ServiceConfig> getServiceConfig() {
+        return Collections.unmodifiableCollection(srvsConf.values());
     }
     
     @Override
@@ -66,7 +66,7 @@ public class Configuration {
     			System.out.println("Global service not equal");
     			return false;
     		}
-    		Iterator<ServiceConfig> it=getServiceConfig();
+    		Iterator<ServiceConfig> it=srvsConf.values().iterator();
     		while(it.hasNext()) {
     			ServiceConfig sc=it.next();
     			ServiceConfig refSc=ref.getServiceConfig(sc.getName());
@@ -79,7 +79,7 @@ public class Configuration {
     				return false;
     			}
     		}
-    		it=ref.getServiceConfig();
+    		it=ref.srvsConf.values().iterator();
     		while(it.hasNext()) {
     			ServiceConfig refSc=it.next();
     			System.out.println("** "+refSc.getName());

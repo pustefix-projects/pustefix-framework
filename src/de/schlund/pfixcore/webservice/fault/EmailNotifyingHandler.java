@@ -13,6 +13,7 @@ import org.apache.log4j.Logger;
 
 import de.schlund.pfixcore.util.email.EmailSender;
 import de.schlund.pfixcore.util.email.EmailSenderException;
+import de.schlund.pfixcore.webservice.HttpServiceRequest;
 
 public class EmailNotifyingHandler extends FaultHandler {
     
@@ -33,7 +34,7 @@ public class EmailNotifyingHandler extends FaultHandler {
         if(sender==null) throw new IllegalArgumentException("Parameter '"+PARAM_SENDER+"' is missing.");
         String str=getParam(PARAM_RECIPIENTS);
         if(str==null) throw new IllegalArgumentException("Parameter '"+PARAM_RECIPIENTS+"' is missing.");
-        ArrayList al=new ArrayList();
+        ArrayList<String> al=new ArrayList<String>();
         StringTokenizer st=new StringTokenizer(str,",");
         while(st.hasMoreTokens()) {
             String s=st.nextToken();
@@ -68,7 +69,8 @@ public class EmailNotifyingHandler extends FaultHandler {
     
     public String createSubject(Fault fault) {
         StringBuffer sb=new StringBuffer();
-        sb.append(fault.getServerName());
+        HttpServiceRequest srvReq=(HttpServiceRequest)fault.getRequest();
+        sb.append(srvReq.getServerName());
         sb.append("|webservice|");
         sb.append(fault.getServiceName());
         sb.append("|");
@@ -78,8 +80,9 @@ public class EmailNotifyingHandler extends FaultHandler {
     
     public String createText(Fault fault) {
         StringBuffer sb=new StringBuffer();
+        HttpServiceRequest srvReq=(HttpServiceRequest)fault.getRequest();
         sb.append("Request: \t");
-        sb.append(fault.getRequestURI());
+        sb.append(srvReq.getRequestURI());
         sb.append("\n");
         sb.append("Service: \t");
         sb.append(fault.getServiceName());
