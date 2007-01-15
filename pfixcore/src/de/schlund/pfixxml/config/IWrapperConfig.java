@@ -20,64 +20,57 @@ package de.schlund.pfixxml.config;
 
 
 /**
- * Stores configuration for an IWrapper
+ * Provides configuration for {@link de.schlund.pfixcore.generator.IWrapper} instances.
  * 
  * @author Sebastian Marsching <sebastian.marsching@1und1.de>
  */
-public class IWrapperConfig {
-    
-    private String prefix = null;
-    private Class wrapperClass = null;
-    private boolean continueOnSubmit = false;
-    private boolean activeIgnore = false;
-    private boolean alwaysRetrieve = false;
-    private boolean dologging = false;
-    
-    public String getPrefix() {
-        return this.prefix;
-    }
-    
-    public void setPrefix(String prefix) {
-        this.prefix = prefix;
-    }
-    
-    public void setWrapperClass(Class clazz) {
-        this.wrapperClass = clazz;
-    }
-    
-    public Class getWrapperClass() {
-        return this.wrapperClass;
-    }
-    
-    public void setContinue(boolean continueOnSubmit) {
-        this.continueOnSubmit = continueOnSubmit;
-    }
-    
-    public boolean isContinue() {
-        return this.continueOnSubmit;
-    }
-    
-    public void setActiveIgnore(boolean ignore) {
-        this.activeIgnore = ignore;
-    }
-    
-    public boolean isActiveIgnore() {
-        return this.activeIgnore;
-    }
-    
-    public void setAlwaysRetrieve(boolean retrieve) {
-        this.alwaysRetrieve = retrieve;
-    }
-    
-    public boolean isAlwaysRetrieve() {
-        return this.alwaysRetrieve;
-    }
+public interface IWrapperConfig {
 
-    public void setLogging(boolean dologging) {
-        this.dologging = dologging;
-    }
+    /**
+     * Returns the prefix that is used for request parameters associated with
+     * this wrapper instance.
+     * 
+     * @return prefix for request parameters
+     */
+    String getPrefix();
 
-    public boolean getLogging() {
-        return this.dologging;
-    }
+    /**
+     * Returns the class that shall be used for instances of the wrapper.
+     * 
+     * @return wrapper class
+     */
+    Class getWrapperClass();
+
+    /**
+     * Specifies whether the next page in the current pageflow should be triggered
+     * when a sumit to this specific wrapper is triggered. 
+     * 
+     * @return continue flag
+     */
+    boolean isContinue();
+
+    /**
+     * If <code>true</code> the state will not check whether the correspondings
+     * handler isActive() method returns true when checking whether a page is
+     * accessible.
+     * 
+     * @return flag indicating handling of active state
+     */
+    boolean isActiveIgnore();
+
+    /**
+     * If <code>true</code> the <code>retrieveCurrentStatus()</code> method
+     * should always be called on the corresponding IHandler.
+     * 
+     * @return flag indicating retrieveCurrentStatus() handling
+     */
+    boolean isAlwaysRetrieve();
+
+    /**
+     * If <code>true</code> the IWrapper should enable logging.
+     * 
+     * @return flag indicating whether to enable logging
+     */
+    boolean getLogging();
+
 }

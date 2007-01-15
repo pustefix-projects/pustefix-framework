@@ -18,49 +18,47 @@
 
 package de.schlund.pfixxml.config;
 
-import java.util.ArrayList;
+import java.util.List;
 
 /**
- * Stores configuration for a PageFlow
+ * Provides configuration for a page flow.  
  * 
  * @author Sebastian Marsching <sebastian.marsching@1und1.de>
  */
-public class PageFlowConfig {
-    
-    private String flowName = null;
-    private String finalPage = null;
-    private boolean stopNext = false;
-    private ArrayList<PageFlowStepConfig> flowSteps = new ArrayList<PageFlowStepConfig>();
-    
-    public PageFlowConfig(String name) {
-        this.flowName = name;
-    }
-    
-    public String getFlowName() {
-        return this.flowName;
-    }
-    
-    public void setFinalPage(String page) {
-        this.finalPage = page;
-    }
-    
-    public String getFinalPage() {
-        return this.finalPage;
-    }
-    
-    public void setStopNext(boolean stop) {
-        this.stopNext = stop;
-    }
-    
-    public boolean isStopNext() {
-        return this.stopNext;
-    }
-    
-    public void addFlowStep(PageFlowStepConfig config) {
-        this.flowSteps.add(config);
-    }
-    
-    public PageFlowStepConfig[] getFlowSteps() {
-        return this.flowSteps.toArray(new PageFlowStepConfig[0]);
-    }
+public interface PageFlowConfig {
+
+    /**
+     *  Returns name of the page flow. The name is used to uniquely identify
+     *  a pageflow in a servlet configuration.
+     *  
+     * @return name of the page flow
+     */
+    String getFlowName();
+
+    /**
+     * Returns name of the final page of the page flow. The final page is the
+     * page that the flow will jump to, when the flow has been processed (no
+     * page of the flow needs input).
+     * 
+     * @return the name of the final page or <code>null</code> if no final
+     * page is defined
+     */
+    String getFinalPage();
+
+    /**
+     * If <code>true</code>, will force the page flow to stop at each page,
+     * even if it does not require input.
+     * 
+     * @return flag indicating whether to always stop at the next page after
+     * a submit 
+     */
+    boolean isStopNext();
+
+    /**
+     * Returns a list of configurations for each flow step.
+     * 
+     * @return configurations of the flow steps
+     */
+    List<? extends PageFlowStepConfig> getFlowSteps();
+
 }

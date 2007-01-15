@@ -18,48 +18,31 @@
 
 package de.schlund.pfixxml.config;
 
-import java.util.HashSet;
 import java.util.Properties;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
+public interface ContextResourceConfig {
 
-/**
- * Stores configuration for a ContextResource
- * 
- * @author Sebastian Marsching <sebastian.marsching@1und1.de>
- */
-public class ContextResourceConfig {
-    private final static Logger LOG = Logger.getLogger(ContextResourceConfig.class);
-    
-    private Class resourceClass = null;
-    private HashSet<Class> interfaces = new HashSet<Class>();
-    private Properties props = new Properties();
-    private ContextConfig parent;
-    
-    public ContextResourceConfig(Class clazz, ContextConfig parent) {
-        this.resourceClass = clazz;
-        this.parent = parent;
-    }
-    
-    public Class getContextResourceClass() {
-        return this.resourceClass;
-    }
-    
-    public void addInterface(Class clazz) {
-        this.interfaces.add(clazz); 
-        ContextResourceConfig oldConfig = this.parent.getContextResourceConfigForInterface(clazz);
-        if (oldConfig != null) {
-            LOG.warn("Binding interface " + clazz.getName() + " already bound to " + oldConfig.getClass().getName() + " to new class " + this.resourceClass.getName());
-        }
-        this.parent.interfaceToResource.put(clazz, this);
-    }
-    
-    public Set<Class> getInterfaces() {
-        return this.interfaces;
-    }
-    
-    public Properties getProperties() {
-        return this.props;
-    }
+    /**
+     * Returns class context resource instance is created from.
+     * 
+     * @return class of context resource
+     */
+    Class getContextResourceClass();
+
+    /**
+     * Returns all Interfaces the context resource is implementing and should
+     * be used for.
+     * 
+     * @return list of interfaces
+     */
+    Set<Class> getInterfaces();
+
+    /**
+     * Returns configuration paramters for the context resource.
+     * 
+     * @return configuration parameters
+     */
+    Properties getProperties();
+
 }

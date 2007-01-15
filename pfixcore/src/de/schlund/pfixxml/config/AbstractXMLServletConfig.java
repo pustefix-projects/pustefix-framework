@@ -18,52 +18,38 @@
 
 package de.schlund.pfixxml.config;
 
-public class AbstractXMLServletConfig extends ServletManagerConfig {
+/**
+ * Provides configuration for an {@link de.schlund.pfixxml.AbstractXMLServer} instance or one of its
+ * child classes.  
+ * 
+ * @author Sebastian Marsching <sebastian.marsching@1und1.de>
+ */
+public interface AbstractXMLServletConfig extends ServletManagerConfig {
 
-    private String servletName;
+    /**
+     * Returns name for the servlet instance. This name is used to build attribute
+     * names which are used to store data within the servlet context and servlet
+     * session. This name has to be unique within the servlet context.
+     * 
+     * @return Name for the servlet instance
+     */
+    String getServletName();
 
-    private String dependFile;
+    /**
+     * Returns the path to the configuration file for the {@link de.schlund.pfixxml.targets.TargetGenerator} 
+     * used by the {@link de.schlund.pfixxml.AbstractXMLServer}. The path has to be specified relative
+     * to the Pustefix docroot.
+     * 
+     * @return path to target generator configuration file
+     */
+    String getDependFile();
 
-    private boolean editMode;
-
-    private boolean editModeSet = false;
-
-    public void setServletName(String value) {
-        this.servletName = value;
-    }
-
-    public String getServletName() {
-        return this.servletName;
-    }
-
-    public void setDependFile(String value) {
-        this.dependFile = value;
-    }
-
-    public String getDependFile() {
-        return this.dependFile;
-    }
-
-    public void setEditMode(boolean b) {
-        this.editMode = b;
-        this.editModeSet = true;
-    }
-
-    public boolean isEditMode() {
-        // We have to take care to handle the case where the editmode is
-        // simply not set for the current servlet. Then we should skip
-        // to reading the central property.
-        if (this.editModeSet) {
-            return this.editMode;
-        } else {
-            String prop = this.getProperties().getProperty(
-                    "xmlserver.noeditmodeallowed");
-            if (prop != null && prop.equalsIgnoreCase("false")) {
-                return true;
-            } else {
-                return false;
-            }
-        }
-    }
+    /**
+     * If true the {@link de.schlund.pfixxml.AbstractXMLServer} or its children allow the user to
+     * switch to "editmode" which provides extra debugging information.
+     * 
+     * @return flag specifying whether to activate the edit mode 
+     */
+    boolean isEditMode();
 
 }

@@ -18,54 +18,25 @@
 
 package de.schlund.pfixcore.scriptedflow;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import de.schlund.pfixcore.scriptedflow.compiler.Compiler;
 import de.schlund.pfixcore.scriptedflow.compiler.CompilerException;
 import de.schlund.pfixcore.scriptedflow.vm.Script;
-import de.schlund.pfixxml.resources.FileResource;
-import de.schlund.pfixxml.resources.ResourceUtil;
+import de.schlund.pfixxml.ContextXMLServer;
 
 /**
- * Stores configuration for scripted flows.  
+ * Provides scripted flows for a {@link ContextXMLServer}.  
  * 
  * @author Sebastian Marsching <sebastian.marsching@1und1.de>
  */
-public class ScriptedFlowConfig {
-    private class Triple {
-        long mtime = -1;
+public interface ScriptedFlowConfig {
 
-        FileResource file = null;
+    /**
+     * Returns the scripted flow configured for the specified name.
+     * 
+     * @param name name identifying the scripted flow
+     * @return compiled scripted flow or <code>null</code> if there is no 
+     * scripted flow for the specified name
+     * @throws CompilerException if scripted flow exists but cannot be compiled
+     */
+    Script getScript(String name) throws CompilerException;
 
-        Script script = null;
-    }
-
-    private Map<String, Triple> scripts = new HashMap<String, Triple>();
-
-    public Script getScript(String name) throws CompilerException {
-        Triple t = this.scripts.get(name);
-        if (t == null) {
-            return null;
-        }
-        synchronized (t) {
-            if (t.script == null || t.file.lastModified() > t.mtime) {
-                if (!t.file.exists()) {
-                    throw new CompilerException(
-                            "Scripted flow "
-                                    + name
-                                    + " is defined but corresponding file does not exist");
-                }
-                t.mtime = t.file.lastModified();
-                t.script = Compiler.compile(t.file);
-            }
-            return t.script;
-        }
-    }
-
-    public void addScript(String name, String path) {
-        Triple t = new Triple();
-        t.file = ResourceUtil.getFileResourceFromDocroot(path);
-        scripts.put(name, t);
-    }
 }

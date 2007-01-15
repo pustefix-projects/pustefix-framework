@@ -19,22 +19,20 @@
 
 package de.schlund.pfixcore.workflow.app;
 
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Properties;
-import java.util.StringTokenizer;
 
-import org.apache.log4j.Category;
+import org.apache.log4j.Logger;
 
 import de.schlund.pfixcore.generator.IHandler;
 import de.schlund.pfixcore.generator.IHandlerFactory;
-import de.schlund.pfixcore.util.PropertiesUtils;
 import de.schlund.pfixcore.workflow.Context;
 import de.schlund.pfixxml.config.IWrapperConfig;
 import de.schlund.pfixxml.config.PageRequestConfig;
-import de.schlund.pfixxml.loader.*;
+import de.schlund.pfixxml.loader.AppLoader;
+import de.schlund.pfixxml.loader.Reloader;
+import de.schlund.pfixxml.loader.StateTransfer;
 import de.schlund.pfixxml.perflogging.PerfEvent;
 import de.schlund.pfixxml.perflogging.PerfEventType;
 
@@ -59,7 +57,7 @@ public class IHandlerSimpleContainer implements IHandlerContainer, Reloader {
     
     public  static final String   PROP_CONTAINER = "ihandlercontainer";
     private static final String   PROP_POLICY    = PROP_CONTAINER + ".policy";
-    private static       Category CAT = Category.getInstance(IHandlerSimpleContainer.class);
+    private static       Logger   LOG            = Logger.getLogger(IHandlerSimpleContainer.class);
     
     // implementation of de.schlund.pfixcore.workflow.app.IHandlerContainer interface
 
@@ -81,9 +79,7 @@ public class IHandlerSimpleContainer implements IHandlerContainer, Reloader {
             this.policy = "NONE";
         }
         
-        IWrapperConfig[] interfaces = config.getIWrappers();
-        for (int i = 0; i < interfaces.length; i++) {
-            IWrapperConfig iConfig = interfaces[i];
+        for (IWrapperConfig iConfig : config.getIWrappers().values()) {
             String wrapperclass = iConfig.getWrapperClass().getName();
             IHandler handler = IHandlerFactory.getInstance().getIHandlerForWrapperClass(wrapperclass);
             handlers.add(handler);

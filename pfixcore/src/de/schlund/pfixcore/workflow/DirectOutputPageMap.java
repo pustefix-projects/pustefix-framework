@@ -51,9 +51,7 @@ public class DirectOutputPageMap implements ConfigurableObject,Reloader {
     public void init(Object confObj) throws Exception {
         DirectOutputServletConfig config = (DirectOutputServletConfig) confObj;
         
-        DirectOutputPageRequestConfig[] pages = config.getPageRequests();
-        for (int i = 0; i < pages.length; i++) {
-            DirectOutputPageRequestConfig pConfig = pages[i];
+        for (DirectOutputPageRequestConfig pConfig : config.getPageRequests()) {
             Class clazz = pConfig.getState();
             DirectOutputState state = DirectOutputStateFactory.getInstance().getDirectOutputState(clazz.getName());
             if (state == null) {

@@ -20,17 +20,19 @@ package de.schlund.pfixcore.util;
 
 
 
-import de.schlund.pfixcore.workflow.Context;
-import de.schlund.pfixcore.workflow.ContextImpl;
-import de.schlund.pfixcore.workflow.context.ServerContextImpl;
-import de.schlund.pfixxml.config.ContextXMLServletConfig;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
+
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpSessionContext;
+
+import de.schlund.pfixcore.workflow.Context;
+import de.schlund.pfixcore.workflow.ContextImpl;
+import de.schlund.pfixcore.workflow.context.ServerContextImpl;
+import de.schlund.pfixxml.config.ContextXMLServletConfig;
 
 /**
  * Helper class that provides a dummy context instance that can

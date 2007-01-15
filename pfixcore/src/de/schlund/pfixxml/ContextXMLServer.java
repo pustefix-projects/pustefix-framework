@@ -19,6 +19,14 @@
 
 package de.schlund.pfixxml;
 
+import java.util.Properties;
+import java.util.TreeMap;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpSession;
+
+import org.apache.log4j.Logger;
+
 import de.schlund.pfixcore.exception.PustefixApplicationException;
 import de.schlund.pfixcore.exception.PustefixCoreException;
 import de.schlund.pfixcore.exception.PustefixRuntimeException;
@@ -33,17 +41,10 @@ import de.schlund.pfixcore.workflow.ContextImpl;
 import de.schlund.pfixcore.workflow.context.RequestContextImpl;
 import de.schlund.pfixcore.workflow.context.ServerContextImpl;
 import de.schlund.pfixxml.config.AbstractXMLServletConfig;
+import de.schlund.pfixxml.config.ConfigReader;
 import de.schlund.pfixxml.config.ContextXMLServletConfig;
 import de.schlund.pfixxml.config.PageRequestConfig;
 import de.schlund.pfixxml.resources.FileResource;
-import java.io.IOException;
-import java.util.Properties;
-import java.util.TreeMap;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpSession;
-import org.apache.log4j.Logger;
-import org.xml.sax.SAXException;
 
 /**
  * @author jtl
@@ -276,10 +277,8 @@ public class ContextXMLServer extends AbstractXMLServer {
 
     protected void reloadServletConfig(FileResource configFile, Properties globalProperties) throws ServletException {
         try {
-            this.config = ContextXMLServletConfig.readFromFile(configFile, globalProperties);
-        } catch (SAXException e) {
-            throw new ServletException("Could not read servlet configuration from " + configFile.toURI(), e);
-        } catch (IOException e) {
+            this.config = ConfigReader.readContextXMLServletConfig(configFile, globalProperties);
+        } catch (PustefixCoreException e) {
             throw new ServletException("Could not read servlet configuration from " + configFile.toURI(), e);
         }
     }

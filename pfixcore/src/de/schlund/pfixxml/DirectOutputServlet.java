@@ -19,7 +19,6 @@
 
 package de.schlund.pfixxml;
 
-import java.io.IOException;
 import java.util.Properties;
 
 import javax.servlet.ServletConfig;
@@ -28,14 +27,15 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Category;
-import org.xml.sax.SAXException;
 
+import de.schlund.pfixcore.exception.PustefixCoreException;
 import de.schlund.pfixcore.workflow.ContextImpl;
 import de.schlund.pfixcore.workflow.ContextResourceManager;
 import de.schlund.pfixcore.workflow.DirectOutputPageMap;
 import de.schlund.pfixcore.workflow.DirectOutputState;
 import de.schlund.pfixcore.workflow.PageRequest;
 import de.schlund.pfixcore.workflow.context.ServerContextImpl;
+import de.schlund.pfixxml.config.ConfigReader;
 import de.schlund.pfixxml.config.DirectOutputServletConfig;
 import de.schlund.pfixxml.config.ServletManagerConfig;
 import de.schlund.pfixxml.resources.FileResource;
@@ -222,11 +222,9 @@ public class DirectOutputServlet extends ServletManager {
 
     protected void reloadServletConfig(FileResource configFile, Properties globalProperties) throws ServletException {
         try {
-            this.config = DirectOutputServletConfig.readFromFile(configFile, globalProperties);
-        } catch (SAXException e) {
+            this.config = ConfigReader.readDirectOutputServletConfig(configFile, globalProperties);
+        } catch (PustefixCoreException e) {
             throw new ServletException("Error on reading config file " + configFile.toURI(), e);
-        } catch (IOException e) {
-            throw new ServletException("Could not read file " + configFile.toURI(), e);
         }
         
     }

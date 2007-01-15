@@ -30,8 +30,8 @@ import org.apache.log4j.Logger;
 import de.schlund.pfixcore.exception.PustefixApplicationException;
 import de.schlund.pfixcore.exception.PustefixCoreException;
 import de.schlund.pfixcore.exception.PustefixRuntimeException;
-import de.schlund.pfixxml.config.ContextConfig;
 import de.schlund.pfixxml.config.ContextResourceConfig;
+import de.schlund.pfixxml.config.ContextConfig;
 import de.schlund.pfixxml.loader.AppLoader;
 import de.schlund.pfixxml.loader.Reloader;
 import de.schlund.pfixxml.loader.StateTransfer;
@@ -93,10 +93,7 @@ public class ContextResourceManager implements Reloader {
         Collection<ContextResource> resourcesToInitialize = new ArrayList<ContextResource>();
         Map<String, ContextResource> resourceClassToInstance = new HashMap<String, ContextResource>();
         
-        Collection<ContextResourceConfig> resourceConfigs = config.getContextResourceConfigs();
-        
-        for (Iterator<ContextResourceConfig> i = resourceConfigs.iterator(); i.hasNext();) {
-            ContextResourceConfig resourceConfig = i.next();
+        for (ContextResourceConfig resourceConfig : config.getContextResourceConfigs()) {
             ContextResource cr = null;
             String classname = resourceConfig.getContextResourceClass().getName();
             try {
@@ -119,7 +116,7 @@ public class ContextResourceManager implements Reloader {
             resourceClassToInstance.put(cr.getClass().getName(), cr);
         }
         
-        Map<Class, ContextResourceConfig> interfaces = config.getInterfaceToContextResourceMap();
+        Map<Class, ? extends ContextResourceConfig> interfaces = config.getInterfaceToContextResourceMap();
         for (Class clazz : interfaces.keySet()) {
             String interfacename = clazz.getName();
             String resourceclass = interfaces.get(clazz).getContextResourceClass().getName();

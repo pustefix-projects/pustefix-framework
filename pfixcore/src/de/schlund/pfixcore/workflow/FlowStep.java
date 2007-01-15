@@ -27,7 +27,7 @@ import java.util.Properties;
 
 import javax.xml.transform.TransformerException;
 
-import org.apache.log4j.Category;
+import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
 
 import de.schlund.pfixcore.exception.PustefixApplicationException;
@@ -50,19 +50,16 @@ public class FlowStep {
     private ArrayList tests_oncontinue    = new ArrayList();
     private PageFlowStepConfig config;
 
-    private static Category LOG = Category.getInstance(PageFlow.class.getName());
+    private static Logger LOG = Logger.getLogger(PageFlow.class);
     public FlowStep(PageFlowStepConfig config) {
         this.config = config;
         
-        PageFlowStepActionConditionConfig[] conditions = config.getActionConditions();
-        
-        for (int i = 0; i < conditions.length; i++) {
-            PageFlowStepActionConfig[] actions = conditions[i].getActions();
+        for (PageFlowStepActionConditionConfig condition : config.getActionConditions()) {
             ArrayList actionList = new ArrayList();
-            for (int j = 0; j < actions.length; j++) {
-                FlowStepAction action = FlowStepActionFactory.getInstance().createAction(actions[j].getActionType().getName());
+            for (PageFlowStepActionConfig actionConfig : condition.getActions()) {
+                FlowStepAction action = FlowStepActionFactory.getInstance().createAction(actionConfig.getActionType().getName());
                 HashMap datamap = new HashMap();
-                Properties params = actions[j].getParams();
+                Properties params = actionConfig.getParams();
                 for (Iterator k = params.keySet().iterator(); k.hasNext();) {
                     String key = (String) k.next();
                     String value = params.getProperty(key);
@@ -72,7 +69,7 @@ public class FlowStep {
                 actionList.add(action);
             }
             actions_oncontinue.add(actionList);
-            tests_oncontinue.add(conditions[i].getXPathExpression());
+            tests_oncontinue.add(condition.getXPathExpression());
         }
 
     }

@@ -18,32 +18,30 @@
 
 package de.schlund.pfixxml.config;
 
-import java.util.ArrayList;
+import java.util.List;
 
 /**
- * Stores configuration for a condtion that triggers PageFlow actions.
+ * Provides configuration for conditional pageflow actions  
  * 
  * @author Sebastian Marsching <sebastian.marsching@1und1.de>
  */
-public class PageFlowStepActionConditionConfig {
-    
-    private String xPathExpression = null;
-    private ArrayList<PageFlowStepActionConfig> actions = new ArrayList<PageFlowStepActionConfig>();
+public interface PageFlowStepActionConditionConfig {
 
-    
-    public void setXPathExpression(String xpath) {
-        this.xPathExpression = xpath;
-    }
-    
-    public String getXPathExpression() {
-        return this.xPathExpression;
-    }
-    
-    public void addAction(PageFlowStepActionConfig action) {
-        this.actions.add(action);
-    }
-    
-    public PageFlowStepActionConfig[] getActions() {
-        return this.actions.toArray(new PageFlowStepActionConfig[0]);
-    }
+    /**
+     * Returns a XPath expression that is evaluated in order to check, whether
+     * the pageflow actions corresponding to this condition should be executed.
+     * The actions will be run if and only if the evaluation of the XPathExpression
+     * in the context of the SPDocument returns <code>true</code>.
+     * 
+     * @return XPath expression containing condition
+     */
+    String getXPathExpression();
+
+    /**
+     * List of actions to run if the condition is met.
+     * 
+     * @return actions to run on condition
+     */
+    List<? extends PageFlowStepActionConfig> getActions();
+
 }
