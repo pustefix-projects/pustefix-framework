@@ -26,7 +26,6 @@ import java.lang.reflect.Method;
 import java.net.JarURLConnection;
 import java.net.URL;
 import java.util.HashSet;
-import java.util.Iterator;
 
 import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilder;
@@ -164,14 +163,6 @@ public class WebServiceTask extends Task {
                         }
                     }
                     
-                    //Get default webservice scope
-                    deployScope=globConf.getScopeType();
-                    
-                    //Get default message style
-                    encStyle=globConf.getEncodingStyle();
-                    encUse=globConf.getEncodingUse();
-                   
-                   
                     File webInfDir=new File(appDir,"WEB-INF");
                     if(!webInfDir.exists()) throw new BuildException("Web application WEB-INF subdirectory of project '"+prjName+"' doesn't exist");
                     File srvWsddFile=new File(webInfDir,"server-config.wsdd");
@@ -191,11 +182,9 @@ public class WebServiceTask extends Task {
                     WSDDRequestFlow reqFlow=new WSDDRequestFlow();
                     WSDDResponseFlow resFlow=new WSDDResponseFlow();
                     
-                    if(globConf.getFaultHandler()!=null) {
-                        WSDDHandler errorHandler=new WSDDHandler();
-                        errorHandler.setType(new QName("ErrorHandler"));
-                        reqFlow.addHandler(errorHandler);
-                    }
+                    WSDDHandler errorHandler=new WSDDHandler();
+                    errorHandler.setType(new QName("ErrorHandler"));
+                    reqFlow.addHandler(errorHandler);
                     
                     if(globConf.getLoggingEnabled() || globConf.getMonitoringEnabled()) {         
                     	WSDDHandler recHandler=new WSDDHandler();
@@ -210,16 +199,14 @@ public class WebServiceTask extends Task {
                
                     String wsUrl="http://"+srvName+globConf.getRequestPath();   
                     
-                    Iterator it=srvConf.getServiceConfig();
-                    //iterate over services
                     int srvCnt=0;
                     int wsdlCnt=0;
                     int stubCnt=0;
                     int wsddCnt=0;
-                    while(it.hasNext()) {
+                    
+                    for(ServiceConfig conf:srvConf.getServiceConfig()) {
                         
                         srvCnt++;
-                        ServiceConfig conf=(ServiceConfig)it.next();
                         String wsName=conf.getName();
                         ServiceConfig refConf=null;
                         if(refSrvConf!=null) refConf=refSrvConf.getServiceConfig(wsName);
@@ -312,17 +299,7 @@ public class WebServiceTask extends Task {
                                 //Change automatically generated name of implementation class to configured name
                                 wsddServices[j].setParameter("className",wsImpl);
                                 
-                                if(globConf.getFaultHandler()==null&&conf.getFaultHandler()!=null) {
-                                	WSDDRequestFlow srFlow=new WSDDRequestFlow();
-                                    WSDDHandler errorHandler=new WSDDHandler();
-                                    errorHandler.setType(new QName("ErrorHandler"));
-                                    srFlow.addHandler(errorHandler);
-                                	Iterator srit=reqFlow.getHandlers().iterator();
-                                	while(srit.hasNext()) srFlow.addHandler((WSDDHandler)srit.next());
-                                	wsddServices[j].setRequestFlow(srFlow);
-                                } else {
-                                    wsddServices[j].setRequestFlow(reqFlow);
-                                }
+                                wsddServices[j].setRequestFlow(reqFlow);
                                 wsddServices[j].setResponseFlow(resFlow);
                                 
                                 //Update server deployment descriptor

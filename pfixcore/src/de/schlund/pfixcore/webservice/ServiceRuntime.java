@@ -19,6 +19,8 @@
 
 package de.schlund.pfixcore.webservice;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -33,6 +35,8 @@ import de.schlund.pfixcore.webservice.config.GlobalServiceConfig;
 import de.schlund.pfixcore.webservice.config.ServiceConfig;
 import de.schlund.pfixcore.webservice.monitor.Monitor;
 import de.schlund.pfixcore.webservice.monitor.MonitorRecord;
+import de.schlund.pfixcore.webservice.utils.FileCache;
+import de.schlund.pfixcore.webservice.utils.FileCacheData;
 import de.schlund.pfixcore.webservice.utils.RecordingRequestWrapper;
 import de.schlund.pfixcore.webservice.utils.RecordingResponseWrapper;
 import de.schlund.pfixcore.workflow.ContextImpl;
@@ -45,30 +49,46 @@ import de.schlund.pfixxml.serverutil.SessionAdmin;
 public class ServiceRuntime {
 	
     private static Logger LOG=Logger.getLogger(ServiceRuntime.class);
+    private static Logger LOGGER_WSTRAIL=Logger.getLogger("LOGGER_WSTRAIL");
     
     private static ThreadLocal<ServiceCallContext> currentContext=new ThreadLocal<ServiceCallContext>();
-    
+	
     private Configuration configuration;	
     private Monitor monitor;
-    
+	
     private Map<String,ServiceProcessor> processors;
+    private Map<String,ServiceStubGenerator> generators;
     private String defaultProtocol;
     
+    private FileCache stubCache;
+	
+    private ServiceDescriptorCache srvDescCache;
     private ServiceRegistry appServiceRegistry;
-    
+	
     public ServiceRuntime() {
+        srvDescCache=new ServiceDescriptorCache();
         processors=new HashMap<String,ServiceProcessor>();
+        generators=new HashMap<String,ServiceStubGenerator>();
+        stubCache=new FileCache(10);
+    }	
+	
+    public ServiceDescriptorCache getServiceDescriptorCache() {
+        return srvDescCache;
     }
     
-    public void addServiceProcessor(String protocol,ServiceProcessor processor) {
-        if(processors.isEmpty()) defaultProtocol=protocol;
-        processors.put(protocol,processor);
-    }
+	public void addServiceProcessor(String protocol,ServiceProcessor processor) {
+		if(processors.isEmpty()) defaultProtocol=protocol;
+		processors.put(protocol,processor);
+	}
     
+    public void addServiceStubGenerator(String protocol,ServiceStubGenerator generator) {
+        generators.put(protocol,generator);
+    }
+	
     public Configuration getConfiguration() {
         return configuration;
     }
-    
+	
     public void setConfiguration(Configuration configuration) {
         this.configuration=configuration;
         GlobalServiceConfig globConf=configuration.getGlobalServiceConfig();
@@ -77,42 +97,44 @@ public class ServiceRuntime {
             monitor=new Monitor(scope,globConf.getMonitoringHistorySize());
         }
     }
-    
+
     public void setApplicationServiceRegistry(ServiceRegistry appServiceRegistry) {
         this.appServiceRegistry=appServiceRegistry;
     }
-    
+	
     public Monitor getMonitor() {
         return monitor;
     }
-    
+	
     public void process(HttpServletRequest req,HttpServletResponse res) throws ServiceException {
-        ContextImpl pfxSessionContext=null;
-        try {
-            
+        ContextImpl pfxSessionContext=null; 
+        try {	
             ServiceRequest serviceReq=new HttpServiceRequest(req);
             ServiceResponse serviceRes=new HttpServiceResponse(res);
             
-            String serviceName=serviceReq.getServiceName();
+            ServiceCallContext callContext=new ServiceCallContext(this);
+            callContext.setServiceRequest(serviceReq);
+            callContext.setServiceResponse(serviceRes);
+            setCurrentContext(callContext);
             
+            String serviceName=serviceReq.getServiceName();
+			
             HttpSession session=req.getSession(false);
             
             ServiceRegistry serviceReg=null;
-            ServiceConfig srvConf=appServiceRegistry.getServiceConfig(serviceName);
+            ServiceConfig srvConf=appServiceRegistry.getService(serviceName);
             if(srvConf!=null) serviceReg=appServiceRegistry;
             else {
                 if(session!=null) {
                     serviceReg=(ServiceRegistry)session.getAttribute(ServiceRegistry.class.getName());
                     if(serviceReg==null) {
-                        serviceReg=new ServiceRegistry(getConfiguration(),ServiceRegistry.RegistryType.SESSION);
+                        serviceReg=new ServiceRegistry(configuration,ServiceRegistry.RegistryType.SESSION);
                         session.setAttribute(ServiceRegistry.class.getName(),serviceReg);
                     }
-                    srvConf=serviceReg.getServiceConfig(serviceName);
+                    srvConf=serviceReg.getService(serviceName);
                 } 
             }
             if(srvConf==null) throw new ServiceException("Service not found: "+serviceName);
-            
-            ServiceCallContext callContext=null;
             
             if(srvConf.getContextName()!=null) {
                 if(srvConf.getSessionType().equals(Constants.SESSION_TYPE_SERVLET)) {
@@ -137,10 +159,7 @@ public class ServiceRuntime {
                     } catch(Exception x) {
                         throw new ServiceException("Authorization failed",x);
                     }
-                    
-                    callContext=new ServiceCallContext(this);
                     callContext.setContext(pfxSessionContext);
-                    setCurrentContext(callContext);
                 }
             }
             
@@ -155,44 +174,59 @@ public class ServiceRuntime {
                     throw new ServiceException("Service protocol '"+wsType+"' isn't supported.");
                 else protocolType=wsType;
             }
-            
+
             if(protocolType.equals(Constants.PROTOCOL_TYPE_ANY)) protocolType=defaultProtocol;
             ServiceProcessor processor=processors.get(protocolType);
             if(processor==null) throw new ServiceException("No ServiceProcessor found for protocol '"+protocolType+"'.");
             
             GlobalServiceConfig globConf=getConfiguration().getGlobalServiceConfig();
             boolean doRecord=globConf.getMonitoringEnabled()||globConf.getLoggingEnabled();
-            long startTime=0;
-            long endTime=0;
             if(doRecord) {
-                startTime=System.currentTimeMillis();
                 serviceReq=new RecordingRequestWrapper(serviceReq);
                 serviceRes=new RecordingResponseWrapper(serviceRes);
             }
             
-            
-            
             if(LOG.isDebugEnabled()) LOG.debug("Process webservice request: "+serviceName+" "+processor);
-            if(pfxSessionContext!=null&&srvConf.doSynchronizeOnContext()) {
+
+            ProcessingInfo procInfo=new ProcessingInfo(serviceName,null);
+            procInfo.setStartTime(System.currentTimeMillis());
+            procInfo.startProcessing();
+                                                                                                                                                        
+            if(pfxSessionContext!=null&&srvConf.getSynchronizeOnContext()) {
                 synchronized(pfxSessionContext) {
-                    processor.process(serviceReq,serviceRes,serviceReg);
+                    processor.process(serviceReq,serviceRes,this,serviceReg,procInfo);
                 }
             } else {
-                processor.process(serviceReq,serviceRes,serviceReg);
-            }		    		
-            
+                processor.process(serviceReq,serviceRes,this,serviceReg,procInfo);
+            }
+                                                                                                                                                        
+            procInfo.endProcessing();
+
+            if(session!=null) {
+                StringBuilder line=new StringBuilder();
+                line.append(session.getId()+"|");
+                line.append(req.getRemoteAddr()+"|");
+                line.append(req.getServerName()+"|");
+                line.append(req.getRequestURI()+"|");
+                line.append(serviceName+"|");
+                line.append(procInfo.getProcessingTime()+"|");
+                line.append(procInfo.getInvocationTime());
+                LOGGER_WSTRAIL.warn(line.toString());
+            }
+
             if(doRecord) {
-                endTime=System.currentTimeMillis();
                 RecordingRequestWrapper monitorReq=(RecordingRequestWrapper)serviceReq;
                 RecordingResponseWrapper monitorRes=(RecordingResponseWrapper)serviceRes;
                 String reqMsg=monitorReq.getRecordedMessage();
                 String resMsg=monitorRes.getRecordedMessage();
                 if(globConf.getMonitoringEnabled()) {
                     MonitorRecord monitorRecord=new MonitorRecord();
-                    monitorRecord.setStartTime(startTime);
-                    monitorRecord.setEndTime(endTime);
+                    monitorRecord.setStartTime(procInfo.getStartTime());
+                    monitorRecord.setProcessingTime(procInfo.getProcessingTime());
+                    monitorRecord.setInvocationTime(procInfo.getInvocationTime());
                     monitorRecord.setProtocol(protocolType);
                     monitorRecord.setService(serviceName);
+                    monitorRecord.setMethod(procInfo.getMethod());
                     monitorRecord.setRequestMessage(reqMsg);
                     monitorRecord.setResponseMessage(resMsg);
                     getMonitor().getMonitorHistory(req).addRecord(monitorRecord);
@@ -201,7 +235,7 @@ public class ServiceRuntime {
                     StringBuffer sb=new StringBuffer();
                     sb.append("\nService: "+serviceName+"\n");
                     sb.append("Protocol: "+protocolType+"\n");
-                    sb.append("Time: "+(endTime-startTime)+"\n");
+                    sb.append("Time: "+0+"\n");
                     sb.append("Request:\n");
                     sb.append(reqMsg==null?"":reqMsg);
                     sb.append("\nResponse:\n");
@@ -210,6 +244,7 @@ public class ServiceRuntime {
                     LOG.info(sb.toString());
                 }
             }
+
             
         } finally {
             setCurrentContext(null);
@@ -226,7 +261,49 @@ public class ServiceRuntime {
     protected static ServiceCallContext getCurrentContext() {
         return currentContext.get();
     }
-	
-	
+    
+    public void getStub(HttpServletRequest req,HttpServletResponse res) throws ServiceException, IOException {
+        String serviceName=HttpServiceRequest.extractServiceName(req);
+        if(serviceName!=null) {
+            String type=req.getParameter("wsscript");
+            if(type!=null) {
+                type=type.toUpperCase();
+                HttpSession session=req.getSession(false);
+                ServiceConfig service=appServiceRegistry.getService(serviceName);
+                if(service==null) {
+                    if(session!=null) {
+                        ServiceRegistry serviceReg=(ServiceRegistry)session.getAttribute(ServiceRegistry.class.getName());
+                        if(serviceReg==null) {
+                            serviceReg=new ServiceRegistry(configuration,ServiceRegistry.RegistryType.SESSION);
+                            session.setAttribute(ServiceRegistry.class.getName(),serviceReg);
+                        }
+                        service=serviceReg.getService(serviceName);
+                    } 
+                }
+                if(service==null) throw new ServiceException("Service not found: "+serviceName);
+                FileCacheData data=stubCache.get(serviceName);
+                if(data==null) {
+                    ServiceStubGenerator stubGen=generators.get(type);
+                    if(stubGen!=null) {
+                        ByteArrayOutputStream bout=new ByteArrayOutputStream();
+                        stubGen.generateStub(service,bout);
+                        byte[] bytes=bout.toByteArray();
+                        data=new FileCacheData(bytes);
+                        stubCache.put(serviceName,data);
+                    }
+                }
+                String etag=req.getHeader("If-None-Match");
+                if(etag!=null && etag.equals(data.getMD5())) {
+                    res.setStatus(HttpServletResponse.SC_NOT_MODIFIED);
+                } else {
+                    res.setContentType("text/plain");    
+                    res.setContentLength(data.getBytes().length);
+                    res.setHeader("ETag",data.getMD5());
+                    res.getOutputStream().write(data.getBytes());
+                    res.getOutputStream().close();
+                }
+            } else throw new ServiceException("Missing 'stub' parameter.");
+        } else throw new ServiceException("Missing service name.");
+    }
 	
 }

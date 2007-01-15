@@ -19,11 +19,12 @@
 
 package de.schlund.pfixcore.webservice;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import de.schlund.pfixcore.webservice.config.Configuration;
-import de.schlund.pfixcore.webservice.config.GlobalServiceConfig;
 import de.schlund.pfixcore.webservice.config.ServiceConfig;
 import de.schlund.pfixxml.loader.AppLoader;
 
@@ -69,15 +70,10 @@ public class ServiceRegistry {
     }
     
 	public boolean isRegistered(String serviceName) {
-	    return getServiceConfig(serviceName)!=null;
+	    return getService(serviceName)!=null;
 	}
-	
-	public GlobalServiceConfig getGlobalServiceConfig() {
-		return configuration.getGlobalServiceConfig();
-	}
-	
-	public ServiceConfig getServiceConfig(String serviceName) {
-		GlobalServiceConfig globSrvConf=configuration.getGlobalServiceConfig();
+
+	public ServiceConfig getService(String serviceName) {
 		ServiceConfig srvConf=configuration.getServiceConfig(serviceName);
         if(srvConf==null) {
             synchronized(runtimeServices) {
@@ -86,7 +82,6 @@ public class ServiceRegistry {
         }
 		if(srvConf!=null) {
 			String scope=srvConf.getScopeType();
-			if(scope==null) scope=globSrvConf.getScopeType();
 			if((scope.equals(Constants.SERVICE_SCOPE_APPLICATION)&&registryType==RegistryType.APPLICATION)||
                     (scope.equals(Constants.SERVICE_SCOPE_SESSION)&&registryType==RegistryType.SESSION)||
                     (scope.equals(Constants.SERVICE_SCOPE_REQUEST)))
@@ -94,6 +89,17 @@ public class ServiceRegistry {
         }
 		return null;
 	}
+    
+    public List<ServiceConfig> getServices() {
+        List<ServiceConfig> list=new ArrayList<ServiceConfig>();
+        for(ServiceConfig srvConf:configuration.getServiceConfig()) {
+            String scope=srvConf.getScopeType();
+            if((scope.equals(Constants.SERVICE_SCOPE_APPLICATION)&&registryType==RegistryType.APPLICATION)||
+                    (scope.equals(Constants.SERVICE_SCOPE_SESSION)&&registryType==RegistryType.SESSION))
+                list.add(srvConf);
+        }
+        return list;
+    }
 	
 	public ServiceDescriptor getServiceDescriptor(String serviceName) throws ServiceException {
         ServiceDescriptor srvDesc=null;
@@ -101,7 +107,7 @@ public class ServiceRegistry {
             srvDesc=serviceDescriptors.get(serviceName);
         }
         if(srvDesc==null) {
-            ServiceConfig srvConf=getServiceConfig(serviceName);
+            ServiceConfig srvConf=getService(serviceName);
             if(srvConf!=null) {
                 synchronized(serviceDescriptors) {
                     srvDesc=new ServiceDescriptor(srvConf);
@@ -118,10 +124,9 @@ public class ServiceRegistry {
             serviceObject=serviceObjects.get(serviceName);
         }
         if(serviceObject==null) {
-            ServiceConfig srvConf=getServiceConfig(serviceName);
+            ServiceConfig srvConf=getService(serviceName);
             if(srvConf!=null) {
                 String scope=srvConf.getScopeType();
-                if(scope==null) scope=configuration.getGlobalServiceConfig().getScopeType();
                 if(scope.equals(Constants.SERVICE_SCOPE_REQUEST)) return createServiceObject(srvConf);
 				synchronized(serviceObjects) {
 				    serviceObject=createServiceObject(srvConf);
@@ -149,4 +154,5 @@ public class ServiceRegistry {
 		}
 	}
 	
+    
 }

@@ -1,108 +1,18 @@
-function WS_Webservice(service,uri,protocol) {
-	this._service=service;
-	if(uri) {
-		this._uri=uri;
-	} else {
-  		var session=window.location.href.match(/;jsessionid=[A-Z0-9]+\.[a-zA-Z0-9]+/);
-  		this._uri=window.location.protocol+"//"+window.location.host+"/xml/webservice/"+service+session;
-	}
-   this._calls={};
-   this._ids=0;
-   if(protocol) {
-   	this._protocol=protocol;
-   } else {
-   	this._protocol="jsonws";
-   }
-   this._proxySetup();
+if(!window.pfx) pfx={};
+if(!pfx.ws) pfx.ws={};
+if(!pfx.ws.json) pfx.ws.json={}; 
+
+pfx.ws.json.deserialize=function(response) {
+   if(this._debug==true) alert("Response: "+response);
+	eval("res="+response);
+	return res;
 }
 
-WS_Webservice.prototype._proxySetup=function() {
-	var req=new HTTP_Request('POST',this._uri+'?json',this._proxySetupCB,this);
-   req.setRequestHeader('wstype',this._protocol);
-   req.start('',0);
-}
-
-WS_Webservice.prototype._proxySetupCB=function(response) {
-	eval("response="+response);
-	var methods=response.result;
-	for(var i=0;i<methods.length;i++) {
-		this._createMethod(methods[i]);
-	}
-}
-
-WS_Webservice.prototype._createMethod=function(name) {
-	var f=function() {
-		return f.ownerObject._callMethod.call(f.ownerObject,f.methodName,arguments);
-	};
-	f.ownerObject=this;
-	f.methodName=name;
-	this[name]=f;
-}
-
-WS_Webservice.prototype._callMethod=function(method,args) {
-	var wsCall={};
-	var jsonReq={};
-	jsonReq.id=this._ids++;
-	if(this._protocol=="jsonrpc") {
-		jsonReq.method=this._service+"."+method;
-	} else {
-		jsonReq.method=method;
-	}
-	var arglen=args.length;
-	if(arglen>0 && typeof args[arglen-1]=='function') {
-		wsCall.callback=args[arglen-1];
-		arglen=arglen-1;
-	} else if(arglen>1 && typeof args[arglen-2]=='function') {
-		wsCall.requestID=args[arglen-1];
-		wsCall.callback=args[arglen-2];
-		arglen=arglen-2;
-	}
-	var jsonParams=[];
-	for(var i=0;i<arglen;i++) jsonParams[i]=args[i];
-	jsonReq.params=jsonParams;
-	var jsonStr=this._serialize(jsonReq);
-   if(wsCall.callback) {
- 		var httpReq=new HTTP_Request('POST',this._uri,this._returnMethod,this);
-		httpReq.setRequestHeader("Content-Type","text/plain");
-    	httpReq.start(jsonStr,null,wsCall.requestID);
-    	this._calls[jsonReq.id]=wsCall;
-   } else {	
-   	var httpReq=new HTTP_Request('POST',this._uri);
-     	httpReq.setRequestHeader("Content-Type","text/plain");
-      var response=httpReq.start(jsonStr,null,wsCall.requestID);
-     	response=this._deserialize(response);
-     	return this._createResult(response);
-   }
-}
-
-WS_Webservice.prototype._returnMethod=function(response) {
-	var response=this._deserialize(response);
-	var result=this._createResult(response);
-	var cb=this._calls[response.id].callback;
-	cb(result);
-}
-
-WS_Webservice.prototype._deserialize=function(response) {
-	eval("response="+response);
-	return response;
-}
-
-WS_Webservice.prototype._createResult=function(response) {
-	if(response.error) {
-		var error=new Error();
-		error.name=response.error.name;
-		error.message=response.error.msg;
-		return error;
-	} else {
-		return response.result;
-	}
-}
-
-WS_Webservice.prototype._serialize=function(obj) {
+pfx.ws.json.serialize=function(obj) {
 	var json=null;
 	if(obj!=null) {
 		if(obj.constructor==String) {
-			json=this._escapeJSONString(obj);
+			json=pfx.ws.json.escapeJSONString(obj);
     	} else if(obj.constructor==Number) {
 			json=obj.toString();
     	} else if(obj.constructor==Boolean) {
@@ -111,7 +21,7 @@ WS_Webservice.prototype._serialize=function(obj) {
 			json='new Date('+obj.valueOf()+')';
     	} else if(obj.constructor==Array) {
 			var arr=[];
-			for(var i=0;i<obj.length;i++) arr.push(this._serialize(obj[i]));
+			for(var i=0;i<obj.length;i++) arr.push(pfx.ws.json.serialize(obj[i]));
 			json="["+arr.join(",")+"]";
     	} else {
 			var arr=[];
@@ -119,7 +29,7 @@ WS_Webservice.prototype._serialize=function(obj) {
 	    		var attrObj=obj[attr];
 	    		if(attrObj==null) arr.push("\""+attr+"\": null");
 	    		else if(typeof attrObj!="function") 
-	    			arr.push(this._escapeJSONString(attr)+":"+this._serialize(attrObj));
+	    			arr.push(pfx.ws.json.escapeJSONString(attr)+":"+pfx.ws.json.serialize(attrObj));
 			}
 			json="{"+arr.join(",")+"}";
 		}
@@ -127,7 +37,7 @@ WS_Webservice.prototype._serialize=function(obj) {
 	return json;
 };
 
-WS_Webservice.prototype._escapeJSONChar=function(ch) {
+pfx.ws.json.escapeJSONChar=function(ch) {
    if(ch=="\""||ch=="\\") return "\\"+c;
    else if(ch=="\b") return "\\b";
    else if(ch=="\f") return "\\f";
@@ -141,7 +51,169 @@ WS_Webservice.prototype._escapeJSONChar=function(ch) {
    else return "\\u"+hex;
 };
 
-WS_Webservice.prototype._escapeJSONString=function(str) {
-	return "\""+str.replace(/([^\u0020-\u007f]|[\\\"])/g,this._escapeJSONChar)+"\"";
+pfx.ws.json.escapeJSONString=function(str) {
+	return "\""+str.replace(/([^\u0020-\u007f]|[\\\"])/g,pfx.ws.json.escapeJSONChar)+"\"";
 };
 
+
+//
+// BaseStub
+//
+
+pfx.ws.json.BaseStub=function(service,context) {
+   this._service=service;
+   this._context=context;
+   this._requestPath="/xml/webservice";
+   this._protocol="jsonws";
+   this._uri=null;
+}
+
+pfx.ws.json.BaseStub.prototype.setService=function(service) {
+   this._service=service;
+   this._uri=null;
+}
+
+pfx.ws.json.BaseStub.prototype.setContext=function(context) {
+   this._context=context;
+}
+
+pfx.ws.json.BaseStub.prototype.setRequestPath=function(requestPath) {
+   this._requestPath=requestPath;
+   this._uri=null;
+}
+
+pfx.ws.json.BaseStub.prototype.setDebug=function(debug) {
+   this._debug=debug;
+}
+
+pfx.ws.json.BaseStub.prototype.getURI=function() {
+   if(this._uri==null) {
+      var session=window.location.href.match(/;jsessionid=[A-Z0-9]+\.[a-zA-Z0-9]+/);
+      this._uri=window.location.protocol+"//"+window.location.host+this._requestPath+"/"+this._service+session;
+   }
+   return this._uri;
+}
+
+pfx.ws.json.BaseStub.prototype.callMethod=function(method,args,expLen) {
+   var wsCall=new pfx.ws.json.Call(this.getURI(),this._context,this._debug);
+   return wsCall.invoke(method,args,expLen);
+}
+
+
+//
+// DynamicProxy
+//
+
+pfx.ws.json.DynamicProxy=function(service,context) {
+   pfx.ws.json.BaseStub.call(this,service,context);
+   this._proxySetup();
+}
+
+pfx.ws.json.DynamicProxy.prototype=new pfx.ws.json.BaseStub;
+
+pfx.ws.json.DynamicProxy.prototype._proxySetup=function() {
+   var req=new pfx.net.HTTPRequest('POST',this.getURI()+'?json',this._proxySetupCB,this);
+   req.setRequestHeader('wstype',this._protocol);
+   req.start('',0);
+}
+
+pfx.ws.json.DynamicProxy.prototype._proxySetupCB=function(response) {
+   eval("response="+response);
+   var methods=response.result;
+   for(var i=0;i<methods.length;i++) {
+      this._createMethod(methods[i]);
+   }
+}
+
+pfx.ws.json.DynamicProxy.prototype._createMethod=function(name) {
+   var f=function() {
+      return f.ownerObject._callMethod.call(f.ownerObject,f.methodName,arguments);
+   };
+   f.ownerObject=this;
+   f.methodName=name;
+   this[name]=f;
+}
+
+pfx.ws.json.DynamicProxy.prototype._callMethod=function(method,args) {
+   var wsCall=new pfx.ws.json.Call(this.getURI(),this._context,this._debug);
+   return wsCall.invoke(method,args);
+}
+
+
+
+//
+// Call
+//
+
+pfx.ws.json.Call=function(uri,context,debug) {
+   this._uri=uri;
+   this._context=context;
+   this._debug=debug;
+   this._opName=null;
+   this._userCallback=null;
+}
+
+pfx.ws.json.Call.prototype.invoke=function(method,args,expLen) {
+   this._opName=method;
+   var jsonReq={};
+   jsonReq.method=method;
+   
+   var argLen=args.length;
+ 
+   if(expLen) {
+      if(argLen==expLen+1) {
+         if(typeof args[argLen-1]=="function" || typeof args[argLen-1]=="object" ) this._userCallback=args[argLen-1];
+         else this._requestId=args[argLen-1];
+         argLen=argLen-1;
+      } else if(argLen==expLen+2 && (typeof args[argLen-2]=="function" || typeof args[argLen-2]=="object") && typeof args[argLen-1]=="string") {
+         this._userCallback=args[argLen-2];
+         this._requestId=args[argLen-1];
+         argLen=argLen-2;
+      } else if(argLen!=expLen) throw new Error("Wrong number of arguments: "+argLen+" - "+expLen);
+   } else {
+      if(argLen>0 && typeof args[argLen-1]=='function') {
+         this._userCallback=args[argLen-1];
+         argLen=argLen-1;
+      } else if(argLen>1 && typeof args[argLen-2]=='function') {
+         this._requestId=args[argLen-1];
+         this._userCallback=args[argLen-2];
+         argLen=argLen-2;
+      }
+   }
+   if(this._requestId) jsonReq.id=this._requestId;
+      
+   var jsonParams=[];
+   for(var i=0;i<argLen;i++) jsonParams[i]=args[i];
+   jsonReq.params=jsonParams;
+   var jsonStr=pfx.ws.json.serialize(jsonReq);
+  
+   if(this._debug==true) alert("Request: "+jsonStr);
+   if(this._userCallback) {
+      var httpReq=new pfx.net.HTTPRequest('POST',this._uri,this.callback,this);
+      httpReq.setRequestHeader("Content-Type","text/plain");
+      httpReq.setRequestHeader("wstype","jsonws");
+      httpReq.start(jsonStr,null,jsonReq.id);
+   } else { 
+      var httpReq=new pfx.net.HTTPRequest('POST',this._uri);
+      httpReq.setRequestHeader("Content-Type","text/plain");
+      httpReq.setRequestHeader("wstype","jsonws");
+      var response=httpReq.start(jsonStr,null,jsonReq.id);
+      return this.callback(response);
+   }
+}
+
+pfx.ws.json.Call.prototype.callback=function(text) {
+   var res=pfx.ws.json.deserialize(text);
+   if(res.error) {
+     var error=new Error();
+     error.name=res.error.name;
+     error.message=res.error.message;
+     if(this._userCallback) this._userCallback(null,res.id,error);
+     else if(this._context) this._context[this._opName].call(this._context,null,res.id,error);
+     else throw error;
+   } else {
+     if(this._userCallback) this._userCallback(res.result,res.id,null);
+     else if(this._context) this._context[this._opName].call(this._context,res.result,res.id,null);
+     else return res.result;
+   }
+}

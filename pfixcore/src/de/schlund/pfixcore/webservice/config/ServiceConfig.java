@@ -22,7 +22,6 @@ package de.schlund.pfixcore.webservice.config;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
-import de.schlund.pfixcore.webservice.Constants;
 import de.schlund.pfixcore.webservice.fault.FaultHandler;
 
 /**
@@ -33,21 +32,27 @@ import de.schlund.pfixcore.webservice.fault.FaultHandler;
  * @author mleidig@schlund.de
  */
 public class ServiceConfig {
-
+    
+    GlobalServiceConfig globConf;
+    
     String  name;
     String  itfName;
     String  implName;
+    
     String  ctxName;
-    boolean ctxSync;
-    String  sessType=Constants.SESSION_TYPE_SERVLET;
-    String scopeType=Constants.SERVICE_SCOPE_APPLICATION;
-    boolean sslForce;
-    String protocolType=Constants.PROTOCOL_TYPE_ANY;
+    Boolean ctxSync;
+    String  sessType;
+    String scopeType;
+    Boolean sslForce;
+    String protocolType;
     String  encStyle;
     String  encUse;
     FaultHandler faultHandler;
     
-    public ServiceConfig() {}
+    
+    public ServiceConfig(GlobalServiceConfig globConf) {
+        this.globConf=globConf;
+    }
     
     public String getName() {
         return name;
@@ -73,43 +78,53 @@ public class ServiceConfig {
         this.implName=implName;
     }
     
+    public String getContextName() {
+        if(ctxName==null&&globConf!=null) return globConf.getContextName();
+        return ctxName;
+    }
+    
     public void setContextName(String ctxName) {
         this.ctxName=ctxName;
     }
     
-    public String getContextName() {
-        return ctxName;
+    public boolean getSynchronizeOnContext() {
+        if(ctxSync==null&&globConf!=null) return globConf.getSynchronizeOnContext();
+        return ctxSync;
     }
     
-    public boolean doSynchronizeOnContext() {
-        return ctxSync;
+    public void setSynchronizeOnContext(Boolean ctxSync) {
+        this.ctxSync=ctxSync;
+    }
+    
+    public String getSessionType() {
+        if(sessType==null&&globConf!=null) return globConf.getSessionType();
+        return sessType;
     }
     
     public void setSessionType(String sessType) {
         this.sessType=sessType;
     }
     
-    public String getSessionType() {
-        return sessType;
+    public String getScopeType() {
+        if(scopeType==null&&globConf!=null) return globConf.getScopeType();
+        return scopeType;
     }
     
     public void setScopeType(String scopeType) {
     	this.scopeType=scopeType;
     }
     
-    public String getScopeType() {
-    	return scopeType;
-    }
-    
-    public boolean getSSLForce() {
+    public Boolean getSSLForce() {
+        if(sslForce==null&&globConf!=null) return globConf.getSSLForce();
         return sslForce;
     }
     
-    public void setSSLForce(boolean sslForce) {
+    public void setSSLForce(Boolean sslForce) {
         this.sslForce=sslForce;
     }
     
     public String getProtocolType() {
+        if(protocolType==null&&globConf!=null) return globConf.getProtocolType();
     	return protocolType;
     }
     
@@ -118,6 +133,7 @@ public class ServiceConfig {
     }
     
     public String getEncodingStyle() {
+        if(encStyle==null&&globConf!=null) return globConf.getEncodingStyle();
         return encStyle;
     }
     
@@ -126,6 +142,7 @@ public class ServiceConfig {
     }
     
     public String getEncodingUse() {
+        if(encUse==null&&globConf!=null) return globConf.getEncodingUse();
         return encUse;
     }
     
@@ -134,7 +151,8 @@ public class ServiceConfig {
     }
     
     public FaultHandler getFaultHandler() {
-    	return faultHandler;
+    	if(faultHandler==null&&globConf!=null) return globConf.getFaultHandler();
+        return faultHandler;
     }
     
     public void setFaultHandler(FaultHandler faultHandler) {

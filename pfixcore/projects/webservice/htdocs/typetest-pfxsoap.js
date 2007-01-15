@@ -74,12 +74,13 @@ function equals(obj1,obj2) {
 
 
 var wsTypeTest=new WS_TypeTest();
-var jwsTypeTest=new WS_Webservice("TypeTest");
+var jwsTypeTest=new JWS_TypeTest();
 
 var timer=new Timer();
 
 function serviceCall() {
 	consoleReset();
+   timer.reset();
 	timer.start();
 	var ws=soapEnabled()?wsTypeTest:jwsTypeTest;
 	
@@ -163,7 +164,7 @@ function serviceCall() {
 			consolePrint("echoIntObj",(t2-t1),ex);
 		}
 		
-		//echoIntObj
+		//echoIntObj(null)
 		var t1=(new Date()).getTime();
 		try {
 			var intVal=null;
@@ -253,6 +254,19 @@ function serviceCall() {
 			var t2=(new Date()).getTime();
 			consolePrint("echoFloatObj",(t2-t1),ex);
 		}
+      
+      //echoFloatObj(null)
+      t1=(new Date()).getTime();
+      try {
+         var floatVal=null;
+         var resVal=ws.echoFloatObj(floatVal);
+         var t2=(new Date()).getTime();
+         if(resVal!=floatVal) throw "Wrong result";
+         consolePrint("echoFloatObj(null)",(t2-t1));
+      } catch(ex) {
+         var t2=(new Date()).getTime();
+         consolePrint("echoFloatObj(null)",(t2-t1),ex);
+      }
 		
 		//echoFloatArray
 		t1=(new Date()).getTime();
@@ -305,6 +319,20 @@ function serviceCall() {
 			var t2=(new Date()).getTime();
    		consolePrint("echoString",(t2-t1),ex);
    	}
+      
+      //echoString(null)
+      t1=(new Date()).getTime();
+      try {
+         var strVal=null;
+         var resVal=ws.echoString(strVal);
+         var t2=(new Date()).getTime();
+         if(resVal!=strVal) throw "Wrong result";
+         
+         consolePrint("echoString(null)",(t2-t1));
+      } catch(ex) {
+         var t2=(new Date()).getTime();
+         consolePrint("echoString(null)",(t2-t1),ex);
+      }
    	
    	//echoStringArray
 		t1=(new Date()).getTime();
@@ -357,6 +385,19 @@ function serviceCall() {
 			var t2=(new Date()).getTime();
    		consolePrint("echoBooleanObj",(t2-t1),ex);
    	}
+      
+      //echoBooleanObj(null)
+      t1=(new Date()).getTime();
+      try {
+         var boolVal=null;
+         var resVal=ws.echoBooleanObj(boolVal);
+         var t2=(new Date()).getTime();
+         if(resVal!=boolVal) throw "Wrong result";
+         consolePrint("echoBooleanObj(null)",(t2-t1));
+      } catch(ex) {
+         var t2=(new Date()).getTime();
+         consolePrint("echoBooleanObj(null)",(t2-t1),ex);
+      }
    	
    	//echoBooleanArray
 		t1=(new Date()).getTime();
