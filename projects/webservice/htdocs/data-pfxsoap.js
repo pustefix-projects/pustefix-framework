@@ -20,7 +20,7 @@ var jwsData=new JWS_Data();
 
 var timer=new Timer();
 
-function serviceCallback(result,exception) {
+function serviceCallback(result,reqid,exception) {
 	timer.stop();
 	printTime(timer.getTime());
 	if(exception==undefined || exception==null) dataPrint(result);
