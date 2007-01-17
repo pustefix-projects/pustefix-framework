@@ -38,9 +38,7 @@ import org.xml.sax.InputSource;
  * @author mleidig
  */
 public class Wsdl2Js {
-    
-    public static final String JSPREFIX_WS="WS_";
-    
+
     private File outputFile;
     private File inputFile;
     
@@ -145,7 +143,8 @@ public class Wsdl2Js {
                     SOAPAddress soapAdr=getSOAPAddress(port);
                     if(soapAdr==null) throw new Exception("No soap address binding found for port "+portName);
                     
-                    String stubClass=JSPREFIX_WS+portName;
+                    
+                    String stubClass=Constants.STUBGEN_DEFAULT_JSNAMESPACE+portName;
                     
                     JsParam[] constParams=new JsParam[] {new JsParam("cbObj")};
                     JsClass jsClass=new JsClass(stubClass,"SOAP_Stub",constParams);

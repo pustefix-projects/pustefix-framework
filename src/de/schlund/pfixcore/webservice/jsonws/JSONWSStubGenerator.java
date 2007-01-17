@@ -26,6 +26,7 @@ import java.util.List;
 
 import de.schlund.pfixcore.example.webservices.CallTest;
 import de.schlund.pfixcore.example.webservices.CallTestImpl;
+import de.schlund.pfixcore.webservice.Constants;
 import de.schlund.pfixcore.webservice.ServiceDescriptor;
 import de.schlund.pfixcore.webservice.ServiceException;
 import de.schlund.pfixcore.webservice.ServiceStubGenerator;
@@ -44,7 +45,20 @@ public class JSONWSStubGenerator implements ServiceStubGenerator {
     public void generateStub(ServiceConfig service,OutputStream out) throws ServiceException,IOException {
         ServiceDescriptor desc=new ServiceDescriptor(service);
         JsParam[] constParams=new JsParam[] {new JsParam("context")};
-        JsClass jsClass=new JsClass("JWS_"+service.getName(),"pfx.ws.json.BaseStub",constParams);
+       
+        String jsClassName=null;
+        if(service.getStubJSNamespace().equals(Constants.STUBGEN_JSNAMESPACE_COMPAT)) {
+            jsClassName=Constants.STUBGEN_DEFAULT_JSNAMESPACE+service.getName();
+        } else if(service.getStubJSNamespace().equals(Constants.STUBGEN_JSNAMESPACE_COMPATUNIQUE)) {
+            jsClassName=Constants.STUBGEN_JSONWS_JSNAMESPACE+service.getName();
+        } else if(service.getStubJSNamespace().equals(Constants.STUBGEN_JSNAMESPACE_JAVANAME)) {
+            jsClassName=desc.getServiceClass().getName();
+        } else {
+            String prefix=service.getStubJSNamespace();
+            if(prefix.contains(".")&&!prefix.endsWith(".")) prefix+=".";
+            jsClassName=prefix+service.getName();
+        }
+        JsClass jsClass=new JsClass(jsClassName,"pfx.ws.json.BaseStub",constParams);
         JsBlock block=jsClass.getConstructorBody();
         block.addStatement(new JsStatement("pfx.ws.json.BaseStub.call(this,\""+service.getName()+"\",context)"));
         for(String methName:desc.getMethods()) {
@@ -64,6 +78,12 @@ public class JSONWSStubGenerator implements ServiceStubGenerator {
         config.setInterfaceName(CallTest.class.getName());
         config.setImplementationName(CallTestImpl.class.getName());
         config.setName("Test");
+        config.setStubJSNamespace(Constants.STUBGEN_JSNAMESPACE_COMPAT);
+        //config.setStubJSNamespace(Constants.STUBGEN_JSNAMESPACE_COMPATUNIQUE);
+        //config.setStubJSNamespace(Constants.STUBGEN_JSNAMESPACE_JAVANAME);
+        //config.setStubJSNamespace("My");
+        //config.setStubJSNamespace("foo.");
+        //config.setStubJSNamespace("foo.bar");
         (new JSONWSStubGenerator()).generateStub(config,System.out);
     }
     

@@ -37,7 +37,15 @@ public class Constants {
     public final static String ENCODING_USE_ENCODED="encoded";
     public final static String ENCODING_USE_LITERAL="literal";
     public final static String[] ENCODING_USES={ENCODING_USE_ENCODED,ENCODING_USE_LITERAL};
- 
+    
+    public final static String STUBGEN_JSNAMESPACE_COMPAT="COMPAT";
+    public final static String STUBGEN_JSNAMESPACE_COMPATUNIQUE="COMPAT_UNIQUE";
+    public final static String STUBGEN_JSNAMESPACE_JAVANAME="JAVA_NAME";
+    public final static String[] STUBGEN_JSNAMESPACES={STUBGEN_JSNAMESPACE_COMPAT,STUBGEN_JSNAMESPACE_COMPATUNIQUE,STUBGEN_JSNAMESPACE_JAVANAME};
+    
+    public final static String STUBGEN_DEFAULT_JSNAMESPACE="WS_";
+    public final static String STUBGEN_JSONWS_JSNAMESPACE="JWS_";
+    
     public static final String HEADER_SOAP_ACTION="SOAPAction";
     public static final String HEADER_REQUEST_ID="Request-Id";
     public static final String PARAM_SOAP_MESSAGE="soapmessage";
