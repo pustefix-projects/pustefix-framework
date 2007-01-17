@@ -22,6 +22,7 @@ package de.schlund.pfixcore.webservice.config;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
+import de.schlund.pfixcore.webservice.Constants;
 import de.schlund.pfixcore.webservice.fault.FaultHandler;
 
 /**
@@ -48,10 +49,14 @@ public class ServiceConfig {
     String  encStyle;
     String  encUse;
     FaultHandler faultHandler;
-    
+    String jsNamespace;
     
     public ServiceConfig(GlobalServiceConfig globConf) {
         this.globConf=globConf;
+    }
+    
+    public GlobalServiceConfig getGlobalServiceConfig() {
+        return globConf;
     }
     
     public String getName() {
@@ -148,6 +153,15 @@ public class ServiceConfig {
     
     public void setEncodingUse(String encUse) {
     	this.encUse=encUse;
+    }
+    
+    public String getStubJSNamespace() {
+        if(jsNamespace==null&&globConf!=null) return globConf.getStubJSNamespace();
+        return jsNamespace;
+    }
+    
+    public void setStubJSNamespace(String jsNamespace) {
+        this.jsNamespace=jsNamespace;
     }
     
     public FaultHandler getFaultHandler() {

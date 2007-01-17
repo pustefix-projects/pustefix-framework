@@ -40,6 +40,7 @@ public class GlobalServiceConfig {
     String wsdlRepo="/wsdl";
     Boolean stubGeneration=Boolean.TRUE;
     String stubRepo="/wsscript";
+    String jsNamespace=Constants.STUBGEN_JSNAMESPACE_COMPAT;
     String protocolType=Constants.PROTOCOL_TYPE_ANY;
     String encStyle=Constants.ENCODING_STYLE_RPC;
     String encUse=Constants.ENCODING_USE_ENCODED;
@@ -103,6 +104,14 @@ public class GlobalServiceConfig {
     
     public void setStubGenerationEnabled(Boolean stubGeneration) {
         this.stubGeneration=stubGeneration;
+    }
+    
+    public String getStubJSNamespace() {
+        return jsNamespace;
+    }
+    
+    public void setStubJSNamespace(String jsNamespace) {
+        this.jsNamespace=jsNamespace;
     }
     
     public String getProtocolType() {

@@ -206,8 +206,9 @@ public class ServiceRuntime {
 			    line.append(req.getServerName()+"|");
 			    line.append(req.getRequestURI()+"|");
 			    line.append(serviceName+"|");
+			    line.append((procInfo.getMethod()==null?"-":procInfo.getMethod())+"|");
 			    line.append(procInfo.getProcessingTime()+"|");
-                line.append(procInfo.getInvocationTime());
+                line.append((procInfo.getInvocationTime()==-1?"-":procInfo.getInvocationTime()));
                 LOGGER_WSTRAIL.warn(line.toString());
 			}
             

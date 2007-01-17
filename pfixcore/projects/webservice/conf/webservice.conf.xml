@@ -5,7 +5,10 @@
   xsi:schemaLocation="http://pustefix.sourceforge.net/wsconfig200401 ../../core/schema/wsconfig200401.xsd">
 
   <webservice-global>
+  
+    <stubgeneration jsnamespace="COMPAT_UNIQUE"/>
     <context name="pfixcore_project:webservice::servlet:config"/>
+    
     <choose>
       <when test="$mode = 'prod'">
         <!--
