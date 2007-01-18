@@ -1,5 +1,20 @@
 2007-01-18  Martin Leidig  <mleidig@schlund.de>
 
+	Added classhinting support to the JSON protocol. Classhinting can 
+	be enabled/disabled within the webservice configuration file using
+	the json element with the boolean classhinting attribute (globally
+	or service specific). By default classhinting is disabled.
+
+	* src/de/schlund/pfixcore/webservice/jsonws/JSONSerializer.java
+	* src/de/schlund/pfixcore/webservice/jsonws/Bean.java
+	* src/de/schlund/pfixcore/webservice/jsonws/JSONWSProcessor.java
+	* src/de/schlund/pfixcore/webservice/config/ServiceConfig.java
+	* src/de/schlund/pfixcore/webservice/config/GlobalServiceConfig.java
+	* src/de/schlund/pfixcore/webservice/config/ConfigurationReader.java
+	* projects/core/schema/wsconfig200401.xsd
+
+2007-01-18  Martin Leidig  <mleidig@schlund.de>
+
 	Added support for java.util.Date to JSON webservices. It's
 	recommended to use java.util.Calendar instead, Date is only 
 	supported for backwards compatibility (besides the SOAP services,

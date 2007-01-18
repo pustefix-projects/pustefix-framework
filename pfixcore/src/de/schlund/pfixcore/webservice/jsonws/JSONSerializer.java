@@ -26,15 +26,18 @@ public class JSONSerializer {
     
     boolean classHinting=false;
     
-    public void serialize(Object obj,Writer writer) throws SerializationException,IOException {
+    public JSONSerializer() {
         
-        SerializerRegistry reg=new SerializerRegistry();
-        SerializationContext ctx=new SerializationContext(reg,true);
-        ctx.serialize(obj,writer);
-       
     }
     
-   
+    public JSONSerializer(boolean classHinting) {
+        this.classHinting=classHinting;
+    }
     
+    public void serialize(Object obj,Writer writer) throws SerializationException,IOException {
+        SerializerRegistry reg=new SerializerRegistry();
+        SerializationContext ctx=new SerializationContext(reg,classHinting);
+        ctx.serialize(obj,writer);   
+    }
     
 }

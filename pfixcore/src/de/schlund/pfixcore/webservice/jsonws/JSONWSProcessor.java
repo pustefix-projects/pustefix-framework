@@ -174,7 +174,7 @@ public class JSONWSProcessor implements ServiceProcessor {
                     if(resultObject instanceof Void || resultObject==null) {
                         writer.write("null");
                     } else {
-                        JSONSerializer jsonSer=new JSONSerializer();
+                        JSONSerializer jsonSer=new JSONSerializer(service.getJSONClassHinting());
                         jsonSer.serialize(resultObject,writer);
                     }
                     long t2=System.currentTimeMillis();
