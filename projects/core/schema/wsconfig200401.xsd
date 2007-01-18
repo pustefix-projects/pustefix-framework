@@ -38,6 +38,7 @@
         </xsd:element>
         <xsd:element ref="protocol" minOccurs="0"/>
         <xsd:element ref="encoding" minOccurs="0"/>
+        <xsd:element ref="json" minOccurs="0"/>
         <xsd:element ref="session" minOccurs="0"/>
         <xsd:element ref="scope" minOccurs="0"/>
         <xsd:element ref="ssl" minOccurs="0"/>
@@ -110,6 +111,7 @@
       </xsd:element>
         <xsd:element ref="protocol" minOccurs="0"/>
         <xsd:element ref="encoding" minOccurs="0"/>
+        <xsd:element ref="json" minOccurs="0"/>
         <xsd:element ref="session" minOccurs="0"/>
         <xsd:element ref="scope" minOccurs="0"/>
         <xsd:element ref="ssl" minOccurs="0"/>
@@ -132,6 +134,12 @@
       <xsd:attribute name="use" type="UseType" use="required"/>
     </xsd:complexType>    
   </xsd:element>
+  
+  <xsd:element name="json">
+    <xsd:complexType>
+      <xsd:attribute name="classhinting" type="xsd:boolean"/>
+    </xsd:complexType>
+  </xsd:element>
     
   <xsd:element name="session">
     <xsd:complexType>
@@ -148,7 +156,7 @@
   <xsd:element name="context">
     <xsd:complexType>
       <xsd:attribute name="name" type="xsd:string"/>
-      <xsd:attribute name="synchronize" type="xsd:boolean" default="true"/>
+      <xsd:attribute name="synchronize" type="xsd:boolean"/>
     </xsd:complexType>
   </xsd:element>
   
