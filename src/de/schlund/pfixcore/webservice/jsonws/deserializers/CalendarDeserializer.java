@@ -20,6 +20,7 @@
 package de.schlund.pfixcore.webservice.jsonws.deserializers;
 
 import java.util.Calendar;
+import java.util.Date;
 
 import de.schlund.pfixcore.webservice.jsonws.DeserializationContext;
 import de.schlund.pfixcore.webservice.jsonws.DeserializationException;
@@ -36,6 +37,9 @@ public class CalendarDeserializer extends Deserializer {
     @Override
     public Object deserialize(DeserializationContext ctx,Object jsonValue,Class targetClass) throws DeserializationException {
         if(jsonValue instanceof Calendar) {
+            if(targetClass==Date.class) {
+                return ((Calendar)jsonValue).getTime();
+            }
             return jsonValue;
         } else throw new DeserializationException("Wrong type: "+jsonValue.getClass().getName());
     }
