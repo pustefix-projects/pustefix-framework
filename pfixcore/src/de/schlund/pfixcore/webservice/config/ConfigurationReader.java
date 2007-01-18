@@ -119,6 +119,9 @@ public class ConfigurationReader extends DefaultHandler {
 				if(encStyle!=null) globSrvConf.setEncodingStyle(encStyle);
 		        String encUse=getStringAttribute(atts,"use",Constants.ENCODING_USES);
 		        if(encUse!=null) globSrvConf.setEncodingUse(encUse);
+            } else if(localName.equals("json")) {
+                Boolean hinting=getBooleanAttribute(atts,"classhinting");
+                if(hinting!=null) globSrvConf.setJSONClassHinting(hinting);
 			} else if(localName.equals("session")) {
 				String sessType=getStringAttribute(atts,"type",Constants.SESSION_TYPES);
 				if(sessType!=null) globSrvConf.setSessionType(sessType);
@@ -170,6 +173,9 @@ public class ConfigurationReader extends DefaultHandler {
 				if(encStyle!=null) srvConf.setEncodingStyle(encStyle);
 		        String encUse=getStringAttribute(atts,"use",Constants.ENCODING_USES);
 		        if(encUse!=null) srvConf.setEncodingUse(encUse);
+            } else if(localName.equals("json")) {
+                Boolean hinting=getBooleanAttribute(atts,"classhinting");
+                if(hinting!=null) srvConf.setJSONClassHinting(hinting);
 			} else if(localName.equals("session")) {
 				String sessType=getStringAttribute(atts,"type",Constants.SESSION_TYPES);
 				if(sessType!=null) srvConf.setSessionType(sessType);
