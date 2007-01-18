@@ -44,6 +44,7 @@ public class GlobalServiceConfig {
     String protocolType=Constants.PROTOCOL_TYPE_ANY;
     String encStyle=Constants.ENCODING_STYLE_RPC;
     String encUse=Constants.ENCODING_USE_ENCODED;
+    Boolean jsonClassHinting=Boolean.FALSE;
     String sessType=Constants.SESSION_TYPE_SERVLET;
     String scopeType=Constants.SERVICE_SCOPE_APPLICATION;
     Boolean sslForce=Boolean.FALSE;
@@ -138,6 +139,14 @@ public class GlobalServiceConfig {
         this.encUse=encUse;
     }
     
+    public Boolean getJSONClassHinting() {
+        return jsonClassHinting;
+    }
+    
+    public void setJSONClassHinting(Boolean jsonClassHinting) {
+        this.jsonClassHinting=jsonClassHinting;
+    }
+        
     public String getSessionType() {
         return sessType;
     }

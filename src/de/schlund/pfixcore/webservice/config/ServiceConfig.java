@@ -22,7 +22,6 @@ package de.schlund.pfixcore.webservice.config;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
-import de.schlund.pfixcore.webservice.Constants;
 import de.schlund.pfixcore.webservice.fault.FaultHandler;
 
 /**
@@ -48,6 +47,7 @@ public class ServiceConfig {
     String protocolType;
     String  encStyle;
     String  encUse;
+    Boolean jsonClassHinting;
     FaultHandler faultHandler;
     String jsNamespace;
     
@@ -153,6 +153,15 @@ public class ServiceConfig {
     
     public void setEncodingUse(String encUse) {
     	this.encUse=encUse;
+    }
+    
+    public Boolean getJSONClassHinting() {
+        if(jsonClassHinting==null&&globConf!=null) return globConf.getJSONClassHinting();
+        return jsonClassHinting;
+    }
+    
+    public void setJSONClassHinting(Boolean jsonClassHinting) {
+        this.jsonClassHinting=jsonClassHinting;
     }
     
     public String getStubJSNamespace() {
