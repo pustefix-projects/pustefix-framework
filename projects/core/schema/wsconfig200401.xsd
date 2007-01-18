@@ -33,6 +33,7 @@
           <xsd:complexType>
             <xsd:attribute name="enabled" type="xsd:boolean"/>
             <xsd:attribute name="repository" type="xsd:string"/>
+            <xsd:attribute name="jsnamespace" type="xsd:string"/>
           </xsd:complexType>
         </xsd:element>
         <xsd:element ref="protocol" minOccurs="0"/>
@@ -102,6 +103,11 @@
             <xsd:attribute name="name" type="ClassType" use="required"/>
     	  </xsd:complexType>    
     	</xsd:element>
+      <xsd:element name="stubgeneration" minOccurs="0">
+        <xsd:complexType>
+          <xsd:attribute name="jsnamespace" type="xsd:string"/>
+        </xsd:complexType>
+      </xsd:element>
         <xsd:element ref="protocol" minOccurs="0"/>
         <xsd:element ref="encoding" minOccurs="0"/>
         <xsd:element ref="session" minOccurs="0"/>

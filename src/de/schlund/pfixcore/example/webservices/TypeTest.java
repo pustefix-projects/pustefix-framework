@@ -4,6 +4,7 @@
 package de.schlund.pfixcore.example.webservices;
 
 import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 
 import org.w3c.dom.Element;
@@ -55,9 +56,11 @@ public interface TypeTest {
     
     public boolean[] echoBooleanArray(boolean[] vals);
     
-    public Calendar echoDate(Calendar date);
+    public Date echoDate(Date date);
     
-    public Calendar[] echoDateArray(Calendar[] dates);
+    public Calendar echoCalendar(Calendar date);
+    
+    public Calendar[] echoCalendarArray(Calendar[] dates);
     
     public String echoString(String str);
     

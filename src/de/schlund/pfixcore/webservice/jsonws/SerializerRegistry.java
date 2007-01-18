@@ -20,11 +20,11 @@
 package de.schlund.pfixcore.webservice.jsonws;
 
 import java.util.Calendar;
+import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Map;
 
-import de.schlund.pfixcore.webservice.jsonws.serializers.ArraySerializer;
 import de.schlund.pfixcore.webservice.jsonws.serializers.BeanSerializer;
 import de.schlund.pfixcore.webservice.jsonws.serializers.BooleanSerializer;
 import de.schlund.pfixcore.webservice.jsonws.serializers.CalendarSerializer;
@@ -54,6 +54,7 @@ public class SerializerRegistry {
         ser=new CalendarSerializer();
         serializers.put(Calendar.class,ser);
         serializers.put(GregorianCalendar.class,ser);
+        serializers.put(Date.class,ser);
       
     }
     

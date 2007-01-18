@@ -20,6 +20,7 @@
 package de.schlund.pfixcore.webservice.jsonws;
 
 import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -67,6 +68,7 @@ public class DeserializerRegistry {
         
         deser=new CalendarDeserializer();
         deserializers.put(Calendar.class,deser);
+        deserializers.put(Date.class,deser);
         
         
     }
