@@ -23,7 +23,7 @@ import java.io.IOException;
 import java.io.Writer;
 import java.lang.reflect.Method;
 import java.util.Iterator;
-import java.util.List;
+import java.util.Set;
 
 import de.schlund.pfixcore.webservice.json.JSONObject;
 import de.schlund.pfixcore.webservice.jsonws.BeanDescriptor;
@@ -50,7 +50,7 @@ public class BeanSerializer extends Serializer {
             jsonObj.putMember(ctx.getClassHintPropertyName(),obj.getClass().getName());
         }
         BeanDescriptor bd=bdf.getBeanDescriptor(obj.getClass());
-        List<String> props=bd.getPropertyNames();
+        Set<String> props=bd.getReadableProperties();
         Iterator<String> it=props.iterator();
         while(it.hasNext()) {
             String prop=it.next();
@@ -80,7 +80,7 @@ public class BeanSerializer extends Serializer {
             writer.write("\",");
         }
         BeanDescriptor bd=bdf.getBeanDescriptor(obj.getClass());
-        List<String> props=bd.getPropertyNames();
+        Set<String> props=bd.getReadableProperties();
         Iterator<String> it=props.iterator();
         while(it.hasNext()) {
             String prop=it.next();

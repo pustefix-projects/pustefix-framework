@@ -147,13 +147,13 @@ public class JSONWSProcessor implements ServiceProcessor {
                             try { 
                                 Object serviceObject=registry.getServiceObject(serviceName);
                                 resultObject=method.invoke(serviceObject,paramObjects);
-                                if(LOG.isDebugEnabled()) LOG.debug("Invocation: "+procInfo.getInvocationTime()+"ms");
                             } catch(Throwable t) {
                                 if(t instanceof InvocationTargetException && t.getCause()!=null) error=t.getCause();
                                 else error=new ServiceException("Error during invocation",t);
                             } 
                             
                             procInfo.endInvocation();
+                            if(LOG.isDebugEnabled()) LOG.debug("Invocation: "+procInfo.getInvocationTime()+"ms");
                         }
                     }
                 }
@@ -164,7 +164,7 @@ public class JSONWSProcessor implements ServiceProcessor {
                 writer.write("{");
                 if(jsonReq.hasMember("id")) {
                     writer.write("\"id\":");
-                    writer.write(String.valueOf(jsonReq.getStringMember("id")));
+                    writer.write("\""+jsonReq.getStringMember("id")+"\"");
                     writer.write(",");
                 }
                 if(error==null) {
@@ -181,6 +181,7 @@ public class JSONWSProcessor implements ServiceProcessor {
                     if(LOG.isDebugEnabled()) LOG.debug("Serialization: "+(t2-t1)+"ms");
                 } else {
                     //Handle error
+                    LOG.error(error,error);
                     ServiceCallContext callContext=ServiceCallContext.getCurrentContext();
                     Fault fault=new Fault(serviceName,callContext.getServiceRequest(),
                             callContext.getServiceResponse(),jsonData,callContext.getContext());

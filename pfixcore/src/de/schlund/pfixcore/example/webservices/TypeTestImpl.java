@@ -4,9 +4,10 @@
 package de.schlund.pfixcore.example.webservices;
 
 import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 
-import org.w3c.dom.*;
+import org.w3c.dom.Element;
 
 /**
  * TypeTestImpl.java 
@@ -93,12 +94,16 @@ public class TypeTestImpl implements TypeTest {
         return vals;
     }
     
-    public Calendar echoDate(Calendar date) {
+    public Calendar echoCalendar(Calendar date) {
         return date;
     }
     
-    public Calendar[] echoDateArray(Calendar[] dates) {
+    public Calendar[] echoCalendarArray(Calendar[] dates) {
         return dates;
+    }
+    
+    public Date echoDate(Date date) {
+        return date;
     }
     
     public String echoString(String str) {

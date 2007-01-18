@@ -109,6 +109,8 @@ public class ConfigurationReader extends DefaultHandler {
 				 if(stubGeneration!=null) globSrvConf.setStubGenerationEnabled(stubGeneration);
 				 String stubRepo=getStringAttribute(atts,"repository");
 				 if(stubRepo!=null)	 globSrvConf.setStubRepository(stubRepo);
+                 String jsNamespace=getStringAttribute(atts,"jsnamespace");
+                 if(jsNamespace!=null) globSrvConf.setStubJSNamespace(jsNamespace);
 			} else if(localName.equals("protocol")) {
 				String proto=getStringAttribute(atts,"type",Constants.PROTOCOL_TYPES);
 				if(proto!=null) globSrvConf.setProtocolType(proto);
@@ -160,6 +162,9 @@ public class ConfigurationReader extends DefaultHandler {
 			} else if(localName.equals("protocol")) {
 				String proto=getStringAttribute(atts,"type",Constants.PROTOCOL_TYPES);
 				if(proto!=null) srvConf.setProtocolType(proto);
+            } else if(localName.equals("stubgeneration")) {
+                 String jsNamespace=getStringAttribute(atts,"jsnamespace");
+                 if(jsNamespace!=null) srvConf.setStubJSNamespace(jsNamespace);
 			} else if(localName.equals("encoding")) {
 				String encStyle=getStringAttribute(atts,"style",Constants.ENCODING_STYLES);
 				if(encStyle!=null) srvConf.setEncodingStyle(encStyle);

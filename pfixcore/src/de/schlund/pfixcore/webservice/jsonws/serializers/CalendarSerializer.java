@@ -22,6 +22,7 @@ package de.schlund.pfixcore.webservice.jsonws.serializers;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.Calendar;
+import java.util.Date;
 
 import de.schlund.pfixcore.webservice.jsonws.CustomJSONObject;
 import de.schlund.pfixcore.webservice.jsonws.SerializationContext;
@@ -35,6 +36,9 @@ public class CalendarSerializer extends Serializer {
         if(obj instanceof Calendar) {
             String json="new Date("+((Calendar)obj).getTimeInMillis()+")";
             return new CustomJSONObject(json);
+        } else if(obj instanceof Date) {
+            String json="new Date("+((Date)obj).getTime()+")";
+            return new CustomJSONObject(json);
         } else throw new SerializationException("Can't serialize object of instance "+obj.getClass().getName());
     }
     
@@ -42,6 +46,8 @@ public class CalendarSerializer extends Serializer {
     public void serialize(SerializationContext ctx, Object obj, Writer writer) throws SerializationException, IOException {
         if(obj instanceof Calendar) {
             writer.write("new Date("+((Calendar)obj).getTimeInMillis()+")");
+        } else if(obj instanceof Date) {
+            writer.write("new Date("+((Date)obj).getTime()+")");
         } else throw new SerializationException("Can't serialize object of instance "+obj.getClass().getName());
     }
     

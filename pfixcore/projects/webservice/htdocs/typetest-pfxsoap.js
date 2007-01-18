@@ -412,6 +412,32 @@ function serviceCall() {
 			consolePrint("echoBooleanArray",(t2-t1),ex);
 		}
 
+      //echoCalendar
+      t1=(new Date()).getTime();
+      try {
+         var dateVal=new Date();
+         var resVal=ws.echoCalendar(dateVal);
+         var t2=(new Date()).getTime();
+         if(!equals(resVal,dateVal)) throw "Wrong result";
+         consolePrint("echoCalendar",(t2-t1));
+      } catch(ex) {
+         var t2=(new Date()).getTime();
+         consolePrint("echoCalendar",(t2-t1),ex);
+      }
+
+      //echoCalendarArray
+      t1=(new Date()).getTime();
+      try {
+         var dateVals=new Array(new Date(),new Date());
+         var resVals=ws.echoCalendarArray(dateVals);
+         var t2=(new Date()).getTime();
+         if(!arrayEquals(dateVals,resVals)) throw "Wrong result";    
+         consolePrint("echoCalendarArray",(t2-t1));
+      } catch(ex) {
+         var t2=(new Date()).getTime();
+         consolePrint("echoCalendarArray",(t2-t1),ex);
+      }
+
    	//echoDate
 		t1=(new Date()).getTime();
 		try {
@@ -424,19 +450,6 @@ function serviceCall() {
 			var t2=(new Date()).getTime();
    		consolePrint("echoDate",(t2-t1),ex);
    	}
-
-   	//echoDateArray
-		t1=(new Date()).getTime();
-		try {
-			var dateVals=new Array(new Date(),new Date());
-			var resVals=ws.echoDateArray(dateVals);
-			var t2=(new Date()).getTime();
-			if(!arrayEquals(dateVals,resVals)) throw "Wrong result";		
-			consolePrint("echoDateArray",(t2-t1));
-		} catch(ex) {
-			var t2=(new Date()).getTime();
-			consolePrint("echoDateArray",(t2-t1),ex);
-		}
 
 		//echoDataBean
 		t1=(new Date()).getTime();

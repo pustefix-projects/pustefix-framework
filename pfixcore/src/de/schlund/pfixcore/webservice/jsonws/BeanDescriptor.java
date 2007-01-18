@@ -1,26 +1,45 @@
 /*
- * Created on 08.10.2005
+ * This file is part of PFIXCORE.
  *
- * To change the template for this generated file go to
- * Window - Preferences - Java - Code Generation - Code and Comments
+ * PFIXCORE is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * PFIXCORE is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with PFIXCORE; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
  */
 package de.schlund.pfixcore.webservice.jsonws;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
+import java.util.Set;
 
+import de.schlund.pfixcore.example.webservices.DataBean;
+
+/**
+ * Bean property descriptor for bean classes.
+ * Introspects a class to find all bean properties by its getter and setter methods.
+ * 
+ * @author mleidig@schlund.de
+ */
 public class BeanDescriptor {
 
 	Class clazz;
-	ArrayList<String> propertyNames=new ArrayList<String>();
-	HashMap<String,Method> getters=new HashMap<String,Method>();
-	HashMap<String,Method> setters=new HashMap<String,Method>();
-    HashMap<String,Class> types=new HashMap<String,Class>();
 	
+    HashMap<String,Class> types=new HashMap<String,Class>();
+    HashMap<String,Method> getters=new HashMap<String,Method>();
+	HashMap<String,Method> setters=new HashMap<String,Method>();
+
 	public BeanDescriptor(Class clazz) {
 		this.clazz=clazz;
 		introspect(clazz);
@@ -29,37 +48,48 @@ public class BeanDescriptor {
 	private void introspect(Class clazz) {
 		Method[] methods=clazz.getMethods();
 		for(int i=0;i<methods.length;i++) {
-			int modifiers=methods[i].getModifiers();
-			if(Modifier.isPublic(modifiers)&&!Modifier.isStatic(modifiers)) {
-				String name=methods[i].getName();
-				if(name.length()>3&&Character.isUpperCase(name.charAt(3))) {
-					if(name.startsWith("get")) {
-						String propName=extractPropertyName(name);
-						getters.put(propName,methods[i]);
-					} else if(name.startsWith("set")) {
-						if(methods[i].getReturnType()==void.class) {
-							String propName=extractPropertyName(name);
-							setters.put(propName,methods[i]);
-						}
-					}
-				}
+		    if(methods[i].getDeclaringClass()!=Object.class) {
+		        int modifiers=methods[i].getModifiers();
+		        if(Modifier.isPublic(modifiers)&&!Modifier.isStatic(modifiers)) {
+		            String name=methods[i].getName();
+		            if(name.length()>3&&Character.isUpperCase(name.charAt(3))) {
+		                if(name.startsWith("get") && methods[i].getParameterTypes().length==0) {
+		                    String propName=extractPropertyName(name);
+		                    getters.put(propName,methods[i]);
+		                } else if(name.startsWith("set")) {
+		                    if(methods[i].getReturnType()==void.class && methods[i].getParameterTypes().length==1) {
+		                        String propName=extractPropertyName(name);
+		                        setters.put(propName,methods[i]);
+		                    }
+		                }
+		            }
+		        }
 			}
-		}
-		Iterator<String> it=getters.keySet().iterator();
-		while(it.hasNext()) {
-			String propName=it.next();
-			Method method=setters.get(propName);
-			if(method==null) it.remove();
-			else {
-                propertyNames.add(propName);
-                Method getMeth=getters.get(propName);
-                types.put(propName,getMeth.getReturnType());
+        }
+        for(String propName:getters.keySet()) {
+            Method getter=getters.get(propName);
+            Method setter=setters.get(propName);
+            if(setter!=null) {
+                if(getter.getReturnType()!=setter.getParameterTypes()[0]) {
+                    getters.remove(propName);
+                    setters.remove(propName);
+                }
             }
-		}
+            types.put(propName,getter.getReturnType());
+        }
+        for(String propName:setters.keySet()) {
+            Method setter=setters.get(propName);
+            Method getter=getters.get(propName);
+            if(getter==null) types.put(propName,setter.getParameterTypes()[0]);
+        }
 	}
     
-    public List<String> getPropertyNames() {
-        return propertyNames;
+    public Set<String> getReadableProperties() {
+        return getters.keySet();
+    }
+    
+    public Set<String> getWritableProperties() {
+        return setters.keySet();
     }
 	
 	private String extractPropertyName(String methodName) {
@@ -86,12 +116,17 @@ public class BeanDescriptor {
 		sb.append("Class:\n");
 		sb.append("\t"+clazz.getName()+"\n");
 		sb.append("Properties:\n");
-		Iterator<String> it=propertyNames.iterator();
+		Iterator<String> it=getReadableProperties().iterator();
 		while(it.hasNext()) {
 			String propName=it.next();
 			sb.append("\t"+propName+"\n");
 		}
 		return sb.toString();
 	}
+    
+    public static void main(String[] args) {
+        BeanDescriptor desc=new BeanDescriptor(DataBean.class); 
+        System.out.println(desc);
+    }
 
 }
