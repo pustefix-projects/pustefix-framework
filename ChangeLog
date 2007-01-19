@@ -1,3 +1,14 @@
+2007-01-19  Jens Lautenbacher  <jtl@schlund.de>
+
+	* projects/core/build/create_depend.xsl: Allow for more than one
+	variant of the master and metatags file in one project by adding a
+	"name" attribute to standardmaster and standardmetatags (default
+	empty) and a "master" and "metatags" attribute to
+	standardpage (also empty by default). Using "name" of
+	standardmaster or standardmetatags results in master-NAME.xsl or
+	metatags-NAME.xsl targets to be defined which can be referred to in
+	standardpage by using <standardpage master="NAME" metags="NAME" ...>
+
 2007-01-19  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
 	* src/de/schlund/pfixxml/config/DirectOutputServletConfig.java: 
