@@ -23,11 +23,11 @@ import java.util.Map;
 
 import org.xml.sax.Attributes;
 
-public class ServletInfoRule extends CheckedRule {
+public class DirectOutputServletInfoRule extends CheckedRule {
 
-    private ContextXMLServletConfigImpl config;
+    private DirectOutputServletConfigImpl config;
 
-    public ServletInfoRule(ContextXMLServletConfigImpl config) {
+    public DirectOutputServletInfoRule(DirectOutputServletConfigImpl config) {
         this.config = config;
     }
 
@@ -38,11 +38,6 @@ public class ServletInfoRule extends CheckedRule {
             throw new Exception("Mandatory attribute \"name\" is missing!");
         }
         config.setServletName(servletName);
-        String dependFile = attributes.getValue("depend");
-        if (dependFile == null) {
-            throw new Exception("Mandatory attribute \"depend\" is missing!");
-        }
-        config.setDependFile(dependFile);
         this.getDigester().push(config);
     }
     
@@ -53,7 +48,8 @@ public class ServletInfoRule extends CheckedRule {
     protected Map<String, Boolean> wantsAttributes() {
         HashMap<String, Boolean> atts = new HashMap<String, Boolean>();
         atts.put("name", true);
-        atts.put("depend", true);
+        // Still allow the unused attribute for compatibility reasons
+        atts.put("depend", false);
         return atts;
     }
 }

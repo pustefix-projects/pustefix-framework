@@ -70,7 +70,6 @@
   <!-- <servletinfo> -->
   <xs:complexType name="servletinfoType" abstract="true">
     <xs:attribute name="name" use="required"/>
-    <xs:attribute name="depend" use="required"/>
   </xs:complexType>
 
   <xs:complexType name="directoutputserverservletinfoType">
@@ -78,14 +77,16 @@
       <xs:extension base="prop:servletinfoType">
         <xs:all>
        	  <xs:element ref="prop:encoding" minOccurs="0"/>
+          <!-- Only present for compatibility with older version -->
           <xs:element ref="prop:editmode" minOccurs="0"/>
           <xs:element ref="prop:ssl" minOccurs="0"/>
-          <xs:element name="choose">
+          <xs:element name="choose" minOccurs="0" maxOccurs="unbounded">
             <xs:complexType>
               <xs:sequence>
                 <xs:element name="when" minOccurs="1" maxOccurs="unbounded">
                   <xs:complexType>
                     <xs:all>
+                      <!-- Only present for compatibility with older version -->
                       <xs:element ref="prop:editmode" minOccurs="0"/>
                       <xs:element ref="prop:ssl" minOccurs="0"/>                      
                     </xs:all>
@@ -95,6 +96,7 @@
                 <xs:element name="otherwise" minOccurs="0" maxOccurs="1">
                   <xs:complexType>
                     <xs:all>
+                      <!-- Only present for compatibility with older version -->
                       <xs:element ref="prop:editmode" minOccurs="0"/>
                       <xs:element ref="prop:ssl" minOccurs="0"/>                      
                     </xs:all>
@@ -104,6 +106,8 @@
             </xs:complexType>
           </xs:element>
         </xs:all>
+        <!-- Only present for compatibility with older version -->
+        <xs:attribute name="depend" use="optional"/>
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
@@ -118,7 +122,7 @@
             <xs:element ref="prop:ssl" minOccurs="0"/>
             <xs:element ref="prop:defaultstate" minOccurs="0"/>
             <xs:element ref="prop:defaultihandlerstate" minOccurs="0"/>
-            <xs:element name="choose">
+            <xs:element name="choose" minOccurs="0" maxOccurs="unbounded">
               <xs:complexType>
                 <xs:sequence>
                   <xs:element name="when" minOccurs="1" maxOccurs="unbounded">
@@ -143,6 +147,7 @@
             </xs:element>
           </xs:choice>
         </xs:sequence>
+        <xs:attribute name="depend" use="required"/>
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
@@ -546,6 +551,7 @@
     <xs:sequence>
       <xs:element name="directoutputservletinfo" type="prop:directoutputserverservletinfoType"/>
       <xs:element ref="prop:foreigncontext"/>
+      <xs:element name="config-include" type="prop:directOutputConfigIncludeType" />
       <xs:element ref="prop:directoutputpagerequest" minOccurs="0" maxOccurs="unbounded"/>
       <xs:element ref="prop:properties" minOccurs="0"/>
     </xs:sequence>
@@ -594,6 +600,20 @@
           <xs:enumeration value="properties"/>
           <xs:enumeration value="interceptors"/>
           <xs:enumeration value="scriptedflows"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="refid" type="xs:NCName" use="optional"></xs:attribute>
+    <xs:attribute name="xpath" type="xs:string" use="optional"></xs:attribute>
+  </xs:complexType>
+
+  <xs:complexType name="directOutputConfigIncludeType">
+    <xs:attribute name="file" type="xs:string" use="required"></xs:attribute>
+    <xs:attribute name="section" use="optional">
+      <xs:simpleType>
+        <xs:restriction base="xs:token">
+          <xs:enumeration value="directoutputpagerequests"/>
+          <xs:enumeration value="properties"/>
         </xs:restriction>
       </xs:simpleType>
     </xs:attribute>
