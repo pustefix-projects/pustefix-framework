@@ -36,6 +36,9 @@
       <xs:element name="scriptedflows" type="fr:scriptedflowsType" maxOccurs="unbounded"
         minOccurs="0">
       </xs:element>
+      <xs:element name="directoutputpagerequests" type="fr:directOutputPagerequestsType" maxOccurs="unbounded"
+        minOccurs="0">
+      </xs:element>
     </xs:sequence>
   </xs:complexType>
 
@@ -119,4 +122,15 @@
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
+  
+  <xs:complexType name="directOutputPagerequestsType">
+    <xs:complexContent>
+      <xs:extension base="fr:sectionType">
+        <xs:sequence>
+          <xs:element ref="prop:directoutputpagerequest" minOccurs="0" maxOccurs="unbounded"></xs:element>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  
 </xs:schema>
