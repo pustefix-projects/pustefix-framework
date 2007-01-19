@@ -9,4 +9,13 @@
   <fr:pagerequests>
     <pr:pagerequest name="IncludeConfPage"/>
   </fr:pagerequests>
+  <fr:directoutputpagerequests id="directtest">
+    <pr:directoutputpagerequest name="test">
+      <directoutputstate class="de.schlund.pfixcore.workflow.app.FileDownloadDOState"/>
+      <properties>
+        <prop name="downloadfile">README.1st</prop>
+        <prop name="downloadmimetype">text/plain</prop>
+      </properties>
+    </pr:directoutputpagerequest>
+  </fr:directoutputpagerequests>
 </fr:config-fragments>

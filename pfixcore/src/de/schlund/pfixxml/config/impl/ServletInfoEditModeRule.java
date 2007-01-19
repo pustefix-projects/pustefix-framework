@@ -25,9 +25,9 @@ import org.xml.sax.Attributes;
 
 public class ServletInfoEditModeRule extends CheckedRule {
 
-    private CommonServletConfig config;
+    private ContextXMLServletConfigImpl config;
 
-    public ServletInfoEditModeRule(CommonServletConfig config) {
+    public ServletInfoEditModeRule(ContextXMLServletConfigImpl config) {
         this.config = config;
     }
 

@@ -1,3 +1,19 @@
+2007-01-19  Sebastian Marsching  <sebastian.marsching@1und1.de>
+
+	* src/de/schlund/pfixxml/config/impl/CommonServletConfig.java: 
+	* src/de/schlund/pfixxml/config/impl/ContextXMLServletConfigImpl.java: 
+	* src/de/schlund/pfixxml/config/impl/DirectOutputServletConfigImpl.java: 
+	* src/de/schlund/pfixxml/config/impl/DirectPagerequestRule.java: 
+	* src/de/schlund/pfixxml/config/impl/ServletInfoEditModeRule.java: 
+	* src/de/schlund/pfixxml/config/impl/ServletInfoRule.java: 
+	* projects/core/schema/configfragments200609.xsd: 
+	* projects/core/schema/properties200401.xsd: 
+	* projects/sample1/conf/direct.conf.xml: 
+	* projects/sample1/conf/fragments.xml: 
+	Added support for includes in configuration for the direct output server.
+	Deprecated depend and editmode configuration options for direct output server
+	because the were not used.
+
 2007-01-18  Martin Leidig  <mleidig@schlund.de>
 
 	Added classhinting support to the JSON protocol. Classhinting can 

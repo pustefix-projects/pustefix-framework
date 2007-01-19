@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <directoutputserver xmlns="http://pustefix.sourceforge.net/properties200401" xmlns:cus="http://www.schlund.de/pustefix/customize" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://pustefix.sourceforge.net/properties200401 http://pustefix.sourceforge.net/properties200401.xsd" version="1.0">
   
-  <directoutputservletinfo depend="sample1/conf/depend.xml" name="pfixcore_project:sample1::servlet:directoutput">
-    <editmode allow="true"/>
+  <directoutputservletinfo name="pfixcore_project:sample1::servlet:directoutput">
     <ssl force="true"/>
   </directoutputservletinfo>
   
@@ -15,6 +14,8 @@
       <prop name="downloadmimetype">text/plain</prop>
     </properties>
   </directoutputpagerequest>
+  
+  <config-include file="sample1/conf/fragments.xml" refid="directtest"/>
   
 </directoutputserver>
 

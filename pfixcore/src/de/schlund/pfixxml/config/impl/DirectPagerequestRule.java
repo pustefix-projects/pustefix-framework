@@ -41,7 +41,7 @@ public class DirectPagerequestRule extends CheckedRule {
         }
         DirectOutputPageRequestConfigImpl reqConfig = new DirectOutputPageRequestConfigImpl();
         reqConfig.setPageName(pageName);
-        this.config.addPageRequest(pageName, reqConfig);
+        this.config.addPageRequest(reqConfig);
         this.getDigester().push(reqConfig);
     }
 

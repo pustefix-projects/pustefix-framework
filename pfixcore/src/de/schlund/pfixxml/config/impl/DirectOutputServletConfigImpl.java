@@ -19,12 +19,15 @@
 package de.schlund.pfixxml.config.impl;
 
 import java.io.IOException;
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
+import java.util.Set;
 import java.util.Map.Entry;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -35,11 +38,18 @@ import org.apache.commons.digester.Digester;
 import org.apache.commons.digester.Rule;
 import org.apache.commons.digester.RulesBase;
 import org.apache.commons.digester.WithDefaultsRulesWrapper;
+import org.apache.log4j.Logger;
+import org.w3c.dom.Document;
+import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 import de.schlund.pfixxml.config.CustomizationHandler;
 import de.schlund.pfixxml.config.DirectOutputServletConfig;
+import de.schlund.pfixxml.config.includes.FileIncludeEvent;
+import de.schlund.pfixxml.config.includes.FileIncludeEventListener;
+import de.schlund.pfixxml.config.includes.IncludesResolver;
 import de.schlund.pfixxml.resources.FileResource;
+import de.schlund.pfixxml.util.Xml;
 
 /**
  * Stores configuration for a Pustefix servlet
@@ -47,14 +57,14 @@ import de.schlund.pfixxml.resources.FileResource;
  * @author Sebastian Marsching <sebastian.marsching@1und1.de>
  */
 public class DirectOutputServletConfigImpl extends ServletManagerConfigImpl implements
-        SSLOption, CommonServletConfig, DirectOutputServletConfig {
+        SSLOption, DirectOutputServletConfig {
     private final static String CONFIG_NS = "http://pustefix.sourceforge.net/properties200401";
 
     private final static String CUS_NS = "http://www.schlund.de/pustefix/customize";
+    
+    private final static Logger LOG = Logger.getLogger(DirectOutputServletConfigImpl.class);
 
     private String servletName = null;
-
-    private String dependFile = null;
 
     private boolean editMode = false;
 
@@ -65,10 +75,14 @@ public class DirectOutputServletConfigImpl extends ServletManagerConfigImpl impl
     private HashMap<String, DirectOutputPageRequestConfigImpl> pages = new HashMap<String, DirectOutputPageRequestConfigImpl>();
     
     private List<DirectOutputPageRequestConfigImpl> cachePages = null;
+    
+    private Set<FileResource> fileDependencies = new HashSet<FileResource>();
+
+    private long loadTime = 0;
 
     public static DirectOutputServletConfigImpl readFromFile(FileResource file,
             Properties globalProperties) throws SAXException, IOException {
-        DirectOutputServletConfigImpl config = new DirectOutputServletConfigImpl();
+        final DirectOutputServletConfigImpl config = new DirectOutputServletConfigImpl();
 
         // Initialize configuration properties with global default properties
         config.setProperties(globalProperties);
@@ -80,8 +94,7 @@ public class DirectOutputServletConfigImpl extends ServletManagerConfigImpl impl
         rules.addDefault(new DefaultMatchRule());
         digester.setRuleNamespaceURI(CONFIG_NS);
 
-        Rule servletInfoRule = new ServletInfoRule(config);
-        Rule servletInfoEditModeRule = new ServletInfoEditModeRule(config);
+        Rule servletInfoRule = new DirectOutputServletInfoRule(config);
         Rule sslRule = new SSLRule();
         Rule foreignContextRule = new DirectForeignContextRule(config);
         Rule pagerequestRule = new DirectPagerequestRule(config);
@@ -95,8 +108,9 @@ public class DirectOutputServletConfigImpl extends ServletManagerConfigImpl impl
         digester.addRule("directoutputserver", dummyRule);
         digester.addRule("directoutputserver/directoutputservletinfo",
                 servletInfoRule);
+        // Still allowed for compatibility reasons
         digester.addRule("directoutputserver/directoutputservletinfo/editmode",
-                servletInfoEditModeRule);
+                dummyRule);
         digester.addRule("directoutputserver/directoutputservletinfo/ssl",
                 sslRule);
         digester.addRule("directoutputserver/foreigncontext",
@@ -122,25 +136,35 @@ public class DirectOutputServletConfigImpl extends ServletManagerConfigImpl impl
                 CUS_NS,
                 new String[] { "/directoutputserver/directoutputservletinfo",
                         "directoutputserver/directoutputpagerequest/properties" });
+        
+        String confDocXml = null;
+        config.loadTime = System.currentTimeMillis();
+
+        Document confDoc = Xml.parseMutable(file);
+        IncludesResolver iresolver = new IncludesResolver(CONFIG_NS, "config-include");
+        // Make sure list of dependencies only contains the file itself
+        config.fileDependencies.clear();
+        config.fileDependencies.add(file);
+        FileIncludeEventListener listener = new FileIncludeEventListener() {
+
+            public void fileIncluded(FileIncludeEvent event) {
+                config.fileDependencies.add(event.getIncludedFile());
+            }
+
+        };
+        iresolver.registerListener(listener);
+        iresolver.resolveIncludes(confDoc);
+        confDocXml = Xml.serialize(confDoc, false, true);
+        
         SAXParser parser;
         try {
             SAXParserFactory spfac = SAXParserFactory.newInstance();
             spfac.setNamespaceAware(true);
             parser = spfac.newSAXParser();
-            parser.parse(file.getInputStream(), cushandler);
+            parser.parse(new InputSource(new StringReader(confDocXml)), cushandler);
         } catch (ParserConfigurationException e) {
             throw new RuntimeException("Could not initialize SAXParser!");
         }
-
-        // Set edit mode property for compatibility reasons
-        if (config.isEditMode()) {
-            config.getProperties().setProperty("xmlserver.noeditmodeallowed",
-                    "false");
-        }
-
-        // Set depend.xml proeprty for compatibility with exception processors
-        config.getProperties().setProperty("xmlserver.depend.xml",
-                config.getDependFile());
 
         return config;
     }
@@ -151,14 +175,6 @@ public class DirectOutputServletConfigImpl extends ServletManagerConfigImpl impl
 
     public String getServletName() {
         return this.servletName;
-    }
-
-    public void setDependFile(String filename) {
-        this.dependFile = filename;
-    }
-
-    public String getDependFile() {
-        return this.dependFile;
     }
 
     public void setEditMode(boolean enabled) {
@@ -191,8 +207,11 @@ public class DirectOutputServletConfigImpl extends ServletManagerConfigImpl impl
         return sync;
     }
 
-    public void addPageRequest(String name, DirectOutputPageRequestConfigImpl config) {
-        this.pages.put(name, config);
+    public void addPageRequest(DirectOutputPageRequestConfigImpl config) {
+        if (this.pages.containsKey(config.getPageName())) {
+            LOG.warn("Overwriting configuration for direct output pagerequest" + config.getPageName());
+        }
+        this.pages.put(config.getPageName(), config);
         this.cachePages = null;
     }
 
@@ -218,5 +237,14 @@ public class DirectOutputServletConfigImpl extends ServletManagerConfigImpl impl
      */
     public DirectOutputPageRequestConfigImpl getPageRequest(String page) {
         return this.pages.get(page);
+    }
+    
+    public boolean needsReload() {
+        for (FileResource file : fileDependencies) {
+            if (file.lastModified() > loadTime) {
+                return true;
+            }
+        }
+        return false;
     }
 }
