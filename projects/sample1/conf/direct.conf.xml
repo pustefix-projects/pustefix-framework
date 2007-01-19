@@ -7,6 +7,8 @@
   
   <foreigncontext externalservletname="pfixcore_project:sample1::servlet:config"/>
   
+  <config-include file="sample1/conf/fragments.xml" refid="directtest"/>
+
   <directoutputpagerequest name="install">
     <directoutputstate class="de.schlund.pfixcore.workflow.app.FileDownloadDOState"/>
     <properties>
@@ -14,8 +16,6 @@
       <prop name="downloadmimetype">text/plain</prop>
     </properties>
   </directoutputpagerequest>
-  
-  <config-include file="sample1/conf/fragments.xml" refid="directtest"/>
   
 </directoutputserver>
 
