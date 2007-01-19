@@ -38,16 +38,25 @@
   </navigation>
 
   <standardmaster>
-<!--     <include stylesheet="sample1/xsl/skin.xsl"/> -->
+    <!-- <include stylesheet="sample1/xsl/skin.xsl"/> -->
   </standardmaster>
   
+  <standardmaster name="var1">
+    <!-- <include stylesheet="sample1/xsl/skin-variation1.xsl"/> -->
+  </standardmaster>
+
   <standardmetatags>
     <include stylesheet="sample1/xsl/metatags.xsl"/>
   </standardmetatags>
-  
+
+  <standardmetatags name="var1">
+    <include stylesheet="sample1/xsl/metatags.xsl"/>
+    <!-- <include stylesheet="sample1/xsl/metatags-additional-variation1.xsl"/> -->
+  </standardmetatags>
+
   <config-include file="sample1/conf/fragments.xml" section="targets"/>
 
-  <standardpage name="home"     xml="sample1/xml/one_frame_navi.xml"/>
+  <standardpage master="var1" metatags="var1" name="home"     xml="sample1/xml/one_frame_navi.xml"/>
   <standardpage name="home"     xml="sample1/xml/one_frame_navi.xml" variant="foo"/>
   <standardpage name="home"     xml="sample1/xml/one_frame_navi.xml" variant="foo:bar:baz"/>
   <standardpage name="home"     xml="sample1/xml/one_frame_navi.xml" variant="baz"/>

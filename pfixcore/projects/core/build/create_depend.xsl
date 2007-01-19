@@ -32,7 +32,14 @@
   <xsl:template match="standardmaster">
     <xsl:param name="project"><xsl:value-of select="/make/@project"/></xsl:param>
     <xsl:param name="lang"><xsl:value-of select="/make/@lang"/></xsl:param>
-    <target name="master.xsl" type="xsl">
+    <xsl:param name="thename">
+      <xsl:choose>
+        <xsl:when test="@name">master-<xsl:value-of select="@name"/>.xsl</xsl:when>
+        <xsl:otherwise>master.xsl</xsl:otherwise>
+      </xsl:choose>
+    </xsl:param>
+    <target type="xsl">
+      <xsl:attribute name="name"><xsl:value-of select="$thename"/></xsl:attribute>
       <xsl:call-template name="render_themes">
         <xsl:with-param name="local_themes" select="@themes"/>
       </xsl:call-template>
@@ -49,7 +56,14 @@
   <xsl:template match="standardmetatags">
     <xsl:param name="project"><xsl:value-of select="/make/@project"/></xsl:param>
     <xsl:param name="lang"><xsl:value-of select="/make/@lang"/></xsl:param>
-    <target name="metatags.xsl" type="xsl">
+    <xsl:param name="thename">
+      <xsl:choose>
+        <xsl:when test="@name">metatags-<xsl:value-of select="@name"/>.xsl</xsl:when>
+        <xsl:otherwise>metatags.xsl</xsl:otherwise>
+      </xsl:choose>
+    </xsl:param>
+    <target type="xsl">
+      <xsl:attribute name="name"><xsl:value-of select="$thename"/></xsl:attribute>
       <xsl:call-template name="render_themes">
         <xsl:with-param name="local_themes" select="@themes"/>
       </xsl:call-template>
@@ -71,6 +85,18 @@
     <xsl:if test="not(/make/standardpage[@name = current()/@name and not(@variant)] or /make/target[@page = current()/@name and not(@variant)])">
       <xsl:message terminate="yes">*** Can't create a variant of a page that's not defined! ***</xsl:message>
     </xsl:if>
+    <xsl:variable name="mastername">
+      <xsl:choose>
+        <xsl:when test="@master">master-<xsl:value-of select="@master"/>.xsl</xsl:when>
+        <xsl:otherwise>master.xsl</xsl:otherwise>
+      </xsl:choose>
+    </xsl:variable>
+    <xsl:variable name="metatagsname">
+      <xsl:choose>
+        <xsl:when test="@metatags">metatags-<xsl:value-of select="@metatags"/>.xsl</xsl:when>
+        <xsl:otherwise>metatags.xsl</xsl:otherwise>
+      </xsl:choose>
+    </xsl:variable>
     <xsl:variable name="thename">
       <xsl:choose>
         <xsl:when test="@variant"><xsl:value-of select="@name"/>::<xsl:value-of select="@variant"/></xsl:when>
@@ -86,7 +112,9 @@
         <xsl:with-param name="local_themes" select="@themes"/>
       </xsl:call-template>
       <depxml name="{$thename}.xml"/>
-      <depxsl name="master.xsl"/>
+      <depxsl>
+        <xsl:attribute name="name"><xsl:value-of select="$mastername"/></xsl:attribute>
+      </depxsl>
       <xsl:if test="./include or /make/global/include">
         <param name="stylesheets_to_include">
           <xsl:attribute name="value">
@@ -120,7 +148,9 @@
         <xsl:with-param name="local_themes" select="@themes"/>
       </xsl:call-template>
       <depxml name="{@xml}"/>
-      <depxsl name="metatags.xsl"/>
+      <depxsl>
+        <xsl:attribute name="name"><xsl:value-of select="$metatagsname"/></xsl:attribute>
+      </depxsl>
       <xsl:call-template name="encoding"/>
       <xsl:variable name="allp" select="./param[not(@name = 'page')]"/>
       <xsl:for-each select="/make/global/param[not(@name = 'page')]">
