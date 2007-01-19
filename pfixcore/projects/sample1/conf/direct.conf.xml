@@ -16,6 +16,8 @@
     </properties>
   </directoutputpagerequest>
   
+  <config-include file="sample1/conf/fragments.xml" refid="directtest"/>
+  
 </directoutputserver>
 
 <!--

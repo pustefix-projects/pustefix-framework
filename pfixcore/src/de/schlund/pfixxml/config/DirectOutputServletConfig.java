@@ -20,10 +20,13 @@ package de.schlund.pfixxml.config;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Properties;
+import java.util.Set;
 import java.util.Map.Entry;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -34,7 +37,14 @@ import org.apache.commons.digester.Digester;
 import org.apache.commons.digester.Rule;
 import org.apache.commons.digester.RulesBase;
 import org.apache.commons.digester.WithDefaultsRulesWrapper;
+import org.w3c.dom.Document;
+import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
+
+import de.schlund.pfixxml.config.includes.FileIncludeEvent;
+import de.schlund.pfixxml.config.includes.FileIncludeEventListener;
+import de.schlund.pfixxml.config.includes.IncludesResolver;
+import de.schlund.pfixxml.util.Xml;
 
 /**
  * Stores configuration for a Pustefix servlet
@@ -56,10 +66,14 @@ public class DirectOutputServletConfig extends ServletManagerConfig implements
     private String externalName;
 
     private HashMap<String, DirectOutputPageRequestConfig> pages = new HashMap<String, DirectOutputPageRequestConfig>();
+    
+    private Set<File> fileDependencies = new HashSet<File>();
+
+    private long loadTime = 0;
 
     public static DirectOutputServletConfig readFromFile(File file,
             Properties globalProperties) throws SAXException, IOException {
-        DirectOutputServletConfig config = new DirectOutputServletConfig();
+        final DirectOutputServletConfig config = new DirectOutputServletConfig();
 
         // Initialize configuration properties with global default properties
         config.setProperties(globalProperties);
@@ -113,25 +127,35 @@ public class DirectOutputServletConfig extends ServletManagerConfig implements
                 CUS_NS,
                 new String[] { "/directoutputserver/directoutputservletinfo",
                         "directoutputserver/directoutputpagerequest/properties" });
+        
+        String confDocXml = null;
+        config.loadTime = System.currentTimeMillis();
+
+        Document confDoc = Xml.parseMutable(file);
+        IncludesResolver iresolver = new IncludesResolver(CONFIG_NS, "config-include");
+        // Make sure list of dependencies only contains the file itself
+        config.fileDependencies.clear();
+        config.fileDependencies.add(file);
+        FileIncludeEventListener listener = new FileIncludeEventListener() {
+
+            public void fileIncluded(FileIncludeEvent event) {
+                config.fileDependencies.add(event.getIncludedFile());
+            }
+
+        };
+        iresolver.registerListener(listener);
+        iresolver.resolveIncludes(confDoc);
+        confDocXml = Xml.serialize(confDoc, false, true);
+        
         SAXParser parser;
         try {
             SAXParserFactory spfac = SAXParserFactory.newInstance();
             spfac.setNamespaceAware(true);
             parser = spfac.newSAXParser();
-            parser.parse(file, cushandler);
+            parser.parse(new InputSource(new StringReader(confDocXml)), cushandler);
         } catch (ParserConfigurationException e) {
             throw new RuntimeException("Could not initialize SAXParser!");
         }
-
-        // Set edit mode property for compatibility reasons
-        if (config.isEditMode()) {
-            config.getProperties().setProperty("xmlserver.noeditmodeallowed",
-                    "false");
-        }
-
-        // Set depend.xml proeprty for compatibility with exception processors
-        config.getProperties().setProperty("xmlserver.depend.xml",
-                config.getDependFile());
 
         return config;
     }
@@ -183,5 +207,14 @@ public class DirectOutputServletConfig extends ServletManagerConfig implements
 
     public DirectOutputPageRequestConfig getPageRequest(String page) {
         return this.pages.get(page);
+    }
+    
+    public boolean needsReload() {
+        for (File file : fileDependencies) {
+            if (file.lastModified() > loadTime) {
+                return true;
+            }
+        }
+        return false;
     }
 }
