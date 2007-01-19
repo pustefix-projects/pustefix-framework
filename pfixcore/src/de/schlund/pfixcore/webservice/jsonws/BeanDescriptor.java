@@ -56,6 +56,7 @@ public class BeanDescriptor {
 		                if(name.startsWith("get") && methods[i].getParameterTypes().length==0) {
 		                    String propName=extractPropertyName(name);
 		                    getters.put(propName,methods[i]);
+                            types.put(propName,methods[i].getReturnType());
 		                } else if(name.startsWith("set")) {
 		                    if(methods[i].getReturnType()==void.class && methods[i].getParameterTypes().length==1) {
 		                        String propName=extractPropertyName(name);
@@ -65,22 +66,6 @@ public class BeanDescriptor {
 		            }
 		        }
 			}
-        }
-        for(String propName:getters.keySet()) {
-            Method getter=getters.get(propName);
-            Method setter=setters.get(propName);
-            if(setter!=null) {
-                if(getter.getReturnType()!=setter.getParameterTypes()[0]) {
-                    getters.remove(propName);
-                    setters.remove(propName);
-                }
-            }
-            types.put(propName,getter.getReturnType());
-        }
-        for(String propName:setters.keySet()) {
-            Method setter=setters.get(propName);
-            Method getter=getters.get(propName);
-            if(getter==null) types.put(propName,setter.getParameterTypes()[0]);
         }
 	}
     
