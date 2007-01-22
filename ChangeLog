@@ -1,5 +1,24 @@
 2007-01-22  Martin Leidig  <mleidig@schlund.de>
 
+	Added the optional IWrapper parameter attribute 'trim', which 
+	provides the option to enable/disable the automatic trimming of 
+	request parameters. The backwards compatible default behaviour, 
+	in absence of the attribute, is to trim incoming parameters 
+	before further processing (trim="true|false|on|off").
+
+	* src/de/schlund/pfixcore/generator/IWrapperParam.java: made
+	parameter trimming optional (can be set via trim argument of
+	constructor)
+	* src/de/schlund/pfixcore/generator/IWrapperIndexedParam.java:
+	same as above
+	* projects/core/build/iwrapper.xsl: trim attribute at param
+	elements is evaluated and used as argument of for IWrapperParam 
+	constructor
+	* projects/core/schema/interfacewrapper200401.xsd: Added trim
+	attribute at param elements to schema
+
+2007-01-22  Martin Leidig  <mleidig@schlund.de>
+
 	* projects/core/script/webservice_json.js: Fixed escaping of
 	double quotes and backslahes.
 
