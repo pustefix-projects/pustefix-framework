@@ -41,6 +41,7 @@ public class IWrapperParam implements IWrapperParamCheck, IWrapperParamDefinitio
     private static final String TYPE_SINGLE    = "single";
     private String              name;
     private String              type;
+    private boolean             trim;
     private boolean             optional;
     private boolean             multiple;
     private String[]            stringval      = null;
@@ -54,14 +55,21 @@ public class IWrapperParam implements IWrapperParamCheck, IWrapperParamDefinitio
     private StatusCodeInfo      missing        = new StatusCodeInfo(StatusCodeLib.PFIXCORE_GENERATOR_MISSING_PARAM, null, null);  
     private boolean             inrequest      = false;
     
-    public IWrapperParam(String name, boolean multiple, boolean optional, RequestParam[] defaultval, String type) {
+    public IWrapperParam(String name, boolean multiple, boolean optional, RequestParam[] defaultval, String type, boolean trim) {
         this.type       = type;
         this.name       = name;
         this.optional   = optional;
         this.multiple   = multiple;
         this.caster     = null;
         this.defaultval = defaultval;
+        this.trim = trim;
     }
+    
+    @Deprecated
+    public IWrapperParam(String name, boolean multiple, boolean optional, RequestParam[] defaultval, String type) {
+        this(name,multiple,optional,defaultval,type,true);
+    }
+    
 
     public void setValue(Object[] value) {
         this.value = value;
@@ -169,7 +177,7 @@ public class IWrapperParam implements IWrapperParamCheck, IWrapperParamDefinitio
                 if (val.getType().equals(RequestParamType.SIMPLE) || val.getType().equals(RequestParamType.FIELDDATA)) {
                     String tmp = val.getValue().trim();
                     if (!tmp.equals("")) {
-                        val.setValue(tmp);
+                        if(trim) val.setValue(tmp);
                         out.add(val);
                     }
                 } else if (val.getType().equals(RequestParamType.FILEDATA)) {
