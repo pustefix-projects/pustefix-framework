@@ -164,6 +164,11 @@
                 <xs:documentation xml:lang="en">pfixcore.example.home.AGE_MISSING</xs:documentation>
               </xs:annotation>
             </xs:attribute>
+            <xs:attribute name="trim" use="optional" default="true">
+              <xs:annotation>
+                <xs:documentation xml:lang="de">Optional (Default is 'true'). Defines if submitted parameters should be trimmed.</xs:documentation>
+              </xs:annotation>
+            </xs:attribute>
           </xs:complexType>
         </xs:element>
       </xs:sequence>
