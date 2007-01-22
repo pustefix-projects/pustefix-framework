@@ -75,7 +75,7 @@
   <xs:complexType name="directoutputserverservletinfoType">
     <xs:complexContent>
       <xs:extension base="prop:servletinfoType">
-        <xs:all>
+        <xs:sequence>
        	  <xs:element ref="prop:encoding" minOccurs="0"/>
           <xs:element ref="prop:editmode" minOccurs="0"/>
           <xs:element ref="prop:ssl" minOccurs="0"/>
@@ -104,7 +104,7 @@
               </xs:sequence>
             </xs:complexType>
           </xs:element>
-        </xs:all>
+        </xs:sequence>
         <!-- Only present for compatibility reasons -->
         <xs:attribute name="depend" use="optional"/>
       </xs:extension>
