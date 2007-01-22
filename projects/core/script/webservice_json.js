@@ -38,7 +38,7 @@ pfx.ws.json.serialize=function(obj) {
 };
 
 pfx.ws.json.escapeJSONChar=function(ch) {
-   if(ch=="\""||ch=="\\") return "\\"+c;
+   if(ch=="\""||ch=="\\") return "\\"+ch;
    else if(ch=="\b") return "\\b";
    else if(ch=="\f") return "\\f";
    else if(ch=="\n") return "\\n";
