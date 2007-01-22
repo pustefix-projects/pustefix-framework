@@ -41,6 +41,7 @@ public class IWrapperIndexedParam implements IWrapperParamDefinition, Comparable
     private static final String TYPE_SINGLE   = "single";
     private String              name;
     private String              type;
+    private boolean             trim;
     private boolean             multiple;
     private IWrapperParamCaster caster;
     private ArrayList           precheck      = new ArrayList();
@@ -50,11 +51,17 @@ public class IWrapperIndexedParam implements IWrapperParamDefinition, Comparable
     private String              prefix;
     private Category            CAT           = Category.getInstance(this.getClass().getName());
     
-    public IWrapperIndexedParam(String name, boolean multiple, String type) {
+    public IWrapperIndexedParam(String name, boolean multiple, String type, boolean trim) {
         this.type     = type;
         this.name     = name;
         this.caster   = null;
         this.multiple = multiple;
+        this.trim       = trim;
+    }
+    
+    @Deprecated
+    public IWrapperIndexedParam(String name, boolean multiple, String type) {
+        this(name,multiple,type,true);
     }
 
     public String getOccurance() {
@@ -85,7 +92,7 @@ public class IWrapperIndexedParam implements IWrapperParamDefinition, Comparable
                 // Now initialize the IWrapperParams
                 String idx = pname.substring(wholename.length() + 1);
                 CAT.debug("~~~ Found index: " + idx + " for IndexedParam " + name);
-                IWrapperParam pinfo = new IWrapperParam(name + "." + idx, multiple, true, null, type);
+                IWrapperParam pinfo = new IWrapperParam(name + "." + idx, multiple, true, null, type, trim);
                 pinfo.setParamCaster(caster);
                 synchronized (params) {
                     params.put(pinfo.getName(), pinfo);
@@ -144,7 +151,7 @@ public class IWrapperIndexedParam implements IWrapperParamDefinition, Comparable
         synchronized (params) {
             IWrapperParam pinfo = (IWrapperParam) params.get(key);
             if (pinfo == null) {
-                pinfo = new IWrapperParam(key, multiple, true, null, type);
+                pinfo = new IWrapperParam(key, multiple, true, null, type, trim);
                 params.put(pinfo.getName(), pinfo);
             }
             return pinfo;
