@@ -1,3 +1,8 @@
+2007-01-22  Martin Leidig  <mleidig@schlund.de>
+
+	* projects/core/script/webservice_json.js: Fixed escaping of
+	double quotes and backslashes.
+
 2007-01-22  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
 	* projects/core/schema/properties200401.xsd:
