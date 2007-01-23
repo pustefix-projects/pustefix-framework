@@ -144,30 +144,32 @@ public class ProjectFactoryServiceImpl implements ProjectFactoryService {
                 "project[servlet/@useineditor='true']");
         for (Iterator i = projectNodes.iterator(); i.hasNext();) {
             Element projectElement = (Element) i.next();
-            if (!projectElement.hasAttribute("name")) {
-                String err = "<project>-tag needs name attribute!";
-                Logger.getLogger(this.getClass()).error(err);
-                throw new EditorInitializationException(err);
-            }
-            String projectName = projectElement.getAttribute("name");
-            Node tempNode;
-            tempNode = XPath.selectNode(projectElement, "comment/text()");
-            if (tempNode == null) {
-                String err = "Project " + projectName
-                        + " does not have mandatory <comment> element!";
-                Logger.getLogger(this.getClass()).error(err);
-                throw new EditorInitializationException(err);
-            }
-            String projectComment = tempNode.getNodeValue();
-            tempNode = XPath.selectNode(projectElement, "depend/text()");
-            if (tempNode == null) {
-                String err = "Project " + projectName
-                        + " does not have mandatory <depend> element!";
-                Logger.getLogger(this.getClass()).error(err);
-                throw new EditorInitializationException(err);
-            }
-            String projectDependFile = tempNode.getNodeValue();
+            String projectName = "<unknown>";
             try {
+                if (!projectElement.hasAttribute("name")) {
+                    String err = "<project>-tag needs name attribute!";
+                    Logger.getLogger(this.getClass()).error(err);
+                    throw new EditorInitializationException(err);
+                }
+                projectName = projectElement.getAttribute("name");
+                Node tempNode;
+                tempNode = XPath.selectNode(projectElement, "comment/text()");
+                if (tempNode == null) {
+                    String err = "Project " + projectName
+                            + " does not have mandatory <comment> element!";
+                    Logger.getLogger(this.getClass()).error(err);
+                    throw new EditorInitializationException(err);
+                }
+                String projectComment = tempNode.getNodeValue();
+                tempNode = XPath.selectNode(projectElement, "depend/text()");
+                if (tempNode == null) {
+                    String err = "Project " + projectName
+                        + " does not have mandatory <depend> element!";
+                    Logger.getLogger(this.getClass()).error(err);
+                    throw new EditorInitializationException(err);
+                }
+                String projectDependFile = tempNode.getNodeValue();
+                
                 ProjectImpl project = new ProjectImpl(variantfactory, themefactory, pagefactory, includefactory, imagefactory, targetfactory, updater, projectName, projectComment, projectDependFile);
                 this.projects.put(projectName, project);
                 this.generatorToProjectNameMap.put(project.getTargetGenerator().getName(), projectName);
