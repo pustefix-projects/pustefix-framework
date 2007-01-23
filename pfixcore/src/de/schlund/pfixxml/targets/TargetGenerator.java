@@ -832,7 +832,6 @@ public class TargetGenerator implements Comparable {
     public static void resetFactories() {
         SPCacheStatistic.reset();
         TargetGeneratorFactory.getInstance().reset();
-        TargetGenerator.resetGenerationReport();
         TargetFactory.getInstance().reset();
         IncludeDocumentFactory.getInstance().reset();
         PageInfoFactory.getInstance().reset();
