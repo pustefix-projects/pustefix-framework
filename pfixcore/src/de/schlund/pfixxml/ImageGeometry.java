@@ -69,16 +69,17 @@ public class ImageGeometry {
     
     public static String getStyleStringForImage(String path, String userStyle, String userWidth, String userHeight) {
         ImageGeometryData data = getImageGeometryData(path);
-        int targetWidth, targetHeight;
+        int targetWidth=-1;
+        int targetHeight=-1;
         if (userWidth != null && userWidth.length() > 0) {
             targetWidth = Integer.parseInt(userWidth);
         } else {
-            targetWidth = data.getWidth();
+            if(data!=null) targetWidth = data.getWidth();
         }
         if (userHeight != null && userHeight.length() > 0) {
             targetHeight = Integer.parseInt(userHeight);
         } else {
-            targetHeight = data.getHeight();
+            if(data!=null) targetHeight = data.getHeight();
         }
         
         boolean haveWidth = false, haveHeight = false;
