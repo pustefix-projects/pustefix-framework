@@ -7,7 +7,7 @@
 	if image doesn't exist, just proceed without the image information (it's
 	a common case cause in a lot of projects users wrongly use attribute
 	value templates within the image source attribute, which weren't yet
-	evaluated at the time the extension function is called, fot the sake of
+	evaluated at the time the extension function is called, for the sake of
 	backwards compatibility we should still support this behaviour)
 
 2007-01-23  Sebastian Marsching  <sebastian.marsching@1und1.de>
