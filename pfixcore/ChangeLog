@@ -1,3 +1,11 @@
+2007-01-23  Sebastian Marsching  <sebastian.marsching@1und1.de>
+
+	* src/de/schlund/pfixcore/editor2/core/spring/ProjectFactoryServiceImpl.java (init): 
+	* src/de/schlund/pfixcore/editor2/frontend/util/EditorApplicationContextFactory.java: 
+	Added code to handle missing <name> or <comment> tag within a project definition.
+	Changed locking to ensure that an exception is thrown when the editor app is
+	called but has not been initialized instead of dead-locking the thread.
+
 2007-01-22  Martin Leidig  <mleidig@schlund.de>
 
 	Added the optional IWrapper parameter attribute 'trim', which 
