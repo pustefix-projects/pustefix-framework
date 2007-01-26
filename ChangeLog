@@ -1,5 +1,12 @@
 2007-01-26  Martin Leidig  <mleidig@schlund.de>
 
+	Trim attribute now only supports boolean values, removed on/off
+	option (cause someone didn't like and I don't mind)
+	* projects/core/build/iwrapper.xsl	
+	* projects/core/schema/interfacewrapper200401.xsd
+
+2007-01-26  Martin Leidig  <mleidig@schlund.de>
+
 	* projects/core/build/create_depend.xsl: fixed strange incompatibility
 	between saxon and xalan transformations, which  could cause wrong output 
 	encoding	
