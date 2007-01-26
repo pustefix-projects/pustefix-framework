@@ -9,7 +9,13 @@
   <xsl:param name="projectsFile"/>
   
   <xsl:variable name="defaultEncoding">UTF-8</xsl:variable>
-  <xsl:variable name="projectEncoding" select="normalize-space(document($projectsFile)/projects/project[@name=current()/make/@project]/encoding/text())"/>
+  
+  <!-- Saxon/Xalan incompatibility/bug workaround: while the condition [@name=/make/@project] works 
+  for Xalan, Saxon needs [@name=current()/make/@project] to select an external document node based
+  on a source node within a global variable. Using another variable instead of a xpath expression
+  works for both transformers: [@name=$projectName] -->
+  <xsl:variable name="projectName" select="/make/@project"/>
+  <xsl:variable name="projectEncoding" select="normalize-space(document($projectsFile)/projects/project[@name=$projectName]/encoding/text())"/>
   <xsl:variable name="encoding">
     <xsl:choose>
       <xsl:when test="$projectEncoding and string-length($projectEncoding) &gt; 0">
