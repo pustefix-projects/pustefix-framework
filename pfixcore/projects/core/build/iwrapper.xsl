@@ -110,7 +110,7 @@ public <xsl:if test="not(/iwrp:interface/iwrp:ihandler) and not(@extends)">abstr
       <xsl:variable name="pname" select="@name"/>
       <xsl:variable name="trim">
         <xsl:choose>
-          <xsl:when test="@trim='false' or @trim='off'">false</xsl:when>
+          <xsl:when test="@trim='false'">false</xsl:when>
           <xsl:otherwise>true</xsl:otherwise>
         </xsl:choose>
       </xsl:variable>
