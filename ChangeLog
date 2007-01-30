@@ -1,5 +1,11 @@
 2007-01-30  Martin Leidig  <mleidig@schlund.de>
 
+	* src/de/schlund/pfixcore/workflow/Context.java: newly add support
+	for nostore mechanism - don't store pagerequests with nostore set
+	as last/current pagerequest
+
+2007-01-30  Martin Leidig  <mleidig@schlund.de>
+
 	Extended distribution file naming opportunities. Now you can use
 	three different version naming conventions (set via the "${dist.type}"
 	property in the build file or as ant parameter): "release" uses 

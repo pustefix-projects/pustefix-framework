@@ -108,9 +108,13 @@ public class Context implements AppContext {
     private boolean            startwithflow;
     private boolean            prohibitcontinue;
     private boolean            stopnextforcurrentrequest;
-    private boolean            needs_update;
     private ArrayList          cookielist  = new ArrayList();
     private ArrayList          messages    = new ArrayList();
+
+    // session state
+    private PageRequest lastPageRequest;
+    private PageFlow lastPageFlow;
+    private boolean            needs_update;
     private ContextConfig      config;
 
     /**
@@ -142,6 +146,8 @@ public class Context implements AppContext {
      * @exception Exception if an error occurs
      */
     public synchronized SPDocument handleRequest(PfixServletRequest preq) throws Exception {
+        currentpagerequest=lastPageRequest;
+        currentpageflow=lastPageFlow;
         try {
             SPDocument spdoc = handleRequestWorker(preq);
             
@@ -162,6 +168,10 @@ public class Context implements AppContext {
             if (saved_autoinvalidate != null) {
                 autoinvalidate_navi  = saved_autoinvalidate;
                 saved_autoinvalidate = null;
+            }
+            if(currentpagerequest!=null && getConfigForCurrentPageRequest().isStoreXML()) {
+                lastPageRequest=currentpagerequest;
+                lastPageFlow=currentpageflow;
             }
         }
     }
