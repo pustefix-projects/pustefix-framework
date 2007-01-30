@@ -1,3 +1,15 @@
+2007-01-30  Martin Leidig  <mleidig@schlund.de>
+
+	Extended distribution file naming opportunities. Now you can use
+	three different version naming conventions (set via the "${dist.type}"
+	property in the build file or as ant parameter): "release" uses 
+	"${dist.version}", "prerelease" uses "${dist.version}-pre" and
+	"build" uses "${dist.version}-${dist.revision}" (svn revision) as
+	version part. Default is "build", e.g. it can be overriden via
+	"ant -Ddist.type=release dist". 
+	   
+	* build.xml
+
 2007-01-26  Martin Leidig  <mleidig@schlund.de>
 
 	Trim attribute now only supports boolean values, removed on/off
