@@ -11,22 +11,16 @@ or delete the DOCTYPE definition -->
   <property name="exclude.examples"       value="de/skelexamples/**/*.*"/>
   
   <import file="skel/build-skel.xml"/>
-  
+
+  <property name="dist.version"        value="0.9.2" description="the version to use for pfixcore-*.*"/>
+  <property name="dist.type"           value="build" description="distribution type: supported values release, prerelease, build"/>
+
   <!-- additional properties -->
   <property name="name.svnrevision"       value="SVN_REVISION"/>
-  <property name="dir.metainf"              location="META-INF"/>
+  <property name="dir.metainf"            location="META-INF"/>
   <property name="dir.dist"               location="dist"/>
   <property name="file.jnipkg"            location="${dir.jni}/${name.jnipkg}"/>
-  <property name="project.version"        value="0.9.2-pre" description="the version to use for pfixcore-*.*"/>
   <property name="dir.toconf"             value="${dir.projects}/common/conf/"/>
-  <property name="name.pfixcore_jar"      value="${project.name}-${project.version}.jar"/>
-  <property name="file.pfixcore_jar"      location="${dir.dist}/${name.pfixcore_jar}"/>
-  <property name="name.pfixcore_data_tgz" value="${project.name}-data-${project.version}.tar.gz"/>
-  <property name="file.pfixcore_data_tgz" location="${dir.dist}/${name.pfixcore_data_tgz}"/>
-  <property name="name.pfixcore_skel_tgz" value="${project.name}-skel-${project.version}.tar.gz"/>
-  <property name="file.pfixcore_skel_tgz" location="${dir.dist}/${name.pfixcore_skel_tgz}"/>
-  <property name="name.pfixcore_examples_tgz" value="${project.name}-examples-${project.version}.tar.gz"/>
-  <property name="file.pfixcore_examples_tgz" location="${dir.dist}/${name.pfixcore_examples_tgz}"/>
   <property name="name.testskel"          value="testskel"/>
   <property name="dir.testskel"           location="${name.testskel}"/>
   <property name="dir.examplepage"        location="${dir.projects}/simplepage"/>
@@ -35,6 +29,36 @@ or delete the DOCTYPE definition -->
   <property name="name.examplelink"       value="simplelink"/>
   <property name="dir.exampleform"        location="${dir.projects}/simpleform"/>
   <property name="name.exampleform"       value="simpleform"/>
+
+  <!-- initialize distribution type dependent properties used for creation of distribution files -->
+
+  <target name="dist-properties">
+    <exec executable="sh" outputproperty="dist.revision" errorproperty="dist.revision.error">
+      <arg line="-c 'svn info | grep ^Revision: | cut -d\  -f2'"/>
+    </exec>                                                                                                                                              <condition property="project.version" value="${dist.version}">
+      <equals arg1="${dist.type}" arg2="release"/>
+    </condition>
+    <condition property="project.version" value="${dist.version}-pre">
+      <or>
+        <equals arg1="${dist.type}" arg2="prerelease"/>
+        <and>
+          <equals arg1="${dist.type}" arg2="build"/>
+          <not><equals arg1="${dist.revision.error}" arg2=""/></not>
+        </and>
+      </or>
+    </condition>
+    <condition property="project.version" value="${dist.version}-${dist.revision}">
+      <equals arg1="${dist.type}" arg2="build"/>
+    </condition>
+    <property name="name.pfixcore_jar"      value="${project.name}-${project.version}.jar"/>
+    <property name="file.pfixcore_jar"      location="${dir.dist}/${name.pfixcore_jar}"/>
+    <property name="name.pfixcore_data_tgz" value="${project.name}-data-${project.version}.tar.gz"/>
+    <property name="file.pfixcore_data_tgz" location="${dir.dist}/${name.pfixcore_data_tgz}"/>
+    <property name="name.pfixcore_skel_tgz" value="${project.name}-skel-${project.version}.tar.gz"/>
+    <property name="file.pfixcore_skel_tgz" location="${dir.dist}/${name.pfixcore_skel_tgz}"/>
+    <property name="name.pfixcore_examples_tgz" value="${project.name}-examples-${project.version}.tar.gz"/>
+    <property name="file.pfixcore_examples_tgz" location="${dir.dist}/${name.pfixcore_examples_tgz}"/>
+  </target>
 
   <!-- override targets -->
     
@@ -90,9 +114,8 @@ or delete the DOCTYPE definition -->
     
   <target name="dist" depends="clean, init, dist-examples" description="Builds release files in dist directory.">
     <delete file="${dir.metainf}/${name.svnrevision}"/>
-
     <exec executable="svn" outputproperty="dist.autotagmessage">
-      <arg line="info -r HEAD"/>
+      <arg line="info"/>
     </exec>
     <!-- looks funny, but if someone called something like
          "ant jar dist" the jar file would have a wrong SVN_REVISION file -->
@@ -102,7 +125,7 @@ or delete the DOCTYPE definition -->
   </target>
 
   <!-- Building the basic examples for dist -->
-  <target name="dist-examples" depends="clean, init" description="Builds three basic examples as a pustefix turorial">
+  <target name="dist-examples" depends="clean, init, dist-properties" description="Builds three basic examples as a pustefix turorial">
     <echo message="Building ${name.pfixcore_examples_tgz} in dist directory"/>
 
     <!-- creating the empty htdocs and img directories -->
@@ -159,7 +182,7 @@ or delete the DOCTYPE definition -->
     </tar>
   </target>
 
-  <target name="data" depends="init, stylesheets, autotag">
+  <target name="data" depends="init, stylesheets, dist-properties, autotag">
     <echo message="Building ${name.pfixcore_data_tgz} in dist directory" />
     <copy file="${dir.metainf}/${name.svnrevision}" tofile="${dir.projects}/core/${name.svnrevision}"/>
     <tar destfile="${file.pfixcore_data_tgz}" compression="gzip">
@@ -169,7 +192,7 @@ or delete the DOCTYPE definition -->
     <delete file="${dir.projects}/core/${name.svnrevision}"/>
   </target>
 
-  <target name="jar" depends="autotag, dist-jni">
+  <target name="jar" depends="dist-properties, autotag, dist-jni">
     <mkdir dir="${dir.dist}" description="creates ${name.pfixcore_jar}"/>
     <jar destfile="${file.pfixcore_jar}">
       <fileset dir="${basedir}" includes="META-INF/**"/>
@@ -189,7 +212,7 @@ or delete the DOCTYPE definition -->
     <echo file="${dir.metainf}/${name.svnrevision}" message="${autotagmessage}&#010;"/>
   </target>
 
-  <target name="test-skeleton" description="extracts skel.jar, copies sample files, runs ant">
+  <target name="test-skeleton" depends="dist-properties" description="extracts skel.jar, copies sample files, runs ant">
     <delete dir="${dir.testskel}"/>
     <mkdir dir="${dir.testskel}"/>
     <untar src="${file.pfixcore_skel_tgz}" dest="${dir.testskel}" compression="gzip"/>
