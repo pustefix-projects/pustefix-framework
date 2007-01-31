@@ -180,7 +180,7 @@ public class Context implements AppContext {
         currentpservreq            = preq;
         prohibitcontinue           = false;
         stopnextforcurrentrequest  = false;
-        jumptopagename      = null;
+        jumptopagename             = null;
         jumptopageflowname         = null;
         on_jumptopage              = false;
         pageflow_requested_by_user = false;
