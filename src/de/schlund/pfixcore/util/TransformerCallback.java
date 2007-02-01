@@ -3,7 +3,6 @@ package de.schlund.pfixcore.util;
 import de.schlund.pfixcore.workflow.ContextImpl;
 import de.schlund.pfixcore.workflow.context.AccessibilityChecker;
 import de.schlund.pfixcore.workflow.context.RequestContextImpl;
-import de.schlund.pfixxml.PfixServletRequest;
 import de.schlund.pfixxml.SPDocument;
 
 /**
