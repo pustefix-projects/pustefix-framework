@@ -70,8 +70,8 @@ public class StateUtil {
         ContextResourceManager crm = context.getContextResourceManager();
         Map<String, Class> crs = context.getConfigForCurrentPageRequest().getContextResources();
         
-        for (Iterator i = crs.keySet().iterator(); i.hasNext();) {
-            String nodename = (String) i.next();
+        for (Iterator<String> i = crs.keySet().iterator(); i.hasNext();) {
+            String nodename = i.next();
             String classname = crs.get(nodename).getName();
             if (LOG.isDebugEnabled()) {
                 LOG.debug("*** Auto appending status for " + classname + " at node " + nodename);
