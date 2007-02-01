@@ -43,7 +43,7 @@
                 xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
                 xmlns:cus="http://www.schlund.de/pustefix/customize"
                 xmlns:pfx="http://www.schlund.de/pustefix/core"
-		xmlns:ixsl="http://www.w3.org/1999/XSL/TransformOutputAlias">
+				xmlns:ixsl="http://www.w3.org/1999/XSL/TransformOutputAlias">
 
   <xsl:import href="core/xsl/default_copy.xsl"/>
   <xsl:import href="core/xsl/include.xsl"/>
@@ -86,19 +86,6 @@
   <xsl:key name="frame_key"    match="pfx:frame"    use="'frame'"/>
 
   <xsl:template match="/">
-    <!-- <xsl:text disable-output-escaping="yes"> -->
-    <!--   &lt;ixsl:stylesheet version="1.1" -->
-    <!--                  xmlns:xsl="http://www.w3.org/1999/XSL/Transform" -->
-    <!--                  xmlns:cus="http://www.schlund.de/pustefix/customize" -->
-    <!--                  xmlns:pfx="http://www.schlund.de/pustefix/core" -->
-    <!--                  xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" -->
-    <!--                  xmlns:url="xalan://java.net.URLEncoder" -->
-    <!--                  xmlns:deref="xalan://de.schlund.pfixxml.DerefServer" -->
-    <!--                  xmlns:callback="xalan://de.schlund.pfixcore.util.TransformerCallback" -->
-    <!-- </xsl:text> -->
-    <!-- <xsl:value-of select="$additional_custom_namespaces"/> -->
-    <!-- <xsl:text disable-output-escaping="yes"> -->
-    <!--   exclude-result-prefixes="pfx cus xsl url deref callback </xsl:text><xsl:value-of select="$exclude_custom_ns_prefixes"/><xsl:text disable-output-escaping="yes">"></xsl:text> -->
     <ixsl:stylesheet version="1.1"
                      xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
                      xmlns:cus="http://www.schlund.de/pustefix/customize"
@@ -227,7 +214,7 @@
                     <ixsl:when test="$__frame = '{./@name}'">
                       <html>
                         <head/>
-			<xsl:apply-templates select="./pfx:frameset"/>
+						<xsl:apply-templates select="./pfx:frameset"/>
                       </html>
                     </ixsl:when>
                   </xsl:otherwise>
