@@ -94,6 +94,16 @@
   <!-- Categories -->
 
   <!-- make some classes quiet by default --> 
+  <category name="org.apache" additivity="false">
+     <priority value="WARN"/>
+    <appender-ref ref="LOGGER_GENERAL"/>
+  </category>
+  
+  <category name="org.springframework" additivity="false">
+     <priority value="WARN"/>
+    <appender-ref ref="LOGGER_GENERAL"/>
+  </category>
+
   <category name="PFXPERF" additivity="false">
     <priority value="DEBUG"/>
     <appender-ref ref="PFXPERF"/>
