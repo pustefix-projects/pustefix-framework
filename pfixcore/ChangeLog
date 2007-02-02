@@ -1,3 +1,9 @@
+2007-02-02  jtl  <jtl@schlund.de>
+
+	* src/de/schlund/pfixcore/generator/IWrapperImpl.java: 
+	* src/de/schlund/pfixcore/workflow/app/IWrapperSimpleContainer.java:
+	some Hash* -> Tree* to gain dependable output ordering in the DOM tree.
+
 2007-01-30  Martin Leidig  <mleidig@schlund.de>
 
 	Extended distribution file naming opportunities. Now you can use
