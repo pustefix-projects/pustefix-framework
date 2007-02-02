@@ -187,7 +187,7 @@ public abstract class IWrapperImpl implements IWrapper {
     }
 
     public final IWrapperParamDefinition[] gimmeAllParamDefinitions() {
-        HashSet retpar = new HashSet();
+        TreeSet retpar = new TreeSet();
         synchronized (params) {
             retpar.addAll(params.values());
         }

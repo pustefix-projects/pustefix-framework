@@ -68,7 +68,7 @@ import de.schlund.pfixxml.resources.ResourceUtil;
  */
 
 public class IWrapperSimpleContainer implements IWrapperContainer, Reloader {
-    private   HashMap            wrappers           = new HashMap();
+    private   TreeMap            wrappers           = new TreeMap();
 
     // depends on request
     private   ArrayList          activegroups       = new ArrayList();
@@ -789,7 +789,7 @@ public class IWrapperSimpleContainer implements IWrapperContainer, Reloader {
     }// IWrapperGroup
     
     public void reload() {
-        HashMap  wrappersNew = new HashMap();
+        TreeMap  wrappersNew = new TreeMap();
         Iterator it = wrappers.keySet().iterator();
         while(it.hasNext()) {
             String   str       = (String) it.next();
