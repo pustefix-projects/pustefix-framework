@@ -90,7 +90,7 @@ public class XsltWebXmlTask extends XsltGenericTask {
             } catch (Exception e) {
                 throw new BuildException("Could not parse file "+projectsFile, e);
             }
-
+            
             int count;
             NodeList nl = doc.getElementsByTagName("project");
             for (int i = 0; i < nl.getLength(); i++) {
@@ -111,6 +111,17 @@ public class XsltWebXmlTask extends XsltGenericTask {
                 String outdir    = "webapps/" + name + "/WEB-INF";
                 File   webinfdir = new File(getDestdir(), outdir);
                 webinfdir.mkdirs();
+                
+                NodeList webappNodes=currproject.getElementsByTagName("webapps");
+                if(webappNodes!=null && webappNodes.getLength()>0) {
+                    Element webappElem=(Element)webappNodes.item(0);
+                    String hostBasedAttr=webappElem.getAttribute("hostbased");
+                    if(hostBasedAttr!=null && hostBasedAttr.equals("true")) {
+                        File hostWebappsDir=new File(getDestdir(),"webapps_"+name);
+                        hostWebappsDir.mkdirs();
+                    }
+                }
+                
                 outname          = "web.xml";
                 out              = new File(webinfdir,outname);
                 count            = doTransformationMaybe();
