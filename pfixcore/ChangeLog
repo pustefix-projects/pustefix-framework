@@ -1,3 +1,27 @@
+2007-02-05  Martin Leidig  <mleidig@schlund.de>
+
+	Added support for deployment of external webapps. Support can be
+	enabled by adding <webapps hostbased="true"/> to project.xml.in.
+	With this option the project/host gets its own webapps directory
+	servletconf/webapps_PROJECTNAME. At the moment the Pustefix webapps
+	are still deployed to the shared webapps directory, but external
+	webapps can be deployed to the host specific webapps directory and
+	thus can have their own context descriptor in META-INF. Additional
+	webapps are automatically deployed, if they are placed inside the
+	directory servletconf/autodeploy/webapps_PROJECTNAME. Project
+	specific JkMount directives can be added to project.xml.in to give
+	you access to your external in the Apache/mod_jk mode. 
+
+	* src/de/schlund/pfixcore/util/XsltWebXmlTask.java: Create extra
+	directory for each project/host with 'hostbased webapps' enabled
+	* projects/core/build/create_apacheconf.xsl: Support for project
+	specific jkmount directives
+	* projects/core/build/create_serverxml.xsl: Adapt appBase and 
+	docBase for 'hostbased webapps'
+	* skel/build-skel.xml: Added autodeploy target, which deploys all
+	webapps from the autodeploy directory to the according webapp
+	directory
+
 2007-01-30  Martin Leidig  <mleidig@schlund.de>
 
 	* src/de/schlund/pfixcore/workflow/Context.java: newly add support

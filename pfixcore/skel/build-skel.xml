@@ -180,7 +180,7 @@ or delete the DOCTYPE definition -->
           />
 
   <target name="compile-xml"
-          depends="propfiles, scgenerate, web_xml, stylesheets, pfixlog_xml, apache_conf, jk_conf, workers_prop, server_xml, webservice"
+          depends="propfiles, scgenerate, web_xml, autodeploy, stylesheets, pfixlog_xml, apache_conf, jk_conf, workers_prop, server_xml, webservice"
           description="performs xslt transformations in dir.projects"
           />
 
@@ -581,6 +581,16 @@ or delete the DOCTYPE definition -->
       <param name="machine" expression="${machine}"/>
       <param name="mode"    expression="${makemode}"/>
     </pfx-webxml>
+  </target>
+
+  <target name="init-autodeploy">
+    <available file="${dir.projects}/servletconf/autodeploy" type="dir" property="autodeploy.exists"/>
+  </target>
+
+  <target name="autodeploy" depends="web_xml, init-autodeploy" if="autodeploy.exists">
+    <copy todir="${dir.tomcat}">
+      <fileset dir="${dir.projects}/servletconf/autodeploy" includes="**"/>
+    </copy>
   </target>
 
   <target name="stylesheets" depends="ant-tasks" description="creates **/*.xsl from **/*.xsl.in with create_stylesheet.xsl">
