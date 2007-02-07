@@ -24,13 +24,6 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 
-import de.schlund.pfixxml.util.xsltimpl.XPathSaxon1;
-import de.schlund.pfixxml.util.xsltimpl.XPathSaxon2;
-import de.schlund.pfixxml.util.xsltimpl.XmlSaxon1;
-import de.schlund.pfixxml.util.xsltimpl.XmlSaxon2;
-import de.schlund.pfixxml.util.xsltimpl.XsltSaxon1;
-import de.schlund.pfixxml.util.xsltimpl.XsltSaxon2;
-
 /**
  * @author mleidig@schlund.de
  */
@@ -38,6 +31,16 @@ public class XsltProvider {
     
     static Logger LOG=Logger.getLogger(XsltProvider.class);
 
+    static String DETECT_SAXON1="com.icl.saxon.TransformerFactoryImpl";
+    static String DETECT_SAXON2="net.sf.saxon.TransformerFactoryImpl";
+    
+    static String XPATH_SAXON1="de.schlund.pfixxml.util.xsltimpl.XPathSaxon1";
+    static String XPATH_SAXON2="de.schlund.pfixxml.util.xsltimpl.XPathSaxon2";
+    static String XML_SAXON1="de.schlund.pfixxml.util.xsltimpl.XmlSaxon1";
+    static String XML_SAXON2="de.schlund.pfixxml.util.xsltimpl.XmlSaxon2";
+    static String XSLT_SAXON1="de.schlund.pfixxml.util.xsltimpl.XsltSaxon1";
+    static String XSLT_SAXON2="de.schlund.pfixxml.util.xsltimpl.XsltSaxon2";
+    
     static Map<XsltVersion,XmlSupport> xmlSupport=new HashMap<XsltVersion,XmlSupport>();
     static Map<XsltVersion,XPathSupport> xpathSupport=new HashMap<XsltVersion,XPathSupport>();
     static Map<XsltVersion,XsltSupport> xsltSupport=new HashMap<XsltVersion,XsltSupport>();
@@ -45,35 +48,59 @@ public class XsltProvider {
     static XsltVersion preferredXsltVersion=XsltVersion.XSLT1;
     
     static {
+        boolean saxon1Available=false;
         try {
-            xmlSupport.put(XsltVersion.XSLT1,new XmlSaxon1());
+            Class.forName(DETECT_SAXON1);
+            saxon1Available=true;    
         } catch(Exception x) {
-            LOG.warn("Can't initialize XmlSupport: "+XmlSaxon1.class.getName(),x);
+            LOG.warn("No Saxon XSLT1 implementation found!");
         }
+        boolean saxon2Available=false;
         try {
-            xpathSupport.put(XsltVersion.XSLT1,new XPathSaxon1());
+            Class.forName(DETECT_SAXON2);
+            saxon2Available=true;    
         } catch(Exception x) {
-            LOG.warn("Can't initialize XPathSupport: "+XPathSaxon1.class.getName(),x);
+            LOG.warn("No Saxon XSLT2 implementation found!");
         }
-        try {
-            xsltSupport.put(XsltVersion.XSLT1,new XsltSaxon1());
-        } catch(Exception x) {
-            LOG.warn("Can't initialize XsltSupport: "+XsltSaxon1.class.getName(),x);
+        if(saxon1Available) {
+            try {
+                Class clazz=Class.forName(XML_SAXON1);
+                xmlSupport.put(XsltVersion.XSLT1,(XmlSupport)clazz.newInstance());
+            } catch(Exception x) {
+                LOG.error("Can't initialize XmlSupport: "+XML_SAXON1,x);
+            }
+            try {
+                Class clazz=Class.forName(XPATH_SAXON1);
+                xpathSupport.put(XsltVersion.XSLT1,(XPathSupport)clazz.newInstance());
+            } catch(Exception x) {
+                LOG.error("Can't initialize XPathSupport: "+XPATH_SAXON1,x);
+            }
+            try {
+                Class clazz=Class.forName(XSLT_SAXON1);
+                xsltSupport.put(XsltVersion.XSLT1,(XsltSupport)clazz.newInstance());
+            } catch(Exception x) {
+                LOG.error("Can't initialize XsltSupport: "+XSLT_SAXON1,x);
+            }
         }
-        try {
-            xmlSupport.put(XsltVersion.XSLT2,new XmlSaxon2());
-        } catch(Exception x) {
-            LOG.warn("Can't initialize XmlSupport: "+XmlSaxon2.class.getName(),x);
-        }
-        try {
-            xpathSupport.put(XsltVersion.XSLT2,new XPathSaxon2());
-        } catch(Exception x) {
-            LOG.warn("Can't initialize XPathSupport: "+XPathSaxon2.class.getName(),x);
-        }
-        try {
-            xsltSupport.put(XsltVersion.XSLT2,new XsltSaxon2());
-        } catch(Exception x) {
-            LOG.warn("Can't initialize XsltSupport: "+XsltSaxon2.class.getName(),x);
+        if(saxon2Available) {
+            try {
+                Class clazz=Class.forName(XML_SAXON2);
+                xmlSupport.put(XsltVersion.XSLT2,(XmlSupport)clazz.newInstance());
+            } catch(Exception x) {
+                LOG.error("Can't initialize XmlSupport: "+XML_SAXON2,x);
+            }
+            try {
+                Class clazz=Class.forName(XPATH_SAXON2);
+                xpathSupport.put(XsltVersion.XSLT2,(XPathSupport)clazz.newInstance());
+            } catch(Exception x) {
+                LOG.error("Can't initialize XPathSupport: "+XPATH_SAXON2,x);
+            }
+            try {
+                Class clazz=Class.forName(XSLT_SAXON2);
+                xsltSupport.put(XsltVersion.XSLT2,(XsltSupport)clazz.newInstance());
+            } catch(Exception x) {
+                LOG.error("Can't initialize XsltSupport: "+XSLT_SAXON2,x);
+            }
         }
     }
     
