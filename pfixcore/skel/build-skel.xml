@@ -827,7 +827,7 @@ or delete the DOCTYPE definition -->
       fqdn="${fqdn}" 
       tmpdir="${dir.projects}/.webservice"
       prjdir="${dir.projects}"
-      wsddskel="${dir.projects}/common/conf/server-config.wsdd"
+      wsddskel="${dir.projects}/core/conf/server-config.wsdd"
       prjfile="${file.projects_xml}" 
       srcdir="${dir.src}"
       builddir="${dir.build}"
