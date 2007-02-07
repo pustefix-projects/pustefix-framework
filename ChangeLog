@@ -1,3 +1,10 @@
+2007-02-07  Martin Leidig  <mleidig@schlund.de>
+
+	* projects/core/conf/server-config.wsdd: Added
+	* projects/common/conf/server-config.wsdd: Removed as obsolete
+	* skel/projects/common/conf/server-config.wsdd: Removed as obsolete
+	* skel/build-skel.xml: Changed location of server-config.wsdd
+
 2007-02-02  jtl  <jtl@schlund.de>
 
 	* src/de/schlund/pfixcore/generator/IWrapperImpl.java: 
