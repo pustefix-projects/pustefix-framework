@@ -169,7 +169,7 @@ public class Context implements AppContext {
                 autoinvalidate_navi  = saved_autoinvalidate;
                 saved_autoinvalidate = null;
             }
-            if(currentpagerequest!=null && getConfigForCurrentPageRequest().isStoreXML()) {
+            if(currentpagerequest!=null && getConfigForCurrentPageRequest()!=null && getConfigForCurrentPageRequest().isStoreXML()) {
                 lastPageRequest=currentpagerequest;
                 lastPageFlow=currentpageflow;
             }
