@@ -55,7 +55,7 @@ public class ResultDocument {
         spdoc.setDocument(doc);
         formresult = doc.createElement("formresult");
         formresult.setAttribute("xmlns:pfx", PFIXCORE_NS);
-        formresult.setAttribute("serial", "" + date.getTime());
+        formresult.setAttribute("serial", "" + spdoc.getTimestamp());
         doc.appendChild(formresult);
 
         formvalues = doc.createElement("formvalues");

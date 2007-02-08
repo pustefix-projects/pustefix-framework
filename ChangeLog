@@ -1,3 +1,22 @@
+2007-02-08  jtl  <jtl@schlund.de>
+
+	* src/de/schlund/pfixcore/workflow/Context.java (resetUICache): new method.
+	* src/de/schlund/pfixcore/workflow/ContextImpl.java (resetUICache): implement it.
+	* src/de/schlund/pfixcore/workflow/app/DefaultIWrapperState.java (getDocument): call context.resetUICache()
+	when handling submitted data.
+	* src/de/schlund/pfixcore/workflow/context/RequestContextImpl.java (handleRequest): 
+	- new feature: implement a possibility to have a running timestamp in the session (and be able to reset it to the current time) 
+	that is used to decide if a matching ETag results in the sending a NOT_MODIFIED header.
+	- new feature: also redirect whenever the incoming page from the request isn't the page used for the UI.
+	This will eliminate misleading pages visible in the URL (and wrong reload behavior) when moving ahead in a pageflow.
+	(resetUICache): new method (see above).
+	* src/de/schlund/pfixxml/ResultDocument.java (ResultDocument): use the timestamp from the 
+	SPDocument for consistency
+	* src/de/schlund/pfixxml/SPDocument.java: change all occurrences of sslredirect -> redirect
+	because we not only do this for the SSL case anymore
+	* src/de/schlund/pfixxml/perflogging/PerfEventType.java: new type for measuring
+	the creation of ETags from the DOM tree
+
 2007-02-08  Martin Leidig  <mleidig@schlund.de>
 
 	Split include.xsl into XSLT1 and XSLT2 version, thus all 

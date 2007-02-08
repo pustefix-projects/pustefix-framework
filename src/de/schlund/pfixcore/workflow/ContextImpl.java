@@ -251,6 +251,10 @@ public class ContextImpl implements Context, AccessibilityChecker {
         return sessioncontext.getVisitId();
     }
 
+    public void resetUICache() {
+        getRequestContextForCurrentThreadWithError().resetUICache();
+    }
+
     public boolean isCurrentPageFlowRequestedByUser() {
         return getRequestContextForCurrentThreadWithError().isCurrentPageFlowRequestedByUser();
     }
@@ -290,7 +294,7 @@ public class ContextImpl implements Context, AccessibilityChecker {
     public void setJumpToPageFlow(String pageflow) {
         getRequestContextForCurrentThreadWithError().setJumpToPageFlow(pageflow);
     }
-
+    
     public void setLanguage(String lang) {
         getRequestContextForCurrentThreadWithError().setLanguage(lang);
         sessioncontext.setLanguage(lang);

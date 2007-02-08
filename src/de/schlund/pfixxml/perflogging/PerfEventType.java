@@ -28,6 +28,7 @@ package de.schlund.pfixxml.perflogging;
  */
 public class PerfEventType {
     
+    public static final String XMLSERVER_CREATEETAG = "XMLSERVER_CREATEETAG";
     public static final String XMLSERVER_PREPROCESS = "XMLSERVER_PRE_PROCESS";
     public static final String IHANDLER_ISACTIVE = "IHANDLER_IS_ACTIVE";
     public static final String IHANDLER_NEEDSDATA = "IHANDLER_NEEDS_DATA";
@@ -44,10 +45,9 @@ public class PerfEventType {
     public static final String CONTEXT_CREATENAVIREUSE = "CONTEXT_CREATE_NAVI_REUSE";
     public static final String XMLSERVER_HANDLEDOCUMENT = "XMLSERVER_HANDLE_DOCUMENT";
     public static final String XMLSERVER_CALLPROCESS = "XMLSERVER_CALL_PROCESS";
-    public static final String XMLSERVER_GETDOM= "XMLSERVER_GET_DOM";
-    public static final String PFIXSERVLETREQUEST_INIT= "PFIXSERVLETREQUEST_INIT";
-    public static final String WEBSERVICE_PROCESSING="WEBSERVICE_PROCESSING";
-    public static final String WEBSERVICE_INVOCATION="WEBSERVICE_INVOCATION";
-
+    public static final String XMLSERVER_GETDOM = "XMLSERVER_GET_DOM";
+    public static final String PFIXSERVLETREQUEST_INIT = "PFIXSERVLETREQUEST_INIT";
+    public static final String WEBSERVICE_PROCESSING = "WEBSERVICE_PROCESSING";
+    public static final String WEBSERVICE_INVOCATION = "WEBSERVICE_INVOCATION";
 }
 
