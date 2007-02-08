@@ -1,3 +1,12 @@
+2007-02-08  Sebastian Marsching  <sebastian.marsching@1und1.de>
+
+	* src/de/schlund/pfixcore/util/UnpackModuleTask.java: 
+	* projects/core/schema/moduledescriptor200702.xsd: 
+	* skel/build-skel.xml: 
+	Adding support for resource data in JAR libraries. The resource data will
+	be copied to the projects/modules/<module-x> directory if a suitable
+	deployment descriptor is present in the JAR archive.
+
 2007-02-08  Martin Leidig  <mleidig@schlund.de>
 
 	* build.xml: Removed exclusion of the de.skelexamples package
