@@ -48,7 +48,7 @@ public class SPDocument {
     private String    contenttype    = null;
     private HashMap   header         = new HashMap();
     private ArrayList cookies        = new ArrayList();
-    private String    sslRedirectURL = null;
+    private String    redirectURL    = null;
 
     //~ Methods ....................................................................................
 
@@ -98,7 +98,7 @@ public class SPDocument {
     }
 
     public int getResponseError() {
-        if (sslRedirectURL == null) {
+        if (redirectURL == null) {
             return error;
         } else {
             return HttpServletResponse.SC_MOVED_TEMPORARILY;
@@ -110,11 +110,11 @@ public class SPDocument {
     }
 
     public HashMap getResponseHeader() {
-        if (sslRedirectURL == null) {
+        if (redirectURL == null) {
             return header;
         } else {
             HashMap newheader = new HashMap();
-            newheader.put("Location", sslRedirectURL);
+            newheader.put("Location", redirectURL);
             return newheader;
         }
     }
@@ -204,21 +204,21 @@ public class SPDocument {
      * 
      * @param redirectURL Complete URL string
      */
-    public void setSSLRedirect(String redirectURL) {
-        this.sslRedirectURL = redirectURL;
+    public void setRedirect(String redirectURL) {
+        this.redirectURL = redirectURL;
     }
 
-    public boolean isSSLRedirect() {
-        return sslRedirectURL != null;
+    public boolean isRedirect() {
+        return redirectURL != null;
     }
     
     /**
-     * Resets the redirect URL set via {@link #setSSLRedirect(String)}.
+     * Resets the redirect URL set via {@link #setRedirect(String)}.
      * Should be called after serving the document the first time
      * (which effectively means after doing the redirect).
      */
-    public void resetSSLRedirectURL() {
-        this.sslRedirectURL = null;
+    public void resetRedirectURL() {
+        this.redirectURL = null;
     }
 
     /**

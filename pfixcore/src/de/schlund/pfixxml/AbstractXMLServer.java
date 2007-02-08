@@ -44,8 +44,13 @@ import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
+import org.apache.log4j.Category;
 import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 import de.schlund.pfixcore.exception.PustefixApplicationException;
 import de.schlund.pfixcore.exception.PustefixCoreException;
@@ -70,6 +75,7 @@ import de.schlund.pfixxml.targets.Target;
 import de.schlund.pfixxml.targets.TargetGenerationException;
 import de.schlund.pfixxml.targets.TargetGenerator;
 import de.schlund.pfixxml.targets.TargetGeneratorFactory;
+import de.schlund.pfixxml.util.MD5Utils;
 import de.schlund.pfixxml.util.SimpleCacheLRU;
 import de.schlund.pfixxml.util.Xml;
 import de.schlund.pfixxml.util.Xslt;
@@ -135,6 +141,7 @@ public abstract class AbstractXMLServer extends ServletManager {
     public static final String PREPROCTIME = "__PREPROCTIME__";
     public static final String GETDOMTIME  = "__GETDOMTIME__";
     public static final String TRAFOTIME   = "__TRAFOTIME__";
+    public static final String REUSEUITIMESTAMP = "__REUSEUITIMESTAMP__";
     
     /**
      * Holds the TargetGenerator which is the XML/XSL Cache for this
@@ -216,7 +223,7 @@ public abstract class AbstractXMLServer extends ServletManager {
                 throw new ServletException(e.getMessage());
             }
         }
-
+        
         String addinfoprop = getAbstractXMLServletConfig().getProperties().getProperty(PROP_ADD_TRAIL_INFO);
         addtrailinfo       = AdditionalTrailInfoFactory.getInstance().getAdditionalTrailInfo(addinfoprop);
         
@@ -337,7 +344,7 @@ public abstract class AbstractXMLServer extends ServletManager {
                 synchronized (session) {
                     // Make sure redirect is only done once
                     // See also: SSL redirect implementation in Context
-                    spdoc.resetSSLRedirectURL();
+                    spdoc.resetRedirectURL();
                 }
             }
            
@@ -418,7 +425,7 @@ public abstract class AbstractXMLServer extends ServletManager {
         }
         handleDocument(preq, res, spdoc, params, doreuse);
 
-        if (!spdoc.getNostore() || spdoc.isSSLRedirect()) {
+        if (!spdoc.getNostore() || spdoc.isRedirect()) {
             SessionCleaner.getInstance().storeSPDocument(spdoc, storeddoms, scleanertimeout);
         } else {
             LOGGER.info("*** Got NOSTORE from SPDocument! ****");
@@ -515,14 +522,49 @@ public abstract class AbstractXMLServer extends ServletManager {
                 }
             }
         }
+        
+        boolean modified_or_no_etag = true;
+        long    reuse_ts_etag = 0;
+        long    reuse_ts_min = 0;
 
-        try {
-            hookBeforeRender(preq, spdoc, paramhash, stylesheet);
-            render(spdoc, getRendering(preq), res, paramhash, stylesheet);
-        } finally {
-            hookAfterRender(preq, spdoc, paramhash, stylesheet);
+        if (session != null && session.getAttribute(REUSEUITIMESTAMP) != null) {
+            reuse_ts_min = (Long) session.getAttribute(REUSEUITIMESTAMP);
         }
         
+        PerfEvent pe_etag = new PerfEvent(PerfEventType.XMLSERVER_CREATEETAG, spdoc.getPagename());
+        pe_etag.start();
+        String etag = createEtag(spdoc.getDocument());
+        pe_etag.save();
+        res.setHeader("ETag", etag + ":" + spdoc.getTimestamp());
+        String incoming = preq.getRequest().getHeader("If-None-Match");
+        if (incoming != null) {
+            int index = incoming.indexOf(":");
+            if (index > 0 && incoming.length() > index+1) {
+                String etag_in = incoming.substring(0, index);
+                String time_in = incoming.substring(index + 1);
+                try {
+                    reuse_ts_etag = new Long(time_in);
+                } catch (NumberFormatException e) {
+                    reuse_ts_etag = 0;
+                }
+                if (etag_in.equals(etag) && (reuse_ts_etag >= reuse_ts_min)) {
+                    modified_or_no_etag = false;
+                }
+            }
+        }
+        
+        if (modified_or_no_etag) {
+            try {
+                hookBeforeRender(preq, spdoc, paramhash, stylesheet);
+                render(spdoc, getRendering(preq), res, paramhash, stylesheet);
+            } finally {
+                hookAfterRender(preq, spdoc, paramhash, stylesheet);
+            }
+        } else {
+            res.setStatus(res.SC_NOT_MODIFIED);
+            LOGGER.info("*** Reuisng UI: " + spdoc.getPagename());
+        }
+
         long handletime = System.currentTimeMillis() - currtime;
         preq.getRequest().setAttribute(TRAFOTIME, handletime);
         
@@ -552,10 +594,13 @@ public abstract class AbstractXMLServer extends ServletManager {
         pe.save();
         
         if (LOGGER.isInfoEnabled()) {
-            LOGGER.info(">>> Complete handleDocument(...) took " + handletime + "ms");
+            LOGGER.info(">>> Complete handleDocument(...) took " + handletime + "ms" + 
+                    " (needed xslt: " + modified_or_no_etag + ")");
         }
+        
         try {
-            if (spdoc.getResponseContentType() == null || spdoc.getResponseContentType().startsWith("text/html")) {
+            if (modified_or_no_etag && 
+                    (spdoc.getResponseContentType() == null || spdoc.getResponseContentType().startsWith("text/html"))) {
                 OutputStream       out          = res.getOutputStream();
                 OutputStreamWriter writer       = new OutputStreamWriter(out, res.getCharacterEncoding());
                 writer.write("\n<!--");
@@ -572,6 +617,40 @@ public abstract class AbstractXMLServer extends ServletManager {
         }
     }
 
+    private String createEtag(Document doc) {
+        Element root = doc.getDocumentElement();
+        StringBuffer buffer = new StringBuffer();
+        recurseSerialize(root, buffer, true);
+        String value = buffer.toString();
+        return MD5Utils.hex_md5(value);
+    }
+    
+    private void recurseSerialize(Node node, StringBuffer buffer, boolean isrootnode) {
+        String name = node.getNodeName();
+        if (name != null) {
+            buffer.append(name);
+        }
+        if (node.getNodeType() == Node.ELEMENT_NODE) {
+            NamedNodeMap attributes = node.getAttributes();
+            for (int i = 0; i < attributes.getLength(); i++) {
+                Node attribute = attributes.item(i);
+                String attname = attribute.getNodeName();
+                if (!(isrootnode && attname.equals("serial"))) { 
+                    buffer.append(" " + attname + "=\"" + attribute.getNodeValue() + "\"");
+                }
+            }
+        }
+        String value = node.getNodeValue();
+        if (value != null) {
+            buffer.append(value);
+        }
+        NodeList children =  node.getChildNodes();
+        for (int i = 0; i < children.getLength(); i++) {
+            Node child = children.item(i);
+            recurseSerialize(child, buffer, false);
+        }
+    }
+    
     private void render(SPDocument spdoc, int rendering, HttpServletResponse res, TreeMap paramhash, String stylesheet) throws RenderingException {
         try {
         switch (rendering) {
@@ -591,13 +670,13 @@ public abstract class AbstractXMLServer extends ServletManager {
                 throw new IllegalArgumentException("unkown rendering: " + rendering);
             }
         } catch (TransformerConfigurationException e) {
-            throw new RenderingException("Exception while rendering page " + spdoc.getPagename() + " with stylesheet " + spdoc.getXSLKey(), e);
+            throw new RenderingException("Exception while rendering page " + spdoc.getPagename() + " with stylesheet " + stylesheet, e);
         } catch (TargetGenerationException e) {
-            throw new RenderingException("Exception while rendering page " + spdoc.getPagename() + " with stylesheet " + spdoc.getXSLKey(), e);
+            throw new RenderingException("Exception while rendering page " + spdoc.getPagename() + " with stylesheet " + stylesheet, e);
         } catch (IOException e) {
-            throw new RenderingException("Exception while rendering page " + spdoc.getPagename() + " with stylesheet " + spdoc.getXSLKey(), e);
+            throw new RenderingException("Exception while rendering page " + spdoc.getPagename() + " with stylesheet " + stylesheet, e);
         } catch (TransformerException e) {
-            throw new RenderingException("Exception while rendering page " + spdoc.getPagename() + " with stylesheet " + spdoc.getXSLKey(), e);
+            throw new RenderingException("Exception while rendering page " + spdoc.getPagename() + " with stylesheet " + stylesheet, e);
         }
     }
 
@@ -612,10 +691,8 @@ public abstract class AbstractXMLServer extends ServletManager {
         paramhash.put("themes", target.getThemes().getId());
         stylevalue = (Templates) target.getValue();
         if (stylevalue == null) { // AH 2004-09-21 added for bugtracing 
-            LOGGER.warn("stylevalue must not be null; stylevalue=" +
-                     stylevalue + "; stylesheet=" + stylesheet + "; spdoc.getPagename()=" +
-                     ((spdoc != null) ? spdoc.getPagename() : "spdoc==null") + " spdoc.getXSLKey()=" +
-                     ((spdoc != null) ? spdoc.getXSLKey() : "spdoc==null"));
+            LOGGER.warn("stylevalue MUST NOT be null: stylesheet=" + stylesheet + "; " +
+                     ((spdoc != null) ? ("pagename=" +  spdoc.getPagename()) : "spdoc==null")); 
         }
         try {
             Xslt.transform(spdoc.getDocument(), stylevalue, paramhash, new StreamResult(res.getOutputStream()));

@@ -25,6 +25,7 @@ import java.util.Properties;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
@@ -42,6 +43,7 @@ import de.schlund.pfixcore.workflow.PageRequest;
 import de.schlund.pfixcore.workflow.PageRequestStatus;
 import de.schlund.pfixcore.workflow.State;
 import de.schlund.pfixcore.workflow.VariantManager;
+import de.schlund.pfixxml.AbstractXMLServer;
 import de.schlund.pfixxml.ContextXMLServer;
 import de.schlund.pfixxml.PfixServletRequest;
 import de.schlund.pfixxml.RequestParam;
@@ -76,7 +78,8 @@ public class RequestContextImpl implements Cloneable {
     private PageFlowManager    pageflowmanager;
     private VariantManager     variantmanager;
     private PageMap            pagemap;
-
+    private boolean            reset_ui_cache;
+    
     private Variant variant  = null;
     private String  language = null;
 
@@ -107,7 +110,7 @@ public class RequestContextImpl implements Cloneable {
         // Look for last request in session
         // this is done to get a behaviour similar to the old one
         // when requests where only done synchronous
-        String lastpage = null;
+        String lastpage     = null;
         String lastpageflow = null;
         lastpage      = parentcontext.getLastPageName();
         lastpageflow  = parentcontext.getLastPageFlowName();
@@ -229,6 +232,10 @@ public class RequestContextImpl implements Cloneable {
     
     public boolean isJumpToPageFlowSet() {
         return getJumpToPageFlow() != null;
+    }
+
+    public void resetUICache() {
+        this.reset_ui_cache = true;
     }
 
     public void prohibitContinue() {
@@ -392,22 +399,50 @@ public class RequestContextImpl implements Cloneable {
 
     public SPDocument handleRequest(PfixServletRequest preq) throws PustefixApplicationException, PustefixCoreException {
         SPDocument spdoc;
+        HttpSession session = preq.getSession(false);
+        
+        // reset_ui_cache can be set while handling the request (e.g. by an interceptor or a State) via
+        // the resetUICache() method in this class. If it is set to true, the minimum allowed timestamp for
+        // an ETag coming from a request is updated to the current time, in effect forcing all transformations
+        // to be redone, even if the new DOM tree has the same hash value as an earlier DOM tree.
+        // The StateImpl will always call resetUICache, whenever a request comes in that sumbmits data,
+        // under the assumption that it's mostly this case when something changes that may result in
+        // other pages being accessible
+        // Note: All this is only necessary, because the current navigation state is no longer part of the DOM tree,
+        // which could lead to the same DOM tree being produced than earlier with a different set of accessible pages.
+        // If the UI would be reused in this case, the wrong links on the page could be shown as forbidden or accessible.
+        
+        reset_ui_cache = false;
         spdoc = handleRequestWorker(preq);
-
-        // Make sure SSL pages are only returned using SSL.
-        // This rule does not apply to pages with the nostore
-        // flag, as we would not be able to return such a page
-        // after the redirect
-        if (getConfigForCurrentPageRequest() != null && spdoc != null && getConfigForCurrentPageRequest().isSSL()
+        if (reset_ui_cache) {
+            session.setAttribute(AbstractXMLServer.REUSEUITIMESTAMP, System.currentTimeMillis());
+        }
+        
+        if (!spdoc.getNostore() && (preq.getPageName() == null || !preq.getPageName().equals(spdoc.getPagename()))) {
+            // Make sure all requests that don't encode an explicite pagename
+            // (this normally is only the case for the first request)
+            // OR pages that have the "wrong" pagename in their request 
+            // (this applies to pages selected by stepping ahead in the page flow)
+            // are redirected to the page selected by the business logic below
+            // This rule does not apply to pages with the nostore
+            // flag, as we would not be able to return such a page after the redirect
+            spdoc.setRedirect(preq.getScheme() + "://" + ServletManager.getServerName(preq.getRequest()) 
+                    + ":" + preq.getServerPort() + preq.getContextPath() + preq.getServletPath() + "/" + spdoc.getPagename() 
+                    + ";jsessionid=" + preq.getSession(false).getId() + "?__reuse=" + spdoc.getTimestamp());
+        } else if (getConfigForCurrentPageRequest() != null && spdoc != null && getConfigForCurrentPageRequest().isSSL()
             && !spdoc.getNostore() && !preq.getOriginalScheme().equals("https")) {
+            // Make sure SSL pages are only returned using SSL.
+            // This rule does not apply to pages with the nostore
+            // flag, as we would not be able to return such a page
+            // after the redirect
             String redirectPort = getServerContext().getProperties().getProperty(ServletManager.PROP_SSL_REDIRECT_PORT + String.valueOf(preq.getOriginalServerPort()));
             if (redirectPort == null) {
                 redirectPort = "";
             } else {
                 redirectPort = ":" + redirectPort;
             }
-            spdoc.setSSLRedirect("https://" + ServletManager.getServerName(preq.getRequest()) + redirectPort + preq.getContextPath() +
-                                 preq.getServletPath() + ";jsessionid=" + preq.getSession(false).getId() + "?__reuse=" + spdoc.getTimestamp());
+            spdoc.setRedirect("https://" + ServletManager.getServerName(preq.getRequest()) + redirectPort + preq.getContextPath() 
+                    + preq.getServletPath() + ";jsessionid=" + preq.getSession(false).getId() + "?__reuse=" + spdoc.getTimestamp());
         }
         
         // Reset stored variant so the session variant is being used
@@ -442,7 +477,7 @@ public class RequestContextImpl implements Cloneable {
             startwithflow = true;
         }
 
-        // This helps to reset the state between different request from different windows
+        // This helps to reset the state between different requests from different windows
         // representing different locations in the same application.  The page will be set a bit
         // below in trySettingPageRequestAndFlow, where the "real" pageflow to use is also deduced.
         // At least, the currentpageflow is updated to be the currently valid variant.
