@@ -3,8 +3,8 @@
                 xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
                 xmlns:ixsl="http://www.w3.org/1999/XSL/TransformOutputAlias"
                 xmlns:pfx="http://www.schlund.de/pustefix/core"
-                xmlns:include="xalan://de.schlund.pfixxml.IncludeDocumentExtensionSaxon1"
-                xmlns:image="xalan://de.schlund.pfixxml.ImageThemedSrcSaxon1"
+                xmlns:include="xalan://de.schlund.pfixxml.IncludeDocumentExtensionSaxon2"
+                xmlns:image="xalan://de.schlund.pfixxml.ImageThemedSrcSaxon2"
                 xmlns:geometry="xalan://de.schlund.pfixxml.ImageGeometry"
                 exclude-result-prefixes="include image geometry">
 
@@ -14,7 +14,7 @@
     ##########################################
     # WARNING:                               #
     # All changes within this file also have #
-    # to be applied to include_xslt2.xsl     #
+    # to be applied to include.xsl           #
     ##########################################
   -->
 
