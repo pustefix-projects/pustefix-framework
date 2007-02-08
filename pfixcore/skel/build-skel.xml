@@ -347,6 +347,13 @@ or delete the DOCTYPE definition -->
      classpathref="cp.classpath"
      loaderref="pfx-loader"   
      /> 
+    <taskdef
+     name="pfx-unpack-jar-module"
+     classname="de.schlund.pfixcore.util.UnpackModuleTask"
+     classpathref="cp.classpath"
+     loaderref="pfx-loader"
+     description="Checks JARs for a Pustefix module deployment descriptor and unpacks the resources"
+     /> 
   </target>
 
   <target name="dtd" depends="dtd-check, ant-tasks" unless="upd.dtd" description="creates a DTD for this build file">
@@ -432,6 +439,7 @@ or delete the DOCTYPE definition -->
     <unjar dest="${dir.extract.modules}">
       <fileset dir="${dir.src.modules}" includes="*.jar" />
     </unjar>
+    <antcall target="-extract-jar-modules"></antcall> 
     <chmod perm="444"><fileset dir="${dir.extract.modules}" includes="**/*"/></chmod>
     <touch file="${dir.extract.modules}/TIMESTAMP"/>
     <foreach param="tmp.modules.buildxml" target="extract-modules-call-ant" inheritall="true" inheritrefs="true">
@@ -440,6 +448,11 @@ or delete the DOCTYPE definition -->
       </fileset>   
     </foreach> 
   </target>
+ 
+  <target name="-extract-jar-modules" depends="ant-tasks" description="Extracts resource data from JAR libraries">
+    <!-- This target should only be called by extract-modules -->  
+    <pfx-unpack-jar-module srcdir="${basedir}" extracttodir="${dir.extract.modules}" includes="${lib.includes}" />
+  </target>   
   
   <target name="extract-modules-call-ant">
     <dirname property="tmp.modules.modulepath" file="${tmp.modules.buildxml}"/> 
