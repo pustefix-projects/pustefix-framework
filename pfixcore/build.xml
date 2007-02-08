@@ -8,7 +8,6 @@ or delete the DOCTYPE definition -->
   <!-- override properties -->
   <property name="dir.projects"           location="projects"/>
   <property name="dir.jni"                location="jni"/>
-  <property name="exclude.examples"       value="de/skelexamples/**/*.*"/>
   
   <import file="skel/build-skel.xml"/>
 
@@ -196,10 +195,8 @@ or delete the DOCTYPE definition -->
       <fileset dir="${basedir}" includes="META-INF/**"/>
       <fileset dir="${dir.build}">
         <exclude name="de/schlund/util/statuscodes/StatusCodeLib.class"/>
-        <exclude name="de/schlund/pfixcore/example/iwrapper/DemoText.class"/>
-        <exclude name="de/schlund/pfixcore/example/ContextDemoText.class"/>
-        <exclude name="de/schlund/pfixcore/example/ContextDemoTextImpl.class"/>
-        <exclude name="de/schlund/pfixcore/example/DemoTextHandler.class"/>
+        <exclude name="de/schlund/pfixcore/example/**"/>
+    <exclude name="de/skelexamples/**"/>
         <exclude name="de/schlund/pfixcore/testsuite/**/*.class"/> 
       </fileset>
       <fileset dir="${dir.jni}" includes="${name.jnipkg}"/>

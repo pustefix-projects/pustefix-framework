@@ -1,3 +1,11 @@
+2007-02-08  Martin Leidig  <mleidig@schlund.de>
+
+	* build.xml: Removed exclusion of the de.skelexamples package
+	from compiling (it just confuses Eclipse, which sometimes doesn't
+	compile the classes and shows errors). Added exclusion of the
+	packages de.schlund.pfixcore.example and de.skelexamples to the
+	jar file creation target (cause they're not needed/wanted here)
+
 2007-02-08  jtl  <jtl@schlund.de>
 
 	* src/de/schlund/pfixcore/workflow/Context.java (resetUICache): new method.
