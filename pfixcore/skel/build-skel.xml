@@ -32,7 +32,7 @@ or delete the DOCTYPE definition -->
   <property name="file.projects_xml"        location="${dir.projects}/servletconf/projects.xml"/>
   <property name="validate"                 value="dynamic"/>
   <property name="catalogfile"              location="${dir.projects}/core/schema/catalog.xml"/>
-  <property name="genlog"                   value="quiet"                                                description="which log4j config to use for the generate task; currently one of quiet, full, tree; defaults to quiet; see ${dir.projects}/core/conf/generator_*.xml"/>
+  <property name="genlog"                   value="quiet"                                                description="which log4j config to use for the generate ; currently one of quiet, full, tree; defaults to quiet; see ${dir.projects}/core/conf/generator_*.xml"/>
   <property name="file.log4jconfig"         location="${dir.projects}/core/conf/generator_${genlog}.xml"/>
 
   <!-- TODO: use dir.tomcat whereever possible -->
@@ -175,7 +175,7 @@ or delete the DOCTYPE definition -->
   </target>
 
   <target name="all"
-          depends="compile, post-compile, installjars, check-permissions, compile-xml"
+          depends="init, compile, post-compile, installjars, check-permissions, compile-xml"
           description="builds all files required to run"
           />
 
@@ -276,7 +276,7 @@ or delete the DOCTYPE definition -->
     </apply>
   </target>
 
-  <target name="ant-tasks" depends="init" description="declares the ant task used for generating java source code. This target needs to be run prior to the actual compile.">
+  <target name="ant-tasks" depends="tomcat.dir.opt" description="declares the ant task used for generating java source code. This target needs to be run prior to the actual compile.">
     <taskdef
      name="pfx-xslt"
      classname="de.schlund.pfixcore.util.XsltGenericTask"
@@ -333,6 +333,13 @@ or delete the DOCTYPE definition -->
   	 loaderref="pfx-loader"
   	 description="Stores properties used at buildtime to be used later at runtime"
   	 />
+    <taskdef
+     name="pfx-unpack-jar-module"
+     classname="de.schlund.pfixcore.util.UnpackModuleTask"
+     classpathref="cp.classpath"
+     loaderref="pfx-loader"
+     description="Checks JARs for a Pustefix module deployment descriptor and unpacks the resources"
+     /> 
   </target>
 
   <target name="dtd" depends="dtd-check, ant-tasks" unless="upd.dtd" description="creates a DTD for this build file">
@@ -411,8 +418,14 @@ or delete the DOCTYPE definition -->
     <unjar dest="${dir.extract.modules}">
       <fileset dir="${dir.src.modules}" includes="*.jar" />
     </unjar>
+    <antcall target="-extract-jar-modules"></antcall>
     <chmod perm="444"><fileset dir="${dir.extract.modules}" includes="**/*"/></chmod>
   </target>
+ 
+ <target name="-extract-jar-modules" depends="ant-tasks" description="Extracts resource data from JAR libraries">
+   <!-- This target should only be called by extract-modules -->  
+   <pfx-unpack-jar-module srcdir="${basedir}" extracttodir="${dir.extract.modules}" includes="${lib.includes}" />
+ </target>
   
   <target name="init-data-check" unless="pfx.force">
     <!-- extract only if pfixcore-data.jar is newer than dir ${dir.projects}/core -->
@@ -539,7 +552,7 @@ or delete the DOCTYPE definition -->
     </pfx-xslt>
   </target>
 
-  <target name="projects_xml" depends="ant-tasks" description="creates projects.xml out of projects.xml.in and multiple project.xml files" >
+  <target name="projects_xml" depends="ant-tasks, init" description="creates projects.xml out of projects.xml.in and multiple project.xml files" >
     <fileset id="id.fileset.projectxmlin" dir="${dir.projects}" includes="**/project.xml.in"/>
     <pathconvert property="projectxmlins" refid="id.fileset.projectxmlin" pathsep="|">
       <map from="${dir.projects}/" to=""/>
@@ -593,7 +606,7 @@ or delete the DOCTYPE definition -->
     </copy>
   </target>
 
-  <target name="stylesheets" depends="ant-tasks" description="creates **/*.xsl from **/*.xsl.in with create_stylesheet.xsl">
+  <target name="stylesheets" depends="ant-tasks, init" description="creates **/*.xsl from **/*.xsl.in with create_stylesheet.xsl">
     <pfx-xslt
      style="${dir.projects}/core/build/create_stylesheet.xsl"
      srcdir="${dir.projects}"
