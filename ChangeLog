@@ -1,3 +1,16 @@
+2007-02-08  Martin Leidig  <mleidig@schlund.de>
+
+	Split include.xsl into XSLT1 and XSLT2 version, thus all 
+	runtime dependencies to a specific Saxon version (caused by
+	incompatible extension functions) are removed and XSLT1- or 
+	XSLT2-only usage doesn't require to include both Saxon libraries.
+
+	* src/de/schlund/pfixxml/util/Xslt.java: Modified the URIResolver
+	to dispatch to XSLT version specific include.xsl files
+	* projects/core/xsl/include.xsl: Removed XSLT2 dependent stuff
+	* projects/core/xsl/include_xslt2.xsl: Added an own include.xsl
+	version for XSLT2
+
 2007-02-07  Martin Leidig  <mleidig@schlund.de>
 
 	* src/de/schlund/pfixxml/util/XsltProvider.java: Added automatic

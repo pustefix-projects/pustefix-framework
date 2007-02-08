@@ -97,7 +97,7 @@ public class Xslt {
         Source src = new SAXSource(Xml.createXMLReader(), input);
         TransformerFactory factory = XsltProvider.getXsltSupport(xsltVersion).getThreadTransformerFactory();
         if(factory.getErrorListener()==null) factory.setErrorListener(new PFErrorListener());
-        factory.setURIResolver(new FileResolver(parent));
+        factory.setURIResolver(new FileResolver(parent,xsltVersion));
         try {
             Templates retval = factory.newTemplates(src);
             return retval;
@@ -155,9 +155,11 @@ public class Xslt {
         private static final String SEP = File.separator;
         
         private TargetImpl parent;
+        private XsltVersion xsltVersion;
 
-        public FileResolver(TargetImpl parent) {
+        public FileResolver(TargetImpl parent, XsltVersion xsltVersion) {
             this.parent = parent;
+            this.xsltVersion = xsltVersion;
         }
 
         /**
@@ -171,6 +173,16 @@ public class Xslt {
             FileResource file;
             boolean forcePfixroot = false;
    
+            //Rewrite include href to xslt version specific file, that's necessary cause
+            //the XSLT1 and XSLT2 extension functions are incompatible and we want
+            //to support using XSLT1 (Saxon 6.5.x) or XSLT2 (Saxon 8.x) without the
+            //need to have both versions installed, thus the extension functions can't be
+            //referenced within the same stylesheet and we rewrite to the according 
+            //version specific stylesheet here
+            if(href.equals("core/xsl/include.xsl")) {
+                if(xsltVersion==XsltVersion.XSLT2) href="core/xsl/include_xslt2.xsl";
+            }
+            
             try {
                 uri = new URI(href);
             } catch (URISyntaxException e) {
