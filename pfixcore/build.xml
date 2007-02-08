@@ -12,8 +12,8 @@ or delete the DOCTYPE definition -->
   
   <import file="skel/build-skel.xml"/>
 
-  <property name="dist.version"        value="0.9.2" description="the version to use for pfixcore-*.*"/>
-  <property name="dist.type"           value="build" description="distribution type: supported values release, prerelease, build"/>
+  <property name="dist.version"        value="0.9.2-pre" description="the version to use for pfixcore-*.*"/>
+  <property name="dist.type"           value="build" description="distribution type: supported values release, build"/>
 
   <!-- additional properties -->
   <property name="name.svnrevision"       value="SVN_REVISION"/>
@@ -35,19 +35,17 @@ or delete the DOCTYPE definition -->
   <target name="dist-properties">
     <exec executable="sh" outputproperty="dist.revision" errorproperty="dist.revision.error">
       <arg line="-c 'svn info | grep ^Revision: | cut -d\  -f2'"/>
-    </exec>                                                                                                                                              <condition property="project.version" value="${dist.version}">
+    </exec>                                                                                                    
+    <condition property="project.version" value="${dist.version}">
       <equals arg1="${dist.type}" arg2="release"/>
     </condition>
-    <condition property="project.version" value="${dist.version}-pre">
-      <or>
-        <equals arg1="${dist.type}" arg2="prerelease"/>
-        <and>
-          <equals arg1="${dist.type}" arg2="build"/>
-          <not><equals arg1="${dist.revision.error}" arg2=""/></not>
-        </and>
-      </or>
+    <condition property="project.version" value="${dist.version}-norev">
+      <and>
+        <equals arg1="${dist.type}" arg2="build"/>
+        <not><equals arg1="${dist.revision.error}" arg2=""/></not>
+      </and>
     </condition>
-    <condition property="project.version" value="${dist.version}-${dist.revision}">
+    <condition property="project.version" value="${dist.version}-r${dist.revision}">
       <equals arg1="${dist.type}" arg2="build"/>
     </condition>
     <property name="name.pfixcore_jar"      value="${project.name}-${project.version}.jar"/>
