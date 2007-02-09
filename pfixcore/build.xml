@@ -49,6 +49,8 @@ or delete the DOCTYPE definition -->
     </condition>
     <property name="name.pfixcore_jar"      value="${project.name}-${project.version}.jar"/>
     <property name="file.pfixcore_jar"      location="${dir.dist}/${name.pfixcore_jar}"/>
+    <property name="name.pfixcore_srcjar"   value="${project.name}-src-${project.version}.jar"/>
+    <property name="file.pfixcore_srcjar"   location="${dir.dist}/${name.pfixcore_srcjar}"/>
     <property name="name.pfixcore_data_tgz" value="${project.name}-data-${project.version}.tar.gz"/>
     <property name="file.pfixcore_data_tgz" location="${dir.dist}/${name.pfixcore_data_tgz}"/>
     <property name="name.pfixcore_skel_tgz" value="${project.name}-skel-${project.version}.tar.gz"/>
@@ -165,7 +167,7 @@ or delete the DOCTYPE definition -->
     <fixcrlf srcdir="${basedir}" includes="build.xml, skel/build.xml, jni/build.xml" tab="remove" tablength="4"/>
   </target>
 
-  <target name="skeleton" depends="tomcat.dir, ant-tasks, fixtabs, compile, jar, data">
+  <target name="skeleton" depends="tomcat.dir, ant-tasks, fixtabs, compile, jar, srcjar, data">
     <echo message="Building ${name.pfixcore_skel_tgz} in dist directory"/>
     <tar destfile="${file.pfixcore_skel_tgz}" compression="gzip">
       <tarfileset dir="${dir.skel}" prefix="skel"/>
@@ -199,6 +201,22 @@ or delete the DOCTYPE definition -->
     <exclude name="de/skelexamples/**"/>
       </fileset>
       <fileset dir="${dir.jni}" includes="${name.jnipkg}"/>
+    </jar>
+  </target>
+
+  <target name="srcjar" depends="dist-properties">
+    <mkdir dir="${dir.dist}"/>
+    <jar destfile="${file.pfixcore_srcjar}">
+      <fileset dir="${basedir}" includes="META-INF/**"/>
+      <fileset dir="${dir.src}">
+        <exclude name="de/schlund/pfixcore/example/**"/>
+        <exclude name="de/skelexamples/**"/>
+      </fileset>
+      <fileset dir="${dir.gensrc}">
+        <exclude name="de/schlund/util/statuscodes/StatusCodeLib.java"/>
+        <exclude name="de/schlund/pfixcore/example/**"/>
+        <exclude name="de/skelexamples/**"/>
+      </fileset>
     </jar>
   </target>
 
