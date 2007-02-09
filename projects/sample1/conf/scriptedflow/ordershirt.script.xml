@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<scriptedflow version="1.0" xmlns="http://pustefix.sourceforge.net/scriptedflow200602" name="OrderShirtScript">
+<scriptedflow version="1.0" xmlns="http://pustefix.sourceforge.net/scriptedflow200602" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://pustefix.sourceforge.net/scriptedflow200602 http://pustefix.sourceforge.net/scriptedflow200602.xsd" name="OrderShirtScript">
   <!-- 
        Simple example that tries to order a shirt size XL
        in the color provided during the request.
