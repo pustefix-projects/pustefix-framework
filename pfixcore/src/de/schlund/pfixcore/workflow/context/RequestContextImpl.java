@@ -78,7 +78,6 @@ public class RequestContextImpl implements Cloneable {
     private PageFlowManager    pageflowmanager;
     private VariantManager     variantmanager;
     private PageMap            pagemap;
-    private boolean            reset_ui_cache;
     
     private Variant variant  = null;
     private String  language = null;
@@ -232,10 +231,6 @@ public class RequestContextImpl implements Cloneable {
     
     public boolean isJumpToPageFlowSet() {
         return getJumpToPageFlow() != null;
-    }
-
-    public void resetUICache() {
-        this.reset_ui_cache = true;
     }
 
     public void prohibitContinue() {
@@ -399,24 +394,8 @@ public class RequestContextImpl implements Cloneable {
 
     public SPDocument handleRequest(PfixServletRequest preq) throws PustefixApplicationException, PustefixCoreException {
         SPDocument spdoc;
-        HttpSession session = preq.getSession(false);
         
-        // reset_ui_cache can be set while handling the request (e.g. by an interceptor or a State) via
-        // the resetUICache() method in this class. If it is set to true, the minimum allowed timestamp for
-        // an ETag coming from a request is updated to the current time, in effect forcing all transformations
-        // to be redone, even if the new DOM tree has the same hash value as an earlier DOM tree.
-        // The StateImpl will always call resetUICache, whenever a request comes in that sumbmits data,
-        // under the assumption that it's mostly this case when something changes that may result in
-        // other pages being accessible
-        // Note: All this is only necessary, because the current navigation state is no longer part of the DOM tree,
-        // which could lead to the same DOM tree being produced than earlier with a different set of accessible pages.
-        // If the UI would be reused in this case, the wrong links on the page could be shown as forbidden or accessible.
-        
-        reset_ui_cache = false;
         spdoc = handleRequestWorker(preq);
-        if (reset_ui_cache) {
-            session.setAttribute(AbstractXMLServer.REUSEUITIMESTAMP, System.currentTimeMillis());
-        }
         
         if (!spdoc.getNostore() && (preq.getPageName() == null || !preq.getPageName().equals(spdoc.getPagename()))) {
             // Make sure all requests that don't encode an explicite pagename

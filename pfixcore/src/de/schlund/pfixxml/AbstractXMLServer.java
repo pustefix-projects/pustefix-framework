@@ -18,6 +18,7 @@
  */
 package de.schlund.pfixxml;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -128,6 +129,7 @@ public abstract class AbstractXMLServer extends ServletManager {
     private static final String   XSLPARAM_REUSE          = "__reusestamp";
     private static final String   VALUE_NONE              = "__NONE__";
     private static final String   SUFFIX_SAVEDDOM         = "_SAVED_DOM";
+    private static final String   ATTR_SHOWXMLDOC         = "__ATTR_SHOWXMLDOC__";
     protected static final String PROP_ADD_TRAIL_INFO     = "xmlserver.additionalinfo.implementation";
     protected static final String PROP_DEPEND             = "xmlserver.depend.xml";
     protected static final String PROP_NAME               = "xmlserver.servlet.name";
@@ -141,7 +143,6 @@ public abstract class AbstractXMLServer extends ServletManager {
     public static final String PREPROCTIME = "__PREPROCTIME__";
     public static final String GETDOMTIME  = "__GETDOMTIME__";
     public static final String TRAFOTIME   = "__TRAFOTIME__";
-    public static final String REUSEUITIMESTAMP = "__REUSEUITIMESTAMP__";
     
     /**
      * Holds the TargetGenerator which is the XML/XSL Cache for this
@@ -304,6 +305,7 @@ public abstract class AbstractXMLServer extends ServletManager {
         if (spdoc != null) {
             doreuse = true;
         }
+
         RequestParam value;
         long         currtime;
         long         preproctime = -1;
@@ -423,12 +425,22 @@ public abstract class AbstractXMLServer extends ServletManager {
         if (session != null && session.getAttribute(SESS_LANG) != null) {
             params.put(XSLPARAM_LANG, session.getAttribute(SESS_LANG));
         }
+        
         handleDocument(preq, res, spdoc, params, doreuse);
 
-        if (!spdoc.getNostore() || spdoc.isRedirect()) {
-            SessionCleaner.getInstance().storeSPDocument(spdoc, storeddoms, scleanertimeout);
-        } else {
-            LOGGER.info("*** Got NOSTORE from SPDocument! ****");
+        // This will store just the last dom, but only when editmode is allowed (so this normally doesn't apply to production mode)
+        // This is a seperate place from the SessionCleaner as we don't want to interfere with this, nor do we want to use 
+        // the whole queue of possible stored SPDocs only for the viewing of the DOM during development.
+        if (session != null && (getRendering(preq) != AbstractXMLServer.RENDER_FONTIFY)) {
+            if (editmodeAllowed) {
+                session.setAttribute(ATTR_SHOWXMLDOC, spdoc);
+            }
+
+            if (!spdoc.getNostore() || spdoc.isRedirect()) {
+                SessionCleaner.getInstance().storeSPDocument(spdoc, storeddoms, scleanertimeout);
+            } else {
+                LOGGER.info("*** Got NOSTORE from SPDocument! ****");
+            }
         }
     }
 
@@ -524,45 +536,32 @@ public abstract class AbstractXMLServer extends ServletManager {
         }
         
         boolean modified_or_no_etag = true;
-        long    reuse_ts_etag = 0;
-        long    reuse_ts_min = 0;
-
-        if (session != null && session.getAttribute(REUSEUITIMESTAMP) != null) {
-            reuse_ts_min = (Long) session.getAttribute(REUSEUITIMESTAMP);
+        String etag_incoming = preq.getRequest().getHeader("If-None-Match");
+        ByteArrayOutputStream output = new ByteArrayOutputStream(4096);
+        
+        try {
+            hookBeforeRender(preq, spdoc, paramhash, stylesheet);
+            render(spdoc, getRendering(preq), res, paramhash, stylesheet, output);
+        } finally {
+            hookAfterRender(preq, spdoc, paramhash, stylesheet);
         }
         
         PerfEvent pe_etag = new PerfEvent(PerfEventType.XMLSERVER_CREATEETAG, spdoc.getPagename());
         pe_etag.start();
-        String etag = createEtag(spdoc.getDocument());
+        String etag_outgoing = MD5Utils.hex_md5(output.toString());
         pe_etag.save();
-        res.setHeader("ETag", etag + ":" + spdoc.getTimestamp());
-        String incoming = preq.getRequest().getHeader("If-None-Match");
-        if (incoming != null) {
-            int index = incoming.indexOf(":");
-            if (index > 0 && incoming.length() > index+1) {
-                String etag_in = incoming.substring(0, index);
-                String time_in = incoming.substring(index + 1);
-                try {
-                    reuse_ts_etag = new Long(time_in);
-                } catch (NumberFormatException e) {
-                    reuse_ts_etag = 0;
-                }
-                if (etag_in.equals(etag) && (reuse_ts_etag >= reuse_ts_min)) {
-                    modified_or_no_etag = false;
-                }
-            }
-        }
-        
-        if (modified_or_no_etag) {
-            try {
-                hookBeforeRender(preq, spdoc, paramhash, stylesheet);
-                render(spdoc, getRendering(preq), res, paramhash, stylesheet);
-            } finally {
-                hookAfterRender(preq, spdoc, paramhash, stylesheet);
-            }
+        res.setHeader("ETag", etag_outgoing);
+
+        if (getRendering(preq) == RENDER_NORMAL && etag_incoming != null && etag_incoming.equals(etag_outgoing)) {
+            res.setStatus(HttpServletResponse.SC_NOT_MODIFIED);
+            LOGGER.info("*** Reusing UI: " + spdoc.getPagename());
+            modified_or_no_etag = false;
         } else {
-            res.setStatus(res.SC_NOT_MODIFIED);
-            LOGGER.info("*** Reuisng UI: " + spdoc.getPagename());
+            try {
+                output.writeTo(res.getOutputStream());
+            } catch (IOException e) {
+                throw new PustefixCoreException(e);
+            }
         }
 
         long handletime = System.currentTimeMillis() - currtime;
@@ -617,45 +616,12 @@ public abstract class AbstractXMLServer extends ServletManager {
         }
     }
 
-    private String createEtag(Document doc) {
-        Element root = doc.getDocumentElement();
-        StringBuffer buffer = new StringBuffer();
-        recurseSerialize(root, buffer, true);
-        String value = buffer.toString();
-        return MD5Utils.hex_md5(value);
-    }
     
-    private void recurseSerialize(Node node, StringBuffer buffer, boolean isrootnode) {
-        String name = node.getNodeName();
-        if (name != null) {
-            buffer.append(name);
-        }
-        if (node.getNodeType() == Node.ELEMENT_NODE) {
-            NamedNodeMap attributes = node.getAttributes();
-            for (int i = 0; i < attributes.getLength(); i++) {
-                Node attribute = attributes.item(i);
-                String attname = attribute.getNodeName();
-                if (!(isrootnode && attname.equals("serial"))) { 
-                    buffer.append(" " + attname + "=\"" + attribute.getNodeValue() + "\"");
-                }
-            }
-        }
-        String value = node.getNodeValue();
-        if (value != null) {
-            buffer.append(value);
-        }
-        NodeList children =  node.getChildNodes();
-        for (int i = 0; i < children.getLength(); i++) {
-            Node child = children.item(i);
-            recurseSerialize(child, buffer, false);
-        }
-    }
-    
-    private void render(SPDocument spdoc, int rendering, HttpServletResponse res, TreeMap paramhash, String stylesheet) throws RenderingException {
+    private void render(SPDocument spdoc, int rendering, HttpServletResponse res, TreeMap paramhash, String stylesheet, OutputStream output) throws RenderingException {
         try {
         switch (rendering) {
             case RENDER_NORMAL:
-                renderNormal(spdoc, res, paramhash, stylesheet);
+                renderNormal(spdoc, res, paramhash, stylesheet, output);
                 break;
             case RENDER_FONTIFY:
                 renderFontify(spdoc, res, paramhash);
@@ -684,7 +650,7 @@ public abstract class AbstractXMLServer extends ServletManager {
         Xml.serialize(spdoc.getDocument(), res.getOutputStream(), true, true);
     }
 
-    private void renderNormal(SPDocument spdoc, HttpServletResponse res, TreeMap paramhash, String stylesheet) throws
+    private void renderNormal(SPDocument spdoc, HttpServletResponse res, TreeMap paramhash, String stylesheet, OutputStream output) throws
         TargetGenerationException, IOException, TransformerException {
         Templates stylevalue;
         Target    target = generator.getTarget(stylesheet);
@@ -695,7 +661,7 @@ public abstract class AbstractXMLServer extends ServletManager {
                      ((spdoc != null) ? ("pagename=" +  spdoc.getPagename()) : "spdoc==null")); 
         }
         try {
-            Xslt.transform(spdoc.getDocument(), stylevalue, paramhash, new StreamResult(res.getOutputStream()));
+            Xslt.transform(spdoc.getDocument(), stylevalue, paramhash, new StreamResult(output));
         } catch (TransformerException e) {
             Throwable inner = e.getException();
             Throwable cause = null;
@@ -854,6 +820,8 @@ public abstract class AbstractXMLServer extends ServletManager {
             RequestParam reuse = preq.getRequestParam(PARAM_REUSE);
             if (reuse != null && reuse.getValue() != null) {
                 return (SPDocument) storeddoms.get(reuse.getValue());
+            } else if (getRendering(preq) == AbstractXMLServer.RENDER_FONTIFY) {
+                return (SPDocument) session.getAttribute(ATTR_SHOWXMLDOC);
             } else {
                 return null;
             }

@@ -87,7 +87,6 @@ public class DefaultIWrapperState extends StateImpl {
         
         if (isSubmitTrigger(context, preq)) {
             CAT.debug(">>> In SubmitHandling...");
-            context.resetUICache(); // See handleRequest() in RequestContextImpl
             
             pe = new PerfEvent(PerfEventType.PAGE_HANDLESUBMITTEDDATA, context.getCurrentPageRequest().toString());
             pe.start();
