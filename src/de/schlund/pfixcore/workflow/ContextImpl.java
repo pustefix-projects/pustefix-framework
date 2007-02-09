@@ -251,10 +251,6 @@ public class ContextImpl implements Context, AccessibilityChecker {
         return sessioncontext.getVisitId();
     }
 
-    public void resetUICache() {
-        getRequestContextForCurrentThreadWithError().resetUICache();
-    }
-
     public boolean isCurrentPageFlowRequestedByUser() {
         return getRequestContextForCurrentThreadWithError().isCurrentPageFlowRequestedByUser();
     }

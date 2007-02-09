@@ -49,7 +49,6 @@ public interface Context {
     void                   prohibitContinue();
     void                   forceStopAtNextStep(boolean forcestop);
     Cookie[]               getRequestCookies();
-    void                   resetUICache();
     void                   setLanguage(String lang);
     String                 getLanguage();
     void                   addCookie(Cookie cookie);

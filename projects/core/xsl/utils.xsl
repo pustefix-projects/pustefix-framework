@@ -78,7 +78,7 @@
                 <td align="left">
                   <a target="pfixcore_xml_source__">
                     <ixsl:attribute name="href">
-                      <ixsl:value-of select="$__uri"/>?__reuse=<ixsl:value-of select="$__reusestamp"/>&amp;__xmlonly=1</ixsl:attribute>
+                      <ixsl:value-of select="$__uri"/>?__xmlonly=1</ixsl:attribute>
                     <img border="0" alt="Show XML" title="Show last XML tree" src="{{$__contextpath}}/core/img/show_xml.gif"/></a>
                 </td>
               </tr>
@@ -216,7 +216,7 @@
                 </ixsl:choose>
                 <a target="pfixcore_xml_source__">
                   <ixsl:attribute name="href">
-                  <ixsl:value-of select="$__uri"/>?__reuse=<ixsl:value-of select="$__reusestamp"/>&amp;__xmlonly=1</ixsl:attribute>
+                  <ixsl:value-of select="$__uri"/>?__xmlonly=1</ixsl:attribute>
                   <img border="0" alt="Show XML" title="Show last XML tree" src="{{$__contextpath}}/core/img/console_showxml.gif" style="margin-left:5px"/>
                 </a>
                 <xsl:if test="@webserviceconsole='true'">

@@ -1,3 +1,15 @@
+2007-02-09  jtl  <jtl@schlund.de>
+
+	* src/de/schlund/pfixcore/workflow/Context.java: 
+	* src/de/schlund/pfixcore/workflow/ContextImpl.java: 
+	* src/de/schlund/pfixcore/workflow/app/DefaultIWrapperState.java: 
+	* src/de/schlund/pfixcore/workflow/context/RequestContextImpl.java: 
+	* src/de/schlund/pfixxml/AbstractXMLServer.java: remove all the latest changes. we don't try to generate an ETag 
+	from the DOM anymore, as this will never work completely reliably. Instead we MD5 the (html) output. 
+	* projects/core/xsl/utils.xsl: don't use __reuse=<TS> for xmlonly output. we store the relevant 
+	  DOM now in a special place (only when editmode is allowed) 
+	* projects/core/xsl/master.xsl: always call setNostore(true) even when in development mode
+
 2007-02-09  Martin Leidig  <mleidig@schlund.de>
 
 	* build.xml: Added new target srcjar, which builds a jar file

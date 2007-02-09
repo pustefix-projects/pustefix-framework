@@ -223,9 +223,7 @@
             </ixsl:choose>
           </xsl:when>
           <xsl:otherwise> <!-- no frames defined! -->
-            <xsl:if test="not($prohibitEdit = 'no')">
-              <ixsl:value-of select="callback:setNoStore($__spdoc__)"/>
-            </xsl:if>
+            <ixsl:value-of select="callback:setNoStore($__spdoc__)"/>
             <xsl:apply-templates select="/pfx:document/node()"/>
           </xsl:otherwise>
         </xsl:choose>
