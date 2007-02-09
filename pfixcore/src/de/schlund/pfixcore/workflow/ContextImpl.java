@@ -183,8 +183,8 @@ public class ContextImpl implements Context, AccessibilityChecker {
         return getRequestContextForCurrentThreadWithError().flowIsRunning();
     }
 
-    public boolean flowStepsBeforeCurrentStepNeedData() throws PustefixApplicationException {
-        return getRequestContextForCurrentThreadWithError().flowStepsBeforeCurrentStepNeedData();
+    public boolean precedingFlowNeedsData() throws PustefixApplicationException {
+        return getRequestContextForCurrentThreadWithError().precedingFlowNeedsData();
     }
 
     public PageRequestConfig getConfigForCurrentPageRequest() {

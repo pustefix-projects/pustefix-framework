@@ -56,7 +56,7 @@ public interface Context {
     void                   setVariant(Variant variant);
     void                   setVariantForThisRequestOnly(Variant variant);
     String                 getVisitId();
-    boolean                flowStepsBeforeCurrentStepNeedData() throws PustefixApplicationException;
+    boolean                precedingFlowNeedsData() throws PustefixApplicationException;
     boolean                finalPageIsRunning();
     boolean                jumpToPageIsRunning();
     boolean                flowIsRunning();
