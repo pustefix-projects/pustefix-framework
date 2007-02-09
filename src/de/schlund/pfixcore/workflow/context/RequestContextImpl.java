@@ -249,7 +249,7 @@ public class RequestContextImpl implements Cloneable {
         return isProhibitContinue();
     }
 
-    public boolean flowStepsBeforeCurrentStepNeedData() throws PustefixApplicationException {
+    public boolean precedingFlowNeedsData() throws PustefixApplicationException {
         if (currentpservreq == null) {
             throw new IllegalStateException("PageFlow information is only availabe during request handling");
         }
