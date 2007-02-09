@@ -1,3 +1,10 @@
+2007-02-09  Sebastian Marsching  <sebastian.marsching@1und1.de>
+
+	* projects/core/schema/scriptedflow200602.xsd: 
+	* projects/sample1/conf/scriptedflow/forceadult.script.xml: 
+	* projects/sample1/conf/scriptedflow/ordershirt.script.xml: 
+	Added XML Schema for scripted flows.
+
 2007-02-09  Martin Leidig  <mleidig@schlund.de>
 
 	* build.xml: Added new target srcjar, which builds a jar file
