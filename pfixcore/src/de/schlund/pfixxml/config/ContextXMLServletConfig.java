@@ -21,7 +21,7 @@ package de.schlund.pfixxml.config;
 import de.schlund.pfixcore.scriptedflow.ScriptedFlowConfig;
 
 /**
- * Provides configuration for {@link de.schlund.pfixxml.ContextXMLServer}.  
+ * Provides configuration for {@link de.schlund.pfixxml.ContextXMLServlet}.  
  * 
  * @author Sebastian Marsching <sebastian.marsching@1und1.de>
  */

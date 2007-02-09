@@ -48,7 +48,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.log4j.Category;
 import org.apache.oro.text.perl.Perl5Util;
 
-import de.schlund.pfixxml.AbstractXMLServer;
+import de.schlund.pfixxml.AbstractXMLServlet;
 
 /**
  *
@@ -136,7 +136,7 @@ public class MultipartHandler {
         }
 
         if (dir == null) {
-            dir = System.getProperty(AbstractXMLServer.DEF_PROP_TMPDIR);
+            dir = System.getProperty(AbstractXMLServlet.DEF_PROP_TMPDIR);
         }
         dirFile = new File(dir);
         if (!dirFile.isDirectory()) {

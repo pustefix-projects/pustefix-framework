@@ -19,7 +19,7 @@
 package de.schlund.pfixxml.config;
 
 /**
- * Provides configuration for an {@link de.schlund.pfixxml.AbstractXMLServer} instance or one of its
+ * Provides configuration for an {@link de.schlund.pfixxml.AbstractXMLServlet} instance or one of its
  * child classes.  
  * 
  * @author Sebastian Marsching <sebastian.marsching@1und1.de>
@@ -37,7 +37,7 @@ public interface AbstractXMLServletConfig extends ServletManagerConfig {
 
     /**
      * Returns the path to the configuration file for the {@link de.schlund.pfixxml.targets.TargetGenerator} 
-     * used by the {@link de.schlund.pfixxml.AbstractXMLServer}. The path has to be specified relative
+     * used by the {@link de.schlund.pfixxml.AbstractXMLServlet}. The path has to be specified relative
      * to the Pustefix docroot.
      * 
      * @return path to target generator configuration file
@@ -45,7 +45,7 @@ public interface AbstractXMLServletConfig extends ServletManagerConfig {
     String getDependFile();
 
     /**
-     * If true the {@link de.schlund.pfixxml.AbstractXMLServer} or its children allow the user to
+     * If true the {@link de.schlund.pfixxml.AbstractXMLServlet} or its children allow the user to
      * switch to "editmode" which provides extra debugging information.
      * 
      * @return flag specifying whether to activate the edit mode 

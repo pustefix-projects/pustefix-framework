@@ -20,10 +20,10 @@ package de.schlund.pfixcore.scriptedflow;
 
 import de.schlund.pfixcore.scriptedflow.compiler.CompilerException;
 import de.schlund.pfixcore.scriptedflow.vm.Script;
-import de.schlund.pfixxml.ContextXMLServer;
+import de.schlund.pfixxml.ContextXMLServlet;
 
 /**
- * Provides scripted flows for a {@link ContextXMLServer}.  
+ * Provides scripted flows for a {@link ContextXMLServlet}.  
  * 
  * @author Sebastian Marsching <sebastian.marsching@1und1.de>
  */

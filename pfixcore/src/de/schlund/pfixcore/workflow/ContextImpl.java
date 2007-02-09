@@ -33,7 +33,7 @@ import de.schlund.pfixcore.workflow.context.AccessibilityChecker;
 import de.schlund.pfixcore.workflow.context.PageFlow;
 import de.schlund.pfixcore.workflow.context.RequestContextImpl;
 import de.schlund.pfixcore.workflow.context.ServerContextImpl;
-import de.schlund.pfixxml.AbstractXMLServer;
+import de.schlund.pfixxml.AbstractXMLServlet;
 import de.schlund.pfixxml.PfixServletRequest;
 import de.schlund.pfixxml.SPDocument;
 import de.schlund.pfixxml.ServletManager;
@@ -46,7 +46,7 @@ public class ContextImpl implements Context, AccessibilityChecker {
 
     /**
      * Implementation of the session part of the context used by
-     * ContextXMLServer, DirectOutputServer and WebServiceServlet. This class
+     * ContextXMLServlet, DirectOutputServlet and WebServiceServlet. This class
      * should never be directly used by application developers.
      * 
      * @author Sebastian Marsching <sebastian.marsching@1und1.de>
@@ -77,12 +77,12 @@ public class ContextImpl implements Context, AccessibilityChecker {
         }
 
         public void setLanguage(String langcode) {
-            session.setAttribute(AbstractXMLServer.SESS_LANG, langcode);
+            session.setAttribute(AbstractXMLServlet.SESS_LANG, langcode);
         }
 
         public String getLanguage() {
             try {
-                return (String) session.getAttribute(AbstractXMLServer.SESS_LANG);
+                return (String) session.getAttribute(AbstractXMLServlet.SESS_LANG);
             } catch (IllegalStateException e) {
                 // May be thrown if session has been invalidated
                 return null;

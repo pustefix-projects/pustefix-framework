@@ -38,7 +38,7 @@ public class ConfigReader {
     
     /**
      * Used to read a configuration for the 
-     * {@link de.schlund.pfixxml.ContextXMLServer}.
+     * {@link de.schlund.pfixxml.ContextXMLServlet}.
      * 
      * @param file configuration file to read
      * @param globalProperties globally defined properties the configuration

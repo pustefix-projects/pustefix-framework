@@ -158,7 +158,7 @@
     <appender-ref ref="LOGGER_GENERAL"/>
   </category>
 
-  <category name="de.schlund.pfixxml.AbstractXMLServer" additivity="false">
+  <category name="de.schlund.pfixxml.AbstractXMLServlet" additivity="false">
     <priority value="DEBUG"/>
     <appender-ref ref="LOGGER_GENERAL"/>
   </category>

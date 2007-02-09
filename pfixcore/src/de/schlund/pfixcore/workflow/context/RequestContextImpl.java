@@ -25,7 +25,6 @@ import java.util.Properties;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
@@ -43,8 +42,7 @@ import de.schlund.pfixcore.workflow.PageRequest;
 import de.schlund.pfixcore.workflow.PageRequestStatus;
 import de.schlund.pfixcore.workflow.State;
 import de.schlund.pfixcore.workflow.VariantManager;
-import de.schlund.pfixxml.AbstractXMLServer;
-import de.schlund.pfixxml.ContextXMLServer;
+import de.schlund.pfixxml.ContextXMLServlet;
 import de.schlund.pfixxml.PfixServletRequest;
 import de.schlund.pfixxml.RequestParam;
 import de.schlund.pfixxml.ResultDocument;
@@ -57,8 +55,8 @@ import de.schlund.pfixxml.perflogging.PerfEventType;
 import de.schlund.util.statuscodes.StatusCode;
 
 /**
- * Implementation of the request part of the context used by ContextXMLServer,
- * DirectOutputServer and WebServiceServlet. This class should never be directly
+ * Implementation of the request part of the context used by ContextXMLServlet,
+ * DirectOutputServlet and WebServiceServlet. This class should never be directly
  * used by application developers.
  * 
  * @author Sebastian Marsching <sebastian.marsching@1und1.de>
@@ -518,7 +516,7 @@ public class RequestContextImpl implements Cloneable {
             LOG.debug("\n");
             insertPageMessages(spdoc);
             storeCookies(spdoc);
-            spdoc.setProperty(ContextXMLServer.XSLPARAM_REQUESTCONTEXT, this);
+            spdoc.setProperty(ContextXMLServlet.XSLPARAM_REQUESTCONTEXT, this);
         }
 
         // Save pagerequest and pageflow

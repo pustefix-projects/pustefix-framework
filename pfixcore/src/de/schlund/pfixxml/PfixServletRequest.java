@@ -21,12 +21,6 @@ package de.schlund.pfixxml;
 
 
 
-import de.schlund.pfixxml.multipart.MultipartHandler;
-import de.schlund.pfixxml.multipart.PartData;
-import de.schlund.pfixxml.perflogging.PerfEvent;
-import de.schlund.pfixxml.perflogging.PerfEventType;
-import de.schlund.pfixxml.serverutil.SessionHelper;
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -34,10 +28,18 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
+
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+
 import org.apache.log4j.Category;
+
+import de.schlund.pfixxml.multipart.MultipartHandler;
+import de.schlund.pfixxml.multipart.PartData;
+import de.schlund.pfixxml.perflogging.PerfEvent;
+import de.schlund.pfixxml.perflogging.PerfEventType;
+import de.schlund.pfixxml.serverutil.SessionHelper;
 
 /**
  * <p>This class is an abstraction of a servlet request. Is provides wrapper functions
@@ -424,7 +426,7 @@ public class PfixServletRequest {
         String  tmpdir = properties.getProperty(PROP_TMPDIR);
         HashSet names = new HashSet();
         if (tmpdir == null || tmpdir.equals("")) {
-            tmpdir = System.getProperty(AbstractXMLServer.DEF_PROP_TMPDIR);
+            tmpdir = System.getProperty(AbstractXMLServlet.DEF_PROP_TMPDIR);
         }
         
         String maxsize = properties.getProperty(PROP_MAXPARTSIZE);

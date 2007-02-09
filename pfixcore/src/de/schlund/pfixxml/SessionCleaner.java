@@ -22,14 +22,14 @@ package de.schlund.pfixxml;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
-import javax.servlet.http.HttpSession;
+
 import org.apache.log4j.Category;
 
 /**
  * The <code>SessionCleaner</code> class is used to remove stored SPDocuments from the session
  * after a timout. This helps in reducing the memory usage as those documents
  * are only stored for possible reuse by following subrequests (for frames). After the timeout one should
- * be reasonable sure that no subrequests will follow (During development, the AbstractXMLServer
+ * be reasonable sure that no subrequests will follow (During development, the AbstractXMLServlet
  * should make sure to call storeSPDocument() with the <code>timeoutsec</code> parameter set to
  * <b>a very high value</b>, to be able to get the stored SPDocument for debugging purposes).
  *
@@ -53,7 +53,7 @@ public class SessionCleaner {
     }
 
     /**
-     * Called from the AbstractXMLServer to store a SPDocument into the supplied SPCache structure
+     * Called from the AbstractXMLServlet to store a SPDocument into the supplied SPCache structure
      * (which in turn is stored in the HTTPSession).  This will also start a TimerTask that removes
      * the stored SPDocument after the given timeout.
      *

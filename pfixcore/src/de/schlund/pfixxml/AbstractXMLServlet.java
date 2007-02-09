@@ -45,13 +45,8 @@ import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
-import org.apache.log4j.Category;
 import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 
 import de.schlund.pfixcore.exception.PustefixApplicationException;
 import de.schlund.pfixcore.exception.PustefixCoreException;
@@ -91,7 +86,7 @@ import de.schlund.pfixxml.util.Xslt;
  * getDom(HttpServletRequest req, HttpServletResponse res)
  * which returns a SPDocument. <br>
  */
-public abstract class AbstractXMLServer extends ServletManager {
+public abstract class AbstractXMLServlet extends ServletManager {
 
     //~ Instance/static variables ..................................................................
     // how to write xml to the result stream
@@ -172,13 +167,13 @@ public abstract class AbstractXMLServer extends ServletManager {
     private int          scleanertimeout            = 300;
     
     private static Logger LOGGER_TRAIL = Logger.getLogger("LOGGER_TRAIL");
-    private static Logger LOGGER       = Logger.getLogger(AbstractXMLServer.class);
+    private static Logger LOGGER       = Logger.getLogger(AbstractXMLServlet.class);
     
     private AdditionalTrailInfo addtrailinfo = null;
     
     //~ Methods ....................................................................................
     /**
-     * Init method of all servlets inheriting from AbstractXMLServers.
+     * Init method of all servlets inheriting from AbstractXMLServlets.
      * It calls super.init(Config) as a first step.
      * @param ContextXMLServletConfig config. Passed in from the servlet container.
      * @return void
@@ -187,11 +182,11 @@ public abstract class AbstractXMLServer extends ServletManager {
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
         if (LOGGER.isDebugEnabled()) {
-            LOGGER.debug("\n>>>> In init of AbstractXMLServer <<<<");
+            LOGGER.debug("\n>>>> In init of AbstractXMLServlet <<<<");
         }
         initValues();
         if (LOGGER.isDebugEnabled()) {
-            LOGGER.debug("End of init AbstractXMLServer");
+            LOGGER.debug("End of init AbstractXMLServlet");
         }
         verifyDirExists(System.getProperty(DEF_PROP_TMPDIR));
     }
@@ -230,7 +225,7 @@ public abstract class AbstractXMLServer extends ServletManager {
         
         if (LOGGER.isInfoEnabled()) {
             StringBuffer sb = new StringBuffer(255);
-            sb.append("\n").append("AbstractXMLServer properties after initValues(): \n");
+            sb.append("\n").append("AbstractXMLServlet properties after initValues(): \n");
             sb.append("                targetconf = ").append(targetconf).append("\n");
             sb.append("               servletname = ").append(servletname).append("\n");
             sb.append("           editModeAllowed = ").append(editmodeAllowed).append("\n");
@@ -258,7 +253,7 @@ public abstract class AbstractXMLServer extends ServletManager {
     }
 
     /**
-     * A child of AbstractXMLServer must implement this method.
+     * A child of AbstractXMLServlet must implement this method.
      * It is here where the final Dom tree and parameters for
      * applying to the stylesheet are put into SPDocument.
      * @param HttpServletRequest req:  the current request
@@ -338,7 +333,7 @@ public abstract class AbstractXMLServer extends ServletManager {
         if (preq.getQueryString() != null)
             params.put(XSLPARAM_QUERYSTRING, preq.getQueryString());
 
-        params.put(XSLPARAM_DEREFKEY, this.getAbstractXMLServletConfig().getProperties().getProperty(DerefServer.PROP_DEREFKEY));
+        params.put(XSLPARAM_DEREFKEY, this.getAbstractXMLServletConfig().getProperties().getProperty(DerefServlet.PROP_DEREFKEY));
 
         if (session != null) {
             params.put(XSLPARAM_SESSID, session.getAttribute(SessionHelper.SESSION_ID_URL));
@@ -431,7 +426,7 @@ public abstract class AbstractXMLServer extends ServletManager {
         // This will store just the last dom, but only when editmode is allowed (so this normally doesn't apply to production mode)
         // This is a seperate place from the SessionCleaner as we don't want to interfere with this, nor do we want to use 
         // the whole queue of possible stored SPDocs only for the viewing of the DOM during development.
-        if (session != null && (getRendering(preq) != AbstractXMLServer.RENDER_FONTIFY)) {
+        if (session != null && (getRendering(preq) != AbstractXMLServlet.RENDER_FONTIFY)) {
             if (editmodeAllowed) {
                 session.setAttribute(ATTR_SHOWXMLDOC, spdoc);
             }
@@ -820,7 +815,7 @@ public abstract class AbstractXMLServer extends ServletManager {
             RequestParam reuse = preq.getRequestParam(PARAM_REUSE);
             if (reuse != null && reuse.getValue() != null) {
                 return (SPDocument) storeddoms.get(reuse.getValue());
-            } else if (getRendering(preq) == AbstractXMLServer.RENDER_FONTIFY) {
+            } else if (getRendering(preq) == AbstractXMLServlet.RENDER_FONTIFY) {
                 return (SPDocument) session.getAttribute(ATTR_SHOWXMLDOC);
             } else {
                 return null;

@@ -33,26 +33,26 @@
   
   <servlet name="config" useineditor="true">
     <active>true</active>
-    <class>de.schlund.pfixxml.ContextXMLServer</class>
+    <class>de.schlund.pfixxml.ContextXMLServlet</class>
     <propfile>sample1/conf/config.prop</propfile>
   </servlet>
   <servlet name="secure" useineditor="true">
     <active>true</active>
-    <class>de.schlund.pfixxml.ContextXMLServer</class>
+    <class>de.schlund.pfixxml.ContextXMLServlet</class>
     <propfile>sample1/conf/secure.prop</propfile>
   </servlet>
   <servlet name="edit">
     <active>true</active>
-    <class>de.schlund.pfixxml.ContextXMLServer</class>
+    <class>de.schlund.pfixxml.ContextXMLServlet</class>
     <propfile>core/editor/conf/config.prop</propfile>
   </servlet>
   <servlet name="deref">
     <active>true</active>
-    <class>de.schlund.pfixxml.DerefServer</class>
+    <class>de.schlund.pfixxml.DerefServlet</class>
   </servlet>
   <servlet name="download">
     <active>true</active>
-    <class>de.schlund.pfixxml.DirectOutputServer</class>
+    <class>de.schlund.pfixxml.DirectOutputServlet</class>
     <propfile>sample1/conf/direct.prop</propfile>
   </servlet>
 </project><project name="simpleform">
@@ -86,17 +86,17 @@
   
   <servlet name="config" useineditor="true">
     <active>true</active>
-    <class>de.schlund.pfixxml.ContextXMLServer</class>
+    <class>de.schlund.pfixxml.ContextXMLServlet</class>
     <propfile>simpleform/conf/config.prop</propfile>
   </servlet>
   <servlet name="edit">
     <active>true</active>
-    <class>de.schlund.pfixxml.ContextXMLServer</class>
+    <class>de.schlund.pfixxml.ContextXMLServlet</class>
     <propfile>core/editor/conf/config.prop</propfile>
   </servlet>
   <servlet name="deref">
     <active>true</active>
-    <class>de.schlund.pfixxml.DerefServer</class>
+    <class>de.schlund.pfixxml.DerefServlet</class>
   </servlet>
 </project><project name="simplelink">
   
@@ -129,17 +129,17 @@
   
   <servlet name="config" useineditor="true">
     <active>true</active>
-    <class>de.schlund.pfixxml.ContextXMLServer</class>
+    <class>de.schlund.pfixxml.ContextXMLServlet</class>
     <propfile>simplelink/conf/config.prop</propfile>
   </servlet>
   <servlet name="edit">
     <active>true</active>
-    <class>de.schlund.pfixxml.ContextXMLServer</class>
+    <class>de.schlund.pfixxml.ContextXMLServlet</class>
     <propfile>core/editor/conf/config.prop</propfile>
   </servlet>
   <servlet name="deref">
     <active>true</active>
-    <class>de.schlund.pfixxml.DerefServer</class>
+    <class>de.schlund.pfixxml.DerefServlet</class>
   </servlet>
 </project><project name="simplepage">
   
@@ -172,17 +172,17 @@
   
   <servlet name="config" useineditor="true">
     <active>true</active>
-    <class>de.schlund.pfixxml.ContextXMLServer</class>
+    <class>de.schlund.pfixxml.ContextXMLServlet</class>
     <propfile>simplepage/conf/config.prop</propfile>
   </servlet>
   <servlet name="edit">
     <active>true</active>
-    <class>de.schlund.pfixxml.ContextXMLServer</class>
+    <class>de.schlund.pfixxml.ContextXMLServlet</class>
     <propfile>core/editor/conf/config.prop</propfile>
   </servlet>
   <servlet name="deref">
     <active>true</active>
-    <class>de.schlund.pfixxml.DerefServer</class>
+    <class>de.schlund.pfixxml.DerefServlet</class>
   </servlet>
 </project><project name="webservice">
   
@@ -210,17 +210,17 @@
   
   <servlet name="config" useineditor="true">
     <active>true</active>
-    <class>de.schlund.pfixxml.ContextXMLServer</class>
+    <class>de.schlund.pfixxml.ContextXMLServlet</class>
     <propfile>webservice/conf/config.prop</propfile>
   </servlet>
   <servlet name="edit">
     <active>true</active>
-    <class>de.schlund.pfixxml.ContextXMLServer</class>
+    <class>de.schlund.pfixxml.ContextXMLServlet</class>
     <propfile>core/editor/conf/config.prop</propfile>
   </servlet>
   <servlet name="deref">
     <active>true</active>
-    <class>de.schlund.pfixxml.DerefServer</class>
+    <class>de.schlund.pfixxml.DerefServlet</class>
   </servlet>
   <servlet name="webservice">
     <active>true</active>
@@ -248,12 +248,12 @@
     </ports>
     <servlet name="edit" useineditor="true">
       <active>true</active>
-      <class>de.schlund.pfixxml.ContextXMLServer</class>
+      <class>de.schlund.pfixxml.ContextXMLServlet</class>
       <propfile>core/editor/conf/config.prop</propfile>
     </servlet>
     <servlet name="deref">
       <active>true</active>
-      <class>de.schlund.pfixxml.DerefServer</class>
+      <class>de.schlund.pfixxml.DerefServlet</class>
     </servlet>
   </project>
 

@@ -51,8 +51,8 @@ import de.schlund.pfixxml.resources.FileResource;
  *
  */
 
-public class ContextXMLServer extends AbstractXMLServer {
-    private Logger LOG = Logger.getLogger(ContextXMLServer.class);
+public class ContextXMLServlet extends AbstractXMLServlet {
+    private Logger LOG = Logger.getLogger(ContextXMLServlet.class);
 
     public final static String CONTEXT_SUFFIX = "__CONTEXT__";
 

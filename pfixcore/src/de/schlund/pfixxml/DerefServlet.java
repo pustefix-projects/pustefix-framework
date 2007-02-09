@@ -45,9 +45,9 @@ import de.schlund.pfixxml.util.MD5Utils;
  *
  */
 
-public class DerefServer extends ServletManager {
+public class DerefServlet extends ServletManager {
     protected static Category DEREFLOG        = Category.getInstance("LOGGER_DEREF");
-    protected static Category CAT             = Category.getInstance(DerefServer.class);
+    protected static Category CAT             = Category.getInstance(DerefServlet.class);
     public static String      PROP_DEREFKEY   = "derefserver.signkey";
     public static String      PROP_IGNORESIGN = "derefserver.ignoresign";
     private ServletManagerConfig config;

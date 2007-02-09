@@ -92,7 +92,7 @@
                      xmlns:pfx="http://www.schlund.de/pustefix/core"
                      xmlns:func="http://exslt.org/functions"
                      xmlns:url="xalan://java.net.URLEncoder"
-                     xmlns:deref="xalan://de.schlund.pfixxml.DerefServer"
+                     xmlns:deref="xalan://de.schlund.pfixxml.DerefServlet"
                      xmlns:callback="xalan://de.schlund.pfixcore.util.TransformerCallback"
                      exclude-result-prefixes="pfx cus xsl url deref callback func">
 
