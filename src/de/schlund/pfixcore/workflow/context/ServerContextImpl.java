@@ -32,8 +32,8 @@ import de.schlund.pfixxml.Variant;
 import de.schlund.pfixxml.config.ContextConfig;
 
 /**
- * Provides server-wide context information for the {@link de.schlund.pfixxml.ContextXMLServer}.
- * <b>Should not be used by other classes than ContextXMLServer</b>  
+ * Provides server-wide context information for the {@link de.schlund.pfixxml.ContextXMLServlet}.
+ * <b>Should not be used by other classes than ContextXMLServlet</b>  
  * 
  * @author Sebastian Marsching <sebastian.marsching@1und1.de>
  */

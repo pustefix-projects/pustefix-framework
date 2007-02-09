@@ -31,7 +31,7 @@ import de.schlund.pfixcore.generator.RequestData;
 import de.schlund.pfixcore.generator.StatusCodeInfo;
 import de.schlund.pfixcore.workflow.Context;
 import de.schlund.pfixcore.workflow.StateImpl;
-import de.schlund.pfixxml.AbstractXMLServer;
+import de.schlund.pfixxml.AbstractXMLServlet;
 import de.schlund.pfixxml.PfixServletRequest;
 import de.schlund.pfixxml.RequestParam;
 import de.schlund.pfixxml.ResultDocument;
@@ -255,7 +255,7 @@ public class DefaultAuthIWrapperState extends StateImpl {
         }
         for (Iterator i = rdata.getParameterNames(); i.hasNext(); ) {
             String name = (String) i.next();
-            if (name.equals(AbstractXMLServer.PARAM_ANCHOR)) {
+            if (name.equals(AbstractXMLServlet.PARAM_ANCHOR)) {
                 RequestParam[] vals = rdata.getParameters(name);
                 for (int j = 0; j < vals.length; j++) {
                     resdoc.addHiddenValue(name, vals[j].getValue());

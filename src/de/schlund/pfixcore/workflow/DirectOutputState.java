@@ -34,7 +34,7 @@ public interface DirectOutputState {
     /**
      * <code>isAccessible</code> can be called to check if the DirectOutputState is accessible.
      *
-     * @param crm a <code>ContextResourceManager</code> that comes from a foreign ContextXMLServer.
+     * @param crm a <code>ContextResourceManager</code> that comes from a foreign ContextXMLServlet.
      * @param props the <code>Properties</code> associated with the current PageRequest.
      * @param preq the current <code>PfixServletRequest</code>.
      * @return a <code>boolean</code> value: trueif accessible, false if not.
@@ -44,7 +44,7 @@ public interface DirectOutputState {
     /**
      * Describe <code>handleRequest</code> method here.
      *
-     * @param crm a <code>ContextResourceManager</code> that comes from a foreign ContextXMLServer.
+     * @param crm a <code>ContextResourceManager</code> that comes from a foreign ContextXMLServlet.
      * @param props the <code>Properties</code> associated with the current PageRequest.
      * @param preq the current <code>PfixServletRequest</code>.
      * @param res the curent <code>HttpServletResponse</code>.

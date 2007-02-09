@@ -145,7 +145,7 @@ public final class AppValues {
     public static final String PROJECTTAG_CLASS       = "class";
     public static final String PROJECTTAG_DOCROOT     = "cus:docroot";
     public static final String PROJECTVALUE_TRUE      = "true";
-    public static final String PROJECTVALUE_CLASS     = "de.schlund.pfixxml.ContextXMLServer";
+    public static final String PROJECTVALUE_CLASS     = "de.schlund.pfixxml.ContextXMLServlet";
     public static final String PROJECTPRRF_DOCROOT    = "cus"; 
     public static final String PROJECTATT_EDITOR      = "useineditor";
     

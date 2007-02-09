@@ -18,19 +18,19 @@
   
   <servlet name="main" useineditor="true">
     <active>true</active>
-    <class>de.schlund.pfixxml.ContextXMLServer</class>
+    <class>de.schlund.pfixxml.ContextXMLServlet</class>
     <propfile>testsuite/conf/main.conf.xml</propfile>
   </servlet>
   
   <servlet name="test1" useineditor="true">
     <active>true</active>
-    <class>de.schlund.pfixxml.ContextXMLServer</class>
+    <class>de.schlund.pfixxml.ContextXMLServlet</class>
     <propfile>testsuite/conf/test1.conf.xml</propfile>
   </servlet>
   
   <servlet name="edit">
     <active>true</active>
-    <class>de.schlund.pfixxml.ContextXMLServer</class>
+    <class>de.schlund.pfixxml.ContextXMLServlet</class>
     <propfile>core/editor2/conf/edit.conf.xml</propfile>
   </servlet>
   

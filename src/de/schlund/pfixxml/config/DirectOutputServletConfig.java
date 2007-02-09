@@ -28,7 +28,7 @@ import java.util.List;
 public interface DirectOutputServletConfig extends ServletManagerConfig {
 
     /**
-     * Returns the name of the corresponding {@link de.schlund.pfixxml.ContextXMLServer}
+     * Returns the name of the corresponding {@link de.schlund.pfixxml.ContextXMLServlet}
      * instance. This instance is used in order to retrieve a {@link de.schlund.pfixcore.workflow.Context}
      * object for the session.
      * 

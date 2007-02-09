@@ -1,3 +1,41 @@
+2007-02-09  Sebastian Marsching  <sebastian.marsching@1und1.de>
+
+	* src/de/schlund/pfixcore/scriptedflow/ScriptedFlowConfig.java: 
+	* src/de/schlund/pfixcore/util/basicapp/helper/AppValues.java: 
+	* src/de/schlund/pfixcore/workflow/app/DefaultAuthIWrapperState.java: 
+	* src/de/schlund/pfixcore/workflow/context/RequestContextImpl.java: 
+	* src/de/schlund/pfixcore/workflow/context/ServerContextImpl.java: 
+	* src/de/schlund/pfixcore/workflow/ContextImpl.java: 
+	* src/de/schlund/pfixcore/workflow/DirectOutputState.java: 
+	* src/de/schlund/pfixxml/config/AbstractXMLServletConfig.java: 
+	* src/de/schlund/pfixxml/config/ConfigReader.java: 
+	* src/de/schlund/pfixxml/config/ContextXMLServletConfig.java: 
+	* src/de/schlund/pfixxml/config/DirectOutputServletConfig.java: 
+	* src/de/schlund/pfixxml/multipart/MultipartHandler.java: 
+	* src/de/schlund/pfixxml/perflogging/DefaultAdditionalTrailInfoImpl.java: 
+	* src/de/schlund/pfixxml/AbstractXMLServlet.java: 
+	* src/de/schlund/pfixxml/ContextXMLServlet.java: 
+	* src/de/schlund/pfixxml/DerefServlet.java: 
+	* src/de/schlund/pfixxml/DirectOutputServlet.java: 
+	* src/de/schlund/pfixxml/PfixServletRequest.java: 
+	* src/de/schlund/pfixxml/RenderingException.java: 
+	* src/de/schlund/pfixxml/SessionCleaner.java: 
+	* projects/core/prjtemplates/project.tmpl: 
+	* projects/core/xsl/master.xsl: 
+	* projects/sample1/conf/project.xml.in: 
+	* projects/simpleform/conf/project.xml.in: 
+	* projects/simplelink/conf/project.xml.in: 
+	* projects/simplepage/conf/project.xml.in: 
+	* projects/testsuite/conf/project.xml.in: 
+	* projects/webservice/conf/project.xml.in: 
+	* skel/projects/common/conf/pfixlog.xml: 
+	* skel/projects/servletconf/projects.xml.in: 
+	* tests/junit/de/schlund/pfixxml/jmx/projects.xml: 
+	Renamed AbstractXMLServer -> AbstractXMLServlet, 
+	ContextXMLServer -> ContextXMLServlet, 
+	DirectOutputServer -> DirectOutputServlet,
+	DerefServer -> DerefServlet
+
 2007-02-09  jtl  <jtl@schlund.de>
 
 	* src/de/schlund/pfixcore/workflow/Context.java: 

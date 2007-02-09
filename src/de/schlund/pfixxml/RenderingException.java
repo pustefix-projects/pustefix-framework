@@ -21,7 +21,7 @@ package de.schlund.pfixxml;
 import de.schlund.pfixcore.exception.PustefixCoreException;
 
 /**
- * Signals an error that occured while AbstractXMLServer was trying to render
+ * Signals an error that occured while AbstractXMLServlet was trying to render
  * a page.
  * 
  * @author Sebastian Marsching <sebastian.marsching@1und1.de>
