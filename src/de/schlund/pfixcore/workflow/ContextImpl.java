@@ -42,7 +42,7 @@ import de.schlund.pfixxml.config.ContextConfig;
 import de.schlund.pfixxml.config.PageRequestConfig;
 import de.schlund.util.statuscodes.StatusCode;
 
-public class ContextImpl implements Context, AccessibilityChecker {
+public class ContextImpl implements Context, AccessibilityChecker, ExtendedContext {
 
     /**
      * Implementation of the session part of the context used by

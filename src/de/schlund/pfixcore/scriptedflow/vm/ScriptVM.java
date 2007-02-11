@@ -31,7 +31,7 @@ import org.w3c.dom.NodeList;
 import de.schlund.pfixcore.exception.PustefixApplicationException;
 import de.schlund.pfixcore.exception.PustefixCoreException;
 import de.schlund.pfixcore.scriptedflow.vm.pvo.ParamValueObject;
-import de.schlund.pfixcore.workflow.Context;
+import de.schlund.pfixcore.workflow.ExtendedContext;
 import de.schlund.pfixxml.PfixServletRequest;
 import de.schlund.pfixxml.SPDocument;
 
@@ -82,7 +82,7 @@ public class ScriptVM {
         return state;
     }
 
-    public SPDocument run(PfixServletRequest preq, SPDocument spdoc, Context rcontext, Map<String, String> params) throws PustefixApplicationException, PustefixCoreException {
+    public SPDocument run(PfixServletRequest preq, SPDocument spdoc, ExtendedContext rcontext, Map<String, String> params) throws PustefixApplicationException, PustefixCoreException {
         isRunning = true;
         
         // Make sure resolver and registers are set up
@@ -266,7 +266,7 @@ public class ScriptVM {
         return spdoc;
     }
     
-    private boolean doVirtualRequest(String pagename, Map<String, String[]> reqParams, PfixServletRequest origPreq, Context rcontext) throws PustefixApplicationException, PustefixCoreException {
+    private boolean doVirtualRequest(String pagename, Map<String, String[]> reqParams, PfixServletRequest origPreq, ExtendedContext rcontext) throws PustefixApplicationException, PustefixCoreException {
 
         HttpServletRequest vhttpreq = new VirtualHttpServletRequest(origPreq.getRequest(), pagename, reqParams);
         PfixServletRequest vpreq    = new PfixServletRequest(vhttpreq, System.getProperties());

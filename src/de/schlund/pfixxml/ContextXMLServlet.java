@@ -36,8 +36,8 @@ import de.schlund.pfixcore.scriptedflow.compiler.CompilerException;
 import de.schlund.pfixcore.scriptedflow.vm.Script;
 import de.schlund.pfixcore.scriptedflow.vm.ScriptVM;
 import de.schlund.pfixcore.scriptedflow.vm.VirtualHttpServletRequest;
-import de.schlund.pfixcore.workflow.Context;
 import de.schlund.pfixcore.workflow.ContextImpl;
+import de.schlund.pfixcore.workflow.ExtendedContext;
 import de.schlund.pfixcore.workflow.context.RequestContextImpl;
 import de.schlund.pfixcore.workflow.context.ServerContextImpl;
 import de.schlund.pfixxml.config.AbstractXMLServletConfig;
@@ -135,7 +135,7 @@ public class ContextXMLServlet extends AbstractXMLServlet {
     }
 
     public SPDocument getDom(PfixServletRequest preq) throws PustefixApplicationException, PustefixCoreException {
-        Context context = getContext(preq);
+        ExtendedContext context = getContext(preq);
         
         // Prepare context for current thread
         // Cleanup is performed in finally block
@@ -240,7 +240,7 @@ public class ContextXMLServlet extends AbstractXMLServlet {
         return info;
     }
     
-    private Context getContext(PfixServletRequest preq) throws PustefixApplicationException, PustefixCoreException {
+    private ExtendedContext getContext(PfixServletRequest preq) throws PustefixApplicationException, PustefixCoreException {
         // Name of the attribute that is used to store the session context
         // within the session object.
         String contextname = makeContextName();

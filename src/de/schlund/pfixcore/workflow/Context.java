@@ -21,10 +21,7 @@ package de.schlund.pfixcore.workflow;
 
 
 import de.schlund.pfixcore.exception.PustefixApplicationException;
-import de.schlund.pfixcore.exception.PustefixCoreException;
 import de.schlund.pfixcore.workflow.context.PageFlow;
-import de.schlund.pfixxml.PfixServletRequest;
-import de.schlund.pfixxml.SPDocument;
 import de.schlund.pfixxml.Variant;
 import de.schlund.pfixxml.config.ContextConfig;
 import de.schlund.pfixxml.config.PageRequestConfig;
@@ -74,5 +71,4 @@ public interface Context {
     void                   addPageMessage(StatusCode scode, String[] args, String level);
     Properties             getPropertiesForContextResource(ContextResource res);
     ContextConfig          getContextConfig();
-    SPDocument             handleRequest(PfixServletRequest preq) throws PustefixApplicationException, PustefixCoreException;
 }
