@@ -22,6 +22,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -82,6 +83,8 @@ public class FactoryInitServlet extends HttpServlet implements Reloader {
             .getName());
 
     private static boolean configured = false;
+    
+    private static FactoryInitException initException;
 
     private ArrayList factories;
 
@@ -270,6 +273,11 @@ public class FactoryInitServlet extends HttpServlet implements Reloader {
                             }
                         } catch (Exception e) {
                             CAT.error(e.toString());
+                            
+                            Throwable initCause=e;
+                            if(e instanceof InvocationTargetException && e.getCause()!=null) initCause=e.getCause();
+                            initException=new FactoryInitException(the_class,initCause);
+
                             ThrowableInformation info = new ThrowableInformation(
                                     e);
                             String[] trace = info.getThrowableStrRep();
@@ -341,6 +349,10 @@ public class FactoryInitServlet extends HttpServlet implements Reloader {
         return configured;
     }
 
+    public static FactoryInitException getInitException() {
+        return initException;
+    }
+    
     public void reload() {
         if (factories != null) {
             ArrayList newFacs = new ArrayList();
@@ -354,4 +366,5 @@ public class FactoryInitServlet extends HttpServlet implements Reloader {
             factories = newFacs;
         }
     }
+
 }

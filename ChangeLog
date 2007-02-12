@@ -1,3 +1,15 @@
+2007-02-12  Martin Leidig  <mleidig@schlund.de>
+
+	* src/de/schlund/pfixxml/FactoryInitServlet.java: store exception
+	and factory name of factory which caused initialization failure as
+	the newly introduced FactoryInitException
+	* src/de/schlund/pfixxml/ServletManager.java: check if factories
+	are initialized before calling process() in callProcess() and
+	throw exception if not
+	* src/de/schlund/pfixxml/FactoryInitException.java: added specialized
+	exception for factory initialization erros, keeping the factory name
+	and the causing Throwable
+
 2007-02-09  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
 	* projects/core/schema/scriptedflow200602.xsd: 
