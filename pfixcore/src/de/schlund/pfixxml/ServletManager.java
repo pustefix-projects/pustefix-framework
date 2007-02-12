@@ -868,6 +868,14 @@ public abstract class ServletManager extends HttpServlet {
     private void callProcess(PfixServletRequest preq, HttpServletRequest req,
                              HttpServletResponse res) throws ServletException, IOException {
         try {
+            if(!FactoryInitServlet.isConfigured()) {
+                FactoryInitException initEx=FactoryInitServlet.getInitException();
+                if(initEx!=null) {
+                    initEx=initEx.copy();
+                    initEx.fillInStackTrace();
+                    throw initEx;
+                } else throw new IllegalStateException("Factories aren't initialized yet.");
+            }
             res.setContentType(DEF_CONTENT_TYPE);
             process(preq, res);
         } catch (Throwable e) {
