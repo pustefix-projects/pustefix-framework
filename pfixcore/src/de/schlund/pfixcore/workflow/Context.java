@@ -151,12 +151,23 @@ public class Context implements AppContext {
         try {
             SPDocument spdoc = handleRequestWorker(preq);
             
-            // Make sure SSL pages are only returned using SSL.
-            // This rule does not apply to pages with the nostore
-            // flag, as we would not be able to return such a page
-            // after the redirect
-            if (this.getConfigForCurrentPageRequest() != null && this.getConfigForCurrentPageRequest().isSSL() &&
+            if (!spdoc.getNostore() && (preq.getPageName() == null || !preq.getPageName().equals(spdoc.getPagename()))) {
+                // Make sure all requests that don't encode an explicite pagename
+                // (this normally is only the case for the first request)
+                // OR pages that have the "wrong" pagename in their request 
+                // (this applies to pages selected by stepping ahead in the page flow)
+                // are redirected to the page selected by the business logic below
+                // This rule does not apply to pages with the nostore
+                // flag, as we would not be able to return such a page after the redirect
+                spdoc.setSSLRedirect(preq.getScheme() + "://" + ServletManager.getServerName(preq.getRequest()) 
+                        + ":" + preq.getServerPort() + preq.getContextPath() + preq.getServletPath() + "/" + spdoc.getPagename() 
+                        + ";jsessionid=" + preq.getSession(false).getId() + "?__reuse=" + spdoc.getTimestamp());
+            } else if (this.getConfigForCurrentPageRequest() != null && this.getConfigForCurrentPageRequest().isSSL() &&
                 spdoc != null && !spdoc.getNostore() && !preq.getOriginalScheme().equals("https") && preq.getSession(false) != null) {
+                // Make sure SSL pages are only returned using SSL.
+                // This rule does not apply to pages with the nostore
+                // flag, as we would not be able to return such a page
+                // after the redirect
                 spdoc.setSSLRedirect("https://" + ServletManager.getServerName(preq.getRequest()) + preq.getContextPath() + preq.getServletPath()
                                      + ";jsessionid=" + preq.getSession(false).getId() + "?__reuse=" + spdoc.getTimestamp());
             }
