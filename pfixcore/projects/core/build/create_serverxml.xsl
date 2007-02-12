@@ -7,6 +7,7 @@
   <xsl:param name="standalone">true</xsl:param>
   <xsl:param name="portbase"/>
   <xsl:param name="trusted"/>
+  
   <xsl:include href="create_lib.xsl"/>
   <xsl:output method="xml" encoding="ISO-8859-1" indent="yes"/>
   
@@ -126,6 +127,9 @@
         <xsl:attribute name="name">
           <xsl:apply-templates select="servername/node()"/>
         </xsl:attribute>
+        <xsl:if test="webapps[@hostbased='true']">
+          <xsl:attribute name="appBase">webapps_<xsl:value-of select="@name"/></xsl:attribute>
+        </xsl:if>
         <xsl:call-template name="create_tomcat_aliases">
           <xsl:with-param name="all_aliases"><xsl:apply-templates select="serveralias/node()"/></xsl:with-param>
         </xsl:call-template>
@@ -138,6 +142,7 @@
         
         <xsl:call-template name="create_context_list">
           <xsl:with-param name="defpath"></xsl:with-param>
+          <xsl:with-param name="hostbased"><xsl:value-of select="webapps/@hostbased"/></xsl:with-param>
         </xsl:call-template>
       </Host>
     </xsl:if>
@@ -145,6 +150,7 @@
 
   <xsl:template name="create_context_list">
     <xsl:param name="defpath"/>
+    <xsl:param name="hostbased"/>
     <xsl:call-template name="create_context">
       <xsl:with-param name="cookies">false</xsl:with-param>
       <xsl:with-param name="path"><xsl:value-of select="$defpath"/></xsl:with-param>
@@ -164,14 +170,20 @@
           </xsl:if>
         </xsl:if>
       </xsl:with-param>
+      <xsl:with-param name="hostbased" select="$hostbased"/>
     </xsl:call-template>
     <xsl:if test="$standalone = 'true'">
-      <xsl:apply-templates select="passthrough"/>
-      <xsl:apply-templates select="/projects/common/apache/passthrough"/>
+      <xsl:apply-templates select="passthrough">
+        <xsl:with-param name="hostbased" select="$hostbased"/>
+      </xsl:apply-templates>
+      <xsl:apply-templates select="/projects/common/apache/passthrough">
+        <xsl:with-param name="hostbased" select="$hostbased"/>
+      </xsl:apply-templates>
     </xsl:if>
   </xsl:template>
 
   <xsl:template match="passthrough">
+    <xsl:param name="hostbased"/>
     <xsl:variable name="rel_path" select="normalize-space(./node())"/>
     <xsl:variable name="abs_path" select="concat($docroot, '/', $rel_path)"/>
     <xsl:choose>
@@ -180,6 +192,7 @@
           <xsl:with-param name="path">/<xsl:value-of select="$rel_path"/></xsl:with-param>
           <xsl:with-param name="docBase">../../<xsl:value-of select="$rel_path"/></xsl:with-param>
           <xsl:with-param name="cookies">false</xsl:with-param>
+          <xsl:with-param name="hostbased" select="$hostbased"/>
         </xsl:call-template>
       </xsl:when>
       <xsl:otherwise>
@@ -193,10 +206,11 @@
     <xsl:param name="docBase"/>
     <xsl:param name="cookies"/>
     <xsl:param name="staticDocBase"/>
+    <xsl:param name="hostbased"/>
     <Context crossContext="true">
       <xsl:attribute name="cookies"><xsl:value-of select="$cookies"/></xsl:attribute>
       <xsl:attribute name="path"><xsl:value-of select="$path"/></xsl:attribute>
-      <xsl:attribute name="docBase"><xsl:value-of select="$docBase"/></xsl:attribute>
+      <xsl:attribute name="docBase"><xsl:if test="$hostbased='true'">../</xsl:if><xsl:value-of select="$docBase"/></xsl:attribute>
       <xsl:attribute name="debug"><xsl:value-of select="$debug"/></xsl:attribute>
       <!-- switch off session serialization -->
       <Manager  pathname=""/>
