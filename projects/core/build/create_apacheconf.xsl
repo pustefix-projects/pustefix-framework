@@ -36,6 +36,9 @@ RewriteEngine on
 </xsl:if>
 
 JkMount /xml/* <xsl:apply-templates select="/projects/common/tomcat/jkmount/node()"/>
+<xsl:for-each select="$currentprj/jkmount">
+JkMount <xsl:choose><xsl:when test="@url"><xsl:value-of select="@url"/><xsl:text> </xsl:text></xsl:when><xsl:otherwise>/xml/*<xsl:text> </xsl:text></xsl:otherwise></xsl:choose> <xsl:apply-templates select="./node()"/>
+</xsl:for-each>
 
 <xsl:apply-templates select="$currentprj/errordoc"/>
 
