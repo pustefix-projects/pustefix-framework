@@ -814,7 +814,14 @@ public abstract class AbstractXMLServlet extends ServletManager {
         if (session != null) {
             RequestParam reuse = preq.getRequestParam(PARAM_REUSE);
             if (reuse != null && reuse.getValue() != null) {
-                return (SPDocument) storeddoms.get(reuse.getValue());
+                SPDocument saved= (SPDocument) storeddoms.get(reuse.getValue());
+                if(preq.getPageName()!=null && saved.getPagename()!=null 
+                        && !preq.getPageName().equals(saved.getPagename())) {
+                    if(LOGGER.isDebugEnabled()) LOGGER.debug("Don't reuse SPDocument cause "+
+                            "pagenames differ: "+preq.getPageName()+" -> "+saved.getPagename());
+                    saved=null;
+                }
+                return saved;
             } else if (getRendering(preq) == AbstractXMLServlet.RENDER_FONTIFY) {
                 return (SPDocument) session.getAttribute(ATTR_SHOWXMLDOC);
             } else {
