@@ -338,16 +338,9 @@ public abstract class AbstractXMLServer extends ServletManager {
             if (doreuse) {
                 synchronized (session) {
                     spdoc = (SPDocument) session.getAttribute(servletname + SUFFIX_SAVEDDOM);
-                    if(preq.getPageName()!=null && spdoc.getPagename()!=null 
-                            && !preq.getPageName().equals(spdoc.getPagename())) {
-                        if(LOGGER.isDebugEnabled()) LOGGER.debug("Don't reuse SPDocument cause "+
-                                "pagenames differ: "+preq.getPageName()+" -> "+spdoc.getPagename());
-                        spdoc=null;
-                    } else {
-                        // Make sure redirect is only done once
-                        // See also: SSL redirect implementation in Context
-                        spdoc.resetSSLRedirectURL();
-                    }
+                    // Make sure redirect is only done once
+                    // See also: SSL redirect implementation in Context
+                    spdoc.resetSSLRedirectURL();
                 }
             }
            
@@ -769,6 +762,12 @@ public abstract class AbstractXMLServer extends ServletManager {
                 SPDocument saved = (SPDocument) session.getAttribute(servletname + SUFFIX_SAVEDDOM);
                 if (saved == null)
                     return false;
+                if(preq.getPageName()!=null && saved.getPagename()!=null 
+                        && !preq.getPageName().equals(saved.getPagename())) {
+                    if(LOGGER.isDebugEnabled()) LOGGER.debug("Don't reuse SPDocument cause "+
+                            "pagenames differ: "+preq.getPageName()+" -> "+saved.getPagename());
+                    return false;
+                }
                 String stamp = saved.getTimestamp() + "";
                 if (reuse.getValue().equals(stamp)) {
                     return true;
