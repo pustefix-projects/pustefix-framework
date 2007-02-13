@@ -100,7 +100,6 @@ public abstract class AbstractXMLServlet extends ServletManager {
     public static String        DEF_PROP_TMPDIR       = "java.io.tmpdir";
     private static final String FONTIFY_SSHEET        = "core/xsl/xmlfontify.xsl";
     public  static final String SESS_LANG             = "__SELECTED_LANGUAGE__";
-    private static final String XML_CONTENT_TYPE      = "text/xml; charset=iso-8859-1";
     public  static final String PARAM_XMLONLY         = "__xmlonly";
     public  static final String PARAM_XMLONLY_FONTIFY = "1"; // -> RENDER_FONFIFY
     public  static final String PARAM_XMLONLY_XMLONLY = "2"; // -> RENDER_XMLONLY
