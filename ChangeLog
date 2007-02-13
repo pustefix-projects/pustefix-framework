@@ -1,3 +1,8 @@
+2007-02-13  Martin Leidig  <mleidig@schlund.de>
+
+	* src/de/schlund/pfixxml/AbstractXMLServer.java: don't reuse SPDocument
+	if it has a pagename that differs from the one in the request
+
 2007-02-12  jtl  <jtl@schlund.de>
 
 	* src/de/schlund/pfixcore/workflow/Context.java (handleRequest): back port of redirects for 
