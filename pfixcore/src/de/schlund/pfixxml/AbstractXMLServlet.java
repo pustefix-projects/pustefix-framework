@@ -814,7 +814,7 @@ public abstract class AbstractXMLServlet extends ServletManager {
             RequestParam reuse = preq.getRequestParam(PARAM_REUSE);
             if (reuse != null && reuse.getValue() != null) {
                 SPDocument saved = (SPDocument) storeddoms.get(reuse.getValue());
-                if (preq.getPageName() != null && saved.getPagename() != null && !preq.getPageName().equals(saved.getPagename())) {
+                if (preq.getPageName() != null && saved!=null && saved.getPagename() != null && !preq.getPageName().equals(saved.getPagename())) {
                     if (LOGGER.isDebugEnabled()) 
                         LOGGER.debug("Don't reuse SPDocument because pagenames differ: " + preq.getPageName() + " -> " + saved.getPagename());
                     saved = null;
