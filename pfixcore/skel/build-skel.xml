@@ -481,7 +481,7 @@ or delete the DOCTYPE definition -->
   <target name="check-permissions">
     <apply executable="chmod" os="Linux, Mac OS X">
       <arg line="a+x"/>
-      <fileset dir="${basedir}" includes="apploader.sh newproject.sh startTomcat.sh skel/apploader.sh skel/newproject.sh skel/startTomcat.sh bin/setClassPath.sh bin/setvars.sh stuff/**/*.sh stuff/**/bin/*"/>
+      <fileset dir="${basedir}" includes="newproject.sh startTomcat.sh skel/newproject.sh skel/startTomcat.sh bin/setClassPath.sh bin/setvars.sh stuff/**/*.sh stuff/**/bin/*"/>
       <fileset dir="${dir.projects}" includes="**/*.sh"/>
     </apply>
   </target>

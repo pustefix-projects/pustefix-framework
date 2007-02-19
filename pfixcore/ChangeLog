@@ -9,7 +9,9 @@
 	* projects/common/conf/pfixlog.xml: Removed Apploader logging.
 	* build.xml: Removed Apploader building.
 	* skel/build-skel.xml: Removed Apploader building.
-
+	* apploader.sh: Removed.
+	* skel/apploader.sh: Removed.
+	
 	Removed Apploader references:
 	* src/de/schlund/pfixcore/generator/IHandlerFactory.java
 	* src/de/schlund/pfixcore/workflow/app/DefaultAuthIWrapperState.java
