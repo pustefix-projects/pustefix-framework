@@ -14,7 +14,6 @@ or delete the DOCTYPE definition -->
   <property name="build.compiler.emacs"     value="true"/>
   <property name="javac.source"             value="1.5"/>
   <property name="javac.encoding"           value="iso8859-1"/>
-  <property name="name.jnipkg"              value="jni.tar.gz"/>
   <property name="debugopts"                value="-Xdebug -Xnoagent -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5000"/>
   <property name="gen"                      value="**/depend.xml"/>
   <property name="dir.src"                  location="src"/>
@@ -24,7 +23,6 @@ or delete the DOCTYPE definition -->
   <property name="lib.includes"             value="lib/*.jar"/>
   <property name="test.lib.includes"        value="${lib.includes}"/>
   <property name="dir.skel"                 location="skel"/>
-  <property name="dir.jni"                  location="${dir.lib}/jni"/>
   <property name="dir.projects"             location="projects"/>
   <property name="dir.docroot"              location="${dir.projects}" description="document root for tomcat, defaults to dir.projects"/>
   <property name="dir.src.modules"          location="modules"/>
@@ -166,7 +164,6 @@ or delete the DOCTYPE definition -->
     <property name="run.debugopts" value=""/>
     <path id="run.path.ld_library_path">
       <pathelement path="${env.LD_LIBRARY_PATH}"/>
-      <pathelement location="${dir.jni}/build"/>
     </path>
     <property name="run.ld_library_path" refid="run.path.ld_library_path"/>
     <exec dir="${dir.projects}/servletconf/tomcat" executable="${dir.projects}/servletconf/tomcat/bin/catalina.sh" vmlauncher="false">
@@ -193,7 +190,7 @@ or delete the DOCTYPE definition -->
           description="performs xslt transformations in dir.projects"
           />
 
-  <target name="depend" depends="generate-src, jni" description="checks dependencies of all .java files">
+  <target name="depend" depends="generate-src" description="checks dependencies of all .java files">
     <depend
      srcdir="${dir.src}"
      destdir="${dir.build}"
@@ -210,7 +207,7 @@ or delete the DOCTYPE definition -->
     <pfx-iwrp srcdir="${dir.src}" includes="**/*.iwrp" destdir="${dir.gensrc}" extension=".java" style="${dir.projects}/core/build/iwrapper.xsl" excludes="${excludes.src}" validate="${validate}" catalogfile="${catalogfile}"/>
   </target>
 
-  <target name="compile" depends="tomcat.dir.opt, generate-src, jni, depend, pre-compile, scgenerate" description="compiles all .java files">
+  <target name="compile" depends="tomcat.dir.opt, generate-src, depend, pre-compile, scgenerate" description="compiles all .java files">
     <javac
      srcdir="${dir.src}:${dir.gensrc}"
      destdir="${dir.build}"
@@ -235,28 +232,6 @@ or delete the DOCTYPE definition -->
     
   <target name="post-compile" depends="compile">
     <!-- general purpose hook for build files importing this build file -->
-  </target>
-
-  <target name="jni">
-    <!-- unjar jni.tar.gz out of pfixcore.jar -->
-    <!-- If overwrite="false", unjar overwrites a file if the modification times of the
-         target file are older than the modification times of the file contained in the archive. -->
-    <unjar dest="${dir.lib}" overwrite="false">
-      <fileset refid="id.fs.pfixcore_jar"/>
-      <patternset>
-        <include name="${name.jnipkg}" />
-      </patternset>
-    </unjar>
-    <untar src="${dir.lib}/${name.jnipkg}" dest="${dir.lib}" compression="gzip" overwrite="false"/>
-    <ant dir="${dir.jni}"/>
-  </target>
-
-  <target name="clean-jni-avl">
-    <available property="avl.clean-jni" file="${dir.jni}/build.xml"/>
-  </target>
-  
-  <target name="clean-jni" depends="clean-jni-avl" if="avl.clean-jni">
-    <ant dir="${dir.jni}" target="clean"/>
   </target>
 
   <target name="installjars" depends="tomcat.dir.opt">
@@ -419,7 +394,7 @@ or delete the DOCTYPE definition -->
     <delete dir="${dir.projects}/.cache"/>
   </target>
 
-  <target name="realclean" depends="clean, clean-jni, realclean-core"/>
+  <target name="realclean" depends="clean, realclean-core"/>
 
   <target name="realclean-core">
     <delete dir="${dir.tomcat}"/>
