@@ -20,7 +20,6 @@
 package de.schlund.pfixcore.workflow;
 
 import de.schlund.pfixcore.util.FlyWeightChecker;
-import de.schlund.pfixxml.loader.*;
 import java.util.*;
 import org.apache.log4j.*;
 

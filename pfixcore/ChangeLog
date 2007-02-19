@@ -2,10 +2,13 @@
 
 	Removed Apploader.
 
+	* jni: Removed native Apploader parts.
 	* src/de/schlund/pfixxml/loader: Removed complete Apploader package.
 	* projects/common/conf/apploader.xml: Removed Apploader configuration.
 	* projects/common/conf/factory.xml: Removed Apploader factory init.
 	* projects/common/conf/pfixlog.xml: Removed Apploader logging.
+	* build.xml: Removed Apploader building.
+	* skel/build-skel.xml: Removed Apploader building.
 
 	Removed Apploader references:
 	* src/de/schlund/pfixcore/generator/IHandlerFactory.java
