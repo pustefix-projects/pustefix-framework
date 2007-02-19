@@ -25,18 +25,19 @@ import java.io.Writer;
 public class JSONSerializer {
     
     boolean classHinting=false;
+    SerializerRegistry registry;
     
-    public JSONSerializer() {
-        
+    public JSONSerializer(SerializerRegistry registry) {
+        this.registry=registry;
     }
     
-    public JSONSerializer(boolean classHinting) {
+    public JSONSerializer(SerializerRegistry registry,boolean classHinting) {
+        this.registry=registry;
         this.classHinting=classHinting;
     }
     
     public void serialize(Object obj,Writer writer) throws SerializationException,IOException {
-        SerializerRegistry reg=new SerializerRegistry();
-        SerializationContext ctx=new SerializationContext(reg,classHinting);
+        SerializationContext ctx=new SerializationContext(registry,classHinting);
         ctx.serialize(obj,writer);   
     }
     
