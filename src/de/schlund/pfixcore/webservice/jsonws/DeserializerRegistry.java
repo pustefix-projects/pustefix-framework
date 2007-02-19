@@ -32,16 +32,18 @@ import de.schlund.pfixcore.webservice.jsonws.deserializers.CalendarDeserializer;
 import de.schlund.pfixcore.webservice.jsonws.deserializers.NumberDeserializer;
 import de.schlund.pfixcore.webservice.jsonws.deserializers.StringDeserializer;
 
-
+/**
+ * @author mleidig@schlund.de
+ */
 public class DeserializerRegistry {
 
     Map<Class,Deserializer> deserializers;
     Deserializer beanDeserializer;
     Deserializer arrayDeserializer;
     
-    public DeserializerRegistry() {
+    public DeserializerRegistry(BeanDescriptorFactory beanDescFactory) {
         deserializers=new HashMap<Class,Deserializer>();
-        beanDeserializer=new BeanDeserializer();
+        beanDeserializer=new BeanDeserializer(beanDescFactory);
         
         arrayDeserializer=new ArrayDeserializer();
         deserializers.put(List.class,arrayDeserializer);

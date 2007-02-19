@@ -51,6 +51,10 @@ public class JSONWSProcessor implements ServiceProcessor {
 
     private Logger LOG=Logger.getLogger(JSONWSProcessor.class);
     
+    private BeanDescriptorFactory beanDescFactory=new BeanDescriptorFactory();
+    private SerializerRegistry serializerRegistry=new SerializerRegistry(beanDescFactory);
+    private DeserializerRegistry deserializerRegistry=new DeserializerRegistry(beanDescFactory);
+    
     public JSONWSProcessor() {
     }
     
@@ -91,7 +95,7 @@ public class JSONWSProcessor implements ServiceProcessor {
                     //Service method lookup
                     Method method=null;
                     JSONArray params=jsonReq.getArrayMember("params");
-                    JSONDeserializer jsonDeser = new JSONDeserializer();
+                    JSONDeserializer jsonDeser = new JSONDeserializer(deserializerRegistry);
                     try {
                         String methodName=jsonReq.getStringMember("method");
                         ServiceDescriptor serviceDesc=runtime.getServiceDescriptorCache().getServiceDescriptor(service);
@@ -174,7 +178,7 @@ public class JSONWSProcessor implements ServiceProcessor {
                     if(resultObject instanceof Void || resultObject==null) {
                         writer.write("null");
                     } else {
-                        JSONSerializer jsonSer=new JSONSerializer(service.getJSONClassHinting());
+                        JSONSerializer jsonSer=new JSONSerializer(serializerRegistry,service.getJSONClassHinting());
                         jsonSer.serialize(resultObject,writer);
                     }
                     long t2=System.currentTimeMillis();

@@ -25,6 +25,8 @@ import java.util.Iterator;
 import java.util.Set;
 
 import de.schlund.pfixcore.example.webservices.DataBean;
+import de.schlund.pfixcore.webservice.json.ExcludePropertiesByDefault;
+import de.schlund.pfixcore.webservice.json.ExcludeProperty;
 
 /**
  * Bean property descriptor for bean classes.
@@ -40,12 +42,12 @@ public class BeanDescriptor {
     HashMap<String,Method> getters=new HashMap<String,Method>();
 	HashMap<String,Method> setters=new HashMap<String,Method>();
 
-	public BeanDescriptor(Class clazz) {
+	public <T> BeanDescriptor(Class<T> clazz) {
 		this.clazz=clazz;
 		introspect(clazz);
 	}
 	
-	private void introspect(Class clazz) {
+	private <T> void introspect(Class<T> clazz) {
 		Method[] methods=clazz.getMethods();
 		for(int i=0;i<methods.length;i++) {
 		    if(methods[i].getDeclaringClass()!=Object.class) {
