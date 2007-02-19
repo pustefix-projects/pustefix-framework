@@ -20,11 +20,9 @@ package de.schlund.pfixxml;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Properties;
@@ -65,9 +63,6 @@ import de.schlund.pfixcore.util.PropertiesUtils;
 import de.schlund.pfixxml.config.CustomizationHandler;
 import de.schlund.pfixxml.config.GlobalConfigurator;
 import de.schlund.pfixxml.config.XMLPropertiesUtil;
-import de.schlund.pfixxml.loader.AppLoader;
-import de.schlund.pfixxml.loader.Reloader;
-import de.schlund.pfixxml.loader.StateTransfer;
 import de.schlund.pfixxml.resources.FileResource;
 import de.schlund.pfixxml.resources.ResourceUtil;
 import de.schlund.pfixxml.util.Misc;
@@ -81,7 +76,7 @@ import de.schlund.pfixxml.util.logging.ProxyLogUtil;
  * "servlet.propfile" parameter which points to a file where all factories are
  * listed.
  */
-public class FactoryInitServlet extends HttpServlet implements Reloader {
+public class FactoryInitServlet extends HttpServlet {
 
     // ~ Instance/static variables
     // ..................................................................
@@ -98,8 +93,6 @@ public class FactoryInitServlet extends HttpServlet implements Reloader {
     private static boolean configured = false;
     
     private static FactoryInitException initException;
-
-    private ArrayList factories;
 
     private static String log4jconfig = null;
 
@@ -242,43 +235,21 @@ public class FactoryInitServlet extends HttpServlet implements Reloader {
                         try {
                             LOG.debug(">>>> Init key: [" + key + "] class: ["
                                     + the_class + "] <<<<");
-                            AppLoader appLoader = AppLoader.getInstance();
                             long start = 0;
                             long stop = 0;
-                            if (appLoader.isEnabled()
-                                    && appLoader.isReloadableClass(the_class)) {
-                                Class clazz = appLoader.loadClass(the_class);
-                                Object factory = clazz.getMethod("getInstance",
-                                        Misc.NO_CLASSES).invoke(null,
-                                        Misc.NO_OBJECTS);
-                                LOG.debug("     Object ID: " + factory);
-                                start = System.currentTimeMillis();
-                                clazz.getMethod("init",
-                                        new Class[] { Properties.class })
-                                        .invoke(factory,
-                                                new Object[] { properties });
-                                stop = System.currentTimeMillis();
-                                LOG.debug("Init of " + factory + " took "
-                                        + (stop - start) + " ms");
-                                if (factories == null) {
-                                    factories = new ArrayList();
-                                }
-                                factories.add(factory);
-                            } else {
-                                Class clazz = Class.forName(the_class);
-                                Object factory = clazz.getMethod("getInstance",
-                                        Misc.NO_CLASSES).invoke(null,
-                                        Misc.NO_OBJECTS);
-                                LOG.debug("     Object ID: " + factory);
-                                start = System.currentTimeMillis();
-                                clazz.getMethod("init",
-                                        new Class[] { Properties.class })
-                                        .invoke(factory,
-                                                new Object[] { properties });
-                                stop = System.currentTimeMillis();
-                                LOG.debug("Init of " + factory + " took "
-                                        + (stop - start) + " ms");
-                            }
+                            Class clazz = Class.forName(the_class);
+                            Object factory = clazz.getMethod("getInstance",
+                                    Misc.NO_CLASSES).invoke(null,
+                                            Misc.NO_OBJECTS);
+                            LOG.debug("     Object ID: " + factory);
+                            start = System.currentTimeMillis();
+                            clazz.getMethod("init",
+                                    new Class[] { Properties.class })
+                                    .invoke(factory,
+                                            new Object[] { properties });
+                            stop = System.currentTimeMillis();
+                            LOG.debug("Init of " + factory + " took "
+                                    + (stop - start) + " ms");
                         } catch (Exception e) {
                             LOG.error(e.toString());
                             
@@ -302,29 +273,7 @@ public class FactoryInitServlet extends HttpServlet implements Reloader {
             configured = true;
             LOG.debug("***** INIT of FactoryInitServlet done *****");
 
-            AppLoader appLoader = AppLoader.getInstance();
-            if (appLoader.isEnabled())
-                appLoader.addReloader(this);
         }
-    }
-
-    private Class classFromContainer(Class clazz) {
-        ClassLoader webappLoader = clazz.getClassLoader();
-        ClassLoader cl = webappLoader.getParent();
-        while (cl != null) {
-            Class containerClazz;
-            try {
-                containerClazz = cl.loadClass(clazz.getName());
-            } catch (ClassNotFoundException e) {
-                cl = cl.getParent();
-                continue;
-            }
-            if (clazz != containerClazz) {
-                return containerClazz;
-            }
-            cl = cl.getParent();
-        }
-        return null;
     }
 
     private void configureLogging(Properties properties) throws ServletException {
@@ -365,7 +314,6 @@ public class FactoryInitServlet extends HttpServlet implements Reloader {
                         "Failed to configure TransformerFactory!", e);
             }
             DOMResult dr = new DOMResult();
-            DOMResult dr2 = new DOMResult();
             th.setResult(dr);
             DefaultHandler dh = new TransformerHandlerAdapter(th);
             DefaultHandler cushandler = new CustomizationHandler(dh);
@@ -440,20 +388,6 @@ public class FactoryInitServlet extends HttpServlet implements Reloader {
 
     public static FactoryInitException getInitException() {
         return initException;
-    }
-    
-    public void reload() {
-        if (factories != null) {
-            ArrayList newFacs = new ArrayList();
-            Iterator it = factories.iterator();
-            while (it.hasNext()) {
-                Object fac = it.next();
-                String className = fac.getClass().getName();
-                Object facNew = StateTransfer.getInstance().transfer(fac);
-                newFacs.add(facNew);
-            }
-            factories = newFacs;
-        }
     }
 
 }

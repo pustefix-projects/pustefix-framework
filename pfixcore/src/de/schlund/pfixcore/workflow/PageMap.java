@@ -26,11 +26,8 @@ import org.apache.log4j.Logger;
 
 import de.schlund.pfixxml.config.ContextConfig;
 import de.schlund.pfixxml.config.PageRequestConfig;
-import de.schlund.pfixxml.loader.AppLoader;
-import de.schlund.pfixxml.loader.Reloader;
-import de.schlund.pfixxml.loader.StateTransfer;
 
-public class PageMap implements Reloader {
+public class PageMap {
 
     protected            HashMap<String, State> pagemap = new HashMap<String, State>();
     private final static Logger                 LOG = Logger.getLogger(PageMap.class);
@@ -50,10 +47,6 @@ public class PageMap implements Reloader {
             }
         }
 
-        AppLoader appLoader = AppLoader.getInstance();
-        if (appLoader.isEnabled()) {
-            appLoader.addReloader(this);
-        }
     }
 
     public State getState(PageRequest page) {
@@ -76,15 +69,4 @@ public class PageMap implements Reloader {
         return ret;
     }
     
-    public void reload() {
-        HashMap  pageNew = new HashMap();
-        Iterator i       = pagemap.keySet().iterator();
-        while (i.hasNext()) {
-            String page  = (String) i.next();
-            State  stOld = (State) pagemap.get(page);
-            State  stNew = (State) StateTransfer.getInstance().transfer(stOld);
-            pageNew.put(page,stNew);
-        }
-        pagemap = pageNew;
-    }
 }

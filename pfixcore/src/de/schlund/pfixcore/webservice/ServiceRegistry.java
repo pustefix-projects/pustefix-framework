@@ -26,7 +26,6 @@ import java.util.Map;
 
 import de.schlund.pfixcore.webservice.config.Configuration;
 import de.schlund.pfixcore.webservice.config.ServiceConfig;
-import de.schlund.pfixxml.loader.AppLoader;
 
 /**
  * @author mleidig@schlund.de
@@ -139,14 +138,7 @@ public class ServiceRegistry {
 	
 	private Object createServiceObject(ServiceConfig srvConf) throws ServiceException {
         try {
-            Class clazz=null;
-            AppLoader loader=AppLoader.getInstance();
-            if(loader.isEnabled()) {
-                ClassLoader newLoader=loader.getAppClassLoader();
-                clazz=newLoader.loadClass(srvConf.getImplementationName());
-            } else {
-                clazz=Class.forName(srvConf.getImplementationName());
-            }
+            Class clazz=Class.forName(srvConf.getImplementationName());
             Object serviceObject=clazz.newInstance();
             return serviceObject;
 		} catch(Exception x) {

@@ -27,9 +27,6 @@ import org.apache.log4j.Category;
 import de.schlund.pfixxml.ConfigurableObject;
 import de.schlund.pfixxml.config.DirectOutputPageRequestConfig;
 import de.schlund.pfixxml.config.DirectOutputServletConfig;
-import de.schlund.pfixxml.loader.AppLoader;
-import de.schlund.pfixxml.loader.Reloader;
-import de.schlund.pfixxml.loader.StateTransfer;
 
 /**
  * <code>DirectOutputPageMap</code> holds a mapping of PageRequests to DirectOutputStates. It
@@ -38,7 +35,7 @@ import de.schlund.pfixxml.loader.StateTransfer;
  *
  * @author <a href="mailto:jtl@schlund.de">Jens Lautenbacher</a>
  */
-public class DirectOutputPageMap implements ConfigurableObject,Reloader {
+public class DirectOutputPageMap implements ConfigurableObject {
     protected            HashMap  pagemap       = new HashMap();
     private final static Category CAT           = Category.getInstance(DirectOutputPageMap.class.getName());
     
@@ -62,10 +59,6 @@ public class DirectOutputPageMap implements ConfigurableObject,Reloader {
             }
         }
         
-        AppLoader appLoader = AppLoader.getInstance();
-        if (appLoader.isEnabled()) {
-            appLoader.addReloader(this);
-        }
     }
 
     /**
@@ -93,18 +86,6 @@ public class DirectOutputPageMap implements ConfigurableObject,Reloader {
 	    ret += key + " -> " + ((DirectOutputState) pagemap.get(key)).getClass().getName();
 	}
 	return ret;
-    }
-    
-    public void reload() {
-        HashMap  pageNew = new HashMap();
-        Iterator it      = pagemap.keySet().iterator();
-        while (it.hasNext()) {
-            String            page  = (String) it.next();
-            DirectOutputState stOld = (DirectOutputState) pagemap.get(page);
-            DirectOutputState stNew = (DirectOutputState) StateTransfer.getInstance().transfer(stOld);
-            pageNew.put(page,stNew);
-        }
-        pagemap = pageNew;
     }
     
 }

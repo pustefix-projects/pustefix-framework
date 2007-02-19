@@ -34,13 +34,11 @@ import org.apache.log4j.Logger;
 
 import de.schlund.pfixcore.webservice.config.Configuration;
 import de.schlund.pfixcore.webservice.config.ConfigurationReader;
-import de.schlund.pfixcore.webservice.config.GlobalServiceConfig;
 import de.schlund.pfixcore.webservice.config.ServiceConfig;
 import de.schlund.pfixcore.webservice.fault.Fault;
 import de.schlund.pfixcore.webservice.fault.FaultHandler;
 import de.schlund.pfixcore.webservice.jsonws.JSONWSProcessor;
 import de.schlund.pfixcore.webservice.jsonws.JSONWSStubGenerator;
-import de.schlund.pfixxml.loader.AppLoader;
 import de.schlund.pfixxml.resources.FileResource;
 import de.schlund.pfixxml.resources.ResourceUtil;
 
@@ -54,14 +52,11 @@ import de.schlund.pfixxml.resources.ResourceUtil;
 public class WebServiceServlet extends AxisServlet implements ServiceProcessor {
 
     private Logger LOG=Logger.getLogger(getClass().getName());
-    private boolean DEBUG=LOG.isDebugEnabled();
     
     private static Object initLock=new Object();
     private ServiceRuntime runtime;
    
     private AdminWebapp adminWebapp;
-   
-    private ClassLoader currentLoader;
     
     private static ThreadLocal<Fault> currentFault=new ThreadLocal<Fault>();
     private static ThreadLocal<ServiceRequest> currentRequest=new ThreadLocal<ServiceRequest>();
@@ -92,13 +87,6 @@ public class WebServiceServlet extends AxisServlet implements ServiceProcessor {
     }
     
     public void init(ServletConfig config) throws ServletException {
-    	AppLoader loader=AppLoader.getInstance();
-    	if(loader.isEnabled()) {
-    		ClassLoader newLoader=loader.getAppClassLoader();
-    		//ClassUtils.setDefaultClassLoader(newLoader);
-    		Thread.currentThread().setContextClassLoader(newLoader);
-            currentLoader=newLoader;
-    	}
         super.init(config);
         synchronized(initLock) {
         	runtime=(ServiceRuntime)getServletContext().getAttribute(ServiceRuntime.class.getName());
@@ -127,28 +115,6 @@ public class WebServiceServlet extends AxisServlet implements ServiceProcessor {
     
     
     public void doPost(HttpServletRequest req,HttpServletResponse res) throws ServletException,IOException {
-        AppLoader loader=AppLoader.getInstance();
-        if(loader.isEnabled()) {
-            ClassLoader newLoader=loader.getAppClassLoader();
-            Thread.currentThread().setContextClassLoader(newLoader);
-        
-            synchronized(this) {
-                if(newLoader!=currentLoader) {
-                    if(DEBUG) LOG.debug("Reload Axis Engine.");
-                    Thread.currentThread().setContextClassLoader(newLoader);
-                    currentLoader=newLoader;
-                    axisServer=null;
-                    getServletContext().removeAttribute(ATTR_AXIS_ENGINE);
-                    getServletContext().removeAttribute(getServletName() + ATTR_AXIS_ENGINE);
-                    try {
-                        init();
-                    } catch(ServletException x) {
-                        throw new RuntimeException("Error while reloading Axis",x);
-                    }
-                }
-            }
-        }
-        
     	try {
     		runtime.process(req,res);
     	} catch(ServiceException x) {

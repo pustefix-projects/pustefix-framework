@@ -98,14 +98,6 @@
     </layout>
   </appender>
 
-  <appender name="LOGGER_APPLOADER" class="org.apache.log4j.RollingFileAppender">
-    <param name="File"><cus:docroot/>servletconf/log/pustefix-apploader.log</param>
-    <param name="MaxFileSize" value="10MB"/>
-    <layout class="org.apache.log4j.PatternLayout">
-      <param name="ConversionPattern" value="%d{ISO8601} %m\n"/>
-    </layout>
-  </appender>
-
   <appender name="LOGGER_WEBSERVICE" class="org.apache.log4j.RollingFileAppender">
     <param name="File"><cus:docroot/>servletconf/log/pustefix-webservice.log</param>
     <param name="MaxFileSize" value="10MB"/>
@@ -206,11 +198,6 @@
   <category name="de.schlund.pfixxml.targets.TraxXSLTProcessor" additivity="false">
     <priority value="WARN"/>
     <appender-ref ref="LOGGER_GENERAL"/>
-  </category>
-  
-  <category name="de.schlund.pfixxml.loader" additivity="false">
-    <priority value="INFO"/>
-    <appender-ref ref="LOGGER_APPLOADER"/>
   </category>
   
   <category name="de.schlund.pfixxml.perflogging" additivity="false">
