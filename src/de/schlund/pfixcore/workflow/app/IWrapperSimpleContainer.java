@@ -48,9 +48,6 @@ import de.schlund.pfixxml.ResultDocument;
 import de.schlund.pfixxml.XMLException;
 import de.schlund.pfixxml.config.IWrapperConfig;
 import de.schlund.pfixxml.config.PageRequestConfig;
-import de.schlund.pfixxml.loader.AppLoader;
-import de.schlund.pfixxml.loader.Reloader;
-import de.schlund.pfixxml.loader.StateTransfer;
 import de.schlund.pfixxml.perflogging.PerfEvent;
 import de.schlund.pfixxml.perflogging.PerfEventType;
 import de.schlund.pfixxml.resources.FileResource;
@@ -67,7 +64,7 @@ import de.schlund.pfixxml.resources.ResourceUtil;
  *
  */
 
-public class IWrapperSimpleContainer implements IWrapperContainer, Reloader {
+public class IWrapperSimpleContainer implements IWrapperContainer {
     private   TreeMap            wrappers           = new TreeMap();
 
     // depends on request
@@ -563,13 +560,8 @@ public class IWrapperSimpleContainer implements IWrapperContainer, Reloader {
                 Class thewrapper = null;
                 IWrapper wrapper = null;
                 try {
-                    AppLoader appLoader = AppLoader.getInstance();
-                    if (appLoader.isEnabled()) {
-                        wrapper = (IWrapper) appLoader.loadClass(iface).newInstance();
-                    } else {
-                        thewrapper = Class.forName(iface);
-                        wrapper    = (IWrapper) thewrapper.newInstance();
-                    }
+                    thewrapper = Class.forName(iface);
+                    wrapper    = (IWrapper) thewrapper.newInstance();
                 } catch (ClassNotFoundException e) {
                     throw new XMLException("unable to find class [" + iface + "] :" + e.getMessage());
                 } catch (InstantiationException e) {
@@ -595,8 +587,6 @@ public class IWrapperSimpleContainer implements IWrapperContainer, Reloader {
                 }
             }
             
-            AppLoader appLoader = AppLoader.getInstance();
-            if (appLoader.isEnabled()) appLoader.addReloader(this);
         }
     }
 
@@ -787,19 +777,6 @@ public class IWrapperSimpleContainer implements IWrapperContainer, Reloader {
             // }
         }
     }// IWrapperGroup
-    
-    public void reload() {
-        TreeMap  wrappersNew = new TreeMap();
-        Iterator it = wrappers.keySet().iterator();
-        while(it.hasNext()) {
-            String   str       = (String) it.next();
-            IWrapper iwOld     = (IWrapper) wrappers.get(str);
-            IWrapper iwNew     = (IWrapper) StateTransfer.getInstance().transfer(iwOld);
-            String   className = iwOld.getClass().getName();
-            wrappersNew.put(str,iwNew);
-        }
-        wrappers = wrappersNew;
-    }
     
     
 }// IWrapperSimpleContainer

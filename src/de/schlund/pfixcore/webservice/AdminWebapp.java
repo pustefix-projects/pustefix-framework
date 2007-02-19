@@ -20,7 +20,6 @@ import de.schlund.pfixcore.webservice.config.GlobalServiceConfig;
 import de.schlund.pfixcore.webservice.config.ServiceConfig;
 import de.schlund.pfixcore.webservice.monitor.MonitorHistory;
 import de.schlund.pfixcore.webservice.monitor.MonitorRecord;
-import de.schlund.pfixxml.loader.AppLoader;
 
 public class AdminWebapp {
 
@@ -31,11 +30,6 @@ public class AdminWebapp {
     }
     
     public void doGet(HttpServletRequest req,HttpServletResponse res) throws ServletException,IOException {
-        AppLoader loader=AppLoader.getInstance();
-        if(loader.isEnabled()) {
-            ClassLoader newLoader=loader.getAppClassLoader();
-            Thread.currentThread().setContextClassLoader(newLoader);
-        }
         HttpSession session=req.getSession(false);
         String qs=req.getQueryString();
         if(qs==null) {
@@ -130,21 +124,7 @@ public class AdminWebapp {
         writer.close();
     }
     
-    public void sendAdmin(HttpServletRequest req,HttpServletResponse res) throws IOException {
-        
-        AppLoader loader=AppLoader.getInstance();
-        if(loader.isEnabled()) {
-          
-            ClassLoader newLoader=loader.getAppClassLoader();
-            if(newLoader!=null) {
-                //ClassLoader currentLoader=Thread.currentThread().getContextClassLoader();
-               
-                Thread.currentThread().setContextClassLoader(newLoader);
-             
-            }
-           
-        }
-      
+    public void sendAdmin(HttpServletRequest req,HttpServletResponse res) throws IOException {  
         PrintWriter writer=res.getWriter();
         
         //TODO: source out html

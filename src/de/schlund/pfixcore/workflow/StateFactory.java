@@ -33,7 +33,7 @@ import org.apache.log4j.*;
  * @author <a href="mailto:jtl@schlund.de">Jens Lautenbacher</a>
  */
 
-public class StateFactory implements Reloader {
+public class StateFactory {
     private static HashMap      knownstates = new HashMap();
     private static Category     LOG         = Category.getInstance(StateFactory.class.getName());
     private static StateFactory instance    = new StateFactory();
@@ -43,8 +43,6 @@ public class StateFactory implements Reloader {
     }
     
     private StateFactory() {
-        AppLoader appLoader = AppLoader.getInstance();
-        if (appLoader.isEnabled()) appLoader.addReloader(this);
     }
     /**
      * <code>getState</code> returns the matching State for classname.
@@ -57,13 +55,8 @@ public class StateFactory implements Reloader {
             State retval = (State) knownstates.get(classname); 
             if (retval == null) {
                 try {
-                    AppLoader appLoader=AppLoader.getInstance();
-                    if (appLoader.isEnabled()) {
-                        retval = (State) appLoader.loadClass(classname).newInstance();
-                    } else {
-                        Class stateclass = Class.forName(classname);
-                        retval = (State) stateclass.newInstance();
-                    }
+                    Class stateclass = Class.forName(classname);
+                    retval = (State) stateclass.newInstance();
                     if (!FlyWeightChecker.check(retval)) {
                         throw new IllegalStateException("You MUST NOT use non-static/non-final fields in flyweight class " + classname);
                     }
@@ -82,15 +75,4 @@ public class StateFactory implements Reloader {
         }
     }
     
-    public void reload() {
-        HashMap  knownNew = new HashMap();
-        Iterator it       = knownstates.keySet().iterator();
-        while (it.hasNext()) {
-            String str  = (String) it.next();
-            State  sOld = (State) knownstates.get(str);
-            State  sNew = (State) StateTransfer.getInstance().transfer(sOld);
-            knownNew.put(str,sNew);
-        }
-        knownstates = knownNew;
-    }
 }

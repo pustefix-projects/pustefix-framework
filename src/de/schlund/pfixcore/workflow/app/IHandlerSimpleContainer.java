@@ -30,9 +30,6 @@ import de.schlund.pfixcore.generator.IHandlerFactory;
 import de.schlund.pfixcore.workflow.Context;
 import de.schlund.pfixxml.config.IWrapperConfig;
 import de.schlund.pfixxml.config.PageRequestConfig;
-import de.schlund.pfixxml.loader.AppLoader;
-import de.schlund.pfixxml.loader.Reloader;
-import de.schlund.pfixxml.loader.StateTransfer;
 import de.schlund.pfixxml.perflogging.PerfEvent;
 import de.schlund.pfixxml.perflogging.PerfEventType;
 
@@ -47,7 +44,7 @@ import de.schlund.pfixxml.perflogging.PerfEventType;
  *
  */
 
-public class IHandlerSimpleContainer implements IHandlerContainer, Reloader {
+public class IHandlerSimpleContainer implements IHandlerContainer {
     /** Store all created handlers here*/
     private HashSet    handlers;
     /** Store all handlers here which do not have a 'ihandlercontainer.ignore' property*/
@@ -88,10 +85,6 @@ public class IHandlerSimpleContainer implements IHandlerContainer, Reloader {
             }
         }
         
-        AppLoader appLoader = AppLoader.getInstance();
-        if (appLoader.isEnabled()) {
-            appLoader.addReloader(this);
-        }
     }
     
     /**
@@ -226,25 +219,6 @@ public class IHandlerSimpleContainer implements IHandlerContainer, Reloader {
             }
         }
         return false;
-    }
-    
-    public void reload() {
-        HashSet  handlersNew = new HashSet();
-        Iterator iter        = handlers.iterator();
-        while (iter.hasNext()) {
-            IHandler ihOld = (IHandler) iter.next();
-            IHandler ihNew = (IHandler) StateTransfer.getInstance().transfer(ihOld);
-            handlersNew.add(ihNew);
-        }
-        handlers          = handlersNew;
-        HashSet activeNew = new HashSet();
-        iter              = activeset.iterator();
-        while (iter.hasNext()) {
-            IHandler ihOld = (IHandler) iter.next();
-            IHandler ihNew = (IHandler) StateTransfer.getInstance().transfer(ihOld);
-            activeNew.add(ihNew);
-        }
-        activeset = activeNew;
     }
     
 }// IHandlerSimpleContainer

@@ -21,9 +21,6 @@ package de.schlund.pfixcore.generator;
 
 
 import de.schlund.pfixcore.util.FlyWeightChecker;
-import de.schlund.pfixxml.loader.AppLoader;
-import de.schlund.pfixxml.loader.Reloader;
-import de.schlund.pfixxml.loader.StateTransfer;
 import java.util.HashMap;
 import java.util.Iterator;
 import org.apache.log4j.Category;
@@ -39,7 +36,7 @@ import org.apache.log4j.Category;
  *
  */
 
-public class IHandlerFactory implements Reloader {
+public class IHandlerFactory {
     private static HashMap         knownhandlers    = new HashMap();
     private static HashMap         wrapper2handlers = new HashMap();
     private static Category        LOG              = Category.getInstance(IHandlerFactory.class.getName());
@@ -47,10 +44,6 @@ public class IHandlerFactory implements Reloader {
 
     private IHandlerFactory() {
         // do nothing.
-        AppLoader appLoader = AppLoader.getInstance();
-        if (appLoader.isEnabled()) {
-            appLoader.addReloader(this);
-        }
     }
     
     /**
@@ -74,13 +67,8 @@ public class IHandlerFactory implements Reloader {
             IHandler retval = (IHandler) knownhandlers.get(classname); 
             if (retval == null) {
                 try {
-                    AppLoader appLoader = AppLoader.getInstance();
-                    if (appLoader.isEnabled()) {
-                        retval = (IHandler) appLoader.loadClass(classname).newInstance();
-                    } else {
-                        Class stateclass = Class.forName(classname);
-                        retval = (IHandler) stateclass.newInstance();
-                    }
+                    Class stateclass = Class.forName(classname);
+                    retval = (IHandler) stateclass.newInstance();
                     if (!FlyWeightChecker.check(retval)) {
                         throw new IllegalStateException("You MUST NOT use non-static/non-final fields in flyweight class " + classname);
                     }
@@ -105,15 +93,9 @@ public class IHandlerFactory implements Reloader {
             IHandler retval = (IHandler) wrapper2handlers.get(classname); 
             if (retval == null) {
                 try {
-                    AppLoader appLoader = AppLoader.getInstance();
-                    if (appLoader.isEnabled()) {
-                        IWrapper wrapper = (IWrapper) appLoader.loadClass(classname).newInstance();
-                        retval           = wrapper.gimmeIHandler();
-                    } else {
-                        Class    stateclass = Class.forName(classname);
-                        IWrapper wrapper    = (IWrapper) stateclass.newInstance();
-                        retval              = wrapper.gimmeIHandler();
-                    }
+                    Class    stateclass = Class.forName(classname);
+                    IWrapper wrapper    = (IWrapper) stateclass.newInstance();
+                    retval              = wrapper.gimmeIHandler();
                     wrapper2handlers.put(classname, retval);
                 } catch (InstantiationException e) {
                     throw new IllegalStateException("unable to instantiate class [" + classname + "] :" + e.getMessage());
@@ -128,28 +110,5 @@ public class IHandlerFactory implements Reloader {
             return retval;
         }
     }
-    
-    
-    public void reload() {
-        HashMap knownNew=new HashMap();
-        Iterator it=knownhandlers.keySet().iterator();
-        while(it.hasNext()) {
-            String str=(String)it.next();
-            IHandler ihOld=(IHandler)knownhandlers.get(str);
-            IHandler ihNew=(IHandler)StateTransfer.getInstance().transfer(ihOld);
-            knownNew.put(str,ihNew);
-        }
-        knownhandlers=knownNew;
-        HashMap wrapperNew=new HashMap();
-        it=wrapper2handlers.keySet().iterator();
-        while(it.hasNext()) {
-            String str=(String)it.next();
-            IHandler ihOld=(IHandler)wrapper2handlers.get(str);
-            IHandler ihNew=(IHandler)StateTransfer.getInstance().transfer(ihOld);
-            wrapperNew.put(str,ihNew);   
-        }
-        wrapper2handlers=wrapperNew;
-    }
-    
     
 }// IHandlerFactory

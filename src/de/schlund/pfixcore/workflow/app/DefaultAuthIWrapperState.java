@@ -37,7 +37,6 @@ import de.schlund.pfixxml.RequestParam;
 import de.schlund.pfixxml.ResultDocument;
 import de.schlund.pfixxml.XMLException;
 import de.schlund.pfixxml.config.PageRequestConfig;
-import de.schlund.pfixxml.loader.AppLoader;
 
 /**
  * DefaultAuthIWrapperState.java
@@ -86,7 +85,6 @@ public class DefaultAuthIWrapperState extends StateImpl {
         ArrayList  aux       = new ArrayList();
         PageRequestConfig config = context.getConfigForCurrentPageRequest();
         Map<String, Class> auxwrp = config.getAuxWrappers();
-        AppLoader  appLoader = AppLoader.getInstance();
         
         if (auxwrp != null) {
             for (Iterator i = auxwrp.keySet().iterator(); i.hasNext(); ) {
@@ -95,12 +93,7 @@ public class DefaultAuthIWrapperState extends StateImpl {
                 if (iface.equals("")) {
                     throw new XMLException("FATAL: No interface for prefix " + prefix);
                 }
-                Class auxwrapper = null;
-                if (appLoader.isEnabled()) {
-                    auxwrapper = appLoader.loadClass(iface);
-                } else {
-                    auxwrapper = Class.forName(iface);
-                }
+                Class auxwrapper = Class.forName(iface);
                 IWrapper wrapper = (IWrapper) auxwrapper.newInstance();
                 wrapper.init(prefix);
                 aux.add(wrapper);
@@ -117,7 +110,6 @@ public class DefaultAuthIWrapperState extends StateImpl {
             pagename = "no pagename available";
         }
         PageRequestConfig config = context.getConfigForCurrentPageRequest();
-        AppLoader  appLoader = AppLoader.getInstance();
         
         String authprefix = config.getAuthWrapperPrefix();
         String authwrapper = config.getAuthWrapperClass().getName();
@@ -137,13 +129,7 @@ public class DefaultAuthIWrapperState extends StateImpl {
         }
 
         CAT.debug("===> authorisation handler: " + authprefix + " => " + authwrapper);
-        Class     thewrapper = null;
-        
-        if (appLoader.isEnabled()) {
-            thewrapper = appLoader.loadClass(authwrapper);
-        } else {
-            thewrapper = Class.forName(authwrapper);
-        }
+        Class thewrapper = Class.forName(authwrapper);
         IWrapper user = (IWrapper) thewrapper.newInstance();
         if (do_init) {
             user.init(authprefix);

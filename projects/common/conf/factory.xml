@@ -10,7 +10,6 @@
     <!--<prop name="pustefix.logging.prefercontainer">true</prop>-->
     
     <!-- List of all factories to init -->
-    <prop name="factory.initialize.00">de.schlund.pfixxml.loader.AppLoader</prop>
     <prop name="factory.initialize.02">de.schlund.pfixxml.targets.SPCacheFactory</prop>
     <prop name="factory.initialize.04">de.schlund.pfixxml.targets.cachestat.SPCacheStatistic</prop>
     <prop name="factory.initialize.05">de.schlund.pfixxml.perflogging.PerfLogging</prop>
@@ -60,9 +59,6 @@
     <prop name="cachestatistic.queueticks">60000</prop><!--1 minute-->
     <prop name="cachestatistic.productdata">servletconf/projects.xml</prop>
     
-    
-    <!--AppLoader-->
-    <prop name="apploader.propertyfile">common/conf/apploader.xml</prop>
     
     <!--PerfStat-->
     <!-- size of buffer for perfevents --> 

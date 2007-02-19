@@ -32,9 +32,6 @@ import de.schlund.pfixcore.exception.PustefixCoreException;
 import de.schlund.pfixcore.exception.PustefixRuntimeException;
 import de.schlund.pfixxml.config.ContextResourceConfig;
 import de.schlund.pfixxml.config.ContextConfig;
-import de.schlund.pfixxml.loader.AppLoader;
-import de.schlund.pfixxml.loader.Reloader;
-import de.schlund.pfixxml.loader.StateTransfer;
 
 /**
  * Implements the ability to store objects implementing a number of interfaces extending
@@ -44,7 +41,7 @@ import de.schlund.pfixxml.loader.StateTransfer;
  *
  */
 
-public class ContextResourceManager implements Reloader {
+public class ContextResourceManager {
     private final static Logger LOG = Logger.getLogger(ContextResourceManager.class);
     private HashMap<String, ContextResource>  resources = new HashMap<String, ContextResource>();
     
@@ -98,17 +95,10 @@ public class ContextResourceManager implements Reloader {
             String classname = resourceConfig.getContextResourceClass().getName();
             try {
                 LOG.debug("Creating object with name [" + classname + "]");
-                AppLoader appLoader = AppLoader.getInstance();
-                if (appLoader.isEnabled()) {
-                    cr = (ContextResource) appLoader.loadClass(classname).newInstance();
-                } else {
-                    cr = (ContextResource) resourceConfig.getContextResourceClass().newInstance();
-                }
+                cr = (ContextResource) resourceConfig.getContextResourceClass().newInstance();
             } catch (InstantiationException e) {
                 throw new PustefixRuntimeException("Exception while creating object " + classname + ":" + e);
             } catch (IllegalAccessException e) {
-                throw new PustefixRuntimeException("Exception while creating object " + classname + ":" + e);
-            } catch (ClassNotFoundException e) {
                 throw new PustefixRuntimeException("Exception while creating object " + classname + ":" + e);
             }
             
@@ -135,8 +125,6 @@ public class ContextResourceManager implements Reloader {
             }
         }
         
-        AppLoader appLoader = AppLoader.getInstance();
-        if (appLoader.isEnabled()) appLoader.addReloader(this);   
     }
 
     /**
@@ -158,12 +146,7 @@ public class ContextResourceManager implements Reloader {
         // Get the class of the requested interface and get all
         // implemented interfaces of the object
         try {
-            AppLoader appLoader = AppLoader.getInstance();
-            if (appLoader.isEnabled()) {
-                wantedinterface = appLoader.loadClass(interfacename);
-            } else {
-                wantedinterface = Class.forName(interfacename) ;
-            }
+            wantedinterface = Class.forName(interfacename) ;
         } catch (ClassNotFoundException e) {
             throw new PustefixRuntimeException("Got ClassNotFoundException for classname " +  interfacename +
                                        "while checking for interface");
@@ -202,15 +185,4 @@ public class ContextResourceManager implements Reloader {
         return  resources.values().iterator();
     }
     
-    public void reload() {
-        HashMap<String, ContextResource>  resNew = new HashMap<String, ContextResource>();
-        Iterator it     = resources.keySet().iterator();
-        while (it.hasNext()) {
-            String str = (String) it.next();
-            ContextResource crOld = (ContextResource)resources.get(str);
-            ContextResource crNew = (ContextResource)StateTransfer.getInstance().transfer(crOld);
-            resNew.put(str,crNew);
-        }
-        resources = resNew;
-    }
 }

@@ -23,7 +23,6 @@ import de.schlund.pfixxml.config.ServletManagerConfig;
 import de.schlund.pfixxml.config.XMLPropertiesUtil;
 import de.schlund.pfixxml.exceptionprocessor.ExceptionConfig;
 import de.schlund.pfixxml.exceptionprocessor.ExceptionProcessor;
-import de.schlund.pfixxml.loader.AppLoader;
 import de.schlund.pfixxml.perflogging.PerfEvent;
 import de.schlund.pfixxml.perflogging.PerfEventType;
 import de.schlund.pfixxml.resources.FileResource;
@@ -160,17 +159,6 @@ public abstract class ServletManager extends HttpServlet {
 
         }
 
-        //if AppLoader is enabled and currently doing a reload, block request until reloading is finished
-        AppLoader loader = AppLoader.getInstance();
-        if (loader.isEnabled()) {
-            while (loader.isLoading()) {
-                try {
-                    Thread.sleep(100);
-                } catch (InterruptedException x) {
-                    //
-                }
-            }
-        }
         HttpSession session = null;
         boolean has_session = false;
         boolean has_ssl_session_insecure = false;
