@@ -1,3 +1,18 @@
+2007-02-19  Martin Leidig  <mleidig@schlund.de>
+
+	Improved caching of bean descriptors, now they're cached 
+	JSONWSProcessor-wide.
+
+	* src/de/schlund/pfixcore/webservice/jsonws/SerializerRegistry.java
+	* src/de/schlund/pfixcore/webservice/jsonws/JSONSerializer.java
+	* src/de/schlund/pfixcore/webservice/jsonws/BeanDescriptor.java
+	* src/de/schlund/pfixcore/webservice/jsonws/DeserializerRegistry.java
+	* src/de/schlund/pfixcore/webservice/jsonws/JSONDeserializer.java
+	* src/de/schlund/pfixcore/webservice/jsonws/serializers/BeanSerializer.java
+	* src/de/schlund/pfixcore/webservice/jsonws/JSONWSProcessor.java
+	* src/de/schlund/pfixcore/webservice/jsonws/deserializers/BeanDeserializer.java
+	* src/de/schlund/pfixcore/webservice/jsonws/BeanDescriptorFactory.java
+
 2007-02-13  Martin Leidig  <mleidig@schlund.de>
 
 	* src/de/schlund/pfixxml/AbstractXMLServer.java: don't reuse SPDocument

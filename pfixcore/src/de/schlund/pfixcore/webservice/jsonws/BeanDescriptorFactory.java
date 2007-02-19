@@ -22,6 +22,9 @@ package de.schlund.pfixcore.webservice.jsonws;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * @author mleidig@schlund.de
+ */
 public class BeanDescriptorFactory {
 
     Map<Class,BeanDescriptor> descriptors;
@@ -30,7 +33,7 @@ public class BeanDescriptorFactory {
         descriptors=new HashMap<Class,BeanDescriptor>();
     }
     
-    public synchronized BeanDescriptor getBeanDescriptor(Class clazz) {
+    public synchronized <T> BeanDescriptor getBeanDescriptor(Class<T> clazz) {
         BeanDescriptor desc=descriptors.get(clazz);
         if(desc==null) {
             desc=new BeanDescriptor(clazz);

@@ -24,15 +24,19 @@ package de.schlund.pfixcore.webservice.jsonws;
  */
 public class JSONDeserializer {
 
+    DeserializerRegistry registry;
+    
+    public JSONDeserializer(DeserializerRegistry registry) {
+        this.registry=registry;
+    }
+    
     public boolean canDeserialize(Object jsonObj,Class targetClass)  throws DeserializationException {
-        DeserializerRegistry reg=new DeserializerRegistry();
-        DeserializationContext ctx=new DeserializationContext(reg); 
+        DeserializationContext ctx=new DeserializationContext(registry); 
         return ctx.canDeserialize(jsonObj, targetClass);
     }
     
     public Object deserialize(Object jsonObj,Class targetClass) throws DeserializationException {
-        DeserializerRegistry reg=new DeserializerRegistry();
-        DeserializationContext ctx=new DeserializationContext(reg); 
+        DeserializationContext ctx=new DeserializationContext(registry); 
         return ctx.deserialize(jsonObj,targetClass);
     }
     

@@ -34,14 +34,10 @@ import de.schlund.pfixcore.webservice.jsonws.Serializer;
 
 public class BeanSerializer extends Serializer {
 
-    BeanDescriptorFactory bdf;
+    BeanDescriptorFactory beanDescFactory;
     
-    public BeanSerializer() {
-        this.bdf=new BeanDescriptorFactory();
-    }
-    
-    public BeanSerializer(BeanDescriptorFactory bdf) {
-        this.bdf=bdf;
+    public BeanSerializer(BeanDescriptorFactory beanDescFactory) {
+        this.beanDescFactory=beanDescFactory;
     }
     
     public Object serialize(SerializationContext ctx,Object obj) throws SerializationException {
@@ -49,7 +45,7 @@ public class BeanSerializer extends Serializer {
         if(ctx.doClassHinting()) {
             jsonObj.putMember(ctx.getClassHintPropertyName(),obj.getClass().getName());
         }
-        BeanDescriptor bd=bdf.getBeanDescriptor(obj.getClass());
+        BeanDescriptor bd=beanDescFactory.getBeanDescriptor(obj.getClass());
         Set<String> props=bd.getReadableProperties();
         Iterator<String> it=props.iterator();
         while(it.hasNext()) {
@@ -79,7 +75,7 @@ public class BeanSerializer extends Serializer {
             writer.write(obj.getClass().getName());
             writer.write("\",");
         }
-        BeanDescriptor bd=bdf.getBeanDescriptor(obj.getClass());
+        BeanDescriptor bd=beanDescFactory.getBeanDescriptor(obj.getClass());
         Set<String> props=bd.getReadableProperties();
         Iterator<String> it=props.iterator();
         while(it.hasNext()) {

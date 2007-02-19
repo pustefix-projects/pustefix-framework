@@ -31,10 +31,10 @@ import de.schlund.pfixcore.webservice.jsonws.Deserializer;
 
 public class BeanDeserializer extends Deserializer {
 
-    BeanDescriptorFactory bdf;
+    BeanDescriptorFactory beanDescFactory;
     
-    public BeanDeserializer() {
-        this.bdf=new BeanDescriptorFactory();
+    public BeanDeserializer(BeanDescriptorFactory beanDescFactory) {
+        this.beanDescFactory=beanDescFactory;
     }
     
     @Override
@@ -55,7 +55,7 @@ public class BeanDeserializer extends Deserializer {
                         throw new DeserializationException("Class '"+targetClass.getName()+"' isn't assignable from '"+clazz.getName());
                     targetClass=clazz;
                 }
-                BeanDescriptor bd=bdf.getBeanDescriptor(targetClass);
+                BeanDescriptor bd=beanDescFactory.getBeanDescriptor(targetClass);
                 
                 Object newObj=targetClass.newInstance();
                 Iterator<String> it=jsonObj.getMemberNames();

@@ -31,16 +31,19 @@ import de.schlund.pfixcore.webservice.jsonws.serializers.CalendarSerializer;
 import de.schlund.pfixcore.webservice.jsonws.serializers.NumberSerializer;
 import de.schlund.pfixcore.webservice.jsonws.serializers.StringSerializer;
 
+/**
+ * @author mleidig@schlund.de
+ */
 public class SerializerRegistry {
 
     Map<Class,Serializer> serializers;
     BeanSerializer beanSerializer;
     
-    public SerializerRegistry() {
+    public SerializerRegistry(BeanDescriptorFactory beanDescFactory) {
         serializers=new HashMap<Class,Serializer>();
         
       
-        beanSerializer=new BeanSerializer();
+        beanSerializer=new BeanSerializer(beanDescFactory);
         
         serializers.put(String.class,new StringSerializer());
         Serializer ser=new NumberSerializer();
