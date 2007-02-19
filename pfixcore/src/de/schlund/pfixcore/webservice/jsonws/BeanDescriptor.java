@@ -25,8 +25,6 @@ import java.util.Iterator;
 import java.util.Set;
 
 import de.schlund.pfixcore.example.webservices.DataBean;
-import de.schlund.pfixcore.webservice.json.ExcludePropertiesByDefault;
-import de.schlund.pfixcore.webservice.json.ExcludeProperty;
 
 /**
  * Bean property descriptor for bean classes.
