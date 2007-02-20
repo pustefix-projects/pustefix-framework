@@ -1,3 +1,13 @@
+2007-02-20  Martin Leidig  <mleidig@schlund.de>
+
+	* skel/build-skel.xml: Fixed task classpath problem with missing build dir: 
+	after realclean tasks can't find classes in the build directory despite they 
+	are existing (were created in the meantime resp.), but at the time the task
+	is initialized the build dir doesn't exist and when the task is called it's
+	omitted. Solution: dependence on the init target didn't work because of 
+	circular references, so I made an additional target init-dirs, on which the
+	init and ant-tasks target depend.
+
 2007-02-19  Martin Leidig  <mleidig@schlund.de>
 
 	Improved caching of bean descriptors, now they're cached 
