@@ -1,3 +1,18 @@
+2007-02-20  Sebastian Marsching  <sebastian.marsching@1und1.de>
+
+	* src/de/schlund/pfixcore/workflow/context/RequestContextImpl.java: 
+	* src/de/schlund/pfixcore/webservice/ServiceRuntime.java: 
+	* src/de/schlund/pfixxml/AbstractXMLServlet.java: 
+	* src/de/schlund/pfixxml/ContextXMLServlet.java: 
+	* src/de/schlund/pfixxml/DirectOutputServlet.java: 
+	Changed handling for SSL switching: Redirect is always sent when 
+	SSL switching is needed regardless of the nostore flag. 
+	AbstractXMLServer stores the document on a redirect, even if the 
+	nostore flag is set.
+	Context instance is now registered using the hashcode of the servlet
+	and the URI handler associated with the servlet. Thus a foreign context
+	can be reffered to using the handler URI instead of a synthetic name.
+
 2007-02-19  Martin Leidig  <mleidig@schlund.de>
 
 	Improved caching of bean descriptors, now they're cached 

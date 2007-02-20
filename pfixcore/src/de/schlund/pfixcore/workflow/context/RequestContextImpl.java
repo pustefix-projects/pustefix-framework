@@ -395,31 +395,30 @@ public class RequestContextImpl implements Cloneable {
         
         spdoc = handleRequestWorker(preq);
         
-        if (!spdoc.getNostore() && (preq.getPageName() == null || !preq.getPageName().equals(spdoc.getPagename()))) {
+        boolean forceSSL = false;
+        if (getConfigForCurrentPageRequest() != null && getConfigForCurrentPageRequest().isSSL() && !preq.getOriginalScheme().equals("https")) {
+            forceSSL = true;
+        }
+        
+        if (spdoc != null && (forceSSL || preq.getPageName() == null || !preq.getPageName().equals(spdoc.getPagename()))) {
             // Make sure all requests that don't encode an explicite pagename
             // (this normally is only the case for the first request)
             // OR pages that have the "wrong" pagename in their request 
             // (this applies to pages selected by stepping ahead in the page flow)
             // are redirected to the page selected by the business logic below
-            // This rule does not apply to pages with the nostore
-            // flag, as we would not be able to return such a page after the redirect
-            spdoc.setRedirect(preq.getScheme() + "://" + ServletManager.getServerName(preq.getRequest()) 
-                    + ":" + preq.getServerPort() + preq.getContextPath() + preq.getServletPath() + "/" + spdoc.getPagename() 
-                    + ";jsessionid=" + preq.getSession(false).getId() + "?__reuse=" + spdoc.getTimestamp());
-        } else if (getConfigForCurrentPageRequest() != null && spdoc != null && getConfigForCurrentPageRequest().isSSL()
-            && !spdoc.getNostore() && !preq.getOriginalScheme().equals("https")) {
-            // Make sure SSL pages are only returned using SSL.
-            // This rule does not apply to pages with the nostore
-            // flag, as we would not be able to return such a page
-            // after the redirect
-            String redirectPort = getServerContext().getProperties().getProperty(ServletManager.PROP_SSL_REDIRECT_PORT + String.valueOf(preq.getOriginalServerPort()));
-            if (redirectPort == null) {
-                redirectPort = "";
-            } else {
-                redirectPort = ":" + redirectPort;
+            String scheme = preq.getScheme();
+            String port = String.valueOf(preq.getServerPort());
+            if (forceSSL) {
+                scheme = "https";
+                port = getServerContext().getProperties().getProperty(ServletManager.PROP_SSL_REDIRECT_PORT + String.valueOf(preq.getOriginalServerPort()));
+                if (port == null) {
+                    port = "443";
+                }
             }
-            spdoc.setRedirect("https://" + ServletManager.getServerName(preq.getRequest()) + redirectPort + preq.getContextPath() 
-                    + preq.getServletPath() + ";jsessionid=" + preq.getSession(false).getId() + "?__reuse=" + spdoc.getTimestamp());
+            
+            spdoc.setRedirect(scheme + "://" + ServletManager.getServerName(preq.getRequest()) 
+                    + ":" + port + preq.getContextPath() + preq.getServletPath() + "/" + spdoc.getPagename() 
+                    + ";jsessionid=" + preq.getSession(false).getId() + "?__reuse=" + spdoc.getTimestamp());
         }
         
         // Reset stored variant so the session variant is being used

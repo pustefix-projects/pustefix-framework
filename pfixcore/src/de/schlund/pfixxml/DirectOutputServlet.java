@@ -113,7 +113,12 @@ public class DirectOutputServlet extends ServletManager {
      * @exception Exception if an error occurs
      */
     protected void process(PfixServletRequest preq, HttpServletResponse res) throws Exception {
-         String        name    = ext_cname + ContextXMLServlet.CONTEXT_SUFFIX;
+         String name;
+         if (ext_cname.startsWith("/")) {
+             name = ext_cname + ContextXMLServlet.CONTEXT_BY_PATH_SUFFIX;
+         } else {
+             name = ext_cname + ContextXMLServlet.CONTEXT_SUFFIX;
+         }
          HttpSession   session = preq.getSession(false);
          if (session == null) {
              //throw new RuntimeException("*** didn't get Session from request. ***");
@@ -122,11 +127,14 @@ public class DirectOutputServlet extends ServletManager {
              return;
          }
          
-         ServerContextImpl servercontext = (ServerContextImpl) getServletContext().getAttribute(name);
          ContextImpl       context       = (ContextImpl) session.getAttribute(name);
-         if (servercontext == null || context == null) {
+         if (context == null) {
              throw new RuntimeException("*** didn't find Context " + name + " in Session " + session.getId()
                                         + ", maybe it's not yet initialized??? ***");
+         }
+         ServerContextImpl servercontext = (ServerContextImpl) getServletContext().getAttribute(context.getName());
+         if (servercontext == null) {
+             throw new RuntimeException("*** didn't find ServerContext " + context.getName() + " in ServletContext, maybe it's not yet initialized??? ***");
          }
          
          // Make sure the context is initialized and deinitialized this thread
