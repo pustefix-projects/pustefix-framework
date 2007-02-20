@@ -55,6 +55,8 @@ public class ContextXMLServlet extends AbstractXMLServlet {
     private Logger LOG = Logger.getLogger(ContextXMLServlet.class);
 
     public final static String CONTEXT_SUFFIX = "__CONTEXT__";
+    public final static String CONTEXT_BY_PATH_SUFFIX = "__CONTEXT_BY_PATH__";
+    public final static String CONTEXT_IDENTITY_SUFFIX = "__CONTEXT_IDENTITY__";
 
     private final static String ALREADY_SSL = "__CONTEXT_ALREADY_SSL__";
 
@@ -75,36 +77,14 @@ public class ContextXMLServlet extends AbstractXMLServlet {
     protected AbstractXMLServletConfig getAbstractXMLServletConfig() {
         return this.config;
     }
-
+    
     protected boolean needsSSL(PfixServletRequest preq) throws ServletException {
         if (super.needsSSL(preq)) {
             return true;
         } else {
-            if (preq.getSession(false) != null && preq.isRequestedSessionIdValid()) {
-                String      contextname = makeContextName();
-                HttpSession session     = preq.getSession(false);
-                String      already_ssl = (String) session.getAttribute(ALREADY_SSL);
-                if (already_ssl != null && already_ssl.equals("true")) {
-                    return true;
-                } else {
-                    String page = preq.getPageName();
-                    if (page == null) {
-                        ContextImpl context = (ContextImpl) session.getAttribute(contextname);
-                        if (context != null) {
-                            page = context.getLastPageName();
-                        }
-                    }
-                    if (page != null) {
-                        PageRequestConfig pageconfig = config.getContextConfig().getPageRequestConfig(page);
-                        if (pageconfig != null) {
-                            boolean retval = pageconfig.isSSL();
-                            if (retval) {
-                                session.setAttribute(ALREADY_SSL, "true");
-                            }
-                            return retval;
-                        }
-                    }
-                }
+            String pagename = preq.getPageName();
+            if (pagename != null) {
+                return config.getContextConfig().getPageRequestConfig(pagename).isSSL();
             }
         }
         return false;
@@ -121,8 +101,8 @@ public class ContextXMLServlet extends AbstractXMLServlet {
     protected boolean tryReloadProperties(PfixServletRequest preq) throws ServletException {
         if (super.tryReloadProperties(preq)) {
             try {
-                servercontext = new ServerContextImpl(getContextXMLServletConfig().getContextConfig(), makeContextName());
-                this.getServletContext().setAttribute(makeContextName(), servercontext);
+                servercontext = new ServerContextImpl(getContextXMLServletConfig().getContextConfig(), makeContextIdentityName());
+                this.getServletContext().setAttribute(makeContextIdentityName(), servercontext);
             } catch (Exception e) {
                 String msg = "Error during reload of servlet configuration";
                 LOG.error(msg, e);
@@ -244,6 +224,11 @@ public class ContextXMLServlet extends AbstractXMLServlet {
         // Name of the attribute that is used to store the session context
         // within the session object.
         String contextname = makeContextName();
+        String contextpathname = makeContextPathBasedName(preq);
+        // A servlet instance might be using different URIs, so we have
+        // to make sure we find the right context instance even if the servlet
+        // is accessed using a different URI
+        String identityname = makeContextIdentityName();
 
         HttpSession session = preq.getSession(false);
         if (session == null) {
@@ -252,27 +237,48 @@ public class ContextXMLServlet extends AbstractXMLServlet {
         }
 
         // FIXME: DCL is broken
-        ContextImpl context = (ContextImpl) session.getAttribute(contextname);
+        ContextImpl context = (ContextImpl) session.getAttribute(identityname);
         // Session does not have a context yet?
         if (context == null) {
             // Synchronize on session object to make sure only ONE
             // context per session is created
             synchronized (session) {
-                context = (ContextImpl) session.getAttribute(contextname);
+                context = (ContextImpl) session.getAttribute(contextpathname);
                 if (context == null) {
                     context = new ContextImpl(servercontext, session);
-                    session.setAttribute(contextname, context);
+                    session.setAttribute(identityname, context);
+                    session.setAttribute(contextpathname + preq.getRequest().getServletPath(), context);
+                    if (contextname != null) {
+                        session.setAttribute(contextname, context);
+                    }
                 } else {
                     // update, as it may have changed
                     context.setServerContext(servercontext);
                 }
+            }
+        } else {
+            // Context is registered with identity and configured name
+            // but maybe not with current path
+            if (session.getAttribute(contextpathname) == null) {
+                session.setAttribute(contextpathname, context);
             }
         }
         return context;
     }
 
     private String makeContextName() {
+        if (servletname == null) {
+            return null;
+        }
         return servletname + CONTEXT_SUFFIX;
+    }
+    
+    private String makeContextPathBasedName(PfixServletRequest preq) {
+        return CONTEXT_BY_PATH_SUFFIX + preq.getRequest().getServletPath();
+    }
+    
+    private String makeContextIdentityName() {
+        return String.valueOf(System.identityHashCode(this)) + CONTEXT_IDENTITY_SUFFIX;
     }
 
     protected void reloadServletConfig(FileResource configFile, Properties globalProperties) throws ServletException {

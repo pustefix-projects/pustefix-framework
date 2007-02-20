@@ -41,6 +41,7 @@ import de.schlund.pfixcore.webservice.utils.RecordingRequestWrapper;
 import de.schlund.pfixcore.webservice.utils.RecordingResponseWrapper;
 import de.schlund.pfixcore.workflow.ContextImpl;
 import de.schlund.pfixcore.workflow.context.ServerContextImpl;
+import de.schlund.pfixxml.ContextXMLServlet;
 import de.schlund.pfixxml.serverutil.SessionAdmin;
 
 /**
@@ -146,9 +147,14 @@ public class ServiceRuntime {
                         if(secure==null || !secure.booleanValue()) 
                             throw new ServiceException("Authentication failed: No secure session");
                     }
-                    String contextName = srvConf.getContextName()+"__CONTEXT__";
-                    ServerContextImpl srvContext = (ServerContextImpl)req.getSession().getServletContext().getAttribute(contextName);
+                    String contextName;
+                    if(srvConf.getContextName().startsWith("/")) {
+                        contextName=srvConf.getContextName()+ContextXMLServlet.CONTEXT_BY_PATH_SUFFIX;
+                    } else {
+                        contextName=srvConf.getContextName()+ContextXMLServlet.CONTEXT_SUFFIX;
+                    }
                     pfxSessionContext = (ContextImpl) session.getAttribute(contextName);
+                    ServerContextImpl srvContext = (ServerContextImpl)req.getSession().getServletContext().getAttribute(pfxSessionContext.getName());
                     
                     try {
                         // Prepare context for current thread.

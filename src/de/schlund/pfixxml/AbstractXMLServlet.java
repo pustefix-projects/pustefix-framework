@@ -677,7 +677,7 @@ public abstract class AbstractXMLServlet extends ServletManager {
         TransformerException, TransformerConfigurationException, TransformerFactoryConfigurationError, IOException {
         Document doc  = spdoc.getDocument();
         Document ext  = doc;
-        if (!spdoc.getNostore()) {
+        if (!spdoc.getNostore() || spdoc.isRedirect()) {
             ext = Xml.createDocument();
             ext.appendChild(ext.importNode(doc.getDocumentElement(), true));
         }
