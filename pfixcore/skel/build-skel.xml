@@ -120,9 +120,12 @@ or delete the DOCTYPE definition -->
     <pathelement location="${dir.build}"/>
   </path>
 
-  <target name="init" depends="properties, init-data">
+  <target name="init-dirs">
     <mkdir dir="${dir.build}"/>
     <mkdir dir="${dir.src}"/>
+  </target>
+
+  <target name="init" depends="properties, init-data, init-dirs">
     <echo message="using machine=${machine} fqdn=${fqdn}" level="verbose"/>
    
     <!-- Create commons-logging configuration info -->
@@ -260,7 +263,7 @@ or delete the DOCTYPE definition -->
     </apply>
   </target>
 
-  <target name="ant-tasks" depends="tomcat.dir.opt" description="declares the ant task used for generating java source code. This target needs to be run prior to the actual compile.">
+  <target name="ant-tasks" depends="init-dirs, tomcat.dir.opt" description="declares the ant task used for generating java source code. This target needs to be run prior to the actual compile.">
     <taskdef
      name="pfx-xslt"
      classname="de.schlund.pfixcore.util.XsltGenericTask"
