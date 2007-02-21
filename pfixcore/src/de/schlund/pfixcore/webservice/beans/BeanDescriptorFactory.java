@@ -17,10 +17,11 @@
  *
  */
 
-package de.schlund.pfixcore.webservice.jsonws;
+package de.schlund.pfixcore.webservice.beans;
 
 import java.util.HashMap;
 import java.util.Map;
+
 
 /**
  * @author mleidig@schlund.de
