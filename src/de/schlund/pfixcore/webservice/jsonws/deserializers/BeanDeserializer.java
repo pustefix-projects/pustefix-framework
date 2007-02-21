@@ -22,9 +22,9 @@ package de.schlund.pfixcore.webservice.jsonws.deserializers;
 import java.lang.reflect.Method;
 import java.util.Iterator;
 
+import de.schlund.pfixcore.webservice.beans.BeanDescriptor;
+import de.schlund.pfixcore.webservice.beans.BeanDescriptorFactory;
 import de.schlund.pfixcore.webservice.json.JSONObject;
-import de.schlund.pfixcore.webservice.jsonws.BeanDescriptor;
-import de.schlund.pfixcore.webservice.jsonws.BeanDescriptorFactory;
 import de.schlund.pfixcore.webservice.jsonws.DeserializationContext;
 import de.schlund.pfixcore.webservice.jsonws.DeserializationException;
 import de.schlund.pfixcore.webservice.jsonws.Deserializer;
@@ -63,19 +63,22 @@ public class BeanDeserializer extends Deserializer {
                     String prop=it.next();
                     if(!prop.equals("javaClass")) {
                         Class propTargetClass=bd.getPropertyType(prop);
-                        Object val=jsonObj.getMember(prop);
-                        Method meth=bd.getSetMethod(prop);
-                        if(val==null) {
-                           meth.invoke(newObj,new Object[] {null}); 
-                        } else {
-                            Object res=ctx.deserialize(val,propTargetClass);
-                            if(res!=null) meth.invoke(newObj,res);
-                        }
+                        if(propTargetClass!=null) {
+                            Object val=jsonObj.getMember(prop);
+                            Method meth=bd.getSetMethod(prop);
+                            if(val==null) {
+                                meth.invoke(newObj,new Object[] {null}); 
+                            } else {
+                                Object res=ctx.deserialize(val,propTargetClass);
+                                if(res!=null) meth.invoke(newObj,res);
+                            }
+                        } else throw new DeserializationException("Bean of type '"+targetClass.getName()+"' doesn't have property '"+prop+"'.");         
                     }
                 }
                 return newObj;
             } catch(Exception x) {
-                throw new DeserializationException("Error while serializing bean.",x);
+                if(x instanceof DeserializationException) throw (DeserializationException)x;
+                throw new DeserializationException("Can't deserialize as bean of type '"+targetClass.getName()+"'.",x);
             }
         } else throw new DeserializationException("No instance of JSONObject: "+jsonValue.getClass().getName());
      

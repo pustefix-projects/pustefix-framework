@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
-package de.schlund.pfixcore.webservice.jsonws;
+package de.schlund.pfixcore.webservice.beans;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -42,32 +42,41 @@ public class BeanDescriptor {
 
 	public <T> BeanDescriptor(Class<T> clazz) {
 		this.clazz=clazz;
-		introspect(clazz);
+		introspectNew(clazz);
 	}
 	
-	private <T> void introspect(Class<T> clazz) {
-		Method[] methods=clazz.getMethods();
-		for(int i=0;i<methods.length;i++) {
-		    if(methods[i].getDeclaringClass()!=Object.class) {
-		        int modifiers=methods[i].getModifiers();
-		        if(Modifier.isPublic(modifiers)&&!Modifier.isStatic(modifiers)) {
-		            String name=methods[i].getName();
-		            if(name.length()>3&&Character.isUpperCase(name.charAt(3))) {
-		                if(name.startsWith("get") && methods[i].getParameterTypes().length==0) {
-		                    String propName=extractPropertyName(name);
-		                    getters.put(propName,methods[i]);
-                            types.put(propName,methods[i].getReturnType());
-		                } else if(name.startsWith("set")) {
-		                    if(methods[i].getReturnType()==void.class && methods[i].getParameterTypes().length==1) {
-		                        String propName=extractPropertyName(name);
-		                        setters.put(propName,methods[i]);
-		                    }
-		                }
-		            }
-		        }
-			}
-        }
-	}
+    private <T> void introspectNew(Class<T> clazz) {
+        Method[] methods=clazz.getMethods();
+        for(int i=0;i<methods.length;i++) {
+            if(methods[i].getDeclaringClass()!=Object.class) {
+                int modifiers=methods[i].getModifiers();
+                if(Modifier.isPublic(modifiers)&&!Modifier.isStatic(modifiers)) {
+                    String name=methods[i].getName();
+                    if(name.length()>3&&Character.isUpperCase(name.charAt(3))) {
+                        if(name.startsWith("get") && methods[i].getParameterTypes().length==0) {
+                            boolean isTransient=false;
+                            Property prop=methods[i].getAnnotation(Property.class);
+                            Transient trans=methods[i].getAnnotation(Transient.class);
+                            if(trans==null) {
+                                TransientByDefault defTrans=methods[i].getDeclaringClass().getAnnotation(TransientByDefault.class);
+                                if(defTrans!=null && prop==null) isTransient=true;
+                            } else isTransient=true;
+                            if(!isTransient) {
+                                String propName=extractPropertyName(name);
+                                getters.put(propName,methods[i]);
+                                types.put(propName,methods[i].getReturnType());
+                            }
+                        } else if(name.startsWith("set")) {
+                            if(methods[i].getReturnType()==void.class && methods[i].getParameterTypes().length==1) {
+                                String propName=extractPropertyName(name);
+                                setters.put(propName,methods[i]);
+                            }
+                        }
+                    }
+                }
+            }
+        }   
+    }
     
     public Set<String> getReadableProperties() {
         return getters.keySet();
@@ -83,7 +92,7 @@ public class BeanDescriptor {
 				Character.isUpperCase(name.charAt(1))) return name;
 		return Character.toLowerCase(name.charAt(0))+name.substring(1);
 	}
-	
+    
 	public Method getSetMethod(String propName) {
 		return setters.get(propName);
 	}

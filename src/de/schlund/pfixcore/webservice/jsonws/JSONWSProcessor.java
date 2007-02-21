@@ -37,6 +37,7 @@ import de.schlund.pfixcore.webservice.ServiceRegistry;
 import de.schlund.pfixcore.webservice.ServiceRequest;
 import de.schlund.pfixcore.webservice.ServiceResponse;
 import de.schlund.pfixcore.webservice.ServiceRuntime;
+import de.schlund.pfixcore.webservice.beans.BeanDescriptorFactory;
 import de.schlund.pfixcore.webservice.config.ServiceConfig;
 import de.schlund.pfixcore.webservice.fault.Fault;
 import de.schlund.pfixcore.webservice.fault.FaultHandler;
