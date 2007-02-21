@@ -25,6 +25,7 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Map;
 
+import de.schlund.pfixcore.webservice.beans.BeanDescriptorFactory;
 import de.schlund.pfixcore.webservice.jsonws.serializers.BeanSerializer;
 import de.schlund.pfixcore.webservice.jsonws.serializers.BooleanSerializer;
 import de.schlund.pfixcore.webservice.jsonws.serializers.CalendarSerializer;

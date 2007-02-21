@@ -1,5 +1,45 @@
 2007-02-20  Martin Leidig  <mleidig@schlund.de>
 
+	Added support for Bean serialization/deserialization customization
+	via Java annotations to the JSON webservice framework. The annotation
+	@Transient can be used at getter methods to exclude the according 
+	property from serialization/deserialization, @TransientByDefault at
+	classes makes all properties declared by that class transient by 
+	default, using @Property at the getters includes the according 
+	property again.
+
+	Refactored and improved exception handling:
+	* src/de/schlund/pfixcore/webservice/jsonws/SerializerRegistry.java
+	* src/de/schlund/pfixcore/webservice/jsonws/DeserializerRegistry.java
+	* src/de/schlund/pfixcore/webservice/jsonws/serializers/BeanSerializer.java
+	* src/de/schlund/pfixcore/webservice/jsonws/JSONWSProcessor.java
+	* src/de/schlund/pfixcore/webservice/jsonws/deserializers/BeanDeserializer.java	
+
+	Added new package for bean introspection stuff:
+	* src/de/schlund/pfixcore/webservice/beans
+
+	Moved exisiting bean introspection classes to new package and added
+	annotation support:
+	* src/de/schlund/pfixcore/webservice/beans/BeanDescriptor.java
+	* src/de/schlund/pfixcore/webservice/beans/BeanDescriptorFactory.java
+
+	Added bean(-property) annotations:
+	* src/de/schlund/pfixcore/webservice/beans/Property.java
+	* src/de/schlund/pfixcore/webservice/beans/Transient.java
+	* src/de/schlund/pfixcore/webservice/beans/TransientByDefault.java
+
+	Added unit test for bean property introspection:
+	* tests/junit/de/schlund/pfixcore/webservice/beans/BeanDescriptorTest.java
+	* tests/junit/de/schlund/pfixcore/webservice/beans/BeanA.java
+	* tests/junit/de/schlund/pfixcore/webservice/beans/BeanB.java
+	* tests/junit/de/schlund/pfixcore/webservice/beans/BeanC.java
+	* tests/junit/de/schlund/pfixcore/webservice/beans/BeanD.java
+	* tests/junit/de/schlund/pfixcore/webservice/beans/BeanE.java
+	* tests/junit/de/schlund/pfixcore/webservice/beans/BeanF.java
+
+
+2007-02-20  Martin Leidig  <mleidig@schlund.de>
+
 	* skel/build-skel.xml: Fixed task classpath problem with missing build dir: 
 	after realclean tasks can't find classes in the build directory despite they 
 	are existing (were created in the meantime resp.), but at the time the task
