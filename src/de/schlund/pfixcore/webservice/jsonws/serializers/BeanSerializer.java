@@ -25,9 +25,9 @@ import java.lang.reflect.Method;
 import java.util.Iterator;
 import java.util.Set;
 
+import de.schlund.pfixcore.webservice.beans.BeanDescriptor;
+import de.schlund.pfixcore.webservice.beans.BeanDescriptorFactory;
 import de.schlund.pfixcore.webservice.json.JSONObject;
-import de.schlund.pfixcore.webservice.jsonws.BeanDescriptor;
-import de.schlund.pfixcore.webservice.jsonws.BeanDescriptorFactory;
 import de.schlund.pfixcore.webservice.jsonws.SerializationContext;
 import de.schlund.pfixcore.webservice.jsonws.SerializationException;
 import de.schlund.pfixcore.webservice.jsonws.Serializer;
