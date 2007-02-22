@@ -1,13 +1,13 @@
 package de.schlund.pfixcore.webservice.beans;
 
-@TransientByDefault
+@ExcludeByDefault
 public class BeanB extends BeanA {
     
     int my;
     int hey;
     int ho;
     
-    @Property
+    @Include
     public int getMy() {
         return my;
     }

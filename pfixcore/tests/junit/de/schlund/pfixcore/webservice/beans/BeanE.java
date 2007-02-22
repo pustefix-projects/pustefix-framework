@@ -14,7 +14,7 @@ public class BeanE extends BeanD {
         this.my=my;
     }
         
-    @Transient
+    @Exclude
     public int getHey() {
         return hey;
     }
@@ -23,7 +23,7 @@ public class BeanE extends BeanD {
         this.hey=hey;
     }
               
-    @Transient
+    @Exclude
     public int getHo() {
         return ho;
     }
