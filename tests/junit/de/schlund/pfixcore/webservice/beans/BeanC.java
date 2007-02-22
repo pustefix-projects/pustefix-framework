@@ -2,7 +2,7 @@ package de.schlund.pfixcore.webservice.beans;
 
 public class BeanC extends BeanB {
 
-    @Transient
+    @Exclude
     @Override
     public int getFoo() {
         return super.getFoo();

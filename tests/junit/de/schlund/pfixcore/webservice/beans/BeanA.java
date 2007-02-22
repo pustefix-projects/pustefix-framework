@@ -14,7 +14,7 @@ public class BeanA {
         this.foo=foo;
     }
                                                                                                                                    
-    @Transient
+    @Exclude
     public int getBar() {
         return bar;
     }

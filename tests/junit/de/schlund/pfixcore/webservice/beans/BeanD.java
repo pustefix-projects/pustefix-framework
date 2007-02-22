@@ -1,13 +1,13 @@
 package de.schlund.pfixcore.webservice.beans;
 
-@TransientByDefault
+@ExcludeByDefault
 public class BeanD {
 
     int foo;
     int bar;
     int baz;
     
-    @Property
+    @Include
     public int getFoo() {
         return foo;
     }
@@ -24,7 +24,7 @@ public class BeanD {
         this.bar=bar;
     }
                         
-    @Property
+    @Include
     public int getBaz() {
         return baz;
     }

@@ -5,8 +5,8 @@ import java.lang.annotation.*;
 /**
  * @author mleidig@schlund.de
  */
-@Target({ElementType.TYPE})
+@Target({ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface TransientByDefault {
+public @interface Include {
     
 }

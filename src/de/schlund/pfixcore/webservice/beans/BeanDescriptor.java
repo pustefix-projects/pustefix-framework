@@ -55,10 +55,10 @@ public class BeanDescriptor {
                     if(name.length()>3&&Character.isUpperCase(name.charAt(3))) {
                         if(name.startsWith("get") && methods[i].getParameterTypes().length==0) {
                             boolean isTransient=false;
-                            Property prop=methods[i].getAnnotation(Property.class);
-                            Transient trans=methods[i].getAnnotation(Transient.class);
+                            Include prop=methods[i].getAnnotation(Include.class);
+                            Exclude trans=methods[i].getAnnotation(Exclude.class);
                             if(trans==null) {
-                                TransientByDefault defTrans=methods[i].getDeclaringClass().getAnnotation(TransientByDefault.class);
+                                ExcludeByDefault defTrans=methods[i].getDeclaringClass().getAnnotation(ExcludeByDefault.class);
                                 if(defTrans!=null && prop==null) isTransient=true;
                             } else isTransient=true;
                             if(!isTransient) {
