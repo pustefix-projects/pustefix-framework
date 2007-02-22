@@ -1,6 +1,6 @@
 package de.schlund.pfixcore.webservice.beans;
 
-@TransientByDefault
+@ExcludeByDefault
 public class BeanF extends BeanB {
 
     @Override
@@ -8,13 +8,13 @@ public class BeanF extends BeanB {
         return super.getFoo();
     }
                  
-    @Property
+    @Include
     @Override                                                         
     public int getBar() {
         return super.getBar();
     }
      
-    @Property
+    @Include
     @Override
     public int getHey() {
         return super.getHey();

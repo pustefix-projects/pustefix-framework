@@ -5,10 +5,8 @@ import java.lang.annotation.*;
 /**
  * @author mleidig@schlund.de
  */
-@Target({ElementType.METHOD})
+@Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface Property {
-	
-    String name() default "";
+public @interface ExcludeByDefault {
     
 }
