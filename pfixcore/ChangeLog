@@ -1,3 +1,25 @@
+2007-02-22  Martin Leidig  <mleidig@schlund.de>
+
+	Renamed JSON bean (de-)serialization annotations. As 'Transient'
+	fits better in durability or persistence contexts, I decided to
+	just call them @ExcludeByDefault, @Include and @Exclude, stating
+	that they mark the properties to be included/excluded in a
+	context independent way.
+
+	* src/de/schlund/pfixcore/webservice/beans/Include.java
+	* src/de/schlund/pfixcore/webservice/beans/BeanDescriptor.java
+	* src/de/schlund/pfixcore/webservice/beans/Property.java
+	* src/de/schlund/pfixcore/webservice/beans/Transient.java
+	* src/de/schlund/pfixcore/webservice/beans/TransientByDefault.java
+	* src/de/schlund/pfixcore/webservice/beans/Exclude.java
+	* src/de/schlund/pfixcore/webservice/beans/ExcludeByDefault.java
+	* tests/junit/de/schlund/pfixcore/webservice/beans/BeanA.java
+	* tests/junit/de/schlund/pfixcore/webservice/beans/BeanB.java
+	* tests/junit/de/schlund/pfixcore/webservice/beans/BeanC.java
+	* tests/junit/de/schlund/pfixcore/webservice/beans/BeanD.java
+	* tests/junit/de/schlund/pfixcore/webservice/beans/BeanE.java
+	* tests/junit/de/schlund/pfixcore/webservice/beans/BeanF.java
+
 2007-02-20  Martin Leidig  <mleidig@schlund.de>
 
 	Added support for Bean serialization/deserialization customization
