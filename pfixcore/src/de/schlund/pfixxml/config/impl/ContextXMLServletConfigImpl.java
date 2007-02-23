@@ -227,9 +227,6 @@ public class ContextXMLServletConfigImpl extends AbstractXMLServletConfigImpl im
             config.getProperties().setProperty("xmlserver.noeditmodeallowed", "false");
         }
 
-        // Set depend.xml proeprty for compatibility with exception processors
-        config.getProperties().setProperty("xmlserver.depend.xml", config.getDependFile());
-
         // Set reference to server properties in context config
         config.getContextConfig().setProperties(config.getProperties());
 

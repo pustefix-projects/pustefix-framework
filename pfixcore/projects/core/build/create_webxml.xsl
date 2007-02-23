@@ -101,6 +101,10 @@
           	<param-name>servlet.encoding</param-name>
             <param-value><xsl:apply-templates select="$project/encoding/text()"/></param-value>
           </init-param>
+          <init-param>
+            <param-name>servlet.dependfile</param-name>
+            <param-value><xsl:apply-templates select="$project/depend/node()"/></param-value>
+          </init-param>
           <xsl:if test="@autostartup = 'true'">
             <load-on-startup>666</load-on-startup>
           </xsl:if>

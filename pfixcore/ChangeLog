@@ -1,3 +1,17 @@
+2007-02-23  Sebastian Marsching  <sebastian.marsching@1und1.de>
+
+	* src/de/schlund/pfixxml/config/impl/ContextXMLServletConfigImpl.java: 
+	* src/de/schlund/pfixxml/config/impl/ServletInfoRule.java: 
+	* src/de/schlund/pfixxml/exceptionprocessor/UniversalExceptionProcessor.java: 
+	* src/de/schlund/pfixxml/targets/TargetGenerator.java: 
+	* src/de/schlund/pfixxml/AbstractXMLServlet.java: 
+	* projects/core/build/create_webxml.xsl: 
+	Made path to depend.xml available using a init-parameter. TargetGenerator can
+	now lookup its name in projects.xml, if it is not specified in depend.xml.
+	Removed deprecated xmlserver.depend.xml property from servlet configuration.
+	XSD for servlet configuration has not been changed yet for compatibility
+	reasons, so the depend attribute is still required by the schema. 
+
 2007-02-22  Martin Leidig  <mleidig@schlund.de>
 
 	Renamed JSON bean (de-)serialization annotations. As 'Transient'

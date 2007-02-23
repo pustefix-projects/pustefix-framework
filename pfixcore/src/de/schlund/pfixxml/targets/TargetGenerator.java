@@ -71,6 +71,7 @@ import de.schlund.pfixxml.resources.FileSystemResource;
 import de.schlund.pfixxml.resources.ResourceUtil;
 import de.schlund.pfixxml.targets.cachestat.SPCacheStatistic;
 import de.schlund.pfixxml.util.TransformerHandlerAdapter;
+import de.schlund.pfixxml.util.XPath;
 import de.schlund.pfixxml.util.Xml;
 import de.schlund.pfixxml.util.XsltVersion;
 
@@ -338,9 +339,30 @@ public class TargetGenerator implements Comparable {
             }
         }
         
+        
         NodeList targetnodes = config.getElementsByTagName("target");
 
-        name = getAttribute(root, "project");
+        name = root.getAttribute("project");
+        if (name == null || name.length() == 0) {
+            String relativePath;
+            if (configFile instanceof DocrootResource) {
+                relativePath = ((DocrootResource) configFile).getRelativePath();
+            } else {
+                throw new XMLException("project attribute is not set and depend.xml is not within docroot");
+            }
+            try {
+                Document projectsXml = Xml.parse(XsltVersion.XSLT1, ResourceUtil.getFileResourceFromDocroot("servletconf/projects.xml"));
+                Node attrNode = XPath.selectNode(projectsXml, "/projects/project[depend/text()='" + relativePath + "']/@name");
+                if (attrNode == null) {
+                    throw new XMLException("Found no project for " + relativePath);
+                }
+                name = attrNode.getNodeValue();
+            } catch (TransformerException e) {
+                throw new XMLException("Could not read projects.xml", e);
+            }
+        }
+        
+        
         language = getAttribute(root, "lang");
 
         String gl_theme_str = null;
