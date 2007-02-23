@@ -34,14 +34,8 @@ public class ServletInfoRule extends CheckedRule {
     public void begin(String namespace, String name, Attributes attributes) throws Exception {
         check(namespace, name, attributes);
         String servletName = attributes.getValue("name");
-        if (servletName == null) {
-            throw new Exception("Mandatory attribute \"name\" is missing!");
-        }
         config.setServletName(servletName);
         String dependFile = attributes.getValue("depend");
-        if (dependFile == null) {
-            throw new Exception("Mandatory attribute \"depend\" is missing!");
-        }
         config.setDependFile(dependFile);
         this.getDigester().push(config);
     }
@@ -52,8 +46,8 @@ public class ServletInfoRule extends CheckedRule {
     
     protected Map<String, Boolean> wantsAttributes() {
         HashMap<String, Boolean> atts = new HashMap<String, Boolean>();
-        atts.put("name", true);
-        atts.put("depend", true);
+        atts.put("name", false);
+        atts.put("depend", false);
         return atts;
     }
 }

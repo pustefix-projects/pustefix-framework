@@ -125,7 +125,6 @@ public abstract class AbstractXMLServlet extends ServletManager {
     private static final String   SUFFIX_SAVEDDOM         = "_SAVED_DOM";
     private static final String   ATTR_SHOWXMLDOC         = "__ATTR_SHOWXMLDOC__";
     protected static final String PROP_ADD_TRAIL_INFO     = "xmlserver.additionalinfo.implementation";
-    protected static final String PROP_DEPEND             = "xmlserver.depend.xml";
     protected static final String PROP_NAME               = "xmlserver.servlet.name";
     protected static final String PROP_NOEDIT             = "xmlserver.noeditmodeallowed";
     protected static final String PROP_RENDER_EXT         = "xmlserver.output.externalrenderer";
@@ -133,6 +132,7 @@ public abstract class AbstractXMLServlet extends ServletManager {
     protected static final String PROP_SKIP_GETMODTIME_MU = "targetgenerator.skip_getmodtimemaybeupdate";
     protected static final String PROP_PROHIBITDEBUG      = "xmlserver.prohibitdebug";
     protected static final String PROP_PROHIBITINFO       = "xmlserver.prohibitinfo";
+    private static final String PARAM_DEPENDFILE = "servlet.dependfile";
 
     public static final String PREPROCTIME = "__PREPROCTIME__";
     public static final String GETDOMTIME  = "__GETDOMTIME__";
@@ -191,7 +191,11 @@ public abstract class AbstractXMLServlet extends ServletManager {
     }
 
     private void initValues() throws ServletException {
-        targetconf  = ResourceUtil.getFileResourceFromDocroot(this.getAbstractXMLServletConfig().getDependFile());
+        if (this.getAbstractXMLServletConfig().getDependFile() != null) {
+            targetconf = ResourceUtil.getFileResourceFromDocroot(this.getAbstractXMLServletConfig().getDependFile());
+        } else {
+            targetconf = ResourceUtil.getFileResourceFromDocroot(this.getInitParameter(PARAM_DEPENDFILE));
+        }
         servletname = this.getAbstractXMLServletConfig().getServletName();
 
         try {

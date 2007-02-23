@@ -27,6 +27,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.transform.Templates;
+import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.stream.StreamResult;
 
@@ -40,10 +41,9 @@ import de.schlund.pfixxml.exceptionprocessor.util.TextCreatorVisitor;
 import de.schlund.pfixxml.exceptionprocessor.util.XMLCreatorVisitor;
 import de.schlund.pfixxml.resources.ResourceUtil;
 import de.schlund.pfixxml.targets.TargetGenerationException;
-import de.schlund.pfixxml.targets.TargetGenerator;
-import de.schlund.pfixxml.targets.TargetGeneratorFactory;
 import de.schlund.pfixxml.util.Xml;
 import de.schlund.pfixxml.util.Xslt;
+import de.schlund.pfixxml.util.XsltVersion;
 
 /**
  * @author jh
@@ -88,27 +88,13 @@ public class UniversalExceptionProcessor implements ExceptionProcessor {
             LOG.debug("Got following DOM for error-representation: " + Xml.serialize(doc, true, false));
         }
         
-        String depxml = props.getProperty("xmlserver.depend.xml");
-        if(depxml == null) {
-            throw new IllegalArgumentException("Need property xmlserver.depend.xml");
-        }
-
-        TargetGenerator generator=null;
-        
-        try {
-            generator=TargetGeneratorFactory.getInstance().createGenerator(
-                ResourceUtil.getFileResourceFromDocroot(depxml));
-        } catch(Exception e) {
-            throw new ServletException(e);
-        }
-            
-        doc = Xml.parse(generator.getXsltVersion(),doc);
+        doc = Xml.parse(XsltVersion.XSLT1, doc);
         
         Templates stvalue;
         
         try {
-            stvalue = (Templates) generator.createXSLLeafTarget(ERROR_STYLESHEET).getValue();
-        } catch (TargetGenerationException e) {
+            stvalue = Xslt.loadTemplates(XsltVersion.XSLT1, ResourceUtil.getFileResourceFromDocroot(ERROR_STYLESHEET));
+        } catch (TransformerConfigurationException e) {
             throw new ServletException(e);
         }
             
