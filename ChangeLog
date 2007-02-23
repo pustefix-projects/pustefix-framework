@@ -1,3 +1,15 @@
+2007-02-23  Martin Leidig  <mleidig@schlund.de>
+
+	Fixed corrupted 304 response problem. 304 Responses for cached
+	documents (the new ETag support) must not set a content-type that
+	is handled by mod_deflate, because old mod_deflate versions have a bug 
+	and gzip the 304 responses too, which causes non-empty response bodies,
+	which in turn confuses browsers and leads to long loading times
+	and broken documents (especially in conjunction with mod_ssl).
+
+	* src/de/schlund/pfixxml/AbstractXMLServlet.java: Reset content type
+	for 304 responses.
+
 2007-02-23  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
 	* src/de/schlund/pfixxml/config/impl/ContextXMLServletConfigImpl.java: 
