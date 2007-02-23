@@ -551,6 +551,10 @@ public abstract class AbstractXMLServlet extends ServletManager {
         res.setHeader("ETag", etag_outgoing);
 
         if (getRendering(preq) == RENDER_NORMAL && etag_incoming != null && etag_incoming.equals(etag_outgoing)) {
+            //it's important to reset the content type, because old Apache versions in conjunction
+            //with mod_ssl and mod_deflate (here enabled for text/html) gzip 304 responses and thus
+            //cause non-empty response bodies which confuses the browsers
+            res.setContentType(null);
             res.setStatus(HttpServletResponse.SC_NOT_MODIFIED);
             LOGGER.info("*** Reusing UI: " + spdoc.getPagename());
             modified_or_no_etag = false;
