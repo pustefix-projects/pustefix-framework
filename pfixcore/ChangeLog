@@ -1,3 +1,11 @@
+2007-02-26  Martin Leidig  <mleidig@schlund.de>
+
+	* skel/build-skel.xml: Added new target "check-buildskel", which
+	checks if a build-skel.xml in the Pustefix root directory exists
+	if it's older than the version from the pfixcore distribution and
+	if its content changed. On these conditions the build is stopped
+	and the user is requested to replace the old version.
+
 2007-02-23  Martin Leidig  <mleidig@schlund.de>
 
 	Fixed corrupted 304 response problem. 304 Responses for cached

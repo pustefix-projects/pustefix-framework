@@ -120,12 +120,42 @@ or delete the DOCTYPE definition -->
     <pathelement location="${dir.build}"/>
   </path>
 
+  <target name="check-newbuildskel">
+    <condition property="newbuildskel">
+      <and>
+        <available file="${dir.projects}/core/build/build-skel.xml"/>
+        <available file="build-skel.xml"/>
+        <not>
+          <uptodate srcfile="${dir.projects}/core/build/build-skel.xml" targetfile="build-skel.xml"/>
+        </not>
+      </and>
+    </condition>
+  </target>
+
+  <target name="check-changedbuildskel" depends="check-newbuildskel" if="newbuildskel">
+    <checksum file="${dir.projects}/core/build/build-skel.xml" property="newbuildskelMD5"/>
+    <checksum file="build-skel.xml" property="oldbuildskelMD5"/>
+    <condition property="changedbuildskel">
+      <not><equals arg1="${newbuildskelMD5}" arg2="${oldbuildskelMD5}"/></not>
+    </condition>
+  </target>
+
+  <target name="check-buildskel" depends="check-changedbuildskel" if="changedbuildskel">
+    <echo level="warning">
+      There's a new build-skel.xml in ${dir.projects}/core/build. 
+      Please replace build-skel.xml in your Pustefix root directory by the new version, e.g.:
+      
+      cp ${dir.projects}/core/build/build-skel.xml .
+    </echo>
+    <fail message="Replace build-skel.xml and rebuild."/>
+  </target>
+
   <target name="init-dirs">
     <mkdir dir="${dir.build}"/>
     <mkdir dir="${dir.src}"/>
   </target>
 
-  <target name="init" depends="properties, init-data, init-dirs">
+  <target name="init" depends="check-buildskel, properties, init-data, init-dirs">
     <echo message="using machine=${machine} fqdn=${fqdn}" level="verbose"/>
    
     <!-- Create commons-logging configuration info -->
