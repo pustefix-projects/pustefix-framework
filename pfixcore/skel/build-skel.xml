@@ -155,7 +155,7 @@ or delete the DOCTYPE definition -->
     <mkdir dir="${dir.src}"/>
   </target>
 
-  <target name="init" depends="check-buildskel, properties, init-data, init-dirs">
+  <target name="init" depends="properties, init-data, check-buildskel, init-dirs">
     <echo message="using machine=${machine} fqdn=${fqdn}" level="verbose"/>
    
     <!-- Create commons-logging configuration info -->
