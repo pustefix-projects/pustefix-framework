@@ -1,3 +1,11 @@
+2007-02-28  Sebastian Marsching  <sebastian.marsching@1und1.de>
+
+	* src/de/schlund/pfixxml/DocrootServlet.java: 
+	* projects/core/build/create_serverxml.xsl: 
+	* projects/core/build/create_webxml.xsl: 
+	In standalone mode server passthrough resources using the DocrootServlet
+	instead of creating special context instances in Tomcat configuration.
+
 2007-02-26  Martin Leidig  <mleidig@schlund.de>
 
 	* skel/build-skel.xml: Added new target "check-buildskel", which
