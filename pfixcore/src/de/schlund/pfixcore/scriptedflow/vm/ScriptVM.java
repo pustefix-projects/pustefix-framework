@@ -26,6 +26,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import de.schlund.pfixcore.exception.PustefixApplicationException;
@@ -236,16 +237,16 @@ public class ScriptVM {
 
             if (removevalues) {
                 Element formvalues = (Element) resolver.evalXPathNode("/formresult/formvalues");
-                NodeList children = formvalues.getChildNodes();
-                for (int i = 0; i < children.getLength(); i++) {
-                    formvalues.removeChild(children.item(i));
+                Node nextNode;
+                while ((nextNode = formvalues.getFirstChild()) != null) {
+                    formvalues.removeChild(nextNode);
                 }
             }
             if (removeerrors) {
                 Element formerrors = (Element) resolver.evalXPathNode("/formresult/formerrors");
-                NodeList children = formerrors.getChildNodes();
-                for (int i = 0; i < children.getLength(); i++) {
-                    formerrors.removeChild(children.item(i));
+                Node nextNode;
+                while ((nextNode = formerrors.getFirstChild()) != null) {
+                    formerrors.removeChild(nextNode);
                 }
             }
             if (formparams != null) {
