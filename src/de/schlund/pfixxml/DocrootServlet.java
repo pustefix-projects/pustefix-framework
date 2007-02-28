@@ -26,11 +26,16 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.StringTokenizer;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import de.schlund.pfixxml.resources.ResourceUtil;
 
 /**
  * In standalone mode this servlet serves the static files from the docroot.
@@ -43,6 +48,8 @@ public class DocrootServlet extends HttpServlet {
     private String base;
 
     private String defaultpath;
+    
+    private List<String> passthroughPaths;
 
     protected void doGet(HttpServletRequest req, HttpServletResponse res)
             throws ServletException, IOException {
@@ -87,11 +94,21 @@ public class DocrootServlet extends HttpServlet {
                 docrootMode = false;
             }
 
-            InputStream in;
+            InputStream in = null;
 
             if (docrootMode) {
-                File file = new File(base, path);
-                in = new BufferedInputStream(new FileInputStream(file));
+                if (passthroughPaths != null) {
+                    for (String prefix : this.passthroughPaths) {
+                        if (path.startsWith(prefix)) {
+                            in = ResourceUtil.getFileResourceFromDocroot(path).getInputStream();
+                        }
+                    }
+                }
+                
+                if (in == null) {
+                    File file = new File(base, path);
+                    in = new BufferedInputStream(new FileInputStream(file));
+                }
             } else {
                 // Use getResourceAsStream() to make sure we can
                 // access the file even in packed WAR mode
@@ -137,6 +154,26 @@ public class DocrootServlet extends HttpServlet {
             if (temp.length() > 1) {
                 this.defaultpath = temp;
             }
+        }
+        
+        // Create a list of passthrough paths
+        String passthroughParam = this.getInitParameter("passthroughPaths");
+        if (passthroughParam != null && passthroughParam.length() > 0) {
+            ArrayList<String> passthroughPaths = new ArrayList<String>();
+            StringTokenizer st = new StringTokenizer(passthroughParam, ":");
+            while (st.hasMoreTokens()) {
+                String token = st.nextToken().trim();
+                if (token.length() > 0) {
+                    if (token.charAt(0) != '/') {
+                        token = "/" + token;
+                    }
+                    if (token.charAt(token.length()-1) != '/') {
+                        token = token + "/";
+                    }
+                    passthroughPaths.add(token);
+                }
+            }
+            this.passthroughPaths = passthroughPaths;
         }
     }
 

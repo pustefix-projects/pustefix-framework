@@ -172,14 +172,6 @@
       </xsl:with-param>
       <xsl:with-param name="hostbased" select="$hostbased"/>
     </xsl:call-template>
-    <xsl:if test="$standalone = 'true'">
-      <xsl:apply-templates select="passthrough">
-        <xsl:with-param name="hostbased" select="$hostbased"/>
-      </xsl:apply-templates>
-      <xsl:apply-templates select="/projects/common/apache/passthrough">
-        <xsl:with-param name="hostbased" select="$hostbased"/>
-      </xsl:apply-templates>
-    </xsl:if>
   </xsl:template>
 
   <xsl:template match="passthrough">

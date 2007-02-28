@@ -58,6 +58,17 @@
           <param-name>defaultpath</param-name>
           <param-value><xsl:value-of select="$project/defpath"/></param-value>
         </init-param>
+        <init-param>
+          <param-name>passthroughPaths</param-name>
+          <param-value>
+            <xsl:for-each select="$project/passthrough">
+              <xsl:value-of select="text()"/><xsl:text>:</xsl:text>
+            </xsl:for-each>
+            <xsl:for-each select="$common/apache/passthrough">
+              <xsl:value-of select="text()"/><xsl:text>:</xsl:text>
+            </xsl:for-each>
+          </param-value>
+        </init-param>
       </xsl:if>
     </servlet>
     
