@@ -8,7 +8,8 @@ public class BeanC extends BeanB {
         return super.getFoo();
     }
                    
-    @Override                                                         
+    @Override
+    @Alias("mybar")
     public int getBar() {
         return super.getBar();
     }

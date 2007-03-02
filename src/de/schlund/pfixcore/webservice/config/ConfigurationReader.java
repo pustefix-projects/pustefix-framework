@@ -20,6 +20,7 @@
 package de.schlund.pfixcore.webservice.config;
 
 import java.io.CharArrayWriter;
+import java.net.MalformedURLException;
 import java.util.Stack;
 
 import javax.xml.parsers.SAXParser;
@@ -33,6 +34,7 @@ import de.schlund.pfixcore.webservice.Constants;
 import de.schlund.pfixcore.webservice.fault.FaultHandler;
 import de.schlund.pfixxml.config.CustomizationHandler;
 import de.schlund.pfixxml.resources.FileResource;
+import de.schlund.pfixxml.resources.ResourceUtil;
 
 /**
  * @author mleidig@schlund.de
@@ -40,6 +42,7 @@ import de.schlund.pfixxml.resources.FileResource;
 public class ConfigurationReader extends DefaultHandler {
 
 	FileResource configFile;
+    FileResource configDir;
 	Configuration config;
 	Stack<Object> contextStack=new Stack<Object>();
 	Object context;
@@ -57,6 +60,7 @@ public class ConfigurationReader extends DefaultHandler {
 	
 	public ConfigurationReader(FileResource configFile) {
 		this.configFile=configFile;
+        configDir=configFile.getParentAsFileResource();
 	}
 	
 	public void read() throws Exception {
@@ -230,6 +234,16 @@ public class ConfigurationReader extends DefaultHandler {
 			}
 		}
 	}
+    
+    @Override
+    public void endDocument() throws SAXException {
+        FileResource metaFile=ResourceUtil.getFileResource(configDir,"beanmetadata.xml");
+        try {
+            config.getGlobalServiceConfig().setDefaultBeanMetaDataURL(metaFile.toURL());
+        } catch(MalformedURLException x) {
+            throw new SAXException("Can't get default bean metadata URL.",x);
+        }
+    }
 	
 	public void characters(char[] ch, int start, int length) throws SAXException {
 		content.write(ch,start,length);

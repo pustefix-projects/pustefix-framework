@@ -19,13 +19,17 @@
 
 package de.schlund.pfixcore.webservice.beans;
 
-import java.lang.annotation.*;
-
 /**
  * @author mleidig@schlund.de
  */
-@Target({ElementType.TYPE})
-@Retention(RetentionPolicy.RUNTIME)
-public @interface ExcludeByDefault {
+public class InitException extends Exception {
+
+    public InitException(String msg) {
+        super(msg);
+    }
+    
+    public InitException(String msg,Throwable cause) {
+        super(msg,cause);
+    }
     
 }

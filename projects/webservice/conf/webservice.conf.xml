@@ -57,5 +57,10 @@
     <interface name="de.schlund.pfixcore.example.webservices.CallTest"/>
     <implementation name="de.schlund.pfixcore.example.webservices.CallTestImpl"/>
   </webservice>
+  
+  <webservice name="BeanTest">
+    <interface name="de.schlund.pfixcore.example.webservices.BeanTest"/>
+    <implementation name="de.schlund.pfixcore.example.webservices.BeanTestImpl"/>
+  </webservice>
 
 </webservice-config>
