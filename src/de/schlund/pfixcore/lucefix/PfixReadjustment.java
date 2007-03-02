@@ -26,7 +26,7 @@ import java.util.Iterator;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.apache.log4j.Category;
+import org.apache.log4j.Logger;
 import org.apache.lucene.document.DateField;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexReader;
@@ -46,7 +46,7 @@ public class PfixReadjustment {
     
     private static PfixReadjustment _instance = new PfixReadjustment();
     
-    private static Category LOG = Category.getInstance(PfixReadjustment.class);
+    private static Logger LOG = Logger.getLogger(PfixReadjustment.class);
     
     public static final String LUCENE_DATA = PfixQueueManager.lucene_data_path;
     

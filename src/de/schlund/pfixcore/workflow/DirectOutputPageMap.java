@@ -22,7 +22,7 @@ package de.schlund.pfixcore.workflow;
 import java.util.HashMap;
 import java.util.Iterator;
 
-import org.apache.log4j.Category;
+import org.apache.log4j.Logger;
 
 import de.schlund.pfixxml.ConfigurableObject;
 import de.schlund.pfixxml.config.DirectOutputPageRequestConfig;
@@ -37,7 +37,7 @@ import de.schlund.pfixxml.config.DirectOutputServletConfig;
  */
 public class DirectOutputPageMap implements ConfigurableObject {
     protected            HashMap  pagemap       = new HashMap();
-    private final static Category CAT           = Category.getInstance(DirectOutputPageMap.class.getName());
+    private final static Logger   LOG           = Logger.getLogger(DirectOutputPageMap.class);
     
     /**
      * The <code>init</code> method initializes a mapping from {@link PageRequest}s to {@link DirectOutputState}s.
@@ -52,7 +52,7 @@ public class DirectOutputPageMap implements ConfigurableObject {
             Class clazz = pConfig.getState();
             DirectOutputState state = DirectOutputStateFactory.getInstance().getDirectOutputState(clazz.getName());
             if (state == null) {
-                CAT.error("***** Skipping page '" + pConfig.getPageName() + "' as it's corresponding class " + clazz.getName() +
+                LOG.error("***** Skipping page '" + pConfig.getPageName() + "' as it's corresponding class " + clazz.getName() +
                 " couldn't be initialized by the DirectOutputStateFactory");
             } else {
                 pagemap.put(pConfig.getPageName(), state);

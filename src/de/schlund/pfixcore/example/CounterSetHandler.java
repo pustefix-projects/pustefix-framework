@@ -38,7 +38,7 @@ import org.apache.log4j.*;
  */
 
 public class CounterSetHandler implements IHandler {
-    private static final Category CAT = Category.getInstance(CounterSetHandler.class);
+    private static final Logger LOG = Logger.getLogger(CounterSetHandler.class);
 
     public void handleSubmittedData(Context context, IWrapper wrapper) throws Exception {
         CounterInput    counter = (CounterInput) wrapper;

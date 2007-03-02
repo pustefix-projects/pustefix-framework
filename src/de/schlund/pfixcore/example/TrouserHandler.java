@@ -19,12 +19,16 @@
 
 package de.schlund.pfixcore.example;
 
-import de.schlund.pfixcore.example.iwrapper.*;
-import de.schlund.pfixcore.generator.*;
-import de.schlund.pfixcore.workflow.*;
-import de.schlund.util.statuscodes.*;
-import org.apache.log4j.*;
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashSet;
+
+import org.apache.log4j.Logger;
+
+import de.schlund.pfixcore.example.iwrapper.Trouser;
+import de.schlund.pfixcore.generator.IHandler;
+import de.schlund.pfixcore.generator.IWrapper;
+import de.schlund.pfixcore.workflow.Context;
+import de.schlund.util.statuscodes.StatusCodeLib;
 
 /**
  * TrouserHandler.java
@@ -38,7 +42,7 @@ import java.util.*;
  */
 
 public class TrouserHandler implements IHandler {
-    private static final Category  CAT  = Category.getInstance(TrouserHandler.class);
+    private static final Logger LOG  = Logger.getLogger(TrouserHandler.class);
     
     public void handleSubmittedData(Context context, IWrapper wrapper) throws Exception {
         Trouser        trouser = (Trouser) wrapper;

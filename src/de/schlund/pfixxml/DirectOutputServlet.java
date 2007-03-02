@@ -26,7 +26,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.apache.log4j.Category;
+import org.apache.log4j.Logger;
 
 import de.schlund.pfixcore.exception.PustefixCoreException;
 import de.schlund.pfixcore.workflow.ContextImpl;
@@ -67,7 +67,7 @@ import de.schlund.pfixxml.resources.FileResource;
  * @version $Id$
  */
 public class DirectOutputServlet extends ServletManager {
-    private Category                  CAT       = Category.getInstance(this.getClass());
+    private Logger                    LOG       = Logger.getLogger(this.getClass());
     private String                    ext_cname = null;
     private DirectOutputPageMap       pagemap   = null;
     private DirectOutputServletConfig config;
@@ -122,7 +122,7 @@ public class DirectOutputServlet extends ServletManager {
          HttpSession   session = preq.getSession(false);
          if (session == null) {
              //throw new RuntimeException("*** didn't get Session from request. ***");
-             CAT.error("*** didn't get Session from request. Stop processing. ***");
+             LOG.error("*** didn't get Session from request. Stop processing. ***");
              res.sendError(HttpServletResponse.SC_FORBIDDEN, "No session supplied");
              return;
          }
@@ -158,14 +158,14 @@ public class DirectOutputServlet extends ServletManager {
 
          // check the authentification first....
          if (!context.isAuthorized()) {
-             CAT.info("Got request without authorization");
+             LOG.info("Got request without authorization");
              res.sendError(HttpServletResponse.SC_FORBIDDEN, "Must authenticate first");
              return;
          }
          
          String pagename = preq.getPageName();
          if (pagename == null || pagename.length() == 0) {
-             CAT.error("*** got request without page name ***");
+             LOG.error("*** got request without page name ***");
              res.sendError(HttpServletResponse.SC_NOT_FOUND, "Must specify page name");
              return;
          }
@@ -187,7 +187,7 @@ public class DirectOutputServlet extends ServletManager {
                                             " for page " + page.getName() + " without being accessible ***");  
              }
          } else {
-             CAT.error("*** No DirectOutputState for page " + page.getName() + " ***");
+             LOG.error("*** No DirectOutputState for page " + page.getName() + " ***");
              res.sendError(HttpServletResponse.SC_NOT_FOUND, "Page " + page.getName() + " not found");
              return;
          }
@@ -214,7 +214,7 @@ public class DirectOutputServlet extends ServletManager {
             pagemap = (DirectOutputPageMap) PropertyObjectManager.getInstance().
                 getConfigurableObject(this.config, de.schlund.pfixcore.workflow.DirectOutputPageMap.class);
         } catch (Exception e) {
-            CAT.warn("==================> XPTN " + e.getMessage());
+            LOG.warn("==================> XPTN " + e.getMessage());
             throw new ServletException(e.getMessage(), e);
         }
     }

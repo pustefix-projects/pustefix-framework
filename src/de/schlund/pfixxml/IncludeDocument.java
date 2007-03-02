@@ -23,7 +23,7 @@ import java.io.IOException;
 
 import javax.xml.transform.TransformerException;
 
-import org.apache.log4j.Category;
+import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
@@ -54,7 +54,7 @@ public class IncludeDocument {
 
     private Document              doc;
     private long                  modTime = 0;
-    private static final Category CAT     = Category.getInstance(IncludeDocument.class.getName());
+    private static final Logger   LOG     = Logger.getLogger(IncludeDocument.class);
     
     //~ Methods ....................................................................................
 

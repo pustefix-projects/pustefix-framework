@@ -19,7 +19,7 @@
 
 package de.schlund.pfixcore.example;
 
-import org.apache.log4j.Category;
+import org.apache.log4j.Logger;
 import org.w3c.dom.Element;
 
 import de.schlund.pfixcore.workflow.Context;
@@ -41,7 +41,7 @@ public class ContextCounterImpl implements ContextResource, ContextCounter {
 
     private Boolean  showcounter = Boolean.FALSE;
     private int      counter     = 0;
-    private Category CAT         = Category.getInstance(this.getClass().getName());
+    private static Logger LOG    = Logger.getLogger(ContextCounterImpl.class);
     private Context  context;
     
     public void init(Context context) {
@@ -74,7 +74,7 @@ public class ContextCounterImpl implements ContextResource, ContextCounter {
     }
 
     public String toString() {
-        CAT.debug("Doing ContextCounter...");
+        LOG.debug("Doing ContextCounter...");
         return "[showcounter?: " + showcounter + "][counter?: " + counter + "]";
     }
 

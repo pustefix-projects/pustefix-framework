@@ -18,7 +18,7 @@
  */
 
 package de.schlund.pfixxml;
-import org.apache.log4j.Category;
+import org.apache.log4j.Logger;
 
 import de.schlund.pfixxml.resources.FileResource;
 import de.schlund.pfixxml.resources.ResourceUtil;
@@ -37,7 +37,7 @@ import de.schlund.pfixxml.util.XsltContext;
  * @version 1.0
  */
 public class ImageThemedSrc {
-    private static Category CAT = Category.getInstance(ImageThemedSrc.class.getName());
+    private static Logger LOG = Logger.getLogger(ImageThemedSrc.class);
 
     /** xslt extension */
     public static String getSrc(XsltContext context, String src, String themed_path, String themed_img,
@@ -60,7 +60,7 @@ public class ImageThemedSrc {
             if (src.startsWith("/")) {
                 src = src.substring(1);
             }
-            CAT.debug("  -> Register image src '" + src + "'");
+            LOG.debug("  -> Register image src '" + src + "'");
             DependencyTracker.logImage(context, src, parent_part_in, parent_product_in, targetGen, targetKey, "image");
             return src;
         } else if (isThemedSrc(src, themed_path, themed_img)) {
@@ -72,9 +72,9 @@ public class ImageThemedSrc {
             for (int i = 0; i < themes.length; i++) {
                 String currtheme = themes[i];
                 testsrc = themed_path + "/" + currtheme + "/" + themed_img;
-                CAT.info("  -> Trying to find image src '" + testsrc + "'");
+                LOG.info("  -> Trying to find image src '" + testsrc + "'");
                 if (existsImage(testsrc)) {
-                    CAT.info("    -> Found src '" + testsrc + "'");
+                    LOG.info("    -> Found src '" + testsrc + "'");
                     DependencyTracker.logImage(context, testsrc, parent_part_in, parent_product_in, targetGen, targetKey, "image");
                     return testsrc;
                 }
@@ -83,10 +83,10 @@ public class ImageThemedSrc {
                     // "real" missing and "missing, but we found a better version" -- but make sure editor copes with it.
                     //DependencyTracker.logImage(context, testsrc, parent_part_in, parent_product_in, targetGen, targetKey, "shadow");
                     DependencyTracker.logImage(context, testsrc, parent_part_in, parent_product_in, targetGen, targetKey, "image");
-                    CAT.info("    -> Image src '" + testsrc + "' not found, trying next theme");
+                    LOG.info("    -> Image src '" + testsrc + "' not found, trying next theme");
                 } else {
                     DependencyTracker.logImage(context, testsrc, parent_part_in, parent_product_in, targetGen, targetKey, "image");
-                    CAT.warn("    -> No themed image found!");
+                    LOG.warn("    -> No themed image found!");
                 }
             }
             return testsrc;

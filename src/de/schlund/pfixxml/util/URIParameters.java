@@ -13,9 +13,10 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.Vector;
+
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.log4j.Category;
+import org.apache.log4j.Logger;
 
 /**
  * @author ml
@@ -25,8 +26,7 @@ import org.apache.log4j.Category;
  */
 public class URIParameters {
     
-    private Category CAT=Category.getInstance(getClass().getName());
-    private boolean DEBUG=CAT.isDebugEnabled();
+    private final static Logger LOG = Logger.getLogger(URIParameters.class);
     
     HttpServletRequest request;
     String encoding;
@@ -36,7 +36,7 @@ public class URIParameters {
    	this.request=request;
    	this.encoding=encoding;
         params=parse(request.getQueryString(),encoding);
-        if(DEBUG) CAT.debug(toString());
+        if(LOG.isDebugEnabled()) LOG.debug(toString());
     }
     
     public HttpServletRequest getRequest() {

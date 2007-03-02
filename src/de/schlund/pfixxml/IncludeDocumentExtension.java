@@ -24,7 +24,7 @@ import java.util.List;
 
 import javax.xml.transform.TransformerException;
 
-import org.apache.log4j.Category;
+import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -40,7 +40,6 @@ import de.schlund.pfixxml.targets.VirtualTarget;
 import de.schlund.pfixxml.util.XPath;
 import de.schlund.pfixxml.util.Xml;
 import de.schlund.pfixxml.util.XsltContext;
-import de.schlund.pfixxml.util.XsltVersion;
 
 /**
  * IncludeDocumentExtension.java
@@ -55,7 +54,7 @@ import de.schlund.pfixxml.util.XsltVersion;
 public final class IncludeDocumentExtension {
     //~ Instance/static variables
     // ..................................................................
-    private static Category     CAT        = Category.getInstance(IncludeDocumentExtension.class.getName());
+    private static Logger       LOG        = Logger.getLogger(IncludeDocumentExtension.class);
     private static final String NOTARGET   = "__NONE__";
     private static final String XPPARTNAME = "/include_parts/part[@name='";
     private static final String XTHEMENAME = "/theme[@name = '";
@@ -162,7 +161,7 @@ public final class IncludeDocumentExtension {
             length = ns.size();
             if (length == 0) {
                 // part not found
-                CAT.debug("*** Part '" + part + "' is 0 times defined.");
+                LOG.debug("*** Part '" + part + "' is 0 times defined.");
                 if (dolog) {
                     DependencyTracker.logTyped("text", path, part, DEF_THEME,
                                                parent_path, parent_part, parent_theme, target);
@@ -181,12 +180,12 @@ public final class IncludeDocumentExtension {
             }
 
             // OK, we have found the part. Find the specfic theme branch matching the theme fallback list.
-            CAT.debug("   => Found part '" +  part + "'");
+            LOG.debug("   => Found part '" +  part + "'");
             
             for (int i = 0; i < themes.length; i++) {
 
                 String curr_theme = themes[i]; 
-                CAT.debug("     => Trying to find theme branch for theme '" + curr_theme + "'");
+                LOG.debug("     => Trying to find theme branch for theme '" + curr_theme + "'");
                 
                 try {
                     ns = XPath.select(doc, XPPARTNAME + part + XPNAMEEND + XTHEMENAME + curr_theme + XPNAMEEND);
@@ -200,13 +199,13 @@ public final class IncludeDocumentExtension {
                 if (length == 0) {
                     // Didn't find a theme part matching curr_theme, trying next in fallback line
                     if (i < (themes.length - 1)) {
-                        CAT.debug("        Part '" + part + "' has no theme branch matching '" + curr_theme + "', trying next theme");
+                        LOG.debug("        Part '" + part + "' has no theme branch matching '" + curr_theme + "', trying next theme");
                     } else {
-                        CAT.warn("        Part '" + part + "' has no theme branch matching '" + curr_theme + "', no more theme to try!");
+                        LOG.warn("        Part '" + part + "' has no theme branch matching '" + curr_theme + "', no more theme to try!");
                     }
                     continue;
                 } else if (length == 1) {
-                    CAT.debug("        Found theme branch '" + curr_theme + "' => STOP");
+                    LOG.debug("        Found theme branch '" + curr_theme + "' => STOP");
                     // specific theme found
                     boolean ok = true;
                     if (dolog) {
@@ -251,7 +250,7 @@ public final class IncludeDocumentExtension {
                              parent_path_str, parent_part, parent_theme};
             String sb = MessageFormat.format("path={0}|part={1}|targetgen={2}|targetkey={3}|"+
                                              "parent_path={4}|parent_part={5}|parent_theme={6}", args);
-            CAT.error("Caught exception in extension function! Params:\n"+ sb+"\n Stacktrace follows.");
+            LOG.error("Caught exception in extension function! Params:\n"+ sb+"\n Stacktrace follows.");
             throw e;
         }
     }

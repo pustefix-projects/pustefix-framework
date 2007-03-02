@@ -35,7 +35,7 @@ import org.apache.log4j.*;
 
 public abstract class SimpleCheck implements IWrapperParamCheck {
     protected HashSet  scodeinfos = new HashSet();
-    protected Category CAT        = Category.getInstance(this.getClass().getName());
+    protected Logger   LOG        = Logger.getLogger(this.getClass());
     
     protected void addSCode(StatusCode scode) {
         addScode(scode, null, null);

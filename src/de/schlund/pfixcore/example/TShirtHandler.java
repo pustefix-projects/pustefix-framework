@@ -37,7 +37,7 @@ import org.apache.log4j.*;
  */
 
 public class TShirtHandler implements IHandler {
-    private static final Category  CAT  = Category.getInstance(TShirtHandler.class);
+    private static final Logger LOG = Logger.getLogger(TShirtHandler.class);
     
     public void handleSubmittedData(Context context, IWrapper wrapper) throws Exception {
         TShirt        tshirt  = (TShirt) wrapper;

@@ -20,13 +20,17 @@
 package de.schlund.pfixcore.workflow.app;
 
 
-import de.schlund.pfixcore.workflow.*;
-import de.schlund.pfixxml.*;
+import org.apache.log4j.Logger;
+
+import de.schlund.pfixcore.workflow.Context;
+import de.schlund.pfixcore.workflow.StateImpl;
+import de.schlund.pfixxml.PfixServletRequest;
+import de.schlund.pfixxml.PropertyObjectManager;
+import de.schlund.pfixxml.ResultDocument;
+import de.schlund.pfixxml.XMLException;
 import de.schlund.pfixxml.config.PageRequestConfig;
 import de.schlund.pfixxml.perflogging.PerfEvent;
 import de.schlund.pfixxml.perflogging.PerfEventType;
-import java.util.Properties;
-import org.apache.log4j.Category;
 
 /**
  * DefaultIWrapperState.java
@@ -38,7 +42,7 @@ import org.apache.log4j.Category;
  */
 
 public class DefaultIWrapperState extends StateImpl {
-    private static Category CAT             = Category.getInstance(DefaultIWrapperState.class);
+    private static Logger LOG               = Logger.getLogger(DefaultIWrapperState.class);
     private static String DEF_WRP_CONTAINER = "de.schlund.pfixcore.workflow.app.IWrapperSimpleContainer";
     private static String DEF_FINALIZER     = "de.schlund.pfixcore.workflow.app.ResdocSimpleFinalizer";
 

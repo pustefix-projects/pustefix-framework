@@ -31,7 +31,7 @@ import java.util.TreeSet;
 
 import javax.servlet.http.HttpSession;
 
-import org.apache.log4j.Category;
+import org.apache.log4j.Logger;
 import org.w3c.dom.Element;
 
 import de.schlund.pfixcore.generator.IHandler;
@@ -81,7 +81,7 @@ public class IWrapperSimpleContainer implements IWrapperContainer {
     private   RequestData        reqdata        = null;
     private   boolean            is_splitted    = false;
     private   boolean            is_loaded      = false;
-    protected Category           CAT            = Category.getInstance(this.getClass().getName());
+    protected Logger             LOG            = Logger.getLogger(this.getClass());
     private   boolean            extendedstatus = false;
     
     public  static final String PROP_CONTAINER       = "iwrappercontainer";
@@ -241,7 +241,7 @@ public class IWrapperSimpleContainer implements IWrapperContainer {
         
         if (selectedwrappers != currentgroup) {
             if (contwrappers != null && contwrappers.containsAll(selectedwrappers)) {
-                CAT.debug("*** Allow continue because all selected wrappers are members of the restriced_continue group!");
+                LOG.debug("*** Allow continue because all selected wrappers are members of the restriced_continue group!");
                 return false;
             }
             return true;
@@ -484,10 +484,10 @@ public class IWrapperSimpleContainer implements IWrapperContainer {
         if (selwrappers != null) {
             for (int i = 0; i < selwrappers.length; i++) {
                 String   prefix  = selwrappers[i];
-                CAT.debug("  >> Restricted to Wrapper: " + prefix);
+                LOG.debug("  >> Restricted to Wrapper: " + prefix);
                 IWrapper selwrap = (IWrapper) wrappers.get(prefix);
                 if (selwrap == null) {
-                    CAT.warn(" *** No wrapper found for prefix " + prefix + "! ignoring");
+                    LOG.warn(" *** No wrapper found for prefix " + prefix + "! ignoring");
                     continue;
                 }
                 selected.addIWrapper(selwrap);
@@ -512,19 +512,19 @@ public class IWrapperSimpleContainer implements IWrapperContainer {
         HttpSession  session = preq.getSession(false);
         RequestParam status  = preq.getRequestParam(GROUP_STATUS_PARAM);
         if (status != null && (status.getValue().equals(GROUP_ON_PARAM))) {
-            CAT.debug("*** Request says: Groupdisplay ON");
+            LOG.debug("*** Request says: Groupdisplay ON");
             session.setAttribute(GROUP_STATUS, GROUP_ON);
             return true;
         } else if (status != null && status.getValue().equals(GROUP_OFF_PARAM)) {
-            CAT.debug("*** Request says: Groupdisplay OFF");
+            LOG.debug("*** Request says: Groupdisplay OFF");
             session.setAttribute(GROUP_STATUS, GROUP_OFF);
             return false;
         } else if (session.getAttribute(GROUP_STATUS) == null) {
-            CAT.debug("*** Nothing in Session: init by switching Groupdisplay ON");
+            LOG.debug("*** Nothing in Session: init by switching Groupdisplay ON");
             session.setAttribute(GROUP_STATUS, GROUP_ON);
             return true;
         } else {
-            CAT.debug("*** Session says: Groupddisplay is " + session.getAttribute(GROUP_STATUS));
+            LOG.debug("*** Session says: Groupddisplay is " + session.getAttribute(GROUP_STATUS));
             return ((Boolean) session.getAttribute(GROUP_STATUS)).booleanValue();
         }
     }
@@ -542,7 +542,7 @@ public class IWrapperSimpleContainer implements IWrapperContainer {
         Collection<? extends IWrapperConfig> interfaces = config.getIWrappers().values();
 
         if (interfaces.size() == 0) {
-            CAT.debug("*** Found no interfaces for this page (page=" + context.getCurrentPageRequest().getName() + ")");
+            LOG.debug("*** Found no interfaces for this page (page=" + context.getCurrentPageRequest().getName() + ")");
         } else {
             // Initialize all wrappers
             int i = 0;
@@ -596,7 +596,7 @@ public class IWrapperSimpleContainer implements IWrapperContainer {
         for (IWrapperConfig iConfig : context.getConfigForCurrentPageRequest().getIWrappers().values()) {
             if (iConfig.isAlwaysRetrieve()) {
                 IWrapper wrapper = (IWrapper) wrappers.get(iConfig.getPrefix());
-                CAT.debug("*** Adding interface '" + iConfig.getPrefix() + "' to the always_retrieve group...");
+                LOG.debug("*** Adding interface '" + iConfig.getPrefix() + "' to the always_retrieve group...");
                 always_retrieve.addIWrapper(wrapper);
             }
         }
@@ -608,7 +608,7 @@ public class IWrapperSimpleContainer implements IWrapperContainer {
         for (IWrapperConfig iConfig : context.getConfigForCurrentPageRequest().getIWrappers().values()) {
             if (iConfig.isContinue()) {
                 IWrapper wrapper = (IWrapper) wrappers.get(iConfig.getPrefix());
-                CAT.debug("*** Adding interface '" + iConfig.getPrefix() + "' to the restricted_continue group...");
+                LOG.debug("*** Adding interface '" + iConfig.getPrefix() + "' to the restricted_continue group...");
                 contwrappers.addIWrapper(wrapper);
             }
         }
@@ -656,23 +656,23 @@ public class IWrapperSimpleContainer implements IWrapperContainer {
         Properties props = context.getPropertiesForCurrentPageRequest();
         HashMap    pmap  = PropertiesUtils.selectProperties(props, GROUP_PROP);
         if (pmap.isEmpty()) {
-            CAT.debug("*** Properties say: Have NO group definition");
+            LOG.debug("*** Properties say: Have NO group definition");
             return false;
         } else {
-            CAT.debug("*** Properties say: Have group definition");
+            LOG.debug("*** Properties say: Have group definition");
             return true;
         }
     }
 
     private IWrapperGroup getCurrentGroupFromRequest() throws Exception {
-        CAT.debug("* looking for group index: " +  GROUP_CURR);
+        LOG.debug("* looking for group index: " +  GROUP_CURR);
         RequestParam page = preq.getRequestParam(GROUP_CURR);
         // synchronized (activegroups) { 
             if (page == null || page.getValue().equals("")) {
-                CAT.debug("*** Request specifies NO group index: Using index 0");
+                LOG.debug("*** Request specifies NO group index: Using index 0");
                 return (IWrapperGroup) activegroups.get(0);
             } else {
-                CAT.debug("*** Request specifies group index: Using index " + page);
+                LOG.debug("*** Request specifies group index: Using index " + page);
                 Integer index = new Integer(page.getValue());
                 return (IWrapperGroup) activegroups.get(index.intValue());
             }
@@ -682,52 +682,52 @@ public class IWrapperSimpleContainer implements IWrapperContainer {
     private Integer checkForNextIndexInRequest() {
         int current_idx = getCurrentIWrapperGroupIndex();
         int last_idx    = activegroups.size() - 1;
-        CAT.debug("* Current Idx: " + current_idx + " LastIdx: " + last_idx);
+        LOG.debug("* Current Idx: " + current_idx + " LastIdx: " + last_idx);
         String[] grpcmdvals = reqdata.getCommands(SELECT_GROUP); 
 
         if (grpcmdvals != null && grpcmdvals.length > 0) {
             if (grpcmdvals.length > 1) {
-                CAT.warn(" *** WARNING: SELGRP commando was submitted more than once! *** ");
+                LOG.warn(" *** WARNING: SELGRP commando was submitted more than once! *** ");
             }
             String val = grpcmdvals[0];
 
             if (val.equals(GROUP_NEXT)) {
-                CAT.debug("* CMD VAL is NEXT");
+                LOG.debug("* CMD VAL is NEXT");
                 if (current_idx < last_idx) {
-                    CAT.debug("* Setting idx to: " + (current_idx + 1));
+                    LOG.debug("* Setting idx to: " + (current_idx + 1));
                     return new Integer(current_idx + 1);
                 } else {
-                    CAT.debug("* Next idx out of bounds; setting to: " + last_idx);
+                    LOG.debug("* Next idx out of bounds; setting to: " + last_idx);
                     return new Integer(last_idx);
                 }
             } else if (val.equals(GROUP_PREV)) {
-                CAT.debug("* CMD VAL is PREV");
+                LOG.debug("* CMD VAL is PREV");
                 if (current_idx > 0) {
-                    CAT.debug("* Setting idx to: " + (current_idx - 1));
+                    LOG.debug("* Setting idx to: " + (current_idx - 1));
                     return new Integer(current_idx - 1);
                 } else {
-                    CAT.debug("* Prev idx out of bounds; setting to: 0");
+                    LOG.debug("* Prev idx out of bounds; setting to: 0");
                     return new Integer(0);
                 }
             } else {
-                CAT.debug("* CMD VAL is: " + val);
+                LOG.debug("* CMD VAL is: " + val);
                 Integer index;
                 try {
                     index = new Integer(val);
                 } catch (Exception e) {
-                    CAT.warn("Couldn't parse index into integer: '" + val + "': " + e.toString());
+                    LOG.warn("Couldn't parse index into integer: '" + val + "': " + e.toString());
                     return new Integer(current_idx);
                 }
                 if (index.intValue() >= 0 && index.intValue() <= last_idx) {
                     return index;
                 } else {
-                    CAT.debug("* Idx out of bounds; resetting to current value: " + current_idx);
+                    LOG.debug("* Idx out of bounds; resetting to current value: " + current_idx);
                     return new Integer(current_idx);
                 }
             }
 
         }
-        CAT.debug("* Found no group index cmd; returning null");
+        LOG.debug("* Found no group index cmd; returning null");
         return null;
     }
     

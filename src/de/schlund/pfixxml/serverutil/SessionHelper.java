@@ -27,7 +27,7 @@ import org.apache.log4j.*;
 
 public class SessionHelper {
 
-    private static Category CAT = Category.getInstance(SessionHelper.class);
+    private static Logger LOG = Logger.getLogger(SessionHelper.class);
 
     public static final String SESSION_ID_URL = "__SESSION_ID_URL__";
 
@@ -41,7 +41,7 @@ public class SessionHelper {
                 store.put(valName, session.getAttribute(valName));
             }
         } catch (NullPointerException e) {
-            CAT.warn("Caught NP-Exception: " + e.getMessage());
+            LOG.warn("Caught NP-Exception: " + e.getMessage());
         }
     }
 
@@ -54,13 +54,13 @@ public class SessionHelper {
                 key = (String) iter.next();
                 value = store.get(key);
                 if (value instanceof NoCopySessionData) {
-                    CAT.debug("*** Will not copy a object implementing NoCopySessionData!!! ***");
+                    LOG.debug("*** Will not copy a object implementing NoCopySessionData!!! ***");
                 } else if (!key.equals(SessionAdmin.LISTENER)) {
                     session.setAttribute(key, value);
                 }
             }
         } catch (NullPointerException e) {
-            CAT.warn("Caught NP-Exception: " + e.getMessage());
+            LOG.warn("Caught NP-Exception: " + e.getMessage());
         }
     }
 
@@ -203,7 +203,7 @@ public class SessionHelper {
 
             rcUri.append(uri);
         } catch (NullPointerException e) {
-            CAT.warn("Caught NP-Exception: " + e.getMessage());
+            LOG.warn("Caught NP-Exception: " + e.getMessage());
         }
         return rc;
     }

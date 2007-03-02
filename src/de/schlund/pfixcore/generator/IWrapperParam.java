@@ -51,7 +51,7 @@ public class IWrapperParam implements IWrapperParamCheck, IWrapperParamDefinitio
     private ArrayList           precheck       = new ArrayList();
     private ArrayList           postcheck      = new ArrayList();
     private HashSet             scodeinfos     = new HashSet();
-    private Category            CAT            = Category.getInstance(this.getClass().getName());
+    private Logger              LOG            = Logger.getLogger(this.getClass());
     private StatusCodeInfo      missing        = new StatusCodeInfo(StatusCodeLib.PFIXCORE_GENERATOR_MISSING_PARAM, null, null);  
     private boolean             inrequest      = false;
     
@@ -165,7 +165,7 @@ public class IWrapperParam implements IWrapperParamCheck, IWrapperParamDefinitio
         String            thename = prefix + "." + name;
         RequestParam[]    rparamv = reqdata.getParameters(thename);
         
-        CAT.debug(">>> [" + thename + "] Optional: " + optional);
+        LOG.debug(">>> [" + thename + "] Optional: " + optional);
         
         if (rparamv != null) {
             inrequest = true;
@@ -173,7 +173,7 @@ public class IWrapperParam implements IWrapperParamCheck, IWrapperParamDefinitio
             ArrayList out = new ArrayList();
             for (Iterator i = in.iterator(); i.hasNext(); ) {
                 RequestParam val = (RequestParam) i.next();
-                CAT.debug(">>> [" + thename + "] Input: >" + val + "<");
+                LOG.debug(">>> [" + thename + "] Input: >" + val + "<");
                 if (val.getType().equals(RequestParamType.SIMPLE) || val.getType().equals(RequestParamType.FIELDDATA)) {
                     String tmp = val.getValue().trim();
                     if (!tmp.equals("")) {
@@ -189,18 +189,18 @@ public class IWrapperParam implements IWrapperParamCheck, IWrapperParamDefinitio
                         }
                     }
                 } else {
-                    CAT.error("RequestParam " + thename + " is of unknown type: " + val.getType());
+                    LOG.error("RequestParam " + thename + " is of unknown type: " + val.getType());
                 }
             }
             if (out.size() > 0) {
                 rparamv = (RequestParam[]) out.toArray(new RequestParam[] {});
             } else {
-                CAT.debug(">>> [" + thename + "] Outlist empty, setting InputArray to null!!!");
+                LOG.debug(">>> [" + thename + "] Outlist empty, setting InputArray to null!!!");
                 rparamv = null;
             }
         } else {
             inrequest = false;
-            CAT.debug(">>> [" + thename + "] InputArray is null!!!");
+            LOG.debug(">>> [" + thename + "] InputArray is null!!!");
         }
         
         setStringValue(rparamv);
@@ -208,7 +208,7 @@ public class IWrapperParam implements IWrapperParamCheck, IWrapperParamDefinitio
         // Default values are _not_ echoed back to the UI, so we set them only AFTER
         // we set the normalized string values.
         if (rparamv == null && defaultval != null) {
-            CAT.debug(">>> Param '" + name + "' is empty, but using supplied default value.");
+            LOG.debug(">>> Param '" + name + "' is empty, but using supplied default value.");
             rparamv = defaultval;
         }
 

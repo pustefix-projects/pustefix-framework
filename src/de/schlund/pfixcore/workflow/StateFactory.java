@@ -34,7 +34,7 @@ import org.apache.log4j.*;
 
 public class StateFactory {
     private static HashMap      knownstates = new HashMap();
-    private static Category     LOG         = Category.getInstance(StateFactory.class.getName());
+    private static Logger       LOG         = Logger.getLogger(StateFactory.class);
     private static StateFactory instance    = new StateFactory();
     
     public static StateFactory getInstance() {

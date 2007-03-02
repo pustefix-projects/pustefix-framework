@@ -19,7 +19,6 @@
 
 package de.schlund.pfixxml.exceptionprocessor;
 
-import de.schlund.pfixxml.PfixServletRequest;
 import java.io.IOException;
 import java.util.Properties;
 
@@ -28,7 +27,10 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.apache.log4j.Category;
+
+import org.apache.log4j.Logger;
+
+import de.schlund.pfixxml.PfixServletRequest;
 
 /**
  * This class is simple implementation of the
@@ -41,7 +43,7 @@ import org.apache.log4j.Category;
  */
 public class PageForwardingExceptionProcessor implements ExceptionProcessor {
 
-    private static Category CAT = Category.getInstance(PageForwardingExceptionProcessor.class);
+    private static Logger LOG = Logger.getLogger(PageForwardingExceptionProcessor.class);
 
     /**
      * The request gets forwarded to the page specified by the 'page'-attribute
@@ -71,8 +73,8 @@ public class PageForwardingExceptionProcessor implements ExceptionProcessor {
         if ( !forwardPage.startsWith("/") )
             forwardPage = "/"+forwardPage;
 
-        CAT.info("Processing Exception of type: "+ exception.getClass());
-        CAT.info("Trying to forward to page: "+forwardPage);
+        LOG.info("Processing Exception of type: "+ exception.getClass());
+        LOG.info("Trying to forward to page: "+forwardPage);
 
         RequestDispatcher dispatcher = context.getRequestDispatcher(forwardPage);
         if ( dispatcher == null ) {

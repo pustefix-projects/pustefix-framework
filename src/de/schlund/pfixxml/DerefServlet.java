@@ -29,7 +29,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.axis.encoding.Base64;
-import org.apache.log4j.Category;
+import org.apache.log4j.Logger;
 
 import de.schlund.pfixxml.config.ServletManagerConfig;
 import de.schlund.pfixxml.config.impl.ServletManagerConfigImpl;
@@ -46,8 +46,8 @@ import de.schlund.pfixxml.util.MD5Utils;
  */
 
 public class DerefServlet extends ServletManager {
-    protected static Category DEREFLOG        = Category.getInstance("LOGGER_DEREF");
-    protected static Category CAT             = Category.getInstance(DerefServlet.class);
+    protected static Logger   DEREFLOG        = Logger.getLogger("LOGGER_DEREF");
+    protected static Logger   LOG             = Logger.getLogger(DerefServlet.class);
     public static String      PROP_DEREFKEY   = "derefserver.signkey";
     public static String      PROP_IGNORESIGN = "derefserver.ignoresign";
     private ServletManagerConfig config;
@@ -87,20 +87,20 @@ public class DerefServlet extends ServletManager {
         HttpServletRequest req     = preq.getRequest();
         String             referer = req.getHeader("Referer");
 
-        CAT.debug("===> sign key: " + key);
-        CAT.debug("===> Referer: " + referer);
+        LOG.debug("===> sign key: " + key);
+        LOG.debug("===> Referer: " + referer);
         
         if (linkparam != null && linkparam.getValue() != null) {
-            CAT.debug(" ==> Handle link: " + linkparam.getValue());
+            LOG.debug(" ==> Handle link: " + linkparam.getValue());
             if (signparam != null && signparam.getValue() != null) {
-                CAT.debug("     with sign: " + signparam.getValue());
+                LOG.debug("     with sign: " + signparam.getValue());
             }
             handleLink(linkparam.getValue(), signparam, ignore_nosign, preq, res, key);
             return;
         } else if (enclinkparam != null && enclinkparam.getValue() != null &&
                    signparam != null && signparam.getValue() != null) {
-            CAT.debug(" ==> Handle enclink: " + enclinkparam.getValue());
-            CAT.debug("     with sign: " + signparam.getValue());
+            LOG.debug(" ==> Handle enclink: " + enclinkparam.getValue());
+            LOG.debug("     with sign: " + signparam.getValue());
             handleEnclink(enclinkparam.getValue(), signparam.getValue(), preq, res, key);
             return;
         } else {
@@ -139,7 +139,7 @@ public class DerefServlet extends ServletManager {
                 SessionHelper.getClearedURI(preq) + "?enclink=" + URLEncoder.encode(enclink, "utf8") +
                 "&sign=" + signString(enclink, key);
             
-            CAT.debug("===> Meta refresh to link: " + reallink);
+            LOG.debug("===> Meta refresh to link: " + reallink);
             DEREFLOG.info(preq.getServerName() + "|" + link + "|" + preq.getRequest().getHeader("Referer"));
             
             writer.write("<html><head>");
@@ -149,7 +149,7 @@ public class DerefServlet extends ServletManager {
             writer.write("</center></body></html>");
             writer.flush();
         } else {
-            CAT.warn("===> No meta refresh because signature is wrong.");
+            LOG.warn("===> No meta refresh because signature is wrong.");
             res.sendError(HttpServletResponse.SC_BAD_REQUEST);
             return;
         }
@@ -161,7 +161,7 @@ public class DerefServlet extends ServletManager {
             if (link.startsWith("/")) {
                 link = preq.getScheme() + "://" + preq.getServerName() + ":" + preq.getServerPort() + link;
             }
-            CAT.debug("===> Relocate to link: " + link);
+            LOG.debug("===> Relocate to link: " + link);
 
             res.setHeader("Expires", "Mon, 26 Jul 1997 05:00:00 GMT");
             res.setHeader("Pragma", "no-cache");
@@ -169,7 +169,7 @@ public class DerefServlet extends ServletManager {
             res.setHeader("Location", link);
             res.setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY);
         } else {
-            CAT.warn("===> Won't relocate because signature is wrong.");
+            LOG.warn("===> Won't relocate because signature is wrong.");
             res.sendError(HttpServletResponse.SC_BAD_REQUEST);
             return;
         }

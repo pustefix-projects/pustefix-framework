@@ -20,10 +20,11 @@
 package de.schlund.pfixcore.generator;
 
 
-import de.schlund.pfixcore.util.FlyWeightChecker;
 import java.util.HashMap;
-import java.util.Iterator;
-import org.apache.log4j.Category;
+
+import org.apache.log4j.Logger;
+
+import de.schlund.pfixcore.util.FlyWeightChecker;
 
 /**
  * IHandlerFactory.java
@@ -39,7 +40,7 @@ import org.apache.log4j.Category;
 public class IHandlerFactory {
     private static HashMap         knownhandlers    = new HashMap();
     private static HashMap         wrapper2handlers = new HashMap();
-    private static Category        LOG              = Category.getInstance(IHandlerFactory.class.getName());
+    private static Logger          LOG              = Logger.getLogger(IHandlerFactory.class);
     private static IHandlerFactory instance         = new IHandlerFactory();
 
     private IHandlerFactory() {

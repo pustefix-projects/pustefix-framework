@@ -1,3 +1,72 @@
+2007-03-02  Sebastian Marsching  <sebastian.marsching@1und1.de>
+
+	* src/de/schlund/pfixcore/example/AdultInfoHandler.java: 
+	* src/de/schlund/pfixcore/example/ContextAdultInfoImpl.java: 
+	* src/de/schlund/pfixcore/example/ContextCounterImpl.java: 
+	* src/de/schlund/pfixcore/example/ContextTrouserImpl.java: 
+	* src/de/schlund/pfixcore/example/ContextTShirtImpl.java: 
+	* src/de/schlund/pfixcore/example/CounterHandler.java: 
+	* src/de/schlund/pfixcore/example/CounterSetHandler.java: 
+	* src/de/schlund/pfixcore/example/MsgFlowStepAction.java: 
+	* src/de/schlund/pfixcore/example/SampleStartIC.java: 
+	* src/de/schlund/pfixcore/example/TrouserHandler.java: 
+	* src/de/schlund/pfixcore/example/TShirtHandler.java: 
+	* src/de/schlund/pfixcore/generator/casters/ToBoolean.java: 
+	* src/de/schlund/pfixcore/generator/casters/ToFile.java: 
+	* src/de/schlund/pfixcore/generator/casters/ToInteger.java: 
+	* src/de/schlund/pfixcore/generator/casters/ToLong.java: 
+	* src/de/schlund/pfixcore/generator/IHandlerFactory.java: 
+	* src/de/schlund/pfixcore/generator/IWrapperImpl.java: 
+	* src/de/schlund/pfixcore/generator/IWrapperIndexedParam.java: 
+	* src/de/schlund/pfixcore/generator/IWrapperParam.java: 
+	* src/de/schlund/pfixcore/generator/SimpleCheck.java: 
+	* src/de/schlund/pfixcore/lucefix/DocumentCache.java: 
+	* src/de/schlund/pfixcore/lucefix/PfixQueueManager.java: 
+	* src/de/schlund/pfixcore/lucefix/PfixReadjustment.java: 
+	* src/de/schlund/pfixcore/workflow/app/DefaultIWrapperState.java: 
+	* src/de/schlund/pfixcore/workflow/app/IHandlerContainerManager.java: 
+	* src/de/schlund/pfixcore/workflow/app/IWrapperSimpleContainer.java: 
+	* src/de/schlund/pfixcore/workflow/app/RequestDataImpl.java: 
+	* src/de/schlund/pfixcore/workflow/app/ResdocFinalizerFactory.java: 
+	* src/de/schlund/pfixcore/workflow/app/ResdocSimpleFinalizer.java: 
+	* src/de/schlund/pfixcore/workflow/context/PageFlow.java: 
+	* src/de/schlund/pfixcore/workflow/DirectOutputPageMap.java: 
+	* src/de/schlund/pfixcore/workflow/DirectOutputStateFactory.java: 
+	* src/de/schlund/pfixcore/workflow/FlowStepActionFactory.java: 
+	* src/de/schlund/pfixcore/workflow/ObservableContextResourceImpl.java: 
+	* src/de/schlund/pfixcore/workflow/StateFactory.java: 
+	* src/de/schlund/pfixxml/exceptionprocessor/util/ExceptionDataValueHelper.java: 
+	* src/de/schlund/pfixxml/exceptionprocessor/PageForwardingExceptionProcessor.java: 
+	* src/de/schlund/pfixxml/multipart/MultipartHandler.java: 
+	* src/de/schlund/pfixxml/serverutil/SessionAdmin.java: 
+	* src/de/schlund/pfixxml/serverutil/SessionHelper.java: 
+	* src/de/schlund/pfixxml/targets/cachestat/AdvanceCacheStatistic.java: 
+	* src/de/schlund/pfixxml/targets/cachestat/SPCacheStatistic.java: 
+	* src/de/schlund/pfixxml/targets/AuxDependencyManager.java: 
+	* src/de/schlund/pfixxml/targets/LeafTarget.java: 
+	* src/de/schlund/pfixxml/targets/LRUCache.java: 
+	* src/de/schlund/pfixxml/targets/SPCacheFactory.java: 
+	* src/de/schlund/pfixxml/targets/TargetDependencyRelation.java: 
+	* src/de/schlund/pfixxml/targets/TargetFactory.java: 
+	* src/de/schlund/pfixxml/targets/TargetGeneratorFactory.java: 
+	* src/de/schlund/pfixxml/targets/TargetImpl.java: 
+	* src/de/schlund/pfixxml/targets/VirtualTarget.java: 
+	* src/de/schlund/pfixxml/util/URIParameters.java: 
+	* src/de/schlund/pfixxml/DependencyTracker.java: 
+	* src/de/schlund/pfixxml/DerefServlet.java: 
+	* src/de/schlund/pfixxml/DirectOutputServlet.java: 
+	* src/de/schlund/pfixxml/ImageThemedSrc.java: 
+	* src/de/schlund/pfixxml/IncludeDocument.java: 
+	* src/de/schlund/pfixxml/IncludeDocumentExtension.java: 
+	* src/de/schlund/pfixxml/IncludeDocumentFactory.java: 
+	* src/de/schlund/pfixxml/PfixServletRequest.java: 
+	* src/de/schlund/pfixxml/PropertyObjectManager.java: 
+	* src/de/schlund/pfixxml/ResultDocument.java: 
+	* src/de/schlund/pfixxml/ServletManager.java: 
+	* src/de/schlund/pfixxml/SessionCleaner.java: 
+	Replaced references to log4j's deprecated Category class by references to 
+	newer Logger class. 
+
 2007-03-02  Martin Leidig  <mleidig@schlund.de>
 
 	Extended support for JSON Bean serialization/deserialization customization.

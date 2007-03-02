@@ -25,7 +25,7 @@ import java.util.TreeSet;
 
 import javax.xml.transform.TransformerException;
 
-import org.apache.log4j.Category;
+import org.apache.log4j.Logger;
 
 import de.schlund.pfixxml.XMLException;
 import de.schlund.pfixxml.resources.FileResource;
@@ -54,8 +54,8 @@ public abstract class TargetImpl implements TargetRW, Comparable {
     protected TreeMap              params          = null;
     protected Target               xmlsource       = null;
     protected Target               xslsource       = null;
-    protected Category             CAT             = Category.getInstance(this.getClass().getName());
-    protected Category             TREE            = Category.getInstance(this.getClass().getName() + ".TREE");
+    protected Logger               LOG             = Logger.getLogger(this.getClass());
+    protected Logger               TREE            = Logger.getLogger(this.getClass().getName() + ".TREE");
     // determine if the target has been generated. This affects production mode only, where
     // we do not need to handle if the target is really up to date (except make generate!!!)
     private   boolean              onceLoaded      = false;
@@ -139,12 +139,12 @@ public abstract class TargetImpl implements TargetRW, Comparable {
         // which sets onceLoaded to true so we don't have to make this check again.
         if (generator.isGetModTimeMaybeUpdateSkipped()) {
             // skip getModTimeMaybeUpdate!
-            CAT.debug("skip_getmodtimemaybeupdate is true. Trying to skip getModTimeMaybeUpdate...");
+            LOG.debug("skip_getmodtimemaybeupdate is true. Trying to skip getModTimeMaybeUpdate...");
             if (!onceLoaded) {
                 // do test for exists here!
                 FileResource thefile = ResourceUtil.getFileResource(getTargetGenerator().getDisccachedir(), getTargetKey());
                 if (!thefile.exists()) { // Target has not been loaded once and it doesn't exist in disk cache
-                    CAT.debug("Cant't skip getModTimeMaybeUpdated because it has not been loaded " +
+                    LOG.debug("Cant't skip getModTimeMaybeUpdated because it has not been loaded " +
                               "and doesn't even exist in disk cache! Generating now !!");
                     try {
                         getModTimeMaybeUpdate();
@@ -155,13 +155,13 @@ public abstract class TargetImpl implements TargetRW, Comparable {
                         throw new TargetGenerationException(e2.getClass().getName()+ " in getModTimeMaybeUpdate()", e2);
                     }
                 } else {
-                    CAT.debug("Target exists in disc cache, using it...");
+                    LOG.debug("Target exists in disc cache, using it...");
                 }
             } else { // target generated -> nop 
-                CAT.debug("Target has already been loaded, reusing it...");
+                LOG.debug("Target has already been loaded, reusing it...");
             }
         } else { // do not skip getModTimeMaybeUpdate 
-            CAT.debug("Skipping getModTimeMaybeUpdate disabled in TargetGenerator!");
+            LOG.debug("Skipping getModTimeMaybeUpdate disabled in TargetGenerator!");
             try {
                 getModTimeMaybeUpdate();
             } catch(IOException e1) {
@@ -218,9 +218,9 @@ public abstract class TargetImpl implements TargetRW, Comparable {
             synchronized (this) {   // TODO: double-checked locking is broken ...
                 obj = getValueFromSPCache();
                 if (obj == null || isDiskCacheNewerThenMemCache()) {
-                    if (CAT.isDebugEnabled()) {
-                        if (CAT.isDebugEnabled() && isDiskCacheNewerThenMemCache()) {
-                            CAT.debug(
+                    if (LOG.isDebugEnabled()) {
+                        if (LOG.isDebugEnabled() && isDiskCacheNewerThenMemCache()) {
+                            LOG.debug(
                                 "File in disk cache is newer then in memory cache. Rereading target from disk...");
                         }
                     }
@@ -266,8 +266,8 @@ public abstract class TargetImpl implements TargetRW, Comparable {
         long target_mod_time = getModTime();
         FileResource thefile = ResourceUtil.getFileResource(getTargetGenerator().getDisccachedir(), getTargetKey());
         long disk_mod_time = thefile.lastModified();
-        if (CAT.isDebugEnabled()) {
-            CAT.debug("File in DiskCache "+ getTargetGenerator().getDisccachedir() + File.separator
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("File in DiskCache "+ getTargetGenerator().getDisccachedir() + File.separator
                     + getTargetKey() + " (" + disk_mod_time + ") is "
                     + (disk_mod_time > target_mod_time ? " newer " : "older")
                     + " than target(" + target_mod_time + ")");

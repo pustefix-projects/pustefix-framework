@@ -26,7 +26,7 @@ import java.util.Iterator;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.apache.log4j.Category;
+import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -48,7 +48,7 @@ import de.schlund.pfixxml.util.Xml;
  */
 
 public class AuxDependencyManager {
-    private static Category CAT    = Category.getInstance(AuxDependencyManager.class.getName());
+    private static Logger   LOG    = Logger.getLogger(AuxDependencyManager.class);
     private static String   DEPAUX = "depaux";
     private TargetImpl   target;
     
@@ -100,7 +100,7 @@ public class AuxDependencyManager {
             parent_theme = null;
 
         if (parent_path != null && parent_part != null && parent_theme != null) {
-            CAT.debug("*** Found another AuxDependency as Parent...");
+            LOG.debug("*** Found another AuxDependency as Parent...");
             parent = AuxDependencyFactory.getInstance()
                     .getAuxDependencyInclude(parent_path, parent_part,
                             parent_theme);
@@ -127,8 +127,8 @@ public class AuxDependencyManager {
         
         if (part != null && part.equals("")) part = null;
         if (theme != null && theme.equals("")) theme = null;
-        CAT.info("Adding Dependency of type 'text' to Target '" + target.getFullName() + "':");
-        CAT.info("*** [" + path.getRelativePath() + "][" + part + "][" + theme + "][" +
+        LOG.info("Adding Dependency of type 'text' to Target '" + target.getFullName() + "':");
+        LOG.info("*** [" + path.getRelativePath() + "][" + part + "][" + theme + "][" +
                  ((parent_path == null)? "null" : parent_path.getRelativePath()) + "][" + parent_part + "][" + parent_theme + "]");
 
         child = AuxDependencyFactory.getInstance().getAuxDependencyInclude(path, part, theme);
@@ -145,8 +145,8 @@ public class AuxDependencyManager {
         AuxDependency child  = null;
         AuxDependency parent = null;
 
-        CAT.info("Adding Dependency of type 'text' to Target '" + target.getFullName() + "':");
-        CAT.info("*** [" + path.getRelativePath() + "][" +
+        LOG.info("Adding Dependency of type 'text' to Target '" + target.getFullName() + "':");
+        LOG.info("*** [" + path.getRelativePath() + "][" +
                  ((parent_path == null)? "null" : parent_path.getRelativePath()) + "][" + parent_part + "][" + parent_theme + "]");
 
         child = AuxDependencyFactory.getInstance().getAuxDependencyImage(path);
@@ -162,8 +162,8 @@ public class AuxDependencyManager {
         
         AuxDependency child  = null;
 
-        CAT.info("Adding Dependency of type 'text' to Target '" + target.getFullName() + "':");
-        CAT.info("*** [" + path.getRelativePath() + "]");
+        LOG.info("Adding Dependency of type 'text' to Target '" + target.getFullName() + "':");
+        LOG.info("*** [" + path.getRelativePath() + "]");
 
         child = AuxDependencyFactory.getInstance().getAuxDependencyFile(path);
         
@@ -177,8 +177,8 @@ public class AuxDependencyManager {
         
         AuxDependency child  = null;
 
-        CAT.info("Adding Dependency of type 'text' to Target '" + target.getFullName() + "':");
-        CAT.info("*** [" + target.getTargetKey() + "]");
+        LOG.info("Adding Dependency of type 'text' to Target '" + target.getFullName() + "':");
+        LOG.info("*** [" + target.getTargetKey() + "]");
 
         child = AuxDependencyFactory.getInstance().getAuxDependencyTarget(target.getTargetGenerator(), targetkey);
         
@@ -213,7 +213,7 @@ public class AuxDependencyManager {
     
 
     public synchronized void saveAuxdepend() throws IOException  {
-        CAT.info("===> Trying to save aux info of Target '" + target.getTargetKey() + "'");
+        LOG.info("===> Trying to save aux info of Target '" + target.getTargetKey() + "'");
 
         Set<AuxDependency> allaux = TargetDependencyRelation.getInstance().getDependenciesForTarget(target);
         FileResource       path   = ResourceUtil.getFileResource(target.getTargetGenerator().getDisccachedir(),

@@ -49,7 +49,7 @@ public class IWrapperIndexedParam implements IWrapperParamDefinition, Comparable
     private HashMap             params        = new HashMap();
     private HashMap             errors        = new HashMap();
     private String              prefix;
-    private Category            CAT           = Category.getInstance(this.getClass().getName());
+    private Logger              LOG           = Logger.getLogger(this.getClass());
     
     public IWrapperIndexedParam(String name, boolean multiple, String type, boolean trim) {
         this.type     = type;
@@ -91,7 +91,7 @@ public class IWrapperIndexedParam implements IWrapperParamDefinition, Comparable
             if (pname.startsWith(wholename + ".")) {
                 // Now initialize the IWrapperParams
                 String idx = pname.substring(wholename.length() + 1);
-                CAT.debug("~~~ Found index: " + idx + " for IndexedParam " + name);
+                LOG.debug("~~~ Found index: " + idx + " for IndexedParam " + name);
                 IWrapperParam pinfo = new IWrapperParam(name + "." + idx, multiple, true, null, type, trim);
                 pinfo.setParamCaster(caster);
                 synchronized (params) {
@@ -105,7 +105,7 @@ public class IWrapperIndexedParam implements IWrapperParamDefinition, Comparable
                 }
                 pinfo.initValueFromRequest(prefix, req);
                 if (pinfo.errorHappened()) {
-                    CAT.debug("*** ERROR happened for Param: " + pinfo.getName());
+                    LOG.debug("*** ERROR happened for Param: " + pinfo.getName());
                     synchronized (errors) {
                         errors.put(pinfo.getName(), pinfo);
                     }

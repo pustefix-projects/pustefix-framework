@@ -22,7 +22,7 @@ package de.schlund.pfixcore.workflow.context;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import org.apache.log4j.Category;
+import org.apache.log4j.Logger;
 
 import de.schlund.pfixcore.workflow.FlowStep;
 import de.schlund.pfixxml.config.PageFlowConfig;
@@ -42,7 +42,7 @@ public class PageFlow {
     
     private final static String PROPERTY_PREFIX   = PageFlowManager.PROP_PREFIX;
     private final static String FLAG_FINAL        = "FINAL";
-    private static Category     LOG               = Category.getInstance(PageFlow.class.getName());
+    private static Logger       LOG               = Logger.getLogger(PageFlow.class);
     
     public PageFlow(PageFlowConfig config) {
         flowname = config.getFlowName();

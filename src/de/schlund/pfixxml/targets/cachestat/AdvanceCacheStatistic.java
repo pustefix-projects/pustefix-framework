@@ -22,7 +22,7 @@ package de.schlund.pfixxml.targets.cachestat;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import org.apache.log4j.Category;
+import org.apache.log4j.Logger;
 
 /**
  * Provides a queue with QUEUE_SIZE entries which
@@ -40,7 +40,7 @@ public class AdvanceCacheStatistic {
     private CacheHitMissPair[] statQueue;
     private int index = 0;
     private int queueSize = 0;
-    private static Category CAT = Category.getInstance(AdvanceCacheStatistic.class.getName());
+    private final static Logger LOG = Logger.getLogger(AdvanceCacheStatistic.class);
 
     public AdvanceCacheStatistic(Timer timer, int queuesize, int queueticks) {
         if(timer == null) {
@@ -71,7 +71,7 @@ public class AdvanceCacheStatistic {
                 hits += pair.getHits();
             }
         }
-        if(CAT.isDebugEnabled()) CAT.debug(this.hashCode()+"Hits: "+hits);
+        if(LOG.isDebugEnabled()) LOG.debug(this.hashCode()+"Hits: "+hits);
         return hits;
     }
 
@@ -83,7 +83,7 @@ public class AdvanceCacheStatistic {
                 misses += pair.getMisses();
             }
         }
-        if(CAT.isDebugEnabled()) CAT.debug(this.hashCode()+" Misses: "+misses);
+        if(LOG.isDebugEnabled()) LOG.debug(this.hashCode()+" Misses: "+misses);
         return misses;     
     }
 
@@ -104,7 +104,7 @@ public class AdvanceCacheStatistic {
         } else {
             index++;
         }
-        if(CAT.isDebugEnabled()) CAT.debug("--->Reset CacheHitMissPair at:"+index);
+        if(LOG.isDebugEnabled()) LOG.debug("--->Reset CacheHitMissPair at:"+index);
         statQueue[index].resetHits();
         statQueue[index].resetMisses();
     }
