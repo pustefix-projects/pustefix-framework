@@ -19,13 +19,18 @@
 
 package de.schlund.pfixcore.webservice.beans;
 
-import java.lang.annotation.*;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
  * @author mleidig@schlund.de
  */
-@Target({ElementType.TYPE})
+@Target({ElementType.METHOD,ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface ExcludeByDefault {
+public @interface Alias {
+
+    String value();
     
 }

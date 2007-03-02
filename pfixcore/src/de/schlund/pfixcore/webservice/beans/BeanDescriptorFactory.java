@@ -19,8 +19,13 @@
 
 package de.schlund.pfixcore.webservice.beans;
 
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
+
+import de.schlund.pfixcore.webservice.beans.metadata.Beans;
+import de.schlund.pfixcore.webservice.beans.metadata.DOMInit;
+import de.schlund.pfixcore.webservice.beans.metadata.Locator;
 
 
 /**
@@ -29,15 +34,30 @@ import java.util.Map;
 public class BeanDescriptorFactory {
 
     Map<Class,BeanDescriptor> descriptors;
+    Beans metadata;
     
     public BeanDescriptorFactory() {
         descriptors=new HashMap<Class,BeanDescriptor>();
     }
     
+    public BeanDescriptorFactory(Beans metadata) {
+        this();
+        this.metadata=metadata;
+    }
+    
+    public BeanDescriptorFactory(Locator locator) throws InitException {
+        this();
+        DOMInit domInit=new DOMInit();
+        for(URL url:locator.getMetadataResources()) {
+            domInit.update(url);
+        }
+        metadata=domInit.getBeans();
+    }
+    
     public synchronized <T> BeanDescriptor getBeanDescriptor(Class<T> clazz) {
         BeanDescriptor desc=descriptors.get(clazz);
         if(desc==null) {
-            desc=new BeanDescriptor(clazz);
+            desc=new BeanDescriptor(clazz,metadata);
             descriptors.put(clazz,desc);
         }
         return desc;

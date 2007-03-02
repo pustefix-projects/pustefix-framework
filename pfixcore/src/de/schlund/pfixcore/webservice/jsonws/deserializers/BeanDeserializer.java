@@ -19,6 +19,7 @@
 
 package de.schlund.pfixcore.webservice.jsonws.deserializers;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Iterator;
 
@@ -29,6 +30,9 @@ import de.schlund.pfixcore.webservice.jsonws.DeserializationContext;
 import de.schlund.pfixcore.webservice.jsonws.DeserializationException;
 import de.schlund.pfixcore.webservice.jsonws.Deserializer;
 
+/**
+ * @author mleidig@schlund.de
+ */
 public class BeanDeserializer extends Deserializer {
 
     BeanDescriptorFactory beanDescFactory;
@@ -66,11 +70,24 @@ public class BeanDeserializer extends Deserializer {
                         if(propTargetClass!=null) {
                             Object val=jsonObj.getMember(prop);
                             Method meth=bd.getSetMethod(prop);
-                            if(val==null) {
-                                meth.invoke(newObj,new Object[] {null}); 
+                            if(meth!=null) {
+                                if(val==null) {
+                                    meth.invoke(newObj,new Object[] {null}); 
+                                } else {
+                                    Object res=ctx.deserialize(val,propTargetClass);
+                                    if(res!=null) meth.invoke(newObj,res);
+                                }
                             } else {
-                                Object res=ctx.deserialize(val,propTargetClass);
-                                if(res!=null) meth.invoke(newObj,res);
+                                Field field=bd.getDirectAccessField(prop);
+                                if(field!=null) {
+                                    if(val==null) {
+                                        field.set(newObj,null);
+                                    } else {
+                                        Object res=ctx.deserialize(val,propTargetClass);
+                                        if(res!=null) field.set(newObj,res);
+                                    }
+                                } else throw new DeserializationException("Bean of type '"+targetClass.getName()+"' doesn't "+
+                                        " have setter method or direct access to property '"+prop+"'.");
                             }
                         } else throw new DeserializationException("Bean of type '"+targetClass.getName()+"' doesn't have property '"+prop+"'.");         
                     }

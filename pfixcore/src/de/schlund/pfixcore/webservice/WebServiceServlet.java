@@ -20,6 +20,7 @@
 package de.schlund.pfixcore.webservice;
 
 import java.io.IOException;
+import java.net.URL;
 import java.util.Enumeration;
 
 import javax.servlet.ServletConfig;
@@ -100,7 +101,8 @@ public class WebServiceServlet extends AxisServlet implements ServiceProcessor {
         				runtime.setConfiguration(srvConf);
         				runtime.setApplicationServiceRegistry(new ServiceRegistry(runtime.getConfiguration(),ServiceRegistry.RegistryType.APPLICATION));
         				runtime.addServiceProcessor(Constants.PROTOCOL_TYPE_SOAP,this);
-        				runtime.addServiceProcessor(Constants.PROTOCOL_TYPE_JSONWS,new JSONWSProcessor());
+                        URL metaURL=srvConf.getGlobalServiceConfig().getDefaultBeanMetaDataURL();
+        				runtime.addServiceProcessor(Constants.PROTOCOL_TYPE_JSONWS,new JSONWSProcessor(metaURL));
                         runtime.addServiceStubGenerator(Constants.PROTOCOL_TYPE_JSONWS,new JSONWSStubGenerator());
         				getServletContext().setAttribute(ServiceRuntime.class.getName(),runtime);
                         adminWebapp=new AdminWebapp(runtime);

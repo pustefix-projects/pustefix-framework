@@ -9,6 +9,7 @@ public class BeanF extends BeanB {
     }
                  
     @Include
+    @Alias("mybar")
     @Override                                                         
     public int getBar() {
         return super.getBar();

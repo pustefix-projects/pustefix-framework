@@ -28,6 +28,8 @@
     <flowstep name="counter"/>
     <flowstep name="data"/>
     <flowstep name="typetest"/>
+    <flowstep name="calltest"/>
+    <flowstep name="beantest"/>
   </pageflow>
   
   <pagerequest name="calculator">
@@ -49,6 +51,9 @@
   </pagerequest>
   
   <pagerequest name="calltest">
+  </pagerequest>
+  
+  <pagerequest name="beantest">
   </pagerequest>
   
   <pagerequest name="gencss" nostore="true">

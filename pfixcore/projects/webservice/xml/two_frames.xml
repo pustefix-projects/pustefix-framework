@@ -18,6 +18,7 @@
             <pfx:button page="data" activeclass="navi" normalclass="navi">Data</pfx:button>
             <pfx:button page="typetest" activeclass="navi" normalclass="navi">TypeTest</pfx:button>
             <pfx:button page="calltest" activeclass="navi" normalclass="navi">CallTest</pfx:button>
+            <pfx:button page="beantest" activeclass="navi" normalclass="navi">BeanTest</pfx:button>
           </div>	
         </body>
       </html>
@@ -62,6 +63,11 @@
               <script type="text/javascript" src="{$__contextpath}/xml/wsscript/CallTest.js"></script>
               <pfx:wsscript name="CallTest"/>
               <script type="text/javascript" src="{$__contextpath}/calltest-pfxsoap.js"></script>   
+            </ixsl:when>
+            <ixsl:when test="$page='beantest'">
+              <script type="text/javascript" src="{$__contextpath}/xml/wsscript/BeanTest.js"></script>
+              <pfx:wsscript name="BeanTest"/>
+              <script type="text/javascript" src="{$__contextpath}/beantest-pfxsoap.js"></script>   
             </ixsl:when>
           </ixsl:choose>  
         </head>

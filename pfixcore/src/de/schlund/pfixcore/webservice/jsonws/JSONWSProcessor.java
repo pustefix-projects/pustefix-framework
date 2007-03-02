@@ -23,6 +23,7 @@ import java.io.StringReader;
 import java.io.Writer;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.net.URL;
 import java.util.Iterator;
 import java.util.List;
 
@@ -38,6 +39,8 @@ import de.schlund.pfixcore.webservice.ServiceRequest;
 import de.schlund.pfixcore.webservice.ServiceResponse;
 import de.schlund.pfixcore.webservice.ServiceRuntime;
 import de.schlund.pfixcore.webservice.beans.BeanDescriptorFactory;
+import de.schlund.pfixcore.webservice.beans.InitException;
+import de.schlund.pfixcore.webservice.beans.metadata.DefaultLocator;
 import de.schlund.pfixcore.webservice.config.ServiceConfig;
 import de.schlund.pfixcore.webservice.fault.Fault;
 import de.schlund.pfixcore.webservice.fault.FaultHandler;
@@ -52,11 +55,18 @@ public class JSONWSProcessor implements ServiceProcessor {
 
     private Logger LOG=Logger.getLogger(JSONWSProcessor.class);
     
-    private BeanDescriptorFactory beanDescFactory=new BeanDescriptorFactory();
-    private SerializerRegistry serializerRegistry=new SerializerRegistry(beanDescFactory);
-    private DeserializerRegistry deserializerRegistry=new DeserializerRegistry(beanDescFactory);
+    private BeanDescriptorFactory beanDescFactory;
+    private SerializerRegistry serializerRegistry;
+    private DeserializerRegistry deserializerRegistry;
     
-    public JSONWSProcessor() {
+    public JSONWSProcessor(URL defaultBeanMetaDataURL) throws ServiceException {
+        try {
+            beanDescFactory=new BeanDescriptorFactory(new DefaultLocator(defaultBeanMetaDataURL));
+        } catch(InitException x) {
+            throw new ServiceException("BeanDescriptorFactory initialization failed.",x);
+        }
+        serializerRegistry=new SerializerRegistry(beanDescFactory);
+        deserializerRegistry=new DeserializerRegistry(beanDescFactory);
     }
     
     public void process(ServiceRequest req,ServiceResponse res,ServiceRuntime runtime,ServiceRegistry registry,ProcessingInfo procInfo) throws ServiceException {

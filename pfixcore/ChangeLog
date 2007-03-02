@@ -1,3 +1,61 @@
+2007-03-02  Martin Leidig  <mleidig@schlund.de>
+
+	Extended support for JSON Bean serialization/deserialization customization.
+	The annotation @Alias can be used to override the property names used within 
+	JSON. Public bean properties without getter/setter methods are detected/handled 
+	now too. Beans now can be customized using XML (for those who don't like annotations 
+	or who want to override them). The XML file has to be called beanmetadata.xml
+	and can either be placed in the project's conf directory or within
+	a jar file's META-INF directory.
+
+	* src/de/schlund/pfixcore/webservice/jsonws/serializers/BeanSerializer.java
+	* src/de/schlund/pfixcore/webservice/jsonws/JSONWSProcessor.java
+	* src/de/schlund/pfixcore/webservice/jsonws/deserializers/BeanDeserializer.java
+	* src/de/schlund/pfixcore/webservice/WebServiceServlet.java
+	* src/de/schlund/pfixcore/webservice/beans/IntrospectionException.java
+	* src/de/schlund/pfixcore/webservice/beans/metadata
+	* src/de/schlund/pfixcore/webservice/beans/metadata/DOMInitException.java
+	* src/de/schlund/pfixcore/webservice/beans/metadata/DOMInit.java
+	* src/de/schlund/pfixcore/webservice/beans/metadata/Locator.java
+	* src/de/schlund/pfixcore/webservice/beans/metadata/Property.java
+	* src/de/schlund/pfixcore/webservice/beans/metadata/Bean.java
+	* src/de/schlund/pfixcore/webservice/beans/metadata/Beans.java
+	* src/de/schlund/pfixcore/webservice/beans/metadata/DefaultLocator.java
+	* src/de/schlund/pfixcore/webservice/beans/InitException.java
+	* src/de/schlund/pfixcore/webservice/beans/Include.java
+	* src/de/schlund/pfixcore/webservice/beans/BeanDescriptor.java
+	* src/de/schlund/pfixcore/webservice/beans/Exclude.java
+	* src/de/schlund/pfixcore/webservice/beans/ExcludeByDefault.java
+	* src/de/schlund/pfixcore/webservice/beans/Alias.java
+	* src/de/schlund/pfixcore/webservice/beans/BeanDescriptorFactory.java
+	* src/de/schlund/pfixcore/webservice/config/GlobalServiceConfig.java
+	* src/de/schlund/pfixcore/webservice/config/ConfigurationReader.java
+	* projects/core/schema/beanmetadata.xsd
+
+	Added sample webservice/test:
+	* projects/webservice/txt/pages/main_beantest.xml
+	* projects/webservice/xml/two_frames.xml
+	* projects/webservice/htdocs/typetest-pfxsoap.js
+	* projects/webservice/htdocs/beantest-pfxsoap.js
+	* projects/webservice/conf/webservice.conf.xml
+	* projects/webservice/conf/beanmetadata.xml
+	* projects/webservice/conf/config.conf.xml
+	* projects/webservice/conf/depend.xml
+	* src/de/schlund/pfixcore/example/webservices/WeirdBean.java
+	* src/de/schlund/pfixcore/example/webservices/BeanTest.java
+	* src/de/schlund/pfixcore/example/webservices/WeirdBeanSub.java
+	* src/de/schlund/pfixcore/example/webservices/BeanTestImpl.java
+
+	Added tests for bean property aliases and xml metadata 
+	* tests/junit/META-INF
+	* tests/junit/META-INF/beanmetadata.xml
+	* tests/junit/de/schlund/pfixcore/webservice/beans/BeanDescriptorTest.java
+	* tests/junit/de/schlund/pfixcore/webservice/beans/beanmetadata.xml
+	* tests/junit/de/schlund/pfixcore/webservice/beans/BeanA.java
+	* tests/junit/de/schlund/pfixcore/webservice/beans/BeanC.java
+	* tests/junit/de/schlund/pfixcore/webservice/beans/BeanD.java
+	* tests/junit/de/schlund/pfixcore/webservice/beans/BeanF.java
+
 2007-02-28  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
 	* src/de/schlund/pfixcore/scriptedflow/vm/ScriptVM.java (mangleDoc): 
