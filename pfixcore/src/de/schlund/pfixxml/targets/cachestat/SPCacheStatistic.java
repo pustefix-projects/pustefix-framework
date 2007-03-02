@@ -28,7 +28,7 @@ import java.util.List;
 import java.util.Properties;
 import java.util.Timer;
 
-import org.apache.log4j.Category;
+import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -56,7 +56,7 @@ public class SPCacheStatistic {
     private static String PROP_QUEUESIZE =  "cachestatistic.queuesize";
     private static String PROP_QUEUETICKS = "cachestatistic.queueticks";
     public static String PROP_PRODUCTDATA = "cachestatistic.productdata";
-    private static Category CAT = Category.getInstance(SPCacheStatistic.class.getName());
+    private final static Logger LOG = Logger.getLogger(SPCacheStatistic.class);
     private int queueSize = 0;
     private int queueTicks = 0;
     
@@ -90,7 +90,7 @@ public class SPCacheStatistic {
         } catch(NumberFormatException e) {
             throw new XMLException("Property '"+PROP_QUEUESIZE+"' is not a number but: "+queuesize);
         }
-        if(CAT.isDebugEnabled()) CAT.debug("Got property '"+PROP_QUEUESIZE+"' ="+queueSize);
+        if(LOG.isDebugEnabled()) LOG.debug("Got property '"+PROP_QUEUESIZE+"' ="+queueSize);
         
         
         String queueticks = props.getProperty(PROP_QUEUETICKS);
@@ -102,7 +102,7 @@ public class SPCacheStatistic {
         } catch(NumberFormatException e) {
             throw new XMLException("Property '"+PROP_QUEUETICKS+"' is not a number but: "+queueticks);
         }
-        if(CAT.isDebugEnabled()) CAT.debug("Got property '"+PROP_QUEUETICKS+"' ="+queueTicks);
+        if(LOG.isDebugEnabled()) LOG.debug("Got property '"+PROP_QUEUETICKS+"' ="+queueTicks);
         
         String productdatafile = props.getProperty(PROP_PRODUCTDATA);
         if (productdatafile == null || productdatafile.equals("")) {
@@ -215,7 +215,7 @@ public class SPCacheStatistic {
         TargetGenerator tgen = target.getTargetGenerator();
         if (targetGen2AdvanceStatMapping.containsKey(tgen)) {
             AdvanceCacheStatistic stat = (AdvanceCacheStatistic) targetGen2AdvanceStatMapping.get(tgen);
-            if(CAT.isDebugEnabled()) CAT.debug("Found: "+stat.hashCode()+" for target: "+target);
+            if(LOG.isDebugEnabled()) LOG.debug("Found: "+stat.hashCode()+" for target: "+target);
             if (mode == REGISTER_HIT) {
                 stat.registerHit();
             } else {
@@ -223,7 +223,7 @@ public class SPCacheStatistic {
             }
         } else {
             AdvanceCacheStatistic stat = new AdvanceCacheStatistic(tickTimer, queueSize, queueTicks);
-            if(CAT.isDebugEnabled())   CAT.debug("New: "+stat.hashCode()+" for target: "+target);
+            if(LOG.isDebugEnabled())   LOG.debug("New: "+stat.hashCode()+" for target: "+target);
             if (mode == REGISTER_HIT) {
                 stat.registerHit();
             } else {

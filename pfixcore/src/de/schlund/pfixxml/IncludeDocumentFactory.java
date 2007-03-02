@@ -23,7 +23,7 @@ import java.io.IOException;
 
 import javax.xml.transform.TransformerException;
 
-import org.apache.log4j.Category;
+import org.apache.log4j.Logger;
 import org.xml.sax.SAXException;
 
 import de.schlund.pfixxml.resources.FileResource;
@@ -49,7 +49,7 @@ import de.schlund.pfixxml.util.XsltVersion;
  */
 public class IncludeDocumentFactory {
 
-    private static Category               CAT      = Category.getInstance(IncludeDocumentFactory.class.getName());
+    private static Logger                 LOG      = Logger.getLogger(IncludeDocumentFactory.class);
     private static IncludeDocumentFactory instance = new IncludeDocumentFactory();
     private SPCache                       cache    = SPCacheFactory.getInstance().getDocumentCache();
        

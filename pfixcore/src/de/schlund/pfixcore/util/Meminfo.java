@@ -26,12 +26,12 @@ public final class Meminfo {
     //~ Instance/static variables ..................................................................
 
     private static long last_used = -1L;
-    private static Category CAT = Category.getInstance(Meminfo.class.getName());
+    private static Logger LOG = Logger.getLogger(Meminfo.class);
 
     //~ Methods ....................................................................................
 
     public final static synchronized void print(String info) {
-        if (!CAT.isDebugEnabled()) {
+        if (!LOG.isDebugEnabled()) {
             return;
         }
         long    free;
@@ -68,6 +68,6 @@ public final class Meminfo {
         }
         debugString.append("`---------------------------------------------------------------\n");
         last_used = used_new_ag;
-        CAT.debug(debugString.toString());
+        LOG.debug(debugString.toString());
     }
 }

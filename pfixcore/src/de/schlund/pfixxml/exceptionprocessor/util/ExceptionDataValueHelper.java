@@ -27,7 +27,7 @@ import java.util.LinkedList;
 
 import javax.servlet.http.HttpSession;
 
-import org.apache.log4j.Category;
+import org.apache.log4j.Logger;
 
 import de.schlund.pfixxml.PfixServletRequest;
 import de.schlund.pfixxml.serverutil.SessionAdmin;
@@ -40,7 +40,7 @@ import de.schlund.pfixxml.serverutil.SessionInfoStruct;
  * Window - Preferences - Java - Code Generation - Code and Comments
  */
 public class ExceptionDataValueHelper {
-    private static Category CAT = Category.getInstance(ExceptionDataValueHelper.class);
+    private static Logger LOG = Logger.getLogger(ExceptionDataValueHelper.class);
 	/**
 	 * @param exception
 	 * @param pfixReq
@@ -100,7 +100,7 @@ public class ExceptionDataValueHelper {
             } catch(Exception e) {
                 // Catch all exceptions here. If an exception occurs in context.toString
                 // we definitly want the exception-info to be generated.
-                CAT.error("Exception while dumping session!", e);
+                LOG.error("Exception while dumping session!", e);
                 strvalue = e.getMessage() == null ? e.toString() : e.getMessage();
             }
             sessdata.put(key, strvalue);

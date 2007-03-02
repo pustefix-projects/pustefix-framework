@@ -18,13 +18,15 @@
  */
 
 package de.schlund.pfixxml.targets;
-import de.schlund.pfixxml.util.RefCountingCollection;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.TreeSet;
-import org.apache.log4j.Category;
+
+import org.apache.log4j.Logger;
+
+import de.schlund.pfixxml.util.RefCountingCollection;
 
 /**
  * TargetDependencyRelation This is a helper singleton class that holds all the "interesting"
@@ -52,7 +54,7 @@ import org.apache.log4j.Category;
  */
 
 public class TargetDependencyRelation {
-    private static Category                       CAT      = Category.getInstance(TargetDependencyRelation.class.getName());
+    private static final Logger                   LOG      = Logger.getLogger(TargetDependencyRelation.class);
     private static final TargetDependencyRelation instance = new TargetDependencyRelation();
     
     private HashMap<AuxDependency, TreeSet<Target>> allauxs; 
@@ -246,7 +248,7 @@ public class TargetDependencyRelation {
                                        + " for target " + target.getFullName() + " would result in a LOOP!");
         }
 
-        CAT.debug("+++ Adding relations " + target.getFullName() + " <-> " + aux.toString() + " / " + parent.toString());
+        LOG.debug("+++ Adding relations " + target.getFullName() + " <-> " + aux.toString() + " / " + parent.toString());
 
         TargetGenerator tgen = target.getTargetGenerator();
         if (allauxs.get(aux) == null) {
@@ -311,7 +313,7 @@ public class TargetDependencyRelation {
     }
 
     public synchronized void resetRelation(Target target) {
-        CAT.debug("--- Removing all relations for " + target.getFullName());
+        LOG.debug("--- Removing all relations for " + target.getFullName());
 
         TargetGenerator tgen = target.getTargetGenerator();
 
@@ -322,7 +324,7 @@ public class TargetDependencyRelation {
             return;
         }
         if (auxsForTarget.isEmpty()) {
-            CAT.error("*** Known target " + target.getFullName() + " has empty relation set! ***");  
+            LOG.error("*** Known target " + target.getFullName() + " has empty relation set! ***");  
             return;
         }
 

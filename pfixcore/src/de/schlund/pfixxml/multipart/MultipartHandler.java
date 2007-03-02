@@ -45,7 +45,7 @@ import javax.servlet.GenericServlet;
 import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.log4j.Category;
+import org.apache.log4j.Logger;
 import org.apache.oro.text.perl.Perl5Util;
 
 import de.schlund.pfixxml.AbstractXMLServlet;
@@ -86,14 +86,7 @@ public class MultipartHandler {
     private ArrayList failedParts = null;
     private long maxPartSize = -1;
 
-    private static Category LOG = null;
-
-    static {
-        LOG = Category.getInstance(MultipartHandler.class.getName());
-        // if (LOG.getAllAppenders() instanceof NullEnumeration) {
-        //     LOG = null;
-        // }
-    }
+    private static Logger LOG = Logger.getLogger(MultipartHandler.class);
 
     protected static File getDestFile(File dir, String fName) throws IOException {
         TempFile rc = null;

@@ -19,7 +19,7 @@
 
 package de.schlund.pfixcore.workflow.app;
 
-import org.apache.log4j.Category;
+import org.apache.log4j.Logger;
 
 
 /**
@@ -35,7 +35,7 @@ import org.apache.log4j.Category;
 
 public class ResdocSimpleFinalizer implements ResdocFinalizer {
     public static final String   PROP_FINALIZER = "resdocfinalizer";
-    protected           Category CAT            = Category.getInstance(this.getClass().getName());
+    protected           Logger   LOG            = Logger.getLogger(this.getClass());
     
     // These 3 methods are likely candidates to be overwritten...
     

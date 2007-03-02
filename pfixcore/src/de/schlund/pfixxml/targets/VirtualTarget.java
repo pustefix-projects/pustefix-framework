@@ -252,7 +252,7 @@ public abstract class VirtualTarget extends TargetImpl {
                         generateValue();
                         TREE.debug("  [" + getTargetKey() + ": generated...]");
                     } catch (TransformerException e) {
-                        CAT.error("Error when generating: " + getTargetKey()
+                        LOG.error("Error when generating: " + getTargetKey()
                                 + " from " + getXMLSource().getTargetKey()
                                 + " and " + getXSLSource().getTargetKey(), e);
                         // Now we invalidate the mem- and disc cache to force
@@ -296,8 +296,8 @@ public abstract class VirtualTarget extends TargetImpl {
         FileResource cachepath = getTargetGenerator().getDisccachedir();
         FileResource cachefile = ResourceUtil.getFileResource(cachepath, key);
         cachefile.getParentAsFileResource().mkdirs();
-        if (CAT.isDebugEnabled()) {
-            CAT.debug(key + ": Getting " + getType() + " by XSLTrafo ("
+        if (LOG.isDebugEnabled()) {
+            LOG.debug(key + ": Getting " + getType() + " by XSLTrafo ("
                     + tmpxmlsource.getTargetKey() + " / "
                     + tmpxslsource.getTargetKey() + ")");
         }

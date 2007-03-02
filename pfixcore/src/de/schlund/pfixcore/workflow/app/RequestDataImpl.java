@@ -21,14 +21,15 @@ package de.schlund.pfixcore.workflow.app;
 
 
 
-import de.schlund.pfixcore.generator.RequestData;
-import de.schlund.pfixcore.workflow.Context;
-import de.schlund.pfixcore.workflow.PageRequest;
-import de.schlund.pfixxml.PfixServletRequest;
-import de.schlund.pfixxml.RequestParam;
 import java.util.HashMap;
 import java.util.Iterator;
-import org.apache.log4j.Category;
+
+import org.apache.log4j.Logger;
+
+import de.schlund.pfixcore.generator.RequestData;
+import de.schlund.pfixcore.workflow.Context;
+import de.schlund.pfixxml.PfixServletRequest;
+import de.schlund.pfixxml.RequestParam;
 
 /**
  * Implementation of the RequestData interface.
@@ -41,7 +42,7 @@ public class RequestDataImpl implements RequestData {
 
     private HashMap  data = new HashMap();
     private HashMap  cmds = new HashMap();
-    private Category CAT  = Category.getInstance(this.getClass().getName());
+    private Logger   LOG  = Logger.getLogger(this.getClass());
     private String   page;
 
     private static final String CMDS_PREFIX = "__CMD";

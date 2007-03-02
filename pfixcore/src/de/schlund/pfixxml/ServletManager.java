@@ -54,7 +54,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import org.apache.log4j.Category;
 import org.apache.log4j.Logger;
 import org.xml.sax.SAXException;
 
@@ -89,8 +88,8 @@ public abstract class ServletManager extends HttpServlet {
     private static String                TIMESTAMP_ID                  = "";
     private static int                   INC_ID                        = 0;
     private boolean                      cookie_security_not_enforced  = false;
-    private Category                     LOGGER_VISIT                  = Logger.getLogger("LOGGER_VISIT");
-    private Category                     CAT                           = Logger.getLogger(ServletManager.class);
+    private Logger                       LOGGER_VISIT                  = Logger.getLogger("LOGGER_VISIT");
+    private Logger                       LOG                           = Logger.getLogger(ServletManager.class);
     private Map<String, ExceptionConfig> exceptionConfigs              = new Hashtable<String, ExceptionConfig>();
     private long                         common_mtime                  = 0;
     private long                         servlet_mtime                 = 0;
@@ -125,7 +124,7 @@ public abstract class ServletManager extends HttpServlet {
     }
 
     protected void relocate(HttpServletResponse res, String reloc_url) {
-        CAT.debug("\n\n        ======> relocating to " + reloc_url + "\n");
+        LOG.debug("\n\n        ======> relocating to " + reloc_url + "\n");
         res.setHeader("Expires", "Mon, 26 Jul 1997 05:00:00 GMT");
         res.setHeader("Pragma", "no-cache");
         res.setHeader("Cache-Control", "no-cache, no-store, private, must-revalidate");
@@ -140,21 +139,21 @@ public abstract class ServletManager extends HttpServlet {
     public void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
         req.setCharacterEncoding(servletEncoding);
         res.setCharacterEncoding(servletEncoding);
-        if (CAT.isDebugEnabled()) {
-            CAT.debug("\n ------------------- Start of new Request ---------------");
-            CAT.debug("====> Scheme://Server:Port " + req.getScheme() + "://" + getServerName(req) + ":" + req.getServerPort());
-            CAT.debug("====> URI:   " + req.getRequestURI());
-            CAT.debug("====> Query: " + req.getQueryString());
-            CAT.debug("----> needsSession=" + needsSession() + " allowSessionCreate=" + allowSessionCreate());
-            CAT.debug("====> Sessions: " + SessionAdmin.getInstance().toString());
-            CAT.debug("\n");
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("\n ------------------- Start of new Request ---------------");
+            LOG.debug("====> Scheme://Server:Port " + req.getScheme() + "://" + getServerName(req) + ":" + req.getServerPort());
+            LOG.debug("====> URI:   " + req.getRequestURI());
+            LOG.debug("====> Query: " + req.getQueryString());
+            LOG.debug("----> needsSession=" + needsSession() + " allowSessionCreate=" + allowSessionCreate());
+            LOG.debug("====> Sessions: " + SessionAdmin.getInstance().toString());
+            LOG.debug("\n");
 
             Enumeration headers = req.getHeaderNames();
 
             while (headers.hasMoreElements()) {
                 String header = (String) headers.nextElement();
                 String headerval = req.getHeader(header);
-                CAT.debug("+++ Header: " + header + " -> " + headerval);
+                LOG.debug("+++ Header: " + header + " -> " + headerval);
             }
 
         }
@@ -179,7 +178,7 @@ public abstract class ServletManager extends HttpServlet {
         if (req.isRequestedSessionIdValid()) {
             session = req.getSession(false);
             has_session = true;
-            CAT.debug("*** Found valid session with ID " + session.getId());
+            LOG.debug("*** Found valid session with ID " + session.getId());
 
             // Much of the advanced security depends on having cookies enabled.  We need to make
             // sure that this isn't defeated by just disabling cookies.  So we mark every session
@@ -198,44 +197,44 @@ public abstract class ServletManager extends HttpServlet {
             Boolean secure = (Boolean) session.getAttribute(SessionAdmin.SESSION_IS_SECURE);
 
             if (!does_cookies && !refuse_cookies) {
-                CAT.debug("*** Client doesn't use cookies...");
+                LOG.debug("*** Client doesn't use cookies...");
                 // We still need to check if the session itself thinks differently -
                 // this happens e.g. when cookies are disabled in the middle of the session.
                 Boolean need_cookies = (Boolean) session.getAttribute(SESSION_COOKIES_MARKER);
                 if (need_cookies != null && need_cookies.booleanValue()) {
                     if (cookie_security_not_enforced) {
-                        CAT.debug("    ... during the session cookies were ENABLED, " + "but will continue because of cookie_security_not_enforced " + session.getId());
+                        LOG.debug("    ... during the session cookies were ENABLED, " + "but will continue because of cookie_security_not_enforced " + session.getId());
                     } else {
-                        CAT.debug("    ... but during the session cookies were already ENABLED: " + "Will invalidate the session " + session.getId());
+                        LOG.debug("    ... but during the session cookies were already ENABLED: " + "Will invalidate the session " + session.getId());
                         session.invalidate();
                         has_session = false;
                     }
                 } else {
-                    CAT.debug("    ... and during the session cookies were DISABLED, too: Let's hope everything is OK...");
+                    LOG.debug("    ... and during the session cookies were DISABLED, too: Let's hope everything is OK...");
                 }
             } else if (!does_cookies && refuse_cookies) {
-                CAT.debug("*** Session REFUSES to use cookies!");
-                CAT.debug("    Client may send cookies, but session refuses to handle them.");
+                LOG.debug("*** Session REFUSES to use cookies!");
+                LOG.debug("    Client may send cookies, but session refuses to handle them.");
             } else {
-                CAT.debug("*** Client uses cookies.");
+                LOG.debug("*** Client uses cookies.");
             }
             if (has_session) {
                 if (runningUnderSSL(req)) {
-                    CAT.debug("*** Found running under SSL");
+                    LOG.debug("*** Found running under SSL");
                     if (secure != null && secure.booleanValue()) {
-                        CAT.debug("    ... and session is secure.");
+                        LOG.debug("    ... and session is secure.");
                         if (does_cookies) {
-                            CAT.debug("*** Client does cookies: Double checking SSL cookie for session ID");
+                            LOG.debug("*** Client does cookies: Double checking SSL cookie for session ID");
                             String sec_testid = (String) session.getAttribute(SECURE_SESS_COOKIE + MD5Utils.hex_md5(session.getId()));
-                            CAT.debug("*** Session expects to see the cookie value " + sec_testid);
+                            LOG.debug("*** Session expects to see the cookie value " + sec_testid);
                             Cookie cookie = getSecureSessionCookie(req, session.getId());
                             cleanupCookies(req, res, cookie);
                             if (cookie != null) {
-                                CAT.debug("*** Found a matching cookie ...");
+                                LOG.debug("*** Found a matching cookie ...");
                                 String tmp = cookie.getValue();
                                 String tmp_sec = tmp.substring(tmp.indexOf(":") + 1);
                                 if (tmp_sec.equals(sec_testid)) {
-                                    CAT.debug("   ... and the value is correct! (" + tmp_sec + ")");
+                                    LOG.debug("   ... and the value is correct! (" + tmp_sec + ")");
                                     has_ssl_session_secure = true;
                                     Cookie cookie_new = new Cookie(cookie.getName(), System.currentTimeMillis() + ":" + tmp_sec);
                                     setCookiePath(req, cookie_new);
@@ -245,15 +244,15 @@ public abstract class ServletManager extends HttpServlet {
                                     cookie_new.setSecure(true);
                                     res.addCookie(cookie_new);
                                 } else {
-                                    CAT.debug("   ... but the value is WRONG!");
-                                    CAT.error("*** Wrong Session-ID for running secure session from cookie. " + "IP:" + req.getRemoteAddr() + " Cookie: " + cookie.getValue()
+                                    LOG.debug("   ... but the value is WRONG!");
+                                    LOG.error("*** Wrong Session-ID for running secure session from cookie. " + "IP:" + req.getRemoteAddr() + " Cookie: " + cookie.getValue()
                                             + " SessID: " + session.getId());
                                     session.invalidate();
                                     has_session = false;
                                 }
                             } else {
-                                CAT.debug("*** Found NO matching cookie at all, but client does cookies: ***");
-                                CAT.error("*** NOSECSESSIDFROMCOOKIE: " + req.getRemoteAddr() + "|" + session.getId() + "|" + req.getHeader("User-Agent") + "|"
+                                LOG.debug("*** Found NO matching cookie at all, but client does cookies: ***");
+                                LOG.error("*** NOSECSESSIDFROMCOOKIE: " + req.getRemoteAddr() + "|" + session.getId() + "|" + req.getHeader("User-Agent") + "|"
                                         + req.getHeader("Cookie"));
                                 // Most time when this happens, we are not under attack, but one of
                                 // two things happened: a) a stupid behaviour (bug?)  of IE or opera
@@ -277,17 +276,17 @@ public abstract class ServletManager extends HttpServlet {
                             has_ssl_session_secure = true;
                         }
                     } else {
-                        CAT.debug("    ... but session is insecure!");
+                        LOG.debug("    ... but session is insecure!");
                         has_ssl_session_insecure = true;
                     }
                 } else if (secure != null && secure.booleanValue()) {
-                    CAT.debug("*** Found secure session but NOT running under SSL => Destroying session.");
+                    LOG.debug("*** Found secure session but NOT running under SSL => Destroying session.");
                     session.invalidate();
                     has_session = false;
                 }
             }
         } else if (req.getRequestedSessionId() != null) {
-            CAT.debug("*** Found old and invalid session in request");
+            LOG.debug("*** Found old and invalid session in request");
             // We have no valid session, but the request contained an invalid session id.
             // case a) This may be an invalid id because we invalidated the session when jumping
             // into the secure SSL session (see redirectToSecureSSLSession below). by using the back button
@@ -295,7 +294,7 @@ public abstract class ServletManager extends HttpServlet {
             // links with the old "parent" session id embedded. We need to check for this and create a
             // new session but reuse the visit id of the currently running SSL session.
             if (!runningUnderSSL(req) && SessionAdmin.getInstance().idWasParentSession(req.getRequestedSessionId())) {
-                CAT.debug("    ... but this session was the parent of a currently running secure session.");
+                LOG.debug("    ... but this session was the parent of a currently running secure session.");
                 HttpSession secure_session = SessionAdmin.getInstance().getChildSessionForParentId(req.getRequestedSessionId());
                 if (secure_session != null) {
                     does_cookies = doCookieTest(req, res, secure_session);
@@ -305,12 +304,12 @@ public abstract class ServletManager extends HttpServlet {
                 // the already running secure session instead (but only if a secure cookie can identify the request as
                 // coming from the browser that made the initial jump http->https).
                 if (does_cookies) {
-                    CAT.debug("    ... client handles cookies, so we'll check if we can reuse the parent session.");
+                    LOG.debug("    ... client handles cookies, so we'll check if we can reuse the parent session.");
                     force_jump_back_to_ssl = true;
                 } else {
                     // OK, it seems as if we will not be able to identify the peer by comparing cookies.
                     // So the only thing we can do is to reuse the VISIT_ID.
-                    CAT.debug("    ... but can't reuse the secure session because the client doesn't handle cookies.");
+                    LOG.debug("    ... but can't reuse the secure session because the client doesn't handle cookies.");
                     force_reuse_visit_id = true;
                 }
             } else {
@@ -322,9 +321,9 @@ public abstract class ServletManager extends HttpServlet {
                 // based on the session id included in the URL.
                 String forcelocal = req.getParameter(PARAM_FORCELOCAL);
                 if (forcelocal != null && (forcelocal.equals("1") || forcelocal.equals("true") || forcelocal.equals("yes"))) {
-                    CAT.debug("    ... but found __forcelocal parameter to be set.");
+                    LOG.debug("    ... but found __forcelocal parameter to be set.");
                 } else {
-                    CAT.debug("    ... and __forcelocal is NOT set.");
+                    LOG.debug("    ... and __forcelocal is NOT set.");
                     redirectToClearedRequest(req, res);
                     return;
                     // End of request cycle.
@@ -336,13 +335,13 @@ public abstract class ServletManager extends HttpServlet {
         if (has_session) {
             preq = (PfixServletRequest) session.getAttribute(STORED_REQUEST);
             if (preq != null) {
-                CAT.debug("*** Found old PfixServletRequest object in session");
+                LOG.debug("*** Found old PfixServletRequest object in session");
                 session.removeAttribute(STORED_REQUEST);
                 preq.updateRequest(req);
             }
         }
         if (preq == null) {
-            CAT.debug("*** Creating PfixServletRequest object.");
+            LOG.debug("*** Creating PfixServletRequest object.");
             preq = new PfixServletRequest(req, this.getServletManagerConfig().getProperties());
         }
 
@@ -352,43 +351,43 @@ public abstract class ServletManager extends HttpServlet {
         // End of initialization. Now we handle all cases where we need to redirect.
 
         if (force_jump_back_to_ssl && allowSessionCreate()) {
-            CAT.debug("=> I");
+            LOG.debug("=> I");
             forceRedirectBackToInsecureSSL(preq, req, res);
             return;
             // End of request cycle.
         }
         if (force_reuse_visit_id && allowSessionCreate()) {
-            CAT.debug("=> II");
+            LOG.debug("=> II");
             forceNewSessionSameVisit(preq, req, res);
             return;
             // End of request cycle.
         }
         if (has_ssl_session_insecure) {
-            CAT.debug("=> III");
+            LOG.debug("=> III");
             redirectToSecureSSLSession(preq, req, res, mark_session_as_no_cookies);
             return;
             // End of request cycle.
         }
         if (needsSession() && allowSessionCreate() && needsSSL(preq) && !has_ssl_session_secure) {
-            CAT.debug("=> IV");
+            LOG.debug("=> IV");
             redirectToInsecureSSLSession(preq, req, res, mark_session_as_no_cookies);
             return;
             // End of request cycle.
         }
         if (!has_session && needsSession() && allowSessionCreate() && !needsSSL(preq)) {
-            CAT.debug("=> V");
+            LOG.debug("=> V");
             redirectToSession(preq, req, res, mark_session_as_no_cookies);
             return;
             // End of request cycle.
         }
         if (!has_session && !needsSession() && needsSSL(preq) && !runningUnderSSL(req)) {
-            CAT.debug("=> VI");
+            LOG.debug("=> VI");
             redirectToSSL(req, res);
             return;
             // End of request cycle.
         }
 
-        CAT.debug("*** >>> End of redirection management, handling request now.... <<< ***\n");
+        LOG.debug("*** >>> End of redirection management, handling request now.... <<< ***\n");
 
         PerfEvent pe = new PerfEvent(PerfEventType.XMLSERVER_CALLPROCESS, req.getRequestURI());
         pe.start();
@@ -397,13 +396,13 @@ public abstract class ServletManager extends HttpServlet {
     }
 
     private void redirectToClearedRequest(HttpServletRequest req, HttpServletResponse res) {
-        CAT.debug("===> Redirecting to cleared Request URL");
+        LOG.debug("===> Redirecting to cleared Request URL");
         String redirect_uri = SessionHelper.getClearedURL(req.getScheme(), getServerName(req), req, getServletManagerConfig().getProperties());
         relocate(res, redirect_uri);
     }
 
     private void redirectToSSL(HttpServletRequest req, HttpServletResponse res) {
-        CAT.debug("===> Redirecting to session-less request URL under SSL");
+        LOG.debug("===> Redirecting to session-less request URL under SSL");
         String redirect_uri = SessionHelper.getClearedURL("https", getServerName(req), req, getServletManagerConfig().getProperties());
         relocate(res, redirect_uri);
     }
@@ -413,39 +412,39 @@ public abstract class ServletManager extends HttpServlet {
         String visit_id = (String) session.getAttribute(VISIT_ID);
         String parentid = (String) session.getAttribute(CHECK_FOR_RUNNING_SSL_SESSION);
         if (parentid != null && !parentid.equals("")) {
-            CAT.debug("*** The current insecure SSL session says to check for a already running SSL session for reuse");
+            LOG.debug("*** The current insecure SSL session says to check for a already running SSL session for reuse");
             HttpSession secure_session = SessionAdmin.getInstance().getChildSessionForParentId(parentid);
             if (secure_session != null) {
                 String secure_id = secure_session.getId();
                 String sec_testid = (String) secure_session.getAttribute(SECURE_SESS_COOKIE + MD5Utils.hex_md5(secure_id));
-                CAT.debug("*** We have found a candidate: SessionId=" + secure_id + " now search for cookie...");
-                CAT.debug("*** Session expects to see the cookie value " + sec_testid);
+                LOG.debug("*** We have found a candidate: SessionId=" + secure_id + " now search for cookie...");
+                LOG.debug("*** Session expects to see the cookie value " + sec_testid);
                 // But we need to make sure that the current request comes
                 // from the same user who created this secure session.
                 // We do this by checking for a (secure) cookie with a corresponding session id.
                 Cookie cookie = getSecureSessionCookie(req, secure_id);
                 if (cookie != null) {
-                    CAT.debug("*** Found a matching cookie ...");
+                    LOG.debug("*** Found a matching cookie ...");
                     String tmp = cookie.getValue();
                     String tmp_sec = tmp.substring(tmp.indexOf(":") + 1);
                     if (tmp_sec.equals(sec_testid)) {
-                        CAT.debug("   ... and the value is correct! (" + tmp_sec + ")");
-                        CAT.debug("==> Redirecting to the secure SSL URL with the already running secure session " + secure_id);
+                        LOG.debug("   ... and the value is correct! (" + tmp_sec + ")");
+                        LOG.debug("==> Redirecting to the secure SSL URL with the already running secure session " + secure_id);
                         String redirect_uri = SessionHelper.encodeURL("https", getServerName(req), req, secure_id, getServletManagerConfig().getProperties());
                         relocate(res, redirect_uri);
                         return;
                     } else {
-                        CAT.debug("   ... but the value is WRONG!");
+                        LOG.debug("   ... but the value is WRONG!");
                         // throw new RuntimeException("Wrong Session-ID for running secure session from cookie.");
-                        CAT.error("Wrong Session-ID for running secure session from cookie.");
+                        LOG.error("Wrong Session-ID for running secure session from cookie.");
                     }
                 } else {
-                    CAT.debug("*** NO matching SecureSessionCookie (not even a wrong one...)");
+                    LOG.debug("*** NO matching SecureSessionCookie (not even a wrong one...)");
                 }
             }
         }
 
-        CAT.debug("*** Saving session data...");
+        LOG.debug("*** Saving session data...");
         HashMap map = new HashMap();
         SessionHelper.saveSessionData(map, session);
         // Before we invalidate the current session we save the traillog
@@ -455,10 +454,10 @@ public abstract class ServletManager extends HttpServlet {
         if (infostruct != null) {
             traillog = SessionAdmin.getInstance().getInfo(session).getTraillog();
         } else {
-            CAT.warn("*** Infostruct == NULL ***");
+            LOG.warn("*** Infostruct == NULL ***");
         }
 
-        CAT.debug("*** Invalidation old session (Id: " + old_id + ")");
+        LOG.debug("*** Invalidation old session (Id: " + old_id + ")");
         session.invalidate();
         session = req.getSession(true);
 
@@ -472,12 +471,12 @@ public abstract class ServletManager extends HttpServlet {
             // Register a new session now.
             registerSession(req, session);
         }
-        CAT.debug("*** Got new Session (Id: " + session.getId() + ")");
-        CAT.debug("*** Copying data back to new session");
+        LOG.debug("*** Got new Session (Id: " + session.getId() + ")");
+        LOG.debug("*** Copying data back to new session");
         SessionHelper.copySessionData(map, session);
         session.setAttribute(SessionHelper.SESSION_ID_URL, SessionHelper.getURLSessionId(req));
-        CAT.debug("*** Setting " + SessionHelper.SESSION_ID_URL + "  to " + session.getAttribute(SessionHelper.SESSION_ID_URL));
-        CAT.debug("*** Setting SECURE flag");
+        LOG.debug("*** Setting " + SessionHelper.SESSION_ID_URL + "  to " + session.getAttribute(SessionHelper.SESSION_ID_URL));
+        LOG.debug("*** Setting SECURE flag");
         session.setAttribute(SessionAdmin.SESSION_IS_SECURE, Boolean.TRUE);
         session.setAttribute(STORED_REQUEST, preq);
 
@@ -491,7 +490,7 @@ public abstract class ServletManager extends HttpServlet {
             }
 
             String sec_testid = Long.toHexString((long) (Math.random() * Long.MAX_VALUE));
-            CAT.debug("*** Secure Test-ID used in session and cookie: " + sec_testid);
+            LOG.debug("*** Secure Test-ID used in session and cookie: " + sec_testid);
             String sec_cookie = MD5Utils.hex_md5(session.getId());
             session.setAttribute(SECURE_SESS_COOKIE + sec_cookie, sec_testid);
 
@@ -507,7 +506,7 @@ public abstract class ServletManager extends HttpServlet {
             createTestCookie(req, res);
         }
 
-        CAT.debug("===> Redirecting to secure SSL URL with session (Id: " + session.getId() + ")");
+        LOG.debug("===> Redirecting to secure SSL URL with session (Id: " + session.getId() + ")");
         String redirect_uri = SessionHelper.encodeURL("https", getServerName(req), req, getServletManagerConfig().getProperties());
         relocate(res, redirect_uri);
     }
@@ -516,7 +515,7 @@ public abstract class ServletManager extends HttpServlet {
         boolean reuse_session = false;
         if (req.isRequestedSessionIdValid()) {
             reuse_session = true;
-            CAT.debug("*** reusing existing session for jump http=>https");
+            LOG.debug("*** reusing existing session for jump http=>https");
         }
         HttpSession session = req.getSession(true);
         if (!reuse_session) {
@@ -524,14 +523,14 @@ public abstract class ServletManager extends HttpServlet {
                 registerSession(req, session);
             } else {
                 session.setAttribute(VISIT_ID, msanc);
-                CAT.debug("*** Setting REFUSE COOKIES flag in session (Id: " + session.getId() + ")");
+                LOG.debug("*** Setting REFUSE COOKIES flag in session (Id: " + session.getId() + ")");
                 session.setAttribute(REFUSE_COOKIES, Boolean.TRUE);
                 SessionAdmin.getInstance().registerSession(session, getServerName(req), req.getRemoteAddr());
             }
         }
 
         session.setAttribute(SessionHelper.SESSION_ID_URL, SessionHelper.getURLSessionId(req));
-        CAT.debug("*** Setting INSECURE flag in session (Id: " + session.getId() + ")");
+        LOG.debug("*** Setting INSECURE flag in session (Id: " + session.getId() + ")");
         session.setAttribute(SessionAdmin.SESSION_IS_SECURE, Boolean.FALSE);
         session.setAttribute(STORED_REQUEST, preq);
 
@@ -540,7 +539,7 @@ public abstract class ServletManager extends HttpServlet {
             createTestCookie(req, res);
         }
 
-        CAT.debug("===> Redirecting to insecure SSL URL with session (Id: " + session.getId() + ")");
+        LOG.debug("===> Redirecting to insecure SSL URL with session (Id: " + session.getId() + ")");
         String redirect_uri = SessionHelper.encodeURL("https", getServerName(req), req, getServletManagerConfig().getProperties());
         relocate(res, redirect_uri);
     }
@@ -552,7 +551,7 @@ public abstract class ServletManager extends HttpServlet {
         HttpSession session = req.getSession(true);
         session.setAttribute(SessionHelper.SESSION_ID_URL, SessionHelper.getURLSessionId(req));
         session.setAttribute(CHECK_FOR_RUNNING_SSL_SESSION, parentid);
-        CAT.debug("*** Setting INSECURE flag in session (Id: " + session.getId() + ")");
+        LOG.debug("*** Setting INSECURE flag in session (Id: " + session.getId() + ")");
         session.setAttribute(SessionAdmin.SESSION_IS_SECURE, Boolean.FALSE);
         session.setAttribute(STORED_REQUEST, preq);
 
@@ -565,7 +564,7 @@ public abstract class ServletManager extends HttpServlet {
             session.setAttribute(RAND_SESS_COOKIE_VALUE, testrand);
         }
 
-        CAT.debug("===> Redirecting to SSL URL with session (Id: " + session.getId() + ")");
+        LOG.debug("===> Redirecting to SSL URL with session (Id: " + session.getId() + ")");
         String redirect_uri = SessionHelper.encodeURL("https", getServerName(req), req, getServletManagerConfig().getProperties());
         relocate(res, redirect_uri);
     }
@@ -592,7 +591,7 @@ public abstract class ServletManager extends HttpServlet {
         session.setAttribute(SessionHelper.SESSION_ID_URL, SessionHelper.getURLSessionId(req));
         session.setAttribute(VISIT_ID, curr_visit_id);
         SessionAdmin.getInstance().registerSession(session, traillog, getServerName(req), req.getRemoteAddr());
-        CAT.debug("===> Redirecting with session (Id: " + session.getId() + ") using OLD VISIT_ID: " + curr_visit_id);
+        LOG.debug("===> Redirecting with session (Id: " + session.getId() + ") using OLD VISIT_ID: " + curr_visit_id);
         session.setAttribute(STORED_REQUEST, preq);
         String redirect_uri = SessionHelper.encodeURL(req.getScheme(), getServerName(req), req, getServletManagerConfig().getProperties());
         relocate(res, redirect_uri);
@@ -606,12 +605,12 @@ public abstract class ServletManager extends HttpServlet {
             createTestCookie(req, res);
         } else {
             session.setAttribute(VISIT_ID, msanc);
-            CAT.debug("*** Setting REFUSE COOKIES flag in session (Id: " + session.getId() + ")");
+            LOG.debug("*** Setting REFUSE COOKIES flag in session (Id: " + session.getId() + ")");
             session.setAttribute(REFUSE_COOKIES, Boolean.TRUE);
             SessionAdmin.getInstance().registerSession(session, getServerName(req), req.getRemoteAddr());
         }
 
-        CAT.debug("===> Redirecting to URL with session (Id: " + session.getId() + ")");
+        LOG.debug("===> Redirecting to URL with session (Id: " + session.getId() + ")");
         session.setAttribute(STORED_REQUEST, preq);
         String redirect_uri = SessionHelper.encodeURL(req.getScheme(), getServerName(req), req, getServletManagerConfig().getProperties());
         relocate(res, redirect_uri);
@@ -628,42 +627,42 @@ public abstract class ServletManager extends HttpServlet {
         // the whole redirect chain, but don't supply cookies on the following request, and we want
         // to correctly react on people who turn off cookies during the session.
         if (sess != null) {
-            CAT.debug("*** Testing for marked session...");
+            LOG.debug("*** Testing for marked session...");
             Cookie[] cookies = req.getCookies();
             boolean sessionusescookies = false;
             Boolean doescookies = (Boolean) sess.getAttribute(SESSION_COOKIES_MARKER);
             if (doescookies != null && doescookies.booleanValue()) {
                 sessionusescookies = true;
-                CAT.debug("    ...session is already marked as using cookies, looking for ANY test cookie...");
+                LOG.debug("    ...session is already marked as using cookies, looking for ANY test cookie...");
             } else {
-                CAT.debug("    ...session is NOT already marked as using cookies!");
+                LOG.debug("    ...session is NOT already marked as using cookies!");
             }
 
             String rand = (String) sess.getAttribute(RAND_SESS_COOKIE_VALUE);
             if (rand != null) {
-                CAT.debug("*** Testing for cookie " + TEST_COOKIE + "...");
+                LOG.debug("*** Testing for cookie " + TEST_COOKIE + "...");
                 if (cookies != null) {
                     for (int i = 0; i < cookies.length; i++) {
                         Cookie cookie = cookies[i];
                         if (cookie.getName().equals(TEST_COOKIE)) {
                             if (sessionusescookies) {
                                 // No need to check the value...
-                                CAT.debug("    ... found it, no need to check the value (because session is marked).");
+                                LOG.debug("    ... found it, no need to check the value (because session is marked).");
                                 return true;
                             } else {
-                                CAT.debug("    ... found it, checking value " + rand);
+                                LOG.debug("    ... found it, checking value " + rand);
                                 if (cookie.getValue().equals(rand)) {
-                                    CAT.debug("    ... value matches! Marking session...");
+                                    LOG.debug("    ... value matches! Marking session...");
                                     sess.setAttribute(SESSION_COOKIES_MARKER, Boolean.TRUE);
                                     return true;
                                 } else {
-                                    CAT.debug("    ... value is WRONG.");
+                                    LOG.debug("    ... value is WRONG.");
                                 }
                             }
                             break;
                         }
                     }
-                    CAT.debug("*** Client sends cookies, but not our test cookie! ***");
+                    LOG.debug("*** Client sends cookies, but not our test cookie! ***");
                 }
             }
         }
@@ -676,10 +675,10 @@ public abstract class ServletManager extends HttpServlet {
         if (sess != null) {
             rand = (String) sess.getAttribute(RAND_SESS_COOKIE_VALUE);
             if (rand != null) {
-                CAT.debug("*** Already found a test cookie value in session: " + rand);
+                LOG.debug("*** Already found a test cookie value in session: " + rand);
             } else {
                 rand = Long.toHexString((long) (Math.random() * Long.MAX_VALUE));
-                CAT.debug("*** Creating a random test cookie value: " + rand);
+                LOG.debug("*** Creating a random test cookie value: " + rand);
             }
             Cookie newprobe = new Cookie(TEST_COOKIE, rand);
             setCookiePath(req, newprobe);
@@ -717,7 +716,7 @@ public abstract class ServletManager extends HttpServlet {
                     INC_ID = 0;
                 }
                 if (INC_ID >= 1000) {
-                    CAT.warn("*** More than 999 connects/sec! ***");
+                    LOG.warn("*** More than 999 connects/sec! ***");
                 }
                 String sessid = session.getId();
                 String mach = "";
@@ -745,11 +744,11 @@ public abstract class ServletManager extends HttpServlet {
         super.init(config);
 
         ServletContext ctx = config.getServletContext();
-        CAT.debug("*** Servlet container is '" + ctx.getServerInfo() + "'");
+        LOG.debug("*** Servlet container is '" + ctx.getServerInfo() + "'");
         int major = ctx.getMajorVersion();
         int minor = ctx.getMinorVersion();
         if ((major == 2 && minor >= 3) || (major > 2)) {
-            CAT.warn("*** Servlet container with support for Servlet API " + major + "." + minor + " detected");
+            LOG.warn("*** Servlet container with support for Servlet API " + major + "." + minor + " detected");
         } else {
             throw new ServletException("*** Can't detect servlet container with support for Servlet API 2.3 or higher");
         }
@@ -790,7 +789,7 @@ public abstract class ServletManager extends HttpServlet {
 
             int currLoadIndex = configLoadIndex.incrementAndGet();
 
-            CAT.warn("\n\n##############################\n" + "#### Reloading properties ####\n" + "##############################\n");
+            LOG.warn("\n\n##############################\n" + "#### Reloading properties ####\n" + "##############################\n");
             Properties properties = new Properties(System.getProperties());
 
             if (commonpropfile != null) {
@@ -852,7 +851,7 @@ public abstract class ServletManager extends HttpServlet {
             res.setContentType(DEF_CONTENT_TYPE);
             process(preq, res);
         } catch (Throwable e) {
-            CAT.error("Exception in process", e);
+            LOG.error("Exception in process", e);
             ExceptionConfig exconf = getExceptionConfigForThrowable(e);
             if(exconf != null && exconf.getProcessor()!= null) { 
                 if ( preq.getLastException() == null ) {  
@@ -880,7 +879,7 @@ public abstract class ServletManager extends HttpServlet {
             try {
                 clazz = Class.forName(key);
             } catch (ClassNotFoundException e) {
-                CAT.error(e);
+                LOG.error(e);
                 throw new ServletException("Unable to instantiate class: " + key, e);
             }
             if (clazz.isInstance(th)) {
@@ -922,12 +921,12 @@ public abstract class ServletManager extends HttpServlet {
                     ioobex = e;
                 }
                 if (type == null || attrName == null || "".equals(type) || "".equals(attrName)) {
-                    CAT.debug("Could not parse property key \"" + propName + "\" into three non-empty parts separated by '.'", ioobex);
+                    LOG.debug("Could not parse property key \"" + propName + "\" into three non-empty parts separated by '.'", ioobex);
                 }
 
                 ExceptionConfig exConf = (ExceptionConfig) tmpExConf.get(type);
 
-                CAT.debug("Property found for exception processing: " + propName + "=" + propValue);
+                LOG.debug("Property found for exception processing: " + propName + "=" + propValue);
 
                 if (exConf == null) {
                     exConf = new ExceptionConfig();
@@ -959,7 +958,7 @@ public abstract class ServletManager extends HttpServlet {
             }
         }
 
-        CAT.debug("Finished reading properties for Exception configuration! \n" + tmpExConf);
+        LOG.debug("Finished reading properties for Exception configuration! \n" + tmpExConf);
 
         exceptionConfigs.clear();
 
@@ -972,9 +971,9 @@ public abstract class ServletManager extends HttpServlet {
                 exceptionConfigs.put(exConfig.getType(), exConfig);
         }
 
-        if (CAT.isDebugEnabled()) {
-            CAT.debug("Complete ExceptionConfig is:");
-            CAT.debug("\n" + exceptionConfigs);
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Complete ExceptionConfig is:");
+            LOG.debug("\n" + exceptionConfigs);
         }
     }
 
@@ -989,9 +988,9 @@ public abstract class ServletManager extends HttpServlet {
         //Try to get servlet encoding from properties:
         String encoding = this.getServletManagerConfig().getProperties().getProperty(SERVLET_ENCODING);
         if (encoding == null || encoding.trim().equals(""))
-            CAT.warn("No servlet encoding property set");
+            LOG.warn("No servlet encoding property set");
         else if (!Charset.isSupported(encoding))
-            CAT.error("Servlet encoding '" + encoding + "' is not supported.");
+            LOG.error("Servlet encoding '" + encoding + "' is not supported.");
         else
             servletEncoding = encoding;
 
@@ -999,19 +998,19 @@ public abstract class ServletManager extends HttpServlet {
         if (servletEncoding == null) {
             encoding = getServletConfig().getInitParameter(SERVLET_ENCODING);
             if (encoding == null || encoding.trim().equals(""))
-                CAT.warn("No servlet encoding init parameter set");
+                LOG.warn("No servlet encoding init parameter set");
             else if (!Charset.isSupported(encoding))
-                CAT.error("Servlet encoding '" + encoding + "' is not supported.");
+                LOG.error("Servlet encoding '" + encoding + "' is not supported.");
             else
                 servletEncoding = encoding;
         }
         //Use default servlet encoding:
         if (servletEncoding == null) {
             servletEncoding = DEFAULT_ENCODING;
-            CAT.warn("Using default servlet encoding: " + DEFAULT_ENCODING);
+            LOG.warn("Using default servlet encoding: " + DEFAULT_ENCODING);
         }
 
-        CAT.debug("Servlet encoding was set to '" + servletEncoding + "'.");
+        LOG.debug("Servlet encoding was set to '" + servletEncoding + "'.");
     }
 
     protected abstract void process(PfixServletRequest preq, HttpServletResponse res) throws Exception;
@@ -1070,7 +1069,7 @@ public abstract class ServletManager extends HttpServlet {
                     try {
                         long lasttouch = Long.parseLong(stamp);
                         cset.add(new SortableCookie(tmp, lasttouch));
-                        CAT.debug("~~~ Adding cookie " + lasttouch + "->" + tmp.getName());
+                        LOG.debug("~~~ Adding cookie " + lasttouch + "->" + tmp.getName());
                     } catch (NumberFormatException e) {
                         setCookiePath(req, tmp);
                         tmp.setMaxAge(0);
@@ -1086,10 +1085,10 @@ public abstract class ServletManager extends HttpServlet {
                 Cookie curr_cookie = current.cookie;
                 long curr_lasttouch = current.lasttouch;
 
-                CAT.debug("--- Checking cookie " + count + "->" + curr_lasttouch + "->" + curr_cookie.getName());
+                LOG.debug("--- Checking cookie " + count + "->" + curr_lasttouch + "->" + curr_cookie.getName());
 
                 if (count <= (length - MAX_PARALLEL_SEC_SESSIONS)) {
-                    CAT.debug("   -> removing cookie because number of secure session cookies too high");
+                    LOG.debug("   -> removing cookie because number of secure session cookies too high");
                     curr_cookie.setMaxAge(0);
                     curr_cookie.setSecure(true);
                     setCookiePath(req, curr_cookie);
@@ -1103,7 +1102,7 @@ public abstract class ServletManager extends HttpServlet {
                     // Will the browser stop sending the cookie half an hour before the session is
                     // really invalidated? As we need the timestamp info anyway to sort the cookies,
                     // we can also do the timeout removing here.
-                    CAT.debug("   -> removing cookie because timestamp too old");
+                    LOG.debug("   -> removing cookie because timestamp too old");
                     curr_cookie.setMaxAge(0);
                     curr_cookie.setSecure(true);
                     setCookiePath(req, curr_cookie);

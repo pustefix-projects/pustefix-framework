@@ -20,7 +20,7 @@
 package de.schlund.pfixxml;
 
 
-import org.apache.log4j.Category;
+import org.apache.log4j.Logger;
 
 import de.schlund.pfixxml.resources.DocrootResource;
 import de.schlund.pfixxml.resources.FileResource;
@@ -32,7 +32,7 @@ import de.schlund.pfixxml.targets.VirtualTarget;
 import de.schlund.pfixxml.util.XsltContext;
 
 public class DependencyTracker {
-    private static Category CAT = Category.getInstance(DependencyTracker.class.getName());
+    private static Logger LOG = Logger.getLogger(DependencyTracker.class);
     
     /** xslt extension */
     public static String logImage(XsltContext context, String path,
@@ -58,11 +58,11 @@ public class DependencyTracker {
         }
         
         if (target == null) {
-            CAT.error("Error adding Dependency: target not found (targetGen=" + targetGen + ", targetKey=" + targetKey + ")");
+            LOG.error("Error adding Dependency: target not found (targetGen=" + targetGen + ", targetKey=" + targetKey + ")");
             return "1";
         }
         if (path.length() == 0) {
-            CAT.error("Error adding Dependency: empty path"); 
+            LOG.error("Error adding Dependency: empty path"); 
             return "1"; 
         }
         DocrootResource relativePath   = ResourceUtil.getFileResourceFromDocroot(path);
@@ -71,7 +71,7 @@ public class DependencyTracker {
             logTyped(type, relativePath, "", "", relativeParent, parent_part, parent_theme, target);
             return "0";
         } catch (Exception e) {
-            CAT.error("Error adding Dependency: ",e); 
+            LOG.error("Error adding Dependency: ",e); 
             return "1"; 
         }
     }
@@ -79,9 +79,9 @@ public class DependencyTracker {
     public static void logTyped(String type, DocrootResource path, String part, String theme,
                                 DocrootResource parent_path, String parent_part, String parent_theme,
                                 VirtualTarget target) {
-        if (CAT.isDebugEnabled()) {
+        if (LOG.isDebugEnabled()) {
             String project = target.getTargetGenerator().getName();
-            CAT.debug("Adding dependency to AuxdependencyManager :+\n"+
+            LOG.debug("Adding dependency to AuxdependencyManager :+\n"+
                       "Type       = " + type + "\n" +
                       "Path       = " + path.getRelativePath() + "\n" +
                       "Part       = " + part + "\n" +

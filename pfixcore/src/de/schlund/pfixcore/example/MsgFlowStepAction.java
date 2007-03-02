@@ -20,11 +20,13 @@
 package de.schlund.pfixcore.example;
 
 
-import java.util.*;
-import org.apache.log4j.Category;
-import de.schlund.pfixxml.ResultDocument;
-import de.schlund.pfixcore.workflow.FlowStepAction;
+import java.util.HashMap;
+
+import org.apache.log4j.Logger;
+
 import de.schlund.pfixcore.workflow.Context;
+import de.schlund.pfixcore.workflow.FlowStepAction;
+import de.schlund.pfixxml.ResultDocument;
 
 /**
  * @author: jtl
@@ -34,14 +36,14 @@ import de.schlund.pfixcore.workflow.Context;
 
 public class MsgFlowStepAction implements FlowStepAction {
     private String          text;
-    private static Category CAT = Category.getInstance(MsgFlowStepAction.class.getName());
+    private static Logger LOG = Logger.getLogger(MsgFlowStepAction.class);
     
     public void setData(HashMap data) {
         this.text = (String) data.get("text");
     }
 
     public void doAction(Context context, ResultDocument resdoc) throws Exception {
-        CAT.error(text);
+        LOG.error(text);
     }
 
 }

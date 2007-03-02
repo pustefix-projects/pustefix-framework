@@ -22,7 +22,7 @@ package de.schlund.pfixxml.targets;
 
 import java.util.HashMap;
 
-import org.apache.log4j.Category;
+import org.apache.log4j.Logger;
 
 import de.schlund.pfixxml.XMLException;
 import de.schlund.pfixxml.resources.FileResource;
@@ -31,7 +31,7 @@ import de.schlund.pfixxml.resources.FileResource;
 public class TargetGeneratorFactory {
     private static TargetGeneratorFactory            instance     = new TargetGeneratorFactory();
     private static HashMap<String, TargetGenerator>  generatormap = new HashMap<String, TargetGenerator>();
-    private static Category                          CAT          = Category.getInstance(TargetGeneratorFactory.class.getName());
+    private final static Logger                      LOG          = Logger.getLogger(TargetGeneratorFactory.class);
     
     public static TargetGeneratorFactory getInstance() {
         return instance;
@@ -42,7 +42,7 @@ public class TargetGeneratorFactory {
             String key = genKey(cfile);
             TargetGenerator generator = (TargetGenerator) generatormap.get(key);
             if (generator == null) {
-                CAT.debug("-- Init TargetGenerator --");
+                LOG.debug("-- Init TargetGenerator --");
                 generator = new TargetGenerator(cfile);
                 
                 // Check generator has unique name
@@ -54,7 +54,7 @@ public class TargetGeneratorFactory {
                             + "\" as it is using the name \"" + tgenName
                             + "\" which is already being used by TargetGenerator with config file \""
                             + tgen.getConfigPath().toString() + "\"";
-                        CAT.error(msg);
+                        LOG.error(msg);
                         throw new Exception(msg);
                     }
                 }

@@ -26,7 +26,6 @@ import java.util.LinkedList;
 import java.util.Queue;
 import java.util.Vector;
 
-import org.apache.log4j.Category;
 import org.apache.log4j.Logger;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.DateField;
@@ -49,7 +48,7 @@ import de.schlund.pfixxml.config.GlobalConfig;
 public class PfixQueueManager implements Runnable {
 
     private static PfixQueueManager _instance = null;
-    private static Category LOG = Logger.getLogger((PfixQueueManager.class));
+    private static Logger LOG = Logger.getLogger((PfixQueueManager.class));
     public static final String WAITMS_PROP = "lucefix.queueidle";
     public static String lucene_data_path;
     private Queue<Tripel> queue = new LinkedList<Tripel>();

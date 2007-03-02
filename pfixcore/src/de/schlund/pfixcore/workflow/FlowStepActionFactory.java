@@ -23,7 +23,7 @@ package de.schlund.pfixcore.workflow;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
-import org.apache.log4j.Category;
+import org.apache.log4j.Logger;
 
 import de.schlund.pfixxml.util.Misc;
 
@@ -33,7 +33,7 @@ import de.schlund.pfixxml.util.Misc;
  */
 
 public class FlowStepActionFactory {
-    private static Category              CAT      = Category.getInstance(FlowStepActionFactory.class.getName());
+    private static Logger                LOG      = Logger.getLogger(FlowStepActionFactory.class);
     private static FlowStepActionFactory instance = new FlowStepActionFactory();
     private static String                JUMPTO   = "jumpto";
     private static String                SETFLOW  = "setflow";
@@ -58,17 +58,17 @@ public class FlowStepActionFactory {
                 Constructor constr = Class.forName(action).getConstructor(Misc.NO_CLASSES);
                 act                = (FlowStepAction) constr.newInstance(Misc.NO_OBJECTS);
             } catch (InstantiationException e) {
-                CAT.error("unable to instantiate class [" + action + "]", e);
+                LOG.error("unable to instantiate class [" + action + "]", e);
             } catch (IllegalAccessException e) {
-                CAT.error("unable access class [" + action + "]", e);
+                LOG.error("unable access class [" + action + "]", e);
             } catch (ClassNotFoundException e) {
-                CAT.error("unable to find class [" + action + "]", e);
+                LOG.error("unable to find class [" + action + "]", e);
             } catch (NoSuchMethodException e) {
-                CAT.error("unable to find constructor in [" + action + "]", e);
+                LOG.error("unable to find constructor in [" + action + "]", e);
             } catch (InvocationTargetException e) {
-                CAT.error("unable to invoke constructor in [" + action + "]", e);
+                LOG.error("unable to invoke constructor in [" + action + "]", e);
             } catch (ClassCastException e) {
-                CAT.error("class [" + action + "] does not implement the interface FlowStepAction", e);
+                LOG.error("class [" + action + "] does not implement the interface FlowStepAction", e);
             }
         }
         return act;

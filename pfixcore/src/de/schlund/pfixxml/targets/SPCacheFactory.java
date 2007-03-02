@@ -22,7 +22,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Properties;
 
-import org.apache.log4j.Category;
+import org.apache.log4j.Logger;
 
 /**
  * SPCacheFactory.java
@@ -43,7 +43,7 @@ import org.apache.log4j.Category;
  */
 
 public class SPCacheFactory {
-    private static Category CAT= Category.getInstance(SPCacheFactory.class.getName());
+    private final static Logger LOG = Logger.getLogger(SPCacheFactory.class);
     private static SPCacheFactory instance= new SPCacheFactory();
 
     private SPCache targetCache= new LRUCache();
@@ -76,10 +76,10 @@ public class SPCacheFactory {
                 documentCache= tmp;
             }
         }
-        if(CAT.isInfoEnabled()) {
-        	CAT.info("SPCacheFactory initialized: ");
-        	CAT.info("  TargetCache   : Class="+targetCache.getClass().getName()+" Capacity=" + targetCache.getCapacity() + " Size="+targetCache.getSize());
-        	CAT.info("  DocumentCache : Class="+documentCache.getClass().getName()+" Capacity=" + documentCache.getCapacity() + " Size="+documentCache.getSize());
+        if(LOG.isInfoEnabled()) {
+        	LOG.info("SPCacheFactory initialized: ");
+        	LOG.info("  TargetCache   : Class="+targetCache.getClass().getName()+" Capacity=" + targetCache.getCapacity() + " Size="+targetCache.getSize());
+        	LOG.info("  DocumentCache : Class="+documentCache.getClass().getName()+" Capacity=" + documentCache.getCapacity() + " Size="+documentCache.getSize());
         }
     }
 
@@ -96,25 +96,25 @@ public class SPCacheFactory {
                     cachesize= Integer.parseInt(csize);
                 } catch (NumberFormatException e) {
                     sizeError= true;
-                    CAT.error("The property " + propNameSize + " is not an int");
+                    LOG.error("The property " + propNameSize + " is not an int");
                 }
             } else {
                 sizeError= true;
-                CAT.error("The property " + propNameSize + " is null");
+                LOG.error("The property " + propNameSize + " is null");
             }
 
             if (classname != null && !sizeError) {
 
-                //CAT.warn("*** Found SPCache classname '" + classname + "' in properties!");
+                //LOG.warn("*** Found SPCache classname '" + classname + "' in properties!");
 
                 tmp= getCache(classname);
                 if (tmp != null)
                     tmp.createCache(cachesize);
             } else
-                CAT.error("Property "+propNameClass+" is null");
+                LOG.error("Property "+propNameClass+" is null");
             
         } else
-            CAT.error("Properties for caches are null");
+            LOG.error("Properties for caches are null");
             
         return tmp;
     }
@@ -125,17 +125,17 @@ public class SPCacheFactory {
             Constructor constr= Class.forName(classname).getConstructor((Class[]) null);
             retval= (SPCache) constr.newInstance((Object[]) null);
         } catch (InstantiationException e) {
-            CAT.error("unable to instantiate class [" + classname + "]", e);
+            LOG.error("unable to instantiate class [" + classname + "]", e);
         } catch (IllegalAccessException e) {
-            CAT.error("unable access class [" + classname + "]", e);
+            LOG.error("unable access class [" + classname + "]", e);
         } catch (ClassNotFoundException e) {
-            CAT.error("unable to find class [" + classname + "]", e);
+            LOG.error("unable to find class [" + classname + "]", e);
         } catch (NoSuchMethodException e) {
-            CAT.error("unable to find correct method in [" + classname + "]", e);
+            LOG.error("unable to find correct method in [" + classname + "]", e);
         } catch (InvocationTargetException e) {
-            CAT.error("unable to invoke correct method in [" + classname + "]", e);
+            LOG.error("unable to invoke correct method in [" + classname + "]", e);
         } catch (ClassCastException e) {
-            CAT.error("class [" + classname + "] does not implement the interface SPCache", e);
+            LOG.error("class [" + classname + "] does not implement the interface SPCache", e);
         }
         return retval;
     }
@@ -152,9 +152,9 @@ public class SPCacheFactory {
      */
     public synchronized SPCache getCache() {
         synchronized (targetCache) {
-            /*CAT.debug("Cache is:          "+targetCache.getClass().getName());
-            CAT.debug("Cache capacity is: "+targetCache.getCapacity());
-            CAT.debug("Cache size is:     "+targetCache.getSize());*/
+            /*LOG.debug("Cache is:          "+targetCache.getClass().getName());
+            LOG.debug("Cache capacity is: "+targetCache.getCapacity());
+            LOG.debug("Cache size is:     "+targetCache.getSize());*/
             return targetCache;
         }
     }
@@ -164,9 +164,9 @@ public class SPCacheFactory {
      */
     public synchronized SPCache getDocumentCache() {
         synchronized (documentCache) {
-            /*CAT.debug("DocumentCache is:          "+documentCache.getClass().getName());
-            CAT.debug("DocumentCache capacity is: "+documentCache.getCapacity());
-            CAT.debug("DocumentCache size is:     "+documentCache.getSize());*/
+            /*LOG.debug("DocumentCache is:          "+documentCache.getClass().getName());
+            LOG.debug("DocumentCache capacity is: "+documentCache.getCapacity());
+            LOG.debug("DocumentCache size is:     "+documentCache.getSize());*/
             return documentCache;
         }
     }

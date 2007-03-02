@@ -29,7 +29,7 @@ import org.apache.log4j.*;
  */
 public class PropertyObjectManager {
 
-    private        Category CAT = Category.getInstance(this.getClass());
+    private        Logger LOG = Logger.getLogger(this.getClass());
     private static PropertyObjectManager instance=new PropertyObjectManager();
     private        Map confMaps;
     
@@ -67,7 +67,7 @@ public class PropertyObjectManager {
             synchronized (confObjs) {
                 confObj = (ConfigurableObject) confObjs.get(objClass);
                 if (confObj == null) {
-                    CAT.warn("******* Creating new ConfigurableObject " + objClass.getName());
+                    LOG.warn("******* Creating new ConfigurableObject " + objClass.getName());
                     confObj = (ConfigurableObject) objClass.newInstance();
                     confObj.init(config);
                     confObjs.put(objClass, confObj);

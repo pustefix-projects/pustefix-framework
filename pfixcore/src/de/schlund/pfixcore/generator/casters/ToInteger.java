@@ -52,7 +52,7 @@ public class ToInteger extends SimpleCheck implements IWrapperParamCaster {
     
     public void castValue(RequestParam[] param) {
         for (int i = 0; i < param.length; i++) {
-            CAT.debug("*** IN param: " + param[i]);
+            LOG.debug("*** IN param: " + param[i]);
         }
         reset();
         ArrayList out = new ArrayList();

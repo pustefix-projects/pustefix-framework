@@ -27,7 +27,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Vector;
 
-import org.apache.log4j.Category;
+import org.apache.log4j.Logger;
 import org.apache.lucene.document.Document;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -44,7 +44,7 @@ import de.schlund.pfixxml.resources.ResourceUtil;
  */
 public class DocumentCache {
     private Map cache;
-    private static Category LOG = Category.getInstance(DocumentCache.class);
+    private static Logger LOG = Logger.getLogger(DocumentCache.class);
 
     public DocumentCache() {
         cache = new HashMap();

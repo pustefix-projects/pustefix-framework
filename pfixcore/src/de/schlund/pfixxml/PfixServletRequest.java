@@ -33,7 +33,7 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
-import org.apache.log4j.Category;
+import org.apache.log4j.Logger;
 
 import de.schlund.pfixxml.multipart.MultipartHandler;
 import de.schlund.pfixxml.multipart.PartData;
@@ -69,7 +69,7 @@ public class PfixServletRequest {
     public  static final String   PAGEPARAM           = "__page";
     private static String         DEF_MAXPARTSIZE     = "" + (10 * 1024 * 1024); // 10 MB
     private HashMap               parameters          = new HashMap();
-    private Category              CAT                 = Category.getInstance(this.getClass());
+    private Logger                LOG                 = Logger.getLogger(this.getClass());
     private ArrayList             multiPartExceptions = new ArrayList();
     private String                servername;
     private String                querystring;
@@ -395,7 +395,7 @@ public class PfixServletRequest {
             String key = (String) enm.nextElement();
             allnames.add(key);
             String[] data = req.getParameterValues(key);
-            CAT.debug("* [NORMAL] Found parameters for key '" + key + "' count=" + data.length);
+            LOG.debug("* [NORMAL] Found parameters for key '" + key + "' count=" + data.length);
             RequestParam[] multiparams = (RequestParam[]) parameters.get(key);
             RequestParam[] params;
             if (multiparams == null) {
@@ -405,14 +405,14 @@ public class PfixServletRequest {
             }
             for (int i = 0; i < data.length; i++) {
                 RequestParam param = new SimpleRequestParam(data[i]);
-                CAT.debug("          " + i + ") Type: NORMAL Value: " + param.getValue());
+                LOG.debug("          " + i + ") Type: NORMAL Value: " + param.getValue());
                 params[i] = param;
             }
             if (multiparams != null) {
-                CAT.debug("          **** MULTI is not null...");
+                LOG.debug("          **** MULTI is not null...");
                 for (int i = data.length; i < (data.length + multiparams.length); i++) {
                     PartData pdat = (PartData) multiparams[i - data.length];
-                    CAT.debug("          " + i + ") Type: " + pdat.getType() + " Value: "
+                    LOG.debug("          " + i + ") Type: " + pdat.getType() + " Value: "
                               + pdat.getValue());
                     params[i] = multiparams[i - data.length];
                 }
@@ -446,10 +446,10 @@ public class PfixServletRequest {
             names.add(key);
             List       values = multi.getAllParameter(key);
             PartData[] data = (PartData[]) values.toArray(new PartData[]{});
-            CAT.debug("* [MULTI] Found parameters for key '" + key + "' count=" + data.length);
+            LOG.debug("* [MULTI] Found parameters for key '" + key + "' count=" + data.length);
             for (int i = 0; i < data.length; i++) {
                 PartData tmp = data[i];
-                CAT.debug("          " + i + ") Type: " + tmp.getType() + " Value: "
+                LOG.debug("          " + i + ") Type: " + tmp.getType() + " Value: "
                           + tmp.getValue());
             }
             parameters.put(key, data);
@@ -479,11 +479,11 @@ public class PfixServletRequest {
                 if (name.startsWith(prefix) && (name.length() > prefix.length())) {
                     String         key    = name.substring(prefix.length());
                     RequestParam[] values = (RequestParam[]) parameters.get(name);
-                    CAT.debug("    * [EMB/" + name + "]  >> Key is " + key);
+                    LOG.debug("    * [EMB/" + name + "]  >> Key is " + key);
                     if (values != null && values.length > 0) {
                         RequestParam[] newvals = new RequestParam[values.length];
                         for (int k = 0; k < values.length ; k++) {
-                            CAT.debug("         Adding value: " + values[k].getValue());
+                            LOG.debug("         Adding value: " + values[k].getValue());
                             newvals[k] = new SimpleRequestParam(values[k].getValue());
                             newvals[k].setSynthetic(true);
                         }

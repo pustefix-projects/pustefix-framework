@@ -149,7 +149,7 @@ public abstract class LeafTarget extends TargetImpl {
                 TREE.debug("  [" + getTargetKey() + ": updated leaf node...]");
                 setModTime(maxmodtime);
             } catch (Exception e) {
-                CAT.error("Error when updating", e);
+                LOG.error("Error when updating", e);
             }
         } else {
             TREE.debug("  [" + getTargetKey() + ": leaf node...]");

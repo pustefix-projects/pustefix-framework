@@ -34,7 +34,7 @@ public class SessionAdmin implements HttpSessionBindingListener {
     public  static String       PARENT_SESS_ID = "__PARENT_SESSION_ID__";
     public  static final String SESSION_IS_SECURE             = "__SESSION_IS_SECURE__";
     private static SessionAdmin instance       = new SessionAdmin();
-    private        Category     CAT            = Category.getInstance(SessionAdmin.class.getName());
+    private static final Logger LOG            = Logger.getLogger(SessionAdmin.class);
     /** Maps session to it's id. */
     private        HashMap<HttpSession, String> sessionid = new HashMap<HttpSession, String>();
     private        HashMap<String, SessionInfoStruct> sessioninfo = new HashMap<String, SessionInfoStruct>();
@@ -108,7 +108,7 @@ public class SessionAdmin implements HttpSessionBindingListener {
                         if (parentid != null) {
                             parentinfo.remove(parentid);
                             parentinfo_rev.remove(id);
-                            CAT.debug("\n\n********* Removed parentid mapping " + parentid +
+                            LOG.debug("\n\n********* Removed parentid mapping " + parentid +
                                       "->" + id + " *********\n");
                         }
                     }
@@ -116,7 +116,7 @@ public class SessionAdmin implements HttpSessionBindingListener {
             }
             sessioninfo.remove(id);
             sessionid.remove(session);
-            CAT.debug("\n\n********* Invalidated Session " + id + " *********\n");
+            LOG.debug("\n\n********* Invalidated Session " + id + " *********\n");
         }
     }
 
@@ -126,7 +126,7 @@ public class SessionAdmin implements HttpSessionBindingListener {
             if (info != null) {
                 info.updateTimestamp(servlet, stylesheet);
             } else {
-                CAT.warn("*** SessionInfoStruct for Session " + sess + " was NULL!!!");
+                LOG.warn("*** SessionInfoStruct for Session " + sess + " was NULL!!!");
             }
         }
     }

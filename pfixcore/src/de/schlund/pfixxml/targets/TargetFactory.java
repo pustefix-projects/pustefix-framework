@@ -34,7 +34,7 @@ import org.apache.log4j.*;
  */
 
 public class TargetFactory {
-    private static Category      CAT      = Category.getInstance(TargetFactory.class.getName()); 
+    private final static Logger  LOG      = Logger.getLogger(TargetFactory.class); 
     private static TargetFactory instance = new TargetFactory();
 
     private TreeMap targetmap = new TreeMap();
@@ -70,7 +70,7 @@ public class TargetFactory {
     
     private TargetRW createTargetForType(TargetType type, TargetGenerator gen, String targetkey, Themes themes) {
         TargetRW target;
-        CAT.debug("===> Creating target '" + targetkey + "' " + type + " [" + gen.getName() + "]");
+        LOG.debug("===> Creating target '" + targetkey + "' " + type + " [" + gen.getName() + "]");
         try {
             Class       theclass    = type.getTargetClass();
             Constructor constructor = theclass.getConstructor(new Class[]{type.getClass(), gen.getClass(), targetkey.getClass(), Themes.class});

@@ -31,7 +31,7 @@ import org.apache.log4j.*;
 
 public class PropertiesUtils {
     /** Logging. */
-    protected static Category LOG = Category.getInstance(PropertiesUtils.class.getName());
+    protected static Logger LOG = Logger.getLogger(PropertiesUtils.class);
 
     /** Default constructor. */
     protected PropertiesUtils() {

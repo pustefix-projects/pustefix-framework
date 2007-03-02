@@ -20,7 +20,7 @@
 package de.schlund.pfixcore.example;
 import java.util.HashMap;
 
-import org.apache.log4j.Category;
+import org.apache.log4j.Logger;
 import org.w3c.dom.Element;
 
 import de.schlund.pfixxml.ResultDocument;
@@ -40,10 +40,10 @@ import de.schlund.pfixcore.util.PropertiesUtils;
 // Inheritance from one C-Res to another is asking for trouble.
 // But for this example it helps keeping the code small.
 public class ContextTrouserImpl extends ContextTShirtImpl implements ContextTrouser{
-    private Category CAT = Category.getInstance(this.getClass().getName());
+    private static Logger LOG = Logger.getLogger(ContextTrouserImpl.class);
     
     public String toString() {
-        CAT.debug("Doing ContextTrouser...");
+        LOG.debug("Doing ContextTrouser...");
         return "[Size: " + getSize() + "][Color: " + getColor() + "]";
     }
     

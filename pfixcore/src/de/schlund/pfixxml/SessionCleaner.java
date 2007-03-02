@@ -23,7 +23,7 @@ import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import org.apache.log4j.Category;
+import org.apache.log4j.Logger;
 
 /**
  * The <code>SessionCleaner</code> class is used to remove stored SPDocuments from the session
@@ -41,7 +41,7 @@ import org.apache.log4j.Category;
 public class SessionCleaner {
     private static SessionCleaner instance = new SessionCleaner();
     private        Timer          timer    = new Timer(true);
-    Category                      CAT      = Category.getInstance(this.getClass());
+    private final static Logger   LOG      = Logger.getLogger(SessionCleaner.class);
     
     private SessionCleaner() {}
 
@@ -64,7 +64,7 @@ public class SessionCleaner {
     public void storeSPDocument(SPDocument spdoc, Map storeddoms, int timeoutsecs) {
         String key = spdoc.getTimestamp() + "";
 
-        CAT.info("*** Create new TimerTask with timeout: " + timeoutsecs);
+        LOG.info("*** Create new TimerTask with timeout: " + timeoutsecs);
         TimerTask task = new SessionCleanerTask(storeddoms, key);
         timer.schedule(task, timeoutsecs * 1000);
         // Save the needed info
@@ -84,14 +84,14 @@ public class SessionCleaner {
             try {
                 if (storeddoms.containsKey(key)) {
                     storeddoms.remove(key);
-                    CAT.info("*** CALLING TIMERTASK: Removing SPDoc '" + key + 
+                    LOG.info("*** CALLING TIMERTASK: Removing SPDoc '" + key + 
                              "' in session from cache (Curr. Size: " + storeddoms.size() + ")");
                 } else {
-                    CAT.info("*** CALLING TIMERTASK: nothing to do.");
+                    LOG.info("*** CALLING TIMERTASK: nothing to do.");
                 }
 
             } catch (IllegalStateException e) {
-                CAT.warn("*** Couldn't remove from cache... " + e.getMessage() + " ***");
+                LOG.warn("*** Couldn't remove from cache... " + e.getMessage() + " ***");
             }
             key        = null;
             storeddoms = null;

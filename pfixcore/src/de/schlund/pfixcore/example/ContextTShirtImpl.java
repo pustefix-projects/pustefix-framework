@@ -20,13 +20,12 @@
 package de.schlund.pfixcore.example;
 import java.util.HashMap;
 
-import org.apache.log4j.Category;
+import org.apache.log4j.Logger;
 import org.w3c.dom.Element;
 
-import de.schlund.pfixcore.workflow.Context;
-import de.schlund.pfixcore.workflow.ContextResource;
-import de.schlund.pfixxml.ResultDocument;
 import de.schlund.pfixcore.util.PropertiesUtils;
+import de.schlund.pfixcore.workflow.Context;
+import de.schlund.pfixxml.ResultDocument;
 /**
  * ContextTShirt.java
  *
@@ -43,7 +42,7 @@ public class ContextTShirtImpl implements ContextTShirt{
     private Integer    color    = null;
     private Integer[]  features = null;
     protected Context  context  = null;
-    private Category CAT = Category.getInstance(this.getClass().getName());
+    private static Logger LOG = Logger.getLogger(ContextTShirtImpl.class);
     
     public void init(Context context) {
         this.context = context;
@@ -76,7 +75,7 @@ public class ContextTShirtImpl implements ContextTShirt{
     }
 
     public String toString() {
-        CAT.debug("Doing ContextTShirt...");
+        LOG.debug("Doing ContextTShirt...");
         return "[Size: " + size + "][Color: " + color + "]";
     }
 

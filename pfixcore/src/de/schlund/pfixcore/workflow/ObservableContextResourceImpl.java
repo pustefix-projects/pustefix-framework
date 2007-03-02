@@ -19,9 +19,10 @@
 
 package de.schlund.pfixcore.workflow;
 
-import java.util.*;
+import java.util.Iterator;
+import java.util.Vector;
 
-import org.apache.log4j.Category;
+import org.apache.log4j.Logger;
 
 /**
  * Implements an observable ContextResource. Observers will be
@@ -35,7 +36,7 @@ import org.apache.log4j.Category;
 
 public abstract class ObservableContextResourceImpl implements ContextResource, ObservableContextResource {
     private Vector   observers = new Vector();
-    private Category CAT       = Category.getInstance(this.getClass().getName());
+    private Logger   LOG       = Logger.getLogger(this.getClass());
 
     /**
      * Adds an observer to the list of registered observers.
@@ -43,7 +44,7 @@ public abstract class ObservableContextResourceImpl implements ContextResource, 
      * @param obj an <code>ContextResourceObserver</code> value
      */
     public synchronized void addObserver(ContextResourceObserver obj) {
-        CAT.debug("Adding observer " + obj.getClass().getName());
+        LOG.debug("Adding observer " + obj.getClass().getName());
         observers.add(obj);
     }
 
@@ -55,9 +56,9 @@ public abstract class ObservableContextResourceImpl implements ContextResource, 
         Iterator iter = observers.iterator();
         while (iter.hasNext()) {
             ContextResourceObserver obj = (ContextResourceObserver) iter.next();
-            CAT.debug("Notify observer" + obj.getClass().getName());
+            LOG.debug("Notify observer" + obj.getClass().getName());
             obj.update(this);
-            CAT.debug("notify done..." + obj.getClass().getName());
+            LOG.debug("notify done..." + obj.getClass().getName());
         }
     }
 }
