@@ -21,6 +21,7 @@ package de.schlund.pfixcore.webservice.jsonws.serializers;
 
 import java.io.IOException;
 import java.io.Writer;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Iterator;
 import java.util.Set;
@@ -32,6 +33,9 @@ import de.schlund.pfixcore.webservice.jsonws.SerializationContext;
 import de.schlund.pfixcore.webservice.jsonws.SerializationException;
 import de.schlund.pfixcore.webservice.jsonws.Serializer;
 
+/**
+ * @author mleidig@schlund.de
+ */
 public class BeanSerializer extends Serializer {
 
     BeanDescriptorFactory beanDescFactory;
@@ -50,9 +54,17 @@ public class BeanSerializer extends Serializer {
         Iterator<String> it=props.iterator();
         while(it.hasNext()) {
             String prop=it.next();
-            Method meth=bd.getGetMethod(prop);
             try {
-                Object val=meth.invoke(obj,new Object[0]);
+                Object val=null;
+                Method meth=bd.getGetMethod(prop);
+                if(meth!=null) {
+                    val=meth.invoke(obj,new Object[0]);
+                } else {
+                    Field field=bd.getDirectAccessField(prop);
+                    if(field!=null) val=field.get(obj);
+                    else throw new SerializationException("Bean of type '"+obj.getClass().getName()+"' doesn't "+
+                            " have getter method or direct access to property '"+prop+"'.");
+                }
                 if(val==null) {
                     jsonObj.putMember(prop,JSONObject.NULL);
                 } else {
@@ -80,9 +92,17 @@ public class BeanSerializer extends Serializer {
         Iterator<String> it=props.iterator();
         while(it.hasNext()) {
             String prop=it.next();
-            Method meth=bd.getGetMethod(prop);
             try {
-                Object val=meth.invoke(obj,new Object[0]);
+                Object val=null;
+                Method meth=bd.getGetMethod(prop);
+                if(meth!=null) {
+                    val=meth.invoke(obj,new Object[0]);
+                } else {
+                    Field field=bd.getDirectAccessField(prop);
+                    if(field!=null) val=field.get(obj);
+                    else throw new SerializationException("Bean of type '"+obj.getClass().getName()+"' doesn't "+
+                            " have getter method or direct access to property '"+prop+"'.");
+                }
                 if(val==null) {
                     writer.write("\"");
                     writer.write(prop);

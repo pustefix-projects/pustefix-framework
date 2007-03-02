@@ -17,15 +17,21 @@
  *
  */
 
-package de.schlund.pfixcore.webservice.beans;
+package de.schlund.pfixcore.webservice.beans.metadata;
 
-import java.lang.annotation.*;
+import de.schlund.pfixcore.webservice.beans.InitException;
 
 /**
  * @author mleidig@schlund.de
  */
-@Target({ElementType.TYPE})
-@Retention(RetentionPolicy.RUNTIME)
-public @interface ExcludeByDefault {
+public class DOMInitException extends InitException {
+
+    public DOMInitException(String msg) {
+        super(msg);
+    }
+    
+    public DOMInitException(String msg,Throwable cause) {
+        super(msg,cause);
+    }
     
 }

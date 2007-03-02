@@ -46,6 +46,12 @@ function beanEquals(b1,b2) {
 		var equal=equals(val1,val2);
 		if(!equal && prop!='javaClass') return false;
 	}
+   for(var prop in b2) {
+      var val1=b1[prop];
+      var val2=b2[prop];
+      var equal=equals(val1,val2);
+      if(!equal && prop!='javaClass') return false;
+   }
 	return true;
 }
 

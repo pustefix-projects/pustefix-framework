@@ -17,15 +17,28 @@
  *
  */
 
-package de.schlund.pfixcore.webservice.beans;
+package de.schlund.pfixcore.webservice.beans.metadata;
 
-import java.lang.annotation.*;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author mleidig@schlund.de
  */
-@Target({ElementType.TYPE})
-@Retention(RetentionPolicy.RUNTIME)
-public @interface ExcludeByDefault {
+public class Beans {
+
+    Map<String,Bean> beans;
+    
+    public Beans() {
+        beans=new HashMap<String,Bean>();
+    }
+    
+    public Bean getBean(String className) {
+        return beans.get(className);
+    }
+    
+    public void setBean(Bean bean) {
+        beans.put(bean.getClassName(),bean);
+    }
     
 }

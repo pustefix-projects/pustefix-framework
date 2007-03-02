@@ -5,6 +5,7 @@ public class BeanA {
     int foo;
     int bar;
     int baz;
+    int test;
     
     public int getFoo() {
         return foo;
@@ -29,6 +30,15 @@ public class BeanA {
     
     public void setBaz(int baz) {
         this.baz=baz;
+    }
+    
+    @Alias("mytest")
+    public int getTest() {
+        return test;
+    }
+    
+    public void setTest(int test) {
+        this.test=test;
     }
 
 }

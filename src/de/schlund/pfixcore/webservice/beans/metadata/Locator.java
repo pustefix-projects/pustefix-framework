@@ -17,15 +17,16 @@
  *
  */
 
-package de.schlund.pfixcore.webservice.beans;
+package de.schlund.pfixcore.webservice.beans.metadata;
 
-import java.lang.annotation.*;
+import java.net.URL;
+import java.util.List;
 
 /**
  * @author mleidig@schlund.de
  */
-@Target({ElementType.TYPE})
-@Retention(RetentionPolicy.RUNTIME)
-public @interface ExcludeByDefault {
+public interface Locator {
+
+    public List<URL> getMetadataResources();
     
 }

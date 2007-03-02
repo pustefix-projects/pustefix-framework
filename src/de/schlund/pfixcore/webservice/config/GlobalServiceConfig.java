@@ -21,6 +21,7 @@ package de.schlund.pfixcore.webservice.config;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.net.URL;
 
 import de.schlund.pfixcore.webservice.Constants;
 import de.schlund.pfixcore.webservice.fault.FaultHandler;
@@ -56,6 +57,7 @@ public class GlobalServiceConfig {
     Integer monitorSize=20;
     Boolean logging=Boolean.FALSE;
     FaultHandler faultHandler;
+    URL defaultBeanMetaDataUrl;
     
     public GlobalServiceConfig() {}
     
@@ -233,6 +235,14 @@ public class GlobalServiceConfig {
     
     public void setFaultHandler(FaultHandler faultHandler) {
     	this.faultHandler=faultHandler;
+    }
+    
+    public URL getDefaultBeanMetaDataURL() {
+        return defaultBeanMetaDataUrl;
+    }
+    
+    public void setDefaultBeanMetaDataURL(URL defaultBeanMetaDataUrl) {
+        this.defaultBeanMetaDataUrl=defaultBeanMetaDataUrl;
     }
     
     @Override
