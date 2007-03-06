@@ -71,7 +71,14 @@ or delete the DOCTYPE definition -->
         <not><equals arg1="${env.JAVA_HOME}" arg2=""/></not>
       </and>
     </condition>
+    <condition property="javahome" value="${java.home}">
+      <and>
+        <isset property="java.home"/>
+        <not><equals arg1="${java.home}" arg2=""/></not>
+      </and>
+    </condition> 
     <fail unless="javahome" message="Property &quot;javahome&quot; not set. This property is used to create projects/servletconf/tomcat/workers.prop. Set environment variable JAVA_HOME to point to the root directory of the Java2 Standard Edition installation you wish to use."/>
+    <echo message="Using javahome=${javahome}"/> 
 
     <property name="debug" value="true"/>
     <property name="debuglevel" value="lines,vars,source"/>
