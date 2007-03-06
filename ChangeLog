@@ -1,3 +1,9 @@
+2007-03-06  Sebastian Marsching  <sebastian.marsching@1und1.de>
+
+	* skel/build-skel.xml: 
+	Fallback to java.home property when JAVA_HOME environment variable
+	is not set.
+
 2007-03-02  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
 	* src/de/schlund/pfixcore/example/AdultInfoHandler.java: 
