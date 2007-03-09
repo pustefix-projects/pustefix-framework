@@ -43,6 +43,7 @@ import de.schlund.pfixcore.workflow.context.ServerContextImpl;
 import de.schlund.pfixxml.config.AbstractXMLServletConfig;
 import de.schlund.pfixxml.config.ConfigReader;
 import de.schlund.pfixxml.config.ContextXMLServletConfig;
+import de.schlund.pfixxml.config.PageRequestConfig;
 import de.schlund.pfixxml.resources.FileResource;
 
 /**
@@ -79,7 +80,10 @@ public class ContextXMLServlet extends AbstractXMLServlet {
         } else {
             String pagename = preq.getPageName();
             if (pagename != null) {
-                return config.getContextConfig().getPageRequestConfig(pagename).isSSL();
+                PageRequestConfig pageConfig = config.getContextConfig().getPageRequestConfig(pagename);
+                if (pageConfig != null) {
+                    return pageConfig.isSSL();
+                }
             }
         }
         return false;
