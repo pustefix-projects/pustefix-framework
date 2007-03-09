@@ -1,3 +1,24 @@
+2007-03-09  Sebastian Marsching  <sebastian.marsching@1und1.de>
+
+	* src/de/schlund/pfixcore/webservice/Constants.java: 
+	* src/de/schlund/pfixcore/webservice/ServiceRuntime.java: 
+	* src/de/schlund/pfixcore/webservice/WebServiceServlet.java: 
+	* src/de/schlund/pfixxml/ContextXMLServlet.java: 
+	* src/de/schlund/pfixxml/DirectOutputServlet.java: 
+	* src/de/schlund/pfixxml/ServerContextStore.java: 
+	* src/de/schlund/pfixxml/SessionContextStore.java: 
+	* projects/core/build/create_webxml.xsl: 
+	Rewrote context store mechanism. Context instances are now stored by two 
+	classes which unify the access of the session and servlet context.
+	Added support for a "<foreigncontext>" tag in the project.xml.in which
+	can replace the context reference specified within the servlet configuration.
+	
+	* projects/webservice/conf/project.xml.in: 
+	* projects/webservice/conf/webservice.conf.xml: 
+	* projects/sample1/conf/project.xml.in: 
+	* projects/sample1/conf/direct.conf.xml: 
+	Moved context reference into project configuration using the new feature.
+
 2007-03-06  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
 	* skel/build-skel.xml: 

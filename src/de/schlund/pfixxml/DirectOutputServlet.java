@@ -72,6 +72,8 @@ public class DirectOutputServlet extends ServletManager {
     private DirectOutputPageMap       pagemap   = null;
     private DirectOutputServletConfig config;
     
+    private final static String PROP_CONTEXT_NAME = "servlet.contextname";
+    
     /**
      * The usual <code>needsSession</code> method. Is set to return
      * true, as any other value wouldn't make sense (You need to get a
@@ -113,12 +115,6 @@ public class DirectOutputServlet extends ServletManager {
      * @exception Exception if an error occurs
      */
     protected void process(PfixServletRequest preq, HttpServletResponse res) throws Exception {
-         String name;
-         if (ext_cname.startsWith("/")) {
-             name = ext_cname + ContextXMLServlet.CONTEXT_BY_PATH_SUFFIX;
-         } else {
-             name = ext_cname + ContextXMLServlet.CONTEXT_SUFFIX;
-         }
          HttpSession   session = preq.getSession(false);
          if (session == null) {
              //throw new RuntimeException("*** didn't get Session from request. ***");
@@ -127,14 +123,14 @@ public class DirectOutputServlet extends ServletManager {
              return;
          }
          
-         ContextImpl       context       = (ContextImpl) session.getAttribute(name);
+         ContextImpl context = SessionContextStore.getInstance(session).getContext(ext_cname);
          if (context == null) {
-             throw new RuntimeException("*** didn't find Context " + name + " in Session " + session.getId()
+             throw new RuntimeException("*** didn't find Context " + ext_cname + " in Session " + session.getId()
                                         + ", maybe it's not yet initialized??? ***");
          }
-         ServerContextImpl servercontext = (ServerContextImpl) getServletContext().getAttribute(context.getName());
+         ServerContextImpl servercontext = ServerContextStore.getInstance(getServletContext()).getContext(ext_cname);
          if (servercontext == null) {
-             throw new RuntimeException("*** didn't find ServerContext " + context.getName() + " in ServletContext, maybe it's not yet initialized??? ***");
+             throw new RuntimeException("*** didn't find ServerContext " + ext_cname + " in ServletContext, maybe it's not yet initialized??? ***");
          }
          
          // Make sure the context is initialized and deinitialized this thread
@@ -204,8 +200,11 @@ public class DirectOutputServlet extends ServletManager {
 
     private void initValues() throws ServletException {
         String cname = this.config.getExternalServletName();
+        String initCName = this.getInitParameter(PROP_CONTEXT_NAME);
         if (cname != null && !cname.equals("")) {
             ext_cname = cname;
+        } else if (initCName != null && initCName.length() > 0) {
+            ext_cname = initCName;
         } else {
             throw new ServletException ("*** Need external servlet name! *****");
         }

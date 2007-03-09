@@ -43,7 +43,6 @@ import de.schlund.pfixcore.workflow.context.ServerContextImpl;
 import de.schlund.pfixxml.config.AbstractXMLServletConfig;
 import de.schlund.pfixxml.config.ConfigReader;
 import de.schlund.pfixxml.config.ContextXMLServletConfig;
-import de.schlund.pfixxml.config.PageRequestConfig;
 import de.schlund.pfixxml.resources.FileResource;
 
 /**
@@ -53,10 +52,6 @@ import de.schlund.pfixxml.resources.FileResource;
 
 public class ContextXMLServlet extends AbstractXMLServlet {
     private Logger LOG = Logger.getLogger(ContextXMLServlet.class);
-
-    public final static String CONTEXT_SUFFIX = "__CONTEXT__";
-    public final static String CONTEXT_BY_PATH_SUFFIX = "__CONTEXT_BY_PATH__";
-    public final static String CONTEXT_IDENTITY_SUFFIX = "__CONTEXT_IDENTITY__";
 
     private final static String ALREADY_SSL = "__CONTEXT_ALREADY_SSL__";
 
@@ -101,8 +96,8 @@ public class ContextXMLServlet extends AbstractXMLServlet {
     protected boolean tryReloadProperties(PfixServletRequest preq) throws ServletException {
         if (super.tryReloadProperties(preq)) {
             try {
-                servercontext = new ServerContextImpl(getContextXMLServletConfig().getContextConfig(), makeContextIdentityName());
-                this.getServletContext().setAttribute(makeContextIdentityName(), servercontext);
+                servercontext = new ServerContextImpl(getContextXMLServletConfig().getContextConfig(), servletname);
+                ServerContextStore.getInstance(this.getServletContext()).storeContext(this, preq, servletname, servercontext);
             } catch (Exception e) {
                 String msg = "Error during reload of servlet configuration";
                 LOG.error(msg, e);
@@ -221,64 +216,30 @@ public class ContextXMLServlet extends AbstractXMLServlet {
     }
     
     private ExtendedContext getContext(PfixServletRequest preq) throws PustefixApplicationException, PustefixCoreException {
-        // Name of the attribute that is used to store the session context
-        // within the session object.
-        String contextname = makeContextName();
-        String contextpathname = makeContextPathBasedName(preq);
-        // A servlet instance might be using different URIs, so we have
-        // to make sure we find the right context instance even if the servlet
-        // is accessed using a different URI
-        String identityname = makeContextIdentityName();
-
         HttpSession session = preq.getSession(false);
         if (session == null) {
             // The ServletManager class handles session creation
             throw new PustefixRuntimeException("No valid session found! Aborting...");
         }
 
-        // FIXME: DCL is broken
-        ContextImpl context = (ContextImpl) session.getAttribute(identityname);
+        SessionContextStore store = SessionContextStore.getInstance(session);
+        ContextImpl context = store.getContext(this, preq);
         // Session does not have a context yet?
         if (context == null) {
             // Synchronize on session object to make sure only ONE
             // context per session is created
             synchronized (session) {
-                context = (ContextImpl) session.getAttribute(contextpathname);
+                context = store.getContext(this, preq);
                 if (context == null) {
                     context = new ContextImpl(servercontext, session);
-                    session.setAttribute(identityname, context);
-                    session.setAttribute(contextpathname + preq.getRequest().getServletPath(), context);
-                    if (contextname != null) {
-                        session.setAttribute(contextname, context);
-                    }
-                } else {
-                    // update, as it may have changed
-                    context.setServerContext(servercontext);
+                    store.storeContext(this, preq, this.servletname, context);
                 }
             }
-        } else {
-            // Context is registered with identity and configured name
-            // but maybe not with current path
-            if (session.getAttribute(contextpathname) == null) {
-                session.setAttribute(contextpathname, context);
-            }
         }
+        // Update reference to server context as it might have changed
+        context.setServerContext(servercontext);
+        
         return context;
-    }
-
-    private String makeContextName() {
-        if (servletname == null) {
-            return null;
-        }
-        return servletname + CONTEXT_SUFFIX;
-    }
-    
-    private String makeContextPathBasedName(PfixServletRequest preq) {
-        return CONTEXT_BY_PATH_SUFFIX + preq.getRequest().getServletPath();
-    }
-    
-    private String makeContextIdentityName() {
-        return String.valueOf(System.identityHashCode(this)) + CONTEXT_IDENTITY_SUFFIX;
     }
 
     protected void reloadServletConfig(FileResource configFile, Properties globalProperties) throws ServletException {

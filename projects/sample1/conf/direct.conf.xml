@@ -5,8 +5,6 @@
     <ssl force="true"/>
   </directoutputservletinfo>
   
-  <foreigncontext externalservletname="pfixcore_project:sample1::servlet:config"/>
-  
   <config-include file="sample1/conf/fragments.xml" refid="directtest"/>
 
   <directoutputpagerequest name="install">

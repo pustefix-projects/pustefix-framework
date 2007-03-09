@@ -42,6 +42,7 @@
     <active>true</active>
     <class>de.schlund.pfixcore.webservice.WebServiceServlet</class>
     <propfile>webservice/conf/webservice.conf.xml</propfile>
+    <foreigncontext>/xml/config</foreigncontext>
   </servlet>
 </project>
 

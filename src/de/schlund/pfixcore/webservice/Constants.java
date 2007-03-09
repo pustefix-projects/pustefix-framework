@@ -6,6 +6,7 @@ public class Constants {
     
     public final static String PROP_COMMON_FILE="servlet.commonpropfile";
     public final static String PROP_SERVLET_FILE="servlet.propfile";
+    public final static String PROP_CONTEXT_NAME="servlet.contextname";
     
     final public static String OLD_CLASSLOADER_PROPERTY="org.jboss.net.axis.OLD_CLASSLOADER_PROPERTY";
     final public static String CONFIGURATION_CONTEXT="org.jboss.net.axis.CONFIGURATION_CONTEXT";
