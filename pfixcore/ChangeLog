@@ -1,5 +1,8 @@
 2007-03-09  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
+	* src/de/schlund/pfixxml/ContextXMLServlet.java: (needsSSL):
+	Fixed a bug causing a 500 error where a 404 error would be more appropriate. 
+
 	* src/de/schlund/pfixcore/webservice/Constants.java: 
 	* src/de/schlund/pfixcore/webservice/ServiceRuntime.java: 
 	* src/de/schlund/pfixcore/webservice/WebServiceServlet.java: 
