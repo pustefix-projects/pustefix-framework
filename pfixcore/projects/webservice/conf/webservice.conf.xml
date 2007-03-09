@@ -7,7 +7,6 @@
   <webservice-global>
   
     <stubgeneration jsnamespace="COMPAT_UNIQUE"/>
-    <context name="pfixcore_project:webservice::servlet:config"/>
     
     <choose>
       <when test="$mode = 'prod'">

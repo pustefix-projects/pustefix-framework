@@ -108,7 +108,13 @@
               <param-value><xsl:apply-templates select="propfile/node()"/></param-value>
             </init-param>
           </xsl:if>
-  				<init-param>
+          <xsl:if test="foreigncontext/node()">
+            <init-param>
+              <param-name>servlet.contextname</param-name>
+              <param-value><xsl:apply-templates select="foreigncontext/node()"/></param-value>
+            </init-param>
+          </xsl:if>
+          <init-param>
           	<param-name>servlet.encoding</param-name>
             <param-value><xsl:apply-templates select="$project/encoding/text()"/></param-value>
           </init-param>

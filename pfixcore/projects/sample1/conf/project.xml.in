@@ -55,6 +55,7 @@
     <active>true</active>
     <class>de.schlund.pfixxml.DirectOutputServlet</class>
     <propfile>sample1/conf/direct.conf.xml</propfile>
+    <foreigncontext>config</foreigncontext>
   </servlet>
 </project>
 
