@@ -1,5 +1,6 @@
 2007-03-15  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
+	* build.xml: Beginning development of pfixcore-0.10.1-pre
 	* build.xml: Releasing pfixcore-0.10.0
 
 2007-03-15  Martin Leidig  <mleidig@schlund.de>
