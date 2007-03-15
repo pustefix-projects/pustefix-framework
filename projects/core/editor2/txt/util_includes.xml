@@ -25,11 +25,11 @@
             <ixsl:for-each select="./file">
               pfx_editor_inc_file = new pfx_editor_File("<ixsl:value-of select="./@path"/>");
               <ixsl:if test="./@open='true'">
-                <ixsl:for-each select="./include">
+                <ixsl:for-each select="./include" xmlns:edit="http://pustefix.sourceforge.net/pfixcore/editor">
                   pfx_editor_inc_part = new pfx_editor_Part(
-                  "<ixsl:value-of select="../@path"/>", 
-                  "<ixsl:value-of select="./@part"/>", 
-                  "<ixsl:value-of select="./@theme"/>",
+                  "<ixsl:value-of select="edit:jsEscape(../@path)"/>", 
+                  "<ixsl:value-of select="edit:jsEscape(./@part)"/>", 
+                  "<ixsl:value-of select="edit:jsEscape(./@theme)"/>",
                   <ixsl:choose>
                     <ixsl:when test="./@selected='true'">
                       true

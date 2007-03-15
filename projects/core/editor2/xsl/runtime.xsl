@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+                xmlns:func="http://exslt.org/functions"
+                xmlns:edit="http://pustefix.sourceforge.net/pfixcore/editor"
                 version="1.0">
   
   <xsl:template match="*" mode="static_disp">
@@ -61,5 +63,34 @@
   <xsl:template match="comment()" mode="static_disp">
     <br/> <span style="color:#999999">&lt;!--<xsl:value-of select="."/>--&gt;</span>
   </xsl:template>
+  
+  <func:function name="edit:jsEscape">
+    <xsl:param name="thestring"/>
+    <func:result select="edit:jsEscapeQuotes(edit:jsEscapeBackslashes($thestring))"/>
+  </func:function>
+  
+  <func:function name="edit:jsEscapeBackslashes">
+    <xsl:param name="thestring"/>
+    <xsl:choose>
+      <xsl:when test="contains($thestring, '\')">
+        <func:result select="concat(substring-before($thestring, '\'), '\\', edit:jsEscapeBackslashes(substring-after($thestring, '\')))"/>
+      </xsl:when>
+      <xsl:otherwise>
+        <func:result select="$thestring"/>
+      </xsl:otherwise>
+    </xsl:choose>
+  </func:function>
+  
+  <func:function name="edit:jsEscapeQuotes">
+    <xsl:param name="thestring"/>
+    <xsl:choose>
+      <xsl:when test="contains($thestring, '&quot;')">
+        <func:result select="concat(substring-before($thestring, '&quot;'), '\&quot;', edit:jsEscapeQuotes(substring-after($thestring, '&quot;')))"/>
+      </xsl:when>
+      <xsl:otherwise>
+        <func:result select="$thestring"/>
+      </xsl:otherwise>
+    </xsl:choose>
+  </func:function>
   
 </xsl:stylesheet>

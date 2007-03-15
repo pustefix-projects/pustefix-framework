@@ -1,3 +1,10 @@
+2007-03-15  Sebastian Marsching  <sebastian.marsching@1und1.de>
+
+	* projects/core/editor2/txt/util_includes.xml: 
+	* projects/core/editor2/xsl/runtime.xsl: 
+	Added escaping for include part names on javascript code generation
+	to fix problem with part names containing quotes.
+
 2007-03-02  Martin Leidig  <mleidig@schlund.de>
 
 	Extended support for JSON Bean serialization/deserialization customization.
