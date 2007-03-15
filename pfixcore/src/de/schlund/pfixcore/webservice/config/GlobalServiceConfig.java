@@ -252,7 +252,7 @@ public class GlobalServiceConfig {
     		Method[] meths=getClass().getDeclaredMethods();
     		for(int i=0;i<meths.length;i++) {
     			Method meth=meths[i];		
-    			if(meth.getName().startsWith("get")&&Modifier.isPublic(meth.getModifiers())&&!meth.equals("getDefaultBeanMetaDataURL")) { 
+    			if(meth.getName().startsWith("get")&&Modifier.isPublic(meth.getModifiers())&&!meth.getName().equals("getDefaultBeanMetaDataURL")) { 
     				try {
     					Object res=meth.invoke(this,new Object[0]);
     					Object refRes=meth.invoke(ref,new Object[0]);
