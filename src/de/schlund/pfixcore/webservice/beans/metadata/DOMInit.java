@@ -19,6 +19,7 @@
 
 package de.schlund.pfixcore.webservice.beans.metadata;
 
+import java.io.FileNotFoundException;
 import java.net.URL;
 import java.util.Iterator;
 
@@ -105,6 +106,8 @@ public class DOMInit {
             db.setErrorHandler(new MyErrorHandler());
             Document doc=db.parse(metadataUrl.openStream());
             update(doc);
+        } catch(FileNotFoundException x) {
+            if(LOG.isDebugEnabled()) LOG.debug("Metadata file not found",x);
         } catch(Exception x) {
             throw new DOMInitException("Can't read metadata from '"+metadataUrl+"'.",x);
         }
