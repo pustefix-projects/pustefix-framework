@@ -1,3 +1,14 @@
+2007-03-16  Martin Leidig  <mleidig@schlund.de>
+
+	Added new IWrapper definition attribute 'implements', which
+	produces an according 'implements' declaration in the generated 
+	class and can be used to tag IWrappers, e.g. for common handling
+	of IWrappers which can't have a common base class, but have a
+	set of common fields, which should be handled by the same method.
+
+	* projects/core/build/iwrapper.xsl
+	* projects/core/schema/interfacewrapper200401.xsd
+
 2007-03-16  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
 	* src/de/schlund/pfixcore/editor2/core/dom/IncludePartThemeVariant.java: 
