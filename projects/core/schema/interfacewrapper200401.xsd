@@ -173,6 +173,7 @@
         </xs:element>
       </xs:sequence>
       <xs:attribute name="extends" type="iwrapperType"><xs:annotation><xs:documentation xml:lang="en">class extending de.schlund.pfixcore.generator.IWrapper</xs:documentation></xs:annotation></xs:attribute>
+      <xs:attribute name="implements" type="xs:string"/>
     </xs:complexType>
   </xs:element>
 
