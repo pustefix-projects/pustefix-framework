@@ -250,6 +250,10 @@
                 </tbody>
               </table>
               <br/>
+              <div style="text-align:left">
+                <pfx:xinp type="check" name="upload.PreserveFormat" value="true"/>
+                <span style="cursor:default" onClick="document.forms[0].elements['upload.PreserveFormat'].checked = !document.forms[0].elements['upload.PreserveFormat'].checked">Preserve format (do not append or prepend whitespace)</span>
+              </div>
               <input class="editor_submit" onclick="wfxed.submitContent('wfxta01', 'wfxsubmit01')" type="button" value="Upload Data"/>
               <br/>
               <div style="display:none">

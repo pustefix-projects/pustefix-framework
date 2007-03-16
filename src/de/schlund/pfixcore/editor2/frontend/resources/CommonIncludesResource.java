@@ -86,10 +86,21 @@ public interface CommonIncludesResource extends ContextResource {
     String getContent();
 
     /**
+     * Returns a flag indicating whether the content is indented. Actually
+     * the method returns <code>true</code> if the content is not starting
+     * with whitespace.
+     * 
+     * @return <code>true</code> if content has now surrounding whitespace
+     */
+    boolean isContentIndented();
+    
+    /**
      * Sets new content for the selected include part
      * 
      * @param content
      *            New content to set
+     * @param indent
+     *            flag indicating whether to fix indention of content
      * @param hash
      *            Hash value of the last version the user has seen
      * @throws TransformerException
@@ -100,7 +111,7 @@ public interface CommonIncludesResource extends ContextResource {
      *             If include part has been changed by another user, while this
      *             user has been editing the part.
      */
-    void setContent(String content, String hash) throws SAXException,
+    void setContent(String content, boolean indent, String hash) throws SAXException,
             EditorException;
 
     /**

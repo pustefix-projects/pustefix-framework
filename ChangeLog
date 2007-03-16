@@ -1,3 +1,14 @@
+2007-03-16  Sebastian Marsching  <sebastian.marsching@1und1.de>
+
+	* src/de/schlund/pfixcore/editor2/core/dom/IncludePartThemeVariant.java: 
+	* src/de/schlund/pfixcore/editor2/core/spring/internal/CommonIncludePartThemeVariantImpl.java: 
+	* src/de/schlund/pfixcore/editor2/frontend/handlers/CommonUploadIncludePartHandler.java: 
+	* src/de/schlund/pfixcore/editor2/frontend/resources/CommonIncludesResource.java: 
+	* src/de/schlund/pfixcore/editor2/frontend/resources/CommonIncludesResourceImpl.java: 
+	* src/de/schlund/pfixcore/editor2/frontend/wrappers/CommonUploadIncludePart.iwrp: 
+	* projects/core/editor2/txt/util_includes.xml: 
+	Added "preserve format" option to editor.
+
 2007-03-15  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
 	* build.xml: Beginning development of pfixcore-0.10.1-pre

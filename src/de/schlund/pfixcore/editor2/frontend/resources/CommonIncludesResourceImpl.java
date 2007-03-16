@@ -68,6 +68,8 @@ public abstract class CommonIncludesResourceImpl implements
             .synchronizedSet(new HashSet<String>());
 
     private ComparedLine[] lastDiff;
+    
+    private boolean indentedContent = false;
 
     protected abstract boolean securityMayCreateIncludePartThemeVariant(
             IncludePart includePart, Theme theme);
@@ -388,7 +390,24 @@ public abstract class CommonIncludesResourceImpl implements
             output.append(this.unicodeTranslate(c));
         }
         
-        return fixIndention(output, 0);
+        
+        if (output.length() > 0) {
+            char firstChar = output.charAt(0);
+            if (firstChar == ' ' || firstChar == '\t' || firstChar == '\n' || firstChar == '\r') {
+                indentedContent = true;
+                return fixIndention(output, 0);
+            } else {
+                indentedContent  = false;
+                return output.toString();
+            }
+        } else {
+            indentedContent = true;
+            return "";
+        }
+    }
+    
+    public boolean isContentIndented() {
+        return indentedContent;
     }
 
     private String unicodeTranslate(char c) {
@@ -402,9 +421,11 @@ public abstract class CommonIncludesResourceImpl implements
         }
     }
 
-    public void setContent(String content, String hash) throws SAXException,
+    public void setContent(String content, boolean indent, String hash) throws SAXException,
             EditorException {
         this.lastDiff = null;
+        
+        this.indentedContent = indent;
         
         // Check whether hashcode has changed
         if (!this.selectedIncludePart.getMD5().equals(hash)) {
@@ -428,11 +449,15 @@ public abstract class CommonIncludesResourceImpl implements
         }
 
         xmlcode.append(">");
-        xmlcode.append(fixIndention(content, 6));
+        if (indent) {
+            xmlcode.append(fixIndention(content, 6));
+        } else {
+            xmlcode.append(content);
+        }
         xmlcode.append("</part>");
         Document doc = Xml.parseStringMutable(xmlcode.toString());
 
-        this.selectedIncludePart.setXML(doc.getDocumentElement());
+        this.selectedIncludePart.setXML(doc.getDocumentElement(), indent);
     }
 
     public boolean createAndSelectBranch(String themeName) {

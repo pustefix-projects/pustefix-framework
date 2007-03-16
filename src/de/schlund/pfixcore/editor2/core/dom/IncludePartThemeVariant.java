@@ -56,7 +56,9 @@ public interface IncludePartThemeVariant extends Comparable<IncludePartThemeVari
     Node getXML();
 
     /**
-     * Sets the content of this IncludePart for the selected theme
+     * Sets the content of this IncludePart for the selected theme.
+     * Does the same as {@link #setXML(Node, boolean)} with <code>indent</code>
+     * set to <code>true</code>.
      * 
      * @param xml
      *            XML Node containing the content to save
@@ -67,6 +69,19 @@ public interface IncludePartThemeVariant extends Comparable<IncludePartThemeVari
     void setXML(Node xml) throws EditorIOException, EditorParsingException,
             EditorSecurityException;
 
+    /**
+     * Sets the content of this IncludePart for the selected theme
+     * 
+     * @param xml XML Node containing the content to save
+     * @param indent if <code>true</code> content will be saved in "pretty"
+     *               format. 
+     * @throws EditorIOException
+     * @throws EditorParsingException
+     * @throws EditorSecurityException
+     */
+    void setXML(Node xml, boolean indent) throws EditorIOException, EditorParsingException,
+            EditorSecurityException;
+    
     /**
      * Returns all include parts this IncludePart is depending on. Actually
      * IncludePartThemeVariant objects are returned to honor the fact, that this
