@@ -147,13 +147,17 @@ public abstract class CommonIncludePartThemeVariantImpl extends
             return null;
         }
     }
-
+    
+    public void setXML(Node xml) throws EditorIOException, EditorParsingException, EditorSecurityException {
+        setXML(xml, true);
+    }
+    
     /*
      * (non-Javadoc)
      * 
      * @see de.schlund.pfixcore.editor2.core.dom.IncludePartThemeVariant#setXML(org.w3c.dom.Node)
      */
-    public void setXML(Node xml) throws EditorIOException,
+    public void setXML(Node xml, boolean indent) throws EditorIOException,
             EditorParsingException, EditorSecurityException {
         File xmlFile = new File(this.pathresolver.resolve(this.getIncludePart()
                 .getIncludeFile().getPath()));
@@ -297,8 +301,11 @@ public abstract class CommonIncludePartThemeVariantImpl extends
             
             // Copy over all nodes except attributes to the theme node
             // Keep indention
-            Node temp = doc.createTextNode("\n");
-            theme.appendChild(temp);
+            Node temp;
+            if (indent) {
+                temp = doc.createTextNode("\n");
+                theme.appendChild(temp);
+            }
             NodeList nlist = xml.getChildNodes();
             for (int i = 0; i < nlist.getLength(); i++) {
                 Node child = nlist.item(i);
@@ -306,8 +313,10 @@ public abstract class CommonIncludePartThemeVariantImpl extends
                     theme.appendChild(doc.importNode(child, true));
                 }
             }
-            temp = doc.createTextNode("\n    ");
-            theme.appendChild(temp);
+            if (indent) {
+                temp = doc.createTextNode("\n    ");
+                theme.appendChild(temp);
+            }
 
             // Log change
             this.writeChangeLog();
