@@ -3,7 +3,6 @@
   <part name="content">
     <theme name="default">
       <center>
-        <pfx:include part="test"/>
         <pfx:forminput target="_top">
           <table width="400">
             <tr>
@@ -261,9 +260,5 @@
     <theme name="default">
       [FOO]
     </theme>
-  </part>
-
-  <part name="test">
-    <theme name="default">Foo</theme>
   </part>
 </include_parts>
