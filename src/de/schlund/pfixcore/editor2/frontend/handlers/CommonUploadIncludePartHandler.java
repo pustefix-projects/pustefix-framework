@@ -62,7 +62,7 @@ public abstract class CommonUploadIncludePartHandler implements IHandler {
                     content = input.getStoredContent();
                     input.setContent(content);
                 }
-                this.getResource(context).setContent(content, input.getHash());
+                this.getResource(context).setContent(content, (input.getPreserveFormat() != null) ? !input.getPreserveFormat().booleanValue() : true, input.getHash());
                 input.setHash(this.getResource(context).getMD5());
             } catch (SAXException e) {
                 Logger.getLogger(this.getClass()).warn(e);
@@ -90,6 +90,7 @@ public abstract class CommonUploadIncludePartHandler implements IHandler {
         if (input.getDoUpload() == null || !input.getDoUpload().booleanValue()) {
             input.setContent(this.getResource(context).getContent());
             input.setHash(this.getResource(context).getMD5());
+            input.setPreserveFormat(!this.getResource(context).isContentIndented());
 
             // Set flag indicating we are in edit mode
             EditorResourceLocator.getSessionResource(context)
