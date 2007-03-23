@@ -28,6 +28,7 @@ import java.util.Set;
 import javax.mail.Address;
 import javax.mail.Message;
 import javax.mail.MessagingException;
+import javax.mail.NoSuchProviderException;
 import javax.mail.SendFailedException;
 import javax.mail.Session;
 import javax.mail.Transport;
@@ -71,7 +72,34 @@ public class EmailSender {
             String from,
             String smtphost)
             throws EmailSenderException {
-        sendMail(subject, text, null, to, from, smtphost);
+        sendMail(subject, text, null, to, from, smtphost, null, null, false);
+    }
+    
+    /**
+     * Send an email (without headers). 
+     * 
+     * @param subject  A String specifying the mail subject. Not null.
+     * @param text     The text the mail should contain. Not null.
+     * @param to       A String arry specifying the recipients. Not null.
+     * @param from     A String specifying the from address. Not null.
+     * @param smtphost A String specifying the smtp-server to use. Not null.
+     * @param authuser username to use for authentication against the mail server.
+     *                  If set to <code>null</code>, no authentication will be used.
+     * @param authpassword password to use for authentication against the mail server.
+     *                  If set to <code>null</code>, no authentication will be used.
+     * @throws EmailSenderException on errors when trying to send the mail.
+     * @throws IllegalArgumentExceptionwhen trying to pass NPs as paramters.
+     */
+    public static void sendMail(
+            String subject,
+            String text,
+            String[] to,
+            String from,
+            String smtphost,
+            String authuser,
+            String authpassword)
+            throws EmailSenderException {
+        sendMail(subject, text, null, to, from, smtphost, authuser, authpassword, false);
     }
     
     /**
@@ -88,12 +116,45 @@ public class EmailSender {
      * @throws IllegalArgumentExceptionwhen trying to pass NPs as paramters.
      */
     public static void sendMail(
+            String subject,
+            String text,
+            Map headers,
+            String[] to,
+            String from,
+            String smtphost)
+            throws EmailSenderException {
+        sendMail(subject, text, headers, to, from, smtphost, null, null, false);
+    }
+    
+    /**
+     * Send an email.
+     * 
+     * @param subject  A String specifying the mail subject. Not null.
+     * @param text     The text the mail should contain. Not null.
+     * @param headers  A Map contain strings as key and values, these headers will be
+     *                  appended to the headers of the email. Maybe null.
+     * @param to       A String arry specifying the recipients. Not null.
+     * @param from     A String specifying the from address. Not null.
+     * @param smtphost A String specifying the smtp-server to use. Not null.
+     * @param authuser username to use for authentication against the mail server.
+     *                  If set to <code>null</code>, no authentication will be used.
+     * @param authpassword password to use for authentication against the mail server.
+     *                  If set to <code>null</code>, no authentication will be used.
+     * @param secure   flag indicating whether to use the STARTTLS command if the server
+     *                  supports it.
+     * @throws EmailSenderException on errors when trying to send the mail.
+     * @throws IllegalArgumentExceptionwhen trying to pass NPs as paramters.
+     */
+    public static void sendMail(
         String subject,
         String text,
         Map headers,
         String[] to,
         String from,
-        String smtphost)
+        String smtphost,
+        String authuser,
+        String authpassword,
+        boolean secure)
         throws EmailSenderException {
 
         if(subject == null)
@@ -120,8 +181,15 @@ public class EmailSender {
 
         Properties properties = new Properties();
         properties.put("mail.smtp.host", smtphost);
+        if (secure) {
+            properties.setProperty("mail.smtp.starttls.enable", "true");
+        }
+        if (authuser != null && authpassword != null) {
+            properties.setProperty("mail.smtp.auth", "true");
+        }
+        Session session = Session.getInstance(properties);
         MimeMessage msg =
-            new MimeMessage(Session.getInstance(properties));
+            new MimeMessage(session);
 
         StringBuffer strError = new StringBuffer();
 
@@ -184,7 +252,20 @@ public class EmailSender {
             msg.setFrom(fromaddress);
             msg.setSentDate(new Date());
             
-            Transport.send(msg);
+            Transport transport;
+            try {
+                transport = session.getTransport("smtp");
+            } catch (NoSuchProviderException e) {
+                throw new EmailSenderException("Could not get a transport for smtp protocol", e);
+            }
+            
+            if (authuser != null && authpassword != null) {
+                transport.connect(smtphost, authuser, authpassword);
+            } else {
+                transport.connect(smtphost, null, null);
+            }
+            
+            transport.sendMessage(msg, msg.getAllRecipients());
         } catch (MessagingException mex) {
             Exception ex = mex;
             strError.append("Caught " + mex.getClass().getName() + "\n");
