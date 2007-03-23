@@ -1,3 +1,9 @@
+2007-03-23  Sebastian Marsching  <sebastian.marsching@1und1.de>
+
+	* src/de/schlund/pfixcore/util/email/EmailSender.java: 
+	* src/de/schlund/pfixcore/util/email/EmailSenderException.java: 
+	Implemented support for SMTP authentication and TLS.
+
 2007-03-16  Martin Leidig  <mleidig@schlund.de>
 
 	Added new IWrapper definition attribute 'implements', which

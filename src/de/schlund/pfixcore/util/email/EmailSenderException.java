@@ -35,6 +35,11 @@ public class EmailSenderException extends Exception {
         this.message_=message;
     }
     
+    public EmailSenderException(String message, Throwable e) {
+        super(message, e);
+        this.message_=message;
+    }
+    
     public String getMessage() {
         return message_;
     }
