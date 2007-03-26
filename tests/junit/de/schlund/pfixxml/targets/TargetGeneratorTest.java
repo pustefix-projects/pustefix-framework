@@ -7,6 +7,9 @@
 package de.schlund.pfixxml.targets;
 
 import java.io.File;
+import java.util.Iterator;
+import java.util.Random;
+import java.util.TreeSet;
 
 import junit.framework.TestCase;
 
@@ -14,6 +17,7 @@ import org.w3c.dom.Document;
 
 import de.schlund.pfixxml.XMLException;
 import de.schlund.pfixxml.config.GlobalConfigurator;
+import de.schlund.pfixxml.resources.FileResource;
 import de.schlund.pfixxml.resources.ResourceUtil;
 import de.schlund.pfixxml.util.Xml;
 
@@ -40,6 +44,7 @@ public class TargetGeneratorTest extends TestCase {
         TargetGenerator gen;
         
         gen = create("<make project='foo' lang='bar'>" + 
+                     "  <navigation/> " +
                      "  <target name='master.xsl' type='xsl'>" +
                      "    <depxml name='core/xsl/master.xsl'/>" + 
                      "    <depxsl name='core/xsl/customizemaster.xsl'/>" +
@@ -103,10 +108,45 @@ public class TargetGeneratorTest extends TestCase {
         File file;
         
         Document doc = Xml.parseStringMutable(str);
-        file = File.createTempFile("depend", "xml", new File("example"));
+        file = File.createTempFile("depend", ".xml", new File("projects"));
         file.deleteOnExit();
         Xml.serialize(doc, file, true, true);
         gen = new TargetGenerator(ResourceUtil.getFileResource(file.toURI()));
         return gen;
     }
+    
+    public void testConcurrency() throws Exception {
+        FileResource res=ResourceUtil.getFileResource(new File("projects/sample1/conf/depend.xml").toURI());
+        TargetGenerator generator=new TargetGenerator(res);
+        TreeSet topTargets=generator.getPageTargetTree().getToplevelTargets();
+        final Target[] targets=new Target[topTargets.size()];
+        Iterator it=topTargets.iterator();
+        for(int i=0;i<targets.length;i++) targets[i]=(Target)it.next();
+        int threadNo=50;
+        final int requestNo=10;
+        Thread[] threads=new Thread[threadNo];
+        for(int i=0;i<threadNo;i++) {
+            final long seed=i;
+            final int max=targets.length;
+            Thread thread=new Thread() {
+               @Override
+               public void run() {
+                   Random random=new Random(System.currentTimeMillis()/(seed+1));
+                   for(int j=0;j<requestNo;j++) {
+                       int ind=random.nextInt(max);
+                       try {
+                           Object obj=targets[ind].getValue();
+                           assertNotNull(obj);
+                       } catch(TargetGenerationException x) {
+                           throw new RuntimeException("Error",x);
+                       }
+                   }
+               }
+            };
+            threads[i]=thread;
+            thread.start();
+        }
+        for(int i=0;i<threadNo;i++) threads[i].join();
+    }
+    
 }

@@ -1,3 +1,15 @@
+2007-03-26  Martin Leidig  <mleidig@schlund.de>
+
+	Added new JUnit version, made tests work from commandline too,
+	added concurrency test for TargetGenerator.
+
+	* .classpath
+	* tests/junit/de/schlund/pfixcore/webservice/beans/BeanDescriptorTest.java
+	* tests/junit/de/schlund/pfixxml/multipart/RFC822HeadersTest.java
+	* tests/junit/de/schlund/pfixxml/targets/TargetGeneratorTest.java
+	* lib/junit-4.3.jar: added
+	* lib/junit-3.8.1.jar: removed
+
 2007-03-23  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
 	* src/de/schlund/pfixcore/util/email/EmailSender.java: 
