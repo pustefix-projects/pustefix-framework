@@ -1,5 +1,6 @@
 package de.schlund.pfixcore.webservice.beans;
 
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashSet;
 import java.util.Set;
@@ -27,6 +28,13 @@ public class BeanDescriptorTest extends TestCase {
         logger.addAppender(appender);
         
         URL url=getClass().getResource("beanmetadata.xml");
+        if(url==null) {
+            try {
+                url=new URL("file:/tests/junit/de/schlund/pfixcore/webservice/beans/beanmetadata.xml");
+            } catch(MalformedURLException x) {
+                throw new RuntimeException(x);
+            }
+        }
         Locator locator=new DefaultLocator(url);
         BeanDescriptorFactory beanDescFactory=new BeanDescriptorFactory(locator);    
         
