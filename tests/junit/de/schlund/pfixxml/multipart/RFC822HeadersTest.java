@@ -20,6 +20,8 @@
 package de.schlund.pfixxml.multipart;
 
 import java.io.ByteArrayOutputStream;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -106,7 +108,15 @@ public class RFC822HeadersTest extends TestCase {
     }
     
     private InputStream getInputStream(String fileName) {
-        return getClass().getClassLoader().getResourceAsStream("de/schlund/pfixxml/multipart/"+fileName);
+        InputStream in=getClass().getClassLoader().getResourceAsStream("de/schlund/pfixxml/multipart/"+fileName);
+        if(in==null) {
+            try {
+                in=new FileInputStream("tests/junit/de/schlund/pfixxml/multipart/"+fileName);
+            } catch(FileNotFoundException x) {
+                throw new RuntimeException(x);
+            }
+        }
+        return in;
     }
     
     private List<Part> parseMultipart(InputStream in,String boundary,boolean custom) throws IOException,MessagingException {

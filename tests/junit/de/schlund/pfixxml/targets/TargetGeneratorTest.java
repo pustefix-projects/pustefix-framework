@@ -7,6 +7,9 @@
 package de.schlund.pfixxml.targets;
 
 import java.io.File;
+import java.util.Iterator;
+import java.util.Random;
+import java.util.TreeSet;
 
 import junit.framework.TestCase;
 
@@ -19,14 +22,14 @@ import de.schlund.pfixxml.util.Xml;
 
 public class TargetGeneratorTest extends TestCase {
     // TODO
-    private static final File DOCROOT = new File("example").getAbsoluteFile();
+    private static final File DOCROOT = new File("projects").getAbsoluteFile();
 
     static {
         PathFactory.getInstance().init(DOCROOT.getAbsolutePath());
     }
     
     public void testEmpty() throws Exception {
-
+ 
         TargetGenerator gen;
         
         gen = create("<make project='foo' lang='bar'/>");
@@ -40,6 +43,7 @@ public class TargetGeneratorTest extends TestCase {
         TargetGenerator gen;
         
         gen = create("<make project='foo' lang='bar'>" + 
+                     "  <navigation/>" +
                      "  <target name='master.xsl' type='xsl'>" +
                      "    <depxml name='core/xsl/master.xsl'/>" + 
                      "    <depxsl name='core/xsl/customizemaster.xsl'/>" +
@@ -101,12 +105,51 @@ public class TargetGeneratorTest extends TestCase {
     private TargetGenerator create(String str) throws Exception {
         TargetGenerator gen;
         File file;
-        
         Document doc = Xml.parseStringMutable(str);
-        file = File.createTempFile("depend", "xml", new File("example"));
+        file = File.createTempFile("depend", ".xml", new File("projects"));
+        Path path=PathFactory.getInstance().createPath(file.getName());
         file.deleteOnExit();
         Xml.serialize(doc, file, true, true);
-        gen = new TargetGenerator(Path.create(file.getPath()));
+        gen = new TargetGenerator(path);
         return gen;
     }
+    
+    public void testConcurrency() throws Exception {
+        Path path=PathFactory.getInstance().createPath("sample1/conf/depend.xml");
+        TargetGenerator generator=new TargetGenerator(path);
+        TreeSet topTargets=generator.getPageTargetTree().getToplevelTargets();
+        final Target[] targets=new Target[topTargets.size()];
+        Iterator it=topTargets.iterator();
+        for(int i=0;i<targets.length;i++) targets[i]=(Target)it.next();
+        int threadNo=50;
+        final int requestNo=10;
+        Thread[] threads=new Thread[threadNo];
+        for(int i=0;i<threadNo;i++) {
+            final long seed=i;
+            final int max=targets.length;
+            Thread thread=new Thread() {
+               @Override
+               public void run() {
+                   Random random=new Random(System.currentTimeMillis()/(seed+1));
+                   for(int j=0;j<requestNo;j++) {
+                       int ind=random.nextInt(max);
+                       try {
+                           Object obj=targets[ind].getValue();
+                           assertNotNull(obj);
+                       } catch(TargetGenerationException x) {
+                           throw new RuntimeException("Error",x);
+                       }
+                   }
+               }
+            };
+            threads[i]=thread;
+            thread.start();
+        }
+        for(int i=0;i<threadNo;i++) threads[i].join();
+    }
+    
+    public static void main(String[] args) throws Exception {
+        new TargetGeneratorTest().testConcurrency();
+    }
+    
 }
