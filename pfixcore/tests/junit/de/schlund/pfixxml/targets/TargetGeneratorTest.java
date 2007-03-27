@@ -115,39 +115,58 @@ public class TargetGeneratorTest extends TestCase {
     }
     
     public void testConcurrency() throws Exception {
-        Path path=PathFactory.getInstance().createPath("sample1/conf/depend.xml");
-        TargetGenerator generator=new TargetGenerator(path);
-        TreeSet topTargets=generator.getPageTargetTree().getToplevelTargets();
-        final Target[] targets=new Target[topTargets.size()];
-        Iterator it=topTargets.iterator();
-        for(int i=0;i<targets.length;i++) targets[i]=(Target)it.next();
-        int threadNo=50;
-        final int requestNo=10;
-        Thread[] threads=new Thread[threadNo];
-        for(int i=0;i<threadNo;i++) {
-            final long seed=i;
-            final int max=targets.length;
-            Thread thread=new Thread() {
-               @Override
-               public void run() {
-                   Random random=new Random(System.currentTimeMillis()/(seed+1));
-                   for(int j=0;j<requestNo;j++) {
-                       int ind=random.nextInt(max);
-                       try {
-                           Object obj=targets[ind].getValue();
-                           assertNotNull(obj);
-                       } catch(TargetGenerationException x) {
-                           throw new RuntimeException("Error",x);
+        File cacheDir=new File("projects/.cache");
+        File tmpCacheDir=new File("projects/.cache_tmp");
+        if(cacheDir.exists()) cacheDir.renameTo(tmpCacheDir);
+        try {
+            Path path=PathFactory.getInstance().createPath("sample1/conf/depend.xml");
+            TargetGenerator generator=new TargetGenerator(path);
+            generator.setIsGetModTimeMaybeUpdateSkipped(true);
+            TreeSet topTargets=generator.getPageTargetTree().getToplevelTargets();
+            final Target[] targets=new Target[topTargets.size()];
+            Iterator it=topTargets.iterator();
+            for(int i=0;i<targets.length;i++) targets[i]=(Target)it.next();
+            int threadNo=50;
+            final int requestNo=10;
+            Thread[] threads=new Thread[threadNo];
+            for(int i=0;i<threadNo;i++) {
+                final long seed=i;
+                final int max=targets.length;
+                Thread thread=new Thread() {
+                   @Override
+                   public void run() {
+                       Random random=new Random(System.currentTimeMillis()/(seed+1));
+                       for(int j=0;j<requestNo;j++) {
+                           int ind=random.nextInt(max);
+                           try {
+                               Object obj=targets[ind].getValue();
+                               assertNotNull(obj);
+                           } catch(TargetGenerationException x) {
+                               throw new RuntimeException("Error",x);
+                           }
                        }
                    }
-               }
-            };
-            threads[i]=thread;
-            thread.start();
+                };
+                threads[i]=thread;
+                thread.start();
+            }
+            for(int i=0;i<threadNo;i++) threads[i].join();
+        } finally {
+            if(cacheDir.exists()) delete(cacheDir);
+            if(tmpCacheDir.exists()) tmpCacheDir.renameTo(cacheDir);
         }
-        for(int i=0;i<threadNo;i++) threads[i].join();
     }
     
+    private static boolean delete(File file) {
+        if(file.isDirectory()) {
+            File[] files=file.listFiles();
+            for(int i=0;i<files.length;i++) {
+                delete(files[i]);
+            }
+        }
+        return file.delete();
+    }
+
     public static void main(String[] args) throws Exception {
         new TargetGeneratorTest().testConcurrency();
     }
