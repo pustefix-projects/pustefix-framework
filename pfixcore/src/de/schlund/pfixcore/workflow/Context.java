@@ -973,6 +973,7 @@ public class Context implements AppContext {
                     pageflow_requested_by_user = false;
                 }
             } else {
+                if(currentpageflow==null) currentpageflow=pageflowmanager.getPageFlowByName(config.getDefaultFlow(), getVariant());
                 flow = pageflowmanager.pageFlowToPageRequest(currentpageflow, currentpagerequest, getVariant());
                 pageflow_requested_by_user = false;
             }

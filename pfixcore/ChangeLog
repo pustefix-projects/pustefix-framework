@@ -1,3 +1,10 @@
+2007-03-29  Martin Leidig  <mleidig@schlund.de>
+
+	* src/de/schlund/pfixcore/workflow/Context.java: Fixed NullPointerException
+	in trySettingPageRequestAndFlow caused by the fact that after adding the nostore 
+	stuff requests to non-exisiting pages don't trigger the current flow to be stored 
+	as last flow and thus it can happen that the current flow is null.
+
 2007-03-28  Martin Leidig  <mleidig@schlund.de>
 
 	* projects/core/script/webservice_json.js: Fixed async JSON 
