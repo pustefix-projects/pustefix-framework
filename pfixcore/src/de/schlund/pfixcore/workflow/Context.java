@@ -180,9 +180,12 @@ public class Context implements AppContext {
                 autoinvalidate_navi  = saved_autoinvalidate;
                 saved_autoinvalidate = null;
             }
-            if(currentpagerequest!=null && getConfigForCurrentPageRequest()!=null && getConfigForCurrentPageRequest().isStoreXML()) {
-                lastPageRequest=currentpagerequest;
-                lastPageFlow=currentpageflow;
+            if(currentpagerequest!=null) {
+                PageRequestConfig conf=getConfigForCurrentPageRequest();
+                if(conf==null || conf.isStoreXML()) {
+                    lastPageRequest=currentpagerequest;
+                    lastPageFlow=currentpageflow;
+                }
             }
         }
     }
@@ -973,7 +976,6 @@ public class Context implements AppContext {
                     pageflow_requested_by_user = false;
                 }
             } else {
-                if(currentpageflow==null) currentpageflow=pageflowmanager.getPageFlowByName(config.getDefaultFlow(), getVariant());
                 flow = pageflowmanager.pageFlowToPageRequest(currentpageflow, currentpagerequest, getVariant());
                 pageflow_requested_by_user = false;
             }
