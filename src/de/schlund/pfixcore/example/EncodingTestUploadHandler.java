@@ -16,14 +16,14 @@ public class EncodingTestUploadHandler implements IHandler {
         EncodingTestUpload upload=(EncodingTestUpload)wrapper;
         File file=upload.getFile();
         String text=upload.getText();
-        ContextEncodingTest ctx=(ContextEncodingTest)context.getContextResourceManager().getResource(ContextEncodingTest.class.getName());
+        ContextEncodingTest ctx=context.getContextResourceManager().getResource(ContextEncodingTest.class);
         if(text!=null) ctx.setText(text);
         if(file!=null) ctx.setFile(file);
     }
     
     public void retrieveCurrentStatus(Context context,IWrapper wrapper) throws Exception {
         EncodingTestUpload upload=(EncodingTestUpload)wrapper;
-        ContextEncodingTest ctx=(ContextEncodingTest)context.getContextResourceManager().getResource(ContextEncodingTest.class.getName());
+        ContextEncodingTest ctx=context.getContextResourceManager().getResource(ContextEncodingTest.class);
         if(ctx.getText()!=null) upload.setText(ctx.getText());
     }
     

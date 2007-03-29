@@ -23,14 +23,14 @@ public class EncodingTestHandler implements IHandler {
         EncodingTest test     = (EncodingTest)wrapper;
         String       encoding = test.getEncoding();
         if (encoding == null || encoding.trim().equals("") || encoding.equals("none")) {
-            ContextEncodingTest ctx = (ContextEncodingTest)context.getContextResourceManager().getResource(ContextEncodingTest.class.getName());
+            ContextEncodingTest ctx = context.getContextResourceManager().getResource(ContextEncodingTest.class);
             ctx.setText(test.getText());
         }
     }
     
     public void retrieveCurrentStatus(Context context,IWrapper wrapper) throws Exception {
         EncodingTest        test = (EncodingTest)wrapper;
-        ContextEncodingTest ctx  = (ContextEncodingTest)context.getContextResourceManager().getResource(ContextEncodingTest.class.getName());
+        ContextEncodingTest ctx  = context.getContextResourceManager().getResource(ContextEncodingTest.class);
         if (ctx.getText() != null) test.setText(ctx.getText());
     }
     

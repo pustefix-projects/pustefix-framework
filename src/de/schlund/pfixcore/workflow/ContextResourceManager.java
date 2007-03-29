@@ -140,6 +140,18 @@ public class ContextResourceManager {
         return  (ContextResource) resources.get(name);
     }
 
+    /**
+     * Returns the ContextResource object which implements the interface
+     * passed as argument (or null if no object found).
+     * 
+     * @param clazz the interface class
+     * @return instance of the class implementing the interface
+     */
+    @SuppressWarnings("unchecked")
+    public <T extends ContextResource> T getResource(Class<T> clazz) {
+        return (T) resources.get(clazz.getName());
+    }
+    
     private void checkInterface(Object obj, String interfacename) throws PustefixCoreException {
         Class wantedinterface = null;
         
