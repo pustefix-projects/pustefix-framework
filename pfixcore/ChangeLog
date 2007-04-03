@@ -1,3 +1,8 @@
+2007-04-03  Sebastian Marsching  <sebastian.marsching@1und1.de>
+
+	* projects/core/xsl/include.xsl: Added XSLT extension function which
+	returns path to the current include file (if available).
+
 2007-03-29  Martin Leidig  <mleidig@schlund.de>
 
 	* src/de/schlund/pfixcore/workflow/Context.java: Fixed NullPointerException
