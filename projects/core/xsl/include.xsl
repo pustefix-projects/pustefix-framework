@@ -6,6 +6,7 @@
                 xmlns:include="xalan://de.schlund.pfixxml.IncludeDocumentExtension"
                 xmlns:image="xalan://de.schlund.pfixxml.ImageThemedSrc"
                 xmlns:geometry="xalan://de.schlund.pfixxml.ImageGeometry"
+                xmlns:func="http://exslt.org/functions"
                 exclude-result-prefixes="include image geometry">
 
   <!-- The needed parameters must be set in the including stylesheet! -->
@@ -407,5 +408,9 @@
       </xsl:otherwise>
     </xsl:choose>
   </xsl:template>
+  
+  <func:function name="pfx:getIncludePath">
+    <func:result select="include:makeSystemIdRelative()"/>
+  </func:function>
 
 </xsl:stylesheet>
