@@ -2,9 +2,9 @@ Put a binary package of tomcat here, straight from the jakarta site (http://jaka
 Please use a package that's packed as a gzipped tar file (.tar.gz).
 Pfixcore is currently tested to run with
 
-	jakarta-tomcat-5.0.27.tar.gz
+	apache-tomcat-5.5.17.tar.gz
 
-Other versions of the 5.0.x branch should work, too. Your mileage may vary.
+Other versions of the 5.5.x branch should work, too. Your mileage may vary.
 The build process will take care to unpack and configure this tomcat package, 
 but you have to call "ant realclean" in order to remove any old tomcat that has 
 been already unpacked and configured before.
