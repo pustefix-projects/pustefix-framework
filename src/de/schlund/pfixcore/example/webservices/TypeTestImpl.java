@@ -5,7 +5,8 @@ package de.schlund.pfixcore.example.webservices;
 
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.w3c.dom.Element;
 
@@ -142,8 +143,20 @@ public class TypeTestImpl implements TypeTest {
         return data;
     }
     
-    public HashMap echoHashMap(HashMap map) {
+    public List<String> echoStringList(List<String> stringList) {
+        return stringList;
+    }
+    
+    public List<DataBean> echoDataBeanList(List<DataBean> dataBeanList) {
+        return dataBeanList;
+    }
+    
+    public Map<String,String> echoStringMap(Map<String,String> map) {
         return map;
+    }
+    
+    public Map<String,DataBean> echoDataBeanMap(Map<String,DataBean> dataBeanMap) {
+        return dataBeanMap;
     }
     
 }

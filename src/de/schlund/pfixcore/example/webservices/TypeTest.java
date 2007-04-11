@@ -5,7 +5,8 @@ package de.schlund.pfixcore.example.webservices;
 
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.w3c.dom.Element;
 
@@ -80,6 +81,12 @@ public interface TypeTest {
     
     public DataBean[] echoDataBeanArray(DataBean[] data);
     
-    public HashMap echoHashMap(HashMap map);
+    public List<String> echoStringList(List<String> stringList);
+    
+    public List<DataBean> echoDataBeanList(List<DataBean> dataBeanList);
+    
+    public Map<String,String> echoStringMap(Map<String,String> stringMap);
+    
+    public Map<String,DataBean> echoDataBeanMap(Map<String,DataBean> dataBeanMap);
     
 }

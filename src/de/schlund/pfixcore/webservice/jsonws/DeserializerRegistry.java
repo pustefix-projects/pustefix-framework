@@ -19,6 +19,8 @@
 
 package de.schlund.pfixcore.webservice.jsonws;
 
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -43,14 +45,13 @@ public class DeserializerRegistry {
     Deserializer arrayDeserializer;
     
     public DeserializerRegistry(BeanDescriptorFactory beanDescFactory) {
-        deserializers=new HashMap<Class,Deserializer>();
-        beanDeserializer=new BeanDeserializer(beanDescFactory);
         
+        deserializers=new HashMap<Class,Deserializer>();
+        
+        beanDeserializer=new BeanDeserializer(beanDescFactory);
         arrayDeserializer=new ArrayDeserializer();
-        deserializers.put(List.class,arrayDeserializer);
         
         deserializers.put(String.class,new StringDeserializer());
-        
         Deserializer deser=new NumberDeserializer();
         deserializers.put(byte.class,deser);
         deserializers.put(Byte.class,deser);
@@ -64,26 +65,34 @@ public class DeserializerRegistry {
         deserializers.put(Float.class,deser);
         deserializers.put(double.class,deser);
         deserializers.put(Double.class,deser);
-        
         deser=new BooleanDeserializer();
         deserializers.put(boolean.class,deser);
         deserializers.put(Boolean.class,deser);
-        
         deser=new CalendarDeserializer();
         deserializers.put(Calendar.class,deser);
         deserializers.put(Date.class,deser);
         
-        
     }
     
-    public Deserializer getDeserializer(Class clazz) throws DeserializationException {
-        Deserializer deser=null;
-        if(clazz!=null) deser=deserializers.get(clazz);
-        if(clazz.isArray()) return arrayDeserializer; 
-        if(List.class.isAssignableFrom(clazz)) return arrayDeserializer;
-        if(deser==null) deser=beanDeserializer;
-        if(deser==null) throw new DeserializationException("No Deserializer found for "+clazz.getName());
+    public Deserializer getDeserializer(Class clazz) {
+        Deserializer deser=deserializers.get(clazz);
+        if(deser==null) {
+            if(clazz.isArray()) deser=arrayDeserializer; 
+            else if(List.class.isAssignableFrom(clazz)) deser=arrayDeserializer;
+            else deser=beanDeserializer;
+        }
         return deser;
+    }
+    
+    public Deserializer getDeserializer(Type type) {
+        Class clazz=null;
+        if(type instanceof Class) clazz=(Class)type;
+        else if(type instanceof ParameterizedType) {
+            Type rawType=((ParameterizedType)type).getRawType();
+            if(rawType instanceof Class) clazz=(Class)rawType;
+        }
+        if(clazz!=null) return getDeserializer(clazz);
+        else throw new RuntimeException("Type not supported: "+type.getClass()+" "+type);
     }
     
 }
