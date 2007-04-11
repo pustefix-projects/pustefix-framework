@@ -21,9 +21,6 @@ package de.schlund.pfixcore.webservice.jsonws;
 
 import java.io.IOException;
 import java.io.Writer;
-import java.util.List;
-
-import de.schlund.pfixcore.webservice.jsonws.serializers.ArraySerializer;
 
 public class SerializationContext {
 
@@ -36,18 +33,12 @@ public class SerializationContext {
     }
     
     public Object serialize(Object obj) throws SerializationException {
-        Class clazz=obj.getClass();
-        Serializer ser=null;
-        if(clazz.isArray()||List.class.isAssignableFrom(clazz)) ser=new ArraySerializer(); 
-        else ser=serReg.getSerializer(obj);
+        Serializer ser=serReg.getSerializer(obj.getClass());
         return ser.serialize(this,obj);
     }
     
     public void serialize(Object obj,Writer writer) throws SerializationException,IOException {
-        Class clazz=obj.getClass();
-        Serializer ser=null;
-        if(clazz.isArray()||List.class.isAssignableFrom(clazz)) ser=new ArraySerializer(); 
-        else ser=serReg.getSerializer(obj);
+        Serializer ser=serReg.getSerializer(obj.getClass());
         ser.serialize(this,obj,writer);
     }
     

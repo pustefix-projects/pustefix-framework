@@ -19,6 +19,7 @@
 
 package de.schlund.pfixcore.webservice.jsonws.deserializers;
 
+import java.lang.reflect.Type;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -29,13 +30,15 @@ import de.schlund.pfixcore.webservice.jsonws.Deserializer;
 public class CalendarDeserializer extends Deserializer {
     
     @Override
-    public boolean canDeserialize(DeserializationContext ctx, Object jsonValue, Class<?> targetClass) {
+    public boolean canDeserialize(DeserializationContext ctx, Object jsonValue, Type targetType) {
+        Class targetClass=(Class)targetType;
         if(jsonValue instanceof Calendar && Calendar.class.isAssignableFrom(targetClass)) return true;
         return false;
     }
     
     @Override
-    public Object deserialize(DeserializationContext ctx,Object jsonValue,Class targetClass) throws DeserializationException {
+    public Object deserialize(DeserializationContext ctx,Object jsonValue,Type targetType) throws DeserializationException {
+        Class targetClass=(Class)targetType;
         if(jsonValue instanceof Calendar) {
             if(targetClass==Date.class) {
                 return ((Calendar)jsonValue).getTime();

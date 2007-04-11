@@ -19,6 +19,9 @@
 
 package de.schlund.pfixcore.webservice.jsonws;
 
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+
 public class DeserializationContext {
 
     DeserializerRegistry deserReg;
@@ -27,15 +30,29 @@ public class DeserializationContext {
         this.deserReg=deserReg;
     }
    
-    public boolean canDeserialize(Object jsonObj,Class targetClass) throws DeserializationException {
+    public boolean canDeserialize(Object jsonObj,Type targetType) throws DeserializationException {
+        Class targetClass=null;
+        if(targetType instanceof Class) targetClass=(Class)targetType;
+        else if(targetType instanceof ParameterizedType) {
+            Type rawType=((ParameterizedType)targetType).getRawType();
+            if(rawType instanceof Class) targetClass=(Class)rawType;
+            else return false;
+        } else return false;
         Deserializer deser=deserReg.getDeserializer(targetClass);
-        return deser.canDeserialize(this,jsonObj,targetClass);
+        return deser.canDeserialize(this,jsonObj,targetType);
     }
     
-    public Object deserialize(Object jsonObj,Class targetClass) throws DeserializationException {
+    public Object deserialize(Object jsonObj,Type targetType) throws DeserializationException {
         if(jsonObj==null) return null;
+        Class targetClass=null;
+        if(targetType instanceof Class) targetClass=(Class)targetType;
+        else if(targetType instanceof ParameterizedType) {
+            Type rawType=((ParameterizedType)targetType).getRawType();
+            if(rawType instanceof Class) targetClass=(Class)rawType;
+            else throw new DeserializationException("Unsupported type: "+targetType);
+        } else throw new DeserializationException("Unsupported type: "+targetType);
         Deserializer deser=deserReg.getDeserializer(targetClass);
-        return deser.deserialize(this,jsonObj,targetClass);
+        return deser.deserialize(this,jsonObj,targetType);
     }
     
 }

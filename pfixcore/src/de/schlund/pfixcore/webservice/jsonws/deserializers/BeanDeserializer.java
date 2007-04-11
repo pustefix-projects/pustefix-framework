@@ -21,7 +21,11 @@ package de.schlund.pfixcore.webservice.jsonws.deserializers;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 
 import de.schlund.pfixcore.webservice.beans.BeanDescriptor;
 import de.schlund.pfixcore.webservice.beans.BeanDescriptorFactory;
@@ -42,60 +46,112 @@ public class BeanDeserializer extends Deserializer {
     }
     
     @Override
-    public boolean canDeserialize(DeserializationContext ctx, Object jsonValue, Class<?> targetClass) {
+    public boolean canDeserialize(DeserializationContext ctx, Object jsonValue, Type targetType) {
         // TODO Auto-generated method stub
         return false;
     }
     
     @Override
-    public Object deserialize(DeserializationContext ctx,Object jsonValue,Class<?> targetClass) throws DeserializationException {
+    public Object deserialize(DeserializationContext ctx,Object jsonValue,Type targetType) throws DeserializationException {
+      
         if(jsonValue instanceof JSONObject) {
-            try {
-                JSONObject jsonObj=(JSONObject)jsonValue;
-                String className=jsonObj.getStringMember("javaClass");
-                if(className!=null) {
-                    Class<?> clazz=Class.forName(className);
-                    if(targetClass!=null && !targetClass.isAssignableFrom(clazz)) 
-                        throw new DeserializationException("Class '"+targetClass.getName()+"' isn't assignable from '"+clazz.getName());
-                    targetClass=clazz;
+            
+            JSONObject jsonObj=(JSONObject)jsonValue;
+            
+            Class<?> targetClass=null;
+            if(targetType instanceof Class) targetClass=(Class)targetType;
+            else if(targetType instanceof ParameterizedType) {
+                Type rawType=((ParameterizedType)targetType).getRawType();
+                if(rawType instanceof Class) targetClass=(Class)rawType;
+                else throw new DeserializationException("Type not supported: "+targetType);
+            }
+            
+            if(Map.class.isAssignableFrom(targetClass)) {
+
+                Type valType=null;
+                if(targetType instanceof ParameterizedType) {
+                    ParameterizedType paramType=(ParameterizedType)targetType;
+                    Type[] argTypes=paramType.getActualTypeArguments();
+                    if(argTypes.length==2) {
+                        Type keyType=argTypes[0];
+                        if(keyType==String.class) {
+                            valType=argTypes[1];
+                        } else throw new DeserializationException("Unsupported Map key type (must be java.lang.String): "+keyType);
+                    } else throw new DeserializationException("Type not supported: "+targetType);
+                } else throw new DeserializationException("Deserialization of unparameterized Map types isn't supported: "+targetType);
+                  
+                Map map=null;
+                if(!targetClass.isInterface()) {
+                    try {
+                        map=(Map)targetClass.newInstance();
+                    } catch(Exception x) {}
                 }
-                BeanDescriptor bd=beanDescFactory.getBeanDescriptor(targetClass);
+                if(map==null) {
+                    if(targetClass.isAssignableFrom(HashMap.class)) {
+                        map=new HashMap();
+                    } else throw new DeserializationException("Can't create instance of class '"+targetClass.getName()+"'.");
+                }
                 
-                Object newObj=targetClass.newInstance();
                 Iterator<String> it=jsonObj.getMemberNames();
                 while(it.hasNext()) {
                     String prop=it.next();
                     if(!prop.equals("javaClass")) {
-                        Class propTargetClass=bd.getPropertyType(prop);
-                        if(propTargetClass!=null) {
-                            Object val=jsonObj.getMember(prop);
-                            Method meth=bd.getSetMethod(prop);
-                            if(meth!=null) {
-                                if(val==null) {
-                                    meth.invoke(newObj,new Object[] {null}); 
-                                } else {
-                                    Object res=ctx.deserialize(val,propTargetClass);
-                                    if(res!=null) meth.invoke(newObj,res);
-                                }
-                            } else {
-                                Field field=bd.getDirectAccessField(prop);
-                                if(field!=null) {
-                                    if(val==null) {
-                                        field.set(newObj,null);
-                                    } else {
-                                        Object res=ctx.deserialize(val,propTargetClass);
-                                        if(res!=null) field.set(newObj,res);
-                                    }
-                                } else throw new DeserializationException("Bean of type '"+targetClass.getName()+"' doesn't "+
-                                        " have setter method or direct access to property '"+prop+"'.");
-                            }
-                        } else throw new DeserializationException("Bean of type '"+targetClass.getName()+"' doesn't have property '"+prop+"'.");         
-                    }
+                        Object res=ctx.deserialize(jsonObj.getMember(prop),valType);
+                        map.put(prop,res);
+                    } 
                 }
-                return newObj;
-            } catch(Exception x) {
-                if(x instanceof DeserializationException) throw (DeserializationException)x;
-                throw new DeserializationException("Can't deserialize as bean of type '"+targetClass.getName()+"'.",x);
+                       
+                return map;
+                
+            } else {
+            
+                try {
+                    
+                    String className=jsonObj.getStringMember("javaClass");
+                    if(className!=null) {
+                        Class<?> clazz=Class.forName(className);
+                        if(targetClass!=null && !targetClass.isAssignableFrom(clazz)) 
+                            throw new DeserializationException("Class '"+targetClass.getName()+"' isn't assignable from '"+clazz.getName());
+                        targetClass=clazz;
+                    }
+                    BeanDescriptor bd=beanDescFactory.getBeanDescriptor(targetClass);
+                
+                    Object newObj=targetClass.newInstance();
+                    Iterator<String> it=jsonObj.getMemberNames();
+                    while(it.hasNext()) {
+                        String prop=it.next();
+                        if(!prop.equals("javaClass")) {
+                            Type propTargetType=bd.getPropertyType(prop);
+                            if(propTargetType!=null) {
+                                Object val=jsonObj.getMember(prop);
+                                Method meth=bd.getSetMethod(prop);
+                                if(meth!=null) {
+                                    if(val==null) {
+                                        meth.invoke(newObj,new Object[] {null}); 
+                                    } else {
+                                        Object res=ctx.deserialize(val,propTargetType);
+                                        if(res!=null) meth.invoke(newObj,res);
+                                    }
+                                } else {
+                                    Field field=bd.getDirectAccessField(prop);
+                                    if(field!=null) {
+                                        if(val==null) {
+                                            field.set(newObj,null);
+                                        } else {
+                                            Object res=ctx.deserialize(val,propTargetType);
+                                            if(res!=null) field.set(newObj,res);
+                                        }
+                                    } else throw new DeserializationException("Bean of type '"+targetClass.getName()+"' doesn't "+
+                                            " have setter method or direct access to property '"+prop+"'.");
+                                }
+                            } else throw new DeserializationException("Bean of type '"+targetClass.getName()+"' doesn't have property '"+prop+"'.");         
+                        }
+                    }
+                    return newObj;
+                } catch(Exception x) {
+                    if(x instanceof DeserializationException) throw (DeserializationException)x;
+                    throw new DeserializationException("Can't deserialize as bean of type '"+targetClass.getName()+"'.",x);
+                }
             }
         } else throw new DeserializationException("No instance of JSONObject: "+jsonValue.getClass().getName());
      

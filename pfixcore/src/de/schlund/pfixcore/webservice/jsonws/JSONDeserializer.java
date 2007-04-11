@@ -19,6 +19,8 @@
 
 package de.schlund.pfixcore.webservice.jsonws;
 
+import java.lang.reflect.Type;
+
 /**
  * @author mleidig@schlund.de
  */
@@ -30,14 +32,14 @@ public class JSONDeserializer {
         this.registry=registry;
     }
     
-    public boolean canDeserialize(Object jsonObj,Class targetClass)  throws DeserializationException {
+    public boolean canDeserialize(Object jsonObj,Type targetType)  throws DeserializationException {
         DeserializationContext ctx=new DeserializationContext(registry); 
-        return ctx.canDeserialize(jsonObj, targetClass);
+        return ctx.canDeserialize(jsonObj, targetType);
     }
     
-    public Object deserialize(Object jsonObj,Class targetClass) throws DeserializationException {
+    public Object deserialize(Object jsonObj,Type targetType) throws DeserializationException {
         DeserializationContext ctx=new DeserializationContext(registry); 
-        return ctx.deserialize(jsonObj,targetClass);
+        return ctx.deserialize(jsonObj,targetType);
     }
     
 }

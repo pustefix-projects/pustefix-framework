@@ -19,16 +19,22 @@
 
 package de.schlund.pfixcore.webservice.jsonws;
 
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import de.schlund.pfixcore.webservice.beans.BeanDescriptorFactory;
+import de.schlund.pfixcore.webservice.jsonws.serializers.ArraySerializer;
 import de.schlund.pfixcore.webservice.jsonws.serializers.BeanSerializer;
 import de.schlund.pfixcore.webservice.jsonws.serializers.BooleanSerializer;
 import de.schlund.pfixcore.webservice.jsonws.serializers.CalendarSerializer;
+import de.schlund.pfixcore.webservice.jsonws.serializers.ListSerializer;
+import de.schlund.pfixcore.webservice.jsonws.serializers.MapSerializer;
 import de.schlund.pfixcore.webservice.jsonws.serializers.NumberSerializer;
 import de.schlund.pfixcore.webservice.jsonws.serializers.StringSerializer;
 
@@ -39,12 +45,18 @@ public class SerializerRegistry {
 
     Map<Class,Serializer> serializers;
     BeanSerializer beanSerializer;
+    ArraySerializer arraySerializer;
+    ListSerializer listSerializer;
+    MapSerializer mapSerializer;
     
     public SerializerRegistry(BeanDescriptorFactory beanDescFactory) {
+        
         serializers=new HashMap<Class,Serializer>();
         
-      
         beanSerializer=new BeanSerializer(beanDescFactory);
+        arraySerializer=new ArraySerializer();
+        listSerializer=new ListSerializer();
+        mapSerializer=new MapSerializer();
         
         serializers.put(String.class,new StringSerializer());
         Serializer ser=new NumberSerializer();
@@ -62,11 +74,26 @@ public class SerializerRegistry {
       
     }
     
-    public Serializer getSerializer(Object obj) {
-        Serializer ser=null;
-        ser=serializers.get(obj.getClass());
-        if(ser==null) ser=beanSerializer;
+    public Serializer getSerializer(Class clazz) {
+        Serializer ser=serializers.get(clazz);
+        if(ser==null) {
+            if(clazz.isArray()) ser=arraySerializer;
+            else if(List.class.isAssignableFrom(clazz)) ser=listSerializer;
+            else if(Map.class.isAssignableFrom(clazz)) ser=mapSerializer;
+            else ser=beanSerializer;
+        }
         return ser;
+    }
+    
+    public Serializer getSerializer(Type type) {
+        Class clazz=null;
+        if(type instanceof Class) clazz=(Class)type;
+        else if(type instanceof ParameterizedType) {
+            Type rawType=((ParameterizedType)type).getRawType();
+            if(rawType instanceof Class) clazz=(Class)rawType;
+        }
+        if(clazz!=null) return getSerializer(clazz);
+        else throw new RuntimeException("Type not supported: "+type.getClass()+" "+type);
     }
     
 }

@@ -21,6 +21,7 @@ package de.schlund.pfixcore.webservice.beans;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Set;
@@ -47,7 +48,7 @@ public class BeanDescriptor {
     
 	Class clazz;
 	
-    HashMap<String,Class> types=new HashMap<String,Class>();
+    HashMap<String,Type> types=new HashMap<String,Type>();
     HashMap<String,Method> getters=new HashMap<String,Method>();
 	HashMap<String,Method> setters=new HashMap<String,Method>();
     HashMap<String,Field> directFields=new HashMap<String,Field>();
@@ -99,7 +100,7 @@ public class BeanDescriptor {
                     }
                     if(!isExcluded) {
                         if(types.get(propName)!=null) throw new IntrospectionException("Duplicate bean property name: "+propName);
-                        types.put(propName,fields[i].getType());
+                        types.put(propName,fields[i].getGenericType());
                         directFields.put(propName,fields[i]);
                     }
                 } else if(getter.getReturnType()!=fields[i].getType()) {
@@ -151,7 +152,7 @@ public class BeanDescriptor {
                             if(!isExcluded) {
                                 if(getters.get(propName)!=null) throw new IntrospectionException("Duplicate bean property name: "+propName);
                                 getters.put(propName,methods[i]);
-                                types.put(propName,methods[i].getReturnType());
+                                types.put(propName,methods[i].getGenericReturnType());
                                 Method setter=null;
                                 try {
                                     setter=clazz.getMethod(createSetterName(origPropName),new Class[] {methods[i].getReturnType()});
@@ -204,7 +205,7 @@ public class BeanDescriptor {
         return directFields.get(propName);
     }
     
-    public Class getPropertyType(String propName) {
+    public Type getPropertyType(String propName) {
         return types.get(propName);
     }
 	
