@@ -1,3 +1,39 @@
+2007-04-11  Martin Leidig  <mleidig@schlund.de>
+
+	Added JSON (de-)serialization support for generic Lists and Maps. Because of
+	the restrictions of the JSON format, especially the absence of type information,
+	the support for Lists and Maps itself is restricted: Lists need a parameterized
+	type parameter and this type has to be instantiable (or be a parameterized List
+	or Map itself), the same with Map values, Map keys have to be java.lang.String 
+	instances.
+
+	Added:
+	* src/de/schlund/pfixcore/webservice/jsonws/serializers/ListSerializer.java
+	* src/de/schlund/pfixcore/webservice/jsonws/serializers/MapSerializer.java
+	* tests/junit/de/schlund/pfixcore/webservice/jsonws
+	* tests/junit/de/schlund/pfixcore/webservice/jsonws/JSONSerializerTest.java
+	* tests/junit/de/schlund/pfixcore/webservice/jsonws/TestBean.java
+
+	Modified:
+	* src/de/schlund/pfixcore/example/webservices/TypeTestImpl.java
+	* src/de/schlund/pfixcore/example/webservices/TypeTest.java
+	* src/de/schlund/pfixcore/webservice/jsonws/SerializerRegistry.java
+	* src/de/schlund/pfixcore/webservice/jsonws/DeserializerRegistry.java
+	* src/de/schlund/pfixcore/webservice/jsonws/JSONDeserializer.java
+	* src/de/schlund/pfixcore/webservice/jsonws/serializers/ArraySerializer.java
+	* src/de/schlund/pfixcore/webservice/jsonws/SerializationContext.java
+	* src/de/schlund/pfixcore/webservice/jsonws/Deserializer.java
+	* src/de/schlund/pfixcore/webservice/jsonws/JSONWSProcessor.java
+	* src/de/schlund/pfixcore/webservice/jsonws/deserializers/ArrayDeserializer.java
+	* src/de/schlund/pfixcore/webservice/jsonws/deserializers/BooleanDeserializer.java
+	* src/de/schlund/pfixcore/webservice/jsonws/deserializers/BeanDeserializer.java
+	* src/de/schlund/pfixcore/webservice/jsonws/deserializers/StringDeserializer.java
+	* src/de/schlund/pfixcore/webservice/jsonws/deserializers/NumberDeserializer.java
+	* src/de/schlund/pfixcore/webservice/jsonws/deserializers/CalendarDeserializer.java
+	* src/de/schlund/pfixcore/webservice/jsonws/DeserializationContext.java
+	* src/de/schlund/pfixcore/webservice/beans/BeanDescriptor.java
+	* projects/webservice/htdocs/typetest-pfxsoap.js
+
 2007-04-03  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
 	* projects/core/xsl/include.xsl:

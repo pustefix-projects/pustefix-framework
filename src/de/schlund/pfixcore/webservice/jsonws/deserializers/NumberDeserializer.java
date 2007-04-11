@@ -19,6 +19,8 @@
 
 package de.schlund.pfixcore.webservice.jsonws.deserializers;
 
+import java.lang.reflect.Type;
+
 import de.schlund.pfixcore.webservice.json.JSONValue;
 import de.schlund.pfixcore.webservice.jsonws.DeserializationContext;
 import de.schlund.pfixcore.webservice.jsonws.DeserializationException;
@@ -30,13 +32,15 @@ import de.schlund.pfixcore.webservice.jsonws.Deserializer;
 public class NumberDeserializer extends Deserializer {
 
     @Override
-    public boolean canDeserialize(DeserializationContext ctx, Object jsonValue, Class<?> targetClass) {
+    public boolean canDeserialize(DeserializationContext ctx, Object jsonValue, Type targetType) {
+        Class targetClass=(Class)targetType;
         if(jsonValue instanceof Number && Number.class.isAssignableFrom(targetClass)) return true;
         return false;
     }
     
     @Override
-    public Object deserialize(DeserializationContext ctx,Object  jsonValue,Class targetClass) throws DeserializationException {
+    public Object deserialize(DeserializationContext ctx,Object  jsonValue,Type targetType) throws DeserializationException {
+        Class targetClass=(Class)targetType;
         if(jsonValue instanceof Number) {
             if(targetClass==int.class||targetClass==Integer.class) {
                 if(jsonValue.getClass()==Integer.class) return jsonValue;

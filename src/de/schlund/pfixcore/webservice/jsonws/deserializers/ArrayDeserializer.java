@@ -20,6 +20,9 @@
 package de.schlund.pfixcore.webservice.jsonws.deserializers;
 
 import java.lang.reflect.Array;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.List;
 
 import de.schlund.pfixcore.webservice.json.JSONArray;
@@ -30,7 +33,8 @@ import de.schlund.pfixcore.webservice.jsonws.Deserializer;
 public class ArrayDeserializer extends Deserializer {
 
     @Override
-    public boolean canDeserialize(DeserializationContext ctx,Object jsonValue,Class<?> targetClass) throws DeserializationException {
+    public boolean canDeserialize(DeserializationContext ctx,Object jsonValue,Type targetType) throws DeserializationException {
+        Class targetClass=(Class)targetType;
         if(jsonValue instanceof JSONArray) {
             if(targetClass.isArray()) {
                 Class compType=targetClass.getComponentType();
@@ -45,10 +49,22 @@ public class ArrayDeserializer extends Deserializer {
     }
     
     @Override
-    public Object deserialize(DeserializationContext ctx,Object jsonValue,Class targetClass) throws DeserializationException {
+    public Object deserialize(DeserializationContext ctx,Object jsonValue,Type targetType) throws DeserializationException {
+
         if(jsonValue instanceof JSONArray) {
+            
             JSONArray jsonArray=(JSONArray)jsonValue;
+        
+            Class<?> targetClass=null;
+            if(targetType instanceof Class) targetClass=(Class)targetType;
+            else if(targetType instanceof ParameterizedType) {
+                Type rawType=((ParameterizedType)targetType).getRawType();
+                if(rawType instanceof Class) targetClass=(Class)rawType;
+                else throw new DeserializationException("Type not supported: "+targetType);
+            }
+            
             if(targetClass.isArray()) {
+                
                 Class compType=targetClass.getComponentType();
                 Object arrayObj=Array.newInstance(compType,jsonArray.size());
                 for(int i=0;i<jsonArray.size();i++) {
@@ -57,22 +73,41 @@ public class ArrayDeserializer extends Deserializer {
                     Array.set(arrayObj,i,obj);
                 }
                 return arrayObj;
+            
             } else if(List.class.isAssignableFrom(targetClass)) {
+            
+                Type argType=null;
+                if(targetType instanceof ParameterizedType) {
+                    ParameterizedType paramType=(ParameterizedType)targetType;
+                    Type[] argTypes=paramType.getActualTypeArguments();
+                    if(argTypes.length==1) {
+                        argType=argTypes[0];
+                    } else throw new DeserializationException("Type not supported: "+targetType);
+                } else throw new DeserializationException("Deserialization of unparameterized List types isn't supported: "+targetType);
+                
                 List list=null;
-                try {
-                    list=(List)targetClass.newInstance();
-                } catch(Exception x) {
-                    throw new DeserializationException("Can't instantiate array class '"+targetClass.getName()+"'.");
+                if(!targetClass.isInterface()) {
+                    try {
+                        list=(List)targetClass.newInstance();
+                    } catch(Exception x) {}
                 }
+                if(list==null) {
+                    if(targetClass.isAssignableFrom(ArrayList.class)) {
+                        list=new ArrayList();
+                    } else throw new DeserializationException("Can't create instance of class '"+targetClass.getName()+"'.");
+                }
+                
                 for(int i=0;i<jsonArray.size();i++) {
                     Object item=jsonArray.get(i);
-                    Object obj=ctx.deserialize(item,Object.class);
+                    Object obj=ctx.deserialize(item,argType);
                     list.add(obj);
                 }
                 return list;
-            }
+                
+            } else throw new DeserializationException("Type not supported: "+targetType);
+            
         } else throw new DeserializationException("Wrong type: "+jsonValue.getClass().getName());
-        return null;
+   
     }
     
 }

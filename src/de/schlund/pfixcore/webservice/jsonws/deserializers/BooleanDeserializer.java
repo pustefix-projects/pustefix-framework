@@ -19,6 +19,8 @@
 
 package de.schlund.pfixcore.webservice.jsonws.deserializers;
 
+import java.lang.reflect.Type;
+
 import de.schlund.pfixcore.webservice.jsonws.DeserializationContext;
 import de.schlund.pfixcore.webservice.jsonws.DeserializationException;
 import de.schlund.pfixcore.webservice.jsonws.Deserializer;
@@ -26,13 +28,13 @@ import de.schlund.pfixcore.webservice.jsonws.Deserializer;
 public class BooleanDeserializer extends Deserializer {
     
     @Override
-    public boolean canDeserialize(DeserializationContext ctx, Object jsonValue, Class<?> targetClass) {
+    public boolean canDeserialize(DeserializationContext ctx, Object jsonValue, Type targetType) {
         if(jsonValue instanceof Boolean) return true; 
         return false;
     }
     
     @Override
-    public Object deserialize(DeserializationContext ctx,Object jsonValue,Class targetClass) throws DeserializationException {
+    public Object deserialize(DeserializationContext ctx,Object jsonValue,Type targetType) throws DeserializationException {
         if(jsonValue instanceof Boolean) {
             return jsonValue;
         } else throw new DeserializationException("Wrong type: "+jsonValue.getClass().getName());
