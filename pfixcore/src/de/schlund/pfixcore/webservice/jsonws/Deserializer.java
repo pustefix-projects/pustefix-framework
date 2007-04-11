@@ -19,12 +19,14 @@
 
 package de.schlund.pfixcore.webservice.jsonws;
 
+import java.lang.reflect.Type;
+
 /**
  * @author mleidig@schlund.de
  */
 public abstract class Deserializer {
 
-    public abstract boolean canDeserialize(DeserializationContext ctx,Object jsonValue,Class<?> targetClass) throws DeserializationException;
-    public abstract Object deserialize(DeserializationContext ctx,Object jsonValue,Class<?> targetClass) throws DeserializationException;
+    public abstract boolean canDeserialize(DeserializationContext ctx,Object jsonValue,Type targetType) throws DeserializationException;
+    public abstract Object deserialize(DeserializationContext ctx,Object jsonValue,Type targetType) throws DeserializationException;
     
 }

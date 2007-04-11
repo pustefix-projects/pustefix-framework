@@ -23,6 +23,7 @@ import java.io.StringReader;
 import java.io.Writer;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Type;
 import java.net.URL;
 import java.util.Iterator;
 import java.util.List;
@@ -118,7 +119,7 @@ public class JSONWSProcessor implements ServiceProcessor {
                             Iterator<Method> methIt=methods.iterator();
                             while(methIt.hasNext() && method==null) {
                                 Method testMeth=methIt.next();
-                                Class[] types=testMeth.getParameterTypes();
+                                Type[] types=testMeth.getGenericParameterTypes();
                                 if(types.length==params.size()) {
                                     boolean canDeserialize=true;
                                     for(int i=0;i<params.size() && canDeserialize;i++) {
@@ -140,7 +141,7 @@ public class JSONWSProcessor implements ServiceProcessor {
                         try {
                             long t1=System.currentTimeMillis();
                             paramObjects=new Object[params.size()];
-                            Class[] types=method.getParameterTypes();
+                            Type[] types=method.getGenericParameterTypes();
                             for(int i=0;i<params.size();i++) {
                                 Object obj=params.get(i);
                                 Object deserObj=jsonDeser.deserialize(obj, types[i]);

@@ -543,6 +543,100 @@ function serviceCall() {
    	}
    	*/
    	
+   	//echoStringList
+		t1=(new Date()).getTime();
+		try {
+			var strVals=["aaa","bbb"];
+			var resVals=ws.echoStringList(strVals);
+			var t2=(new Date()).getTime();
+			if(!arrayEquals(strVals,resVals)) throw "Wrong result";
+			consolePrint("echoStringList",(t2-t1));
+		} catch(ex) {
+			var t2=(new Date()).getTime();
+			consolePrint("echoStringList",(t2-t1),ex);
+		}
+      
+      //echoDataBeanList
+      t1=(new Date()).getTime();
+      try {
+         var bean1=new Object();
+         bean1["date"]=new Date();
+         bean1["floatVals"]=new Array(1.2,2.1);
+         bean1["intVal"]=2;
+         bean1["name"]="TestBean1";
+         bean1["children"]=new Array();
+         bean1["boolVal"]=true;
+         var bean2=new Object();
+         bean2["date"]=new Date();
+         bean2["floatVals"]=new Array(1.2,2.1);
+         bean2["intVal"]=2;
+         bean2["name"]="TestBean2";
+         bean2["children"]=new Array();
+         bean2["boolVal"]=true;
+         var bean3=new Object();
+         bean3["date"]=new Date();
+         bean3["floatVals"]=new Array(1.2,2.1);
+         bean3["intVal"]=2;
+         bean3["name"]="TestBean3";
+         bean3["children"]=new Array(bean1,bean2);
+         bean3["boolVal"]=true;
+         var beans=new Array(bean3);
+         var resBeans=ws.echoDataBeanList(beans);
+         var t2=(new Date()).getTime();
+         if(!equals(resBeans,beans)) throw "Wrong result";
+         consolePrint("echoDataBeanList",(t2-t1));
+      } catch(ex) {
+         var t2=(new Date()).getTime();
+         consolePrint("echoDataBeanList",(t2-t1),ex);
+      }  
+      
+      //echoStringMap
+      t1=(new Date()).getTime();
+      try {
+         var strVals={"key1":"val1","key2":"val2"};
+         var resVals=ws.echoStringMap(strVals);
+         var t2=(new Date()).getTime();
+         if(!equals(strVals,resVals)) throw "Wrong result";
+         consolePrint("echoStringMap",(t2-t1));
+      } catch(ex) {
+         var t2=(new Date()).getTime();
+         consolePrint("echoStringMap",(t2-t1),ex);
+      }
+   	
+      //echoDataBeanMap
+      t1=(new Date()).getTime();
+      try {
+         var bean1=new Object();
+         bean1["date"]=new Date();
+         bean1["floatVals"]=new Array(1.2,2.1);
+         bean1["intVal"]=2;
+         bean1["name"]="TestBean1";
+         bean1["children"]=new Array();
+         bean1["boolVal"]=true;
+         var bean2=new Object();
+         bean2["date"]=new Date();
+         bean2["floatVals"]=new Array(1.2,2.1);
+         bean2["intVal"]=2;
+         bean2["name"]="TestBean2";
+         bean2["children"]=new Array();
+         bean2["boolVal"]=true;
+         var bean3=new Object();
+         bean3["date"]=new Date();
+         bean3["floatVals"]=new Array(1.2,2.1);
+         bean3["intVal"]=2;
+         bean3["name"]="TestBean3";
+         bean3["children"]=new Array(bean1,bean2);
+         bean3["boolVal"]=true;
+         var beans={"bean1":bean1,"bean2":bean2,"bean3":bean3};
+         var resBeans=ws.echoDataBeanMap(beans);
+         var t2=(new Date()).getTime();
+         if(!equals(resBeans,beans)) throw "Wrong result";
+         consolePrint("echoDataBeanMap",(t2-t1));
+      } catch(ex) {
+         var t2=(new Date()).getTime();
+         consolePrint("echoDataBeanMap",(t2-t1),ex);
+      }  
+      
    	var total2=(new Date()).getTime();
    	
    	timer.stop();

@@ -21,29 +21,26 @@ package de.schlund.pfixcore.webservice.jsonws.serializers;
 
 import java.io.IOException;
 import java.io.Writer;
-import java.lang.reflect.Array;
+import java.util.Iterator;
+import java.util.List;
 
 import de.schlund.pfixcore.webservice.json.JSONArray;
-import de.schlund.pfixcore.webservice.json.JSONValue;
 import de.schlund.pfixcore.webservice.jsonws.SerializationContext;
 import de.schlund.pfixcore.webservice.jsonws.SerializationException;
 import de.schlund.pfixcore.webservice.jsonws.Serializer;
 
-public class ArraySerializer extends Serializer {
+public class ListSerializer extends Serializer {
     
     @Override
     public Object serialize(SerializationContext ctx, Object obj) throws SerializationException {
         JSONArray jsonArray=new JSONArray();
-        if(obj.getClass().isArray()) {
-            int len=Array.getLength(obj);
-            for(int i=0;i<len;i++) {
-                Object item=Array.get(obj,i);
-                if(item==null) {
-                    jsonArray.add(JSONValue.NULL);
-                } else {
-                    Object serObj=ctx.serialize(item);
-                    jsonArray.add(serObj);
-                }
+        if(obj instanceof List) {
+            List list=(List)obj;
+            Iterator it=list.iterator();
+            while(it.hasNext()) {
+                Object item=it.next();
+                Object serObj=ctx.serialize(item);
+                jsonArray.add(serObj);
             }
         }
         return jsonArray;
@@ -52,16 +49,13 @@ public class ArraySerializer extends Serializer {
     @Override
     public void serialize(SerializationContext ctx, Object obj,Writer writer) throws SerializationException,IOException {
         writer.write("[");
-        if(obj.getClass().isArray()) {
-            int len=Array.getLength(obj);
-            for(int i=0;i<len;i++) {
-                if(i>0) writer.write(",");
-                Object item=Array.get(obj,i);
-                if(item==null) {
-                    writer.write("null");
-                } else {
-                    ctx.serialize(item,writer);
-                }
+        if(obj instanceof List) {
+            List list=(List)obj;
+            Iterator it=list.iterator();
+            while(it.hasNext()) {
+                Object item=it.next();
+                ctx.serialize(item,writer);
+                if(it.hasNext()) writer.write(",");
             }
         }
         writer.write("]");
