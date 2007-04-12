@@ -1,8 +1,20 @@
 /*
- * Created on 04.04.2007
+ * This file is part of PFIXCORE.
  *
- * To change the template for this generated file go to
- * Window - Preferences - Java - Code Generation - Code and Comments
+ * PFIXCORE is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * PFIXCORE is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with PFIXCORE; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
  */
 package de.schlund.pfixcore.webservice.jsonws;
 
@@ -18,6 +30,9 @@ import de.schlund.pfixcore.webservice.beans.BeanDescriptorFactory;
 import de.schlund.pfixcore.webservice.json.JSONObject;
 import de.schlund.pfixcore.webservice.json.parser.JSONParser;
 
+/**
+ * @author mleidig@schlund.de
+ */
 public class JSONSerializerTest extends TestCase {
 
     BeanDescriptorFactory beanDescFactory;
@@ -68,6 +83,12 @@ public class JSONSerializerTest extends TestCase {
         mapMap.put("sub2",subMap2);
         bean.setMapMap(mapMap);
         
+        HashMap<String,Integer> intMap=new HashMap<String,Integer>();
+        intMap.put("one",1);
+        intMap.put("two",2);
+        intMap.put("three",3);
+        bean.setIntMap(intMap);
+        
         serializer.serialize(bean,writer);
         String json=writer.toString();
        
@@ -81,6 +102,40 @@ public class JSONSerializerTest extends TestCase {
 
         //System.out.println(json);
         //System.out.println(jsonRef);
+        
+        assertEquals(json,jsonRef);
+        
+    }
+    
+    @SuppressWarnings("unchecked")
+    public void testReadOnlySerialization() throws Exception {
+        
+        JSONSerializer serializer=new JSONSerializer(serializerRegistry);
+        StringWriter writer=new StringWriter();
+        ReadOnlyBean bean=new ReadOnlyBean();
+        
+        Map<String,Number> numMap=new HashMap<String,Number>();
+        numMap.put("int",new Integer(1));
+        numMap.put("float",new Float(2));
+        numMap.put("double",new Double(3));
+        bean.setNumMap(numMap);
+        
+        List mixedList=new ArrayList();
+        mixedList.add("text");
+        mixedList.add(1);
+        mixedList.add(true);
+        TestBean testBean=new TestBean();
+        testBean.setText("test");
+        testBean.setValue(7);
+        mixedList.add(testBean);
+        bean.setMixedList(mixedList);
+        
+        serializer.serialize(bean,writer);
+        String json=writer.toString();
+        String jsonRef="{\"numMap\":{\"double\":3.0,\"float\":2.0,\"int\":1},\"mixedList\":[\"text\",1,true," +
+                "{\"intMap\":null,\"intList\":null,\"value\":7,\"text\":\"test\",\"mapMap\":null,\"strMap\":null,\"strList\":null}]}";
+        
+        //System.out.println(json);
         
         assertEquals(json,jsonRef);
         
