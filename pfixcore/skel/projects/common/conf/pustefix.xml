@@ -6,7 +6,7 @@
     <!-- shared properties for the pustefix projects -->
 
     <!-- IMPORTANT! Set this property to some random value! -->
-    <!-- <prop name="derefserver.signkey">123456secret</prop> -->
+    <prop name="derefserver.signkey">987foobarbaz123</prop>
     
     <!-- dump of the whole session on Exception -->
     <prop name="servlet.sessiondumponerror">true</prop>
@@ -33,12 +33,18 @@
         <prop name="sessioncleaner.timeout">600</prop>
       </otherwise>
     </choose>
-    <prop name="xmlserver.additionalinfo.implementation">de.schlund.pfixxml.perflogging.DefaultAdditionalTrailInfoImpl</prop>
     
     <!-- this defines a named switch ("default" in this case) that a servlet can watch to
        go into adminmode when the switch's status changes to true -->
-    <prop name="context.adminmode.default.status">off</prop>  
+    <prop name="context.adminmode.default.status">off</prop>
+    <prop name="xmlserver.additionalinfo.implementation">de.schlund.pfixxml.perflogging.DefaultAdditionalTrailInfoImpl</prop>
     
-    
+    <choose>
+      <when test="$mode = 'test'">
+        <prop name="exception.java.lang.Throwable.processor">de.schlund.pfixxml.exceptionprocessor.UniversalExceptionProcessor</prop>
+      </when>
+    </choose>
+
   </properties>
+
 </standardprops>
