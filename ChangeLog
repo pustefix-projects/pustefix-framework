@@ -1,3 +1,9 @@
+2007-04-13  Martin Leidig  <mleidig@schlund.de>
+
+	Made newproject.sh working again by updating the general configuration.
+
+	* skel/projects/common/conf/pustefix.xml
+
 2007-04-12  Martin Leidig  <mleidig@schlund.de>
 
 	Added JSON serialization tests for Lists and Maps, e.g. unparameterized
