@@ -1,8 +1,11 @@
 2007-04-13  Martin Leidig  <mleidig@schlund.de>
 
-	Made newproject.sh working again by updating the general configuration.
+	Made newproject.sh working again by updating the general and factory
+	configuration and fixing the script's classpath building problem.
 
 	* skel/projects/common/conf/pustefix.xml
+	* skel/projects/common/conf/factory.xml
+	* skel/newproject.sh
 
 2007-04-12  Martin Leidig  <mleidig@schlund.de>
 
