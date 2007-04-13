@@ -40,7 +40,7 @@
     <choose>
       <when test="$mode = 'test'">
         <prop name="exception.java.lang.Throwable.processor">de.schlund.pfixxml.exceptionprocessor.UniversalExceptionProcessor</prop>
-      </when>      
+      </when>
     </choose>
     
     <!-- Defines SSL ports used for redirect corresponding to the unsecure ports -->
