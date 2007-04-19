@@ -19,9 +19,14 @@
 
 package de.schlund.pfixcore.webservice.config;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.net.URL;
+import java.util.HashMap;
 
 import de.schlund.pfixcore.webservice.Constants;
 import de.schlund.pfixcore.webservice.fault.FaultHandler;
@@ -33,31 +38,31 @@ import de.schlund.pfixcore.webservice.fault.FaultHandler;
  * 
  * @author mleidig@schlund.de
  */
-public class GlobalServiceConfig {
+public class GlobalServiceConfig implements Serializable {
     
-    String server;
-    String reqPath="/xml/webservice";
-    Boolean wsdlSupport=Boolean.TRUE;
-    String wsdlRepo="/wsdl";
-    Boolean stubGeneration=Boolean.TRUE;
-    String stubRepo="/wsscript";
-    String jsNamespace=Constants.STUBGEN_JSNAMESPACE_COMPAT;
-    String protocolType=Constants.PROTOCOL_TYPE_ANY;
-    String encStyle=Constants.ENCODING_STYLE_RPC;
-    String encUse=Constants.ENCODING_USE_ENCODED;
-    Boolean jsonClassHinting=Boolean.FALSE;
-    String sessType=Constants.SESSION_TYPE_SERVLET;
-    String scopeType=Constants.SERVICE_SCOPE_APPLICATION;
-    Boolean sslForce=Boolean.FALSE;
-    String ctxName;
-    Boolean ctxSync=Boolean.TRUE;
-    Boolean admin=Boolean.FALSE;
-    Boolean monitoring=Boolean.FALSE;
-    String monitorScope=Constants.MONITOR_SCOPE_SESSION;
-    Integer monitorSize=20;
-    Boolean logging=Boolean.FALSE;
-    FaultHandler faultHandler;
-    URL defaultBeanMetaDataUrl;
+    private String server;
+    private String reqPath="/xml/webservice";
+    private Boolean wsdlSupport=Boolean.TRUE;
+    private String wsdlRepo="/wsdl";
+    private Boolean stubGeneration=Boolean.TRUE;
+    private String stubRepo="/wsscript";
+    private String jsNamespace=Constants.STUBGEN_JSNAMESPACE_COMPAT;
+    private String protocolType=Constants.PROTOCOL_TYPE_ANY;
+    private String encStyle=Constants.ENCODING_STYLE_RPC;
+    private String encUse=Constants.ENCODING_USE_ENCODED;
+    private Boolean jsonClassHinting=Boolean.FALSE;
+    private String sessType=Constants.SESSION_TYPE_SERVLET;
+    private String scopeType=Constants.SERVICE_SCOPE_APPLICATION;
+    private Boolean sslForce=Boolean.FALSE;
+    private String ctxName;
+    private Boolean ctxSync=Boolean.TRUE;
+    private Boolean admin=Boolean.FALSE;
+    private Boolean monitoring=Boolean.FALSE;
+    private String monitorScope=Constants.MONITOR_SCOPE_SESSION;
+    private Integer monitorSize=20;
+    private Boolean logging=Boolean.FALSE;
+    private transient FaultHandler faultHandler;
+    private URL defaultBeanMetaDataUrl;
     
     public GlobalServiceConfig() {}
     
@@ -247,12 +252,14 @@ public class GlobalServiceConfig {
     
     @Override
     public boolean equals(Object obj) {
+        
     	if(obj instanceof GlobalServiceConfig) {
     		GlobalServiceConfig ref=(GlobalServiceConfig)obj;
     		Method[] meths=getClass().getDeclaredMethods();
     		for(int i=0;i<meths.length;i++) {
     			Method meth=meths[i];		
-    			if(meth.getName().startsWith("get")&&Modifier.isPublic(meth.getModifiers())&&!meth.getName().equals("getDefaultBeanMetaDataURL")) { 
+    			if(meth.getName().startsWith("get")&&Modifier.isPublic(meth.getModifiers())
+                        &&!meth.getName().equals("getDefaultBeanMetaDataURL")) { 
     				try {
     					Object res=meth.invoke(this,new Object[0]);
     					Object refRes=meth.invoke(ref,new Object[0]);
@@ -274,5 +281,31 @@ public class GlobalServiceConfig {
     	}
     	return false;
     }
+    
+    private void writeObject(ObjectOutputStream out) throws IOException {
+        out.defaultWriteObject();
+        if(faultHandler!=null) out.writeObject(faultHandler.getClass().getName());
+        else out.writeObject(null);
+        if(faultHandler!=null&&faultHandler.getParams()!=null) out.writeObject(faultHandler.getParams());
+        else out.writeObject(null);
+    }
+         
+    private void readObject(ObjectInputStream in) throws IOException,ClassNotFoundException {
+        in.defaultReadObject();
+        String str=(String)in.readObject();
+        if(str!=null) {
+            Class clazz=Class.forName(str);
+            try {
+                faultHandler=(FaultHandler)clazz.newInstance();
+                HashMap params=(HashMap)in.readObject();
+                if(params!=null) faultHandler.setParams(params);
+            } catch(IllegalAccessException x) {
+                
+            } catch(InstantiationException x) {
+                
+            }
+        }
+    }
+   
     
 }

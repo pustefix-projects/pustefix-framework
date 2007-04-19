@@ -50,7 +50,7 @@ public class SerializerRegistry {
     MapSerializer mapSerializer;
     
     public SerializerRegistry(BeanDescriptorFactory beanDescFactory) {
-        
+       
         serializers=new HashMap<Class,Serializer>();
         
         beanSerializer=new BeanSerializer(beanDescFactory);
@@ -72,6 +72,10 @@ public class SerializerRegistry {
         serializers.put(GregorianCalendar.class,ser);
         serializers.put(Date.class,ser);
       
+    }
+    
+    public void register(Class clazz,Serializer serializer) {
+        serializers.put(clazz,serializer);
     }
     
     public Serializer getSerializer(Class clazz) {

@@ -6,10 +6,11 @@
  */
 package de.schlund.pfixcore.webservice.fault;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Iterator;
 
-public abstract class FaultHandler {
+public abstract class FaultHandler implements Serializable {
 	
     HashMap<String,String> params=new HashMap<String,String>();
     
@@ -76,5 +77,5 @@ public abstract class FaultHandler {
 		}
 		return false;
 	}
-	
+    
 }

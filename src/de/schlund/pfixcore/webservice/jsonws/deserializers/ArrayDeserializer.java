@@ -34,16 +34,15 @@ public class ArrayDeserializer extends Deserializer {
 
     @Override
     public boolean canDeserialize(DeserializationContext ctx,Object jsonValue,Type targetType) throws DeserializationException {
-        Class targetClass=(Class)targetType;
         if(jsonValue instanceof JSONArray) {
-            if(targetClass.isArray()) {
-                Class compType=targetClass.getComponentType();
-                JSONArray jsonArray=(JSONArray)jsonValue;
-                if(jsonArray.size()==0) return true;
-                ctx.canDeserialize(jsonArray.get(0),compType);
-            } else if(List.class.isAssignableFrom(targetClass)) {
-                return true;
+            Class<?> targetClass=null;
+            if(targetType instanceof Class) targetClass=(Class)targetType;
+            else if(targetType instanceof ParameterizedType) {
+                Type rawType=((ParameterizedType)targetType).getRawType();
+                if(rawType instanceof Class) targetClass=(Class)rawType;
+                else return false;
             }
+            if(targetClass.isArray() || List.class.isAssignableFrom(targetClass)) return true;
         }
         return false;
     }

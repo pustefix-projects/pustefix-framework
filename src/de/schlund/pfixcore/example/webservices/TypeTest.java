@@ -89,4 +89,6 @@ public interface TypeTest {
     
     public Map<String,DataBean> echoDataBeanMap(Map<String,DataBean> dataBeanMap);
     
+    public BeanImpl[] echoBeanArray(BeanImpl[] beanArray);
+    
 }

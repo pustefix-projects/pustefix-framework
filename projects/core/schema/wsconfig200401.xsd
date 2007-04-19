@@ -13,9 +13,16 @@
   <xsd:element name="webservice-config">
     <xsd:complexType>
       <xsd:sequence>
-        <xsd:element ref="webservice-global"/>
+        <xsd:element ref="import" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element ref="webservice-global" minOccurs="0"/>
         <xsd:element ref="webservice" minOccurs="0" maxOccurs="unbounded"/>
       </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="import">
+    <xsd:complexType>
+      <xsd:attribute name="href" type="xsd:string"/>
     </xsd:complexType>
   </xsd:element>
 
@@ -245,6 +252,7 @@
     <xsd:restriction base="xsd:string">
       <xsd:enumeration value="SOAP"/>
       <xsd:enumeration value="JSONWS"/>
+      <xsd:enumeration value="JSONQX"/>
       <xsd:enumeration value="ANY"/>
     </xsd:restriction>
   </xsd:simpleType>

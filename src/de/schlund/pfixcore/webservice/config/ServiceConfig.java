@@ -19,8 +19,13 @@
 
 package de.schlund.pfixcore.webservice.config;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.HashMap;
 
 import de.schlund.pfixcore.webservice.fault.FaultHandler;
 
@@ -31,25 +36,25 @@ import de.schlund.pfixcore.webservice.fault.FaultHandler;
  * 
  * @author mleidig@schlund.de
  */
-public class ServiceConfig {
+public class ServiceConfig implements Serializable {
     
-    GlobalServiceConfig globConf;
+    private GlobalServiceConfig globConf;
     
-    String  name;
-    String  itfName;
-    String  implName;
+    private String  name;
+    private String  itfName;
+    private String  implName;
     
-    String  ctxName;
-    Boolean ctxSync;
-    String  sessType;
-    String scopeType;
-    Boolean sslForce;
-    String protocolType;
-    String  encStyle;
-    String  encUse;
-    Boolean jsonClassHinting;
-    FaultHandler faultHandler;
-    String jsNamespace;
+    private String  ctxName;
+    private Boolean ctxSync;
+    private String  sessType;
+    private String scopeType;
+    private Boolean sslForce;
+    private String protocolType;
+    private String  encStyle;
+    private String  encUse;
+    private Boolean jsonClassHinting;
+    private transient FaultHandler faultHandler;
+    private String jsNamespace;
     
     public ServiceConfig(GlobalServiceConfig globConf) {
         this.globConf=globConf;
@@ -57,6 +62,10 @@ public class ServiceConfig {
     
     public GlobalServiceConfig getGlobalServiceConfig() {
         return globConf;
+    }
+    
+    public void setGlobalServiceConfig(GlobalServiceConfig globConf) {
+        this.globConf=globConf;
     }
     
     public String getName() {
@@ -210,6 +219,31 @@ public class ServiceConfig {
     		return true;
     	}
     	return false;
+    }
+    
+    private void writeObject(ObjectOutputStream out) throws IOException {
+        out.defaultWriteObject();
+        if(faultHandler!=null) out.writeObject(faultHandler.getClass().getName());
+        else out.writeObject(null);
+        if(faultHandler!=null&&faultHandler.getParams()!=null) out.writeObject(faultHandler.getParams());
+        else out.writeObject(null);
+    }
+         
+    private void readObject(ObjectInputStream in) throws IOException,ClassNotFoundException {
+        in.defaultReadObject();
+        String str=(String)in.readObject();
+        if(str!=null) {
+            Class clazz=Class.forName(str);
+            try {
+                faultHandler=(FaultHandler)clazz.newInstance();
+                HashMap params=(HashMap)in.readObject();
+                if(params!=null) faultHandler.setParams(params);
+            } catch(IllegalAccessException x) {
+                
+            } catch(InstantiationException x) {
+                
+            }
+        }
     }
 	
 }

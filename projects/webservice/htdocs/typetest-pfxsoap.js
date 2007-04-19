@@ -637,6 +637,28 @@ function serviceCall() {
          consolePrint("echoDataBeanMap",(t2-t1),ex);
       }  
       
+      //echoBeanArray
+      t1=(new Date()).getTime();
+      try {
+         var bean1=new Object();
+         bean1["text"]="text1";
+         bean1["value"]=1;
+         bean1["javaClass"]="de.schlund.pfixcore.example.webservices.BeanImpl";
+         var bean2=new Object();
+         bean2["text"]="text2";
+         bean2["value"]=2;
+         bean2["enabled"]=true;
+         bean2["javaClass"]="de.schlund.pfixcore.example.webservices.BeanSubImpl";
+         var beans=[bean1,bean2];
+         var resBeans=ws.echoBeanArray(beans);
+         var t2=(new Date()).getTime();
+         if(!equals(resBeans,beans)) throw "Wrong result";
+         consolePrint("echoBeanArray",(t2-t1));
+      } catch(ex) {
+         var t2=(new Date()).getTime();
+         consolePrint("echoBeanArray",(t2-t1),ex);
+      }  
+      
    	var total2=(new Date()).getTime();
    	
    	timer.stop();

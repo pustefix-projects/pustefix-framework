@@ -32,7 +32,8 @@ public class CalendarDeserializer extends Deserializer {
     @Override
     public boolean canDeserialize(DeserializationContext ctx, Object jsonValue, Type targetType) {
         Class targetClass=(Class)targetType;
-        if(jsonValue instanceof Calendar && Calendar.class.isAssignableFrom(targetClass)) return true;
+        if(jsonValue instanceof Calendar && (targetClass==Date.class || 
+                Calendar.class.isAssignableFrom(targetClass))) return true;
         return false;
     }
     
@@ -42,7 +43,7 @@ public class CalendarDeserializer extends Deserializer {
         if(jsonValue instanceof Calendar) {
             if(targetClass==Date.class) {
                 return ((Calendar)jsonValue).getTime();
-            }
+            } 
             return jsonValue;
         } else throw new DeserializationException("Wrong type: "+jsonValue.getClass().getName());
     }
