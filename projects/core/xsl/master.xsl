@@ -241,6 +241,7 @@
   <xsl:template match="pfx:script">
     <script>
       <xsl:attribute name="language">JavaScript</xsl:attribute>
+      <xsl:attribute name="type">text/javascript</xsl:attribute>
       <xsl:copy-of select="@*"/>
       <ixsl:comment>
 	<xsl:copy-of select="./node()"/>
