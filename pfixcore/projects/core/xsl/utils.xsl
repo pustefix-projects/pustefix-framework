@@ -108,16 +108,16 @@
               de_schlund_pfixcore_console_drag_object = element;
               de_schlund_pfixcore_console_drag_start_x = posx - element.offsetLeft;
               de_schlund_pfixcore_console_drag_start_y = posy - element.offsetTop;
-              if (event.stopPropagation) { 
+              if (typeof event.stopPropagation == "function") { 
                 event.stopPropagation(); 
-              } else if (typeof event.cancelBubble != 'undefined') {
+              } else if (typeof event.cancelBubble == "boolean") {
                 event.cancelBubble = true;
               }
               if (typeof event.preventDefault == "function") {
                 event.preventDefault();
-              } else if (typeof event.preventDefault == "boolean") {
-                event.preventDefault = false;
               }
+              // event.preventDefault for IE
+              return false;
             }
             
             function de_schlund_pfixcore_console_drag_stop() {
@@ -131,17 +131,17 @@
                 de_schlund_pfixcore_console_drag_object.style.right = "";
                 de_schlund_pfixcore_console_drag_object.style.left = (posx - de_schlund_pfixcore_console_drag_start_x) + "px";
                 de_schlund_pfixcore_console_drag_object.style.top = (posy - de_schlund_pfixcore_console_drag_start_y) + "px";
-                if (event.stopPropagation) { 
+                if (typeof event.stopPropagation == "function") { 
                   event.stopPropagation(); 
-                } else if (typeof event.cancelBubble != 'undefined') {
+                } else if (typeof event.cancelBubble == "boolean") {
                   event.cancelBubble = true;
                 }
                 if (typeof event.preventDefault == "function") {
                   event.preventDefault();
-                } else if (typeof event.preventDefault == "boolean") {
-                  event.preventDefault = false;
                 }
               }
+              // event.preventDefault for IE
+              return false;
             }
             
             function de_schlund_pfixcore_console_minimize(element, event) {
@@ -155,9 +155,9 @@
               var newWidth = element.offsetWidth;
               element.style.left = (element.offsetLeft + oldWidth - newWidth) + "px";
               element.style.visibility='visible';
-              if (event.stopPropagation) { 
+              if (typeof event.stopPropagation == "function") { 
                 event.stopPropagation(); 
-              } else if (typeof event.cancelBubble != 'undefined') {
+              } else if (typeof event.cancelBubble == "boolean") {
                 event.cancelBubble = true;
               }
             }
@@ -175,15 +175,20 @@
               }
               element.style.left = (element.offsetLeft + oldWidth - newWidth) + "px";
               element.style.visibility='visible';
-              if (event.stopPropagation) { 
+              if (typeof event.stopPropagation == "function") { 
                 event.stopPropagation(); 
-              } else if (typeof event.cancelBubble != 'undefined') {
+              } else if (typeof event.cancelBubble == "boolean") {
                 event.cancelBubble = true;
               }
             }
             
-            document.addEventListener("mouseup", de_schlund_pfixcore_console_drag_stop, true);
-            document.addEventListener("mousemove", de_schlund_pfixcore_console_drag_move, true);
+            if (typeof document.addEventListener == "function") {
+              document.addEventListener("mouseup", de_schlund_pfixcore_console_drag_stop, true);
+              document.addEventListener("mousemove", de_schlund_pfixcore_console_drag_move, true);
+            } else if (typeof window.attachEvent == "object") {
+              document.attachEvent("onmouseup", de_schlund_pfixcore_console_drag_stop);
+              document.attachEvent("onmousemove", de_schlund_pfixcore_console_drag_move);
+            }
           </script>
           <div id="de_schlund_pfixcore_console_divelement" style="position:fixed;top:20px;right:20px;background-color:#aabbee;padding:5px;opacity:0.9;-moz-opacity:0.9;filter:alpha(opacity=90)">
             <div style="display:none">

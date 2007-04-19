@@ -1,3 +1,11 @@
+2007-04-19  Sebastian Marsching  <sebastian.marsching@1und1.de>
+
+	* projects/core/xsl/forminput.xsl: Suppress "type" attribute on "form" element
+	* projects/core/xsl/master.xsl: 
+	Add "type" attribute for "script" element in <pfx:script> template
+	* projects/core/xsl/utils.xsl: 
+	Fixed javascript code for editor console to make it work in IE (version 6)
+
 2007-04-13  Martin Leidig  <mleidig@schlund.de>
 
 	Made newproject.sh working again by updating the general and factory
