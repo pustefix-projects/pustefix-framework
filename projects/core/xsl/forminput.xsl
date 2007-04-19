@@ -191,7 +191,7 @@
       </xsl:choose>
     </xsl:variable>
     <form method="post">
-      <xsl:copy-of select="./@*[name()!='send-to-page' and name()!='send-to-pageflow']"/>
+      <xsl:copy-of select="./@*[name()!='send-to-page' and name()!='send-to-pageflow' and name()!='type']"/>
       <ixsl:attribute name="action">
         <ixsl:value-of select="$__contextpath"/>
         <xsl:choose>
