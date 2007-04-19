@@ -4,6 +4,8 @@
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://pustefix.sourceforge.net/wsconfig200401 ../../core/schema/wsconfig200401.xsd">
 
+  <import href="webservice/conf/webservice-import.xml"/>
+
   <webservice-global>
   
     <stubgeneration jsnamespace="COMPAT_UNIQUE"/>
@@ -25,12 +27,6 @@
       </otherwise>
     </choose>
   </webservice-global>
-
-  <webservice name="Calculator">
-    <interface name="de.schlund.pfixcore.example.webservices.Calculator"/>
-    <implementation name="de.schlund.pfixcore.example.webservices.CalculatorImpl"/>
-    <session type="none"/>
-  </webservice>
  
   <webservice name="Chat">
     <interface name="de.schlund.pfixcore.example.webservices.chat.Chat"/>

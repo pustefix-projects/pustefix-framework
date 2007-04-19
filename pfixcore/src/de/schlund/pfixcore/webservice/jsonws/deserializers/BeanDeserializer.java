@@ -47,7 +47,30 @@ public class BeanDeserializer extends Deserializer {
     
     @Override
     public boolean canDeserialize(DeserializationContext ctx, Object jsonValue, Type targetType) {
-        // TODO Auto-generated method stub
+        if(jsonValue instanceof JSONObject) {
+            JSONObject jsonObj=(JSONObject)jsonValue;
+            Class<?> targetClass=null;
+            if(targetType instanceof Class) targetClass=(Class)targetType;
+            else if(targetType instanceof ParameterizedType) {
+                Type rawType=((ParameterizedType)targetType).getRawType();
+                if(rawType instanceof Class) targetClass=(Class)rawType;
+                else return false;
+            }
+            if(Map.class.isAssignableFrom(targetClass)) return true;
+            else {
+                String className=jsonObj.getStringMember("javaClass");
+                if(className!=null) {
+                    try {
+                        Class<?> clazz=Class.forName(className);
+                        if(targetClass!=null && !targetClass.isAssignableFrom(clazz)) return false;
+                        targetClass=clazz;
+                    } catch(ClassNotFoundException x) {
+                        return false;
+                    }
+                }
+                if(isInstantiable(targetClass)) return true;
+            }
+        }
         return false;
     }
     
@@ -155,6 +178,16 @@ public class BeanDeserializer extends Deserializer {
             }
         } else throw new DeserializationException("No instance of JSONObject: "+jsonValue.getClass().getName());
      
+    }
+    
+    private boolean isInstantiable(Class clazz) {
+        if(clazz.isInterface()) return false;
+        try {
+            clazz.getConstructor(new Class[0]);
+        } catch(NoSuchMethodException x) {
+            return false;
+        }
+        return true;
     }
     
 }

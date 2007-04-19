@@ -159,4 +159,8 @@ public class TypeTestImpl implements TypeTest {
         return dataBeanMap;
     }
     
+    public BeanImpl[] echoBeanArray(BeanImpl[] beanArray) {
+        return beanArray;
+    }
+    
 }

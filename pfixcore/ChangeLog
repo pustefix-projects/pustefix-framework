@@ -1,3 +1,47 @@
+2007-04-19  Martin Leidig  <mleidig@schlund.de>
+
+	Added qooxdoo-RPC-compatible ServiceProcessor and implemented
+	simple import-mechanism for webservice configuration (similar
+	to XSLT import mechanism).
+
+	Added:
+
+	* src/de/schlund/pfixcore/example/webservices/BeanSubImpl.java
+	* src/de/schlund/pfixcore/example/webservices/BeanItf.java
+	* src/de/schlund/pfixcore/example/webservices/BeanImpl.java
+	* src/de/schlund/pfixcore/webservice/jsonqx
+	* src/de/schlund/pfixcore/webservice/jsonqx/JSONQXProcessor.java
+	* src/de/schlund/pfixcore/webservice/jsonqx/CalendarSerializer.java
+	* projects/webservice/conf/webservice-import.xml
+	* tests/junit/de/schlund/pfixcore/webservice/config
+	* tests/junit/de/schlund/pfixcore/webservice/config/ConfigurationTest.java
+
+	Modified:
+
+	* src/de/schlund/pfixcore/example/webservices/TypeTestImpl.java
+	* src/de/schlund/pfixcore/example/webservices/TypeTest.java
+	* src/de/schlund/pfixcore/webservice/Constants.java
+	* src/de/schlund/pfixcore/webservice/json/JSONParser.jj
+	* src/de/schlund/pfixcore/webservice/json/parser/JSONParserTokenManager.java
+	* src/de/schlund/pfixcore/webservice/json/ParserUtils.java
+	* src/de/schlund/pfixcore/webservice/jsonws/SerializerRegistry.java
+	* src/de/schlund/pfixcore/webservice/jsonws/deserializers/ArrayDeserializer.java
+	* src/de/schlund/pfixcore/webservice/jsonws/deserializers/BeanDeserializer.java
+	* src/de/schlund/pfixcore/webservice/jsonws/deserializers/StringDeserializer.java
+	* src/de/schlund/pfixcore/webservice/jsonws/deserializers/NumberDeserializer.java
+	* src/de/schlund/pfixcore/webservice/jsonws/deserializers/CalendarDeserializer.java
+	* src/de/schlund/pfixcore/webservice/jsonws/DeserializationContext.java
+	* src/de/schlund/pfixcore/webservice/WebServiceServlet.java
+	* src/de/schlund/pfixcore/webservice/generate/WebServiceTask.java
+	* src/de/schlund/pfixcore/webservice/config/ServiceConfig.java
+	* src/de/schlund/pfixcore/webservice/config/Configuration.java
+	* src/de/schlund/pfixcore/webservice/config/GlobalServiceConfig.java
+	* src/de/schlund/pfixcore/webservice/config/ConfigurationReader.java
+	* src/de/schlund/pfixcore/webservice/fault/FaultHandler.java
+	* projects/core/schema/wsconfig200401.xsd
+	* projects/webservice/htdocs/typetest-pfxsoap.js
+	* projects/webservice/conf/webservice.conf.xml
+
 2007-04-19  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
 	* projects/core/xsl/forminput.xsl: Suppress "type" attribute on "form" element

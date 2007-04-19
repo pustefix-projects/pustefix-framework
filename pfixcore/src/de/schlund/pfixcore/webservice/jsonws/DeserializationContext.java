@@ -38,6 +38,10 @@ public class DeserializationContext {
             if(rawType instanceof Class) targetClass=(Class)rawType;
             else return false;
         } else return false;
+        if(jsonObj==null) {
+            if(targetClass.isPrimitive()) return false;
+            return true;
+        }
         Deserializer deser=deserReg.getDeserializer(targetClass);
         return deser.canDeserialize(this,jsonObj,targetType);
     }

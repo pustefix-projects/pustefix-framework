@@ -19,7 +19,11 @@
 
 package de.schlund.pfixcore.webservice.config;
 
-import java.util.*;
+import java.io.Serializable;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
 
 /**
  * Configuration.java 
@@ -28,7 +32,7 @@ import java.util.*;
  * 
  * @author mleidig@schlund.de
  */
-public class Configuration {
+public class Configuration implements Serializable {
 
     private GlobalServiceConfig globConf;
     private HashMap<String,ServiceConfig> srvsConf;
@@ -61,7 +65,6 @@ public class Configuration {
     public boolean equals(Object obj) {
     	if(obj instanceof Configuration) {
     		Configuration ref=(Configuration)obj;
-    		System.out.println("* Global");
     		if(!getGlobalServiceConfig().equals(ref.getGlobalServiceConfig())) {
     			System.out.println("Global service not equal");
     			return false;
@@ -82,7 +85,6 @@ public class Configuration {
     		it=ref.srvsConf.values().iterator();
     		while(it.hasNext()) {
     			ServiceConfig refSc=it.next();
-    			System.out.println("** "+refSc.getName());
     			ServiceConfig sc=getServiceConfig(refSc.getName());
     			if(sc==null) {
     				System.out.println("Service not found: "+refSc.getName());

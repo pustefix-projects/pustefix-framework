@@ -38,6 +38,7 @@ import de.schlund.pfixcore.webservice.config.ConfigurationReader;
 import de.schlund.pfixcore.webservice.config.ServiceConfig;
 import de.schlund.pfixcore.webservice.fault.Fault;
 import de.schlund.pfixcore.webservice.fault.FaultHandler;
+import de.schlund.pfixcore.webservice.jsonqx.JSONQXProcessor;
 import de.schlund.pfixcore.webservice.jsonws.JSONWSProcessor;
 import de.schlund.pfixcore.webservice.jsonws.JSONWSStubGenerator;
 import de.schlund.pfixxml.resources.FileResource;
@@ -106,6 +107,7 @@ public class WebServiceServlet extends AxisServlet implements ServiceProcessor {
         				runtime.addServiceProcessor(Constants.PROTOCOL_TYPE_SOAP,this);
                         URL metaURL=srvConf.getGlobalServiceConfig().getDefaultBeanMetaDataURL();
         				runtime.addServiceProcessor(Constants.PROTOCOL_TYPE_JSONWS,new JSONWSProcessor(metaURL));
+                        runtime.addServiceProcessor(Constants.PROTOCOL_TYPE_JSONQX,new JSONQXProcessor(metaURL));
                         runtime.addServiceStubGenerator(Constants.PROTOCOL_TYPE_JSONWS,new JSONWSStubGenerator());
         				getServletContext().setAttribute(ServiceRuntime.class.getName(),runtime);
                         adminWebapp=new AdminWebapp(runtime);

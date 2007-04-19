@@ -32,7 +32,7 @@ public class StringDeserializer extends Deserializer {
 
     @Override
     public boolean canDeserialize(DeserializationContext ctx, Object jsonValue, Type targetType) {
-        // TODO Auto-generated method stub
+        if(jsonValue instanceof String) return true;
         return false;
     }
     

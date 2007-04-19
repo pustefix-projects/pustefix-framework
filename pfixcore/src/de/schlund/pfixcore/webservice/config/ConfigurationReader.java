@@ -20,7 +20,14 @@
 package de.schlund.pfixcore.webservice.config;
 
 import java.io.CharArrayWriter;
+import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.OutputStream;
 import java.net.MalformedURLException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import java.util.Stack;
 
 import javax.xml.parsers.SAXParser;
@@ -33,6 +40,7 @@ import org.xml.sax.helpers.DefaultHandler;
 import de.schlund.pfixcore.webservice.Constants;
 import de.schlund.pfixcore.webservice.fault.FaultHandler;
 import de.schlund.pfixxml.config.CustomizationHandler;
+import de.schlund.pfixxml.config.GlobalConfigurator;
 import de.schlund.pfixxml.resources.FileResource;
 import de.schlund.pfixxml.resources.ResourceUtil;
 
@@ -47,9 +55,15 @@ public class ConfigurationReader extends DefaultHandler {
 	Stack<Object> contextStack=new Stack<Object>();
 	Object context;
 	CharArrayWriter content=new CharArrayWriter();
-
-	public static Configuration read(FileResource file) throws Exception {
-		ConfigurationReader reader=new ConfigurationReader(file);
+	List<FileResource> importedFiles=new ArrayList<FileResource>();
+    boolean isRootFile;
+    
+    public static Configuration read(FileResource file) throws Exception {
+        return read(file,true);
+    }
+    
+	private static Configuration read(FileResource file,boolean isRootFile) throws Exception {
+		ConfigurationReader reader=new ConfigurationReader(file,isRootFile);
 		reader.read();
 		return reader.getConfiguration();
 	}
@@ -58,8 +72,9 @@ public class ConfigurationReader extends DefaultHandler {
 		return config;
 	}
 	
-	public ConfigurationReader(FileResource configFile) {
+	public ConfigurationReader(FileResource configFile,boolean isRootFile) {
 		this.configFile=configFile;
+        this.isRootFile=isRootFile;
         configDir=configFile.getParentAsFileResource();
 	}
 	
@@ -100,7 +115,11 @@ public class ConfigurationReader extends DefaultHandler {
 				srvConf.setName(name);
 				config.addServiceConfig(srvConf);
 				setContext(srvConf);
-			}
+			} else if(localName.equals("import")) {
+			    String name=getStringAttribute(atts,"href",true);
+                FileResource impFile=ResourceUtil.getFileResourceFromDocroot(name);
+                importedFiles.add(impFile);
+            }
 		} else if(context instanceof GlobalServiceConfig) {
 			GlobalServiceConfig globSrvConf=(GlobalServiceConfig)context;
 			if(localName.equals("wsdlsupport")) {
@@ -237,9 +256,22 @@ public class ConfigurationReader extends DefaultHandler {
     
     @Override
     public void endDocument() throws SAXException {
+        processImports();
+        if(isRootFile) {
+            GlobalServiceConfig globSrvConf=config.getGlobalServiceConfig();
+            if(globSrvConf==null) {
+                globSrvConf=new GlobalServiceConfig();
+                config.setGlobalServiceConfig(globSrvConf);
+            }
+            Collection<ServiceConfig> wsList=config.getServiceConfig();
+            for(ServiceConfig ws:wsList) {
+                ws.setGlobalServiceConfig(globSrvConf);
+            }
+        }
         FileResource metaFile=ResourceUtil.getFileResource(configDir,"beanmetadata.xml");
         try {
-            config.getGlobalServiceConfig().setDefaultBeanMetaDataURL(metaFile.toURL());
+            if(config.getGlobalServiceConfig()!=null) 
+                config.getGlobalServiceConfig().setDefaultBeanMetaDataURL(metaFile.toURL());
         } catch(MalformedURLException x) {
             throw new SAXException("Can't get default bean metadata URL.",x);
         }
@@ -251,6 +283,27 @@ public class ConfigurationReader extends DefaultHandler {
 	
     public String getContent() {
     	return content.toString().trim();
+    }
+    
+    private void processImports() throws SAXException {
+        for(int i=importedFiles.size()-1;i>-1;i--) {
+            try {
+                FileResource impFile=importedFiles.get(i);
+                Configuration impConf=ConfigurationReader.read(impFile,false);
+                if(config.getGlobalServiceConfig()==null && impConf.getGlobalServiceConfig()!=null) {
+                    config.setGlobalServiceConfig(impConf.getGlobalServiceConfig());
+                }
+                Collection<ServiceConfig> wsList=impConf.getServiceConfig();
+                for(ServiceConfig ws:wsList) {
+                    if(config.getServiceConfig(ws.getName())==null) {
+                        config.addServiceConfig(ws);
+                    }
+                }
+            } catch(Exception x) {
+                x.printStackTrace();
+                throw new SAXException("Error processing imported file: "+importedFiles.get(i),x);
+            }
+        }
     }
 	
     private String getStringAttribute(Attributes attributes,String attrName) throws ConfigException {
@@ -308,5 +361,27 @@ public class ConfigurationReader extends DefaultHandler {
     		throw new ConfigException(ConfigException.ILLEGAL_ATTRIBUTE_VALUE,attrName,val,x);
     	}
     }
-    	
+
+    
+    public static void serialize(Configuration config,FileResource file) throws Exception {
+        OutputStream out=file.getOutputStream();
+        serialize(config,out);
+    }
+    
+    public static void serialize(Configuration config,OutputStream out) throws Exception {
+        ObjectOutputStream serializer=new ObjectOutputStream(out);
+        serializer.writeObject(config);
+        serializer.flush( );
+    }
+    
+    public static Configuration deserialize(FileResource file) throws Exception {
+        InputStream in=file.getInputStream();
+        return deserialize(in);
+    }
+    
+    public static Configuration deserialize(InputStream in) throws Exception {
+        ObjectInputStream deserializer=new ObjectInputStream(in);
+        return (Configuration)deserializer.readObject( );
+    }
+    
 }

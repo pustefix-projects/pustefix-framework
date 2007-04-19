@@ -19,6 +19,7 @@
 
 package de.schlund.pfixcore.webservice.json;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -34,6 +35,11 @@ public class ParserUtils {
     final static char[] ESC_MAP={'\b','\f','\n','\r','\t','\\','"'};
     
     final static Pattern DATE_PATTERN=Pattern.compile("new Date\\((0|[1-9][0-9]*)\\)");
+    final static Pattern DATE_UTC_PATTERN=Pattern.compile("new Date\\(Date.UTC\\(((0|[1-9]([0-9])*)(,(0|[1-9]([0-9])*))*)\\)\\)");
+    final static Pattern COMMA_SPLIT_PATTERN=Pattern.compile(",");
+    
+    final static int[] CALENDAR_FIELDS={Calendar.YEAR,Calendar.MONTH,Calendar.DATE,
+        Calendar.HOUR_OF_DAY,Calendar.MINUTE,Calendar.SECOND,Calendar.MILLISECOND};
     
     public static String jsonToJava(String str) throws ParseException {
         StringBuilder sb=new StringBuilder();
@@ -113,7 +119,7 @@ public class ParserUtils {
         }
     }
     
-    public static Calendar parseDate(String dateStr) {
+    public static Calendar parseUTCDate(String dateStr) {
         Matcher mat=DATE_PATTERN.matcher(dateStr);
         if(mat.matches()) {
             long time=Long.parseLong(mat.group(1));
@@ -124,16 +130,23 @@ public class ParserUtils {
         return null;
     }
     
-    public static void main(String[] args) {
-        String[] sa=new String[1000];
-        StringBuffer sb=new StringBuffer();
-        for(int i=0;i<1000;i++) sb.append("a");
-        String str=sb.toString();
-        for(int i=0;i<1000;i++) sa[i]=str;
-        long t1=System.currentTimeMillis();
-        for(int i=0;i<1000;i++) ParserUtils.jsonEscape(sa[i]);
-        long t2=System.currentTimeMillis();
-        System.out.println(t2-t1);
+    public static Calendar parseUTCFuncDate(String dateStr) {
+        Calendar cal=Calendar.getInstance();
+        Matcher mat=DATE_UTC_PATTERN.matcher(dateStr);
+        if(mat.matches()) {
+            String[] vals=COMMA_SPLIT_PATTERN.split(mat.group(1));
+            for(int i=0;i<vals.length;i++) {
+                int val=Integer.parseInt(vals[i]);
+                cal.set(CALENDAR_FIELDS[i],val);  
+            }
+        }
+        return cal;
+    }
+    
+    public static Calendar parseDate(String dateStr) {
+        Calendar cal=parseUTCDate(dateStr);
+        if(cal==null) cal=parseUTCFuncDate(dateStr);
+        return cal;
     }
     
 }

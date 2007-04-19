@@ -128,13 +128,15 @@ public class WebServiceTask extends Task {
                     //read webservice configuration
                     Configuration srvConf=ConfigurationReader.read(wsConfFile);
                     GlobalServiceConfig globConf=srvConf.getGlobalServiceConfig();
-                    //read last built webservice configuration
-                    FileResource refWsConfFile=ResourceUtil.getFileResource("file://"+tmpDir.getAbsolutePath()+"/"+"webservice.conf.xml");
+                    
                     Configuration refSrvConf=null;
                     GlobalServiceConfig refGlobConf=null;
                     boolean globalConfChanged=false;
+                    
+                    //read last built webservice configuration
+                    FileResource refWsConfFile=ResourceUtil.getFileResource("file://"+tmpDir.getAbsolutePath()+"/"+"webservice.conf.ser");
                     if(refWsConfFile.exists()) {
-                    	refSrvConf=ConfigurationReader.read(refWsConfFile);
+                        refSrvConf=ConfigurationReader.deserialize(refWsConfFile);
                     	refGlobConf=refSrvConf.getGlobalServiceConfig();
                     	if(!globConf.equals(refGlobConf)) globalConfChanged=true;
                     }
@@ -328,7 +330,8 @@ public class WebServiceTask extends Task {
                     }
                     
                     //Store current webservice configuration file
-                    ResourceUtil.copy(wsConfFile,refWsConfFile);
+                    ConfigurationReader.serialize(srvConf,refWsConfFile);
+                    
                     
                     if(wsdlCnt!=0) log("Generated "+wsdlCnt+"(of "+srvCnt+") WSDL file(s)");
                     if(wsddCnt!=0) log("Generated "+wsddCnt+"(of "+srvCnt+") WSDD file(s)");
