@@ -53,6 +53,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import de.schlund.pfixcore.webservice.Constants;
 import de.schlund.pfixcore.webservice.config.Configuration;
 import de.schlund.pfixcore.webservice.config.ConfigurationReader;
 import de.schlund.pfixcore.webservice.config.GlobalServiceConfig;
@@ -208,119 +209,123 @@ public class WebServiceTask extends Task {
                     
                     for(ServiceConfig conf:srvConf.getServiceConfig()) {
                         
-                        srvCnt++;
-                        String wsName=conf.getName();
-                        ServiceConfig refConf=null;
-                        if(refSrvConf!=null) refConf=refSrvConf.getServiceConfig(wsName);
+                        if(conf.getProtocolType().equals(Constants.PROTOCOL_TYPE_ANY)||
+                                conf.getProtocolType().equals(Constants.PROTOCOL_TYPE_SOAP)) {
                         
-                        String wsItf=conf.getInterfaceName();
-                        String wsImpl=conf.getImplementationName();
-                        //String wsItfPkg=getPackageName(wsItf);
-                        
-                        //Get service specific webservice scope
-                        String wsDeployScope=deployScope;
-                        if(conf.getScopeType()!=null) wsDeployScope=conf.getScopeType();
-                        
-                        //Get service specific message style, if not present take default
-                        String wsEncStyle=encStyle;
-                        if(conf.getEncodingStyle()!=null) wsEncStyle=conf.getEncodingStyle();
-                        String wsEncUse=encUse;
-                        if(conf.getEncodingUse()!=null) wsEncUse=conf.getEncodingUse();
-                        
-                        //Don't check for source files cause webservice classes can come from jar file
-                        //String wsItfPath=wsItf.replace('.',File.separatorChar)+".java";
-                        //File wsItfFile=new File(srcdir,wsItfPath);
-                        //if(!wsItfFile.exists()) throw new BuildException("Web service interface source '"+wsItfFile.getAbsolutePath()+"' doesn't exist.");
-    
-                        File wsdlFile=new File(wsdlDir,wsName+".wsdl");
-                        
-                        //Generate WSDL
-                        if(refConf==null || !wsdlFile.exists() || globalConfChanged || !conf.equals(refConf) || checkChanges(wsItf,wsdlFile)) { 
-                             
-                                checkInterface(wsItf);
+                            srvCnt++;
+                            String wsName=conf.getName();
+                            ServiceConfig refConf=null;
+                            if(refSrvConf!=null) refConf=refSrvConf.getServiceConfig(wsName);
                             
-                                wsdlCnt++;
-                                //String wsNS=null;
-                                //if(shortNamespaces) wsNS=createShortNamespace(wsName);
-                                //else wsNS=createLongNamespace(wsItf);
-                                Java2Wsdl task=new Java2Wsdl();
-                                task.setOutput(wsdlFile);
-                                task.setClassName(wsItf);
-                                //task.setNamespace(wsNS);
-                                task.setLocation(wsUrl+"/"+wsName);
-                                task.setImplClassName(conf.getImplementationName());
-                                //task.addNamespaceMapping("de.schlund.pfixcore.example.webservices",wsNS);
-                                task.setStyle(wsEncStyle);
-                                task.setUse(wsEncUse);
-                                task.generate();
-                                log("Created webservice definition file "+wsdlFile.getAbsolutePath(),Project.MSG_VERBOSE);
-                        }                
-                     
-                        //Generate javascript stubs            
-                        if(globConf.getStubGenerationEnabled()) {
-                            File stubFile=new File(stubDir,wsName+".js");
-                            if(!stubFile.exists() || stubFile.lastModified()<wsdlFile.lastModified()) {
-                                Wsdl2Js task=new Wsdl2Js();
-                                task.setInputFile(wsdlFile);
-                                task.setOutputFile(stubFile);
-                                task.generate();
-                                stubCnt++;
-                            }
-                        }
-                        
-                        //Generate WSDD
-                        File wsddPath=null;
-                        if(shortNamespaces) {
-                            wsddPath=new File(tmpDir,wsName+"_pkg");
-                        } else {
-                            String wsddPathPart=getPackageName(wsItf).replace('.',File.separatorChar);
-                            wsddPath=new File(tmpDir,wsddPathPart);
-                        }
-                        File wsddFile=new File(tmpDir,wsName+".wsdd");
-                        if(!wsddFile.exists() || wsddFile.lastModified()<wsdlFile.lastModified()) {
+                            String wsItf=conf.getInterfaceName();
+                            String wsImpl=conf.getImplementationName();
+                            //String wsItfPkg=getPackageName(wsItf);
                             
-                            wsddCnt++;
-                            Wsdl2Java task=new Wsdl2Java();
-                            task.setOutput(tmpDir);
-                            task.setDeployScope(wsDeployScope);
-                            task.setServerSide(true);
-                            task.setURL(wsdlFile.getAbsolutePath());
-                            //task.setPackageName(wsItfPkg);
-                            task.generate();
+                            //Get service specific webservice scope
+                            String wsDeployScope=deployScope;
+                            if(conf.getScopeType()!=null) wsDeployScope=conf.getScopeType();
                             
-                            File origWsddFile=new File(wsddPath,"deploy.wsdd");
-                            if(!origWsddFile.exists()) throw new BuildException("Can't locate deployment descriptor file "+origWsddFile.getAbsolutePath());
-                            origWsddFile.renameTo(wsddFile);
-                            log("Created deployment descriptor file "+wsddFile.getAbsolutePath(),Project.MSG_VERBOSE);
-                               
-                            Document wsddDoc=loadDoc(wsddFile);
-                            WSDDDocument wsdd=new WSDDDocument(wsddDoc);
-                            WSDDService[] wsddServices=wsdd.getDeployment().getServices();
-                            for(int j=0;j<wsddServices.length;j++) {
-                            	
-                                //Change automatically generated name of implementation class to configured name
-                                wsddServices[j].setParameter("className",wsImpl);
+                            //Get service specific message style, if not present take default
+                            String wsEncStyle=encStyle;
+                            if(conf.getEncodingStyle()!=null) wsEncStyle=conf.getEncodingStyle();
+                            String wsEncUse=encUse;
+                            if(conf.getEncodingUse()!=null) wsEncUse=conf.getEncodingUse();
+                            
+                            //Don't check for source files cause webservice classes can come from jar file
+                            //String wsItfPath=wsItf.replace('.',File.separatorChar)+".java";
+                            //File wsItfFile=new File(srcdir,wsItfPath);
+                            //if(!wsItfFile.exists()) throw new BuildException("Web service interface source '"+wsItfFile.getAbsolutePath()+"' doesn't exist.");
+        
+                            File wsdlFile=new File(wsdlDir,wsName+".wsdl");
+                            
+                            //Generate WSDL
+                            if(refConf==null || !wsdlFile.exists() || globalConfChanged || !conf.equals(refConf) || checkChanges(wsItf,wsdlFile)) { 
+                                 
+                                    checkInterface(wsItf);
                                 
-                                wsddServices[j].setRequestFlow(reqFlow);
-                                wsddServices[j].setResponseFlow(resFlow);
-                                
-                                //Update server deployment descriptor
-                                srvWsdd.getDeployment().deployService(wsddServices[j]);
-                                wsddChanged=true;
+                                    wsdlCnt++;
+                                    //String wsNS=null;
+                                    //if(shortNamespaces) wsNS=createShortNamespace(wsName);
+                                    //else wsNS=createLongNamespace(wsItf);
+                                    Java2Wsdl task=new Java2Wsdl();
+                                    task.setOutput(wsdlFile);
+                                    task.setClassName(wsItf);
+                                    //task.setNamespace(wsNS);
+                                    task.setLocation(wsUrl+"/"+wsName);
+                                    task.setImplClassName(conf.getImplementationName());
+                                    //task.addNamespaceMapping("de.schlund.pfixcore.example.webservices",wsNS);
+                                    task.setStyle(wsEncStyle);
+                                    task.setUse(wsEncUse);
+                                    task.generate();
+                                    log("Created webservice definition file "+wsdlFile.getAbsolutePath(),Project.MSG_VERBOSE);
+                            }                
+                         
+                            //Generate javascript stubs            
+                            if(globConf.getStubGenerationEnabled()) {
+                                File stubFile=new File(stubDir,wsName+".js");
+                                if(!stubFile.exists() || stubFile.lastModified()<wsdlFile.lastModified()) {
+                                    Wsdl2Js task=new Wsdl2Js();
+                                    task.setInputFile(wsdlFile);
+                                    task.setOutputFile(stubFile);
+                                    task.generate();
+                                    stubCnt++;
+                                }
                             }
-                            serialize(wsdd.getDOMDocument(),wsddFile);
-                              
-                        } else if(isNewWsdd) {
                             
-                            Document wsddDoc=loadDoc(wsddFile);
-                            WSDDDocument wsdd=new WSDDDocument(wsddDoc);
-                            WSDDService[] wsddServices=wsdd.getDeployment().getServices();
-                            for(int j=0;j<wsddServices.length;j++) {
-                                //Update server deployment descriptor
-                                srvWsdd.getDeployment().deployService(wsddServices[j]);
-                                wsddChanged=true;
+                            //Generate WSDD
+                            File wsddPath=null;
+                            if(shortNamespaces) {
+                                wsddPath=new File(tmpDir,wsName+"_pkg");
+                            } else {
+                                String wsddPathPart=getPackageName(wsItf).replace('.',File.separatorChar);
+                                wsddPath=new File(tmpDir,wsddPathPart);
+                            }
+                            File wsddFile=new File(tmpDir,wsName+".wsdd");
+                            if(!wsddFile.exists() || wsddFile.lastModified()<wsdlFile.lastModified()) {
+                                
+                                wsddCnt++;
+                                Wsdl2Java task=new Wsdl2Java();
+                                task.setOutput(tmpDir);
+                                task.setDeployScope(wsDeployScope);
+                                task.setServerSide(true);
+                                task.setURL(wsdlFile.getAbsolutePath());
+                                //task.setPackageName(wsItfPkg);
+                                task.generate();
+                                
+                                File origWsddFile=new File(wsddPath,"deploy.wsdd");
+                                if(!origWsddFile.exists()) throw new BuildException("Can't locate deployment descriptor file "+origWsddFile.getAbsolutePath());
+                                origWsddFile.renameTo(wsddFile);
+                                log("Created deployment descriptor file "+wsddFile.getAbsolutePath(),Project.MSG_VERBOSE);
+                                   
+                                Document wsddDoc=loadDoc(wsddFile);
+                                WSDDDocument wsdd=new WSDDDocument(wsddDoc);
+                                WSDDService[] wsddServices=wsdd.getDeployment().getServices();
+                                for(int j=0;j<wsddServices.length;j++) {
+                                	
+                                    //Change automatically generated name of implementation class to configured name
+                                    wsddServices[j].setParameter("className",wsImpl);
+                                    
+                                    wsddServices[j].setRequestFlow(reqFlow);
+                                    wsddServices[j].setResponseFlow(resFlow);
+                                    
+                                    //Update server deployment descriptor
+                                    srvWsdd.getDeployment().deployService(wsddServices[j]);
+                                    wsddChanged=true;
+                                }
+                                serialize(wsdd.getDOMDocument(),wsddFile);
+                                  
+                            } else if(isNewWsdd) {
+                                
+                                Document wsddDoc=loadDoc(wsddFile);
+                                WSDDDocument wsdd=new WSDDDocument(wsddDoc);
+                                WSDDService[] wsddServices=wsdd.getDeployment().getServices();
+                                for(int j=0;j<wsddServices.length;j++) {
+                                    //Update server deployment descriptor
+                                    srvWsdd.getDeployment().deployService(wsddServices[j]);
+                                    wsddChanged=true;
+                                }   
                             }   
-                        }   
+                        }
                     }
                     
                     //Store changed server deployment descriptor
@@ -328,22 +333,20 @@ public class WebServiceTask extends Task {
                         serialize(srvWsdd.getDOMDocument(),srvWsddFile);
                         log("Created server deployment descriptor file "+srvWsddFile.getAbsolutePath(),Project.MSG_VERBOSE);
                     }
-                    
+                            
                     //Store current webservice configuration file
                     ConfigurationReader.serialize(srvConf,refWsConfFile);
-                    
-                    
+                            
                     if(wsdlCnt!=0) log("Generated "+wsdlCnt+"(of "+srvCnt+") WSDL file(s)");
                     if(wsddCnt!=0) log("Generated "+wsddCnt+"(of "+srvCnt+") WSDD file(s)");
                     if(stubCnt!=0) log("Generated "+stubCnt+"(of "+srvCnt+") WS stub file(s)");
                     if(wsddChanged) log("Generated server WSDD file");
-                      
                 }
             }
-	        } catch(Exception x) {
-	            throw new BuildException(x);
-	        }
+        } catch(Exception x) {
+            throw new BuildException(x);
         }
+    }
     
         private String getPackageName(String className) {
             int ind=className.lastIndexOf('.');
