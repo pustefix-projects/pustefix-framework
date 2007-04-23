@@ -22,6 +22,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Hashtable;
 import java.util.Properties;
 
 import org.apache.tools.ant.BuildException;
@@ -76,7 +77,12 @@ public class BuildTimePropTask extends Task {
             props.setProperty("machine", machine);
             props.setProperty("fqdn", fqdn);
             props.setProperty("uid", uid);
-
+            
+            Hashtable<String, String> antProps = this.getProject().getProperties();
+            for (String key : antProps.keySet()) {
+                props.setProperty("__antprop_" + key, antProps.get(key));
+            }
+            
             props.store(new FileOutputStream(file),
                     "Properties used at buildtime");
         } catch (IOException e) {
