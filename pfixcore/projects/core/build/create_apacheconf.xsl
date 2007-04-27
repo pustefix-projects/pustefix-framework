@@ -35,10 +35,38 @@ RewriteEngine on
   <xsl:apply-templates select="sslkey"/>
 </xsl:if>
 
+&lt;IfDefine PFX_USE_JK&gt;
 JkMount /xml/* <xsl:apply-templates select="/projects/common/tomcat/jkmount/node()"/>
 <xsl:for-each select="$currentprj/jkmount">
 JkMount <xsl:choose><xsl:when test="@url"><xsl:value-of select="@url"/><xsl:text> </xsl:text></xsl:when><xsl:otherwise>/xml/*<xsl:text> </xsl:text></xsl:otherwise></xsl:choose> <xsl:apply-templates select="./node()"/>
 </xsl:for-each>
+&lt;/IfDefine&gt;
+
+&lt;IfDefine PFX_USE_PROXY_AJP&gt;
+ProxyPass /xml/ balancer://<xsl:apply-templates select="/projects/common/tomcat/jkmount/node()"/>/xml/ nofailover=On stickysession=jsessionid
+<xsl:for-each select="$currentprj/jkmount">
+ProxyPass <xsl:choose><xsl:when test="@url"><xsl:value-of select="substring-before(@url, '*')"/><xsl:text> </xsl:text></xsl:when><xsl:otherwise>/xml/<xsl:text> </xsl:text></xsl:otherwise></xsl:choose> balancer://<xsl:apply-templates select="./node()"/><xsl:choose><xsl:when test="@url"><xsl:value-of select="substring-before(@url, '*')"/><xsl:text> </xsl:text></xsl:when><xsl:otherwise>/xml/<xsl:text> </xsl:text></xsl:otherwise></xsl:choose> nofailover=On stickysession=jsessionid
+</xsl:for-each>
+Include <xsl:value-of select="$docroot"/>/servletconf/tomcat/ajp.conf
+&lt;/IfDefine&gt;
+
+&lt;IfDefine !PFX_USE_PROXY_AJP&gt;
+&lt;IfDefine !PFX_USE_JK&gt;
+&lt;IfModule proxy_ajp_module&gt;
+ProxyPass /xml/ balancer://<xsl:apply-templates select="/projects/common/tomcat/jkmount/node()"/>/xml/ nofailover=On stickysession=jsessionid
+<xsl:for-each select="$currentprj/jkmount">
+ProxyPass <xsl:choose><xsl:when test="@url"><xsl:value-of select="substring-before(@url, '*')"/><xsl:text> </xsl:text></xsl:when><xsl:otherwise>/xml/<xsl:text> </xsl:text></xsl:otherwise></xsl:choose> balancer://<xsl:apply-templates select="./node()"/><xsl:choose><xsl:when test="@url"><xsl:value-of select="substring-before(@url, '*')"/><xsl:text> </xsl:text></xsl:when><xsl:otherwise>/xml/<xsl:text> </xsl:text></xsl:otherwise></xsl:choose> nofailover=On stickysession=jsessionid
+</xsl:for-each>
+Include <xsl:value-of select="$docroot"/>/servletconf/tomcat/ajp.conf
+&lt;/IfModule&gt;
+&lt;IfModule !proxy_ajp_module&gt;
+JkMount /xml/* <xsl:apply-templates select="/projects/common/tomcat/jkmount/node()"/>
+<xsl:for-each select="$currentprj/jkmount">
+JkMount <xsl:choose><xsl:when test="@url"><xsl:value-of select="@url"/><xsl:text> </xsl:text></xsl:when><xsl:otherwise>/xml/*<xsl:text> </xsl:text></xsl:otherwise></xsl:choose> <xsl:apply-templates select="./node()"/>
+</xsl:for-each>
+&lt;/IfModule&gt;
+&lt;/IfDefine&gt;
+&lt;/IfDefine&gt;
 
 <xsl:apply-templates select="$currentprj/errordoc"/>
 
