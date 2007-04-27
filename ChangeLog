@@ -1,5 +1,13 @@
 2007-04-23  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
+	* projects/core/build/create_ajpconf.xsl: 
+	* projects/core/build/create_apacheconf.xsl: 
+	* projects/core/build/create_jkconf.xsl: 
+	* skel/build-skel.xml: 
+	Added support for mod_proxy_ajp
+
+2007-04-23  Sebastian Marsching  <sebastian.marsching@1und1.de>
+
 	* src/de/schlund/pfixxml/config/BuildTimePropTask.java (execute): 
 	Make ant properties available using "__antprop_" prefix.
 

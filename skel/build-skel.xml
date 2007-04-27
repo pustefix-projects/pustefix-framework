@@ -226,7 +226,7 @@ or delete the DOCTYPE definition -->
           />
 
   <target name="compile-xml"
-          depends="propfiles, scgenerate, web_xml, autodeploy, stylesheets, pfixlog_xml, apache_conf, jk_conf, workers_prop, server_xml, webservice"
+          depends="propfiles, scgenerate, web_xml, autodeploy, stylesheets, pfixlog_xml, apache_conf, jk_conf, ajp_conf, workers_prop, server_xml, webservice"
           description="performs xslt transformations in dir.projects"
           />
 
@@ -721,7 +721,21 @@ or delete the DOCTYPE definition -->
       <param name="mode"      expression="${makemode}"/>
     </pfx-xslt>
   </target>
-
+  
+  <target name="ajp_conf" depends="ant-tasks, projects_xml" description="creates servletconf/tomcat/ajp.conf from servletconf/projects.xml with core/build/create_ajpconf.xsl">
+    <pfx-xslt
+     infile="${dir.projects}/servletconf/projects.xml"
+     outfile="${dir.tomcat}/ajp.conf"
+     style="${dir.projects}/core/build/create_ajpconf.xsl"
+     >
+      <param name="docroot"   expression="${dir.docroot}"/>
+      <param name="fqdn"      expression="${fqdn}"/>
+      <param name="uid"       expression="${uid}"/>
+      <param name="machine"   expression="${machine}"/>
+      <param name="mode"      expression="${makemode}"/>
+    </pfx-xslt>
+  </target>
+  
   <target name="workers_prop" depends="ant-tasks, projects_xml" description="creates servletconf/tomcat/workers.prop from servletconf/projects.xml with core/build/create_workersprop.xsl">
     <pfx-xslt
      infile="${dir.projects}/servletconf/projects.xml"
