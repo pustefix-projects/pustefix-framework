@@ -62,44 +62,38 @@ public class PagesResourceImpl implements PagesResource {
 
             Element targetsElement = resdoc.createSubNode(currentPage,
                     "targets");
-            this
-                    .renderTarget(this.selectedPage.getPageTarget(),
-                            targetsElement);
-
-            // Sort include parts
-            TreeSet includes = new TreeSet(this.selectedPage.getPageTarget()
-                    .getIncludeDependencies(true));
-            if (!includes.isEmpty()) {
-                Element includesElement = resdoc.createSubNode(currentPage,
-                        "includes");
-                for (Iterator i = includes.iterator(); i.hasNext();) {
-                    IncludePartThemeVariant part = (IncludePartThemeVariant) i
-                            .next();
-                    Element includeElement = resdoc.createSubNode(
-                            includesElement, "include");
-                    includesElement.appendChild(includeElement);
-                    includeElement.setAttribute("path", part.getIncludePart()
-                            .getIncludeFile().getPath());
-                    includeElement.setAttribute("part", part.getIncludePart()
-                            .getName());
-                    includeElement.setAttribute("theme", part.getTheme()
-                            .getName());
+            
+            Target pageTarget = this.selectedPage.getPageTarget();
+            // Null targets may exist because dummy page objects (for pages
+            // which are only in navigation, not in target section) might
+            // exist.
+            if (pageTarget != null) {
+                this.renderTarget(pageTarget, targetsElement);
+                
+                // Sort include parts
+                TreeSet includes = new TreeSet(this.selectedPage.getPageTarget().getIncludeDependencies(true));
+                if (!includes.isEmpty()) {
+                    Element includesElement = resdoc.createSubNode(currentPage, "includes");
+                    for (Iterator i = includes.iterator(); i.hasNext();) {
+                        IncludePartThemeVariant part = (IncludePartThemeVariant) i.next();
+                        Element includeElement = resdoc.createSubNode(includesElement, "include");
+                        includesElement.appendChild(includeElement);
+                        includeElement.setAttribute("path", part.getIncludePart().getIncludeFile().getPath());
+                        includeElement.setAttribute("part", part.getIncludePart().getName());
+                        includeElement.setAttribute("theme", part.getTheme().getName());
+                    }
                 }
-            }
-
-            // Sort images
-            TreeSet images = new TreeSet(this.selectedPage.getPageTarget()
-                    .getImageDependencies(true));
-            if (!images.isEmpty()) {
-                Element imagesElement = resdoc.createSubNode(currentPage,
-                        "images");
-                for (Iterator i = images.iterator(); i.hasNext();) {
-                    Image image = (Image) i.next();
-                    Element imageElement = resdoc.createSubNode(imagesElement,
-                            "image");
-                    imageElement.setAttribute("path", image.getPath());
-                    imageElement.setAttribute("modtime", Long.toString(image
-                            .getLastModTime()));
+                
+                // Sort images
+                TreeSet images = new TreeSet(this.selectedPage.getPageTarget().getImageDependencies(true));
+                if (!images.isEmpty()) {
+                    Element imagesElement = resdoc.createSubNode(currentPage, "images");
+                    for (Iterator i = images.iterator(); i.hasNext();) {
+                        Image image = (Image) i.next();
+                        Element imageElement = resdoc.createSubNode(imagesElement, "image");
+                        imageElement.setAttribute("path", image.getPath());
+                        imageElement.setAttribute("modtime", Long.toString(image.getLastModTime()));
+                    }
                 }
             }
         }

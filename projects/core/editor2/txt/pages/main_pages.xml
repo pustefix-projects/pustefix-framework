@@ -85,6 +85,9 @@
     <theme name="default">
         <table><tr><td class="editor_main_emph">XML/XSL dependency tree:</td></tr></table>
         <table class="editor_box" width="100%">
+          <ixsl:if test="not(/formresult/pages/currentpage/targets//target)">
+            <tr><td>There is no target information available for this page.</td></tr>
+          </ixsl:if>
           <ixsl:for-each select="/formresult/pages/currentpage/targets//target">
             <ixsl:variable name="count"><ixsl:value-of select="count(ancestor::target)"/></ixsl:variable>
             <ixsl:variable name="ind">

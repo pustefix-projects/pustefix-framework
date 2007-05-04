@@ -127,8 +127,7 @@ public class PageFactoryServiceImpl implements PageFactoryService {
      *      de.schlund.pfixxml.targets.PageInfo)
      */
     public MutablePage getMutablePage(String pageName, Variant variant,
-            String handler, ThemeList themes, Page parent, Project project,
-            PageInfo pinfo) {
+            String handler, ThemeList themes, Project project) {
         PageKey pk = new PageKey(project, pageName, variant);
 
         synchronized (this.cache) {
