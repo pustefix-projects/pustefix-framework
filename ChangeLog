@@ -1,5 +1,10 @@
 2007-05-04  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
+	* src/de/schlund/pfixcore/testsuite/util/TargetGeneratorBenchmarkFactory.java: 
+	* src/de/schlund/pfixcore/testsuite/util/TargetGeneratorBenchmarkUtil.java: 
+	* stuff/targetgenbenchmark/runbenchmark.sh: 
+	Created benchmark utility for TargetGenerator.
+	
 	* src/de/schlund/pfixcore/editor2/core/spring/internal/ProjectImpl.java: 
 	* src/de/schlund/pfixcore/editor2/core/spring/PageFactoryService.java: 
 	* src/de/schlund/pfixcore/editor2/core/spring/PageFactoryServiceImpl.java: 
