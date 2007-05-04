@@ -1,3 +1,14 @@
+2007-05-04  Sebastian Marsching  <sebastian.marsching@1und1.de>
+
+	* src/de/schlund/pfixcore/editor2/core/spring/internal/ProjectImpl.java: 
+	* src/de/schlund/pfixcore/editor2/core/spring/PageFactoryService.java: 
+	* src/de/schlund/pfixcore/editor2/core/spring/PageFactoryServiceImpl.java: 
+	* src/de/schlund/pfixcore/editor2/core/spring/TargetFactoryServiceImpl.java: 
+	* src/de/schlund/pfixcore/editor2/frontend/resources/PagesResourceImpl.java: 
+	* projects/core/editor2/txt/pages/main_pages.xml: 
+	Fixed editor problems that occured when a page was not listed in navigation or
+	a page was listed in navigation but no target existed.
+
 2007-04-23  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
 	* projects/core/build/create_ajpconf.xsl: 
