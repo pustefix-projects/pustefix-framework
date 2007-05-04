@@ -56,7 +56,13 @@ public class TargetsResourceImpl implements TargetsResource {
         if (project != null) {
             for (Iterator i = project.getAllPages().iterator(); i.hasNext();) {
                 Page page = (Page) i.next();
-                this.renderTarget(page.getPageTarget(), elem);
+                Target pageTarget = page.getPageTarget();
+                // Null targets may exist because dummy page objects (for pages
+                // which are only in navigation, not in target section) might
+                // exist.
+                if (pageTarget != null) {
+                    this.renderTarget(pageTarget, elem);
+                }
             }
         }
         if (this.selectedTarget != null) {

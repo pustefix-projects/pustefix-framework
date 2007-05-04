@@ -58,6 +58,7 @@ import de.schlund.pfixxml.targets.PageTargetTree;
 import de.schlund.pfixxml.targets.TargetDependencyRelation;
 import de.schlund.pfixxml.targets.TargetGenerator;
 import de.schlund.pfixxml.targets.TargetGeneratorFactory;
+import de.schlund.pfixxml.targets.Themes;
 import de.schlund.pfixxml.util.Path;
 
 /**
@@ -168,7 +169,7 @@ public class ProjectImpl extends AbstractProject {
             pages.addAll(this.recurseNavigationElement(navElements[i], null,
                     ptree));
         }
-
+        
         // Create pagename => page map
         HashMap<String, Map<Variant, Page>> pagemap = new HashMap<String, Map<Variant, Page>>();
         for (Iterator i = pages.iterator(); i.hasNext();) {
@@ -182,6 +183,32 @@ public class ProjectImpl extends AbstractProject {
                 .hasNext();) {
             Map<Variant, Page> map = i.next();
             allpages.addAll(map.values());
+        }
+        
+        // Add pages from target definitions which are not present in navigation tree
+        for (PageInfo pinfo : (TreeSet<PageInfo>)gen.getPageTargetTree().getPageInfos()) {
+            String pageName = pinfo.getName();
+            String pageHandler = "none";
+            String variantName = pinfo.getVariant();
+            Variant pageVariant;
+            if (variantName != null) {
+                pageVariant = this.variantfactory.getVariant(variantName);
+            } else {
+                pageVariant = null;
+            }
+            ThemeList pageThemes = new ThemeListImpl(this.themefactory,
+                    ptree.getTargetForPageInfo(pinfo).getThemes());
+            if (!pagemap.containsKey(pageName) || !pagemap.get(pageName).containsKey(pageVariant)) {
+                // Create new page only if there has not been a page
+                // with the same name and same variant before
+                MutablePage page;
+                page = this.pagefactory.getMutablePage(pageName,
+                        pageVariant, pageHandler, pageThemes, this);
+                page.setHandlerPath(pageHandler);
+                pages.add(page);
+                this.recursePage(page, pagemap);
+                allpages.add(page);
+            }
         }
 
         this.toppages = pages;
@@ -257,8 +284,7 @@ public class ProjectImpl extends AbstractProject {
                     // Create new page only if there has not been a page
                     // with the same name and same variant before
                     page = this.pagefactory.getMutablePage(pageName,
-                            pageVariant, pageHandler, pageThemes, null, this,
-                            pinfo);
+                            pageVariant, pageHandler, pageThemes, this);
                 }
                 page.setHandlerPath(pageHandler);
                 pages.add(page);
@@ -267,6 +293,17 @@ public class ProjectImpl extends AbstractProject {
                 }
             }
         }
+        
+        // make sure a default page exists, even if there is no target
+        // otherwise, subpages cannot not be handled correctly
+        if (defaultPage == null) {
+            MutablePage page;
+            page = this.pagefactory.getMutablePage(pageName, null, pageHandler, new ThemeListImpl(this.themefactory, new Themes("default")), this);
+            page.setHandlerPath(pageHandler);
+            pages.add(page);
+            defaultPage = page;
+        }
+        
         HashSet<Page> subpages = new HashSet<Page>();
 
         if (nav.hasChildren()) {

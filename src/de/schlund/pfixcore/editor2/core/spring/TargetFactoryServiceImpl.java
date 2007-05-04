@@ -102,6 +102,9 @@ public class TargetFactoryServiceImpl implements TargetFactoryService {
      */
     public Target getTargetFromPustefixTarget(
             de.schlund.pfixxml.targets.Target pfixTarget, Project project) {
+        if (pfixTarget == null) {
+            return null;
+        }
         synchronized (this.cachePfixTarget) {
             if (!this.cachePfixTarget.containsKey(pfixTarget)) {
                 this.cachePfixTarget.put(pfixTarget, new TargetPfixImpl(
