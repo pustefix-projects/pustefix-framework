@@ -36,7 +36,6 @@ import org.apache.log4j.Logger;
 
 import de.schlund.pfixcore.webservice.config.Configuration;
 import de.schlund.pfixcore.webservice.config.ConfigurationReader;
-import de.schlund.pfixcore.webservice.config.GlobalServiceConfig;
 import de.schlund.pfixcore.webservice.config.ServiceConfig;
 import de.schlund.pfixcore.webservice.fault.Fault;
 import de.schlund.pfixcore.webservice.fault.FaultHandler;
@@ -154,8 +153,9 @@ public class WebServiceServlet extends AxisServlet implements ServiceProcessor {
         
     	try {
     		runtime.process(req,res);
-    	} catch(ServiceException x) {
-    		throw new ServletException("Error while processing webservice request.",x);
+    	} catch(Throwable t) {
+            LOG.error("Error while processing webservice request",t);
+            if(!res.isCommitted()) throw new ServletException("Error while processing webservice request.",t);
     	}
     }
     
