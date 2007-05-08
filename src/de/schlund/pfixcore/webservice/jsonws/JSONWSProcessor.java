@@ -19,6 +19,7 @@
 
 package de.schlund.pfixcore.webservice.jsonws;
 
+import java.io.IOException;
 import java.io.StringReader;
 import java.io.Writer;
 import java.lang.reflect.InvocationTargetException;
@@ -71,7 +72,9 @@ public class JSONWSProcessor implements ServiceProcessor {
     }
     
     public void process(ServiceRequest req,ServiceResponse res,ServiceRuntime runtime,ServiceRegistry registry,ProcessingInfo procInfo) throws ServiceException {
+        Writer writer=null;
         try {
+            
             String serviceName=req.getServiceName();
             ServiceConfig service=registry.getService(serviceName);
             if(service==null) throw new ServiceException("Service not found: "+serviceName);
@@ -176,13 +179,14 @@ public class JSONWSProcessor implements ServiceProcessor {
                 
                 res.setContentType("text/plain");
                 res.setCharacterEncoding("utf-8");
-                Writer writer=res.getMessageWriter();
+                writer=res.getMessageWriter();
                 writer.write("{");
-                if(jsonReq.hasMember("id")) {
+                if(jsonReq!=null && jsonReq.hasMember("id")) {
                     writer.write("\"id\":");
                     writer.write("\""+jsonReq.getStringMember("id")+"\"");
                     writer.write(",");
                 }
+           
                 if(error==null) {
                     writer.write("\"result\":");
                     //Serialization
@@ -214,12 +218,17 @@ public class JSONWSProcessor implements ServiceProcessor {
                 }
                 writer.write("}");
                 writer.flush();
-                writer.close();    
             }
         } catch (Exception e) {
             ServiceException se=new ServiceException("Error while processing service request.",e);
             LOG.error(se);
             throw se;
+        } finally {
+            if(writer!=null) {
+                try {
+                    writer.close();
+                } catch(IOException x) {}
+            }
         }
     }
 
