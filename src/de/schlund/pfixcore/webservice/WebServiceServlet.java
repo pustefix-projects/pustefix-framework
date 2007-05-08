@@ -124,8 +124,9 @@ public class WebServiceServlet extends AxisServlet implements ServiceProcessor {
     public void doPost(HttpServletRequest req,HttpServletResponse res) throws ServletException,IOException {
     	try {
     		runtime.process(req,res);
-    	} catch(ServiceException x) {
-    		throw new ServletException("Error while processing webservice request.",x);
+    	} catch(Throwable t) {
+            LOG.error("Error while processing webservice request",t);
+            if(!res.isCommitted()) throw new ServletException("Error while processing webservice request.",t);
     	}
     }
     

@@ -1,3 +1,14 @@
+2007-05-08  Martin Leidig  <mleidig@schlund.de>
+
+	Fixed "multiple getWriter() call problem", which could occur when an 
+	exception is thrown during the writing of a JSON response, which in
+	turn can trigger a ServletException and a second getWriter() call.
+
+	* src/de/schlund/pfixcore/webservice/WebServiceServlet.java: Don't throw
+	ServletException if HttpServletResponse is already committed.
+	* src/de/schlund/pfixcore/webservice/jsonws/JSONWSProcessor.java: Ensure
+	that Writers are closed before returning to the caller.
+
 2007-05-04  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
 	* src/de/schlund/pfixcore/testsuite/util/TargetGeneratorBenchmarkFactory.java: 
