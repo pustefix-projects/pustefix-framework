@@ -450,6 +450,7 @@ public abstract class AbstractXMLServer extends ServletManager {
         int    err;
         String errtxt;
         if ((err = spdoc.getResponseError()) != 0) {
+            setCookies(spdoc,res);
             if ((errtxt = spdoc.getResponseErrorText()) != null) {
                 res.sendError(err, errtxt);
             } else {
@@ -491,19 +492,7 @@ public abstract class AbstractXMLServer extends ServletManager {
                 SessionAdmin.getInstance().touchSession(servletname, stylesheet, session);
             }
             // Only process cookies if we don't reuse
-            if (spdoc.getCookies() != null && ! spdoc.getCookies().isEmpty()) {
-                if (LOGGER.isDebugEnabled()) {
-                    LOGGER.debug("*** Sending cookies ***");
-                }
-                // Now adding the Cookies from spdoc
-                for (Iterator i = spdoc.getCookies().iterator(); i.hasNext();) {
-                    Cookie cookie = (Cookie) i.next();
-                    if (LOGGER.isDebugEnabled()) {
-                        LOGGER.debug("    Add cookie: " + cookie);
-                    }
-                    res.addCookie(cookie);
-                }
-            }
+            setCookies(spdoc,res);
         }
 
         // String etag = preq.getRequest().getHeader("Etag");
@@ -802,6 +791,22 @@ public abstract class AbstractXMLServer extends ServletManager {
             boolean ok = temporary_dir.mkdirs();
             if (LOGGER.isInfoEnabled()) {
                 LOGGER.info(temporary_dir.getPath() + " did not exist. Created now. Sucess:" + ok);
+            }
+        }
+    }
+    
+    private void setCookies(SPDocument spdoc,HttpServletResponse res) {
+        if (spdoc.getCookies() != null && ! spdoc.getCookies().isEmpty()) {
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug("*** Sending cookies ***");
+            }
+            // Now adding the Cookies from spdoc
+            for (Iterator i = spdoc.getCookies().iterator(); i.hasNext();) {
+                Cookie cookie = (Cookie) i.next();
+                if (LOGGER.isDebugEnabled()) {
+                    LOGGER.debug("    Add cookie: " + cookie);
+                }
+                res.addCookie(cookie);
             }
         }
     }
