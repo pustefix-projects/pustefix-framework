@@ -1,3 +1,12 @@
+2007-05-09  Martin Leidig  <mleidig@schlund.de>
+
+	Fixed "Cookie setting problem with reused SPDocuments". Cookies still
+	aren't set at responses based on a reused DOM, but now they're set at
+	error responses (including 302 status responses) too.
+
+	* src/de/schlund/pfixxml/AbstractXMLServer.java: Set cookies on error
+	responses.
+
 2007-05-08  Martin Leidig  <mleidig@schlund.de>
 
 	Fixed "multiple getWriter() call problem", which could occur when an 
