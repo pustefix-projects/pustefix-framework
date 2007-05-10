@@ -10,7 +10,7 @@ or delete the DOCTYPE definition -->
   
   <import file="skel/build-skel.xml"/>
 
-  <property name="dist.version"        value="0.10.1-pre" description="the version to use for pfixcore-*.*"/>
+  <property name="dist.version"        value="0.10.2-pre" description="the version to use for pfixcore-*.*"/>
   <property name="dist.type"           value="build" description="distribution type: supported values release, build"/>
 
   <!-- additional properties -->
