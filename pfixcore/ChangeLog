@@ -1,3 +1,9 @@
+2007-05-10  Martin Leidig  <mleidig@schlund.de>
+
+	Released Pfixcore 0.10.1
+	
+	* build.xml: Changed development version to 0.10.2-pre
+
 2007-05-09  Martin Leidig  <mleidig@schlund.de>
 
 	Fixed "Cookie setting problem with reused SPDocuments". Cookies still
