@@ -1,3 +1,12 @@
+2007-05-11  Martin Leidig  <mleidig@schlund.de>
+
+	Enable native XMLHttpRequest usage by default for Opera (instead
+	of iframe fallback), because current versions don't have problems
+	any longer.
+
+	* projects/core/script/httpRequest.js
+	* projects/core/script/xmlRequest.js
+
 2007-05-09  Martin Leidig  <mleidig@schlund.de>
 
 	Fixed "Cookie setting problem with reused SPDocuments". Cookies still
