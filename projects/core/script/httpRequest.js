@@ -246,18 +246,18 @@ pfx.net.HTTPRequest.prototype.start = function( content, headers, reqId ) {
       if( !( _isMshtml || _isOpera ) ) {
         el = document.createElement("iframe");
         el.style.display = "none";
-        el.name          = "pfxxmliframe"+i;
-        el.id            = "pfxxmliframe"+i;
+        el.name          = "pfxreqiframe"+i;
+        el.id            = "pfxreqiframe"+i;
 
         document.body.appendChild(el);
 
       } else {
         el = document.createElement("div");
         el.style.display = "none";
-        el.id            = "pfxxmldiv"+i;
+        el.id            = "pfxreqdiv"+i;
         document.body.appendChild(el);
 
-        document.getElementById("pfxxmldiv"+i).innerHTML = '<' + 'iframe id="pfxxmliframe' + i + '" name="pfxxmliframe' + i + '" style="display:block"><' + '/iframe>';
+        document.getElementById("pfxreqdiv"+i).innerHTML = '<' + 'iframe id="pfxreqiframe' + i + '" name="pfxreqiframe' + i + '" style="display:block"><' + '/iframe>';
       }
 
       var url = this.url;
@@ -290,7 +290,7 @@ pfx.net.HTTPRequest.prototype.start = function( content, headers, reqId ) {
 
         el = document.createElement("div");
         el.style.display = "none";
-        el.id               = "pfxxmlformdiv"+i;
+        el.id               = "pfxreqformdiv"+i;
 
         pfx.net.HTTPRequest._xml[i] = this.callback;
         pfx.net.HTTPRequest._xmlThis[i] = this;
@@ -302,14 +302,22 @@ pfx.net.HTTPRequest.prototype.start = function( content, headers, reqId ) {
 
           var elForm = document.createElement("form");
           elForm.action = url;
-          elForm.target = "pfxxmliframe"+i;
+          elForm.target = "pfxreqiframe"+i;
           elForm.method = self.method;
-          elForm.id     = "pfxxmlform"+i;
+          elForm.id     = "pfxreqform"+i;
           
           var elField = document.createElement("textarea");
-          elField.name  = "soapmessage";
+          elField.name  = "message";
           elField.value = content;
           elForm.appendChild(elField);
+          
+          for( var h=0; h<self.headers.length; h++ ) {
+            elField = document.createElement("input");
+            elField.type = "hidden";
+            elField.name = self.headers[h][0];
+            elField.value = self.headers[h][1];
+            elForm.appendChild(elField);
+          }
 
           if( _isMshtml ) {
             elField = document.createElement("input");
@@ -322,10 +330,11 @@ pfx.net.HTTPRequest.prototype.start = function( content, headers, reqId ) {
           el.appendChild(elForm);
           document.body.appendChild(el);
           
-          document.getElementById("pfxxmlform"+i).target = "pfxxmliframe"+i;
+          document.getElementById("pfxreqform"+i).target = "pfxreqiframe"+i;
 
           window.setTimeout( function() {
-            document.forms[document.forms.length-1].submit();
+            var form=document.getElementById("pfxreqform"+i);
+            form.submit();
           }, 1 );
         }, 1 );        
 
@@ -409,14 +418,15 @@ pfx.net.HTTPRequest.prototype._customOnReadyStateChange = function() {
       try {
         if( pfx.net.HTTPRequest._xmlTimerCount[i]<pfx.net.HTTPRequest._xmlTimerCountMax ) {
 
-          win = window.frames['pfxxmliframe'+i];
+          win = window.frames['pfxreqiframe'+i];
           if( win && 
               win.document && 
               win.location.href != "about:blank" && 
               (_isMshtml ? win.document.readyState=="complete" : true)) {
-
-            pfx.net.HTTPRequest._xml[i].call( pfx.net.HTTPRequest._xmlThis[i].context, 
-                                      _isMshtml ? win.document.body : win.document,
+            
+            var resdoc=_isMshtml ? win.document.body : win.document;
+            var text=resdoc.getElementsByTagName("pre")[0].firstChild.nodeValue;
+            pfx.net.HTTPRequest._xml[i].call( pfx.net.HTTPRequest._xmlThis[i].context, text,
                                       pfx.net.HTTPRequest._xmlThis[i].getQueryParameter( win.location.href, "PFX_Request_ID") );
             this.cancelOnReadyStateChange(i);
           } else {
@@ -436,7 +446,6 @@ pfx.net.HTTPRequest.prototype._customOnReadyStateChange = function() {
 //
 //*****************************************************************************
 pfx.net.HTTPRequest.prototype._cancelOnReadyStateChange = function( i, msg ) {
-
   try {
     window.clearInterval(pfx.net.HTTPRequest._xmlTimer[i]);
     pfx.net.HTTPRequest._xmlTimer[i] = null;
@@ -450,22 +459,22 @@ pfx.net.HTTPRequest.prototype._cancelOnReadyStateChange = function( i, msg ) {
   // remove div, iframe, etc.; speedup by reusing iframes not build in
   var el;
   try {
-    if( el = document.getElementById("pfxxmliframe"+i) ) {
+    if( el = document.getElementById("pfxreqiframe"+i) ) {
       document.body.removeChild(el);
     }
   } catch(e) {}
   try {
-    if( el = document.getElementById("pfxxmldiv"+i) ) {
+    if( el = document.getElementById("pfxreqdiv"+i) ) {
       document.body.removeChild(el);
     }
   } catch(e) {}
   try {
-    if( el = document.getElementById("pfxxmlform"+i) ) {
+    if( el = document.getElementById("pfxreqform"+i) ) {
       document.body.removeChild(el);
     }
   } catch(e) {}
   try {
-    if( el = document.getElementById("pfxxmlformdiv"+i) ) {
+    if( el = document.getElementById("pfxreqformdiv"+i) ) {
       document.body.removeChild(el);
     }
   } catch(e) {}
