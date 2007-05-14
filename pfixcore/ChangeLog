@@ -1,3 +1,9 @@
+2007-05-14  Sebastian Marsching  <sebastian.marsching@1und1.de>
+
+	* src/de/schlund/pfixxml/DerefServlet.java (handleLink): 
+	Added code that does a javascript redirect in case the HTTP refresh
+	redirect does not work (ugly IE7-workaround).
+
 2007-05-11  Martin Leidig  <mleidig@schlund.de>
 
 	Enable native XMLHttpRequest usage by default for Opera (instead
