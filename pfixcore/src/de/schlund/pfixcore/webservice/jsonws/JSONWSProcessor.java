@@ -202,6 +202,7 @@ public class JSONWSProcessor implements ServiceProcessor {
                 } else {
                     //Handle error
                     LOG.error(error,error);
+                    try {LOG.error(req.dump());} catch(Exception x) {LOG.error("No dump available",x);}
                     ServiceCallContext callContext=ServiceCallContext.getCurrentContext();
                     Fault fault=new Fault(serviceName,callContext.getServiceRequest(),
                             callContext.getServiceResponse(),jsonData,callContext.getContext());
@@ -222,6 +223,7 @@ public class JSONWSProcessor implements ServiceProcessor {
         } catch (Exception e) {
             ServiceException se=new ServiceException("Error while processing service request.",e);
             LOG.error(se);
+            try {LOG.error(req.dump());} catch(Exception x) {LOG.error("No dump available",x);}
             throw se;
         } finally {
             if(writer!=null) {

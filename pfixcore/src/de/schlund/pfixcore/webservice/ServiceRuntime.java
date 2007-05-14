@@ -163,7 +163,7 @@ public class ServiceRuntime {
         	if(protocolType==null) protocolType=getConfiguration().getGlobalServiceConfig().getProtocolType();
 			
 			String wsType=req.getHeader(Constants.HEADER_WSTYPE);
-			if(wsType==null) req.getParameter(Constants.PARAM_WSTYPE);
+			if(wsType==null) wsType=req.getParameter(Constants.PARAM_WSTYPE);
 			if(wsType!=null) {
 				wsType=wsType.toUpperCase();
 				if(!protocolType.equals(Constants.PROTOCOL_TYPE_ANY)&&!wsType.equals(protocolType))
