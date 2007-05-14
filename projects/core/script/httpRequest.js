@@ -63,23 +63,6 @@ pfx.net.HTTPRequest.IFRAMES_ONLY     =  1;
 // set iframe behaviour
 pfx.net.HTTPRequest.prototype.iframes  = pfx.net.HTTPRequest.IFRAMES_FALLBACK;
 
-
-//-------
-// Opera
-//-------
-
-if( _isOpera ) {
-  // opera 7.6pr1's support of XMLHttpRequest still buggy
-  // - no setRequestHeader()
-  // - Content-Length: 0
-
-  // deactivate XMLHttpRequest
-  pfx.net.HTTPRequest.builtin = false;
-
-  // use iframes instead, if allowed by configuration
-  pfx.net.HTTPRequest.prototype.iframes = pfx.net.HTTPRequest.prototype.iframes || 1;
-}
-
 //--------
 // Mshtml
 //--------

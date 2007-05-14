@@ -62,22 +62,6 @@ XML_Request.prototype.iframes  = XML_Request.IFRAMES_FALLBACK;
 // set headers required for SOAP (Axis)
 XML_Request.prototype.headers = [ [ 'SOAPAction', '""'] ];
 
-//-------
-// Opera
-//-------
-
-if( _isOpera ) {
-  // opera 7.6pr1's support of XMLHttpRequest still buggy
-  // - no setRequestHeader()
-  // - Content-Length: 0
-
-  // deactivate XMLHttpRequest
-  XML_Request.builtin = false;
-
-  // use iframes instead, if allowed by configuration
-  XML_Request.prototype.iframes = XML_Request.prototype.iframes || 1;
-}
-
 //--------
 // Mshtml
 //--------
