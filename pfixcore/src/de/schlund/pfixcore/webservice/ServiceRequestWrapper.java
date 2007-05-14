@@ -62,4 +62,8 @@ public class ServiceRequestWrapper implements ServiceRequest {
 		return request.getUnderlyingRequest();
 	}
 	
+    public String dump() {
+        return request.dump();
+    }
+    
 }
