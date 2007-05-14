@@ -144,7 +144,14 @@ public class DerefServlet extends ServletManager {
             
             writer.write("<html><head>");
             writer.write("<meta http-equiv=\"refresh\" content=\"0; URL=" + reallink +  "\">");
-            writer.write("</head><body bgcolor=\"#ffffff\"><center>");
+
+            writer.write("<script language=\"JavaScript\" type=\"text/javascript\">\n");
+            writer.write("<!--\n");
+            writer.write("function redirect() { setTimeout(\"window.location.replace('" + reallink + "')\", 10); }\n");
+            writer.write("-->\n");
+            writer.write("</script>\n");
+            
+            writer.write("</head><body onload=\"redirect()\" bgcolor=\"#ffffff\"><center>");
             writer.write("<a style=\"color:#cccccc;\" href=\"" + reallink + "\">" + "-> Redirect ->" + "</a>");
             writer.write("</center></body></html>");
             writer.flush();
