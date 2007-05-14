@@ -27,6 +27,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringReader;
+import java.util.Enumeration;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -39,6 +40,7 @@ public class HttpServiceRequest implements ServiceRequest {
 	HttpServletRequest httpRequest;
 	String serviceName;
     String requestURI;
+    String cachedMessage;
 	
 	public HttpServiceRequest(HttpServletRequest httpRequest) {
 		this.httpRequest=httpRequest;
@@ -82,15 +84,18 @@ public class HttpServiceRequest implements ServiceRequest {
 		if(httpRequest.getContentType().equals(Constants.CONTENT_TYPE_URLENCODED)) {
 			return httpRequest.getParameter("message");
 		} else {
-			//Check if content type is text/plain text/xml application/xml ?
-			String charset=httpRequest.getCharacterEncoding();
-			if(charset==null) charset="UTF-8";
-			BufferedReader in=new BufferedReader(new InputStreamReader(httpRequest.getInputStream(),charset));
-			CharArrayWriter data=new CharArrayWriter();
-			char buf[]=new char[4096];
-			int ret;
-			while((ret=in.read(buf,0,4096))!=-1) data.write(buf,0,ret);
-			return data.toString();
+            if(cachedMessage==null) {
+    			//Check if content type is text/plain text/xml application/xml ?
+    			String charset=httpRequest.getCharacterEncoding();
+    			if(charset==null) charset="UTF-8";
+    			BufferedReader in=new BufferedReader(new InputStreamReader(httpRequest.getInputStream(),charset));
+    			CharArrayWriter data=new CharArrayWriter();
+    			char buf[]=new char[4096];
+    			int ret;
+    			while((ret=in.read(buf,0,4096))!=-1) data.write(buf,0,ret);
+    			cachedMessage=data.toString();
+            }
+            return cachedMessage;
 		}
 	}
 	
@@ -151,6 +156,36 @@ public class HttpServiceRequest implements ServiceRequest {
 	
     public String getServerName() {
         return httpRequest.getServerName();
+    }
+    
+    private void dumpHeaders(StringBuilder sb) {
+        Enumeration names=httpRequest.getHeaderNames();
+        while(names.hasMoreElements()) {
+            String name=(String)names.nextElement();
+            Enumeration values=httpRequest.getHeaders(name);
+            while(values.hasMoreElements()) {
+                String value=(String)values.nextElement();
+                sb.append(name+": "+value+"\n");
+            }
+        }
+    }
+    
+    private void dumpMessage(StringBuilder sb) {
+        if(cachedMessage==null) {
+            sb.append("[Message not available]");
+        } else {
+            sb.append(cachedMessage);
+        }
+    }
+    
+    public String dump() {
+        StringBuilder sb=new StringBuilder();
+        sb.append(getRequestURI());
+        sb.append("\n\n");
+        dumpHeaders(sb);
+        sb.append("\n");
+        dumpMessage(sb);
+        return sb.toString();
     }
     
 }

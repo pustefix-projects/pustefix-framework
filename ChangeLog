@@ -1,3 +1,21 @@
+2007-05-14  Martin Leidig  <mleidig@schlund.de>
+
+	Fixed race condition in iframe fallback handling.
+	Changed fallback HTML element names to allow simultaneous
+	usage of both request implementations:
+
+	* projects/core/script/httpRequest.js
+	* projects/core/script/xmlRequest.js
+
+	Added service request dumping support (especially for 
+	improved, more verbose, exception reporting).
+
+	* src/de/schlund/pfixcore/webservice/ServiceRuntime.java
+	* src/de/schlund/pfixcore/webservice/ServiceRequest.java
+	* src/de/schlund/pfixcore/webservice/jsonws/JSONWSProcessor.java
+	* src/de/schlund/pfixcore/webservice/HttpServiceRequest.java
+	* src/de/schlund/pfixcore/webservice/ServiceRequestWrapper.java
+
 2007-05-14  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
 	* src/de/schlund/pfixxml/DerefServlet.java (handleLink): 

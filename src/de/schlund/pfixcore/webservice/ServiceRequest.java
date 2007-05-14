@@ -38,4 +38,6 @@ public interface ServiceRequest {
 	public Reader getMessageReader() throws IOException;
 	public InputStream getMessageStream() throws IOException;
 	
+    public String dump();
+    
 }
