@@ -1,5 +1,18 @@
 2007-05-15  Martin Leidig  <mleidig@schlund.de>
 
+	* src/de/schlund/pfixxml/ServletManager.java: Implemented new
+	ExceptionConfig management. The old behaviour was strange and
+	buggy: ExceptionConfig objects were retrieved by accident,
+	because they were hold in a Map and were retrieved by iterating
+	over the Map's keys and doing an instanceof test. Therefore it
+	could happen that different ExceptionConfig objects were
+	returned for the same Exception class. Now they're hold in
+	a LinkedHashMap, keyed by the class. Retrieving is done by
+	first trying to get the ExceptionConfig object by key, if
+	none is found an iteration with instanceof testing is done.
+
+2007-05-15  Martin Leidig  <mleidig@schlund.de>
+
 	* src/de/schlund/pfixcore/webservice/ServiceRuntime.java: throw
 	Exception if session context can't be retrieved
 

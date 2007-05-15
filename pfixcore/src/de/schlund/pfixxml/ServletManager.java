@@ -19,6 +19,34 @@
 
 package de.schlund.pfixxml;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.text.NumberFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.Map;
+import java.util.Properties;
+import java.util.TreeSet;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
+import org.apache.log4j.Logger;
+import org.xml.sax.SAXException;
+
 import de.schlund.pfixxml.config.ServletManagerConfig;
 import de.schlund.pfixxml.config.XMLPropertiesUtil;
 import de.schlund.pfixxml.exceptionprocessor.ExceptionConfig;
@@ -31,31 +59,6 @@ import de.schlund.pfixxml.serverutil.SessionAdmin;
 import de.schlund.pfixxml.serverutil.SessionHelper;
 import de.schlund.pfixxml.serverutil.SessionInfoStruct;
 import de.schlund.pfixxml.util.MD5Utils;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.nio.charset.Charset;
-import java.text.NumberFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.Map;
-import java.util.Properties;
-import java.util.TreeSet;
-import java.util.concurrent.atomic.AtomicInteger;
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-import org.apache.log4j.Logger;
-import org.xml.sax.SAXException;
 
 /**
  * ServletManager.java
@@ -90,7 +93,7 @@ public abstract class ServletManager extends HttpServlet {
     private boolean                      cookie_security_not_enforced  = false;
     private Logger                       LOGGER_VISIT                  = Logger.getLogger("LOGGER_VISIT");
     private Logger                       LOG                           = Logger.getLogger(ServletManager.class);
-    private Map<String, ExceptionConfig> exceptionConfigs              = new Hashtable<String, ExceptionConfig>();
+    private Map<Class, ExceptionConfig> exceptionConfigs = new LinkedHashMap<Class, ExceptionConfig>();
     private long                         common_mtime                  = 0;
     private long                         servlet_mtime                 = 0;
     private FileResource                 commonpropfile;
@@ -871,23 +874,16 @@ public abstract class ServletManager extends HttpServlet {
      * @throws ServletException
      * @throws ClassNotFoundException
      */
-    private ExceptionConfig getExceptionConfigForThrowable(Throwable th) throws ServletException {
-        for (Iterator iter = exceptionConfigs.keySet().iterator(); iter.hasNext();) {
-            String key = (String) iter.next();
-            //TODO: avoid frequent creation of temporary class objects 
-            Class clazz;
-            try {
-                clazz = Class.forName(key);
-            } catch (ClassNotFoundException e) {
-                LOG.error(e);
-                throw new ServletException("Unable to instantiate class: " + key, e);
-            }
-            if (clazz.isInstance(th)) {
-                // bingo
-                return (ExceptionConfig) exceptionConfigs.get(key);
+    private ExceptionConfig getExceptionConfigForThrowable(Throwable throwable) throws ServletException {
+        ExceptionConfig exConf=exceptionConfigs.get(throwable.getClass());
+        if(exConf==null) {
+            Iterator<Class> it=exceptionConfigs.keySet().iterator();
+            while(it.hasNext()&&exConf==null) {
+                Class exClass=it.next();
+                if(exClass.isInstance(throwable)) exConf=exceptionConfigs.get(exClass);
             }
         }
-        return null;
+        return exConf;
     }
 
     /**
@@ -967,8 +963,14 @@ public abstract class ServletManager extends HttpServlet {
             ExceptionConfig exConfig = (ExceptionConfig) values.next();
             if (exConfig.validate() == false)
                 throw new ServletException("INVALID ExceptionConfig: \n" + exConfig);
-            else
-                exceptionConfigs.put(exConfig.getType(), exConfig);
+            else {
+                try {
+                    Class clazz=Class.forName(exConfig.getType());
+                    exceptionConfigs.put(clazz, exConfig);
+                } catch(ClassNotFoundException x) {
+                    throw new ServletException("Can't find exception class: "+exConfig.getType());
+                }
+            }
         }
 
         if (LOG.isDebugEnabled()) {
