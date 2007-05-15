@@ -138,7 +138,7 @@ public class ServiceRuntime {
                 } 
             }
             if(srvConf==null) throw new ServiceException("Service not found: "+serviceName);
-            
+             
             if(srvConf.getContextName()!=null) {
                 if(srvConf.getSessionType().equals(Constants.SESSION_TYPE_SERVLET)) {
                     if(session==null) throw new ServiceException("Authentication failed: No valid session.");
@@ -151,6 +151,8 @@ public class ServiceRuntime {
                     }
                     
                     pfxSessionContext=SessionContextStore.getInstance(session).getContext(srvConf.getContextName());
+                    if(pfxSessionContext==null) throw new ServiceException("Context '"+srvConf.getContextName()+"' doesn't exist.");
+                    
                     ServerContextImpl srvContext=ServerContextStore.getInstance(session.getServletContext()).getContext(srvConf.getContextName());
                     
                     try {
