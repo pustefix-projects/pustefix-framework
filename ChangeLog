@@ -6,10 +6,11 @@
 	because they were hold in a Map and were retrieved by iterating
 	over the Map's keys and doing an instanceof test. Therefore it
 	could happen that different ExceptionConfig objects were
-	returned for the same Exception class. Now they're hold in
-	a LinkedHashMap, keyed by the class. Retrieving is done by
-	first trying to get the ExceptionConfig object by key, if
+	returned for the same Exception class. Now retrieving is done
+	by first trying to get the ExceptionConfig object by key, if
 	none is found an iteration with instanceof testing is done.
+	The iteration order is still undefined, because the underlying
+	properties are not ordered.
 
 2007-05-15  Martin Leidig  <mleidig@schlund.de>
 

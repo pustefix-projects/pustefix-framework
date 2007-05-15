@@ -28,7 +28,6 @@ import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Properties;
@@ -93,7 +92,7 @@ public abstract class ServletManager extends HttpServlet {
     private boolean                      cookie_security_not_enforced  = false;
     private Logger                       LOGGER_VISIT                  = Logger.getLogger("LOGGER_VISIT");
     private Logger                       LOG                           = Logger.getLogger(ServletManager.class);
-    private Map<Class, ExceptionConfig> exceptionConfigs = new LinkedHashMap<Class, ExceptionConfig>();
+    private Map<Class, ExceptionConfig> exceptionConfigs = new HashMap<Class, ExceptionConfig>();
     private long                         common_mtime                  = 0;
     private long                         servlet_mtime                 = 0;
     private FileResource                 commonpropfile;
