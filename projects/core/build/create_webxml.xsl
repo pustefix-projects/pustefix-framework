@@ -169,7 +169,74 @@
     </xsl:choose>
   </xsl:template>
 
-
+  <xsl:template match="cus:filter">
+    <xsl:for-each select="$project/filter">
+      
+      <xsl:variable name="active_node">
+        <xsl:apply-templates select="./active/node()"/>
+      </xsl:variable>
+      <xsl:variable name="active">
+        <xsl:value-of select="normalize-space($active_node)"/>
+      </xsl:variable>
+      
+      <xsl:if test="$active = 'true'">
+        <filter>
+          <filter-name><xsl:value-of select="@name"/></filter-name>
+          <filter-class><xsl:apply-templates select="class/node()"/></filter-class>
+          <xsl:if test="foreigncontext/node()">
+            <init-param>
+              <param-name>contextRef</param-name>
+              <param-value><xsl:apply-templates select="foreigncontext/node()"/></param-value>
+            </init-param>
+          </xsl:if>
+          <xsl:apply-templates select="init-param"/>
+        </filter>
+      </xsl:if>
+      
+    </xsl:for-each>
+  </xsl:template>
+  
+  <xsl:template match="cus:filter-mapping">
+  
+    <xsl:for-each select="$project/servlet/use-filter">
+      
+      <xsl:variable name="filter-name-node">
+        <xsl:apply-templates select="node()"/>
+      </xsl:variable>
+      <xsl:variable name="filter-name">
+        <xsl:value-of select="normalize-space($filter-name-node)"/>
+      </xsl:variable>
+      
+      <xsl:variable name="servlet-name">
+        <xsl:value-of select="normalize-space(parent::servlet/@name)"/>
+      </xsl:variable>
+      
+      <xsl:variable name="servlet-active-node">
+        <xsl:apply-templates select="parent::servlet/active/node()"/>
+      </xsl:variable>
+      <xsl:variable name="servlet-active">
+        <xsl:value-of select="normalize-space($servlet-active-node)"/>
+      </xsl:variable>
+      
+      <xsl:variable name="filter-active-node">
+        <xsl:apply-templates select="$project/filter[@name=$filter-name]/active/node()"/>
+      </xsl:variable>
+      <xsl:variable name="filter-active">
+        <xsl:value-of select="normalize-space($filter-active-node)"/>
+      </xsl:variable>
+      
+      <xsl:if test="$servlet-active = 'true' and $filter-active='true'">
+        <filter-mapping>
+          <filter-name><xsl:value-of select="$filter-name"/></filter-name>
+          <servlet-name><xsl:value-of select="$servlet-name"/></servlet-name>
+        </filter-mapping>
+      </xsl:if>
+      
+    </xsl:for-each>
+    
+    <xsl:apply-templates match="$project/filter-mapping"/>
+    
+  </xsl:template>
 
 </xsl:stylesheet>
 
