@@ -23,6 +23,7 @@
     <page name="scriptingstate" handler="/xml/config"/>
     <page name="encoding" handler="/xml/config"/>
     <page name="test"     handler="/xml/config"/>
+    <page name="tokenerror"    handler="/xml/config"/>
 
     <page name="ssltest"  handler="/xml/secure"/>
     <page name="install"  handler="/xml/download"/>
@@ -71,6 +72,7 @@
   
   <standardpage name="encoding" xml="sample1/xml/one_frame.xml"/>
   <standardpage name="test"     xml="sample1/xml/one_frame.xml"/>
+  <standardpage name="tokenerror"    xml="sample1/xml/one_frame.xml"/>
 
   <standardpage name="ssltest"  xml="sample1/xml/one_frame.xml"/>
   
