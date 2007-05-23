@@ -680,7 +680,23 @@
     </xsl:if>
   </xsl:template>
 
-
+  <xsl:template match="pfx:token">
+    <input type="hidden" name="__token">
+      <xsl:variable name="tokenName">
+        <xsl:choose>
+          <xsl:when test="@name">
+            <xsl:value-of select="@name"/>
+          </xsl:when>
+          <xsl:otherwise>
+            <xsl:value-of select="concat($page,'#',generate-id())"/>
+          </xsl:otherwise>
+        </xsl:choose>
+      </xsl:variable>
+      <ixsl:attribute name="value">
+        <xsl:value-of select="$tokenName"/>:<xsl:value-of select="@errorpage"/>:<ixsl:value-of select="pfx:getToken('{$tokenName}')"/>
+      </ixsl:attribute>
+    </input>
+  </xsl:template>
   
 </xsl:stylesheet>
 

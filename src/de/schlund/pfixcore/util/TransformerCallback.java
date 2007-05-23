@@ -1,5 +1,10 @@
 package de.schlund.pfixcore.util;
 
+import java.math.BigInteger;
+import java.util.HashSet;
+import java.util.Random;
+import java.util.Set;
+
 import de.schlund.pfixcore.workflow.ContextImpl;
 import de.schlund.pfixcore.workflow.context.AccessibilityChecker;
 import de.schlund.pfixcore.workflow.context.RequestContextImpl;
@@ -61,5 +66,12 @@ public class TransformerCallback {
         }
         return -1;
     }
-
+    
+    public static String getToken(RequestContextImpl requestContext, String tokenName) throws Exception {
+        tokenName=tokenName.trim();
+        if(tokenName.contains(":")) throw new IllegalArgumentException("Illegal token name: "+tokenName);
+        String token=requestContext.getParentContext().getToken(tokenName);
+        return token;
+    } 
+    
 }

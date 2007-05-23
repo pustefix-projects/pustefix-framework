@@ -19,8 +19,10 @@
 package de.schlund.pfixcore.workflow;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
@@ -29,6 +31,8 @@ import javax.servlet.http.HttpSession;
 
 import de.schlund.pfixcore.exception.PustefixApplicationException;
 import de.schlund.pfixcore.exception.PustefixCoreException;
+import de.schlund.pfixcore.util.TokenManager;
+import de.schlund.pfixcore.util.TokenUtils;
 import de.schlund.pfixcore.workflow.context.AccessibilityChecker;
 import de.schlund.pfixcore.workflow.context.PageFlow;
 import de.schlund.pfixcore.workflow.context.RequestContextImpl;
@@ -42,7 +46,7 @@ import de.schlund.pfixxml.config.ContextConfig;
 import de.schlund.pfixxml.config.PageRequestConfig;
 import de.schlund.util.statuscodes.StatusCode;
 
-public class ContextImpl implements Context, AccessibilityChecker, ExtendedContext {
+public class ContextImpl implements Context, AccessibilityChecker, ExtendedContext, TokenManager {
 
     /**
      * Implementation of the session part of the context used by
@@ -62,7 +66,9 @@ public class ContextImpl implements Context, AccessibilityChecker, ExtendedConte
         // private Map<NavigationElement, Integer> navigationMap = new
         // HashMap<NavigationElement, Integer>();
         private Set<String>            visitedPages     = Collections.synchronizedSet(new HashSet<String>());
-
+        
+        private Map<String,String>          tokens = Collections.synchronizedMap(new HashMap<String,String>());
+        
         public SessionContextImpl(HttpSession session) {
             this.session = session;
             this.crm = new ContextResourceManager();
@@ -129,6 +135,21 @@ public class ContextImpl implements Context, AccessibilityChecker, ExtendedConte
 
         public boolean isVisitedPage(String pagename) {
             return visitedPages.contains(pagename);
+        }
+        
+        public void invalidateToken(String tokenName) {
+            tokens.remove(tokenName);
+        }
+        
+        public boolean isValidToken(String tokenName,String token) {
+            String storedToken=tokens.get(tokenName);
+            return storedToken!=null && storedToken.equals(token);
+        }
+        
+        public String getToken(String tokenName) {
+            String token=TokenUtils.createRandomToken();
+            tokens.put(tokenName,token);
+            return token;
         }
 
         public String toString() {
@@ -382,6 +403,18 @@ public class ContextImpl implements Context, AccessibilityChecker, ExtendedConte
     // rendering a page
     public void setRequestContextForCurrentThread(RequestContextImpl requestcontext) {
         requestcontextstore.set(requestcontext);
+    }
+    
+    public void invalidateToken(String token) {
+        sessioncontext.invalidateToken(token);
+    }
+    
+    public String getToken(String tokenName) {
+        return sessioncontext.getToken(tokenName);
+    }
+    
+    public boolean isValidToken(String tokenName,String token) {
+        return sessioncontext.isValidToken(tokenName,token);
     }
     
     public String toString() {

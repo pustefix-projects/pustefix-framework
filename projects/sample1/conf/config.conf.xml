@@ -205,6 +205,8 @@
   
   <pagerequest name="geninc"/>
   
+  <pagerequest name="tokenerror"/>
+  
   <config-include file="sample1/conf/fragments.xml" section="pagerequests"/>
   
   <properties>

@@ -20,17 +20,18 @@
 package de.schlund.pfixcore.workflow.app;
 
 
-import org.apache.log4j.Logger;
-
+import de.schlund.pfixcore.util.TokenManager;
 import de.schlund.pfixcore.workflow.Context;
 import de.schlund.pfixcore.workflow.StateImpl;
 import de.schlund.pfixxml.PfixServletRequest;
 import de.schlund.pfixxml.PropertyObjectManager;
+import de.schlund.pfixxml.RequestParam;
 import de.schlund.pfixxml.ResultDocument;
 import de.schlund.pfixxml.XMLException;
 import de.schlund.pfixxml.config.PageRequestConfig;
 import de.schlund.pfixxml.perflogging.PerfEvent;
 import de.schlund.pfixxml.perflogging.PerfEventType;
+import de.schlund.util.statuscodes.StatusCodeLib;
 
 /**
  * DefaultIWrapperState.java
@@ -42,7 +43,7 @@ import de.schlund.pfixxml.perflogging.PerfEventType;
  */
 
 public class DefaultIWrapperState extends StateImpl {
-    private static Logger LOG               = Logger.getLogger(DefaultIWrapperState.class);
+    
     private static String DEF_WRP_CONTAINER = "de.schlund.pfixcore.workflow.app.IWrapperSimpleContainer";
     private static String DEF_FINALIZER     = "de.schlund.pfixcore.workflow.app.ResdocSimpleFinalizer";
 
@@ -92,32 +93,62 @@ public class DefaultIWrapperState extends StateImpl {
         if (isSubmitTrigger(context, preq)) {
             CAT.debug(">>> In SubmitHandling...");
             
-            pe = new PerfEvent(PerfEventType.PAGE_HANDLESUBMITTEDDATA, context.getCurrentPageRequest().toString());
-            pe.start();
-            container.handleSubmittedData();
-            pe.save();
-         
-            if (container.errorHappened()) {
-                CAT.debug("    => Can't continue, as errors happened during load/work.");
-                rfinal.onWorkError(container);
-                context.prohibitContinue();
-            } else {
-                CAT.debug("    => No error happened during work ...");
-                if (!context.isJumpToPageSet() && container.stayAfterSubmit()) {
-                    CAT.debug("... Container says he wants to stay on this page and no jumptopage is set: Setting prohibitcontinue=true");
+            boolean valid=true;
+            RequestParam rp=preq.getRequestParam("__token");
+            if(rp!=null) {
+                String token=rp.getValue();
+                String[] tokenParts=token.split(":");
+                if(tokenParts.length==3) {
+                    String tokenName=tokenParts[0];
+                    String errorPage=tokenParts[1];
+                    String tokenValue=tokenParts[2];
+                    TokenManager tm=(TokenManager)context;
+                    if(tm.isValidToken(tokenName,tokenValue)) tm.invalidateToken(tokenName);
+                    else {
+                        context.addPageMessage(StatusCodeLib.PFIXCORE_GENERATOR_FORM_TOKEN_INVALID);
+                        if(errorPage.equals(""))  {
+                            pe = new PerfEvent(PerfEventType.PAGE_RETRIEVECURRENTSTATUS, context.getCurrentPageRequest().toString());
+                            pe.start();
+                            container.retrieveCurrentStatus();
+                            pe.save();
+                            rfinal.onRetrieveStatus(container);
+                            context.prohibitContinue();
+                        } else context.setJumpToPage(errorPage);
+                        valid=false;
+                    }
+                } else throw new IllegalArgumentException("Invalid token format: "+token);
+            }
+            
+            if(valid) {
+            
+                pe = new PerfEvent(PerfEventType.PAGE_HANDLESUBMITTEDDATA, context.getCurrentPageRequest().toString());
+                pe.start();
+                container.handleSubmittedData();
+                pe.save();
+             
+                if (container.errorHappened()) {
+                    CAT.debug("    => Can't continue, as errors happened during load/work.");
+                    rfinal.onWorkError(container);
                     context.prohibitContinue();
                 } else {
-                    CAT.debug("... Container says he is ready.");
+                    CAT.debug("    => No error happened during work ...");
+                    if (!context.isJumpToPageSet() && container.stayAfterSubmit()) {
+                        CAT.debug("... Container says he wants to stay on this page and no jumptopage is set: Setting prohibitcontinue=true");
+                        context.prohibitContinue();
+                    } else {
+                        CAT.debug("... Container says he is ready.");
+                    }
+    
+                    CAT.debug("    => end of submit reached successfully.");
+                    CAT.debug("    => retrieving current status.");
+                    pe = new PerfEvent(PerfEventType.PAGE_RETRIEVECURRENTSTATUS, context.getCurrentPageRequest().toString());
+                    pe.start();
+                    container.retrieveCurrentStatus();
+                    pe.save();
+    
+                    rfinal.onSuccess(container);
                 }
-
-                CAT.debug("    => end of submit reached successfully.");
-                CAT.debug("    => retrieving current status.");
-                pe = new PerfEvent(PerfEventType.PAGE_RETRIEVECURRENTSTATUS, context.getCurrentPageRequest().toString());
-                pe.start();
-                container.retrieveCurrentStatus();
-                pe.save();
-
-                rfinal.onSuccess(container);
+            
             }
         } else if (isDirectTrigger(context, preq) || context.finalPageIsRunning() || context.flowIsRunning()) {
             CAT.debug(">>> Retrieving current status...");

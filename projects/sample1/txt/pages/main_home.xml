@@ -57,6 +57,7 @@
               <errormsg><name>prefix.Value.<ixsl:value-of select="position()"/></name></errormsg>
             </ixsl:for-each>
           </table>
+          <pfx:token errorpage="tokenerror"/>
         </pfx:forminput>
         <p>
           <h3><pfx:button page="scripting">SCRIPTING IHandler Test</pfx:button></h3>

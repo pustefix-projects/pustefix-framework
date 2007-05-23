@@ -45,4 +45,9 @@
     <func:result select="callback:isVisited($__context__, $thepagename)"/>
   </func:function>
   
+  <func:function name="pfx:getToken">
+    <xsl:param name="tokenName"/>
+    <func:result select="callback:getToken($__context__,$tokenName)"/>
+  </func:function>
+  
 </xsl:stylesheet>

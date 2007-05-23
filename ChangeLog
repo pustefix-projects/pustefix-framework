@@ -1,3 +1,42 @@
+2007-05-23  Martin Leidig  <mleidig@schlund.de>
+
+	Added form submit token mechanism which can be used to prevent
+	duplicate form submissions and handle transactional processing
+	requirements.
+	Using the pfx:token tag a hidden field with a random token is
+	included into the parent form. The token is stored in the Context,
+	keyed by a customizable name (by default pagename#elementid,
+	which can be overwritten/replaced using the @name attribute).
+	After the form is submitted the token is invalidated, submitting
+	the form again causes the setting of a page message. Via the
+	@errorpage attribute you can optionally jump to an error page. 
+
+	* src/de/schlund/pfixcore/workflow/app/DefaultIWrapperState.java:
+	Check if token was submitted and if it is valid, if not set
+	page message or error page
+	* src/de/schlund/pfixcore/workflow/ContextImpl.java: Implement
+	TokenManager interface, hold Map with tokens
+	* src/de/schlund/pfixcore/util/TokenUtils.java: New helper class
+	providing token generation
+	* src/de/schlund/pfixcore/util/TokenManager.java: Token management
+	interface providing methods to create, validate and reset tokens
+	* src/de/schlund/pfixcore/util/TransformerCallback.java: Added
+	callback to create token
+	* projects/sample1/txt/pages/main_tokenerror.xml: sample error 
+	page called when form is double submitted 
+	* projects/sample1/txt/pages/main_home.xml: added pfx:token tag
+	to form (with errorpage attribute)
+	* projects/sample1/txt/pages/main_order.xml: added pfx:token tag
+	to form (without errorpage)
+	* projects/sample1/conf/config.conf.xml: added error page
+	* projects/sample1/conf/depend.xml: added error page
+	* projects/core/xsl/forminput.xsl: added template handling the
+	pfx:token tag (inserting token as hidden field)
+	* projects/core/xsl/functions.xsl: added callback function for
+	token creation
+	* projects/core/dyntxt/statusmessages.xml: added statuscode for
+	token validation error
+
 2007-05-18  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
 	* src/de/schlund/pfixxml/AbstractContextServletFilter.java: 
