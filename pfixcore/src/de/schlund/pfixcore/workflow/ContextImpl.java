@@ -19,9 +19,9 @@
 package de.schlund.pfixcore.workflow;
 
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
@@ -67,7 +67,7 @@ public class ContextImpl implements Context, AccessibilityChecker, ExtendedConte
         // HashMap<NavigationElement, Integer>();
         private Set<String>            visitedPages     = Collections.synchronizedSet(new HashSet<String>());
         
-        private Map<String,String>          tokens = Collections.synchronizedMap(new HashMap<String,String>());
+        private Map<String,String>          tokens;
         
         public SessionContextImpl(HttpSession session) {
             this.session = session;
@@ -138,18 +138,31 @@ public class ContextImpl implements Context, AccessibilityChecker, ExtendedConte
         }
         
         public void invalidateToken(String tokenName) {
-            tokens.remove(tokenName);
+            synchronized(this) {
+                if(tokens!=null) tokens.remove(tokenName);
+            }
         }
         
         public boolean isValidToken(String tokenName,String token) {
-            String storedToken=tokens.get(tokenName);
-            return storedToken!=null && storedToken.equals(token);
+            synchronized(this) {
+                if(tokens==null) return false;
+                String storedToken=tokens.get(tokenName);
+                return storedToken!=null && storedToken.equals(token);
+            }
         }
         
         public String getToken(String tokenName) {
-            String token=TokenUtils.createRandomToken();
-            tokens.put(tokenName,token);
-            return token;
+            synchronized(this) {
+                if(tokens==null) tokens=new LinkedHashMap<String,String>();
+                String token=TokenUtils.createRandomToken();
+                if(tokens.size()>25) {
+                    Iterator<String> it=tokens.keySet().iterator();
+                    it.next();
+                    it.remove();
+                }
+                tokens.put(tokenName,token);
+                return token;
+            }
         }
 
         public String toString() {
