@@ -33,7 +33,7 @@ public class ImportText {
     
     public static void main(String[] args) throws Exception {
         if (args.length != 2) {
-            System.err.println("Usage: java de.schlund.util.ImportText <DUMP.XML>");
+            System.err.println("Usage: java de.schlund.pfixcore.util.ImportText <DOCROOT> <DUMP.XML>");
             System.err.println("       This will import all include parts from the given DUMP.XML file");
             System.err.println("       that must be given as a relative file name to DOCROOT.");            
             System.exit(0);
