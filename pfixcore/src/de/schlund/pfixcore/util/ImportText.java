@@ -17,6 +17,7 @@ import de.schlund.pfixxml.resources.DocrootResource;
 import de.schlund.pfixxml.resources.ResourceUtil;
 import de.schlund.pfixxml.util.XPath;
 import de.schlund.pfixxml.util.Xml;
+import de.schlund.pfixxml.util.XsltVersion;
 
 /**
  * ImportText.java
@@ -49,7 +50,7 @@ public class ImportText {
 
     
     public void importList(String dump) throws Exception {
-        Document dumpeddoc     = Xml.parse(null, new File(dump));
+        Document dumpeddoc     = Xml.parse(XsltVersion.XSLT2, new File(dump));
         List     dumpedinclude = XPath.select(dumpeddoc, "/dumpedincludeparts/USEDINCLUDE");
 
         String oldpath  = null;
