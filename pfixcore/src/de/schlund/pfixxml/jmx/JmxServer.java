@@ -40,11 +40,7 @@ import javax.management.remote.JMXConnectorServerFactory;
 import javax.management.remote.JMXServiceURL;
 import javax.management.remote.jmxmp.JMXMPConnectorServer;
 import javax.servlet.http.HttpSession;
-import javax.xml.transform.TransformerException;
-
 import org.apache.log4j.Logger;
-import org.w3c.dom.Document;
-
 import de.schlund.pfixxml.perflogging.PerfLogging;
 import de.schlund.pfixxml.resources.FileResource;
 import de.schlund.pfixxml.resources.ResourceUtil;
