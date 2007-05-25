@@ -12,7 +12,7 @@
             </td>
           </tr>
           <tr>
-            <td width="1px"><pfx:xinp type="check" value="true" name="select.Do_B"/></td>
+            <td width="1px"><pfx:xinp name="select.Do_B" type="check" value="true"/></td>
             <td nowrap="nowrap">Call Page B</td>
             <td align="right"><pfx:xinp type="submit" value="Go!"/></td>
           </tr>
