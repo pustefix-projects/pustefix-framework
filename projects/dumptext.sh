@@ -5,7 +5,7 @@ export LANG=C
 
 echo
 echo -----------------------------------------------------------------------------------------------------------
-echo Going to call:  java -mx500M de.schlund.util.DumpText `pwd` $@ 
+echo Going to call:  java -mx500M de.schlund.pfixcore.util.DumpText `pwd` $@ 
 echo ----------------------------------------------------------------------------------------------------------- 
 echo
 echo CAUTION:
