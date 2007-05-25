@@ -38,7 +38,7 @@ public class DumpText {
     
     public static void main(String[] args) throws Exception {
         if (args.length != 2) {
-            System.err.println("Usage: java de.schlund.util.DumpText <DOCROOT> <DEPEND.XML>");
+            System.err.println("Usage: java de.schlund.pfixcore.util.DumpText <DOCROOT> <DEPEND.XML>");
             System.err.println("       This will create a dump of all include parts");
             System.err.println("       that are used by the project that belongs to the");
             System.err.println("       given DEPEND.XML file. Note that the DEPEND.XML file");
