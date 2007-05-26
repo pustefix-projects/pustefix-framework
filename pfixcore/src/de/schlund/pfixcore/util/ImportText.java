@@ -48,7 +48,21 @@ public class ImportText {
         trans.importList(dumpxml);
     }
 
-    
+    /**
+     * This is the method that iterates over the list of USEDINCLUDE tags and imports
+     * its content into the right include file under the right part and theme.
+     * If the theme already exists, the content is replaced, otherwise a new theme is 
+     * created.
+     * NOTE: For good performance, this method depends on the USEDINCLUDE tags
+     * to be grouped by the same PATH (aka, the same inlcude files) in the input file.
+     * The DumpText class takes care to dump the include parts ordered by include file, 
+     * but depending on possible post processing, this may no longer be true.
+     * This method has only the simple optimization of serializing the changed file
+     * whenever a new include file is used, so having the parts to import in random order
+     * would result in serializing a changed include file after nearly every include part.
+     * @param dump - The file name of the file containing the include parts to be imported
+     * @throws Exception
+     */
     public void importList(String dump) throws Exception {
         Document dumpeddoc     = Xml.parse(XsltVersion.XSLT2, new File(dump));
         List     dumpedinclude = XPath.select(dumpeddoc, "/dumpedincludeparts/USEDINCLUDE");
