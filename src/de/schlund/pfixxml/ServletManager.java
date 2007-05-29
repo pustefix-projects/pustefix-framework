@@ -854,7 +854,7 @@ public abstract class ServletManager extends HttpServlet {
             process(preq, res);
         } catch (Throwable e) {
             LOG.error("Exception in process", e);
-            ExceptionConfig exconf = getExceptionConfigForThrowable(e);
+            ExceptionConfig exconf = getExceptionConfigForThrowable(e.getClass());
             if(exconf != null && exconf.getProcessor()!= null) { 
                 if ( preq.getLastException() == null ) {  
                     ExceptionProcessor eproc = exconf.getProcessor();
@@ -873,18 +873,15 @@ public abstract class ServletManager extends HttpServlet {
      * @throws ServletException
      * @throws ClassNotFoundException
      */
-    private ExceptionConfig getExceptionConfigForThrowable(Throwable throwable) throws ServletException {
-        ExceptionConfig exConf=exceptionConfigs.get(throwable.getClass());
-        if(exConf==null) {
-            Iterator<Class> it=exceptionConfigs.keySet().iterator();
-            while(it.hasNext()&&exConf==null) {
-                Class exClass=it.next();
-                if(exClass.isInstance(throwable)) exConf=exceptionConfigs.get(exClass);
-            }
+    private ExceptionConfig getExceptionConfigForThrowable(Class clazz) throws ServletException {
+        ExceptionConfig exConf=null;
+        if(clazz!=null) {
+            exConf=exceptionConfigs.get(clazz);
+            if(exConf==null) exConf=getExceptionConfigForThrowable(clazz.getSuperclass());
         }
         return exConf;
     }
-
+    
     /**
      * This method uses all properties prefixed with 'exception' to build ExceptionConfig
      * objects, which are then stored in the exConfig-Map, keyed by the type attribute
