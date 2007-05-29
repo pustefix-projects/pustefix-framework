@@ -86,8 +86,7 @@ CustomLog  <xsl:apply-templates select="/projects/common/apache/apachelogdir"/>/
 </xsl:if>
 
 &lt;Location /&gt;
-Options ExecCGI FollowSymLinks
-AllowOverride None
+Options ExecCGI
 <xsl:apply-templates select="$currentprj/literalauth"/>
 &lt;/Location&gt;
 DirectoryIndex index.cgi
