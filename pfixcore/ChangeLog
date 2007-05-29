@@ -1,3 +1,9 @@
+2007-05-29  Martin Leidig  <mleidig@schlund.de>
+
+	* src/de/schlund/pfixxml/ServletManager.java: Improved ExceptionProcessor
+	retrieval. Now we retrieve the configured ExceptionProcessor by walking
+	up the throwable's type hierarchy via reflection.
+
 2007-05-25  jtl  <jtl@schlund.de>
 
 	* src/de/schlund/pfixcore/util/DumpText.java: 
@@ -6,7 +12,7 @@
 	* projects/dumptext.sh:
 	* projects/importtext.sh: use the tools above.
 
- 2007-05-23  Martin Leidig  <mleidig@schlund.de>
+2007-05-23  Martin Leidig  <mleidig@schlund.de>
 
 	Added form submit token mechanism which can be used to prevent
 	duplicate form submissions and handle transactional processing
