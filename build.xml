@@ -28,6 +28,8 @@ or delete the DOCTYPE definition -->
   <property name="name.examplelink"       value="simplelink"/>
   <property name="dir.exampleform"        location="${dir.projects}/simpleform"/>
   <property name="name.exampleform"       value="simpleform"/>
+    
+  <property name="java.target"            value="1.5"/>
 
   <!-- initialize distribution type dependent properties used for creation of distribution files -->
 
@@ -85,6 +87,7 @@ or delete the DOCTYPE definition -->
      classpathref="cp.classpath"
      sourcepath="${dir.src}"
      encoding="${javac.encoding}"
+     target="${java.target}"
      >
     </javac>
   </target>
