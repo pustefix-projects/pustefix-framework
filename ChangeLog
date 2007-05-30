@@ -1,5 +1,8 @@
 2007-05-30  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
+	* src/de/schlund/pfixcore/util/CheckIncludes.java: 
+	Fixed bug causing check includes utility to use wrong path names
+	
 	* projects/core/xsl/utils.xsl: 
 	Minor changes in javascript code for edit console
 
