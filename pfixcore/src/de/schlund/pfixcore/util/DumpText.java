@@ -68,6 +68,7 @@ public class DumpText {
         root.setAttribute("xmlns:pfx", "http://www.schlund.de/pustefix/core");
         root.setAttribute("xmlns:ixsl", "http://www.w3.org/1999/XSL/Transform");
         root.setAttribute("dependfile", depend);
+        addRootNodeAtributes(root);
         list.appendChild(root);
         root.appendChild(list.createTextNode("\n"));
         
@@ -88,6 +89,16 @@ public class DumpText {
         System.out.print("\n");
     }
 
+    /**
+     * Overwrite this method to add more attributes to the root node (the dumpincludeparts tag). 
+     * Typically used for adding more xmlns:XXX attributes.
+     * @param root
+     */
+    protected void addRootNodeAtributes(Element root) {
+        // You may add more namespaces here...
+        // root.setAttribute("xmlns:xxx", "http:/yyy.zzz");
+    }
+    
     /**
      * The method <code>includePartOK</code> can be overridden in derived classes to
      * select based on the include part given as input if this part should be dumped or not.
@@ -159,7 +170,7 @@ public class DumpText {
                     partelem.appendChild(node);
                 }
             } else {
-                System.out.println("Didn't find matching theme in part " + part + "@" + path + " for theme " + theme + "!");
+                System.out.print("\nDidn't find matching theme in part " + part + "@" + path.getRelative() + " for theme " + theme + "!");
             }
         }
     }
