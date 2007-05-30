@@ -60,14 +60,14 @@ public class CheckIncludes {
         input = new BufferedReader(new FileReader(allincs));
         while ((line = input.readLine()) != null) {
             // line = new File(pwd + line).getCanonicalPath();
-            includefilenames.add(PathFactory.getInstance().createPath(line.substring(2)));
+            includefilenames.add(PathFactory.getInstance().createPath(line));
         }
         input.close();
 
         input = new BufferedReader(new FileReader(allimgs));
         while ((line = input.readLine()) != null) {
             // line = new File(pwd + line).getCanonicalPath();
-            imagefilenames.add(PathFactory.getInstance().createPath(line.substring(2)));
+            imagefilenames.add(PathFactory.getInstance().createPath(line));
         }
         input.close();
         
