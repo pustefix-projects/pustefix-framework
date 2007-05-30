@@ -1,3 +1,8 @@
+2007-05-30  Sebastian Marsching  <sebastian.marsching@1und1.de>
+
+	* projects/core/xsl/utils.xsl: 
+	Minor changes in javascript code for edit console
+
 2007-05-30  jtl  <jtl@schlund.de>
 
 	* src/de/schlund/pfixcore/util/DumpText.java: small cleanups 

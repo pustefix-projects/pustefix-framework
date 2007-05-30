@@ -182,10 +182,10 @@
               }
             }
             
-            if (typeof document.addEventListener == "function") {
+            if ((document.addEventListener) &amp;&amp; (typeof document.addEventListener == "function")) {
               document.addEventListener("mouseup", de_schlund_pfixcore_console_drag_stop, true);
               document.addEventListener("mousemove", de_schlund_pfixcore_console_drag_move, true);
-            } else if (typeof window.attachEvent == "object") {
+            } else if ((document.attachEvent) &amp;&amp; (typeof document.attachEvent == "object")) {
               document.attachEvent("onmouseup", de_schlund_pfixcore_console_drag_stop);
               document.attachEvent("onmousemove", de_schlund_pfixcore_console_drag_move);
             }
