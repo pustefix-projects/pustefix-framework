@@ -1,5 +1,8 @@
 package de.schlund.pfixcore.util;
 
+import java.io.UnsupportedEncodingException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Iterator;
 import java.util.TreeSet;
 
@@ -8,6 +11,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import org.apache.log4j.xml.DOMConfigurator;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
@@ -163,6 +167,8 @@ public class DumpText {
                 }
             }
             if (themenode != null) {
+                String check = md5ForNode(themenode);
+                partelem.setAttribute("CHECK", check);
                 partelem.setAttribute("THEME", retrieveTheme(aux));
                 NodeList nlist = themenode.getChildNodes();
                 for (int i = 0; i < nlist.getLength(); i++) {
@@ -175,4 +181,43 @@ public class DumpText {
         }
     }
 
+    public static String md5ForNode(Node root) throws Exception {
+        StringBuffer check = new StringBuffer();
+        stringForNode(root, check);
+        // System.out.println("->" + check.toString() + "<-");
+        return DumpText.format(check.toString());
+    }
+    
+    private static void stringForNode(Node root, StringBuffer checkstring) throws Exception {
+        NodeList nl = root.getChildNodes();
+        int length = nl.getLength();
+        for (int m = 0; m < length; m++) {
+            Node node = (Node) nl.item(m);
+            if (node.getNodeType() == Node.ELEMENT_NODE) {
+                checkstring.append(node.getNodeName());
+                NamedNodeMap map =  node.getAttributes();
+                for (int k = 0; k < map.getLength(); k++) {
+                    Node   attr     = map.item(k);
+                    String attrname = attr.getNodeName();
+                    // We should better discard "alt" and "title" for the checksum...
+                    if (!attrname.equals("alt") && !attrname.equals("title")) {
+                        checkstring.append(attrname + attr.getNodeValue());
+                    }
+                }
+                stringForNode(node, checkstring);
+            }
+        }
+    }
+    
+    private static String format(String check) throws NoSuchAlgorithmException, UnsupportedEncodingException {
+        check = check.replaceAll(" ","");
+        MessageDigest md5 = MessageDigest.getInstance("MD5");
+        md5.update(check.getBytes("ISO-8859-1"));
+        byte[] end = md5.digest();
+        String digest = "";
+        for (int i = 0; i < end.length; i++) {
+            digest += ((end[i] & 0xff) < 16 ? "0" : "") + Integer.toHexString(end[i] & 0xff);
+        }
+        return digest;
+    }
 }

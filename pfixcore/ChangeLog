@@ -1,3 +1,11 @@
+2007-05-31  jtl  <jtl@schlund.de>
+
+	* src/de/schlund/pfixcore/util/ImportText.java (handleInclude): use the method below on import...
+	also reorganized the code a bit.
+	* src/de/schlund/pfixcore/util/DumpText.java (stringForNode): new method. 
+	used to create a checksum over the structure of the tags (this can be used to re-check on import
+	after the dumped text has been translated to make sure the tag structure is still the same)
+
 2007-05-30  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
 	* src/de/schlund/pfixcore/util/CheckIncludes.java: 
