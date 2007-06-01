@@ -51,10 +51,6 @@ pfx.ws.json.escapeJSONChar=function(ch) {
    else return "\\u"+hex;
 };
 
-pfx.ws.json.escapeJSONString=function(str) {
-	return "\""+str.replace(/([^\u0020-\u007f]|[\\\"])/g,pfx.ws.json.escapeJSONChar)+"\"";
-};
-
 pfx.ws.json.replaceCallbackSupport=null;
 
 pfx.ws.json.escapeJSONString=function(str) {
