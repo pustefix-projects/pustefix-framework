@@ -201,10 +201,11 @@ public class DumpText {
                     String attrname = attr.getNodeName();
                     // We should better discard "alt" and "title" for the checksum...
                     if (!attrname.equals("alt") && !attrname.equals("title")) {
-                        checkstring.append(attrname + attr.getNodeValue());
+                        checkstring.append(attrname + "=" + attr.getNodeValue());
                     }
                 }
                 stringForNode(node, checkstring);
+                checkstring.append("/" + node.getNodeName());
             }
         }
     }
