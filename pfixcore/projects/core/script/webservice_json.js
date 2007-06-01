@@ -55,6 +55,27 @@ pfx.ws.json.escapeJSONString=function(str) {
 	return "\""+str.replace(/([^\u0020-\u007f]|[\\\"])/g,pfx.ws.json.escapeJSONChar)+"\"";
 };
 
+pfx.ws.json.replaceCallbackSupport=null;
+
+pfx.ws.json.escapeJSONString=function(str) {
+   if(pfx.ws.json.replaceCallbackSupport==null) {
+      if(navigator.userAgent.indexOf("Safari")!=-1) pfx.ws.json.replaceCallbackSupport=false;
+      else pfx.ws.json.replaceCallbackSupport=true;
+   }
+   if(pfx.ws.json.replaceCallbackSupport) {
+      return "\""+str.replace(/([^\u0020-\u007f]|[\\\"])/g,pfx.ws.json.escapeJSONChar)+"\"";
+   } else {
+      var escStr=[];
+      for(var i=0;i<str.length;i++) {
+        if(str.charAt(i)=='"'||str.charAt(i)=='\\'||str.charCodeAt(i)<32||str.charCodeAt(i)>=128) {
+           escStr[i]=pfx.ws.json.escapeJSONChar(str.charAt(i));
+        } else {
+           escStr[i]=str.charAt(i);
+        }
+      }
+      return "\""+escStr.join("")+"\"";
+   }
+};
 
 //
 // BaseStub
