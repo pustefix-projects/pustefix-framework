@@ -1,3 +1,8 @@
+2007-06-01  Martin Leidig  <mleidig@schlund.de>
+
+	* projects/core/script/webservice_json.js: Fixed problem with old Safari 
+	versions (broken regexp replace callback).
+
 2007-05-31  jtl  <jtl@schlund.de>
 
 	* src/de/schlund/pfixcore/util/ImportText.java (handleInclude): use the method below on import...
