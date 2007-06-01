@@ -64,7 +64,7 @@ public class ImportText {
      * @throws Exception
      */
     public void importList(String dump) throws Exception {
-        Document dumpeddoc     = Xml.parse(XsltVersion.XSLT2, new File(dump));
+        Document dumpeddoc     = Xml.parse(XsltVersion.XSLT1, new File(dump));
         List     dumpedinclude = XPath.select(dumpeddoc, "/dumpedincludeparts/USEDINCLUDE");
 
         String oldpath  = null;
