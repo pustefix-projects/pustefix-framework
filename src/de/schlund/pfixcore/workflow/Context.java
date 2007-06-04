@@ -71,4 +71,20 @@ public interface Context {
     void                   addPageMessage(StatusCode scode, String[] args, String level);
     Properties             getPropertiesForContextResource(ContextResource res);
     ContextConfig          getContextConfig();
+    
+    /**
+     * Tells the servlet that the session for this context is not longer needed 
+     * and can be deleted. However, there is no guarantee <b>when</b> the session
+     * will be deleted. Usually, there will be some delay, between the call of
+     * this method and the actual invalidation taking place, so the output page
+     * of the current request can still be rendered.
+     * <b>Do not use this method if you are concerned about security!</b> As the
+     * session is not invalidated immediately, session data is still available for
+     * some time after calling this method. If you keep sensitive data in the
+     * session (e.g. login data), you should reset the corresponding context
+     * resources instead of using this method. This method is only provided for
+     * memory reasons (so that memory allocated by this session can be freed, if
+     * it is not needed any more). 
+     */
+    void                   markSessionForCleanup();
 }

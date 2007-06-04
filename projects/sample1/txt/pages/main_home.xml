@@ -98,7 +98,8 @@
         <pfx:elink href="ftp://ftp.rz.uni-karlsruhe.de" target="_popup">
         Goto FTP UniKa!</pfx:elink>
         <br/>
-        <pfx:button page="geninc">Test generated runtime stylesheet include</pfx:button>
+        <pfx:button page="geninc">Test generated runtime stylesheet include</pfx:button>  
+        <pfx:button page="invalidate">Invalidate this session</pfx:button>
         <br/>
     </theme>
   </part>

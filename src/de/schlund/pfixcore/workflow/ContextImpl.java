@@ -177,6 +177,10 @@ public class ContextImpl implements Context, AccessibilityChecker, ExtendedConte
 
             return contextbuf.toString();
         }
+
+        public void markSessionForCleanup() {
+            this.session.setAttribute(AbstractXMLServlet.SESS_CLEANUP_FLAG_STAGE1, true);
+        }
     }
     
     private SessionContextImpl sessioncontext;
@@ -462,5 +466,8 @@ public class ContextImpl implements Context, AccessibilityChecker, ExtendedConte
         }
     }
     
+    public void markSessionForCleanup() {
+        this.sessioncontext.markSessionForCleanup();
+    }
 
 }

@@ -1,5 +1,18 @@
 2007-06-04  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
+	* src/de/schlund/pfixcore/workflow/ContextImpl.java: 
+	* src/de/schlund/pfixcore/workflow/Context.java: 
+    * src/de/schlund/pfixcore/example/InvalidateSessionState.java: 
+	* src/de/schlund/pfixxml/SessionCleaner.java: 
+	* src/de/schlund/pfixxml/AbstractXMLServlet.java: 
+	* projects/sample1/txt/pages/main_invalidate.xml: 
+	* projects/sample1/txt/pages/main_home.xml: 
+	* projects/sample1/xml/two_frames.xml: 
+	* projects/sample1/conf/config.conf.xml: 
+	* projects/sample1/conf/depend.xml: 
+	Added method markSessionForCleanup() to Context interface. This will cause a
+	session to be invalidated as soon as reasonable possible.
+
 	* src/de/schlund/pfixcore/editor2/frontend/util/EditorApplicationContextFactory.java (run): 
 	Use getBeanNamesForType() instead of deprecated getBeanDefinitionNames() method.
 
