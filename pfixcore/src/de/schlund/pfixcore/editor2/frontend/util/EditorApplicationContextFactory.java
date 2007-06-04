@@ -134,7 +134,7 @@ public final class EditorApplicationContextFactory implements Runnable {
             // but you can never be sure enough.
             // Note that we look for the concrete implementation, not the
             // interface.
-            String beanNames[] = this.appContext.getBeanDefinitionNames(PustefixTargetUpdateServiceImpl.class);
+            String beanNames[] = this.appContext.getBeanNamesForType(PustefixTargetUpdateServiceImpl.class);
             for (int i = 0; i < beanNames.length; i++) {
                 // System.out.println("############ in EACF: calling setEnabled: " + generatorFlag);
                 ((PustefixTargetUpdateServiceImpl) this.appContext.getBean(beanNames[i])).enableAutoUpdating(generatorFlag);
