@@ -203,6 +203,10 @@
     </output>
   </pagerequest>  
   
+  <pagerequest name="invalidate">
+    <state class="de.schlund.pfixcore.example.InvalidateSessionState"/>
+  </pagerequest>
+  
   <pagerequest name="geninc"/>
   
   <pagerequest name="tokenerror"/>

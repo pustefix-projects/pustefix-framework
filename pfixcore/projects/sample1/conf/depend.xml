@@ -29,6 +29,7 @@
     <page name="install"  handler="/xml/download"/>
     
     <page name="geninc"  handler="/xml/config"/>
+    <page name="invalidate" handler="/xml/config"/>
 
     <page name="A"  handler="/xml/config"/>
     <page name="B"  handler="/xml/config"/>
@@ -74,7 +75,9 @@
   <standardpage name="test"     xml="sample1/xml/one_frame.xml"/>
   <standardpage name="tokenerror"    xml="sample1/xml/one_frame.xml"/>
 
-  <standardpage name="ssltest"  xml="sample1/xml/one_frame.xml"/>
+  <standardpage name="ssltest"  xml="sample1/xml/one_frame_navi.xml"/>
+  
+  <standardpage name="invalidate" xml="sample1/xml/two_frames.xml"/>
   
   <standardpage name="geninc"   xml="sample1/xml/one_frame.xml">
     <include stylesheet="generatedruntime.xsl"/>

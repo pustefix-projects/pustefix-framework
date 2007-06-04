@@ -35,6 +35,7 @@ import java.util.TreeMap;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.xml.transform.Templates;
@@ -137,6 +138,9 @@ public abstract class AbstractXMLServlet extends ServletManager {
     public static final String PREPROCTIME = "__PREPROCTIME__";
     public static final String GETDOMTIME  = "__GETDOMTIME__";
     public static final String TRAFOTIME   = "__TRAFOTIME__";
+    
+    public final static String SESS_CLEANUP_FLAG_STAGE1 = "__pfx_session_cleanup_stage1";
+    public final static String SESS_CLEANUP_FLAG_STAGE2 = "__pfx_session_cleanup_stage2";
     
     /**
      * Holds the TargetGenerator which is the XML/XSL Cache for this
@@ -303,6 +307,14 @@ public abstract class AbstractXMLServlet extends ServletManager {
         if (spdoc != null) {
             doreuse = true;
         }
+        
+        // Check if session has been scheduled for invalidation
+        if (!doreuse && session.getAttribute(SESS_CLEANUP_FLAG_STAGE2) != null) {
+            HttpServletRequest req = preq.getRequest();
+            String redirectUri = SessionHelper.getClearedURL(req.getScheme(), getServerName(req), req, getAbstractXMLServletConfig().getProperties());
+            relocate(res, redirectUri);
+            return;
+        }
 
         RequestParam value;
         long         currtime;
@@ -429,7 +441,7 @@ public abstract class AbstractXMLServlet extends ServletManager {
         // This will store just the last dom, but only when editmode is allowed (so this normally doesn't apply to production mode)
         // This is a seperate place from the SessionCleaner as we don't want to interfere with this, nor do we want to use 
         // the whole queue of possible stored SPDocs only for the viewing of the DOM during development.
-        if (session != null && (getRendering(preq) != AbstractXMLServlet.RENDER_FONTIFY)) {
+        if (session != null && (getRendering(preq) != AbstractXMLServlet.RENDER_FONTIFY) && !doreuse) {
             if (editmodeAllowed) {
                 session.setAttribute(ATTR_SHOWXMLDOC, spdoc);
             }
@@ -438,6 +450,25 @@ public abstract class AbstractXMLServlet extends ServletManager {
                 SessionCleaner.getInstance().storeSPDocument(spdoc, storeddoms, scleanertimeout);
             } else {
                 LOGGER.info("*** Got NOSTORE from SPDocument! ****");
+            }
+        }
+        
+        if (session != null && !doreuse && (session.getAttribute(SESS_CLEANUP_FLAG_STAGE1) != null
+                && session.getAttribute(SESS_CLEANUP_FLAG_STAGE2) == null)) {
+            if (!spdoc.getNostore() || spdoc.isRedirect()) {
+                // Delay invalidation
+                
+                // This is obviously not thread-safe. However, no problems should
+                // arise if the session is invalidated twice.
+                session.setAttribute(SESS_CLEANUP_FLAG_STAGE2, true);
+                
+                SessionCleaner.getInstance().invalidateSession(session, scleanertimeout);
+            } else {
+                // Invalidate immediately
+                if (session.getAttribute(SESS_CLEANUP_FLAG_STAGE1) != null
+                        && session.getAttribute(SESS_CLEANUP_FLAG_STAGE2) == null) {
+                    session.invalidate();
+                }
             }
         }
     }

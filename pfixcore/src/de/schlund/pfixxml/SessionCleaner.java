@@ -23,6 +23,8 @@ import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import javax.servlet.http.HttpSession;
+
 import org.apache.log4j.Logger;
 
 /**
@@ -97,4 +99,25 @@ public class SessionCleaner {
             storeddoms = null;
         }
     }
+    
+    private class SessionInvalidateTask extends TimerTask {
+        HttpSession session;
+        
+        private SessionInvalidateTask(HttpSession session) {
+            this.session = session;
+        }
+
+        public void run() {
+            try {
+                this.session.invalidate();
+            } catch (IllegalStateException e) {
+                // Ignore IllegalStateException
+            }
+        }
+    }
+
+    public void invalidateSession(HttpSession session, int timeoutsecs) {
+        timer.schedule(new SessionInvalidateTask(session), timeoutsecs * 1000);
+    }
+    
 } // SessionCleaner
