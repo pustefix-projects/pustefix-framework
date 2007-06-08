@@ -20,12 +20,15 @@ package de.schlund.pfixcore.editor2.core.spring.internal;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 
 import de.schlund.pfixcore.editor2.core.dom.AbstractPage;
 import de.schlund.pfixcore.editor2.core.dom.Page;
 import de.schlund.pfixcore.editor2.core.dom.Project;
 import de.schlund.pfixcore.editor2.core.dom.Target;
+import de.schlund.pfixcore.editor2.core.dom.Theme;
 import de.schlund.pfixcore.editor2.core.dom.ThemeList;
 import de.schlund.pfixcore.editor2.core.dom.Variant;
 import de.schlund.pfixcore.editor2.core.spring.PustefixTargetUpdateService;
@@ -136,8 +139,24 @@ public class PageImpl extends AbstractPage implements MutablePage {
      * @see de.schlund.pfixcore.editor2.core.dom.Page#getThemes()
      */
     public ThemeList getThemes() {
-        return new ThemeListImpl(this.themefactory, this.getPfixTarget()
-                .getThemes());
+        de.schlund.pfixxml.targets.Target target = this.getPfixTarget();
+        if (target == null) {
+            return new ThemeList() {
+
+                public List<Theme> getThemes() {
+                    return Collections.emptyList();
+                }
+
+                public boolean includesTheme(Theme theme) {
+                    return false;
+                }
+
+                public boolean themeOverridesTheme(Theme t1, Theme t2) {
+                    return false;
+                }
+            };
+        }
+        return new ThemeListImpl(this.themefactory, target.getThemes());
     }
 
     /*
@@ -164,10 +183,15 @@ public class PageImpl extends AbstractPage implements MutablePage {
     }
 
     public void registerForUpdate() {
-        this.updater.registerTargetForUpdate(this.getPfixTarget());
+        if (this.getPfixTarget() != null) {
+            this.updater.registerTargetForUpdate(this.getPfixTarget());
+        }
     }
 
     public void update() {
+        if (this.getPfixTarget() == null) {
+            return;
+        }
         try {
             this.getPfixTarget().getValue();
         } catch (TargetGenerationException e) {
