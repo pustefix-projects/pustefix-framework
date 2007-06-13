@@ -72,9 +72,9 @@ public class ServiceDescriptor {
             String name=meths[i].getName();
             Method implMeth=null;
             try {
-                implMeth=clazz.getDeclaredMethod(name,meths[i].getParameterTypes());
+                implMeth=clazz.getMethod(name,meths[i].getParameterTypes());
             } catch(NoSuchMethodException x) {
-                throw new IllegalArgumentException("Method '"+name+"' not!",x);
+                throw new IllegalArgumentException("Method '"+name+"' not found!",x);
             }
             List<Method> ml=methods.get(name);
             if(ml==null) {
