@@ -53,7 +53,7 @@
             <br/><br/>
           </li>
           <li>
-            <pfx:button normalclass="editor_importantlink" page="commons" target="_top">
+            <pfx:button normalclass="editor_importantlink" page="dynincludes" target="_top">
               DynIncludes
             </pfx:button>
             <br/>
@@ -62,7 +62,7 @@
             <br/><br/>
           </li>
           <li>
-            <pfx:button normalclass="editor_importantlink" page="dynincludes" target="_top">
+            <pfx:button normalclass="editor_importantlink" page="search" target="_top">
               Search
             </pfx:button>
             <br/>
