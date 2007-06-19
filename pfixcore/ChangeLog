@@ -1,3 +1,10 @@
+2007-06-19  jtl  <jtl@schlund.de>
+
+	* src/de/schlund/pfixcore/util/DumpText.java: Implement IDumptText. You can extend from DUmpText now and give 
+	your extended class as an argument to the dumptext.sh. No need to copy the main method anymore
+	* src/de/schlund/pfixcore/util/IDumpText.java: Helper interface to allow easier overwriting of
+	the DumpText class.
+
 2007-06-15  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
 	* projects/core/editor2/txt/pages/main_home.xml: 
