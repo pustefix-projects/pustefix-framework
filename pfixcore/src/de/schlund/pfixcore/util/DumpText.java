@@ -34,25 +34,34 @@ import de.schlund.pfixxml.util.Xml;
  * @version 1.0
  */
 
-public class DumpText {
+public class DumpText implements IDumpText {
     private static DocumentBuilderFactory dbfac = DocumentBuilderFactory.newInstance();
     static {
         dbfac.setNamespaceAware(true);
     }
     
     public static void main(String[] args) throws Exception {
-        if (args.length != 2) {
-            System.err.println("Usage: java de.schlund.pfixcore.util.DumpText <DOCROOT> <DEPEND.XML>");
+        if (args.length < 2 || args.length > 3) {
+            System.err.println("Usage: java de.schlund.pfixcore.util.DumpText DOCROOT DEPEND.XML <CLASSNAME>");
             System.err.println("       This will create a dump of all include parts");
             System.err.println("       that are used by the project that belongs to the");
             System.err.println("       given DEPEND.XML file. Note that the DEPEND.XML file");
-            System.err.println("       must be given as a relative file name to DOCROOT.");            
+            System.err.println("       must be given as a relative file name to DOCROOT.");
+            System.err.println("       CLASSNAME is an optional class that implements the IDumpText interface that");
+            System.err.println("       should be used instead of de.schlund.pfixcore.util.DumpText for processing");
             System.exit(0);
         }
         String    docroot = args[0];
         String    depend  = args[1];
         PathFactory.getInstance().init(docroot);
-        DumpText trans = new DumpText();
+        IDumpText trans;
+        if (args.length == 3) {
+            Class clazz = Class.forName(args[2]);
+            trans = (IDumpText) clazz.newInstance();
+        } else {
+            trans = new DumpText();
+        }
+        
         DOMConfigurator.configure("core/conf/generator_quiet.xml");
         trans.generateList(depend);
     }
@@ -98,7 +107,7 @@ public class DumpText {
      * Typically used for adding more xmlns:XXX attributes.
      * @param root
      */
-    protected void addRootNodeAtributes(Element root) {
+    public void addRootNodeAtributes(Element root) {
         // You may add more namespaces here...
         // root.setAttribute("xmlns:xxx", "http:/yyy.zzz");
     }
@@ -110,7 +119,7 @@ public class DumpText {
      * @param aux - The AuxDependencyInclude to check
      * @return true, if the include part should be dunped, false if otherwise
      */
-    protected boolean includePartOK(AuxDependencyInclude aux) {
+    public boolean includePartOK(AuxDependencyInclude aux) {
         // String path  = aux.getPath().getRelativePath();
         // String part  = aux.getPart();
         // String theme = aux.getTheme();
@@ -125,7 +134,7 @@ public class DumpText {
      * @param aux
      * @return the String to be used in the theme attribute of the dumped 
      */
-    protected String retrieveTheme(AuxDependencyInclude aux) {
+    public String retrieveTheme(AuxDependencyInclude aux) {
         // String path  = aux.getPath().getRelativePath();
         // String part  = aux.getPart();
         return aux.getTheme();
