@@ -49,6 +49,7 @@ public class SPDocument {
     private HashMap    header      = new HashMap();
     private ArrayList  cookies     = new ArrayList();
     private String     sslRedirectURL = null;
+    private boolean trailLogged;
 
     //~ Methods ....................................................................................
 
@@ -217,6 +218,14 @@ public class SPDocument {
         this.sslRedirectURL = null;
     }
 
+    public boolean getTrailLogged() {
+        return trailLogged;
+    }
+    
+    public void setTrailLogged() {
+        trailLogged=true;
+    }
+    
     /**
      * Describe <code>toString</code> method here.
      *
