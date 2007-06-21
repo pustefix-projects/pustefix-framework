@@ -1,5 +1,12 @@
 2007-06-21  Martin Leidig  <mleidig@schlund.de>
 
+	* projects/core/xsl/forminput.xsl: bugfix: calling image geometry extension
+	function with percentage values causes NumberFormatException, quickfix just
+	copies width/height percentage values without calling the extension function
+	for pfx:xinp@type='image' elements
+
+2007-06-21  Martin Leidig  <mleidig@schlund.de>
+
 	Fixed changed trail logging behaviour: instead of reuse flag the new
 	trailLogged flag in SPDocument is used to decide if a trail has to be logged.
 	It's also used to for the logging of the result tree.
