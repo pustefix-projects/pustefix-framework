@@ -1,3 +1,11 @@
+2007-06-21  Martin Leidig  <mleidig@schlund.de>
+
+	Fixed changed trail logging behaviour: instead of reuse flag the new
+	trailLogged flag in SPDocument is used to decide if a trail has to be logged.
+
+	* src/de/schlund/pfixxml/SPDocument.java
+	* src/de/schlund/pfixxml/AbstractXMLServer.java
+
 2007-06-19  jtl  <jtl@schlund.de>
 
 	* src/de/schlund/pfixcore/util/DumpText.java: Implement IDumptText. You can extend from DUmpText now and give 

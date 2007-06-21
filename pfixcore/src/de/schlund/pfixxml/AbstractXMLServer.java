@@ -297,6 +297,7 @@ public abstract class AbstractXMLServer extends ServletManager {
         Properties   params      = new Properties();
         HttpSession  session     = preq.getSession(false);
         boolean      doreuse     = doReuse(preq);
+        
         SPDocument   spdoc       = null;
         RequestParam value;
         long         currtime;
@@ -509,7 +510,7 @@ public abstract class AbstractXMLServer extends ServletManager {
         
         Map<String, Object> addinfo = addtrailinfo.getData(preq);
         
-        if (! doreuse && session != null) {
+        if (session != null && !spdoc.getTrailLogged()) {
             StringBuffer logbuff = new StringBuffer();
             logbuff.append(session.getAttribute(VISIT_ID) + "|");
             logbuff.append(session.getId() + "|");
@@ -528,6 +529,7 @@ public abstract class AbstractXMLServer extends ServletManager {
                 logbuff.append("|" + addinfo.get(keys.next()));
             }
             LOGGER_TRAIL.warn(logbuff.toString());
+            spdoc.setTrailLogged();
         }
 
         pe.save();
