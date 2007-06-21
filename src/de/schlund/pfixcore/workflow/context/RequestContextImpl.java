@@ -416,9 +416,14 @@ public class RequestContextImpl implements Cloneable {
                 }
             }
             
-            spdoc.setRedirect(scheme + "://" + ServletManager.getServerName(preq.getRequest()) 
+            String redirectURL=scheme + "://" + ServletManager.getServerName(preq.getRequest()) 
                     + ":" + port + preq.getContextPath() + preq.getServletPath() + "/" + spdoc.getPagename() 
-                    + ";jsessionid=" + preq.getSession(false).getId() + "?__reuse=" + spdoc.getTimestamp());
+                    + ";jsessionid=" + preq.getSession(false).getId() + "?__reuse=" + spdoc.getTimestamp();
+            
+            RequestParam rp=preq.getRequestParam("__frame");
+            if(rp!=null) redirectURL+="&__frame="+rp.getValue();
+            spdoc.setRedirect(redirectURL);
+            
         }
         
         // Reset stored variant so the session variant is being used
