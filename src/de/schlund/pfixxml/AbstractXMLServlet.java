@@ -538,13 +538,16 @@ public abstract class AbstractXMLServlet extends ServletManager {
             spdoc.setDocIsUpdateable(false);
         }
 
-        if (! doreuse) {
+        if(!spdoc.getTrailLogged()) {
             if (LOGGER.isDebugEnabled()) {
                 LOGGER.debug("*** Using document:" + spdoc);
             }
             if (LOGGER.isInfoEnabled()) {
                 LOGGER.info(" *** Using stylesheet: " + stylesheet + " ***");
             }
+        }
+        
+        if (! doreuse) {
             // we only want to update the Session hit when we are not handling a "reuse" request
             if (session != null) {
                 SessionAdmin.getInstance().touchSession(servletname, stylesheet, session);
@@ -591,7 +594,7 @@ public abstract class AbstractXMLServlet extends ServletManager {
         
         Map<String, Object> addinfo = addtrailinfo.getData(preq);
         
-        if (! doreuse && session != null) {
+        if (session != null && !spdoc.getTrailLogged()) {
             StringBuffer logbuff = new StringBuffer();
             logbuff.append(session.getAttribute(VISIT_ID) + "|");
             logbuff.append(session.getId() + "|");
@@ -610,6 +613,7 @@ public abstract class AbstractXMLServlet extends ServletManager {
                 logbuff.append("|" + addinfo.get(keys.next()));
             }
             LOGGER_TRAIL.warn(logbuff.toString());
+            spdoc.setTrailLogged();
         }
 
         pe.save();
