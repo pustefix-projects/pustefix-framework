@@ -49,6 +49,7 @@ public class SPDocument {
     private HashMap   header         = new HashMap();
     private ArrayList cookies        = new ArrayList();
     private String    redirectURL    = null;
+    private boolean trailLogged;
 
     //~ Methods ....................................................................................
 
@@ -219,6 +220,14 @@ public class SPDocument {
      */
     public void resetRedirectURL() {
         this.redirectURL = null;
+    }
+    
+    public boolean getTrailLogged() {
+        return trailLogged;
+    }
+    
+    public void setTrailLogged() {
+        trailLogged=true;
     }
 
     /**
