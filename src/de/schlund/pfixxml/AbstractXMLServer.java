@@ -481,13 +481,16 @@ public abstract class AbstractXMLServer extends ServletManager {
             spdoc.setDocIsUpdateable(false);
         }
 
-        if (! doreuse) {
+       if(!spdoc.getTrailLogged()) {
             if (LOGGER.isDebugEnabled()) {
                 LOGGER.debug("*** Using document:" + spdoc);
             }
             if (LOGGER.isInfoEnabled()) {
                 LOGGER.info(" *** Using stylesheet: " + stylesheet + " ***");
             }
+       }
+       
+       if (! doreuse) {
             // we only want to update the Session hit when we are not handling a "reuse" request
             if (session != null) {
                 SessionAdmin.getInstance().touchSession(servletname, stylesheet, session);
