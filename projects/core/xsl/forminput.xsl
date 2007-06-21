@@ -314,9 +314,17 @@
     <input type="image" src="{{$__contextpath}}/{$realsrc}" alt="{$alt}"> 
       <xsl:copy-of select="@*[not(contains(concat('|',$always-exclude-attributes,'|',$exclude-attributes,'|') , concat('|',name(),'|')))]"/>
       <xsl:attribute name="class"><xsl:value-of select="@class"/> PfxInputImage</xsl:attribute>
-      <xsl:call-template name="pfx:image_geom_impl_new">
-        <xsl:with-param name="src" select="$realsrc"/>
-      </xsl:call-template>
+      <xsl:choose>
+        <xsl:when test="contains(@width,'%') or contains(@height,'%')">
+          <xsl:if test="@width"><xsl:copy-of select="@width"/></xsl:if>
+          <xsl:if test="@height"><xsl:copy-of select="@height"/></xsl:if>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:call-template name="pfx:image_geom_impl_new">
+            <xsl:with-param name="src" select="$realsrc"/>
+          </xsl:call-template>
+        </xsl:otherwise>
+      </xsl:choose>
       <ixsl:attribute name="name">__SBMT:<ixsl:value-of select="$genname_{generate-id(.)}"/>:</ixsl:attribute>
       <xsl:apply-templates/>
     </input>
