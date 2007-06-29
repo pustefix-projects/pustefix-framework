@@ -22,12 +22,15 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpSession;
+import javax.servlet.http.HttpSessionBindingEvent;
+import javax.servlet.http.HttpSessionBindingListener;
 
 import de.schlund.pfixcore.exception.PustefixApplicationException;
 import de.schlund.pfixcore.exception.PustefixCoreException;
@@ -62,16 +65,43 @@ public class ContextImpl implements Context, AccessibilityChecker, ExtendedConte
         private Variant                variant          = null;
         private String                 visitId          = null;
         private ContextResourceManager crm;
+        private SessionEndNotificator  sessionEndNotificator;
 
         // private Map<NavigationElement, Integer> navigationMap = new
         // HashMap<NavigationElement, Integer>();
         private Set<String>            visitedPages     = Collections.synchronizedSet(new HashSet<String>());
         
         private Map<String,String>          tokens;
+
+        
+        private class SessionEndNotificator implements HttpSessionBindingListener {
+            private LinkedHashSet<SessionStatusListener> sessionListeners = new LinkedHashSet<SessionStatusListener>();
+            
+            public void valueBound(HttpSessionBindingEvent ev) {
+                // Ignore this event
+            }
+
+            public void valueUnbound(HttpSessionBindingEvent ev) {
+                // Send event to registered listeners
+                synchronized (this) {
+                    for (SessionStatusListener l : sessionListeners) {
+                        l.sessionStatusChanged(new SessionStatusEvent(SessionStatusEvent.Type.SESSION_DESTROYED));
+                    }
+                }
+            }
+        }
         
         public SessionContextImpl(HttpSession session) {
             this.session = session;
             this.crm = new ContextResourceManager();
+            
+            synchronized(this.getClass()) {
+                this.sessionEndNotificator = (SessionEndNotificator) this.session.getAttribute("de.schlund.pfixcore.workflow.ContextImpl.SessionContextImpl.dummylistenerobject"); 
+                if (this.sessionEndNotificator == null) {
+                    this.sessionEndNotificator = new SessionEndNotificator();
+                    this.session.setAttribute("de.schlund.pfixcore.workflow.ContextImpl.SessionContextImpl.dummylistenerobject", this.sessionEndNotificator);
+                }
+            }
         }
 
         private void init(Context context) throws PustefixApplicationException, PustefixCoreException {
@@ -180,6 +210,20 @@ public class ContextImpl implements Context, AccessibilityChecker, ExtendedConte
 
         public void markSessionForCleanup() {
             this.session.setAttribute(AbstractXMLServlet.SESS_CLEANUP_FLAG_STAGE1, true);
+        }
+        
+        public void addSessionStatusListener(SessionStatusListener l) {
+            synchronized (this.sessionEndNotificator) {
+                if (!sessionEndNotificator.sessionListeners.contains(l)) {
+                    sessionEndNotificator.sessionListeners.add(l);
+                }
+            }
+        }
+        
+        public void removeSessionStatusListener(SessionStatusListener l) {
+            synchronized (this.sessionEndNotificator) {
+                sessionEndNotificator.sessionListeners.remove(l);
+            }
         }
     }
     
@@ -468,6 +512,14 @@ public class ContextImpl implements Context, AccessibilityChecker, ExtendedConte
     
     public void markSessionForCleanup() {
         this.sessioncontext.markSessionForCleanup();
+    }
+
+    public void addSessionStatusListener(SessionStatusListener l) {
+        this.sessioncontext.addSessionStatusListener(l);
+    }
+
+    public void removeSessionStatusListener(SessionStatusListener l) {
+        this.sessioncontext.removeSessionStatusListener(l);
     }
 
 }
