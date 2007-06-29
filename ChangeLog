@@ -1,3 +1,12 @@
+2007-06-29  Martin Leidig  <mleidig@schlund.de>
+
+	Removed generation of IWrapper method toString() and added generic
+	toString()-implementation to class IWrapperImpl (simplification of
+	generated code)
+
+	* src/de/schlund/pfixcore/generator/IWrapperImpl.java
+	* projects/core/build/iwrapper.xsl
+
 2007-06-29  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
 	* src/de/schlund/pfixcore/workflow/Context.java: 
