@@ -53,6 +53,8 @@ public interface Context {
     void                   setVariant(Variant variant);
     void                   setVariantForThisRequestOnly(Variant variant);
     String                 getVisitId();
+    void                   addSessionStatusListener(SessionStatusListener l);
+    void                   removeSessionStatusListener(SessionStatusListener l);
     boolean                precedingFlowNeedsData() throws PustefixApplicationException;
     boolean                finalPageIsRunning();
     boolean                jumpToPageIsRunning();
