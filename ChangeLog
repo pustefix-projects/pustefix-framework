@@ -1,3 +1,9 @@
+2007-07-02  Sebastian Marsching  <sebastian.marsching@1und1.de>
+
+	* src/de/schlund/pfixcore/editor2/core/spring/UserManagementServiceImpl.java: 
+	* src/de/schlund/pfixcore/editor2/core/vo/EditorUser.java: 
+	Use LinkedHashMaps instead of HashMaps to keep order of entries.
+
 2007-06-29  Martin Leidig  <mleidig@schlund.de>
 
 	Removed generation of IWrapper method toString() and added generic
