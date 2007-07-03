@@ -1,3 +1,24 @@
+2007-07-03  Martin Leidig  <mleidig@schlund.de>
+
+	Performance improvements for client-side JSON Javascript webservice 
+	stub usage:
+	- Multiple Javascript webservice stubs now can be generated and delivered 
+	as a single file
+	- Javascript webservice stub files now can optionally be requested without
+	a session id, thus the ETag/caching-mechanism works across sessions
+	
+	The pfx:wsscript tag now has an optional attribute session, indicating
+	if the session id should be added to stub requests (default is false).
+	The name attribute now can contain multiple service names separated by
+	whitespace.
+
+	* src/de/schlund/pfixcore/webservice/ServiceRuntime.java: added support
+	for generation of multiple stubs into one file
+	* src/de/schlund/pfixcore/webservice/utils/FileCache.java: cleanup
+	* projects/core/xsl/master.xsl: added support for multiple service
+	names and sessionless usage to pfx:wsscript tag
+	* projects/webservice/conf/depend.xml: removed encoding setting
+
 2007-07-02  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
 	* src/de/schlund/pfixcore/editor2/core/spring/UserManagementServiceImpl.java: 
