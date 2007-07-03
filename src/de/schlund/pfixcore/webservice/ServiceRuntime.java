@@ -68,7 +68,7 @@ public class ServiceRuntime {
         srvDescCache=new ServiceDescriptorCache();
 		processors=new HashMap<String,ServiceProcessor>();
         generators=new HashMap<String,ServiceStubGenerator>();
-        stubCache=new FileCache(10);
+        stubCache=new FileCache(100);
 	}
 	
     public ServiceDescriptorCache getServiceDescriptorCache() {
@@ -257,49 +257,78 @@ public class ServiceRuntime {
 	}
     
     public void getStub(HttpServletRequest req,HttpServletResponse res) throws ServiceException, IOException {
-        String serviceName=HttpServiceRequest.extractServiceName(req);
-        if(serviceName!=null) {
-            String type=req.getParameter("wsscript");
-            if(type!=null) {
-                type=type.toUpperCase();
-                HttpSession session=req.getSession(false);
-                ServiceConfig service=appServiceRegistry.getService(serviceName);
-                if(service==null) {
-                    if(session!=null) {
-                        ServiceRegistry serviceReg=(ServiceRegistry)session.getAttribute(ServiceRegistry.class.getName());
-                        if(serviceReg==null) {
-                            serviceReg=new ServiceRegistry(configuration,ServiceRegistry.RegistryType.SESSION);
-                            session.setAttribute(ServiceRegistry.class.getName(),serviceReg);
-                        }
-                        service=serviceReg.getService(serviceName);
-                    } 
-                }
-                if(service==null) throw new ServiceException("Service not found: "+serviceName);
-                FileCacheData data=stubCache.get(serviceName);
-                if(data==null) {
-                    ServiceStubGenerator stubGen=generators.get(type);
-                    if(stubGen!=null) {
-                        ByteArrayOutputStream bout=new ByteArrayOutputStream();
-                        stubGen.generateStub(service,bout);
-                        byte[] bytes=bout.toByteArray();
-                        data=new FileCacheData(bytes);
-                        stubCache.put(serviceName,data);
+        
+        long t1=System.currentTimeMillis();
+        
+        String nameParam=req.getParameter("name");
+        if(nameParam==null) throw new ServiceException("Missing parameter: name");
+        String typeParam=req.getParameter("type");
+        if(typeParam==null) throw new ServiceException("Missing parameter: type");
+        nameParam=nameParam.trim();
+        String[] serviceNames=nameParam.split("\\s+");
+        if(serviceNames.length==0) throw new ServiceException("No service name found");
+        String serviceType=typeParam.toUpperCase();
+        if(!serviceType.equals(Constants.PROTOCOL_TYPE_JSONWS)) throw new ServiceException("Protocol not supported: "+serviceType);
+        
+        ServiceConfig[] services=new ServiceConfig[serviceNames.length];
+        for(int i=0;i<serviceNames.length;i++) {
+            HttpSession session=req.getSession(false);
+            ServiceConfig service=appServiceRegistry.getService(serviceNames[i]);
+            if(service==null) {
+                if(session!=null) {
+                    ServiceRegistry serviceReg=(ServiceRegistry)session.getAttribute(ServiceRegistry.class.getName());
+                    if(serviceReg==null) {
+                        serviceReg=new ServiceRegistry(configuration,ServiceRegistry.RegistryType.SESSION);
+                        session.setAttribute(ServiceRegistry.class.getName(),serviceReg);
                     }
+                    service=serviceReg.getService(serviceNames[i]);
+                } 
+            }
+            if(service==null) throw new ServiceException("Service not found: "+serviceNames[i]);
+            services[i]=service;
+        }
+        
+        StringBuilder sb=new StringBuilder();
+        for(String serviceName:serviceNames) {
+            sb.append(serviceName);
+            sb.append(" ");
+        }
+        String cacheKey=sb.toString();
+                 
+        FileCacheData data=stubCache.get(cacheKey);
+        if(data==null) {
+            ServiceStubGenerator stubGen=generators.get(serviceType);
+            if(stubGen!=null) {
+                long tt1=System.currentTimeMillis();
+                ByteArrayOutputStream bout=new ByteArrayOutputStream();
+                for(int i=0;i<services.length;i++) {
+                    stubGen.generateStub(services[i],bout);
+                    if(i<services.length-1) bout.write("\n\n".getBytes());
                 }
-                String etag=req.getHeader("If-None-Match");
-                if(etag!=null && etag.equals(data.getMD5())) {
-                    res.setStatus(HttpServletResponse.SC_NOT_MODIFIED);
-                } else {
-                    res.setContentType("text/plain");    
-                    res.setContentLength(data.getBytes().length);
-                    res.setHeader("ETag",data.getMD5());
-                    res.getOutputStream().write(data.getBytes());
-                    res.getOutputStream().close();
-                }
-            } else throw new ServiceException("Missing 'stub' parameter.");
-        } else throw new ServiceException("Missing service name.");
+                byte[] bytes=bout.toByteArray();
+                data=new FileCacheData(bytes);
+                stubCache.put(cacheKey,data);
+                long tt2=System.currentTimeMillis();
+                if(LOG.isDebugEnabled()) 
+                    LOG.debug("Generated stub for '"+cacheKey+"' (Time: "+(tt2-tt1)+"ms, Size: "+bytes.length+"b)");
+            } else throw new ServiceException("No stub generator found for protocol: "+serviceType);
+        }
+        
+        long t2=System.currentTimeMillis();
+        if(LOG.isDebugEnabled()) LOG.debug("Retrieved stub for '"+cacheKey+"' (Time: "+(t2-t1)+"ms)");
+        
+        String etag=req.getHeader("If-None-Match");
+        if(etag!=null && etag.equals(data.getMD5())) {
+            res.setStatus(HttpServletResponse.SC_NOT_MODIFIED);
+        } else {
+            res.setContentType("text/plain");    
+            res.setContentLength(data.getBytes().length);
+            res.setHeader("ETag",data.getMD5());
+            res.getOutputStream().write(data.getBytes());
+            res.getOutputStream().close();
+        }
     }
-	
+
     public ServiceRegistry getApplicationServiceRegistry() {
         return appServiceRegistry;
     }

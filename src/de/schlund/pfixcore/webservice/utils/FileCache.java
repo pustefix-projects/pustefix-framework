@@ -19,10 +19,6 @@
 
 package de.schlund.pfixcore.webservice.utils;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -33,27 +29,19 @@ import org.apache.log4j.Logger;
  */
 public class FileCache {
 
-    private static Logger LOG=Logger.getLogger(FileCache.class);
+    static Logger LOG=Logger.getLogger(FileCache.class);
     
-    private File dir;
     private LinkedHashMap<String,FileCacheData> map;
     
     public FileCache(int size) {
         final int maxSize=size;
         map=new LinkedHashMap<String,FileCacheData>(maxSize,0.75f,true) {
             protected boolean removeEldestEntry(Map.Entry eldest) {
-                return size()>maxSize;
+                boolean exceeded=size()>maxSize;
+                if(exceeded) LOG.warn("Cache maximum size exceeded. Eldest entry to be removed.");
+                return exceeded;
              }
         };
-    }
-    
-    public FileCache(int size,File dir) {
-        this(size);
-        this.dir=dir;
-    }
-    
-    public void put(String name,byte[] bytes) {
-        map.put(name,new FileCacheData(bytes));
     }
     
     public synchronized void put(String name,FileCacheData data) {
@@ -62,45 +50,17 @@ public class FileCache {
     
     public synchronized FileCacheData get(String name) {
         FileCacheData data=map.get(name);
-        if(dir!=null) {
-            File file=new File(dir,name);
-            if(file.exists()) {
-                try {
-                    byte[] bytes=read(file);
-                    data=new FileCacheData(bytes);
-                    map.put(name,data);
-                } catch(IOException x) {
-                    LOG.warn("Can't read data from file: "+file.getAbsolutePath(),x);
-                }
-            }
-        }
         return data;
     }
     
-    private byte[] read(File file) throws IOException {
-        FileInputStream in=new FileInputStream(file);
-        ByteArrayOutputStream out=new ByteArrayOutputStream();
-        byte[] buffer=new byte[4096];
-        int no=0;
-        try {
-            while((no=in.read(buffer))!=-1) out.write(buffer,0,no);
-        } finally {
-            in.close();
-            out.close();
-        }
-        return out.toByteArray();
-    }
-    
-
-    
     public static void main(String[] args) {
         FileCache cache=new FileCache(3);
-        cache.put("a","aaa".getBytes());
-        cache.put("b","bbb".getBytes());
-        cache.put("c","ccc".getBytes());
+        cache.put("a",new FileCacheData("aaa".getBytes()));
+        cache.put("b",new FileCacheData("bbb".getBytes()));
+        cache.put("c",new FileCacheData("ccc".getBytes()));
         cache.get("a");
         cache.get("b");
-        cache.put("d","ddd".getBytes());
+        cache.put("d",new FileCacheData("ddd".getBytes()));
         FileCacheData data=cache.get("b");
         String res=(data==null)?"null":new String(data.bytes)+" "+data.md5;
         System.out.println(res);
