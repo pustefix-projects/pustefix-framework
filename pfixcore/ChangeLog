@@ -1,3 +1,36 @@
+2007-07-16  Martin Leidig  <mleidig@schlund.de>
+
+	Added support for automatic IWrapper generation from annotated beans.
+	Everything which can be configured in XML within the iwrp-Files now
+	can be done within Java bean classes by using according annotations.
+
+	The Java source files now are preprocessed by the JDK's apt tool.
+	Using the IWrapperAnnotationProcessor the Java IWrapper sources are
+	generated from the beans by apt. 
+	
+	Added:
+
+	* src/de/schlund/pfixcore/generator/annotation/Param.java
+	* src/de/schlund/pfixcore/generator/annotation/PreCheck.java
+	* src/de/schlund/pfixcore/generator/annotation/Transient.java
+	* src/de/schlund/pfixcore/generator/annotation/Property.java
+	* src/de/schlund/pfixcore/generator/annotation/IWrapper.java
+	* src/de/schlund/pfixcore/generator/annotation/PostCheck.java
+	* src/de/schlund/pfixcore/generator/annotation/Caster.java
+	* src/de/schlund/pfixcore/generator/iwrpgen
+	* src/de/schlund/pfixcore/generator/iwrpgen/IWrapperGeneratorTask.java
+	* src/de/schlund/pfixcore/generator/iwrpgen/IWrapperAnnotationProcessor.java
+	* src/de/schlund/pfixcore/generator/iwrpgen/BeanDescriptor.java
+	* src/de/schlund/pfixcore/generator/iwrpgen/MirrorApiUtils.java
+	* src/de/schlund/pfixcore/generator/iwrpgen/IWrapperAnnotationProcessorFactory.java
+	* src/de/schlund/pfixcore/generator/iwrpgen/IWrapperRuntimeGenerator.java
+	* src/de/schlund/pfixcore/util/CommonAnnotationProcessorFactory.java
+
+	Modified: 
+
+	* build.xml: precompile AnnotationProcessor stuff before generation
+	* skel/build-skel.xml: added apt target before compile target
+
 2007-07-03  Martin Leidig  <mleidig@schlund.de>
 
 	Performance improvements for client-side JSON Javascript webservice 

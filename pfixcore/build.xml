@@ -79,6 +79,16 @@ or delete the DOCTYPE definition -->
     </javac>
   </target>
 
+  <target name="pre-compile" depends="init" description="compiles AnnotationProcessors used by apt">
+    <javac 
+      srcdir="${dir.src}"
+      destdir="${dir.build}"
+      includes="de/schlund/pfixcore/util/CommonAnnotationProcessorFactory.java, de/schlund/pfixcore/generator/iwrpgen/IWrapperAnnotationProcessor.java, de/schlund/pfixcore/generator/iwrpgen/IWrapperAnnotationProcessorFactory.java"
+      classpathref="cp.classpath"
+      sourcepath="${dir.src}"
+      encoding="${javac.encoding}"/>
+  </target>
+
   <target name="clean-project" depends="skel.clean-project">
     <delete dir="${dir.dist}"/>
     <!-- Delete empty htdocs and img dirs in the dist examples -->

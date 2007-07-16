@@ -247,7 +247,25 @@ or delete the DOCTYPE definition -->
     <pfx-iwrp srcdir="${dir.src}" includes="**/*.iwrp" destdir="${dir.gensrc}" extension=".java" style="${dir.projects}/core/build/iwrapper.xsl" excludes="${excludes.src}" validate="${validate}" catalogfile="${catalogfile}"/>
   </target>
 
-  <target name="compile" depends="tomcat.dir.opt, generate-src, depend, pre-compile, scgenerate" description="compiles all .java files">
+  <target name="apt" depends="init">
+    <apt
+      srcdir="${dir.src}:${dir.gensrc}"
+      destdir="${dir.build}"
+      debug="${debug}"
+      debuglevel="${debuglevel}"
+      classpathref="cp.classpath"
+      compile="false"
+      source="${javac.source}"
+      nowarn="${javac.nowarn}"
+      encoding="${javac.encoding}"
+      excludes="${excludes.src}, ${exclude.examples}"
+      preprocessdir="${dir.gensrc}"
+      factory="de.schlund.pfixcore.util.CommonAnnotationProcessorFactory"
+      >
+    </apt>
+  </target>
+
+  <target name="compile" depends="tomcat.dir.opt, generate-src, depend, pre-compile, scgenerate, apt" description="preprocesses and compiles all .java files">
     <javac
      srcdir="${dir.src}:${dir.gensrc}"
      destdir="${dir.build}"
@@ -260,6 +278,7 @@ or delete the DOCTYPE definition -->
      excludes="${excludes.src}, ${exclude.examples}"
      >
     </javac>
+
     <available file="res" type="dir" property="has.resources" />
     <antcall target="resources"/>
   </target>
@@ -368,7 +387,7 @@ or delete the DOCTYPE definition -->
      classpathref="cp.classpath"
      loaderref="pfx-loader"
      description="Checks JARs for a Pustefix module deployment descriptor and unpacks the resources"
-     /> 
+     />
   </target>
 
   <target name="dtd" depends="dtd-check, ant-tasks" unless="upd.dtd" description="creates a DTD for this build file">
