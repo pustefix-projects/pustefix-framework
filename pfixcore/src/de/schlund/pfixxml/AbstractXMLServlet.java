@@ -500,6 +500,14 @@ public abstract class AbstractXMLServlet extends ServletManager {
         } else {
             res.setContentType(DEF_CONTENT_TYPE);
         }
+        if (spdoc.getResponseError() == HttpServletResponse.SC_NOT_FOUND && spdoc.getDocument() != null) {
+            String stylesheet = extractStylesheetFromSPDoc(spdoc);
+            if (generator.getTarget(stylesheet) != null) {
+                spdoc.setResponseError(0);
+                spdoc.setResponseErrorText(null);
+            }
+        }
+        
         // if the document contains a error code, do errorhandling here and no further processing.
         int    err;
         String errtxt;

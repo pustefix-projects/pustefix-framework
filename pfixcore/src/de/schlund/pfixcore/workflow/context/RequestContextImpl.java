@@ -29,6 +29,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 
 import de.schlund.pfixcore.exception.PustefixApplicationException;
 import de.schlund.pfixcore.exception.PustefixCoreException;
@@ -619,6 +620,12 @@ public class RequestContextImpl implements Cloneable {
             if (state == null) {
                 LOG.warn("* Can't get a handling state for page " + currentpagerequest);
                 resdoc = new ResultDocument();
+                Node commentNode = resdoc.getRootElement().getOwnerDocument().createComment(" This XML tree contains no page specific data as no page configuration could be found! ");
+                if (resdoc.getRootElement().getFirstChild() != null) {
+                    resdoc.getRootElement().insertBefore(commentNode, resdoc.getRootElement().getFirstChild());
+                } else {
+                    resdoc.getRootElement().appendChild(commentNode);
+                }
                 document = resdoc.getSPDocument();
                 document.setResponseError(HttpServletResponse.SC_NOT_FOUND);
                 return document;
