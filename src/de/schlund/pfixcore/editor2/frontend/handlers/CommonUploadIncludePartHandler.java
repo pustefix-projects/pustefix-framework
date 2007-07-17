@@ -50,8 +50,11 @@ public abstract class CommonUploadIncludePartHandler implements IHandler {
                 .setInIncludeEditView(true);
         
         if (input.getDoUpload() != null && input.getDoUpload().booleanValue()
-                && input.getContent() != null && input.getHash() != null) {
+                && input.getHash() != null) {
             String content = input.getContent();
+            if (content == null) {
+                content = "";
+            }
             try {
                 String path = this.getResource(context).getSelectedIncludePart().getIncludePart().getIncludeFile().getPath();
                 if (path.lastIndexOf('/') == -1 || path.lastIndexOf('/') == 0) {
