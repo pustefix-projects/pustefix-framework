@@ -399,7 +399,7 @@
     </xsl:param>
     <xsl:choose>
       <xsl:when test="string($src) = ''">
-        <xsl:message terminate="no">**** Caution:      Error calling pfx:image_geom_impl: no src specified ****</xsl:message>
+        <xsl:message terminate="no">**** Caution:      Error calling pfx:image_geom_impl_new: no src specified ****</xsl:message>
       </xsl:when>
       <xsl:otherwise>
         <xsl:variable name="path">
