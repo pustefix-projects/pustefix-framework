@@ -127,8 +127,6 @@ public class ImageGeometry {
             }
         }
         
-        LOG.error("targetWidth: " + targetWidth + "targetHeight: " + targetHeight);
-        
         if (!haveWidth && targetWidth != -1) {
             if (genStyle.length() > 0 && genStyle.charAt(genStyle.length()-1) != ';') {
                 genStyle.append(';');
