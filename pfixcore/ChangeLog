@@ -1,3 +1,9 @@
+2007-07-17  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixxml/ImageGeometry.java (ImageGeometry::getStyleStringForImage): 
+	* projects/core/xsl/forminput.xsl: fixed to handle "%" values in the style computing
+	method itself
+
 2007-07-17  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
 	* src/de/schlund/pfixcore/editor2/frontend/handlers/CommonUploadIncludePartHandler.java:
