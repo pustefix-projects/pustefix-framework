@@ -1,3 +1,14 @@
+2007-07-17  Sebastian Marsching  <sebastian.marsching@1und1.de>
+
+	* src/de/schlund/pfixcore/editor2/frontend/handlers/CommonUploadIncludePartHandler.java:
+	Fixed bug in editor causing empty include parts not to be saved correctly.
+	
+	* projects/core/editor2/xsl/runtime.xsl: 
+	Removed xmlns declarations from editor output.
+	
+	* projects/core/script/wfxEditor.js: 
+	Improved copy & past in javascript editor form.
+
 2007-07-03  Martin Leidig  <mleidig@schlund.de>
 
 	Performance improvements for client-side JSON Javascript webservice 
