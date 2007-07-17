@@ -39,8 +39,9 @@ import de.schlund.pfixxml.resources.ResourceUtil;
  */
 
 public class ImageGeometry {
-    private static Map      imageinfo = new HashMap();
-    private static Logger   LOG       = Logger.getLogger(ImageGeometry.class); 
+    private static Map<String, ImageGeometryData> imageinfo = new HashMap<String, ImageGeometryData>();
+    private static Logger                         LOG       = Logger.getLogger(ImageGeometry.class); 
+    
     
     public static int getHeight(String path) {
         ImageGeometryData data = getImageGeometryData(path);
@@ -73,15 +74,38 @@ public class ImageGeometry {
         ImageGeometryData data = getImageGeometryData(path);
         int targetWidth=-1;
         int targetHeight=-1;
+        String targetWidthUnit = "px";
+        String targetHeightUnit = "px";
+
         if (userWidth != null && userWidth.length() > 0) {
-            targetWidth = Integer.parseInt(userWidth);
+            userWidth = userWidth.trim();
+            if (userWidth.endsWith("%")) {
+                targetWidthUnit = "%";
+                userWidth = userWidth.substring(0, userWidth.length() - 1);
+            }
+            try {
+                targetWidth = Integer.parseInt(userWidth);
+            } catch (NumberFormatException e) {
+                LOG.error("*** Image " + path + " supplied invalid data for width parameter: " + userWidth);
+                targetWidth = -1;
+            }
         } else {
-            if(data!=null) targetWidth = data.getWidth();
+            if (data != null) targetWidth = data.getWidth();
         }
         if (userHeight != null && userHeight.length() > 0) {
-            targetHeight = Integer.parseInt(userHeight);
+            userHeight = userHeight.trim();
+            if (userHeight.endsWith("%")) {
+                targetHeightUnit = "%";
+                userHeight = userHeight.substring(0, userHeight.length() - 1);
+            }
+            try {
+                targetHeight = Integer.parseInt(userHeight);
+            } catch (NumberFormatException e) {
+                LOG.error("*** Image " + path + " supplied invalid data for height parameter: " + userHeight);
+                targetHeight = -1;
+            }
         } else {
-            if(data!=null) targetHeight = data.getHeight();
+            if (data != null) targetHeight = data.getHeight();
         }
         
         boolean haveWidth = false, haveHeight = false;
@@ -103,13 +127,15 @@ public class ImageGeometry {
             }
         }
         
+        LOG.error("targetWidth: " + targetWidth + "targetHeight: " + targetHeight);
+        
         if (!haveWidth && targetWidth != -1) {
             if (genStyle.length() > 0 && genStyle.charAt(genStyle.length()-1) != ';') {
                 genStyle.append(';');
             }
             genStyle.append("width:");
             genStyle.append(targetWidth);
-            genStyle.append("px;");
+            genStyle.append(targetWidthUnit + ";");
         }
         
         if (!haveHeight && targetHeight != -1) {
@@ -118,7 +144,7 @@ public class ImageGeometry {
             }
             genStyle.append("height:");
             genStyle.append(targetHeight);
-            genStyle.append("px;");
+            genStyle.append(targetHeightUnit + ";");
         }
         
         return genStyle.toString();
@@ -129,7 +155,7 @@ public class ImageGeometry {
             FileResource img = ResourceUtil.getFileResourceFromDocroot(path);
             if (img.exists() && img.canRead() && img.isFile()) {
                 long              mtime = img.lastModified();
-                ImageGeometryData tmp = (ImageGeometryData) imageinfo.get(path);
+                ImageGeometryData tmp = imageinfo.get(path);
                 if (tmp == null || mtime > tmp.lastModified()) {
                     // LOG.debug("Cache miss or outdated for: " + path);
                     try {
