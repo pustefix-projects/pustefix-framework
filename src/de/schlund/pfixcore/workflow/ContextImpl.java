@@ -64,7 +64,7 @@ public class ContextImpl implements Context, AccessibilityChecker, ExtendedConte
         private String                 lastPageFlowName = null;
         private Variant                variant          = null;
         private String                 visitId          = null;
-        private ContextResourceManager crm;
+        private ContextResourceManagerImpl crm;
         private SessionEndNotificator  sessionEndNotificator;
 
         // private Map<NavigationElement, Integer> navigationMap = new
@@ -93,7 +93,7 @@ public class ContextImpl implements Context, AccessibilityChecker, ExtendedConte
         
         public SessionContextImpl(HttpSession session) {
             this.session = session;
-            this.crm = new ContextResourceManager();
+            this.crm = new ContextResourceManagerImpl();
             
             synchronized(this.getClass()) {
                 this.sessionEndNotificator = (SessionEndNotificator) this.session.getAttribute("de.schlund.pfixcore.workflow.ContextImpl.SessionContextImpl.dummylistenerobject"); 
