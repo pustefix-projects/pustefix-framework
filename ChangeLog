@@ -1,5 +1,14 @@
 2007-07-19  Martin Leidig  <mleidig@schlund.de>
 
+	Added own apt ant task implementation, which works with older
+	ant versions as well as with ant 1.7. Enabled apt target again. 
+
+	* src/de/schlund/pfixcore/generator/iwrpgen/AptTask.java: added
+	* build.xml
+	* skel/build-skel.xml
+
+2007-07-19  Martin Leidig  <mleidig@schlund.de>
+
 	* skel/build-skel.xml: Temporarily comment out apt, cause apache-ant-1.7
 	can't be used by some users due to a bug
 
