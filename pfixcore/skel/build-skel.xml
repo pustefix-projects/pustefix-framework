@@ -247,24 +247,15 @@ or delete the DOCTYPE definition -->
     <pfx-iwrp srcdir="${dir.src}" includes="**/*.iwrp" destdir="${dir.gensrc}" extension=".java" style="${dir.projects}/core/build/iwrapper.xsl" excludes="${excludes.src}" validate="${validate}" catalogfile="${catalogfile}"/>
   </target>
 
-  <target name="apt" depends="init">
-<!--
-    <apt
+  <target name="apt" depends="ant-tasks">
+    <pfx-apt
+      classpathref="cp.classpath"
       srcdir="${dir.src}:${dir.gensrc}"
       destdir="${dir.build}"
-      debug="${debug}"
-      debuglevel="${debuglevel}"
-      classpathref="cp.classpath"
-      compile="false"
-      source="${javac.source}"
-      nowarn="${javac.nowarn}"
-      encoding="${javac.encoding}"
-      excludes="${excludes.src}, ${exclude.examples}"
       preprocessdir="${dir.gensrc}"
+      encoding="${javac.encoding}"
       factory="de.schlund.pfixcore.util.CommonAnnotationProcessorFactory"
-      >
-    </apt>
--->
+    />
   </target>
 
   <target name="compile" depends="tomcat.dir.opt, generate-src, depend, pre-compile, scgenerate, apt" description="preprocesses and compiles all .java files">
@@ -390,6 +381,13 @@ or delete the DOCTYPE definition -->
      loaderref="pfx-loader"
      description="Checks JARs for a Pustefix module deployment descriptor and unpacks the resources"
      />
+    <taskdef
+      name="pfx-apt"
+      classname="de.schlund.pfixcore.generator.iwrpgen.AptTask"
+      classpathref="cp.classpath"
+      loaderref="pfx-loader"
+      description="Pustefix APT task"
+    />
   </target>
 
   <target name="dtd" depends="dtd-check, ant-tasks" unless="upd.dtd" description="creates a DTD for this build file">
