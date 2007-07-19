@@ -1,5 +1,10 @@
 2007-07-19  Martin Leidig  <mleidig@schlund.de>
 
+	* skel/build-skel.xml: Temporarily comment out apt, cause apache-ant-1.7
+	can't be used by some users due to a bug
+
+2007-07-19  Martin Leidig  <mleidig@schlund.de>
+
 	Made PfixServletRequest and ContextResourceManager to interfaces.
 
 	* src/de/schlund/pfixcore/scriptedflow/vm/ScriptVM.java

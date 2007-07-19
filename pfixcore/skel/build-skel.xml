@@ -248,6 +248,7 @@ or delete the DOCTYPE definition -->
   </target>
 
   <target name="apt" depends="init">
+<!--
     <apt
       srcdir="${dir.src}:${dir.gensrc}"
       destdir="${dir.build}"
@@ -263,6 +264,7 @@ or delete the DOCTYPE definition -->
       factory="de.schlund.pfixcore.util.CommonAnnotationProcessorFactory"
       >
     </apt>
+-->
   </target>
 
   <target name="compile" depends="tomcat.dir.opt, generate-src, depend, pre-compile, scgenerate, apt" description="preprocesses and compiles all .java files">
