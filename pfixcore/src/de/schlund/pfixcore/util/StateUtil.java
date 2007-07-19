@@ -19,11 +19,11 @@
 
 package de.schlund.pfixcore.util;
 
+import de.schlund.pfixcore.workflow.ContextResourceManager;
 import de.schlund.pfixcore.workflow.State;
 import de.schlund.pfixcore.workflow.StateImpl;
 import de.schlund.pfixcore.workflow.Context;
 import de.schlund.pfixcore.workflow.ContextResource;
-import de.schlund.pfixcore.workflow.ContextResourceManager;
 import de.schlund.pfixcore.util.PropertiesUtils;
 import de.schlund.pfixxml.ResultDocument;
 import de.schlund.pfixxml.SPDocument;

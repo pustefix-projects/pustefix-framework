@@ -41,8 +41,8 @@ import de.schlund.pfixxml.config.ContextConfig;
  *
  */
 
-public class ContextResourceManager {
-    private final static Logger LOG = Logger.getLogger(ContextResourceManager.class);
+public class ContextResourceManagerImpl implements ContextResourceManager {
+    private final static Logger LOG = Logger.getLogger(ContextResourceManagerImpl.class);
     private HashMap<String, ContextResource>  resources = new HashMap<String, ContextResource>();
     
     /**
@@ -127,25 +127,15 @@ public class ContextResourceManager {
         
     }
 
-    /**
-     * Returns the stored object which implements the interface,
-     * specified by the full qualified classname of the requested interface, or
-     * null, if no object for the interface name is found. 
-     *
-     * @param name the classname of the requested interface
-     * @return an object of a class implementing the requested interface, which
-               extends <code>ContextResource</code>
+    /* (non-Javadoc)
+     * @see de.schlund.pfixcore.workflow.ContextResourceManager#getResource(java.lang.String)
      */
     public ContextResource getResource(String name) {
         return  (ContextResource) resources.get(name);
     }
 
-    /**
-     * Returns the ContextResource object which implements the interface
-     * passed as argument (or null if no object found).
-     * 
-     * @param clazz the interface class
-     * @return instance of the class implementing the interface
+    /* (non-Javadoc)
+     * @see de.schlund.pfixcore.workflow.ContextResourceManager#getResource(java.lang.Class)
      */
     @SuppressWarnings("unchecked")
     public <T extends ContextResource> T getResource(Class<T> clazz) {
@@ -188,12 +178,10 @@ public class ContextResourceManager {
         }
     }
     
-    /**
-     * Returns an iterator for all stored objects.
-     *
-     * @return the <code>Iterator</code>
+    /* (non-Javadoc)
+     * @see de.schlund.pfixcore.workflow.ContextResourceManager#getResourceIterator()
      */
-    public Iterator getResourceIterator() {
+    public Iterator<ContextResource> getResourceIterator() {
         return  resources.values().iterator();
     }
     
