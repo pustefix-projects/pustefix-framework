@@ -83,7 +83,7 @@ public class MultipartHandler {
     private HashMap parameter = null;
     private GenericServlet logBase = null;
     private ArrayList fileuploads = null;
-    private ArrayList failedParts = null;
+    private List<Exception> failedParts = null;
     private long maxPartSize = -1;
 
     private static Logger LOG = Logger.getLogger(MultipartHandler.class);
@@ -140,7 +140,7 @@ public class MultipartHandler {
         }
         parameter = new HashMap();
         fileuploads = new ArrayList();
-        failedParts = new ArrayList();
+        failedParts = new ArrayList<Exception>();
     }
 
     public Enumeration getParameterNames() {
@@ -164,7 +164,7 @@ public class MultipartHandler {
         return fileuploads;
     }
 
-    public List getExceptionList() {
+    public List<Exception> getExceptionList() {
         return failedParts;
     }
 

@@ -34,6 +34,7 @@ import de.schlund.pfixcore.exception.PustefixCoreException;
 import de.schlund.pfixcore.scriptedflow.vm.pvo.ParamValueObject;
 import de.schlund.pfixcore.workflow.ExtendedContext;
 import de.schlund.pfixxml.PfixServletRequest;
+import de.schlund.pfixxml.PfixServletRequestImpl;
 import de.schlund.pfixxml.SPDocument;
 
 /**
@@ -270,7 +271,7 @@ public class ScriptVM {
     private boolean doVirtualRequest(String pagename, Map<String, String[]> reqParams, PfixServletRequest origPreq, ExtendedContext rcontext) throws PustefixApplicationException, PustefixCoreException {
 
         HttpServletRequest vhttpreq = new VirtualHttpServletRequest(origPreq.getRequest(), pagename, reqParams);
-        PfixServletRequest vpreq    = new PfixServletRequest(vhttpreq, System.getProperties());
+        PfixServletRequest vpreq    = new PfixServletRequestImpl(vhttpreq, System.getProperties());
         
         // Send request to the context and use returned SPDocument
         // for further processing

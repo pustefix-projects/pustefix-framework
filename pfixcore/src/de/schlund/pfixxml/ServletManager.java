@@ -344,7 +344,7 @@ public abstract class ServletManager extends HttpServlet {
         }
         if (preq == null) {
             LOG.debug("*** Creating PfixServletRequest object.");
-            preq = new PfixServletRequest(req, this.getServletManagerConfig().getProperties());
+            preq = new PfixServletRequestImpl(req, this.getServletManagerConfig().getProperties());
         }
 
         FactoryInitServlet.tryReloadLog4j();

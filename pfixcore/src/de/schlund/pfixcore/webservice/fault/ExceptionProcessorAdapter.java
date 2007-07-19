@@ -12,6 +12,7 @@ import de.schlund.pfixcore.webservice.ServiceRequest;
 import de.schlund.pfixcore.webservice.ServiceResponse;
 import de.schlund.pfixxml.PathFactory;
 import de.schlund.pfixxml.PfixServletRequest;
+import de.schlund.pfixxml.PfixServletRequestImpl;
 import de.schlund.pfixxml.config.XMLPropertiesUtil;
 import de.schlund.pfixxml.exceptionprocessor.ExceptionConfig;
 import de.schlund.pfixxml.exceptionprocessor.ExceptionProcessor;
@@ -72,7 +73,7 @@ public class ExceptionProcessorAdapter extends FaultHandler {
             if(srvReq.getUnderlyingRequest() instanceof HttpServletRequest) {
                 HttpServletRequest req=(HttpServletRequest)srvReq.getUnderlyingRequest();
                 HttpServletResponse res=(HttpServletResponse)srvRes.getUnderlyingResponse();
-                PfixServletRequest pfixReq=new PfixServletRequest(req,new Properties());
+                PfixServletRequest pfixReq=new PfixServletRequestImpl(req,new Properties());
                 HttpSession session=req.getSession(false);
                 if(session!=null) {
                     try {

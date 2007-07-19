@@ -57,7 +57,7 @@ import de.schlund.pfixxml.serverutil.SessionHelper;
  *
  * @author <a href="mailto:jtl@schlund.de">Jens Lautenbacher</a>
  */
-public class PfixServletRequest {
+public class PfixServletRequestImpl implements PfixServletRequest {
 
     //~ Instance/static variables ..................................................................
 
@@ -66,11 +66,10 @@ public class PfixServletRequest {
     private static final String   PROP_TMPDIR         = "pfixservletrequest.tmpdir";
     private static final String   PROP_MAXPARTSIZE    = "pfixservletrequest.maxpartsize";
     private static final String   ATTR_LASTEXCEPTION  = "REQ_LASTEXCEPTION";
-    public  static final String   PAGEPARAM           = "__page";
     private static String         DEF_MAXPARTSIZE     = "" + (10 * 1024 * 1024); // 10 MB
     private HashMap               parameters          = new HashMap();
     private Logger                LOG                 = Logger.getLogger(this.getClass());
-    private ArrayList             multiPartExceptions = new ArrayList();
+    private List<Exception>             multiPartExceptions = new ArrayList<Exception>();
     private String                servername;
     private String                querystring;
     private String                scheme;
@@ -81,6 +80,9 @@ public class PfixServletRequest {
     private long                  starttime        = 0;
 
 
+    /* (non-Javadoc)
+     * @see de.schlund.pfixxml.PfixServletRequest#getCreationTimeStamp()
+     */
     public long getCreationTimeStamp() {
         return starttime;
     }
@@ -94,7 +96,7 @@ public class PfixServletRequest {
      * @param properties
      * @param cUtil
      */
-    public PfixServletRequest(HttpServletRequest req, Properties properties) {
+    public PfixServletRequestImpl(HttpServletRequest req, Properties properties) {
         PerfEvent pe = new PerfEvent(PerfEventType.PFIXSERVLETREQUEST_INIT);
         pe.start();
         
@@ -114,95 +116,81 @@ public class PfixServletRequest {
 
     //~ Methods ....................................................................................
 
-    /**
-     * Returns the value of the request-attribute that is stored under the key
-     * {@link #ATTR_LASTEXCEPTION ATTR_LASTEXCEPTION}
+    /* (non-Javadoc)
+     * @see de.schlund.pfixxml.PfixServletRequest#getLastException()
      */
     public Throwable getLastException() {
         return (Throwable) request.getAttribute(ATTR_LASTEXCEPTION);
     }
 
-    /**
-     * Stores the given <code>exception</code>-object as an attribute in the request,
-       * under the key of {@link #ATTR_LASTEXCEPTION ATTR_LASTEXCEPTION}.
-     * @param lastException The value to assign lastException.
+    /* (non-Javadoc)
+     * @see de.schlund.pfixxml.PfixServletRequest#setLastException(java.lang.Throwable)
      */
     public void setLastException(Throwable lastException) {
         request.setAttribute(ATTR_LASTEXCEPTION, lastException);
     }
 
-    /**
-     * Retrieve the server name form the orginal request
-     * @return the name
+    /* (non-Javadoc)
+     * @see de.schlund.pfixxml.PfixServletRequest#getOriginalServerName()
      */
     public String getOriginalServerName() {
         return servername;
     }
 
-    /**
-     * Retrieve the query string from the orginal request
-     * @return the query string
+    /* (non-Javadoc)
+     * @see de.schlund.pfixxml.PfixServletRequest#getOriginalQueryString()
      */
     public String getOriginalQueryString() {
         return querystring;
     }
 
-    /**
-     * Retrieve the scheme from the orginal request
-     * @return the scheme
+    /* (non-Javadoc)
+     * @see de.schlund.pfixxml.PfixServletRequest#getOriginalScheme()
      */
     public String getOriginalScheme() {
         return scheme;
     }
 
-    /**
-     * Retrieve the request uri from the orginal request
-     * @return the uri
+    /* (non-Javadoc)
+     * @see de.schlund.pfixxml.PfixServletRequest#getOriginalRequestURI()
      */
     public String getOriginalRequestURI() {
         return uri;
     }
 
-    /**
-     * Retrieve the port number from the orginal request
-     * @return the port
+    /* (non-Javadoc)
+     * @see de.schlund.pfixxml.PfixServletRequest#getOriginalServerPort()
      */
     public int getOriginalServerPort() {
         return serverport;
     }
 
-    /**
-     * Update the servlet request. After calling this method
-     * the request data used by constructor are accesible
-     * only by the 'getOriginal' methods.
-     * @param req the new request
+    /* (non-Javadoc)
+     * @see de.schlund.pfixxml.PfixServletRequest#updateRequest(javax.servlet.http.HttpServletRequest)
      */
     public void updateRequest(HttpServletRequest req) {
         this.request = req;
         this.session = req.getSession(false);
     }
 
-    /**
-     * Retrieve the current request.
-     * @return the current request.
+    /* (non-Javadoc)
+     * @see de.schlund.pfixxml.PfixServletRequest#getRequest()
      */
     public HttpServletRequest getRequest() {
         return request;
     }
 
-    /**
-     * Determine if any error happened.
-     * @return true if error happened, else false
+    /* (non-Javadoc)
+     * @see de.schlund.pfixxml.PfixServletRequest#errorHappened()
      */
     public boolean errorHappened() {
         return ! multiPartExceptions.isEmpty();
     }
 
-    /**
-     * Retrieve all exceptions that happened during multipart-handling
-     * @return a list containing all exceptions
+    /* (non-Javadoc)
+     * @see de.schlund.pfixxml.PfixServletRequest#getAllExceptions()
      */
-    public List getAllExceptions() {
+    public List<Exception> getAllExceptions() {
         return multiPartExceptions;
     }
 
@@ -211,75 +199,64 @@ public class PfixServletRequest {
     // any other request that has been set via updateRequest().
     // Most are just called as the corresponding methods in HttpServletRequest.
 
-    /**
-     * Retrieve all cookies from the current request
-     * @return an array containing all cookies
+    /* (non-Javadoc)
+     * @see de.schlund.pfixxml.PfixServletRequest#getCookies()
      */
     public Cookie[] getCookies() {
         return request.getCookies();
     }
 
-    /**
-     * Retrieve the path information from the current request
-     * @return the path info
+    /* (non-Javadoc)
+     * @see de.schlund.pfixxml.PfixServletRequest#getPathInfo()
      */
     public String getPathInfo() {
         return request.getPathInfo();
     }
 
-    /**
-     * Retrieve the translated path from the current request
-     * @return the translated path
+    /* (non-Javadoc)
+     * @see de.schlund.pfixxml.PfixServletRequest#getPathTranslated()
      */
     public String getPathTranslated() {
         return request.getPathTranslated();
     }
 
-    /**
-     * Retrieve the query string from the current request
-     * @return the query string
+    /* (non-Javadoc)
+     * @see de.schlund.pfixxml.PfixServletRequest#getQueryString()
      */
     public String getQueryString() {
         return request.getQueryString();
     }
 
-    /**
-     * Retrieve the session id belonging to the current request
-     * @return the session id
+    /* (non-Javadoc)
+     * @see de.schlund.pfixxml.PfixServletRequest#getRequestedSessionId()
      */
     public String getRequestedSessionId() {
         return request.getRequestedSessionId();
     }
 
-    /**
-     * Retrieve the request uri from the current request
-     * @return the request uri
+    /* (non-Javadoc)
+     * @see de.schlund.pfixxml.PfixServletRequest#getRequestURI()
      */
     public String getRequestURI() {
         return SessionHelper.encodeURI(request);
     }
 
-    /**
-     * Retrieve the context path from the current request
-     * @return the context path
+    /* (non-Javadoc)
+     * @see de.schlund.pfixxml.PfixServletRequest#getContextPath()
      */
     public String getContextPath() {
         return request.getContextPath();
     }
 
-    /**
-     * Retrieve the servlet path from the current request
-     * @return the servlet path
+    /* (non-Javadoc)
+     * @see de.schlund.pfixxml.PfixServletRequest#getServletPath()
      */
     public String getServletPath() {
         return request.getServletPath();
     }
 
-    /**
-     * Retrieve the session belonging to the current request
-     * @param create if true a new session will be created if not exists
-     * in the current request, if false the orginal session will be returned
-     * @return the http session
+    /* (non-Javadoc)
+     * @see de.schlund.pfixxml.PfixServletRequest#getSession(boolean)
      */
     public HttpSession getSession(boolean create) {
         if (! create) {
@@ -289,67 +266,58 @@ public class PfixServletRequest {
         }
     }
 
-    /**
-     * Retrieve whether the requested session id is valid
-     * @return true if valid, else false
+    /* (non-Javadoc)
+     * @see de.schlund.pfixxml.PfixServletRequest#isRequestedSessionIdValid()
      */
     public boolean isRequestedSessionIdValid() {
         return request.isRequestedSessionIdValid();
     }
 
-    /**
-     * Retrieve the remote ip-address from the current request
-     * @return the remote address
+    /* (non-Javadoc)
+     * @see de.schlund.pfixxml.PfixServletRequest#getRemoteAddr()
      */
     public String getRemoteAddr() {
         return request.getRemoteAddr();
     }
 
-    /**
-     * Retrieve the remote host from the current request
-     * @return the remote host
+    /* (non-Javadoc)
+     * @see de.schlund.pfixxml.PfixServletRequest#getRemoteHost()
      */
     public String getRemoteHost() {
         return request.getRemoteHost();
     }
 
-    /**
-     * Retrieve the scheme from the current request
-     * @return the scheme
+    /* (non-Javadoc)
+     * @see de.schlund.pfixxml.PfixServletRequest#getScheme()
      */
     public String getScheme() {
         return request.getScheme();
     }
 
-    /**
-     * Retrieve the port number from the current request
-     * @return the port number
+    /* (non-Javadoc)
+     * @see de.schlund.pfixxml.PfixServletRequest#getServerPort()
      */
     public int getServerPort() {
         return request.getServerPort();
     }
 
-    /**
-     * Retrieve the server name from the current request
-     * @return the name
+    /* (non-Javadoc)
+     * @see de.schlund.pfixxml.PfixServletRequest#getServerName()
      */
     public String getServerName() {
         return request.getServerName();
     }
 
 
-    /**
-     *  Gets the part of this request's URI that refers to the servlet being invoked.
-     * @ the servlet being invoked, as contained in this request's URI
+    /* (non-Javadoc)
+     * @see de.schlund.pfixxml.PfixServletRequest#getServletName()
      */
     public String getServletName() {
         return request.getServletPath();
     }
 
-    /**
-     * Retrieve a {@link RequestParam} according to the name parameter
-     * @param the name used as a key
-     * @return the request param or null if not exists
+    /* (non-Javadoc)
+     * @see de.schlund.pfixxml.PfixServletRequest#getRequestParam(java.lang.String)
      */
     public RequestParam getRequestParam(String name) {
         RequestParam[] params = (RequestParam[]) parameters.get(name);
@@ -360,10 +328,8 @@ public class PfixServletRequest {
         }
     }
 
-    /**
-     * Retrieve all request params according to the name parameter
-     * @param the name used as a key
-     * @return an array containing all request params or null if not exists
+    /* (non-Javadoc)
+     * @see de.schlund.pfixxml.PfixServletRequest#getAllRequestParams(java.lang.String)
      */
     public RequestParam[] getAllRequestParams(String name) {
         RequestParam[] params = (RequestParam[]) parameters.get(name);
@@ -376,9 +342,8 @@ public class PfixServletRequest {
 
     // ---------------------------------- //
 
-    /**
-     * Retrieve all names of all request params
-     * @return an array containing all names for all request params.
+    /* (non-Javadoc)
+     * @see de.schlund.pfixxml.PfixServletRequest#getRequestParamNames()
      */
     public String[] getRequestParamNames() {
         return (String[]) parameters.keySet().toArray(new String[]{});
@@ -506,12 +471,8 @@ public class PfixServletRequest {
         }
     }
     
-    /**
-     * Extracts page name from pathinfo of this request.
-     * 
-     * @return page name for the given request or <code>null</code>
-     *         if no page name has been specified or specified page name
-     *         has invalid scheme
+    /* (non-Javadoc)
+     * @see de.schlund.pfixxml.PfixServletRequest#getPageName()
      */
     public String getPageName() {
         String       pagename = "";
