@@ -1,3 +1,19 @@
+2007-07-19  Martin Leidig  <mleidig@schlund.de>
+
+	Made PfixServletRequest and ContextResourceManager to interfaces.
+
+	* src/de/schlund/pfixcore/scriptedflow/vm/ScriptVM.java
+	* src/de/schlund/pfixcore/workflow/ContextImpl.java
+	* src/de/schlund/pfixcore/workflow/ContextResourceManagerImpl.java
+	* src/de/schlund/pfixcore/workflow/ContextResourceManager.java
+	* src/de/schlund/pfixcore/util/StateUtil.java
+	* src/de/schlund/pfixcore/webservice/fault/ExceptionProcessorAdapter.java
+	* src/de/schlund/pfixxml/multipart/MultipartHandler.java
+	* src/de/schlund/pfixxml/ContextXMLServlet.java
+	* src/de/schlund/pfixxml/PfixServletRequestImpl.java
+	* src/de/schlund/pfixxml/ServletManager.java
+	* src/de/schlund/pfixxml/PfixServletRequest.java
+
 2007-07-17  Jens Lautenbacher  <jtl@schlund.de>
 
 	* src/de/schlund/pfixxml/ImageGeometry.java (ImageGeometry::getStyleStringForImage): 
