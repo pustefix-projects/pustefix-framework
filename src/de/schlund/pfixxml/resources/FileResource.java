@@ -277,4 +277,7 @@ public interface FileResource extends Comparable<FileResource> {
      * @throws FileNotFoundException if resource cannot be found or is readonly
      */
     OutputStream getOutputStream() throws FileNotFoundException;
+    
+    OutputStream getOutputStream(boolean append) throws FileNotFoundException;
+    
 }

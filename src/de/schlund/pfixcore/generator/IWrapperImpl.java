@@ -74,7 +74,7 @@ public abstract class IWrapperImpl implements IWrapper {
     public void tryErrorLogging() throws IOException {
         if (logdir != null && pagename != null && visitid != null) {
             FileResource    log    = ResourceUtil.getFileResource(logdir, pagename + "#" + prefix);
-            Writer          out    = new OutputStreamWriter(new BufferedOutputStream(log.getOutputStream()));
+            Writer          out    = new OutputStreamWriter(new BufferedOutputStream(log.getOutputStream(true)));
             IWrapperParam[] tmperrors = gimmeAllParamsWithErrors();
             if (tmperrors != null && tmperrors.length > 0) {
                 StringBuffer buff = getLogBuffer("ERRORS");
@@ -93,8 +93,8 @@ public abstract class IWrapperImpl implements IWrapper {
 
     public void tryParamLogging() throws IOException {
         if (logdir != null && pagename != null && visitid != null) {
-            File         log  = new File(logdir + "/" + pagename + "#" + prefix);
-            Writer       out  = new OutputStreamWriter(new BufferedOutputStream(new FileOutputStream(log, true)));
+            FileResource log=ResourceUtil.getFileResource(logdir,pagename+"#"+prefix);
+            Writer       out  = new OutputStreamWriter(new BufferedOutputStream(log.getOutputStream(true)));
             StringBuffer buff = getLogBuffer("VALUES");
             for (Iterator iter = params.values().iterator(); iter.hasNext(); ) {
                 appendParamLog((IWrapperParam) iter.next(), buff);
@@ -103,7 +103,7 @@ public abstract class IWrapperImpl implements IWrapper {
                 IWrapperIndexedParam pindex  = (IWrapperIndexedParam) iter.next();
                 IWrapperParam[] pinfoarr = pindex.getAllParams();
                 for (int i = 0; i < pinfoarr.length; i++) {
-                    appendParamLog((IWrapperParam) iter.next(), buff);
+                    appendParamLog(pinfoarr[i], buff);
                 }
             }
             out.write(buff.toString() + "\n");

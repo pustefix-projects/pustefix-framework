@@ -282,6 +282,14 @@ class DocrootResourceImpl implements DocrootResource {
             throw new FileNotFoundException("Cannot write to file in WAR archive");
         }
     }
+    
+    public OutputStream getOutputStream(boolean append) throws FileNotFoundException {
+        if (file != null) {
+            return new FileOutputStream(file,append);
+        } else {
+            throw new FileNotFoundException("Cannot write to file in WAR archive");
+        }
+    }
 
     public int compareTo(FileResource o) {
         return uri.compareTo(o.toURI());

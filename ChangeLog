@@ -1,3 +1,17 @@
+2007-07-25  Martin Leidig  <mleidig@schlund.de>
+
+	Fixed interface/IWrapper logging bugs: use FileResource instead
+	of File for logging (using File failed because of pfixroot scheme
+	in URI). Added method getOutputStream(boolean append) to FileResource
+	interfaces/implementations (needed for appending logs). Fixed
+	bug concerning logging of indexed params (NoSuchElementException due
+	to iterator misusage).
+
+	* src/de/schlund/pfixcore/generator/IWrapperImpl.java
+	* src/de/schlund/pfixxml/resources/DocrootResourceImpl.java
+	* src/de/schlund/pfixxml/resources/FileResource.java
+	* src/de/schlund/pfixxml/resources/FileSystemResourceImpl.java
+
 2007-07-19  Martin Leidig  <mleidig@schlund.de>
 
 	Added own apt ant task implementation, which works with older
