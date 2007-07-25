@@ -172,6 +172,10 @@ class FileSystemResourceImpl implements FileSystemResource {
     public OutputStream getOutputStream() throws FileNotFoundException {
         return new FileOutputStream(file);
     }
+    
+    public OutputStream getOutputStream(boolean append) throws FileNotFoundException {
+        return new FileOutputStream(file,append);
+    }
 
     public int compareTo(FileResource o) {
         return uri.compareTo(o.toURI());
