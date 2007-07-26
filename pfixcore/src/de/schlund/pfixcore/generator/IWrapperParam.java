@@ -92,7 +92,7 @@ public class IWrapperParam implements IWrapperParamCheck, IWrapperParamDefinitio
     }
 
     public IWrapperParamPostCheck[] getPostChecks() {
-        return (IWrapperParamPostCheck[]) precheck.toArray(new IWrapperParamPostCheck[]{});
+        return (IWrapperParamPostCheck[]) postcheck.toArray(new IWrapperParamPostCheck[]{});
     }
 
     public void setCustomSCode(String scode) {
