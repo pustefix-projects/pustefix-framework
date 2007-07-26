@@ -1,3 +1,31 @@
+2007-07-26  Martin Leidig  <mleidig@schlund.de>
+
+	Provide IWrapper information within XSLT at runtime.
+	Therefore the new XSLT function pfx:getIWrapperInfo can
+	be used to retrieve the XML fragment describing the
+	IWrapper. The format is similar to the .iwrp file format.
+	The function expects the IWrapper prefix name and the
+	page name as parameters.
+
+	* src/de/schlund/pfixcore/generator/IWrapperInfo.java:
+	this class extracts the IWrapper information and caches
+	the resulting document
+	* src/de/schlund/pfixcore/generator/IWrapperParam.java:
+	fixed wrong casting from pre- to postcheck in getPostChecks
+	method
+	* src/de/schlund/pfixcore/util/TransformerCallback.java:
+	added callback method to retrieve IWrapper description
+	* src/de/schlund/pfixxml/util/Xml.java: make XSLT version
+	detection publicly available
+	* projects/core/build/iwrapper.xsl: generate IWrapper
+	annotations into IWrapper sources
+	* projects/core/xsl/functions.xsl: added pfx:getIWrapperInfo
+	function
+	* projects/sample1/txt/pages/main_iwrapperinfo.xml: added
+	sample page which retrieves some IWrappers and its parameters
+	* projects/sample1/conf/depend.xml: added sample page
+	* projects/sample1/conf/config.conf.xml: added sample page
+
 2007-07-25  Martin Leidig  <mleidig@schlund.de>
 
 	Fixed interface/IWrapper logging bugs: use FileResource instead

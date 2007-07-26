@@ -448,7 +448,7 @@ public class Xml {
         return ele.substring(start + 1, end);
     }
     
-    private static XsltVersion getXsltVersion(Node node) {
+    public static XsltVersion getXsltVersion(Node node) {
         Iterator<Map.Entry<XsltVersion,XmlSupport>> it=XsltProvider.getXmlSupport().entrySet().iterator();
         while(it.hasNext()) {
             Map.Entry<XsltVersion,XmlSupport> entry=it.next();

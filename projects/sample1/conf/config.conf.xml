@@ -210,7 +210,9 @@
   <pagerequest name="geninc"/>
   
   <pagerequest name="tokenerror"/>
-  
+ 
+  <pagerequest name="iwrapperinfo"/>
+ 
   <config-include file="sample1/conf/fragments.xml" section="pagerequests"/>
   
   <properties>

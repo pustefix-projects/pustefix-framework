@@ -50,4 +50,11 @@
     <func:result select="callback:getToken($__context__,$tokenName)"/>
   </func:function>
   
+  <func:function name="pfx:getIWrapperInfo">
+    <xsl:param name="pageName"/>
+    <xsl:param name="prefix"/>
+    <func:result select="callback:getIWrapperInfo($__context__,/,$pageName,$prefix)"/>
+  </func:function>
+  
+  
 </xsl:stylesheet>
