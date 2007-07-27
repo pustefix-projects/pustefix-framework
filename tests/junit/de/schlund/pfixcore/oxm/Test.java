@@ -32,6 +32,8 @@ import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
+import junit.framework.TestCase;
+
 import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -47,7 +49,11 @@ import de.schlund.pfixcore.oxm.impl.SerializerRegistry;
 /**
  * @author mleidig@schlund.de
  */
-public class Test {
+public class Test extends TestCase {
+    
+    public void testMarshalling() {
+        
+    }
     
     public static void main(String[] args) throws Exception {
         
