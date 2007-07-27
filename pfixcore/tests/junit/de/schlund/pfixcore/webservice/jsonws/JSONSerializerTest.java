@@ -26,7 +26,7 @@ import java.util.List;
 import java.util.Map;
 
 import junit.framework.TestCase;
-import de.schlund.pfixcore.webservice.beans.BeanDescriptorFactory;
+import de.schlund.pfixcore.beans.BeanDescriptorFactory;
 import de.schlund.pfixcore.webservice.json.JSONObject;
 import de.schlund.pfixcore.webservice.json.parser.JSONParser;
 
@@ -38,7 +38,7 @@ public class JSONSerializerTest extends TestCase {
     BeanDescriptorFactory beanDescFactory;
     SerializerRegistry serializerRegistry;
     DeserializerRegistry deserializerRegistry;
-    
+     
     @Override
     protected void setUp() throws Exception {
         beanDescFactory=new BeanDescriptorFactory();

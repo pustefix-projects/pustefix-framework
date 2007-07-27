@@ -1,3 +1,58 @@
+2007-07-27  Martin Leidig  <mleidig@schlund.de>
+
+	Added object-to-xml mapping framework providing 
+	support for easy result tree creation from arbitrary
+	objects. Therefore the ResultDocument now provides
+	additional addObject(...) methods. The object
+	serialization can be customized by the bean
+	annotations known from the JSON serialization
+	mechanism. 
+
+	Added object-to-xml mapping framework:
+	* src/de/schlund/pfixcore/oxm
+	* src/de/schlund/pfixcore/oxm/MarshallingException.java
+	* src/de/schlund/pfixcore/oxm/impl
+	* src/de/schlund/pfixcore/oxm/impl/SerializerRegistry.java
+	* src/de/schlund/pfixcore/oxm/impl/SerializationContext.java
+	* src/de/schlund/pfixcore/oxm/impl/MarshallerFactory.java
+	* src/de/schlund/pfixcore/oxm/impl/ComplexTypeSerializer.java
+	* src/de/schlund/pfixcore/oxm/impl/SimpleTypeSerializer.java
+	* src/de/schlund/pfixcore/oxm/impl/serializers
+	* src/de/schlund/pfixcore/oxm/impl/serializers/BeanSerializer.java
+	* src/de/schlund/pfixcore/oxm/impl/serializers/CollectionSerializer.java
+	* src/de/schlund/pfixcore/oxm/impl/serializers/MapSerializer.java
+	* src/de/schlund/pfixcore/oxm/impl/serializers/ArraySerializer.java
+	* src/de/schlund/pfixcore/oxm/impl/serializers/ObjectToStringSerializer.java
+	* src/de/schlund/pfixcore/oxm/impl/MarshallerImpl.java
+	* src/de/schlund/pfixcore/oxm/impl/DOMWriter.java
+	* src/de/schlund/pfixcore/oxm/impl/SerializationException.java
+	* src/de/schlund/pfixcore/oxm/impl/XMLWriter.java
+	* src/de/schlund/pfixcore/oxm/Marshaller.java
+	* src/de/schlund/pfixcore/oxm/MappingException.java
+
+	* src/de/schlund/pfixxml/ResultDocument.java: Added addObject(...)
+	methods to serialize objects into result tree
+
+	Added object-xml-mapping sample to encoding test page:
+	* projects/sample1/txt/pages/main_encoding.xml
+	* src/de/schlund/pfixcore/example/ContextEncodingTestImpl.java 
+
+	Added object-xml-mapping test:
+	* tests/junit/de/schlund/pfixcore/oxm
+	* tests/junit/de/schlund/pfixcore/oxm/Test.java
+	* tests/junit/de/schlund/pfixcore/oxm/Bean.java
+	* tests/junit/de/schlund/pfixcore/oxm/BeanItf.java
+
+	* src/de/schlund/pfixcore/beans
+	* src/de/schlund/pfixcore/webservice/beans: Renamed package to
+	de.schlund.pfixcore.beans, cause it's no longer webservice specific
+	and can be used by other parts of the framework and is used by the
+	object-xml-mapping framework
+	* tests/junit/de/schlund/pfixcore/beans
+	* tests/junit/de/schlund/pfixcore/webservice/beans: Renamed the
+	according test packages
+
+
 2007-07-26  Martin Leidig  <mleidig@schlund.de>
 
 	Provide IWrapper information within XSLT at runtime.

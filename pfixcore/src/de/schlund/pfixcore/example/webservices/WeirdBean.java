@@ -1,7 +1,7 @@
 package de.schlund.pfixcore.example.webservices;
 
-import de.schlund.pfixcore.webservice.beans.Alias;
-import de.schlund.pfixcore.webservice.beans.Exclude;
+import de.schlund.pfixcore.beans.Alias;
+import de.schlund.pfixcore.beans.Exclude;
 
 public class WeirdBean {
 
