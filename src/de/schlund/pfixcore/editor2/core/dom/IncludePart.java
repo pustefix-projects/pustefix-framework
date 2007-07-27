@@ -73,8 +73,11 @@ public interface IncludePart extends Comparable<IncludePart> {
      * @param theme
      *            Theme to create a variant for.
      * @return New IncludePartThemeVariant object for the specified theme
+     * @throws EditorSecurityException 
+     * @throws EditorParsingException 
+     * @throws EditorIOException 
      */
-    IncludePartThemeVariant createThemeVariant(Theme theme);
+    IncludePartThemeVariant createThemeVariant(Theme theme) throws EditorIOException, EditorParsingException, EditorSecurityException;
 
     /**
      * Return true, if there is a variant for the specified theme. A variant is

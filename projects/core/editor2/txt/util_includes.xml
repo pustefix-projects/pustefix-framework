@@ -173,7 +173,7 @@
             </td>
           </tr>
         </ixsl:if>
-        <ixsl:if test="not(./currentinclude/@theme = 'default') and (./currentinclude/@mayEdit = 'true')">
+        <ixsl:if test="./currentinclude/@mayEdit = 'true'">
           <tr><td colspan="2"><hr/></td></tr>
           <tr>
             <td>

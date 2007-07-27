@@ -110,6 +110,8 @@ public class TargetGenerator implements Comparable {
     private XsltVersion xsltVersion=XsltVersion.XSLT1; //default, can be overridden in depend.xml 
 
     private Themes global_themes;
+    
+    private String default_theme;
 
     private String language;
 
@@ -145,6 +147,10 @@ public class TargetGenerator implements Comparable {
 
     public Themes getGlobalThemes() {
         return global_themes;
+    }
+    
+    public String getDefaultTheme() {
+        return default_theme;
     }
 
     public String getLanguage() {
@@ -366,16 +372,26 @@ public class TargetGenerator implements Comparable {
         language = getAttribute(root, "lang");
 
         String gl_theme_str = null;
+        String def_theme_str = null;
         if (root.hasAttribute("themes")) {
             gl_theme_str = getAttribute(root, "themes");
         }
         if (gl_theme_str == null || gl_theme_str.equals("")) {
             gl_theme_str = name + " default";
         } else if (!gl_theme_str.endsWith(" default")) {
+            if (gl_theme_str.lastIndexOf(' ') == -1) {
+                def_theme_str = gl_theme_str.trim();
+            } else {
+                def_theme_str = gl_theme_str.substring(gl_theme_str.lastIndexOf(' ')).trim();
+            }
             gl_theme_str = gl_theme_str + " default";
         }
-
+        if (def_theme_str == null) {
+            def_theme_str = "default";
+        }
+        
         global_themes = new Themes(gl_theme_str);
+        default_theme = def_theme_str;
 
         FileResource disccache = getDisccachedir();
         if (!disccache.exists()) {

@@ -127,7 +127,7 @@ public final class IncludeDocumentExtension {
                 throw ex;
             }
             
-            String DEF_THEME = themes[(themes.length -1)];
+            String DEF_THEME = tgen.getDefaultTheme();
 
             if (!path.exists()) {
                 if (dolog) {

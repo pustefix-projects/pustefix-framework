@@ -1,3 +1,26 @@
+2007-07-27  Sebastian Marsching  <sebastian.marsching@1und1.de>
+
+	* src/de/schlund/pfixcore/editor2/core/dom/IncludePart.java: 
+	* src/de/schlund/pfixcore/editor2/core/spring/internal/CommonIncludePartImpl.java: 
+	* src/de/schlund/pfixcore/editor2/core/spring/internal/DynIncludePartImpl.java: 
+	* src/de/schlund/pfixcore/editor2/core/spring/internal/IncludeFileImpl.java: 
+	* src/de/schlund/pfixcore/editor2/core/spring/internal/IncludePartImpl.java: 
+	* src/de/schlund/pfixcore/editor2/core/spring/internal/IncludePartThemeVariantImpl.java: 
+	* src/de/schlund/pfixcore/editor2/core/spring/IncludeFactoryService.java: 
+	* src/de/schlund/pfixcore/editor2/core/spring/IncludeFactoryServiceImpl.java: 
+	* src/de/schlund/pfixcore/editor2/frontend/resources/CommonIncludesResource.java: 
+	* src/de/schlund/pfixcore/editor2/frontend/resources/CommonIncludesResourceImpl.java: 
+	* projects/core/editor2/txt/util_includes.xml: 
+	Use runtime information from TargetGenerator to build include part structure in
+	editor. Allow new theme variant to be created even for non-existing parts.
+	Made default theme variant deletable using editor.
+
+	* src/de/schlund/pfixxml/targets/TargetGenerator.java: 
+	* src/de/schlund/pfixxml/IncludeDocumentExtension.java: 
+	Made default theme for new parts configurable: The last theme listed in the
+	projects global theme list will be used as the default theme, however the
+	"default" special theme will still be used as a fallback.
+	
 2007-07-27  Martin Leidig  <mleidig@schlund.de>
 
 	Added object-to-xml mapping framework providing 

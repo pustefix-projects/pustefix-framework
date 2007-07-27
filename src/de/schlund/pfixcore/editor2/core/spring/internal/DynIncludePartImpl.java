@@ -20,12 +20,20 @@ package de.schlund.pfixcore.editor2.core.spring.internal;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 
+import javax.xml.transform.TransformerException;
+
+import org.apache.log4j.Logger;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 import de.schlund.pfixcore.editor2.core.dom.IncludeFile;
 import de.schlund.pfixcore.editor2.core.dom.IncludePartThemeVariant;
 import de.schlund.pfixcore.editor2.core.dom.Theme;
+import de.schlund.pfixcore.editor2.core.exception.EditorIOException;
+import de.schlund.pfixcore.editor2.core.exception.EditorParsingException;
 import de.schlund.pfixcore.editor2.core.exception.EditorSecurityException;
 import de.schlund.pfixcore.editor2.core.spring.BackupService;
 import de.schlund.pfixcore.editor2.core.spring.ConfigurationService;
@@ -33,6 +41,7 @@ import de.schlund.pfixcore.editor2.core.spring.FileSystemService;
 import de.schlund.pfixcore.editor2.core.spring.PathResolverService;
 import de.schlund.pfixcore.editor2.core.spring.SecurityManagerService;
 import de.schlund.pfixcore.editor2.core.spring.ThemeFactoryService;
+import de.schlund.pfixxml.util.XPath;
 
 /**
  * Implementation of IncludePart for DynIncludes.
@@ -80,4 +89,113 @@ public class DynIncludePartImpl extends CommonIncludePartImpl {
         return new ArrayList<Theme>();
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see de.schlund.pfixcore.editor2.core.dom.IncludePart#getThemeVariant(de.schlund.pfixcore.editor2.core.dom.Theme)
+     */
+    public IncludePartThemeVariant getThemeVariant(Theme theme) {
+        synchronized (this.cache) {
+            if (this.cache.containsKey(theme)) {
+                return (IncludePartThemeVariant) this.cache.get(theme);
+            } else {
+                if (!this.hasThemeVariant(theme)) {
+                    return null;
+                } else {
+                    IncludePartThemeVariant incPartVariant = createIncludePartThemeVariant(theme);
+                    this.cache.put(theme, incPartVariant);
+                    return incPartVariant;
+                }
+            }
+        }
+    }
+    
+    /*
+     * (non-Javadoc)
+     * 
+     * @see de.schlund.pfixcore.editor2.core.dom.IncludePart#getThemeVariants()
+     */
+    public Collection<IncludePartThemeVariant> getThemeVariants() {
+        synchronized (this.cache) {
+            this.refreshCache();
+            return new HashSet<IncludePartThemeVariant>(this.cache.values());
+        }
+    }
+
+    private void refreshCache() {
+        synchronized (this.cache) {
+            if (this.getIncludeFile().getSerial() == this.cacheSerial) {
+                return;
+            }
+            long newSerial = this.getIncludeFile().getSerial();
+            Node xml = this.getContentXML();
+
+            // Reset cache
+            this.cache.clear();
+            if (xml == null) {
+                return;
+            }
+
+            NodeList nlist = xml.getChildNodes();
+            for (int i = 0; i < nlist.getLength(); i++) {
+                Node n = nlist.item(i);
+                if (n.getNodeType() == Node.ELEMENT_NODE
+                        && n.getNodeName().equals(XML_THEME_TAG_NAME)) {
+                    Element el = (Element) n;
+                    String themeName = el.getAttribute("name");
+                    if (themeName != null) {
+                        Theme theme = this.getThemeFactory().getTheme(themeName);
+                        this.cache.put(theme, this
+                                .createIncludePartThemeVariant(theme));
+                    }
+                }
+            }
+            
+            this.cacheSerial = newSerial;
+        }
+    }
+
+    public IncludePartThemeVariant createThemeVariant(Theme theme) {
+        synchronized (cache) {
+            IncludePartThemeVariant variant = (IncludePartThemeVariant) this.cache
+                    .get(theme);
+            if (variant != null) {
+                return variant;
+            } else {
+                variant = this.createIncludePartThemeVariant(theme);
+                this.cache.put(theme, variant);
+                return variant;
+            }
+        }
+    }
+
+    public boolean hasThemeVariant(Theme theme) {
+        if (this.getContentXML() == null) {
+            return false;
+        }
+        try {
+            return XPath.test(this.getContentXML(), XML_THEME_TAG_NAME + "[@name='"
+                    + theme.getName() + "']");
+        } catch (TransformerException e) {
+            // Should NEVER happen
+            // So if it does, assume variant for theme is not existing
+            Logger.getLogger(this.getClass()).error("XPath error!", e);
+            return false;
+        }
+    }
+
+    public void deleteThemeVariant(IncludePartThemeVariant variant) throws EditorSecurityException, EditorIOException, EditorParsingException {
+        synchronized (this.cache) {
+            super.deleteThemeVariant(variant);
+            
+            Logger.getLogger("LOGGER_EDITOR").warn(
+                    "DYNTXT: " + this.securitymanager.getPrincipal().getName()
+                            + ": " + variant.toString() + ": DELETED");
+            
+            // Remove from cache
+            this.cache.remove(variant.getTheme());
+        }
+    }
+    
+    
 }

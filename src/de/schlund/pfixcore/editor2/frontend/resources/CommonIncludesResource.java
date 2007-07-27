@@ -27,6 +27,9 @@ import org.xml.sax.SAXException;
 import de.schlund.pfixcore.editor2.core.dom.IncludeFile;
 import de.schlund.pfixcore.editor2.core.dom.IncludePartThemeVariant;
 import de.schlund.pfixcore.editor2.core.exception.EditorException;
+import de.schlund.pfixcore.editor2.core.exception.EditorIOException;
+import de.schlund.pfixcore.editor2.core.exception.EditorParsingException;
+import de.schlund.pfixcore.editor2.core.exception.EditorSecurityException;
 import de.schlund.pfixcore.workflow.ContextResource;
 
 /**
@@ -120,8 +123,11 @@ public interface CommonIncludesResource extends ContextResource {
      * @param theme
      *            Name of theme to create branch for
      * @return <code>true</code> on success, <code>false</code> otherwise
+     * @throws EditorSecurityException 
+     * @throws EditorParsingException 
+     * @throws EditorIOException 
      */
-    boolean createAndSelectBranch(String theme);
+    boolean createAndSelectBranch(String theme) throws EditorIOException, EditorParsingException, EditorSecurityException;
 
     /**
      * Deletes the branch that is currently selected
