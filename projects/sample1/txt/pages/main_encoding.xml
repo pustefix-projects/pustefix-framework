@@ -14,6 +14,14 @@
         }
       </pfx:script>
       <center>
+      <table width="100%"><tr>
+       <td align="center" valign="top" width="100" style="background:#EEEEEE">
+        <ixsl:value-of select="/formresult/text/alphabet/@description"/>:<br/><br/>
+        <ixsl:for-each select="/formresult/text/alphabet/characters/item">
+          <span style="font-size:140%"><ixsl:value-of select="."/></span><br/>
+        </ixsl:for-each>
+       </td>
+       <td align="center" valign="top">
         <br/>
         <h2>Page encoding: <span style="font-weight:normal"><ixsl:value-of select="/formresult/text/encoding"/></span></h2>
         <br/>
@@ -110,7 +118,9 @@
             </td></tr>
           </table>
         </pfx:forminput>
-      
+       </td>
+      </tr></table>
+       
       </center>
     
     </theme>

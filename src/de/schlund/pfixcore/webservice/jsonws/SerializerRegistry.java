@@ -28,7 +28,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import de.schlund.pfixcore.webservice.beans.BeanDescriptorFactory;
+import de.schlund.pfixcore.beans.BeanDescriptorFactory;
 import de.schlund.pfixcore.webservice.jsonws.serializers.ArraySerializer;
 import de.schlund.pfixcore.webservice.jsonws.serializers.BeanSerializer;
 import de.schlund.pfixcore.webservice.jsonws.serializers.BooleanSerializer;

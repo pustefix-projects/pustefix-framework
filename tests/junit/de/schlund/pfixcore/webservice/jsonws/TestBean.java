@@ -26,7 +26,6 @@ import java.util.Map;
  * @author mleidig@schlund.de
  */
 public class TestBean {
-
     private int value;
     private String text;
     private List<String> strList;

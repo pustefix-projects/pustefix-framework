@@ -27,8 +27,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import de.schlund.pfixcore.webservice.beans.BeanDescriptor;
-import de.schlund.pfixcore.webservice.beans.BeanDescriptorFactory;
+import de.schlund.pfixcore.beans.BeanDescriptor;
+import de.schlund.pfixcore.beans.BeanDescriptorFactory;
 import de.schlund.pfixcore.webservice.json.JSONObject;
 import de.schlund.pfixcore.webservice.jsonws.DeserializationContext;
 import de.schlund.pfixcore.webservice.jsonws.DeserializationException;

@@ -34,6 +34,9 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
+import de.schlund.pfixcore.beans.BeanDescriptorFactory;
+import de.schlund.pfixcore.beans.InitException;
+import de.schlund.pfixcore.beans.metadata.DefaultLocator;
 import de.schlund.pfixcore.webservice.ProcessingInfo;
 import de.schlund.pfixcore.webservice.ServiceCallContext;
 import de.schlund.pfixcore.webservice.ServiceDescriptor;
@@ -43,9 +46,6 @@ import de.schlund.pfixcore.webservice.ServiceRegistry;
 import de.schlund.pfixcore.webservice.ServiceRequest;
 import de.schlund.pfixcore.webservice.ServiceResponse;
 import de.schlund.pfixcore.webservice.ServiceRuntime;
-import de.schlund.pfixcore.webservice.beans.BeanDescriptorFactory;
-import de.schlund.pfixcore.webservice.beans.InitException;
-import de.schlund.pfixcore.webservice.beans.metadata.DefaultLocator;
 import de.schlund.pfixcore.webservice.config.ServiceConfig;
 import de.schlund.pfixcore.webservice.fault.Fault;
 import de.schlund.pfixcore.webservice.fault.FaultHandler;
