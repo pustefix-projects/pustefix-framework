@@ -460,7 +460,7 @@ public abstract class CommonIncludesResourceImpl implements
         this.selectedIncludePart.setXML(doc.getDocumentElement(), indent);
     }
 
-    public boolean createAndSelectBranch(String themeName) {
+    public boolean createAndSelectBranch(String themeName) throws EditorIOException, EditorParsingException, EditorSecurityException {
         Theme theme = null;
         for (Iterator i = this.getPossibleThemes(
                 this.selectedIncludePart,

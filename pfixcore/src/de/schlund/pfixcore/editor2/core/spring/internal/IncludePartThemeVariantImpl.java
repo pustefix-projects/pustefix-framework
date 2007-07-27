@@ -148,9 +148,7 @@ public class IncludePartThemeVariantImpl extends
             } else if ((child.getType() == DependencyType.TEXT) && recursive) {
                 AuxDependencyInclude aux = (AuxDependencyInclude) child;
                 IncludePartThemeVariant variant = this.includefactory
-                        .getIncludeFile(aux.getPath().getRelativePath())
-                        .createPart(aux.getPart())
-                        .createThemeVariant(themefactory.getTheme(aux.getTheme()));
+                        .getIncludePartThemeVariant(aux);
                 images.addAll(variant.getImageDependencies(true));
             }
         }
@@ -231,8 +229,7 @@ public class IncludePartThemeVariantImpl extends
             } else if ((child.getType() == DependencyType.TEXT) && recursive) {
                 AuxDependencyInclude aux = (AuxDependencyInclude) child;
                 IncludePartThemeVariant variant = this.includefactory
-                        .getIncludeFile(aux.getPath().getRelativePath()).createPart(aux.getPart())
-                        .createThemeVariant(themefactory.getTheme(aux.getTheme()));
+                        .getIncludePartThemeVariant(aux);
                 images.addAll(variant.getImageDependencies(true));
             }
         }

@@ -21,20 +21,32 @@ package de.schlund.pfixcore.editor2.core.spring.internal;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 
+import org.apache.log4j.Logger;
+import org.w3c.dom.DOMException;
+import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import de.schlund.pfixcore.editor2.core.dom.IncludeFile;
 import de.schlund.pfixcore.editor2.core.dom.IncludePartThemeVariant;
 import de.schlund.pfixcore.editor2.core.dom.Page;
+import de.schlund.pfixcore.editor2.core.dom.Project;
 import de.schlund.pfixcore.editor2.core.dom.Theme;
+import de.schlund.pfixcore.editor2.core.exception.EditorIOException;
+import de.schlund.pfixcore.editor2.core.exception.EditorParsingException;
 import de.schlund.pfixcore.editor2.core.exception.EditorSecurityException;
 import de.schlund.pfixcore.editor2.core.spring.BackupService;
 import de.schlund.pfixcore.editor2.core.spring.FileSystemService;
 import de.schlund.pfixcore.editor2.core.spring.IncludeFactoryService;
 import de.schlund.pfixcore.editor2.core.spring.PathResolverService;
+import de.schlund.pfixcore.editor2.core.spring.ProjectFactoryService;
 import de.schlund.pfixcore.editor2.core.spring.SecurityManagerService;
 import de.schlund.pfixcore.editor2.core.spring.ThemeFactoryService;
+import de.schlund.pfixxml.resources.ResourceUtil;
+import de.schlund.pfixxml.targets.AuxDependency;
+import de.schlund.pfixxml.targets.AuxDependencyFactory;
+import de.schlund.pfixxml.util.Xml;
 
 /**
  * Implementation of IncludePart using a DOM tree
@@ -45,15 +57,18 @@ public class IncludePartImpl extends CommonIncludePartImpl {
     private IncludeFactoryService includefactory;
 
     private SecurityManagerService securitymanager;
+    
+    private ProjectFactoryService projectfactory;
 
     public IncludePartImpl(ThemeFactoryService themefactory,
-            IncludeFactoryService includefactory, FileSystemService filesystem,
+            IncludeFactoryService includefactory, ProjectFactoryService projectfactory, FileSystemService filesystem,
             PathResolverService pathresolver, BackupService backup,
             SecurityManagerService securitymanager, String partName,
             IncludeFile file, Element el, long serial) {
         super(themefactory, filesystem, pathresolver, backup, partName, file, el, serial);
         this.includefactory = includefactory;
         this.securitymanager = securitymanager;
+        this.projectfactory = projectfactory;
     }
 
     /*
@@ -76,12 +91,76 @@ public class IncludePartImpl extends CommonIncludePartImpl {
         return themes;
     }
 
-    protected IncludePartThemeVariant createIncludePartThemeVariant(Theme theme) {
-        return includefactory.getIncludePartThemeVariant(theme, this);
-    }
-
     protected void securityCheckDeleteIncludePartThemeVariant(
             IncludePartThemeVariant variant) throws EditorSecurityException {
         this.securitymanager.checkEditIncludePartThemeVariant(variant);
     }
+
+    public IncludePartThemeVariant createThemeVariant(Theme theme) throws EditorIOException, EditorParsingException, EditorSecurityException, DOMException {
+        // Make sure that returned instance is in auxdep map
+        AuxDependency aux = AuxDependencyFactory.getInstance().getAuxDependencyInclude(
+                ResourceUtil.getFileResourceFromDocroot(this.getIncludeFile().getPath()),
+                this.getName(), theme.getName());
+        
+        return includefactory.getIncludePartThemeVariant(aux);
+    }
+
+    public IncludePartThemeVariant getThemeVariant(Theme theme) {
+        for (Project project : this.projectfactory.getProjects()) {
+            for (IncludePartThemeVariant part : project.getAllIncludeParts()) {
+                if (part.getIncludePart().equals(this) && part.getTheme().equals(theme)) {
+                    return part;
+                }
+            }
+        }
+        return null;
+    }
+
+    public Collection<IncludePartThemeVariant> getThemeVariants() {
+        LinkedHashSet<IncludePartThemeVariant> parts = new LinkedHashSet<IncludePartThemeVariant>();
+        for (Project project : this.projectfactory.getProjects()) {
+            for (IncludePartThemeVariant part : project.getAllIncludeParts()) {
+                if (part.getIncludePart().equals(this)) {
+                    parts.add(part);
+                }
+            }
+        }
+        return parts;
+    }
+
+    public boolean hasThemeVariant(Theme theme) {
+        for (Project project : this.projectfactory.getProjects()) {
+            for (IncludePartThemeVariant part : project.getAllIncludeParts()) {
+                if (part.getIncludePart().equals(this) && part.getTheme().equals(theme)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public void deleteThemeVariant(IncludePartThemeVariant variant) throws EditorSecurityException, EditorIOException, EditorParsingException {
+        super.deleteThemeVariant(variant);
+        
+        Logger.getLogger("LOGGER_EDITOR").warn(
+                "TXT: " + this.securitymanager.getPrincipal().getName()
+                        + ": " + variant.toString() + ": DELETED");
+        
+        // Register affected pages for regeneration
+        Page affectedpage = null;
+        for (Iterator i = variant.getAffectedPages().iterator(); i.hasNext();) {
+            Page page = (Page) i.next();
+            page.registerForUpdate();
+            affectedpage = page;
+        }
+
+        // Regenerate exactly ONE affected page synchronously
+        // to make sure changes in the dependency tree are
+        // visible at once
+        if (affectedpage != null) {
+            affectedpage.update();
+        }
+    }
+    
+    
 }

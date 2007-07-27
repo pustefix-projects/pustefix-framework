@@ -19,9 +19,7 @@
 package de.schlund.pfixcore.editor2.core.spring;
 
 import de.schlund.pfixcore.editor2.core.dom.IncludeFile;
-import de.schlund.pfixcore.editor2.core.dom.IncludePart;
 import de.schlund.pfixcore.editor2.core.dom.IncludePartThemeVariant;
-import de.schlund.pfixcore.editor2.core.dom.Theme;
 import de.schlund.pfixcore.editor2.core.exception.EditorParsingException;
 import de.schlund.pfixxml.targets.AuxDependency;
 
@@ -41,19 +39,6 @@ public interface IncludeFactoryService {
      *             If an error occurs during parsing of the IncludeFile
      */
     IncludeFile getIncludeFile(String filename) throws EditorParsingException;
-
-    /**
-     * Creates an IncludePartThemeVariant object which is a child of the
-     * specified IncludePart and uses the specified Theme.
-     * 
-     * @param theme
-     *            Theme to use
-     * @param part
-     *            IncludePart the created variant belongs to
-     * @return New IncludePartThemeVariant for the given parameters
-     */
-    IncludePartThemeVariant getIncludePartThemeVariant(Theme theme,
-            IncludePart part);
 
     /**
      * Create an IncludePartThemeVariant object using the information retrieved

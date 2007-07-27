@@ -25,6 +25,7 @@ import de.schlund.pfixcore.editor2.core.spring.BackupService;
 import de.schlund.pfixcore.editor2.core.spring.FileSystemService;
 import de.schlund.pfixcore.editor2.core.spring.IncludeFactoryService;
 import de.schlund.pfixcore.editor2.core.spring.PathResolverService;
+import de.schlund.pfixcore.editor2.core.spring.ProjectFactoryService;
 import de.schlund.pfixcore.editor2.core.spring.SecurityManagerService;
 import de.schlund.pfixcore.editor2.core.spring.ThemeFactoryService;
 
@@ -37,6 +38,8 @@ public class IncludeFileImpl extends CommonIncludeFileImpl {
     private ThemeFactoryService themefactory;
 
     private IncludeFactoryService includefactory;
+    
+    private ProjectFactoryService projectfactory;
 
     private FileSystemService filesystem;
 
@@ -47,7 +50,7 @@ public class IncludeFileImpl extends CommonIncludeFileImpl {
     private SecurityManagerService securitymanager;
 
     public IncludeFileImpl(ThemeFactoryService themefactory,
-            IncludeFactoryService includefactory, FileSystemService filesystem,
+            IncludeFactoryService includefactory, ProjectFactoryService projectfactory, FileSystemService filesystem,
             PathResolverService pathresolver, BackupService backup,
             SecurityManagerService securitymanager, String path) {
         super(filesystem, pathresolver, path);
@@ -57,10 +60,11 @@ public class IncludeFileImpl extends CommonIncludeFileImpl {
         this.pathresolver = pathresolver;
         this.backup = backup;
         this.securitymanager = securitymanager;
+        this.projectfactory = projectfactory;
     }
 
     protected IncludePart createIncludePartInstance(String name, Element el, long serial) {
-        return new IncludePartImpl(themefactory, includefactory, filesystem,
+        return new IncludePartImpl(themefactory, includefactory, projectfactory, filesystem,
                 pathresolver, backup, securitymanager, name, this, el, serial);
     }
 

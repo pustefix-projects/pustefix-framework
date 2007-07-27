@@ -21,17 +21,15 @@ package de.schlund.pfixcore.editor2.core.spring.internal;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
+
 import javax.xml.transform.TransformerException;
 
 import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import de.schlund.pfixcore.editor2.core.dom.AbstractIncludePart;
@@ -54,11 +52,11 @@ import de.schlund.pfixxml.util.XPath;
  * @author Sebastian Marsching <sebastian.marsching@1und1.de>
  */
 public abstract class CommonIncludePartImpl extends AbstractIncludePart {
-    private final static String XML_THEME_TAG_NAME = "theme";
+    protected final static String XML_THEME_TAG_NAME = "theme";
 
     private IncludeFile file;
 
-    private HashMap<Theme, IncludePartThemeVariant> cache;
+    protected HashMap<Theme, IncludePartThemeVariant> cache;
 
     private ThemeFactoryService themefactory;
 
@@ -72,7 +70,7 @@ public abstract class CommonIncludePartImpl extends AbstractIncludePart {
 
     private Node cacheXML = null;
 
-    private long cacheSerial = -1;
+    protected long cacheSerial = -1;
 
     private long cacheXMLSerial = -1;
 
@@ -92,17 +90,15 @@ public abstract class CommonIncludePartImpl extends AbstractIncludePart {
     }
 
     /**
-     * Override in implementation to create IncludePartThemeVariant
-     */
-    protected abstract IncludePartThemeVariant createIncludePartThemeVariant(
-            Theme theme);
-
-    /**
      * Override in implementation to do security check
      */
     protected abstract void securityCheckDeleteIncludePartThemeVariant(
             IncludePartThemeVariant variant) throws EditorSecurityException;
-
+    
+    protected ThemeFactoryService getThemeFactory() {
+        return this.themefactory;
+    }
+    
     /*
      * (non-Javadoc)
      * 
@@ -153,100 +149,7 @@ public abstract class CommonIncludePartImpl extends AbstractIncludePart {
         }
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see de.schlund.pfixcore.editor2.core.dom.IncludePart#getThemeVariant(de.schlund.pfixcore.editor2.core.dom.Theme)
-     */
-    public IncludePartThemeVariant getThemeVariant(Theme theme) {
-        synchronized (this.cache) {
-            if (this.cache.containsKey(theme)) {
-                return (IncludePartThemeVariant) this.cache.get(theme);
-            } else {
-                if (!this.hasThemeVariant(theme)) {
-                    return null;
-                } else {
-                    IncludePartThemeVariant incPartVariant = createIncludePartThemeVariant(theme);
-                    this.cache.put(theme, incPartVariant);
-                    return incPartVariant;
-                }
-            }
-        }
-    }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see de.schlund.pfixcore.editor2.core.dom.IncludePart#getThemeVariants()
-     */
-    public Collection<IncludePartThemeVariant> getThemeVariants() {
-        synchronized (this.cache) {
-            this.refreshCache();
-            return new HashSet<IncludePartThemeVariant>(this.cache.values());
-        }
-    }
-
-    private void refreshCache() {
-        synchronized (this.cache) {
-            if (this.getIncludeFile().getSerial() == this.cacheSerial) {
-                return;
-            }
-            long newSerial = this.getIncludeFile().getSerial();
-            Node xml = this.getContentXML();
-
-            // Reset cache
-            this.cache.clear();
-            if (xml == null) {
-                return;
-            }
-
-            NodeList nlist = xml.getChildNodes();
-            for (int i = 0; i < nlist.getLength(); i++) {
-                Node n = nlist.item(i);
-                if (n.getNodeType() == Node.ELEMENT_NODE
-                        && n.getNodeName().equals(XML_THEME_TAG_NAME)) {
-                    Element el = (Element) n;
-                    String themeName = el.getAttribute("name");
-                    if (themeName != null) {
-                        Theme theme = this.themefactory.getTheme(themeName);
-                        this.cache.put(theme, this
-                                .createIncludePartThemeVariant(theme));
-                    }
-                }
-            }
-            
-            this.cacheSerial = newSerial;
-        }
-    }
-
-    public IncludePartThemeVariant createThemeVariant(Theme theme) {
-        synchronized (cache) {
-            IncludePartThemeVariant variant = (IncludePartThemeVariant) this.cache
-                    .get(theme);
-            if (variant != null) {
-                return variant;
-            } else {
-                variant = this.createIncludePartThemeVariant(theme);
-                this.cache.put(theme, variant);
-                return variant;
-            }
-        }
-    }
-
-    public boolean hasThemeVariant(Theme theme) {
-        if (this.getContentXML() == null) {
-            return false;
-        }
-        try {
-            return XPath.test(this.getContentXML(), XML_THEME_TAG_NAME + "[@name='"
-                    + theme.getName() + "']");
-        } catch (TransformerException e) {
-            // Should NEVER happen
-            // So if it does, assume variant for theme is not existing
-            Logger.getLogger(this.getClass()).error("XPath error!", e);
-            return false;
-        }
-    }
 
     public void deleteThemeVariant(IncludePartThemeVariant variant)
             throws EditorSecurityException, EditorIOException,
@@ -256,12 +159,7 @@ public abstract class CommonIncludePartImpl extends AbstractIncludePart {
             Logger.getLogger(this.getClass()).error(err);
             throw new RuntimeException(err);
         }
-
-        if (variant.getTheme().getName().equals("default")) {
-            throw new EditorSecurityException(
-                    "Removal of default branch is never allowed!");
-        }
-
+ 
         securityCheckDeleteIncludePartThemeVariant(variant);
 
         synchronized (this.cache) {
@@ -269,9 +167,6 @@ public abstract class CommonIncludePartImpl extends AbstractIncludePart {
                 // Variant is not existing any more, so ignore
                 return;
             }
-
-            // Remove from cache
-            this.cache.remove(variant.getTheme());
 
             // Remove from file, if existing there
             File xmlFile = new File(this.pathresolver.resolve(this
