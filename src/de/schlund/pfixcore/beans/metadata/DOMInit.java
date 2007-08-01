@@ -107,7 +107,7 @@ public class DOMInit {
             Document doc=db.parse(metadataUrl.openStream());
             update(doc);
         } catch(FileNotFoundException x) {
-            if(LOG.isDebugEnabled()) LOG.debug("Metadata file not found",x);
+            if(LOG.isDebugEnabled()) LOG.debug("No metadata file found: "+metadataUrl.toString());
         } catch(Exception x) {
             throw new DOMInitException("Can't read metadata from '"+metadataUrl+"'.",x);
         }

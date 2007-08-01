@@ -1,5 +1,16 @@
 2007-07-27  Martin Leidig  <mleidig@schlund.de>
 
+	* build.xml: set version to 0.11.1-pre
+
+	* src/de/schlund/pfixcore/generator/IWrapperIndexedParam.java: fixed
+	getPostChecks() method	
+
+	* src/de/schlund/pfixcore/beans/metadata/DOMInit.java: don't log
+	stacktrace if no metadata file is found (because it looks like a
+	fault)
+
+2007-07-27  Martin Leidig  <mleidig@schlund.de>
+
 	Released Pfixcore 0.11.0
 
 	* build.xml: Changed Pfixcore version
