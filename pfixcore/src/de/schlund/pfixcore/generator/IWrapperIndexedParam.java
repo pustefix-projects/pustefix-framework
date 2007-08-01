@@ -81,7 +81,7 @@ public class IWrapperIndexedParam implements IWrapperParamDefinition, Comparable
     }
 
     public IWrapperParamPostCheck[] getPostChecks() {
-        return (IWrapperParamPostCheck[]) precheck.toArray(new IWrapperParamPostCheck[]{});
+        return (IWrapperParamPostCheck[]) postcheck.toArray(new IWrapperParamPostCheck[]{});
     }
 
     protected void initValueFromRequest(String prefix, RequestData req) {
