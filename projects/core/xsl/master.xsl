@@ -178,6 +178,11 @@
           <ixsl:value-of select="url:encode(string($in),$enc)"/>
         </ixsl:if>
       </ixsl:template>
+
+      <ixsl:template name="__sign">
+        <ixsl:param name="in"/>
+        <ixsl:value-of select="deref:signString($in, $__derefkey)"/>
+      </ixsl:template>
       
       <ixsl:template name="__deref">
         <ixsl:param name="link"/>
@@ -187,11 +192,60 @@
           </ixsl:call-template>
         </ixsl:variable>
         <ixsl:variable name="sign">
-          <ixsl:value-of select="deref:signString($link, $__derefkey)"/>
+          <ixsl:call-template name="__sign">
+            <ixsl:with-param name="in" select="$link"/>
+          </ixsl:call-template>
         </ixsl:variable>
         <ixsl:text>/xml/deref?link=</ixsl:text>
-        <ixsl:value-of select="$enclink"/>&amp;sign=<ixsl:value-of select="$sign"/>
+        <ixsl:value-of select="$enclink"/>&amp;__sign=<ixsl:value-of select="$sign"/>
       </ixsl:template>
+
+      <ixsl:template name="__formwarn">
+        <xsl:choose>
+          <xsl:when test="$prohibitEdit = 'no'">
+           <ixsl:param name="fullname"/>
+           <ixsl:param name="targetpage"/>
+<!--           <ixsl:message>***IN*** <ixsl:value-of select="$fullname"/>@<ixsl:value-of select="$targetpage"/></ixsl:message>-->
+             <ixsl:if test="contains($fullname, '.')">
+              <ixsl:variable name="prefix" select="substring-before($fullname, '.')"/>
+              <ixsl:variable name="tmp" select="substring-after($fullname, '.')"/>
+              <ixsl:variable name="name">
+                <ixsl:choose>
+                  <ixsl:when test="contains($tmp, '.')"><ixsl:value-of select="substring-before($tmp, '.')"/></ixsl:when>
+                  <ixsl:otherwise><ixsl:value-of select="$tmp"/></ixsl:otherwise>
+                </ixsl:choose>
+              </ixsl:variable>
+              <ixsl:variable name="index" select="substring-after($tmp, '.')"/>
+              <ixsl:choose>
+                <ixsl:when test="not(pfx:getIWrapperInfo($targetpage,$prefix))">
+                  <div style="position: absolute; color: #000000; background-color: #eeaaaa; border: solid 1px #aa8888; font-family: sans-serif; font-size:9px; font-weight: normal;" 
+                  onclick="if (event.stopPropagation) event.stopPropagation(); else if (typeof event.cancelBubble != 'undefined') event.cancelBubble = true; this.style.display='none';">
+                    Warning: Unknown wrapper <b><ixsl:value-of select="$prefix"/></b> on page <b><ixsl:value-of select="$targetpage"/></b>
+                  </div>
+                </ixsl:when>
+                <ixsl:when test="not(pfx:getIWrapperInfo($targetpage,$prefix)/iwrapper/param[@name = $name])">
+                  <div style="position: absolute; color: #000000; background-color: #eeaaaa; border: solid 1px #aa8888; font-family: sans-serif; font-size:9px; font-weight: normal;" 
+                  onclick="if (event.stopPropagation) event.stopPropagation(); else if (typeof event.cancelBubble != 'undefined') event.cancelBubble = true; this.style.display='none';">
+                    Warning: Unknown parameter <b><ixsl:value-of select="$name"/></b> in wrapper <b><ixsl:value-of select="$prefix"/></b> on page <b><ixsl:value-of select="$targetpage"/></b>
+                  </div>
+                </ixsl:when>
+                <ixsl:when test="$index and not(pfx:getIWrapperInfo($targetpage,$prefix)/iwrapper/param[@name = $name and @occurrence = 'indexed'])">
+                  <div style="position: absolute; color: #000000; background-color: #eeaaaa; border: solid 1px #aa8888; font-family: sans-serif; font-size:9px; font-weight: normal;" 
+                  onclick="if (event.stopPropagation) event.stopPropagation(); else if (typeof event.cancelBubble != 'undefined') event.cancelBubble = true; this.style.display='none';">
+                    Warning: No indexed parameter <b><ixsl:value-of select="$name"/></b> in wrapper <b><ixsl:value-of select="$prefix"/></b> on page <b><ixsl:value-of select="$targetpage"/></b>
+                  </div>
+                </ixsl:when>
+                <ixsl:when test="not($index) and not(pfx:getIWrapperInfo($targetpage,$prefix)/iwrapper/param[@name = $name and @occurrence != 'indexed'])">
+                  <div style="position: absolute; color: #000000; background-color: #eeaaaa; border: solid 1px #aa8888; font-family: sans-serif; font-size:9px; font-weight: normal;" 
+                  onclick="if (event.stopPropagation) event.stopPropagation(); else if (typeof event.cancelBubble != 'undefined') event.cancelBubble = true; this.style.display='none';">
+                    Warning: Parameter <b><ixsl:value-of select="$name"/></b> in wrapper <b><ixsl:value-of select="$prefix"/></b> on page <b><ixsl:value-of select="$targetpage"/> must be indexed</b>
+                  </div>
+                </ixsl:when>
+              </ixsl:choose>
+            </ixsl:if>
+          </xsl:when>
+       </xsl:choose>
+    </ixsl:template>    
 
       <ixsl:template match="/">
         <xsl:choose>

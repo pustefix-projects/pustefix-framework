@@ -82,7 +82,6 @@ public class IWrapperSimpleContainer implements IWrapperContainer {
     private   boolean            is_splitted    = false;
     private   boolean            is_loaded      = false;
     protected Logger             LOG            = Logger.getLogger(this.getClass());
-    private   boolean            extendedstatus = false;
     
     public  static final String PROP_CONTAINER       = "iwrappercontainer";
     private static final String PROP_INTERFACE       = "interface";
@@ -326,30 +325,6 @@ public class IWrapperSimpleContainer implements IWrapperContainer {
                 wrap.setAttribute("prefix", wrapper.gimmePrefix());
             }
         }
-        if (extendedstatus) {
-            Element extstatus = resdoc.createNode("iwrapperinfo");
-            for (Iterator iter = wrappers.values().iterator(); iter.hasNext();) {
-                IWrapper                  tmp     = (IWrapper) iter.next();
-                IWrapperParamDefinition[] def     = tmp.gimmeAllParamDefinitions();
-                String                    prefix  = tmp.gimmePrefix();
-                Element                   wrpelem = resdoc.createSubNode(extstatus, "wrapper");
-                wrpelem.setAttribute("prefix", prefix);
-                if (def == null) {
-                    wrpelem.setAttribute("docheck", "false");
-                } else {
-                    for (int i = 0; i < def.length ; i++) {
-                        IWrapperParamDefinition tmpdef = def[i];
-                        
-                        Element parelem = resdoc.createSubNode(wrpelem, "param");
-                        parelem.setAttribute("name", tmpdef.getName());
-                        parelem.setAttribute("type", tmpdef.getType());
-                        parelem.setAttribute("occurance", tmpdef.getOccurance());
-                        parelem.setAttribute("frequency", tmpdef.getFrequency());
-                        // FIXME: Use more information
-                    }
-                }
-            }
-        }
     }
 
 
@@ -532,9 +507,6 @@ public class IWrapperSimpleContainer implements IWrapperContainer {
     private void readIWrappersConfigFromProperties() throws Exception  {
         Properties allprops   = context.getProperties();
         String     noeditmode = allprops.getProperty(PROP_NOEDITMODE);
-        if (noeditmode != null && noeditmode.equals("false")) {
-            extendedstatus = true;
-        }
 
         //Properties props      = context.getPropertiesForCurrentPageRequest();
         //HashMap    interfaces = PropertiesUtils.selectProperties(props, PROP_INTERFACE);

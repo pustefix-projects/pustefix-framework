@@ -72,21 +72,23 @@ public class TransformerCallback {
     }
     
     public static String getToken(RequestContextImpl requestContext, String tokenName) throws Exception {
-        tokenName=tokenName.trim();
-        if(tokenName.contains(":")) throw new IllegalArgumentException("Illegal token name: "+tokenName);
-        String token=requestContext.getParentContext().getToken(tokenName);
+        tokenName = tokenName.trim();
+        if (tokenName.contains(":")) throw new IllegalArgumentException("Illegal token name: " + tokenName);
+        String token = requestContext.getParentContext().getToken(tokenName);
         return token;
     }
     
-    public static Node getIWrapperInfo(RequestContextImpl requestContext,Node docNode,String pageName,String prefix) {
-        ContextImpl context=requestContext.getParentContext();
-        XsltVersion xsltVersion=Xml.getXsltVersion(docNode);
-        PageRequestConfig pageConfig=context.getContextConfig().getPageRequestConfig(pageName);
-        Map<String,? extends IWrapperConfig> iwrappers=pageConfig.getIWrappers();
-        IWrapperConfig iwrpConfig=iwrappers.get(prefix);
-        if(iwrpConfig!=null) {
-            return IWrapperInfo.getDocument(iwrpConfig,xsltVersion);
-        } else throw new RuntimeException("IWrapper with prefix '"+prefix+"' on page '"+pageName+"' not found.");
+    public static Node getIWrapperInfo(RequestContextImpl requestContext, Node docNode, String pageName, String prefix) {
+        ContextImpl context = requestContext.getParentContext();
+        XsltVersion xsltVersion = Xml.getXsltVersion(docNode);
+        PageRequestConfig pageConfig = context.getContextConfig().getPageRequestConfig(pageName);
+        Map<String, ? extends IWrapperConfig> iwrappers = pageConfig.getIWrappers();
+        IWrapperConfig iwrpConfig = iwrappers.get(prefix);
+        if (iwrpConfig != null) {
+            return IWrapperInfo.getDocument(iwrpConfig, xsltVersion);
+        } else
+            return null;
+            // throw new RuntimeException("IWrapper with prefix '" + prefix + "' on page '" + pageName + "' not found.");
     }
     
 }

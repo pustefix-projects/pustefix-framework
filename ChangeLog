@@ -1,3 +1,22 @@
+2007-08-02  jtl  <jtl@schlund.de>
+
+	* projects/core/xsl/forminput.xsl: Added <pfx:externalform href="..."> template to route an external form
+	over the deref server.
+	Changed checking of IWrapper and their parameters to use the new runtime checking via callbacks (see below).
+	This will now also work for parameter names that are constructed at runtime (e.g. indexed parameters)
+	* projects/core/xsl/master.xsl: added __formwarn template for runtime checking of the validity of 
+	IWrappers and their parameters.
+	Also add __sign template to go along the __enc template: __deref will now call both of them.	
+	* projects/sample1/txt/pages/main_home.xml: Make a test case for the new form-over-dereferer servlet stuff
+	* src/de/schlund/pfixxml/DerefServlet.java (handleLink): added the possibility to add all "remaining" submitted 
+	parameters to the link that is stripped from the referer. Needed to enable to route form submits (where no final 
+	link parameter with the host + all the parameters can be constructed) over the deref servlet. In this case the signing will 
+	only guard the hostname.
+	* src/de/schlund/pfixcore/generator/IWrapperInfo.java: "martin style" -> "other people esp. jtl" style
+	* src/de/schlund/pfixcore/util/TransformerCallback.java: don't throw an Exception if a wrapper is not found, 
+	just return null
+	* src/de/schlund/pfixcore/workflow/app/IWrapperSimpleContainer.java: removed insertion of extended status 
+
 2007-07-27  Martin Leidig  <mleidig@schlund.de>
 
 	* build.xml: set version to 0.11.1-pre
@@ -14,7 +33,6 @@
 	Released Pfixcore 0.11.0
 
 	* build.xml: Changed Pfixcore version
-
 
 2007-07-27  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
