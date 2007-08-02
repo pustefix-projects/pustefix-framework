@@ -3,6 +3,13 @@
   <part name="content">
     <theme name="default">
       <center>
+      Test of deref-server for forms: 
+      <pfx:externalform href="http://www.gimp.org">
+        <input type="text" name="FOO"/>
+        <input type="submit"/>
+      </pfx:externalform>
+      <br/>
+      <hr/>
         <pfx:forminput target="_top">
           <table width="400">
             <tr>

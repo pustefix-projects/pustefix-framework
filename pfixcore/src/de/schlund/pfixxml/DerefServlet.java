@@ -73,8 +73,8 @@ public class DerefServlet extends ServletManager {
     
     protected void process(PfixServletRequest preq, HttpServletResponse res) throws Exception {
         RequestParam linkparam    = preq.getRequestParam("link");
-        RequestParam enclinkparam = preq.getRequestParam("enclink");
-        RequestParam signparam    = preq.getRequestParam("sign");
+        RequestParam enclinkparam = preq.getRequestParam("__enclink");
+        RequestParam signparam    = preq.getRequestParam("__sign");
         String       key          = config.getProperties().getProperty(PROP_DEREFKEY);
         String       ign          = config.getProperties().getProperty(PROP_IGNORESIGN);
 
@@ -132,12 +132,35 @@ public class DerefServlet extends ServletManager {
         // We don't currently enforce the signing at this stage. We may change this to enforcing mode,
         // or maybe we will use some clear warning pages in the case of a not signed request.
         if (checked || (!signed && ignore_nosign)) {
-            OutputStream       out      = res.getOutputStream();
-            OutputStreamWriter writer   = new OutputStreamWriter(out, res.getCharacterEncoding());
+            OutputStream       out    = res.getOutputStream();
+            OutputStreamWriter writer = new OutputStreamWriter(out, res.getCharacterEncoding());
+            RequestParam addallparams = preq.getRequestParam("__addallparams");
+            if (addallparams != null && addallparams.getValue() != null && addallparams.getValue().equals("true")) {
+                String[] allparamnames = preq.getRequestParamNames();
+                StringBuffer urlextension = new StringBuffer();
+                for (String tmpname : allparamnames) {
+                    if (tmpname.equals("link") || tmpname.equals("__sign") || tmpname.equals("__enclink") || tmpname.equals("__addallparams")) {
+                        continue;
+                    }
+                    RequestParam tmpparam = preq.getRequestParam(tmpname);
+                    if (tmpparam.getValue() != null) {
+                        urlextension.append("&" + URLEncoder.encode(tmpname, preq.getRequest().getCharacterEncoding()) + "=" + 
+                                URLEncoder.encode(tmpparam.getValue(), preq.getRequest().getCharacterEncoding()));
+                    }
+                }
+                String urltail = urlextension.toString();
+                if (urltail != null && urltail.length() > 0) {
+                    if (link.contains("?")) {
+                        link = link + urlextension;
+                    } else {
+                        link = link + "?" + urlextension.substring(1);
+                    }
+                }
+            }
             String             enclink  = Base64.encode(link.getBytes("utf8"));
             String             reallink = preq.getScheme() + "://" + preq.getServerName() + ":" + preq.getServerPort() +
-                SessionHelper.getClearedURI(preq) + "?enclink=" + URLEncoder.encode(enclink, "utf8") +
-                "&sign=" + signString(enclink, key);
+                SessionHelper.getClearedURI(preq) + "?__enclink=" + URLEncoder.encode(enclink, "utf8") +
+                "&__sign=" + signString(enclink, key);
             
             LOG.debug("===> Meta refresh to link: " + reallink);
             DEREFLOG.info(preq.getServerName() + "|" + link + "|" + preq.getRequest().getHeader("Referer"));
