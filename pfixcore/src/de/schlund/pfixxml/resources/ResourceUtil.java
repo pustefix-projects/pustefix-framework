@@ -79,6 +79,11 @@ public class ResourceUtil {
      * @see #getFileResource(URI)
      */
     public static FileResource getFileResource(String uri) {
+    	// Replace spaces in URI with %20
+    	// URIs must not contain spaces, however
+    	// there is plenty of code that doesn't check for
+    	// spaces when calling this method
+    	uri = fixURI(uri);
         try {
             return getFileResource(new URI(uri));
         } catch (URISyntaxException e) {
@@ -98,7 +103,8 @@ public class ResourceUtil {
      * @throws IllegalArgumentException if name is not relative
      */
     public static FileResource getFileResource(FileResource parent, String name) {
-        if (name.startsWith("/")) {
+        name = fixURI(name);
+    	if (name.startsWith("/")) {
             throw new IllegalArgumentException("Relative name may not start with a '/'");
         }
         
@@ -123,7 +129,8 @@ public class ResourceUtil {
      * @return Resource from the docroot
      */
     public static DocrootResource getFileResourceFromDocroot(String path) {
-        if (!path.startsWith("/")) {
+        path = fixURI(path);
+    	if (!path.startsWith("/")) {
             path = "/" + path;
         }
         try {
@@ -153,5 +160,17 @@ public class ResourceUtil {
         }
         in.close();
         out.close();
+    }
+    
+    /**
+     * Takes a URI as a string and converts it into a valid URI
+     * string (e.g. replaces spaces) on a best effort basis.
+     * 
+     * @param uri URI to do fixes for
+     * @return URI in correct format
+     */
+    private static String fixURI(String uri) {
+    	uri = uri.replace(" ", "%20");
+    	return uri;
     }
 }

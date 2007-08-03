@@ -1,3 +1,8 @@
+2007-08-03  termi  <termi@prometheus.local.marsching.com>
+
+	* src/de/schlund/pfixxml/resources/ResourceUtil.java: 
+	Replace spaces in URIs with %20s.
+
 2007-08-02  jtl  <jtl@schlund.de>
 
 	* projects/core/xsl/forminput.xsl: Added <pfx:externalform href="..."> template to route an external form
