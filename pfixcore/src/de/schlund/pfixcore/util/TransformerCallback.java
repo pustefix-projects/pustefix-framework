@@ -2,8 +2,10 @@ package de.schlund.pfixcore.util;
 
 import java.util.Map;
 
+import org.apache.log4j.Logger;
 import org.w3c.dom.Node;
 
+import de.schlund.pfixcore.generator.IWrapper;
 import de.schlund.pfixcore.generator.IWrapperInfo;
 import de.schlund.pfixcore.workflow.ContextImpl;
 import de.schlund.pfixcore.workflow.context.AccessibilityChecker;
@@ -24,6 +26,8 @@ import de.schlund.pfixxml.util.XsltVersion;
  * @version 1.0
  */
 public class TransformerCallback {
+    
+    private static Logger LOG=Logger.getLogger(TransformerCallback.class);
 
     public static void setNoStore(SPDocument spdoc) {
         spdoc.setNostore(true);
@@ -79,16 +83,29 @@ public class TransformerCallback {
     }
     
     public static Node getIWrapperInfo(RequestContextImpl requestContext, Node docNode, String pageName, String prefix) {
-        ContextImpl context = requestContext.getParentContext();
-        XsltVersion xsltVersion = Xml.getXsltVersion(docNode);
-        PageRequestConfig pageConfig = context.getContextConfig().getPageRequestConfig(pageName);
-        Map<String, ? extends IWrapperConfig> iwrappers = pageConfig.getIWrappers();
-        IWrapperConfig iwrpConfig = iwrappers.get(prefix);
-        if (iwrpConfig != null) {
-            return IWrapperInfo.getDocument(iwrpConfig, xsltVersion);
-        } else
+        try {
+            ContextImpl context = requestContext.getParentContext();
+            XsltVersion xsltVersion = Xml.getXsltVersion(docNode);
+            PageRequestConfig pageConfig = context.getContextConfig().getPageRequestConfig(pageName);
+            if(pageConfig!=null) {
+                Map<String, ? extends IWrapperConfig> iwrappers = pageConfig.getIWrappers();
+                Class<? extends IWrapper> iwrpClass=null;
+                IWrapperConfig iwrpConfig = iwrappers.get(prefix);
+                if (iwrpConfig != null) {
+                    iwrpClass=iwrpConfig.getWrapperClass();
+                } else if(pageConfig.getAuthWrapperPrefix()!=null && pageConfig.getAuthWrapperPrefix().equals(prefix)) {
+                    iwrpClass=pageConfig.getAuthWrapperClass();
+                } else {
+                    Map<String,Class<? extends IWrapper>> auxWrappers=pageConfig.getAuxWrappers();
+                    iwrpClass=auxWrappers.get(prefix);
+                }
+                if(iwrpClass!=null) return IWrapperInfo.getDocument(iwrpClass, xsltVersion);
+            }
             return null;
-            // throw new RuntimeException("IWrapper with prefix '" + prefix + "' on page '" + pageName + "' not found.");
+        } catch(RuntimeException x) {
+            LOG.error("Error while getting IWrapperInfo: "+pageName+" "+prefix,x);
+            throw x;
+        }
     }
     
 }

@@ -21,7 +21,6 @@ import de.schlund.pfixcore.generator.annotation.Caster;
 import de.schlund.pfixcore.generator.annotation.PostCheck;
 import de.schlund.pfixcore.generator.annotation.PreCheck;
 import de.schlund.pfixcore.generator.annotation.Property;
-import de.schlund.pfixxml.config.IWrapperConfig;
 import de.schlund.pfixxml.util.Xml;
 import de.schlund.pfixxml.util.XsltVersion;
 
@@ -34,8 +33,7 @@ public class IWrapperInfo {
     private static DocumentBuilderFactory  docBuilderFactory = DocumentBuilderFactory.newInstance();
     private static Map<Class<?>, Document> docCache          = new HashMap<Class<?>, Document>();
 
-    public static Document getDocument(IWrapperConfig iwrpConfig, XsltVersion xsltVersion) {
-        Class<?> iwrpClass = iwrpConfig.getWrapperClass();
+    public static Document getDocument(Class<? extends IWrapper> iwrpClass, XsltVersion xsltVersion) {
         synchronized (iwrpClass) {
             Document iwrpDoc = null;
             synchronized (docCache) {
@@ -48,7 +46,7 @@ public class IWrapperInfo {
                     Element root = doc.createElement("iwrapper");
                     root.setAttribute("class", iwrpClass.getName());
                     doc.appendChild(root);
-                    IWrapper iw = (IWrapper) iwrpClass.newInstance();
+                    IWrapper iw = iwrpClass.newInstance();
                     iw.init("dummy");
                     IWrapperParamDefinition[] defs = iw.gimmeAllParamDefinitions();
                     for (IWrapperParamDefinition def : defs) {
