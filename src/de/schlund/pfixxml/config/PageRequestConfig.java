@@ -21,8 +21,6 @@ package de.schlund.pfixxml.config;
 import java.util.Map;
 import java.util.Properties;
 
-import de.schlund.pfixcore.generator.IWrapper;
-
 /**
  * Provides configuration for a specific page.  
  * 
@@ -115,7 +113,7 @@ public interface PageRequestConfig {
      * 
      * @return map containinge prefix to authwrapper mappings
      */
-    Map<String, Class<? extends IWrapper>> getAuxWrappers();
+    Map<String, Class<?>> getAuxWrappers();
 
     /**
      * Returns context resources defined for this page. The map has the form
@@ -149,6 +147,6 @@ public interface PageRequestConfig {
      * @return class of the auth wrapper or <code>null</code> if this
      * is not an auth page
      */
-    Class<? extends IWrapper> getAuthWrapperClass();
+    Class<?> getAuthWrapperClass();
     
 }

@@ -24,7 +24,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Properties;
 
-import de.schlund.pfixcore.generator.IWrapper;
 import de.schlund.pfixxml.config.PageRequestConfig;
 
 /**
@@ -44,7 +43,7 @@ public class PageRequestConfigImpl implements SSLOption, Cloneable, PageRequestC
     private Class finalizer = null;
     private String authPrefix = null;
     private Class authClass = null;
-    private LinkedHashMap<String, Class<? extends IWrapper>> auxwrappers = new LinkedHashMap<String, Class<? extends IWrapper>>();
+    private LinkedHashMap<String, Class<?>> auxwrappers = new LinkedHashMap<String, Class<?>>();
     private LinkedHashMap<String, IWrapperConfigImpl> iwrappers = new LinkedHashMap<String, IWrapperConfigImpl>();
     private LinkedHashMap<String, Class> resources = new LinkedHashMap<String, Class>();
     private Properties props = new Properties();
@@ -159,7 +158,7 @@ public class PageRequestConfigImpl implements SSLOption, Cloneable, PageRequestC
     /* (non-Javadoc)
      * @see de.schlund.pfixxml.config.PageRequestConfig#getAuxWrappers()
      */
-    public Map<String, Class<? extends IWrapper>> getAuxWrappers() {
+    public Map<String, Class<?>> getAuxWrappers() {
         return this.auxwrappers;
     }
     

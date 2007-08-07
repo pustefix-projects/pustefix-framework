@@ -18,8 +18,6 @@
 
 package de.schlund.pfixxml.config;
 
-import de.schlund.pfixcore.generator.IWrapper;
-
 
 /**
  * Provides configuration for {@link de.schlund.pfixcore.generator.IWrapper} instances.
@@ -41,7 +39,7 @@ public interface IWrapperConfig {
      * 
      * @return wrapper class
      */
-    Class<? extends IWrapper> getWrapperClass();
+    Class<?> getWrapperClass();
 
     /**
      * Specifies whether the next page in the current pageflow should be triggered

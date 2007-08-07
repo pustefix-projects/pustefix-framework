@@ -92,12 +92,12 @@ public class TransformerCallback {
                 Class<? extends IWrapper> iwrpClass=null;
                 IWrapperConfig iwrpConfig = iwrappers.get(prefix);
                 if (iwrpConfig != null) {
-                    iwrpClass=iwrpConfig.getWrapperClass();
+                    iwrpClass=(Class<? extends IWrapper>)iwrpConfig.getWrapperClass();
                 } else if(pageConfig.getAuthWrapperPrefix()!=null && pageConfig.getAuthWrapperPrefix().equals(prefix)) {
-                    iwrpClass=pageConfig.getAuthWrapperClass();
+                    iwrpClass=(Class<? extends IWrapper>)pageConfig.getAuthWrapperClass();
                 } else {
-                    Map<String,Class<? extends IWrapper>> auxWrappers=pageConfig.getAuxWrappers();
-                    iwrpClass=auxWrappers.get(prefix);
+                    Map<String,Class<?>> auxWrappers=pageConfig.getAuxWrappers();
+                    iwrpClass=(Class<? extends IWrapper>)auxWrappers.get(prefix);
                 }
                 if(iwrpClass!=null) return IWrapperInfo.getDocument(iwrpClass, xsltVersion);
             }
