@@ -349,13 +349,6 @@ or delete the DOCTYPE definition -->
      description="Creates dependencies in ${dir.projects}/.cache"
      />
     <taskdef
-      name="pfx-webservice"
-      classname="de.schlund.pfixcore.webservice.generate.WebServiceTask"
-      classpathref="cp.classpath"
-      loaderref="pfx-loader"
-      description="Generates/deploys WSDL, WSDD and JS stubs from web service interfaces/configuration"
-    />
-    <taskdef
      name="pfx-passthroughcopy"
      classname="de.schlund.pfixcore.util.WebappCopyPassthroughHtdocsTask"
      classpathref="cp.classpath"
@@ -387,6 +380,15 @@ or delete the DOCTYPE definition -->
       classpathref="cp.classpath"
       loaderref="pfx-loader"
       description="Pustefix APT task"
+    />
+  </target>
+
+  <target name="ant-tasks-webservice">
+    <taskdef
+      name="pfx-webservice"
+      classname="de.schlund.pfixcore.webservice.generate.WebServiceTask"
+      classpathref="cp.classpath"
+      description="Generates/deploys WSDL, WSDD and JS stubs from web service interfaces/configuration"
     />
   </target>
 
@@ -893,7 +895,7 @@ or delete the DOCTYPE definition -->
     />
   </target>
 
-  <target name="webservice" depends="ant-tasks">
+  <target name="webservice" depends="ant-tasks-webservice">
     <pfx-webservice
       fqdn="${fqdn}" 
       tmpdir="${dir.projects}/.webservice"
