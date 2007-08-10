@@ -1,3 +1,13 @@
+2007-08-10  Martin Leidig  <mleidig@schlund.de>
+
+	* skel/build-skel.xml: Moved the webservice ant task definition into its
+	own target and made the webservice target depending on it. Thus the webservice
+	task is loaded by its own classloader and not the one that is used by the other 
+	tasks. This ensure that at instantiation time all necessary libraries are
+	available to the classloader, even libraries which only become available later
+	during the build process, after the common ant task loader has already been
+	instantiated to load the ant tasks.
+
 2007-08-07  Martin Leidig  <mleidig@schlund.de>
 
 	Added missing IWrapper runtime information for auth- and aux-wrappers.
