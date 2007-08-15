@@ -33,6 +33,7 @@ public class AptTask extends MatchingTask {
         	log("Processing "+modList.length+" source file"+(modList.length>1?"s":""));
 	        Commandline cmd=new Commandline();
 	        cmd.setExecutable("apt");
+	        cmd.createArgument().setValue("-J-Xmx512m");
 	        cmd.createArgument().setValue("-classpath");
 	        classPath.addExisting(classPath.concatSystemClasspath());
 	        cmd.createArgument().setPath(classPath);
