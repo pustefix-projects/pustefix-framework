@@ -1311,6 +1311,6 @@ SOAP_Stub.prototype._extractCallback=function(call,args,expLen) {
 
 SOAP_Stub.prototype._setURL=function(url) {
   this._url=url.replace(/(https?:\/\/)([^\/]+)(.*)/,window.location.protocol+"//"+window.location.host+"$3");
-  var session=window.location.href.replace(/.*(;jsessionid=[A-Z0-9]+\.[a-zA-Z0-9]+)(\?.*)?$/,"$1");
+  var session=window.location.href.match(/;jsessionid=[A-Z0-9]+\.[a-zA-Z0-9]+/);
   this._url+=session;
 }
