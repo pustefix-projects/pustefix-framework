@@ -1,3 +1,25 @@
+2007-08-22  Martin Leidig  <mleidig@schlund.de>
+
+	Send webservice authentication error responses in the requested webservice
+	protocol instead of simple 500 errors with a text message. Therefore every
+	ServiceProcessor has to implement the new method processException. This
+	method should write a response containing the passed Exception in the
+	according webservice protocol. Besides authentication errors now throw
+	a typed Exception, AuthenticationException, which derives the formerly
+	used ServiceException.
+
+	Added:
+	* src/de/schlund/pfixcore/webservice/AuthenticationException.java
+
+	Modified:
+	* src/de/schlund/pfixcore/webservice/ServiceProcessor.java
+	* src/de/schlund/pfixcore/webservice/ServiceRuntime.java
+	* src/de/schlund/pfixcore/webservice/jsonqx/JSONQXProcessor.java
+	* src/de/schlund/pfixcore/webservice/jsonws/JSONWSProcessor.java
+	* src/de/schlund/pfixcore/webservice/WebServiceServlet.java
+	* src/de/schlund/pfixcore/webservice/ServiceException.java
+	* projects/core/script/xmlRequest.js
+
 2007-08-17  Martin Leidig  <mleidig@schlund.de>
 
 	* projects/core/script/webservice.js: Fixed bug: extracted wrong session id 
