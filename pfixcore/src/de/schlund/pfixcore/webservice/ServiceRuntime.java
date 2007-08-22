@@ -41,7 +41,6 @@ import de.schlund.pfixcore.webservice.utils.RecordingRequestWrapper;
 import de.schlund.pfixcore.webservice.utils.RecordingResponseWrapper;
 import de.schlund.pfixcore.workflow.ContextImpl;
 import de.schlund.pfixcore.workflow.context.ServerContextImpl;
-import de.schlund.pfixxml.ContextXMLServlet;
 import de.schlund.pfixxml.ServerContextStore;
 import de.schlund.pfixxml.SessionContextStore;
 import de.schlund.pfixxml.serverutil.SessionAdmin;
@@ -110,10 +109,13 @@ public class ServiceRuntime {
     }
 	
     public void process(HttpServletRequest req,HttpServletResponse res) throws ServiceException {
-        ContextImpl pfxSessionContext=null; 
-        try {	
-            ServiceRequest serviceReq=new HttpServiceRequest(req);
-            ServiceResponse serviceRes=new HttpServiceResponse(res);
+        
+        ContextImpl pfxSessionContext=null;
+        String wsType=null;
+        ServiceRequest serviceReq=new HttpServiceRequest(req);
+        ServiceResponse serviceRes=new HttpServiceResponse(res);
+        
+        try {	   
             
             ServiceCallContext callContext=new ServiceCallContext(this);
             callContext.setServiceRequest(serviceReq);
@@ -122,6 +124,10 @@ public class ServiceRuntime {
             
             String serviceName=serviceReq.getServiceName();
 			
+            wsType=req.getHeader(Constants.HEADER_WSTYPE);
+            if(wsType==null) wsType=req.getParameter(Constants.PARAM_WSTYPE);
+            if(wsType!=null) wsType=wsType.toUpperCase();
+            
             HttpSession session=req.getSession(false);
             
             ServiceRegistry serviceReg=null;
@@ -141,40 +147,38 @@ public class ServiceRuntime {
              
             if(srvConf.getContextName()!=null) {
                 if(srvConf.getSessionType().equals(Constants.SESSION_TYPE_SERVLET)) {
-                    if(session==null) throw new ServiceException("Authentication failed: No valid session.");
+                    if(session==null) throw new AuthenticationException("Authentication failed: No valid session.");
                     if(srvConf.getSSLForce() && !req.getScheme().equals("https")) 
-                        throw new ServiceException("Authentication failed: SSL connection required");
+                        throw new AuthenticationException("Authentication failed: SSL connection required");
                     if(req.getScheme().equals("https")) {
                         Boolean secure=(Boolean)session.getAttribute(SessionAdmin.SESSION_IS_SECURE);
                         if(secure==null || !secure.booleanValue()) 
-                            throw new ServiceException("Authentication failed: No secure session");
+                            throw new AuthenticationException("Authentication failed: No secure session");
                     }
-                    
+                        
                     pfxSessionContext=SessionContextStore.getInstance(session).getContext(srvConf.getContextName());
                     if(pfxSessionContext==null) throw new ServiceException("Context '"+srvConf.getContextName()+"' doesn't exist.");
-                    
+                        
                     ServerContextImpl srvContext=ServerContextStore.getInstance(session.getServletContext()).getContext(srvConf.getContextName());
-                    
+                        
                     try {
                         // Prepare context for current thread.
                         // Cleanup is performed in finally block.
                         pfxSessionContext.setServerContext(srvContext);
                         pfxSessionContext.prepareForRequest();
-                        if(!pfxSessionContext.isAuthorized()) throw new ServiceException("Authorization failed: Must authenticate first!");                                                                                                                                  
+                        if(!pfxSessionContext.isAuthorized()) throw new AuthenticationException("Authorization failed: Must authenticate first!");                                                                                                                                  
                     } catch(Exception x) {
-                        throw new ServiceException("Authorization failed",x);
+                        if(x instanceof AuthenticationException) throw (AuthenticationException)x; 
+                        else throw new AuthenticationException("Authorization failed",x);
                     }
                     callContext.setContext(pfxSessionContext);
                 }
             }
-            
+          
             String protocolType=srvConf.getProtocolType();
             if(protocolType==null) protocolType=getConfiguration().getGlobalServiceConfig().getProtocolType();
             
-            String wsType=req.getHeader(Constants.HEADER_WSTYPE);
-            if(wsType==null) wsType=req.getParameter(Constants.PARAM_WSTYPE);
             if(wsType!=null) {
-                wsType=wsType.toUpperCase();
                 if(!protocolType.equals(Constants.PROTOCOL_TYPE_ANY)&&!wsType.equals(protocolType))
                     throw new ServiceException("Service protocol '"+wsType+"' isn't supported.");
                 else protocolType=wsType;
@@ -196,7 +200,7 @@ public class ServiceRuntime {
             ProcessingInfo procInfo=new ProcessingInfo(serviceName,null);
             procInfo.setStartTime(System.currentTimeMillis());
             procInfo.startProcessing();
-                                                                                                                                                        
+                                                                  
             if(pfxSessionContext!=null&&srvConf.getSynchronizeOnContext()) {
                 synchronized(pfxSessionContext) {
                     processor.process(serviceReq,serviceRes,this,serviceReg,procInfo);
@@ -208,14 +212,14 @@ public class ServiceRuntime {
             procInfo.endProcessing();
             
             if(session!=null) {
-	        StringBuilder line=new StringBuilder();
-		line.append(session.getId()+"|");
-		line.append(req.getRemoteAddr()+"|");
-		line.append(req.getServerName()+"|");
-		line.append(req.getRequestURI()+"|");
-		line.append(serviceName+"|");
-		line.append((procInfo.getMethod()==null?"-":procInfo.getMethod())+"|");
-		line.append(procInfo.getProcessingTime()+"|");
+                StringBuilder line=new StringBuilder();
+                line.append(session.getId()+"|");
+                line.append(req.getRemoteAddr()+"|");
+                line.append(req.getServerName()+"|");
+                line.append(req.getRequestURI()+"|");
+                line.append(serviceName+"|");
+                line.append((procInfo.getMethod()==null?"-":procInfo.getMethod())+"|");
+                line.append(procInfo.getProcessingTime()+"|");
                 line.append((procInfo.getInvocationTime()==-1?"-":procInfo.getInvocationTime()));
                 LOGGER_WSTRAIL.warn(line.toString());
             }
@@ -250,8 +254,11 @@ public class ServiceRuntime {
                     LOG.info(sb.toString());
                 }
             }
-
-            
+        } catch(AuthenticationException x) {
+            if(LOG.isDebugEnabled()) LOG.debug(x);
+            ServiceProcessor processor=processors.get(wsType);
+            if(processor!=null) processor.processException(serviceReq,serviceRes,x);
+            else throw x;
         } finally {
             setCurrentContext(null);
             if (pfxSessionContext != null) {

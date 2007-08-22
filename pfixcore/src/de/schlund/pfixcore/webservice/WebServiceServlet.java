@@ -20,6 +20,7 @@
 package de.schlund.pfixcore.webservice;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.net.URL;
 import java.util.Enumeration;
 
@@ -171,6 +172,31 @@ public class WebServiceServlet extends AxisServlet implements ServiceProcessor {
         	setCurrentRequest(null);
         }
     	
+    }
+    
+    public void processException(ServiceRequest serviceReq, ServiceResponse serviceRes, Exception exception) throws ServiceException {
+        HttpServletResponse res=(HttpServletResponse)serviceRes.getUnderlyingResponse();
+        try {
+            res.setStatus(500);
+            res.setContentType("text/xml");
+            res.setCharacterEncoding("utf-8");
+            PrintWriter out=res.getWriter();
+            out.write("<?xml version=\"1.0\" encoding=\"utf-8\"?>");
+            out.write("<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" ");
+            out.write("xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" ");
+            out.write("xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">");
+            out.write("<soapenv:Body>");
+            out.write("<soapenv:Fault>");
+            out.write("<faultcode>soapenv:Server.userException</faultcode>");
+            out.write("<faultstring>");
+            out.write(exception.getClass().getName()+": "+exception.getMessage());
+            out.write("</faultstring>");
+            out.write("</soapenv:Fault>");
+            out.write("</soapenv:Body>");
+            out.write("</soapenv:Envelope>");
+        } catch(IOException x) {
+            throw new ServiceException("IOException during service exception processing.",x);
+        } 
     }
     
     protected void processAxisFault(AxisFault axisFault) {
