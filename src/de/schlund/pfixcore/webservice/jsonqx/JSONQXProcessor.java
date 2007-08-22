@@ -253,5 +253,24 @@ public class JSONQXProcessor implements ServiceProcessor {
         }
             
     }
+  
+    public void processException(ServiceRequest req, ServiceResponse res, Exception exception) throws ServiceException {
+        try {
+            res.setContentType("text/plain"); 
+            res.setCharacterEncoding("utf-8");
+            Writer writer=res.getMessageWriter();
+            writer.write("{");
+            JSONObject errobj=new JSONObject();
+            errobj.putMember("origin",1);
+            errobj.putMember("code",6);
+            writer.write("\"error\":");
+            writer.write(errobj.toJSONString());   
+            writer.write("}");
+            writer.flush();
+            writer.close();      
+        } catch(IOException x) {
+            throw new ServiceException("IOException during service exception processing.",x);
+        }
+    }
     
 }

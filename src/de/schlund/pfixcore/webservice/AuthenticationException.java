@@ -16,19 +16,20 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
+
 package de.schlund.pfixcore.webservice;
 
 /**
  * @author mleidig@schlund.de
  */
-public class ServiceException extends Exception {
+public class AuthenticationException extends ServiceException {
 
-	public ServiceException(String msg) {
-		super(msg);
-	}
-	
-	public ServiceException(String msg,Throwable cause) {
-		super(msg,cause);
-	}
-	
+    public AuthenticationException(String message) {
+        super(message);
+    }
+    
+    public AuthenticationException(String message,Throwable cause) {
+        super(message,cause);
+    }
+    
 }

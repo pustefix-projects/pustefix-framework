@@ -234,6 +234,25 @@ public class JSONWSProcessor implements ServiceProcessor {
         }
     }
 
+    public void processException(ServiceRequest req, ServiceResponse res, Exception exception) throws ServiceException {
+        try {
+            res.setContentType("text/plain");
+            res.setCharacterEncoding("utf-8");
+            Writer writer=res.getMessageWriter();
+            writer.write("{");
+            JSONObject errobj=new JSONObject();
+            errobj.putMember("name",exception.getClass().getName());
+            errobj.putMember("message",exception.getMessage());
+            writer.write("\"error\":");
+            writer.write(errobj.toJSONString());   
+            writer.write("}");
+            writer.flush();
+            writer.close();
+        } catch(IOException x) {
+            throw new ServiceException("IOException during service exception processing.",x);
+        }
+    }
+    
     private JSONObject listMethods(ServiceConfig service,ServiceRuntime runtime,ServiceRegistry srvReg) throws ServiceException {
         JSONArray meths=new JSONArray();
         ServiceDescriptor desc=runtime.getServiceDescriptorCache().getServiceDescriptor(service);

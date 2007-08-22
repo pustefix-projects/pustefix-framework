@@ -25,5 +25,6 @@ package de.schlund.pfixcore.webservice;
 public interface ServiceProcessor {
 
 	public void process(ServiceRequest req,ServiceResponse res,ServiceRuntime runtime,ServiceRegistry registry,ProcessingInfo procInfo) throws ServiceException;
-    
+    public void processException(ServiceRequest req,ServiceResponse res,Exception exception) throws ServiceException;
+	
 }

@@ -60,7 +60,7 @@ XML_Request.IFRAMES_ONLY     =  1;
 XML_Request.prototype.iframes  = XML_Request.IFRAMES_FALLBACK;
 
 // set headers required for SOAP (Axis)
-XML_Request.prototype.headers = [ [ 'SOAPAction', '""'] ];
+XML_Request.prototype.headers = [ [ 'SOAPAction', '""'], [ 'wstype', 'soap' ] ];
 
 //--------
 // Mshtml
@@ -314,6 +314,12 @@ XML_Request.prototype.start = function( content, reqId ) {
             elField.value = "1";
             elForm.appendChild(elField);
           }
+       
+          elField = document.createElement("input");
+          elField.type = "hidden";
+          elField.name = "wstype";
+          elField.value = "soap";
+          elForm.appendChild(elField);
 
           el.appendChild(elForm);
           document.body.appendChild(el);
