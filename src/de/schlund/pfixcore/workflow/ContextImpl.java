@@ -438,7 +438,7 @@ public class ContextImpl implements Context, AccessibilityChecker, ExtendedConte
     }
     
     public boolean isAuthorized() throws Exception {
-        return (this.getRequestContextForCurrentThreadWithError().checkAuthorization(false) == null);
+        return (this.getRequestContextForCurrentThreadWithError().checkAuthorization(false, false) == null);
     }
     
     public void prepareForRequest() {

@@ -797,6 +797,14 @@ public class RequestContextImpl implements Cloneable {
     }
 
     public SPDocument checkAuthorization(boolean forceauth) throws PustefixApplicationException, PustefixCoreException {
+        return checkAuthorization(forceauth, true);
+    }
+    
+    public SPDocument checkAuthorization(boolean forceauth, boolean needDocument) throws PustefixApplicationException, PustefixCoreException {
+        // The needDocument flag is a hack that should only be used internally:
+        // It is needed, when this method is called only to see, whether
+        // the context is authenticated, but the creation of SPDocument
+        // for the login page would lead to an exception being thrown.
         if (authpage != null) {
             ResultDocument resdoc = null;
             LOG.debug("===> [" + authpage + "]: Checking authorisation");
@@ -808,6 +816,11 @@ public class RequestContextImpl implements Cloneable {
             }
             PageRequest saved = currentpagerequest;
             if (checkNeedsData(authpage, PageRequestStatus.AUTH) || forceauth) {
+                if (!needDocument) {
+                    // Return an empty SPDocument that is just used to
+                    // signal the context is not authenticated yet.
+                    return new SPDocument();
+                }
                 LOG.debug("===> [" + authpage + "]: Need authorisation data");
                 currentpagerequest = authpage;
                 resdoc = documentFromCurrentStep();
