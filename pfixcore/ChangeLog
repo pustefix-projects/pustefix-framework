@@ -1,5 +1,11 @@
 2007-09-06  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
+	* src/de/schlund/pfixxml/AbstractXMLServlet.java: 
+	* src/de/schlund/pfixxml/SessionCleaner.java: 
+	* projects/core/xsl/master.xsl: 
+	Register frames for SPDocument reuse and delete the SPDocument after
+	all frames have been rendered.
+
 	* src/de/schlund/pfixcore/workflow/context/RequestContextImpl.java: 
 	* src/de/schlund/pfixcore/workflow/ContextImpl.java: 
 	Fixed an exception occurring when the Context#isAuthorized() method was 
