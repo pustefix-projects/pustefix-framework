@@ -94,7 +94,8 @@
                      xmlns:url="xalan://java.net.URLEncoder"
                      xmlns:deref="xalan://de.schlund.pfixxml.DerefServlet"
                      xmlns:callback="xalan://de.schlund.pfixcore.util.TransformerCallback"
-                     exclude-result-prefixes="pfx cus xsl url deref callback func">
+                     xmlns:rfh="java:de.schlund.pfixxml.AbstractXMLServlet$RegisterFrameHelper" 
+                     exclude-result-prefixes="pfx cus xsl url deref callback func rfh">
 
       <ixsl:import href="core/xsl/default_copy.xsl"/>
       <ixsl:import href="core/xsl/include.xsl"/>
@@ -123,9 +124,10 @@
       <ixsl:param name="__navitree"/>
       <ixsl:param name="navitree" select="$__navitree"/>
       
-      <!-- The next two parameters are opaque Java objects. Use them only to pass them to extension functions! -->
+      <!-- The next three parameters are opaque Java objects. Use them only to pass them to extension functions! -->
       <ixsl:param name="__context__"/>
       <ixsl:param name="__spdoc__"/>
+      <ixsl:param name="__register_frame_helper__"/>
       
       <!-- these parameters will always be passed in by the servlet -->
       <!-- e.g. /xml/static/FOOBAR;jsessionid=1E668C65F42697962A31177EB5319D8B.foo -->
@@ -254,6 +256,8 @@
             <ixsl:choose>
               <ixsl:when test="$__frame = '_top'"> 
                 <html>
+                  <!-- Unregister SPDocument for top frame -->
+                  <ixsl:value-of select="rfh:unregisterFrame($__register_frame_helper__, '_top')"/>
                   <xsl:apply-templates select="/pfx:document/node()"/>
                 </html>
               </ixsl:when>
@@ -261,11 +265,15 @@
                 <xsl:choose>
                   <xsl:when test="not(./pfx:frameset)">
                     <ixsl:when test="$__frame = '{./@name}'">
+                      <!-- Unregister SPDocument for this frame -->
+                      <ixsl:value-of select="rfh:unregisterFrame($__register_frame_helper__, $__frame)"/>
                       <xsl:apply-templates select="./node()"/>
                     </ixsl:when>
                   </xsl:when>
                   <xsl:otherwise>
                     <ixsl:when test="$__frame = '{./@name}'">
+                      <!-- Unregister SPDocument for this frame -->
+                      <ixsl:value-of select="rfh:unregisterFrame($__register_frame_helper__, $__frame)"/>
                       <html>
                         <head/>
 						<xsl:apply-templates select="./pfx:frameset"/>
@@ -278,6 +286,8 @@
           </xsl:when>
           <xsl:otherwise> <!-- no frames defined! -->
             <ixsl:value-of select="callback:setNoStore($__spdoc__)"/>
+            <!-- Unregister SPDocument for top frame -->
+            <ixsl:value-of select="rfh:unregisterFrame($__register_frame_helper__, '_top')"/>
             <xsl:apply-templates select="/pfx:document/node()"/>
           </xsl:otherwise>
         </xsl:choose>
@@ -311,6 +321,8 @@
   </xsl:template>
   
   <xsl:template match="pfx:frame">
+    <!-- Register SPDocument for this frame -->
+    <ixsl:value-of select="rfh:registerFrame($__register_frame_helper__, '{@name}')"/>
     <frame scrolling="auto" marginwidth="1" marginheight="1">
       <xsl:copy-of select="./@*[name()!='noresize']"/>
       <xsl:if test="@noresize!='false'">
@@ -329,7 +341,7 @@
         </xsl:when>
         <xsl:otherwise>
           <ixsl:attribute name="src">
-            <ixsl:value-of select="$__uri"/>?__frame=<xsl:value-of select="@name"/>&amp;__reuse=<ixsl:value-of select="$__reusestamp"/>
+            <ixsl:value-of select="$__uri"/>?__frame=<xsl:value-of select="@name"/>&amp;__reuse=<ixsl:value-of select="$__reusestamp"/>.<ixsl:text><xsl:value-of select="@name"/></ixsl:text>
             <ixsl:if test="/formresult/frameanchor[@frame = '{@name}']">#<ixsl:value-of select="/formresult/frameanchor[@frame = '{@name}']/@anchor"/></ixsl:if>
           </ixsl:attribute>
         </xsl:otherwise>

@@ -805,6 +805,7 @@ public abstract class AbstractXMLServlet extends ServletManager {
         String session_to_link_from_external = SessionAdmin.getInstance().getExternalSessionId(session);
         paramhash.put("__external_session_ref", session_to_link_from_external);
         paramhash.put("__spdoc__", spdoc);
+        paramhash.put("__register_frame_helper__", new RegisterFrameHelper((Map) session.getAttribute(servletname + SUFFIX_SAVEDDOM), spdoc));
         return paramhash;
     }
     
@@ -938,6 +939,31 @@ public abstract class AbstractXMLServlet extends ServletManager {
      */
     protected void hookAfterRender(PfixServletRequest preq, SPDocument spdoc, TreeMap paramhash, String stylesheet) {
         // Empty in default implementation
+    }
+    
+    public class RegisterFrameHelper {
+        private Map storeddoms;
+        private SPDocument spdoc;
+
+        private RegisterFrameHelper(Map storeddoms, SPDocument spdoc) {
+            this.storeddoms = storeddoms;
+            this.spdoc = spdoc;
+        }
+        
+        public void registerFrame(String frameName) {
+            SessionCleaner.getInstance().storeSPDocument(spdoc, frameName, storeddoms, scleanertimeout);
+        }
+        
+        public void unregisterFrame(String frameName) {
+            String reuseKey = spdoc.getTimestamp() + "";
+            if (frameName.equals("_top")) {
+                frameName = null;
+            }
+            if (frameName != null && frameName.length() > 0) {
+                reuseKey += "." + frameName;
+            }
+            storeddoms.remove(reuseKey);
+        }
     }
 
 }
