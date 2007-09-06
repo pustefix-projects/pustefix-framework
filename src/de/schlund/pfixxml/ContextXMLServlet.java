@@ -66,6 +66,9 @@ public class ContextXMLServlet extends AbstractXMLServlet {
 
     private ServerContextImpl servercontext = null;
 
+    private Object reloadInitLock=new Object();
+    private boolean reloadInitDone;
+    
     protected ContextXMLServletConfig getContextXMLServletConfig() {
         return this.config;
     }
@@ -98,6 +101,19 @@ public class ContextXMLServlet extends AbstractXMLServlet {
     }
 
     protected boolean tryReloadProperties(PfixServletRequest preq) throws ServletException {
+        //synchronize first method call because of a race condition, which 
+        //can lead to a NullPointerException (servercontext being null)
+        synchronized(reloadInitLock) {
+            if(!reloadInitDone) {
+                boolean result=nosyncTryReloadProperties(preq);
+                reloadInitDone=true;
+                return result;
+            }
+        }
+        return nosyncTryReloadProperties(preq);
+    }
+    
+    private boolean nosyncTryReloadProperties(PfixServletRequest preq) throws ServletException {
         if (super.tryReloadProperties(preq)) {
             try {
                 servercontext = new ServerContextImpl(getContextXMLServletConfig().getContextConfig(), servletname);
