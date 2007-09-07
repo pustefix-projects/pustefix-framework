@@ -170,10 +170,9 @@
           </xsl:choose>
         </xsl:when>
         <xsl:otherwise>
-        <!--
           <xsl:if test="ancestor-or-self::pfx:frame[position()=1]/@name">
             <xsl:value-of select="ancestor-or-self::pfx:frame[position()=1]/@name"/>
-          </xsl:if>-->
+          </xsl:if>
         </xsl:otherwise>
       </xsl:choose>
     </xsl:variable>
