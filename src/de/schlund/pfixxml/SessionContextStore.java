@@ -20,8 +20,8 @@ package de.schlund.pfixxml;
 
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.http.HttpSession;
 
@@ -125,8 +125,8 @@ public class SessionContextStore {
         }
     }
     
-    public Iterator<String> getServletNames() {
-        return Collections.unmodifiableSet(servletMap.keySet()).iterator();
+    public Set<String> getServletNames() {
+        return Collections.unmodifiableSet(servletMap.keySet());
     }
     
 }
