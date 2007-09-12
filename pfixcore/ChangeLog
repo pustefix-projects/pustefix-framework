@@ -1,3 +1,21 @@
+2007-09-12  Martin Leidig  <mleidig@schlund.de>
+
+	Improved extension function exception handling: Due to an 
+	unfortunate implementation of Saxon's FunctionProxy only 
+	the exception message and no stacktrace or cause of an error, 
+	occurred within an extension function, is available in the 
+	resulting TransformerException. Using the ExtensionFunctionUtils
+	class an extension function can catch its exceptions and store 
+	it threadlocally calling the method setExtensionFunctionError. 
+	Later, during exception handling, the  exception can be retrieved 
+	calling getExtensionFunctionError(). This mechanism is used by
+	TransformerCallback and Xslt to subsequently add the extension 
+	function exception to the TransformerException.
+
+	* de/schlund/pfixxml/util/ExtensionFunctionUtils.java
+	* de/schlund/pfixcore/util/TransformerCallback.java
+	* de/schlund/pfixxml/util/Xslt.java
+
 2007-09-10  Martin Leidig  <mleidig@schlund.de>
 
 	* src/de/schlund/pfixxml/SessionContextStore.java: added method
