@@ -13,6 +13,7 @@ import de.schlund.pfixcore.workflow.context.RequestContextImpl;
 import de.schlund.pfixxml.SPDocument;
 import de.schlund.pfixxml.config.IWrapperConfig;
 import de.schlund.pfixxml.config.PageRequestConfig;
+import de.schlund.pfixxml.util.ExtensionFunctionUtils;
 import de.schlund.pfixxml.util.Xml;
 import de.schlund.pfixxml.util.XsltVersion;
 
@@ -34,52 +35,67 @@ public class TransformerCallback {
     }
 
     public static int isAccessible(RequestContextImpl requestcontext, String pagename) throws Exception {
-        ContextImpl context = requestcontext.getParentContext();
-        if (context.getContextConfig().getPageRequestConfig(pagename) != null) {
-            AccessibilityChecker check = (AccessibilityChecker) context;
-            boolean retval;
-            if (context.getContextConfig().isSynchronized()) {
-                synchronized (context) {
+        try {
+            ContextImpl context = requestcontext.getParentContext();
+            if (context.getContextConfig().getPageRequestConfig(pagename) != null) {
+                AccessibilityChecker check = (AccessibilityChecker) context;
+                boolean retval;
+                if (context.getContextConfig().isSynchronized()) {
+                    synchronized (context) {
+                        retval = check.isPageAccessible(pagename);
+                    }
+                } else {
                     retval = check.isPageAccessible(pagename);
                 }
-            } else {
-                retval = check.isPageAccessible(pagename);
+                if (retval) {
+                    return 1;
+                } else {
+                    return 0;
+                }
             }
-            if (retval) {
-                return 1;
-            } else {
-                return 0;
-            }
+            return -1;
+        } catch(Exception x) {
+            ExtensionFunctionUtils.setExtensionFunctionError(x);
+            throw x;
         }
-        return -1;
     }
 
     public static int isVisited(RequestContextImpl requestcontext, String pagename) throws Exception {
-        ContextImpl context = requestcontext.getParentContext();
-        if (context.getContextConfig().getPageRequestConfig(pagename) != null) {
-            AccessibilityChecker check = (AccessibilityChecker) context;
-            boolean retval;
-            if (context.getContextConfig().isSynchronized()) {
-                synchronized (context) {
+        try {
+            ContextImpl context = requestcontext.getParentContext();
+            if (context.getContextConfig().getPageRequestConfig(pagename) != null) {
+                AccessibilityChecker check = (AccessibilityChecker) context;
+                boolean retval;
+                if (context.getContextConfig().isSynchronized()) {
+                    synchronized (context) {
+                        retval = check.isPageAlreadyVisited(pagename);
+                    }
+                } else {
                     retval = check.isPageAlreadyVisited(pagename);
                 }
-            } else {
-                retval = check.isPageAlreadyVisited(pagename);
+                if (retval) {
+                    return 1;
+                } else {
+                    return 0;
+                }
             }
-            if (retval) {
-                return 1;
-            } else {
-                return 0;
-            }
+            return -1;
+        } catch(Exception x) {
+            ExtensionFunctionUtils.setExtensionFunctionError(x);
+            throw x;
         }
-        return -1;
     }
     
     public static String getToken(RequestContextImpl requestContext, String tokenName) throws Exception {
-        tokenName = tokenName.trim();
-        if (tokenName.contains(":")) throw new IllegalArgumentException("Illegal token name: " + tokenName);
-        String token = requestContext.getParentContext().getToken(tokenName);
-        return token;
+        try {
+            tokenName = tokenName.trim();
+            if (tokenName.contains(":")) throw new IllegalArgumentException("Illegal token name: " + tokenName);
+            String token = requestContext.getParentContext().getToken(tokenName);
+            return token;
+        } catch(Exception x) {
+            ExtensionFunctionUtils.setExtensionFunctionError(x);
+            throw x;
+        }
     }
     
     public static Node getIWrapperInfo(RequestContextImpl requestContext, Node docNode, String pageName, String prefix) {
@@ -103,7 +119,7 @@ public class TransformerCallback {
             }
             return null;
         } catch(RuntimeException x) {
-            LOG.error("Error while getting IWrapperInfo: "+pageName+" "+prefix,x);
+            ExtensionFunctionUtils.setExtensionFunctionError(x);
             throw x;
         }
     }
