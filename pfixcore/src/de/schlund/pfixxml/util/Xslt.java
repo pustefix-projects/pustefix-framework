@@ -40,7 +40,6 @@ import javax.xml.transform.stream.StreamSource;
 
 import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
-import org.w3c.dom.Node;
 import org.xml.sax.InputSource;
 
 import de.schlund.pfixxml.resources.FileResource;
@@ -132,7 +131,17 @@ public class Xslt {
         }
         if (LOG.isDebugEnabled())
             start = System.currentTimeMillis();
-        trafo.transform(new DOMSource(Xml.parse(xsltVersion,xml)), result);
+        try {
+            ExtensionFunctionUtils.setExtensionFunctionError(null);
+            trafo.transform(new DOMSource(Xml.parse(xsltVersion,xml)), result);
+        } catch(TransformerException x) {
+            Throwable t=ExtensionFunctionUtils.getExtensionFunctionError();
+            if(t!=null) {
+                ExtensionFunctionUtils.setExtensionFunctionError(null);
+                throw new TransformerException(x.getMessage(),x.getLocator(),t);
+            }
+            throw x;
+        }
         if (LOG.isDebugEnabled()) {
             long stop = System.currentTimeMillis();
             LOG.debug("      ===========> Transforming and serializing took " + (stop - start) + " ms.");
