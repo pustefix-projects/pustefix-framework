@@ -69,10 +69,12 @@ function equals(obj1,obj2) {
 	if(type1=="string" || type1=="number" || type1=="boolean" || type1=="undefined" || type1=="null") {
 		return obj1==obj2;
 	}
-	if((obj1 instanceof Array) && (obj2 instanceof Array)) {
+	if((obj1 instanceof Array) || (obj2 instanceof Array)) {
+      if(!((obj1 instanceof Array) && (obj2 instanceof Array))) return false;
 		return arrayEquals(obj1,obj2);
 	}
-	if((obj1 instanceof Date) && (obj2 instanceof Date)) {
+	if((obj1 instanceof Date) || (obj2 instanceof Date)) {
+      if(!((obj1 instanceof Date) && (obj2 instanceof Date))) return false;
 		return obj1.toGMTString()==obj2.toGMTString(); 
 	}
 	return beanEquals(obj1,obj2);
