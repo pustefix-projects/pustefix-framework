@@ -1,3 +1,8 @@
+2007-09-18  Martin Leidig  <mleidig@schlund.de>
+
+	* projects/core/script/webservice.js: support Null values for 
+	Date and Calendar objects (bugfix)
+
 2007-09-12  Martin Leidig  <mleidig@schlund.de>
 
 	Improved extension function exception handling: Due to an 
