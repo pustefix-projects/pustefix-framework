@@ -578,12 +578,16 @@ SOAP_DateTimeSerializer.prototype.parseDate=function(dateStr) {
   return date;
 }
 SOAP_DateTimeSerializer.prototype.serialize=function(value,name,typeInfo,writer,ctx) {
-  if(!(value instanceof Date)) throw new SOAP_SerializeEx("Illegal type: "+(typeof value),"SOAP_DateTimeSerializer.serialize");
-  var date=value.getUTCFullYear()+"-"+this.fillNulls(value.getUTCMonth()+1,2)+"-"+
+  if(value!=null && !(value instanceof Date)) throw new SOAP_SerializeEx("Illegal type: "+(typeof value),"SOAP_DateTimeSerializer.serialize");
+  if(value==null) {
+    this.superclass.serialize(value,name,typeInfo,writer,ctx);
+  } else {
+    var date=value.getUTCFullYear()+"-"+this.fillNulls(value.getUTCMonth()+1,2)+"-"+
     this.fillNulls(value.getUTCDate(),2)+"T"+this.fillNulls(value.getUTCHours(),2)+":"+
     this.fillNulls(value.getUTCMinutes(),2)+":"+this.fillNulls(value.getUTCSeconds(),2)+"."+
     this.fillNulls(value.getUTCMilliseconds(),3)+"Z";
-  this.superclass.serialize(date,name,typeInfo,writer,ctx);
+    this.superclass.serialize(date,name,typeInfo,writer,ctx);
+  }
 }
 SOAP_DateTimeSerializer.prototype.deserialize=function(typeInfo,element) {
   return this.parseDate(this.superclass.deserialize.call(this,typeInfo,element));
