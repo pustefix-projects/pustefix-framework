@@ -559,6 +559,7 @@ SOAP_DateTimeSerializer.prototype.fillNulls=function(value,length) {
   return filler+value;
 }
 SOAP_DateTimeSerializer.prototype.parseDate=function(dateStr) {
+  if(!dateStr) return null;
   var date=new Date();
   var year=dateStr.substr(0,4);
   date.setUTCFullYear(year);
@@ -585,8 +586,6 @@ SOAP_DateTimeSerializer.prototype.serialize=function(value,name,typeInfo,writer,
   this.superclass.serialize(date,name,typeInfo,writer,ctx);
 }
 SOAP_DateTimeSerializer.prototype.deserialize=function(typeInfo,element) {
-  //if ( element.getAttributeNS(XML_NS_XSI, 'nil') == 'true' ) return null;
-  //else 
   return this.parseDate(this.superclass.deserialize.call(this,typeInfo,element));
 }
 
