@@ -432,6 +432,19 @@ function serviceCall() {
          var t2=(new Date()).getTime();
          consolePrint("echoCalendar",(t2-t1),ex);
       }
+      
+      //echoCalendar(null)
+      t1=(new Date()).getTime();
+      try {
+         var dateVal=null;
+         var resVal=ws.echoCalendar(dateVal);
+         var t2=(new Date()).getTime();
+         if(!equals(resVal,dateVal)) throw "Wrong result";
+         consolePrint("echoCalendar(null)",(t2-t1));
+      } catch(ex) {
+         var t2=(new Date()).getTime();
+         consolePrint("echoCalendar(null)",(t2-t1),ex);
+      }
 
       //echoCalendarArray
       t1=(new Date()).getTime();
@@ -477,6 +490,25 @@ function serviceCall() {
 			var t2=(new Date()).getTime();
    		consolePrint("echoDataBean",(t2-t1),ex);
    	}	
+   
+      //echoDataBean(Null-properties)
+      t1=(new Date()).getTime();
+      try {
+         var bean=new Object();
+         bean["date"]=null;
+         bean["floatVals"]=new Array(1.2,2.1);
+         bean["intVal"]=2;
+         bean["name"]=null;
+         bean["children"]=new Array();
+         bean["boolVal"]=true;
+         var resBean=ws.echoDataBean(bean);
+         var t2=(new Date()).getTime();
+         if(!equals(resBean,bean)) throw "Wrong result";
+         consolePrint("echoDataBean(Null-properties)",(t2-t1));
+      } catch(ex) {
+         var t2=(new Date()).getTime();
+         consolePrint("echoDataBean(Null-properties)",(t2-t1),ex);
+      }  
    
    	//echoDataBeanArray
 		t1=(new Date()).getTime();

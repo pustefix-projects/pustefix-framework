@@ -678,7 +678,7 @@ SOAP_BeanSerializer.prototype.serialize=function(value,name,typeInfo,writer,ctx)
     var propInfo=typeInfo.propToInfo[propName];
     var serializer=SOAP_TypeMapping.getSerializerByInfo(propInfo);
     var propVal=value[propName];
-    if(propVal==undefined) throw new SOAP_SerializeEx("Missing bean property: "+propName,"SOAP_BeanSerializer.serialize");
+    if(!propVal && typeof propVal=='undefined') throw new SOAP_SerializeEx("Missing bean property: "+propName,"SOAP_BeanSerializer.serialize");
     serializer.serialize(propVal,propName,propInfo,writer,ctx);
   }
   writer.endElement(name);
