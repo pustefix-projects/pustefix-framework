@@ -1,3 +1,8 @@
+2007-09-19  Martin Leidig  <mleidig@schlund.de>
+
+	* projects/core/script/webservice.js: allow Null values for
+	bean properties
+
 2007-09-18  Martin Leidig  <mleidig@schlund.de>
 
 	* projects/core/script/webservice.js: support Null values for
