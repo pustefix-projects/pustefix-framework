@@ -1067,7 +1067,7 @@ or delete the DOCTYPE definition -->
   <property name="dir.test.report" location="build/test-reports"/>
   <target name="test" depends="test.compile">
     <mkdir dir="${dir.test.report}"/>
-    <junit dir="./" printSummary="yes" fork="true" haltonerror="true">
+    <junit dir="./" printSummary="yes" fork="true" haltonfailure="true">
       <sysproperty key="basedir" value="."/>
       <formatter type="xml"/>
       <formatter type="plain"/>

@@ -1,5 +1,10 @@
 2007-09-19  Martin Leidig  <mleidig@schlund.de>
 
+	* skel/build-skel.xml: change junit task error behaviour: now halt
+	on failures and errors instead of errors only.
+
+2007-09-19  Martin Leidig  <mleidig@schlund.de>
+
 	* projects/core/script/webservice.js: allow Null values for
 	bean properties
 	* projects/webservice/htdocs/typetest-pfxsoap.js: add new
