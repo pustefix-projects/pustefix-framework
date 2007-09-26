@@ -40,11 +40,21 @@ pfx.net.HTTPRequest=function() {
   this.errors = [];
   this.status = 0;
   this.statusText = "";
+  this.aborted = false;
+  this.retries = 0;
+  this.timer = null;
+  
+  this._retry_content;
+  this._retry_headers;
+  this._retry_reqId;
 
   var self = this;
   this.customOnReadyStateChange = function() { self._customOnReadyStateChange(); };
   this.cancelOnReadyStateChange = function(i, msg) { self._cancelOnReadyStateChange(i, msg); };
 }
+
+pfx.net.HTTPRequest.TIMEOUT = 120000;
+pfx.net.HTTPRequest.RETRIES = 0;
 
 pfx.net.HTTPRequest._xml = [];
 pfx.net.HTTPRequest._xmlThis = [];
@@ -92,6 +102,11 @@ if( !pfx.net.HTTPRequest.builtin && !_isOpera && window.ActiveXObject ) {
 
 pfx.net.HTTPRequest.activeX = typeof pfx.net.HTTPRequest.msXmlHttp == "string";
 
+
+pfx.net.HTTPRequest.prototype.restart = function() {
+  this.start(this._retry_content,this._retry_headers,this._retry_reqId);
+}
+
 //*****************************************************************************
 //
 //*****************************************************************************
@@ -101,6 +116,12 @@ pfx.net.HTTPRequest.prototype.start = function( content, headers, reqId ) {
   //  var uniq = ""+ new Date().getTime() + Math.floor(1000 * Math.random());
   //  this.url += ( ( this.url.indexOf('?')+1 ) ? '&' : '?' ) + uniq;
 
+  if(pfx.net.HTTPRequest.RETRIES>0 && this._retry_content==null) {
+    this._retry_content=content;
+    this._retry_headers=headers;
+    this._retry_reqId=reqId;
+  }
+  
   var i = pfx.net.HTTPRequest._xml.length;
 
   if( this.iframes!=pfx.net.HTTPRequest.IFRAMES_ONLY ) {
@@ -138,55 +159,6 @@ pfx.net.HTTPRequest.prototype.start = function( content, headers, reqId ) {
 
     if( typeof pfx.net.HTTPRequest._xml[i] != "undefined" ) {
 
-      if( this.callback ) {
-        //-------
-        // async
-        //-------
-
-        try {
-          var self = this;
-
-          if( pfx.net.HTTPRequest.activeX ) {
-            pfx.net.HTTPRequest._xml[i].onreadystatechange = function() {
-              if( pfx.net.HTTPRequest._xml[i].readyState == 4 ) {
-                var reqId;
-                try {
-                  reqId = pfx.net.HTTPRequest._xml[i].getResponseHeader("Request-Id");
-                } catch(e) {
-                }
-                self.callback.call( self.context, self._getResponse(pfx.net.HTTPRequest._xml[i]), reqId);
-                pfx.net.HTTPRequest._xml[i] = null;
-              }
-            };
-          } else {
-            pfx.net.HTTPRequest._xml[i].onreadystatechange = function() {
-              if( pfx.net.HTTPRequest._xml[i].readyState == 4 ) {
-                try {
-                  self.status     = pfx.net.HTTPRequest._xml[i].status;
-                  self.statusText = pfx.net.HTTPRequest._xml[i].statusText;
-                } catch(e) {
-                }
-                if( self.status && self.status >= 300 ) {
-                  //throw new Error("HTTP_Request: Asynchronous call failed" + " (status " + self.status + ", " + self.statusText + ")");
-                }
-                var reqId;
-                try {
-                  reqId = pfx.net.HTTPRequest._xml[i].getResponseHeader("Request-Id");
-                } catch(e) {
-                }
-                self.callback.call( self.context, self._getResponse(pfx.net.HTTPRequest._xml[i]), reqId );
-                pfx.net.HTTPRequest._xml[i] = null;
-              }
-            };
-          }
-
-        } catch(e) {
-          pfx.net.HTTPRequest._xml[i] = null;
-          throw new Error("HTTP_Request: Onreadystatechange failed");
-        }
-      }
-
-
       try {
      
         pfx.net.HTTPRequest._xml[i].open( this.method, this.url, this.callback ? true : false); 
@@ -207,8 +179,73 @@ pfx.net.HTTPRequest.prototype.start = function( content, headers, reqId ) {
           }
         }
         
+        
+        
+        var self = this;
+        
+        if( this.callback ) {  
+
+          if( pfx.net.HTTPRequest.activeX ) {
+            pfx.net.HTTPRequest._xml[i].onreadystatechange = function() {
+              if( pfx.net.HTTPRequest._xml[i].readyState == 4 && !self.aborted) {
+                var reqId;
+                try {
+                  reqId = pfx.net.HTTPRequest._xml[i].getResponseHeader("Request-Id");
+                } catch(e) {
+                }
+                self.callback.call( self.context, self._getResponse(pfx.net.HTTPRequest._xml[i]), reqId);
+                pfx.net.HTTPRequest._xml[i] = null;
+                if(self.timer!=null) {
+                  window.clearTimeout(self.timer);
+                  self.timer=null;
+                }
+              }
+            };
+          } else {
+            pfx.net.HTTPRequest._xml[i].onreadystatechange = function() {
+              if( pfx.net.HTTPRequest._xml[i].readyState == 4 && !self.aborted) {
+                try {
+                  self.status     = pfx.net.HTTPRequest._xml[i].status;
+                  self.statusText = pfx.net.HTTPRequest._xml[i].statusText;
+                } catch(e) {
+                }
+                if( self.status && self.status >= 300 ) {
+                  //throw new Error("HTTP_Request: Asynchronous call failed" + " (status " + self.status + ", " + self.statusText + ")");
+                }
+                var reqId;
+                try {
+                  reqId = pfx.net.HTTPRequest._xml[i].getResponseHeader("Request-Id");
+                } catch(e) {
+                }
+                self.callback.call( self.context, self._getResponse(pfx.net.HTTPRequest._xml[i]), reqId );
+                pfx.net.HTTPRequest._xml[i] = null;
+                if(self.timer!=null) {
+                  window.clearTimeout(self.timer);
+                  self.timer=null;
+                }
+              }
+            };
+          }
+        }
+        
+        this.timer=window.setTimeout(function() {
+          if( pfx.net.HTTPRequest._xml[i]!=null ) {
+            var state=pfx.net.HTTPRequest._xml[i].readyState;
+            if( state==1 || state==2 || state==3 ) {
+              self.aborted=true;
+              pfx.net.HTTPRequest._xml[i].abort();
+              pfx.net.HTTPRequest._xml[i]=null;
+              if(self.retries<pfx.net.HTTPRequest.RETRIES) {
+                self.aborted=false;
+                self.retries++;
+                self.restart();
+              }
+            }
+          }
+        },pfx.net.HTTPRequest.TIMEOUT);
+        
         pfx.net.HTTPRequest._xml[i].send(content);
-          
+        
         if( !this.callback ) {
     
           this.status=pfx.net.HTTPRequest._xml[i].status;
@@ -218,6 +255,7 @@ pfx.net.HTTPRequest.prototype.start = function( content, headers, reqId ) {
       
           return true;
         }
+        
       } catch(e) {
         pfx.net.HTTPRequest._xml[i] = null;
         throw new Error("HTTP_Request: Call failed [Cause: "+e+"]");
@@ -485,3 +523,4 @@ pfx.net.HTTPRequest.prototype._cancelOnReadyStateChange = function( i, msg ) {
 };
 //*****************************************************************************
 //*****************************************************************************
+  
