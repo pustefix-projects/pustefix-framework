@@ -950,15 +950,18 @@ SOAP_Call.prototype.invoke=function() {
   var resDoc;
   if( !this.userCallback && !this.userObject ) {
     // sync
-    this.request=new XML_Request('POST',this.endpoint);
+    this.request=new pfx.net.HTTPRequest('POST',this.endpoint);
+    this.request.setRequestHeader('SOAPAction','""');
     resDoc=this.request.start(writer.xml); 
     return this.callback(resDoc);
   } else {
     // async
     try {
-      this.request=new XML_Request( 'POST', this.endpoint, this.callback, this );
+      this.request=new pfx.net.HTTPRequest( 'POST', this.endpoint, this.callback, this );
+      this.request.setRequestHeader('SOAPAction','""');
+      this.request.setRequestHeader('Request-Id',this.requestID);
       if(this.requestID==null) this.request.start(writer.xml);
-      else this.request.start(writer.xml,this.requestID);
+      else this.request.start(writer.xml,null,this.requestID);
     } catch(ex) { }
   }
 }
