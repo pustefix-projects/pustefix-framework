@@ -275,7 +275,7 @@
           <xsl:when test="not($__target_key = '__NONE__') and $prohibitEdit = 'no'">
             <ixsl:if test="$__editmode = 'admin'">
               <a href="#">
-                <ixsl:attribute name="onclick">window.open('/xml/edit/includes;<ixsl:value-of select="$__sessid"/>?jump.Theme=<xsl:value-of select="string($used_theme)"/>&amp;jump.Path=<xsl:value-of select="string($realpath)"/>&amp;jump.Part=<xsl:value-of select="$part"/>&amp;jump.TargetGenerator=<xsl:value-of select="$product"/>&amp;jump.Type=include&amp;__anchor=left_navi|<xsl:value-of select="$realpath"/>','PustefixEditor','menubar=yes,status=yes,resizable=yes');return(false);</ixsl:attribute>
+                <ixsl:attribute name="onclick">window.open('/xml/edit;<ixsl:value-of select="$__sessid"/>?__scriptedflow=selectinclude&amp;theme=<xsl:value-of select="string($used_theme)"/>&amp;path=<xsl:value-of select="string($realpath)"/>&amp;part=<xsl:value-of select="$part"/>&amp;tgen=<xsl:value-of select="$product"/>&amp;type=include&amp;__anchor=left_navi|<xsl:value-of select="$realpath"/>','PustefixEditor','menubar=yes,status=yes,resizable=yes');return(false);</ixsl:attribute>
                 <img border="0" src="{{$__contextpath}}/core/img/edit.gif"
                      alt="] Edit include: '{$part}' in file '{$realpath}'"
                      title="Edit include: '{$part}' in file '{$realpath}'"/>
@@ -284,7 +284,7 @@
           </xsl:when>
           <xsl:when test="$__target_key='__NONE__' and $__editmode = 'admin'">
             <a href="#">
-              <xsl:attribute name="onClick">window.open('/xml/edit/dynincludes;<xsl:value-of select="$__sessid"/>?jump.Theme=<xsl:value-of select="string($used_theme)"/>&amp;jump.Path=<xsl:value-of select="$realpath"/>&amp;jump.Part=<xsl:value-of select="$part"/>&amp;jump.Name=<xsl:value-of select="$product"/>&amp;jump.TargetGenerator=<xsl:value-of select="$product"/>&amp;jump.Type=dyninclude&amp;__anchor=left_navi|{$realpath}','PustefixEditor','menubar=yes,status=yes,resizable=yes');return(false);</xsl:attribute>
+              <xsl:attribute name="onClick">window.open('/xml/edit;<xsl:value-of select="$__sessid"/>?__scriptedflow=selectinclude&amp;theme=<xsl:value-of select="string($used_theme)"/>&amp;path=<xsl:value-of select="$realpath"/>&amp;part=<xsl:value-of select="$part"/>&amp;tgen=<xsl:value-of select="$product"/>&amp;type=dyninclude&amp;__anchor=left_navi|{$realpath}','PustefixEditor','menubar=yes,status=yes,resizable=yes');return(false);</xsl:attribute>
               <img border="0" src="{$__contextpath}/core/img/edit.gif" alt="] Edit include: '{$part}' in file '{$realpath}'" title="Edit include: '{$part}' in file '{$realpath}'"/>
             </a>
           </xsl:when>

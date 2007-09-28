@@ -1,3 +1,22 @@
+2007-09-28  Sebastian Marsching  <sebastian.marsching@1und1.de>
+	
+	* projects/core/editor2/conf/scriptedflows/selectinclude.xsl: 
+	* projects/core/editor2/conf/edit.conf.xml: 
+	* projects/core/xsl/include.xsl: 
+	* projects/core/xsl/include_xslt2.xsl: 
+	Replaced auxhandler for include part selection with scripted flow in
+	preparation for the removal of auxhandler support.
+	
+	* src/de/schlund/pfixxml/ContextXMLServlet.java: 
+	* src/de/schlund/pfixcore/workflow/context/RequestContextImpl.java: 
+	Moved the URL redirection code from context to servlet in order to make it work
+	with scripted flows. However, SSL redirect handling is still managed in the 
+	context. 	
+	
+	* src/de/schlund/pfixcore/workflow/ContextImpl.java: 
+	Implemented HttpSessionBindingListener to change session object stored in
+	SessionContextImpl when context is bound to another session (e.g. on SSL switch)
+
 2007-09-19  Martin Leidig  <mleidig@schlund.de>
 
 	* skel/build-skel.xml: change junit task error behaviour: now halt

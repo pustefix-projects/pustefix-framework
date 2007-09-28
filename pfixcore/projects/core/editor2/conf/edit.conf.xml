@@ -51,7 +51,9 @@
       <!-- This ContextInterceptor has to be called AFTER all other interceptors -->
       <!-- <interceptor class="de.schlund.pfixcore.editor2.frontend.util.SpringHelperEndContextInterceptor"/>-->
     </end>
-  </interceptors>  
+  </interceptors>
+  
+  <scriptedflow name="selectinclude" file="core/editor2/conf/scriptedflows/selectinclude.xml"/>
   
   <pageflow name="EditorFlow" final="start">
     <flowstep name="start"/>
@@ -92,7 +94,6 @@
   <pagerequest name="login">
     <auth>
       <authinterface class="de.schlund.pfixcore.editor2.frontend.wrappers.Login" prefix="auth"/>
-      <auxinterface class="de.schlund.pfixcore.editor2.frontend.wrappers.JumpToIncludePart" prefix="jump"/>
     </auth>
   </pagerequest>
   
@@ -101,6 +102,7 @@
       <interface class="de.schlund.pfixcore.editor2.frontend.wrappers.SelectProject" prefix="selectproject"/>
       <interface class="de.schlund.pfixcore.editor2.frontend.wrappers.UserLoginSwitch" prefix="userlogins"/>
       <interface class="de.schlund.pfixcore.editor2.frontend.wrappers.SelectUser" prefix="selectuser"/>
+      <interface class="de.schlund.pfixcore.editor2.frontend.wrappers.JumpToIncludePart" prefix="jump"/>
     </input>
     <output>
       <resource node="session" class="de.schlund.pfixcore.editor2.frontend.resources.SessionResource"/>
