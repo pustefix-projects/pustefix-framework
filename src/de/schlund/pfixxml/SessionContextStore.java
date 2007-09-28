@@ -20,10 +20,13 @@ package de.schlund.pfixxml;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
 import javax.servlet.http.HttpSession;
+import javax.servlet.http.HttpSessionBindingEvent;
+import javax.servlet.http.HttpSessionBindingListener;
 
 import de.schlund.pfixcore.workflow.ContextImpl;
 
@@ -34,7 +37,7 @@ import de.schlund.pfixcore.workflow.ContextImpl;
  * 
  * @author Sebastian Marsching <sebastian.marsching@1und1.de>
  */
-public class SessionContextStore {
+public class SessionContextStore implements HttpSessionBindingListener {
     private final static String SESSION_ATTRIBUTE = "__PFX_CONTEXTSTORE__";
     
     private Map<String, ContextImpl> servletMap = Collections.synchronizedMap(new HashMap<String, ContextImpl>()); 
@@ -127,6 +130,34 @@ public class SessionContextStore {
     
     public Set<String> getServletNames() {
         return Collections.unmodifiableSet(servletMap.keySet());
+    }
+
+    public void valueBound(HttpSessionBindingEvent ev) {
+        HashSet<ContextImpl> contexts = getAllContexts();
+        for (ContextImpl context : contexts) {
+            if (context instanceof HttpSessionBindingListener) {
+                HttpSessionBindingListener l = (HttpSessionBindingListener) context;
+                l.valueBound(ev);
+            }
+        }
+    }
+
+    public void valueUnbound(HttpSessionBindingEvent ev) {
+        HashSet<ContextImpl> contexts = getAllContexts();
+        for (ContextImpl context : contexts) {
+            if (context instanceof HttpSessionBindingListener) {
+                HttpSessionBindingListener l = (HttpSessionBindingListener) context;
+                l.valueUnbound(ev);
+            }
+        }
+    }
+    
+    private HashSet<ContextImpl> getAllContexts() {
+        HashSet<ContextImpl> contexts = new HashSet<ContextImpl>();
+        contexts.addAll(servletMap.values());
+        contexts.addAll(nameMap.values());
+        contexts.addAll(pathMap.values());
+        return contexts;
     }
     
 }

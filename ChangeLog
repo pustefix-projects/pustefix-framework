@@ -1,4 +1,7 @@
 2007-09-28  Sebastian Marsching  <sebastian.marsching@1und1.de>
+
+	* src/de/schlund/pfixxml/SessionContextStore.java: 
+	Delegate HttpSessionBindingEvents to context instances.
 	
 	* projects/core/editor2/conf/scriptedflows/selectinclude.xsl: 
 	* projects/core/editor2/conf/edit.conf.xml: 
