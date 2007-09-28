@@ -211,7 +211,26 @@ public class ContextXMLServlet extends AbstractXMLServlet {
                 // handle as usual
                 spdoc = context.handleRequest(preq);
             }
+            
+            if (spdoc != null && !spdoc.isRedirect() && (preq.getPageName() == null || !preq.getPageName().equals(spdoc.getPagename()))) {
+                // Make sure all requests that don't encode an explicite pagename
+                // (this normally is only the case for the first request)
+                // OR pages that have the "wrong" pagename in their request 
+                // (this applies to pages selected by stepping ahead in the page flow)
+                // are redirected to the page selected by the business logic below
+                String scheme = preq.getScheme();
+                String port = String.valueOf(preq.getServerPort());
+                String redirectURL = scheme + "://" + ServletManager.getServerName(preq.getRequest()) 
+                    + ":" + port + preq.getContextPath() + preq.getServletPath() + "/" + spdoc.getPagename() 
+                    + ";jsessionid=" + preq.getSession(false).getId() + "?__reuse=" + spdoc.getTimestamp();
+                RequestParam rp = preq.getRequestParam("__frame");
+                if (rp != null) {
+                    redirectURL += "&__frame=" + rp.getValue();
+                }
+                spdoc.setRedirect(redirectURL);
 
+            }
+            
             return spdoc;
         } finally {
             ((ContextImpl) context).cleanupAfterRequest();

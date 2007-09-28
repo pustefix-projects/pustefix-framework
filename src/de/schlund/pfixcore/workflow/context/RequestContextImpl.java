@@ -401,28 +401,23 @@ public class RequestContextImpl implements Cloneable {
             forceSSL = true;
         }
         
-        if (spdoc != null && (forceSSL || preq.getPageName() == null || !preq.getPageName().equals(spdoc.getPagename()))) {
-            // Make sure all requests that don't encode an explicite pagename
-            // (this normally is only the case for the first request)
-            // OR pages that have the "wrong" pagename in their request 
-            // (this applies to pages selected by stepping ahead in the page flow)
-            // are redirected to the page selected by the business logic below
-            String scheme = preq.getScheme();
-            String port = String.valueOf(preq.getServerPort());
-            if (forceSSL) {
-                scheme = "https";
-                port = getServerContext().getProperties().getProperty(ServletManager.PROP_SSL_REDIRECT_PORT + String.valueOf(preq.getOriginalServerPort()));
-                if (port == null) {
-                    port = "443";
-                }
+        if (spdoc != null && forceSSL) {
+            // Make sure connection is switched to SSL if current page is marked
+            // as "secure"
+            String scheme = "https";
+            String port = getServerContext().getProperties().getProperty(ServletManager.PROP_SSL_REDIRECT_PORT + String.valueOf(preq.getOriginalServerPort()));
+            if (port == null) {
+                port = "443";
             }
             
             String redirectURL=scheme + "://" + ServletManager.getServerName(preq.getRequest()) 
                     + ":" + port + preq.getContextPath() + preq.getServletPath() + "/" + spdoc.getPagename() 
                     + ";jsessionid=" + preq.getSession(false).getId() + "?__reuse=" + spdoc.getTimestamp();
             
-            RequestParam rp=preq.getRequestParam("__frame");
-            if(rp!=null) redirectURL+="&__frame="+rp.getValue();
+            RequestParam rp = preq.getRequestParam("__frame");
+            if (rp != null) {
+                redirectURL += "&__frame=" + rp.getValue();
+            }
             spdoc.setRedirect(redirectURL);
             
         }

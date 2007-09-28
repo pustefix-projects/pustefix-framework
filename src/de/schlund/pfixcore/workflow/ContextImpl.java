@@ -49,7 +49,7 @@ import de.schlund.pfixxml.config.ContextConfig;
 import de.schlund.pfixxml.config.PageRequestConfig;
 import de.schlund.util.statuscodes.StatusCode;
 
-public class ContextImpl implements Context, AccessibilityChecker, ExtendedContext, TokenManager {
+public class ContextImpl implements Context, AccessibilityChecker, ExtendedContext, TokenManager, HttpSessionBindingListener {
 
     /**
      * Implementation of the session part of the context used by
@@ -520,6 +520,18 @@ public class ContextImpl implements Context, AccessibilityChecker, ExtendedConte
 
     public void removeSessionStatusListener(SessionStatusListener l) {
         this.sessioncontext.removeSessionStatusListener(l);
+    }
+
+    // Notification on session binding / unbinding
+    
+    public void valueBound(HttpSessionBindingEvent ev) {
+        this.sessioncontext.session = ev.getSession();
+    }
+
+    public void valueUnbound(HttpSessionBindingEvent ev) {
+        if (ev.getSession() == this.sessioncontext.session) {
+            this.sessioncontext.session = null;
+        }
     }
 
 }
