@@ -1,3 +1,20 @@
+2007-10-04  Martin Leidig  <mleidig@schlund.de>
+
+	Trace transformations failing with UnsupportedOperationExceptions (Saxon's
+	intensional nodeset dependency bug). Thus we try to find out what and where
+	it happens exactly. The tracing is done by catching the exception and 
+	repeating the transformation once again with a registered tracelistener, 
+	which is logging out the trace steps.
+
+	Added: 
+	* src/de/schlund/pfixxml/util/xsltimpl/Saxon1TraceListener.java
+
+	Modified:
+	* src/de/schlund/pfixxml/util/Xslt.java
+	* src/de/schlund/pfixxml/util/XsltSupport.java
+	* src/de/schlund/pfixxml/util/xsltimpl/XsltSaxon1.java
+	* src/de/schlund/pfixxml/util/xsltimpl/XsltSaxon2.java
+
 2007-09-28  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
 	* src/de/schlund/pfixxml/SessionContextStore.java: 
