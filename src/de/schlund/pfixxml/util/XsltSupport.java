@@ -19,7 +19,10 @@
 
 package de.schlund.pfixxml.util;
 
+import java.io.Writer;
+
 import javax.xml.transform.Templates;
+import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 
 /**
@@ -31,5 +34,6 @@ public interface XsltSupport {
     public TransformerFactory getThreadTransformerFactory();
     public Templates getPrettyPrinterTemplates();
     public boolean isInternalTemplate(Templates templates);
+    public void doTracing(Transformer transformer, Writer traceWriter);
     
 }

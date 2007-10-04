@@ -20,15 +20,18 @@
 package de.schlund.pfixxml.util.xsltimpl;
 
 import java.io.StringReader;
+import java.io.Writer;
 
 import javax.xml.transform.Source;
 import javax.xml.transform.Templates;
+import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.sax.SAXSource;
 
 import org.xml.sax.InputSource;
 
+import com.icl.saxon.Controller;
 import com.icl.saxon.PreparedStyleSheet;
 import com.icl.saxon.TransformerFactoryImpl;
 
@@ -87,6 +90,13 @@ public class XsltSaxon1 implements XsltSupport {
     
     public boolean isInternalTemplate(Templates templates) {
         return templates instanceof PreparedStyleSheet;
+    }
+    
+    public void doTracing(Transformer transformer, Writer traceWriter) {
+        Saxon1TraceListener tl=new Saxon1TraceListener(Saxon1TraceListener.Format.VERBOSE, traceWriter);
+        Controller c=(Controller)transformer;
+        c.setTraceListener(tl);
+        c.setLineNumbering(true);
     }
     
 }

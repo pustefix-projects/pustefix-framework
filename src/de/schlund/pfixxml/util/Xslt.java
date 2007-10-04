@@ -18,7 +18,10 @@
  */
 package de.schlund.pfixxml.util;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.OutputStream;
+import java.io.StringWriter;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -36,6 +39,7 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.URIResolver;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.sax.SAXSource;
+import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
 import org.apache.log4j.Logger;
@@ -117,8 +121,35 @@ public class Xslt {
     //-- apply transformation
     
     public static void transform(Document xml, Templates templates, Map params, Result result) throws TransformerException {
+        try {
+            doTransform(xml,templates,params,result,false);
+        } catch(UnsupportedOperationException x) {
+            if(result instanceof StreamResult) {
+                OutputStream out=((StreamResult)result).getOutputStream();
+                if(out instanceof ByteArrayOutputStream) {
+                    LOG.error("Try to transform again after UnsupportedOperationException",x);
+                    ByteArrayOutputStream baos=(ByteArrayOutputStream)out;
+                    baos.reset();
+                    try {
+                        doTransform(xml,templates,params,result,false);
+                    } catch(UnsupportedOperationException ex) {
+                        LOG.error("Try to transform and trace after UnsupportedOperationException",ex);
+                        baos.reset();
+                        doTransform(xml,templates,params,result,true);
+                    }
+                }
+            }
+        }
+    }
+    
+    private static void doTransform(Document xml, Templates templates, Map params, Result result, boolean trace) throws TransformerException {
         XsltVersion xsltVersion=getXsltVersion(templates);
         Transformer trafo = templates.newTransformer();
+        StringWriter traceWriter=null;
+        if(trace) {
+           traceWriter=new StringWriter();
+           XsltProvider.getXsltSupport(xsltVersion).doTracing(trafo,traceWriter);
+        }
         long start = 0;
         if (params != null) {
             for (Iterator e = params.keySet().iterator(); e.hasNext();) {
@@ -141,13 +172,24 @@ public class Xslt {
                 throw new TransformerException(x.getMessage(),x.getLocator(),t);
             }
             throw x;
+        } finally {
+           if(trace) {
+              String traceStr=traceWriter.toString();
+              int maxSize=10000;
+              if(traceStr.length()>maxSize) {
+                 traceStr=traceStr.substring(traceStr.length()-maxSize);
+                 int ind=traceStr.indexOf('\n');
+                 if(ind>-1) traceStr=traceStr.substring(ind); 
+              }
+              LOG.error("Last trace steps:\n"+traceStr);
+           }
         }
         if (LOG.isDebugEnabled()) {
             long stop = System.currentTimeMillis();
             LOG.debug("      ===========> Transforming and serializing took " + (stop - start) + " ms.");
         }
     }
-
+    
     //--
 
     private static XsltVersion getXsltVersion(Templates templates) {

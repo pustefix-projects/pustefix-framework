@@ -20,9 +20,11 @@
 package de.schlund.pfixxml.util.xsltimpl;
 
 import java.io.StringReader;
+import java.io.Writer;
 
 import javax.xml.transform.Source;
 import javax.xml.transform.Templates;
+import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.sax.SAXSource;
@@ -91,6 +93,10 @@ public class XsltSaxon2 implements XsltSupport {
  
     public boolean isInternalTemplate(Templates templates) {
         return templates instanceof PreparedStylesheet;
+    }
+    
+    public void doTracing(Transformer transformer,  Writer traceWriter) {
+        //TODO: implementation
     }
     
 }
