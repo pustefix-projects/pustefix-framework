@@ -1,3 +1,59 @@
+2007-10-05  Martin Leidig  <mleidig@schlund.de>
+
+	Removed instantiation of custom JMX server for registering Pustefix MBeans
+	and use platform server instead. Splitted the single MBean into multiple
+	MBeans according to the responsibilities.
+
+	Removed the complete jmx package (some of the non-JMX specific stuff
+	was moved to other packages):
+	* src/de/schlund/pfixxml/jmx
+	* src/de/schlund/pfixxml/jmx/ApplicationList.java
+	* src/de/schlund/pfixxml/jmx/Application.java
+	* src/de/schlund/pfixxml/jmx/Environment.java
+	* src/de/schlund/pfixxml/jmx/JMXConnectionListener.java
+	* src/de/schlund/pfixxml/jmx/JmxServer.java
+	* src/de/schlund/pfixxml/jmx/JmxPortServlet.java
+	* src/de/schlund/pfixxml/jmx/JmxServerMBean.java
+	* src/de/schlund/pfixxml/jmx/TrailLogger.java
+	* src/de/schlund/pfixxml/jmx/JmxServerFactory.java
+	* src/de/schlund/pfixxml/jmx/TrailLoggerMBean.java
+
+	Added own package for testrecording stuff:
+	* src/de/schlund/pfixxml/testrecording/ApplicationList.java
+	* src/de/schlund/pfixxml/testrecording/TestRecordingMBean.java
+	* src/de/schlund/pfixxml/testrecording/Application.java
+	* src/de/schlund/pfixxml/testrecording/TrailLogger.java
+	* src/de/schlund/pfixxml/testrecording/TestRecording.java
+	* src/de/schlund/pfixxml/testrecording/TrailLoggerMBean.java
+
+	Added PerfloggingMBean and did some refactoring (fixed generics warnings):
+	* src/de/schlund/pfixxml/perflogging/PerfLogging.java
+	* src/de/schlund/pfixxml/perflogging/Interval.java
+	* src/de/schlund/pfixxml/perflogging/PerfStatistic.java
+	* src/de/schlund/pfixxml/perflogging/LogFileWriterThread.java
+	* src/de/schlund/pfixxml/perflogging/PerfLoggingMBean.java
+	* src/de/schlund/pfixxml/perflogging/PerfEventPut.java
+	* src/de/schlund/pfixxml/perflogging/AdditionalTrailInfoFactory.java
+	* src/de/schlund/pfixxml/perflogging/BoundedBufferWrapper.java
+	* src/de/schlund/pfixxml/perflogging/PerfEventTakeThread.java
+	* src/de/schlund/pfixxml/perflogging/IntervalFactory.java
+	* src/de/schlund/pfixxml/perflogging/PerfEvent.java
+	* src/de/schlund/pfixxml/AbstractXMLServlet.java
+
+	Added SessionAdminMbean and refactored
+	* src/de/schlund/pfixxml/serverutil/SessionAdminMBean.java
+	* src/de/schlund/pfixxml/serverutil/SessionAdmin.java
+
+	Moved servlet from jmx package:
+	* src/de/schlund/pfixxml/JmxPortServlet.java
+
+	Removed JMX server configuration and added TestRecording factory:
+	* projects/common/conf/factory.xml
+
+	Refactored:
+	* tests/junit/de/schlund/pfixxml/jmx/ApplicationListTest.java
+	* src/de/schlund/pfixxml/AbstractXMLServlet.java
+	
 2007-10-04  Martin Leidig  <mleidig@schlund.de>
 
 	Trace transformations failing with UnsupportedOperationExceptions (Saxon's

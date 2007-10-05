@@ -19,7 +19,12 @@
 
 package de.schlund.pfixxml.serverutil;
 
+import java.io.IOException;
+import java.lang.management.ManagementFactory;
 import java.util.*;
+
+import javax.management.MBeanServer;
+import javax.management.ObjectName;
 import javax.servlet.http.*;
 
 import org.apache.log4j.*;
@@ -29,7 +34,8 @@ import org.apache.log4j.*;
  *
  */
 
-public class SessionAdmin implements HttpSessionBindingListener {
+public class SessionAdmin implements HttpSessionBindingListener, SessionAdminMBean {
+    
     public  static String       LISTENER       = "__SESSION_LISTENER__"; 
     public  static String       PARENT_SESS_ID = "__PARENT_SESSION_ID__";
     public  static final String SESSION_IS_SECURE             = "__SESSION_IS_SECURE__";
@@ -38,10 +44,18 @@ public class SessionAdmin implements HttpSessionBindingListener {
     /** Maps session to it's id. */
     private        HashMap<HttpSession, String> sessionid = new HashMap<HttpSession, String>();
     private        HashMap<String, SessionInfoStruct> sessioninfo = new HashMap<String, SessionInfoStruct>();
-    private        HashMap      parentinfo     = new HashMap();
-    private        HashMap      parentinfo_rev = new HashMap();
+    private        HashMap<String,HttpSession>      parentinfo     = new HashMap<String,HttpSession>();
+    private        HashMap<String,String>      parentinfo_rev = new HashMap<String,String>();
     
-    private SessionAdmin() {}
+    private SessionAdmin() {
+        try {
+            MBeanServer mbeanServer = ManagementFactory.getPlatformMBeanServer(); 
+            ObjectName objectName = new ObjectName("Pustefix:type=SessionAdmin"); 
+            mbeanServer.registerMBean(this, objectName);
+        } catch(Exception x) {
+            LOG.error("Can't register SessionAdmin MBean!",x);
+        } 
+    }
 
     public String toString() {
         return "[Number of active Sessions: " + sessioninfo.keySet().size() + "]";
@@ -131,10 +145,14 @@ public class SessionAdmin implements HttpSessionBindingListener {
         }
     }
 
-    public Set getAllSessionIds() {
+    public Set<String> getAllSessionIds() {
         return sessioninfo.keySet();
     }
 
+    public int getSessionNumber() {
+        return sessioninfo.size();
+    }
+    
     public SessionInfoStruct getInfo(HttpSession sess) {
         synchronized (sessioninfo) {
             return ((SessionInfoStruct) sessioninfo.get(sess.getId()));
@@ -164,6 +182,39 @@ public class SessionAdmin implements HttpSessionBindingListener {
         }
         return result;
     }
-
+    
+    //accessible via JMX:
+    
+    public List<SessionData> getSessions(String serverName, String remoteAddr) {
+        SessionAdmin admin;
+        Iterator<String> iter;
+        String id;
+        List<SessionData> lst;
+        SessionInfoStruct info;
+        
+        lst = new ArrayList<SessionData>();
+        admin = SessionAdmin.getInstance();
+        iter = admin.getAllSessionIds().iterator();
+        while (iter.hasNext()) {
+            id = (String) iter.next();
+            info = admin.getInfo(id);
+            if (serverName.equals(info.getData().getServerName()) && remoteAddr.equals(info.getData().getRemoteAddr())) {
+                lst.add(info.getData());
+            }
+        }
+        return lst;
+    }
+    
+    public void invalidateSession(String id) throws IOException {
+        getSession(id).invalidate();
+    }
+    
+    public HttpSession getSession(String id) throws IOException {
+        SessionInfoStruct info = getInfo(id);
+        if (info == null) {
+            throw new IOException("session not found: " + id);
+        }
+        return info.getSession();
+    }
 
 }

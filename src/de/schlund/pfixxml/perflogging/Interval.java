@@ -9,8 +9,6 @@ package de.schlund.pfixxml.perflogging;
 /**
  * @author jh
  *
- * TODO To change the template for this generated type comment go to
- * Window - Preferences - Java - Code Style - Code Templates
  */
 public class Interval {
     private long from;

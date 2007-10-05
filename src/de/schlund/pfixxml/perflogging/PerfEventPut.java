@@ -9,13 +9,9 @@ package de.schlund.pfixxml.perflogging;
 
 import org.apache.log4j.Logger;
 
-import EDU.oswego.cs.dl.util.concurrent.BoundedBuffer;
-
 /**
  * @author jh
  * 
- * TODO To change the template for this generated type comment go to Window -
- * Preferences - Java - Code Style - Code Templates
  */
 class PerfEventPut {
     private static PerfEventPut instance = new PerfEventPut();

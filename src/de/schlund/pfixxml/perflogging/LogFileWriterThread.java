@@ -13,8 +13,6 @@ import org.apache.log4j.Logger;
 /**
  * @author jh
  *
- * TODO To change the template for this generated type comment go to
- * Window - Preferences - Java - Code Style - Code Templates
  */
 public class LogFileWriterThread extends TimerTask {
     private static Logger LOG = Logger.getLogger(LogFileWriterThread.class);

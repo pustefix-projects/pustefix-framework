@@ -3,7 +3,7 @@ package de.schlund.pfixxml.perflogging;
 
 import java.util.HashMap;
 import java.util.Map;
-import javax.servlet.ServletException;
+
 import org.apache.log4j.Logger;
 
 public class AdditionalTrailInfoFactory {
@@ -23,7 +23,7 @@ public class AdditionalTrailInfoFactory {
         if (implementors.get(implemenation_class) == null) {
             LOG.info("Creating object from class "+implemenation_class);
             try {
-                Class               clazz = Class.forName(implemenation_class);
+                Class<?>             clazz = Class.forName(implemenation_class);
                 AdditionalTrailInfo info  = (AdditionalTrailInfo) clazz.newInstance();
                 implementors.put(implemenation_class, info);
             } catch (ClassNotFoundException e) {

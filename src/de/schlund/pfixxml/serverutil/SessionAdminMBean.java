@@ -16,9 +16,16 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
+package de.schlund.pfixxml.serverutil;
 
-package de.schlund.pfixxml.jmx;
+import java.io.IOException;
 
-public interface TrailLoggerMBean {
-    public void stop();
+/**
+ * @author mleidig@schlund.de
+ */
+public interface SessionAdminMBean {
+
+    public void invalidateSession(String id) throws IOException;
+    public int getSessionNumber();
+    
 }

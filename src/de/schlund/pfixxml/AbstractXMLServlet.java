@@ -55,8 +55,6 @@ import de.schlund.pfixcore.workflow.NavigationFactory;
 import de.schlund.pfixcore.workflow.NavigationInitializationException;
 import de.schlund.pfixxml.config.AbstractXMLServletConfig;
 import de.schlund.pfixxml.config.ServletManagerConfig;
-import de.schlund.pfixxml.jmx.JmxServerFactory;
-import de.schlund.pfixxml.jmx.TrailLogger;
 import de.schlund.pfixxml.perflogging.AdditionalTrailInfo;
 import de.schlund.pfixxml.perflogging.AdditionalTrailInfoFactory;
 import de.schlund.pfixxml.perflogging.PerfEvent;
@@ -72,6 +70,8 @@ import de.schlund.pfixxml.targets.Target;
 import de.schlund.pfixxml.targets.TargetGenerationException;
 import de.schlund.pfixxml.targets.TargetGenerator;
 import de.schlund.pfixxml.targets.TargetGeneratorFactory;
+import de.schlund.pfixxml.testrecording.TestRecording;
+import de.schlund.pfixxml.testrecording.TrailLogger;
 import de.schlund.pfixxml.util.MD5Utils;
 import de.schlund.pfixxml.util.SimpleCacheLRU;
 import de.schlund.pfixxml.util.Xml;
@@ -766,7 +766,7 @@ public abstract class AbstractXMLServlet extends ServletManager {
         } else {
             throw new IllegalArgumentException("invalid value for " + PARAM_XMLONLY + ": " + value);
         }
-        if (editmodeAllowed || JmxServerFactory.getServer().isKnownClient(pfreq.getRemoteAddr())) {
+        if (editmodeAllowed || TestRecording.getInstance().isKnownClient(pfreq.getRemoteAddr())) {
             return rendering;
         } else {
             return RENDER_NORMAL;

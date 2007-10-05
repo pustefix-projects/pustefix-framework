@@ -1,4 +1,4 @@
-package de.schlund.pfixxml.jmx;
+package de.schlund.pfixxml.testrecording;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -23,7 +23,7 @@ public class ApplicationList implements Serializable {
 
     public static ApplicationList load(Document projectsXml, boolean tomcat, String sessionSuffix) throws TransformerException {
         ApplicationList result;
-        Iterator iter;
+        Iterator<?> iter;
         Element project;
         String name;
         String server;
@@ -59,10 +59,10 @@ public class ApplicationList implements Serializable {
     
     //--
     
-    private final List apps;
+    private final List<Application> apps;
     
     public ApplicationList() {
-        apps = new ArrayList();
+        apps = new ArrayList<Application>();
     }
     
     public void add(Application app) {
@@ -87,7 +87,7 @@ public class ApplicationList implements Serializable {
     }
     
     public Application lookup(String displayName) {
-        Iterator iter;
+        Iterator<Application> iter;
         Application app;
         
         iter = apps.iterator();
@@ -101,7 +101,7 @@ public class ApplicationList implements Serializable {
     }
     
     // TODO: castor
-    public List getApplications() {
+    public List<Application> getApplications() {
         return apps;
     }
     

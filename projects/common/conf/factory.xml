@@ -13,7 +13,7 @@
     <prop name="factory.initialize.02">de.schlund.pfixxml.targets.SPCacheFactory</prop>
     <prop name="factory.initialize.04">de.schlund.pfixxml.targets.cachestat.SPCacheStatistic</prop>
     <prop name="factory.initialize.05">de.schlund.pfixxml.perflogging.PerfLogging</prop>
-    <prop name="factory.initialize.06">de.schlund.pfixxml.jmx.JmxServerFactory</prop>
+    <prop name="factory.initialize.06">de.schlund.pfixxml.testrecording.TestRecording</prop>
 
     <choose>
       <when test="$mode = 'prod'">
@@ -29,16 +29,6 @@
       </otherwise>
     </choose>
 
-    <!-- JmxServerFactory -->
-    <prop name="de.schlund.pfixcore.jmx.keystore">common/conf/jmxserver.keystore</prop>
-    <prop name="de.schlund.pfixcore.jmx.port.default">9334</prop>
-    <choose>
-      <when test="not($mode = 'prod')">
-        <prop name="de.schlund.pfixcore.jmx.servername"><cus:fqdn/></prop>
-      </when>
-    </choose>
-
-    
     <!-- ApplicationContext factory for editor -->
     <prop name="de.schlund.pfixcore.editor2.springconfig">common/conf/editor-spring.xml</prop>
     <prop name="de.schlund.pfixcore.editor2.updatetargets">true</prop>
