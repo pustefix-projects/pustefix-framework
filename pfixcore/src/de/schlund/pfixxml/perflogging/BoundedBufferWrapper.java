@@ -11,8 +11,6 @@ import EDU.oswego.cs.dl.util.concurrent.BoundedBuffer;
 /**
  * @author jh
  *
- * TODO To change the template for this generated type comment go to
- * Window - Preferences - Java - Code Style - Code Templates
  */
 class BoundedBufferWrapper {
     private BoundedBuffer boundedBuffer;

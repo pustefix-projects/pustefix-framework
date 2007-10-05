@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.Serializable;
 
 import junit.framework.TestCase;
+import de.schlund.pfixxml.testrecording.Application;
+import de.schlund.pfixxml.testrecording.ApplicationList;
 import de.schlund.pfixxml.util.Xml;
 
 public class ApplicationListTest extends TestCase {

@@ -16,30 +16,19 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
+package de.schlund.pfixxml.perflogging;
 
-package de.schlund.pfixxml.jmx;
-
-import java.io.IOException;
-import java.util.List;
 import java.util.Map;
 
-import javax.management.ObjectName;
-
-public interface JmxServerMBean {
-	
-    /* Trail logging */
-    public ObjectName startRecording(String sessionId) throws IOException;
-    public ApplicationList getApplicationList(boolean tomcat, String sessionSuffix);
-    public List getSessions(String serverName, String remoteAddr);
-    public void invalidateSession(String id) throws IOException;
-    public boolean isKnownClient(String remoteAddr);
-    public void addKnownClient(String remoteAddr);
-    public void removeKnownClient(String remoteAddr);
+/**
+ * @author mleidig@schlund.de
+ */
+public interface PerfLoggingMBean {
     
-    /* Performance logging */
     public boolean isPerfLoggingEnabled();
     public boolean isPerfLoggingRunning();
     public void startPerfLogging();
     public String stopPerfLogging();
     public Map<String, Map<String, int[]>> stopPerfLoggingMap();
+    
 }

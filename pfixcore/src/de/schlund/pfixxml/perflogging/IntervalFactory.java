@@ -9,12 +9,11 @@ package de.schlund.pfixxml.perflogging;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author jh
  *
- * TODO To change the template for this generated type comment go to
- * Window - Preferences - Java - Code Style - Code Templates
  */
 public class IntervalFactory {
     private static IntervalFactory instance = new IntervalFactory();
@@ -41,7 +40,7 @@ public class IntervalFactory {
         return interval_category_map.get(category);
     }
     
-    HashMap getAllIntervals() {
+    Map<String, List<Interval>> getAllIntervals() {
         return interval_category_map;
     }
     

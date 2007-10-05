@@ -17,7 +17,7 @@
  *
  */
 
-package de.schlund.pfixxml.jmx;
+package de.schlund.pfixxml.testrecording;
 
 import java.io.IOException;
 import java.util.Enumeration;
@@ -50,13 +50,10 @@ public class TrailLogger extends NotificationBroadcasterSupport implements Trail
     
     public static final String NOTIFICATION_TYPE = "step";
     public static final String CLOSE_TYPE ="close";
-	
-    /** session attribute name */
-    private static final String SESS_TRAIL_LOGGER = "__TRAIL_LOGGER__";
     
     // TODO: ugly static thing code. 
     // maps visit_ids auf TrailLogger
-    public static final Map map = new HashMap();
+    public static final Map<String,TrailLogger> map = new HashMap<String,TrailLogger>();
     
     public static void log(PfixServletRequest preq, SPDocument resdoc, HttpSession session) {
         TrailLogger logger;
@@ -80,7 +77,7 @@ public class TrailLogger extends NotificationBroadcasterSupport implements Trail
         visit = lookupVisit(session);
         if (visit == null) {
             // TODO
-            Enumeration enm = session.getAttributeNames();
+            Enumeration<?> enm = session.getAttributeNames();
             System.out.println("session " + session);
             while (enm.hasMoreElements()) {
                 String valName = (String)enm.nextElement();

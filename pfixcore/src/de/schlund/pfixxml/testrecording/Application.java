@@ -1,4 +1,4 @@
-package de.schlund.pfixxml.jmx;
+package de.schlund.pfixxml.testrecording;
 
 import java.io.Serializable;
 import java.net.MalformedURLException;

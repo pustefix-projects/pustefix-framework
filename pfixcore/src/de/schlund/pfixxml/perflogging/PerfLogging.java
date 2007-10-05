@@ -6,26 +6,27 @@
  */
 package de.schlund.pfixxml.perflogging;
 
+import java.lang.management.ManagementFactory;
 import java.util.Map;
 import java.util.Properties;
-import java.util.Timer;
+
+import javax.management.MBeanServer;
+import javax.management.Notification;
+import javax.management.NotificationBroadcasterSupport;
+import javax.management.ObjectName;
 
 import org.apache.log4j.Logger;
-
-import EDU.oswego.cs.dl.util.concurrent.BoundedBuffer;
 
 
 /**
  * @author jh
  *
- * TODO To change the template for this generated type comment go to
- * Window - Preferences - Java - Code Style - Code Templates
  */
-public class PerfLogging {
+public class PerfLogging extends NotificationBroadcasterSupport implements PerfLoggingMBean {
+    
     private static PerfLogging instance = new PerfLogging();
     private static Logger LOG = Logger.getLogger(PerfLogging.class);
     private String PROP_BUFFER_SIZE = "perflogging.buffersize";
-    private String PROP_LOG_WRITE = "perflogging.logwrite";
     private String PROP_ENABLED = "perflogging.enabled";
     private String PROP_AUTOSTART = "perflogging.autostart";
     private String PROP_OFFER_MAX_WAIT = "perflogging.offermaxwait";
@@ -34,12 +35,11 @@ public class PerfLogging {
     private String ON = "1";
     private int DEFAULT_BUFFER_SIZE = 1000;
     private int DEFAULT_OFFER_MAX_WAIT = 5;
-    private int DEFAULT_LOG_WRITE = 1000 * 60 * 10; //10 min
     private boolean perfLoggingEnabled = false;
     private boolean perfActive = false;
     private BoundedBufferWrapper boundedBuffer;
     private PerfEventTakeThread perfEventTakeThread;
-  
+    private long seqNo;
     
     private PerfLogging() {}
     
@@ -99,6 +99,14 @@ public class PerfLogging {
             perfActive = false;
         }
         
+        try {
+            MBeanServer mbeanServer = ManagementFactory.getPlatformMBeanServer(); 
+            ObjectName objectName = new ObjectName("Pustefix:type=PerfLogging"); 
+            mbeanServer.registerMBean(this, objectName);
+        } catch(Exception x) {
+            LOG.error("Can't register PerfLogging MBean!",x);
+        } 
+        
     }
     
     public boolean isPerfLogggingEnabled() {
@@ -145,7 +153,7 @@ public class PerfLogging {
         }
     }
     
-    public synchronized Map inactivatePerfloggingMap() {
+    public synchronized Map<String, Map<String, int[]>> inactivatePerfloggingMap() {
         if(!perfLoggingEnabled) {
             LOG.warn("Perflogging is disabled");
             return null;
@@ -153,7 +161,7 @@ public class PerfLogging {
         if(perfActive) {
             LOG.info("Inactivating perflogging");
             perfActive = false;
-            Map map = PerfStatistic.getInstance().toMap();
+            Map<String, Map<String, int[]>> map = PerfStatistic.getInstance().toMap();
             PerfStatistic.getInstance().reset();
             stopPerfEventTakeThread();
             boundedBuffer.reset();
@@ -176,6 +184,56 @@ public class PerfLogging {
     }
     
   
+    //accessible via JMX:
     
+    public synchronized boolean isPerfLoggingEnabled() {
+        return isPerfLogggingEnabled();
+    }
+    
+    public synchronized boolean isPerfLoggingRunning() {
+        return isPerfLoggingActive();
+    }
+    
+    public synchronized void startPerfLogging() {
+        if(!isPerfLoggingActive()) {
+            try {
+                activatePerflogging();
+            } finally {
+                if(isPerfLoggingActive()) {
+                    Notification n= new Notification("PerfLogging.started",this,seqNo++, 
+                            System.currentTimeMillis(),"Started performance logging");
+                    sendNotification(n);
+                }
+            }
+        } else throw new IllegalStateException("Performance logging is already running.");
+    }
+    
+    public synchronized String stopPerfLogging() {
+        if(isPerfLoggingActive()) {
+            try {
+                return inactivatePerflogging();
+            } finally {
+                if(!isPerfLoggingActive()) {
+                    Notification n= new Notification("PerfLogging.stopped",this,seqNo++, 
+                            System.currentTimeMillis(),"Stopped performance logging");
+                    sendNotification(n);
+                }
+            }
+        } else throw new IllegalStateException("Performance logging isn't running.");
+    }
+    
+    public synchronized Map<String, Map<String, int[]>> stopPerfLoggingMap() {
+        if(isPerfLoggingActive()) {
+            try {
+                return inactivatePerfloggingMap();
+            } finally {
+                if(!isPerfLoggingActive()) {
+                    Notification n= new Notification("PerfLogging.stopped",this,seqNo++, 
+                            System.currentTimeMillis(),"Stopped performance logging");
+                    sendNotification(n);
+                }
+            }
+        } else throw new IllegalStateException("Performance logging isn't running.");
+    }
  
 }

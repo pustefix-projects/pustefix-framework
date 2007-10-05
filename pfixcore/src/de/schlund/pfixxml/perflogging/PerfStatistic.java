@@ -1,8 +1,6 @@
 /*
  * Created on 08.06.2005
  *
- * TODO To change the template for this generated file go to
- * Window - Preferences - Java - Code Style - Code Templates
  */
 package de.schlund.pfixxml.perflogging;
 
@@ -16,12 +14,10 @@ import java.util.Map;
 /**
  * @author jh
  *
- * TODO To change the template for this generated type comment go to
- * Window - Preferences - Java - Code Style - Code Templates
  */
 public class PerfStatistic {
-    private HashMap<String, HashMap<String, int[]>> category_map = 
-        new HashMap<String, HashMap<String, int[]>>(); 
+    private Map<String,Map<String, int[]>> category_map = 
+        new HashMap<String, Map<String, int[]>>(); 
     
     
     private static PerfStatistic instance = new PerfStatistic();
@@ -38,7 +34,7 @@ public class PerfStatistic {
     }
         
    synchronized void reset() {
-       category_map = new HashMap<String, HashMap<String, int[]>>();
+       category_map = new HashMap<String, Map<String, int[]>>();
    }
 
     /**
@@ -52,7 +48,7 @@ public class PerfStatistic {
             category_map.put(pe.getCategory(), new HashMap<String, int[]>());
         }
         
-        HashMap<String, int[]> identity_map = category_map.get(pe.getCategory());
+        Map<String, int[]> identity_map = category_map.get(pe.getCategory());
         
         if(!identity_map.containsKey(pe.getIdentifier())) {
             int[] c = createCount(intervals.size());
@@ -84,7 +80,7 @@ public class PerfStatistic {
         return sb.toString();
     }
 
-    synchronized Map toMap() {        
+    synchronized Map<String, Map<String, int[]>> toMap() {        
         if(category_map.isEmpty()) return null;
         return category_map;        
     }
@@ -95,21 +91,21 @@ public class PerfStatistic {
      */
     private void format(StringBuffer sb, Formatter v) {
         v.printHeader(sb);
-        for(Iterator i = category_map.keySet().iterator(); i.hasNext();) {
+        for(Iterator<String> i = category_map.keySet().iterator(); i.hasNext();) {
             String category = (String) i.next();
             v.categoryStart(sb, category);
-            HashMap identity_map = category_map.get(category);
-            for(Iterator j = identity_map.keySet().iterator(); j.hasNext(); ) {
+            Map<String,int[]> identity_map = category_map.get(category);
+            for(Iterator<String> j = identity_map.keySet().iterator(); j.hasNext(); ) {
                 String identfier = (String) j.next();
                 int[] cc = (int[]) identity_map.get(identfier);
-                List intervals = IntervalFactory.getInstance().getIntervalForCategory(category);
+                List<Interval> intervals = IntervalFactory.getInstance().getIntervalForCategory(category);
                 
                 int count = 0;
                 int total = getTotal(category, identfier);
                 
                 v.identfierStart(sb, identfier, total);
                 
-                for(Iterator k = intervals.iterator(); k.hasNext();) {
+                for(Iterator<Interval> k = intervals.iterator(); k.hasNext();) {
                     Interval interval = (Interval) k.next();
                    // if(cc[count] > 0) {
                         int per = getPercent(cc, count, total);
@@ -143,12 +139,12 @@ public class PerfStatistic {
     
     
     private int getTotal(String category, String ident) {
-        HashMap identity_map = category_map.get(category);
+        Map<String,int[]> identity_map = category_map.get(category);
         int[] cc = (int[]) identity_map.get(ident);
-        List intervals = IntervalFactory.getInstance().getIntervalForCategory(category);
+        List<Interval> intervals = IntervalFactory.getInstance().getIntervalForCategory(category);
         int count = 0;
         int total = 0;
-        for(Iterator k = intervals.iterator(); k.hasNext(); k.next()) {
+        for(Iterator<Interval> k = intervals.iterator(); k.hasNext(); k.next()) {
             if(cc[count] > 0) {
                 total += cc[count];
             }
@@ -164,7 +160,7 @@ public class PerfStatistic {
   
     
     
-    private int search(long time, List intervals) {
+    private int search(long time, List<Interval> intervals) {
         boolean success = false;
         int first = 0;
         int last = intervals.size();
