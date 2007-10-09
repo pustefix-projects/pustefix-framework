@@ -160,7 +160,8 @@ public class ServiceRuntime {
                     if(pfxSessionContext==null) throw new ServiceException("Context '"+srvConf.getContextName()+"' doesn't exist.");
                         
                     ServerContextImpl srvContext=ServerContextStore.getInstance(session.getServletContext()).getContext(srvConf.getContextName());
-                        
+                    if(srvContext==null) throw new ServiceException("ServerContext '"+srvConf.getContextName()+"' doesn't exist.");
+                    
                     try {
                         // Prepare context for current thread.
                         // Cleanup is performed in finally block.
