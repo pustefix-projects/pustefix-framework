@@ -96,7 +96,7 @@ public abstract class AbstractXMLServlet extends ServletManager {
     private static final int RENDER_FONTIFY  = 2;
     private static final int RENDER_XMLONLY  = 3;
 
-    private static final int MAX_STORED_DOMS = 5;
+    private static final int DEF_MAX_STORED_DOMS = 5;
     
     public static String        DEF_PROP_TMPDIR       = "java.io.tmpdir";
     private static final String FONTIFY_SSHEET        = "core/xsl/xmlfontify.xsl";
@@ -130,6 +130,7 @@ public abstract class AbstractXMLServlet extends ServletManager {
     protected static final String PROP_NOEDIT             = "xmlserver.noeditmodeallowed";
     protected static final String PROP_RENDER_EXT         = "xmlserver.output.externalrenderer";
     protected static final String PROP_CLEANER_TO         = "sessioncleaner.timeout";
+    protected static final String PROP_MAX_STORED_DOMS    = "xmlserver.maxStoredDoms";
     protected static final String PROP_SKIP_GETMODTIME_MU = "targetgenerator.skip_getmodtimemaybeupdate";
     protected static final String PROP_PROHIBITDEBUG      = "xmlserver.prohibitdebug";
     protected static final String PROP_PROHIBITINFO       = "xmlserver.prohibitinfo";
@@ -141,6 +142,8 @@ public abstract class AbstractXMLServlet extends ServletManager {
     
     public final static String SESS_CLEANUP_FLAG_STAGE1 = "__pfx_session_cleanup_stage1";
     public final static String SESS_CLEANUP_FLAG_STAGE2 = "__pfx_session_cleanup_stage2";
+    
+    private int maxStoredDoms=DEF_MAX_STORED_DOMS;
     
     /**
      * Holds the TargetGenerator which is the XML/XSL Cache for this
@@ -227,6 +230,15 @@ public abstract class AbstractXMLServlet extends ServletManager {
             }
         }
         
+        String strVal=getAbstractXMLServletConfig().getProperties().getProperty(PROP_MAX_STORED_DOMS);
+        if(strVal!=null) {
+            try {
+                maxStoredDoms=Integer.parseInt(strVal);
+            } catch(NumberFormatException e) {
+                throw new ServletException("Illegal property value for '"+PROP_MAX_STORED_DOMS+"': "+strVal,e);
+            }
+        }
+        
         String addinfoprop = getAbstractXMLServletConfig().getProperties().getProperty(PROP_ADD_TRAIL_INFO);
         addtrailinfo       = AdditionalTrailInfoFactory.getInstance().getAdditionalTrailInfo(addinfoprop);
         
@@ -236,6 +248,7 @@ public abstract class AbstractXMLServlet extends ServletManager {
             sb.append("                targetconf = ").append(targetconf).append("\n");
             sb.append("               servletname = ").append(servletname).append("\n");
             sb.append("           editModeAllowed = ").append(editmodeAllowed).append("\n");
+            sb.append("             maxStoredDoms = ").append(maxStoredDoms).append("\n");
             sb.append("                   timeout = ").append(timeout).append("\n");
             sb.append("skip_getmodtimemaybeupdate = ").append(skip_getmodtimemaybeupdate).append("\n");
             sb.append("           render_external = ").append(render_external).append("\n");
@@ -298,7 +311,7 @@ public abstract class AbstractXMLServlet extends ServletManager {
         if (session != null) {
             storeddoms = (Map) session.getAttribute(servletname + SUFFIX_SAVEDDOM);
             if (storeddoms == null) {
-                storeddoms = Collections.synchronizedMap(new SimpleCacheLRU(MAX_STORED_DOMS));
+                storeddoms = Collections.synchronizedMap(new SimpleCacheLRU(maxStoredDoms));
                 session.setAttribute(servletname + SUFFIX_SAVEDDOM, storeddoms);
             }
         }
@@ -860,8 +873,9 @@ public abstract class AbstractXMLServlet extends ServletManager {
                         LOGGER.debug("Don't reuse SPDocument because pagenames differ: " + preq.getPageName() + " -> " + saved.getPagename());
                     saved = null;
                 }
-                if(LOGGER.isDebugEnabled() && saved!=null) {
-                    LOGGER.debug("Reuse SPDocument "+saved.getTimestamp()+" restored with key "+reuse.getValue());
+                if(LOGGER.isDebugEnabled()) {
+                    if(saved!=null) LOGGER.debug("Reuse SPDocument "+saved.getTimestamp()+" restored with key "+reuse.getValue());
+                    else LOGGER.debug("No SPDocument with key "+reuse.getValue()+" found");
                 }
                 return saved;
             } else if (getRendering(preq) == AbstractXMLServlet.RENDER_FONTIFY) {
