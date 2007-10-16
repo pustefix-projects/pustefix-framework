@@ -87,6 +87,9 @@ public class SessionCleaner {
         timer.schedule(task, timeoutsecs * 1000);
         // Save the needed info
         storeddoms.put(key, spdoc);
+        if(LOG.isDebugEnabled()) {
+            LOG.debug("Store SPDocument "+spdoc.getTimestamp()+" under key "+key);
+        }
     }
 
     private class SessionCleanerTask extends TimerTask {

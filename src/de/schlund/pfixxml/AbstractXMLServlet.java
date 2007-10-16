@@ -860,6 +860,9 @@ public abstract class AbstractXMLServlet extends ServletManager {
                         LOGGER.debug("Don't reuse SPDocument because pagenames differ: " + preq.getPageName() + " -> " + saved.getPagename());
                     saved = null;
                 }
+                if(LOGGER.isDebugEnabled() && saved!=null) {
+                    LOGGER.debug("Reuse SPDocument "+saved.getTimestamp()+" restored with key "+reuse.getValue());
+                }
                 return saved;
             } else if (getRendering(preq) == AbstractXMLServlet.RENDER_FONTIFY) {
                 return (SPDocument) session.getAttribute(ATTR_SHOWXMLDOC);
@@ -963,6 +966,9 @@ public abstract class AbstractXMLServlet extends ServletManager {
                 reuseKey += "." + frameName;
             }
             storeddoms.remove(reuseKey);
+            if(LOGGER.isDebugEnabled()) {
+                LOGGER.debug("Remove SPDocument stored under "+reuseKey);
+            }
         }
     }
 
