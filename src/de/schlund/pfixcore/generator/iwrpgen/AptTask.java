@@ -62,7 +62,7 @@ public class AptTask extends MatchingTask {
             List<File> newFiles=fileScanner.getChangedFiles(dir,destDir);
             modList.addAll(newFiles);
         }
-        System.out.println(fileScanner.printStatistics());
+        if(fileScanner.getScanCount()>0) System.out.println(fileScanner.printStatistics());
         return modList;
     }
    
