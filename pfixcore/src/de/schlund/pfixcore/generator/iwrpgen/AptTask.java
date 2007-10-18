@@ -4,9 +4,10 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.tools.ant.BuildException;
-import org.apache.tools.ant.DirectoryScanner;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.taskdefs.Execute;
 import org.apache.tools.ant.taskdefs.LogStreamHandler;
@@ -14,8 +15,6 @@ import org.apache.tools.ant.taskdefs.MatchingTask;
 import org.apache.tools.ant.types.Commandline;
 import org.apache.tools.ant.types.Path;
 import org.apache.tools.ant.types.Reference;
-import org.apache.tools.ant.util.GlobPatternMapper;
-import org.apache.tools.ant.util.SourceFileScanner;
 
 public class AptTask extends MatchingTask {
 
@@ -28,9 +27,9 @@ public class AptTask extends MatchingTask {
     
     @Override
     public void execute() throws BuildException {
-        File[] modList=getModifiedFiles();
-        if(modList.length>0) {
-        	log("Processing "+modList.length+" source file"+(modList.length>1?"s":""));
+        List<File> modList=getModifiedFiles();
+        if(modList.size()>0) {
+        	log("Processing "+modList.size()+" source file"+(modList.size()>1?"s":""));
 	        Commandline cmd=new Commandline();
 	        cmd.setExecutable("apt");
 	        cmd.createArgument().setValue("-J-Xmx512m");
@@ -53,33 +52,20 @@ public class AptTask extends MatchingTask {
         }
     }
     
-    private File[] getModifiedFiles() throws BuildException {
-        File[] modList=new File[0];
+    private List<File> getModifiedFiles() throws BuildException {
+        IWrapperFileScanner fileScanner=new IWrapperFileScanner();
+        List<File> modList=new ArrayList<File>();
         String[] dirs=srcDir.list();
         for(int i=0;i<dirs.length;i++) {
             File dir=getProject().resolveFile(dirs[i]);
             if(!dir.exists()) throw new BuildException("Source directory doesn't exist: "+dir.getAbsolutePath(),getLocation());
-            DirectoryScanner scanner=getDirectoryScanner(dir);
-            String[] files=scanner.getIncludedFiles();
-            modList=scanDir(dir,destDir,files,modList);
+            List<File> newFiles=fileScanner.getChangedFiles(dir,destDir);
+            modList.addAll(newFiles);
         }
+        System.out.println(fileScanner.printStatistics());
         return modList;
     }
-    
-    private File[] scanDir(File srcDir,File destDir,String[] files,File[] processList) {
-        GlobPatternMapper mapper=new GlobPatternMapper();
-        mapper.setFrom("*.java");
-        mapper.setTo("*.class");
-        SourceFileScanner scanner=new SourceFileScanner(this);
-        File[] newFiles=scanner.restrictAsFiles(files,srcDir,destDir,mapper);
-        if(newFiles.length>0) {
-            File[] newProcessList=new File[processList.length+newFiles.length];
-            System.arraycopy(processList,0,newProcessList,0,processList.length);
-            System.arraycopy(newFiles,0,newProcessList,processList.length,newFiles.length);
-            processList=newProcessList;
-        }
-        return processList;
-    }
+   
 
     private void callApt(String[] args,int firstFileIndex) {
         File tmpFile=null;
