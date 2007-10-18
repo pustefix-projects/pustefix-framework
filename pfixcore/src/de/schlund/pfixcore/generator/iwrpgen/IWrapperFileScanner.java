@@ -92,8 +92,12 @@ public class IWrapperFileScanner {
         }
     }
     
+    public long getScanCount() {
+        return fileReadCount;
+    }
+    
     public String printStatistics() {
-        return "Read "+fileReadCount+" file(s) in "+fileReadTime+"ms";
+        return "Scanned "+fileReadCount+" file(s) in "+fileReadTime+"ms";
     }
     
 }
