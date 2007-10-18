@@ -47,7 +47,7 @@
     <echo>path: ${remote.repository.path}</echo>
   </target>
 
-  <target name="mvn-deploy" depends="mvn-initTaskDefs, dist-properties, mvn-initRemoteRepository"
+  <target name="mvn-deploy" depends="dist, mvn-initTaskDefs, dist-properties, mvn-initRemoteRepository"
           description="Deploy to remote maven repository">
     <artifact:deploy file="${file.pfixcore_jar}" pomRefId="maven.project">
       <artifact:remoteRepository refid="remote.repository">
@@ -58,7 +58,7 @@
     </artifact:deploy>
   </target>
   
-  <target name="mvn-install" depends="mvn-initTaskDefs, dist-properties, mvn-initLocalRepository"
+  <target name="mvn-install" depends="dist, mvn-initTaskDefs, dist-properties, mvn-initLocalRepository"
           description="Install in local maven repository">
     <artifact:install file="${file.pfixcore_jar}" pomRefId="maven.project">
       <localRepository refid="local.repository"/>
