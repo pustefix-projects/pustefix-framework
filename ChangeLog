@@ -1,5 +1,17 @@
 2007-10-18  Martin Leidig  <mleidig@schlund.de>
 
+	Improved performance of the apt task by using an 'intelligent' file scanner,
+	which presorts/filters the changed Java files, so that the apt tool only has
+	to process files containing IWrapper annotations.
+
+	* src/de/schlund/pfixcore/generator/iwrpgen/IWrapperFileScanner.java: Added
+	special file scanner, which not only finds changed java files, but also reads
+	the beginning of the file and searches for IWrapper annotations.
+	* src/de/schlund/pfixcore/generator/iwrpgen/AptTask.java: Use special file
+	scanner instead of Ant's Directory scanner to find changed java files.
+
+2007-10-18  Martin Leidig  <mleidig@schlund.de>
+
 	Added support for maven repository deployment to build process. The new
 	task 'mvn-install' can be used to install the Pustefix distribution artifacts
 	in the local maven repository, the taks 'mvn-deploy' deploys them to a
