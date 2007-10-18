@@ -1,0 +1,83 @@
+<project name="pfixcore-deployment" default="deploy-all" xmlns:artifact="urn:maven-artifact-ant">
+
+  <target name="mvn-initTaskDefs">
+    <xmlproperty file="pom.xml" prefix="pom.xml"/>
+    <path id="maven-ant-tasks.classpath" path="lib/maven-ant-tasks-2.0.7.jar"/>
+    <typedef resource="org/apache/maven/artifact/ant/antlib.xml" uri="urn:maven-artifact-ant"
+             classpathref="maven-ant-tasks.classpath"/>
+    <artifact:pom file="pom.xml" id="maven.project"/>
+  </target>
+
+  <target name="mvn-initLocalRepository" depends="mvn-initTaskDefs">
+    <property name="local.repo.location" location="${user.home}/.m2/repository"/>
+    <available file="${local.repo.location}" property="local.repo.available"/>
+    <fail unless="local.repo.available">Local maven repository doesn't exist: ${local.repo.location}</fail>
+    <artifact:localRepository id="local.repository" path="${local.repo.location}" layout="default"/>
+  </target>
+
+  <target name="mvn-initRemoteRepository" depends="mvn-initTaskDefs, mvn-installSshProvider">
+    <condition property="remote.repo.available" value="true">
+      <and>
+        <isset property="remote.repository.host"/>
+        <isset property="remote.repository.user"/>
+        <isset property="remote.repository.path"/>
+      </and>
+    </condition>
+    <fail unless="remote.repo.available">No remote maven repository configured</fail>
+    <artifact:remoteRepository id="remote.repository" url="scpexe://${remote.repository.host}/${remote.repository.path}" layout="default"/>
+  </target>
+
+  <target name="mvn-installSshProvider" depends="mvn-initTaskDefs">
+    <artifact:install-provider artifactId="wagon-ssh-external" version="1.0-beta-2"/>
+  </target>
+  
+  <target name="mvn-info" depends="mvn-initTaskDefs"
+          description="Print setup information">
+    <echo>POM:</echo>
+    <echo>----</echo>
+    <echo>groupId:    ${maven.project.groupId}</echo>
+    <echo>artifactId: ${maven.project.artifactId}</echo>
+    <echo>name:       ${maven.project.name}</echo>
+    <echo>version:    ${maven.project.version}</echo>
+    <echo></echo>
+    <echo>Remote repository:</echo>
+    <echo>------------------</echo>
+    <echo>host: ${remote.repository.host}</echo>
+    <echo>user: ${remote.repository.user}</echo>
+    <echo>path: ${remote.repository.path}</echo>
+  </target>
+
+  <target name="mvn-deploy" depends="mvn-initTaskDefs, dist-properties, mvn-initRemoteRepository"
+          description="Deploy to remote maven repository">
+    <artifact:deploy file="${file.pfixcore_jar}" pomRefId="maven.project">
+      <artifact:remoteRepository refid="remote.repository">
+        <artifact:authentication username="${remote.repository.user}" privateKey="${user.home}/.ssh/id_dsa"/>
+      </artifact:remoteRepository>
+      <attach file="${file.pfixcore_srcjar}" classifier="sources" type="jar"/>
+      <attach file="${file.pfixcore_data_tgz}" classifier="data" type="tar.gz"/>
+    </artifact:deploy>
+  </target>
+  
+  <target name="mvn-install" depends="mvn-initTaskDefs, dist-properties, mvn-initLocalRepository"
+          description="Install in local maven repository">
+    <artifact:install file="${file.pfixcore_jar}" pomRefId="maven.project">
+      <localRepository refid="local.repository"/>
+      <attach file="${file.pfixcore_srcjar}" classifier="sources" type="jar"/>
+      <attach file="${file.pfixcore_data_tgz}" classifier="data" type="tar.gz"/>
+    </artifact:install>
+  </target>
+
+  <target name="mvn-test-getdeps" depends="mvn-initTaskDefs">
+    <artifact:dependencies filesetId="dependency.fileset" useScope="runtime">
+      <dependency groupId="de.schlund.pfixcore" artifactId="pfixcore" version="0.11.1"/>
+      <dependency groupId="de.schlund.pfixcore" artifactId="pfixcore" version="0.11.1" classifier="data" type="tar.gz"/>
+    </artifact:dependencies>
+    <delete dir="testdeps"/>
+    <mkdir dir="testdeps"/>
+    <copy todir="testdeps">
+      <fileset refid="dependency.fileset" />
+      <mapper type="flatten" />
+    </copy>
+  </target>
+
+</project>
