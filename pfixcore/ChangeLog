@@ -1,3 +1,20 @@
+2007-10-18  Martin Leidig  <mleidig@schlund.de>
+
+	Added support for maven repository deployment to build process. The new
+	task 'mvn-install' can be used to install the Pustefix distribution artifacts
+	in the local maven repository, the taks 'mvn-deploy' deploys them to a
+	remote repository via ssh. The remote repository location has to be configured
+	using the build properties remote.repository.host, remote.repository.user,
+	remote.repository.path.
+
+	Added:
+	* pom.xml
+	* build-maven.xml
+	* lib/maven-ant-tasks-2.0.7.jar
+
+	Changed:
+	* build.xml: Import build-maven.xml
+
 2007-10-16  Martin Leidig  <mleidig@schlund.de>
 
 	* src/de/schlund/pfixxml/AbstractXMLServlet.java: Make maximum number of stored
