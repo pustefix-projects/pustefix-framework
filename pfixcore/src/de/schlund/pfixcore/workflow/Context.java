@@ -18,16 +18,17 @@
 
 package de.schlund.pfixcore.workflow;
 
+import java.util.Properties;
 
+import javax.servlet.http.Cookie;
 
+import de.schlund.pfixcore.auth.Authentication;
 import de.schlund.pfixcore.exception.PustefixApplicationException;
 import de.schlund.pfixcore.workflow.context.PageFlow;
 import de.schlund.pfixxml.Variant;
 import de.schlund.pfixxml.config.ContextConfig;
 import de.schlund.pfixxml.config.PageRequestConfig;
 import de.schlund.util.statuscodes.StatusCode;
-import java.util.Properties;
-import javax.servlet.http.Cookie;
 
 /**
  * 
@@ -73,6 +74,8 @@ public interface Context {
     void                   addPageMessage(StatusCode scode, String[] args, String level);
     Properties             getPropertiesForContextResource(ContextResource res);
     ContextConfig          getContextConfig();
+    Authentication         getAuthentication();
+    void                   setAuthentication(Authentication authentication);
     
     /**
      * Tells the servlet that the session for this context is not longer needed 

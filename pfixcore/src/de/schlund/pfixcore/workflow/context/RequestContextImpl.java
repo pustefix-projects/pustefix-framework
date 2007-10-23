@@ -21,6 +21,7 @@ package de.schlund.pfixcore.workflow.context;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 import javax.servlet.http.Cookie;
@@ -31,6 +32,13 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
+import de.schlund.pfixcore.auth.AccessDeniedException;
+import de.schlund.pfixcore.auth.Authentication;
+import de.schlund.pfixcore.auth.AuthorizationException;
+import de.schlund.pfixcore.auth.AuthorizationInterceptor;
+import de.schlund.pfixcore.auth.NotAuthenticatedException;
+import de.schlund.pfixcore.auth.Role;
+import de.schlund.pfixcore.auth.RoleNotFoundException;
 import de.schlund.pfixcore.exception.PustefixApplicationException;
 import de.schlund.pfixcore.exception.PustefixCoreException;
 import de.schlund.pfixcore.exception.PustefixRuntimeException;
@@ -50,7 +58,9 @@ import de.schlund.pfixxml.ResultDocument;
 import de.schlund.pfixxml.SPDocument;
 import de.schlund.pfixxml.ServletManager;
 import de.schlund.pfixxml.Variant;
+import de.schlund.pfixxml.config.PageAccessConfig;
 import de.schlund.pfixxml.config.PageRequestConfig;
+import de.schlund.pfixxml.config.RoleConfig;
 import de.schlund.pfixxml.perflogging.PerfEvent;
 import de.schlund.pfixxml.perflogging.PerfEventType;
 import de.schlund.util.statuscodes.StatusCode;
@@ -62,7 +72,7 @@ import de.schlund.util.statuscodes.StatusCode;
  * 
  * @author Sebastian Marsching <sebastian.marsching@1und1.de>
  */
-public class RequestContextImpl implements Cloneable {
+public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
 
     private final static Logger LOG                 = Logger.getLogger(ContextImpl.class);
     private final static String PARAM_JUMPPAGE      = "__jumptopage";
@@ -835,13 +845,18 @@ public class RequestContextImpl implements Cloneable {
                 }
                 resdoc.getSPDocument().getDocument().getDocumentElement().setAttribute("authoriginalpage", saved.getRootName());
                 resdoc.getSPDocument().setPagename(authpage.getName());
+                addAuthenticationData(resdoc);
                 return resdoc.getSPDocument();
             }
         }
         return null;
     }
 
-    private ResultDocument documentFromCurrentStep() throws PustefixApplicationException {
+    private ResultDocument documentFromCurrentStep() throws PustefixApplicationException, PustefixCoreException {
+        
+        ResultDocument document = checkPageAuthorization();
+        if (document != null) return document;
+
         State state = pagemap.getState(currentpagerequest);
         if (state == null) {
             throw new PustefixRuntimeException("* Can't get a state in documentFromCurrentStep() for page " + currentpagerequest.getName());
@@ -855,7 +870,100 @@ public class RequestContextImpl implements Cloneable {
             throw new PustefixApplicationException("Exception while running getDocument() for page " + currentpagerequest.getName(), e);
         }
     }
+    
+    public void checkAuthorization(Authentication authentication) {
+        Map<String,RoleConfig> roleConfigs=parentcontext.getContextConfig().getRoleConfigs();
+        if(roleConfigs!=null) {
+            String pageName=currentpagerequest.getRootName();
+            if(authentication==null||!authentication.isAuthenticated()) {
+                if(LOG.isDebugEnabled()) LOG.debug("Not yet authenticated.");
+                throw new NotAuthenticatedException("Not yet authenticated.", "pageaccess", pageName);
+            }
+            Role[] roles=authentication.getRoles();
+            if(roles!=null) {
+                for(Role role:roles) {
+                    RoleConfig roleConfig=parentcontext.getContextConfig().getRoleConfig(role.getName());
+                    if(roleConfig!=null) {
+                        PageAccessConfig pageAccessConfig=roleConfig.getPageAccessConfig();
+                        if(pageAccessConfig!=null && pageAccessConfig.containsPage(pageName)) {
+                            if(LOG.isDebugEnabled()) LOG.debug("Authorized to access page '"+pageName+"'");
+                            return;
+                        }
+                    } else throw new RoleNotFoundException(role.getName());
+                }
+            }
+            List<String> permittedRoles=new ArrayList<String>();
+            for(RoleConfig roleConfig:roleConfigs.values()) {
+                PageAccessConfig pageAccessConfig=roleConfig.getPageAccessConfig();
+                if(pageAccessConfig!=null && pageAccessConfig.containsPage(pageName))
+                    permittedRoles.add(roleConfig.getName());
+            }
+            if(LOG.isDebugEnabled()) LOG.debug("Not authorized to access page '"+pageName+"'");
+            throw new AccessDeniedException("Not authorized to access page '"+pageName+"'.","pageaccess",pageName,permittedRoles);
+        }
+    }
+    
+    private ResultDocument checkPageAuthorization() throws PustefixApplicationException, PustefixCoreException {
+        if(!parentcontext.getContextConfig().hasRoleConfigs() ||
+                (authpage!=null && currentpagerequest.getRootName().equals(authpage.getRootName()))) return null;
+        try {
+            checkAuthorization(parentcontext.getAuthentication());
+        } catch(AuthorizationException authEx) {
+            if(authpage==null) throw authEx;
+            PageRequest saved = currentpagerequest;
+            if(LOG.isDebugEnabled()) LOG.debug("===> [" + authpage + "]: Checking authorisation");
+            if (!checkIsAccessible(authpage, PageRequestStatus.AUTH)) {
+                throw new PustefixCoreException("*** Authorisation page [" + authpage + "] is not accessible! ***");
+            }
+            if(LOG.isDebugEnabled()) LOG.debug("===> [" + authpage + "]: Need authorisation data");
+            currentpagerequest = authpage;
+            ResultDocument resdoc = documentFromCurrentStep();
+            currentpagerequest = saved;
+            prohibitcontinue=true;
+            if (resdoc != null && prohibitcontinue) {
+                if (resdoc.getSPDocument() == null) {
+                    throw new PustefixCoreException("*** FATAL: " + authpage + " returns a 'null' SPDocument! ***");
+                }    
+                resdoc.getSPDocument().getDocument().getDocumentElement().setAttribute("authoriginalpage", saved.getRootName());
+                resdoc.getSPDocument().setPagename(authpage.getName());
+                Element authElem=addAuthenticationData(resdoc);
+                Element misElem=resdoc.createSubNode(authElem,"authorizationfailure");
+                if(authEx.getType()!=null) misElem.setAttribute("type",authEx.getType());
+                if(authEx.getAuthorization()!=null) misElem.setAttribute("authorization",authEx.getAuthorization());
+                if(authEx.getTarget()!=null) misElem.setAttribute("target",authEx.getTarget());
+                if(authEx instanceof AccessDeniedException) {
+                    AccessDeniedException accessEx=(AccessDeniedException)authEx;
+                    Element permElem=resdoc.createSubNode(misElem,"permittedroles");
+                    List<String> permittedRoles=accessEx.getPermittedRoles();
+                    for(String permittedRole:permittedRoles) {
+                        Element roleElem=resdoc.createSubNode(permElem, "role");
+                        roleElem.setAttribute("name",permittedRole);
+                    }
+                }
+                return resdoc;
+            }
+        }
+        return null;
+    }
 
+    private Element addAuthenticationData(ResultDocument resDoc) {
+        if(parentcontext.getAuthentication()!=null) {
+            Element root=resDoc.getRootElement();
+            Element authElem=resDoc.createNode("authentication");
+            if(root.getFirstChild()!=null) root.insertBefore(authElem, root.getFirstChild());
+            else root.appendChild(authElem);
+            authElem.setAttribute("authenticated",String.valueOf(parentcontext.getAuthentication().isAuthenticated()));
+            Role[] roles=parentcontext.getAuthentication().getRoles();
+            Element rolesElem=resDoc.createSubNode(authElem, "roles");
+            if(roles!=null) for(Role role:roles) {
+                Element roleElem=resDoc.createSubNode(rolesElem, "role");
+                roleElem.setAttribute("name",role.getName());
+            }
+            return authElem;
+        }
+        return null;
+    }
+    
     private void trySettingPageRequestAndFlow() {
         PageRequest tmp = null;
         String tmppagename = currentpservreq.getPageName();

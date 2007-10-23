@@ -41,6 +41,10 @@
           </xs:complexType>
         </xs:element>
       </xs:choice>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="prop:role"/>
+        <xs:element ref="prop:config-include"/>
+      </xs:choice>
       <xs:choice minOccurs="1" maxOccurs="unbounded">
         <xs:element ref="prop:pageflow"/>
         <xs:element ref="prop:pagerequest"/>
@@ -268,9 +272,22 @@
   
   <!-- </interceptors> -->
 	
-	
+  <!-- <role> -->
 
-
+  <xs:element name="role" type="prop:roleType"/>
+  <xs:complexType name="roleType">
+    <xs:sequence>
+      <xs:element ref="prop:pageaccess" minOccurs="1" maxOccurs="1"/>
+    </xs:sequence>
+    <xs:attribute name="name" type="xs:string"/>
+  </xs:complexType>
+  
+  <xs:element name="pageaccess" type="prop:pageaccessType"/>
+  <xs:complexType name="pageaccessType">
+    <xs:attribute name="names" type="xs:string"/>
+  </xs:complexType>
+  
+  <!-- </role> -->
 
   <!-- <pageflow> -->
   <xs:element name="pageflow" type="prop:pageflowType"/>
@@ -599,6 +616,7 @@
           <xs:enumeration value="pagerequests"/>
           <xs:enumeration value="properties"/>
           <xs:enumeration value="interceptors"/>
+          <xs:enumeration value="roles"/>
           <xs:enumeration value="scriptedflows"/>
         </xs:restriction>
       </xs:simpleType>

@@ -32,6 +32,9 @@ import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpSessionBindingEvent;
 import javax.servlet.http.HttpSessionBindingListener;
 
+import de.schlund.pfixcore.auth.Authentication;
+import de.schlund.pfixcore.auth.Role;
+import de.schlund.pfixcore.auth.RoleNotFoundException;
 import de.schlund.pfixcore.exception.PustefixApplicationException;
 import de.schlund.pfixcore.exception.PustefixCoreException;
 import de.schlund.pfixcore.util.TokenManager;
@@ -47,6 +50,7 @@ import de.schlund.pfixxml.ServletManager;
 import de.schlund.pfixxml.Variant;
 import de.schlund.pfixxml.config.ContextConfig;
 import de.schlund.pfixxml.config.PageRequestConfig;
+import de.schlund.pfixxml.config.RoleConfig;
 import de.schlund.util.statuscodes.StatusCode;
 
 public class ContextImpl implements Context, AccessibilityChecker, ExtendedContext, TokenManager, HttpSessionBindingListener {
@@ -66,6 +70,7 @@ public class ContextImpl implements Context, AccessibilityChecker, ExtendedConte
         private String                 visitId          = null;
         private ContextResourceManagerImpl crm;
         private SessionEndNotificator  sessionEndNotificator;
+        private Authentication authentication;
 
         // private Map<NavigationElement, Integer> navigationMap = new
         // HashMap<NavigationElement, Integer>();
@@ -195,6 +200,18 @@ public class ContextImpl implements Context, AccessibilityChecker, ExtendedConte
             }
         }
 
+        public Authentication getAuthentication() {
+            return authentication;
+        }
+        
+        public void setAuthentication(Authentication authentication) {
+            this.authentication = authentication;
+            for(Role role:authentication.getRoles()) {
+                RoleConfig roleConfig=getContextConfig().getRoleConfig(role.getName());
+                if(roleConfig==null) throw new RoleNotFoundException(role.getName());
+            }
+        }
+        
         public String toString() {
             StringBuffer contextbuf = new StringBuffer("\n");
 
@@ -476,6 +493,14 @@ public class ContextImpl implements Context, AccessibilityChecker, ExtendedConte
     
     public boolean isValidToken(String tokenName,String token) {
         return sessioncontext.isValidToken(tokenName,token);
+    }
+    
+    public Authentication getAuthentication() {
+        return sessioncontext.getAuthentication();
+    }
+    
+    public void setAuthentication(Authentication authentication) {
+        sessioncontext.setAuthentication(authentication);
     }
     
     public String toString() {

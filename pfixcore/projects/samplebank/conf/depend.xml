@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<make project="samplebank"
+      lang="en_GB">
+
+  <global>
+    <param name="outputdoctype-public" value="-//W3C//DTD HTML 4.01//EN"/>
+    <param name="outputdoctype-system" value="http://www.w3.org/TR/html40/strict.dtd"/>
+  </global>
+  
+  <navigation>
+    <page name="login"     handler="/xml/config"/>
+    <page name="accountoverview"     handler="/xml/config" accesskey="H"/>
+    <page name="accountdetails"    handler="/xml/config" accesskey="O"/>
+  </navigation>
+  
+  <standardmaster/>
+
+  <standardmetatags>
+    <include stylesheet="samplebank/xsl/metatags.xsl"/>
+  </standardmetatags>
+  
+  <standardpage name="login" xml="samplebank/xml/one_frame.xml"/>
+  <standardpage name="accountoverview" xml="samplebank/xml/one_frame.xml"/>
+  <standardpage name="accountdetails" xml="samplebank/xml/one_frame.xml"/>
+
+</make>

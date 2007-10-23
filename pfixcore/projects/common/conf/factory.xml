@@ -37,6 +37,7 @@
     <prop name="partindex.scodefile.1">core/dyntxt/statusmessages.xml</prop>
     <prop name="partindex.scodefile.2">sample1/dyntxt/statusmessages.xml</prop>
     <prop name="partindex.scodefile.3">testsuite/dyntxt/statusmessages.xml</prop>
+    <prop name="partindex.scodefile.4">samplebank/dyntxt/statusmessages.xml</prop>
     
     <!-- SPCacheFactory -->
     <prop name="targetcache.cacheclass">de.schlund.pfixxml.targets.LRUCache</prop>

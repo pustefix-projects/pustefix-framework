@@ -136,4 +136,8 @@ public interface ContextConfig {
      */
     boolean isSynchronized();
 
+    RoleConfig getRoleConfig(String roleName);
+    Map<String,RoleConfig> getRoleConfigs();
+    boolean hasRoleConfigs();
+    
 }
