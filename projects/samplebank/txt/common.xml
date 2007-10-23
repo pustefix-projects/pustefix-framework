@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="ISO-8859-1"?><include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
+  
+<part name="header">
+  <theme name="default">
+    <div class="header">$$$&#160; Sample Bank Application &#160;$$$</div>
+  </theme>
+</part>
+
+<part name="navigation">
+  <theme name="default">
+    <div class="navigation">
+      <pfx:button page="accountoverview">Overview</pfx:button> 
+      <pfx:button page="accountdetails">Account</pfx:button>
+    </div>
+  </theme>
+</part>
+
+</include_parts>

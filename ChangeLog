@@ -1,3 +1,94 @@
+2007-10-23  Martin Leidig  <mleidig@schlund.de>
+
+	Added role-based authorization support. Now it's possible to define roles
+	and assign authorizations to them. Currently we only support pageaccess
+	authorizations, further authorizations, like method access will be possible
+	in later releases.
+	Roles can be assigned to the current user or session by setting an Authentication
+	object using the Context's setAuthentication method. The pageaccess authorization 
+	is done by interfering documentFromCurrentStep() and checking if the current
+	roles permit accessing the current page. The role definition and assignment of
+	authorizations is done in the ContextXMLServlet's configuration file.
+
+	Added:
+
+	* src/de/schlund/pfixcore/auth
+	* src/de/schlund/pfixcore/auth/Authentication.java
+	* src/de/schlund/pfixcore/auth/AuthorizationException.java
+	* src/de/schlund/pfixcore/auth/AuthorizationInterceptor.java
+	* src/de/schlund/pfixcore/auth/AuthenticationImpl.java
+	* src/de/schlund/pfixcore/auth/Role.java
+	* src/de/schlund/pfixcore/auth/NotAuthenticatedException.java
+	* src/de/schlund/pfixcore/auth/RoleImpl.java
+	* src/de/schlund/pfixcore/auth/AccessDeniedException.java
+	* src/de/schlund/pfixcore/auth/RoleNotFoundException.java
+	* src/de/schlund/pfixcore/auth/AuthenticationException.java
+	* src/de/schlund/pfixxml/config/impl/PageAccessConfigImpl.java
+	* src/de/schlund/pfixxml/config/impl/PageAccessRule.java
+	* src/de/schlund/pfixxml/config/impl/RoleConfigImpl.java
+	* src/de/schlund/pfixxml/config/impl/RoleRule.java
+	* src/de/schlund/pfixxml/config/PageAccessConfig.java
+	* src/de/schlund/pfixxml/config/RoleConfig.java
+
+	Modified:
+
+	* src/de/schlund/pfixcore/workflow/context/RequestContextImpl.java
+	* src/de/schlund/pfixcore/workflow/ContextImpl.java
+	* src/de/schlund/pfixcore/workflow/Context.java
+	* src/de/schlund/pfixxml/config/ContextConfig.java
+	* src/de/schlund/pfixxml/config/impl/ContextXMLServletConfigImpl.java
+	* src/de/schlund/pfixxml/config/impl/ContextConfigImpl.java
+	* src/de/schlund/pfixxml/config/includes/IncludesResolver.java
+	* projects/core/schema/properties200401.xsd
+	* projects/core/schema/configfragments200609.xsd
+	* projects/common/conf/factory.xml
+
+	Added sample application (simple online banking example):
+
+	* src/de/schlund/pfixcore/example/bank
+	* src/de/schlund/pfixcore/example/bank/BankApplication.java
+	* src/de/schlund/pfixcore/example/bank/model
+	* src/de/schlund/pfixcore/example/bank/model/BankInMemoryDAO.java
+	* src/de/schlund/pfixcore/example/bank/model/BankDAO.java
+	* src/de/schlund/pfixcore/example/bank/model/Customer.java
+	* src/de/schlund/pfixcore/example/bank/model/Account.java
+	* src/de/schlund/pfixcore/example/bank/context
+	* src/de/schlund/pfixcore/example/bank/context/ContextAccount.java
+	* src/de/schlund/pfixcore/example/bank/context/ContextAccountImpl.java
+	* src/de/schlund/pfixcore/example/bank/context/ContextTest.java
+	* src/de/schlund/pfixcore/example/bank/context/ContextCustomer.java
+	* src/de/schlund/pfixcore/example/bank/context/ContextTestImpl.java
+	* src/de/schlund/pfixcore/example/bank/context/ContextCustomerImpl.java
+	* src/de/schlund/pfixcore/example/bank/ihandler
+	* src/de/schlund/pfixcore/example/bank/ihandler/EditAccountHandler.java
+	* src/de/schlund/pfixcore/example/bank/ihandler/LoginHandler.java
+	* src/de/schlund/pfixcore/example/bank/ihandler/SelectAccountHandler.java
+	* src/de/schlund/pfixcore/example/bank/iwrapper
+	* src/de/schlund/pfixcore/example/bank/iwrapper/EditAccount.iwrp
+	* src/de/schlund/pfixcore/example/bank/iwrapper/Login.iwrp
+	* src/de/schlund/pfixcore/example/bank/iwrapper/SelectAccount.iwrp
+	* src/de/schlund/pfixcore/example/bank/AuthTokenManager.java
+	* projects/samplebank
+	* projects/samplebank/txt
+	* projects/samplebank/txt/pages
+	* projects/samplebank/txt/pages/main_accountdetails.xml
+	* projects/samplebank/txt/pages/main_accountoverview.xml
+	* projects/samplebank/txt/pages/main_login.xml
+	* projects/samplebank/txt/common.xml
+	* projects/samplebank/xml
+	* projects/samplebank/xml/one_frame.xml
+	* projects/samplebank/htdocs
+	* projects/samplebank/htdocs/style.css
+	* projects/samplebank/conf
+	* projects/samplebank/conf/config.conf.xml
+	* projects/samplebank/conf/project.xml.in
+	* projects/samplebank/conf/depend.xml
+	* projects/samplebank/xsl
+	* projects/samplebank/xsl/metatags.xsl
+	* projects/samplebank/dyntxt
+	* projects/samplebank/dyntxt/statusmessages.xml
+	* projects/samplebank/img
+
 2007-10-18  Martin Leidig  <mleidig@schlund.de>
 
 	Improved performance of the apt task by using an 'intelligent' file scanner,

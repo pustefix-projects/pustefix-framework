@@ -33,6 +33,7 @@ import org.apache.log4j.Logger;
 import de.schlund.pfixxml.config.ContextConfig;
 import de.schlund.pfixxml.config.ContextResourceConfig;
 import de.schlund.pfixxml.config.PageFlowConfig;
+import de.schlund.pfixxml.config.RoleConfig;
 
 /**
  * Stores configuration for a Context
@@ -59,6 +60,7 @@ public class ContextConfigImpl implements ContextConfig {
     private String navigationFile = null;
     private Properties props = new Properties();
     private boolean synchronize = true;
+    private Map<String,RoleConfig> roleConfigs = new HashMap<String,RoleConfig>();
 
     public void setAuthPage(String page) {
         this.authPage = page;
@@ -180,6 +182,22 @@ public class ContextConfigImpl implements ContextConfig {
         } else {
             this.endinterceptors.add(clazz);
         }       
+    }
+    
+    public void addRoleConfig(RoleConfig roleConfig) {
+        roleConfigs.put(roleConfig.getName(),roleConfig);
+    }
+    
+    public RoleConfig getRoleConfig(String roleName) {
+        return roleConfigs.get(roleName);
+    }
+    
+    public Map<String,RoleConfig> getRoleConfigs() {
+        return Collections.unmodifiableMap(roleConfigs);
+    }
+    
+    public boolean hasRoleConfigs() {
+        return !roleConfigs.isEmpty();
     }
     
     public void setNavigationFile(String filename) {
