@@ -1,5 +1,9 @@
 2007-10-25  Martin Leidig  <mleidig@schlund.de>
 
+	* build.xml: Don't include saxon8.x jars into skeleton archive.
+
+2007-10-25  Martin Leidig  <mleidig@schlund.de>
+
 	Improved error page of UniversalExceptionProcessor. Now all exception causes are
 	shown (needed cause the toplevel exceptions aren't meaningful enough). All stacktraces
 	are available too (and additionally are collapsible).

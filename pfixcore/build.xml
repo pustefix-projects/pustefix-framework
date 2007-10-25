@@ -173,7 +173,7 @@ or delete the DOCTYPE definition -->
     <tar destfile="${file.pfixcore_skel_tgz}" compression="gzip">
       <tarfileset dir="${dir.skel}" prefix="skel"/>
       <tarfileset dir="${dir.metainf}" includes="${name.svnrevision}" prefix="skel"/>
-      <tarfileset dir="${dir.lib}" includes="*.jar, tomcat/README" prefix="skel/lib"/>
+      <tarfileset dir="${dir.lib}" includes="*.jar, tomcat/README" excludes="saxon8*.jar" prefix="skel/lib"/>
       <tarfileset dir="${dir.dist}" includes="${name.pfixcore_jar}" prefix="skel/lib"/>
       <tarfileset dir="${dir.dist}" includes="${name.pfixcore_data_tgz}" prefix="skel/lib"/>
       <tarfileset dir="${basedir}" includes="ant.dtd" prefix="skel"/>
