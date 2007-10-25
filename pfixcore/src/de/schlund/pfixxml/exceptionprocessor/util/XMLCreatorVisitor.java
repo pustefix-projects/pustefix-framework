@@ -95,24 +95,29 @@ public class XMLCreatorVisitor implements ExceptionDataValueVisitor {
 		}
 		e.appendChild(sess_keysnvals);
 		
-		Element exception = doc.createElement("exception");
-		exception.setAttribute("type", data.getThrowable().getClass().getName());
-		exception.setAttribute("msg", data.getThrowable().getMessage());
-		
-		Element stacktrace = doc.createElement("stacktrace");
-		StackTraceElement[] strace = data.getThrowable().getStackTrace();
-		for(int i=0; i<strace.length; i++) {
-			Element line = doc.createElement("line");
-			Text line_txt = doc.createTextNode(strace[i].toString());
-			line.appendChild(line_txt);
-			stacktrace.appendChild(line);
-		}
-		exception.appendChild(stacktrace);
-		
-		e.appendChild(exception);
+		appendThrowable(e, data.getThrowable());
 		
 		doc.appendChild(e);
         data.setXMLRepresentation(doc);
 	}
 
+	private void appendThrowable(Element elem, Throwable throwable) {
+	    if(throwable!=null) {
+	        Element exElem = doc.createElement("exception");
+	        exElem.setAttribute("type", throwable.getClass().getName());
+	        exElem.setAttribute("msg", throwable.getMessage());
+	        Element stackElem = doc.createElement("stacktrace");
+	        StackTraceElement[] strace = throwable.getStackTrace();
+	        for(int i=0; i<strace.length; i++) {
+	            Element lineElem = doc.createElement("line");
+	            Text lineText = doc.createTextNode(strace[i].toString());
+	            lineElem.appendChild(lineText);
+	            stackElem.appendChild(lineElem);
+	        }
+	        exElem.appendChild(stackElem);
+	        elem.appendChild(exElem);
+	        if(throwable.getCause()!=null) appendThrowable(exElem, throwable.getCause());
+	    }
+	}
+	
 }
