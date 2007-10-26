@@ -20,7 +20,7 @@ or delete the DOCTYPE definition -->
   <property name="dir.gensrc"               location="gensrc"/>
   <property name="dir.build"                location="build"/>
   <property name="dir.lib"                  location="lib"/>
-  <property name="lib.includes"             value="lib/*.jar"/>
+  <property name="lib.includes"             value="lib/**/*.jar"/>
   <property name="test.lib.includes"        value="${lib.includes}"/>
   <property name="dir.skel"                 location="skel"/>
   <property name="dir.projects"             location="projects"/>
