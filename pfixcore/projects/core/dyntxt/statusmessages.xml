@@ -156,6 +156,9 @@
   <part name="pfixcore.generator.FORM_TOKEN_INVALID">
     <theme name="default">The submitted form token is invalid.</theme>
   </part>
+  <part name="pfixcore.generator.FORM_TOKEN_MISSING">
+    <theme name="default">The required form token is missing.</theme>
+  </part>
   <part name="pfixcore.lucefix.INDEX_NOT_INITED">
     <theme name="default">Index is not initialized. Please wait some minutes before using search</theme>
   </part>
