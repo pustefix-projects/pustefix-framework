@@ -19,6 +19,10 @@
           .comment            {color: #666666;}
           .dimmed             {color: #aaaaaa;}
           .error              {background-color: #ffff00;}
+          .datatable {border-spacing:0px;color:#000000;padding-left:20px;}
+          .datatable td {padding:4px;}
+          .datatable th {padding:4px;text-align:left;font-weight:normal;border-bottom: 1px solid black;}
+          .rowsep {border-bottom: 1px dotted #888888;}
         </style>
       </head>
       <body>
@@ -35,6 +39,8 @@
           <xsl:with-param name="thepages" select="$navitree/page"/>
         </xsl:call-template>
         </table>
+        <xsl:call-template name="render_iwrappers"/>
+        <br/>
       </body>
     </html>
   </xsl:template>
@@ -84,6 +90,47 @@
       <td align="center"><xsl:copy-of select="$visited"/></td>
       <td align="center"><xsl:copy-of select="$visible"/></td>
     </tr>
+  </xsl:template>
+  
+  <xsl:template name="render_iwrappers">
+    <h1>IWrappers:</h1>
+    <table cellspacing="0" class="datatable">
+      <tr>
+        <th>Prefix</th>
+        <th>Param name</th>
+        <th>Occurrence</th>
+        <th>Frequency</th>
+        <th>Type</th>
+      </tr>
+      <xsl:for-each select="callback:getIWrappers($__context__,/,'')/iwrappers/iwrapper">
+        <xsl:variable name="iwrp" select="callback:getIWrapperInfo($__context__,/,'',@prefix)/iwrapper"/>
+        <xsl:variable name="prefix" select="@prefix"/>
+        <xsl:for-each select="$iwrp/param">
+          <tr>
+            <td>
+              <xsl:if test="position()=last()"><xsl:attribute name="class">rowsep</xsl:attribute></xsl:if>
+              <xsl:value-of select="$prefix"/>
+            </td>
+            <td>
+              <xsl:if test="position()=last()"><xsl:attribute name="class">rowsep</xsl:attribute></xsl:if>
+              <xsl:value-of select="@name"/>
+            </td>
+            <td>
+              <xsl:if test="position()=last()"><xsl:attribute name="class">rowsep</xsl:attribute></xsl:if>
+              <xsl:value-of select="@occurrence"/>
+            </td>
+            <td>
+              <xsl:if test="position()=last()"><xsl:attribute name="class">rowsep</xsl:attribute></xsl:if>
+              <xsl:value-of select="@frequency"/>
+            </td>
+            <td>
+              <xsl:if test="position()=last()"><xsl:attribute name="class">rowsep</xsl:attribute></xsl:if>
+              <xsl:value-of select="@type"/>
+            </td>
+          </tr>
+        </xsl:for-each> 
+      </xsl:for-each>
+    </table>
   </xsl:template>
 
   <xsl:template match="*" mode="static_disp">
