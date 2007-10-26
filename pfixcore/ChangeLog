@@ -1,4 +1,16 @@
 2007-10-26  Martin Leidig  <mleidig@schlund.de>
+
+	Added table showing all configured IWrappers and their parameters for the
+	current page in the editor-mode-XML-only DOM-tree view.
+
+	* src/de/schlund/pfixcore/util/TransformerCallback.java: added new method
+	which returns a nodelist containing all configured IWrappers and their
+	prefixes
+	* projects/core/xsl/xmlfontify.xsl: added XSLT which retrieves the IWrapper
+	list for the current page, iterates over the IWrappers, gets the IWrapper
+	information and shows the data in a table
+
+2007-10-26  Martin Leidig  <mleidig@schlund.de>
 	
 	Added support for forcing form submit tokens. It's enabled by setting
 	the 'requirestoken'-attribute at the according pagerequest/input element	

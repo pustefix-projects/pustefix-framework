@@ -1,13 +1,25 @@
 package de.schlund.pfixcore.util;
 
+import java.io.StringWriter;
 import java.util.Map;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+
 import org.apache.log4j.Logger;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
 import de.schlund.pfixcore.generator.IWrapper;
 import de.schlund.pfixcore.generator.IWrapperInfo;
 import de.schlund.pfixcore.workflow.ContextImpl;
+import de.schlund.pfixcore.workflow.PageRequest;
 import de.schlund.pfixcore.workflow.context.AccessibilityChecker;
 import de.schlund.pfixcore.workflow.context.RequestContextImpl;
 import de.schlund.pfixxml.SPDocument;
@@ -30,6 +42,8 @@ public class TransformerCallback {
     
     private static Logger LOG=Logger.getLogger(TransformerCallback.class);
 
+    private static DocumentBuilderFactory  docBuilderFactory = DocumentBuilderFactory.newInstance();
+    
     public static void setNoStore(SPDocument spdoc) {
         spdoc.setNostore(true);
     }
@@ -102,6 +116,11 @@ public class TransformerCallback {
         try {
             ContextImpl context = requestContext.getParentContext();
             XsltVersion xsltVersion = Xml.getXsltVersion(docNode);
+            if(pageName==null || pageName.equals("")) {
+                PageRequest pg=requestContext.getCurrentPageRequest();
+                if(pg!=null) pageName=pg.getName();
+                else throw new IllegalArgumentException("Missing page name");
+            }
             PageRequestConfig pageConfig = context.getContextConfig().getPageRequestConfig(pageName);
             if(pageConfig!=null) {
                 Map<String, ? extends IWrapperConfig> iwrappers = pageConfig.getIWrappers();
@@ -119,6 +138,57 @@ public class TransformerCallback {
             }
             return null;
         } catch(RuntimeException x) {
+            ExtensionFunctionUtils.setExtensionFunctionError(x);
+            throw x;
+        }
+    }
+    
+    public static Node getIWrappers(RequestContextImpl requestContext, Node docNode, String pageName) throws Exception {
+        try {
+            ContextImpl context = requestContext.getParentContext();
+            XsltVersion xsltVersion = Xml.getXsltVersion(docNode);
+            DocumentBuilder db = docBuilderFactory.newDocumentBuilder();
+            Document doc = db.newDocument();
+            Element root = doc.createElement("iwrappers");
+            doc.appendChild(root);
+            if(pageName==null || pageName.equals("")) {
+                PageRequest pg=requestContext.getCurrentPageRequest();
+                if(pg!=null) pageName=pg.getName();
+                else throw new IllegalArgumentException("Missing page name");
+            }
+            PageRequestConfig pageConfig = context.getContextConfig().getPageRequestConfig(pageName);
+            if(pageConfig!=null) {
+                if(pageConfig.getAuthWrapperPrefix()!=null) {
+                    Element elem=doc.createElement("iwrapper");
+                    elem.setAttribute("type","auth");
+                    elem.setAttribute("prefix",pageConfig.getAuthWrapperPrefix());
+                    root.appendChild(elem);
+                }
+                Map<String,Class<?>> auxWrappers=pageConfig.getAuxWrappers();
+                for(String prefix:auxWrappers.keySet()) {
+                    Element elem=doc.createElement("iwrapper");
+                    elem.setAttribute("type","aux");
+                    elem.setAttribute("prefix",prefix);
+                    root.appendChild(elem);
+                }
+                Map<String, ? extends IWrapperConfig> iwrappers = pageConfig.getIWrappers();
+                for(String prefix:iwrappers.keySet()) {
+                    Element elem=doc.createElement("iwrapper");
+                    elem.setAttribute("prefix",prefix);
+                    root.appendChild(elem);
+                }          
+            }
+            if (LOG.isDebugEnabled()) {
+                TransformerFactory tf = TransformerFactory.newInstance();
+                Transformer t = tf.newTransformer();
+                t.setOutputProperty(OutputKeys.INDENT, "yes");
+                StringWriter writer = new StringWriter();
+                t.transform(new DOMSource(doc), new StreamResult(writer));
+                LOG.debug(writer.toString());
+            }
+            Node iwrpDoc = Xml.parse(xsltVersion, doc);
+            return iwrpDoc;
+        } catch(Exception x) {
             ExtensionFunctionUtils.setExtensionFunctionError(x);
             throw x;
         }
