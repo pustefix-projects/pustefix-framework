@@ -1,3 +1,8 @@
+2007-10-26  Martin Leidig  <mleidig@schlund.de>
+
+	* build-maven.xml: Add skel archive as artifact attachment.	
+	* pom.xml: Set version to 0.11.2
+
 2007-10-25  Martin Leidig  <mleidig@schlund.de>
 
 	* build.xml: Don't include saxon8.x jars into skeleton archive.
