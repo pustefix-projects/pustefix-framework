@@ -1,4 +1,17 @@
 2007-10-26  Martin Leidig  <mleidig@schlund.de>
+	
+	Added support for forcing form submit tokens. It's enabled by setting
+	the 'requirestoken'-attribute at the according pagerequest/input element	
+	to 'true'. 
+			
+	* src/de/schlund/pfixcore/workflow/app/DefaultIWrapperState.java
+	* src/de/schlund/pfixxml/config/PageRequestConfig.java
+	* src/de/schlund/pfixxml/config/impl/PageRequestConfigImpl.java
+	* src/de/schlund/pfixxml/config/impl/PagerequestInputRule.java
+	* projects/core/schema/properties200401.xsd
+	* projects/core/dyntxt/statusmessages.xml
+
+2007-10-26  Martin Leidig  <mleidig@schlund.de>
 
 	* build-maven.xml: Add skel archive as artifact attachment.	
 	* pom.xml: Set version to 0.11.2

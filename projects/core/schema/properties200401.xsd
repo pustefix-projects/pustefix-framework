@@ -451,6 +451,7 @@
                   </xs:restriction>
                 </xs:simpleType>
               </xs:attribute>
+              <xs:attribute name="requirestoken" default="false" type="xs:boolean"/>
             </xs:complexType>
           </xs:element>
           <xs:element name="auth" minOccurs="0">
