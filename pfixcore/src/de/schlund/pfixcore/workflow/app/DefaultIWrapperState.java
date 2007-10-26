@@ -117,6 +117,18 @@ public class DefaultIWrapperState extends StateImpl {
                         valid=false;
                     }
                 } else throw new IllegalArgumentException("Invalid token format: "+token);
+            } else {
+                PageRequestConfig pageConf=context.getConfigForCurrentPageRequest();
+                if(pageConf!=null && pageConf.requiresToken()) {
+                    context.addPageMessage(StatusCodeLib.PFIXCORE_GENERATOR_FORM_TOKEN_MISSING);
+                    pe = new PerfEvent(PerfEventType.PAGE_RETRIEVECURRENTSTATUS, context.getCurrentPageRequest().toString());
+                    pe.start();
+                    container.retrieveCurrentStatus();
+                    pe.save();
+                    rfinal.onRetrieveStatus(container);
+                    context.prohibitContinue();
+                    valid=false;
+                }
             }
             
             if(valid) {

@@ -52,11 +52,18 @@ public class PagerequestInputRule extends CheckedRule {
         } else {
             pageConfig.setIWrapperPolicy(PageRequestConfig.Policy.ANY);
         }
+        String val = attributes.getValue("requirestoken");
+        if(val != null) {
+            if(val.equalsIgnoreCase("true")) {
+                pageConfig.setRequiresToken(true);
+            }
+        }
     }
     
     protected Map<String, Boolean> wantsAttributes() {
         HashMap<String, Boolean> atts = new HashMap<String, Boolean>();
         atts.put("policy", false);
+        atts.put("requirestoken",false);
         return atts;
     }
     

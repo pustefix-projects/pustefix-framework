@@ -149,4 +149,6 @@ public interface PageRequestConfig {
      */
     Class<?> getAuthWrapperClass();
     
+    boolean requiresToken();
+    
 }

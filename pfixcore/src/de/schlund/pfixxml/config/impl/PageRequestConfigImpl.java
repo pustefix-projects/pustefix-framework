@@ -48,6 +48,7 @@ public class PageRequestConfigImpl implements SSLOption, Cloneable, PageRequestC
     private LinkedHashMap<String, Class> resources = new LinkedHashMap<String, Class>();
     private Properties props = new Properties();
     private Policy policy = Policy.ANY;
+    private boolean requiresToken = false;
     
     public void setPageName(String page) {
         this.pageName = page;
@@ -216,6 +217,14 @@ public class PageRequestConfigImpl implements SSLOption, Cloneable, PageRequestC
         return this.authClass;
     }
 
+    public boolean requiresToken() {
+        return requiresToken;
+    }
+    
+    public void setRequiresToken(boolean requiresToken) {
+        this.requiresToken = requiresToken;
+    }
+    
     /* (non-Javadoc)
      * @see java.lang.Object#clone()
      */
