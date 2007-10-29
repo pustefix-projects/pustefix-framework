@@ -1,3 +1,13 @@
+2007-10-29  Sebastian Marsching  <sebastian.marsching@1und1.de>
+
+	* src/de/schlund/pfixcore/editor2/frontend/resources/NamespaceInfoResource.java: 
+	* src/de/schlund/pfixcore/editor2/frontend/resources/NamespaceInfoResourceImpl.java:
+	* projects/core/script/wfxEditor.js: 
+	* projects/core/editor2/conf/edit.conf.xml: 
+	* projects/core/editor2/txt/util_includes.xml: 
+	Use configured namespace prefixes in javascript editor when checking XML
+	document for correct syntax.
+
 2007-10-26  Martin Leidig  <mleidig@schlund.de>
 
 	Added table showing all configured IWrappers and their parameters for the

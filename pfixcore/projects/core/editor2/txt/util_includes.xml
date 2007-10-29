@@ -197,6 +197,9 @@
   <part name="uploadinclude">
     <theme name="default">
       <!-- <pfx:editconsole/> -->
+      <script type="text/javascript">
+        var de_schlund_pfixcore_editor_namespace_decl = "<ixsl:for-each select="/formresult/namespace-info/namespace">xmlns:<ixsl:value-of select="@prefix"/>=\"<ixsl:value-of select="@url"/>\" </ixsl:for-each>";
+      </script>
       <br/>
       <table class="editor_box" width="100%">
         <pfx:checkfield name="upload.Content">

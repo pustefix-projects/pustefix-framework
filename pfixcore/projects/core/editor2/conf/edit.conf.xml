@@ -34,9 +34,12 @@
       <implements class="de.schlund.pfixcore.editor2.frontend.resources.SessionInfoResource"/>
     </resource>
     <resource class="de.schlund.pfixcore.editor2.frontend.resources.UsersResourceImpl">
-    <implements class="de.schlund.pfixcore.editor2.frontend.resources.UsersResource"/>   </resource>
+      <implements class="de.schlund.pfixcore.editor2.frontend.resources.UsersResource"/>   </resource>
     <resource class="de.schlund.pfixcore.lucefix.ContextSearchImpl">
       <implements class="de.schlund.pfixcore.lucefix.ContextSearch"/>
+    </resource>
+    <resource class="de.schlund.pfixcore.editor2.frontend.resources.NamespaceInfoResourceImpl">
+      <implements class="de.schlund.pfixcore.editor2.frontend.resources.NamespaceInfoResource"/>
     </resource>
   </context>
   
@@ -163,6 +166,7 @@
       <resource node="session" class="de.schlund.pfixcore.editor2.frontend.resources.SessionResource"/>
       <resource node="projects" class="de.schlund.pfixcore.editor2.frontend.resources.ProjectsResource"/>
       <resource node="includes" class="de.schlund.pfixcore.editor2.frontend.resources.IncludesResource"/>
+      <resource node="namespace-info" class="de.schlund.pfixcore.editor2.frontend.resources.NamespaceInfoResource"/>
       <resource node="lucefix" class="de.schlund.pfixcore.lucefix.ContextSearch"/>
     </output>
   </pagerequest>
@@ -178,6 +182,7 @@
       <resource node="session" class="de.schlund.pfixcore.editor2.frontend.resources.SessionResource"/>
       <resource node="projects" class="de.schlund.pfixcore.editor2.frontend.resources.ProjectsResource"/>
       <resource node="dynincludes" class="de.schlund.pfixcore.editor2.frontend.resources.DynIncludesResource"/>
+      <resource node="namespace-info" class="de.schlund.pfixcore.editor2.frontend.resources.NamespaceInfoResource"/>
     </output>
   </pagerequest>
 	
