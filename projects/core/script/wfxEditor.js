@@ -329,7 +329,7 @@ wfxEditor.prototype.isWellFormedXML = function( xml, err ) {
   if( xml.indexOf("<?xml ") != 0 ) {
     // prepend XML declaration
     xml = '<?xml version="1.0" encoding="utf-8" ?>\n' +
-      '<sfxroot xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core" xmlns:ixsl="http://www.w3.org/1999/XSL/TransformOutputAlias">\n' + xml + '\n</sfxroot>\n';
+      '<sfxroot ' + de_schlund_pfixcore_editor_namespace_decl + '>\n' + xml + '\n</sfxroot>\n';
   }
 
   if( typeof err == "undefined" ) {
