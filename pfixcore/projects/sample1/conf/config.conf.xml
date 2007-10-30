@@ -31,8 +31,12 @@
       <implements class="de.schlund.pfixcore.example.ContextTogglePic"/>
     </resource>
     
-     <resource class="de.schlund.pfixcore.example.ContextEncodingTestImpl">
+    <resource class="de.schlund.pfixcore.example.ContextEncodingTestImpl">
       <implements class="de.schlund.pfixcore.example.ContextEncodingTest"/>
+    </resource>
+    
+    <resource class="de.schlund.pfixcore.example.ContextFileUploadImpl">
+      <implements class="de.schlund.pfixcore.example.ContextFileUpload"/>
     </resource>
     
     <resource class="de.schlund.pfixcore.example.ContextSimpleDataImpl">
@@ -185,6 +189,16 @@
     <!-- <properties> -->
     <!--   <prop name="mimetype">text/html; charset=utf-8</prop> -->
     <!-- </properties> -->
+  </pagerequest>
+  
+  <pagerequest name="upload">
+    <input>
+      <interface prefix="multiupload" class="de.schlund.pfixcore.example.iwrapper.MultiFileUpload"/>
+      <interface prefix="upload" class="de.schlund.pfixcore.example.iwrapper.FileUpload"/>
+    </input>
+    <output>
+      <resource node="uploadfiles" class="de.schlund.pfixcore.example.ContextFileUpload"/>
+    </output>
   </pagerequest>
   
   <pagerequest name="scriptingstate">

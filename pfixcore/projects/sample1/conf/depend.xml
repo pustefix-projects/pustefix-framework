@@ -22,6 +22,7 @@
     <page name="scripting" handler="/xml/config"/>
     <page name="scriptingstate" handler="/xml/config"/>
     <page name="encoding" handler="/xml/config"/>
+    <page name="upload" handler="/xml/config"/>
     <page name="test"     handler="/xml/config"/>
     <page name="tokenerror"    handler="/xml/config"/>
     <page name="iwrapperinfo" handler="/xml/config"/>
@@ -73,6 +74,7 @@
   <standardpage name="C" xml="sample1/xml/one_frame.xml"/>
   
   <standardpage name="encoding" xml="sample1/xml/one_frame.xml"/>
+  <standardpage name="upload" xml="sample1/xml/one_frame.xml"/>
   <standardpage name="test"     xml="sample1/xml/one_frame.xml"/>
   <standardpage name="tokenerror"    xml="sample1/xml/one_frame.xml"/>
   <standardpage name="iwrapperinfo" xml="sample1/xml/one_frame.xml"/>

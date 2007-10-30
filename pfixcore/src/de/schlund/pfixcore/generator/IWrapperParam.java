@@ -182,12 +182,7 @@ public class IWrapperParam implements IWrapperParamCheck, IWrapperParamDefinitio
                     }
                 } else if (val.getType().equals(RequestParamType.FILEDATA)) {
                     String fname = val.getValue();
-                    if (fname != null) {
-                        File tmpfile = new File(fname);
-                        if (tmpfile.exists() && tmpfile.canRead() && tmpfile.isFile()) {
-                            out.add(val);
-                        }
-                    }
+                    if (fname != null) out.add(val);
                 } else {
                     LOG.error("RequestParam " + thename + " is of unknown type: " + val.getType());
                 }

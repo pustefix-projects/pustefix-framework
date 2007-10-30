@@ -114,6 +114,9 @@
   <part name="pfixcore.generator.caster.ERR_TO_FILE">
     <theme name="default">The entered value is not a valid file.</theme>
   </part>
+  <part name="pfixcore.generator.caster.ERR_TO_UPLOADFILE">
+    <theme name="default">The entered value is not a valid file.</theme>
+  </part>
   <part name="pfixcore.generator.caster.ERR_TO_FLOAT">
     <theme name="default">The entered value is no valid float number.</theme>
   </part>

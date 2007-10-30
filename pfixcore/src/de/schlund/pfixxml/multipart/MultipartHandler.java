@@ -80,9 +80,9 @@ public class MultipartHandler {
     private HttpServletRequest req = null;
     private String dir = null;
     private File dirFile = null;
-    private HashMap parameter = null;
+    private HashMap<String,ArrayList<PartData>> parameter = null;
     private GenericServlet logBase = null;
-    private ArrayList fileuploads = null;
+    private ArrayList<FileData> fileuploads = null;
     private List<Exception> failedParts = null;
     private long maxPartSize = -1;
 
@@ -138,29 +138,29 @@ public class MultipartHandler {
         if (!dirFile.canWrite()) {
             throw new IllegalArgumentException("Can't write to dir '" + dir + "'.");
         }
-        parameter = new HashMap();
-        fileuploads = new ArrayList();
+        parameter = new HashMap<String,ArrayList<PartData>>();
+        fileuploads = new ArrayList<FileData>();
         failedParts = new ArrayList<Exception>();
     }
 
-    public Enumeration getParameterNames() {
+    public Enumeration<String> getParameterNames() {
         return Collections.enumeration(parameter.keySet());
     }
 
     public PartData getParameter(String name) {
         PartData rc = null;
-        ArrayList list = (ArrayList) parameter.get(name);
+        List<PartData> list = parameter.get(name);
         if (list != null && 0 < list.size()) {
-            rc = (PartData) list.get(0);
+            rc = list.get(0);
         }
         return rc;
     }
 
-    public List getAllParameter(String name) {
-        return (List) parameter.get(name);
+    public List<PartData> getAllParameter(String name) {
+        return parameter.get(name);
     }
 
-    public List getFileUploads() {
+    public List<FileData> getFileUploads() {
         return fileuploads;
     }
 
@@ -288,13 +288,14 @@ public class MultipartHandler {
     protected void addParameterPart(PartData part) {
         try {
             String fieldName = part.getFieldname();
-            ArrayList params = (ArrayList) parameter.get(fieldName);
+            ArrayList<PartData> params = (ArrayList<PartData>) parameter.get(fieldName);
             if (params == null) {
-                params = new ArrayList();
+                params = new ArrayList<PartData>();
                 parameter.put(fieldName, params);
             }
             params.add(part);
         } catch (NullPointerException e) {
+            LOG.error(e,e);
         }
     }
 
@@ -362,7 +363,8 @@ public class MultipartHandler {
                 dataOut.close();
             }
         }
-        if (ex == null) {
+        
+        if(localFile!=null) {
             FileData fileP = new FileData();
             fileP.setPrimaryType(ct.getPrimaryType());
             fileP.setSubType(ct.getSubType());
@@ -371,23 +373,23 @@ public class MultipartHandler {
             fileP.setTransferEncoding(transEnc);
             fileP.setModificationDate(getDateFromParam(cdStruct.getParam(MODIFICATION_DATE_PARAM)));
             fileP.setReadDate(getDateFromParam(cdStruct.getParam(READ_DATE_PARAM)));
-
-            if (localFile != null) {
+            if (ex == null) {
                 fileP.setLocalFilename(localFile.getAbsolutePath());
                 fileP.setSize(localFile.length());
                 fileP.setLocalFile(localFile);
                 fileuploads.add(fileP);
+                addParameterPart(fileP);
             } else {
+                //delete file resulting from part exceeding the size limit
+                if(localFile!=null && localFile.exists()) localFile.delete();
+                ex.setFieldName(fieldName);
+                failedParts.add(ex);
+                //mark as exceeded
+                fileP.setExceedsSizeLimit(true);  
                 fileP.setLocalFilename("");
                 fileP.setSize(0);
+                addParameterPart(fileP);
             }
-
-            addParameterPart(fileP);
-        } else {
-            //delete file resulting from part exceeding the size limit
-            if(localFile!=null && localFile.exists()) localFile.delete();
-            ex.setFieldName(fieldName);
-            failedParts.add(ex);
         }
 
     }
