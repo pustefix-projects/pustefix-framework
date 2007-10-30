@@ -99,6 +99,7 @@ public class HeaderStruct {
         StringBuffer buf = new StringBuffer();
         buf.append("name:   ").append(name).append('\n');
         buf.append("value:  ").append(value).append('\n');
+        @SuppressWarnings("unchecked")
         Enumeration enm = params.getNames();
         while (enm.hasMoreElements()) {
             String pName = (String)enm.nextElement();

@@ -1,3 +1,44 @@
+2007-10-30  Martin Leidig  <mleidig@schlund.de>
+
+	Added new file upload parameter type, which provides more information than the 
+	raw java.io.File. Using the new type de.schlund.pfixxml.multipart.UploadFile you
+	also get information about files which exceeded the part size limit. The mime
+	type is available too. 
+
+	Added:
+
+	* src/de/schlund/pfixcore/generator/IWrapperParam.java: Removed tmp file existence
+	check, because now FileData without backing local file is allowed	
+	* src/de/schlund/pfixxml/multipart/UploadFile.java: New interface for
+	uploaded files
+	* src/de/schlund/pfixcore/generator/casters/ToUploadFile.java: casts FileData param
+	values to UploadFile objects
+	* projects/sample1/txt/pages/main_upload.xml: Added test page with
+	single und multiple file upload tests.
+	* src/de/schlund/pfixcore/example/iwrapper/FileUpload.iwrp: single file upload
+	wrapper
+	* src/de/schlund/pfixcore/example/iwrapper/MultiFileUpload.iwrp: multiple file
+	upload wrapper
+	* src/de/schlund/pfixcore/example/ContextFileUpload.java: show upload status
+	* src/de/schlund/pfixcore/example/FileUploadHandler.java: handle single file upload
+	* src/de/schlund/pfixcore/example/ContextFileUploadImpl.java: show upload status
+	* src/de/schlund/pfixcore/example/MultiFileUploadHandler.java: handle multiple file
+	upload
+
+	Modified:
+
+	* src/de/schlund/pfixxml/multipart/MultipartHandler.java: don't create FileData
+	for empty upload parts, but create FileData for upload parts exceeding the maximum
+	file size; warning cleanup
+	* src/de/schlund/pfixxml/multipart/FileData.java: Added implementation
+	of UploadFile interface methods
+	* src/de/schlund/pfixxml/multipart/HeaderStruct.java: warning cleanup
+	* src/de/schlund/pfixxml/multipart/MultipartStream.java: warning cleanup
+	* projects/core/dyntxt/statusmessages.xml: Added statuscode for UploadFile
+	* projects/sample1/conf/config.conf.xml: Added pagerequest and context
+	resource for file upload page.
+	* projects/sample1/conf/depend.xml: Added file upload page.
+
 2007-10-29  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
 	* src/de/schlund/pfixcore/editor2/frontend/resources/NamespaceInfoResource.java: 

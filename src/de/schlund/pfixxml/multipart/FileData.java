@@ -21,6 +21,7 @@ package de.schlund.pfixxml.multipart;
 
 import java.io.File;
 import java.util.Date;
+
 import de.schlund.pfixxml.RequestParamType;
 
 /**
@@ -28,7 +29,7 @@ import de.schlund.pfixxml.RequestParamType;
  *
  */
 
-public class FileData extends PartData {
+public class FileData extends PartData implements UploadFile {
 
     private String transferEncoding = null;
     private String filename = null;
@@ -37,6 +38,7 @@ public class FileData extends PartData {
     private long size = 0;
     private String localFilename = null;
     private File localFile = null;
+    private boolean exceedsSizeLimit;
 
     /**
      * Constructor for FileData.
@@ -58,6 +60,10 @@ public class FileData extends PartData {
         return filename;
     }
 
+    public String getName() {
+        return filename;
+    }
+    
     /**
      * Sets the filename.
      * @param filename The filename to set
@@ -168,6 +174,18 @@ public class FileData extends PartData {
      */
     public void setLocalFile(File localFile) {
         this.localFile = localFile;
+    }
+    
+    public boolean exceedsSizeLimit() {
+        return exceedsSizeLimit;
+    }
+    
+    public void setExceedsSizeLimit(boolean exceedsSizeLimit) {
+        this.exceedsSizeLimit=exceedsSizeLimit;
+    }
+    
+    public String getMimeType() {
+        return primaryType+"/"+subType;
     }
     
 }

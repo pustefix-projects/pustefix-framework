@@ -56,7 +56,7 @@ public class MultipartStream extends InputStream {
     private int bufSize = DEF_BUFFER_SIZE;
     private boolean eom = false;
     private boolean eop = false;
-    private boolean endOfLine = false;
+ 
     private long maxPartSize = DEF_MAX_PART_SIZE;
     private long partSize = 0;
     

@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="ISO-8859-1"?><include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
+
+  <part name="content">
+    <theme name="default">
+        <center>
+          <h2>File upload test</h2>
+          
+          <h3>Single file upload</h3>
+          
+          <pfx:forminput enctype="multipart/form-data" target="_top">
+            <table>
+              <tr>
+                <td>File:</td>
+                <td><input name="upload.File" type="file"/></td>
+              </tr>
+              <tr>
+                <td>Comment:</td>
+                <td><input name="upload.Comment" type="text"/></td>
+              </tr>
+              <tr>
+                <td colspan="2" align="center">
+                  <pfx:xinp type="submit" value="Upload">
+                    <pfx:command name="SELWRP">upload</pfx:command>
+                  </pfx:xinp>
+                </td>
+              </tr>
+            </table>
+          </pfx:forminput>
+          
+          <h3>Multiple file upload</h3>
+          <pfx:forminput enctype="multipart/form-data" target="_top">
+            <table>
+              <tr>
+                <td>File:</td>
+                <td><input name="multiupload.File.1" type="file"/></td>
+              </tr>
+              <tr>
+                <td>File:</td>
+                <td><input name="multiupload.File.2" type="file"/></td>
+              </tr>
+              <tr>
+                <td>File:</td>
+                <td><input name="multiupload.File.3" type="file"/></td>
+              </tr>
+              <tr>
+                <td>Comment:</td>
+                <td><input name="multiupload.Comment" type="text"/></td>
+              </tr>
+              <tr>
+                <td colspan="2" align="center">
+                  <pfx:xinp type="submit" value="Upload">
+                    <pfx:command name="SELWRP">multiupload</pfx:command>
+                  </pfx:xinp>
+                </td>
+              </tr>
+            </table>
+          </pfx:forminput>
+          
+          <h3>Last uploads</h3>
+          <table cellpadding="3" cellspacing="0">
+            <tr>
+              <th align="left">Name</th>
+              <th align="left">Mime-Type</th>
+              <th align="left">Size</th>
+              <th align="left">Status</th>
+            </tr>
+            <ixsl:for-each select="/formresult/uploadfiles/file">
+              <tr>
+                <td><ixsl:value-of select="@name"/></td>
+                <td><ixsl:value-of select="@mimetype"/></td>
+                <td><ixsl:value-of select="@size"/></td>
+                <td>
+                  <ixsl:choose>
+                    <ixsl:when test="@exceedsSizeLimit='true'">
+                      <span style="color:red">exceeds size limit</span>
+                    </ixsl:when>
+                    <ixsl:otherwise>
+                      ok
+                    </ixsl:otherwise>
+                  </ixsl:choose>
+                </td>
+              </tr>
+            </ixsl:for-each>
+          </table>
+          
+        </center>
+      </theme>
+  </part>
+
+</include_parts>
