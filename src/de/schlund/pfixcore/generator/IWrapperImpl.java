@@ -146,7 +146,11 @@ public abstract class IWrapperImpl implements IWrapper {
             // error handling happens inside the IWRapperIndexedParam...
         }
     }
-
+    
+    public final void loadFromStringValues() throws Exception {
+    	for(IWrapperParam pinfo:params.values()) pinfo.initFromStringValue();
+    	for(IWrapperIndexedParam pindex:idxprms.values()) pindex.initFromStringValue();
+    }
     
     public final IHandler gimmeIHandler() {
         if (handler == null) {

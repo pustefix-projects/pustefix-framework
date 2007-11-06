@@ -20,6 +20,8 @@
 package de.schlund.pfixcore.generator;
 
 import java.util.*;
+
+import de.schlund.pfixxml.RequestParam;
 import de.schlund.util.statuscodes.*;
 import org.apache.log4j.*;
 
@@ -112,6 +114,14 @@ public class IWrapperIndexedParam implements IWrapperParamDefinition, Comparable
                 }
             }
         }
+    }
+    
+    protected void initFromStringValue() {	
+    	Iterator<?> it=params.values().iterator();
+    	while(it.hasNext()) {
+    		IWrapperParam pinfo=(IWrapperParam)it.next();
+    		pinfo.initFromStringValue();
+    	}
     }
     
     public String getType() { return type; }

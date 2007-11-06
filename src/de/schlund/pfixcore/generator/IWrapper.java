@@ -50,7 +50,17 @@ public interface IWrapper extends Comparable {
     void    initLogging(FileResource logdir, String pagename, String visitid);
     void    tryParamLogging() throws IOException;
     void    tryErrorLogging() throws IOException;
-    void    load(RequestData req) throws Exception;
+    void    load(RequestData req) throws Exception; 
+    /**
+     * Load the IWrapper's typed data from the String representations set via the 
+     * setStringValXXX methods, i.e. the string values are processed (checked and casted) 
+     * just like values provided by a RequestData object.
+     * This method requires that the IWrapper is already initialized (that the init
+     * method has been called). Amongst others it can be used to manually instantiate 
+     * and populate IWrapper objects within unit tests.
+     * @throws Exception
+     */
+    void    loadFromStringValues() throws Exception;
     boolean errorHappened();
     void    defineOrder(int order);
     // The reason for these to not being called get* is to avoid nameclashes with

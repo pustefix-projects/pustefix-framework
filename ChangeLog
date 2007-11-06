@@ -1,3 +1,25 @@
+2007-11-06  Martin Leidig  <mleidig@schlund.de>
+
+	Added support for manual IWrapper instantiation and population. Using the new
+	IWrapper method loadFromStringValues() you can load the IWrapper's typed data 
+	from the String representations set via the setStringValXXX methods, i.e. the 
+	string values are processed (checked and casted) just like values provided by 
+	a RequestData object (includes the setting of statuscodes). Amongst others it 
+	can be used to manually instantiate and populate IWrapper objects within unit 
+	tests.
+
+	* src/de/schlund/pfixcore/generator/IWrapper.java: added loadFromStringValues()
+	method to interface
+	* src/de/schlund/pfixcore/generator/IWrapperImpl.java: loadFromStringValues()
+	implementation calling initFromStringValue() for all parameters
+	* src/de/schlund/pfixcore/generator/IWrapperParam.java: extract parameter
+	checking and casting from initValueFromRequest() method into new method
+	checkValue(). Added new method initFromStringValue() which uses the string
+	representation as parameter and calls checkValue().
+	* src/de/schlund/pfixcore/generator/IWrapperIndexedParam.java: added method
+	initFromStringValue(), which calls initFromStringValue() for all containing
+	parameters.
+
 2007-10-30  Martin Leidig  <mleidig@schlund.de>
 
 	Added new file upload parameter type, which provides more information than the 
