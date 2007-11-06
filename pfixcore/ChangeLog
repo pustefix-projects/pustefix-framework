@@ -1,5 +1,11 @@
 2007-11-06  Martin Leidig  <mleidig@schlund.de>
 
+	Upgraded to Spring to version 2.0.7
+	* lib/spring-1.2.1.jar: Removed
+	* lib/spring-2.0.7.jar: Added
+
+2007-11-06  Martin Leidig  <mleidig@schlund.de>
+
 	Added support for manual IWrapper instantiation and population. Using the new
 	IWrapper method loadFromStringValues() you can load the IWrapper's typed data 
 	from the String representations set via the setStringValXXX methods, i.e. the 
