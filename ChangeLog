@@ -1,6 +1,6 @@
 2007-11-06  Martin Leidig  <mleidig@schlund.de>
 
-	Upgraded to Spring to version 2.0.7
+	Upgraded to Spring version 2.0.7
 	* lib/spring-1.2.1.jar: Removed
 	* lib/spring-2.0.7.jar: Added
 
