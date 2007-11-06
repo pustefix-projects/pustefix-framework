@@ -19,11 +19,18 @@
 
 package de.schlund.pfixcore.generator;
 
-import de.schlund.pfixxml.*;
-import de.schlund.util.statuscodes.*;
-import java.io.*;
-import java.util.*;
-import org.apache.log4j.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Iterator;
+
+import org.apache.log4j.Logger;
+
+import de.schlund.pfixxml.RequestParam;
+import de.schlund.pfixxml.RequestParamType;
+import de.schlund.pfixxml.SimpleRequestParam;
+import de.schlund.util.statuscodes.StatusCode;
+import de.schlund.util.statuscodes.StatusCodeLib;
 
 /**
  * Describe class <code>IWrapperParam</code> here.
@@ -200,6 +207,12 @@ public class IWrapperParam implements IWrapperParamCheck, IWrapperParamDefinitio
         
         setStringValue(rparamv);
 
+        checkValue(rparamv);
+
+    }
+  
+    private void checkValue(RequestParam[] rparamv) {
+
         // Default values are _not_ echoed back to the UI, so we set them only AFTER
         // we set the normalized string values.
         if (rparamv == null && defaultval != null) {
@@ -258,6 +271,19 @@ public class IWrapperParam implements IWrapperParamCheck, IWrapperParamDefinitio
         } else {
             setValue(null);
         }
+    }
+    
+
+    protected void initFromStringValue() {	
+    	RequestParam[] rparamv = null;
+    	if(stringval!=null) {
+    		rparamv = new RequestParam[stringval.length];
+    		for(int i=0;i<stringval.length;i++) {
+    			RequestParam rp=new SimpleRequestParam(stringval[i]);
+    			rparamv[i]=rp;
+    		}
+    	}
+    	checkValue(rparamv);
     }
 
     public int compareTo(Object inobj) {
