@@ -147,7 +147,7 @@
         <ssl force="true"/>
       </when>
     </choose>
-    <input>
+    <input requirestoken="true">
       <interface prefix="shirt" class="de.schlund.pfixcore.example.iwrapper.TShirt"/>
       <interface prefix="counter" class="de.schlund.pfixcore.example.iwrapper.Counter"/>
       <interface prefix="cinput" class="de.schlund.pfixcore.example.iwrapper.CounterInput" alwaysretrieve="true"/>

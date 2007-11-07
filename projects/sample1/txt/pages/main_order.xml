@@ -27,7 +27,6 @@
                 </td>
               </tr>
             </table>
-            <pfx:token/>
           </pfx:forminput>
           <br/>[<pfx:image themed-img="test.gif" themed-path="sample1/img"/>]
         </center>

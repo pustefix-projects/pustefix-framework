@@ -112,6 +112,18 @@ public class TransformerCallback {
         }
     }
     
+    public static boolean requiresToken(RequestContextImpl requestContext, String pageName) throws Exception {
+    	try {
+    		ContextImpl context = requestContext.getParentContext();
+    		PageRequestConfig pageConfig = context.getContextConfig().getPageRequestConfig(pageName);
+            if(pageConfig!=null) return pageConfig.requiresToken();
+    		return false;
+    	} catch(Exception x) {
+            ExtensionFunctionUtils.setExtensionFunctionError(x);
+            throw x;
+        }
+    }
+    
     public static Node getIWrapperInfo(RequestContextImpl requestContext, Node docNode, String pageName, String prefix) {
         try {
             ContextImpl context = requestContext.getParentContext();
