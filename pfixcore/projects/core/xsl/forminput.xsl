@@ -240,6 +240,19 @@
           <ixsl:attribute name="value"><ixsl:value-of select="./text()"/></ixsl:attribute>
         </input>
       </ixsl:for-each>
+      <xsl:if test="not(.//pfx:token)">
+        <xsl:variable name="pageName">
+          <xsl:choose>
+            <xsl:when test="@send-to-page"><xsl:value-of select="@send-to-page"/></xsl:when>
+            <xsl:otherwise><xsl:value-of select="$page"/></xsl:otherwise>
+          </xsl:choose>
+        </xsl:variable>
+        <ixsl:if test="pfx:requiresToken('{$pageName}')">
+          <xsl:call-template name="createToken">
+            <xsl:with-param name="tokenName"><xsl:value-of select="concat($pageName,'#',generate-id())"/></xsl:with-param>
+          </xsl:call-template>
+        </ixsl:if>
+      </xsl:if>
       <xsl:apply-templates/>
     </form>
   </xsl:template>
@@ -720,18 +733,22 @@
 <!--    </xsl:if>-->
 <!--  </xsl:template>-->
 
-  <xsl:template match="pfx:token">
-    <input type="hidden" name="__token">
-      <xsl:variable name="tokenName">
-        <xsl:choose>
+  <xsl:template match="pfx:token" name="createToken">
+    <xsl:param name="tokenName">
+      <xsl:choose>
           <xsl:when test="@name">
             <xsl:value-of select="@name"/>
           </xsl:when>
           <xsl:otherwise>
-            <xsl:value-of select="concat($page,'#',generate-id())"/>
+            <xsl:choose>
+              <xsl:when test="ancestor::pfx:forminput[position()=1]/@send-to-page"><xsl:value-of select="ancestor::pfx:forminput[position()=1]/@send-to-page"/></xsl:when>
+              <xsl:otherwise><xsl:value-of select="$page"/></xsl:otherwise>
+            </xsl:choose>
+            <xsl:value-of select="concat('#',generate-id())"/>
           </xsl:otherwise>
         </xsl:choose>
-      </xsl:variable>
+    </xsl:param>
+    <input type="hidden" name="__token">
       <ixsl:attribute name="value">
         <xsl:value-of select="$tokenName"/>:<xsl:value-of select="@errorpage"/>:<ixsl:value-of select="pfx:getToken('{$tokenName}')"/>
       </ixsl:attribute>

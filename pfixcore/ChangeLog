@@ -1,3 +1,19 @@
+2007-11-07  Martin Leidig  <mleidig@schlund.de>
+
+	Automatically insert token parameter in forms when requiresToken is set
+	in the configuration.
+
+	* src/de/schlund/pfixcore/util/TransformerCallback.java: added requiresToken()
+	method, which checks if form submit to a page need token parameter
+	* projects/core/xsl/forminput.xsl: automatically insert token form parameter
+	if form contains no pfx:token element but needs a token (detected via Java callback) 
+	* projects/core/xsl/functions.xsl: added pfx:requiresToken function, which
+	does Java callback to check if the passed page needs a form token
+	* projects/sample1/conf/config.conf.xml: set requirestoken at order
+	input element
+	* projects/sample1/txt/pages/main_order.xml: remove pfx:token from
+	form
+
 2007-11-06  Martin Leidig  <mleidig@schlund.de>
 
 	Upgraded to Spring version 2.0.7
