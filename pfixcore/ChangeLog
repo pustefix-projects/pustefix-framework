@@ -1,3 +1,18 @@
+2007-11-09  Martin Leidig  <mleidig@schlund.de>
+
+	Added dependency entries for all required (mandatory) libraries to
+	pom.xml. As public maven repositories don't contain all this libraries
+	and some of them come with an out-dated pom.xml, transitive dependency
+	resolution may not work or will need some manual adjustments and
+	conflict resolutions. 
+	By the way we should look if we can update some out-dated libraries
+	and replace some old libraries, for which new replacements are
+	available (e.g. replace jakarta-oro library usage with java.util.regex).
+
+	* pom.xml: Added mandatory library dependencies
+	* build-maven.xml: Added test target, which retrieves all dependent
+	libraries
+
 2007-11-07  Martin Leidig  <mleidig@schlund.de>
 
 	Automatically insert token parameter in forms when requiresToken is set

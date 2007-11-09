@@ -82,4 +82,13 @@
     </copy>
   </target>
 
+  <target name="mvn-getdeps" depends="mvn-initTaskDefs">
+    <artifact:dependencies verbose="true" filesetId="dependency.fileset" pomRefId="maven.project" useScope="runtime"/>
+    <mkdir dir="deps"/>
+    <copy todir="deps">
+      <fileset refid="dependency.fileset"/>
+      <mapper type="flatten"/>
+    </copy>
+  </target>
+
 </project>
