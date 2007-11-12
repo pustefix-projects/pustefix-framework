@@ -532,7 +532,7 @@ or delete the DOCTYPE definition -->
   </target>
 
   <target name="scgenerate" depends="propfiles">
-    <java classname="de.schlund.pfixcore.util.GenerateSCodes" fork="true" classpathref="cp.classpath">
+    <java classname="de.schlund.pfixcore.util.GenerateSCodes" fork="true" classpathref="cp.classpath" failonerror="true">
       <arg value="${dir.gensrc}/de/schlund/util/statuscodes/StatusCodeLib.java"/>
       <arg value="${dir.projects}/common/conf/factory.xml"/>
       <arg value="${dir.projects}"/>
