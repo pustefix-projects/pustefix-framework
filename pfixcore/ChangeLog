@@ -1,3 +1,8 @@
+2007-11-19  Sebastian Marsching <sebastian.marsching@1und1.de>
+
+	* docs/:
+	Added support for Docbook based documentation.
+
 2007-11-09  Martin Leidig  <mleidig@schlund.de>
 
 	Added dependency entries for all required (mandatory) libraries to
