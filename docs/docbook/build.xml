@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="pfixcore-docs" default="build">
+  
+  <path id="xslt.classpath">
+    <fileset dir="../tools/saxon" includes="**.jar"/>
+    <fileset dir="../tools/xslthl" includes="**.jar"/>
+    <fileset dir="../tools/docbook-xsl-ns/extensions" includes="saxon65.jar"/> 
+  </path>
+  
+  <path id="fop.classpath">
+    <fileset dir="../tools/fop" includes="**.jar"/>
+    <fileset dir="../tools/docbook-xsl-ns/extensions" includes="xalan27.jar"/> 
+  </path>
+  
+  <taskdef resource="net/sf/antcontrib/antcontrib.properties">
+    <classpath>
+      <fileset dir="../tools/ant-contrib" includes="**.jar"/>
+    </classpath>
+  </taskdef>
+  
+  <taskdef name="fop" classname="org.apache.fop.tools.anttasks.Fop">
+    <classpath refid="fop.classpath"/>
+  </taskdef>
+  
+  <target name="prepare" depends="copyimages">
+    
+  </target>
+  
+  <target name="copyimages">
+    <!-- Copy images to one directory, so that each builder can fetch
+         them from there                                              -->
+    <mkdir dir="build/images/docbook"/>
+    <copy todir="build/images/docbook">
+      <fileset dir="../tools/docbook-xsl-ns/images" includes="**/**"></fileset>
+    </copy>
+    <copy todir="build/images">
+      <fileset dir="src/images" includes="**/**"></fileset>
+    </copy>
+  </target>
+  
+  <target name="build" depends="html, chunked, pdf">
+    <!-- Just depends on other targets -->
+  </target>
+  
+  <target name="chunked" depends="prepare">
+    <echo level="info" message="Creating chunked pages..."/>
+    <mkdir dir="build/chunked/images"/>
+    <copy todir="build/chunked/images">
+      <fileset dir="build/images" includes="**/**"></fileset>
+    </copy>
+    <foreach target="-transform-chunked" param="filename">
+      <path>
+        <fileset dir="src" includes="**.xml"/>
+      </path>
+    </foreach>
+  </target>
+  
+  <target name="html" depends="prepare">
+    <echo level="info" message="Creating html pages..."/>
+    <mkdir dir="build/html/images"/>
+    <copy todir="build/html/images">
+      <fileset dir="build/images" includes="**/**"></fileset>
+    </copy>
+    <mkdir dir="build/html"/>
+    <foreach target="-transform-html" param="filename">
+      <path>
+        <fileset dir="src" includes="**.xml"/>
+      </path>
+    </foreach>
+  </target>
+  
+  <target name="-transform-chunked">
+    <propertyregex property="basename" input="${filename}" regexp=".*/([^/]+)\.xml" select="\1"/>
+    <propertyregex property="longbasename" input="${filename}" regexp=".*/([^/]+\.xml)" select="\1"/> 
+    <echo level="info" message="Processing ${longbasename}"/> 
+    <mkdir dir="build/chunked/${basename}"/> 
+    <xslt style="../tools/docbook-xsl-ns/html/chunkfast.xsl" classpathref="xslt.classpath" in="${filename}" out="build/dummy">
+      <param name="base.dir" expression="build/chunked/${basename}/"/>
+      <param name="use.id.as.filename" expression="1"/>
+      <param name="root.filename" expression="index"/>
+      <param name="chunk.section.depth" expression="0"/>
+      <param name="section.autolabel" expression="1"/>
+      <param name="section.autolabel.max.depth" expression="1"/>
+      <param name="section.label.includes.component.label" expression="1"/>
+      <param name="html.cleanup" expression="1"/>
+      <param name="use.extensions" expression="1"/>
+      <param name="textinsert.extension" expression="1"/>
+      <param name="linenumbering.extension" expression="1"/>
+      <param name="graphicsize.extension" expression="0"/>
+      <param name="highlight.source" expression="1"/>
+      <param name="callout.graphics.path" expression="../images/docbook/callouts/"/>
+      <param name="admon.graphics" expression="1"/>
+      <param name="admon.graphics.path" expression="../images/docbook/"/>
+      <param name="img.src.path" expression="../"/>
+    </xslt>
+    <delete file="build/dummy"/> 
+  </target>
+  
+  <target name="-transform-html">
+    <propertyregex property="basename" input="${filename}" regexp=".*/([^/]+)\.xml" select="\1"/>
+    <propertyregex property="longbasename" input="${filename}" regexp=".*/([^/]+\.xml)" select="\1"/>
+    <echo level="info" message="Processing ${longbasename}"/> 
+    <xslt style="../tools/docbook-xsl-ns/html/docbook.xsl" classpathref="xslt.classpath" in="${filename}" out="build/html/${basename}.html">
+      <param name="section.autolabel" expression="1"/>
+      <param name="section.label.includes.component.label" expression="1"/>
+      <param name="section.autolabel.max.depth" expression="1"/>
+      <param name="html.cleanup" expression="1"/>
+      <param name="use.extensions" expression="1"/>
+      <param name="textinsert.extension" expression="1"/>
+      <param name="linenumbering.extension" expression="1"/>
+      <param name="graphicsize.extension" expression="0"/>
+      <param name="highlight.source" expression="1"/>
+      <param name="callout.graphics.path" expression="images/docbook/callouts/"/>
+      <param name="admon.graphics" expression="1"/>
+      <param name="admon.graphics.path" expression="images/docbook/"/>
+    </xslt>
+  </target>
+  
+  <target name="pdf" depends="fo">
+    <echo level="info" message="Creating PDF documents..."/>
+    <mkdir dir="build/pdf"/>
+    <fop format="application/pdf" outdir="build/pdf" relativebase="true">
+      <fileset dir="build/fo" includes="**.fo"/>
+    </fop>
+  </target>
+  
+  <target name="fo" depends="prepare">
+    <echo level="info" message="Creating XSL-FO documents..."/>
+    <mkdir dir="build/fo/images"/>
+    <copy todir="build/fo/images">
+      <fileset dir="build/images" includes="**/**"></fileset>
+    </copy>
+    <xslt basedir="src" includes="**.xml" style="../tools/docbook-xsl-ns/fo/docbook.xsl" classpathref="fop.classpath" destdir="build/fo" extension=".fo">
+      <param name="section.autolabel" expression="1"/>
+      <param name="section.label.includes.component.label" expression="1"/>
+      <param name="section.autolabel.max.depth" expression="1"/>
+      <param name="use.extensions" expression="1"/>
+      <param name="textinsert.extension" expression="1"/>
+      <param name="linenumbering.extension" expression="1"/>
+      <param name="graphicsize.extension" expression="0"/>
+      <param name="highlight.source" expression="0"/>
+      <param name="callout.graphics.path" expression="images/docbook/callouts/"/>
+      <param name="callout.graphics.extension" expression=".svg"/>
+      <param name="admon.graphics" expression="1"/>
+      <param name="admon.graphics.path" expression="images/docbook/"/>
+      <param name="admon.graphics.extension" expression=".svg"/>
+      <param name="fop1.extensions" expression="1"/>
+      <param name="paper.type" expression="A4"/>
+      <param name="hyphenation" expression="0"/>
+      <param name="hyphenate.verbatim" expression="1"/>
+    </xslt>
+  </target>
+  
+  <target name="clean">
+    <delete includeemptydirs="true">
+	  <fileset dir="build/">
+	    <include name="**/**"/>
+	  </fileset>
+    </delete>
+  </target>
+  
+</project>
