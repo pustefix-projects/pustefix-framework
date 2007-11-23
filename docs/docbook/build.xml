@@ -101,8 +101,6 @@
   </target>
   
   <target name="-transform-html">
-    <pathconvert property="temp" refid="xslt.classpath"></pathconvert>
-    <echo message="Classpath: ${temp}"/>
     <propertyregex property="basename" input="${filename}" regexp=".*/([^/]+)\.xml" select="\1"/>
     <propertyregex property="longbasename" input="${filename}" regexp=".*/([^/]+\.xml)" select="\1"/>
     <echo level="info" message="Processing ${longbasename}"/> 
