@@ -4,7 +4,8 @@
   <path id="xslt.classpath">
     <fileset dir="../tools/saxon" includes="**.jar"/>
     <fileset dir="../tools/xslthl" includes="**.jar"/>
-    <fileset dir="../tools/docbook-xsl-ns/extensions" includes="saxon65.jar"/> 
+    <fileset dir="../tools/docbook-xsl-ns/extensions" includes="saxon65.jar"/>
+    <fileset dir="../tools/xixslt" includes="**.jar"/>
   </path>
   
   <path id="fop.classpath">
@@ -20,6 +21,10 @@
   
   <taskdef name="fop" classname="org.apache.fop.tools.anttasks.Fop">
     <classpath refid="fop.classpath"/>
+  </taskdef>
+  
+  <taskdef name="xi-xslt" classname="de.schlund.oss.pustefix.docs.XIncludeXSLTProcess">
+    <classpath refid="xslt.classpath"/>
   </taskdef>
   
   <target name="prepare" depends="copyimages">
@@ -74,7 +79,7 @@
     <propertyregex property="longbasename" input="${filename}" regexp=".*/([^/]+\.xml)" select="\1"/> 
     <echo level="info" message="Processing ${longbasename}"/> 
     <mkdir dir="build/chunked/${basename}"/> 
-    <xslt style="../tools/docbook-xsl-ns/html/chunkfast.xsl" classpathref="xslt.classpath" in="${filename}" out="build/dummy">
+    <xi-xslt style="../tools/docbook-xsl-ns/html/chunkfast.xsl" validate="false" classpathref="xslt.classpath" in="${filename}" out="build/chunked/${basename}.TIMESTAMP">
       <param name="base.dir" expression="build/chunked/${basename}/"/>
       <param name="use.id.as.filename" expression="1"/>
       <param name="root.filename" expression="index"/>
@@ -92,15 +97,16 @@
       <param name="admon.graphics" expression="1"/>
       <param name="admon.graphics.path" expression="../images/docbook/"/>
       <param name="img.src.path" expression="../"/>
-    </xslt>
-    <delete file="build/dummy"/> 
+    </xi-xslt>
   </target>
   
   <target name="-transform-html">
+    <pathconvert property="temp" refid="xslt.classpath"></pathconvert>
+    <echo message="Classpath: ${temp}"/>
     <propertyregex property="basename" input="${filename}" regexp=".*/([^/]+)\.xml" select="\1"/>
     <propertyregex property="longbasename" input="${filename}" regexp=".*/([^/]+\.xml)" select="\1"/>
     <echo level="info" message="Processing ${longbasename}"/> 
-    <xslt style="../tools/docbook-xsl-ns/html/docbook.xsl" classpathref="xslt.classpath" in="${filename}" out="build/html/${basename}.html">
+    <xi-xslt style="../tools/docbook-xsl-ns/html/docbook.xsl" classpathref="xslt.classpath" in="${filename}" out="build/html/${basename}.html">
       <param name="section.autolabel" expression="1"/>
       <param name="section.label.includes.component.label" expression="1"/>
       <param name="section.autolabel.max.depth" expression="1"/>
@@ -113,7 +119,7 @@
       <param name="callout.graphics.path" expression="images/docbook/callouts/"/>
       <param name="admon.graphics" expression="1"/>
       <param name="admon.graphics.path" expression="images/docbook/"/>
-    </xslt>
+    </xi-xslt>
   </target>
   
   <target name="pdf" depends="fo">
@@ -130,7 +136,7 @@
     <copy todir="build/fo/images">
       <fileset dir="build/images" includes="**/**"></fileset>
     </copy>
-    <xslt basedir="src" includes="**.xml" style="../tools/docbook-xsl-ns/fo/docbook.xsl" classpathref="fop.classpath" destdir="build/fo" extension=".fo">
+    <xi-xslt basedir="src" includes="**.xml" style="../tools/docbook-xsl-ns/fo/docbook.xsl" validate="false" classpathref="fop.classpath" destdir="build/fo" extension=".fo">
       <param name="section.autolabel" expression="1"/>
       <param name="section.label.includes.component.label" expression="1"/>
       <param name="section.autolabel.max.depth" expression="1"/>
@@ -148,7 +154,7 @@
       <param name="paper.type" expression="A4"/>
       <param name="hyphenation" expression="0"/>
       <param name="hyphenate.verbatim" expression="1"/>
-    </xslt>
+    </xi-xslt>
   </target>
   
   <target name="clean">
