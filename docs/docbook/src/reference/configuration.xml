@@ -210,8 +210,7 @@
   
   <context defaultflow="AFlowName" authpage="APageName" synchronized="true">
       ]]></programlisting>
-      <table rules="all" frame="box">
-        <caption>Context attributes</caption>
+      <informaltable rules="all" frame="box">
         <thead align="left">
           <tr>
             <th>Attribute</th>
@@ -240,7 +239,7 @@
             concurrently, requiring thread-safe business logic.</td>
           </tr>
         </tbody>
-      </table>
+      </informaltable>
       <programlisting language="xml"><![CDATA[
     <resource class="AContextResource">
       ]]></programlisting>
@@ -306,8 +305,7 @@
        See here for more information on how to handle variants of 
        pageflows.
        <!-- TODO Add link here --> 
-       <table rules="all" frame="box">
-        <caption>Pageflow attributes</caption>
+       <informaltable rules="all" frame="box">
         <thead align="left">
           <tr>
             <th>Attribute</th>
@@ -335,12 +333,11 @@
             it doesn't need any input.</td>
           </tr>
         </tbody>
-      </table>
+      </informaltable>
       <programlisting language="xml"><![CDATA[
     <flowstep name="AnotherPageName" stophere="true|false">
       ]]></programlisting>
-      <table rules="all" frame="box">
-        <caption>Flowstep attributes</caption>
+      <informaltable rules="all" frame="box">
         <thead align="left">
           <tr>
             <th>Attribute</th>
@@ -365,7 +362,7 @@
             every single flowstep.</td>
           </tr>
         </tbody>
-      </table>
+      </informaltable>
       <programlisting language="xml"><![CDATA[
       <oncontinue applyall="true|false">
       ]]></programlisting>
@@ -428,8 +425,7 @@
   
   <pagerequest name="APageName" nostore="true|false" copyfrom="APageName">
       ]]></programlisting>
-      <table rules="all" frame="box">
-        <caption>Pagerequest attributes</caption>
+      <informaltable rules="all" frame="box">
         <thead align="left">
           <tr>
             <th>Attribute</th>
@@ -464,7 +460,7 @@
             extending, no restricting!</td>
           </tr>
         </tbody>
-      </table>
+      </informaltable>
       <programlisting language="xml"><![CDATA[
     <ssl force="true|false"/>
       ]]></programlisting>
@@ -583,8 +579,7 @@
       <classname>IWrapper</classname> to retrieve the passed 
       parameters via typed getter methods.
       <!-- TODO Add link here -->
-      <table rules="all" frame="box">
-        <caption>Input attributes</caption>
+      <informaltable rules="all" frame="box">
         <thead align="left">
           <tr>
             <th>Attribute</th>
@@ -669,7 +664,7 @@
             selected <classname>IHandler</classname>. </td>
           </tr>
         </tbody>
-      </table>
+      </informaltable>
       <programlisting language="xml"><![CDATA[
     </input>
       ]]></programlisting>
@@ -724,8 +719,7 @@
       <programlisting language="xml"><![CDATA[
       <resource node="AName" class="AClassName"/>
       ]]></programlisting>
-      <table rules="all" frame="box">
-        <caption>Resource attributes</caption>
+      <informaltable rules="all" frame="box">
         <thead align="left">
           <tr>
             <th>Attribute</th>
@@ -749,7 +743,7 @@
             it's data.</td>
           </tr>
         </tbody>
-      </table>
+      </informaltable>
       <programlisting language="xml"><![CDATA[
     </output>
     
@@ -764,8 +758,7 @@
       There are some props that are already defined for 
       <classname>de.schlund.pfixcore.workflow.app.StaticState</classname> 
       and descendants. These are listed below
-      <table rules="all" frame="box">
-        <caption>Properties</caption>
+      <informaltable rules="all" frame="box">
         <thead align="left">
           <tr>
             <th>Property Name</th>
@@ -796,17 +789,17 @@ Cache-Control=private</code>
             headers, you must manually supply them, too. </td>
           </tr>
         </tbody>
-      </table>
+      </informaltable>
       <programlisting language="xml"><![CDATA[
     </properties>
   </pagerequest>
   
   <config-include file="myproject/conf/myfile.xml" section="pagerequests"/>
       ]]></programlisting>
-      Includes a part of a config-fragments at this location.
-      <!-- TODO Add link here -->
-      <table rules="all" frame="box">
-        <caption>Config include attributes</caption>
+      Includes a part of a config fragments file at this location.
+      See <xref linkend="configuration.fragments"/> for details on how
+      to define config fragments.
+      <informaltable rules="all" frame="box">
         <thead align="left">
           <tr>
             <th>Attribute</th>
@@ -838,20 +831,21 @@ Cache-Control=private</code>
             <td><emphasis>Optional</emphasis>. 
             A XPath expression specifying the node-set to be included. 
             The prefixes to be used for XML namespaces are "fr" for 
-            the namespace of the fragments file tags and "pr" for the 
-            namespace of the ContextXMLServer configuration tags.</td>
-            <!-- TODO Add link to fragments format -->
+            the namespace of the 
+            <link linkend="configuration.fragments">fragments file</link> 
+            tags and "pr" for the namespace of the 
+            <classname>ContextXMLServlet</classname> configuration 
+            tags.</td>
           </tr>
         </tbody>
-      </table>
+      </informaltable>
       <emphasis>One and only one</emphasis> of the section, refid or 
       xpath attribute has to be specified for each config-include.
       <programlisting language="xml"><![CDATA[
   <properties>
     <prop name="AProperty">AValue</prop>
       ]]></programlisting>
-      <table rules="all" frame="box">
-        <caption>Properties</caption>
+      <informaltable rules="all" frame="box">
         <thead align="left">
           <tr>
             <th>Property Name</th>
@@ -883,7 +877,7 @@ Cache-Control=private</code>
             headers, you must manually supply them, too. </td>
           </tr>
         </tbody>
-      </table>
+      </informaltable>
        You can also specify properties here that are understood by the 
        ServletManager class.
        <!-- TODO Add link to ServletManager description -->
@@ -963,9 +957,9 @@ Cache-Control=private</code>
   <config-include file="myproject/conf/myfile.xml" section="directoutputpagerequests"/>
        ]]></programlisting>
       Includes a part of a config-fragments at this location.
-      <!-- TODO Add link here -->
-      <table rules="all" frame="box">
-        <caption>Config include attributes</caption>
+      See <xref linkend="configuration.fragments"/> for details on how
+      to define config fragments.
+      <informaltable rules="all" frame="box">
         <thead align="left">
           <tr>
             <th>Attribute</th>
@@ -985,7 +979,7 @@ Cache-Control=private</code>
             one section of the specified type exists in the file, the 
             content of all this sections is included. For a 
             <classname>DirectOutputServlet</classname> configuration
-            only <literal>directouputpagerequests</literal> and 
+            only <literal>directoutputpagerequests</literal> and 
             <literal>properties</literal> are valid.</td>
           </tr>
           <tr>
@@ -1003,10 +997,9 @@ Cache-Control=private</code>
             the namespace of the fragments file tags and "pr" for the 
             namespace of the <classname>DirectOutputServlet</classname> 
             configuration tags.</td>
-            <!-- TODO Add link to fragments format -->
           </tr>
         </tbody>
-      </table>
+      </informaltable>
       <emphasis>One and only one</emphasis> of the section, refid or 
       xpath attribute has to be specified for each config-include.
       <programlisting language="xml"><![CDATA[
@@ -1030,6 +1023,215 @@ Cache-Control=private</code>
 </directoutputserver>
       ]]></programlisting>
     </para>
+  </section>
+  
+  <section xml:id="configuration.fragments">
+    <title>Configuration fragments file format</title>
+    <para>
+      Configuration fragments files contain aggregated configuration 
+      directives that are intended to be reused in different 
+      configuration files.
+    </para>
+    <para>
+      <programlisting language="xml"><![CDATA[
+<fr:config-fragments
+  xmlns:fr="http://pustefix.sourceforge.net/configfragments200609"
+  xmlns:pr="http://pustefix.sourceforge.net/properties200401"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://pustefix.sourceforge.net/configfragments200609 http://pustefix.sourceforge.net/configfragments200609.xsd">
+  
+  <fr:navigation id="nav1">
+      ]]></programlisting>
+      All sections have an <emphasis>optional</emphasis> 
+      <tag class="attribute">id</tag> that can be used to identifiy 
+      the section when more than one section fo the same type is 
+      present in one file. The value of the 
+      <tag class="attribute">id</tag> attribute has to be unique
+      within the whole file.
+      <programlisting language="xml"><![CDATA[
+    <page name="MyPage" handler="/xml/myhandler"/>
+      ]]></programlisting>
+      The structure here is the same as within the navigation tag of the 
+      depend.xml file.
+      <!-- TODO Add link to depend.xml syntax -->
+      <programlisting language="xml"><![CDATA[
+  </fr:navigation>
+  <fr:targets>
+    <standardpage name="MyPage" xml="myproject/xml/mymaster.xml"/>
+      ]]></programlisting>
+      The tags allowed here are the same that are allowed for 
+      standardpage or target definitions in the depend.xml file.
+      <!-- TODO Add link to depend.xml syntax -->
+      <programlisting language="xml"><![CDATA[
+  </fr:targets>
+  <fr:resources>
+    <pr:resource class="com.example.MyResourceImpl">
+      <pr:implements class="com.example.MyResource"/>
+    </pr:resource>
+      ]]></programlisting>
+      The tags allowed here are the same that are allowed for the 
+      definition of context resources within the <tag>context</tag> 
+      tag of the <link linkend="configuration.contextxmlservlet">ContextXMLServlet configuration</link>.
+      <programlisting language="xml"><![CDATA[
+  </fr:resources>
+  <fr:interceptors>
+    <pr:interceptor class="com.example.MyInterceptor"/>
+      ]]></programlisting>
+      The tags allowed here are the same that are allowed within the 
+      <tag>startinterceptors</tag> and <tag>endinterceptors</tag> tags 
+      of the <link linkend="configuration.contextxmlservlet">ContextXMLServlet configuration</link>.
+      <programlisting language="xml"><![CDATA[
+  </fr:interceptors>
+  <fr:scriptedflows>
+    <pr:scriptedflow name="myscript" file="myproject/conf/scriptedflows/myscript.script.xml"/>
+      ]]></programlisting>
+      The tags allowed here are the same that are allowed within the 
+      <tag>scriptedflows</tag> tag of the 
+      <link linkend="configuration.contextxmlservlet">ContextXMLServlet configuration</link>.
+      <programlisting language="xml"><![CDATA[
+  </fr:scriptedflows>
+  <fr:roles>
+    <pr:role name="MY_ROLE">
+      <pr:pageaccess names="mypage*"/>
+    </pr:role>
+      ]]></programlisting>
+      The tags allowed here are the same that are used for role 
+      definition in the
+      <link linkend="configuration.contextxmlservlet">ContextXMLServlet configuration</link>.
+      <programlisting language="xml"><![CDATA[
+  </fr:roles>
+  <fr:pageflows>
+    <pr:pageflow name="MyFlow">
+      <pr:flowstep name="MyFirstPage"/>
+      <pr:flowstep name="MySecondPage"/>
+    </pr:pageflow>
+      ]]></programlisting>
+      The tags allowed here are the same that are used for the 
+      definition of pageflows in the
+      <link linkend="configuration.contextxmlservlet">ContextXMLServlet configuration</link>.
+      <programlisting language="xml"><![CDATA[
+  </fr:pageflows>
+  <fr:pagerequests>
+    <pr:pagerequest name="MyPage"/>
+      ]]></programlisting>
+      The tags allowed here are the same that are used for the 
+      definition of pagerequets in the
+      <link linkend="configuration.contextxmlservlet">ContextXMLServlet configuration</link>.
+      <programlisting language="xml"><![CDATA[
+  </fr:pagerequests>
+  <fr:properties>
+    <pr:prop name="myproperty">myvalue</pr:prop>
+      ]]></programlisting>
+      The tags allowed here are the same that are allowed within the 
+      <tag>properties</tag> tag of the 
+      <link linkend="configuration.contextxmlservlet">ContextXMLServlet configuration</link>.
+      <programlisting language="xml"><![CDATA[
+  </fr:properties>
+  <fr:directoutputpagerequests>
+    <pr:directoutputpagerequest name="foo">...</pr:directoutputpagerequest>
+      ]]></programlisting>
+      Direct output pagerequests can be defined here. See 
+      <xref linkend="configuration.directoutputservlet"/> for details 
+      on this.
+      <programlisting language="xml"><![CDATA[
+  </fr:directoutputpagerequests>
+</fr:config-fragments>
+      ]]></programlisting>
+    </para>
+  </section>
+  
+  <section xml:id="configuration.factory">
+    <title>FactoryInitServlet (factory.xml)</title>
+    <para>
+      This property file is located in 
+      <filename>projects/common/conf/factory.xml</filename> and used 
+      by the <classname>de.schlund.pfixxml.FactoryInitServlet</classname> 
+      servlet (contained in the special admin project used in every 
+      Pustefix environment) whenever the servletcontainer starts up to 
+      initialize services that are used by all the other projects. The
+      syntax of this file is described in <xref linkend="configuration.javaprops"/>.
+    </para>
+  </section>
+  
+  <section xml:id="configuration.pustefixxml">
+    <title>Global properties (pustefix.xml)</title>
+    <para>
+      The syntax of the 
+      <filename>common/conf/pustefix.xml</filename> file 
+      complies to the description in 
+      <xref linkend="configuration.javaprops"/>. The properties
+      defined here are merged with the properties defined for a
+      specific servlet. However, there are some properties with a 
+      special meaning.
+    </para>
+    <para>
+      Exception processing is configured via <tag>prop</tag> elements 
+      whose names comply to following syntax:
+      <code>exception.TYPE.[page|forward|processor]</code>
+      For one single <literal>TYPE</literal>, there may be only one 
+      occurrence of <literal>page</literal>, <literal>forward</literal> 
+      and <literal>processor</literal>.
+    </para>
+    <para>
+      <literal>TYPE</literal> is a fully qualified class name of a 
+      valid exception class, for which the handling should be 
+      configured at this point. In this case it specifically means, 
+      that the specified class must be a descendant of 
+      <classname>java.lang.Throwable</classname>, as the 
+      <literal>catch</literal>-block that handles the exceptions which 
+      are specified here, catches <classname>Throwable</classname>.
+    </para>
+    <para>
+      If an exception occurs during exception processing, or during 
+      processing of the page the request got forwarded to, no further 
+      exception handling will take place. Therefore the code that 
+      processes exceptions and the code that drives pages to which 
+      requests get forwarded, in case of exceptions, should be robust. 
+      Otherwise the whole exception-handling thing would be quite 
+      useless, wouldn't it?
+    </para>
+    <table rules="all" frame="box">
+      <caption>Exception processor properties</caption>
+      <thead align="left">
+        <tr>
+          <th>Attribute</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><literal>file</literal></td>
+          <td><emphasis>Mandatory</emphasis>. Path to the file that 
+          contains the tags to be included (relative to docroot). </td>
+        </tr>
+        <tr>
+          <td><literal>section</literal></td>
+          <td><emphasis>Optional</emphasis>. 
+          Type of the section that shall be included. If more than 
+          one section of the specified type exists in the file, the 
+          content of all this sections is included. For a 
+          <classname>DirectOutputServlet</classname> configuration
+          only <literal>directoutputpagerequests</literal> and 
+          <literal>properties</literal> are valid.</td>
+        </tr>
+        <tr>
+          <td><literal>refid</literal></td>
+          <td><emphasis>Optional</emphasis>. 
+          Include a section identified by the specified id. The 
+          refid specified here must match the id attribute of 
+          exactly one section in the specified file.</td>
+        </tr>
+        <tr>
+          <td><literal>xpath</literal></td>
+          <td><emphasis>Optional</emphasis>. 
+          A XPath expression specifying the node-set to be included. 
+          The prefixes to be used for XML namespaces are "fr" for 
+          the namespace of the fragments file tags and "pr" for the 
+          namespace of the <classname>DirectOutputServlet</classname> 
+          configuration tags.</td>
+        </tr>
+      </tbody>
+    </table>
   </section>
   
 </chapter>
