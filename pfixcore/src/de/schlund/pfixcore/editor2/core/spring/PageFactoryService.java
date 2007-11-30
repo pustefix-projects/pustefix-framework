@@ -18,12 +18,10 @@
 
 package de.schlund.pfixcore.editor2.core.spring;
 
-import de.schlund.pfixcore.editor2.core.dom.Page;
 import de.schlund.pfixcore.editor2.core.dom.Project;
 import de.schlund.pfixcore.editor2.core.dom.ThemeList;
 import de.schlund.pfixcore.editor2.core.dom.Variant;
 import de.schlund.pfixcore.editor2.core.spring.internal.MutablePage;
-import de.schlund.pfixxml.targets.PageInfo;
 
 /**
  * Service providing methods to create Page objects

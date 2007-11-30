@@ -40,7 +40,6 @@ import org.xml.sax.helpers.DefaultHandler;
 import de.schlund.pfixcore.webservice.Constants;
 import de.schlund.pfixcore.webservice.fault.FaultHandler;
 import de.schlund.pfixxml.config.CustomizationHandler;
-import de.schlund.pfixxml.config.GlobalConfigurator;
 import de.schlund.pfixxml.resources.FileResource;
 import de.schlund.pfixxml.resources.ResourceUtil;
 

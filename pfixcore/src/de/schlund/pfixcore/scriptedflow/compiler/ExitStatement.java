@@ -18,13 +18,14 @@
 
 package de.schlund.pfixcore.scriptedflow.compiler;
 
-import de.schlund.pfixcore.scriptedflow.vm.ExitInstruction;
-import de.schlund.pfixcore.scriptedflow.vm.Instruction;
-import de.schlund.pfixcore.scriptedflow.vm.pvo.ParamValueObject;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import de.schlund.pfixcore.scriptedflow.vm.ExitInstruction;
+import de.schlund.pfixcore.scriptedflow.vm.Instruction;
+import de.schlund.pfixcore.scriptedflow.vm.pvo.ParamValueObject;
 
 /**
  * 

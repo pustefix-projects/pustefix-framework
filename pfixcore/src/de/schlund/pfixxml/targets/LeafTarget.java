@@ -19,14 +19,15 @@
 
 package de.schlund.pfixxml.targets;
 
-import de.schlund.pfixxml.*;
+import java.io.IOException;
+import java.util.Iterator;
+import java.util.TreeSet;
+
+import org.apache.log4j.NDC;
+
+import de.schlund.pfixxml.XMLException;
 import de.schlund.pfixxml.resources.FileResource;
 import de.schlund.pfixxml.resources.ResourceUtil;
-
-import java.io.*;
-import java.util.*;
-
-import org.apache.log4j.*;
 
 /**
  * LeafTarget.java

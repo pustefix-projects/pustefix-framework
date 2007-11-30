@@ -19,12 +19,11 @@
 
 package de.schlund.pfixcore.example;
 
-import de.schlund.pfixcore.example.iwrapper.*;
-import de.schlund.pfixcore.generator.*;
-import de.schlund.pfixcore.workflow.*;
+import de.schlund.pfixcore.example.iwrapper.CounterInput;
+import de.schlund.pfixcore.generator.IHandler;
+import de.schlund.pfixcore.generator.IWrapper;
+import de.schlund.pfixcore.workflow.Context;
 import de.schlund.util.statuscodes.StatusCodeLib;
-
-import org.apache.log4j.*;
 
 /**
  * CounterSetHandler.java
@@ -38,7 +37,7 @@ import org.apache.log4j.*;
  */
 
 public class CounterSetHandler implements IHandler {
-    private static final Logger LOG = Logger.getLogger(CounterSetHandler.class);
+    // private static final Logger LOG = Logger.getLogger(CounterSetHandler.class);
 
     public void handleSubmittedData(Context context, IWrapper wrapper) throws Exception {
         CounterInput    counter = (CounterInput) wrapper;

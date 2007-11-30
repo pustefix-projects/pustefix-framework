@@ -21,8 +21,6 @@ package de.schlund.pfixcore.workflow.app;
 
 import java.util.HashMap;
 
-import org.apache.log4j.Logger;
-
 import de.schlund.pfixxml.XMLException;
 
 /**
@@ -38,7 +36,6 @@ import de.schlund.pfixxml.XMLException;
  */
 
 public class ResdocFinalizerFactory {
-    private static Logger LOG = Logger.getLogger(ResdocFinalizerFactory.class.getName());
     /** Store the already created ResdocFinalizer here, use classname as key*/
     private static HashMap known = new HashMap();
     private static ResdocFinalizerFactory instance = new ResdocFinalizerFactory();

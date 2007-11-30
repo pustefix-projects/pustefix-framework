@@ -20,7 +20,8 @@
 package de.schlund.pfixcore.workflow;
 
 
-import java.util.*;
+import java.util.HashMap;
+
 import de.schlund.pfixxml.ResultDocument;
 
 /**

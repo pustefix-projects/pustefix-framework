@@ -3,7 +3,9 @@
  */
 package de.schlund.pfixcore.webservice.generate;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -13,22 +15,37 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.wsdl.*;
-import javax.wsdl.factory.*;
-import javax.wsdl.xml.*;
-
+import javax.wsdl.Binding;
+import javax.wsdl.BindingInput;
+import javax.wsdl.BindingOperation;
+import javax.wsdl.Definition;
+import javax.wsdl.Input;
+import javax.wsdl.Message;
+import javax.wsdl.Operation;
+import javax.wsdl.Output;
+import javax.wsdl.Part;
+import javax.wsdl.Port;
+import javax.wsdl.Service;
+import javax.wsdl.Types;
 import javax.wsdl.extensions.ExtensibilityElement;
 import javax.wsdl.extensions.soap.SOAPAddress;
 import javax.wsdl.extensions.soap.SOAPBinding;
 import javax.wsdl.extensions.soap.SOAPBody;
-
+import javax.wsdl.factory.WSDLFactory;
+import javax.wsdl.xml.WSDLReader;
 import javax.xml.namespace.QName;
 
-import de.schlund.pfixcore.webservice.generate.js.*;
-import de.schlund.pfixcore.webservice.Constants;
-
-import org.w3c.dom.*;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
+
+import de.schlund.pfixcore.webservice.Constants;
+import de.schlund.pfixcore.webservice.generate.js.JsBlock;
+import de.schlund.pfixcore.webservice.generate.js.JsClass;
+import de.schlund.pfixcore.webservice.generate.js.JsMethod;
+import de.schlund.pfixcore.webservice.generate.js.JsParam;
+import de.schlund.pfixcore.webservice.generate.js.JsStatement;
 
 /**
  * Wsdl2Js.java 

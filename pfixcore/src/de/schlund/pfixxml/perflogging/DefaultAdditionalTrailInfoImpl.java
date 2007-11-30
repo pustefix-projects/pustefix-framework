@@ -1,8 +1,9 @@
 package de.schlund.pfixxml.perflogging;
 
+import java.util.LinkedHashMap;
+
 import de.schlund.pfixxml.AbstractXMLServlet;
 import de.schlund.pfixxml.PfixServletRequest;
-import java.util.LinkedHashMap;
 
 public class DefaultAdditionalTrailInfoImpl implements AdditionalTrailInfo {
 

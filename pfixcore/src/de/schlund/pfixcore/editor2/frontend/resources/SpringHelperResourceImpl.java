@@ -19,6 +19,7 @@
 package de.schlund.pfixcore.editor2.frontend.resources;
 
 import java.util.HashMap;
+
 import org.w3c.dom.Element;
 
 import de.schlund.pfixcore.workflow.Context;

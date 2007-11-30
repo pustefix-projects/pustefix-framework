@@ -19,14 +19,15 @@
 
 package de.schlund.pfixxml.exceptionprocessor;
 
-import de.schlund.pfixxml.PfixServletRequest;
 import java.io.IOException;
 import java.util.Properties;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import de.schlund.pfixxml.PfixServletRequest;
 
 /**
  * Every <code>ExceptionProcessor</code> that is configured to process exceptions

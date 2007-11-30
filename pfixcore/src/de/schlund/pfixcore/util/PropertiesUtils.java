@@ -20,8 +20,13 @@
 package de.schlund.pfixcore.util;
 
 import java.io.IOException;
-import java.util.*;
-import org.apache.log4j.*;
+import java.util.Comparator;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Properties;
+import java.util.TreeMap;
+
+import org.apache.log4j.Logger;
 
 /**
  * Insert the type's description here.

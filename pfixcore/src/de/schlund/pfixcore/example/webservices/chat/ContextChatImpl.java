@@ -6,13 +6,13 @@
  */
 package de.schlund.pfixcore.example.webservices.chat;
 
+import java.util.ArrayList;
+
 import org.w3c.dom.Element;
 
 import de.schlund.pfixcore.workflow.Context;
 import de.schlund.pfixcore.workflow.ContextResource;
 import de.schlund.pfixxml.ResultDocument;
-
-import java.util.ArrayList;
 
 /**
  * @author ml

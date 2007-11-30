@@ -26,11 +26,8 @@ import org.xml.sax.Attributes;
 import de.schlund.pfixxml.config.ContextXMLServletConfig;
 
 public class PageflowStepOnContinueRule extends CheckedRule {
-    private ContextXMLServletConfig config;
 
-    public PageflowStepOnContinueRule(ContextXMLServletConfig config) {
-        this.config = config;
-    }
+    public PageflowStepOnContinueRule(ContextXMLServletConfig config) {}
 
     public void begin(String namespace, String name, Attributes attributes) throws Exception {
         check(namespace, name, attributes);

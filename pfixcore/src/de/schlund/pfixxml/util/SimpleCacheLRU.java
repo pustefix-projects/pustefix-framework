@@ -2,7 +2,6 @@ package de.schlund.pfixxml.util;
 
 import java.util.LinkedHashMap;
 import java.util.Map.Entry;
-import java.util.Map;
 
 /**
  * Describe class CacheLRU here.

@@ -28,10 +28,7 @@ import de.schlund.pfixcore.workflow.ContextResource;
 import de.schlund.pfixxml.config.ContextXMLServletConfig;
 
 public class PagerequestOutputResourceRule extends CheckedRule {
-    private ContextXMLServletConfig config;
-
     public PagerequestOutputResourceRule(ContextXMLServletConfig config) {
-        this.config = config;
     }
 
     public void begin(String namespace, String name, Attributes attributes) throws Exception {

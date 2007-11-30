@@ -135,6 +135,7 @@ public class FlowStep {
         return this.config.isStopHere();
     }
 
+    @Override
     public String toString() {
         return("[page=" + this.config.getPage() + " stophere=" + this.config.isStopHere() + " #cont_actions=" + actions_oncontinue.size()+ "]");
     }

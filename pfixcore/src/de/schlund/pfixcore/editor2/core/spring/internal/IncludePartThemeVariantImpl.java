@@ -70,7 +70,7 @@ public class IncludePartThemeVariantImpl extends
 
     private IncludeFactoryService includefactory;
 
-    private ThemeFactoryService themefactory;
+    // private ThemeFactoryService themefactory;
 
     private ImageFactoryService imagefactory;
 
@@ -88,7 +88,7 @@ public class IncludePartThemeVariantImpl extends
         this.projectfactory = projectfactory;
         this.variantfactory = variantfactory;
         this.includefactory = includefactory;
-        this.themefactory = themefactory;
+        // this.themefactory = themefactory;
         this.imagefactory = imagefactory;
         this.securitymanager = securitymanager;
     }

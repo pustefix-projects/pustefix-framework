@@ -22,8 +22,6 @@ package de.schlund.pfixcore.example;
 import java.util.Arrays;
 import java.util.HashSet;
 
-import org.apache.log4j.Logger;
-
 import de.schlund.pfixcore.example.iwrapper.Trouser;
 import de.schlund.pfixcore.generator.IHandler;
 import de.schlund.pfixcore.generator.IWrapper;
@@ -42,8 +40,6 @@ import de.schlund.util.statuscodes.StatusCodeLib;
  */
 
 public class TrouserHandler implements IHandler {
-    private static final Logger LOG  = Logger.getLogger(TrouserHandler.class);
-    
     public void handleSubmittedData(Context context, IWrapper wrapper) throws Exception {
         Trouser        trouser = (Trouser) wrapper;
         ContextTrouser ct      = SampleRes.getContextTrouser(context);

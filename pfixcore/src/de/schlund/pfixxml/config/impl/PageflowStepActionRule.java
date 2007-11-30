@@ -27,11 +27,8 @@ import de.schlund.pfixcore.workflow.FlowStepAction;
 import de.schlund.pfixxml.config.ContextXMLServletConfig;
 
 public class PageflowStepActionRule extends CheckedRule {
-    private ContextXMLServletConfig config;
 
-    public PageflowStepActionRule(ContextXMLServletConfig config) {
-        this.config = config;
-    }
+    public PageflowStepActionRule(ContextXMLServletConfig config) {}
 
     public void begin(String namespace, String name, Attributes attributes) throws Exception {
        // DO NOT call check because we want arbitrary attributes to be passed

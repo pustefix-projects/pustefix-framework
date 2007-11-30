@@ -52,6 +52,7 @@ public class DefaultIWrapperState extends StateImpl {
     /**
      * @see de.schlund.pfixcore.workflow.State#isAccessible(Context, PfixServletRequest)
      */
+    @Override
     public boolean isAccessible(Context context, PfixServletRequest preq) throws Exception {
         IHandlerContainer container = getIHandlerContainer(context);
         return (container.isPageAccessible(context) && container.areHandlerActive(context));
@@ -60,6 +61,7 @@ public class DefaultIWrapperState extends StateImpl {
     /**
      * @see de.schlund.pfixcore.workflow.State#needsData(Context, PfixServletRequest)
      */
+    @Override
     public boolean needsData(Context context, PfixServletRequest preq) throws Exception {
         CAT.debug(">>> Checking needsData()...");
         IWrapperContainer container = getIWrapperContainer(context);
@@ -77,6 +79,7 @@ public class DefaultIWrapperState extends StateImpl {
     /**
      * @see de.schlund.pfixcore.workflow.State#getDocument(Context, PfixServletRequest)
      */
+    @Override
     public ResultDocument getDocument(Context context, PfixServletRequest preq) throws Exception {
         IWrapperContainer container  = getIWrapperContainer(context);
         ResdocFinalizer   rfinal     = getResdocFinalizer(context);

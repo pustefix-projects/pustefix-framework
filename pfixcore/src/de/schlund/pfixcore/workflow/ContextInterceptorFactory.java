@@ -1,8 +1,8 @@
 package de.schlund.pfixcore.workflow;
 
-import de.schlund.pfixxml.XMLException;
 import java.util.HashMap;
-import java.util.Iterator;
+
+import de.schlund.pfixxml.XMLException;
 
 /**
  * Describe class ContextInterceptorFactory here.

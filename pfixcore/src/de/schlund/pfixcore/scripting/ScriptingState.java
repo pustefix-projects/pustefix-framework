@@ -19,17 +19,20 @@
     
 package de.schlund.pfixcore.scripting;
 
-import de.schlund.pfixcore.workflow.Context;
-import de.schlund.pfixcore.workflow.State;
-import de.schlund.pfixxml.PfixServletRequest;
-import de.schlund.pfixxml.ResultDocument;
 import java.io.IOException;
 import java.util.Properties;
+
 import javax.servlet.http.HttpServletRequest;
+
 import org.apache.bsf.BSFEngine;
 import org.apache.bsf.BSFException;
 import org.apache.bsf.BSFManager;
 import org.apache.log4j.Logger;
+
+import de.schlund.pfixcore.workflow.Context;
+import de.schlund.pfixcore.workflow.State;
+import de.schlund.pfixxml.PfixServletRequest;
+import de.schlund.pfixxml.ResultDocument;
 
 /**
  * This class creates a <code>BSFEngine</code>-instance for every request, to

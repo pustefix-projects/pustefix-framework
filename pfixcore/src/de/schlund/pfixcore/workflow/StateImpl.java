@@ -19,13 +19,11 @@
 
 package de.schlund.pfixcore.workflow;
 
-import de.schlund.pfixcore.util.PropertiesUtils;
-import de.schlund.pfixcore.util.StateUtil;
-import de.schlund.pfixcore.workflow.Context;
-import de.schlund.pfixxml.ResultDocument;
-import de.schlund.pfixxml.PfixServletRequest;
-
 import org.apache.log4j.Logger;
+
+import de.schlund.pfixcore.util.StateUtil;
+import de.schlund.pfixxml.PfixServletRequest;
+import de.schlund.pfixxml.ResultDocument;
 
 /**
  * @author jtl

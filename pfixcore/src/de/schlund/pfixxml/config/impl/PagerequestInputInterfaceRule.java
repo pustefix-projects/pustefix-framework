@@ -28,10 +28,7 @@ import de.schlund.pfixcore.generator.IWrapper;
 import de.schlund.pfixxml.config.ContextXMLServletConfig;
 
 public class PagerequestInputInterfaceRule extends CheckedRule {
-    private ContextXMLServletConfig config;
-
     public PagerequestInputInterfaceRule(ContextXMLServletConfig config) {
-        this.config = config;
     }
 
     public void begin(String namespace, String name, Attributes attributes) throws Exception {

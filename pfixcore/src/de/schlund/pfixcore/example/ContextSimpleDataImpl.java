@@ -1,10 +1,11 @@
 package de.schlund.pfixcore.example;
 
-import de.schlund.pfixcore.workflow.Context;
-import de.schlund.pfixcore.workflow.ContextResource;
-import de.schlund.pfixxml.ResultDocument;
-import org.w3c.dom.Element;
 import java.util.HashMap;
+
+import org.w3c.dom.Element;
+
+import de.schlund.pfixcore.workflow.Context;
+import de.schlund.pfixxml.ResultDocument;
 
 /**
  * Describe class ContextSimpleDataImpl here.

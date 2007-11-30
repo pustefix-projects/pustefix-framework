@@ -18,9 +18,10 @@
 
 package de.schlund.pfixcore.scriptedflow.vm;
 
-import de.schlund.pfixcore.scriptedflow.vm.pvo.ParamValueObject;
 import java.util.List;
 import java.util.Map;
+
+import de.schlund.pfixcore.scriptedflow.vm.pvo.ParamValueObject;
 
 public class ExitInstruction implements Instruction {
 

@@ -30,8 +30,8 @@ import org.apache.log4j.Logger;
 import de.schlund.pfixcore.exception.PustefixApplicationException;
 import de.schlund.pfixcore.exception.PustefixCoreException;
 import de.schlund.pfixcore.exception.PustefixRuntimeException;
-import de.schlund.pfixxml.config.ContextResourceConfig;
 import de.schlund.pfixxml.config.ContextConfig;
+import de.schlund.pfixxml.config.ContextResourceConfig;
 
 /**
  * Implements the ability to store objects implementing a number of interfaces extending

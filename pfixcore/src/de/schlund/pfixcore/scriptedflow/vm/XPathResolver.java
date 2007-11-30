@@ -21,17 +21,20 @@ package de.schlund.pfixcore.scriptedflow.vm;
 
 
 
-import de.schlund.pfixxml.SPDocument;
-import de.schlund.pfixxml.util.Xml;
 import java.util.Map;
+
 import javax.xml.namespace.QName;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 import javax.xml.xpath.XPathVariableResolver;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
+
+import de.schlund.pfixxml.SPDocument;
+import de.schlund.pfixxml.util.Xml;
 
 /**
  * Used by the VM to evaluate XPath expressions for different instructions.  

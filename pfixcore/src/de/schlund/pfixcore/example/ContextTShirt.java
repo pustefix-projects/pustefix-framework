@@ -18,7 +18,7 @@
  */
 
 package de.schlund.pfixcore.example;
-import de.schlund.pfixcore.workflow.*;
+import de.schlund.pfixcore.workflow.ContextResource;
 /**
  * ContextTShirt.java
  *

@@ -37,7 +37,6 @@ import org.w3c.dom.Element;
 import de.schlund.pfixcore.generator.IHandler;
 import de.schlund.pfixcore.generator.IWrapper;
 import de.schlund.pfixcore.generator.IWrapperParam;
-import de.schlund.pfixcore.generator.IWrapperParamDefinition;
 import de.schlund.pfixcore.generator.RequestData;
 import de.schlund.pfixcore.generator.StatusCodeInfo;
 import de.schlund.pfixcore.util.PropertiesUtils;
@@ -84,7 +83,7 @@ public class IWrapperSimpleContainer implements IWrapperContainer {
     protected Logger             LOG            = Logger.getLogger(this.getClass());
     
     public  static final String PROP_CONTAINER       = "iwrappercontainer";
-    private static final String PROP_INTERFACE       = "interface";
+    //private static final String PROP_INTERFACE       = "interface";
     public  static final String PROP_RESTRICED       = "restrictedcontinue";
     public  static final String PROP_ALWAYS_RETRIEVE = "alwaysretrieve";
     private static final String PROP_NOEDITMODE      = "xmlserver.noeditmodeallowed";
@@ -105,7 +104,7 @@ public class IWrapperSimpleContainer implements IWrapperContainer {
     private static final String  SELECT_GROUP       = "SELGRP";  
     private static final String  SELECT_WRAPPER     = "SELWRP";  
     private static final String  WRAPPER_LOGDIR     = "interfacelogging";
-    private static final String  WRAPPER_LOGLIST    = "loginterfaces";
+    // private static final String  WRAPPER_LOGLIST    = "loginterfaces";
 
     /**
      * This method must be called right after an instance of this class is created.

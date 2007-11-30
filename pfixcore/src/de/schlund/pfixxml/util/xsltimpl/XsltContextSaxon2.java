@@ -19,10 +19,10 @@
 
 package de.schlund.pfixxml.util.xsltimpl;
 
-import de.schlund.pfixxml.util.XsltContext;
-import de.schlund.pfixxml.util.XsltVersion;
 import net.sf.saxon.expr.XPathContext;
 import net.sf.saxon.om.NodeInfo;
+import de.schlund.pfixxml.util.XsltContext;
+import de.schlund.pfixxml.util.XsltVersion;
 
 /**
  * @author mleidig@schlund.de

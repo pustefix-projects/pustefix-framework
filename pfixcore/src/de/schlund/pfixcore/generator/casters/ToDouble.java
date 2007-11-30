@@ -18,10 +18,13 @@
  */
 
 package de.schlund.pfixcore.generator.casters;
-import de.schlund.pfixcore.generator.*;
-import de.schlund.pfixxml.*;
-import de.schlund.util.statuscodes.*;
-import java.util.*;
+import java.util.ArrayList;
+
+import de.schlund.pfixcore.generator.IWrapperParamCaster;
+import de.schlund.pfixcore.generator.SimpleCheck;
+import de.schlund.pfixxml.RequestParam;
+import de.schlund.util.statuscodes.StatusCode;
+import de.schlund.util.statuscodes.StatusCodeLib;
 
 /**
  * ToDouble.java

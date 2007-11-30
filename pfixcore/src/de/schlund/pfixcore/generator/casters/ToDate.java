@@ -18,11 +18,16 @@
  */
 
 package de.schlund.pfixcore.generator.casters;
-import de.schlund.pfixcore.generator.*;
-import de.schlund.pfixxml.*;
-import de.schlund.util.statuscodes.*;
-import java.text.*;
-import java.util.*;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+
+import de.schlund.pfixcore.generator.IWrapperParamCaster;
+import de.schlund.pfixcore.generator.SimpleCheck;
+import de.schlund.pfixxml.RequestParam;
+import de.schlund.util.statuscodes.StatusCode;
+import de.schlund.util.statuscodes.StatusCodeLib;
 
 /**
  * ToDate.java

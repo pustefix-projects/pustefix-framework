@@ -31,13 +31,10 @@ import de.schlund.pfixxml.config.DirectOutputServletConfig;
 public class DirectPagerequestPropertyRule extends CheckedRule {
     private final static Logger LOG = Logger.getLogger(DirectPagerequestPropertyRule.class);
 
-    private DirectOutputServletConfig config;
     private String propName;
     private String propValue;
 
-    public DirectPagerequestPropertyRule(DirectOutputServletConfig config) {
-        this.config = config;
-    }
+    public DirectPagerequestPropertyRule(DirectOutputServletConfig config) {}
 
     public void begin(String namespace, String name, Attributes attributes) throws Exception {
         check(namespace, name, attributes);

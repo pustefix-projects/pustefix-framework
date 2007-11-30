@@ -19,11 +19,17 @@
 
 package de.schlund.pfixcore.generator.casters;
 
-import de.schlund.pfixcore.generator.*;
-import de.schlund.pfixxml.*;
-import de.schlund.util.statuscodes.*;
-import java.util.*;
-import org.apache.oro.text.regex.*;
+import java.util.ArrayList;
+
+import org.apache.oro.text.regex.MalformedPatternException;
+import org.apache.oro.text.regex.Perl5Compiler;
+import org.apache.oro.text.regex.Perl5Pattern;
+
+import de.schlund.pfixcore.generator.IWrapperParamCaster;
+import de.schlund.pfixcore.generator.SimpleCheck;
+import de.schlund.pfixxml.RequestParam;
+import de.schlund.util.statuscodes.StatusCode;
+import de.schlund.util.statuscodes.StatusCodeLib;
 
 
 /**

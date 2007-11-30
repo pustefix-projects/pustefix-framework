@@ -19,9 +19,11 @@
 
 package de.schlund.pfixcore.workflow;
 
-import de.schlund.pfixxml.*;
-import java.util.*;
-import javax.servlet.http.*;
+import java.util.Properties;
+
+import javax.servlet.http.HttpServletResponse;
+
+import de.schlund.pfixxml.PfixServletRequest;
 
 /**
  * The <code>DirectOutputState</code> interface is implemented by classes that wish to produce

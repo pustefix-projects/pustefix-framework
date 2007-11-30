@@ -55,7 +55,7 @@ import de.schlund.pfixxml.util.Xml;
  */
 
 public class CheckIncludes {
-    private static final String XPATH = "/include_parts/part/theme";
+    // private static final String XPATH = "/include_parts/part/theme";
     
     private HashMap generators       = new HashMap();
     private TreeSet includefilenames = new TreeSet();

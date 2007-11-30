@@ -23,7 +23,6 @@ import java.util.Properties;
 
 import javax.xml.transform.dom.DOMResult;
 
-import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -42,8 +41,6 @@ public class ResultDocument {
     
     public static final String PFIXCORE_NS = "http://www.schlund.de/pustefix/core";
     public static final String IXSL_NS     = "http://www.w3.org/1999/XSL/Transform";
-    
-    private   Logger     LOG = Logger.getLogger(ResultDocument.class);
     
     protected Element    formresult;
     protected Element    formvalues;

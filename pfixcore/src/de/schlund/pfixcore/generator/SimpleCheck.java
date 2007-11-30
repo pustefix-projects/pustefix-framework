@@ -18,9 +18,11 @@
  */
 
 package de.schlund.pfixcore.generator;
-import de.schlund.util.statuscodes.*;
 import java.util.HashSet;
-import org.apache.log4j.*;
+
+import org.apache.log4j.Logger;
+
+import de.schlund.util.statuscodes.StatusCode;
 
 /**
  * SimpleCheck.java

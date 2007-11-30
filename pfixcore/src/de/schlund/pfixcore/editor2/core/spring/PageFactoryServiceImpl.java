@@ -26,7 +26,6 @@ import de.schlund.pfixcore.editor2.core.dom.ThemeList;
 import de.schlund.pfixcore.editor2.core.dom.Variant;
 import de.schlund.pfixcore.editor2.core.spring.internal.MutablePage;
 import de.schlund.pfixcore.editor2.core.spring.internal.PageImpl;
-import de.schlund.pfixxml.targets.PageInfo;
 
 /**
  * Implementation of PageFactoryService

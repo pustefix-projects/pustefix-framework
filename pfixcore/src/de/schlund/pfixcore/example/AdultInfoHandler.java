@@ -19,8 +19,6 @@
 
 package de.schlund.pfixcore.example;
 
-import org.apache.log4j.Logger;
-
 import de.schlund.pfixcore.example.iwrapper.AdultInfo;
 import de.schlund.pfixcore.generator.IHandler;
 import de.schlund.pfixcore.generator.IWrapper;
@@ -38,7 +36,7 @@ import de.schlund.pfixcore.workflow.Context;
  */
 
 public class AdultInfoHandler implements IHandler {
-    private final static Logger LOG  = Logger.getLogger(AdultInfoHandler.class);
+    // private final static Logger LOG  = Logger.getLogger(AdultInfoHandler.class);
 
     public void handleSubmittedData(Context context, IWrapper wrapper) throws Exception {
         AdultInfo              info    = (AdultInfo) wrapper;

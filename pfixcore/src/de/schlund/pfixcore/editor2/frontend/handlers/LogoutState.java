@@ -1,10 +1,10 @@
 package de.schlund.pfixcore.editor2.frontend.handlers;
 
 import de.schlund.pfixcore.editor2.frontend.util.EditorResourceLocator;
+import de.schlund.pfixcore.workflow.Context;
 import de.schlund.pfixcore.workflow.StateImpl;
 import de.schlund.pfixxml.PfixServletRequest;
 import de.schlund.pfixxml.ResultDocument;
-import de.schlund.pfixcore.workflow.Context;
 
 /**
  * Describe class LogoutState here.

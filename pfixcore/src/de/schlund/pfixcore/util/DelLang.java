@@ -33,7 +33,7 @@ import de.schlund.pfixxml.util.Xml;
 
 public class DelLang {
     private static DocumentBuilderFactory dbfac = DocumentBuilderFactory.newInstance();
-    private String docroot;
+    //private String docroot;
     private Pattern pattern = Pattern.compile("^\\s*$");
     int onelangcount = 0;
     int multilangcount = 0;
@@ -43,7 +43,7 @@ public class DelLang {
     }
     
     public DelLang(String docroot) {
-        this.docroot = docroot;
+        // this.docroot = docroot;
     }
 
     public static void main(String[] args) throws Exception {

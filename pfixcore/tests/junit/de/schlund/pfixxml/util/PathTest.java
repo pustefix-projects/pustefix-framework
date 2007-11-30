@@ -3,6 +3,7 @@ package de.schlund.pfixxml.util;
 import java.io.*;
 import junit.framework.TestCase;
 
+@SuppressWarnings("deprecation")
 public class PathTest extends TestCase {
     private Path path;
     

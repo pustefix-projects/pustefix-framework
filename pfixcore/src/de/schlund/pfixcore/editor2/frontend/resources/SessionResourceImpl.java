@@ -19,6 +19,7 @@
 package de.schlund.pfixcore.editor2.frontend.resources;
 
 import java.security.Principal;
+
 import org.w3c.dom.Element;
 
 import de.schlund.pfixcore.editor2.core.exception.EditorSecurityException;

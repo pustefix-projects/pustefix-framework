@@ -19,7 +19,6 @@
 
 package de.schlund.pfixcore.generator;
 
-import de.schlund.util.statuscodes.*;
 
 /**
  *

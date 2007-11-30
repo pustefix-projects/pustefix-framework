@@ -19,8 +19,6 @@
 
 package de.schlund.pfixcore.lucefix;
 
-import java.util.Properties;
-
 import de.schlund.pfixxml.XMLException;
 
 /**

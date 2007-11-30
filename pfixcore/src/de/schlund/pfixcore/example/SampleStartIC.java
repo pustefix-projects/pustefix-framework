@@ -1,7 +1,5 @@
 package de.schlund.pfixcore.example;
 
-import org.apache.log4j.Logger;
-
 import de.schlund.pfixcore.workflow.Context;
 import de.schlund.pfixcore.workflow.ContextInterceptor;
 import de.schlund.pfixxml.PfixServletRequest;
@@ -18,8 +16,6 @@ import de.schlund.pfixxml.Variant;
  * @version 1.0
  */
 public class SampleStartIC implements ContextInterceptor {
-    private static Logger LOG = Logger.getLogger(SampleStartIC.class);
-
     // Implementation of de.schlund.pfixcore.workflow.ContextInterceptor
     /**
      * Describe <code>process</code> method here.

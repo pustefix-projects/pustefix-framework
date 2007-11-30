@@ -38,8 +38,8 @@ package de.schlund.pfixxml;
 
 import java.io.DataInput;
 import java.io.FileInputStream;
-import java.io.InputStream;
 import java.io.IOException;
+import java.io.InputStream;
 
 /**
  * Get file format, image resolution, number of bits per pixel and optionally 
@@ -149,7 +149,7 @@ public class ImageInfo {
 	private int format;
 	private InputStream in;
 	private DataInput din;
-	private boolean collectComments;
+	// private boolean collectComments;
 	private boolean determineNumberOfImages;
 	private int numberOfImages;
 
@@ -761,7 +761,7 @@ public class ImageInfo {
 
 	public void setCollectComments(boolean newValue)
 	{
-		collectComments = newValue;
+		// collectComments = newValue;
 	}
 
 	/**

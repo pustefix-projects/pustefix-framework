@@ -19,12 +19,18 @@
 
 package de.schlund.pfixxml;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletResponse;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+
 import de.schlund.pfixxml.util.Xml;
-import java.util.*;
-
-import javax.servlet.http.*;
-
-import org.w3c.dom.*;
 
 
 /**

@@ -44,6 +44,7 @@ public class StaticState extends StateImpl {
     /**
      * @see de.schlund.pfixcore.workflow.State#getDocument(Context, PfixServletRequest)
      */
+    @Override
     public ResultDocument getDocument(Context context, PfixServletRequest preq) throws Exception {
         ResultDocument resdoc = createDefaultResultDocument(context);
         Properties     props  = context.getPropertiesForCurrentPageRequest();
@@ -52,6 +53,7 @@ public class StaticState extends StateImpl {
         return resdoc;
     }
 
+    @Override
     public boolean needsData(Context context, PfixServletRequest preq) throws Exception {
         Properties props     = context.getPropertiesForCurrentPageRequest();
         String     needsdata = props.getProperty(NEEDSDATA);

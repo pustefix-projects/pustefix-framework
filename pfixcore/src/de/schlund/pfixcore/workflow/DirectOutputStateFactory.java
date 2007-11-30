@@ -19,8 +19,9 @@
 
 package de.schlund.pfixcore.workflow;
 
-import java.util.*;
-import org.apache.log4j.*;
+import java.util.HashMap;
+
+import org.apache.log4j.Logger;
 
 /**
  * The <code>DirectOutputStateFactory</code> class is a singleton that manages and creates

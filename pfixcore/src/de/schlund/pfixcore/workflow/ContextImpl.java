@@ -212,6 +212,7 @@ public class ContextImpl implements Context, AccessibilityChecker, ExtendedConte
             }
         }
         
+        @Override
         public String toString() {
             StringBuffer contextbuf = new StringBuffer("\n");
 
@@ -503,6 +504,7 @@ public class ContextImpl implements Context, AccessibilityChecker, ExtendedConte
         sessioncontext.setAuthentication(authentication);
     }
     
+    @Override
     public String toString() {
         RequestContextImpl requestcontext = getRequestContextForCurrentThread();
         if (requestcontext != null) {

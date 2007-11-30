@@ -19,7 +19,6 @@
 package de.schlund.pfixxml.util;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.OutputStream;
 import java.io.StringWriter;
 import java.net.MalformedURLException;
@@ -203,8 +202,6 @@ public class Xslt {
     
     
     static class FileResolver implements URIResolver {
-        private static final String SEP = File.separator;
-        
         private TargetImpl parent;
         private XsltVersion xsltVersion;
 

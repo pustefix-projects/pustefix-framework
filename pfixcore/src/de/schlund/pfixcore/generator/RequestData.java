@@ -19,8 +19,9 @@
 
 package de.schlund.pfixcore.generator;
 
-import de.schlund.pfixxml.*;
-import java.util.*;
+import java.util.Iterator;
+
+import de.schlund.pfixxml.RequestParam;
 
 /**
  * RequestData.java

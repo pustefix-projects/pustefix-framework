@@ -19,11 +19,12 @@
 
 package de.schlund.pfixcore.example;
 
-import de.schlund.pfixcore.example.iwrapper.*;
-import de.schlund.pfixcore.generator.*;
-import de.schlund.pfixcore.workflow.*;
-import de.schlund.util.statuscodes.*;
-import org.apache.log4j.*;
+import de.schlund.pfixcore.example.iwrapper.TShirt;
+import de.schlund.pfixcore.generator.IHandler;
+import de.schlund.pfixcore.generator.IWrapper;
+import de.schlund.pfixcore.workflow.Context;
+import de.schlund.pfixcore.workflow.ContextResourceManager;
+import de.schlund.util.statuscodes.StatusCodeLib;
 
 /**
  * TShirtHandler.java
@@ -37,8 +38,6 @@ import org.apache.log4j.*;
  */
 
 public class TShirtHandler implements IHandler {
-    private static final Logger LOG = Logger.getLogger(TShirtHandler.class);
-    
     public void handleSubmittedData(Context context, IWrapper wrapper) throws Exception {
         TShirt        tshirt  = (TShirt) wrapper;
         ContextTShirt ct      = SampleRes.getContextTShirt(context);

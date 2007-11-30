@@ -19,16 +19,16 @@
     
 package de.schlund.pfixcore.scripting;
 
+import java.io.IOException;
+
+import org.apache.bsf.BSFEngine;
+import org.apache.bsf.BSFException;
+import org.apache.bsf.BSFManager;
+import org.apache.log4j.Logger;
+
 import de.schlund.pfixcore.generator.IHandler;
 import de.schlund.pfixcore.generator.IWrapper;
 import de.schlund.pfixcore.workflow.Context;
-
-import java.io.IOException;
-
-import org.apache.bsf.BSFException;
-import org.apache.bsf.BSFManager;
-import org.apache.bsf.BSFEngine;
-import org.apache.log4j.Logger;
 
 /**
  * 
