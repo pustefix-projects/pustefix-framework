@@ -30,7 +30,6 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import de.schlund.pfixxml.IncludeDocumentFactory;
 import de.schlund.pfixxml.config.GlobalConfigurator;
 import de.schlund.pfixxml.resources.DocrootResource;
 import de.schlund.pfixxml.resources.ResourceUtil;
@@ -187,7 +186,6 @@ public class CheckIncludes {
     }
 
     private void checkForUnusedImages(Document result, Element res_root) throws Exception {
-        IncludeDocumentFactory incfac = IncludeDocumentFactory.getInstance();
         for (Iterator i = imagefilenames.iterator(); i.hasNext();) {
             DocrootResource img = (DocrootResource) i.next();
 

@@ -61,7 +61,6 @@ public class DelLang {
 
     public void transform(String files) throws Exception {
 
-        File           list   = new File(files);
         BufferedReader input  = new BufferedReader(new FileReader(files));
         Set<FileResource>      inames = new TreeSet<FileResource>();
         String         line;

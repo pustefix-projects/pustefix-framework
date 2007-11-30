@@ -156,8 +156,4 @@ public class Merge {
             node.getParentNode().removeChild(node);
         }
     }
-
-    private static String serialize(Node node) {
-        return Xml.serialize(node, true, false);
-    }
 }

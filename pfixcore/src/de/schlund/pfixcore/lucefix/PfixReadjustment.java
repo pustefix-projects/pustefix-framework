@@ -71,8 +71,6 @@ public class PfixReadjustment {
         
         int knownDocsSize, newDocs, deleteDocs, numDocs;
         
-        int counter = 0;
-        
         startLoop = stopLoop = startCollect = stopCollect = startIndexLoop = stopIndexLoop = startAddLoop = stopAddLoop = 0;
         newDocs = knownDocsSize = deleteDocs = numDocs = 0;
         

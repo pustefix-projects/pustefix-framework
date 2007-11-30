@@ -233,6 +233,7 @@ public final class IncludeDocumentExtension {
             }
             
             // We are only here if none of the themes produced a match:
+            @SuppressWarnings("unused")
             boolean ok = true;
             if (dolog) {
                 try {

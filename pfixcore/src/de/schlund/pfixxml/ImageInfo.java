@@ -737,12 +737,6 @@ public class ImageInfo {
 		return sb.toString();
 	}
 
-	private String readLine(int firstChar) throws IOException {
-		StringBuffer result = new StringBuffer();
-		result.append((char)firstChar);
-		return readLine(result);
-	}
-
 	private static void run(InputStream in, ImageInfo imageInfo) {
 		imageInfo.setInput(in);
 		imageInfo.setDetermineImageNumber(true);

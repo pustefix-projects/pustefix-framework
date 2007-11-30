@@ -298,7 +298,6 @@ public abstract class TargetImpl implements TargetRW, Comparable {
     }
     
     private void doCacheStatistic(Object value) {
-        TargetGenerator tgen = getTargetGenerator();
         if (value == null) {
             SPCacheStatistic.getInstance().registerCacheMiss(this);
         } else {

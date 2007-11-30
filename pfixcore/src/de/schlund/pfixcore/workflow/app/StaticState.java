@@ -47,8 +47,6 @@ public class StaticState extends StateImpl {
     @Override
     public ResultDocument getDocument(Context context, PfixServletRequest preq) throws Exception {
         ResultDocument resdoc = createDefaultResultDocument(context);
-        Properties     props  = context.getPropertiesForCurrentPageRequest();
-
         context.prohibitContinue();
         return resdoc;
     }

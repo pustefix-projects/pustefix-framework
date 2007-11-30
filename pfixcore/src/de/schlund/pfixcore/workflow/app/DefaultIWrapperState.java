@@ -250,7 +250,6 @@ public class DefaultIWrapperState extends StateImpl {
 
     // Remember, a IHandlerContainer is a flyweight!!!
     protected IHandlerContainer getIHandlerContainer(Context context) throws Exception {
-        PropertyObjectManager pom      = PropertyObjectManager.getInstance();
         // Use context config object as dummy configuration object to make sure
         // each context (server) has its own IHandlerContainerManager
         IHandlerContainerManager  ihcm = 

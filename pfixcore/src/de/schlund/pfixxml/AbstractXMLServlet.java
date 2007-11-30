@@ -333,8 +333,6 @@ public abstract class AbstractXMLServlet extends ServletManager {
         long         currtime;
         long         preproctime = -1;
         long         getdomtime  = -1;
-        long         handletime  = -1;
-        
         
         // Reset the additional trail info before processing the request
         addtrailinfo.reset();
@@ -650,7 +648,6 @@ public abstract class AbstractXMLServlet extends ServletManager {
                 OutputStream       out          = res.getOutputStream();
                 OutputStreamWriter writer       = new OutputStreamWriter(out, res.getCharacterEncoding());
                 writer.write("\n<!--");
-                int count = 0;
                 for (Iterator<String> keys = addinfo.keySet().iterator(); keys.hasNext(); ) {
                     String key = keys.next();
                     writer.write(" " + key + ": " + addinfo.get(key));

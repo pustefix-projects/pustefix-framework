@@ -23,7 +23,6 @@ import de.schlund.pfixcore.example.iwrapper.TShirt;
 import de.schlund.pfixcore.generator.IHandler;
 import de.schlund.pfixcore.generator.IWrapper;
 import de.schlund.pfixcore.workflow.Context;
-import de.schlund.pfixcore.workflow.ContextResourceManager;
 import de.schlund.util.statuscodes.StatusCodeLib;
 
 /**
@@ -76,7 +75,6 @@ public class TShirtHandler implements IHandler {
     }
     
     public boolean needsData(Context context) throws Exception{
-        ContextResourceManager crm = context.getContextResourceManager();
         ContextTShirt          ct  = SampleRes.getContextTShirt(context);
         return ct.needsData();
     }
