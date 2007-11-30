@@ -156,11 +156,7 @@
   </target>
   
   <target name="clean">
-    <delete includeemptydirs="true">
-	  <fileset dir="build/">
-	    <include name="**/**"/>
-	  </fileset>
-    </delete>
+    <delete dir="build"/>
   </target>
   
 </project>
