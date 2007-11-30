@@ -208,6 +208,7 @@ public class VirtualHttpServletRequest implements HttpServletRequest {
         return orig.isRequestedSessionIdFromURL();
     }
 
+    @SuppressWarnings("deprecation")
     public boolean isRequestedSessionIdFromUrl() {
         return orig.isRequestedSessionIdFromUrl();
     }
@@ -322,6 +323,7 @@ public class VirtualHttpServletRequest implements HttpServletRequest {
         return orig.getRequestDispatcher(arg0);
     }
 
+    @SuppressWarnings("deprecation")
     public String getRealPath(String arg0) {
         return orig.getRealPath(arg0);
     }

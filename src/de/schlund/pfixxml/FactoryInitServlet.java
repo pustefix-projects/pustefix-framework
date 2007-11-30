@@ -166,6 +166,7 @@ public class FactoryInitServlet extends HttpServlet {
      * @throws ServletException
      *             on errors
      */
+    @SuppressWarnings("deprecation")
     public void init(ServletConfig Config) throws ServletException {
         super.init(Config);
         Properties properties = new Properties(System.getProperties());

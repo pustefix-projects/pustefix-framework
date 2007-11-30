@@ -159,7 +159,6 @@ public class IncludesResourceImpl extends CommonIncludesResourceImpl implements
         Collection<IncludePartThemeVariant> parts = project
                 .getAllIncludeParts();
         TreeSet<IncludeFile> files = new TreeSet<IncludeFile>();
-        String compareStr = dirname + "/";
         for (Iterator i = parts.iterator(); i.hasNext();) {
             IncludePartThemeVariant part = (IncludePartThemeVariant) i.next();
             IncludeFile file = part.getIncludePart().getIncludeFile();

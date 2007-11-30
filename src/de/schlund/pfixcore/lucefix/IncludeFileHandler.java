@@ -157,22 +157,6 @@ public class IncludeFileHandler extends DefaultHandler implements LexicalHandler
 
 
 
-    /**
-     * @param atts
-     * @return
-     */
-    private String print(Attributes atts) {
-        StringBuffer retv = new StringBuffer();
-        for (int i = 0; i < atts.getLength(); i++) {
-            retv.append(atts.getLocalName(i));
-            retv.append("-");
-            retv.append(atts.getValue(i));
-        }
-        return retv.toString();
-    }
-
-
-
     public void endCDATA() throws SAXException {
         // TODO Auto-generated method stub
 

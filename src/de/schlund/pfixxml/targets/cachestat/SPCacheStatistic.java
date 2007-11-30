@@ -180,8 +180,6 @@ public class SPCacheStatistic {
      */
     public String getCacheStatisticAsString() {
         StringBuffer sb = new StringBuffer(128);
-        SPCache currentcache = SPCacheFactory.getInstance().getCache();
-
         // do clone or synchronize 
         Hashtable targetgentoinfomap_clone = (Hashtable) targetGen2AdvanceStatMapping.clone();
 
@@ -303,7 +301,6 @@ public class SPCacheStatistic {
             TargetGenerator tgen = (TargetGenerator) i.next();
             AdvanceCacheStatistic stat = (AdvanceCacheStatistic) targetGen2AdvanceStatMapping.get(tgen);
 
-            String productname = tgen.getName();
             long hits = stat.getHits();
             long misses = stat.getMisses();
             totalmisses += misses;

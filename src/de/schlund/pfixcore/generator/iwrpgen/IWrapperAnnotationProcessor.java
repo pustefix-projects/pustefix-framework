@@ -294,7 +294,6 @@ public class IWrapperAnnotationProcessor implements AnnotationProcessor {
     					return;
     				}
     			}
-    			String propClass=null;
     			AnnotationMirror transientMirror=MirrorApiUtils.getAnnotationMirror(methDecl,transientType);
     			if(transientMirror==null && fieldDecl!=null) transientMirror=MirrorApiUtils.getAnnotationMirror(fieldDecl,transientType);
         		if(transientMirror==null) {

@@ -219,8 +219,6 @@ public class Xslt {
             URI uri;
             String path;
             FileResource file;
-            boolean forcePfixroot = false;
-   
             //Rewrite include href to xslt version specific file, that's necessary cause
             //the XSLT1 and XSLT2 extension functions are incompatible and we want
             //to support using XSLT1 (Saxon 6.5.x) or XSLT2 (Saxon 8.x) without the
@@ -242,7 +240,6 @@ public class Xslt {
             }
             path = uri.getPath();
             if (uri.getScheme() != null && uri.getScheme().equals("pfixroot")) {
-                forcePfixroot = true;
                 if (path.startsWith("/")) {
                     path = path.substring(1);
                 }

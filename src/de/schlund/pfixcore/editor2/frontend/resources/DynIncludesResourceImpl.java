@@ -151,7 +151,6 @@ public class DynIncludesResourceImpl extends CommonIncludesResourceImpl
     protected Set<IncludeFile> getIncludeFilesInDirectory(String dirname,
             Project project) {
         TreeSet<IncludeFile> files = new TreeSet<IncludeFile>();
-        String compareStr = dirname + "/";
         for (Iterator i = SpringBeanLocator.getDynIncludeFactoryService()
                 .getDynIncludeFiles().iterator(); i.hasNext();) {
             IncludeFile file = (IncludeFile) i.next();

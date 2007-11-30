@@ -396,8 +396,6 @@ public class XsltTransformer {
     }
 
     public String toString() {
-        // TODO_AH throw out debug in XsltGenericTask or cache this String?
-        String transformerString = (transformer == null) ? "<unused>" : String.valueOf(transformer); 
         return shortClassname(getClass().getName())+"[transformer="+transformer+"; isValidate="+isValidate+" isValidateDynamic="+isValidateDynamic+"; isNamespaceAware="+isNamespaceAware+"; params="+params+"]";
     }
 

@@ -86,8 +86,6 @@ public class IWrapperSimpleContainer implements IWrapperContainer {
     //private static final String PROP_INTERFACE       = "interface";
     public  static final String PROP_RESTRICED       = "restrictedcontinue";
     public  static final String PROP_ALWAYS_RETRIEVE = "alwaysretrieve";
-    private static final String PROP_NOEDITMODE      = "xmlserver.noeditmodeallowed";
-    
     private static final String  GROUP_STATUS_PARAM = "__groupdisplay";
     private static final String  GROUP_STATUS       = "__GROUPDISPLAY__STATUS__";
     private static final Boolean GROUP_ON           = new Boolean(true);
@@ -504,9 +502,6 @@ public class IWrapperSimpleContainer implements IWrapperContainer {
     }
 
     private void readIWrappersConfigFromProperties() throws Exception  {
-        Properties allprops   = context.getProperties();
-        String     noeditmode = allprops.getProperty(PROP_NOEDITMODE);
-
         //Properties props      = context.getPropertiesForCurrentPageRequest();
         //HashMap    interfaces = PropertiesUtils.selectProperties(props, PROP_INTERFACE);
         PageRequestConfig config = context.getConfigForCurrentPageRequest();

@@ -215,7 +215,6 @@ public class AuxDependencyManager {
     public synchronized void saveAuxdepend() throws IOException  {
         LOG.info("===> Trying to save aux info of Target '" + target.getTargetKey() + "'");
 
-        Set<AuxDependency> allaux = TargetDependencyRelation.getInstance().getDependenciesForTarget(target);
         FileResource       path   = ResourceUtil.getFileResource(target.getTargetGenerator().getDisccachedir(),
                                                                  target.getTargetKey() + ".aux");
         FileResource       dir    = path.getParentAsFileResource();

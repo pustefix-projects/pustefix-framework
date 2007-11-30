@@ -577,14 +577,6 @@ public class TargetGenerator implements Comparable {
         }
     }
 
-    private TargetRW createXMLVirtualTarget(String key) {
-        return createTarget(TargetType.XML_VIRTUAL, key, null);
-    }
-
-    private TargetRW createXSLVirtualTarget(String key) {
-        return createTarget(TargetType.XSL_VIRTUAL, key, null);
-    }
-
     private TargetRW createTarget(TargetType type, String key, Themes themes) {
         TargetFactory tfac = TargetFactory.getInstance();
         TargetRW tmp = tfac.getTarget(type, this, key, themes);

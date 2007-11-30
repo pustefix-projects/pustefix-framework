@@ -27,7 +27,6 @@ import java.util.Map;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpSession;
-import javax.servlet.http.HttpSessionContext;
 
 import de.schlund.pfixcore.workflow.Context;
 import de.schlund.pfixcore.workflow.ContextImpl;
@@ -81,7 +80,8 @@ public class DummyContextFactory {
             return this.maxInactiveInterval;
         }
 
-        public HttpSessionContext getSessionContext() {
+        @SuppressWarnings("deprecation")
+        public javax.servlet.http.HttpSessionContext getSessionContext() {
             return null;
         }
 

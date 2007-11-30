@@ -55,7 +55,7 @@ public class TrouserHandler implements IHandler {
                 String[]   args  = new String[2];
                 args[0] = "1";
                 args[1] = "2";
-                trouser.addSCodeWithArgsColor(StatusCodeLib.PFIXCORE_EXAMPLE_TROUSER_FEATURECOLOR_OUTOF_STOCK, args);
+                trouser.addSCodeColor(StatusCodeLib.PFIXCORE_EXAMPLE_TROUSER_FEATURECOLOR_OUTOF_STOCK, args, null);
                 return;
             }
         }
@@ -67,8 +67,8 @@ public class TrouserHandler implements IHandler {
     }
     
     public void retrieveCurrentStatus(Context context, IWrapper wrapper) throws Exception {
-        Trouser                trouser = (Trouser) wrapper;
-        ContextTrouser         ct      = SampleRes.getContextTrouser(context);
+        Trouser        trouser = (Trouser) wrapper;
+        ContextTrouser ct      = SampleRes.getContextTrouser(context);
 
         // we use the ct.needsData() call to look if the Context Ressource has meaningful content
         // to display. This may be handled differently depending on the case.

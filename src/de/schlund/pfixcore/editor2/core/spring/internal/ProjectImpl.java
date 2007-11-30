@@ -225,8 +225,7 @@ public class ProjectImpl extends AbstractProject {
      * @param allpages
      *            Map to add page objects to
      */
-    private void recursePage(Page page,
-            HashMap<String, Map<Variant, Page>> allpages) {
+    private void recursePage(Page page, HashMap<String, Map<Variant, Page>> allpages) {
         Map<Variant, Page> pagetable;
         if (allpages.containsKey(page.getName())) {
             pagetable = allpages.get(page.getName());
