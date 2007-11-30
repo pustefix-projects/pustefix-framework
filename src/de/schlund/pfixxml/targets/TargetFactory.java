@@ -18,9 +18,10 @@
  */
 
 package de.schlund.pfixxml.targets;
-import java.util.*;
-import java.lang.reflect.*;
-import org.apache.log4j.*;
+import java.lang.reflect.Constructor;
+import java.util.TreeMap;
+
+import org.apache.log4j.Logger;
 
 /**
  * TargetFactory.java

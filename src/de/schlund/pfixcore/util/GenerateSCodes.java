@@ -27,8 +27,6 @@ import java.io.Writer;
 import java.util.HashSet;
 import java.util.Properties;
 
-import javax.xml.transform.TransformerException;
-
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;

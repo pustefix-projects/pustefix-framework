@@ -19,9 +19,12 @@
 
 package de.schlund.pfixxml;
 
-import java.io.*;
-import java.util.*;
-import org.apache.log4j.*;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.StringTokenizer;
+
+import org.apache.log4j.Logger;
 
 import de.schlund.pfixxml.resources.FileResource;
 import de.schlund.pfixxml.resources.ResourceUtil;

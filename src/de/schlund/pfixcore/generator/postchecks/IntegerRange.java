@@ -19,8 +19,11 @@
 
 package de.schlund.pfixcore.generator.postchecks;
 import java.util.StringTokenizer;
-import de.schlund.util.statuscodes.*;
-import de.schlund.pfixcore.generator.*;
+
+import de.schlund.pfixcore.generator.IWrapperParamPostCheck;
+import de.schlund.pfixcore.generator.SimpleCheck;
+import de.schlund.util.statuscodes.StatusCode;
+import de.schlund.util.statuscodes.StatusCodeLib;
 
 /**
  * IntegerRange.java

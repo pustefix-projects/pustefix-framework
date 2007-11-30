@@ -19,7 +19,7 @@
 
 package de.schlund.pfixcore.generator;
 
-import de.schlund.pfixxml.*;
+import de.schlund.pfixxml.RequestParam;
 
 /**
  *

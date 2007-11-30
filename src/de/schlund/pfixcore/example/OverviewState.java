@@ -19,9 +19,10 @@
 
 package de.schlund.pfixcore.example;
 
-import de.schlund.pfixcore.workflow.*;
-import de.schlund.pfixcore.workflow.app.*;
-import de.schlund.pfixxml.*;
+import de.schlund.pfixcore.workflow.Context;
+import de.schlund.pfixcore.workflow.ContextResourceManager;
+import de.schlund.pfixcore.workflow.app.StaticState;
+import de.schlund.pfixxml.PfixServletRequest;
 
 /**
  * OverviewState.java

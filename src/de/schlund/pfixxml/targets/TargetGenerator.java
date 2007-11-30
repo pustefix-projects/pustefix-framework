@@ -120,9 +120,6 @@ public class TargetGenerator implements Comparable {
 
     private Set<ConfigurationChangeListener> configurationListeners = Collections.synchronizedSet(new HashSet<ConfigurationChangeListener>());
 
-    // needed during load.
-    private int unnamedcount = 0;
-
     private FileResource config_path;
 
     //--

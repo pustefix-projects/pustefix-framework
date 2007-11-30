@@ -18,10 +18,9 @@
  */
 package de.schlund.pfixcore.workflow.app;
 
+import de.schlund.pfixcore.generator.IHandler;
 import de.schlund.pfixcore.workflow.Context;
 import de.schlund.pfixxml.config.PageRequestConfig;
-
-import java.util.Properties;
 
 
 /**

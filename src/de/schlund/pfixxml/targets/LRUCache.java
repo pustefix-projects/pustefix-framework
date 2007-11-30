@@ -23,7 +23,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
 import org.apache.oro.util.CacheLRU;
 
 /**
@@ -32,7 +31,7 @@ import org.apache.oro.util.CacheLRU;
  */
 
 public class LRUCache implements SPCache {
-    private static final Logger   LOG          = Logger.getLogger(LRUCache.class);
+    // private static final Logger   LOG          = Logger.getLogger(LRUCache.class);
     public  static final int      DEFAULT_SIZE = 30;
 
     private CacheLRU cache;

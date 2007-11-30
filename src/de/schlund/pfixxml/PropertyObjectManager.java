@@ -19,8 +19,11 @@
 
 package de.schlund.pfixxml;
 
-import java.util.*;
-import org.apache.log4j.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.WeakHashMap;
+
+import org.apache.log4j.Logger;
 
 /**
  * This class manages shared objects, which are build from properties. 

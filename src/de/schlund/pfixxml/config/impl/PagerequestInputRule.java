@@ -26,13 +26,9 @@ import org.xml.sax.SAXException;
 
 import de.schlund.pfixxml.config.ContextXMLServletConfig;
 import de.schlund.pfixxml.config.PageRequestConfig;
-import de.schlund.pfixxml.config.PageRequestConfig.Policy;
 
 public class PagerequestInputRule extends CheckedRule {
-    private ContextXMLServletConfig config;
-
     public PagerequestInputRule(ContextXMLServletConfig config) {
-        this.config = config;
     }
 
     public void begin(String namespace, String name, Attributes attributes) throws Exception {

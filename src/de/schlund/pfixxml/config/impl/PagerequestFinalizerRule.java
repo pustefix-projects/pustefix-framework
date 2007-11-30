@@ -28,11 +28,8 @@ import de.schlund.pfixcore.workflow.app.ResdocFinalizer;
 import de.schlund.pfixxml.config.ContextXMLServletConfig;
 
 public class PagerequestFinalizerRule extends CheckedRule {
-    private ContextXMLServletConfig config;
-
-    public PagerequestFinalizerRule(ContextXMLServletConfig config) {
-        this.config = config;
-    }
+    
+    public PagerequestFinalizerRule(ContextXMLServletConfig config) {}
 
     public void begin(String namespace, String name, Attributes attributes) throws Exception {
         check(namespace, name, attributes);

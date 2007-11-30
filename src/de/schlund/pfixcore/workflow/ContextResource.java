@@ -19,8 +19,9 @@
 
 package de.schlund.pfixcore.workflow;
 
-import de.schlund.pfixxml.*;
-import org.w3c.dom.*;
+import org.w3c.dom.Element;
+
+import de.schlund.pfixxml.ResultDocument;
 
 public interface ContextResource {
     void    init(Context context) throws Exception;

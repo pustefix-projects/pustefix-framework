@@ -44,6 +44,7 @@ public class PageRequest {
      *
      * @return a <code>String</code> value
      */
+    @Override
     public String toString() { 
         return getName();
     }
@@ -72,6 +73,7 @@ public class PageRequest {
      * @param arg an <code>Object</code> value
      * @return a <code>boolean</code> value
      */
+    @Override
     public boolean equals(Object arg) {
         if ((arg != null) && (arg instanceof PageRequest)) {
             return preqname.equals(((PageRequest) arg).getName());
@@ -85,6 +87,7 @@ public class PageRequest {
      *
      * @return an <code>int</code> value
      */
+    @Override
     public int hashCode() {
         if (preqname == null) {
 	    return 0;

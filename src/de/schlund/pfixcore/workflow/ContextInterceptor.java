@@ -1,7 +1,6 @@
 package de.schlund.pfixcore.workflow;
 
 import de.schlund.pfixxml.PfixServletRequest;
-import java.util.Properties;
 
 /**
  * Describe interface ContextInterceptor here.

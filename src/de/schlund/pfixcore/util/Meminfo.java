@@ -18,7 +18,7 @@
  */
 package de.schlund.pfixcore.util;
 
-import org.apache.log4j.*;
+import org.apache.log4j.Logger;
 
 
 public final class Meminfo {

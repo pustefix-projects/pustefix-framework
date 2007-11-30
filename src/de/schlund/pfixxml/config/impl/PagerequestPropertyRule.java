@@ -31,12 +31,10 @@ import de.schlund.pfixxml.config.PageRequestConfig;
 public class PagerequestPropertyRule extends CheckedRule {
     private final static Logger LOG = Logger.getLogger(PagerequestPropertyRule.class);
 
-    private ContextXMLServletConfig config;
     private String propName;
     private String propValue;
 
     public PagerequestPropertyRule(ContextXMLServletConfig config) {
-        this.config = config;
     }
 
     public void begin(String namespace, String name, Attributes attributes) throws Exception {

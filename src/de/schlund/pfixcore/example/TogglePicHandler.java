@@ -19,9 +19,10 @@
 
 package de.schlund.pfixcore.example;
 
-import de.schlund.pfixcore.example.iwrapper.*;
-import de.schlund.pfixcore.generator.*;
-import de.schlund.pfixcore.workflow.*;
+import de.schlund.pfixcore.example.iwrapper.TogglePic;
+import de.schlund.pfixcore.generator.IHandler;
+import de.schlund.pfixcore.generator.IWrapper;
+import de.schlund.pfixcore.workflow.Context;
 
 
 /**

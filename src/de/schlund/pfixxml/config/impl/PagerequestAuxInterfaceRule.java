@@ -28,11 +28,8 @@ import de.schlund.pfixcore.generator.IWrapper;
 import de.schlund.pfixxml.config.ContextXMLServletConfig;
 
 public class PagerequestAuxInterfaceRule extends CheckedRule {
-    private ContextXMLServletConfig config;
-
-    public PagerequestAuxInterfaceRule(ContextXMLServletConfig config) {
-        this.config = config;
-    }
+    
+    public PagerequestAuxInterfaceRule(ContextXMLServletConfig config) {}
 
     public void begin(String namespace, String name, Attributes attributes) throws Exception {
         check(namespace, name, attributes);

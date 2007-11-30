@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Properties;
 
 import javax.management.MBeanServer;
-import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
 import javax.servlet.http.HttpSession;
 

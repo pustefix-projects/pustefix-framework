@@ -29,11 +29,7 @@ import de.schlund.pfixxml.config.DirectOutputServletConfig;
 
 public class DirectPagerequestStateRule extends CheckedRule {
 
-    private DirectOutputServletConfig config;
-
-    public DirectPagerequestStateRule(DirectOutputServletConfig config) {
-        this.config = config;
-    }
+    public DirectPagerequestStateRule(DirectOutputServletConfig config) {}
 
     public void begin(String namespace, String name, Attributes attributes) throws Exception {
         check(namespace, name, attributes);

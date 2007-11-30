@@ -18,11 +18,14 @@
  */
 
 package de.schlund.pfixcore.generator.prechecks;
-import de.schlund.pfixcore.generator.*;
-import de.schlund.pfixxml.*;
-import de.schlund.util.statuscodes.*;
-import org.apache.oro.text.*;
-import org.apache.oro.text.perl.*;
+import org.apache.oro.text.PatternCacheLRU;
+import org.apache.oro.text.perl.Perl5Util;
+
+import de.schlund.pfixcore.generator.IWrapperParamPreCheck;
+import de.schlund.pfixcore.generator.SimpleCheck;
+import de.schlund.pfixxml.RequestParam;
+import de.schlund.util.statuscodes.StatusCode;
+import de.schlund.util.statuscodes.StatusCodeLib;
 
 /**
  * RegexpCheck.java

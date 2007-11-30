@@ -24,8 +24,6 @@ package de.schlund.pfixcore.workflow.app;
 import java.util.HashMap;
 import java.util.Iterator;
 
-import org.apache.log4j.Logger;
-
 import de.schlund.pfixcore.generator.RequestData;
 import de.schlund.pfixcore.workflow.Context;
 import de.schlund.pfixxml.PfixServletRequest;
@@ -42,7 +40,6 @@ public class RequestDataImpl implements RequestData {
 
     private HashMap  data = new HashMap();
     private HashMap  cmds = new HashMap();
-    private Logger   LOG  = Logger.getLogger(this.getClass());
     private String   page;
 
     private static final String CMDS_PREFIX = "__CMD";

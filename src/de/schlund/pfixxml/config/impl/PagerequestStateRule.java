@@ -29,10 +29,7 @@ import de.schlund.pfixcore.workflow.State;
 import de.schlund.pfixxml.config.ContextXMLServletConfig;
 
 public class PagerequestStateRule extends CheckedRule {
-    private ContextXMLServletConfig config;
-
     public PagerequestStateRule(ContextXMLServletConfig config) {
-        this.config = config;
     }
 
     public void begin(String namespace, String name, Attributes attributes)

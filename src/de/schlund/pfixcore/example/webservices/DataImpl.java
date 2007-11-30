@@ -3,7 +3,7 @@
  */
 package de.schlund.pfixcore.example.webservices;
 
-import de.schlund.pfixcore.webservice.*;
+import de.schlund.pfixcore.webservice.AbstractService;
 
 /**
  * DataImpl.java 

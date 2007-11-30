@@ -27,11 +27,8 @@ import org.xml.sax.SAXException;
 import de.schlund.pfixxml.config.ContextXMLServletConfig;
 
 public class PageflowStepRule extends CheckedRule {
-    private ContextXMLServletConfig config;
-
-    public PageflowStepRule(ContextXMLServletConfig config) {
-        this.config = config;
-    }
+    
+    public PageflowStepRule(ContextXMLServletConfig config) {}
 
     public void begin(String namespace, String name, Attributes attributes) throws Exception {
         check(namespace, name, attributes);

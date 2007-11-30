@@ -18,8 +18,7 @@
  */
 
 package de.schlund.pfixcore.example;
-import de.schlund.pfixcore.workflow.*;
-import java.util.HashMap;
+import de.schlund.pfixcore.workflow.ContextResource;
 
 /**
  * ContextSimpleData.java

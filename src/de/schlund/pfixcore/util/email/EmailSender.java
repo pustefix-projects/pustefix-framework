@@ -36,7 +36,6 @@ import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
-import org.apache.log4j.Logger;
 import org.apache.oro.text.perl.MalformedPerl5PatternException;
 import org.apache.oro.text.perl.Perl5Util;
 
@@ -50,7 +49,7 @@ import org.apache.oro.text.perl.Perl5Util;
 
 public class EmailSender {
 
-    private static Logger LOG = Logger.getLogger(EmailSender.class);
+    // private static Logger LOG = Logger.getLogger(EmailSender.class);
     private static final String CHARSET = "ISO-8859-15";
 
     /**

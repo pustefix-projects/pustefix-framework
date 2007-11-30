@@ -28,11 +28,7 @@ import de.schlund.pfixxml.config.ContextXMLServletConfig;
 
 public class ContextResourceInterfaceRule extends CheckedRule {
 
-    private ContextXMLServletConfig config;
-
-    public ContextResourceInterfaceRule(ContextXMLServletConfig config) {
-        this.config = config;
-    }
+    public ContextResourceInterfaceRule(ContextXMLServletConfig config) {}
 
     public void begin(String namespace, String name, Attributes attributes) throws Exception {
         check(namespace, name, attributes);

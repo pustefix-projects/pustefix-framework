@@ -1,11 +1,12 @@
 package de.schlund.pfixcore.example;
 
+import java.util.HashMap;
+import java.util.Iterator;
+
 import de.schlund.pfixcore.example.iwrapper.IndexedTest;
 import de.schlund.pfixcore.generator.IHandler;
 import de.schlund.pfixcore.generator.IWrapper;
 import de.schlund.pfixcore.workflow.Context;
-import java.util.HashMap;
-import java.util.Iterator;
 
 /**
  * Describe class IndexedTestHandler here.

@@ -3,13 +3,13 @@ package de.schlund.pfixcore.webservice.json.parser;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.InputStreamReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.StringReader;
-import java.io.Reader;
-import java.util.Stack;
 
-import de.schlund.pfixcore.webservice.json.*;
+import de.schlund.pfixcore.webservice.json.JSONArray;
+import de.schlund.pfixcore.webservice.json.JSONObject;
+import de.schlund.pfixcore.webservice.json.ParserUtils;
 
 public class JSONParser implements JSONParserConstants {
 

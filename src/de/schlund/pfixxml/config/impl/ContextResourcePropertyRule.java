@@ -31,13 +31,10 @@ import de.schlund.pfixxml.config.ContextXMLServletConfig;
 public class ContextResourcePropertyRule extends CheckedRule {
     private final static Logger LOG = Logger.getLogger(ContextResourcePropertyRule.class);
 
-    private ContextXMLServletConfig config;
     private String propName;
     private String propValue;
 
-    public ContextResourcePropertyRule(ContextXMLServletConfig config) {
-        this.config = config;
-    }
+    public ContextResourcePropertyRule(ContextXMLServletConfig config) {}
 
     public void begin(String namespace, String name, Attributes attributes) throws Exception {
         check(namespace, name, attributes);

@@ -19,6 +19,7 @@
 package de.schlund.pfixcore.util.basicapp.basics;
 
 import java.io.File;
+
 import de.schlund.pfixcore.util.basicapp.helper.AppValues;
 import de.schlund.pfixcore.util.basicapp.objects.Project;
 
@@ -35,14 +36,12 @@ public class CreateProject {
      * The project settings initialized by 
      * @see de.schlund.pfixcore.util.basicapp.basics.CreateProjectSettings 
      */
-    private Project project = null;
     private String docRoot  = AppValues.BASICPATH;
     private boolean success = false;
     private String created  = "Folder has been created successfully";
     String projectFolder    = null;
     
     public CreateProject(Project project) {
-        this.project  = project;
         projectFolder = project.getProjectName(); 
     }
     

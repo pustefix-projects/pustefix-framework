@@ -54,7 +54,7 @@ import de.schlund.pfixxml.resources.FileResource;
 public class ContextXMLServlet extends AbstractXMLServlet {
     private Logger LOG = Logger.getLogger(ContextXMLServlet.class);
 
-    private final static String ALREADY_SSL = "__CONTEXT_ALREADY_SSL__";
+    // private final static String ALREADY_SSL = "__CONTEXT_ALREADY_SSL__";
 
     private final static String PARAM_SCRIPTEDFLOW = "__scriptedflow";
 

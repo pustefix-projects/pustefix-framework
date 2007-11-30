@@ -18,7 +18,6 @@
 
 package de.schlund.pfixxml.util;
 
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
 

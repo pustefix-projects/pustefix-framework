@@ -19,9 +19,10 @@
 
 package de.schlund.pfixcore.example;
 
-import de.schlund.pfixcore.workflow.*;
-import de.schlund.pfixxml.*;
-import org.w3c.dom.*;
+import org.w3c.dom.Element;
+
+import de.schlund.pfixcore.workflow.Context;
+import de.schlund.pfixxml.ResultDocument;
 
 
 /**

@@ -22,8 +22,6 @@ package de.schlund.pfixcore.generator;
 
 import java.util.HashMap;
 
-import org.apache.log4j.Logger;
-
 import de.schlund.pfixcore.util.FlyWeightChecker;
 
 /**
@@ -40,7 +38,7 @@ import de.schlund.pfixcore.util.FlyWeightChecker;
 public class IHandlerFactory {
     private static HashMap         knownhandlers    = new HashMap();
     private static HashMap         wrapper2handlers = new HashMap();
-    private static Logger          LOG              = Logger.getLogger(IHandlerFactory.class);
+    // private static Logger          LOG              = Logger.getLogger(IHandlerFactory.class);
     private static IHandlerFactory instance         = new IHandlerFactory();
 
     private IHandlerFactory() {

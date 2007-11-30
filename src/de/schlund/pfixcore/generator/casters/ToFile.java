@@ -18,12 +18,16 @@
  */
 
 package de.schlund.pfixcore.generator.casters;
-import de.schlund.pfixcore.generator.*;
-import de.schlund.pfixxml.*;
-import de.schlund.pfixxml.multipart.*;
-import de.schlund.util.statuscodes.*;
-import java.io.*;
-import java.util.*;
+import java.io.File;
+import java.util.ArrayList;
+
+import de.schlund.pfixcore.generator.IWrapperParamCaster;
+import de.schlund.pfixcore.generator.SimpleCheck;
+import de.schlund.pfixxml.RequestParam;
+import de.schlund.pfixxml.RequestParamType;
+import de.schlund.pfixxml.multipart.FileData;
+import de.schlund.util.statuscodes.StatusCode;
+import de.schlund.util.statuscodes.StatusCodeLib;
 
 /**
  * ToFile.java

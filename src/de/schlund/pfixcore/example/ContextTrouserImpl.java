@@ -23,8 +23,8 @@ import java.util.HashMap;
 import org.apache.log4j.Logger;
 import org.w3c.dom.Element;
 
-import de.schlund.pfixxml.ResultDocument;
 import de.schlund.pfixcore.util.PropertiesUtils;
+import de.schlund.pfixxml.ResultDocument;
 /**
  * ContextTrouser.java
  *

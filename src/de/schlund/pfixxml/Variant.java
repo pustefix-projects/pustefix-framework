@@ -19,8 +19,8 @@
 
 package de.schlund.pfixxml;
 
-import java.util.StringTokenizer;
 import java.util.ArrayList;
+import java.util.StringTokenizer;
 
 /**
  * Describe class Variant here.

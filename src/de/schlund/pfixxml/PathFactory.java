@@ -18,10 +18,11 @@
  */
 package de.schlund.pfixxml;
 
+import java.io.File;
+
 import de.schlund.pfixxml.config.GlobalConfigurator;
 import de.schlund.pfixxml.resources.ResourceUtil;
 import de.schlund.pfixxml.util.Path;
-import java.io.File;
 
 /**
  * Describe class PathFactory here.

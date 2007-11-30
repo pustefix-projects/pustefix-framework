@@ -19,8 +19,6 @@
 
 package de.schlund.pfixxml;
 
-import java.util.Properties;
-
 import de.schlund.pfixxml.config.ContextConfig;
 
 /**

@@ -19,11 +19,13 @@
 
 package de.schlund.pfixcore.generator;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 
-import de.schlund.pfixxml.RequestParam;
-import de.schlund.util.statuscodes.*;
-import org.apache.log4j.*;
+import org.apache.log4j.Logger;
+
+import de.schlund.util.statuscodes.StatusCode;
 
 /**
  * IWrapperIndexedParam.java
@@ -50,7 +52,7 @@ public class IWrapperIndexedParam implements IWrapperParamDefinition, Comparable
     private ArrayList           postcheck     = new ArrayList();
     private HashMap             params        = new HashMap();
     private HashMap             errors        = new HashMap();
-    private String              prefix;
+    // private String              prefix;
     private Logger              LOG           = Logger.getLogger(this.getClass());
     
     public IWrapperIndexedParam(String name, boolean multiple, String type, boolean trim) {

@@ -61,10 +61,12 @@ public class DefaultAuthIWrapperState extends StateImpl {
      * @exception Exception if an error occurs
      * @see de.schlund.pfixcore.workflow.State#isAccessible(Context, PfixServletRequest) 
      */
+    @Override
     public boolean isAccessible(Context context, PfixServletRequest preq) throws Exception {
         return true;
     }
 
+    @Override
     public boolean needsData(Context context, PfixServletRequest preq) throws Exception {
         IWrapper userwrapper = getAuthWrapper(context, false);
         IHandler userhandler = userwrapper.gimmeIHandler();
@@ -147,6 +149,7 @@ public class DefaultAuthIWrapperState extends StateImpl {
      * @exception Exception if an error occurs
      * @see de.schlund.pfixcore.workflow.State#getDocument(Context, PfixServletRequest) 
      */
+    @Override
     public ResultDocument getDocument(Context context, PfixServletRequest preq) throws Exception {
         IWrapper       user        = getAuthWrapper(context, true);
         IHandler       userhandler = user.gimmeIHandler();

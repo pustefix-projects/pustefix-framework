@@ -25,7 +25,6 @@ import java.util.LinkedHashSet;
 
 import org.apache.log4j.Logger;
 import org.w3c.dom.DOMException;
-import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import de.schlund.pfixcore.editor2.core.dom.IncludeFile;
@@ -46,7 +45,6 @@ import de.schlund.pfixcore.editor2.core.spring.ThemeFactoryService;
 import de.schlund.pfixxml.resources.ResourceUtil;
 import de.schlund.pfixxml.targets.AuxDependency;
 import de.schlund.pfixxml.targets.AuxDependencyFactory;
-import de.schlund.pfixxml.util.Xml;
 
 /**
  * Implementation of IncludePart using a DOM tree

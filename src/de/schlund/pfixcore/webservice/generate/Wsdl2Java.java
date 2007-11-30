@@ -1,16 +1,15 @@
 package de.schlund.pfixcore.webservice.generate;
 
-import org.apache.axis.wsdl.toJava.Emitter;
-import org.apache.tools.ant.BuildException;
-
-import org.apache.axis.tools.ant.wsdl.TypeMappingVersionEnum;
-
-import de.schlund.pfixcore.webservice.Constants;
-
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
+
+import org.apache.axis.tools.ant.wsdl.TypeMappingVersionEnum;
+import org.apache.axis.wsdl.toJava.Emitter;
+import org.apache.tools.ant.BuildException;
+
+import de.schlund.pfixcore.webservice.Constants;
 
 
 public class Wsdl2Java {

@@ -23,8 +23,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Properties;
 
-import org.apache.log4j.Logger;
-
 import de.schlund.pfixcore.generator.IHandler;
 import de.schlund.pfixcore.generator.IHandlerFactory;
 import de.schlund.pfixcore.workflow.Context;
@@ -54,7 +52,7 @@ public class IHandlerSimpleContainer implements IHandlerContainer {
     
     public  static final String   PROP_CONTAINER = "ihandlercontainer";
     private static final String   PROP_POLICY    = PROP_CONTAINER + ".policy";
-    private static       Logger   LOG            = Logger.getLogger(IHandlerSimpleContainer.class);
+    // private static       Logger   LOG            = Logger.getLogger(IHandlerSimpleContainer.class);
     
     // implementation of de.schlund.pfixcore.workflow.app.IHandlerContainer interface
 

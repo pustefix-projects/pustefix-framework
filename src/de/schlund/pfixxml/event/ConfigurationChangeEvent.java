@@ -20,8 +20,6 @@ package de.schlund.pfixxml.event;
 
 import java.util.EventObject;
 
-import de.schlund.pfixxml.targets.TargetGenerator;
-
 /**
  * Event signaling that the configuration of the source object has been
  * changed.

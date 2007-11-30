@@ -21,8 +21,6 @@ package de.schlund.pfixcore.workflow.app;
 import java.util.HashMap;
 import java.util.Properties;
 
-import org.apache.log4j.Logger;
-
 import de.schlund.pfixcore.workflow.Context;
 import de.schlund.pfixcore.workflow.PageRequest;
 import de.schlund.pfixxml.ConfigurableObject;
@@ -36,7 +34,7 @@ import de.schlund.pfixxml.XMLException;
  */
 
 public class IHandlerContainerManager implements ConfigurableObject {
-    private static Logger LOG                 = Logger.getLogger(IHandlerContainerManager.class);
+    // private static Logger LOG                 = Logger.getLogger(IHandlerContainerManager.class);
     private static String   DEF_HDL_CONTAINER = "de.schlund.pfixcore.workflow.app.IHandlerSimpleContainer";
     /** Store the already created IHandlerContainer here, use the page as key*/
     private        HashMap  known             = new HashMap();

@@ -19,8 +19,9 @@
 
 package de.schlund.pfixxml.serverutil;
 
-import java.util.*;
-import javax.servlet.http.*;
+import java.util.LinkedList;
+
+import javax.servlet.http.HttpSession;
 
 /**
  *
