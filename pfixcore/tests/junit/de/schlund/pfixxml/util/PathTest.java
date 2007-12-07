@@ -19,8 +19,8 @@ public class PathTest extends TestCase {
     }
 
     public void testAbsolute() {
-        path = Path.create("/foo/bar.tgz");
-        assertEquals(new File("/foo"), path.getBase());
+        path = Path.create(new File("/"),"foo");
+        assertEquals(new File("/foo"), path.resolve());
     }
     
     public void testEmptyRelative() {
@@ -31,32 +31,31 @@ public class PathTest extends TestCase {
     
     public void testRoot() {
         assertEquals("", Path.ROOT.getName());
-        path = Path.create("/");
-        assertEquals(Path.ROOT, path.getBase());
-        assertEquals(Path.ROOT, path.resolve());
+        path = Path.create("");
+        assertEquals(Path.ROOT, new File("/"));
         assertEquals("", path.getRelative());
     }
 
     public void testAbsoluteBase() throws IOException {
-        assertEquals(Path.HERE, Path.create(new File("."), "").getBase().getCanonicalFile());
+    	System.out.println(Path.HERE.getAbsolutePath());
+        assertEquals(Path.HERE, new File(".").getCanonicalFile());
     }
     //--
     
     public void testGetName() {
-        assertEquals("foo.tgz", Path.create("/foo.tgz").getName());
-        assertEquals("", Path.create("/").getName());
+        assertEquals("foo.tgz", Path.create("foo.tgz").getName());
+        assertEquals("", Path.create("").getName());
     }
 
     public void testGetSuffix() {
-        assertEquals(".tgz", Path.create("/foo.tgz").getSuffix());
-        assertEquals("", Path.create("/foo").getSuffix());
-        assertEquals("", Path.create("/").getSuffix());
+        assertEquals(".tgz", Path.create("foo.tgz").getSuffix());
+        assertEquals("", Path.create("foo").getSuffix());
+        assertEquals("", Path.create("").getSuffix());
     }
 
     public void testGetDir() {
         assertEquals("baz", Path.create(new File("/bar"), "baz/foo.tgz").getDir());
-        assertNull(Path.create("/bar/foo.tgz").getDir());
-        assertNull(Path.create("/foo").getDir());
-        assertNull(Path.create("/").getDir());
+        assertNull(Path.create("foo").getDir());
+        assertNull(Path.create("").getDir());
     }
 }

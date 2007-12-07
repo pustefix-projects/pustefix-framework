@@ -85,7 +85,7 @@ public class XsltTest extends TestCase {
         Xslt.transform(doc, trafo, null, result);
     }
     
-	public NodeInfo toDocumentExtension(String str) throws TransformerException {
-	    return (NodeInfo) Xml.parseString(getXsltVersion(), str);
+	public static NodeInfo toDocumentExtension(String str) throws TransformerException {
+	    return (NodeInfo) Xml.parseString(XsltVersion.XSLT1, str);
 	}
 }
