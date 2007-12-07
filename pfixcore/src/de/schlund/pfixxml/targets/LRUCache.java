@@ -25,26 +25,21 @@ import java.util.Map;
 
 import org.apache.oro.util.CacheLRU;
 
-/**
- *
- *
- */
-
 public class LRUCache implements SPCache {
     // private static final Logger   LOG          = Logger.getLogger(LRUCache.class);
-    public  static final int      DEFAULT_SIZE = 30;
+    public  static final int DEFAULT_SIZE = 30;
 
     private CacheLRU cache;
     
     public LRUCache() {
         // nothing to do
-        cache= new CacheLRU(DEFAULT_SIZE);
+        cache = new CacheLRU(DEFAULT_SIZE);
     }
     
     public void createCache(int capacity) {
-        if(capacity <= 0 )
-            capacity= DEFAULT_SIZE;
-        cache= new CacheLRU(capacity);
+        if (capacity <= 0 )
+            capacity = DEFAULT_SIZE;
+        cache = new CacheLRU(capacity);
     }
     
     public Iterator getIterator() {
