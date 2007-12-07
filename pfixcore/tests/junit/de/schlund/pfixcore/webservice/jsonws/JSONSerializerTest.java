@@ -24,6 +24,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 import junit.framework.TestCase;
 import de.schlund.pfixcore.beans.BeanDescriptorFactory;
@@ -114,7 +116,7 @@ public class JSONSerializerTest extends TestCase {
         StringWriter writer=new StringWriter();
         ReadOnlyBean bean=new ReadOnlyBean();
         
-        Map<String,Number> numMap=new HashMap<String,Number>();
+        SortedMap<String,Number> numMap=new TreeMap<String,Number>();
         numMap.put("int",new Integer(1));
         numMap.put("float",new Float(2));
         numMap.put("double",new Double(3));
