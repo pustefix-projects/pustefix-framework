@@ -22,8 +22,6 @@ package de.schlund.pfixxml.util;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import net.sf.saxon.dom.DocumentBuilderFactoryImpl;
-import net.sf.saxon.dom.NodeOverNodeInfo;
-import net.sf.saxon.om.NodeInfo;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -38,9 +36,7 @@ public class XPathSaxon2Test extends XPathTest {
     
     @Override
     protected void checkNodeEquality(Node node1, Node node2) {
-        NodeInfo info1=((NodeOverNodeInfo)node1).getUnderlyingNodeInfo();
-        NodeInfo info2=((NodeOverNodeInfo)node2).getUnderlyingNodeInfo();
-        assertSame(info1,info2);
+        assertSame(node1,node2);
     }
     
 }
