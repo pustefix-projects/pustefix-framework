@@ -182,7 +182,7 @@ public class IncludesResolver {
     }
 
     private boolean checkSectionType(String section) {
-        if (section.equals("targets") || section.equals("navigation") || section.equals("pageflows") || section.equals("pagerequests") || section.equals("properties") || section.equals("interceptors") || section.equals("scriptedflows") || section.equals("roles") || section.equals("resources")) {
+        if (section.equals("targets") || section.equals("navigation") || section.equals("pageflows") || section.equals("pagerequests") || section.equals("properties") || section.equals("interceptors") || section.equals("scriptedflows") || section.equals("roles") || section.equals("authconstraints") || section.equals("resources")) {
             return true;
         } else {
             return false;

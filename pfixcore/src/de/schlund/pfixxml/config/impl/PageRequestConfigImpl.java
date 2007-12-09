@@ -24,6 +24,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Properties;
 
+import de.schlund.pfixcore.auth.AuthConstraint;
 import de.schlund.pfixxml.config.PageRequestConfig;
 
 /**
@@ -49,6 +50,7 @@ public class PageRequestConfigImpl implements SSLOption, Cloneable, PageRequestC
     private Properties props = new Properties();
     private Policy policy = Policy.ANY;
     private boolean requiresToken = false;
+    private AuthConstraint authConstraint;
     
     public void setPageName(String page) {
         this.pageName = page;
@@ -223,6 +225,14 @@ public class PageRequestConfigImpl implements SSLOption, Cloneable, PageRequestC
     
     public void setRequiresToken(boolean requiresToken) {
         this.requiresToken = requiresToken;
+    }
+    
+    public AuthConstraint getAuthConstraint() {
+    	return authConstraint;
+    }
+    
+    public void setAuthConstraint(AuthConstraint authConstraint) {
+    	this.authConstraint = authConstraint;
     }
     
     /* (non-Javadoc)

@@ -15,33 +15,33 @@
  * along with PFIXCORE; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-package de.schlund.pfixxml.config.impl;
+package de.schlund.pfixcore.auth.conditions;
 
-import de.schlund.pfixxml.config.PageAccessConfig;
-import de.schlund.pfixxml.config.RoleConfig;
+import de.schlund.pfixcore.auth.Authentication;
+import de.schlund.pfixcore.auth.Condition;
+import de.schlund.pfixcore.auth.Role;
 
 /**
+ * 
  * @author mleidig@schlund.de
+ *
  */
-public class RoleConfigImpl implements RoleConfig {
+public class And extends ConditionGroup {
+	
+	public And(Condition ... conditions) {
+		super(conditions);
+	}
+	
+	public boolean evaluate(Authentication auth) {
+		for(Condition condition:conditions) {
+			if(!condition.evaluate(auth)) return false; 
+		}
+		return true;
+	}
+	
+	@Override
+	public String getOperatorString() {
+		return "&&";
+	}
 
-    private String name;
-    private PageAccessConfig pageAccessConfig;
-    
-    public void setName(String name) {
-        this.name = name;
-    }
-    
-    public String getName() {
-        return name;
-    }
-    
-    public PageAccessConfig getPageAccessConfig() {
-        return pageAccessConfig;
-    }
-    
-    public void setPageAccessConfig(PageAccessConfig pageAccessConfig) {
-        this.pageAccessConfig=pageAccessConfig;
-    }
-    
 }

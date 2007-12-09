@@ -1,7 +1,6 @@
 package de.schlund.pfixcore.example.bank.ihandler;
 
 import de.schlund.pfixcore.auth.Authentication;
-import de.schlund.pfixcore.auth.AuthenticationImpl;
 import de.schlund.pfixcore.example.bank.AuthTokenManager;
 import de.schlund.pfixcore.example.bank.BankApplication;
 import de.schlund.pfixcore.example.bank.context.ContextAccount;
@@ -34,8 +33,9 @@ public class LoginHandler implements IHandler {
         	} else {
         		ContextCustomer contextCustomer=context.getContextResourceManager().getResource(ContextCustomer.class);
         		contextCustomer.setCustomer(customer);
-        		Authentication auth=new AuthenticationImpl(new String[] {"UNRESTRICTED"},true);
-        		context.setAuthentication(auth);
+        		Authentication auth=context.getAuthentication();
+        		auth.addRole("UNRESTRICTED");
+        		auth.setAuthenticated(true);
         	}
         } else if(login.getAuthToken()!=null) {
         	String[] tokens=AuthTokenManager.decodeAuthToken(login.getAuthToken());
@@ -49,8 +49,9 @@ public class LoginHandler implements IHandler {
 	        			if(account!=null) {
 	        				ContextCustomer contextCustomer=context.getContextResourceManager().getResource(ContextCustomer.class);
 	        				contextCustomer.setCustomer(customer);
-	        				Authentication auth=new AuthenticationImpl(new String[] {"ACCOUNT"},true);
-	        				context.setAuthentication(auth);
+	        				Authentication auth=context.getAuthentication();
+	        				auth.addRole("ACCOUNT");
+	        				auth.setAuthenticated(true);
 	        				ContextAccount contextAccount=context.getContextResourceManager().getResource(ContextAccount.class);
 	        				contextAccount.setAccount(account);
 	        				return;
@@ -66,7 +67,7 @@ public class LoginHandler implements IHandler {
     }
 
     public boolean isActive(Context context) throws Exception {
-        return needsData(context);
+        return true;
     }
 
     public boolean prerequisitesMet(Context context) throws Exception {
@@ -74,12 +75,11 @@ public class LoginHandler implements IHandler {
     }
 
     public boolean needsData(Context context) throws Exception {
-    	ContextCustomer contextCustomer=context.getContextResourceManager().getResource(ContextCustomer.class);
-    	return contextCustomer.getCustomer()==null;
+    	return false;
     }
 
     public void retrieveCurrentStatus(Context context, IWrapper wrapper) throws Exception {
-
+    	
     }
 
 }

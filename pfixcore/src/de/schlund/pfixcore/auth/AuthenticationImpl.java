@@ -21,17 +21,25 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 
 /**
+ * 
  * @author mleidig@schlund.de
+ * 
  */
 public class AuthenticationImpl implements Authentication {
 
     private boolean authenticated;
     private SortedMap<String,Role> roles;
+    private RoleProvider roleProvider;
     
-    public AuthenticationImpl(String[] roleNames, boolean authenticated) {
-        roles=new TreeMap<String,Role>();
+    public AuthenticationImpl(RoleProvider roleProvider) {
+    	this.roleProvider=roleProvider;
+    	roles=new TreeMap<String,Role>();
+    }
+    
+    public AuthenticationImpl(RoleProvider roleProvider, String[] roleNames, boolean authenticated) {
+    	this(roleProvider);
         for(String roleName:roleNames) {
-            roles.put(roleName,new RoleImpl(roleName));
+            roles.put(roleName,roleProvider.getRole(roleName));
         }
         this.authenticated=authenticated;
     }
@@ -44,14 +52,27 @@ public class AuthenticationImpl implements Authentication {
         this.authenticated = authenticated;
     }
     
-    public Role[] getRoles() {
+    public synchronized Role[] getRoles() {
         Role[] rolesCopy=new Role[roles.size()];
         roles.values().toArray(rolesCopy);
         return rolesCopy;
     }
     
-    public boolean hasRole(String roleName) {
+    public synchronized boolean hasRole(String roleName) {
         return roles.containsKey(roleName);
+    }
+    
+    public synchronized boolean addRole(String roleName) {
+    	if(!roles.containsKey(roleName)) {
+    		Role role=roleProvider.getRole(roleName);
+    		roles.put(roleName,role);
+    		return true;
+    	}
+    	return false;
+    }
+    
+    public synchronized boolean revokeRole(String roleName) {
+    	return roles.remove(roleName)!=null;
     }
     
 }

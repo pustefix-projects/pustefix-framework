@@ -20,43 +20,21 @@ package de.schlund.pfixcore.auth;
 /**
  * 
  * @author mleidig@schlund.de
- * 
+ *
  */
-public class RoleImpl implements Role {
+public class AuthConstraintViolation extends AuthorizationException {
+	
+	private final static String TYPESTR="AUTHCONSTRAINT_VIOLATION";
+	    
+	private AuthConstraint constraint;
+	  
+	public AuthConstraintViolation(String message, String subtype, String target, AuthConstraint constraint) {
+		super(message, TYPESTR, subtype, target);
+		this.constraint=constraint;
+	}
 
-    private String name;
-    private boolean initial;
-    
-    public RoleImpl(String name) {
-        if(name==null) throw new IllegalArgumentException("Name must not be null!");
-        this.name=name;
-    }
-    
-    public RoleImpl(String name, boolean initial) {
-    	this(name);
-    	this.initial=initial;
-    }
-    
-    public String getName() {
-        return name;
-    }
-    
-    public boolean isInitial() {
-    	return initial;
-    }
-    
-    @Override
-    public int hashCode() {
-        return name.hashCode();
-    }
-    
-    @Override
-    public boolean equals(Object obj) {
-        if(obj instanceof RoleImpl) {
-            Role role=(Role)obj;
-            if(role.getName().equals(name)) return true;
-        }
-        return false;
-    }
-    
+	public AuthConstraint getViolatedConstraint() {
+		return constraint;
+	}
+	
 }

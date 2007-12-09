@@ -75,7 +75,6 @@ public interface Context {
     Properties             getPropertiesForContextResource(ContextResource res);
     ContextConfig          getContextConfig();
     Authentication         getAuthentication();
-    void                   setAuthentication(Authentication authentication);
     
     /**
      * Tells the servlet that the session for this context is not longer needed 

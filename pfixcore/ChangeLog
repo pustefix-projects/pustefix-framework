@@ -1,3 +1,81 @@
+2007-12-09  Martin Leidig  <mleidig@schlund.de>
+
+	Extended role based authorization. New features are:
+	- Declarative authconstraints, which can be assigned
+	to pagerequests; authconstraints define authorization
+	conditions, supported are: 'hasrole', 'and', 'or' and
+	'not', represented by according XML elements. Using 
+	the 'authpage' attribute you can define the page, which
+	should be called on authorization failure. Using the
+	'default' attribute you can set one toplevel authconstraint
+	to be the default one for all pagerequest having no
+	authconstraint asssigned
+	- Pagerequests can either define new authconstraints
+	as child elements or can reference existing toplevel
+	authconstraints
+	- Roles can be automatically set on context initialization
+	using the 'initial' attribute
+	- The Authentication object is automatically set on
+	startup (it hasn't to be created manually any more), roles
+	can be added using 'addRole()' and removed using 'revokeRole()'
+	- You can check the current roles from XSLT using the
+	'pfx:hasRole' extension function
+
+	Added:
+	* projects/samplebank/txt/pages/main_home.xml
+	* projects/samplebank/txt/pages/main_test.xml
+	* src/de/schlund/pfixcore/auth/AuthConstraintImpl.java
+	* src/de/schlund/pfixcore/auth/AuthConstraint.java
+	* src/de/schlund/pfixcore/auth/AuthConstraintViolation.java
+	* src/de/schlund/pfixcore/auth/Condition.java
+	* src/de/schlund/pfixcore/auth/conditions
+	* src/de/schlund/pfixcore/auth/conditions/And.java
+	* src/de/schlund/pfixcore/auth/conditions/ConditionGroup.java
+	* src/de/schlund/pfixcore/auth/conditions/HasRole.java
+	* src/de/schlund/pfixcore/auth/conditions/Not.java
+	* src/de/schlund/pfixcore/auth/conditions/Or.java
+	* src/de/schlund/pfixcore/auth/RoleProvider.java
+	* src/de/schlund/pfixxml/config/impl/AuthConstraintRule.java
+	* src/de/schlund/pfixxml/config/impl/ConditionRule.java
+
+	Removed:
+	* src/de/schlund/pfixcore/auth/AccessDeniedException.java
+	* src/de/schlund/pfixxml/config/impl/PageAccessConfigImpl.java
+	* src/de/schlund/pfixxml/config/impl/PageAccessRule.java
+	* src/de/schlund/pfixxml/config/impl/RoleConfigImpl.java
+	* src/de/schlund/pfixxml/config/PageAccessConfig.java
+	* src/de/schlund/pfixxml/config/RoleConfig.java
+
+	Modified:
+	* projects/core/schema/properties200401.xsd
+	* projects/core/xsl/forminput.xsl
+	* projects/core/xsl/functions.xsl
+	* projects/samplebank/conf/config.conf.xml
+	* projects/samplebank/conf/depend.xml
+	* projects/samplebank/htdocs/style.css
+	* projects/samplebank/txt/common.xml
+	* projects/samplebank/txt/pages/main_login.xml
+	* projects/samplebank/xml/one_frame.xml
+	* src/de/schlund/pfixcore/auth/AuthenticationImpl.java
+	* src/de/schlund/pfixcore/auth/Authentication.java
+	* src/de/schlund/pfixcore/auth/RoleImpl.java
+	* src/de/schlund/pfixcore/auth/Role.java
+	* src/de/schlund/pfixcore/example/bank/ihandler/LoginHandler.java
+	* src/de/schlund/pfixcore/example/bank/ihandler/SelectAccountHandler.java
+	* src/de/schlund/pfixcore/util/TransformerCallback.java
+	* src/de/schlund/pfixcore/workflow/ContextImpl.java
+	* src/de/schlund/pfixcore/workflow/Context.java
+	* src/de/schlund/pfixcore/workflow/context/RequestContextImpl.java
+	* src/de/schlund/pfixcore/workflow/context/ServerContextImpl.java
+	* src/de/schlund/pfixxml/config/ContextConfig.java
+	* src/de/schlund/pfixxml/config/impl/ContextConfigImpl.java
+	* src/de/schlund/pfixxml/config/impl/ContextXMLServletConfigImpl.java
+	* src/de/schlund/pfixxml/config/impl/PageRequestConfigImpl.java
+	* src/de/schlund/pfixxml/config/impl/RoleRule.java
+	* src/de/schlund/pfixxml/config/includes/IncludesResolver.java
+	* src/de/schlund/pfixxml/config/PageRequestConfig.java
+	* src/de/schlund/pfixxml/util/ExtensionFunctionUtils.java
+
 2007-12-01 Jens Lautenbacher <jtl@schlund.de>
 	Cosmetic stuff part II - removed some more warnings...
 

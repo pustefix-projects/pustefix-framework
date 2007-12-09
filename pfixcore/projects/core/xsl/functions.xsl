@@ -17,7 +17,7 @@
         </xsl:when>
         <xsl:otherwise>
           <xsl:message terminate="yes">
-            pfx:isVisible() either needs a paramter or has to be called in the right context!
+            pfx:isVisible() either needs a parameter or has to be called in the right context!
           </xsl:message>
         </xsl:otherwise>
       </xsl:choose>
@@ -37,7 +37,7 @@
         </xsl:when>
         <xsl:otherwise>
           <xsl:message terminate="yes">
-            pfx:isVisited() either needs a paramter or has to be called in the right context!
+            pfx:isVisited() either needs a parameter or has to be called in the right context!
           </xsl:message>
         </xsl:otherwise>
       </xsl:choose>
@@ -61,5 +61,9 @@
     <func:result select="callback:getIWrapperInfo($__context__,/,$pageName,$prefix)"/>
   </func:function>
   
+  <func:function name="pfx:hasRole">
+    <xsl:param name="roleName"/>
+    <func:result select="callback:hasRole($__context__,$roleName)"/>
+  </func:function>
   
 </xsl:stylesheet>

@@ -21,6 +21,8 @@ package de.schlund.pfixxml.config;
 import java.util.Map;
 import java.util.Properties;
 
+import de.schlund.pfixcore.auth.AuthConstraint;
+
 /**
  * Provides configuration for a specific page.  
  * 
@@ -150,5 +152,7 @@ public interface PageRequestConfig {
     Class<?> getAuthWrapperClass();
     
     boolean requiresToken();
+    
+    AuthConstraint getAuthConstraint();
     
 }

@@ -23,6 +23,8 @@ import java.util.Map;
 
 import org.xml.sax.Attributes;
 
+import de.schlund.pfixcore.auth.RoleImpl;
+
 /**
  * @author mleidig@schlund.de
  */
@@ -35,11 +37,13 @@ public class RoleRule extends CheckedRule {
 
     public void begin(String namespace, String name, Attributes attributes) throws Exception {
         check(namespace, name, attributes);
-        String authName = attributes.getValue("name");
-        RoleConfigImpl authConfig=new RoleConfigImpl();
-        authConfig.setName(authName);
-        getDigester().push(authConfig);
-        config.getContextConfig().addRoleConfig(authConfig);
+        String roleName = attributes.getValue("name");
+        boolean initial=false;
+        String initialStr = attributes.getValue("initial");
+        if(initialStr!=null) initial=Boolean.parseBoolean(initialStr);
+        RoleImpl role=new RoleImpl(roleName,initial);
+        getDigester().push(role);
+        config.getContextConfig().addRole(role);
     }
     
     public void end(String namespace, String name) throws Exception {
@@ -49,6 +53,7 @@ public class RoleRule extends CheckedRule {
     protected Map<String, Boolean> wantsAttributes() {
         HashMap<String, Boolean> atts = new HashMap<String, Boolean>();
         atts.put("name", true);
+        atts.put("initial", false);
         return atts;
     }
     

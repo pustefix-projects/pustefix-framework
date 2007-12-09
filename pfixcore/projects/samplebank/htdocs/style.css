@@ -26,7 +26,7 @@ div.navigation {
 
 div.content {
   padding-left: 10px;
-  
+  padding-right: 10px; 
 }
 
 h1 {
@@ -40,3 +40,14 @@ h2 {
 span.errmsg {
   color: red;
 }
+
+div.info {
+  font-size: 70%;
+  color: #333333;
+}
+
+span.core_button_invisible {
+  color: #aaaaaa                            
+}
+
+                            

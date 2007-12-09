@@ -22,6 +22,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import de.schlund.pfixcore.auth.AuthConstraint;
+import de.schlund.pfixcore.auth.Role;
+import de.schlund.pfixcore.auth.RoleProvider;
+
 /**
  * Provides configuration for a context instance.
  * 
@@ -136,8 +140,11 @@ public interface ContextConfig {
      */
     boolean isSynchronized();
 
-    RoleConfig getRoleConfig(String roleName);
-    Map<String,RoleConfig> getRoleConfigs();
-    boolean hasRoleConfigs();
+    Role getRole(String roleName);
+    Map<String,Role> getRoles();
+    List<Role> getInitialRoles();
+    boolean hasRoles();
+    RoleProvider getRoleProvider();
+    AuthConstraint getDefaultAuthConstraint();
     
 }

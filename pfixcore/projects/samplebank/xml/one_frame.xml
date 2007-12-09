@@ -7,11 +7,14 @@
     </head>
     <body>
       <pfx:include href="samplebank/txt/common.xml" part="header"/>
-      <ixsl:if test="not($page='login')">
-        <pfx:include href="samplebank/txt/common.xml" part="navigation"/>
-      </ixsl:if>
+      <pfx:include href="samplebank/txt/common.xml" part="navigation"/>
       <div class="content">
         <pfx:maincontent path="samplebank/txt/pages" prefix="main_" part="content"/>
+        <hr/>
+        <pfx:include href="samplebank/txt/common.xml" part="roles"/><br/>
+        <ixsl:if test="$page='home'">
+          <pfx:include href="samplebank/txt/common.xml" part="authtokens"/><br/>
+        </ixsl:if>
       </div>
       <pfx:editconsole/>
     </body>

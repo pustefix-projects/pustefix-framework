@@ -30,17 +30,19 @@ import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
 
+import de.schlund.pfixcore.auth.AuthConstraint;
+import de.schlund.pfixcore.auth.Role;
+import de.schlund.pfixcore.auth.RoleProvider;
 import de.schlund.pfixxml.config.ContextConfig;
 import de.schlund.pfixxml.config.ContextResourceConfig;
 import de.schlund.pfixxml.config.PageFlowConfig;
-import de.schlund.pfixxml.config.RoleConfig;
 
 /**
  * Stores configuration for a Context
  * 
  * @author Sebastian Marsching <sebastian.marsching@1und1.de>
  */
-public class ContextConfigImpl implements ContextConfig {
+public class ContextConfigImpl implements ContextConfig, RoleProvider {
     // Caution: This implementation is not thread-safe. However, it
     // does not have to be as a configuration is initialized only once.
     
@@ -60,7 +62,10 @@ public class ContextConfigImpl implements ContextConfig {
     private String navigationFile = null;
     private Properties props = new Properties();
     private boolean synchronize = true;
-    private Map<String,RoleConfig> roleConfigs = new HashMap<String,RoleConfig>();
+    private Map<String,Role> roles = new HashMap<String,Role>();
+    private List<Role> initialRoles = new ArrayList<Role>();
+    private Map<String,AuthConstraint> authConstraints = new HashMap<String,AuthConstraint>();
+    private AuthConstraint defaultAuthConstraint;
 
     public void setAuthPage(String page) {
         this.authPage = page;
@@ -184,20 +189,45 @@ public class ContextConfigImpl implements ContextConfig {
         }       
     }
     
-    public void addRoleConfig(RoleConfig roleConfig) {
-        roleConfigs.put(roleConfig.getName(),roleConfig);
+    public void addRole(Role role) {
+        roles.put(role.getName(),role);
+        if(role.isInitial()) initialRoles.add(role);
     }
     
-    public RoleConfig getRoleConfig(String roleName) {
-        return roleConfigs.get(roleName);
+    public Role getRole(String roleName) {
+        return roles.get(roleName);
     }
     
-    public Map<String,RoleConfig> getRoleConfigs() {
-        return Collections.unmodifiableMap(roleConfigs);
+    public Map<String,Role> getRoles() {
+        return Collections.unmodifiableMap(roles);
     }
     
-    public boolean hasRoleConfigs() {
-        return !roleConfigs.isEmpty();
+    public List<Role> getInitialRoles() {
+    	return initialRoles;
+    }
+    
+    public RoleProvider getRoleProvider() {
+    	return this;
+    }
+    
+    public boolean hasRoles() {
+        return !roles.isEmpty();
+    }
+    
+    public void addAuthConstraint(String id,AuthConstraint authConstraint) {
+    	authConstraints.put(id,authConstraint);
+    }
+    
+    public AuthConstraint getAuthConstraint(String id) {
+    	return authConstraints.get(id);
+    }
+    
+    public void setDefaultAuthConstraint(AuthConstraint authConstraint) {
+       defaultAuthConstraint=authConstraint;
+    }
+    
+    public AuthConstraint getDefaultAuthConstraint() {
+       return defaultAuthConstraint;
     }
     
     public void setNavigationFile(String filename) {
