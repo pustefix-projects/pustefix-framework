@@ -113,8 +113,10 @@ public class ContextXMLServletConfigImpl extends AbstractXMLServletConfigImpl im
         Rule contextStartInterceptorRule = new ContextInterceptorRule(config, "start");
         Rule contextEndInterceptorRule = new ContextInterceptorRule(config, "end");
         Rule roleRule = new RoleRule(config);
-        Rule pageaccessRule = new PageAccessRule(config);
         Rule servletPropertyRule = new ServletPropertyRule(config);
+        Rule authConstraintRule = new AuthConstraintRule(config,false);
+        Rule topLevelAuthConstraintRule = new AuthConstraintRule(config,true);
+        Rule conditionRule = new ConditionRule(config);
 
         // Rule doing nothing
         Rule dummyRule = new Rule() {
@@ -186,13 +188,19 @@ public class ContextXMLServletConfigImpl extends AbstractXMLServletConfigImpl im
         digester.addRule("contextxmlserver/pagerequest/default/properties/prop", pagerequestPropertyRule);
         digester.addRule("contextxmlserver/pagerequest/variant/properties", dummyRule);
         digester.addRule("contextxmlserver/pagerequest/variant/properties/prop", pagerequestPropertyRule);
+        digester.addRule("contextxmlserver/pagerequest/authconstraint", authConstraintRule);
+        digester.addRule("contextxmlserver/pagerequest/authconstraint/*", conditionRule);
+        digester.addRule("contextxmlserver/authconstraint", topLevelAuthConstraintRule);
+        digester.addRule("*/hasrole", conditionRule);
+        digester.addRule("*/not", conditionRule);
+        digester.addRule("*/and", conditionRule);
+        digester.addRule("*/or", conditionRule);
         digester.addRule("contextxmlserver/interceptors", dummyRule);
         digester.addRule("contextxmlserver/interceptors/start", dummyRule);
         digester.addRule("contextxmlserver/interceptors/end", dummyRule);
         digester.addRule("contextxmlserver/interceptors/start/interceptor", contextStartInterceptorRule);
         digester.addRule("contextxmlserver/interceptors/end/interceptor", contextEndInterceptorRule);
         digester.addRule("contextxmlserver/role", roleRule);
-        digester.addRule("contextxmlserver/role/pageaccess", pageaccessRule);
         digester.addRule("contextxmlserver/properties", dummyRule);
         digester.addRule("contextxmlserver/properties/prop", servletPropertyRule);
 

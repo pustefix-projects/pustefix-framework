@@ -16,6 +16,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
+import de.schlund.pfixcore.auth.Authentication;
 import de.schlund.pfixcore.generator.IWrapper;
 import de.schlund.pfixcore.generator.IWrapperInfo;
 import de.schlund.pfixcore.workflow.ContextImpl;
@@ -200,6 +201,20 @@ public class TransformerCallback {
             }
             Node iwrpDoc = Xml.parse(xsltVersion, doc);
             return iwrpDoc;
+        } catch(Exception x) {
+            ExtensionFunctionUtils.setExtensionFunctionError(x);
+            throw x;
+        }
+    }
+    
+    public static boolean hasRole(RequestContextImpl requestContext, String roleName) throws Exception {
+        try {
+            ContextImpl context = requestContext.getParentContext();
+            Authentication auth = context.getAuthentication();
+            if(auth!=null) {
+            	return auth.hasRole(roleName);
+            }
+            return false;
         } catch(Exception x) {
             ExtensionFunctionUtils.setExtensionFunctionError(x);
             throw x;

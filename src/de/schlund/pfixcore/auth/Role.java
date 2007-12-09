@@ -18,10 +18,13 @@
 package de.schlund.pfixcore.auth;
 
 /**
+ * 
  * @author mleidig@schlund.de
+ * 
  */
 public interface Role {
 
     public String getName();
+    public boolean isInitial();
     
 }

@@ -8,9 +8,39 @@
 
 <part name="navigation">
   <theme name="default">
-    <div class="navigation">
+    <div class="navigation"> 
+      <pfx:button page="home">Home</pfx:button> 
       <pfx:button page="accountoverview">Overview</pfx:button> 
       <pfx:button page="accountdetails">Account</pfx:button>
+    </div>
+  </theme>
+</part>
+
+<part name="roles">
+  <theme name="default">
+    <div class="info">
+      Current roles:<br/>
+      <ixsl:if test="pfx:hasRole('ANONYMOUS')">
+        &#160;&#160;<i>ANONYMOUS</i><br/>
+      </ixsl:if>
+      <ixsl:if test="pfx:hasRole('UNRESTRICTED')"> 
+        &#160;&#160;<i>UNRESTRICTED</i><br/>
+      </ixsl:if>
+      <ixsl:if test="pfx:hasRole('ACCOUNT')">
+        &#160;&#160;<i>ACCOUNT</i><br/>
+      </ixsl:if>
+    </div>
+  </theme>
+</part>
+
+<part name="authtokens">
+  <theme name="default">
+    <div class="info">
+      <ixsl:for-each select="/formresult/test/authtoken">
+        <a>
+          <ixsl:attribute name="href">/xml/config/accountdetails?__roleauth=1&amp;__sendingdata=1&amp;login.AuthToken=<ixsl:value-of select="@value"/></ixsl:attribute>
+          Account login via authentication token</a><br/>
+      </ixsl:for-each>
     </div>
   </theme>
 </part>

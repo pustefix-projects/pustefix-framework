@@ -22,6 +22,9 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Properties;
 
+import de.schlund.pfixcore.auth.Role;
+import de.schlund.pfixcore.auth.RoleNotFoundException;
+import de.schlund.pfixcore.auth.RoleProvider;
 import de.schlund.pfixcore.workflow.ContextInterceptor;
 import de.schlund.pfixcore.workflow.ContextInterceptorFactory;
 import de.schlund.pfixcore.workflow.ContextResource;
@@ -37,7 +40,8 @@ import de.schlund.pfixxml.config.ContextConfig;
  * 
  * @author Sebastian Marsching <sebastian.marsching@1und1.de>
  */
-public class ServerContextImpl {
+public class ServerContextImpl implements RoleProvider {
+	
     private ContextConfig config;
     
     private String name;
@@ -126,6 +130,12 @@ public class ServerContextImpl {
         } else {
             return pagename;
         }
+    }
+    
+    public Role getRole(String roleName) throws RoleNotFoundException {
+    	Role role=getContextConfig().getRole(roleName);
+    	if(role==null) throw new RoleNotFoundException(roleName);
+    	return role;
     }
 
 }

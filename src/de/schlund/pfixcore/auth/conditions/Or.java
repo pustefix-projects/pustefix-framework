@@ -15,14 +15,32 @@
  * along with PFIXCORE; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-package de.schlund.pfixxml.config;
+package de.schlund.pfixcore.auth.conditions;
+
+import de.schlund.pfixcore.auth.Authentication;
+import de.schlund.pfixcore.auth.Condition;
 
 /**
+ * 
  * @author mleidig@schlund.de
+ *
  */
-public interface PageAccessConfig {
+public class Or extends ConditionGroup {
 
-    public String getNames();
-    public boolean containsPage(String pageName);
-    
+	public Or(Condition ... conditions) {
+		super(conditions);
+	}
+	
+	public boolean evaluate(Authentication auth) {
+		for(Condition condition:conditions) {
+			if(condition.evaluate(auth)) return true; 
+		}
+		return false;
+	}
+	
+	@Override
+	public String getOperatorString() {
+		return "||";
+	}
+	
 }

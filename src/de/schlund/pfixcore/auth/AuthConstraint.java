@@ -15,27 +15,21 @@
  * along with PFIXCORE; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-
 package de.schlund.pfixcore.auth;
 
-import java.util.List;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 /**
+ * 
  * @author mleidig@schlund.de
+ *
  */
-public class AccessDeniedException extends AuthorizationException {
-
-    private final static String TYPESTR="ACCESS_DENIED";
-    
-    private List<String> permittedRoles;
-  
-    public AccessDeniedException(String message, String subtype, String target, List<String> permittedRoles) {
-        super(message, TYPESTR, subtype, target);
-        this.permittedRoles=permittedRoles;
-    }
-    
-    public List<String> getPermittedRoles() {
-        return permittedRoles;
-    }
-
+public interface AuthConstraint {
+	
+	public boolean isAuthorized(Authentication auth);
+	public Condition getCondition();
+	public String getAuthPage();
+	public Element toXML(Document doc);
+	
 }

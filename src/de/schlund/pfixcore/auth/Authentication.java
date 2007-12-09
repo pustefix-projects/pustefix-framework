@@ -18,7 +18,9 @@
 package de.schlund.pfixcore.auth;
 
 /**
+ * 
  * @author mleidig@schlund.de
+ *
  */
 public interface Authentication {
     
@@ -26,6 +28,9 @@ public interface Authentication {
     public void setAuthenticated(boolean authenticated);
     
     public boolean hasRole(String roleName);
+    public boolean addRole(String roleName);
+    public boolean revokeRole(String roleName);
+    
     public Role[] getRoles();
     
 }

@@ -3,7 +3,7 @@
   <part name="content">
     <theme name="default">
       <h1>Customer login:</h1>
-      <pfx:forminput type="auth">
+      <pfx:forminput type="roleauth">
         <table>
           <tr>
             <td>Customer ID:</td>
@@ -16,17 +16,13 @@
             <td><errormsg name="login.Password"/></td>
           </tr>
           <tr>
-            <td colspan="2" align="right"><pfx:xinp type="submit" value="Login"/></td>
+            <td colspan="2" align="right">
+            <pfx:xinp type="submit" value="Login">
+            </pfx:xinp>
+            </td>
           </tr>
         </table>
       </pfx:forminput>
-      
-      <br/><br/><br/><hr/>
-      <ixsl:for-each select="/formresult/test/authtoken">
-        <a>
-          <ixsl:attribute name="href">/xml/config/accountdetails?__sendingauthdata=1&amp;login.AuthToken=<ixsl:value-of select="@value"/></ixsl:attribute>
-          Account login via authentication token</a><br/>
-      </ixsl:for-each>
     </theme>
   </part>
   

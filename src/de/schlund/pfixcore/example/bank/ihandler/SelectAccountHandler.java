@@ -24,8 +24,7 @@ public class SelectAccountHandler implements IHandler {
     }
 
     public boolean isActive(Context context) throws Exception {
-    	ContextCustomer contextCustomer=context.getContextResourceManager().getResource(ContextCustomer.class);
-    	return contextCustomer.getCustomer()!=null;
+       return true;
     }
 
     public boolean prerequisitesMet(Context context) throws Exception {

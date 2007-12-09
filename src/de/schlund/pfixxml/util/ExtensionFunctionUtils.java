@@ -7,7 +7,7 @@ package de.schlund.pfixxml.util;
  * It supports thread local storage of extension function errors: 
  * due to an unfortunate implementation of Saxon's FunctionProxy 
  * only the exception message and no stacktrace or cause of an 
- * error, occurred within an extension function, is avaiable in the 
+ * error, occurred within an extension function, is available in the 
  * resulting TransformerException. Using this class an extension
  * function can catch its exceptions and store it calling the method
  * setExtensionFunctionError. Later, during exception handling, the 

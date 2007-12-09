@@ -45,6 +45,19 @@
         <xs:element ref="prop:role"/>
         <xs:element ref="prop:config-include"/>
       </xs:choice>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element name="authconstraint" minOccurs="0">
+          <xs:complexType>
+            <xs:complexContent>
+              <xs:extension base="prop:authconstraintType">
+                <xs:attribute name="id" use="required" type="xs:ID"/>
+                <xs:attribute name="authpage" use="optional" type="xs:string"/>
+              </xs:extension>
+            </xs:complexContent>
+          </xs:complexType>
+        </xs:element>
+        <xs:element ref="prop:config-include"/>
+      </xs:choice>
       <xs:choice minOccurs="1" maxOccurs="unbounded">
         <xs:element ref="prop:pageflow"/>
         <xs:element ref="prop:pagerequest"/>
@@ -165,13 +178,55 @@
   <xs:complexType name="sslType">
     <xs:attribute name="force" type="xs:boolean" use="required"/>
   </xs:complexType>
+  
+  <xs:complexType name="authconstraintType">
+    <xs:sequence>
+      <xs:element ref="prop:condition" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
 
-	<xs:element name="encoding" type="prop:encodingType"/>
-	<xs:simpleType name="encodingType">
-		<xs:restriction base="xs:normalizedString">
-			<xs:minLength value="2"/>
-		</xs:restriction>
-	</xs:simpleType>
+  <xs:element name="condition" type="prop:conditionType" abstract="true"/>
+  <xs:complexType name="conditionType" abstract="true"/>
+ 
+  <xs:complexType name="singleconditionType">
+    <xs:complexContent>
+      <xs:extension base="prop:conditionType">
+        <xs:sequence>
+          <xs:element ref="prop:condition" minOccurs="1" maxOccurs="1"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType> 
+ 
+  <xs:complexType name="multiconditionType">
+    <xs:complexContent>
+      <xs:extension base="prop:conditionType">
+      	<xs:sequence>
+          <xs:element ref="prop:condition" minOccurs="2" maxOccurs="unbounded"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  
+  <xs:element name="or" type="prop:multiconditionType" substitutionGroup="prop:condition"/>
+  <xs:element name="and" type="prop:multiconditionType" substitutionGroup="prop:condition"/>
+  <xs:element name="not" type="prop:singleconditionType" substitutionGroup="prop:condition"/>
+  
+  <xs:element name="hasrole" type="prop:hasroleType" substitutionGroup="prop:condition"/>
+  <xs:complexType name="hasroleType">
+    <xs:complexContent>
+      <xs:extension base="prop:conditionType">
+         <xs:attribute name="name" type="xs:string" use="required"/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  
+  <xs:element name="encoding" type="prop:encodingType"/>
+  <xs:simpleType name="encodingType">
+    <xs:restriction base="xs:normalizedString">
+      <xs:minLength value="2"/>
+    </xs:restriction>
+  </xs:simpleType>
 
   <xs:element name="defaultstate" type="prop:defaultstateType"/>
   <xs:complexType name="defaultstateType">
@@ -277,9 +332,10 @@
   <xs:element name="role" type="prop:roleType"/>
   <xs:complexType name="roleType">
     <xs:sequence>
-      <xs:element ref="prop:pageaccess" minOccurs="1" maxOccurs="1"/>
+      <xs:element ref="prop:pageaccess" minOccurs="0" maxOccurs="1"/>
     </xs:sequence>
-    <xs:attribute name="name" type="xs:string"/>
+    <xs:attribute name="name" type="xs:string" use="required"/>
+    <xs:attribute name="initial" type="xs:boolean"/>
   </xs:complexType>
   
   <xs:element name="pageaccess" type="prop:pageaccessType"/>
@@ -415,6 +471,17 @@
           </xs:complexType>
         </xs:element>
 
+        <xs:element name="authconstraint" minOccurs="0">
+          <xs:complexType>
+            <xs:complexContent>
+              <xs:extension base="prop:authconstraintType">
+                <xs:attribute name="ref" use="optional" type="xs:IDREF"/>
+                <xs:attribute name="authpage" use="optional" type="xs:string"/>
+              </xs:extension>
+            </xs:complexContent>
+          </xs:complexType>
+        </xs:element>
+        
         <xs:element name="state" minOccurs="0">
           <xs:complexType>
             <xs:attribute name="class" use="required"/>

@@ -15,14 +15,15 @@
  * along with PFIXCORE; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-package de.schlund.pfixxml.config;
+package de.schlund.pfixcore.auth;
 
 /**
+ * 
  * @author mleidig@schlund.de
+ *
  */
-public interface RoleConfig {
+public interface RoleProvider {
 
-    public String getName();
-    public PageAccessConfig getPageAccessConfig();
-    
+	public Role getRole(String roleName) throws RoleNotFoundException;
+	
 }

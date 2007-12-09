@@ -17,46 +17,17 @@
  */
 package de.schlund.pfixcore.auth;
 
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+
 /**
  * 
  * @author mleidig@schlund.de
- * 
+ *
  */
-public class RoleImpl implements Role {
+public interface Condition {
 
-    private String name;
-    private boolean initial;
-    
-    public RoleImpl(String name) {
-        if(name==null) throw new IllegalArgumentException("Name must not be null!");
-        this.name=name;
-    }
-    
-    public RoleImpl(String name, boolean initial) {
-    	this(name);
-    	this.initial=initial;
-    }
-    
-    public String getName() {
-        return name;
-    }
-    
-    public boolean isInitial() {
-    	return initial;
-    }
-    
-    @Override
-    public int hashCode() {
-        return name.hashCode();
-    }
-    
-    @Override
-    public boolean equals(Object obj) {
-        if(obj instanceof RoleImpl) {
-            Role role=(Role)obj;
-            if(role.getName().equals(name)) return true;
-        }
-        return false;
-    }
-    
+	public boolean evaluate(Authentication auth);
+	public Element toXML(Document doc);
+	
 }

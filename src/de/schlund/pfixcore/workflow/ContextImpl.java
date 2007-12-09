@@ -33,8 +33,8 @@ import javax.servlet.http.HttpSessionBindingEvent;
 import javax.servlet.http.HttpSessionBindingListener;
 
 import de.schlund.pfixcore.auth.Authentication;
+import de.schlund.pfixcore.auth.AuthenticationImpl;
 import de.schlund.pfixcore.auth.Role;
-import de.schlund.pfixcore.auth.RoleNotFoundException;
 import de.schlund.pfixcore.exception.PustefixApplicationException;
 import de.schlund.pfixcore.exception.PustefixCoreException;
 import de.schlund.pfixcore.util.TokenManager;
@@ -50,7 +50,6 @@ import de.schlund.pfixxml.ServletManager;
 import de.schlund.pfixxml.Variant;
 import de.schlund.pfixxml.config.ContextConfig;
 import de.schlund.pfixxml.config.PageRequestConfig;
-import de.schlund.pfixxml.config.RoleConfig;
 import de.schlund.util.statuscodes.StatusCode;
 
 public class ContextImpl implements Context, AccessibilityChecker, ExtendedContext, TokenManager, HttpSessionBindingListener {
@@ -99,7 +98,6 @@ public class ContextImpl implements Context, AccessibilityChecker, ExtendedConte
         public SessionContextImpl(HttpSession session) {
             this.session = session;
             this.crm = new ContextResourceManagerImpl();
-            
             synchronized(this.getClass()) {
                 this.sessionEndNotificator = (SessionEndNotificator) this.session.getAttribute("de.schlund.pfixcore.workflow.ContextImpl.SessionContextImpl.dummylistenerobject"); 
                 if (this.sessionEndNotificator == null) {
@@ -110,6 +108,11 @@ public class ContextImpl implements Context, AccessibilityChecker, ExtendedConte
         }
 
         private void init(Context context) throws PustefixApplicationException, PustefixCoreException {
+        	if(getContextConfig().hasRoles()) {
+            	this.authentication = new AuthenticationImpl(servercontext);
+            	for(Role role:getContextConfig().getInitialRoles()) this.authentication.addRole(role.getName());
+            	if(!getContextConfig().getInitialRoles().isEmpty()) this.authentication.setAuthenticated(true);
+            }
             crm.init(context, context.getContextConfig());
         }
 
@@ -206,10 +209,6 @@ public class ContextImpl implements Context, AccessibilityChecker, ExtendedConte
         
         public void setAuthentication(Authentication authentication) {
             this.authentication = authentication;
-            for(Role role:authentication.getRoles()) {
-                RoleConfig roleConfig=getContextConfig().getRoleConfig(role.getName());
-                if(roleConfig==null) throw new RoleNotFoundException(role.getName());
-            }
         }
         
         @Override

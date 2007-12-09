@@ -8,6 +8,7 @@
   </global>
   
   <navigation>
+    <page name="home" handler="/xml/config"/>
     <page name="login"     handler="/xml/config"/>
     <page name="accountoverview"     handler="/xml/config" accesskey="H"/>
     <page name="accountdetails"    handler="/xml/config" accesskey="O"/>
@@ -19,8 +20,10 @@
     <include stylesheet="samplebank/xsl/metatags.xsl"/>
   </standardmetatags>
   
+  <standardpage name="home" xml="samplebank/xml/one_frame.xml"/>
   <standardpage name="login" xml="samplebank/xml/one_frame.xml"/>
   <standardpage name="accountoverview" xml="samplebank/xml/one_frame.xml"/>
   <standardpage name="accountdetails" xml="samplebank/xml/one_frame.xml"/>
+  <standardpage name="test" xml="samplebank/xml/one_frame.xml"/>
 
 </make>

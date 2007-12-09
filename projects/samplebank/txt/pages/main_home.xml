@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="ISO-8859-1"?><include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
+  
+  <part name="content">
+    <theme name="default">
+      <h1>New offers:</h1>
+      <h2>Free of charge giro account</h2> <i>Read more...</i>
+      <h2>Time deposit up to a rate of 7%</h2> <i>Read more...</i>
+    </theme>
+  </part>
+  
+</include_parts>
