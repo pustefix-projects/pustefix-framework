@@ -19,7 +19,6 @@ package de.schlund.pfixcore.auth.conditions;
 
 import de.schlund.pfixcore.auth.Authentication;
 import de.schlund.pfixcore.auth.Condition;
-import de.schlund.pfixcore.auth.Role;
 
 /**
  * 
@@ -33,8 +32,8 @@ public class And extends ConditionGroup {
 	}
 	
 	public boolean evaluate(Authentication auth) {
-		for(Condition condition:conditions) {
-			if(!condition.evaluate(auth)) return false; 
+		for (Condition condition:conditions) {
+			if (!condition.evaluate(auth)) return false; 
 		}
 		return true;
 	}
