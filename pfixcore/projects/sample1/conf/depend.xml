@@ -81,6 +81,8 @@
 
   <standardpage name="ssltest"  xml="sample1/xml/one_frame_navi.xml"/>
   
+  <standardpage name="frames"  xml="sample1/xml/manyframes.xml"/>  
+  
   <standardpage name="invalidate" xml="sample1/xml/two_frames.xml"/>
   
   <standardpage name="geninc"   xml="sample1/xml/one_frame.xml">
