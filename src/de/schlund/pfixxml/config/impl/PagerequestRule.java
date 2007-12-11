@@ -44,12 +44,12 @@ public class PagerequestRule extends CheckedRule {
         if (copyfrom != null) {
             pageConfig.setCopyFromPage(copyfrom);
         }
-        String nostore = attributes.getValue("nostore");
-        if (nostore != null) {
-            pageConfig.setStoreXML(!Boolean.parseBoolean(nostore));
-        } else {
-            pageConfig.setStoreXML(true);
-        }
+//        String nostore = attributes.getValue("nostore");
+//        if (nostore != null) {
+//            pageConfig.setStoreXML(!Boolean.parseBoolean(nostore));
+//        } else {
+//            pageConfig.setStoreXML(true);
+//        }
         pageConfig.setDefaultStaticState(config.getDefaultStaticState());
         pageConfig.setDefaultIHandlerState(config.getDefaultIHandlerState());
         ctxConfig.addPageRequest(pageConfig);

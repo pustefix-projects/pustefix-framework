@@ -521,9 +521,9 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
 
             if (spdoc.getResponseError() == 0) {
                 parentcontext.addVisitedPage(spdoc.getPagename());
-                if (!getConfigForCurrentPageRequest().isStoreXML()) {
-                    spdoc.setNostore(true);
-                }
+                // if (!getConfigForCurrentPageRequest().isStoreXML()) {
+                //    spdoc.setNostore(true);
+                // }
             }
 
             LOG.debug("\n");

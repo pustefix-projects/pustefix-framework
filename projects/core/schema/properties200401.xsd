@@ -440,7 +440,6 @@
       <xs:group ref="prop:pagerequestGroup"/>
     </xs:choice>
     <xs:attribute name="name" use="required"/>
-    <xs:attribute name="nostore" type="xs:boolean"/>
     <xs:attribute name="copyfrom"/>
   </xs:complexType>
 

@@ -23,7 +23,7 @@ import de.schlund.pfixcore.workflow.ContextImpl;
 import de.schlund.pfixcore.workflow.PageRequest;
 import de.schlund.pfixcore.workflow.context.AccessibilityChecker;
 import de.schlund.pfixcore.workflow.context.RequestContextImpl;
-import de.schlund.pfixxml.SPDocument;
+//import de.schlund.pfixxml.SPDocument;
 import de.schlund.pfixxml.config.IWrapperConfig;
 import de.schlund.pfixxml.config.PageRequestConfig;
 import de.schlund.pfixxml.util.ExtensionFunctionUtils;
@@ -45,9 +45,9 @@ public class TransformerCallback {
 
     private static DocumentBuilderFactory  docBuilderFactory = DocumentBuilderFactory.newInstance();
     
-    public static void setNoStore(SPDocument spdoc) {
-        spdoc.setNostore(true);
-    }
+//    public static void setNoStore(SPDocument spdoc) {
+//        spdoc.setNostore(true);
+//    }
 
     public static int isAccessible(RequestContextImpl requestcontext, String pagename) throws Exception {
         try {

@@ -19,13 +19,14 @@
 
 package de.schlund.pfixxml;
 
-import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
 import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
+
+import de.schlund.pfixxml.util.CacheValueLRU;
 
 /**
  * The <code>SessionCleaner</code> class is used to remove stored SPDocuments from the session
@@ -63,7 +64,7 @@ public class SessionCleaner {
      * @param storeddoms a <code>Map</code> value
      * @param timeoutsecs a <code>int</code> value. The timeout when the document should be removed.
      */
-    public void storeSPDocument(SPDocument spdoc, Map storeddoms, int timeoutsecs) {
+    public void storeSPDocument(SPDocument spdoc, CacheValueLRU<String,SPDocument> storeddoms, int timeoutsecs) {
         storeSPDocument(spdoc, null, storeddoms, timeoutsecs);
     }
     
@@ -76,28 +77,29 @@ public class SessionCleaner {
      * @param storeddoms a <code>Map</code> value
      * @param timeoutsecs a <code>int</code> value. The timeout when the document should be removed.
      */
-    public void storeSPDocument(SPDocument spdoc, String frameName, Map storeddoms, int timeoutsecs) {
+    public void storeSPDocument(SPDocument spdoc, String frameName, CacheValueLRU<String,SPDocument> storeddoms, int timeoutsecs) {
         String key = spdoc.getTimestamp() + "";
         if (frameName != null) {
             key = key + "." + frameName;
         }
 
+        // Save the needed info
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Store SPDocument " + spdoc.getTimestamp() + " under key " + key);
+        }
+        storeddoms.put(key, spdoc);
         LOG.info("*** Create new TimerTask with timeout: " + timeoutsecs);
         TimerTask task = new SessionCleanerTask(storeddoms, key);
         timer.schedule(task, timeoutsecs * 1000);
-        // Save the needed info
-        storeddoms.put(key, spdoc);
-        if(LOG.isDebugEnabled()) {
-            LOG.debug("Store SPDocument "+spdoc.getTimestamp()+" under key "+key);
-        }
+
     }
 
     private class SessionCleanerTask extends TimerTask {
         String key;
-        Map    storeddoms;
+        CacheValueLRU<String,SPDocument> storeddoms;
         
-        public SessionCleanerTask(Map storeddoms, String key) {
-            this.storeddoms = storeddoms;
+        public SessionCleanerTask(CacheValueLRU<String,SPDocument> storeddomcache, String key) {
+            this.storeddoms = storeddomcache;
             this.key        = key;
         }
 
@@ -105,8 +107,8 @@ public class SessionCleaner {
             try {
                 if (storeddoms.containsKey(key)) {
                     storeddoms.remove(key);
-                    LOG.info("*** CALLING TIMERTASK: Removing SPDoc '" + key + 
-                             "' in session from cache (Curr. Size: " + storeddoms.size() + ")");
+                    LOG.info("*** CALLING TIMERTASK: Removing SPDoc Reference for '" + key + 
+                             "' in session from cache (Curr. Size (= All keys counted!): " + storeddoms.sizeOfKeyEntries() + ")");
                 } else {
                     LOG.info("*** CALLING TIMERTASK: nothing to do.");
                 }

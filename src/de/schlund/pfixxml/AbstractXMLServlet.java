@@ -24,7 +24,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.SocketException;
-import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -73,7 +72,7 @@ import de.schlund.pfixxml.targets.TargetGeneratorFactory;
 import de.schlund.pfixxml.testrecording.TestRecording;
 import de.schlund.pfixxml.testrecording.TrailLogger;
 import de.schlund.pfixxml.util.MD5Utils;
-import de.schlund.pfixxml.util.SimpleCacheLRU;
+import de.schlund.pfixxml.util.CacheValueLRU;
 import de.schlund.pfixxml.util.Xml;
 import de.schlund.pfixxml.util.Xslt;
 
@@ -307,11 +306,11 @@ public abstract class AbstractXMLServlet extends ServletManager {
     protected void process(PfixServletRequest preq, HttpServletResponse res) throws Exception {
         Properties  params     = new Properties();
         HttpSession session    = preq.getSession(false);
-        Map         storeddoms = null;
+        CacheValueLRU<String,SPDocument> storeddoms = null;
         if (session != null) {
-            storeddoms = (Map) session.getAttribute(servletname + SUFFIX_SAVEDDOM);
+            storeddoms = (CacheValueLRU<String,SPDocument>) session.getAttribute(servletname + SUFFIX_SAVEDDOM);
             if (storeddoms == null) {
-                storeddoms = Collections.synchronizedMap(new SimpleCacheLRU(maxStoredDoms));
+                storeddoms = new CacheValueLRU<String,SPDocument>(maxStoredDoms);
                 session.setAttribute(servletname + SUFFIX_SAVEDDOM, storeddoms);
             }
         }
@@ -437,7 +436,7 @@ public abstract class AbstractXMLServlet extends ServletManager {
                 }
             }
 
-            // this will remain at -1 when we don't have to enter the businesslogic codepathv
+            // this will remain at -1 when we don't have to enter the businesslogic codepath
             // (whenever there is a stored spdoc already)
             getdomtime = System.currentTimeMillis() - currtime;
             preq.getRequest().setAttribute(GETDOMTIME, getdomtime);
@@ -449,24 +448,29 @@ public abstract class AbstractXMLServlet extends ServletManager {
         
         handleDocument(preq, res, spdoc, params, doreuse);
 
-        // This will store just the last dom, but only when editmode is allowed (so this normally doesn't apply to production mode)
-        // This is a seperate place from the SessionCleaner as we don't want to interfere with this, nor do we want to use 
-        // the whole queue of possible stored SPDocs only for the viewing of the DOM during development.
         if (session != null && (getRendering(preq) != AbstractXMLServlet.RENDER_FONTIFY) && !doreuse) {
+            // This will store just the last dom, but only when editmode is allowed (so this normally doesn't apply to production mode)
+            // This is a seperate place from the SessionCleaner as we don't want to interfere with this, nor do we want to use 
+            // the whole queue of possible stored SPDocs only for the viewing of the DOM during development.
             if (editmodeAllowed) {
                 session.setAttribute(ATTR_SHOWXMLDOC, spdoc);
             }
 
-            if (!spdoc.getNostore() || spdoc.isRedirect()) {
+//            if (!spdoc.getNostore() || spdoc.isRedirect()) {
+            if (spdoc.isRedirect()) {
+                    LOGGER.info("**** Storing for redirection! ****");
+//                } else {
+//                    LOGGER.info("**** Storing because SPDoc wants us to. ****");
+//                }
                 SessionCleaner.getInstance().storeSPDocument(spdoc, storeddoms, scleanertimeout);
             } else {
-                LOGGER.info("*** Got NOSTORE from SPDocument! ****");
+                LOGGER.info("**** Not storing because no redirect... ****");
             }
         }
         
         if (session != null && !doreuse && (session.getAttribute(SESS_CLEANUP_FLAG_STAGE1) != null
                 && session.getAttribute(SESS_CLEANUP_FLAG_STAGE2) == null)) {
-            if (!spdoc.getNostore() || spdoc.isRedirect()) {
+            if (/* !spdoc.getNostore() || */ spdoc.isRedirect()) {
                 // Delay invalidation
                 
                 // This is obviously not thread-safe. However, no problems should
@@ -727,7 +731,7 @@ public abstract class AbstractXMLServlet extends ServletManager {
         TransformerException, TransformerConfigurationException, TransformerFactoryConfigurationError, IOException {
         Document doc  = spdoc.getDocument();
         Document ext  = doc;
-        if (!spdoc.getNostore() || spdoc.isRedirect()) {
+        if (/* !spdoc.getNostore() || */ spdoc.isRedirect()) {
             ext = Xml.createDocument();
             ext.appendChild(ext.importNode(doc.getDocumentElement(), true));
         }
@@ -815,7 +819,7 @@ public abstract class AbstractXMLServlet extends ServletManager {
         String session_to_link_from_external = SessionAdmin.getInstance().getExternalSessionId(session);
         paramhash.put("__external_session_ref", session_to_link_from_external);
         paramhash.put("__spdoc__", spdoc);
-        paramhash.put("__register_frame_helper__", new RegisterFrameHelper((Map) session.getAttribute(servletname + SUFFIX_SAVEDDOM), spdoc));
+        paramhash.put("__register_frame_helper__", new RegisterFrameHelper((CacheValueLRU<String, SPDocument>) session.getAttribute(servletname + SUFFIX_SAVEDDOM), spdoc));
         return paramhash;
     }
     
@@ -859,12 +863,12 @@ public abstract class AbstractXMLServlet extends ServletManager {
         }
     }
 
-    private SPDocument doReuse(PfixServletRequest preq, Map storeddoms) {
+    private SPDocument doReuse(PfixServletRequest preq, CacheValueLRU<String,SPDocument> storeddoms) {
         HttpSession session = preq.getSession(false);
         if (session != null) {
             RequestParam reuse = preq.getRequestParam(PARAM_REUSE);
             if (reuse != null && reuse.getValue() != null) {
-                SPDocument saved = (SPDocument) storeddoms.get(reuse.getValue());
+                SPDocument saved = storeddoms.get(reuse.getValue());
                 if (preq.getPageName() != null && saved!=null && saved.getPagename() != null && !preq.getPageName().equals(saved.getPagename())) {
                     if (LOGGER.isDebugEnabled()) 
                         LOGGER.debug("Don't reuse SPDocument because pagenames differ: " + preq.getPageName() + " -> " + saved.getPagename());
@@ -956,10 +960,10 @@ public abstract class AbstractXMLServlet extends ServletManager {
     }
     
     public class RegisterFrameHelper {
-        private Map storeddoms;
+        private CacheValueLRU<String,SPDocument> storeddoms;
         private SPDocument spdoc;
 
-        private RegisterFrameHelper(Map storeddoms, SPDocument spdoc) {
+        private RegisterFrameHelper(CacheValueLRU<String,SPDocument> storeddoms, SPDocument spdoc) {
             this.storeddoms = storeddoms;
             this.spdoc = spdoc;
         }
@@ -976,10 +980,10 @@ public abstract class AbstractXMLServlet extends ServletManager {
             if (frameName != null && frameName.length() > 0) {
                 reuseKey += "." + frameName;
             }
-            storeddoms.remove(reuseKey);
             if(LOGGER.isDebugEnabled()) {
                 LOGGER.debug("Remove SPDocument stored under "+reuseKey);
             }
+            storeddoms.remove(reuseKey);
         }
     }
 
