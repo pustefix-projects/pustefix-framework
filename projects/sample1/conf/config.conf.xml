@@ -101,6 +101,8 @@
   </pageflow>
   
   <!-- *** PageRequests and associated properties *** -->
+
+  <pagerequest name="frames"/>
   
   <pagerequest name="A">
     <input>
