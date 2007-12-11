@@ -1,3 +1,31 @@
+2007-12-11  jtl  <jtl@schlund.de>
+
+	* projects/core/schema/properies200401.xsd:
+	* projects/core/xsl/master.xsl:
+	* src/de/schlund/pfixcore/util/TransformerCallback.java: 
+	* src/de/schlund/pfixcore/workflow/context/RequestContextImpl.java: 
+	* src/de/schlund/pfixxml/SPDocument.java: 
+	* src/de/schlund/pfixxml/config/PageRequestConfig.java: 
+	* src/de/schlund/pfixxml/config/impl/PageRequestConfigImpl.java: 
+	* src/de/schlund/pfixxml/config/impl/PagerequestRule.java: 
+	* src/de/schlund/pfixxml/config/impl/PagerequestVariantRule.java: remove 
+	nostore/storeXML/setNostore stuff. This is no longer needed. We normally don't store 
+	a document, only if it's a redirect or the XSLT trafo explicitly requests it (e.g. for frames). 
+	This also means, that the session cleaner normally doesn't have to do anything, only if the 
+	next request from a redirect or a frame is somehow lost.
+	 
+	* src/de/schlund/pfixxml/util/CacheValueLRU.java: new file. Implement a LRU Cache 
+	on the number of distinct VALUES, not keys. 
+	* src/de/schlund/pfixxml/SessionCleaner.java: use it there instead of the old map
+	* src/de/schlund/pfixxml/AbstractXMLServlet.java: also here, and remove the nostore handling, too
+	when we are already here :-) Now you actively have to use the callback from the xslt file to
+	force a storing of the document or the document is a redirect. Normally we won't store anything anymore.
+	 
+	projects/sample1/conf/depend.xml
+	projects/sample1/conf/config.conf.xml
+	projects/sample1/xml/manyframes.xml: added "frames" page for testing frame related stuff
+	
+	
 2007-12-09  Martin Leidig  <mleidig@schlund.de>
 
 	Extended role based authorization. New features are:

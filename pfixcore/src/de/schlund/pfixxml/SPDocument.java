@@ -44,7 +44,7 @@ public class SPDocument {
     private Document  document;
     private HashMap   propertiesmap;
     private boolean   updateable     = true;
-    private boolean   nostore        = false;
+    // private boolean   nostore        = false;
     private String    pagename       = null;
     private Variant   variant        = null;
     private String    xslkey         = null;
@@ -76,13 +76,13 @@ public class SPDocument {
         return variant;
     }
 
-    public void setNostore(boolean nostore) {
-        this.nostore = nostore;
-    }
-
-    public boolean getNostore() {
-        return nostore;
-    }
+//    public void setNostore(boolean nostore) {
+//        this.nostore = nostore;
+//    }
+//
+//    public boolean getNostore() {
+//        return nostore;
+//    }
     
     public void setResponseContentType(String type) {
         contenttype = type;

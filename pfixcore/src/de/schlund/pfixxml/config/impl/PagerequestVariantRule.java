@@ -44,7 +44,7 @@ public class PagerequestVariantRule extends CheckedRule {
         if (defaultConfig.getCopyFromPage() != null) {
             throw new SAXException("Page using \"copyfrom\" cannot define its own variants!");
         }
-        pageConfig.setStoreXML(defaultConfig.isStoreXML());
+//        pageConfig.setStoreXML(defaultConfig.isStoreXML());
         pageConfig.setDefaultStaticState(config.getDefaultStaticState());
         pageConfig.setDefaultIHandlerState(config.getDefaultIHandlerState());
         ctxConfig.addPageRequest(pageConfig);

@@ -257,7 +257,7 @@
               <ixsl:when test="$__frame = '_top'"> 
                 <html>
                   <!-- Unregister SPDocument for top frame -->
-                  <ixsl:value-of select="rfh:unregisterFrame($__register_frame_helper__, '_top')"/>
+                <ixsl:value-of select="rfh:unregisterFrame($__register_frame_helper__, '_top')"/>
                   <xsl:apply-templates select="/pfx:document/node()"/>
                 </html>
               </ixsl:when>
@@ -284,8 +284,8 @@
               </xsl:for-each>
             </ixsl:choose>
           </xsl:when>
-          <xsl:otherwise> <!-- no frames defined! -->
-            <ixsl:value-of select="callback:setNoStore($__spdoc__)"/>
+          <xsl:otherwise><!-- no frames defined! -->
+<!--            <ixsl:value-of select="callback:setNoStore($__spdoc__)"/>-->
             <!-- Unregister SPDocument for top frame -->
             <ixsl:value-of select="rfh:unregisterFrame($__register_frame_helper__, '_top')"/>
             <xsl:apply-templates select="/pfx:document/node()"/>

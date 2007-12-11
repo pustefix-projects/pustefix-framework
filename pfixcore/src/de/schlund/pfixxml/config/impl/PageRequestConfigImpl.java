@@ -36,7 +36,7 @@ public class PageRequestConfigImpl implements SSLOption, Cloneable, PageRequestC
     
     private String pageName = null;
     private String copyFromPage = null;
-    private boolean storeXML = true;
+//    private boolean storeXML = true;
     private boolean ssl = false;
     private Class stateClass = null;
     private Class defaultStaticStateClass = null;
@@ -63,16 +63,16 @@ public class PageRequestConfigImpl implements SSLOption, Cloneable, PageRequestC
         return this.pageName;
     }
     
-    public void setStoreXML(boolean store) {
-        this.storeXML = store;
-    }
+//    public void setStoreXML(boolean store) {
+//        this.storeXML = store;
+//    }
     
     /* (non-Javadoc)
      * @see de.schlund.pfixxml.config.PageRequestConfig#isStoreXML()
      */
-    public boolean isStoreXML() {
-        return this.storeXML;
-    }
+//    public boolean isStoreXML() {
+//        return this.storeXML;
+//    }
     
     public void setSSL(boolean forceSSL) {
         this.ssl = forceSSL;
