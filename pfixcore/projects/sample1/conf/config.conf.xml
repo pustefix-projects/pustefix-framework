@@ -3,7 +3,6 @@
   
   <servletinfo depend="sample1/conf/depend.xml" name="pfixcore_project:sample1::servlet:config">
     <editmode allow="true"/>
-    <!-- <adminmode watch="default" page="admin"/> -->
   </servletinfo>
   
   <context defaultflow="OrderFlow">
@@ -240,8 +239,6 @@
     <prop name="contexttrouser.feature.0">Waterproof</prop>
     <prop name="contexttrouser.feature.1">Extra warm</prop>
     <prop name="contexttrouser.feature.2">Windproof</prop>
-
-    <!--<prop name="context.startinterceptor.001">de.schlund.pfixcore.example.SampleStartIC</prop>-->    
   </properties>
 
 </contextxmlserver>
