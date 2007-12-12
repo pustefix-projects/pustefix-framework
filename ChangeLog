@@ -1,3 +1,7 @@
+2007-12-12  jtl  <jtl@schlund.de>
+
+	* projects/core/build/iwrapper.xsl: conditionalize annotion import
+
 2007-12-11  jtl  <jtl@schlund.de>
 
 	* projects/core/schema/properies200401.xsd:
