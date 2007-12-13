@@ -1,0 +1,89 @@
+<?xml version="1.0"?>
+<chapter xml:id="advancedtopics" xmlns="http://docbook.org/ns/docbook" xmlns:xlink="www.w3.org/1999/xlink" xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://docbook.org/ns/docbook http://www.docbook.org/xml/5.0CR7/xsd/docbook.xsd">
+  <title>Advanced topics</title>
+
+  <section xml:id="rolebasedauth">
+    <title>Role-based authorization</title>
+    <para>
+      Pustefix provides a role-based authorization mechanism. You can define arbitrary <literal>roles</literal>, declare logical operations/combinations on this roles using
+      <literal>authconstraints</literal>, and assign these authconstraints to <literal>pagerequests</literal>.
+    </para>      
+    <para>
+      A <literal>role</literal> is defined using an according XML element with a unique <literal>name</literal> attribute value. Setting the <literal>initial</literal> attribute
+      to <literal>true</literal> the role will be automatically set on context initialization.
+    </para>
+    <para>
+      <literal>Authconstraints</literal> can combine various authorization conditions, supported conditions are: <literal>hasrole</literal>, 
+      <literal>and</literal>, <literal>or</literal> and <literal>not</literal>, represented by according XML elements. 
+      Using the <literal>authpage</literal> attribute you can define the page, which should be called on authorization failure. 
+      Using the <literal>default</literal> attribute you can set one toplevel 
+      <literal>authconstraint</literal> to be the default one for all <literal>pagerequests</literal> having no <literal>authconstraint</literal> asssigned.
+    </para>
+    <para>
+      <literal>Pagerequests</literal> can either define new <literal>authconstraints</literal> as child elements or can reference existing toplevel 
+      <literal>authconstraints</literal> by their <literal>id</literal>.
+    </para>
+<para>
+<programlisting language="xml"><![CDATA[
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<contextxmlserver>
+  
+  <role name="ANONYMOUS" initial="true"/>
+  <role name="USER"/>
+  <role name="ADMIN"/>
+  
+  <authconstraint id="AC_DEFAULT" authpage="login" default="true">
+    <hasrole name="ANONYMOUS"/>
+  </authconstraint>
+  
+  <authconstraint id="AC_KNOWN" authpage="login">
+    <or>
+      <hasrole name="USER"/>
+      <hasrole name="ADMIN"/>
+    </or>
+  </authconstraint>
+  
+  <pagerequest name="home">
+    ...
+  </pagerequest>
+  
+  <pagerequest name="login">
+    <input>
+      ...
+    </input>
+  </pagerequest>
+
+  <pagerequest name="adminpage">
+    <authconstraint authpage="login">
+      <hasrole name="ADMIN"/>
+    </authconstraint>
+    ...
+  </pagerequest>
+  
+  <pagerequest name="userpage">
+    <authconstraint ref="AC_KNOWN"/>
+    ...
+  </pagerequest>
+
+  ...
+
+</contextxmlserver>
+]]></programlisting>
+    </para>
+
+
+
+
+  </section>
+
+  <section xml:id="object2xml">
+    <title>Object-to-XML mapping</title>
+
+  </section>
+  
+  <section xml:id="iwrapperannotations">
+    <title>Annotation-based IWrapper creation</title>
+ 
+  </section>
+
+</chapter>
