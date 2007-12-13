@@ -8,4 +8,5 @@
     </copyright>
   </info>
   <xi:include href="reference/configuration.xml"/>
+  <xi:include href="reference/advancedtopics.xml"/>
 </book>
