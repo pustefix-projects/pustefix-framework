@@ -78,7 +78,54 @@
 
   <section xml:id="object2xml">
     <title>Object-to-XML mapping</title>
-
+	<para>
+	  Pustefix provides a lightweight object serialization mechanism, which can be used to 
+	  serialize arbitrary objects into the result DOM without having to do any DOM operations by 
+	  yourself. The XML binding is customizable via Java annotations within the bean classes.
+	</para>
+	<para>
+	  The framework supports arbitrary <literal>Beans</literal>, <literal>Arrays</literal>, 
+	  <literal>Collections</literal>, <literal>Maps</literal>, <literal>Numbers</literal> (including
+	  the primitive types and their object wrapper types), <literal>Strings</literal>, 
+	  and <literal>Date/Calendar</literal>. To support other types or to serialize
+	  to a custom format, it's possible to write your own serializers and annotations (to attach
+	  them to the according bean properties). 
+	</para>
+	<para>
+	  The serialization of beans can be customized using the generic Pustefix bean annotations,
+	  which are known from the JSON serialization framework. You can exclude individual properties 
+	  from (de-)serialization by marking the according getter with an <literal>@Exclude</literal> 
+	  annotation or you can exclude all properties by marking the bean class with an 
+	  <literal>@ExcludeByDefault</literal> annotation and include individual properties with the
+	  <literal>@Include</literal> annotations at their getters (marking public members is supported 
+	  too). Using the <literal>@Alias</literal> annotation you can control 
+	  the name used as the resulting attribute or element name.
+	</para>
+	<para>
+	  The serialization to the result tree is done by calling one of the static <literal>addObject</literal>
+	  methods of the <literal>ResultDocument</literal> class. The <literal>element</literal> 
+	  argument is the parent DOM element for serialized XML, the optional <literal>name</literal>
+	  argument can be used to create an additional child element for the serialized XML. The
+	  <literal>object</literal> argument is the object, which should be serialized.
+	</para>
+	<para>
+	  <programlisting language="java"><![CDATA[
+	   public class ResultDocument {
+	     ...
+	     public static Element addObject(Element element, Object object) {...}
+	     public static Element addObject(Element element, String name, Object object) {...}
+	   }
+	  ]]></programlisting>
+	</para>
+	<para>
+	  The default serialization process tries to produce relatively compact XML. Thus it favours
+	  attributes over elements and serializes so-called simple types, which can be represented
+	  as strings, into attributes where it's possible and makes sense, e.g. for bean properties.
+	</para>
+	
+	
+	
+	
   </section>
   
   <section xml:id="iwrapperannotations">
