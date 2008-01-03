@@ -18,15 +18,20 @@
  */
 package de.schlund.pfixcore.oxm.impl.serializers;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
 
 import de.schlund.pfixcore.beans.BeanDescriptor;
 import de.schlund.pfixcore.beans.BeanDescriptorFactory;
+import de.schlund.pfixcore.oxm.impl.AnnotationAware;
 import de.schlund.pfixcore.oxm.impl.ComplexTypeSerializer;
 import de.schlund.pfixcore.oxm.impl.SerializationContext;
+import de.schlund.pfixcore.oxm.impl.SimpleTypeSerializer;
 import de.schlund.pfixcore.oxm.impl.XMLWriter;
 
 /**
@@ -35,13 +40,18 @@ import de.schlund.pfixcore.oxm.impl.XMLWriter;
 public class BeanSerializer implements ComplexTypeSerializer {
 
     BeanDescriptorFactory beanDescFactory;
+    Map<Class<?>,Map<String,SimpleTypeSerializer>> customSimpleSerializerCache;
+    Map<Class<?>,Map<String,ComplexTypeSerializer>> customComplexSerializerCache;
     
     public BeanSerializer(BeanDescriptorFactory beanDescFactory) {
         this.beanDescFactory=beanDescFactory;
+        customSimpleSerializerCache=new HashMap<Class<?>,Map<String,SimpleTypeSerializer>>();
+        customComplexSerializerCache=new HashMap<Class<?>,Map<String,ComplexTypeSerializer>>();
     }
     
     public void serialize(Object obj,SerializationContext ctx,XMLWriter writer) {
         BeanDescriptor bd=beanDescFactory.getBeanDescriptor(obj.getClass());
+        readCustomSerializers(obj.getClass(),bd);
         Set<String> props=bd.getReadableProperties();
         Iterator<String> it=props.iterator();
         while(it.hasNext()) {
@@ -58,7 +68,10 @@ public class BeanSerializer implements ComplexTypeSerializer {
                             " have getter method or direct access to property '"+prop+"'.");
                 }
                 if(val!=null) {
-                    if(ctx.hasSimpleTypeSerializer(val.getClass())) {
+                	SimpleTypeSerializer simpleSerializer=getCustomSimpleTypeSerializer(obj.getClass(),prop);
+                	if(simpleSerializer!=null) {
+                		writer.writeAttribute(prop,simpleSerializer.serialize(val,ctx));
+                	} else if(ctx.hasSimpleTypeSerializer(val.getClass())) {
                         writer.writeAttribute(prop,ctx.serialize(val));
                     } else {
                         writer.writeStartElement(prop);
@@ -70,6 +83,95 @@ public class BeanSerializer implements ComplexTypeSerializer {
                 throw new RuntimeException("Error during serialization.",x);
             }
         }
+    }
+    
+    private SimpleTypeSerializer getCustomSimpleTypeSerializer(Class<?> clazz,String prop) {
+    	Map<String,SimpleTypeSerializer> simpleSerializers=customSimpleSerializerCache.get(clazz);
+    	if(simpleSerializers!=null && !simpleSerializers.isEmpty()) {
+    		return simpleSerializers.get(prop);
+    	}
+    	return null;
+    }
+    
+    /**
+    private ComplexTypeSerializer getCustomComplexTypeSerializer(Class<?> clazz,String prop) {
+    	Map<String,ComplexTypeSerializer> complexSerializers=customComplexSerializerCache.get(clazz);
+    	if(complexSerializers!=null && !complexSerializers.isEmpty()) {
+    		return complexSerializers.get(prop);
+    	}
+    	return null;
+    }
+    */
+    
+    private void readCustomSerializers(Class<?> clazz,BeanDescriptor beanDesc) {
+    	if(customSimpleSerializerCache.containsKey(clazz)) return;
+    	Map<String,SimpleTypeSerializer> simpleSerializers=new HashMap<String,SimpleTypeSerializer>();
+    	Map<String,ComplexTypeSerializer> complexSerializers=new HashMap<String,ComplexTypeSerializer>();
+    	Set<String> props=beanDesc.getReadableProperties();
+    	Iterator<String> it=props.iterator();
+    	while(it.hasNext()) {
+    		String prop=it.next();
+    		try {
+    			Method meth=beanDesc.getGetMethod(prop);
+    			if(meth!=null) {
+    				Annotation[] annos=meth.getAnnotations();
+                  	for(Annotation anno:annos) {
+                  		if(anno.annotationType().isAnnotationPresent(de.schlund.pfixcore.oxm.impl.annotation.SimpleTypeSerializer.class)) {	
+                  			de.schlund.pfixcore.oxm.impl.annotation.SimpleTypeSerializer serAnno=
+                  				anno.annotationType().getAnnotation(de.schlund.pfixcore.oxm.impl.annotation.SimpleTypeSerializer.class);
+                  			Class<? extends SimpleTypeSerializer> serClass=serAnno.value();
+                  			SimpleTypeSerializer serializer=serClass.newInstance();
+                  			if(AnnotationAware.class.isAssignableFrom(serClass)) {
+                  				AnnotationAware aa=(AnnotationAware)serializer;
+                  				aa.setAnnotation(anno);
+                  			}
+                  			simpleSerializers.put(prop,serializer);
+                  		} else if(anno.annotationType().isAnnotationPresent(de.schlund.pfixcore.oxm.impl.annotation.ComplexTypeSerializer.class)) {
+                  			de.schlund.pfixcore.oxm.impl.annotation.ComplexTypeSerializer serAnno=
+                  				anno.annotationType().getAnnotation(de.schlund.pfixcore.oxm.impl.annotation.ComplexTypeSerializer.class);
+                  			Class<? extends ComplexTypeSerializer> serClass=serAnno.value();
+                  			ComplexTypeSerializer serializer=serClass.newInstance();
+                  			if(AnnotationAware.class.isAssignableFrom(serClass)) {
+                  				AnnotationAware aa=(AnnotationAware)serializer;
+                  				aa.setAnnotation(anno);
+                  			}
+                  			complexSerializers.put(prop,serializer);
+                  		}
+                  	}
+    			}
+    			Field field=beanDesc.getDirectAccessField(prop);
+                if(field!=null) {
+                	Annotation[] annos=field.getAnnotations();
+                	for(Annotation anno:annos) {
+                  		if(anno.annotationType().isAnnotationPresent(de.schlund.pfixcore.oxm.impl.annotation.SimpleTypeSerializer.class)) {	
+                  			de.schlund.pfixcore.oxm.impl.annotation.SimpleTypeSerializer serAnno=
+                  				anno.annotationType().getAnnotation(de.schlund.pfixcore.oxm.impl.annotation.SimpleTypeSerializer.class);
+                  			Class<? extends SimpleTypeSerializer> serClass=serAnno.value();
+                  			SimpleTypeSerializer serializer=serClass.newInstance();
+                  			if(AnnotationAware.class.isAssignableFrom(serClass)) {
+                  				AnnotationAware aa=(AnnotationAware)serializer;
+                  				aa.setAnnotation(anno);
+                  			}
+                  			simpleSerializers.put(prop,serializer);
+                  		} else if(anno.annotationType().isAnnotationPresent(de.schlund.pfixcore.oxm.impl.annotation.ComplexTypeSerializer.class)) {
+                  			de.schlund.pfixcore.oxm.impl.annotation.ComplexTypeSerializer serAnno=
+                  				anno.annotationType().getAnnotation(de.schlund.pfixcore.oxm.impl.annotation.ComplexTypeSerializer.class);
+                  			Class<? extends ComplexTypeSerializer> serClass=serAnno.value();
+                  			ComplexTypeSerializer serializer=serClass.newInstance();
+                  			if(AnnotationAware.class.isAssignableFrom(serClass)) {
+                  				AnnotationAware aa=(AnnotationAware)serializer;
+                  				aa.setAnnotation(anno);
+                  			}
+                  			complexSerializers.put(prop,serializer);
+                  		}
+                  	}
+                }
+    		} catch (Exception x) {
+    			throw new RuntimeException("Error during serialization.",x);
+    		}
+    	}
+    	customSimpleSerializerCache.put(clazz,simpleSerializers);
+    	customComplexSerializerCache.put(clazz,complexSerializers);
     }
     
 }
