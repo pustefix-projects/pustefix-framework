@@ -3,6 +3,8 @@ package de.schlund.pfixcore.example.bank.model;
 import java.util.Calendar;
 import java.util.Currency;
 
+import de.schlund.pfixcore.oxm.impl.annotation.DateSerializer;
+
 public class Account {
 
 	private long accountNo;
@@ -32,7 +34,7 @@ public class Account {
 	public void setDebit(float debit) {
 		this.debit = debit;
 	}
-	
+
 	public Currency getCurrency() {
 		return currency;
 	}
@@ -41,6 +43,7 @@ public class Account {
 		this.currency = currency;
 	}
 
+	@DateSerializer("yyyy-MM-dd HH:mm:ss")
 	public Calendar getOpeningDate() {
 		return openingDate;
 	}

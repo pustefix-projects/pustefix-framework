@@ -18,6 +18,9 @@
  */
 package de.schlund.pfixcore.oxm.impl;
 
+import java.util.Currency;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,6 +29,7 @@ import de.schlund.pfixcore.beans.BeanDescriptorFactory;
 import de.schlund.pfixcore.oxm.impl.serializers.ArraySerializer;
 import de.schlund.pfixcore.oxm.impl.serializers.BeanSerializer;
 import de.schlund.pfixcore.oxm.impl.serializers.CollectionSerializer;
+import de.schlund.pfixcore.oxm.impl.serializers.DateSerializer;
 import de.schlund.pfixcore.oxm.impl.serializers.MapSerializer;
 import de.schlund.pfixcore.oxm.impl.serializers.ObjectToStringSerializer;
 
@@ -61,6 +65,11 @@ public class SerializerRegistry {
         simpleSerializers.put(Long.class,ser);
         simpleSerializers.put(Float.class,ser);
         simpleSerializers.put(Double.class,ser);
+        simpleSerializers.put(Currency.class,ser);
+        
+        ser=new DateSerializer();
+        simpleSerializers.put(Date.class,ser);
+        simpleSerializers.put(GregorianCalendar.class,ser);
         
     }
     

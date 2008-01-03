@@ -43,6 +43,10 @@ public class BankInMemoryDAO implements BankDAO {
 	
 	public static void main(String[] args) {
 		new BankInMemoryDAO();
+		Currency c=Currency.getInstance("EUR");
+		System.out.println(c);
+		System.out.println(c.getCurrencyCode());
+		System.out.println(c.getSymbol());
 	}
 	
 }

@@ -1,3 +1,32 @@
+2007-01-03  Martin Leidig  <mleidig@schlund.de>
+
+	Added support for custom serializers to the Object-XML-Mapping framework.
+	Own serializer implementations can be written implementing the
+	SimpleTypeSerializer interface. The serializers can be set at bean
+	members/getters using custom annotations (marked themselves by the
+	SimpleTypeSerializer annotation).
+	Added a DateSerializer implementation, which supports customization
+	of the date format via annotations, e.g.: @DateSerializer("yyyy-MM-dd")
+	The samplebank application now uses the ResultDocument.addObject()-method 
+	for building the result tree (instead of manually building the DOM).
+
+	Added:
+	* src/de/schlund/pfixcore/oxm/impl/annotation
+	* src/de/schlund/pfixcore/oxm/impl/annotation/ComplexTypeSerializer.java
+	* src/de/schlund/pfixcore/oxm/impl/annotation/SimpleTypeSerializer.java
+	* src/de/schlund/pfixcore/oxm/impl/annotation/DateSerializer.java
+	* src/de/schlund/pfixcore/oxm/impl/AnnotationAware.java
+	* src/de/schlund/pfixcore/oxm/impl/serializers/DateSerializer.java
+
+	Modified:
+	* src/de/schlund/pfixcore/oxm/impl/SerializerRegistry.java
+	* src/de/schlund/pfixcore/oxm/impl/serializers/BeanSerializer.java
+	* src/de/schlund/pfixcore/example/bank/model/BankInMemoryDAO.java
+	* src/de/schlund/pfixcore/example/bank/model/Account.java
+	* src/de/schlund/pfixcore/example/bank/context/ContextAccountImpl.java
+	* src/de/schlund/pfixcore/example/bank/context/ContextCustomerImpl.java
+	* projects/samplebank/txt/pages/main_accountoverview.xml
+
 2007-12-12  jtl  <jtl@schlund.de>
 
 	* projects/core/build/iwrapper.xsl: conditionalize annotion import
