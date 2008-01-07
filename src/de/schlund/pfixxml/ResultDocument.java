@@ -186,8 +186,8 @@ public class ResultDocument {
     public static Element addObject(Element element, String name, Object object) {
         Document owner = element.getOwnerDocument();
         Element tmp = owner.createElement(name);
-        addObject(tmp, object);
         element.appendChild(tmp);
+        addObject(tmp, object);
         return element;
     }
     
