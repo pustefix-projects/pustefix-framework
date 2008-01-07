@@ -562,6 +562,123 @@
       getter methods or at the field itself, if it's public. If a property of a builtin type should
       be skipped you can mark the according property with a <literal>@Transient</literal> annotation.
     </para>
+    <section xml:id="iwrapperannotations_reference">
+      <title>IWrapper annotations</title>
+      <para>
+        Every IWrapper configuration element known from the XML configuration has an annotation
+        counterpart. Besides there are some special annotations like <literal>@IWrapper</literal>
+        and <literal>@Transient</literal>. In the following we'll give a short overview of
+        all avaible annotations:
+      </para>
+      <para>
+      <programlisting language="java"><![CDATA[
+        @Target(ElementType.TYPE)
+        @Retention(RetentionPolicy.RUNTIME)
+        public @interface IWrapper {
+          String name() default "";
+          Class<? extends IHandler> ihandler() default IHandler.class;
+        }
+      ]]></programlisting>
+      </para>
+      <para>
+        The <literal>@IWrapper</literal> annotation is used to mark a class as template for
+        an IWrapper. The <literal>name</literal> attribute denotes the class name of the
+        generated IWrapper class (without package). By default the bean name with the
+        suffix <literal>Wrapper</literal> is used (and the same package). The <literal>ihandler</literal>
+        attribute denotes the <literal>IHandler</literal> implementation class.
+      </para>
+      <para>
+      <programlisting language="java"><![CDATA[
+        @Target({ElementType.METHOD,ElementType.FIELD})
+        @Retention(RetentionPolicy.RUNTIME)
+        public @interface Param {
+          String name() default "";
+          boolean mandatory() default true;
+          boolean trim() default true;
+          String missingscode() default "";
+          String[] defaults() default {};
+        }
+      ]]></programlisting>
+      </para>
+      <para>
+        The <literal>@Param</literal> annotation is used to mark a bean property as parameter
+        and configure its <literal>name</literal> and all the other options known from the
+        IWrapper XML configuration. This annotation is optional, leaving it out the property name
+        is used as name and the other attributes are set to their default values.
+      </para>
+      <para>
+      <programlisting language="java"><![CDATA[
+        @Target({ElementType.METHOD,ElementType.FIELD})
+        @Retention(RetentionPolicy.RUNTIME)
+        public @interface Caster {
+          Class<? extends IWrapperParamCaster> type();
+          Property[] properties() default {};
+        }
+      ]]></programlisting>
+      </para>
+      <para>
+        The <literal>@Caster</literal> annotation denotes the caster implementation class.
+        The nested <literal>properties</literal> attribute can be used to set properties via
+        <literal>@Property</literal> annotations. That's the same as the <literal>cparam</literal>
+        elements in the XML configuration (the params/properties are set using according methods
+        prefixed with <literal>_put</literal>).
+      </para>
+      <para>
+      <programlisting language="java"><![CDATA[
+        @Target({ElementType.METHOD,ElementType.FIELD})
+        @Retention(RetentionPolicy.RUNTIME)
+        public @interface Property {
+          String name();
+          String value();
+        }
+      ]]></programlisting>
+      </para>
+      <para>
+        The <literal>@Property</literal> annotation is used as nested annotation within
+        the <literal>properties</literal> array attribute of various annotations. It consists
+        of simple <literal>name/value</literal> pairs. 
+      </para>
+      <para>
+      <programlisting language="java"><![CDATA[
+        @Target({ElementType.METHOD,ElementType.FIELD})
+        @Retention(RetentionPolicy.RUNTIME)
+        public @interface PreCheck {
+          Class<? extends IWrapperParamPreCheck> type();
+          Property[] properties() default {};
+        }
+      ]]></programlisting>
+      </para>
+      <para>
+        The <literal>@PreCheck</literal> annotation denotes the precheck implementation class
+        with optional properties/parameters:
+      </para>
+      <para>
+      <programlisting language="java"><![CDATA[
+        @Target({ElementType.METHOD,ElementType.FIELD})
+        @Retention(RetentionPolicy.RUNTIME)
+        public @interface PostCheck {
+          Class<? extends IWrapperParamPostCheck> type();
+          Property[] properties() default {};
+        }
+      ]]></programlisting>
+      </para>
+      <para>
+        The <literal>@PostCheck</literal> annotation denotes the postcheck implementation class
+        with optional properties/parameters:
+      </para>
+      <para>
+      <programlisting language="java"><![CDATA[
+        @Target({ElementType.METHOD,ElementType.FIELD})
+        @Retention(RetentionPolicy.RUNTIME)
+        public @interface Transient {}
+      ]]></programlisting>
+      </para>
+      <para>
+        The <literal>@Transient</literal> annotation can be used to avoid that a bean property
+        of a builtin type is made to an IWrapper parameter.
+      </para>
+    
+    </section>
     
   </section>
 
