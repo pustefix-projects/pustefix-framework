@@ -562,6 +562,12 @@
       getter methods or at the field itself, if it's public. If a property of a builtin type should
       be skipped you can mark the according property with a <literal>@Transient</literal> annotation.
     </para>
+    <para>
+      Bean based IWrappers can be used to create new beans or fill existing beans with
+      the IWrapper's state. Therefore the <literal>IWrapperToBean</literal> class provides
+      the two static methods <literal>&lt;T&gt; T createBean(IWrapper wrapper, Class&lt;T&gt; beanClass)</literal>
+      and <literal>populateBean(IWrapper wrapper, Object obj)</literal>.
+    </para>
     <section xml:id="iwrapperannotations_reference">
       <title>IWrapper annotations</title>
       <para>
