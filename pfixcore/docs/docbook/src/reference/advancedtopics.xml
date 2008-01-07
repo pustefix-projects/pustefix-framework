@@ -578,6 +578,11 @@
           String name() default "";
           Class<? extends IHandler> ihandler() default IHandler.class;
         }
+        
+        @IWrapper(name="MyBeanWrapper",ihandler=MyBeanHandler.class)
+        public class MyBean {
+          ...
+        }
       ]]></programlisting>
       </para>
       <para>
@@ -598,12 +603,19 @@
           String missingscode() default "";
           String[] defaults() default {};
         }
+        
+        @IWrapper(name="MyBeanWrapper",ihandler=MyBeanHandler.class)
+        public class MyBean {
+          ...
+          @Param(name="MyValue",mandatory=false)
+          public int getValue() {...}
+        }
       ]]></programlisting>
       </para>
       <para>
         The <literal>@Param</literal> annotation is used to mark a bean property as parameter
         and configure its <literal>name</literal> and all the other options known from the
-        IWrapper XML configuration. This annotation is optional, leaving it out the property name
+        IWrapper XML configuration. This annotation is optional, leaving it out, the property name
         is used as name and the other attributes are set to their default values.
       </para>
       <para>
@@ -614,6 +626,13 @@
           Class<? extends IWrapperParamCaster> type();
           Property[] properties() default {};
         }
+        
+        @IWrapper(name="MyBeanWrapper",ihandler=MyBeanHandler.class)
+        public class MyBean {
+          ...
+          @Caster(type=SomeClassCaster.class)
+          public SomeClass getValue() {...}
+        }
       ]]></programlisting>
       </para>
       <para>
@@ -621,7 +640,7 @@
         The nested <literal>properties</literal> attribute can be used to set properties via
         <literal>@Property</literal> annotations. That's the same as the <literal>cparam</literal>
         elements in the XML configuration (the params/properties are set using according methods
-        prefixed with <literal>_put</literal>).
+        prefixed with <literal>put_</literal>).
       </para>
       <para>
       <programlisting language="java"><![CDATA[
@@ -646,11 +665,23 @@
           Class<? extends IWrapperParamPreCheck> type();
           Property[] properties() default {};
         }
+        
+        @IWrapper(name="MyBeanWrapper",ihandler=MyBeanHandler.class)
+        public class MyBean {
+          ...
+          @PreCheck(
+            type=de.schlund.pfixcore.generator.prechecks.RegexpCheck.class,
+            properties={
+              @Property(name="regexp",value="/^(M|L|XL)$/")
+            }
+          )
+          public String getValue() {...}
+        }
       ]]></programlisting>
       </para>
       <para>
         The <literal>@PreCheck</literal> annotation denotes the precheck implementation class
-        with optional properties/parameters:
+        with optional properties/parameters.
       </para>
       <para>
       <programlisting language="java"><![CDATA[
@@ -660,17 +691,36 @@
           Class<? extends IWrapperParamPostCheck> type();
           Property[] properties() default {};
         }
+        
+        @IWrapper(name="MyBeanWrapper",ihandler=MyBeanHandler.class)
+        public class MyBean {
+          ...
+          @PostCheck(
+            type=de.schlund.pfixcore.generator.postchecks.IntegerRange.class,
+            properties={
+              @Property(name="range",value="0:2")
+            }
+          )
+          public int getValue() {...}
+        }
       ]]></programlisting>
       </para>
       <para>
         The <literal>@PostCheck</literal> annotation denotes the postcheck implementation class
-        with optional properties/parameters:
+        with optional properties/parameters.
       </para>
       <para>
       <programlisting language="java"><![CDATA[
         @Target({ElementType.METHOD,ElementType.FIELD})
         @Retention(RetentionPolicy.RUNTIME)
         public @interface Transient {}
+        
+        @IWrapper(name="MyBeanWrapper",ihandler=MyBeanHandler.class)
+        public class MyBean {
+          ...
+          @Transient
+          public int getValue() {...}
+        }
       ]]></programlisting>
       </para>
       <para>
