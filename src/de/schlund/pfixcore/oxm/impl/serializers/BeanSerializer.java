@@ -70,14 +70,21 @@ public class BeanSerializer implements ComplexTypeSerializer {
                 if(val!=null) {
                 	SimpleTypeSerializer simpleSerializer=getCustomSimpleTypeSerializer(obj.getClass(),prop);
                 	if(simpleSerializer!=null) {
-                		writer.writeAttribute(prop,simpleSerializer.serialize(val,ctx));
-                	} else if(ctx.hasSimpleTypeSerializer(val.getClass())) {
+                		writer.writeAttribute(prop,ctx.serialize(val,simpleSerializer));
+                	} else {
+                	   ComplexTypeSerializer complexSerializer=getCustomComplexTypeSerializer(obj.getClass(),prop);
+                	   if(complexSerializer!=null) {
+                	     writer.writeStartElement(prop);
+                       ctx.serialize(val,writer,complexSerializer);
+                       writer.writeEndElement(prop);
+                	   } else if(ctx.hasSimpleTypeSerializer(val.getClass())) {
                         writer.writeAttribute(prop,ctx.serialize(val));
-                    } else {
+                     } else {
                         writer.writeStartElement(prop);
                         ctx.serialize(val,writer);
                         writer.writeEndElement(prop);
-                    }
+                     }
+                	}
                 }
             } catch (Exception x) {
                 throw new RuntimeException("Error during serialization.",x);
@@ -93,7 +100,6 @@ public class BeanSerializer implements ComplexTypeSerializer {
     	return null;
     }
     
-    /**
     private ComplexTypeSerializer getCustomComplexTypeSerializer(Class<?> clazz,String prop) {
     	Map<String,ComplexTypeSerializer> complexSerializers=customComplexSerializerCache.get(clazz);
     	if(complexSerializers!=null && !complexSerializers.isEmpty()) {
@@ -101,7 +107,6 @@ public class BeanSerializer implements ComplexTypeSerializer {
     	}
     	return null;
     }
-    */
     
     private void readCustomSerializers(Class<?> clazz,BeanDescriptor beanDesc) {
     	if(customSimpleSerializerCache.containsKey(clazz)) return;

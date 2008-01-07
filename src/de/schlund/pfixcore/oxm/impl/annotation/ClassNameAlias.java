@@ -16,17 +16,20 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
-package de.schlund.pfixcore.oxm.impl;
+package de.schlund.pfixcore.oxm.impl.annotation;
+
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
  * @author mleidig@schlund.de
  */
-public interface XMLWriter {
-
-    public void writeStartElement(String localName);
-    public void writeCharacters(String text);
-    public void writeEndElement(String localName);
-    public void writeAttribute(String localName,String value);
-    public XPathPosition getCurrentPosition();
+@Target({ElementType.TYPE})
+@Retention(RetentionPolicy.RUNTIME)
+public @interface ClassNameAlias {
     
+   String value();
+   
 }

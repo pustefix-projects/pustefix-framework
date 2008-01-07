@@ -37,9 +37,10 @@ public class CollectionSerializer implements ComplexTypeSerializer {
             Iterator<?> it=col.iterator();
             while(it.hasNext()) {
                 Object item=it.next();
-                writer.writeStartElement("item");
-                context.serialize(item, writer);
-                writer.writeEndElement("item");
+                String elementName=context.mapClassName(item);
+                writer.writeStartElement(elementName);
+                if(item!=null) context.serialize(item, writer);
+                writer.writeEndElement(elementName);
             }
         } else throw new SerializationException("Illegal type: "+obj.getClass().getName());
     }
