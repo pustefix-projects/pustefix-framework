@@ -117,6 +117,10 @@
 	   }
 	  ]]></programlisting>
 	</para>
+	
+	<section xml:id="object2xml_serializationprocess">
+    <title>Serialization process</title>
+	
 	<para>
 	  The default serialization process tries to produce relatively compact XML. Thus it favours
 	  attributes over elements and serializes so-called simple types, which can be represented
@@ -144,6 +148,7 @@
             this.accountNo = accountNo;
           }
 
+          @Alias("balance")
           public float getDebit() {
             return debit;
           }
@@ -152,7 +157,6 @@
             this.debit = debit;
           }
   
-          @Alias("balance")
           public Currency getCurrency() {
             return currency;
           }
@@ -183,7 +187,8 @@
 	  ]]></programlisting>
 	</para>
 	<para>
-	  Here you see how the bean's serialized within a ContextResource:
+	  Here you see how the bean's serialized to the <literal>ResultDocument</literal> within 
+	  a <literal>ContextResource</literal>:
 	</para>
 	<para>
 	  <programlisting language="java"><![CDATA[
@@ -209,7 +214,7 @@
         <formresult serial="1199439160721">
           ...
           <data>
-            <account accountNo="2000123" balance="EUR" debit="332.54" openingDate="2003-11-04 09:15:38"/>
+            <account accountNo="2000123" currency="EUR" balance="332.54" openingDate="2003-11-04 09:15:38"/>
           </data>
           ...
         </formresult>
@@ -252,24 +257,38 @@
     </para>
     <para>
       <literal>Collections</literal> and <literal>Arrays</literal> are represented using
-      an <literal>item</literal> element for each entry:
+      an element for each entry. The element name is derived from the the simple name
+      of the entry's class (without package name and starting lowercase):
     </para>
     <para>
       <programlisting language="xml"><![CDATA[
         <formresult serial="1199439160721">
           ...
           <data>
-            <item accountNo="2000000" balance="EUR" debit="3124.49" openingDate="2003-10-23 08:05:10"/>
-            <item accountNo="2000123" balance="EUR" debit="332.54" openingDate="2003-11-04 09:15:38"/>
-            <item accountNo="2001405" balance="EUR" debit="25123.11" openingDate="2005-01-13 10:10:10"/>
+            <account accountNo="2000000" currency="EUR" balance="3124.49" openingDate="2003-10-23 08:05:10"/>
+            <account accountNo="2000123" currency="EUR" balance="332.54" openingDate="2003-11-04 09:15:38"/>
+            <account accountNo="2001405" currency="EUR" balance="25123.11" openingDate="2005-01-13 10:10:10"/>
           </data>
           ...
         </formresult>
       ]]></programlisting>
     </para>
     <para>
-      <literal>Maps</literal> are represented using <literal>entry</literal> elements containing
-      <literal>key</literal> and <literal>value</literal> elements:
+      The element name can be changed using the <literal>@ClassNameAlias</literal> annotation, e.g.
+      to rename the <literal>account</literal> element to <literal>bankaccount</literal>:
+    </para>
+    <para>
+	  <programlisting language="java"><![CDATA[
+      @ClassNameAlias("bankaccount")
+      public class Account {
+        ...
+      }
+      ]]></programlisting>
+	</para>
+    <para>
+      <literal>Maps</literal> are represented using an <literal>entry</literal> element for each
+      map entry. Key and value are represented by child elements (whereas the element names are
+      derived from the class names):
     </para>
     <para>
       <programlisting language="xml"><![CDATA[
@@ -277,16 +296,16 @@
           ...
           <data>
             <entry>
-              <key>2000000</key>
-              <value accountNo="2000000" balance="EUR" debit="3124.49" openingDate="2003-10-23 08:05:34"/>
+              <long>2000000</long>
+              <account accountNo="2000000" currency="EUR" debit="3124.49" openingDate="2003-10-23 08:05:34"/>
             </entry>
             <entry>
               <key>2001405</key>
-              <value accountNo="2001405" balance="EUR" debit="25123.11" openingDate="2005-01-13 10:10:34"/>
+              <account accountNo="2001405" currency="EUR" debit="25123.11" openingDate="2005-01-13 10:10:34"/>
             </entry>
             <entry>
               <key>2000123</key>
-              <value accountNo="2000123" balance="EUR" debit="332.54" openingDate="2003-11-04 09:15:34"/>
+              <account accountNo="2000123" currency="EUR" debit="332.54" openingDate="2003-11-04 09:15:34"/>
             </entry>
           </data>
           ...
@@ -294,18 +313,64 @@
       ]]></programlisting>
     </para>
     <para>
-      If you don't like the default serialization mechanism or you use unsupported types, you can
-      write your own serializers. At the moment only <literal>SimpleTypeSerializers</literal>, 
-      producing <literal>String</literal> values (no XML structure) are supported. 
+      Circular object references are handled by adding a <literal>xpathref</literal> attribute to
+      the according element. Its value is an absolute XPath expression referencing the according
+      object's element:
     </para>
     <para>
-      Let's look at an example: a custom <literal>String</literal> serializer, which allows to configure if 
+      <programlisting language="xml"><![CDATA[
+      <formresult serial="1199702214819">
+        ...
+        <data>
+          <account accountNo="2000123">
+            <customer customerId="100000">
+              <accounts>
+                <account accountNo="2000000">
+                  <customer xpathref="/formresult/data[1]/account[1]/customer[1]"/>
+                </account>
+                <account xpathref="/formresult/data[1]/account[1]"/>
+                <account accountNo="2001405">
+                  <customer xpathref="/formresult/data[1]/account[1]/customer[1]"/>
+                </account>
+              </accounts>
+            </customer>
+          </account>
+        </data>
+        ...
+      </formresult>
+      ]]></programlisting>
+    </para>
+    <para>
+      In this example the <literal>Account</literal> bean has a reference to a <literal>Customer</literal>
+      bean, which itself has a reference to all of its <literal>Accounts</literal>. You can see that all
+      beans, which were already serialized (as ancestors in the tree) contain an according back-reference.
+    </para>
+    
+    </section>
+    
+    <section xml:id="object2xml_customserializers">
+    <title>Custom serializers</title>
+    
+    <para>
+      If you don't like the default serialization mechanism or you use unsupported types, you can
+      write your own serializers. There are two types of serializers: <literal>SimpleTypeSerializers</literal>, 
+      which can produce <literal>String</literal> values (e.g. for primitive types), 
+      and <literal>ComplexTypeSerializers</literal>, which can produce structured XML data
+      (e.g. for bean types). 
+    </para>
+    <para>
+      Implementing your own serializer just requires to implement the <literal>SimpleTypeSerializer</literal>
+      or <literal>ComplexTypeSerializer</literal> interface and create a custom annotation to be able
+      to attach your serializer to a bean property.
+    </para>
+    <para>
+      Let's look at an example of a <literal>SimpleTypeSerializer</literal>: 
+      a custom <literal>String</literal> serializer, which allows to configure if 
       <literal>Strings</literal> should be ouput lower- or uppercase. Here's the implementation:
     </para>
     <para>
 	  <programlisting language="java"><![CDATA[
-        package de.schlund.pfixcore.oxm.impl.serializers;
-
+        ...
         import de.schlund.pfixcore.oxm.impl.AnnotationAware;
         import de.schlund.pfixcore.oxm.impl.SimpleTypeSerializer;
         import de.schlund.pfixcore.oxm.impl.annotation.StringSerializer;
@@ -313,12 +378,12 @@
 
         public class StringTypeSerializer implements SimpleTypeSerializer, AnnotationAware {
 
-	      private boolean doLowerCase;
+          private boolean doLowerCase;
 	
-	      public void setAnnotation(Annotation annotation) {
-		    StringSerializer s=(StringSerializer)annotation;
-		    doLowerCase=s.value();
-	      }
+          public void setAnnotation(Annotation annotation) {
+            StringSerializer s=(StringSerializer)annotation;
+            doLowerCase=s.value();
+          }
 		
           public String serialize(Object obj, SerializationContext context) throws SerializationException {
             if(obj instanceof String) {
@@ -327,7 +392,7 @@
               else str=str.toUpperCase();
               return str;
             } 
-            throw new SerializationException("Type not supported: "+obj.getClass().getName());
+            throw new SerializationException("Illegal type: "+obj.getClass().getName());
           }
         }
       ]]></programlisting>
@@ -345,7 +410,6 @@
     </para>
     <para>
 	  <programlisting language="java"><![CDATA[
-        package de.schlund.pfixcore.oxm.impl.annotation;
         ...
         
         @SimpleTypeSerializer(StringTypeSerializer.class)
@@ -363,9 +427,107 @@
       at runtime using the <literal>@Retention</literal> annotation. The rest of the annotation
       definition can be done according to your needs. In the example we just define a boolean
       property indicating if the <literal>String</literal> should be converted to lower- or uppercase. Here you
-      see how the annotation is applied:
+      see how the annotation is applied to serialize a customer's lastname as uppercase:
     </para>
-	  
+    <para>
+	  <programlisting language="java"><![CDATA[
+      public class Customer {
+        ...
+        @StringSerializer(false)
+        public String getLastName() {...}
+      }
+      ]]></programlisting>
+	</para>
+	<para>
+	  Let's look at an example of a <literal>ComplexTypeSerializer</literal>. We want to customize
+	  the serialization of a <literal>Customer</literal> bean: the <literal>firstName</literal> and
+	  <literal>lastName</literal> properties should be output together within a <literal>name</literal>
+	  element:
+	</para>
+	<para>
+      <programlisting language="java"><![CDATA[
+      public class Customer {
+        ...
+        public long getCustomerId() {...}
+        public String getFirsstName() {...}
+        public String getLastName() {...}
+        public List<Account> getAccounts() {...}
+        ...
+      }
+      ]]></programlisting>
+    </para>
+    <para>
+      The serializer just implements <literal>ComplexTypeSerializer</literal>. We don't need to
+      implement <literal>AnnotationAware</literal> because our annotation will have no parameter
+      we may want to read:
+    </para>
+    <para>
+      <programlisting language="java"><![CDATA[
+      public class CustomerTypeSerializer implements ComplexTypeSerializer {
+
+        public void serialize(Object obj, SerializationContext context, XMLWriter writer) throws SerializationException {
+          if(obj instanceof Customer) {
+            Customer customer=(Customer)obj;
+            writer.writeStartElement("name");
+            writer.writeCharacters(customer.getFirstName()+" "+customer.getLastName());
+            writer.writeEndElement("name");
+            context.serialize(customer.getAccounts(),writer);
+          } else throw new SerializationException("Illegal type: "+obj.getClass().getName());
+        }
+       
+      }
+      ]]></programlisting>
+    </para>
+    <para>
+      The <literal>serialize</literal> method gets a <literal>XMLWriter</literal> object, which
+      is used to write the <literal>name</literal> element. Then the passed <literal>SerializationContext</literal>
+      is used to serialize the customer's accounts using the default serialization mechanism.
+    </para>
+    <para>Finally we implement a custom annotation:</para>
+    <para>
+	  <programlisting language="java"><![CDATA[
+      @ComplexTypeSerializer(de.schlund.pfixcore.example.bank.oxm.CustomerTypeSerializer.class)
+      @Target({ElementType.METHOD,ElementType.FIELD})
+      @Retention(RetentionPolicy.RUNTIME)
+      public @interface CustomerSerializer {}
+	  ]]></programlisting>
+    </para>
+    <para>Here we apply the annotation to the <literal>Account</literal> bean's 
+      <literal>customer</literal> property:</para>
+    	<para>
+      <programlisting language="java"><![CDATA[
+      public class Account {
+        ...
+        @CustomerSerializer
+        public Customer getCustomer() {...}
+        ...
+      }
+      ]]></programlisting>
+    </para>
+    <para>
+      Here's an excerpt of the resulting XML:
+    </para>
+    <para>
+      <programlisting language="xml"><![CDATA[
+      <formresult serial="1199705488403">
+        ...
+        <data>
+          <account accountNo="2000000" balance="3124.49" currency="EUR" openingDate="2003-10-23 08:05:22">
+            <customer>
+              <name>Mike Foo</name>
+              <account accountNo="..."/>
+              <account accountNo="..."/>
+              ...
+            </customer>
+          </account>
+        </data>
+        ...
+      </formresult>
+      ]]></programlisting>
+    </para>
+    
+    </section>
+
   </section>
   
   <section xml:id="iwrapperannotations">
