@@ -1,4 +1,15 @@
-2007-01-07  Martin Leidig  <mleidig@schlund.de>
+2008-01-07  Martin Leidig  <mleidig@schlund.de>
+
+	Improved file change detection of apt task by saving timestamp file of
+	last apt run.
+	Added automatic Caster configuration for builtin types.
+
+	Modified:
+	* src/de/schlund/pfixcore/generator/iwrpgen/IWrapperFileScanner.java
+	* src/de/schlund/pfixcore/generator/iwrpgen/IWrapperAnnotationProcessor.java
+	* src/de/schlund/pfixcore/generator/iwrpgen/AptTask.java
+
+2008-01-07  Martin Leidig  <mleidig@schlund.de>
 
 	Changed serialization format: use derived classname as element 
 	name for Map/Array/Collection entries.
@@ -28,7 +39,7 @@
 	* src/de/schlund/pfixcore/oxm/impl/annotation/ClassNameAlias.java
 
 
-2007-01-03  Martin Leidig  <mleidig@schlund.de>
+2008-01-03  Martin Leidig  <mleidig@schlund.de>
 
 	Added support for custom serializers to the Object-XML-Mapping framework.
 	Own serializer implementations can be written implementing the
