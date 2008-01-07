@@ -34,8 +34,6 @@ import de.schlund.pfixcore.generator.IWrapperParamPreCheck;
 public @interface PreCheck {
 
     Class<? extends IWrapperParamPreCheck> type();
-    String propName() default "";
-    String propVal() default "";
     Property[] properties() default {};
     
 }
