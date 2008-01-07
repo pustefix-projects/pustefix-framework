@@ -532,7 +532,37 @@
   
   <section xml:id="iwrapperannotations">
     <title>Annotation-based IWrapper creation</title>
- 
+    <para>
+      The annotation-based IWrapper creation provides an alternative to the usual,
+      XML configuration based, IWrapper creation. Using this approach you create IWrappers
+      from standard Java Beans by adding the necessary configuration data in the form
+      of annotations.
+    </para>
+    <para>
+      The IWrappers are automatically created during the build process using the Sun JVM's <literal>apt</literal>
+      tool and a custom <literal>AnnotationProcessor</literal> which analyzes the Java bean's
+      source code and generates the according IWrapper sources.
+    </para>
+    <para>
+      You're making a bean to a template for an <literal>IWrapper</literal> by adding an 
+      <literal>@IWrapper</literal> annotation to its class declaration. By default every 
+      bean property that is of a so-called builtin type, i.e. has a pre-defined 
+      <literal>IWrapperParamCaster</literal> implementation, will be automatically added
+      as an IWrapper parameter.
+    </para>
+    <para>
+      Builtin types are <literal>boolean, byte, double, float, int, long,
+      java.lang.Boolean, java.lang.Byte, java.lang.Double, java.lang.Float, java.lang.Integer, 
+      java.lang.Long, java.lang.String, java.util.Date</literal> and <literal>Arrays</literal>
+      with components of these types.
+    </para>
+    <para>
+      Bean properties of an unknown type are either ignored or require a <literal>@Caster</literal>
+      annotation specifying an appropriate caster. Bean properties can be annotated at their
+      getter methods or at the field itself, if it's public. If a property of a builtin type should
+      be skipped you can mark the according property with a <literal>@Transient</literal> annotation.
+    </para>
+    
   </section>
 
 </chapter>
