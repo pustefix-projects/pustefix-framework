@@ -32,21 +32,13 @@ public class ArraySerializer implements ComplexTypeSerializer {
 
     public void serialize(Object obj, SerializationContext context, XMLWriter writer) throws SerializationException {
         if(obj.getClass().isArray()) {
-            boolean isSimpleType=context.hasSimpleTypeSerializer(obj.getClass().getComponentType());
             int len=Array.getLength(obj);
             for(int i=0;i<len;i++) {
-                writer.writeStartElement("item");
                 Object item=Array.get(obj,i);
-                if(item!=null) {
-                    if(isSimpleType) {
-                        String value=context.serialize(item);
-                        writer.writeCharacters(value);
-                    } else {
-                        context.serialize(item,writer);
-                    }
-                }
-                writer.writeEndElement("item");
-               
+                String elementName=context.mapClassName(item);
+                writer.writeStartElement(elementName);
+                if(item!=null) context.serialize(item,writer);
+                writer.writeEndElement(elementName);
             }
         } else throw new SerializationException("Illegal type: "+obj.getClass().getName());
     } 

@@ -1,3 +1,33 @@
+2007-01-07  Martin Leidig  <mleidig@schlund.de>
+
+	Changed serialization format: use derived classname as element 
+	name for Map/Array/Collection entries.
+	Added classname mapping customization support via @ClassNameAlias 
+	annotation.
+	Added XPath reference generation support to XMLWriter and 
+	SerializationContext, which allows circular dependencies to be 
+	serialized as xpathref attributes containing XPath expressions 
+	referencing the according element.
+	Added support for custom ComplexTypeSerializer implementations.
+
+	Modified:
+	* src/de/schlund/pfixcore/oxm/impl/SerializerRegistry.java
+	* src/de/schlund/pfixcore/oxm/impl/serializers/BeanSerializer.java
+	* src/de/schlund/pfixcore/oxm/impl/serializers/CollectionSerializer.java
+	* src/de/schlund/pfixcore/oxm/impl/serializers/MapSerializer.java
+	* src/de/schlund/pfixcore/oxm/impl/serializers/ArraySerializer.java
+	* src/de/schlund/pfixcore/oxm/impl/serializers/ObjectToStringSerializer.java
+	* src/de/schlund/pfixcore/oxm/impl/DOMWriter.java
+	* src/de/schlund/pfixcore/oxm/impl/SerializationContext.java
+	* src/de/schlund/pfixcore/oxm/impl/XMLWriter.java
+
+	Added:
+	* src/de/schlund/pfixcore/oxm/impl/DOMXPathPosition.java
+	* src/de/schlund/pfixcore/oxm/impl/XPathPosition.java
+	* src/de/schlund/pfixcore/oxm/impl/ClassNameMapping.java
+	* src/de/schlund/pfixcore/oxm/impl/annotation/ClassNameAlias.java
+
+
 2007-01-03  Martin Leidig  <mleidig@schlund.de>
 
 	Added support for custom serializers to the Object-XML-Mapping framework.

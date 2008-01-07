@@ -60,4 +60,8 @@ public class DOMWriter implements XMLWriter {
         return root;
     }
     
+    public XPathPosition getCurrentPosition() {
+       return new DOMXPathPosition(current);
+    }
+    
 }

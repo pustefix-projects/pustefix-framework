@@ -19,14 +19,12 @@
 package de.schlund.pfixcore.oxm.impl;
 
 /**
+ * 
  * @author mleidig@schlund.de
+ *
  */
-public interface XMLWriter {
+public interface XPathPosition {
+   
+   public String getXPath();
 
-    public void writeStartElement(String localName);
-    public void writeCharacters(String text);
-    public void writeEndElement(String localName);
-    public void writeAttribute(String localName,String value);
-    public XPathPosition getCurrentPosition();
-    
 }

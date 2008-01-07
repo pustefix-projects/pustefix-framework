@@ -38,13 +38,15 @@ public class MapSerializer implements ComplexTypeSerializer {
             while(it.hasNext()) {
                 writer.writeStartElement("entry");
                 Object key=it.next();
-                writer.writeStartElement("key");
-                context.serialize(key, writer);
-                writer.writeEndElement("key");
-                writer.writeStartElement("value");
+                String elementName=context.mapClassName(key);
+                writer.writeStartElement(elementName);
+                if(key!=null) context.serialize(key, writer);
+                writer.writeEndElement(elementName);
                 Object val=map.get(key);
+                elementName=context.mapClassName(val);
+                writer.writeStartElement(elementName);
                 if(val!=null) context.serialize(val, writer);
-                writer.writeEndElement("value");
+                writer.writeEndElement(elementName);
                 writer.writeEndElement("entry");
             }
         } else throw new SerializationException("Illegal type: "+obj.getClass().getName());

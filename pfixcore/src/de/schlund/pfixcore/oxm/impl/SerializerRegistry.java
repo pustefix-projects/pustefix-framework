@@ -38,6 +38,8 @@ import de.schlund.pfixcore.oxm.impl.serializers.ObjectToStringSerializer;
  */
 public class SerializerRegistry {
 
+   ClassNameMapping classNameMapping;
+   
     Map<Class<?>,ComplexTypeSerializer> serializers;
     Map<Class<?>,SimpleTypeSerializer> simpleSerializers;
     
@@ -47,6 +49,8 @@ public class SerializerRegistry {
     MapSerializer mapSerializer;
     
     public SerializerRegistry(BeanDescriptorFactory beanDescFactory) {
+       
+       classNameMapping=new ClassNameMapping();
         
         serializers=new HashMap<Class<?>,ComplexTypeSerializer>();
         simpleSerializers=new HashMap<Class<?>,SimpleTypeSerializer>();
@@ -58,6 +62,7 @@ public class SerializerRegistry {
         
         SimpleTypeSerializer ser=new ObjectToStringSerializer();
         simpleSerializers.put(String.class,ser);
+        simpleSerializers.put(Character.class,ser);
         simpleSerializers.put(Boolean.class,ser);
         simpleSerializers.put(Byte.class,ser);
         simpleSerializers.put(Short.class,ser);
@@ -87,6 +92,11 @@ public class SerializerRegistry {
     public SimpleTypeSerializer getSimpleTypeSerializer(Class<?> clazz) {
         SimpleTypeSerializer serializer=simpleSerializers.get(clazz);
         return serializer;
+    }
+    
+    public String mapClassName(Object obj) {
+       if(obj==null) return "null";
+       return classNameMapping.mapClassName(obj.getClass());
     }
     
 }
