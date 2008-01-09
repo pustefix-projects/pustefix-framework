@@ -9,19 +9,113 @@
       <literal>authconstraints</literal>, and assign these authconstraints to <literal>pagerequests</literal>.
     </para>      
     <para>
-      A <literal>role</literal> is defined using an according XML element with a unique <literal>name</literal> attribute value. Setting the <literal>initial</literal> attribute
-      to <literal>true</literal> the role will be automatically set on context initialization.
+      A <literal>role</literal> is defined using an according XML element with a unique 
+      <literal>name</literal> attribute value. Setting the <literal>initial</literal> 
+      attribute to <literal>true</literal> the <literal>role</literal> will be automatically 
+      set on context initialization.
     </para>
     <para>
-      <literal>Authconstraints</literal> can combine various authorization conditions, supported conditions are: <literal>hasrole</literal>, 
-      <literal>and</literal>, <literal>or</literal> and <literal>not</literal>, represented by according XML elements. 
-      Using the <literal>authpage</literal> attribute you can define the page, which should be called on authorization failure. 
-      Using the <literal>default</literal> attribute you can set one toplevel 
-      <literal>authconstraint</literal> to be the default one for all <literal>pagerequests</literal> having no <literal>authconstraint</literal> asssigned.
+<programlisting language="xml"><![CDATA[
+  <role name="MYROLE" initial="true"/>
+]]></programlisting>
     </para>
     <para>
-      <literal>Pagerequests</literal> can either define new <literal>authconstraints</literal> as child elements or can reference existing toplevel 
-      <literal>authconstraints</literal> by their <literal>id</literal>.
+      <literal>Authconstraints</literal> can combine various authorization conditions, 
+      supported conditions are: <literal>hasrole</literal>, <literal>and</literal>, 
+      <literal>or</literal> and <literal>not</literal>, represented by according XML elements. 
+      Using the <literal>authpage</literal> attribute you can define the page, which should be 
+      called on authorization failure. Using the <literal>default</literal> attribute you can 
+      set one toplevel <literal>authconstraint</literal> to be the default one for 
+      all <literal>pagerequests</literal> having no <literal>authconstraint</literal> asssigned.
+    </para>
+<programlisting language="xml"><![CDATA[
+  <authconstraint id="MYCONSTRAINT" authpage="login" default="true">
+    <or>
+      <hasrole name="MYROLE"/>
+      <hasrole name="OTHERROLE"/>
+    </or>
+  </authconstraint>
+]]></programlisting>
+    <para>
+      <literal>Pagerequests</literal> can either define new <literal>authconstraints</literal> as 
+      child elements or can reference existing toplevel <literal>authconstraints</literal> by 
+      their <literal>id</literal>.
+    </para>
+    <para>
+<programlisting language="xml"><![CDATA[
+  <pagerequest name="mypage">
+    <authconstraint ref="MYCONSTRAINT"/>
+    ...
+  </pagerequest>
+
+  <pagerequest name="mypage">
+    <authconstraint authpage="login">
+      <hasrole name="MYROLE"/>
+    </authconstraint>
+    ...
+  </pagerequest>
+]]></programlisting>
+    </para>
+    <para>
+      You can programmatically set/query roles using the <literal>de.schlund.pfixcore.auth.Authentication</literal>
+      object, which can be retrieved from the <literal>Context</literal> calling its <literal>getAuthentication()</literal>
+      method.
+    </para>
+    <para>
+<programlisting language="java"><![CDATA[
+public interface Authentication {
+    
+    public boolean isAuthenticated();
+    public void setAuthenticated(boolean authenticated);
+    
+    public boolean hasRole(String roleName);
+    public boolean addRole(String roleName);
+    public boolean revokeRole(String roleName);
+    
+    public Role[] getRoles();
+    
+}
+]]></programlisting>
+    </para>
+    <para>
+      You can add a new role using <literal>addRole()</literal>, revoke exisiting
+      roles using <literal>revokeRole()</literal> or check for a role using 
+      <literal>hasRole()</literal>. Using <literal>getRoles()</literal> you get an array 
+      of all currently set roles.
+    </para>
+    <para>
+      If a default role is defined, this role will be initially set and <literal>isAuthenticated()</literal>
+      will return <literal>true</literal>. Without a default role <literal>isAuthenticated()</literal>
+      will return <literal>false</literal>. This method just returns a boolean flag, which can
+      be manually set using <literal>setAuthenticated()</literal>. Thus you're able to
+      generally restrict access (independent of the roles).
+    </para> 
+         
+    <section xml:id="rolebasedauth_example">
+    <title>Example</title>
+    <para>
+      The following example defines three <literal>roles</literal>. The <literal>role</literal> 
+      <literal>ANONYMOUS</literal> is configured as <literal>initial</literal> <literal>role</literal>,
+      i.e. every session/context has this <literal>role</literal> automatically set from the beginning.
+    </para>
+    <para>
+      There are two top-level <literal>authconstraints</literal>. The <literal>authconstraint</literal> 
+      <literal>AC_DEFAULT</literal> is declared as <literal>default</literal>, i.e. pages, having no explicitly set 
+      <literal>authconstraint</literal>, will get this one. The <literal>authconstraint's authpage</literal> 
+      is set to <literal>login</literal> and it has a simple condition saying that it requires the <literal>role</literal> 
+      <literal>ANONYMOUS</literal>.
+    </para>
+    <para>
+      The <literal>authconstraint</literal> <literal>AC_KNOWN</literal> declares that
+      it requires the <literal>USER</literal> or the <literal>ADMIN</literal> <literal>role</literal>. This
+      <literal>authconstraint</literal> is referenced by the <literal>pagerequest</literal> <literal>userpage</literal>, using
+      an empty <literal>authconstraint</literal> element having a <literal>ref</literal> attribute containing the
+      <literal>authconstraint's</literal> id.
+    </para>
+    <para>
+      The <literal>pagerequest</literal> <literal>adminpage</literal> contains an anonymous
+      <literal>authconstraint</literal> element, which defines the <literal>role</literal> 
+      <literal>ADMIN</literal> as requirement.
     </para>
 <para>
 <programlisting language="xml"><![CDATA[
@@ -70,7 +164,8 @@
 </contextxmlserver>
 ]]></programlisting>
     </para>
-
+  
+  </section>
 
 
 
