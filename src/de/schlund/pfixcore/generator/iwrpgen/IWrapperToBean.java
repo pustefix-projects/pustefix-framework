@@ -24,8 +24,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import de.schlund.pfixcore.example.bank.model.Transaction;
-import de.schlund.pfixcore.example.bank.model.TransactionWrapper;
 import de.schlund.pfixcore.generator.IWrapper;
 import de.schlund.pfixxml.config.GlobalConfigurator;
 
@@ -98,35 +96,6 @@ public class IWrapperToBean {
 
     private static String createGetterName(String propName) {
         return "get" + Character.toUpperCase(propName.charAt(0)) + propName.substring(1);
-    }
-
-    public static void main(String[] args) throws Exception {
-        GlobalConfigurator.setDocroot("/projects");
-        TransactionWrapper wrapper = new TransactionWrapper();
-        wrapper.init("foo");
-        wrapper.setStringValAccountNo("1000");
-        wrapper.setStringValSum(new String[] { "1000", "33" });
-        wrapper.setStringValBankCode("12212");
-        wrapper.setStringValDate("2007/11/24");
-        wrapper.setStringValPurpose(new String[] { "foo", "bar" });
-        wrapper.loadFromStringValues();
-        
-        BeanDescriptor bd=getBeanDescriptor(TransactionWrapper.class);
-        for(String prop:bd.getProperties()) {
-            System.out.println("*** "+prop);
-        }
-        
-        System.out.println(wrapper.getAccountNo());
-        System.out.println(wrapper.getSum()[1]);
-        System.out.println(wrapper.getDate());
-        System.out.println(wrapper.getPurpose()[1]);
-        Transaction t = createBean(wrapper, Transaction.class);
-        System.out.println("------");
-        System.out.println(t.getAccountNo());
-        System.out.println(t.getAmount()[1]);
-        System.out.println(t.getDate());
-        System.out.println(t.getPurpose()[1]);
-
     }
 
 }
