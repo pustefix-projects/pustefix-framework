@@ -1071,6 +1071,7 @@ or delete the DOCTYPE definition -->
       <sysproperty key="basedir" value="."/>
       <formatter type="xml"/>
       <formatter type="plain"/>
+      <formatter type="brief" usefile="off"/>
       <classpath>
         <path refid="test.classpath"/>
         <pathelement path="${dir.test.classes}"/>
