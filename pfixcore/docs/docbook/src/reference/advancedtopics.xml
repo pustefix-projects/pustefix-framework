@@ -5,8 +5,9 @@
   <section xml:id="rolebasedauth">
     <title>Role-based authorization</title>
     <para>
-      Pustefix provides a role-based authorization mechanism. You can define arbitrary <literal>roles</literal>, declare logical operations/combinations on this roles using
-      <literal>authconstraints</literal>, and assign these authconstraints to <literal>pagerequests</literal>.
+      Pustefix provides a role-based authorization mechanism. You can define arbitrary <literal>roles</literal>, 
+      declare logical operations/combinations on this roles using <literal>authconstraints</literal>, 
+      and assign these authconstraints to <literal>pagerequests</literal>.
     </para>      
     <para>
       A <literal>role</literal> is defined using an according XML element with a unique 
@@ -90,6 +91,55 @@ public interface Authentication {
       be manually set using <literal>setAuthenticated()</literal>. Thus you're able to
       generally restrict access (independent of the roles).
     </para> 
+    <para>
+      You can also query the current roles from within your XML/XSLT code using the
+      XPath extension function <literal>pfx:hasRole(rolename)</literal>
+    </para>
+    <para>
+    <programlisting language="xml"><![CDATA[
+      <ixsl:if test="pfx:hasRole('MYROLE')">
+         ...
+      </ixsl:if>
+    ]]></programlisting>
+    </para>
+    <para>
+      If you try to access a page for which the authconstraint isn't fulfilled, you're forwarded
+      to the according login page. The login page has to be a regular page, i.e. IWrappers on the
+      page are configured the regular way (no <literal>authinterface</literal> elements). 
+      Login forms require the <literal>type</literal> attribute set to <literal>roleauth</literal>
+      (instead of <literal>auth</literal> in the traditional login forms).
+    </para>
+    <para>
+    <programlisting language="xml"><![CDATA[
+    <pfx:forminput type="roleauth">
+      ...
+    </pfx:forminput>
+    ]]></programlisting>
+    </para>
+    <para>
+      The framework automatically inserts an <literal>authentication</literal> element into
+      the login page's DOM tree. This element contains the state of the <literal>authenticated</literal>
+      flag, the <literal>targetpage</literal> which should be accessed, the current <literal>roles</literal>
+      and the <literal>authorizationfailure</literal> containing the violated
+      <literal>authconstraint</literal>.
+    </para>
+    <para>
+    <programlisting language="xml"><![CDATA[
+    <formresult>
+      <authentication authenticated="true" targetpage="mypage">
+        <roles>
+          <role name="SOMEROLE"/>
+        </roles>
+        <authorizationfailure authorization="pageaccess" target="mypage">
+          <authconstraint>
+            <hasrole name="MYROLE"/>
+          </authconstraint>
+        </authorizationfailure>
+      </authentication>
+      ...
+    </formresult>
+    ]]></programlisting>
+    </para>
          
     <section xml:id="rolebasedauth_example">
     <title>Example</title>
@@ -119,7 +169,6 @@ public interface Authentication {
     </para>
 <para>
 <programlisting language="xml"><![CDATA[
-<?xml version="1.0" encoding="ISO-8859-1"?>
 <contextxmlserver>
   
   <role name="ANONYMOUS" initial="true"/>
