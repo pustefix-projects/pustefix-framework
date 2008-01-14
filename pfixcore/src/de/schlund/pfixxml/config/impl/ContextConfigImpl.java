@@ -26,9 +26,12 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
+import org.xml.sax.SAXException;
 
 import de.schlund.pfixcore.auth.AuthConstraint;
 import de.schlund.pfixcore.auth.Role;
@@ -254,7 +257,7 @@ public class ContextConfigImpl implements ContextConfig, RoleProvider {
         return this.synchronize;
     }
 
-    public void doFinishing() {
+    public void doFinishing() throws SAXException {
         // Handle page copies
         HashMap<String, PageRequestConfigImpl> newPages = new HashMap<String, PageRequestConfigImpl>();
         
@@ -276,6 +279,8 @@ public class ContextConfigImpl implements ContextConfig, RoleProvider {
         
         this.pagerequests.putAll(newPages);
         this.cachePagerequests = null;
+        
+        checkAuthConstraints();
     }
 
     private PageRequestConfigImpl copyPage(PageRequestConfigImpl source, String newName) {
@@ -289,4 +294,45 @@ public class ContextConfigImpl implements ContextConfig, RoleProvider {
         
         return newConfig;
     }
+    
+    private void checkAuthConstraints() throws SAXException {
+        Set<String> authPages = new TreeSet<String>();
+        List<PageRequestConfigImpl> pages = getPageRequestConfigs();
+        for (PageRequestConfigImpl page : pages) {
+            AuthConstraint authConstraint = page.getAuthConstraint();
+            if (authConstraint != null && getAuthPage() != null) {
+                if (getAuthPage().equals(authConstraint.getAuthPage()))
+                    throw new SAXException("Authconstraint authpage isn't allowed to " + "be equal to context authpage: " + getAuthPage());
+            }
+            if (authConstraint == null) authConstraint = getDefaultAuthConstraint();
+            if (authConstraint != null) {
+                authPages.clear();
+                authPages.add(page.getPageName());
+                checkAuthConstraint(authConstraint, authPages);
+            }
+        }
+    }
+    
+    private void checkAuthConstraint(AuthConstraint authConstraint, Set<String> authPages) throws SAXException {
+        String authPage = authConstraint.getAuthPage();
+        if (authPage != null) {
+            if (authPages.contains(authPage)) {
+                StringBuilder sb = new StringBuilder();
+                for (String s : authPages)
+                    sb.append(s + " -> ");
+                sb.append(authPage);
+                throw new SAXException("Circular authconstraint@authpage reference: " + sb.toString());
+            }
+            PageRequestConfigImpl cfg = getPageRequestConfig(authPage);
+            if (cfg != null) {
+                AuthConstraint ac = cfg.getAuthConstraint();
+                if (ac == null) ac = getDefaultAuthConstraint();
+                if (ac != null) {
+                    authPages.add(authPage);
+                    checkAuthConstraint(ac, authPages);
+                }
+            } else throw new SAXException("Authpage not configured: " + authPage);
+        }
+    }
+    
 }
