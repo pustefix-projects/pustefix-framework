@@ -24,9 +24,6 @@ package de.schlund.pfixcore.auth;
  */
 public interface Authentication {
     
-    public boolean isAuthenticated();
-    public void setAuthenticated(boolean authenticated);
-    
     public boolean hasRole(String roleName);
     public boolean addRole(String roleName);
     public boolean revokeRole(String roleName);

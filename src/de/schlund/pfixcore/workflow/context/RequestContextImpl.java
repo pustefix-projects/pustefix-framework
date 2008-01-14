@@ -882,7 +882,7 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
     public void checkAuthorization(Authentication authentication) {
         if(parentcontext.getContextConfig().hasRoles()) {
             String pageName=currentpagerequest.getRootName();
-            if(authentication==null||!authentication.isAuthenticated()) {
+            if(authentication==null) {
                 if(LOG.isDebugEnabled()) LOG.debug("Not yet authenticated.");
                 throw new NotAuthenticatedException("Not yet authenticated.", "pageaccess", pageName);
             }
@@ -960,7 +960,6 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
             Element authElem=resDoc.createNode("authentication");
             if(root.getFirstChild()!=null) root.insertBefore(authElem, root.getFirstChild());
             else root.appendChild(authElem);
-            authElem.setAttribute("authenticated",String.valueOf(parentcontext.getAuthentication().isAuthenticated()));
             if(roleAuthTarget!=null) authElem.setAttribute("targetpage",roleAuthTarget);
             Role[] roles=parentcontext.getAuthentication().getRoles();
             Element rolesElem=resDoc.createSubNode(authElem, "roles");
