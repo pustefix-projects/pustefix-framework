@@ -111,7 +111,6 @@ public class ContextImpl implements Context, AccessibilityChecker, ExtendedConte
         	if(getContextConfig().hasRoles()) {
             	this.authentication = new AuthenticationImpl(servercontext);
             	for(Role role:getContextConfig().getInitialRoles()) this.authentication.addRole(role.getName());
-            	if(!getContextConfig().getInitialRoles().isEmpty()) this.authentication.setAuthenticated(true);
             }
             crm.init(context, context.getContextConfig());
         }

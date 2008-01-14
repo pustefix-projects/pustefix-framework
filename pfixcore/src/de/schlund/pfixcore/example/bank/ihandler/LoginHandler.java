@@ -35,7 +35,6 @@ public class LoginHandler implements IHandler {
         		contextCustomer.setCustomer(customer);
         		Authentication auth=context.getAuthentication();
         		auth.addRole("UNRESTRICTED");
-        		auth.setAuthenticated(true);
         	}
         } else if(login.getAuthToken()!=null) {
         	String[] tokens=AuthTokenManager.decodeAuthToken(login.getAuthToken());
@@ -51,7 +50,6 @@ public class LoginHandler implements IHandler {
 	        				contextCustomer.setCustomer(customer);
 	        				Authentication auth=context.getAuthentication();
 	        				auth.addRole("ACCOUNT");
-	        				auth.setAuthenticated(true);
 	        				ContextAccount contextAccount=context.getContextResourceManager().getResource(ContextAccount.class);
 	        				contextAccount.setAccount(account);
 	        				return;

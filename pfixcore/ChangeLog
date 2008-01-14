@@ -1,3 +1,17 @@
+2008-01-14i  Martin Leidig  <mleidig@schlund.de>
+
+	Removed the authentication flag. The Authentication object is
+	considered as being always authenticated (found no use case for
+	need of explicit control).
+
+	* src/de/schlund/pfixcore/auth/Authentication.java
+	* src/de/schlund/pfixcore/workflow/context/RequestContextImpl.java
+	* src/de/schlund/pfixcore/workflow/ContextImpl.java
+	* src/de/schlund/pfixcore/example/bank/ihandler/LoginHandler.java
+
+	* projects/core/schema/properties200401.xsd: Added default attribute
+	definition for authconstraint elements.
+
 2008-01-14  Martin Leidig  <mleidig@schlund.de>
 
 	* src/de/schlund/pfixxml/ResultDocument.java: addObject(Element element, 
