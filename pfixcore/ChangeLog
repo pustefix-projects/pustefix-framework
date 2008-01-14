@@ -12,6 +12,12 @@
 	* projects/core/schema/properties200401.xsd: Added default attribute
 	definition for authconstraint elements.
 
+	* de/schlund/pfixxml/config/impl/ContextConfigImpl.java: Added check
+	for circular authpage references and context authpage after reading
+	in configuration (now authpages aren't allowed to have authconstraints
+	which have the page itself as direct or indirect authpage, also a
+	Context's authpage isn't allowed to be used as authconstraint authpage.
+
 2008-01-14  Martin Leidig  <mleidig@schlund.de>
 
 	* src/de/schlund/pfixxml/ResultDocument.java: addObject(Element element, 
