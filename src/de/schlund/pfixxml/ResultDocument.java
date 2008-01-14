@@ -188,7 +188,7 @@ public class ResultDocument {
         Element tmp = owner.createElement(name);
         element.appendChild(tmp);
         addObject(tmp, object);
-        return element;
+        return tmp;
     }
     
 }
