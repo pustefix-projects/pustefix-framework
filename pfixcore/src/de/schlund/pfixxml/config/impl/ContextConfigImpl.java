@@ -23,11 +23,11 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
-import java.util.TreeSet;
 import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
@@ -69,7 +69,8 @@ public class ContextConfigImpl implements ContextConfig, RoleProvider {
     private List<Role> initialRoles = new ArrayList<Role>();
     private Map<String,AuthConstraint> authConstraints = new HashMap<String,AuthConstraint>();
     private AuthConstraint defaultAuthConstraint;
-
+    private boolean doLoadTimeChecks = false;
+    
     public void setAuthPage(String page) {
         this.authPage = page;
     }
@@ -280,7 +281,7 @@ public class ContextConfigImpl implements ContextConfig, RoleProvider {
         this.pagerequests.putAll(newPages);
         this.cachePagerequests = null;
         
-        checkAuthConstraints();
+        if(doLoadTimeChecks) checkAuthConstraints();
     }
 
     private PageRequestConfigImpl copyPage(PageRequestConfigImpl source, String newName) {
@@ -296,7 +297,7 @@ public class ContextConfigImpl implements ContextConfig, RoleProvider {
     }
     
     private void checkAuthConstraints() throws SAXException {
-        Set<String> authPages = new TreeSet<String>();
+        Set<String> authPages = new LinkedHashSet<String>();
         List<PageRequestConfigImpl> pages = getPageRequestConfigs();
         for (PageRequestConfigImpl page : pages) {
             AuthConstraint authConstraint = page.getAuthConstraint();
