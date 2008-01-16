@@ -20,8 +20,10 @@ package de.schlund.pfixcore.workflow.context;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Properties;
+import java.util.Set;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
@@ -97,9 +99,9 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
     private String jumptopage     = null;
     private String jumptopageflow = null;
     
-    private boolean roleAuth;
-    private String  roleAuthTarget;
-    private boolean roleAuthFailed;
+    private boolean     roleAuth;
+    private String      roleAuthTarget;
+    private Set<String> roleAuthDeps;
     
     private PageRequest authpage                   = null;
     private boolean     prohibitcontinue           = false;
@@ -856,9 +858,9 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
     
     private ResultDocument documentFromCurrentStep() throws PustefixApplicationException, PustefixCoreException {
         
-    	  ResultDocument document=null;
-    	  document = checkPageAuthorization();
-    	  if (document != null) return document;
+        ResultDocument document = null;
+        document = checkPageAuthorization();
+        if (document != null) return document;
 
         State state = pagemap.getState(currentpagerequest);
         if (state == null) {
@@ -867,11 +869,12 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
 
         LOG.debug("** [" + currentpagerequest + "]: associated state: " + state.getClass().getName());
         LOG.debug("=> [" + currentpagerequest + "]: Calling getDocument()");
+        
         try {
-            ResultDocument resdoc=state.getDocument(parentcontext, currentpservreq);
+            ResultDocument resdoc = state.getDocument(parentcontext, currentpservreq);
             //TODO: find better place and only insert if authorization failed
-            if(resdoc!=null && roleAuth) {
-               addAuthenticationData(resdoc);
+            if (resdoc != null && roleAuth) {
+                addAuthenticationData(resdoc);
             }
             return resdoc;
         } catch (Exception e) {
@@ -880,73 +883,81 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
     }
     
     public void checkAuthorization(Authentication authentication) {
-        if(parentcontext.getContextConfig().hasRoles()) {
-            String pageName=currentpagerequest.getRootName();
-            if(authentication==null) {
-                if(LOG.isDebugEnabled()) LOG.debug("Not yet authenticated.");
+        if (parentcontext.getContextConfig().hasRoles()) {
+            String pageName = currentpagerequest.getRootName();
+            if (authentication == null) {
+                if (LOG.isDebugEnabled()) LOG.debug("Not yet authenticated.");
                 throw new NotAuthenticatedException("Not yet authenticated.", "pageaccess", pageName);
             }
-            PageRequestConfig pageConfig=this.getConfigForCurrentPageRequest();
-        	AuthConstraint authConstraint=pageConfig.getAuthConstraint();
-        	if(authConstraint==null) authConstraint=parentcontext.getContextConfig().getDefaultAuthConstraint();
-        	if(authConstraint!=null) {
-        		if(!authConstraint.isAuthorized(authentication)) {
-        			 if(LOG.isDebugEnabled()) LOG.debug("Not authorized to access page '"+pageName+"'");
-        			 throw new AuthConstraintViolation("Not authorized to access page '"+pageName+"'.","pageaccess",pageName,authConstraint);
-        		} 
-        	}
+            PageRequestConfig pageConfig = this.getConfigForCurrentPageRequest();
+            AuthConstraint authConstraint = pageConfig.getAuthConstraint();
+            if (authConstraint == null) authConstraint = parentcontext.getContextConfig().getDefaultAuthConstraint();
+            if (authConstraint != null) {
+                if (!authConstraint.isAuthorized(authentication)) {
+                    if (LOG.isDebugEnabled()) LOG.debug("Not authorized to access page '" + pageName + "'");
+                    throw new AuthConstraintViolation("Not authorized to access page '" + pageName + "'.", "pageaccess", pageName, authConstraint);
+                }
+            }
         }
     }
     
     private ResultDocument checkPageAuthorization() throws PustefixApplicationException, PustefixCoreException {
-        if(!parentcontext.getContextConfig().hasRoles()) return null;
+        if (!parentcontext.getContextConfig().hasRoles()) return null;
         try {
             checkAuthorization(parentcontext.getAuthentication());
-        } catch(AuthorizationException authEx) {
-           if(roleAuthFailed) return null;
-           //if(roleAuthFailed) throw new RuntimeException("Authorization page has cyclic dependencies: "+authEx.getTarget());
-           roleAuthFailed=true;
-        	PageRequest localAuthPage=null;
-        	PageRequestConfig pageConfig=this.getConfigForCurrentPageRequest();
-          	AuthConstraint authConstraint=pageConfig.getAuthConstraint();
-          	if(authConstraint==null) authConstraint=parentcontext.getContextConfig().getDefaultAuthConstraint();
-          	if(authConstraint!=null) {
-          		String authPageName=authConstraint.getAuthPage();
-          		if(authPageName!=null) localAuthPage=createPageRequest(authPageName);
-          	}
-            if(localAuthPage==null) localAuthPage=authpage;
-            if(localAuthPage==null) throw authEx;
+        } catch (AuthorizationException authEx) {
+            String targetPage=authEx.getTarget();
+            if(roleAuthDeps!=null && roleAuthDeps.contains(targetPage)) { 
+                StringBuilder sb = new StringBuilder();
+                for (String s : roleAuthDeps)
+                    sb.append(s + " -> ");
+                sb.append(targetPage);
+                throw new PustefixCoreException("Authorization page has circular dependencies: "+sb.toString());
+            }
+            if(roleAuthDeps==null) roleAuthDeps=new LinkedHashSet<String>();
+            roleAuthDeps.add(authEx.getTarget());
+            PageRequest localAuthPage = null;
+            PageRequestConfig pageConfig = this.getConfigForCurrentPageRequest();
+            AuthConstraint authConstraint = pageConfig.getAuthConstraint();
+            if (authConstraint == null) authConstraint = parentcontext.getContextConfig().getDefaultAuthConstraint();
+            if (authConstraint != null) {
+                String authPageName = authConstraint.getAuthPage();
+                if (authPageName != null) localAuthPage = createPageRequest(authPageName);
+            }
+            if (localAuthPage == null) throw authEx;
+            if (localAuthPage.equals(authpage)) throw new PustefixCoreException("Authconstraint authpage isn't "+
+                    "allowed to be equal to context authpage: "+authpage);
             PageRequest saved = currentpagerequest;
-            if(LOG.isDebugEnabled()) LOG.debug("===> [" + localAuthPage + "]: Checking authorisation");
+            if (LOG.isDebugEnabled()) LOG.debug("===> [" + localAuthPage + "]: Checking authorisation");
             if (!checkIsAccessible(localAuthPage, PageRequestStatus.AUTH)) {
                 throw new PustefixCoreException("*** Authorisation page [" + localAuthPage + "] is not accessible! ***");
             }
-            if(LOG.isDebugEnabled()) LOG.debug("===> [" + localAuthPage + "]: Need authorisation data");
+            if (LOG.isDebugEnabled()) LOG.debug("===> [" + localAuthPage + "]: Need authorisation data");
             currentpagerequest = localAuthPage;
             ResultDocument resdoc = documentFromCurrentStep();
             currentpagerequest = saved;
-            prohibitcontinue=true;
+            prohibitcontinue = true;
             if (resdoc != null && prohibitcontinue) {
                 if (resdoc.getSPDocument() == null) {
                     throw new PustefixCoreException("*** FATAL: " + localAuthPage + " returns a 'null' SPDocument! ***");
-                }    
+                }
                 resdoc.getSPDocument().getDocument().getDocumentElement().setAttribute("authoriginalpage", saved.getRootName());
                 resdoc.getSPDocument().setPagename(localAuthPage.getName());
-                Element authElem=addAuthenticationData(resdoc);
-                if(authElem!=null) {
-                   authElem.setAttribute("targetpage",authEx.getTarget());
-	                Element misElem=resdoc.createSubNode(authElem,"authorizationfailure");
-	                if(authEx.getType()!=null) misElem.setAttribute("type",authEx.getType());
-	                if(authEx.getAuthorization()!=null) misElem.setAttribute("authorization",authEx.getAuthorization());
-	                if(authEx.getTarget()!=null) misElem.setAttribute("target",authEx.getTarget());
-	                if(authEx instanceof AuthConstraintViolation) {
-	                    AuthConstraintViolation authVio=(AuthConstraintViolation)authEx;
-	                    AuthConstraint authCon=authVio.getViolatedConstraint();
-	                    if(authCon!=null) {
-	                    	Element constraintElem=authCon.toXML(misElem.getOwnerDocument());
-	                    	misElem.appendChild(constraintElem);
-	                    }
-	                }
+                Element authElem = addAuthenticationData(resdoc);
+                if (authElem != null) {
+                    authElem.setAttribute("targetpage", authEx.getTarget());
+                    Element misElem = resdoc.createSubNode(authElem, "authorizationfailure");
+                    if (authEx.getType() != null) misElem.setAttribute("type", authEx.getType());
+                    if (authEx.getAuthorization() != null) misElem.setAttribute("authorization", authEx.getAuthorization());
+                    if (authEx.getTarget() != null) misElem.setAttribute("target", authEx.getTarget());
+                    if (authEx instanceof AuthConstraintViolation) {
+                        AuthConstraintViolation authVio = (AuthConstraintViolation) authEx;
+                        AuthConstraint authCon = authVio.getViolatedConstraint();
+                        if (authCon != null) {
+                            Element constraintElem = authCon.toXML(misElem.getOwnerDocument());
+                            misElem.appendChild(constraintElem);
+                        }
+                    }
                 }
                 return resdoc;
             }
@@ -955,17 +966,17 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
     }
 
     private Element addAuthenticationData(ResultDocument resDoc) {
-        if(parentcontext.getAuthentication()!=null) {
-            Element root=resDoc.getRootElement();
-            Element authElem=resDoc.createNode("authentication");
-            if(root.getFirstChild()!=null) root.insertBefore(authElem, root.getFirstChild());
+        if (parentcontext.getAuthentication() != null) {
+            Element root = resDoc.getRootElement();
+            Element authElem = resDoc.createNode("authentication");
+            if (root.getFirstChild() != null) root.insertBefore(authElem, root.getFirstChild());
             else root.appendChild(authElem);
-            if(roleAuthTarget!=null) authElem.setAttribute("targetpage",roleAuthTarget);
-            Role[] roles=parentcontext.getAuthentication().getRoles();
-            Element rolesElem=resDoc.createSubNode(authElem, "roles");
-            if(roles!=null) for(Role role:roles) {
-                Element roleElem=resDoc.createSubNode(rolesElem, "role");
-                roleElem.setAttribute("name",role.getName());
+            if (roleAuthTarget != null) authElem.setAttribute("targetpage", roleAuthTarget);
+            Role[] roles = parentcontext.getAuthentication().getRoles();
+            Element rolesElem = resDoc.createSubNode(authElem, "roles");
+            if (roles != null) for (Role role : roles) {
+                Element roleElem = resDoc.createSubNode(rolesElem, "role");
+                roleElem.setAttribute("name", role.getName());
             }
             return authElem;
         }
