@@ -11,7 +11,7 @@
           <th>Currency</th>
           <th></th>
         </tr>
-        <ixsl:for-each select="/formresult/accounts/item">
+        <ixsl:for-each select="/formresult/accounts/account">
           <tr>
             <td><ixsl:value-of select="@accountNo"/></td>
             <td><ixsl:value-of select="@openingDate"/></td>

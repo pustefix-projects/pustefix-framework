@@ -34,6 +34,7 @@
   
   <pageflow name="DefaultFlow" final="home">
     <flowstep name="home"/>
+    <flowstep name="logout"/>
   </pageflow>
   
   <pageflow name="AccountFlow" final="home">
@@ -87,6 +88,10 @@
     <authconstraint authpage="login">
       <hasrole name="UNRESTRICTED"/>
     </authconstraint>
+  </pagerequest>
+  
+  <pagerequest name="logout">
+    <state class="de.schlund.pfixcore.example.bank.LogoutState"/>
   </pagerequest>
   
 
