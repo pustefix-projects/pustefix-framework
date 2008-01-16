@@ -8,11 +8,24 @@
 
 <part name="navigation">
   <theme name="default">
-    <div class="navigation"> 
-      <pfx:button page="home">Home</pfx:button> 
-      <pfx:button page="accountoverview">Overview</pfx:button> 
-      <pfx:button page="accountdetails">Account</pfx:button>
-    </div>
+    <table width="100%" cellpadding="0" cellspacing="0"> 
+      <tr>
+        <td>
+          <div class="navigation">
+            <pfx:button page="home">Home</pfx:button>&#160;
+            <pfx:button page="accountoverview">Overview</pfx:button>&#160;
+            <pfx:button page="accountdetails">Account</pfx:button>&#160;
+          </div>
+        </td>
+        <ixsl:if test="pfx:hasRole('ACCOUNT') or pfx:hasRole('UNRESTRICTED')">
+          <td align="right">
+            <div class="navigation">
+              <pfx:button page="logout">Logout</pfx:button>
+            </div>
+          </td>
+        </ixsl:if>
+      </tr>
+    </table>
   </theme>
 </part>
 
