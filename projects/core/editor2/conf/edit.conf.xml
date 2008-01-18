@@ -5,7 +5,7 @@
     <editmode allow="false"/>
   </servletinfo>
   
-  <context defaultflow="EditorFlow" authpage="login">
+  <context defaultflow="EditorFlow">
     <resource class="de.schlund.pfixcore.editor2.frontend.resources.SessionResourceImpl">
       <implements class="de.schlund.pfixcore.editor2.frontend.resources.SessionResource"/>
     </resource>
@@ -58,6 +58,13 @@
   
   <scriptedflow name="selectinclude" file="core/editor2/conf/scriptedflows/selectinclude.xml"/>
   
+  <role name="ANONYMOUS" initial="true"/>
+  <role name="AUTHENTICATED"/>
+  
+  <authconstraint id="AC_AUTHENTICATED" authpage="login" default="true">
+    <hasrole name="AUTHENTICATED"/>
+  </authconstraint>
+  
   <pageflow name="EditorFlow" final="start">
     <flowstep name="start"/>
     <flowstep name="home"/>
@@ -95,9 +102,18 @@
   </pageflow>
   
   <pagerequest name="login">
-    <auth>
-      <authinterface class="de.schlund.pfixcore.editor2.frontend.wrappers.Login" prefix="auth"/>
-    </auth>
+    <authconstraint>
+<!-- 
+      <or>
+        <hasrole name="ANONYMOUS"/>
+        <hasrole name="AUTHENTICATED"/>
+      </or>
+       -->
+       <hasrole name="ANONYMOUS"/>
+    </authconstraint>
+    <input>
+      <interface class="de.schlund.pfixcore.editor2.frontend.wrappers.Login" prefix="auth"/>
+    </input>
   </pagerequest>
   
   <pagerequest name="start">
@@ -235,14 +251,14 @@
     </output>
   </pagerequest>
   
-  <pagerequest name="ws_includes" nostore="true">
+  <pagerequest name="ws_includes">
     <state class="de.schlund.pfixcore.editor2.frontend.webservice.StaticIncludesState"/>
     <properties>
       <prop name="mimetype">text/xml</prop>
     </properties>
   </pagerequest>
   
-  <pagerequest name="ws_dynincludes" nostore="true">
+  <pagerequest name="ws_dynincludes">
     <state class="de.schlund.pfixcore.editor2.frontend.webservice.DynamicIncludesState"/>
     <properties>
       <prop name="mimetype">text/xml</prop>
