@@ -66,9 +66,6 @@
 <programlisting language="java"><![CDATA[
 public interface Authentication {
     
-    public boolean isAuthenticated();
-    public void setAuthenticated(boolean authenticated);
-    
     public boolean hasRole(String roleName);
     public boolean addRole(String roleName);
     public boolean revokeRole(String roleName);
@@ -82,15 +79,8 @@ public interface Authentication {
       You can add a new role using <literal>addRole()</literal>, revoke exisiting
       roles using <literal>revokeRole()</literal> or check for a role using 
       <literal>hasRole()</literal>. Using <literal>getRoles()</literal> you get an array 
-      of all currently set roles.
+      of all currently set roles.  If a default role is defined, this role will be initially set.
     </para>
-    <para>
-      If a default role is defined, this role will be initially set and <literal>isAuthenticated()</literal>
-      will return <literal>true</literal>. Without a default role <literal>isAuthenticated()</literal>
-      will return <literal>false</literal>. This method just returns a boolean flag, which can
-      be manually set using <literal>setAuthenticated()</literal>. Thus you're able to
-      generally restrict access (independent of the roles).
-    </para> 
     <para>
       You can also query the current roles from within your XML/XSLT code using the
       XPath extension function <literal>pfx:hasRole(rolename)</literal>
@@ -556,7 +546,7 @@ public interface Authentication {
 	  <programlisting language="java"><![CDATA[
         ...
         
-        @SimpleTypeSerializer(StringTypeSerializer.class)
+        @SimpleTypeSerializerClass(StringTypeSerializer.class)
         @Target({ElementType.METHOD,ElementType.FIELD})
         @Retention(RetentionPolicy.RUNTIME)
         public @interface StringSerializer {
@@ -565,7 +555,7 @@ public interface Authentication {
       ]]></programlisting>
     </para>
     <para>
-      You have to annotate the custom annotation with a <literal>SimpleTypeSerializer</literal>
+      You have to annotate the custom annotation with a <literal>SimpleTypeSerializerClass</literal>
       annotation with the serializer class as value, make the annotation available to
       methods and fields using the <literal>@Target</literal> annotation and make it visible
       at runtime using the <literal>@Retention</literal> annotation. The rest of the annotation
@@ -630,7 +620,7 @@ public interface Authentication {
     <para>Finally we implement a custom annotation:</para>
     <para>
 	  <programlisting language="java"><![CDATA[
-      @ComplexTypeSerializer(de.schlund.pfixcore.example.bank.oxm.CustomerTypeSerializer.class)
+      @ComplexTypeSerializerClass(de.schlund.pfixcore.example.bank.oxm.CustomerTypeSerializer.class)
       @Target({ElementType.METHOD,ElementType.FIELD})
       @Retention(RetentionPolicy.RUNTIME)
       public @interface CustomerSerializer {}
