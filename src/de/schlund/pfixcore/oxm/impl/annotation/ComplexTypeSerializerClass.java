@@ -29,8 +29,8 @@ import java.lang.annotation.Target;
  */
 @Target(ElementType.ANNOTATION_TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface SimpleTypeSerializer {
+public @interface ComplexTypeSerializerClass {
 	
-	Class<? extends de.schlund.pfixcore.oxm.impl.SimpleTypeSerializer> value();
+	Class<? extends de.schlund.pfixcore.oxm.impl.ComplexTypeSerializer> value();
 	
 }

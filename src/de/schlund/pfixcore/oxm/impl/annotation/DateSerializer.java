@@ -27,7 +27,7 @@ import java.lang.annotation.Target;
 /**
  * @author mleidig@schlund.de
  */
-@SimpleTypeSerializer(de.schlund.pfixcore.oxm.impl.serializers.DateSerializer.class)
+@SimpleTypeSerializerClass(de.schlund.pfixcore.oxm.impl.serializers.DateSerializer.class)
 @Target({ElementType.METHOD,ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface DateSerializer {
