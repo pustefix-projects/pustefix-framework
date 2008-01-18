@@ -453,6 +453,7 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
         on_jumptopage              = false;
         pageflow_requested_by_user = false;
         startwithflow              = false;
+        roleAuthDeps               = null;
 
         RequestParam fstop = currentpservreq.getRequestParam(PARAM_FORCESTOP);
         if (fstop != null && fstop.getValue().equals("true")) {
