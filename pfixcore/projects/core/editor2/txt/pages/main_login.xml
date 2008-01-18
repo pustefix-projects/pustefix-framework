@@ -11,7 +11,7 @@
       <center>
         <div class="box" style="width:400px">
           <h1>Welcome to the Pustefix CMS</h1>
-          <pfx:forminput target="_top" type="auth">
+          <pfx:forminput target="_top" type="roleauth">
             <span style="color: #ffffff; font-weight: bold;">Enter your userdata below:</span>
             <table width="350">
               <tr>

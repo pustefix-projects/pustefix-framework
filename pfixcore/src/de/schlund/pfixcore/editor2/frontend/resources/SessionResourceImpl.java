@@ -61,6 +61,9 @@ public class SessionResourceImpl implements SessionResource {
         // Register context with ContextStore
         ContextStore.getInstance().registerContext(this.context, username);
         
+        // Set AUTHENTICATED role on context
+        context.getAuthentication().addRole("AUTHENTICATED");
+        
         return true;
     }
 
@@ -69,6 +72,9 @@ public class SessionResourceImpl implements SessionResource {
         
         // Unregister context
         ContextStore.getInstance().unregisterContext(this.context);
+        
+        // Remove AUTHENTICATED role
+        context.getAuthentication().revokeRole("AUTHENTICATED");
     }
 
     public boolean isLoggedIn() {

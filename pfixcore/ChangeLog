@@ -1,3 +1,10 @@
+2008-01-18  Sebastian Marsching  <sebastian.marsching@1und1.de>
+
+	* src/de/schlund/pfixcore/editor2/frontend/resources/SessionResourceImpl.java: 
+	* projects/core/editor2/conf/edit.conf.xml: 
+	* projects/core/editor2/txt/pages/main_login.xml: 
+	Switched editor servlet to role-based authentication mechanism.
+
 2008-01-18  Martin Leidig  <mleidig@schlund.de>
 
 	Renamed SimpleTypeSerializer and ComplexTypeSerializer annotations
