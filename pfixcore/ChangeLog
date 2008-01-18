@@ -1,5 +1,23 @@
 2008-01-18  Martin Leidig  <mleidig@schlund.de>
 
+	Renamed SimpleTypeSerializer and ComplexTypeSerializer annotations
+	to SimpleTypeSerializerClass and ComplexTypeSeriailizerClass to 
+	avoid name clashes/irritations with the serializer interface names.
+
+	Modified:
+	* src/de/schlund/pfixcore/oxm/impl/serializers/BeanSerializer.java
+	* src/de/schlund/pfixcore/oxm/impl/annotation/DateSerializer.java
+
+	Removed:
+	* src/de/schlund/pfixcore/oxm/impl/annotation/ComplexTypeSerializer.java
+	* src/de/schlund/pfixcore/oxm/impl/annotation/SimpleTypeSerializer.java
+
+	Added:
+	* src/de/schlund/pfixcore/oxm/impl/annotation/ComplexTypeSerializerClass.java
+	* src/de/schlund/pfixcore/oxm/impl/annotation/SimpleTypeSerializerClass.java
+
+2008-01-18  Martin Leidig  <mleidig@schlund.de>
+
 	* src/de/schlund/pfixcore/workflow/context/RequestContextImpl.java: reset
 	HashSet for circular authpage reference detection in handleRequestWorker 
 
