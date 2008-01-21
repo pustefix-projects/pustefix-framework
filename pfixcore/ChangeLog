@@ -1,3 +1,8 @@
+2008-01-21  Sebastian Marsching  <sebastian.marsching@1und1.de>
+
+	* startTomcat.sh: 
+	Removed "jni/lib" from LD_LIBRARY_PATH (was only used by AppLoader)
+
 2008-01-18  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
 	* src/de/schlund/pfixcore/editor2/frontend/resources/SessionResourceImpl.java: 

@@ -6,7 +6,6 @@ else
    cmd="run"
 fi
 
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:`pwd`/jni/lib
 export JAVA_OPTS="-mx200M"
 echo "---------------------------"
 echo "catalina.sh $cmd"
@@ -18,6 +17,3 @@ echo "---------------------------"
 
 cd ./projects/servletconf/tomcat/
 LANG=C ./bin/catalina.sh $cmd
-
-
-
