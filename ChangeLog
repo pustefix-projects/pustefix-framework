@@ -1,3 +1,9 @@
+2008-01-31  Martin Leidig  <mleidig@schlund.de>
+
+	Released Pfixcore 0.12.0
+
+	* build.xml: Change version number
+
 2008-01-21  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
 	* startTomcat.sh: 
