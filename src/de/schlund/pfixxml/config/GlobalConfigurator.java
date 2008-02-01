@@ -20,6 +20,9 @@ package de.schlund.pfixxml.config;
 
 import javax.servlet.ServletContext;
 
+import de.schlund.pfixxml.resources.DocrootResource;
+import de.schlund.pfixxml.resources.DocrootResourceProvider;
+
 /**
  * Used to set global configuration values. Should only be used from initialization
  * code. Settings can be read by all code using {@link de.schlund.pfixxml.config.GlobalConfig}.
@@ -57,5 +60,15 @@ public class GlobalConfigurator {
      */
     public static void setServletContext(ServletContext context) {
         GlobalConfig.setServletContext(context);
+    }
+    
+    /**
+     * Sets provider for instances of {@link DocrootResource}.
+     * Can only be used if neither docroot path nor servlet context is set.
+     * 
+     * @param provider the provider used to resolve docroot resources
+     */
+    public static void setDocrootResourceProvider(DocrootResourceProvider provider) {
+        GlobalConfig.setDocrootResourceProvider(provider);
     }
 }

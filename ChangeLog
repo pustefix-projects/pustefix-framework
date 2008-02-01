@@ -1,3 +1,29 @@
+2008-02-01  Sebastian Marsching  <sebastian.marsching@1und1.de>
+
+	* src/de/schlund/pfixxml/config/GlobalConfig.java: 
+	* src/de/schlund/pfixxml/config/GlobalConfigurator.java: 
+	* src/de/schlund/pfixxml/resources/internal/DocrootResourceByServletContextImpl.java: 
+	* src/de/schlund/pfixxml/resources/internal/DocrootResourceByServletContextProvider.java: 
+	* src/de/schlund/pfixxml/resources/internal/DocrootResourceOnFileSystemImpl.java: 
+	* src/de/schlund/pfixxml/resources/internal/DocrootResourceOnFileSystemProvider.java: 
+	* src/de/schlund/pfixxml/resources/AbstractDocrootResourceImpl.java: 
+	* src/de/schlund/pfixxml/resources/DocrootResourceProvider.java: 
+	* src/de/schlund/pfixxml/resources/ResourceUtil.java: 
+	Introduced additional abstraction level for docroot resource handling:
+	Docroot resources are now created by a provider, so that different 
+	mechanisms can be plugged in.
+	
+	* src/de/schlund/pfixxml/FactoryInitServlet.java: 
+	* src/de/schlund/pfixxml/FactoryInitUtil.java: 
+	Moved code for factory initialization to FactoryInitUtil. Thus
+	factory initialization can be performed in an environment where
+	FactoryInitServlet is not available.
+	
+	* src/de/schlund/pfixxml/ServletManager.java: 
+	Added code that detects "JSESSIONID" cookie and deletes it, if present.
+	Changed code that checks initialization state of FactoryInitServlet to
+	check FactoryInitUtil instead.
+
 2008-02-01  Martin Leidig  <mleidig@schlund.de>
 
 	* build.xml: set version to 0.12.1-pre (build)
