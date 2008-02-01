@@ -93,8 +93,8 @@ public abstract class ServletManager extends HttpServlet {
     private Logger                       LOGGER_VISIT                  = Logger.getLogger("LOGGER_VISIT");
     private Logger                       LOG                           = Logger.getLogger(ServletManager.class);
     private Map<Class, ExceptionConfig> exceptionConfigs = new HashMap<Class, ExceptionConfig>();
-    private long                         common_mtime                  = 0;
-    private long                         servlet_mtime                 = 0;
+    private long                         common_mtime                  = -2;
+    private long                         servlet_mtime                 = -2;
     private FileResource                 commonpropfile;
     private FileResource                 servletpropfile;
     private String                       servletEncoding;
@@ -176,7 +176,22 @@ public abstract class ServletManager extends HttpServlet {
         if (p3pHeader != null && p3pHeader.length() > 0) {
             res.addHeader("P3P", p3pHeader);
         }
-
+        
+        // Delete JSESSIONID cookie
+        // Otherwise a redirect loop will be caused when a request with an
+        // invalid JSESSIONID cookie is made
+        if (req.getCookies() != null) {
+            Cookie[] cookies = req.getCookies();
+            for (int i = 0; i < cookies.length; i++) {
+                Cookie cookie = cookies[i];
+                if (cookie.getName().equalsIgnoreCase("JSESSIONID")) {
+                    cookie.setMaxAge(0);
+                    cookie.setPath((req.getContextPath().equals("")) ? "/" : req.getContextPath());
+                    res.addCookie(cookie);
+                }
+            }
+        }
+        
         if (req.isRequestedSessionIdValid()) {
             session = req.getSession(false);
             has_session = true;
@@ -842,7 +857,7 @@ public abstract class ServletManager extends HttpServlet {
 
     private void callProcess(PfixServletRequest preq, HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
         try {
-            if(!FactoryInitServlet.isConfigured()) {
+            if(!FactoryInitServlet.isConfigured() && !FactoryInitUtil.isInitialized()) {
                 FactoryInitException initEx=FactoryInitServlet.getInitException();
                 if(initEx!=null) {
                     initEx=initEx.copy();

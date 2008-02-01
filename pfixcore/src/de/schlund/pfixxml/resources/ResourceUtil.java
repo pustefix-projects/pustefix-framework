@@ -25,6 +25,8 @@ import java.io.OutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 
+import de.schlund.pfixxml.config.GlobalConfig;
+
 /**
  * Provides access to resources on the filesystem.
  * For most of the functionality, {@link de.schlund.pfixxml.config.GlobalConfig}
@@ -58,7 +60,7 @@ public class ResourceUtil {
         }
         
         if (scheme.equals("pfixroot")) {
-            return new DocrootResourceImpl(uri);
+            return GlobalConfig.getDocrootResourceProvider().getDocrootResource(uri);
         } else if (scheme.equals("file")) {
             return new FileSystemResourceImpl(uri);
         } else {

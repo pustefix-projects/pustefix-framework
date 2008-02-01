@@ -223,52 +223,12 @@ public class FactoryInitServlet extends HttpServlet {
         synchronized (LOCK) {
             if (!configured) {
                 configureLogging(properties);
-
                 LOG.debug(">>>> LOG4J Init OK <<<<");
-                HashMap to_init = PropertiesUtils.selectProperties(properties,
-                        "factory.initialize");
-                if (to_init != null) {
-                    // sort key to initialize the factories in defined order
-                    TreeSet keyset = new TreeSet(to_init.keySet());
-                    for (Iterator i = keyset.iterator(); i.hasNext();) {
-                        String key = (String) i.next();
-                        String the_class = (String) to_init.get(key);
-                        try {
-                            LOG.debug(">>>> Init key: [" + key + "] class: ["
-                                    + the_class + "] <<<<");
-                            long start = 0;
-                            long stop = 0;
-                            Class clazz = Class.forName(the_class);
-                            Object factory = clazz.getMethod("getInstance",
-                                    Misc.NO_CLASSES).invoke(null,
-                                            Misc.NO_OBJECTS);
-                            LOG.debug("     Object ID: " + factory);
-                            start = System.currentTimeMillis();
-                            clazz.getMethod("init",
-                                    new Class[] { Properties.class })
-                                    .invoke(factory,
-                                            new Object[] { properties });
-                            stop = System.currentTimeMillis();
-                            LOG.debug("Init of " + factory + " took "
-                                    + (stop - start) + " ms");
-                        } catch (Exception e) {
-                            LOG.error(e.toString());
-                            
-                            Throwable initCause=e;
-                            if(e instanceof InvocationTargetException && e.getCause()!=null) initCause=e.getCause();
-                            initException=new FactoryInitException(the_class,initCause);
 
-                            ThrowableInformation info = new ThrowableInformation(
-                                    e);
-                            String[] trace = info.getThrowableStrRep();
-                            StringBuffer strerror = new StringBuffer();
-                            for (int ii = 0; ii < trace.length; ii++) {
-                                strerror.append("->" + trace[ii] + "\n");
-                            }
-                            LOG.error(strerror.toString());
-                            throw new ServletException(e.toString());
-                        }
-                    }
+                try {
+                    FactoryInitUtil.initialize(properties);
+                } catch (FactoryInitException e) {
+                    throw new ServletException(e.getCause().toString());
                 }
             }
             configured = true;
