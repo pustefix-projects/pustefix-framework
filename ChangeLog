@@ -1,3 +1,25 @@
+2008-02-05  Martin Leidig  <mleidig@schlund.de>
+
+	Added some new IWrapper generation features: 
+	- support for bean properties of parameterized List type
+	- support for populating IWrappers with Java bean data (using the
+	  BeanToIWrapper.populateIWrapper() method (for custom types/casters
+	  the types have to implement toString())
+	- added exemplary unit test
+
+	* src/de/schlund/pfixcore/generator/iwrpgen/IWrapperToBean.java
+	* src/de/schlund/pfixcore/generator/iwrpgen/IWrapperAnnotationProcessor.java
+
+	* src/de/schlund/pfixcore/generator/iwrpgen/BeanToIWrapper.java
+	* src/de/schlund/pfixcore/example/test
+	* src/de/schlund/pfixcore/example/test/BeanDummyHandler.java
+	* src/de/schlund/pfixcore/example/test/Bean.java
+	* src/de/schlund/pfixcore/example/test/Data.java
+	* src/de/schlund/pfixcore/example/test/DataCaster.java
+	* tests/junit/de/schlund/pfixcore/generator
+	* tests/junit/de/schlund/pfixcore/generator/iwrpgen
+	* tests/junit/de/schlund/pfixcore/generator/iwrpgen/IWrapperBeanTest.java
+
 2008-02-05  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
 	* src/de/schlund/pfixcore/beans/metadata/DefaultLocator.java: 

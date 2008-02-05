@@ -23,7 +23,6 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,11 +31,11 @@ import java.util.Set;
 import de.schlund.pfixcore.generator.IWrapper;
 
 /**
+ * Helper class to populate IWrapper instances with data from Java beans.
  * 
  * @author mleidig@schlund.de
- * 
  */
-public class IWrapperToBean {
+public class BeanToIWrapper {
 
     private static Map<Class<?>, BeanDescriptor> descriptors = new HashMap<Class<?>, BeanDescriptor>();
 
@@ -49,59 +48,57 @@ public class IWrapperToBean {
         return desc;
     }
 
-    public static <T> T createBean(IWrapper wrapper, Class<T> beanClass) {
-        try {
-            T instance = beanClass.newInstance();
-            populateBean(wrapper, instance);
-            return instance;
-        } catch (Exception x) {
-            throw new RuntimeException("Can't instantiate bean: " + beanClass.getName(), x);
-        }
-    }
-
-    public static void populateBean(IWrapper wrapper, Object obj) {
+    /**
+     * Populates an IWrapper instance with data from a Java bean.
+     * 
+     * @param obj -
+     *            the Java bean to populate the IWrapper
+     * @param wrapper -
+     *            the IWrapper to be populated
+     */
+    public static void populateIWrapper(Object obj, IWrapper wrapper) {
         Class<?> clazz = obj.getClass();
         BeanDescriptor beanDesc = getBeanDescriptor(clazz);
         BeanDescriptor wrapperBeanDesc = getBeanDescriptor(wrapper.getClass());
         Set<String> properties = wrapperBeanDesc.getProperties();
         for (String property : properties) {
-            String getterName = createGetterName(property);
-            Method getter = null;
-            try {
-                getter = wrapper.getClass().getMethod(getterName, new Class[0]);
-            } catch (NoSuchMethodException x) {
-                throw new RuntimeException("Can't find getter: " + getterName, x);
-            }
             Object res = null;
-            try {
-                res = getter.invoke(wrapper, new Object[0]);
-            } catch (Exception x) {
-                throw new RuntimeException("Can't get property: " + property, x);
-            }
-            Method setter = beanDesc.getSetMethod(property);
-            if (setter == null) {
-                Field field = null;
-                field = beanDesc.getDirectAccessField(property);
-                if (field == null) throw new RuntimeException("Can't find bean property: " + property);
+            Method getter = beanDesc.getGetMethod(property);
+            if (getter != null) {
                 try {
-                    Type type = beanDesc.getPropertyType(property);
-                    if (isList(type)) {
-                        res = convertArrayToList(res);
-                    }
-                    field.set(obj, res);
+                    res = getter.invoke(obj, new Object[0]);
                 } catch (Exception x) {
-                    throw new RuntimeException("Can't set property: " + property, x);
+                    throw new RuntimeException("Can't get property: " + property, x);
                 }
             } else {
+                Field field = beanDesc.getDirectAccessField(property);
+                if (field == null) throw new RuntimeException("Can't find bean property: " + property);
                 try {
-                    Type type = beanDesc.getPropertyType(property);
-                    if (isList(type)) {
-                        res = convertArrayToList(res);
-                    }
-                    setter.invoke(obj, res);
+                    res = field.get(obj);
                 } catch (Exception x) {
-                    throw new RuntimeException("Can't set property: " + property, x);
+                    throw new RuntimeException("Can't get property: " + property, x);
                 }
+            }
+            Method setter = null;
+            try {
+                setter = wrapperBeanDesc.getSetMethod(property);
+                Type type = beanDesc.getPropertyType(property);
+                if (res != null && isList(type)) {
+                    Class<?> compType = null;
+                    Class<?>[] paramTypes = setter.getParameterTypes();
+                    if (paramTypes.length == 1 && paramTypes[0].isArray()) compType = paramTypes[0].getComponentType();
+                    if (compType == null) throw new RuntimeException("Can't get array component type for property: " + property);
+                    List<?> list = (List<?>) res;
+                    Object array = Array.newInstance(compType, list.size());
+                    for (int ind = 0; ind < list.size(); ind++) {
+                        Object item = list.get(ind);
+                        Array.set(array, ind, item);
+                    }
+                    res = array;
+                }
+                setter.invoke(wrapper, res);
+            } catch (Exception x) {
+                throw new RuntimeException("Can't set param: " + property, x);
             }
         }
     }
@@ -116,21 +113,6 @@ public class IWrapperToBean {
             }
         }
         return false;
-    }
-
-    private static List<Object> convertArrayToList(Object array) {
-        if (array == null) return null;
-        List<Object> list = new ArrayList<Object>();
-        int len = Array.getLength(array);
-        for (int ind = 0; ind < len; ind++) {
-            Object item = Array.get(array, ind);
-            list.add(item);
-        }
-        return list;
-    }
-
-    private static String createGetterName(String propName) {
-        return "get" + Character.toUpperCase(propName.charAt(0)) + propName.substring(1);
     }
 
 }
