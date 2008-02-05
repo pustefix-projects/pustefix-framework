@@ -22,7 +22,7 @@ import de.schlund.pfixxml.util.Xml;
 
 public class TestRecording implements TestRecordingMBean {
 
-   private static Logger LOG=Logger.getLogger(TestRecording.class);
+   private final static Logger LOG=Logger.getLogger(TestRecording.class);
    
    private static TestRecording instance=new TestRecording();
    

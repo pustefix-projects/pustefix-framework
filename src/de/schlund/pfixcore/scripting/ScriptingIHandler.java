@@ -44,7 +44,7 @@ public class ScriptingIHandler implements IHandler{
     // This IHandler has instance variables because it is created new each time and not
     // controlled by the IHandlerFactory. This may change soon, but for now it works OK.
     
-    private static Logger LOG = Logger.getLogger(ScriptingIHandler.class);
+    private final static Logger LOG = Logger.getLogger(ScriptingIHandler.class);
   
     /**
      */

@@ -17,7 +17,7 @@ import org.w3c.dom.NodeList;
  */
 public class MD5Utils {
     
-    private static Logger logger = Logger.getLogger(MD5Utils.class);
+    private final static Logger logger = Logger.getLogger(MD5Utils.class);
  
     
     public static final String CHARSET_UTF8 = "UTF-8";

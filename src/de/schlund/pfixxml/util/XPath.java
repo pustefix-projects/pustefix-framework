@@ -31,7 +31,7 @@ import org.w3c.dom.Node;
  */
 public class XPath {
     
-    static Logger LOG=Logger.getLogger(XPath.class);
+    final static Logger LOG=Logger.getLogger(XPath.class);
     
     static XPathSupport defaultSupport=new XPathDefault();
        

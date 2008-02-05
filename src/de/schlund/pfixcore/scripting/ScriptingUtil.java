@@ -40,7 +40,7 @@ import de.schlund.pfixxml.resources.ResourceUtil;
  */
 public class ScriptingUtil {
     
-    private static Logger LOG = Logger.getLogger(ScriptingUtil.class);
+    private final static Logger LOG = Logger.getLogger(ScriptingUtil.class);
     
   
     /**

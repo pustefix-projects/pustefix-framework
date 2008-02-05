@@ -40,7 +40,7 @@ public class PageFlow {
     private HashMap   stepmap  = new HashMap();
     private String    finalpage;
     
-    private static Logger LOG = Logger.getLogger(PageFlow.class);
+    private final static Logger LOG = Logger.getLogger(PageFlow.class);
     
     public PageFlow(PageFlowConfig config) {
         flowname = config.getFlowName();

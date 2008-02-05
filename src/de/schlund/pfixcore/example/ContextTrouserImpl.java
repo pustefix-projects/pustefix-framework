@@ -40,7 +40,7 @@ import de.schlund.pfixxml.ResultDocument;
 // Inheritance from one C-Res to another is asking for trouble.
 // But for this example it helps keeping the code small.
 public class ContextTrouserImpl extends ContextTShirtImpl implements ContextTrouser{
-    private static Logger LOG = Logger.getLogger(ContextTrouserImpl.class);
+    private final static Logger LOG = Logger.getLogger(ContextTrouserImpl.class);
     
     public String toString() {
         LOG.debug("Doing ContextTrouser...");

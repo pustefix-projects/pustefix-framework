@@ -8,7 +8,7 @@ import org.apache.log4j.Logger;
 
 public class AdditionalTrailInfoFactory {
     private static AdditionalTrailInfoFactory instance = new AdditionalTrailInfoFactory();
-    private static Logger LOG = Logger.getLogger(AdditionalTrailInfoFactory.class);
+    private final static Logger LOG = Logger.getLogger(AdditionalTrailInfoFactory.class);
 
     private AdditionalTrailInfoFactory() {} 
     

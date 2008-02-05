@@ -38,7 +38,7 @@ import com.icl.saxon.trace.TraceListener;
  */
 public class Saxon1TraceListener implements TraceListener {
 
-   private static Logger LOG=Logger.getLogger(Saxon1TraceListener.class);
+   private final static Logger LOG=Logger.getLogger(Saxon1TraceListener.class);
     
    public enum Format {VERBOSE,COMPRESSED};
    

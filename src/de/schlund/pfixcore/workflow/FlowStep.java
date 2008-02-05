@@ -50,7 +50,7 @@ public class FlowStep {
     private ArrayList tests_oncontinue    = new ArrayList();
     private PageFlowStepConfig config;
 
-    private static Logger LOG = Logger.getLogger(PageFlow.class);
+    private final static Logger LOG = Logger.getLogger(PageFlow.class);
     public FlowStep(PageFlowStepConfig config) {
         this.config = config;
         

@@ -43,7 +43,7 @@ import de.schlund.pfixxml.PfixServletRequest;
  */
 public class PageForwardingExceptionProcessor implements ExceptionProcessor {
 
-    private static Logger LOG = Logger.getLogger(PageForwardingExceptionProcessor.class);
+    private final static Logger LOG = Logger.getLogger(PageForwardingExceptionProcessor.class);
 
     /**
      * The request gets forwarded to the page specified by the 'page'-attribute

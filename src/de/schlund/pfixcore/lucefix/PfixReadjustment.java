@@ -46,7 +46,7 @@ public class PfixReadjustment {
     
     private static PfixReadjustment _instance = new PfixReadjustment();
     
-    private static Logger LOG = Logger.getLogger(PfixReadjustment.class);
+    private final static Logger LOG = Logger.getLogger(PfixReadjustment.class);
     
     public static final String LUCENE_DATA = PfixQueueManager.lucene_data_path;
     

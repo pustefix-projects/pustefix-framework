@@ -31,7 +31,7 @@ import de.schlund.pfixcore.util.PropertiesUtils;
 import de.schlund.pfixxml.util.Misc;
 
 public class FactoryInitUtil {
-    private static Logger LOG = Logger.getLogger(FactoryInitUtil.class);
+    private final static Logger LOG = Logger.getLogger(FactoryInitUtil.class);
     
     private static boolean initialized = false;
     

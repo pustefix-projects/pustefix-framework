@@ -40,7 +40,7 @@ import de.schlund.pfixxml.serverutil.SessionInfoStruct;
  * Window - Preferences - Java - Code Generation - Code and Comments
  */
 public class ExceptionDataValueHelper {
-    private static Logger LOG = Logger.getLogger(ExceptionDataValueHelper.class);
+    private final static Logger LOG = Logger.getLogger(ExceptionDataValueHelper.class);
 	/**
 	 * @param exception
 	 * @param pfixReq

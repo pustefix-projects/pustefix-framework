@@ -171,8 +171,8 @@ public abstract class AbstractXMLServlet extends ServletManager {
     private boolean      skip_getmodtimemaybeupdate = false;
     private int          scleanertimeout            = 300;
     
-    private static Logger LOGGER_TRAIL = Logger.getLogger("LOGGER_TRAIL");
-    private static Logger LOGGER       = Logger.getLogger(AbstractXMLServlet.class);
+    private final static Logger LOGGER_TRAIL = Logger.getLogger("LOGGER_TRAIL");
+    private final static Logger LOGGER       = Logger.getLogger(AbstractXMLServlet.class);
     
     private AdditionalTrailInfo addtrailinfo = null;
     

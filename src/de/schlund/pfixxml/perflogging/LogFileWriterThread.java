@@ -15,7 +15,7 @@ import org.apache.log4j.Logger;
  *
  */
 public class LogFileWriterThread extends TimerTask {
-    private static Logger LOG = Logger.getLogger(LogFileWriterThread.class);
+    private final static Logger LOG = Logger.getLogger(LogFileWriterThread.class);
    
     public void run() {
         

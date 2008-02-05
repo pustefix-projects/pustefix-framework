@@ -42,7 +42,7 @@ import de.schlund.pfixxml.ResultDocument;
 public class ContextAdultInfoImpl implements ContextResource, ContextAdultInfo {
     private Boolean adult = null;
     private HashMap test  = new HashMap();
-    private static Logger LOG = Logger.getLogger(ContextAdultInfoImpl.class);
+    private final static Logger LOG = Logger.getLogger(ContextAdultInfoImpl.class);
     
     public void init(Context context) {}
    

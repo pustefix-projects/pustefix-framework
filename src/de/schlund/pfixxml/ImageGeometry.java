@@ -43,7 +43,7 @@ import de.schlund.pfixxml.resources.ResourceUtil;
 
 public class ImageGeometry {
     private static Map<String, ImageGeometryData> imageinfo = new HashMap<String, ImageGeometryData>();
-    private static Logger                         LOG       = Logger.getLogger(ImageGeometry.class); 
+    private final static Logger                         LOG       = Logger.getLogger(ImageGeometry.class); 
     
     
     public static int getHeight(String path) {

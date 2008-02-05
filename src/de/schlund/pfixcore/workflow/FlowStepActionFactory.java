@@ -33,7 +33,7 @@ import de.schlund.pfixxml.util.Misc;
  */
 
 public class FlowStepActionFactory {
-    private static Logger                LOG      = Logger.getLogger(FlowStepActionFactory.class);
+    private final static Logger                LOG      = Logger.getLogger(FlowStepActionFactory.class);
     private static FlowStepActionFactory instance = new FlowStepActionFactory();
     private static String                JUMPTO   = "jumpto";
     private static String                SETFLOW  = "setflow";

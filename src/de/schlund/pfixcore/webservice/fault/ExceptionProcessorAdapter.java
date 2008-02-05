@@ -20,7 +20,7 @@ import de.schlund.pfixxml.resources.ResourceUtil;
 
 public class ExceptionProcessorAdapter extends FaultHandler {
 
-    static Logger LOG=Logger.getLogger(ExceptionProcessorAdapter.class);
+    final static Logger LOG=Logger.getLogger(ExceptionProcessorAdapter.class);
     
     private final static String PARAM_CONFIG="config";
     private final static String PROP_EXPROC="exception.java.lang.Throwable.processor";
