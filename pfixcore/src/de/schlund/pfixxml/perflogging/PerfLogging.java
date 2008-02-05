@@ -25,7 +25,7 @@ import org.apache.log4j.Logger;
 public class PerfLogging extends NotificationBroadcasterSupport implements PerfLoggingMBean {
     
     private static PerfLogging instance = new PerfLogging();
-    private static Logger LOG = Logger.getLogger(PerfLogging.class);
+    private final static Logger LOG = Logger.getLogger(PerfLogging.class);
     private String PROP_BUFFER_SIZE = "perflogging.buffersize";
     private String PROP_ENABLED = "perflogging.enabled";
     private String PROP_AUTOSTART = "perflogging.autostart";

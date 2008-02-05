@@ -45,7 +45,7 @@ public class PageFlowManager {
     
     private VariantManager vmanager;
 
-    private static Logger LOG = Logger.getLogger(PageFlowManager.class);
+    private final static Logger LOG = Logger.getLogger(PageFlowManager.class);
 
     public final static String PROP_PREFIX = "context.pageflow";
 

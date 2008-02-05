@@ -50,8 +50,8 @@ import de.schlund.pfixxml.serverutil.SessionAdmin;
  */
 public class ServiceRuntime {
 	
-    private static Logger LOG=Logger.getLogger(ServiceRuntime.class);
-    private static Logger LOGGER_WSTRAIL=Logger.getLogger("LOGGER_WSTRAIL");
+    private final static Logger LOG=Logger.getLogger(ServiceRuntime.class);
+    private final static Logger LOGGER_WSTRAIL=Logger.getLogger("LOGGER_WSTRAIL");
     
     private static ThreadLocal<ServiceCallContext> currentContext=new ThreadLocal<ServiceCallContext>();
 	

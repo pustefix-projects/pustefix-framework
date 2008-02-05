@@ -41,7 +41,7 @@ import de.schlund.pfixxml.util.XsltVersion;
  */
 public class TransformerCallback {
     
-    private static Logger LOG=Logger.getLogger(TransformerCallback.class);
+    private final static Logger LOG=Logger.getLogger(TransformerCallback.class);
 
     private static DocumentBuilderFactory  docBuilderFactory = DocumentBuilderFactory.newInstance();
     

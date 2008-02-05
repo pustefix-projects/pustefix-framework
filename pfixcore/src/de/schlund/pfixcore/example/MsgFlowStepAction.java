@@ -36,7 +36,7 @@ import de.schlund.pfixxml.ResultDocument;
 
 public class MsgFlowStepAction implements FlowStepAction {
     private String          text;
-    private static Logger LOG = Logger.getLogger(MsgFlowStepAction.class);
+    private final static Logger LOG = Logger.getLogger(MsgFlowStepAction.class);
     
     public void setData(HashMap data) {
         this.text = (String) data.get("text");

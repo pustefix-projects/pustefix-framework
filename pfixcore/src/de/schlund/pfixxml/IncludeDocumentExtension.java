@@ -54,7 +54,7 @@ import de.schlund.pfixxml.util.XsltContext;
 public final class IncludeDocumentExtension {
     //~ Instance/static variables
     // ..................................................................
-    private static Logger       LOG        = Logger.getLogger(IncludeDocumentExtension.class);
+    private static final Logger       LOG        = Logger.getLogger(IncludeDocumentExtension.class);
     private static final String NOTARGET   = "__NONE__";
     private static final String XPPARTNAME = "/include_parts/part[@name='";
     private static final String XTHEMENAME = "/theme[@name = '";

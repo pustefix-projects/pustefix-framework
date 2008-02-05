@@ -26,7 +26,7 @@ public final class Meminfo {
     //~ Instance/static variables ..................................................................
 
     private static long last_used = -1L;
-    private static Logger LOG = Logger.getLogger(Meminfo.class);
+    private final static Logger LOG = Logger.getLogger(Meminfo.class);
 
     //~ Methods ....................................................................................
 

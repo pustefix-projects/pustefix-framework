@@ -46,7 +46,7 @@ import de.schlund.pfixxml.perflogging.PerfEventType;
  */
 public class StateUtil {
   
-    private static Logger LOG = Logger.getLogger(StateImpl.class);
+    private final static Logger LOG = Logger.getLogger(StateImpl.class);
     
     private static final String MIMETYPE      = "mimetype";
     private static final String HEADER        = "responseheader";

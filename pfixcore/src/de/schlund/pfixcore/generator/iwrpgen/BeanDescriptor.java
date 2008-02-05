@@ -36,7 +36,7 @@ import de.schlund.pfixcore.generator.annotation.Transient;
  */
 public class BeanDescriptor {
 
-    static Logger LOG=Logger.getLogger(BeanDescriptor.class);
+    final static Logger LOG=Logger.getLogger(BeanDescriptor.class);
     
 	Class<?> clazz;
 	

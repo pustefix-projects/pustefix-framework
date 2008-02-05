@@ -13,7 +13,7 @@ import org.apache.log4j.Logger;
  *
  */
 public class PerfEventTakeThread extends Thread {
-    private static Logger LOG = Logger.getLogger(PerfEventTakeThread.class);
+    private final static Logger LOG = Logger.getLogger(PerfEventTakeThread.class);
     private BoundedBufferWrapper bBuffer;
     
     public PerfEventTakeThread(BoundedBufferWrapper b) {

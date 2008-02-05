@@ -38,7 +38,7 @@ import de.schlund.pfixcore.webservice.utils.XMLFormatter;
  */
 public class RecordingHandler extends AbstractHandler {
         
-    private static Logger LOG=Logger.getLogger(RecordingHandler.class.getName());
+    private final static Logger LOG=Logger.getLogger(RecordingHandler.class.getName());
 
     public RecordingHandler() {
     }

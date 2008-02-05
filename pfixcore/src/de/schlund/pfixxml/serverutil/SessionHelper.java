@@ -34,7 +34,7 @@ import de.schlund.pfixxml.ServletManager;
 
 public class SessionHelper {
 
-    private static Logger LOG = Logger.getLogger(SessionHelper.class);
+    private final static Logger LOG = Logger.getLogger(SessionHelper.class);
 
     public static final String SESSION_ID_URL = "__SESSION_ID_URL__";
 

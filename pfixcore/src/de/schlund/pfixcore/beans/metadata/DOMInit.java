@@ -41,7 +41,7 @@ import org.xml.sax.SAXParseException;
  */
 public class DOMInit {
     
-    static Logger LOG=Logger.getLogger(DOMInit.class);
+    protected final static Logger LOG=Logger.getLogger(DOMInit.class);
     
     public final static String XMLNS_BEANMETADATA="http://pustefix.sourceforge.net/beanmetadata";
     

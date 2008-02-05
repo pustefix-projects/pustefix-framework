@@ -30,8 +30,8 @@ import java.util.List;
  */
 public class DefaultLocator implements Locator {
 
-    private static String DEFAULT_FILE="beanmetadata.xml";
-    private static String DEFAULT_LOCATION="META-INF";
+    private final static String DEFAULT_FILE="beanmetadata.xml";
+    private final static String DEFAULT_LOCATION="META-INF";
     
     List<URL> resources;
     

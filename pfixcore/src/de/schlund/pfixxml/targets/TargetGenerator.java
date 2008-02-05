@@ -91,7 +91,7 @@ public class TargetGenerator implements Comparable {
 
     public static final String CACHEDIR = ".cache";
 
-    private static Logger LOG = Logger.getLogger(TargetGenerator.class);
+    private static final Logger LOG = Logger.getLogger(TargetGenerator.class);
 
     private static TargetGenerationReport report = new TargetGenerationReport();
 

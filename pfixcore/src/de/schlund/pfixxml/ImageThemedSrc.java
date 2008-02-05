@@ -37,7 +37,7 @@ import de.schlund.pfixxml.util.XsltContext;
  * @version 1.0
  */
 public class ImageThemedSrc {
-    private static Logger LOG = Logger.getLogger(ImageThemedSrc.class);
+    private final static Logger LOG = Logger.getLogger(ImageThemedSrc.class);
 
     /** xslt extension */
     public static String getSrc(XsltContext context, String src, String themed_path, String themed_img,

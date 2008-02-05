@@ -15,7 +15,7 @@ import org.apache.log4j.Logger;
  */
 class PerfEventPut {
     private static PerfEventPut instance = new PerfEventPut();
-    private static Logger LOG = Logger.getLogger(PerfEventPut.class);
+    private final static Logger LOG = Logger.getLogger(PerfEventPut.class);
     
     private BoundedBufferWrapper bBuffer;
     

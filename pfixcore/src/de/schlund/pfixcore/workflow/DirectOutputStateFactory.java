@@ -31,7 +31,7 @@ import org.apache.log4j.Logger;
  */
 public class DirectOutputStateFactory {
     private static HashMap      knownstates = new HashMap();
-    private static Logger       LOG         = Logger.getLogger(StateFactory.class);
+    private final static Logger       LOG         = Logger.getLogger(StateFactory.class);
     private static DirectOutputStateFactory instance    = new DirectOutputStateFactory();
     
     private DirectOutputStateFactory() {

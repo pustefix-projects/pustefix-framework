@@ -48,7 +48,7 @@ import de.schlund.pfixxml.util.Xml;
  */
 
 public class AuxDependencyManager {
-    private static Logger   LOG    = Logger.getLogger(AuxDependencyManager.class);
+    private final static Logger   LOG    = Logger.getLogger(AuxDependencyManager.class);
     private static String   DEPAUX = "depaux";
     private TargetImpl   target;
     

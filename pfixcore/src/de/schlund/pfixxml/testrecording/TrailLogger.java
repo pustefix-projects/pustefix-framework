@@ -46,7 +46,7 @@ import de.schlund.pfixxml.util.Xml;
  * @author <a href="mailto: haecker@schlund.de">Joerg Haecker</a>
  */
 public class TrailLogger extends NotificationBroadcasterSupport implements TrailLoggerMBean {
-    private static Logger LOG = Logger.getLogger(TrailLogger.class);
+    private final static Logger LOG = Logger.getLogger(TrailLogger.class);
     
     public static final String NOTIFICATION_TYPE = "step";
     public static final String CLOSE_TYPE ="close";

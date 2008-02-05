@@ -42,7 +42,7 @@ public class ContextTShirtImpl implements ContextTShirt{
     private Integer    color    = null;
     private Integer[]  features = null;
     protected Context  context  = null;
-    private static Logger LOG = Logger.getLogger(ContextTShirtImpl.class);
+    private final static Logger LOG = Logger.getLogger(ContextTShirtImpl.class);
     
     public void init(Context context) {
         this.context = context;

@@ -29,7 +29,7 @@ import de.schlund.pfixxml.util.XsltVersion;
  */
 public class IWrapperInfo {
 
-    private static Logger                  LOG               = Logger.getLogger(IWrapperInfo.class);
+    private final static Logger                  LOG               = Logger.getLogger(IWrapperInfo.class);
     private static DocumentBuilderFactory  docBuilderFactory = DocumentBuilderFactory.newInstance();
     private static Map<Class<?>, Document> docCache          = new HashMap<Class<?>, Document>();
 

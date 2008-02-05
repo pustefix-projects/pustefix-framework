@@ -1,3 +1,60 @@
+2008-02-05  Sebastian Marsching  <sebastian.marsching@1und1.de>
+
+	* src/de/schlund/pfixcore/beans/metadata/DefaultLocator.java: 
+	* src/de/schlund/pfixcore/beans/metadata/DOMInit.java: 
+	* src/de/schlund/pfixcore/beans/BeanDescriptor.java: 
+	* src/de/schlund/pfixcore/example/ContextAdultInfoImpl.java: 
+	* src/de/schlund/pfixcore/example/ContextCounterImpl.java: 
+	* src/de/schlund/pfixcore/example/ContextTrouserImpl.java: 
+	* src/de/schlund/pfixcore/example/ContextTShirtImpl.java: 
+	* src/de/schlund/pfixcore/example/MsgFlowStepAction.java: 
+	* src/de/schlund/pfixcore/generator/iwrpgen/BeanDescriptor.java: 
+	* src/de/schlund/pfixcore/generator/IWrapperInfo.java: 
+	* src/de/schlund/pfixcore/lucefix/PfixQueueManager.java: 
+	* src/de/schlund/pfixcore/lucefix/PfixReadjustment.java: 
+	* src/de/schlund/pfixcore/scripting/ScriptingIHandler.java: 
+	* src/de/schlund/pfixcore/scripting/ScriptingUtil.java: 
+	* src/de/schlund/pfixcore/util/Meminfo.java: 
+	* src/de/schlund/pfixcore/util/PropertiesUtils.java: 
+	* src/de/schlund/pfixcore/util/StateUtil.java: 
+	* src/de/schlund/pfixcore/util/TransformerCallback.java: 
+	* src/de/schlund/pfixcore/webservice/fault/ExceptionProcessorAdapter.java: 
+	* src/de/schlund/pfixcore/webservice/handler/ErrorHandler.java: 
+	* src/de/schlund/pfixcore/webservice/handler/RecordingHandler.java: 
+	* src/de/schlund/pfixcore/webservice/utils/FileCache.java: 
+	* src/de/schlund/pfixcore/webservice/ServiceRuntime.java: 
+	* src/de/schlund/pfixcore/workflow/context/PageFlow.java: 
+	* src/de/schlund/pfixcore/workflow/context/PageFlowManager.java: 
+	* src/de/schlund/pfixcore/workflow/DirectOutputStateFactory.java: 
+	* src/de/schlund/pfixcore/workflow/FlowStep.java: 
+	* src/de/schlund/pfixcore/workflow/FlowStepActionFactory.java: 
+	* src/de/schlund/pfixcore/workflow/NavigationFactory.java: 
+	* src/de/schlund/pfixxml/exceptionprocessor/util/ExceptionDataValueHelper.java: 
+	* src/de/schlund/pfixxml/exceptionprocessor/PageForwardingExceptionProcessor.java: 
+	* src/de/schlund/pfixxml/multipart/MultipartHandler.java: 
+	* src/de/schlund/pfixxml/perflogging/AdditionalTrailInfoFactory.java: 
+	* src/de/schlund/pfixxml/perflogging/LogFileWriterThread.java: 
+	* src/de/schlund/pfixxml/perflogging/PerfEventPut.java: 
+	* src/de/schlund/pfixxml/perflogging/PerfEventTakeThread.java: 
+	* src/de/schlund/pfixxml/perflogging/PerfLogging.java: 
+	* src/de/schlund/pfixxml/serverutil/SessionHelper.java: 
+	* src/de/schlund/pfixxml/targets/AuxDependencyManager.java: 
+	* src/de/schlund/pfixxml/targets/TargetGenerator.java: 
+	* src/de/schlund/pfixxml/testrecording/TestRecording.java: 
+	* src/de/schlund/pfixxml/testrecording/TrailLogger.java: 
+	* src/de/schlund/pfixxml/util/xsltimpl/Saxon1TraceListener.java: 
+	* src/de/schlund/pfixxml/util/MD5Utils.java: 
+	* src/de/schlund/pfixxml/util/XPath.java: 
+	* src/de/schlund/pfixxml/util/XsltProvider.java: 
+	* src/de/schlund/pfixxml/AbstractXMLServlet.java: 
+	* src/de/schlund/pfixxml/DependencyTracker.java: 
+	* src/de/schlund/pfixxml/DerefServlet.java: 
+	* src/de/schlund/pfixxml/FactoryInitUtil.java: 
+	* src/de/schlund/pfixxml/ImageGeometry.java: 
+	* src/de/schlund/pfixxml/ImageThemedSrc.java: 
+	* src/de/schlund/pfixxml/IncludeDocumentExtension.java: 
+	Made static fields keeping instances of Log4J's Logger final.
+	
 2008-02-01  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
 	* src/de/schlund/pfixxml/config/GlobalConfig.java: 

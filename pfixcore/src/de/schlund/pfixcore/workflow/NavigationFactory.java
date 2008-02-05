@@ -39,7 +39,7 @@ import de.schlund.pfixxml.util.XsltVersion;
  */
 
 public class NavigationFactory {
-    private static Logger            LOG      = Logger.getLogger(NavigationFactory.class);
+    private final static Logger            LOG      = Logger.getLogger(NavigationFactory.class);
     private static HashMap           navis    = new HashMap();
     private static NavigationFactory instance = new NavigationFactory();
     

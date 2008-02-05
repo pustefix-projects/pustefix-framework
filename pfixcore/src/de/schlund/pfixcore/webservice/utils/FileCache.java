@@ -29,7 +29,7 @@ import org.apache.log4j.Logger;
  */
 public class FileCache {
 
-    static Logger LOG=Logger.getLogger(FileCache.class);
+    final static Logger LOG=Logger.getLogger(FileCache.class);
     
     private LinkedHashMap<String,FileCacheData> map;
     

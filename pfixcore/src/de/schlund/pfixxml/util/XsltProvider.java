@@ -29,7 +29,7 @@ import org.apache.log4j.Logger;
  */
 public class XsltProvider {
     
-    static Logger LOG=Logger.getLogger(XsltProvider.class);
+    final static Logger LOG=Logger.getLogger(XsltProvider.class);
 
     static String DETECT_SAXON1="com.icl.saxon.TransformerFactoryImpl";
     static String DETECT_SAXON2="net.sf.saxon.TransformerFactoryImpl";

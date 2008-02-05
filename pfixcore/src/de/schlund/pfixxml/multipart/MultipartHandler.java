@@ -86,7 +86,7 @@ public class MultipartHandler {
     private List<Exception> failedParts = null;
     private long maxPartSize = -1;
 
-    private static Logger LOG = Logger.getLogger(MultipartHandler.class);
+    private final static Logger LOG = Logger.getLogger(MultipartHandler.class);
 
     protected static File getDestFile(File dir, String fName) throws IOException {
         TempFile rc = null;

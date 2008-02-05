@@ -44,7 +44,7 @@ import de.schlund.pfixcore.example.webservices.DataBean;
  */
 public class BeanDescriptor {
 
-    static Logger LOG=Logger.getLogger(BeanDescriptor.class);
+    protected final static Logger LOG=Logger.getLogger(BeanDescriptor.class);
     
 	Class<?> clazz;
 	

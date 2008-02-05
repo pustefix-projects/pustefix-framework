@@ -39,7 +39,7 @@ import de.schlund.pfixcore.workflow.Context;
  */
 public class ErrorHandler extends AbstractHandler {
         
-    private static Logger LOG=Logger.getLogger(ErrorHandler.class);
+    private final static Logger LOG=Logger.getLogger(ErrorHandler.class);
 
     public ErrorHandler() {
         super();

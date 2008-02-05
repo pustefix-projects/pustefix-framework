@@ -41,7 +41,7 @@ public class ContextCounterImpl implements ContextResource, ContextCounter {
 
     private Boolean  showcounter = Boolean.FALSE;
     private int      counter     = 0;
-    private static Logger LOG    = Logger.getLogger(ContextCounterImpl.class);
+    private final static Logger LOG    = Logger.getLogger(ContextCounterImpl.class);
     // private Context  context;
     
     public void init(Context context) {
