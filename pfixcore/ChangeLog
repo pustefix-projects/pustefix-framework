@@ -7,9 +7,11 @@
 	  the types have to implement toString())
 	- added exemplary unit test
 
+	Modified:
 	* src/de/schlund/pfixcore/generator/iwrpgen/IWrapperToBean.java
 	* src/de/schlund/pfixcore/generator/iwrpgen/IWrapperAnnotationProcessor.java
 
+	Added:
 	* src/de/schlund/pfixcore/generator/iwrpgen/BeanToIWrapper.java
 	* src/de/schlund/pfixcore/example/test
 	* src/de/schlund/pfixcore/example/test/BeanDummyHandler.java
