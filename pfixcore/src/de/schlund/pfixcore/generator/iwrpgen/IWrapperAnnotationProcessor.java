@@ -51,6 +51,7 @@ import com.sun.mirror.declaration.FieldDeclaration;
 import com.sun.mirror.declaration.MethodDeclaration;
 import com.sun.mirror.type.ArrayType;
 import com.sun.mirror.type.ClassType;
+import com.sun.mirror.type.InterfaceType;
 import com.sun.mirror.type.PrimitiveType;
 import com.sun.mirror.type.TypeMirror;
 import com.sun.mirror.type.VoidType;
@@ -149,10 +150,10 @@ public class IWrapperAnnotationProcessor implements AnnotationProcessor {
 
         Document doc;
         Element root;
-        
+
         Set<PrimitiveType.Kind> builtinPrimitives = new HashSet<PrimitiveType.Kind>();
         Set<String> builtinTypes = new HashSet<String>();
-        
+
         private String BOOLEAN_CASTER = "de.schlund.pfixcore.generator.casters.ToBoolean";
         private String BYTE_CASTER = "de.schlund.pfixcore.generator.casters.ToByte";
         private String DOUBLE_CASTER = "de.schlund.pfixcore.generator.casters.ToDouble";
@@ -161,7 +162,7 @@ public class IWrapperAnnotationProcessor implements AnnotationProcessor {
         private String LONG_CASTER = "de.schlund.pfixcore.generator.casters.ToLong";
 
         private String DATE_CASTER = "de.schlund.pfixcore.generator.casters.ToDate";
-        
+
         public TypeVisitor() {
             builtinPrimitives.add(PrimitiveType.Kind.BOOLEAN);
             builtinPrimitives.add(PrimitiveType.Kind.BYTE);
@@ -282,7 +283,7 @@ public class IWrapperAnnotationProcessor implements AnnotationProcessor {
                     if (transientMirror == null) {
                         AnnotationMirror paramMirror = MirrorApiUtils.getAnnotationMirror(fieldDecl, paramType);
                         AnnotationMirror casterMirror = MirrorApiUtils.getAnnotationMirror(fieldDecl, casterType);
-                        if(paramMirror!=null || casterMirror!=null || isBuiltinType(fieldDecl.getType())) {
+                        if (paramMirror != null || casterMirror != null || isBuiltinType(fieldDecl.getType())) {
                             Element paramElem = addParam(root, propName, fieldDecl.getType(), paramMirror);
                             if (paramElem == null) return;
                             if (casterMirror != null) addCaster(paramElem, casterMirror);
@@ -332,16 +333,18 @@ public class IWrapperAnnotationProcessor implements AnnotationProcessor {
                     if (paramMirror == null && fieldDecl != null) paramMirror = MirrorApiUtils.getAnnotationMirror(fieldDecl, paramType);
                     AnnotationMirror casterMirror = MirrorApiUtils.getAnnotationMirror(methDecl, casterType);
                     if (casterMirror == null && fieldDecl != null) casterMirror = MirrorApiUtils.getAnnotationMirror(fieldDecl, casterType);
-                    if(paramMirror!=null || casterMirror!=null || isBuiltinType(methDecl.getReturnType())) {
+                    if (paramMirror != null || casterMirror != null || isBuiltinType(methDecl.getReturnType())) {
                         Element paramElem = addParam(root, propName, methDecl.getReturnType(), paramMirror);
                         if (paramElem == null) return;
                         if (casterMirror != null) addCaster(paramElem, casterMirror);
                         else autoAddCaster(paramElem, methDecl.getReturnType());
                         AnnotationMirror preCheckMirror = MirrorApiUtils.getAnnotationMirror(methDecl, preCheckType);
-                        if (preCheckMirror == null && fieldDecl != null) preCheckMirror = MirrorApiUtils.getAnnotationMirror(fieldDecl, preCheckType);
+                        if (preCheckMirror == null && fieldDecl != null)
+                            preCheckMirror = MirrorApiUtils.getAnnotationMirror(fieldDecl, preCheckType);
                         if (preCheckMirror != null) addPreCheck(paramElem, preCheckMirror);
                         AnnotationMirror postCheckMirror = MirrorApiUtils.getAnnotationMirror(methDecl, postCheckType);
-                        if (postCheckMirror == null && fieldDecl != null) postCheckMirror = MirrorApiUtils.getAnnotationMirror(fieldDecl, postCheckType);
+                        if (postCheckMirror == null && fieldDecl != null)
+                            postCheckMirror = MirrorApiUtils.getAnnotationMirror(fieldDecl, postCheckType);
                         if (postCheckMirror != null) addPostCheck(paramElem, postCheckMirror);
                     }
                 }
@@ -351,20 +354,20 @@ public class IWrapperAnnotationProcessor implements AnnotationProcessor {
 
         private Element addParam(Element rootElem, String propertyName, TypeMirror typeMirror, AnnotationMirror mirror) {
             Element paramElem = rootElem.getOwnerDocument().createElementNS(XMLNS_IWRP, "iwrp:param");
-
             String paramType = null;
-            if (typeMirror instanceof ClassType) {
-                ClassType propType = (ClassType) typeMirror;
-                paramType = propType.getDeclaration().getQualifiedName();
-            } else if (typeMirror instanceof PrimitiveType) {
-                PrimitiveType propType = (PrimitiveType) typeMirror;
-                paramType = getPrimitiveWrapperType(propType.getKind());
-                if (paramType == null) {
-                    warn("Ignore property because of unsupported primitive type: " + typeMirror);
+            if (!isArrayType(typeMirror)) {
+                if (typeMirror instanceof ClassType) {
+                    ClassType propType = (ClassType) typeMirror;
+                    paramType = propType.getDeclaration().getQualifiedName();
+                } else if (typeMirror instanceof PrimitiveType) {
+                    PrimitiveType propType = (PrimitiveType) typeMirror;
+                    paramType = getPrimitiveWrapperType(propType.getKind());
+                    if (paramType == null) {
+                        warn("Ignore property because of unsupported primitive type: " + typeMirror);
+                    }
                 }
-            } else if (typeMirror instanceof ArrayType) {
-                ArrayType propType = (ArrayType) typeMirror;
-                TypeMirror compType = propType.getComponentType();
+            } else {
+                TypeMirror compType = getArrayComponentType(typeMirror);
                 if (compType instanceof ClassType) {
                     paramElem.setAttribute("frequency", "multiple");
                     paramType = ((ClassType) compType).getDeclaration().getQualifiedName();
@@ -377,9 +380,6 @@ public class IWrapperAnnotationProcessor implements AnnotationProcessor {
                 } else {
                     warn("Ignore property because of unsupported component type: " + typeMirror);
                 }
-            } else {
-                warn("Ignore property because of unsupported type: " + typeMirror);
-                return null;
             }
             rootElem.appendChild(paramElem);
             paramElem.setAttribute("type", paramType);
@@ -503,8 +503,8 @@ public class IWrapperAnnotationProcessor implements AnnotationProcessor {
 
         private void autoAddCaster(Element paramElem, TypeMirror mirror) {
             String caster = null;
-            if (mirror instanceof ArrayType) {
-                TypeMirror compType = ((ArrayType) mirror).getComponentType();
+            if (isBuiltinArrayType(mirror)) {
+                TypeMirror compType = getArrayComponentType(mirror);
                 mirror = compType;
             }
             if (mirror instanceof PrimitiveType) {
@@ -535,20 +535,96 @@ public class IWrapperAnnotationProcessor implements AnnotationProcessor {
                 casterElem.setAttribute("class", caster);
             }
         }
-        
+
         private boolean isBuiltinType(TypeMirror mirror) {
-            if(mirror instanceof ArrayType) {
+            boolean builtin = isBuiltinArrayType(mirror);
+            if (!builtin) builtin = isBuiltinSingleType(mirror);
+            return builtin;
+        }
+
+        private boolean isBuiltinArrayType(TypeMirror mirror) {
+            boolean builtin = false;
+            if (mirror instanceof ArrayType) {
                 TypeMirror compType = ((ArrayType) mirror).getComponentType();
-                mirror = compType;
-            }
-            if (mirror instanceof PrimitiveType) {
-                PrimitiveType.Kind kind = ((PrimitiveType) mirror).getKind();
-                return builtinPrimitives.contains(kind);
-            } else if(mirror instanceof ClassType) {
+                builtin = isBuiltinSingleType(compType);
+            } else if (mirror instanceof ClassType) {
                 String qname = ((ClassType) mirror).getDeclaration().getQualifiedName();
-                return builtinTypes.contains(qname);
+                if (qname.equals("java.util.ArrayList")) {
+                    Collection<TypeMirror> args = ((ClassType) mirror).getActualTypeArguments();
+                    if (args.size() == 1) {
+                        TypeMirror arg = args.iterator().next();
+                        builtin = isBuiltinSingleType(arg);
+                    }
+                }
+            } else if (mirror instanceof InterfaceType) {
+                String qname = ((InterfaceType) mirror).getDeclaration().getQualifiedName();
+                if (qname.equals("java.util.List")) {
+                    Collection<TypeMirror> args = ((InterfaceType) mirror).getActualTypeArguments();
+                    if (args.size() == 1) {
+                        TypeMirror arg = args.iterator().next();
+                        builtin = isBuiltinSingleType(arg);
+                    }
+                }
+
+            }
+            return builtin;
+        }
+
+        private boolean isArrayType(TypeMirror mirror) {
+            if (mirror instanceof ArrayType) {
+                return true;
+            } else if (mirror instanceof ClassType) {
+                String qname = ((ClassType) mirror).getDeclaration().getQualifiedName();
+                if (qname.equals("java.util.ArrayList")) {
+                    Collection<TypeMirror> args = ((ClassType) mirror).getActualTypeArguments();
+                    if (args.size() == 1) {
+                        return true;
+                    }
+                }
+            } else if (mirror instanceof InterfaceType) {
+                String qname = ((InterfaceType) mirror).getDeclaration().getQualifiedName();
+                if (qname.equals("java.util.List")) {
+                    Collection<TypeMirror> args = ((InterfaceType) mirror).getActualTypeArguments();
+                    if (args.size() == 1) {
+                        return true;
+                    }
+                }
+
             }
             return false;
+        }
+
+        private boolean isBuiltinSingleType(TypeMirror mirror) {
+            boolean builtin = false;
+            if (mirror instanceof PrimitiveType) {
+                PrimitiveType.Kind kind = ((PrimitiveType) mirror).getKind();
+                builtin = builtinPrimitives.contains(kind);
+            } else if (mirror instanceof ClassType) {
+                String qname = ((ClassType) mirror).getDeclaration().getQualifiedName();
+                builtin = builtinTypes.contains(qname);
+            }
+            return builtin;
+        }
+
+        private TypeMirror getArrayComponentType(TypeMirror typeMirror) {
+            TypeMirror compType = null;
+            if (typeMirror instanceof ClassType) {
+                String qname = ((ClassType) typeMirror).getDeclaration().getQualifiedName();
+                if (qname.equals("java.util.ArrayList")) {
+                    Collection<TypeMirror> args = ((ClassType) typeMirror).getActualTypeArguments();
+                    if (args.size() == 1) compType = args.iterator().next();
+                }
+            } else if (typeMirror instanceof InterfaceType) {
+                String qname = ((InterfaceType) typeMirror).getDeclaration().getQualifiedName();
+                if (qname.equals("java.util.List")) {
+                    Collection<TypeMirror> args = ((InterfaceType) typeMirror).getActualTypeArguments();
+                    if (args.size() == 1) compType = args.iterator().next();
+                }
+            } else if (typeMirror instanceof ArrayType) {
+                ArrayType propType = (ArrayType) typeMirror;
+                compType = propType.getComponentType();
+            }
+            return compType;
         }
 
     }
