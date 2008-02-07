@@ -5,7 +5,7 @@
 	are supported. Besides added some unit tests for the OXM stuff. 
 	
 	The new XMLUtils class adds some useful methods for DOM handling,
-	e.g. building an XPath expression from a DOM node and and
+	e.g. building an XPath expression from a DOM node and an
 	assertEquals method which can be used in unit tests to compare
 	DOM documents or nodes.
 
