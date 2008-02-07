@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<result boolVal="true" floatVal="2.2" intVal="1" strVal="aaa">
+   <childList>
+      <complexTestBean boolVal="false" floatVal="3.3" intVal="2" strVal="bbb">
+         <booleanArray>
+            <boolean>true</boolean>
+            <boolean>true</boolean>
+         </booleanArray>
+      </complexTestBean>
+      <complexTestBean boolVal="true" floatVal="4.4" intVal="3" strVal="ccc">
+         <booleanArray>
+            <boolean>false</boolean>
+            <boolean>false</boolean>
+         </booleanArray>
+      </complexTestBean>
+   </childList>
+   <childMap>
+      <entry>
+         <string>ccc</string>
+         <complexTestBean boolVal="true" floatVal="4.4" intVal="3" strVal="ccc">
+            <booleanArray>
+               <boolean>false</boolean>
+               <boolean>false</boolean>
+            </booleanArray>
+         </complexTestBean>
+      </entry>
+      <entry>
+         <string>bbb</string>
+         <complexTestBean boolVal="false" floatVal="3.3" intVal="2" strVal="bbb">
+            <booleanArray>
+               <boolean>true</boolean>
+               <boolean>true</boolean>
+            </booleanArray>
+         </complexTestBean>
+      </entry>
+   </childMap>
+   <booleanArray>
+      <boolean>true</boolean>
+      <boolean>false</boolean>
+   </booleanArray>
+</result>

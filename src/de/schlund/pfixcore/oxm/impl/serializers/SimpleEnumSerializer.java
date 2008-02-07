@@ -16,18 +16,20 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
+package de.schlund.pfixcore.oxm.impl.serializers;
 
-package de.schlund.pfixcore.beans;
+import de.schlund.pfixcore.oxm.impl.SerializationContext;
+import de.schlund.pfixcore.oxm.impl.SerializationException;
+import de.schlund.pfixcore.oxm.impl.SimpleTypeSerializer;
 
 /**
  * @author mleidig@schlund.de
  */
-public class IntrospectionException extends RuntimeException {
+public class SimpleEnumSerializer implements SimpleTypeSerializer {
 
-    private static final long serialVersionUID = 4961446418289217687L;
-
-    public IntrospectionException(String msg) {
-        super(msg);
+    public String serialize(Object obj, SerializationContext context) throws SerializationException {
+        Enum<?> e = (Enum<?>) obj;
+        return e.name();
     }
 
 }

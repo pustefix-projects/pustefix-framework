@@ -21,23 +21,25 @@ package de.schlund.pfixcore.oxm;
 /**
  * Abstraction for object (un-)marshalling errors.
  * 
- * This is the generic base class for more specific exceptions, which 
- * themselves are wrapping the implementation specific exceptions.
+ * This is the generic base class for more specific exceptions, which themselves
+ * are wrapping the implementation specific exceptions.
  * 
  * @author mleidig@schlund.de
  */
 public class MappingException extends RuntimeException {
 
+    private static final long serialVersionUID = 1627843664499011152L;
+
     public MappingException(String message) {
         super(message);
     }
-    
+
     public MappingException(Throwable cause) {
         super(cause);
     }
-    
-    public MappingException(String message,Throwable cause) {
-        super(message,cause);
+
+    public MappingException(String message, Throwable cause) {
+        super(message, cause);
     }
-    
+
 }
