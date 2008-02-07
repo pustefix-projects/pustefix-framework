@@ -30,9 +30,9 @@ import org.w3c.dom.NodeList;
 import org.w3c.dom.Text;
 
 /**
- * This class contains some utility methods for working with w3c DOMs: -
- * creation of a XPath expression denoting the absolute node position -
- * assertEquals JUnit test implementation for comparison of DOM nodes
+ * This class contains some utility methods for working with w3c DOMs: 
+ * - creation of a XPath expression denoting the absolute node position
+ * - assertEquals JUnit test implementation for comparison of DOM nodes
  * 
  * @author mleidig
  * 
@@ -176,17 +176,19 @@ public class XMLUtils {
      * Strips whitespace (empty text nodes) from DOM
      */
     public static void stripWhitespace(Node node) {
-        if(node.getNodeType()==Node.ELEMENT_NODE) {
-            Element elem=(Element)node;
-            NodeList nl=elem.getChildNodes();
-            List<Node> nodes=new ArrayList<Node>();
-            for(int i=0;i<nl.getLength();i++) nodes.add(nl.item(i));
-            for(Node n:nodes) stripWhitespace(n);
-        } else if(node.getNodeType()==Node.TEXT_NODE) {
-            Text text=(Text)node;
-            String content=text.getTextContent();
-            if(content.trim().equals("")) node.getParentNode().removeChild(node);
-        } else if(node.getNodeType()==Node.DOCUMENT_NODE) {
+        if (node.getNodeType() == Node.ELEMENT_NODE) {
+            Element elem = (Element) node;
+            NodeList nl = elem.getChildNodes();
+            List<Node> nodes = new ArrayList<Node>();
+            for (int i = 0; i < nl.getLength(); i++)
+                nodes.add(nl.item(i));
+            for (Node n : nodes)
+                stripWhitespace(n);
+        } else if (node.getNodeType() == Node.TEXT_NODE) {
+            Text text = (Text) node;
+            String content = text.getTextContent();
+            if (content.trim().equals("")) node.getParentNode().removeChild(node);
+        } else if (node.getNodeType() == Node.DOCUMENT_NODE) {
             stripWhitespace(node.getFirstChild());
         }
     }
