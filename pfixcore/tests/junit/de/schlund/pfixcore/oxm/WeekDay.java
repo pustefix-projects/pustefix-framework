@@ -16,18 +16,27 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
-
-package de.schlund.pfixcore.beans;
+package de.schlund.pfixcore.oxm;
 
 /**
  * @author mleidig@schlund.de
  */
-public class IntrospectionException extends RuntimeException {
+public enum WeekDay {
 
-    private static final long serialVersionUID = 4961446418289217687L;
+    SUNDAY(0), MONDAY(8), TUESDAY(8), WEDNESDAY(8), THURSDAY(8), FRIDAY(6), SATURDAY(0);
 
-    public IntrospectionException(String msg) {
-        super(msg);
+    private int workingHours;
+
+    WeekDay(int workingHours) {
+        this.workingHours = workingHours;
+    }
+
+    public int getWorkingHours() {
+        return workingHours;
+    }
+
+    public void setWorkingHours(int hours) {
+        this.workingHours = hours;
     }
 
 }

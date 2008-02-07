@@ -24,12 +24,14 @@ package de.schlund.pfixcore.beans;
  */
 public class InitException extends Exception {
 
+    private static final long serialVersionUID = -8383757459951915154L;
+
     public InitException(String msg) {
         super(msg);
     }
-    
-    public InitException(String msg,Throwable cause) {
-        super(msg,cause);
+
+    public InitException(String msg, Throwable cause) {
+        super(msg, cause);
     }
-    
+
 }

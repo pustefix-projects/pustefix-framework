@@ -1,5 +1,40 @@
 2008-02-07  Martin Leidig  <mleidig@schlund.de>
 
+	Added Enum support to Object-to-XML mapping. Both simple enums, only
+	with constant names, and complex enums, having bean-style properties,
+	are supported. Besides added some unit tests for the OXM stuff. 
+	
+	The new XMLUtils class adds some useful methods for DOM handling,
+	e.g. building an XPath expression from a DOM node and and
+	assertEquals method which can be used in unit tests to compare
+	DOM documents or nodes.
+
+	Modified:
+	* src/de/schlund/pfixcore/oxm/MarshallingException.java
+	* src/de/schlund/pfixcore/oxm/impl/SerializerRegistry.java
+	* src/de/schlund/pfixcore/oxm/impl/serializers/BeanSerializer.java
+	* src/de/schlund/pfixcore/oxm/impl/SerializationException.java
+	* src/de/schlund/pfixcore/oxm/MappingException.java
+	* src/de/schlund/pfixcore/beans/IntrospectionException.java
+	* src/de/schlund/pfixcore/beans/InitException.java
+	* src/de/schlund/pfixcore/beans/BeanDescriptor.java
+	* tests/junit/de/schlund/pfixcore/oxm/Test.java
+
+	Added:
+	* src/de/schlund/pfixcore/oxm/impl/serializers/ComplexEnumSerializer.java
+	* src/de/schlund/pfixcore/oxm/impl/serializers/SimpleEnumSerializer.java
+	* src/de/schlund/pfixxml/util/XMLUtils.java
+	* tests/junit/de/schlund/pfixcore/oxm/testcomplex.xml
+	* tests/junit/de/schlund/pfixcore/oxm/WeekDay.java
+	* tests/junit/de/schlund/pfixcore/oxm/EnumTestBean.java
+	* tests/junit/de/schlund/pfixcore/oxm/ComplexTestBean.java
+
+	Removed:
+	* tests/junit/de/schlund/pfixcore/oxm/Bean.java
+	* tests/junit/de/schlund/pfixcore/oxm/BeanItf.java
+
+2008-02-07  Martin Leidig  <mleidig@schlund.de>
+
 	* projects/core/build/iwrapper.xsl: Bugfix: due to error in xpath
 	expression postchecks were not taken into account when checking
 	if import statement for annotations is required (causing that

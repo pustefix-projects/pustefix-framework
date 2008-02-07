@@ -16,18 +16,47 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
-
-package de.schlund.pfixcore.beans;
+package de.schlund.pfixcore.oxm;
 
 /**
  * @author mleidig@schlund.de
  */
-public class IntrospectionException extends RuntimeException {
+public class EnumTestBean {
 
-    private static final long serialVersionUID = 4961446418289217687L;
+    enum Priority {
+        HIGH, LOW
+    };
 
-    public IntrospectionException(String msg) {
-        super(msg);
+    private String text;
+    private WeekDay day;
+    private Priority prio;
+
+    public EnumTestBean() {
+
+    }
+
+    public String getText() {
+        return text;
+    }
+
+    public void setText(String text) {
+        this.text = text;
+    }
+
+    public WeekDay getDay() {
+        return day;
+    }
+
+    public void setDay(WeekDay day) {
+        this.day = day;
+    }
+
+    public Priority getPrio() {
+        return prio;
+    }
+
+    public void setPrio(Priority prio) {
+        this.prio = prio;
     }
 
 }

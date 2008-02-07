@@ -25,6 +25,8 @@ package de.schlund.pfixcore.oxm;
  */
 public class MarshallingException extends MappingException {
 
+    private static final long serialVersionUID = -2634284968836082793L;
+
     public MarshallingException(String message) {
         super(message);
     }

@@ -25,78 +25,92 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import de.schlund.pfixcore.beans.BeanDescriptor;
 import de.schlund.pfixcore.beans.BeanDescriptorFactory;
 import de.schlund.pfixcore.oxm.impl.serializers.ArraySerializer;
 import de.schlund.pfixcore.oxm.impl.serializers.BeanSerializer;
 import de.schlund.pfixcore.oxm.impl.serializers.CollectionSerializer;
+import de.schlund.pfixcore.oxm.impl.serializers.ComplexEnumSerializer;
 import de.schlund.pfixcore.oxm.impl.serializers.DateSerializer;
 import de.schlund.pfixcore.oxm.impl.serializers.MapSerializer;
 import de.schlund.pfixcore.oxm.impl.serializers.ObjectToStringSerializer;
+import de.schlund.pfixcore.oxm.impl.serializers.SimpleEnumSerializer;
 
 /**
  * @author mleidig@schlund.de
  */
 public class SerializerRegistry {
 
-   ClassNameMapping classNameMapping;
-   
-    Map<Class<?>,ComplexTypeSerializer> serializers;
-    Map<Class<?>,SimpleTypeSerializer> simpleSerializers;
-    
+    BeanDescriptorFactory beanDescFactory;
+    ClassNameMapping classNameMapping;
+
+    Map<Class<?>, ComplexTypeSerializer> serializers;
+    Map<Class<?>, SimpleTypeSerializer> simpleSerializers;
+
     ArraySerializer arraySerializer;
     BeanSerializer beanSerializer;
     CollectionSerializer collSerializer;
     MapSerializer mapSerializer;
-    
+    SimpleEnumSerializer simpleEnumSerializer;
+    ComplexEnumSerializer complexEnumSerializer;
+
     public SerializerRegistry(BeanDescriptorFactory beanDescFactory) {
-       
-       classNameMapping=new ClassNameMapping();
-        
-        serializers=new HashMap<Class<?>,ComplexTypeSerializer>();
-        simpleSerializers=new HashMap<Class<?>,SimpleTypeSerializer>();
-        
-        arraySerializer=new ArraySerializer();
-        beanSerializer=new BeanSerializer(beanDescFactory);
-        collSerializer=new CollectionSerializer();
-        mapSerializer=new MapSerializer();
-        
-        SimpleTypeSerializer ser=new ObjectToStringSerializer();
-        simpleSerializers.put(String.class,ser);
-        simpleSerializers.put(Character.class,ser);
-        simpleSerializers.put(Boolean.class,ser);
-        simpleSerializers.put(Byte.class,ser);
-        simpleSerializers.put(Short.class,ser);
-        simpleSerializers.put(Integer.class,ser);
-        simpleSerializers.put(Long.class,ser);
-        simpleSerializers.put(Float.class,ser);
-        simpleSerializers.put(Double.class,ser);
-        simpleSerializers.put(Currency.class,ser);
-        
-        ser=new DateSerializer();
-        simpleSerializers.put(Date.class,ser);
-        simpleSerializers.put(GregorianCalendar.class,ser);
-        
+
+        this.beanDescFactory = beanDescFactory;
+        classNameMapping = new ClassNameMapping();
+
+        serializers = new HashMap<Class<?>, ComplexTypeSerializer>();
+        simpleSerializers = new HashMap<Class<?>, SimpleTypeSerializer>();
+
+        arraySerializer = new ArraySerializer();
+        beanSerializer = new BeanSerializer(beanDescFactory);
+        collSerializer = new CollectionSerializer();
+        mapSerializer = new MapSerializer();
+        simpleEnumSerializer = new SimpleEnumSerializer();
+        complexEnumSerializer = new ComplexEnumSerializer(beanDescFactory);
+
+        SimpleTypeSerializer ser = new ObjectToStringSerializer();
+        simpleSerializers.put(String.class, ser);
+        simpleSerializers.put(Character.class, ser);
+        simpleSerializers.put(Boolean.class, ser);
+        simpleSerializers.put(Byte.class, ser);
+        simpleSerializers.put(Short.class, ser);
+        simpleSerializers.put(Integer.class, ser);
+        simpleSerializers.put(Long.class, ser);
+        simpleSerializers.put(Float.class, ser);
+        simpleSerializers.put(Double.class, ser);
+        simpleSerializers.put(Currency.class, ser);
+
+        ser = new DateSerializer();
+        simpleSerializers.put(Date.class, ser);
+        simpleSerializers.put(GregorianCalendar.class, ser);
+
     }
-    
+
     public ComplexTypeSerializer getSerializer(Class<?> clazz) {
-        ComplexTypeSerializer serializer=serializers.get(clazz);
-        if(serializer==null) {
-            if(clazz.isArray()) serializer=arraySerializer;
-            else if(List.class.isAssignableFrom(clazz)) serializer=collSerializer;
-            else if(Map.class.isAssignableFrom(clazz)) serializer=mapSerializer;
-            else serializer=beanSerializer;
+        ComplexTypeSerializer serializer = serializers.get(clazz);
+        if (serializer == null) {
+            if (clazz.isArray()) serializer = arraySerializer;
+            else if (List.class.isAssignableFrom(clazz)) serializer = collSerializer;
+            else if (Map.class.isAssignableFrom(clazz)) serializer = mapSerializer;
+            else if (Enum.class.isAssignableFrom(clazz)) serializer = complexEnumSerializer;
+            else serializer = beanSerializer;
         }
         return serializer;
     }
-    
+
     public SimpleTypeSerializer getSimpleTypeSerializer(Class<?> clazz) {
-        SimpleTypeSerializer serializer=simpleSerializers.get(clazz);
+        SimpleTypeSerializer serializer = simpleSerializers.get(clazz);
+        if (Enum.class.isAssignableFrom(clazz)) {
+            BeanDescriptor beanDesc = beanDescFactory.getBeanDescriptor(clazz);
+            if (beanDesc.getReadableProperties().isEmpty()) serializer = simpleEnumSerializer;
+        }
         return serializer;
     }
-    
+
     public String mapClassName(Object obj) {
-       if(obj==null) return "null";
-       return classNameMapping.mapClassName(obj.getClass());
+        if (obj == null) return "null";
+        return classNameMapping.mapClassName(obj.getClass());
     }
-    
+
 }
