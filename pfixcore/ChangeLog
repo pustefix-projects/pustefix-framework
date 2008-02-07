@@ -1,5 +1,13 @@
 2008-02-07  Martin Leidig  <mleidig@schlund.de>
 
+	* .classpath: Added classpath variable PFX_TOOLS_LIB, which has to
+	be set to the tools.jar from the JDK installation. If the tools.jar
+	has already bean added as system library to the current JRE in Eclipse
+	it has to be removed (as your project won't build with the same
+	library added twice to the build path). 
+
+2008-02-07  Martin Leidig  <mleidig@schlund.de>
+
 	Added Enum support to Object-to-XML mapping. Both simple enums, only
 	with constant names, and complex enums, having bean-style properties,
 	are supported. Besides added some unit tests for the OXM stuff. 
