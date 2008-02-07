@@ -1,3 +1,11 @@
+2008-02-07  Martin Leidig  <mleidig@schlund.de>
+
+	* projects/core/build/iwrapper.xsl: Bugfix: due to error in xpath
+	expression postchecks were not taken into account when checking
+	if import statement for annotations is required (causing that
+	IWrappers containing no caster and prechecks, but postchecks,
+	can't be compiled).
+
 2008-02-05  Martin Leidig  <mleidig@schlund.de>
 
 	Added some new IWrapper generation features: 
