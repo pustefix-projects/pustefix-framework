@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<result boolVal="true" floatVal="2.2" intVal="1" strVal="aaa">
+<result boolVal="true" floatVal="2.2" intVal="1" strVal="aaa" file="/tmp" uri="http://pustefix-framework.org" type="de.schlund.pfixcore.oxm.ComplexTestBean">
    <childList>
       <complexTestBean boolVal="false" floatVal="3.3" intVal="2" strVal="bbb">
          <booleanArray>
@@ -14,6 +14,10 @@
          </booleanArray>
       </complexTestBean>
    </childList>
+   <props>
+      <property key="key2" value="val2"/>
+      <property key="key1" value="val1"/>
+   </props>
    <childMap>
       <entry>
          <string>ccc</string>

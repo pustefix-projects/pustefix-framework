@@ -18,22 +18,28 @@
  */
 package de.schlund.pfixcore.oxm.impl;
 
+import java.io.File;
+import java.net.URI;
+import java.net.URL;
 import java.util.Currency;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 import de.schlund.pfixcore.beans.BeanDescriptor;
 import de.schlund.pfixcore.beans.BeanDescriptorFactory;
 import de.schlund.pfixcore.oxm.impl.serializers.ArraySerializer;
 import de.schlund.pfixcore.oxm.impl.serializers.BeanSerializer;
+import de.schlund.pfixcore.oxm.impl.serializers.ClassSerializer;
 import de.schlund.pfixcore.oxm.impl.serializers.CollectionSerializer;
 import de.schlund.pfixcore.oxm.impl.serializers.ComplexEnumSerializer;
 import de.schlund.pfixcore.oxm.impl.serializers.DateSerializer;
 import de.schlund.pfixcore.oxm.impl.serializers.MapSerializer;
 import de.schlund.pfixcore.oxm.impl.serializers.ObjectToStringSerializer;
+import de.schlund.pfixcore.oxm.impl.serializers.PropertiesSerializer;
 import de.schlund.pfixcore.oxm.impl.serializers.SimpleEnumSerializer;
 
 /**
@@ -44,7 +50,7 @@ public class SerializerRegistry {
     BeanDescriptorFactory beanDescFactory;
     ClassNameMapping classNameMapping;
 
-    Map<Class<?>, ComplexTypeSerializer> serializers;
+    Map<Class<?>, ComplexTypeSerializer> complexSerializers;
     Map<Class<?>, SimpleTypeSerializer> simpleSerializers;
 
     ArraySerializer arraySerializer;
@@ -59,7 +65,7 @@ public class SerializerRegistry {
         this.beanDescFactory = beanDescFactory;
         classNameMapping = new ClassNameMapping();
 
-        serializers = new HashMap<Class<?>, ComplexTypeSerializer>();
+        complexSerializers = new HashMap<Class<?>, ComplexTypeSerializer>();
         simpleSerializers = new HashMap<Class<?>, SimpleTypeSerializer>();
 
         arraySerializer = new ArraySerializer();
@@ -80,15 +86,22 @@ public class SerializerRegistry {
         simpleSerializers.put(Float.class, ser);
         simpleSerializers.put(Double.class, ser);
         simpleSerializers.put(Currency.class, ser);
+        simpleSerializers.put(URL.class, ser);
+        simpleSerializers.put(URI.class, ser);
+        simpleSerializers.put(File.class, ser);
 
         ser = new DateSerializer();
         simpleSerializers.put(Date.class, ser);
         simpleSerializers.put(GregorianCalendar.class, ser);
 
+        simpleSerializers.put(Class.class, new ClassSerializer());
+
+        complexSerializers.put(Properties.class, new PropertiesSerializer());
+
     }
 
     public ComplexTypeSerializer getSerializer(Class<?> clazz) {
-        ComplexTypeSerializer serializer = serializers.get(clazz);
+        ComplexTypeSerializer serializer = complexSerializers.get(clazz);
         if (serializer == null) {
             if (clazz.isArray()) serializer = arraySerializer;
             else if (List.class.isAssignableFrom(clazz)) serializer = collSerializer;

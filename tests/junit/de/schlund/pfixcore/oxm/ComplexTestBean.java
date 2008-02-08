@@ -18,11 +18,14 @@
  */
 package de.schlund.pfixcore.oxm;
 
+import java.io.File;
+import java.net.URI;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 /**
- * @author mleidig
+ * @author mleidig@schlund.de
  */
 public class ComplexTestBean {
 
@@ -33,6 +36,10 @@ public class ComplexTestBean {
     private Boolean[] booleanArray;
     private List<ComplexTestBean> childList;
     private Map<String, ComplexTestBean> childMap;
+    public Class<?> type;
+    public File file;
+    public Properties props;
+    public URI uri;
 
     public ComplexTestBean() {
 

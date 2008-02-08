@@ -1,3 +1,25 @@
+2008-02-08  Martin Leidig  <mleidig@schlund.de>
+
+	Added OXM serializer for java.util.Properties, which is used
+	by default (until now the MapSerializer was used) and produces
+	property elements with key/value attributes.
+	Added OXM serializer for java.lang.Class, which just outputs
+	the canonical name.
+	For java.net.URI, java.net.URL and java.io.File the
+	ObjectToStringSerializer is used by default (which just uses
+	the object's toString() method).
+
+	Modified:
+	* src/de/schlund/pfixcore/oxm/impl/SerializerRegistry.java
+	* src/de/schlund/pfixcore/oxm/impl/ClassNameMapping.java
+	* tests/junit/de/schlund/pfixcore/oxm/Test.java
+	* tests/junit/de/schlund/pfixcore/oxm/testcomplex.xml
+	* tests/junit/de/schlund/pfixcore/oxm/ComplexTestBean.java
+
+	Added:
+	* src/de/schlund/pfixcore/oxm/impl/serializers/ClassSerializer.java
+	* src/de/schlund/pfixcore/oxm/impl/serializers/PropertiesSerializer.java
+
 2008-02-07  Martin Leidig  <mleidig@schlund.de>
 
 	* .classpath: Added classpath variable PFX_TOOLS_LIB, which has to
