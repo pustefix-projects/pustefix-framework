@@ -18,18 +18,26 @@
  */
 package de.schlund.pfixcore.oxm;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.io.StringReader;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Result;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMResult;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 
 import junit.framework.TestCase;
 
@@ -95,7 +103,7 @@ public class Test extends TestCase {
 
     }
 
-    public void testComplex() {
+    public void testComplex() throws Exception {
 
         BeanDescriptorFactory bdf = new BeanDescriptorFactory();
         SerializerRegistry reg = new SerializerRegistry(bdf);
@@ -107,6 +115,13 @@ public class Test extends TestCase {
         bean.setFloatVal(new Float(2.2));
         bean.setStrVal("aaa");
         bean.setBooleanArray(new Boolean[] { Boolean.TRUE, Boolean.FALSE });
+        bean.type = ComplexTestBean.class;
+        bean.file = new File("/tmp");
+        Properties props = new Properties();
+        props.setProperty("key1", "val1");
+        props.setProperty("key2", "val2");
+        bean.props = props;
+        bean.uri = new URI("http://pustefix-framework.org");
 
         ComplexTestBean bean1 = new ComplexTestBean();
         bean1.setBoolVal(false);
@@ -137,6 +152,7 @@ public class Test extends TestCase {
         Document doc = createResultDocument();
         Result res = new DOMResult(doc);
         m.marshal(bean, res);
+        // printDocument(doc);
         XMLUtils.assertEquals(expDoc, doc);
 
     }
@@ -185,12 +201,15 @@ public class Test extends TestCase {
         return in;
     }
 
-    /**
-     * private void printDocument(Document doc) { try { Transformer t =
-     * TransformerFactory.newInstance().newTransformer();
-     * t.setOutputProperty(OutputKeys.INDENT, "yes"); t.transform(new
-     * DOMSource(doc), new StreamResult(System.out)); } catch (Exception x) {
-     * throw new RuntimeException("Can't print document", x); } }
-     */
+    @SuppressWarnings("unused")
+    private void printDocument(Document doc) {
+        try {
+            Transformer t = TransformerFactory.newInstance().newTransformer();
+            t.setOutputProperty(OutputKeys.INDENT, "yes");
+            t.transform(new DOMSource(doc), new StreamResult(System.out));
+        } catch (Exception x) {
+            throw new RuntimeException("Can't print document", x);
+        }
+    }
 
 }
