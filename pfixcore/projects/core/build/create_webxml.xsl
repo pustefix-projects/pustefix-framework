@@ -238,6 +238,17 @@
     
   </xsl:template>
 
+  <xsl:template match="cus:listener">
+    <!-- Insert listener for webservices if webservice servlet is configured -->
+    <xsl:if test="$project/servlet[@name='webservice' and class/text()='de.schlund.pfixcore.webservice.WebServiceServlet']">
+      <listener>
+        <listener-class>de.schlund.pfixcore.webservice.WebserviceContextListener</listener-class>
+      </listener>
+    </xsl:if>
+    <!-- Copy listener definitions from project.xml.in (not supported yet) -->
+    <!-- <xsl:copy-of select="$project/listener"/> -->
+  </xsl:template>
+  
 </xsl:stylesheet>
 
 <!--

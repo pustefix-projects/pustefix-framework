@@ -82,7 +82,7 @@ function testSyncEx() {
   try {
     ws.testError("error");
   } catch(ex) {
-    if(ex.name='java.lang.IllegalArgumentException' && ex.message=='Illegal value: error') consolePrint(test+" OK");
+    if(ex.name=='java.lang.IllegalArgumentException' && ex.message=='Illegal value: error') consolePrint(test+" OK");
     else consolePrint(test+" Error");
   }
 }

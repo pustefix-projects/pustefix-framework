@@ -41,7 +41,7 @@ public class HttpServiceResponse implements ServiceResponse {
 	}
 	
 	public void setContentType(String ctype) {
-		 httpResponse.setContentType("text/plain");
+		 httpResponse.setContentType(ctype);
 	}
 	
 	public void setCharacterEncoding(String encoding) {

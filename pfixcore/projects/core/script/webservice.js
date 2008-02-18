@@ -55,14 +55,11 @@ CORE_WrongArgNoEx.extend(CORE_IllegalArgsEx);
 //CONSTANTS
 var XML_NS_XSD="http://www.w3.org/2001/XMLSchema";
 var XML_NS_XSI="http://www.w3.org/2001/XMLSchema-instance";
-var XML_NS_SOAPENC="http://schemas.xmlsoap.org/soap/encoding/"
 var XML_NS_SOAPENV="http://schemas.xmlsoap.org/soap/envelope/";
-var XML_NS_APACHESOAP="http://xml.apache.org/xml-soap";
 var XML_NS_PREFIX_MAP=new Array();
 XML_NS_PREFIX_MAP[XML_NS_XSD]="xsd";
 XML_NS_PREFIX_MAP[XML_NS_XSI]="xsi";
-XML_NS_PREFIX_MAP[XML_NS_SOAPENC]="soapenc";
-XML_NS_PREFIX_MAP[XML_NS_SOAPENV]="soapenv";
+XML_NS_PREFIX_MAP[XML_NS_SOAPENV]="S";
 
 
 //*********************************
@@ -102,8 +99,8 @@ XML_Utilities.prototype.getChildrenByName=function(node,name) {
   return nodes;
 }
 
-XML_Utilities.prototype.getChildrenByNameNS=function(node,name) {
-  if(arguments.length!=2) throw new CORE_WrongArgNoEx("","XML_Utilities.getChildrenByNameNS");
+XML_Utilities.prototype.getChildrenByNameNS=function(node,nsuri,name) {
+  if(arguments.length!=3) throw new CORE_WrongArgNoEx("","XML_Utilities.getChildrenByNameNS");
   if(node.childNodes==null || node.childNodes.length==0) return null;
   if(!this.scopeChecked) {
     if(typeof node.scopeName!="undefined") this.scopeSupport=true;
@@ -114,7 +111,7 @@ XML_Utilities.prototype.getChildrenByNameNS=function(node,name) {
     if(this.scopeSupport) {
       if(node.childNodes[i].scopeName+":"+node.childNodes[i].nodeName==name) nodes.push(node.childNodes[i]);
     } else {
-      if(node.childNodes[i].nodeName==name) nodes.push(node.childNodes[i]);
+      if(node.childNodes[i].namespaceURI==nsuri && node.childNodes[i].localName==name) nodes.push(node.childNodes[i]);
     }
   }
   return nodes;
@@ -130,6 +127,14 @@ XML_Utilities.prototype.getText=function(node) {
     else if(n.nodeType==1 || n.nodeType==10) text+=this.getText(n);
   }
   return text;
+}
+
+XML_Utilities.prototype.filterElements=function(elements,name) {
+  var filtered=[];
+  for(var i=0;i<elements.length;i++) {
+    if(elements[i].nodeName==name) filtered.push(elements[i]);
+  }
+  return filtered;
 }
 
 var XML_Utilities=new XML_Utilities();
@@ -179,7 +184,6 @@ XML_QName.prototype.toString=function() {
 //XML_Types
 //*********************************
 function XML_Types() {
-
   this.XSD_BASE64=new XML_QName(XML_NS_XSD,"base64Binary");
   this.XSD_BOOLEAN=new XML_QName(XML_NS_XSD,"boolean");
   this.XSD_BYTE=new XML_QName(XML_NS_XSD,"byte");
@@ -195,21 +199,7 @@ function XML_Types() {
   this.XSD_LONG=new XML_QName(XML_NS_XSD,"long");
   this.XSD_QNAME=new XML_QName(XML_NS_XSD,"XML_QName");
   this.XSD_SHORT=new XML_QName(XML_NS_XSD,"short");
-  this.XSD_STRING=new XML_QName(XML_NS_XSD,"string");
-  
-  this.SOAP_ARRAY=new XML_QName(XML_NS_SOAPENC,"Array");
-  this.SOAP_BASE64=new XML_QName(XML_NS_SOAPENC,"base64");
-  this.SOAP_BYTE=new XML_QName(XML_NS_SOAPENC,"byte");
-  this.SOAP_BOOLEAN=new XML_QName(XML_NS_SOAPENC,"boolean");
-  this.SOAP_DOUBLE=new XML_QName(XML_NS_SOAPENC,"double");
-  this.SOAP_FLOAT=new XML_QName(XML_NS_SOAPENC,"float");
-  this.SOAP_INT=new XML_QName(XML_NS_SOAPENC,"int");
-  this.SOAP_LONG=new XML_QName(XML_NS_SOAPENC,"long");
-  this.SOAP_SHORT=new XML_QName(XML_NS_SOAPENC,"short");
-  this.SOAP_STRING=new XML_QName(XML_NS_SOAPENC,"string");
-  
-  this.APACHESOAP_ELEMENT=new XML_QName(XML_NS_APACHESOAP,"Element");
-  
+  this.XSD_STRING=new XML_QName(XML_NS_XSD,"string");  
 }
 
 var XML_Types=new XML_Types();
@@ -381,14 +371,9 @@ XML_Writer.prototype.getPrefix=function(nsuri) {
 
 //CONSTANTS
 
-var SOAP_ENCSTYLE_RPC="rpc";
-var SOAP_ENCSTYLE_DOCUMENT="document";
-var SOAP_ENCUSE_ENCODED="encoded";
-var SOAP_ENCUSE_LITERAL="literal";
 
 var SOAP_XSI_TYPE=new XML_QName(XML_NS_XSI,"type");
 var SOAP_XSI_NIL=new XML_QName(XML_NS_XSI,"nil");
-var SOAP_ARRAY_TYPE=new XML_QName(XML_NS_SOAPENC,"arrayType");
 
 
 //*********************************
@@ -436,6 +421,7 @@ function SOAP_SimpleSerializer() {
 }
 //serialize(value,name,typeInfo,writer,ctx)
 SOAP_SimpleSerializer.prototype.serialize=function(value,name,typeInfo,writer,ctx) {
+  if(value==null) return;
   writer.startElement(name);
   var nsuri=typeInfo.xmlType.namespaceUri;
   var prefix=writer.currentCtx.getPrefix(nsuri);
@@ -443,10 +429,6 @@ SOAP_SimpleSerializer.prototype.serialize=function(value,name,typeInfo,writer,ct
     prefix=writer.getPrefix(nsuri);
     writer.writeNamespaceDeclaration(nsuri);
   }
-  if(ctx.use==SOAP_ENCUSE_ENCODED) {
-    writer.writeAttribute(SOAP_XSI_TYPE,prefix+":"+typeInfo.xmlType.localpart);
-  }
-  if(value==null) writer.writeAttribute(SOAP_XSI_NIL,"true");
   else writer.writeChars(""+value);
   writer.endElement(name);
 }
@@ -562,19 +544,19 @@ SOAP_DateTimeSerializer.prototype.parseDate=function(dateStr) {
   if(!dateStr) return null;
   var date=new Date();
   var year=dateStr.substr(0,4);
-  date.setUTCFullYear(year);
+  date.setFullYear(year);
   var month=dateStr.substr(5,2);
-  date.setUTCMonth(month-1);
+  date.setMonth(month-1);
   var day=dateStr.substr(8,2);
-  date.setUTCDate(day);
+  date.setDate(day);
   var hours=dateStr.substr(11,2);
-  date.setUTCHours(hours);
+  date.setHours(hours);
   var minutes=dateStr.substr(14,2);
-  date.setUTCMinutes(minutes);
+  date.setMinutes(minutes);
   var seconds=dateStr.substr(17,2);
-  date.setUTCSeconds(seconds);
+  date.setSeconds(seconds);
   var millis=dateStr.substr(20,3);
-  date.setUTCMilliseconds(millis);
+  date.setMilliseconds(millis);
   return date;
 }
 SOAP_DateTimeSerializer.prototype.serialize=function(value,name,typeInfo,writer,ctx) {
@@ -582,10 +564,16 @@ SOAP_DateTimeSerializer.prototype.serialize=function(value,name,typeInfo,writer,
   if(value==null) {
     this.superclass.serialize(value,name,typeInfo,writer,ctx);
   } else {
-    var date=value.getUTCFullYear()+"-"+this.fillNulls(value.getUTCMonth()+1,2)+"-"+
-    this.fillNulls(value.getUTCDate(),2)+"T"+this.fillNulls(value.getUTCHours(),2)+":"+
-    this.fillNulls(value.getUTCMinutes(),2)+":"+this.fillNulls(value.getUTCSeconds(),2)+"."+
-    this.fillNulls(value.getUTCMilliseconds(),3)+"Z";
+    var offset=value.getTimezoneOffset();
+    var tzp=offset>0?"-":"+";
+    offset=Math.abs(offset);
+    var tzh=Math.floor(offset / 60);
+    var tzm=offset % 60;
+    var tz=tzp+this.fillNulls(tzh,2)+":"+this.fillNulls(tzm,2);
+    var date=value.getFullYear()+"-"+this.fillNulls(value.getMonth()+1,2)+"-"+
+    this.fillNulls(value.getDate(),2)+"T"+this.fillNulls(value.getHours(),2)+":"+
+    this.fillNulls(value.getMinutes(),2)+":"+this.fillNulls(value.getSeconds(),2)+"."+
+    this.fillNulls(value.getMilliseconds(),3)+tz;
     this.superclass.serialize(date,name,typeInfo,writer,ctx);
   }
 }
@@ -602,33 +590,20 @@ function SOAP_ArraySerializer(xmlType) {
 SOAP_ArraySerializer.extend(SOAP_SimpleSerializer);
 SOAP_ArraySerializer.prototype.serializeSub=function(value,name,typeInfo,dim,writer,ctx) {
   if(dim>0 && (value instanceof Array || (typeof value=="object" && typeof value.slice!="undefined")) ) {
-    writer.startElement(name);
-    if(dim==typeInfo.dimension) {
-      var prefix=writer.getPrefix(XML_Types.SOAP_ARRAY.namespaceUri);
-      if(ctx.use==SOAP_ENCUSE_ENCODED) {
-        writer.writeAttribute(SOAP_XSI_TYPE,prefix+":"+XML_Types.SOAP_ARRAY.localpart);
-      }
-    }
-    var dimStr="";
-    for(var j=0;j<dim;j++) dimStr+="[]";
-    dimStr=dimStr.replace(/\[\]$/,"["+value.length+"]");
-    
-    var nsuri=typeInfo.arrayType.xmlType.namespaceUri;
-    var prefix=writer.currentCtx.getPrefix(nsuri);
-    if(prefix==null) {
-      prefix=writer.getPrefix(nsuri);
-      writer.writeNamespaceDeclaration(nsuri);
-    }
-    if(ctx.use==SOAP_ENCUSE_ENCODED) {	
-    	writer.writeAttribute(SOAP_ARRAY_TYPE,prefix+":"+typeInfo.arrayType.xmlType.localpart+dimStr);
-    }
+    //var nsuri=typeInfo.arrayType.xmlType.namespaceUri;
+    //var prefix=writer.currentCtx.getPrefix(nsuri);
+    //if(prefix==null) {
+    //  prefix=writer.getPrefix(nsuri);
+    //  writer.writeNamespaceDeclaration(nsuri);
+    //}
     for(var i=0;i<value.length;i++) {
-      this.serializeSub(value[i],"item",typeInfo,dim-1,writer,ctx);
+      this.serializeSub(value[i],name,typeInfo,dim-1,writer,ctx);
     }
-    writer.endElement(name);
   } else {
+    //writer.startElement(name);
     var serializer=SOAP_TypeMapping.getSerializerByInfo(typeInfo.arrayType);
     serializer.serialize(value,name,typeInfo.arrayType,writer,ctx);
+    //writer.endElement(name);
   }
 }
 
@@ -636,22 +611,20 @@ SOAP_ArraySerializer.prototype.serialize=function(value,name,typeInfo,writer,ctx
   this.serializeSub(value,name,typeInfo,typeInfo.dimension,writer,ctx);
 }
 
-SOAP_ArraySerializer.prototype.deserializeSub=function(typeInfo,dim,element) {
+SOAP_ArraySerializer.prototype.deserializeSub=function(typeInfo,dim,elements) {
   if(dim>1) {
-    var items=XML_Utilities.getChildElements(element);
-		var array=new Array();
-    for(var i=0;i<items.length;i++) {
-      var subArray=this.deserializeSub(typeInfo,dim-1,items[i]);
+    var array=new Array();
+    for(var i=0;i<elements.length;i++) {
+      var subArray=this.deserializeSub(typeInfo,dim-1,elements[i]);
       array.push(subArray);
     }
     return array;
   } else if(dim==1) {
-		var items=XML_Utilities.getChildElements(element);
     var array=new Array();
-    if(items!=null) {
+    if(elements!=null) {
       var deserializer=SOAP_TypeMapping.getSerializerByInfo(typeInfo.arrayType);
-      for(var i=0;i<items.length;i++) { 
-        var val=deserializer.deserialize(typeInfo.arrayType,items[i]);
+      for(var i=0;i<elements.length;i++) { 
+        var val=deserializer.deserialize(typeInfo.arrayType,elements[i]);
         array.push(val);
       }
     }
@@ -659,8 +632,8 @@ SOAP_ArraySerializer.prototype.deserializeSub=function(typeInfo,dim,element) {
   } else throw new SOAP_SerializeEx("Illegal array dimension: "+dim,"SOAP_ArraySerializer.deserializeSub");
 }
 
-SOAP_ArraySerializer.prototype.deserialize=function(typeInfo,element) {
-  return this.deserializeSub(typeInfo,typeInfo.dimension,element);
+SOAP_ArraySerializer.prototype.deserialize=function(typeInfo,elements) {
+  return this.deserializeSub(typeInfo,typeInfo.dimension,elements);
 }
 
 
@@ -673,14 +646,18 @@ function SOAP_BeanSerializer(type) {
 SOAP_BeanSerializer.extend(SOAP_SimpleSerializer);
 SOAP_BeanSerializer.prototype.serialize=function(value,name,typeInfo,writer,ctx) {
   writer.startElement(name);
+  
   for(var i=0;i<typeInfo.propNames.length;i++) {
+    
     var propName=typeInfo.propNames[i];
+
     var propInfo=typeInfo.propToInfo[propName];
     var serializer=SOAP_TypeMapping.getSerializerByInfo(propInfo);
     var propVal=value[propName];
     if(!propVal && typeof propVal=='undefined') throw new SOAP_SerializeEx("Missing bean property: "+propName,"SOAP_BeanSerializer.serialize");
     serializer.serialize(propVal,propName,propInfo,writer,ctx);
   }
+ 
   writer.endElement(name);
 }
 SOAP_BeanSerializer.prototype.deserialize=function(typeInfo,element) {
@@ -688,12 +665,19 @@ SOAP_BeanSerializer.prototype.deserialize=function(typeInfo,element) {
   for(var i=0;i<typeInfo.propNames.length;i++) {
     var propName=typeInfo.propNames[i];
     var propInfo=typeInfo.propToInfo[propName];
-    var serializer=SOAP_TypeMapping.getSerializerByInfo(propInfo);
     var items=XML_Utilities.getChildrenByName(element,propName);
     if(items.length>0) {
       var deserializer=SOAP_TypeMapping.getSerializerByInfo(propInfo);
-      var val=deserializer.deserialize(propInfo,items[0]);
+      var val=null;
+      if(propInfo instanceof SOAP_ArrayInfo) {
+        val=deserializer.deserialize(propInfo,items);
+      } else {
+        val=deserializer.deserialize(propInfo,items[0]);
+      }
       obj[propName]=val;
+    } else {
+      if(propInfo instanceof SOAP_ArrayInfo) obj[propName]=[];
+      else obj[propName]=null;
     }
   }
   return obj;
@@ -742,30 +726,20 @@ function SOAP_TypeMapping() {
 
 //init()
 SOAP_TypeMapping.prototype.init=function() {
-	var boolSer=new SOAP_BooleanSerializer();
-  this.mappings[XML_Types.XSD_BOOLEAN.hashKey()]=boolSer;
-  this.mappings[XML_Types.SOAP_BOOLEAN.hashKey()]=boolSer;
+  this.mappings[XML_Types.XSD_BOOLEAN.hashKey()]=new SOAP_BooleanSerializer();
   var numSer=new SOAP_NumberSerializer();
   this.mappings[XML_Types.XSD_BYTE.hashKey()]=numSer;
-  this.mappings[XML_Types.SOAP_BYTE.hashKey()]=numSer;
   this.mappings[XML_Types.XSD_SHORT.hashKey()]=numSer;
-  this.mappings[XML_Types.SOAP_SHORT.hashKey()]=numSer;
   this.mappings[XML_Types.XSD_INT.hashKey()]=numSer;
-  this.mappings[XML_Types.SOAP_INT.hashKey()]=numSer;
   this.mappings[XML_Types.XSD_LONG.hashKey()]=numSer;
-  this.mappings[XML_Types.SOAP_LONG.hashKey()]=numSer;
   var floatSer=new SOAP_FloatSerializer();  
   this.mappings[XML_Types.XSD_FLOAT.hashKey()]=floatSer;
-  this.mappings[XML_Types.SOAP_FLOAT.hashKey()]=floatSer;
   this.mappings[XML_Types.XSD_DOUBLE.hashKey()]=floatSer;
-  this.mappings[XML_Types.SOAP_DOUBLE.hashKey()]=floatSer;
-  var strSer=new SOAP_StringSerializer();
-  this.mappings[XML_Types.XSD_STRING.hashKey()]=strSer;
-  this.mappings[XML_Types.SOAP_STRING.hashKey()]=strSer;
+  this.mappings[XML_Types.XSD_STRING.hashKey()]=new SOAP_StringSerializer();
   this.mappings[XML_Types.XSD_DATETIME.hashKey()]=new SOAP_DateTimeSerializer();
   this.mappings["ARRAY"]=new SOAP_ArraySerializer();
   this.mappings["BEAN"]=new SOAP_BeanSerializer();
-  this.mappings[XML_Types.APACHESOAP_ELEMENT.hashKey()]=new SOAP_ElementSerializer();
+  this.mappings["ELEMENT"]=new SOAP_ElementSerializer();
 }
 
 //register(XML_QName xmlType,Serializer serializer)
@@ -799,30 +773,33 @@ var SOAP_TypeMapping=new SOAP_TypeMapping();
 //*********************************
 // SOAP_RPCSerializer(XML_QName opName,ArrayOfParameter params,values,...)
 //*********************************
-function SOAP_RPCSerializer(opName,params,retTypeInfo,serCtx) {
+function SOAP_RPCSerializer(opName,params,targetNamespace,retTypeInfo,serCtx) {
   this.opName=opName;
   this.params=params;
+  this.targetNamespace=targetNamespace;
   this.retTypeInfo=retTypeInfo;
   this.serCtx=serCtx;
 }
 
 SOAP_RPCSerializer.prototype.serialize=function(writer) {
-  writer.startElement(this.opName);
-  if(this.serCtx.use=='encoded') {
-  	writer.writeAttribute(new XML_QName(XML_NS_SOAPENV,"encodingStyle"),XML_NS_SOAPENC);
- 	}
+  writer.startElement(new XML_QName(this.targetNamespace,this.opName));
   for(var i=0;i<this.params.length;i++) {
     var serializer=SOAP_TypeMapping.getSerializerByInfo(this.params[i].typeInfo);
     serializer.serialize(this.params[i].value,this.params[i].name,this.params[i].typeInfo,writer,this.serCtx);
   }
-  writer.endElement(this.opName);
+  writer.endElement(new XML_QName(this.targetNamespace,this.opName));
 }
 
 SOAP_RPCSerializer.prototype.deserialize=function(element) {
   if(this.retTypeInfo==null) return;
   var serializer=SOAP_TypeMapping.getSerializerByInfo(this.retTypeInfo);
-  var res=serializer.deserialize(this.retTypeInfo,element.getElementsByTagName(this.opName+"Return")[0]);
-  return res;
+  var retElems=element.getElementsByTagName("return");
+  if(retElems.length==0) return null;
+  if(this.retTypeInfo instanceof SOAP_ArrayInfo) {
+  	return serializer.deserialize(this.retTypeInfo,retElems);
+  } else {
+    return serializer.deserialize(this.retTypeInfo,retElems[0]);
+  }
 }
 
 
@@ -865,6 +842,7 @@ function SOAP_Call() {
   this.endpoint=null;
   this.opName=null;
   this.params=new Array();
+  this.targetNamespace=null;
   this.retTypeInfo=null;
   this.userCallback=null;
   this.userObject=null;
@@ -884,6 +862,10 @@ SOAP_Call.prototype.setTargetEndpointAddress=function() {
 SOAP_Call.prototype.setEncoding=function(style,use) {
   this.style=style;
   this.use=use;
+}
+
+SOAP_Call.prototype.setTargetNamespace=function(targetNamespace) {
+  this.targetNamespace=targetNamespace;
 }
 
 SOAP_Call.prototype.setUserCallback=function(cb) {
@@ -941,7 +923,7 @@ SOAP_Call.prototype.invoke=function() {
   
   var serCtx=new SOAP_SerializeCtx();
   serCtx.setEncoding(this.style,this.use);
-  var rpc=new SOAP_RPCSerializer(this.opName,this.params,this.retTypeInfo,serCtx);
+  var rpc=new SOAP_RPCSerializer(this.opName,this.params,this.targetNamespace,this.retTypeInfo,serCtx);
   
   var bodyElem=new SOAP_BodyElement(rpc);
   soapMsg.getSoapPart().getEnvelope().getBody().addBodyElement(bodyElem);
@@ -951,12 +933,14 @@ SOAP_Call.prototype.invoke=function() {
   if( !this.userCallback && !this.userObject ) {
     // sync
     this.request=new XML_Request('POST',this.endpoint);
+    this.request.setRequestHeader("Content-Type","text/xml");
     resDoc=this.request.start(writer.xml); 
     return this.callback(resDoc);
   } else {
     // async
     try {
       this.request=new XML_Request( 'POST', this.endpoint, this.callback, this );
+      this.request.setRequestHeader("Content-Type","text/xml");
       if(this.requestID==null) this.request.start(writer.xml);
       else this.request.start(writer.xml,this.requestID);
     } catch(ex) { }
@@ -966,18 +950,23 @@ SOAP_Call.prototype.invoke=function() {
 SOAP_Call.prototype.callback=function(xml,reqID) {
   try {
     var soapMsg=new SOAP_Message(xml);
+    
     var fault=soapMsg.getSoapPart().getEnvelope().getBody().getFault();
     if(fault!=null) {
       var ex=new Error();
-      var ind=fault.faultString.indexOf(":");
-      ex.name=fault.faultString.substring(0,ind);
-      if(fault.faultString.charAt(ind+1)==" ") ind++;
-      ex.message=fault.faultString.substring(ind+1,fault.faultString.length);
+      var nl=XML_Utilities.getChildrenByName(fault.element,"detail");
+      if(nl!=null && nl.length>0) {
+        nl=XML_Utilities.getChildrenByName(nl[0],"exception");
+        if(nl!=null && nl.length>0) {
+          ex.name=nl[0].getAttribute("class");
+        }
+      }
+      ex.message=fault.faultString;
       if(this.userCallback) this.userCallback(null,reqID,ex);
       else if(this.userObject) this.userObject[this.opName].call(this.userObject,null,reqID,ex);
       else throw ex;
     } else {
-      var rpc=new SOAP_RPCSerializer( this.opName, null, this.retTypeInfo);
+      var rpc=new SOAP_RPCSerializer( this.opName, null, this.targetNamespace, this.retTypeInfo);
       var res = rpc.deserialize(soapMsg.getSoapPart().getEnvelope().getBody().element);
       if(this.userCallback) this.userCallback(res,reqID,null);
       else if(this.userObject) this.userObject[this.opName].call(this.userObject,res,reqID,null);
@@ -1021,7 +1010,7 @@ function SOAP_Part() {
   if(arguments.length==0) {
     this.envelope=new SOAP_Envelope();
   } else if(arguments.length==1) {
-    var e=XML_Utilities.getChildrenByNameNS(arguments[0],"soapenv:Envelope")[0];
+    var e=XML_Utilities.getChildrenByNameNS(arguments[0],XML_NS_SOAPENV,"Envelope")[0];
     if(e==null) throw new SOAP_Exception("NO SOAP MESSAGE","SOAP_Part");
     this.envelope=new SOAP_Envelope(e);
   } else throw new CORE_WrongArgNoEx("","SOAP_Part");
@@ -1048,10 +1037,10 @@ function SOAP_Envelope() {
     this.body=new SOAP_Body();
     this.element=null;
   } else if(arguments.length==1) {
-    var e=XML_Utilities.getChildrenByNameNS(arguments[0],"soapenv:Header")[0];
+    var e=XML_Utilities.getChildrenByNameNS(arguments[0],XML_NS_SOAPENV,"Header")[0];
     if(e!=null) this.header=new SOAP_Header(e);
     else this.header=null;
-    e=XML_Utilities.getChildrenByNameNS(arguments[0],"soapenv:Body")[0];
+    e=XML_Utilities.getChildrenByNameNS(arguments[0],XML_NS_SOAPENV,"Body")[0];
     if(e!=null) this.body=new SOAP_Body(e);
     else throw new SOAP_Exception("NO MESSAGE BODY","SOAP_Envelope");
     this.element=arguments[0];
@@ -1107,7 +1096,7 @@ function SOAP_Body() {
     this.bodyElems=new Array();
     this.element=null;
   } else if(arguments.length==1) {
-    var e=XML_Utilities.getChildrenByNameNS(arguments[0],"soapenv:Fault")[0];
+    var e=XML_Utilities.getChildrenByNameNS(arguments[0],XML_NS_SOAPENV,"Fault")[0];
     if(e!=null) this.fault=new SOAP_Fault(e);
     this.element=arguments[0];
   } else throw new CORE_WrongArgNoEx("","SOAP_Envelope");
@@ -1214,15 +1203,12 @@ function SOAP_Fault() {
   if(arguments.length==0) {
     this.faultCode=null;
     this.faultString=null;
-    this.detail=null;
     this.element=null;
   } else if(arguments.length==1) {
     var nl=XML_Utilities.getChildrenByName(arguments[0],"faultcode");
     if(nl!=null && nl.length>0) this.faultCode=XML_Utilities.getText(nl[0]);
     nl=XML_Utilities.getChildrenByName(arguments[0],"faultstring");
     if(nl!=null && nl.length>0) this.faultString=XML_Utilities.getText(nl[0]);
-    nl=XML_Utilities.getChildrenByName(arguments[0],"detail");
-    if(nl!=null && nl.length>0) this.detail=XML_Utilities.getText(nl[0]);
     this.element=arguments[0];
   } else throw new CORE_WrongArgNoEx("","SOAP_Fault");
 }
@@ -1291,6 +1277,7 @@ SOAP_BeanInfo.prototype.populate=function(props) {
 //*********************************
 function SOAP_Stub() {
   this._url="";
+  this._targetNamespace="";
   this._typeInfos=new Array();
 }
 

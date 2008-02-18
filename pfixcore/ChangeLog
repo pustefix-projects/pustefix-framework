@@ -1,3 +1,113 @@
+2008-02-18  Martin Leidig  <mleidig@schlund.de>
+
+	Migrated AJAX/Webservice support from Axis 1.2 to JAXWS 2.
+	
+	The webservice integration layer abstracts from the webservice stack 
+	implementation specifics and all SOAP services should work without changes 
+	using the new mechanism (due to the big technology jump there possibly
+	are some special cases which won't work as expected, so some testing is
+	recommended).
+
+	Other big under-cover changes are: 
+	- Javascript-SOAP implementation: changed style from rpc/encoded
+	to document/wrapped (rpc style isn't supported any more)
+	- SOAP service endpoint integration: now proxy classes are generated
+	from the Service interface and implementation classes (allows classes
+	without annotations as JAXWS services, provides hooks for custom
+	error handling and monitoring)
+
+	Added JAXWS libraries and dependencies:
+	* lib/jaxb-api-2.1.jar
+	* lib/jaxb-impl-2.1.6.jar
+	* lib/jaxb-xjc-2.1.6.jar
+	* lib/jaxws-api-2.1.3.jar
+	* lib/jaxws-rt-2.1.3.jar
+	* lib/jaxws-tools-2.1.3.jar
+	* lib/jsr173_api-1.0.jar
+	* lib/jsr181-api-2.0.jar
+	* lib/jsr250_api-1.0.jar
+	* lib/saaj-api-1.3.jar
+	* lib/saaj-impl-1.3.jar
+	* lib/sjsxp-1.0.1.jar
+	* lib/stax-ex-1.2.jar
+	* lib/streambuffer-0.5.jar
+	* lib/wsdl4j-1.6.2.jar
+
+	Removed Axis libraries and dependencies:
+	* lib/axis-1.2.1.jar
+	* lib/axis-ant-1.2.1.jar
+	* lib/jaxrpc-1.1.jar
+	* lib/saaj-1.2.jar
+	* lib/wsdl4j-1.5.1.jar
+
+	Removed Axis integration specific classes/packages:
+	* projects/core/conf/server-config.wsdd
+	* src/de/schlund/pfixcore/webservice/generate
+	* src/de/schlund/pfixcore/webservice/generate/Java2Wsdl.java
+	* src/de/schlund/pfixcore/webservice/generate/WebServiceTask.java
+	* src/de/schlund/pfixcore/webservice/generate/Wsdl2Java.java
+	* src/de/schlund/pfixcore/webservice/generate/Wsdl2Js.java
+	* src/de/schlund/pfixcore/webservice/handler
+	* src/de/schlund/pfixcore/webservice/handler/AbstractHandler.java
+	* src/de/schlund/pfixcore/webservice/handler/ErrorHandler.java
+	* src/de/schlund/pfixcore/webservice/handler/RecordingHandler.java
+
+	Moved package:
+	* src/de/schlund/pfixcore/webservice/generate/js: from
+	* src/de/schlund/pfixcore/webservice/jsgen: to
+
+	Added JAXWS build integration (Proxy, Javascript generation, etc.):
+	* src/de/schlund/pfixcore/webservice/jaxws/generate
+	* src/de/schlund/pfixcore/webservice/jaxws/generate/ProxyGenerator.java
+	* src/de/schlund/pfixcore/webservice/jaxws/generate/TaskUtils.java
+	* src/de/schlund/pfixcore/webservice/jaxws/generate/WebserviceTask.java
+	* src/de/schlund/pfixcore/webservice/jaxws/generate/Wsdl2JsException.java
+	* src/de/schlund/pfixcore/webservice/jaxws/generate/Wsdl2Js.java
+	* src/de/schlund/pfixcore/webservice/jaxws/generate/Wsdl2JsTypeException.java
+
+	Added JAXWS runtime integration (ServiceRuntime, Handler, etc.):
+	* src/de/schlund/pfixcore/webservice/jaxws
+	* src/de/schlund/pfixcore/webservice/jaxws/ErrorHandler.java
+	* src/de/schlund/pfixcore/webservice/jaxws/JAXWSContext.java
+	* src/de/schlund/pfixcore/webservice/jaxws/JAXWSProcessor.java
+	* src/de/schlund/pfixcore/webservice/jaxws/ProxyInvocationException.java
+	* src/de/schlund/pfixcore/webservice/jaxws/RecordingHandler.java
+	* src/de/schlund/pfixcore/webservice/WebserviceContextListener.java
+
+	Added Base64 utilities (replaces Axis implementation):
+	* src/de/schlund/pfixxml/util/Base64Utils.java
+
+	Added File utilities:
+	* src/de/schlund/pfixxml/util/FileUtils.java
+
+	Modified build process (proxy generation/compilation, etc.):
+	* build.xml
+	* skel/build-skel.xml
+
+	Modified .classpath (updated libraries):
+	* .classpath
+
+	Modified web.xml creation (ServletContextListener support):
+	* projects/core/build/create_webxml.xsl
+	* projects/core/conf/web.xml
+
+	Modified Javascript SOAP implementation (migrated from rpc/encoded to
+	document/wrapped style):
+	* projects/core/script/webservice.js
+
+	Modified files to remove Axis/JAXRPC dependencies, do some clean up, etc.:
+	* projects/webservice/htdocs/calltest-pfxsoap.js
+	* src/de/schlund/pfixcore/example/webservices/WeirdBean.java
+	* src/de/schlund/pfixcore/webservice/Constants.java
+	* src/de/schlund/pfixcore/webservice/fault/EmailNotifyingHandler.java
+	* src/de/schlund/pfixcore/webservice/fault/LoggingHandler.java
+	* src/de/schlund/pfixcore/webservice/HttpServiceResponse.java
+	* src/de/schlund/pfixcore/webservice/jsonws/JSONWSStubGenerator.java
+	* src/de/schlund/pfixcore/webservice/ServiceCallContext.java
+	* src/de/schlund/pfixcore/webservice/ServiceRuntime.java
+	* src/de/schlund/pfixcore/webservice/WebServiceServlet.java
+	* src/de/schlund/pfixxml/DerefServlet.java
+
 2008-01-07  Martin Leidig  <mleidig@schlund.de>
 
 	Improved file change detection of apt task by saving timestamp file of

@@ -91,7 +91,7 @@ public class EmailNotifyingHandler extends FaultHandler {
         sb.append(fault.getFaultString());
         sb.append("\n\n");
         sb.append("Context:\n");
-        sb.append(fault.getContext().toString());
+        sb.append(fault.getContext()==null?"-":fault.getContext().toString());
         sb.append("\n\n");
         sb.append("Request message:\n\n");
         sb.append(fault.getRequestMessage());
