@@ -46,6 +46,9 @@ import de.schlund.pfixxml.util.MD5Utils;
  */
 
 public class DerefServlet extends ServletManager {
+   
+    private static final long serialVersionUID = 4003807093421866709L;
+    
     protected final static Logger   DEREFLOG        = Logger.getLogger("LOGGER_DEREF");
     protected final static Logger   LOG             = Logger.getLogger(DerefServlet.class);
     public static String      PROP_DEREFKEY   = "derefserver.signkey";
@@ -158,7 +161,7 @@ public class DerefServlet extends ServletManager {
                 }
             }
             String             enclink  = Base64.encode(link.getBytes("utf8"));
-            String             reallink = preq.getScheme() + "://" + preq.getServerName() + ":" + preq.getServerPort() +
+            String             reallink = getServerURL(preq) +
                 SessionHelper.getClearedURI(preq) + "?__enclink=" + URLEncoder.encode(enclink, "utf8") +
                 "&__sign=" + signString(enclink, key);
             
@@ -184,12 +187,21 @@ public class DerefServlet extends ServletManager {
             return;
         }
     }
+    
+    private String getServerURL(PfixServletRequest preq) {
+        String url = preq.getScheme() + "://" + preq.getServerName();
+        //only add port if non-default
+        if (!((preq.getScheme().equals("http") && preq.getServerPort() == 80) || (preq.getScheme().equals("https") && preq.getServerPort() == 443))) {
+            url += ":" + preq.getServerPort();
+        }
+        return url;
+    }
 
     private void handleEnclink(String enclink, String sign, PfixServletRequest preq, HttpServletResponse res, String key) throws Exception {
         if (checkSign(enclink, key, sign)) {
             String link = new String( Base64.decode(enclink), "utf8");
             if (link.startsWith("/")) {
-                link = preq.getScheme() + "://" + preq.getServerName() + ":" + preq.getServerPort() + link;
+                link = getServerURL(preq) + link;
             }
             LOG.debug("===> Relocate to link: " + link);
 
