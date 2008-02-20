@@ -1,5 +1,16 @@
 2008-02-20  Martin Leidig  <mleidig@schlund.de>
 
+	Added support for configuration of servlet lifecycle listeners in
+	the project configuration. The configuration format differs slightly
+	from the webapp format: <!ELEMENT listener (active, class)>. It
+	contains a customizable 'active' element and uses 'class' instead of 
+	'listener-class' (for the sake of consistency).
+
+	* projects/core/conf/web.xml
+	* projects/core/build/create_webxml.xsl
+
+2008-02-20  Martin Leidig  <mleidig@schlund.de>
+
 	Change version to 0.12.2-pre (build):
 	* build.xml
 	* pom.xml
