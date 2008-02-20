@@ -1,6 +1,6 @@
 2008-02-20  Martin Leidig  <mleidig@schlund.de>
 
-	Released Pfixcore 0.12.0.
+	Released Pfixcore 0.12.1.
 
 	* build.xml: changed version
 	* pom.xml: changed version
