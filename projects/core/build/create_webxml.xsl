@@ -238,6 +238,27 @@
     
   </xsl:template>
 
+  <xsl:template match="cus:listener">
+  
+    <xsl:for-each select="$project/listener">
+    
+      <xsl:variable name="active_node">
+        <xsl:apply-templates select="./active/node()"/>
+      </xsl:variable>
+      <xsl:variable name="active">
+        <xsl:value-of select="normalize-space($active_node)"/>
+      </xsl:variable>
+      
+      <xsl:if test="$active = 'true'">
+        <listener>
+          <listener-class><xsl:apply-templates select="class/node()"/></listener-class>
+        </listener>
+      </xsl:if>
+      
+    </xsl:for-each>
+
+  </xsl:template>
+
 </xsl:stylesheet>
 
 <!--
