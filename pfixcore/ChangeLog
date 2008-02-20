@@ -1,5 +1,11 @@
 2008-02-20  Martin Leidig  <mleidig@schlund.de>
 
+	Change version to 0.12.2-pre (build):
+	* build.xml
+	* pom.xml
+
+2008-02-20  Martin Leidig  <mleidig@schlund.de>
+
 	Released Pfixcore 0.12.1.
 
 	* build.xml: changed version
