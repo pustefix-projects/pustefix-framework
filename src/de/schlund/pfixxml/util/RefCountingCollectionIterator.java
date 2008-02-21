@@ -38,7 +38,7 @@ public class RefCountingCollectionIterator<E> implements Iterator<E> {
     E                        current;
     Map<E, Integer>          map;
     
-    RefCountingCollectionIterator(RefCountingCollection<E> coll, Map map) {
+    RefCountingCollectionIterator(RefCountingCollection<E> coll, Map<E, Integer> map) {
         this.map  = map;
         this.coll = coll;
         colliter = (Iterator<E>) map.keySet().iterator();

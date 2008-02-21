@@ -29,17 +29,17 @@ import de.schlund.pfixcore.webservice.config.ServiceConfig;
  */
 public class ServiceDescriptorCache {
 
-    Map<Class,ServiceDescriptor> srvDescs;
+    Map<Class<?>,ServiceDescriptor> srvDescs;
     
     public ServiceDescriptorCache() {
-        srvDescs=new HashMap<Class,ServiceDescriptor>();
+        srvDescs=new HashMap<Class<?>,ServiceDescriptor>();
     }
     
     public void clear() {
         srvDescs.clear();
     }
     
-    public ServiceDescriptor getServiceDescriptor(Class clazz) throws ServiceException {
+    public ServiceDescriptor getServiceDescriptor(Class<?> clazz) throws ServiceException {
         ServiceDescriptor srvDesc=new ServiceDescriptor(clazz);
         synchronized(srvDescs) {
             srvDescs.put(clazz,srvDesc);

@@ -56,11 +56,11 @@ import de.schlund.pfixxml.util.Xml;
 public class CheckIncludes {
     // private static final String XPATH = "/include_parts/part/theme";
     
-    private HashMap generators       = new HashMap();
-    private TreeSet includefilenames = new TreeSet();
-    private TreeSet imagefilenames   = new TreeSet();
-    private TreeSet unavail          = new TreeSet();
-    private TreeSet includes;
+    private HashMap<String, TargetGenerator> generators = new HashMap<String, TargetGenerator>();
+    private TreeSet<DocrootResource> includefilenames = new TreeSet<DocrootResource>();
+    private TreeSet<DocrootResource> imagefilenames = new TreeSet<DocrootResource>();
+    private TreeSet<AuxDependency> unavail = new TreeSet<AuxDependency>();
+    private TreeSet<AuxDependency> includes;
     private String  pwd;
     private String  outfile;
 
@@ -97,8 +97,8 @@ public class CheckIncludes {
         input.close();
 
         includes = AuxDependencyFactory.getInstance().getAllAuxDependencies();
-        for (Iterator i = includes.iterator(); i.hasNext();) {
-            AuxDependency aux = (AuxDependency) i.next();
+        for (Iterator<AuxDependency> i = includes.iterator(); i.hasNext();) {
+            AuxDependency aux = i.next();
             unavail.add(aux);
         }
     }
@@ -143,17 +143,16 @@ public class CheckIncludes {
     }
 
     private void checkForUnavailableIncludes(Document result, Element res_root) throws Exception {
-        for (Iterator i = generators.keySet().iterator(); i.hasNext();) {
-            String          depend  = (String) i.next();
-            TargetGenerator gen     = (TargetGenerator) generators.get(depend);
-            // TreeSet         deps = gen.getDependencyRefCounter().getAllDependencies();
-            TreeSet         deps    = TargetDependencyRelation.getInstance().getProjectDependencies(gen);
+        for (Iterator<String> i = generators.keySet().iterator(); i.hasNext();) {
+            String depend = i.next();
+            TargetGenerator gen = generators.get(depend);
+            TreeSet<AuxDependency> deps = TargetDependencyRelation.getInstance().getProjectDependencies(gen);
             if (deps == null) {
                 return;
             }
 
-            for (Iterator j = deps.iterator(); j.hasNext();) {
-                AuxDependency aux = (AuxDependency) j.next();
+            for (Iterator<AuxDependency> j = deps.iterator(); j.hasNext();) {
+                AuxDependency aux = j.next();
                 if (!unavail.contains(aux) || aux.getType().equals(DependencyType.FILE) || aux.getType().equals(DependencyType.TARGET)) {
                     j.remove();
                 }
@@ -165,8 +164,8 @@ public class CheckIncludes {
                 prj_elem.setAttribute("name", name);
                 res_root.appendChild(prj_elem);
                 
-                for (Iterator j = deps.iterator(); j.hasNext(); ) {
-                    AuxDependency aux = (AuxDependency) j.next();
+                for (Iterator<AuxDependency> j = deps.iterator(); j.hasNext(); ) {
+                    AuxDependency aux = j.next();
                     Element elem = result.createElement("MISSING");
                     prj_elem.appendChild(elem);
                     elem.setAttribute("type", aux.getType().toString());
@@ -186,8 +185,8 @@ public class CheckIncludes {
     }
 
     private void checkForUnusedImages(Document result, Element res_root) throws Exception {
-        for (Iterator i = imagefilenames.iterator(); i.hasNext();) {
-            DocrootResource img = (DocrootResource) i.next();
+        for (Iterator<DocrootResource> i = imagefilenames.iterator(); i.hasNext();) {
+            DocrootResource img = i.next();
 
             Element res_image = result.createElement("image");
             res_image.setAttribute("name", img.getRelativePath());
@@ -205,8 +204,8 @@ public class CheckIncludes {
     }
     
     private void checkForUnusedIncludes(Document result, Element res_root) throws Exception {
-        for (Iterator i = includefilenames.iterator(); i.hasNext();) {
-            DocrootResource path = (DocrootResource) i.next();
+        for (Iterator<DocrootResource> i = includefilenames.iterator(); i.hasNext();) {
+            DocrootResource path = i.next();
             Document doc;
 
             Element res_incfile = result.createElement("incfile");

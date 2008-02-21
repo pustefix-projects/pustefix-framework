@@ -56,8 +56,8 @@ public class MultiTransform {
     private String xslfile = null;
     private String action = null;
     private String out_ext = null;
-    private HashMap params = new HashMap();
-    private List infiles = new LinkedList();
+    private HashMap<String, String> params = new HashMap<String, String>();
+    private List<String> infiles = new LinkedList<String>();
     
     private MultiTransform() {
         BasicConfigurator.configure();
@@ -101,8 +101,8 @@ public class MultiTransform {
     }
     private void doDocumentation() throws Exception {
         Templates xsl = trfac.newTemplates(new StreamSource(xslfile));
-        for (Iterator i = infiles.iterator(); i.hasNext();) {
-            String infile = (String) i.next();
+        for (Iterator<String> i = infiles.iterator(); i.hasNext();) {
+            String infile = i.next();
             // Remove last extension xsl.in
             String outfile = infile.substring(0, infile.lastIndexOf("xsl"));
             // Add doku.xml for generating documentation files
@@ -113,8 +113,8 @@ public class MultiTransform {
     private void doStdfiles() throws Exception {
         File f = new File(xslfile);
         Templates xsl = trfac.newTemplates(new StreamSource(f));
-        for (Iterator i = infiles.iterator(); i.hasNext();) {
-            String infile = (String) i.next();
+        for (Iterator<String> i = infiles.iterator(); i.hasNext();) {
+            String infile = i.next();
             // Remove the last extension part: .foo.in => .foo
             String outfile = infile.substring(0, infile.lastIndexOf("."));
             // maybe add an output extension
@@ -127,8 +127,8 @@ public class MultiTransform {
     private void doIWrappers() throws Exception {
         File f = new File(xslfile);
         Templates xsl = trfac.newTemplates(new StreamSource(f));
-        for (Iterator i = infiles.iterator(); i.hasNext();) {
-            String iwrp = (String) i.next();
+        for (Iterator<String> i = infiles.iterator(); i.hasNext();) {
+            String iwrp = i.next();
             String pkg = iwrp.substring(0, iwrp.lastIndexOf("/"));
             if (srcdir != null && pkg.startsWith(srcdir)) {
                 pkg = pkg.substring(srcdir.length());
@@ -174,9 +174,9 @@ public class MultiTransform {
             if ((out.exists() && ((in.lastModified() > out.lastModified()) || xsl.lastModified() > out.lastModified())) || !out.exists()) {
                 System.out.println(">>> " + infile + " ==> " + outfile);
                 Transformer trafo = tmpl.newTransformer();
-                for (Iterator i = params.keySet().iterator(); i.hasNext();) {
-                    String key = (String) i.next();
-                    String val = (String) params.get(key);
+                for (Iterator<String> i = params.keySet().iterator(); i.hasNext();) {
+                    String key = i.next();
+                    String val = params.get(key);
                     trafo.setParameter(key, val);
                 }
                 if (indoc != null) {

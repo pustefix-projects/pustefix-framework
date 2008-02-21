@@ -243,7 +243,7 @@ public class WebServiceServlet extends AxisServlet implements ServiceProcessor {
 		}
 		sb.append("\n");
 		if(showHeaders) {
-			Enumeration headers=srvReq.getHeaderNames();
+			Enumeration<?> headers=srvReq.getHeaderNames();
 			while(headers.hasMoreElements()) {
 				String header=(String)headers.nextElement();
 				String value=srvReq.getHeader(header);

@@ -119,7 +119,7 @@ public class Xslt {
     
     //-- apply transformation
     
-    public static void transform(Document xml, Templates templates, Map params, Result result) throws TransformerException {
+    public static void transform(Document xml, Templates templates, Map<String, Object> params, Result result) throws TransformerException {
         try {
             doTransform(xml,templates,params,result,false);
         } catch(UnsupportedOperationException x) {
@@ -141,7 +141,7 @@ public class Xslt {
         }
     }
     
-    private static void doTransform(Document xml, Templates templates, Map params, Result result, boolean trace) throws TransformerException {
+    private static void doTransform(Document xml, Templates templates, Map<String, Object> params, Result result, boolean trace) throws TransformerException {
         XsltVersion xsltVersion=getXsltVersion(templates);
         Transformer trafo = templates.newTransformer();
         StringWriter traceWriter=null;
@@ -151,8 +151,8 @@ public class Xslt {
         }
         long start = 0;
         if (params != null) {
-            for (Iterator e = params.keySet().iterator(); e.hasNext();) {
-                String name  = (String) e.next();
+            for (Iterator<String> e = params.keySet().iterator(); e.hasNext();) {
+                String name  = e.next();
                 Object value = params.get(name);
                 if (name != null && value != null) {
                     trafo.setParameter(name, value);

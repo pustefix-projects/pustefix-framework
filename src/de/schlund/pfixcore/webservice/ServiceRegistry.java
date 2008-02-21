@@ -49,20 +49,6 @@ public class ServiceRegistry {
         runtimeServices=new HashMap<String,ServiceConfig>();
 	}
 
-    public void registerService(Object serviceObject) {
-        //get ServiceConfig from annotations
-        //check if registration allowed
-        //register ServiceConfig and serviceObject
-        throw new RuntimeException("Not yet implemented!");
-    }
-    
-    public void registerService(Class serviceClass) {
-        //get ServiceConfig from annotations
-        //check if registration allowed
-        //register ServiceConfig
-        throw new RuntimeException("Not yet implemented!");
-    }
-    
     public void deregisterService(String serviceName) {
         //remove serviceconfig, servicedescriptor and serviceobject
         throw new RuntimeException("Not yet implemented!");
@@ -138,7 +124,7 @@ public class ServiceRegistry {
 	
 	private Object createServiceObject(ServiceConfig srvConf) throws ServiceException {
         try {
-            Class clazz=Class.forName(srvConf.getImplementationName());
+            Class<?> clazz=Class.forName(srvConf.getImplementationName());
             Object serviceObject=clazz.newInstance();
             return serviceObject;
 		} catch(Exception x) {

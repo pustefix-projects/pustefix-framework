@@ -20,6 +20,8 @@ package de.schlund.pfixxml.config;
 
 import java.util.Properties;
 
+import de.schlund.pfixcore.workflow.FlowStepAction;
+
 /**
  * Provides configuration for a pageflow action. A pageflow action
  * is attached to a condition.
@@ -34,7 +36,7 @@ public interface PageFlowStepActionConfig {
      * 
      * @return class of the action object
      */
-    Class getActionType();
+    Class<? extends FlowStepAction> getActionType();
 
     /**
      * Returns a properties map containing parameters for the action.

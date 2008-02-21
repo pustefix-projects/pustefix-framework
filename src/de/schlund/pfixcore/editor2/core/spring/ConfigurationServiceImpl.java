@@ -32,6 +32,7 @@ import javax.xml.transform.TransformerException;
 import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
 import de.schlund.pfixcore.editor2.core.exception.EditorInitializationException;
@@ -57,7 +58,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
     
     public void init() throws FileNotFoundException, SAXException, IOException, ParserConfigurationException, EditorInitializationException {
         Document doc = filesystem.readXMLDocumentFromFile(new File(pathresolver.resolve(projectsFile)));
-        List nlist;
+        List<Node> nlist;
         this.map = new HashMap<String, String>();
         try {
             nlist = XPath.select(doc.getDocumentElement(), "common/namespaces/namespace-declaration");
@@ -67,7 +68,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
             Logger.getLogger(this.getClass()).error(err, e);
             throw new RuntimeException(err, e);
         }
-        for (Iterator i = nlist.iterator(); i.hasNext();) {
+        for (Iterator<Node> i = nlist.iterator(); i.hasNext();) {
             Element node = (Element) i.next();
             if (!node.hasAttribute("prefix")) {
                 String err = "Mandatory attribute prefix is missing for tag namespace-declaration!";

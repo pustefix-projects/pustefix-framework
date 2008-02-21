@@ -30,7 +30,7 @@ public class URIParameters {
     
     HttpServletRequest request;
     String encoding;
-    HashMap params;
+    HashMap<String, String[]> params;
     
     public URIParameters(HttpServletRequest request,String encoding) throws Exception {
    	this.request=request;
@@ -47,8 +47,8 @@ public class URIParameters {
    	return encoding;
     }
     
-    private HashMap parse(String queryStr,String encoding) throws Exception {
-   	HashMap map=new HashMap();
+    private HashMap<String, String[]> parse(String queryStr,String encoding) throws Exception {
+   	HashMap<String, String[]> map=new HashMap<String, String[]>();
         if(queryStr!=null) {
             StringTokenizer st=new StringTokenizer(queryStr,"&");
             while(st.hasMoreTokens()) {
@@ -80,20 +80,20 @@ public class URIParameters {
    	return null;
     }
     
-    public Enumeration getParameterNames() {
-   	Vector v=new Vector();
+    public Enumeration<String> getParameterNames() {
+   	Vector<String> v=new Vector<String>();
    	if(!params.isEmpty()) {
-            Iterator it=params.keySet().iterator();
+            Iterator<String> it=params.keySet().iterator();
             while(it.hasNext()) v.add(it.next());
    	}
    	return v.elements();
     }
     
     public String[] getParameterValues(String name) {
-   	return (String[])params.get(name);
+   	return params.get(name);
     }
     
-    public Map getParameterMap() {
+    public Map<String, String[]> getParameterMap() {
    	return params;
     }
     
@@ -103,9 +103,9 @@ public class URIParameters {
    	sb.append(" (");
    	sb.append(encoding);
    	sb.append("):\n");
-   	Iterator it=params.keySet().iterator();
+   	Iterator<String> it=params.keySet().iterator();
    	while(it.hasNext()) {
-            String name=(String)it.next();
+            String name=it.next();
             sb.append("   ");
             sb.append(name);
             sb.append(" = ");

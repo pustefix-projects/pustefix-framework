@@ -36,10 +36,10 @@ import de.schlund.pfixcore.webservice.config.ServiceConfig;
  */
 public class ServiceDescriptor {
 
-    Class serviceClass;
+    Class<?> serviceClass;
     Map<String,List<Method>> serviceMethods;
 
-    public ServiceDescriptor(Class serviceClass) throws ServiceException {
+    public ServiceDescriptor(Class<?> serviceClass) throws ServiceException {
         this.serviceClass=serviceClass;
         serviceMethods=introspect(serviceClass);
     }
@@ -47,8 +47,8 @@ public class ServiceDescriptor {
 	public ServiceDescriptor(ServiceConfig serviceConfig) throws ServiceException {
         try {
             ClassLoader cl=Thread.currentThread().getContextClassLoader();
-            Class itf=Class.forName(serviceConfig.getInterfaceName(),true,cl);
-            Class clazz=Class.forName(serviceConfig.getImplementationName(),true,cl);
+            Class<?> itf=Class.forName(serviceConfig.getInterfaceName(),true,cl);
+            Class<?> clazz=Class.forName(serviceConfig.getImplementationName(),true,cl);
             serviceMethods=introspect(clazz,itf);
             serviceClass=itf;
         } catch (ClassNotFoundException x) {
@@ -56,7 +56,7 @@ public class ServiceDescriptor {
         }
 	}
     
-    public Class getServiceClass() {
+    public Class<?> getServiceClass() {
         return serviceClass;
     }
     
@@ -88,7 +88,7 @@ public class ServiceDescriptor {
     
     private Map<String,List<Method>> introspect(Class<?> clazz) throws ServiceException {
         Map<String,List<Method>> methods=new HashMap<String,List<Method>>();
-        Class current=clazz;
+        Class<?> current=clazz;
         while(current!=null && !current.equals(Object.class)) {
             Method[] meths=current.getDeclaredMethods();
             for(int i=0;i<meths.length;i++) {

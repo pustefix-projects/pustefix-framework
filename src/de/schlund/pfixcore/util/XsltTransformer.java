@@ -103,7 +103,7 @@ public class XsltTransformer {
     /** The In memory version of the stylesheet */
     protected Templates templates;
     /** holds additional {@link XsltParam} objects to be passed to the stylesheets */
-    protected HashMap params = new HashMap(20);
+    protected HashMap<String, XsltParam> params = new HashMap<String, XsltParam>(20);
     protected boolean isValidParams = false;
     protected boolean isValidParser = false;
     /** controls {@link #VALIDATION_FEATURE_ID} and {@link #SCHEMA_VALIDATION_FEATURE_ID}; defaults to false */
@@ -246,8 +246,8 @@ public class XsltTransformer {
             // assert transformer != null : "Exception should have been thrown
             // beforehand";
             transformer.clearParameters();
-            for (Iterator iter = params.values().iterator(); iter.hasNext();) {
-                XsltParam param = (XsltParam) iter.next();
+            for (Iterator<XsltParam> iter = params.values().iterator(); iter.hasNext();) {
+                XsltParam param = iter.next();
                 transformer.setParameter(param.getName(), param.getExpression());
             }
         }

@@ -32,6 +32,7 @@ import javax.xml.transform.TransformerException;
 import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
 import de.schlund.pfixcore.editor2.core.dom.Project;
@@ -119,7 +120,7 @@ public class UserManagementServiceImpl implements UserManagementService {
         synchronized (this.users) {
             this.users.clear();
             try {
-                for (Iterator i = XPath.select(xml, "/userinfo/user")
+                for (Iterator<Node> i = XPath.select(xml, "/userinfo/user")
                         .iterator(); i.hasNext();) {
                     Element userNode = (Element) i.next();
                     String userName = userNode.getAttribute("id");
@@ -184,7 +185,7 @@ public class UserManagementServiceImpl implements UserManagementService {
                             .setEditDynIncludes(userMayEditDynIncludes);
                     user.setGlobalPermissions(globalPermissions);
 
-                    for (Iterator i2 = XPath.select(userNode,
+                    for (Iterator<Node> i2 = XPath.select(userNode,
                             "permissions/project").iterator(); i2.hasNext();) {
                         Element projectNode = (Element) i2.next();
                         String projectName = projectNode.getAttribute("name");
@@ -246,8 +247,8 @@ public class UserManagementServiceImpl implements UserManagementService {
         File configFile = new File(this.pathresolver.resolve(CONFIG_FILE));
 
         synchronized (this.users) {
-            for (Iterator i = this.users.values().iterator(); i.hasNext();) {
-                EditorUser user = (EditorUser) i.next();
+            for (Iterator<EditorUser> i = this.users.values().iterator(); i.hasNext();) {
+                EditorUser user = i.next();
                 Element userElement = doc.createElement("user");
                 root.appendChild(userElement);
                 userElement.setAttribute("id", user.getUsername());
@@ -272,9 +273,9 @@ public class UserManagementServiceImpl implements UserManagementService {
                     globalElement.setAttribute("editDynIncludes", "false");
                 }
 
-                for (Iterator i2 = user.getProjectsWithPermissions().iterator(); i2
+                for (Iterator<Project> i2 = user.getProjectsWithPermissions().iterator(); i2
                         .hasNext();) {
-                    Project project = (Project) i2.next();
+                    Project project = i2.next();
                     EditorProjectPermissions projectPermissions = user
                             .getProjectPermissions(project);
                     Element projectElement = doc.createElement("project");
@@ -388,8 +389,8 @@ public class UserManagementServiceImpl implements UserManagementService {
         this.checkInitialized();
         synchronized (this.users) {
             HashSet<EditorUser> users = new HashSet<EditorUser>();
-            for (Iterator i = this.users.values().iterator(); i.hasNext();) {
-                EditorUser user = (EditorUser) i.next();
+            for (Iterator<EditorUser> i = this.users.values().iterator(); i.hasNext();) {
+                EditorUser user = i.next();
                 users.add((EditorUser) user.clone());
             }
             return users;

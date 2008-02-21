@@ -99,7 +99,7 @@ public class DynIncludeFactoryServiceImpl implements DynIncludeFactoryService {
 
         this.files = new HashMap<String, IncludeFile>();
 
-        for (Iterator i = includeFiles.iterator(); i.hasNext();) {
+        for (Iterator<File> i = includeFiles.iterator(); i.hasNext();) {
             File file = (File) i.next();
             String path = file.getAbsolutePath().substring(
                     docroot.getAbsolutePath().length() + 1);

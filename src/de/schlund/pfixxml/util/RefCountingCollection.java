@@ -132,7 +132,7 @@ public class RefCountingCollection<E> implements Collection<E> {
         return buff.toString();
     }
 
-    protected final boolean isInternalMapEqualToMap(Map map) {
+    protected final boolean isInternalMapEqualToMap(Map<?, ?> map) {
         return this.map.equals(map);
     }
     
@@ -179,7 +179,7 @@ public class RefCountingCollection<E> implements Collection<E> {
     }
 
     public final Iterator<E> iterator() {
-        return new RefCountingCollectionIterator(this, map);
+        return new RefCountingCollectionIterator<E>(this, map);
     }
 
     public final int hashCode() {

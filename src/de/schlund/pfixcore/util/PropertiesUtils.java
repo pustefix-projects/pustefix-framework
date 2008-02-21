@@ -52,10 +52,10 @@ public class PropertiesUtils {
      * Creation date: (05/09/00 17:53:25)
      * @return HashMap
      */
-    public static HashMap selectProperties(Properties props,String prefix) {
-    	String      p;
-    	Enumeration enm;
-    	HashMap     result = new HashMap();
+    public static HashMap<String, String> selectProperties(Properties props, String prefix) {
+    	String p;
+    	Enumeration<?> enm;
+    	HashMap<String, String> result = new HashMap<String, String>();
 
     	prefix += '.';
     	enm    = props.propertyNames();
@@ -77,8 +77,8 @@ public class PropertiesUtils {
      *     prefix.length() return all Properties sorted. If props is null
      *     return an empty TreeMap
      */
-    public static TreeMap selectPropertiesSorted(Properties props, String prefix) {
-        return selectPropertiesSorted((Comparator)null, props, prefix);
+    public static TreeMap<String, String> selectPropertiesSorted(Properties props, String prefix) {
+        return selectPropertiesSorted(null, props, prefix);
     }
     
     /**
@@ -89,17 +89,17 @@ public class PropertiesUtils {
      *     prefix.length() return all Properties sorted. If props is null
      *     return an empty TreeMap
      */
-    public static TreeMap selectPropertiesSorted(Comparator comp, Properties props, String prefix) {
-        TreeMap rc = null;
+    public static TreeMap<String, String> selectPropertiesSorted(Comparator<String> comp, Properties props, String prefix) {
+        TreeMap<String, String> rc = null;
         if (comp != null) {
-            rc = new TreeMap(comp);
+            rc = new TreeMap<String, String>(comp);
         } else {
-            rc = new TreeMap();
+            rc = new TreeMap<String, String>();
         }
         if (props != null) {
             if (prefix != null && 0 < prefix.length()) {
                 String dottedPrefix = prefix + '.';
-                Enumeration enm = props.propertyNames();
+                Enumeration<?> enm = props.propertyNames();
                 String pKey = null;
                 String newKey = null;
                 while (enm.hasMoreElements()) {
@@ -112,7 +112,12 @@ public class PropertiesUtils {
                     }
                 }
             } else {
-                rc.putAll(props);
+                Enumeration<?> enm = props.propertyNames();
+                while (enm.hasMoreElements()) {
+                    String key = (String) enm.nextElement();
+                    String value = props.getProperty(key);
+                    rc.put(key, value);
+                }
             }
         }
         return rc;

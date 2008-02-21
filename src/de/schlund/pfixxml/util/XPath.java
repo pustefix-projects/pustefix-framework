@@ -42,7 +42,7 @@ public class XPath {
         return defaultSupport;
     }
     
-    public static List select(Node context, String xpath) throws TransformerException {
+    public static List<Node> select(Node context, String xpath) throws TransformerException {
         XPathSupport xps=getXPathSupport(context);
         return xps.select(context,xpath);
     }
