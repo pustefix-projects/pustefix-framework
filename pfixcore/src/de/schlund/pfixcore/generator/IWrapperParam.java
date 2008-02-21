@@ -40,7 +40,7 @@ import de.schlund.util.statuscodes.StatusCodeLib;
  *
  */
 
-public class IWrapperParam implements IWrapperParamCheck, IWrapperParamDefinition, Comparable {
+public class IWrapperParam implements IWrapperParamCheck, IWrapperParamDefinition, Comparable<IWrapperParamDefinition> {
 
     private static final String TYPE_OPTIONAL  = "optional";
     private static final String TYPE_MANDATORY = "mandatory";
@@ -55,9 +55,9 @@ public class IWrapperParam implements IWrapperParamCheck, IWrapperParamDefinitio
     private Object[]            value          = null;
     private RequestParam[]      defaultval     = null;
     private IWrapperParamCaster caster;
-    private ArrayList           precheck       = new ArrayList();
-    private ArrayList           postcheck      = new ArrayList();
-    private HashSet             scodeinfos     = new HashSet();
+    private ArrayList<IWrapperParamPreCheck> precheck = new ArrayList<IWrapperParamPreCheck>();
+    private ArrayList<IWrapperParamPostCheck> postcheck = new ArrayList<IWrapperParamPostCheck>();
+    private HashSet<StatusCodeInfo> scodeinfos = new HashSet<StatusCodeInfo>();
     private Logger              LOG            = Logger.getLogger(this.getClass());
     private StatusCodeInfo      missing        = new StatusCodeInfo(StatusCodeLib.PFIXCORE_GENERATOR_MISSING_PARAM, null, null);  
     private boolean             inrequest      = false;
@@ -176,10 +176,10 @@ public class IWrapperParam implements IWrapperParamCheck, IWrapperParamDefinitio
         
         if (rparamv != null) {
             inrequest = true;
-            ArrayList in  = new ArrayList(Arrays.asList(rparamv));
-            ArrayList out = new ArrayList();
-            for (Iterator i = in.iterator(); i.hasNext(); ) {
-                RequestParam val = (RequestParam) i.next();
+            ArrayList<RequestParam> in = new ArrayList<RequestParam>(Arrays.asList(rparamv));
+            ArrayList<RequestParam> out = new ArrayList<RequestParam>();
+            for (Iterator<RequestParam> i = in.iterator(); i.hasNext(); ) {
+                RequestParam val = i.next();
                 LOG.debug(">>> [" + thename + "] Input: >" + val + "<");
                 if (val.getType().equals(RequestParamType.SIMPLE) || val.getType().equals(RequestParamType.FIELDDATA)) {
                     String tmp = val.getValue().trim();
@@ -225,8 +225,8 @@ public class IWrapperParam implements IWrapperParamCheck, IWrapperParamDefinitio
                 scodeinfos.add(missing);
             }
         } else if (rparamv != null) {
-            for (Iterator i = precheck.iterator(); i.hasNext(); ) {
-                IWrapperParamPreCheck pre = (IWrapperParamPreCheck) i.next();
+            for (Iterator<IWrapperParamPreCheck> i = precheck.iterator(); i.hasNext(); ) {
+                IWrapperParamPreCheck pre = i.next();
                 pre.check(rparamv);
                 if (pre.errorHappened()) {
                     synchronized (scodeinfos) {
@@ -254,8 +254,8 @@ public class IWrapperParam implements IWrapperParamCheck, IWrapperParamDefinitio
                             tmp[i] = rparamv[i].getValue();
                         }
                     }
-                    for (Iterator i = postcheck.iterator(); i.hasNext(); ) {
-                        IWrapperParamPostCheck post = (IWrapperParamPostCheck) i.next();
+                    for (Iterator<IWrapperParamPostCheck> i = postcheck.iterator(); i.hasNext(); ) {
+                        IWrapperParamPostCheck post = i.next();
                         post.check(tmp);
                         if (post.errorHappened()) {
                             synchronized (scodeinfos) {
@@ -286,8 +286,7 @@ public class IWrapperParam implements IWrapperParamCheck, IWrapperParamDefinitio
     	checkValue(rparamv);
     }
 
-    public int compareTo(Object inobj) {
-        IWrapperParamDefinition in = (IWrapperParamDefinition) inobj;
+    public int compareTo(IWrapperParamDefinition in) {
         return name.compareTo(in.getName());
     }
 }

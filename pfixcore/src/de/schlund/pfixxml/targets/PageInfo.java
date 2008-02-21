@@ -30,7 +30,7 @@ package de.schlund.pfixxml.targets;
  *
  */
 
-public class PageInfo implements Comparable {
+public class PageInfo implements Comparable<PageInfo> {
     private String          name;
     private String          variant;
     private TargetGenerator generator;
@@ -53,8 +53,7 @@ public class PageInfo implements Comparable {
         return generator;
     }
 
-    public int compareTo(Object inobj) {
-        PageInfo in = (PageInfo) inobj;
+    public int compareTo(PageInfo in) {
         if (getTargetGenerator().getName().compareTo(in.getTargetGenerator().getName()) != 0) {
             return getTargetGenerator().getName().compareTo(in.getTargetGenerator().getName());
         } else {

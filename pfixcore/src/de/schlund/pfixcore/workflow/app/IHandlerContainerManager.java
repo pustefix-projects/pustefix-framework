@@ -37,7 +37,7 @@ public class IHandlerContainerManager implements ConfigurableObject {
     // private static Logger LOG                 = Logger.getLogger(IHandlerContainerManager.class);
     private static String   DEF_HDL_CONTAINER = "de.schlund.pfixcore.workflow.app.IHandlerSimpleContainer";
     /** Store the already created IHandlerContainer here, use the page as key*/
-    private        HashMap  known             = new HashMap();
+    private HashMap<PageRequest, IHandlerContainer> known = new HashMap<PageRequest, IHandlerContainer>();
 
     /**
      * @see de.schlund.pfixxml.PropertyObject#init(Properties)
@@ -62,7 +62,7 @@ public class IHandlerContainerManager implements ConfigurableObject {
 
         synchronized (known) {
             PageRequest       page   = context.getCurrentPageRequest();
-            IHandlerContainer retval = (IHandlerContainer) known.get(page); 
+            IHandlerContainer retval = known.get(page); 
             if (retval == null) {
                 // LOG.debug("----- cachemiss for IHandlerContainer on page " + page.getName());
                 try {

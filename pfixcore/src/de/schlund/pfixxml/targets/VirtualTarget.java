@@ -50,7 +50,7 @@ import de.schlund.pfixxml.util.Xslt;
 public abstract class VirtualTarget extends TargetImpl {
     protected long modtime = 0;
 
-    protected TreeSet pageinfos = new TreeSet();
+    protected TreeSet<PageInfo> pageinfos = new TreeSet<PageInfo>();
 
     protected boolean forceupdate = false;
 
@@ -66,9 +66,9 @@ public abstract class VirtualTarget extends TargetImpl {
     /**
      * @see de.schlund.pfixxml.targets.Target#getPageInfos()
      */
-    public TreeSet getPageInfos() {
+    public TreeSet<PageInfo> getPageInfos() {
         synchronized (pageinfos) {
-            return (TreeSet) pageinfos.clone();
+            return new TreeSet<PageInfo>(pageinfos);
         }
     }
 
@@ -132,9 +132,9 @@ public abstract class VirtualTarget extends TargetImpl {
         xslup = tmp.needsUpdate();
         xslmod = tmp.getModTime();
 
-        for (Iterator i = this.getAuxDependencyManager().getChildren()
+        for (Iterator<AuxDependency> i = this.getAuxDependencyManager().getChildren()
                 .iterator(); i.hasNext();) {
-            AuxDependency aux = (AuxDependency) i.next();
+            AuxDependency aux = i.next();
             if (aux.getType() == DependencyType.TARGET) {
                 Target auxtarget = ((AuxDependencyTarget) aux).getTarget();
                 depmod = Math.max(auxtarget.getModTime(), depmod);
@@ -159,7 +159,7 @@ public abstract class VirtualTarget extends TargetImpl {
      * @see de.schlund.pfixxml.targets.TargetRW#storeValue(java.lang.Object)
      */
     public void storeValue(Object obj) {
-        SPCache cache = SPCacheFactory.getInstance().getCache();
+        SPCache<Object, Object> cache = SPCacheFactory.getInstance().getCache();
         cache.setValue(this, obj);
     }
 
@@ -189,7 +189,7 @@ public abstract class VirtualTarget extends TargetImpl {
      * @see de.schlund.pfixxml.targets.TargetImpl#getValueFromSPCache()
      */
     protected Object getValueFromSPCache() {
-        SPCache cache = SPCacheFactory.getInstance().getCache();
+        SPCache<Object, Object> cache = SPCacheFactory.getInstance().getCache();
         return cache.getValue(this);
     }
 
@@ -221,9 +221,9 @@ public abstract class VirtualTarget extends TargetImpl {
         maxmodtime = Math.max(tmpmodtime, maxmodtime);
 
         // check target dependencies
-        for (Iterator i = this.getAuxDependencyManager().getChildren()
+        for (Iterator<AuxDependency> i = this.getAuxDependencyManager().getChildren()
                 .iterator(); i.hasNext();) {
-            AuxDependency aux = (AuxDependency) i.next();
+            AuxDependency aux = i.next();
             if (aux.getType() == DependencyType.TARGET) {
                 Target auxtarget;
                 try {
@@ -320,7 +320,7 @@ public abstract class VirtualTarget extends TargetImpl {
             throw new XMLException("**** xsl source "
                     + tmpxslsource.getTargetKey() + " ("
                     + tmpxslsource.getType() + ") doesn't have a value!");
-        TreeMap tmpparams = getParams();
+        TreeMap<String, Object> tmpparams = getParams();
         tmpparams.put("themes", themes.getId());
 
         // Store output in temporary object and overwrite cache file only

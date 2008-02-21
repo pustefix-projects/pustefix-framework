@@ -43,8 +43,8 @@ public class ProjectsResourceImpl implements ProjectsResource {
             throws Exception {
         ProjectFactoryService projectfactory = SpringBeanLocator
                 .getProjectFactoryService();
-        for (Iterator i = projectfactory.getProjects().iterator(); i.hasNext();) {
-            Project project = (Project) i.next();
+        for (Iterator<Project> i = projectfactory.getProjects().iterator(); i.hasNext();) {
+            Project project = i.next();
             Element projectElement = resdoc.createSubNode(elem, "project");
             projectElement.setAttribute("name", project.getName());
             projectElement.setAttribute("comment", project.getComment());

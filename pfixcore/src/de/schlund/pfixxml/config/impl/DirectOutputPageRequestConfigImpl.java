@@ -21,6 +21,7 @@ package de.schlund.pfixxml.config.impl;
 import java.util.Enumeration;
 import java.util.Properties;
 
+import de.schlund.pfixcore.workflow.DirectOutputState;
 import de.schlund.pfixxml.config.DirectOutputPageRequestConfig;
 
 
@@ -33,7 +34,7 @@ public class DirectOutputPageRequestConfigImpl implements DirectOutputPageReques
 
     private String pageName = null;
 
-    private Class stateClass = null;
+    private Class<? extends DirectOutputState> stateClass = null;
     
     private Properties properties = new Properties();
 
@@ -48,20 +49,20 @@ public class DirectOutputPageRequestConfigImpl implements DirectOutputPageReques
         return this.pageName;
     }
 
-    public void setState(Class clazz) {
+    public void setState(Class<? extends DirectOutputState> clazz) {
         this.stateClass = clazz;
     }
 
     /* (non-Javadoc)
      * @see de.schlund.pfixxml.config.DirectOutputPageRequestConfig#getState()
      */
-    public Class getState() {
+    public Class<? extends DirectOutputState> getState() {
         return this.stateClass;
     }
     
     public void setProperties(Properties props) {
         this.properties = new Properties();
-        Enumeration e = props.propertyNames();
+        Enumeration<?> e = props.propertyNames();
         while (e.hasMoreElements()) {
             String propname = (String) e.nextElement();
             this.properties.setProperty(propname, props.getProperty(propname));

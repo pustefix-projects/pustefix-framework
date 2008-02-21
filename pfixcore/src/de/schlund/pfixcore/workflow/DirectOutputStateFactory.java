@@ -30,7 +30,7 @@ import org.apache.log4j.Logger;
  * @author <a href="mailto:jtl@schlund.de">Jens Lautenbacher</a>
  */
 public class DirectOutputStateFactory {
-    private static HashMap      knownstates = new HashMap();
+    private static HashMap<String, DirectOutputState> knownstates = new HashMap<String, DirectOutputState>();
     private final static Logger       LOG         = Logger.getLogger(StateFactory.class);
     private static DirectOutputStateFactory instance    = new DirectOutputStateFactory();
     
@@ -57,7 +57,7 @@ public class DirectOutputStateFactory {
             DirectOutputState retval = (DirectOutputState) knownstates.get(classname); 
             if (retval == null) {
                 try {
-                    Class stateclass = Class.forName(classname);
+                    Class<?> stateclass = Class.forName(classname);
                     retval = (DirectOutputState) stateclass.newInstance();
                 } catch (InstantiationException e) {
                     LOG.error("unable to instantiate class [" + classname + "]", e);

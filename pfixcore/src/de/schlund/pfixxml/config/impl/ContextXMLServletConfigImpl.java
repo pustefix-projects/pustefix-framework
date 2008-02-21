@@ -37,6 +37,7 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 import de.schlund.pfixcore.scriptedflow.ScriptedFlowConfigImpl;
+import de.schlund.pfixcore.workflow.State;
 import de.schlund.pfixxml.config.ContextXMLServletConfig;
 import de.schlund.pfixxml.config.CustomizationHandler;
 import de.schlund.pfixxml.config.includes.FileIncludeEvent;
@@ -51,17 +52,17 @@ import de.schlund.pfixxml.util.Xml;
  * @author Sebastian Marsching <sebastian.marsching@1und1.de>
  */
 public class ContextXMLServletConfigImpl extends AbstractXMLServletConfigImpl implements SSLOption, ContextXMLServletConfig {
-    private final static Class DEFAULT_IHANDLER_STATE = de.schlund.pfixcore.workflow.app.DefaultIWrapperState.class;
+    private final static Class<de.schlund.pfixcore.workflow.app.DefaultIWrapperState> DEFAULT_IHANDLER_STATE = de.schlund.pfixcore.workflow.app.DefaultIWrapperState.class;
 
-    private final static Class DEFAULT_STATIC_STATE = de.schlund.pfixcore.workflow.app.StaticState.class;
+    private final static Class<de.schlund.pfixcore.workflow.app.StaticState> DEFAULT_STATIC_STATE = de.schlund.pfixcore.workflow.app.StaticState.class;
 
     public final static String CONFIG_NS = "http://pustefix.sourceforge.net/properties200401";
 
     private final static String CUS_NS = "http://www.schlund.de/pustefix/customize";
 
-    private Class defaultStateClass = DEFAULT_STATIC_STATE;
+    private Class<? extends State> defaultStateClass = DEFAULT_STATIC_STATE;
 
-    private Class defaultIHandlerStateClass = DEFAULT_IHANDLER_STATE;
+    private Class<? extends State> defaultIHandlerStateClass = DEFAULT_IHANDLER_STATE;
 
     private ContextConfigImpl contextConfig;
 
@@ -248,19 +249,19 @@ public class ContextXMLServletConfigImpl extends AbstractXMLServletConfigImpl im
         return config;
     }
 
-    public void setDefaultStaticState(Class clazz) {
+    public void setDefaultStaticState(Class<? extends State> clazz) {
         this.defaultStateClass = clazz;
     }
 
-    public Class getDefaultStaticState() {
+    public Class<? extends State> getDefaultStaticState() {
         return this.defaultStateClass;
     }
 
-    public void setDefaultIHandlerState(Class clazz) {
+    public void setDefaultIHandlerState(Class<? extends State> clazz) {
         this.defaultIHandlerStateClass = clazz;
     }
 
-    public Class getDefaultIHandlerState() {
+    public Class<? extends State> getDefaultIHandlerState() {
         return this.defaultIHandlerStateClass;
     }
 

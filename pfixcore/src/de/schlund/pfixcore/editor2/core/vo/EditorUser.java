@@ -30,7 +30,7 @@ import de.schlund.pfixcore.editor2.core.dom.Project;
  * 
  * @author Sebastian Marsching <sebastian.marsching@1und1.de>
  */
-public class EditorUser implements Cloneable, Comparable {
+public class EditorUser implements Cloneable, Comparable<EditorUser> {
     private String username;
 
     private String cryptedPassword;
@@ -179,9 +179,9 @@ public class EditorUser implements Cloneable, Comparable {
     public Collection<Project> getProjectsWithPermissions() {
         HashSet<Project> projects = new HashSet<Project>();
         synchronized (this.projectsPermissions) {
-            for (Iterator i = this.projectsPermissions.keySet().iterator(); i
+            for (Iterator<Project> i = this.projectsPermissions.keySet().iterator(); i
                     .hasNext();) {
-                Project project = (Project) i.next();
+                Project project = i.next();
                 EditorProjectPermissions permissions = (EditorProjectPermissions) this.projectsPermissions
                         .get(project);
                 if (permissions.isEditImages() || permissions.isEditIncludes()) {
@@ -244,9 +244,9 @@ public class EditorUser implements Cloneable, Comparable {
         obj.setGlobalPermissions(this.getGlobalPermissions());
         obj.setPhoneNumber(this.getPhoneNumber());
         synchronized (this.projectsPermissions) {
-            for (Iterator i = this.projectsPermissions.keySet().iterator(); i
+            for (Iterator<Project> i = this.projectsPermissions.keySet().iterator(); i
                     .hasNext();) {
-                Project project = (Project) i.next();
+                Project project = i.next();
                 obj.setProjectPermissions(project, this
                         .getProjectPermissions(project));
             }
@@ -255,8 +255,7 @@ public class EditorUser implements Cloneable, Comparable {
         return obj;
     }
 
-    public int compareTo(Object o) {
-        EditorUser u2 = (EditorUser) o;
+    public int compareTo(EditorUser u2) {
         return this.getUsername().compareTo(u2.getUsername());
     }
 }

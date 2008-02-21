@@ -102,9 +102,9 @@ public class EditUserHandler implements IHandler {
             gPermissions.setEditDynIncludes(isEditDynIncludes);
             user.setGlobalPermissions(gPermissions);
 
-            for (Iterator i = SpringBeanLocator.getProjectFactoryService()
+            for (Iterator<Project> i = SpringBeanLocator.getProjectFactoryService()
                     .getProjects().iterator(); i.hasNext();) {
-                Project project = (Project) i.next();
+                Project project = i.next();
                 boolean isEditImages = false;
                 if (input.getEditImagesPrivilege(project.getName()) != null
                         && input.getEditImagesPrivilege(project.getName())
@@ -148,9 +148,9 @@ public class EditUserHandler implements IHandler {
         } else {
             input.setEditDynIncludesPrivilege(new Boolean(false));
         }
-        for (Iterator i = SpringBeanLocator.getProjectFactoryService()
+        for (Iterator<Project> i = SpringBeanLocator.getProjectFactoryService()
                 .getProjects().iterator(); i.hasNext();) {
-            Project project = (Project) i.next();
+            Project project = i.next();
             EditorProjectPermissions permissions = user
                     .getProjectPermissions(project);
             if (permissions.isEditImages()) {

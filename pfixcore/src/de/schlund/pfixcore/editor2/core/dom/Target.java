@@ -138,7 +138,7 @@ public interface Target {
      * 
      * @return Parameters used by the XSL processor
      */
-    Map<String, String> getParameters();
+    Map<String, Object> getParameters();
     
     /**
      * Returns a list representing the themes used by this target 

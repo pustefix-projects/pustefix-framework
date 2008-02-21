@@ -34,7 +34,7 @@ public class PropertyObjectManager {
 
     private        Logger LOG = Logger.getLogger(this.getClass());
     private static PropertyObjectManager instance=new PropertyObjectManager();
-    private        Map confMaps;
+    private        Map<Object, HashMap<Class<? extends ConfigurableObject>, ConfigurableObject>> confMaps;
     
     /**Returns PropertyObjectManager instance.*/
     public static PropertyObjectManager getInstance() {
@@ -43,35 +43,35 @@ public class PropertyObjectManager {
     
     /**Constructor.*/
     PropertyObjectManager() {
-        confMaps = new WeakHashMap();
+        confMaps = new WeakHashMap<Object, HashMap<Class<? extends ConfigurableObject>,ConfigurableObject>>();
     }
     
     public ConfigurableObject getConfigurableObject(Object config, String className) throws Exception {
-        return getConfigurableObject(config, Class.forName(className));
+        return getConfigurableObject(config, Class.forName(className).asSubclass(ConfigurableObject.class));
     }
     
-    public ConfigurableObject getConfigurableObject(Object config, Class objClass) throws Exception {
-        HashMap        confObjs = null;
+    public ConfigurableObject getConfigurableObject(Object config, Class<? extends ConfigurableObject> objClass) throws Exception {
+        HashMap<Class<? extends ConfigurableObject>, ConfigurableObject> confObjs = null;
         ConfigurableObject confObj = null;
         
-        confObjs = (HashMap) confMaps.get(config);
+        confObjs = confMaps.get(config);
         if (confObjs == null) {
             synchronized (confMaps) {
-                confObjs = (HashMap) confMaps.get(config);
+                confObjs = confMaps.get(config);
                 if (confObjs == null) {
-                    confObjs = new HashMap();
+                    confObjs = new HashMap<Class<? extends ConfigurableObject>, ConfigurableObject>();
                     confMaps.put(config, confObjs);
                 }
             }
         }
 
-        confObj = (ConfigurableObject) confObjs.get(objClass);
+        confObj = confObjs.get(objClass);
         if (confObj == null) {
             synchronized (confObjs) {
-                confObj = (ConfigurableObject) confObjs.get(objClass);
+                confObj = confObjs.get(objClass);
                 if (confObj == null) {
                     LOG.warn("******* Creating new ConfigurableObject " + objClass.getName());
-                    confObj = (ConfigurableObject) objClass.newInstance();
+                    confObj = objClass.newInstance();
                     confObj.init(config);
                     confObjs.put(objClass, confObj);
                 }

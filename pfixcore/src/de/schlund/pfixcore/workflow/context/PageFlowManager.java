@@ -82,8 +82,8 @@ public class PageFlowManager {
                 LOG.debug("===> Page " + page + " isn't a member of any pageflow: Reusing flow " + currentflow.getName());
                 return currentflow;
             }
-            for (Iterator i = rootflownames.iterator(); i.hasNext();) {
-                String pageflowname = vmanager.getVariantMatchingPageFlowName((String) i.next(), variant);
+            for (Iterator<String> i = rootflownames.iterator(); i.hasNext();) {
+                String pageflowname = vmanager.getVariantMatchingPageFlowName(i.next(), variant);
                 PageFlow pf = getPageFlowByName(pageflowname);
                 if (pf.containsPage(page.getRootName())) {
                     LOG.debug("===> Switching to pageflow: " + pf.getName());

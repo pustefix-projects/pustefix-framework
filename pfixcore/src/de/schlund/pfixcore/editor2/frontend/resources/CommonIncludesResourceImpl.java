@@ -77,9 +77,9 @@ public abstract class CommonIncludesResourceImpl implements
     protected abstract IncludePartThemeVariant internalSelectIncludePart(
             Project project, String path, String part, String theme);
 
-    protected abstract Collection getPossibleThemes(
+    protected abstract Collection<Theme> getPossibleThemes(
             IncludePartThemeVariant selectedIncludePart, Project project,
-            Collection pages);
+            Collection<Page> pages);
 
     protected abstract boolean securityMayEditIncludePartThemeVariant(
             IncludePartThemeVariant variant);
@@ -126,27 +126,27 @@ public abstract class CommonIncludesResourceImpl implements
             }
 
             // Render possible new branches
-            Collection pages = this.selectedIncludePart.getAffectedPages();
-            Collection themes = this.getPossibleThemes(
+            Collection<Page> pages = this.selectedIncludePart.getAffectedPages();
+            Collection<Theme> themes = this.getPossibleThemes(
                     this.selectedIncludePart, project, pages);
             if (!themes.isEmpty()) {
                 Element possibleThemes = resdoc.createSubNode(currentInclude,
                         "possiblethemes");
-                for (Iterator i = themes.iterator(); i.hasNext();) {
-                    Theme theme = (Theme) i.next();
+                for (Iterator<Theme> i = themes.iterator(); i.hasNext();) {
+                    Theme theme = i.next();
                     ResultDocument.addTextChild(possibleThemes, "option", theme
                             .getName());
                 }
             }
 
             // Render backups
-            Collection backups = SpringBeanLocator.getBackupService()
+            Collection<String> backups = SpringBeanLocator.getBackupService()
                     .listIncludeVersions(this.selectedIncludePart);
             if (!backups.isEmpty()) {
                 Element backupsNode = resdoc.createSubNode(currentInclude,
                         "backups");
-                for (Iterator i = backups.iterator(); i.hasNext();) {
-                    String version = (String) i.next();
+                for (Iterator<String> i = backups.iterator(); i.hasNext();) {
+                    String version = i.next();
                     ResultDocument.addTextChild(backupsNode, "option", version);
                 }
             }
@@ -156,12 +156,12 @@ public abstract class CommonIncludesResourceImpl implements
             if (!pages.isEmpty()) {
                 Element pagesNode = resdoc.createSubNode(currentInclude,
                         "pages");
-                HashMap projectNodes = new HashMap();
-                for (Iterator i = pages.iterator(); i.hasNext();) {
-                    Page page = (Page) i.next();
+                HashMap<Project, Element> projectNodes = new HashMap<Project, Element>();
+                for (Iterator<Page> i = pages.iterator(); i.hasNext();) {
+                    Page page = i.next();
                     Element projectNode;
                     if (projectNodes.containsKey(page.getProject())) {
-                        projectNode = (Element) projectNodes.get(page
+                        projectNode = projectNodes.get(page
                                 .getProject());
                     } else {
                         projectNode = resdoc
@@ -181,27 +181,26 @@ public abstract class CommonIncludesResourceImpl implements
             }
 
             // Render includes
-            TreeSet includes = new TreeSet(this.selectedIncludePart
+            TreeSet<IncludePartThemeVariant> includes = new TreeSet<IncludePartThemeVariant>(this.selectedIncludePart
                     .getIncludeDependencies(false));
             if (!includes.isEmpty()) {
                 Element includesNode = resdoc.createSubNode(currentInclude,
                         "includes");
-                for (Iterator i = includes.iterator(); i.hasNext();) {
-                    IncludePartThemeVariant variant = (IncludePartThemeVariant) i
-                            .next();
+                for (Iterator<IncludePartThemeVariant> i = includes.iterator(); i.hasNext();) {
+                    IncludePartThemeVariant variant = i.next();
                     this.renderInclude(variant, includesNode);
                 }
             }
 
             // Render images
             // Get images for current target and all include parts
-            TreeSet images = new TreeSet(this.selectedIncludePart
+            TreeSet<Image> images = new TreeSet<Image>(this.selectedIncludePart
                     .getImageDependencies(true));
             if (!images.isEmpty()) {
                 Element imagesNode = resdoc.createSubNode(currentInclude,
                         "images");
-                for (Iterator i = images.iterator(); i.hasNext();) {
-                    Image image = (Image) i.next();
+                for (Iterator<Image> i = images.iterator(); i.hasNext();) {
+                    Image image = i.next();
                     Element imageNode = resdoc.createSubNode(imagesNode,
                             "image");
                     imageNode.setAttribute("path", image.getPath());
@@ -241,8 +240,8 @@ public abstract class CommonIncludesResourceImpl implements
                     "concurrentedits");
             Map<Context, String> contextmap = ContextStore.getInstance()
                     .getContextMap();
-            for (Iterator i = contextmap.keySet().iterator(); i.hasNext();) {
-                Context foreignCtx = (Context) i.next();
+            for (Iterator<Context> i = contextmap.keySet().iterator(); i.hasNext();) {
+                Context foreignCtx = i.next();
                 if (foreignCtx != this.context
                         && EditorResourceLocator.getSessionResource(foreignCtx)
                                 .isInIncludeEditView()) {
@@ -272,11 +271,10 @@ public abstract class CommonIncludesResourceImpl implements
         includeNode.setAttribute("theme", variant.getTheme().getName());
 
         try {
-            TreeSet variants = new TreeSet(variant
+            TreeSet<IncludePartThemeVariant> variants = new TreeSet<IncludePartThemeVariant>(variant
                     .getIncludeDependencies(false));
-            for (Iterator i = variants.iterator(); i.hasNext();) {
-                IncludePartThemeVariant variant2 = (IncludePartThemeVariant) i
-                        .next();
+            for (Iterator<IncludePartThemeVariant> i = variants.iterator(); i.hasNext();) {
+                IncludePartThemeVariant variant2 = i.next();
                 this.renderInclude(variant2, includeNode);
             }
         } catch (EditorParsingException e) {
@@ -370,12 +368,12 @@ public abstract class CommonIncludesResourceImpl implements
 
         // Make sure xmlns declarations are present in top-level element
         if (xml instanceof Element) {
-            Map xmlnsMappings = SpringBeanLocator.getConfigurationService()
+            Map<String, String> xmlnsMappings = SpringBeanLocator.getConfigurationService()
                     .getPrefixToNamespaceMappings();
             Element elem = (Element) xml;
-            for (Iterator i = xmlnsMappings.keySet().iterator(); i.hasNext();) {
-                String prefix = (String) i.next();
-                String url = (String) xmlnsMappings.get(prefix);
+            for (Iterator<String> i = xmlnsMappings.keySet().iterator(); i.hasNext();) {
+                String prefix = i.next();
+                String url = xmlnsMappings.get(prefix);
                 elem.setAttributeNS("http://www.w3.org/2000/xmlns/", "xmlns:"
                         + prefix, url);
             }
@@ -440,11 +438,11 @@ public abstract class CommonIncludesResourceImpl implements
         xmlcode.append("<part");
 
         // Add predefined prefixes
-        Map xmlnsMappings = SpringBeanLocator.getConfigurationService()
+        Map<String, String> xmlnsMappings = SpringBeanLocator.getConfigurationService()
                 .getPrefixToNamespaceMappings();
-        for (Iterator i = xmlnsMappings.keySet().iterator(); i.hasNext();) {
-            String prefix = (String) i.next();
-            String url = (String) xmlnsMappings.get(prefix);
+        for (Iterator<String> i = xmlnsMappings.keySet().iterator(); i.hasNext();) {
+            String prefix = i.next();
+            String url = xmlnsMappings.get(prefix);
             xmlcode.append(" xmlns:" + prefix + "=\"" + url + "\"");
         }
 
@@ -462,13 +460,13 @@ public abstract class CommonIncludesResourceImpl implements
 
     public boolean createAndSelectBranch(String themeName) throws EditorIOException, EditorParsingException, EditorSecurityException {
         Theme theme = null;
-        for (Iterator i = this.getPossibleThemes(
+        for (Iterator<Theme> i = this.getPossibleThemes(
                 this.selectedIncludePart,
                 EditorResourceLocator.getProjectsResource(context)
                         .getSelectedProject(),
                 this.selectedIncludePart.getAffectedPages()).iterator(); i
                 .hasNext();) {
-            Theme theme2 = (Theme) i.next();
+            Theme theme2 = i.next();
             if (theme2.getName().equals(themeName)) {
                 theme = theme2;
             }
@@ -510,8 +508,8 @@ public abstract class CommonIncludesResourceImpl implements
     public void closeDirectoryTree(String name) {
         this.openDirectories.remove(name);
         // Close all file tree below this directory
-        for (Iterator i = this.openFiles.iterator(); i.hasNext();) {
-            String file = (String) i.next();
+        for (Iterator<String> i = this.openFiles.iterator(); i.hasNext();) {
+            String file = i.next();
             try {
                 String dir = file.substring(0, file.lastIndexOf('/'));
                 if (dir.equals(name)) {

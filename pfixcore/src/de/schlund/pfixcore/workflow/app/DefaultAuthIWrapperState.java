@@ -76,26 +76,26 @@ public class DefaultAuthIWrapperState extends StateImpl {
         } else {
             if (preq != null) {
                 RequestData rdata = new RequestDataImpl(context, preq);
-                ArrayList   aux   = getAuxWrapper(context);
+                ArrayList<IWrapper> aux = getAuxWrapper(context);
                 auxLoadData(aux, context, rdata);
             }
             return false;
         }
     }
 
-    private ArrayList getAuxWrapper(Context context) throws Exception {
-        ArrayList  aux       = new ArrayList();
+    private ArrayList<IWrapper> getAuxWrapper(Context context) throws Exception {
+        ArrayList<IWrapper>  aux       = new ArrayList<IWrapper>();
         PageRequestConfig config = context.getConfigForCurrentPageRequest();
         Map<String, Class<?>> auxwrp = config.getAuxWrappers();
         
         if (auxwrp != null) {
-            for (Iterator i = auxwrp.keySet().iterator(); i.hasNext(); ) {
-                String prefix = (String) i.next(); 
+            for (Iterator<String> i = auxwrp.keySet().iterator(); i.hasNext(); ) {
+                String prefix = i.next(); 
                 String iface  = auxwrp.get(prefix).getName();
                 if (iface.equals("")) {
                     throw new XMLException("FATAL: No interface for prefix " + prefix);
                 }
-                Class auxwrapper = Class.forName(iface);
+                Class<?> auxwrapper = Class.forName(iface);
                 IWrapper wrapper = (IWrapper) auxwrapper.newInstance();
                 wrapper.init(prefix);
                 aux.add(wrapper);
@@ -131,7 +131,7 @@ public class DefaultAuthIWrapperState extends StateImpl {
         }
 
         CAT.debug("===> authorisation handler: " + authprefix + " => " + authwrapper);
-        Class thewrapper = Class.forName(authwrapper);
+        Class<?> thewrapper = Class.forName(authwrapper);
         IWrapper user = (IWrapper) thewrapper.newInstance();
         if (do_init) {
             user.init(authprefix);
@@ -156,7 +156,7 @@ public class DefaultAuthIWrapperState extends StateImpl {
         Properties     properties  = context.getProperties();
         ResultDocument resdoc      = super.createDefaultResultDocument(context);
         RequestData    rdata       = new RequestDataImpl(context, preq);
-        ArrayList      aux         = getAuxWrapper(context);
+        ArrayList<IWrapper> aux    = getAuxWrapper(context);
 
         // Two cases: we are actively submitting data, or not.
         // If we are, we always try to authenticate against supplied user data.
@@ -224,9 +224,9 @@ public class DefaultAuthIWrapperState extends StateImpl {
         }
     }
 
-    private void auxEchoData(ArrayList aux, RequestData rdata, ResultDocument resdoc) throws Exception {
-        for (Iterator i = aux.iterator(); i.hasNext(); ) {
-            IWrapper tmp = (IWrapper) i.next();
+    private void auxEchoData(ArrayList<IWrapper> aux, RequestData rdata, ResultDocument resdoc) throws Exception {
+        for (Iterator<IWrapper> i = aux.iterator(); i.hasNext(); ) {
+            IWrapper tmp = i.next();
             tmp.load(rdata);
             IWrapperParam[] params = tmp.gimmeAllParams();
             String          prefix = tmp.gimmePrefix();
@@ -242,8 +242,8 @@ public class DefaultAuthIWrapperState extends StateImpl {
                 resdoc.addHiddenValue(prefix + "." + par.getName(), val);
             }
         }
-        for (Iterator i = rdata.getParameterNames(); i.hasNext(); ) {
-            String name = (String) i.next();
+        for (Iterator<String> i = rdata.getParameterNames(); i.hasNext(); ) {
+            String name = i.next();
             if (name.equals(AbstractXMLServlet.PARAM_ANCHOR)) {
                 RequestParam[] vals = rdata.getParameters(name);
                 for (int j = 0; j < vals.length; j++) {
@@ -253,9 +253,9 @@ public class DefaultAuthIWrapperState extends StateImpl {
         }
     }
     
-    private void auxLoadData(ArrayList aux, Context context, RequestData rdata) throws Exception {
-        for (Iterator i = aux.iterator(); i.hasNext(); ) {
-            IWrapper tmp = (IWrapper) i.next();
+    private void auxLoadData(ArrayList<IWrapper> aux, Context context, RequestData rdata) throws Exception {
+        for (Iterator<IWrapper> i = aux.iterator(); i.hasNext(); ) {
+            IWrapper tmp = i.next();
             IHandler hnd = tmp.gimmeIHandler();
             tmp.load(rdata);
             if (!tmp.errorHappened()) {

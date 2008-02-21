@@ -41,7 +41,7 @@ public class PagerequestStateRule extends CheckedRule {
         if (className == null) {
             throw new SAXException("Mandatory attribute \"class\" is missing!");
         }
-        Class clazz;
+        Class<?> clazz;
         if (className.startsWith("script:")) {
             String scriptName = className.substring(7);
             pageConfig.getProperties().setProperty(
@@ -58,7 +58,7 @@ public class PagerequestStateRule extends CheckedRule {
         if (!State.class.isAssignableFrom(clazz)) {
             throw new SAXException("State " + clazz + " for page " + pageConfig.getPageName() + " does not implement " + State.class + " interface!");
         }
-        pageConfig.setState(clazz);
+        pageConfig.setState(clazz.asSubclass(State.class));
     }
 
     protected Map<String, Boolean> wantsAttributes() {

@@ -37,6 +37,7 @@ import org.xml.sax.SAXException;
 
 import de.schlund.pfixxml.resources.FileResource;
 import de.schlund.pfixxml.resources.ResourceUtil;
+import de.schlund.pfixxml.util.Generics;
 import de.schlund.pfixxml.util.XPath;
 import de.schlund.pfixxml.util.Xml;
 
@@ -78,7 +79,7 @@ public class IncludesResolver {
     public void resolveIncludes(Document doc) throws SAXException {
         List<Element> nodes;
         try {
-            nodes = XPath.select(doc, "//*[local-name()='" + includeTag + "']");
+            nodes = Generics.convertList(XPath.select(doc, "//*[local-name()='" + includeTag + "']"));
         } catch (TransformerException e) {
             throw new RuntimeException("Unexpected XPath error!");
         }
@@ -206,7 +207,7 @@ public class IncludesResolver {
             if (!(obj instanceof Tupel)) {
                 return false;
             }
-            Tupel tupel = (Tupel) obj;
+            Tupel<?, ?> tupel = (Tupel<?, ?>) obj;
             
             return obj1.equals(tupel.obj1) && obj2.equals(tupel.obj2);
         }

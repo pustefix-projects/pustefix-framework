@@ -58,7 +58,7 @@ public class ToLong extends SimpleCheck implements IWrapperParamCaster {
             LOG.debug("*** IN param: " + param[i]);
         }
         reset();
-        ArrayList out = new ArrayList();
+        ArrayList<Long> out = new ArrayList<Long>();
         Long   val;
         for (int i = 0; i < param.length; i++) {
             try {
@@ -71,7 +71,7 @@ public class ToLong extends SimpleCheck implements IWrapperParamCaster {
             }
         }
         if (!errorHappened()) {
-            value = (Long[]) out.toArray(new Long[] {});
+            value = out.toArray(new Long[] {});
         }
     }
     

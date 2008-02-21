@@ -18,6 +18,7 @@
 
 package de.schlund.pfixxml.config.impl;
 
+import de.schlund.pfixcore.generator.IWrapper;
 import de.schlund.pfixxml.config.IWrapperConfig;
 
 
@@ -29,7 +30,7 @@ import de.schlund.pfixxml.config.IWrapperConfig;
 public class IWrapperConfigImpl implements IWrapperConfig {
     
     private String prefix = null;
-    private Class wrapperClass = null;
+    private Class<? extends IWrapper> wrapperClass = null;
     private boolean continueOnSubmit = false;
     private boolean activeIgnore = false;
     private boolean alwaysRetrieve = false;
@@ -46,14 +47,14 @@ public class IWrapperConfigImpl implements IWrapperConfig {
         this.prefix = prefix;
     }
     
-    public void setWrapperClass(Class clazz) {
+    public void setWrapperClass(Class<? extends IWrapper> clazz) {
         this.wrapperClass = clazz;
     }
     
     /* (non-Javadoc)
      * @see de.schlund.pfixxml.config.IWrapperConfig#getWrapperClass()
      */
-    public Class getWrapperClass() {
+    public Class<? extends IWrapper> getWrapperClass() {
         return this.wrapperClass;
     }
     

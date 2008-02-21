@@ -42,7 +42,7 @@ public class PagerequestAuxInterfaceRule extends CheckedRule {
         if (className == null) {
             throw new SAXException("Mandatory attribute \"class\" is missing!");
         }
-        Class clazz;
+        Class<?> clazz;
         try {
             clazz = Class.forName(className);
         } catch (ClassNotFoundException e) {
@@ -51,7 +51,7 @@ public class PagerequestAuxInterfaceRule extends CheckedRule {
         if (!IWrapper.class.isAssignableFrom(clazz)) {
             throw new SAXException("Aux wrapper class " + clazz + " on page " + pageConfig.getPageName() + " does not implement " + IWrapper.class + " interface!");
         }
-        pageConfig.addAuxWrapper(prefix, clazz);
+        pageConfig.addAuxWrapper(prefix, clazz.asSubclass(IWrapper.class));
     }
 
     protected Map<String, Boolean> wantsAttributes() {

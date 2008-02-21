@@ -8,6 +8,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -59,10 +60,10 @@ public class Wsdl2Js {
     private File outputFile;
     private File inputFile;
     
-    private HashMap schemaTypes;
-    private HashMap typeInfoMap;
-    private ArrayList typeInfoList;
-    private ArrayList popInfoList;
+    private HashMap<QName, Element> schemaTypes;
+    private HashMap<QName, String> typeInfoMap;
+    private ArrayList<String> typeInfoList;
+    private ArrayList<String> popInfoList;
     
     private static Pattern typePattern=Pattern.compile("(\\w+):(\\w+)");
     private static Pattern arrayTypePattern=Pattern.compile("(\\w+):(\\w+)((\\[\\])+)");
@@ -79,6 +80,7 @@ public class Wsdl2Js {
     }
     
     
+    @SuppressWarnings("unchecked")
     private SOAPAddress getSOAPAddress(Port port) {
         Iterator it=port.getExtensibilityElements().iterator();
         while(it.hasNext()) {
@@ -91,6 +93,7 @@ public class Wsdl2Js {
         return null;
     }
     
+    @SuppressWarnings("unchecked")
     private SOAPBinding getSOAPBinding(Binding binding) {
         Iterator it=binding.getExtensibilityElements().iterator();
         while(it.hasNext()) {
@@ -103,6 +106,7 @@ public class Wsdl2Js {
         return null;
     }
     
+    @SuppressWarnings("unchecked")
     private SOAPBody getSOAPBody(BindingInput binding) {
         Iterator it=binding.getExtensibilityElements().iterator();
         while(it.hasNext()) {
@@ -141,18 +145,18 @@ public class Wsdl2Js {
             if(!inputFile.exists()) throw new Exception("WSDL input file doesn't exist");
             InputSource inSrc=new InputSource(new FileInputStream(inputFile));
             Definition def=wr.readWSDL(null,inSrc);
-            NamespaceMap namespaces=new NamespaceMap(def.getNamespaces());
+            NamespaceMap namespaces=getNamespaceMapFromDefinition(def);
             
-            typeInfoMap=new HashMap();
-            popInfoList=new ArrayList();
-            typeInfoList=new ArrayList();
+            typeInfoMap=new HashMap<QName, String>();
+            popInfoList=new ArrayList<String>();
+            typeInfoList=new ArrayList<String>();
             
             schemaTypes=getComplexSchemaTypes(def.getTypes());
             
-            Iterator srvIt=def.getServices().values().iterator();
+            Iterator<Service> srvIt=getServicesFromDefinition(def).iterator();
             while(srvIt.hasNext()) {
                 Service service=(Service)srvIt.next();
-                Iterator prtIt=service.getPorts().values().iterator();
+                Iterator<Port> prtIt=getPortsFromService(service).iterator();
                 while(prtIt.hasNext()) {
                     Port port=(Port)prtIt.next();
                     String portName=port.getName();
@@ -175,9 +179,9 @@ public class Wsdl2Js {
                     String style=soapBinding.getStyle();
                     
                     //PortType portType=binding.getPortType();
-                    Iterator bopIt=binding.getBindingOperations().iterator();
+                    Iterator<BindingOperation> bopIt=getOperationsFromBinding(binding).iterator();
                     while(bopIt.hasNext()) {
-                        BindingOperation bop=(BindingOperation)bopIt.next();
+                        BindingOperation bop=bopIt.next();
                         Operation op=bop.getOperation();
                        
                         SOAPBody soapBody=getSOAPBody(bop.getBindingInput());
@@ -190,9 +194,9 @@ public class Wsdl2Js {
                         //get input params
                         Input input=op.getInput();
                         Message inputMsg=input.getMessage();
-                        Iterator partIt=inputMsg.getOrderedParts(op.getParameterOrdering()).iterator();
+                        Iterator<Part> partIt=getOrderedPartsFromMessage(inputMsg, op.getParameterOrdering()).iterator();
                         while(partIt.hasNext()) {
-                            Part part=(Part)partIt.next();
+                            Part part=partIt.next();
                             JsParam jsParam=new JsParam(part.getName());
                             jsMethod.addParam(jsParam);     
                         }   
@@ -215,7 +219,7 @@ public class Wsdl2Js {
                         //get return param (presume only one return param)
                         Output output=op.getOutput();
                         Message outputMsg=output.getMessage();
-                        partIt=outputMsg.getParts().values().iterator();
+                        partIt=getPartsFromMessage(outputMsg).iterator();
                         while(partIt.hasNext()) {
                             Part part=(Part)partIt.next();
                             QName type=part.getTypeName();
@@ -245,7 +249,36 @@ public class Wsdl2Js {
         
     }
     
+    @SuppressWarnings("unchecked")
+    private Collection<Part> getOrderedPartsFromMessage(Message inputMsg, List orderings) {
+        return inputMsg.getOrderedParts(orderings);
+    }
+
+    @SuppressWarnings("unchecked")
+    private Collection<Part> getPartsFromMessage(Message msg) {
+        return msg.getParts().values();
+    }
     
+    @SuppressWarnings("unchecked")
+    private Collection<BindingOperation> getOperationsFromBinding(Binding binding) {
+        return binding.getBindingOperations();
+    }
+
+    @SuppressWarnings("unchecked")
+    private Collection<Port> getPortsFromService(Service service) {
+        return service.getPorts().values();
+    }
+
+    @SuppressWarnings("unchecked")
+    private Collection<Service> getServicesFromDefinition(Definition def) {
+        return def.getServices().values();
+    }
+
+    @SuppressWarnings("unchecked")
+    private NamespaceMap getNamespaceMapFromDefinition(Definition def) {
+        return new NamespaceMap(def.getNamespaces());
+    }
+
     private String createJsTypeInfo(QName type,NamespaceMap namespaces,String use) throws Exception {
         String ret=(String)typeInfoMap.get(type);
         if(ret==null) {
@@ -308,13 +341,13 @@ public class Wsdl2Js {
     /**
      * Get all complexType elements from WSDL types section
      */
-    public HashMap getComplexSchemaTypes(Types wsdlTypes) throws Exception {
-        HashMap schemaTypes=new HashMap();
+    public HashMap<QName, Element> getComplexSchemaTypes(Types wsdlTypes) throws Exception {
+        HashMap<QName, Element> schemaTypes=new HashMap<QName, Element>();
         if(wsdlTypes!=null) {
-        	List schemaList=wsdlTypes.getExtensibilityElements();
-        	Iterator schemaIt=schemaList.iterator();
+        	List<ExtensibilityElement> schemaList=getExtensibilityElementsFromTypes(wsdlTypes);
+        	Iterator<ExtensibilityElement> schemaIt=schemaList.iterator();
         	while(schemaIt.hasNext()) {
-        		ExtensibilityElement extElem=(ExtensibilityElement)schemaIt.next();
+        		ExtensibilityElement extElem=schemaIt.next();
                 String className=extElem.getClass().getName();
                 boolean isSchema=wsdl4jWithSchema?className.indexOf("Schema")>-1:className.equals(WSDL4J_14_SCHEMA);
         		if(isSchema) {
@@ -338,6 +371,11 @@ public class Wsdl2Js {
         return schemaTypes;
     }
     
+    @SuppressWarnings("unchecked")
+    private List<ExtensibilityElement> getExtensibilityElementsFromTypes(Types wsdlTypes) {
+        return wsdlTypes.getExtensibilityElements();
+    }
+
     /**
      * Check if complexType represents an array
      */
@@ -444,7 +482,7 @@ public class Wsdl2Js {
             	if(modelElem.getLocalName().equals("sequence")) {
                     return getSequenceMemberInfos(modelElem,namespaces,use);
                 } else if(modelElem.getLocalName().equals("complexContent")) {
-                    ArrayList memberInfos=new ArrayList();
+                    ArrayList<MemberInfo> memberInfos=new ArrayList<MemberInfo>();
                     Element extElem=getFirstSchemaChild(modelElem);
                     if(extElem!=null&&extElem.getLocalName().equals("extension")) {
                     	String base=extElem.getAttribute("base");
@@ -477,7 +515,7 @@ public class Wsdl2Js {
     
     private MemberInfo[] getSequenceMemberInfos(Element seqElem,NamespaceMap namespaces,String use) throws Exception {
         if(use.equals(Constants.ENCODING_USE_ENCODED)||use.equals(Constants.ENCODING_USE_LITERAL)) {
-            ArrayList memberInfos=new ArrayList();
+            ArrayList<MemberInfo> memberInfos=new ArrayList<MemberInfo>();
         	Element[] elems=getSchemaChildren(seqElem);
         	for(int i=0;i<elems.length;i++) {
         		Element elem=elems[i];
@@ -512,7 +550,7 @@ public class Wsdl2Js {
     }
     
     private Element[] getSchemaChildren(Element parent) {
-        ArrayList al=new ArrayList();
+        ArrayList<Node> al=new ArrayList<Node>();
         NodeList nl=parent.getChildNodes();
         for(int i=0;i<nl.getLength();i++) {
             Node n=nl.item(i);
@@ -568,16 +606,16 @@ public class Wsdl2Js {
     
     class NamespaceMap {
      
-        Map namespaces;
-        Map prefixes;
+        Map<String, String> namespaces;
+        Map<String, String> prefixes;
         
-        NamespaceMap(Map namespaces) {
+        NamespaceMap(Map<String, String> namespaces) {
             this.namespaces=namespaces;
-            prefixes=new HashMap();
-            Iterator it=namespaces.keySet().iterator();
+            prefixes=new HashMap<String, String>();
+            Iterator<String> it=namespaces.keySet().iterator();
             while(it.hasNext())  {
-                String prefix=(String)it.next();
-                String nsuri=(String)namespaces.get(prefix);
+                String prefix=it.next();
+                String nsuri=namespaces.get(prefix);
                 prefixes.put(nsuri,prefix);
             }
         }

@@ -71,7 +71,7 @@ class SimpleNamespaceContext implements NamespaceContext {
         return null;
     }
 
-    public Iterator getPrefixes(String namespaceURI) {
+    public Iterator<String> getPrefixes(String namespaceURI) {
         if (namespaceURI == null) {
             throw new IllegalArgumentException("Namespace URI must not be null!");
         }

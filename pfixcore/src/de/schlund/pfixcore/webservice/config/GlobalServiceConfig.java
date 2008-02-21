@@ -294,10 +294,10 @@ public class GlobalServiceConfig implements Serializable {
         in.defaultReadObject();
         String str=(String)in.readObject();
         if(str!=null) {
-            Class clazz=Class.forName(str);
+            Class<?> clazz=Class.forName(str);
             try {
                 faultHandler=(FaultHandler)clazz.newInstance();
-                HashMap params=(HashMap)in.readObject();
+                HashMap<String, String> params = (HashMap<String,String>) in.readObject();
                 if(params!=null) faultHandler.setParams(params);
             } catch(IllegalAccessException x) {
                 

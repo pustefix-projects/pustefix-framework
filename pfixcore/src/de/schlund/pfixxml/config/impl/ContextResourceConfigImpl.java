@@ -24,6 +24,7 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 
+import de.schlund.pfixcore.workflow.ContextResource;
 import de.schlund.pfixxml.config.ContextResourceConfig;
 
 /**
@@ -34,12 +35,12 @@ import de.schlund.pfixxml.config.ContextResourceConfig;
 public class ContextResourceConfigImpl implements ContextResourceConfig {
     private final static Logger LOG = Logger.getLogger(ContextResourceConfigImpl.class);
     
-    private Class resourceClass = null;
-    private HashSet<Class> interfaces = new HashSet<Class>();
+    private Class<? extends ContextResource> resourceClass = null;
+    private HashSet<Class<? extends ContextResource>> interfaces = new HashSet<Class<? extends ContextResource>>();
     private Properties props = new Properties();
     private ContextConfigImpl parent;
     
-    public ContextResourceConfigImpl(Class clazz, ContextConfigImpl parent) {
+    public ContextResourceConfigImpl(Class<? extends ContextResource> clazz, ContextConfigImpl parent) {
         this.resourceClass = clazz;
         this.parent = parent;
     }
@@ -47,11 +48,11 @@ public class ContextResourceConfigImpl implements ContextResourceConfig {
     /* (non-Javadoc)
      * @see de.schlund.pfixxml.config.ContextResourceConfig#getContextResourceClass()
      */
-    public Class getContextResourceClass() {
+    public Class<? extends ContextResource> getContextResourceClass() {
         return this.resourceClass;
     }
     
-    public void addInterface(Class clazz) {
+    public void addInterface(Class<? extends ContextResource> clazz) {
         this.interfaces.add(clazz); 
         ContextResourceConfig oldConfig = this.parent.getContextResourceConfigForInterface(clazz);
         if (oldConfig != null) {
@@ -63,7 +64,7 @@ public class ContextResourceConfigImpl implements ContextResourceConfig {
     /* (non-Javadoc)
      * @see de.schlund.pfixxml.config.ContextResourceConfig#getInterfaces()
      */
-    public Set<Class> getInterfaces() {
+    public Set<Class<? extends ContextResource>> getInterfaces() {
         return this.interfaces;
     }
     

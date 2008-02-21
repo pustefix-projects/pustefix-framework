@@ -42,7 +42,7 @@ public class PageflowStepActionRule extends CheckedRule {
         if (type.equals("jumpto")) {
             type = "de.schlund.pfixcore.workflow.FlowStepJumpToAction";
         }
-        Class clazz;
+        Class<?> clazz;
         try {
             clazz = Class.forName(type);
         } catch (ClassNotFoundException e) {
@@ -52,7 +52,7 @@ public class PageflowStepActionRule extends CheckedRule {
             throw new SAXException("Pageflow step action " + clazz + " does not implmenent " + FlowStepAction.class + " interface!");
         }
         PageFlowStepActionConfigImpl actionConfig = new PageFlowStepActionConfigImpl();
-        actionConfig.setActionType(clazz);
+        actionConfig.setActionType(clazz.asSubclass(FlowStepAction.class));
         for (int i = 0; i < attributes.getLength(); i++) {
             actionConfig.setParam(attributes.getLocalName(i), attributes.getValue(i));
         }

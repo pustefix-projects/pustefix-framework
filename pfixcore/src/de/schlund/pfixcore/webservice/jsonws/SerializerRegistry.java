@@ -43,7 +43,7 @@ import de.schlund.pfixcore.webservice.jsonws.serializers.StringSerializer;
  */
 public class SerializerRegistry {
 
-    Map<Class,Serializer> serializers;
+    Map<Class<?>,Serializer> serializers;
     BeanSerializer beanSerializer;
     ArraySerializer arraySerializer;
     ListSerializer listSerializer;
@@ -51,7 +51,7 @@ public class SerializerRegistry {
     
     public SerializerRegistry(BeanDescriptorFactory beanDescFactory) {
        
-        serializers=new HashMap<Class,Serializer>();
+        serializers=new HashMap<Class<?>,Serializer>();
         
         beanSerializer=new BeanSerializer(beanDescFactory);
         arraySerializer=new ArraySerializer();
@@ -74,11 +74,11 @@ public class SerializerRegistry {
       
     }
     
-    public void register(Class clazz,Serializer serializer) {
+    public void register(Class<?> clazz,Serializer serializer) {
         serializers.put(clazz,serializer);
     }
     
-    public Serializer getSerializer(Class clazz) {
+    public Serializer getSerializer(Class<?> clazz) {
         Serializer ser=serializers.get(clazz);
         if(ser==null) {
             if(clazz.isArray()) ser=arraySerializer;
@@ -90,11 +90,11 @@ public class SerializerRegistry {
     }
     
     public Serializer getSerializer(Type type) {
-        Class clazz=null;
-        if(type instanceof Class) clazz=(Class)type;
+        Class<?> clazz=null;
+        if(type instanceof Class) clazz=(Class<?>)type;
         else if(type instanceof ParameterizedType) {
             Type rawType=((ParameterizedType)type).getRawType();
-            if(rawType instanceof Class) clazz=(Class)rawType;
+            if(rawType instanceof Class) clazz=(Class<?>)rawType;
         }
         if(clazz!=null) return getSerializer(clazz);
         else throw new RuntimeException("Type not supported: "+type.getClass()+" "+type);

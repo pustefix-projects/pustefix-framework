@@ -66,14 +66,14 @@ public class ServerContextImpl implements RoleProvider {
     
     private void createInterceptors() throws Exception {
         ArrayList<ContextInterceptor> list = new ArrayList<ContextInterceptor>();
-        for (Iterator<Class> i = config.getStartInterceptors().iterator(); i.hasNext();) {
+        for (Iterator<Class<? extends ContextInterceptor>> i = config.getStartInterceptors().iterator(); i.hasNext();) {
             String classname = i.next().getName();
             list.add(ContextInterceptorFactory.getInstance().getInterceptor(classname));
         }
         startInterceptors = (ContextInterceptor[]) list.toArray(new ContextInterceptor[] {});
 
         list.clear();
-        for (Iterator<Class> i = config.getEndInterceptors().iterator(); i.hasNext();) {
+        for (Iterator<Class<? extends ContextInterceptor>> i = config.getEndInterceptors().iterator(); i.hasNext();) {
             String classname = i.next().getName();
             list.add(ContextInterceptorFactory.getInstance().getInterceptor(classname));
         }

@@ -76,14 +76,13 @@ public class IncludePartImpl extends CommonIncludePartImpl {
      */
     public Collection<Theme> getPossibleThemes() {
         HashSet<Page> pages = new HashSet<Page>();
-        for (Iterator i = this.getThemeVariants().iterator(); i.hasNext();) {
-            IncludePartThemeVariant partVar = (IncludePartThemeVariant) i
-                    .next();
+        for (Iterator<IncludePartThemeVariant> i = this.getThemeVariants().iterator(); i.hasNext();) {
+            IncludePartThemeVariant partVar = i.next();
             pages.addAll(partVar.getAffectedPages());
         }
         HashSet<Theme> themes = new HashSet<Theme>();
-        for (Iterator i = pages.iterator(); i.hasNext();) {
-            Page page = (Page) i.next();
+        for (Iterator<Page> i = pages.iterator(); i.hasNext();) {
+            Page page = i.next();
             themes.addAll(page.getThemes().getThemes());
         }
         return themes;
@@ -146,8 +145,8 @@ public class IncludePartImpl extends CommonIncludePartImpl {
         
         // Register affected pages for regeneration
         Page affectedpage = null;
-        for (Iterator i = variant.getAffectedPages().iterator(); i.hasNext();) {
-            Page page = (Page) i.next();
+        for (Iterator<Page> i = variant.getAffectedPages().iterator(); i.hasNext();) {
+            Page page = i.next();
             page.registerForUpdate();
             affectedpage = page;
         }

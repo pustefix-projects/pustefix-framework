@@ -38,7 +38,7 @@ public class DirectPagerequestStateRule extends CheckedRule {
             throw new SAXException("Mandatory attribute \"class\" is missing!");
         }
         DirectOutputPageRequestConfigImpl reqConfig = (DirectOutputPageRequestConfigImpl) this.getDigester().peek();
-        Class clazz;
+        Class<?> clazz;
         try {
             clazz = Class.forName(className);
         } catch (ClassNotFoundException e) {
@@ -47,7 +47,7 @@ public class DirectPagerequestStateRule extends CheckedRule {
         if (!DirectOutputState.class.isAssignableFrom(clazz)) {
             throw new SAXException("Direct output state " + clazz + " for page " + reqConfig.getPageName() + " does not implmenent " + DirectOutputState.class + " interface!");
         }
-        reqConfig.setState(clazz);
+        reqConfig.setState(clazz.asSubclass(DirectOutputState.class));
     }
 
     protected Map<String, Boolean> wantsAttributes() {

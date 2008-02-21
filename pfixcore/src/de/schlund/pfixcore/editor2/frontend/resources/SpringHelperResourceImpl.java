@@ -26,7 +26,7 @@ import de.schlund.pfixcore.workflow.Context;
 import de.schlund.pfixxml.ResultDocument;
 
 public class SpringHelperResourceImpl implements SpringHelperResource {
-    private HashMap values;
+    private HashMap<String, Object> values;
     
     public Object get(String key) {
         synchronized (this.values) {
@@ -47,7 +47,7 @@ public class SpringHelperResourceImpl implements SpringHelperResource {
     }
 
     public void init(Context context) throws Exception {
-        this.values = new HashMap();
+        this.values = new HashMap<String, Object>();
     }
 
     public void insertStatus(ResultDocument resdoc, Element elem) throws Exception {

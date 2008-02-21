@@ -67,7 +67,7 @@ public class PfixServletRequestImpl implements PfixServletRequest {
     private static final String   PROP_MAXPARTSIZE    = "pfixservletrequest.maxpartsize";
     private static final String   ATTR_LASTEXCEPTION  = "REQ_LASTEXCEPTION";
     private static String         DEF_MAXPARTSIZE     = "" + (10 * 1024 * 1024); // 10 MB
-    private HashMap               parameters          = new HashMap();
+    private HashMap<String, RequestParam[]> parameters = new HashMap<String, RequestParam[]>();
     private Logger                LOG                 = Logger.getLogger(this.getClass());
     private List<Exception>             multiPartExceptions = new ArrayList<Exception>();
     private String                servername;
@@ -352,11 +352,11 @@ public class PfixServletRequestImpl implements PfixServletRequest {
 
     private void getRequestParams(HttpServletRequest req, Properties properties) {
         String  type     = req.getContentType();
-        HashSet allnames = new HashSet();
+        HashSet<String> allnames = new HashSet<String>();
         if (type != null && type.toLowerCase().startsWith(MultipartHandler.MULTI_FORM_DATA)) {
             allnames.addAll(handleMulti(req, properties));
         }
-        for (Enumeration enm = req.getParameterNames(); enm.hasMoreElements();) {
+        for (Enumeration<?> enm = req.getParameterNames(); enm.hasMoreElements();) {
             String key = (String) enm.nextElement();
             allnames.add(key);
             String[] data = req.getParameterValues(key);
@@ -387,9 +387,9 @@ public class PfixServletRequestImpl implements PfixServletRequest {
         generateSynthetics(req,allnames);
     }
 
-    private HashSet handleMulti(HttpServletRequest req, Properties properties) {
+    private HashSet<String> handleMulti(HttpServletRequest req, Properties properties) {
         String  tmpdir = properties.getProperty(PROP_TMPDIR);
-        HashSet names = new HashSet();
+        HashSet<String> names = new HashSet<String>();
         if (tmpdir == null || tmpdir.equals("")) {
             tmpdir = System.getProperty(AbstractXMLServlet.DEF_PROP_TMPDIR);
         }
@@ -406,11 +406,11 @@ public class PfixServletRequestImpl implements PfixServletRequest {
         } catch (Exception e) {
             multiPartExceptions.add(e);
         }
-        for (Enumeration enm = multi.getParameterNames(); enm.hasMoreElements();) {
+        for (Enumeration<String> enm = multi.getParameterNames(); enm.hasMoreElements();) {
             String key = (String) enm.nextElement();
             names.add(key);
-            List       values = multi.getAllParameter(key);
-            PartData[] data = (PartData[]) values.toArray(new PartData[]{});
+            List<PartData> values = multi.getAllParameter(key);
+            PartData[] data = values.toArray(new PartData[]{});
             LOG.debug("* [MULTI] Found parameters for key '" + key + "' count=" + data.length);
             for (int i = 0; i < data.length; i++) {
                 PartData tmp = data[i];
@@ -422,10 +422,10 @@ public class PfixServletRequestImpl implements PfixServletRequest {
         return names;
     }
 
-    private void generateSynthetics(HttpServletRequest req, HashSet allnames) {
-        HashSet prefixes = new HashSet();
-        for (Iterator i = allnames.iterator(); i.hasNext();) {
-            String name = (String) i.next();
+    private void generateSynthetics(HttpServletRequest req, HashSet<String> allnames) {
+        HashSet<String> prefixes = new HashSet<String>();
+        for (Iterator<String> i = allnames.iterator(); i.hasNext();) {
+            String name = i.next();
             if (name.startsWith(SBMT_PREFIX)) {
                 int start = SBMT_PREFIX.length();
                 int end   = name.lastIndexOf(":");
@@ -437,13 +437,13 @@ public class PfixServletRequestImpl implements PfixServletRequest {
                 }
             }
         }
-        for (Iterator i = prefixes.iterator(); i.hasNext();) {
-            String prefix = SYNT_PREFIX + (String) i.next() + ":";
-            for (Iterator j = allnames.iterator(); j.hasNext();) {
-                String name = (String) j.next();
+        for (Iterator<String> i = prefixes.iterator(); i.hasNext();) {
+            String prefix = SYNT_PREFIX + i.next() + ":";
+            for (Iterator<String> j = allnames.iterator(); j.hasNext();) {
+                String name = j.next();
                 if (name.startsWith(prefix) && (name.length() > prefix.length())) {
                     String         key    = name.substring(prefix.length());
-                    RequestParam[] values = (RequestParam[]) parameters.get(name);
+                    RequestParam[] values = parameters.get(name);
                     LOG.debug("    * [EMB/" + name + "]  >> Key is " + key);
                     if (values != null && values.length > 0) {
                         RequestParam[] newvals = new RequestParam[values.length];
@@ -453,7 +453,7 @@ public class PfixServletRequestImpl implements PfixServletRequest {
                             newvals[k].setSynthetic(true);
                         }
                         // Eeeek, how to concatenate arrays in an elegant way?
-                        RequestParam[] oldvals = (RequestParam[]) parameters.get(key);
+                        RequestParam[] oldvals = parameters.get(key);
                         RequestParam[] finvals = newvals;
                         if (oldvals != null && oldvals.length > 0) {
                             finvals = new RequestParam[oldvals.length + newvals.length];

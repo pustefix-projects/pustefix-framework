@@ -42,7 +42,7 @@ import de.schlund.pfixxml.targets.cachestat.SPCacheStatistic;
  *
  *
  */
-public abstract class TargetImpl implements TargetRW, Comparable {
+public abstract class TargetImpl implements TargetRW, Comparable<Target> {
 
     //~ Instance/static variables ..................................................................
 
@@ -51,7 +51,7 @@ public abstract class TargetImpl implements TargetRW, Comparable {
     protected TargetGenerator      generator;
     protected String               targetkey;
     protected Themes               themes          = null;
-    protected TreeMap              params          = null;
+    protected TreeMap<String, Object> params       = null;
     protected Target               xmlsource       = null;
     protected Target               xslsource       = null;
     protected Logger               LOG             = Logger.getLogger(this.getClass());
@@ -113,12 +113,12 @@ public abstract class TargetImpl implements TargetRW, Comparable {
     /**
      * @see de.schlund.pfixxml.targets.Target#getParams()
      */
-    public TreeMap getParams() {
+    public TreeMap<String, Object> getParams() {
         if (params == null) {
             return null;
         } else {
             synchronized (params) {
-                return new TreeMap(params);
+                return new TreeMap<String, Object>(params);
             }
         }
     }
@@ -190,7 +190,7 @@ public abstract class TargetImpl implements TargetRW, Comparable {
 
     public abstract void addPageInfo(PageInfo info);
     
-    public abstract TreeSet getPageInfos();
+    public abstract TreeSet<PageInfo> getPageInfos();
     
     public abstract void setXMLSource(Target source);
 
@@ -252,8 +252,7 @@ public abstract class TargetImpl implements TargetRW, Comparable {
     /**
      * @see java.lang.Comparable#compareTo(java.lang.Object)
      */
-    public int compareTo(Object inobj) {
-        Target in = (Target) inobj;
+    public int compareTo(Target in) {
         if (getTargetGenerator().getName().compareTo(in.getTargetGenerator().getName()) != 0) {
             return getTargetGenerator().getName().compareTo(in.getTargetGenerator().getName());
         } else {

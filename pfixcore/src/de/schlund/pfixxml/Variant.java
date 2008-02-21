@@ -42,7 +42,7 @@ public class Variant {
             variant_arr = null;
         } else {
             StringTokenizer tokenizer = new StringTokenizer(variant, ":");
-            ArrayList       arrlist   = new ArrayList();
+            ArrayList<String> arrlist = new ArrayList<String>();
             String          fallback  = "";
             while (tokenizer.hasMoreElements()) {
                 String tok = tokenizer.nextToken();
@@ -52,7 +52,7 @@ public class Variant {
                 fallback += tok;
                 arrlist.add(0,fallback);
             }
-            variant_arr = (String[]) arrlist.toArray(new String[]{});
+            variant_arr = arrlist.toArray(new String[]{});
         }
     }
 

@@ -336,8 +336,8 @@ public abstract class CommonIncludePartThemeVariantImpl extends
 
             // Register affected pages for regeneration
             Page affectedpage = null;
-            for (Iterator i = this.getAffectedPages().iterator(); i.hasNext();) {
-                Page page = (Page) i.next();
+            for (Iterator<Page> i = this.getAffectedPages().iterator(); i.hasNext();) {
+                Page page = i.next();
                 page.registerForUpdate();
                 affectedpage = page;
             }
@@ -352,13 +352,12 @@ public abstract class CommonIncludePartThemeVariantImpl extends
                 // probably because it was just created - so look for
                 // pages using other branches, which will use this branch
                 // when being regenerated
-                pageloop: for (Iterator i = this.getIncludePart()
+                pageloop: for (Iterator<IncludePartThemeVariant> i = this.getIncludePart()
                         .getThemeVariants().iterator(); i.hasNext();) {
-                    IncludePartThemeVariant iv = (IncludePartThemeVariant) i
-                            .next();
-                    for (Iterator i2 = iv.getAffectedPages().iterator(); i2
+                    IncludePartThemeVariant iv = i.next();
+                    for (Iterator<Page> i2 = iv.getAffectedPages().iterator(); i2
                             .hasNext();) {
-                        Page p = (Page) i2.next();
+                        Page p = i2.next();
                         if (p.getThemes().themeOverridesTheme(this.getTheme(),
                                 iv.getTheme())) {
                             p.update();

@@ -41,7 +41,7 @@ public class ContextResourceRule extends CheckedRule {
         if (className == null) {
             throw new SAXException("Mandatory attribute \"class\" is missing!");
         }
-        Class clazz = null;
+        Class<?> clazz = null;
         try {
             clazz = Class.forName(className);
         } catch (ClassNotFoundException e) {
@@ -50,7 +50,7 @@ public class ContextResourceRule extends CheckedRule {
         if (!ContextResource.class.isAssignableFrom(clazz)) {
             throw new SAXException("ContextResource " + clazz + " does not implement " + ContextResource.class + " interface!");
         }
-        ContextResourceConfigImpl crConfig = new ContextResourceConfigImpl(clazz, config.getContextConfig());
+        ContextResourceConfigImpl crConfig = new ContextResourceConfigImpl(clazz.asSubclass(ContextResource.class), config.getContextConfig());
         ctxConfig.addContextResource(crConfig);
         this.getDigester().push(crConfig);        
     }

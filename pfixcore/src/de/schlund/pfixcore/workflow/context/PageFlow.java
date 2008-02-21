@@ -36,8 +36,8 @@ import de.schlund.pfixxml.config.PageFlowStepConfig;
 public class PageFlow {
     private String    flowname;
     private String    rootname;
-    private ArrayList allsteps = new ArrayList();
-    private HashMap   stepmap  = new HashMap();
+    private ArrayList<FlowStep> allsteps = new ArrayList<FlowStep>();
+    private HashMap<String, FlowStep> stepmap = new HashMap<String, FlowStep>();
     private String    finalpage;
     
     private final static Logger LOG = Logger.getLogger(PageFlow.class);

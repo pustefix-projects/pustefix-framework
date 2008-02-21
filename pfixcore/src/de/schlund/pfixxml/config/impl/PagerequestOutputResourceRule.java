@@ -42,7 +42,7 @@ public class PagerequestOutputResourceRule extends CheckedRule {
         if (className == null) {
             throw new SAXException("Mandatory attribute \"class\" is missing!");
         }
-        Class clazz;
+        Class<?> clazz;
         try {
             clazz = Class.forName(className);
         } catch (ClassNotFoundException e) {
@@ -51,7 +51,7 @@ public class PagerequestOutputResourceRule extends CheckedRule {
         if (!ContextResource.class.isAssignableFrom(clazz)) {
             throw new SAXException("Context resource class " + clazz + " on page " + pageConfig.getPageName() + " does not implement " + ContextResource.class + " interface!");
         }
-        pageConfig.addContextResource(node, clazz);
+        pageConfig.addContextResource(node, clazz.asSubclass(ContextResource.class));
     }
 
     protected Map<String, Boolean> wantsAttributes() {

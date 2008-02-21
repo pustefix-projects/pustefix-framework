@@ -49,7 +49,7 @@ public class TrouserHandler implements IHandler {
 
         // Sample Check: reject a certain combination
         if (feature != null && color.equals(new Integer(2))) {
-            HashSet set = new HashSet(Arrays.asList(feature));
+            HashSet<Integer> set = new HashSet<Integer>(Arrays.asList(feature));
             if (set.contains(new Integer(1))) {
                 // The combination of feature 1 and color No. 2 is invalid (maybe out of stock) 
                 String[]   args  = new String[2];

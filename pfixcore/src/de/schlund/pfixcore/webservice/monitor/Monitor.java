@@ -50,9 +50,9 @@ public class Monitor {
 	                while(!isInterrupted()) {
 	                	synchronized(ipToHistory) {
 		                	long time=System.currentTimeMillis()-timeout;
-		                	Iterator it=ipToHistory.keySet().iterator();
+		                	Iterator<String> it=ipToHistory.keySet().iterator();
 		                	while(it.hasNext()) {
-		                		String ip=(String)it.next();
+		                		String ip=it.next();
 		                		MonitorHistory hist=ipToHistory.get(ip);
 		                		if(hist.lastModified()<time) ipToHistory.remove(ip);
 		                	}

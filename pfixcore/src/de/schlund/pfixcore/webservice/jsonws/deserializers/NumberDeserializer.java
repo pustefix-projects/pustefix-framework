@@ -32,14 +32,14 @@ public class NumberDeserializer extends Deserializer {
 
     @Override
     public boolean canDeserialize(DeserializationContext ctx, Object jsonValue, Type targetType) {
-        Class targetClass=(Class)targetType;
+        Class<?> targetClass=(Class<?>)targetType;
         if(jsonValue instanceof Number && Number.class.isAssignableFrom(targetClass)) return true;
         return false;
     }
     
     @Override
     public Object deserialize(DeserializationContext ctx,Object  jsonValue,Type targetType) throws DeserializationException {
-        Class targetClass=(Class)targetType;
+        Class<?> targetClass=(Class<?>)targetType;
         if(jsonValue instanceof Number) {
             if(targetClass==int.class||targetClass==Integer.class) {
                 if(jsonValue.getClass()==Integer.class) return jsonValue;

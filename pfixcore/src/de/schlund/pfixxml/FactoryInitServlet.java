@@ -22,11 +22,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Properties;
-import java.util.TreeSet;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -47,7 +43,6 @@ import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
 import org.apache.log4j.Logger;
-import org.apache.log4j.spi.ThrowableInformation;
 import org.apache.log4j.xml.DOMConfigurator;
 import org.w3c.dom.Document;
 import org.xml.sax.EntityResolver;
@@ -59,13 +54,11 @@ import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
 import org.xml.sax.helpers.XMLReaderFactory;
 
-import de.schlund.pfixcore.util.PropertiesUtils;
 import de.schlund.pfixxml.config.CustomizationHandler;
 import de.schlund.pfixxml.config.GlobalConfigurator;
 import de.schlund.pfixxml.config.XMLPropertiesUtil;
 import de.schlund.pfixxml.resources.FileResource;
 import de.schlund.pfixxml.resources.ResourceUtil;
-import de.schlund.pfixxml.util.Misc;
 import de.schlund.pfixxml.util.TransformerHandlerAdapter;
 import de.schlund.pfixxml.util.logging.ProxyLogUtil;
 

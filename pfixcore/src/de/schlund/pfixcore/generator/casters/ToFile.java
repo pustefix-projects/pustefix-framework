@@ -61,7 +61,7 @@ public class ToFile extends SimpleCheck implements IWrapperParamCaster {
             }
         }
         reset();
-        ArrayList out = new ArrayList();
+        ArrayList<File> out = new ArrayList<File>();
         File val;
         for (int i = 0; i < param.length; i++) {
             RequestParam tmp = param[i];
@@ -76,7 +76,7 @@ public class ToFile extends SimpleCheck implements IWrapperParamCaster {
             }
         }
         if (!errorHappened()) {
-            value = (File[]) out.toArray(new File[] {});
+            value = out.toArray(new File[] {});
         }
     }
     

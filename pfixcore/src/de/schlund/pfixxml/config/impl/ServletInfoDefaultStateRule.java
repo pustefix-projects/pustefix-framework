@@ -40,7 +40,7 @@ public class ServletInfoDefaultStateRule extends CheckedRule {
         if (className == null) {
             throw new Exception("Attribute \"class\" is mandatory!");
         }
-        Class clazz;
+        Class<?> clazz;
         try {
             clazz = Class.forName(className);
         } catch (ClassNotFoundException e) {
@@ -49,7 +49,7 @@ public class ServletInfoDefaultStateRule extends CheckedRule {
         if (!State.class.isAssignableFrom(clazz)) {
             throw new SAXException("Default state class " + clazz + " does not implement " + State.class + " interface!");
         }
-        config.setDefaultStaticState(clazz);
+        config.setDefaultStaticState(clazz.asSubclass(State.class));
     }   
 
     protected Map<String, Boolean> wantsAttributes() {

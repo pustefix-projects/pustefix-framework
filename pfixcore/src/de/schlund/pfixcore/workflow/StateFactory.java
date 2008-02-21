@@ -33,7 +33,7 @@ import de.schlund.pfixcore.util.FlyWeightChecker;
  */
 
 public class StateFactory {
-    private static HashMap      knownstates = new HashMap();
+    private static HashMap<String, State> knownstates = new HashMap<String, State>();
     private static StateFactory instance    = new StateFactory();
     
     public static StateFactory getInstance() {
@@ -53,7 +53,7 @@ public class StateFactory {
             State retval = (State) knownstates.get(classname); 
             if (retval == null) {
                 try {
-                    Class stateclass = Class.forName(classname);
+                    Class<?> stateclass = Class.forName(classname);
                     retval = (State) stateclass.newInstance();
                     if (!FlyWeightChecker.check(retval)) {
                         throw new IllegalStateException("You MUST NOT use non-static/non-final fields in flyweight class " + classname);

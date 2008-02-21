@@ -46,7 +46,7 @@ public class IncludeFileHandler extends DefaultHandler implements LexicalHandler
         } else {
             throw new IllegalArgumentException("Parameter is non-docroot path: " + file.toURI());
         }
-        alleDokumente = new Vector();
+        alleDokumente = new Vector<PreDoc>();
     }
 
     private static final String PRODUCT           = "theme";
@@ -58,7 +58,7 @@ public class IncludeFileHandler extends DefaultHandler implements LexicalHandler
     private int                 product_count     = 0;
     private Part                currentPart       = null;
     private PreDoc              currentDoc        = null;
-    private Collection          alleDokumente     = null;
+    private Collection<PreDoc> alleDokumente = null;
     private String              path;
     private long                lasttouch;
 
@@ -108,10 +108,10 @@ public class IncludeFileHandler extends DefaultHandler implements LexicalHandler
         return (Document[]) getScannedDocumentsAsVector().toArray(new Document[0]);
     }
     
-    public Vector getScannedDocumentsAsVector(){
-        Vector retval = new Vector();
-        for (Iterator iter = alleDokumente.iterator(); iter.hasNext();) {
-            PreDoc element = (PreDoc) iter.next();
+    public Vector<Document> getScannedDocumentsAsVector(){
+        Vector<Document> retval = new Vector<Document>();
+        for (Iterator<PreDoc> iter = alleDokumente.iterator(); iter.hasNext();) {
+            PreDoc element = iter.next();
             retval.add(element.toLuceneDocument());
         }
         return retval;

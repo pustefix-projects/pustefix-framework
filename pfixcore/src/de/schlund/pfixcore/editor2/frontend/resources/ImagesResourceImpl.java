@@ -56,9 +56,9 @@ public class ImagesResourceImpl implements ImagesResource {
         if (project == null) {
             return false;
         }
-        Collection allimages = project.getAllImages();
-        for (Iterator i = allimages.iterator(); i.hasNext();) {
-            Image image = (Image) i.next();
+        Collection<Image> allimages = project.getAllImages();
+        for (Iterator<Image> i = allimages.iterator(); i.hasNext();) {
+            Image image = i.next();
             if (image.getPath().equals(path)) {
                 this.selectedImage = image;
                 return true;
@@ -85,10 +85,10 @@ public class ImagesResourceImpl implements ImagesResource {
                 this.context).getSelectedProject();
 
         if (project != null) {
-            TreeSet allimages = new TreeSet(project.getAllImages());
-            HashMap directoryNodes = new HashMap();
-            for (Iterator i = allimages.iterator(); i.hasNext();) {
-                Image image = (Image) i.next();
+            TreeSet<Image> allimages = new TreeSet<Image>(project.getAllImages());
+            HashMap<String, Element> directoryNodes = new HashMap<String, Element>();
+            for (Iterator<Image> i = allimages.iterator(); i.hasNext();) {
+                Image image = i.next();
                 String path = image.getPath();
                 String directory;
                 if (path.lastIndexOf("/") > 0) {
@@ -96,7 +96,7 @@ public class ImagesResourceImpl implements ImagesResource {
                 } else {
                     directory = "/";
                 }
-                Element directoryNode = (Element) directoryNodes.get(directory);
+                Element directoryNode = directoryNodes.get(directory);
                 if (directoryNode == null) {
                     directoryNode = resdoc.createSubNode(elem, "directory");
                     directoryNode.setAttribute("path", directory);
@@ -143,25 +143,25 @@ public class ImagesResourceImpl implements ImagesResource {
                 }
 
                 // Render backups
-                Collection backups = SpringBeanLocator.getBackupService()
+                Collection<String> backups = SpringBeanLocator.getBackupService()
                         .listImageVersions(this.selectedImage);
                 if (!backups.isEmpty()) {
                     Element backupsNode = resdoc.createSubNode(currentImage,
                             "backups");
-                    for (Iterator i = backups.iterator(); i.hasNext();) {
-                        String version = (String) i.next();
+                    for (Iterator<String> i = backups.iterator(); i.hasNext();) {
+                        String version = i.next();
                         ResultDocument.addTextChild(backupsNode, "option",
                                 version);
                     }
                 }
 
                 // Render affected pages
-                Collection pages = this.selectedImage.getAffectedPages();
+                Collection<Page> pages = this.selectedImage.getAffectedPages();
                 if (!pages.isEmpty()) {
                     Element pagesNode = resdoc.createSubNode(currentImage,
                             "pages");
-                    HashMap projectNodes = new HashMap();
-                    for (Iterator i = pages.iterator(); i.hasNext();) {
+                    HashMap<Project, Element> projectNodes = new HashMap<Project, Element>();
+                    for (Iterator<Page> i = pages.iterator(); i.hasNext();) {
                         Page page = (Page) i.next();
                         Element projectNode;
                         if (projectNodes.containsKey(page.getProject())) {

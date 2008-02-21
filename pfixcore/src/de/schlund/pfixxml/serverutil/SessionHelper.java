@@ -40,9 +40,9 @@ public class SessionHelper {
 
     private static final String ENC_STR = "jsessionid";
 
-    public static void saveSessionData(Map store, HttpSession session) {
+    public static void saveSessionData(Map<String, Object> store, HttpSession session) {
         try {
-            Enumeration enm = session.getAttributeNames();
+            Enumeration<?> enm = session.getAttributeNames();
             while (enm.hasMoreElements()) {
                 String valName = (String) enm.nextElement();
                 store.put(valName, session.getAttribute(valName));
@@ -52,13 +52,13 @@ public class SessionHelper {
         }
     }
 
-    public static void copySessionData(Map store, HttpSession session) {
+    public static void copySessionData(Map<String, Object> store, HttpSession session) {
         try {
-            Iterator iter = store.keySet().iterator();
+            Iterator<String> iter = store.keySet().iterator();
             String key = null;
             Object value = null;
             while (iter.hasNext()) {
-                key = (String) iter.next();
+                key = iter.next();
                 value = store.get(key);
                 if (value instanceof NoCopySessionData) {
                     LOG.debug("*** Will not copy a object implementing NoCopySessionData!!! ***");

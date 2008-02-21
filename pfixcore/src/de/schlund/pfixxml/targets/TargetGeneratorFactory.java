@@ -79,7 +79,7 @@ public class TargetGeneratorFactory {
     }
     
     public void reset() {
-        generatormap = new HashMap(); 
+        generatormap = new HashMap<String, TargetGenerator>(); 
     }
     
 }

@@ -50,7 +50,7 @@ public class XPathSaxon2 implements XPathSupport {
         try {
             XPathEvaluator xpe=createXPath(context);
             List<Node> nodeList=new ArrayList<Node>();
-            List list=(List)xpe.evaluate(xpath,context,XPathConstants.NODESET);
+            List<?> list=(List<?>)xpe.evaluate(xpath,context,XPathConstants.NODESET);
             for(Object obj:list) {
                 Item item=(Item)obj;
                 if(item instanceof NodeInfo) nodeList.add(NodeOverNodeInfo.wrap((NodeInfo)item));

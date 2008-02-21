@@ -54,13 +54,13 @@ public class TextCreatorVisitor implements ExceptionDataValueVisitor {
 						"" + data.getPort(), data.getUri(), data.getQuery()});
 
 		StringBuffer requestparam_info = new StringBuffer();
-		HashMap map = data.getRequestParams();
+		HashMap<String, String> map = data.getRequestParams();
 		if(map == null) {
 			requestparam_info.append("No parameters");
 		} else {
-			for(Iterator iter = map.keySet().iterator(); iter.hasNext();) {
-				String key = iter.next().toString();
-				String value = map.get(key).toString();
+			for(Iterator<String> iter = map.keySet().iterator(); iter.hasNext();) {
+				String key = iter.next();
+				String value = map.get(key);
 				requestparam_info.append(key+" = "+value+"\n");
 			}
 		}
@@ -68,24 +68,24 @@ public class TextCreatorVisitor implements ExceptionDataValueVisitor {
 		
 		
 		StringBuffer laststep_info = new StringBuffer();
-		List steps = data.getLastSteps();
+		List<String> steps = data.getLastSteps();
 		if(steps == null) {
 			laststep_info.append("No last step info");
 		} else {
-			for(Iterator iter = steps.iterator(); iter.hasNext(); ) {
-				Object value = iter.next();
+			for(Iterator<String> iter = steps.iterator(); iter.hasNext(); ) {
+				String value = iter.next();
 				laststep_info.append(value+"\n");
 			}
 		}
 		
 		StringBuffer sessiondata_info = new StringBuffer();
-		HashMap sessmap = data.getSessionKeysAndValues();
+		HashMap<String, String> sessmap = data.getSessionKeysAndValues();
 		if(sessmap == null) {
 			sessiondata_info.append("No session keys and values");
 		} else {
-			for(Iterator iter = sessmap.keySet().iterator(); iter.hasNext(); ) {
-				String key = iter.next().toString();
-				String value = sessmap.get(key).toString();
+			for(Iterator<String> iter = sessmap.keySet().iterator(); iter.hasNext(); ) {
+				String key = iter.next();
+				String value = sessmap.get(key);
 				sessiondata_info.append("Key   = "+key+"\n");
 				sessiondata_info.append("Value = "+value+"\n");
 				sessiondata_info.append("------------------------------------------------------\n");

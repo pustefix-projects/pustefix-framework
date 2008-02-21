@@ -61,7 +61,7 @@ public class SPCacheStatistic {
     private int queueTicks = 0;
     
     /** Maps TargetGenerators to AdvanceCacheStatistic */
-    private Hashtable targetGen2AdvanceStatMapping;
+    private Hashtable<TargetGenerator, AdvanceCacheStatistic> targetGen2AdvanceStatMapping;
     /** Format for hitrate */
     private DecimalFormat hitrateFormat = new DecimalFormat("##0.00");
     /** Timer used for AdvanceCacheStatistic */
@@ -117,7 +117,7 @@ public class SPCacheStatistic {
      * Private constructor of a singleton.
      */
     private SPCacheStatistic() {
-        targetGen2AdvanceStatMapping = new Hashtable();
+        targetGen2AdvanceStatMapping = new Hashtable<TargetGenerator, AdvanceCacheStatistic>();
     }
 
     /**
@@ -150,12 +150,12 @@ public class SPCacheStatistic {
     public Document getCacheStatisticAsXML() {
         
         // do clone or synchronize? We need a stable iterator.
-        Hashtable targetgentoinfomap_clone =  (Hashtable) targetGen2AdvanceStatMapping.clone();
+        Hashtable<TargetGenerator, AdvanceCacheStatistic> targetgentoinfomap_clone =  (Hashtable<TargetGenerator, AdvanceCacheStatistic>) targetGen2AdvanceStatMapping.clone();
 
         Document doc = Xml.createDocument();
         Element top = doc.createElement("spcachestatistic");
 
-        SPCache currentcache = SPCacheFactory.getInstance().getCache();
+        SPCache<Object, Object> currentcache = SPCacheFactory.getInstance().getCache();
 
         Element ele_currentcache = doc.createElement("currentcache");
         setCacheAttributesXML(currentcache, ele_currentcache);
@@ -181,13 +181,13 @@ public class SPCacheStatistic {
     public String getCacheStatisticAsString() {
         StringBuffer sb = new StringBuffer(128);
         // do clone or synchronize 
-        Hashtable targetgentoinfomap_clone = (Hashtable) targetGen2AdvanceStatMapping.clone();
+        Hashtable<TargetGenerator, AdvanceCacheStatistic> targetgentoinfomap_clone = (Hashtable<TargetGenerator, AdvanceCacheStatistic>) targetGen2AdvanceStatMapping.clone();
 
         long totalmisses = 0;
         long totalhits = 0;
-        for (Iterator i = targetgentoinfomap_clone.keySet().iterator(); i.hasNext();) {
-            TargetGenerator tgen = (TargetGenerator) i.next();
-            AdvanceCacheStatistic stat = (AdvanceCacheStatistic) targetgentoinfomap_clone.get(tgen);
+        for (Iterator<TargetGenerator> i = targetgentoinfomap_clone.keySet().iterator(); i.hasNext();) {
+            TargetGenerator tgen = i.next();
+            AdvanceCacheStatistic stat = targetgentoinfomap_clone.get(tgen);
             long hits = stat.getHits();
             long misses = stat.getMisses();
             String hitrate = formatHitrate(hits, misses);
@@ -234,14 +234,14 @@ public class SPCacheStatistic {
     /**
      *  Attach the cachestatistic for all known targetgenerators.
      **/
-    private void attachTargetGenerators2XML(Document doc, TargetsInSPCache targetsincache, Element ele_hitmiss, Hashtable targetgentoinfomap) {
+    private void attachTargetGenerators2XML(Document doc, TargetsInSPCache targetsincache, Element ele_hitmiss, Hashtable<TargetGenerator, AdvanceCacheStatistic> targetgentoinfomap) {
 
-        for (Iterator i = targetgentoinfomap.keySet().iterator(); i.hasNext();) {
-            TargetGenerator tgen = (TargetGenerator) i.next();
+        for (Iterator<TargetGenerator> i = targetgentoinfomap.keySet().iterator(); i.hasNext();) {
+            TargetGenerator tgen = i.next();
             Element ele_tg = doc.createElement("product");
 
             ele_tg.setAttribute("name", tgen.getName());
-            AdvanceCacheStatistic stat = (AdvanceCacheStatistic) targetgentoinfomap.get(tgen);
+            AdvanceCacheStatistic stat = targetgentoinfomap.get(tgen);
             long hits = stat.getHits();
             long misses = stat.getMisses();
             String hitrate = formatHitrate(hits, misses) + "%";
@@ -259,10 +259,10 @@ public class SPCacheStatistic {
      **/
     private void attachTargets2XML(Document doc, TargetsInSPCache targetsincache, TargetGenerator tgen, Element ele_tg) {
         if (targetsincache.containsTargetGenerator(tgen)) {
-            List targets = targetsincache.getTargetsForTargetGenerator(tgen);
-            for (Iterator j = targets.iterator(); j.hasNext();) {
+            List<Target> targets = targetsincache.getTargetsForTargetGenerator(tgen);
+            for (Iterator<Target> j = targets.iterator(); j.hasNext();) {
                 Element entry_ele = doc.createElement("target");
-                Target t = (Target) j.next();
+                Target t = j.next();
                 entry_ele.setAttribute("id", t.getTargetKey());
                 ele_tg.appendChild(entry_ele);
             }
@@ -275,9 +275,9 @@ public class SPCacheStatistic {
     private void attachShared2XML(Document doc, TargetsInSPCache targetsincache, Element ele_hitmiss) {
         if (!targetsincache.getSharedTargets().isEmpty()) {
             Element ele_shared = doc.createElement("shared");
-            for (Iterator i = targetsincache.getSharedTargets().iterator(); i.hasNext();) {
+            for (Iterator<SharedLeaf> i = targetsincache.getSharedTargets().iterator(); i.hasNext();) {
                 Element entry_ele = doc.createElement("sharedtarget");
-                SharedLeaf sleaf = (SharedLeaf) i.next();
+                SharedLeaf sleaf = i.next();
                 entry_ele.setAttribute("id", sleaf.getPath().toString());
                 ele_shared.appendChild(entry_ele);
             }
@@ -289,7 +289,7 @@ public class SPCacheStatistic {
      * Attach general information abou the cache and create the total rates
      * by iterating over all known targetGenerators in the targetGen2AdvanceStatMapping-map.
      */
-    private void setCacheAttributesXML(SPCache currentcache, Element ele_currentcache) {
+    private void setCacheAttributesXML(SPCache<Object, Object> currentcache, Element ele_currentcache) {
         ele_currentcache.setAttribute("class", currentcache.getClass().getName());
         ele_currentcache.setAttribute("capacity", "" + currentcache.getCapacity());
         ele_currentcache.setAttribute("size", "" + currentcache.getSize());
@@ -297,9 +297,9 @@ public class SPCacheStatistic {
         long totalhits = 0;
         long totalmisses = 0;
 
-        for (Iterator i = targetGen2AdvanceStatMapping.keySet().iterator(); i.hasNext();) {
-            TargetGenerator tgen = (TargetGenerator) i.next();
-            AdvanceCacheStatistic stat = (AdvanceCacheStatistic) targetGen2AdvanceStatMapping.get(tgen);
+        for (Iterator<TargetGenerator> i = targetGen2AdvanceStatMapping.keySet().iterator(); i.hasNext();) {
+            TargetGenerator tgen = i.next();
+            AdvanceCacheStatistic stat = targetGen2AdvanceStatMapping.get(tgen);
 
             long hits = stat.getHits();
             long misses = stat.getMisses();
@@ -340,11 +340,11 @@ final class TargetsInSPCache {
     /**
      *  Maps tgen as key to List with targets as values 
      **/
-    private HashMap targettgenMapping = new HashMap();
+    private HashMap<TargetGenerator, List<Target>> targettgenMapping = new HashMap<TargetGenerator, List<Target>>();
     /**
      * Includes all SharedLeafs in SPCache 
      **/
-    private ArrayList sharedTargets = new ArrayList();
+    private ArrayList<SharedLeaf> sharedTargets = new ArrayList<SharedLeaf>();
 
     /**
      * Trigger collection of cache information.
@@ -356,15 +356,15 @@ final class TargetsInSPCache {
     /**
      * Get all SharedLeaf-targets in the cache.
      */
-    List getSharedTargets() {
+    List<SharedLeaf> getSharedTargets() {
         return sharedTargets;
     }
 
     /**
      * Get all targets for a given TargetGenerator.
      */
-    List getTargetsForTargetGenerator(TargetGenerator tgen) {
-        return (List) targettgenMapping.get(tgen);
+    List<Target> getTargetsForTargetGenerator(TargetGenerator tgen) {
+        return targettgenMapping.get(tgen);
     }
 
     boolean containsTargetGenerator(TargetGenerator tgen) {
@@ -375,7 +375,7 @@ final class TargetsInSPCache {
         sharedTargets.add(leaf);
     }
 
-    private void setTargetsForTargetGenerator(TargetGenerator tgen, List targets) {
+    private void setTargetsForTargetGenerator(TargetGenerator tgen, List<Target> targets) {
         targettgenMapping.put(tgen, targets);
     }
 
@@ -384,18 +384,18 @@ final class TargetsInSPCache {
 	 * and all Shared Leafs
 	 */
     private void getTargetsForTargetGeneratorFromSPCache() {
-        SPCache cache = SPCacheFactory.getInstance().getCache();
+        SPCache<Object, Object> cache = SPCacheFactory.getInstance().getCache();
 
-        for (Iterator i = cache.getIterator(); i.hasNext();) {
+        for (Iterator<?> i = cache.getIterator(); i.hasNext();) {
             Object obj = i.next();
             if (obj instanceof Target) {
                 Target target = (Target) obj;
                 TargetGenerator tgen = target.getTargetGenerator();
                 if (containsTargetGenerator(tgen)) {
-                    List list = getTargetsForTargetGenerator(tgen);
+                    List<Target> list = getTargetsForTargetGenerator(tgen);
                     list.add(target);
                 } else {
-                    ArrayList list = new ArrayList();
+                    ArrayList<Target> list = new ArrayList<Target>();
                     list.add(target);
                     setTargetsForTargetGenerator(tgen, list);
                 }

@@ -44,7 +44,7 @@ public class PagerequestInputInterfaceRule extends CheckedRule {
         if (className == null) {
             throw new SAXException("Mandatory attribute \"class\" is missing!");
         }
-        Class wrapperClass;
+        Class<?> wrapperClass;
         try {
             wrapperClass = Class.forName(className);
         } catch (ClassNotFoundException e) {
@@ -53,7 +53,7 @@ public class PagerequestInputInterfaceRule extends CheckedRule {
         if (!IWrapper.class.isAssignableFrom(wrapperClass)) {
             throw new SAXException("Input wrapper class " + wrapperClass + " on page " + pageConfig.getPageName() + " does not implement " + IWrapper.class + " interface!");
         }
-        wrapperConfig.setWrapperClass(wrapperClass);
+        wrapperConfig.setWrapperClass(wrapperClass.asSubclass(IWrapper.class));
         String activeignore = attributes.getValue("activeignore");
         if (activeignore != null) {
             wrapperConfig.setActiveIgnore(Boolean.parseBoolean(activeignore));

@@ -45,9 +45,9 @@ public class ChatServer {
     
     private void publish(Message msg,String[] to) {
         if(to==null || to.length==0) {
-        	Iterator it=ctxMap.values().iterator();
+        	Iterator<ContextChat> it=ctxMap.values().iterator();
             while(it.hasNext()) {
-            	ContextChat cc=(ContextChat)it.next();
+            	ContextChat cc=it.next();
                 cc.addMessage(msg);
             }
         } else {

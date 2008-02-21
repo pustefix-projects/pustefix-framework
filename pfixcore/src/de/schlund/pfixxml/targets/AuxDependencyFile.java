@@ -55,9 +55,9 @@ public class AuxDependencyFile extends AbstractAuxDependency {
             if (last_lastModTime == 0) {
                 // We change from the file being checked once to not exist to "it exists now".
                 // so we need to make sure that all targets using it will be rebuild.
-                TreeSet targets = TargetDependencyRelation.getInstance()
+                TreeSet<Target> targets = TargetDependencyRelation.getInstance()
                         .getAffectedTargets(this);
-                for (Iterator i = targets.iterator(); i.hasNext();) {
+                for (Iterator<Target> i = targets.iterator(); i.hasNext();) {
                     VirtualTarget target = (VirtualTarget) i.next();
                     target.setForceUpdate();
                 }
@@ -68,9 +68,9 @@ public class AuxDependencyFile extends AbstractAuxDependency {
             if (last_lastModTime > 0) {
                 // The file existed when last check has been made,
                 // so make sure each target using it is being rebuild
-                TreeSet targets = TargetDependencyRelation.getInstance()
+                TreeSet<Target> targets = TargetDependencyRelation.getInstance()
                         .getAffectedTargets(this);
-                for (Iterator i = targets.iterator(); i.hasNext();) {
+                for (Iterator<Target> i = targets.iterator(); i.hasNext();) {
                     VirtualTarget target = (VirtualTarget) i.next();
                     target.setForceUpdate();
                 }

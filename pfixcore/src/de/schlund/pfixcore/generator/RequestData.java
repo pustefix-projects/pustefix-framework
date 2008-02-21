@@ -36,7 +36,7 @@ import de.schlund.pfixxml.RequestParam;
 
 public interface RequestData {
     RequestParam[] getParameters(String name);
-    Iterator       getParameterNames();
+    Iterator<String> getParameterNames();
     String[]       getCommands(String cmd);
-    Iterator       getCommandNames();
+    Iterator<String> getCommandNames();
 }// RequestData

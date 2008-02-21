@@ -36,7 +36,7 @@ import de.schlund.util.statuscodes.StatusCode;
  */
 
 public abstract class SimpleCheck implements IWrapperParamCheck {
-    protected HashSet  scodeinfos = new HashSet();
+    protected HashSet<StatusCodeInfo>  scodeinfos = new HashSet<StatusCodeInfo>();
     protected Logger   LOG        = Logger.getLogger(this.getClass());
     
     protected void addSCode(StatusCode scode) {
@@ -48,12 +48,12 @@ public abstract class SimpleCheck implements IWrapperParamCheck {
     }
     
     protected void reset() {
-        scodeinfos = new HashSet();
+        scodeinfos = new HashSet<StatusCodeInfo>();
     }
     
     public StatusCodeInfo[] getStatusCodeInfos() {
         synchronized (scodeinfos) {
-            return (StatusCodeInfo[]) scodeinfos.toArray(new StatusCodeInfo[] {});
+            return scodeinfos.toArray(new StatusCodeInfo[] {});
         }
     }
     

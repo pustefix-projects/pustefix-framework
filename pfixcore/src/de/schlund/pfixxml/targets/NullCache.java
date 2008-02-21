@@ -27,7 +27,7 @@ import java.util.TreeMap;
  *
  */
 
-public class NullCache implements SPCache {
+public class NullCache<T1, T2> implements SPCache<T1, T2> {
 
     public NullCache() {
         // ???
@@ -38,16 +38,16 @@ public class NullCache implements SPCache {
         // nothing to do 
     }
     
-    public Iterator getIterator() {
-        TreeMap tmphash = new TreeMap();
+    public Iterator<T1> getIterator() {
+        TreeMap<T1, T2> tmphash = new TreeMap<T1, T2>();
         return tmphash.keySet().iterator();
     }
     
-    public Object getValue(Object key) {
+    public T2 getValue(T1 key) {
         return null;
     }
     
-    public void setValue(Object key, Object value) {
+    public void setValue(T1 key, T2 value) {
         // nothing here...
     }
     

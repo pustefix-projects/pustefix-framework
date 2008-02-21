@@ -38,8 +38,8 @@ import de.schlund.pfixxml.RequestParam;
 
 public class RequestDataImpl implements RequestData {
 
-    private HashMap  data = new HashMap();
-    private HashMap  cmds = new HashMap();
+    private HashMap<String, RequestParam[]> data = new HashMap<String, RequestParam[]>();
+    private HashMap<String, String[]> cmds = new HashMap<String, String[]>();
     private String   page;
 
     private static final String CMDS_PREFIX = "__CMD";
@@ -54,14 +54,14 @@ public class RequestDataImpl implements RequestData {
     /**
      * @see de.schlund.pfixcore.generator.RequestData#getParameterNames()
      */
-    public Iterator getParameterNames() {
+    public Iterator<String> getParameterNames() {
         return data.keySet().iterator();
     }
 
     /**
      * @see de.schlund.pfixcore.generator.RequestData#getCommandNames()
      */
-    public Iterator getCommandNames() {
+    public Iterator<String> getCommandNames() {
         return cmds.keySet().iterator();
     }
 

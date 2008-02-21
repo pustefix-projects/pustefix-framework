@@ -100,10 +100,10 @@ public abstract class CommonIncludeState extends StaticState {
             handleError(doc);
             return;
         }
-        SortedSet parts = this.getResource(crm).openFileTree(file);
+        SortedSet<IncludePartThemeVariant> parts = this.getResource(crm).openFileTree(file);
         Element parent = doc.createNode("wsresponse");
-        for (Iterator i = parts.iterator(); i.hasNext();) {
-            IncludePartThemeVariant part = (IncludePartThemeVariant) i.next();
+        for (Iterator<IncludePartThemeVariant> i = parts.iterator(); i.hasNext();) {
+            IncludePartThemeVariant part = i.next();
             Element node = doc.createSubNode(parent, "includepart");
             node.setAttribute("file", part.getIncludePart().getIncludeFile()
                     .getPath());
@@ -119,10 +119,10 @@ public abstract class CommonIncludeState extends StaticState {
             handleError(doc);
             return;
         }
-        SortedSet files = this.getResource(crm).openDirectoryTree(dir);
+        SortedSet<IncludeFile> files = this.getResource(crm).openDirectoryTree(dir);
         Element parent = doc.createNode("wsresponse");
-        for (Iterator i = files.iterator(); i.hasNext();) {
-            IncludeFile file = (IncludeFile) i.next();
+        for (Iterator<IncludeFile> i = files.iterator(); i.hasNext();) {
+            IncludeFile file = i.next();
             Element node = doc.createSubNode(parent, "file");
             node.setAttribute("path", file.getPath());
         }

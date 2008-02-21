@@ -61,7 +61,7 @@ public class PfixReadjustment {
      * Checks list of include parts for changes and updates search index.
      */
     public void readjust() {
-        Collection partsKnownByPustefix = getUsedTripels();
+        Collection<Tripel> partsKnownByPustefix = getUsedTripels();
         IndexReader reader = null;
         PfixQueueManager queue;
         boolean jobDone;
@@ -91,8 +91,8 @@ public class PfixReadjustment {
             } catch (IOException ioe) {
                 LOG.warn("broken or nonexistant database -> will queue ALL known parts");
                 
-                for (Iterator iter = partsKnownByPustefix.iterator(); iter.hasNext();) {
-                    Tripel element = (Tripel) iter.next();
+                for (Iterator<Tripel> iter = partsKnownByPustefix.iterator(); iter.hasNext();) {
+                    Tripel element = iter.next();
                     element.setType(Tripel.Type.INSERT);
                     newDocs++;
                     if (!tripelsToIndex.add(element)) {
@@ -145,8 +145,8 @@ public class PfixReadjustment {
                 
                 // now partsKnownByPustefix only contains parts which are NOT indexed...
                 startAddLoop = System.currentTimeMillis();
-                for (Iterator iter = partsKnownByPustefix.iterator(); iter.hasNext();) {
-                    Tripel element = (Tripel) iter.next();
+                for (Iterator<Tripel> iter = partsKnownByPustefix.iterator(); iter.hasNext();) {
+                    Tripel element = iter.next();
                     element.setType(Tripel.Type.INSERT);
                     // LOG.debug("adding " + element + " to queue
                     // (INDEX)");
@@ -192,10 +192,10 @@ public class PfixReadjustment {
         Set<Tripel> retval = new TreeSet<Tripel>();
         
         ProjectFactoryService projectFactory = SpringBeanLocator.getProjectFactoryService();
-        for (Iterator i = projectFactory.getProjects().iterator(); i.hasNext();) {
-            Project currentproject = (Project) i.next();
-            for (Iterator i2 = currentproject.getAllIncludeParts().iterator(); i2.hasNext();) {
-                IncludePartThemeVariant element = (IncludePartThemeVariant) i2.next();
+        for (Iterator<Project> i = projectFactory.getProjects().iterator(); i.hasNext();) {
+            Project currentproject = i.next();
+            for (Iterator<IncludePartThemeVariant> i2 = currentproject.getAllIncludeParts().iterator(); i2.hasNext();) {
+                IncludePartThemeVariant element = i2.next();
                 String filename = element.getIncludePart().getIncludeFile().getPath();
                 String incname = element.getIncludePart().getName();
                 String prodname = element.getTheme().getName();

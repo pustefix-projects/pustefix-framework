@@ -149,7 +149,7 @@ public final class IncludeDocumentExtension {
             }
             doc = iDoc.getDocument();
             // Get the part
-            List ns;
+            List<Node> ns;
             try {
                 ns = XPath.select(doc, XPPARTNAME + part + XPNAMEEND);
             } catch (TransformerException e) {

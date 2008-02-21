@@ -423,7 +423,7 @@ public abstract class AbstractXMLServlet extends ServletManager {
             
             TrailLogger.log(preq, spdoc, session);
             RequestParam[] anchors   = preq.getAllRequestParams(PARAM_ANCHOR);
-            Map            anchormap;
+            Map<String, String> anchormap;
             if (anchors != null && anchors.length > 0) {
                 anchormap = createAnchorMap(anchors);
                 spdoc.storeFrameAnchors(anchormap);
@@ -493,11 +493,11 @@ public abstract class AbstractXMLServlet extends ServletManager {
         long currtime = System.currentTimeMillis();
         
         // Check the document for supplied headers...
-        HashMap headers = spdoc.getResponseHeader();
+        HashMap<String, String> headers = spdoc.getResponseHeader();
         if (headers.size() != 0) {
-            for (Iterator i = headers.keySet().iterator(); i.hasNext();) {
-                String key = (String) i.next();
-                String val = (String) headers.get(key);
+            for (Iterator<String> i = headers.keySet().iterator(); i.hasNext();) {
+                String key = i.next();
+                String val = headers.get(key);
                 if (LOGGER.isDebugEnabled()) {
                     LOGGER.debug("*** Setting custom supplied header: " + key + " -> " + val);
                 }
@@ -542,7 +542,7 @@ public abstract class AbstractXMLServlet extends ServletManager {
 
         // So no error happened, let's go on with normal processing.
         HttpSession   session    = preq.getSession(false);
-        TreeMap       paramhash  = constructParameters(spdoc, params, session);
+        TreeMap<String, Object> paramhash  = constructParameters(spdoc, params, session);
         String        stylesheet = extractStylesheetFromSPDoc(spdoc);
         if (stylesheet == null) {
             throw new PustefixCoreException("Wasn't able to extract any stylesheet specification from page '" +
@@ -665,7 +665,7 @@ public abstract class AbstractXMLServlet extends ServletManager {
     }
 
     
-    private void render(SPDocument spdoc, int rendering, HttpServletResponse res, TreeMap paramhash, String stylesheet, OutputStream output) throws RenderingException {
+    private void render(SPDocument spdoc, int rendering, HttpServletResponse res, TreeMap<String, Object> paramhash, String stylesheet, OutputStream output) throws RenderingException {
         try {
         switch (rendering) {
             case RENDER_NORMAL:
@@ -698,7 +698,7 @@ public abstract class AbstractXMLServlet extends ServletManager {
         Xml.serialize(spdoc.getDocument(), res.getOutputStream(), true, true);
     }
 
-    private void renderNormal(SPDocument spdoc, HttpServletResponse res, TreeMap paramhash, String stylesheet, OutputStream output) throws
+    private void renderNormal(SPDocument spdoc, HttpServletResponse res, TreeMap<String, Object> paramhash, String stylesheet, OutputStream output) throws
         TargetGenerationException, IOException, TransformerException {
         Templates stylevalue;
         Target    target = generator.getTarget(stylesheet);
@@ -727,7 +727,8 @@ public abstract class AbstractXMLServlet extends ServletManager {
     }
 
 
-    private void renderExternal(SPDocument spdoc, HttpServletResponse res, TreeMap paramhash, String stylesheet) throws
+    // FIXME Remove external render mode as it is NOT WORKING
+    private void renderExternal(SPDocument spdoc, HttpServletResponse res, TreeMap<String, Object> paramhash, String stylesheet) throws
         TransformerException, TransformerConfigurationException, TransformerFactoryConfigurationError, IOException {
         Document doc  = spdoc.getDocument();
         Document ext  = doc;
@@ -739,8 +740,8 @@ public abstract class AbstractXMLServlet extends ServletManager {
         ext.insertBefore(ext.createProcessingInstruction("xml-stylesheet", "type=\"text/xsl\" media=\"all\" href=\"file: //"
                                                          + generator.getName() + "/" + stylesheet + "\""),
                          ext.getDocumentElement()); 
-        for (Iterator i = paramhash.keySet().iterator(); i.hasNext();) {
-            String key = (String) i.next();
+        for (Iterator<String> i = paramhash.keySet().iterator(); i.hasNext();) {
+            String key = i.next();
             String val = (String) paramhash.get(key);
             ext.insertBefore(ext.createProcessingInstruction("modxslt-param", "name=\"" + key + "\" value=\"" + val + "\""),
                              ext.getDocumentElement());
@@ -750,7 +751,7 @@ public abstract class AbstractXMLServlet extends ServletManager {
                                                                     new StreamResult(res.getOutputStream()));
     }
 
-    private void renderFontify(SPDocument spdoc, HttpServletResponse res, TreeMap paramhash) throws TargetGenerationException, IOException {
+    private void renderFontify(SPDocument spdoc, HttpServletResponse res, TreeMap<String, Object> paramhash) throws TargetGenerationException, IOException {
         Templates stylevalue = (Templates) generator.createXSLLeafTarget(FONTIFY_SSHEET).getValue();
         try {
             Xslt.transform(spdoc.getDocument(), stylevalue, paramhash, new StreamResult(res.getOutputStream()));
@@ -787,15 +788,15 @@ public abstract class AbstractXMLServlet extends ServletManager {
         }
     }
 
-    private TreeMap constructParameters(SPDocument spdoc, Properties gen_params, HttpSession session) throws NavigationInitializationException {
-        TreeMap paramhash = new TreeMap();
-        HashMap params = spdoc.getProperties();
+    private TreeMap<String, Object> constructParameters(SPDocument spdoc, Properties gen_params, HttpSession session) throws NavigationInitializationException {
+        TreeMap<String, Object> paramhash = new TreeMap<String, Object>();
+        HashMap<String, Object> params = spdoc.getProperties();
         // These are properties which have been set in the process method
         //  e.g. Frame handling is stored here
         if (gen_params != null) {
-            for (Enumeration e = gen_params.keys(); e.hasMoreElements();) {
+            for (Enumeration<?> e = gen_params.keys(); e.hasMoreElements();) {
                 String name  = (String) e.nextElement();
-                Object value = gen_params.get(name);
+                String value = gen_params.getProperty(name);
                 if (name != null && value != null) {
                     paramhash.put(name, value);
                 }
@@ -804,8 +805,8 @@ public abstract class AbstractXMLServlet extends ServletManager {
         // These are the parameters that may be set by the DOM tree producing
         // method of the servlet (something that implements the abstract method getDom())
         if (params != null) {
-            for (Iterator iter = params.keySet().iterator(); iter.hasNext(); ) {
-                String name  = (String) iter.next();
+            for (Iterator<String> iter = params.keySet().iterator(); iter.hasNext(); ) {
+                String name  = iter.next();
                 Object value = params.get(name);
                 if (name != null && value != null) {
                     paramhash.put(name, value);
@@ -889,8 +890,8 @@ public abstract class AbstractXMLServlet extends ServletManager {
         }
     }
 
-    private Map createAnchorMap(RequestParam[] anchors) {
-        Map map = new HashMap();
+    private Map<String, String> createAnchorMap(RequestParam[] anchors) {
+        Map<String, String> map = new HashMap<String, String>();
         for (int i = 0; i < anchors.length; i++) {
             String value     = anchors[i].getValue();
             int    pos       = value.indexOf("|");
@@ -919,8 +920,8 @@ public abstract class AbstractXMLServlet extends ServletManager {
                 LOGGER.debug("*** Sending cookies ***");
             }
             // Now adding the Cookies from spdoc
-            for (Iterator i = spdoc.getCookies().iterator(); i.hasNext();) {
-                Cookie cookie = (Cookie) i.next();
+            for (Iterator<Cookie> i = spdoc.getCookies().iterator(); i.hasNext();) {
+                Cookie cookie = i.next();
                 if (LOGGER.isDebugEnabled()) {
                     LOGGER.debug("    Add cookie: " + cookie);
                 }
@@ -940,7 +941,7 @@ public abstract class AbstractXMLServlet extends ServletManager {
      * @param paramhash parameters supplied to XSLT code
      * @param stylesheet name of the stylesheet being used
      */
-    protected void hookBeforeRender(PfixServletRequest preq, SPDocument spdoc, TreeMap paramhash, String stylesheet) {
+    protected void hookBeforeRender(PfixServletRequest preq, SPDocument spdoc, TreeMap<String, Object> paramhash, String stylesheet) {
         // Empty in default implementation
     }
 
@@ -955,7 +956,7 @@ public abstract class AbstractXMLServlet extends ServletManager {
      * @param paramhash parameters supplied to XSLT code
      * @param stylesheet name of the stylesheet being used
      */
-    protected void hookAfterRender(PfixServletRequest preq, SPDocument spdoc, TreeMap paramhash, String stylesheet) {
+    protected void hookAfterRender(PfixServletRequest preq, SPDocument spdoc, TreeMap<String, Object> paramhash, String stylesheet) {
         // Empty in default implementation
     }
     

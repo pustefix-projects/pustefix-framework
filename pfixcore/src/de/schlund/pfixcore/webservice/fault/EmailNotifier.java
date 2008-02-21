@@ -20,10 +20,10 @@ public class EmailNotifier extends Thread {
 	private static EmailNotifier instance=new EmailNotifier();
 	
 	private NotifierThread thread;
-	ArrayList emailQueue;
+	ArrayList<Email> emailQueue;
 	
 	private EmailNotifier() {
-		emailQueue=new ArrayList();
+		emailQueue=new ArrayList<Email>();
 		thread=new NotifierThread();
 		thread.start();
 	}

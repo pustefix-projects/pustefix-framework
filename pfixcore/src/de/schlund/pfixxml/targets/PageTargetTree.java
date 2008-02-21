@@ -34,8 +34,8 @@ import java.util.TreeSet;
  */
 
 public class PageTargetTree {
-    TreeMap toplevels = new TreeMap();
-    TreeMap pageinfos = new TreeMap();
+    TreeMap<PageInfo, Target> toplevels = new TreeMap<PageInfo, Target>();
+    TreeMap<String, TreeSet<PageInfo>> pageinfos = new TreeMap<String, TreeSet<PageInfo>>();
 
     protected void addEntry(PageInfo pageinfo, Target target) {
         synchronized (toplevels) {
@@ -43,9 +43,9 @@ public class PageTargetTree {
                 toplevels.put(pageinfo, target);
                 String name = pageinfo.getName();
                 if (pageinfos.get(name) == null) {
-                    pageinfos.put(name, new TreeSet());
+                    pageinfos.put(name, new TreeSet<PageInfo>());
                 }
-                TreeSet pinfos = (TreeSet) pageinfos.get(name);
+                TreeSet<PageInfo> pinfos = pageinfos.get(name);
                 pinfos.add(pageinfo);
             } else {
                 throw new RuntimeException("Can't have another top-level target '" +
@@ -55,22 +55,22 @@ public class PageTargetTree {
         }
     }
 
-    public TreeSet getPageInfoForPageName(String name) {
+    public TreeSet<PageInfo> getPageInfoForPageName(String name) {
         synchronized (pageinfos) {
-            return (TreeSet) pageinfos.get(name);
+            return pageinfos.get(name);
         }
     }
 
     
-    public TreeSet getPageInfos() {
+    public TreeSet<PageInfo> getPageInfos() {
         synchronized (toplevels) {
-            return new TreeSet(toplevels.keySet());
+            return new TreeSet<PageInfo>(toplevels.keySet());
         }
     }
 
-    public TreeSet getToplevelTargets() {
+    public TreeSet<Target> getToplevelTargets() {
         synchronized (toplevels) {
-            return new TreeSet(toplevels.values());
+            return new TreeSet<Target>(toplevels.values());
         }
     }
 
@@ -82,9 +82,9 @@ public class PageTargetTree {
     
     public void initTargets() {
         synchronized (toplevels) {
-            for (Iterator i = toplevels.keySet().iterator(); i.hasNext(); ) {
-                PageInfo pageinfo = (PageInfo) i.next();
-                Target   top      = (Target) toplevels.get(pageinfo);
+            for (Iterator<PageInfo> i = toplevels.keySet().iterator(); i.hasNext(); ) {
+                PageInfo pageinfo = i.next();
+                Target   top      = toplevels.get(pageinfo);
                 addPageInfoToTarget(pageinfo, top);
             }
         }

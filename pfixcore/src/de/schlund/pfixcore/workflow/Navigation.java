@@ -37,6 +37,7 @@ import javax.xml.transform.sax.TransformerHandler;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
@@ -109,7 +110,7 @@ public class Navigation {
         // We need a Saxon node here
         navigationXMLElement = (Element) XPath.selectOne(Xml.parse(xsltVersion,navitree), "/make/navigation");
         
-        List     nl       = XPath.select(navitree, "/make/navigation/page");
+        List<Node>     nl       = XPath.select(navitree, "/make/navigation/page");
         pagetonavi        = new HashMap<String, NavigationElement>();
         recursePagetree(pageroot, nl);
     }
@@ -128,7 +129,7 @@ public class Navigation {
         return navigationXMLElement;
     }
 
-    private void recursePagetree(NavigationElement parent, List nl) throws TransformerException {
+    private void recursePagetree(NavigationElement parent, List<Node> nl) throws TransformerException {
         for (int i = 0; i < nl.size(); i++) {
             Element page    = (Element) nl.get(i);
             String  name    = page.getAttribute("name");
@@ -137,7 +138,7 @@ public class Navigation {
             NavigationElement elem = new NavigationElement(name, handler);
             pagetonavi.put(name, elem);
             parent.addChild(elem);
-            List tmp = XPath.select(page, "./page");
+            List<Node> tmp = XPath.select(page, "./page");
             if (tmp.size() > 0) {
                 recursePagetree(elem, tmp);
             }
@@ -153,7 +154,7 @@ public class Navigation {
     }
 
     public class NavigationElement {
-        private ArrayList children = new ArrayList();
+        private ArrayList<NavigationElement> children = new ArrayList<NavigationElement>();
         private String    name;
         private String    handler;
         
@@ -179,7 +180,7 @@ public class Navigation {
         }
         
         public NavigationElement[] getChildren() {
-            return (NavigationElement[]) children.toArray(new NavigationElement[] {});
+            return children.toArray(new NavigationElement[] {});
         }
     } // NavigationElement
 }

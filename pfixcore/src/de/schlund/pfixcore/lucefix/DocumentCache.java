@@ -42,11 +42,11 @@ import de.schlund.pfixxml.resources.ResourceUtil;
  * @date Jun 14, 2005
  */
 public class DocumentCache {
-    private Map cache;
+    private Map<String, Document> cache;
     // private static Logger LOG = Logger.getLogger(DocumentCache.class);
 
     public DocumentCache() {
-        cache = new HashMap();
+        cache = new HashMap<String, Document>();
     }
 
     public Document getDocument(Tripel tripel) throws FileNotFoundException, IOException, SAXException {
@@ -64,10 +64,10 @@ public class DocumentCache {
             String filename = stripAddition(path);
             // file was not scanned
             flush(); 
-            Collection newest = DocumentCache.getDocumentsFromFileAsCollection(ResourceUtil.getFileResourceFromDocroot(
+            Collection<Document> newest = DocumentCache.getDocumentsFromFileAsCollection(ResourceUtil.getFileResourceFromDocroot(
                     filename));
-            for (Iterator iter = newest.iterator(); iter.hasNext();) {
-                Document element = (Document) iter.next();
+            for (Iterator<Document> iter = newest.iterator(); iter.hasNext();) {
+                Document element = iter.next();
                 if (type != Type.EDITORUPDATE){
                     cache.put(element.get("path"), element);
                 }
@@ -103,7 +103,7 @@ public class DocumentCache {
         return cache.remove(doc.get("path")) != null;
     }
 
-    public Collection getRest() {
+    public Collection<Document> getRest() {
         return cache.values();
     }
 
@@ -111,7 +111,7 @@ public class DocumentCache {
         cache.clear();
     }
 
-    private static Collection getDocumentsFromFileAsCollection(FileResource f) throws FileNotFoundException, IOException,
+    private static Collection<Document> getDocumentsFromFileAsCollection(FileResource f) throws FileNotFoundException, IOException,
             SAXException {
         XMLReader xmlreader = XMLReaderFactory.createXMLReader();
         IncludeFileHandler handler = new IncludeFileHandler(f);
@@ -124,7 +124,7 @@ public class DocumentCache {
             xmlreader.parse(new InputSource(f.getInputStream()));
         } catch (Exception e) {
 //            org.apache.log4j.Logger.getLogger(DocumentCache.class).warn("bad xml: " + f);
-            return new Vector();
+            return new Vector<Document>();
         }
         return handler.getScannedDocumentsAsVector();
     }

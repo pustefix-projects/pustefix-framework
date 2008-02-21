@@ -66,7 +66,7 @@ public class ExceptionDataValueHelper {
         }
 		exdata.setQuery(pfixReq.getQueryString());
 		
-		HashMap keysnvalues = new HashMap();
+		HashMap<String, String> keysnvalues = new HashMap<String, String>();
 		String[] param_names = pfixReq.getRequestParamNames();
 		for(int i=0; i<param_names.length; i++) {
 			keysnvalues.put(param_names[i], pfixReq.getRequestParam(param_names[i]).getValue());
@@ -76,12 +76,12 @@ public class ExceptionDataValueHelper {
 		 
 		SessionAdmin sessadmin = SessionAdmin.getInstance();
 		SessionInfoStruct info = sessadmin.getInfo(id);
-		ArrayList steps = new ArrayList();
+		ArrayList<String> steps = new ArrayList<String>();
 	    if(info != null) {
-	    	LinkedList trail = info.getTraillog();
+	    	LinkedList<SessionInfoStruct.TrailElement> trail = info.getTraillog();
 	    	if (trail != null && trail.size() > 0) {
-	    		for (Iterator j = trail.listIterator(); j.hasNext();) {
-	    			SessionInfoStruct.TrailElement step = (SessionInfoStruct.TrailElement) j.next();
+	    		for (Iterator<SessionInfoStruct.TrailElement> j = trail.listIterator(); j.hasNext();) {
+	    			SessionInfoStruct.TrailElement step = j.next();
 	        		steps.add("[" + step.getCounter() + "] " + step.getStylesheetname() + " [" + step.getServletname() + "]");
 	        	}
 	        }
@@ -89,8 +89,8 @@ public class ExceptionDataValueHelper {
 	    exdata.setLastSteps(steps);
 	    
 	    
-	    HashMap sessdata = new HashMap();
-        Enumeration enm = session.getAttributeNames();
+	    HashMap<String,String> sessdata = new HashMap<String, String>();
+        Enumeration<?> enm = session.getAttributeNames();
         while (enm.hasMoreElements()) {
             String key = (String) enm.nextElement();
             Object value = session.getAttribute(key);

@@ -36,7 +36,7 @@ import de.schlund.pfixxml.config.DirectOutputServletConfig;
  * @author <a href="mailto:jtl@schlund.de">Jens Lautenbacher</a>
  */
 public class DirectOutputPageMap implements ConfigurableObject {
-    protected            HashMap  pagemap       = new HashMap();
+    protected HashMap<String, DirectOutputState> pagemap = new HashMap<String, DirectOutputState>();
     private final static Logger   LOG           = Logger.getLogger(DirectOutputPageMap.class);
     
     /**
@@ -49,7 +49,7 @@ public class DirectOutputPageMap implements ConfigurableObject {
         DirectOutputServletConfig config = (DirectOutputServletConfig) confObj;
         
         for (DirectOutputPageRequestConfig pConfig : config.getPageRequests()) {
-            Class clazz = pConfig.getState();
+            Class<? extends DirectOutputState> clazz = pConfig.getState();
             DirectOutputState state = DirectOutputStateFactory.getInstance().getDirectOutputState(clazz.getName());
             if (state == null) {
                 LOG.error("***** Skipping page '" + pConfig.getPageName() + "' as it's corresponding class " + clazz.getName() +
@@ -79,12 +79,12 @@ public class DirectOutputPageMap implements ConfigurableObject {
     @Override
     public String toString() {
 	String ret = "";
-	for (Iterator i = pagemap.keySet().iterator(); i.hasNext(); ) {
+	for (Iterator<String> i = pagemap.keySet().iterator(); i.hasNext(); ) {
 	    if (ret.length() > 0) {
 		ret += ", ";
 	    }
-	    String key = (String) i.next();
-	    ret += key + " -> " + ((DirectOutputState) pagemap.get(key)).getClass().getName();
+	    String key = i.next();
+	    ret += key + " -> " + (pagemap.get(key)).getClass().getName();
 	}
 	return ret;
     }

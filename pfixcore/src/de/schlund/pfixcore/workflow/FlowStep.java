@@ -23,6 +23,7 @@ package de.schlund.pfixcore.workflow;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Properties;
 
 import javax.xml.transform.TransformerException;
@@ -46,8 +47,8 @@ import de.schlund.pfixxml.util.XPath;
 
 public class FlowStep {
 
-    private ArrayList actions_oncontinue  = new ArrayList();
-    private ArrayList tests_oncontinue    = new ArrayList();
+    private ArrayList<List<FlowStepAction>> actions_oncontinue  = new ArrayList<List<FlowStepAction>>();
+    private ArrayList<String> tests_oncontinue = new ArrayList<String>();
     private PageFlowStepConfig config;
 
     private final static Logger LOG = Logger.getLogger(PageFlow.class);
@@ -55,12 +56,12 @@ public class FlowStep {
         this.config = config;
         
         for (PageFlowStepActionConditionConfig condition : config.getActionConditions()) {
-            ArrayList actionList = new ArrayList();
+            ArrayList<FlowStepAction> actionList = new ArrayList<FlowStepAction>();
             for (PageFlowStepActionConfig actionConfig : condition.getActions()) {
                 FlowStepAction action = FlowStepActionFactory.getInstance().createAction(actionConfig.getActionType().getName());
-                HashMap datamap = new HashMap();
+                HashMap<String, String> datamap = new HashMap<String, String>();
                 Properties params = actionConfig.getParams();
-                for (Iterator k = params.keySet().iterator(); k.hasNext();) {
+                for (Iterator<?> k = params.keySet().iterator(); k.hasNext();) {
                     String key = (String) k.next();
                     String value = params.getProperty(key);
                     datamap.put(key, value);
@@ -77,7 +78,7 @@ public class FlowStep {
     public void applyActionsOnContinue(Context context, ResultDocument resdoc) throws PustefixApplicationException, PustefixCoreException {
         if (!actions_oncontinue.isEmpty()) {
             for (int i = 0; i < actions_oncontinue.size(); i++) {
-                ArrayList actionList = (ArrayList) actions_oncontinue.get(i);
+                List<FlowStepAction> actionList = actions_oncontinue.get(i);
                 String         test   = (String) tests_oncontinue.get(i);
                 LOG.debug("*** [" + this.config.getPage() + "] Trying on-continue-action #" + i);
                 boolean check;
@@ -88,8 +89,8 @@ public class FlowStep {
                 }
                 if (check) {
                     LOG.debug("    ===> Action applies, calling doAction now...");
-                    for (Iterator j = actionList.iterator(); j.hasNext();) {
-                        FlowStepAction action = (FlowStepAction) j.next();
+                    for (Iterator<FlowStepAction> j = actionList.iterator(); j.hasNext();) {
+                        FlowStepAction action = j.next();
                         try {
                             action.doAction(context, resdoc);
                         } catch (Exception e) {

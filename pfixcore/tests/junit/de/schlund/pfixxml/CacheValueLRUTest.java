@@ -7,7 +7,7 @@ public class CacheValueLRUTest extends TestCase {
     
     public void testLRU() throws Exception {
         System.out.println("-----testLRU-----");
-        CacheValueLRU<String,String> map = new CacheValueLRU(3);
+        CacheValueLRU<String,String> map = new CacheValueLRU<String, String>(3);
         map.put("Key_A", "Val_1");
         map.put("Key_B", "Val_2");        
         map.put("Key_C", "Val_3");
@@ -34,7 +34,7 @@ public class CacheValueLRUTest extends TestCase {
     
     public void testMultipleKeys() throws Exception {
         System.out.println("-----testMultipleKeys-----");
-        CacheValueLRU<String,String> map = new CacheValueLRU(3);
+        CacheValueLRU<String,String> map = new CacheValueLRU<String, String>(3);
         map.put("Key_A", "Val_1");
         map.put("Key_B", "Val_2");        
         map.put("Key_C", "Val_3");

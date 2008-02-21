@@ -239,8 +239,8 @@ public class TargetPfixImpl extends AbstractTarget {
                 return deps;
             }
 
-            for (Iterator i = auxmanager.getChildren().iterator(); i.hasNext();) {
-                AuxDependency auxdep = (AuxDependency) i.next();
+            for (Iterator<AuxDependency> i = auxmanager.getChildren().iterator(); i.hasNext();) {
+                AuxDependency auxdep = i.next();
                 if (auxdep.getType() == DependencyType.FILE) {
                     deps.add(this.targetfactory
                             .getLeafTargetFromPustefixAuxDependency((AuxDependencyFile) auxdep));
@@ -266,11 +266,11 @@ public class TargetPfixImpl extends AbstractTarget {
         ArrayList<IncludePartThemeVariant> deps = new ArrayList<IncludePartThemeVariant>();
         if (this.pfixTarget instanceof VirtualTarget) {
             if (recursive) {
-                Set alldeps = TargetDependencyRelation.getInstance()
+                Set<AuxDependency> alldeps = TargetDependencyRelation.getInstance()
                         .getDependenciesForTarget(this.pfixTarget);
                 if (alldeps != null) {
-                    for (Iterator i = alldeps.iterator(); i.hasNext();) {
-                        AuxDependency aux = (AuxDependency) i.next();
+                    for (Iterator<AuxDependency> i = alldeps.iterator(); i.hasNext();) {
+                        AuxDependency aux = i.next();
                         if (aux.getType() == DependencyType.TEXT) {
                             IncludePartThemeVariant variant = this.includefactory
                                     .getIncludePartThemeVariant(aux);
@@ -299,9 +299,9 @@ public class TargetPfixImpl extends AbstractTarget {
                     return deps;
                 }
 
-                for (Iterator i = auxmanager.getChildren().iterator(); i
+                for (Iterator<AuxDependency> i = auxmanager.getChildren().iterator(); i
                         .hasNext();) {
-                    AuxDependency auxdep = (AuxDependency) i.next();
+                    AuxDependency auxdep = i.next();
                     if (auxdep.getType() == DependencyType.TEXT) {
                         IncludePartThemeVariant variant = this.includefactory
                                 .getIncludePartThemeVariant(auxdep);
@@ -329,11 +329,11 @@ public class TargetPfixImpl extends AbstractTarget {
         ArrayList<Image> deps = new ArrayList<Image>();
         if (this.pfixTarget instanceof VirtualTarget) {
             if (recursive) {
-                Set alldeps = TargetDependencyRelation.getInstance()
+                Set<AuxDependency> alldeps = TargetDependencyRelation.getInstance()
                         .getDependenciesForTarget(this.pfixTarget);
                 if (alldeps != null) {
-                    for (Iterator i = alldeps.iterator(); i.hasNext();) {
-                        AuxDependency auxdep = (AuxDependency) i.next();
+                    for (Iterator<AuxDependency> i = alldeps.iterator(); i.hasNext();) {
+                        AuxDependency auxdep = i.next();
                         if (auxdep.getType() == DependencyType.IMAGE) {
                             Image img = this.imagefactory.getImage(((AuxDependencyImage) auxdep).getPath().getRelativePath());
                             deps.add(img);
@@ -359,9 +359,9 @@ public class TargetPfixImpl extends AbstractTarget {
                     return deps;
                 }
 
-                for (Iterator i = auxmanager.getChildren().iterator(); i
+                for (Iterator<AuxDependency> i = auxmanager.getChildren().iterator(); i
                         .hasNext();) {
-                    AuxDependency auxdep = (AuxDependency) i.next();
+                    AuxDependency auxdep = i.next();
                     if (auxdep.getType() == DependencyType.IMAGE) {
                         Image img = this.imagefactory.getImage(((AuxDependencyImage) auxdep).getPath().getRelativePath());
                         deps.add(img);
@@ -384,10 +384,10 @@ public class TargetPfixImpl extends AbstractTarget {
      * @see de.schlund.pfixcore.editor2.core.dom.Target#getAffectedPages()
      */
     public Collection<Page> getAffectedPages() {
-        Collection pageinfos = this.pfixTarget.getPageInfos();
+        Collection<PageInfo> pageinfos = this.pfixTarget.getPageInfos();
         HashSet<Page> pages = new HashSet<Page>();
-        for (Iterator i2 = pageinfos.iterator(); i2.hasNext();) {
-            PageInfo pageinfo = (PageInfo) i2.next();
+        for (Iterator<PageInfo> i2 = pageinfos.iterator(); i2.hasNext();) {
+            PageInfo pageinfo = i2.next();
             if (pageinfo == null) {
                 continue;
             }
@@ -429,10 +429,10 @@ public class TargetPfixImpl extends AbstractTarget {
         return this.project;
     }
 
-    public Map<String, String> getParameters() {
-        Map map = this.pfixTarget.getParams();
+    public Map<String, Object> getParameters() {
+        Map<String, Object> map = this.pfixTarget.getParams();
         if (map != null) {
-            Map<String, String> rv = new HashMap<String, String>();
+            Map<String, Object> rv = new HashMap<String, Object>();
             // Remove non-String values, as they cannot be handeled correctly
             for (Object key : map.keySet()) {
                 Object val = map.get(key);
@@ -442,7 +442,7 @@ public class TargetPfixImpl extends AbstractTarget {
             }
             return rv;
         } else {
-            return new HashMap<String, String>();
+            return new HashMap<String, Object>();
         }
     }
 

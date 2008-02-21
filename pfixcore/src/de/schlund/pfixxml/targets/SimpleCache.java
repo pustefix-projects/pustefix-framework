@@ -28,8 +28,8 @@ import java.util.TreeMap;
  *
  */
 
-public class SimpleCache implements SPCache {
-    private HashMap cache = null;
+public class SimpleCache<T1, T2> implements SPCache<T1, T2> {
+    private HashMap<T1, T2> cache = null;
 
     public SimpleCache() {
         // ???
@@ -37,25 +37,25 @@ public class SimpleCache implements SPCache {
     }
     
     public void createCache(int capacity) {
-        cache= new HashMap();
+        cache= new HashMap<T1, T2>();
     }
     
     
-    public Iterator getIterator() {
-        TreeMap tmphash;
+    public Iterator<T1> getIterator() {
+        TreeMap<T1, T2> tmphash;
         synchronized (cache) {
-            tmphash = new TreeMap(cache);
+            tmphash = new TreeMap<T1, T2>(cache);
         }
         return tmphash.keySet().iterator();
     }
     
-    public Object getValue(Object key) {
+    public T2 getValue(Object key) {
         synchronized (cache) {
             return cache.get(key);
         }
     }
     
-    public void setValue(Object key, Object value) {
+    public void setValue(T1 key, T2 value) {
         synchronized (cache) {
             cache.put(key, value);
         }

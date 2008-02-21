@@ -38,8 +38,8 @@ public interface ContextAdultInfo extends ContextResource {
     public void    setAdult(Boolean adult);
     public boolean needsData();
     // These two are just here for convenience reasons so I don't need yet another CR.
-    public void    setIndexedTest(HashMap inmap);
-    public HashMap getIndexedTest();
+    public void    setIndexedTest(HashMap<String, String> inmap);
+    public HashMap<String, String> getIndexedTest();
     
 
 }// ContextAdultInfo

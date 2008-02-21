@@ -35,8 +35,8 @@ public class ListSerializer extends Serializer {
     public Object serialize(SerializationContext ctx, Object obj) throws SerializationException {
         JSONArray jsonArray=new JSONArray();
         if(obj instanceof List) {
-            List list=(List)obj;
-            Iterator it=list.iterator();
+            List<?> list=(List<?>)obj;
+            Iterator<?> it=list.iterator();
             while(it.hasNext()) {
                 Object item=it.next();
                 Object serObj=ctx.serialize(item);
@@ -50,8 +50,8 @@ public class ListSerializer extends Serializer {
     public void serialize(SerializationContext ctx, Object obj,Writer writer) throws SerializationException,IOException {
         writer.write("[");
         if(obj instanceof List) {
-            List list=(List)obj;
-            Iterator it=list.iterator();
+            List<?> list=(List<?>)obj;
+            Iterator<?> it=list.iterator();
             while(it.hasNext()) {
                 Object item=it.next();
                 ctx.serialize(item,writer);

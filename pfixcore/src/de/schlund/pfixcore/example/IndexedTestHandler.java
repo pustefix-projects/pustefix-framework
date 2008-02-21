@@ -26,7 +26,7 @@ public class IndexedTestHandler implements IHandler {
         ContextAdultInfo cai   = SampleRes.getContextAdultInfo(context);
         String[]         keys  = itest.getKeysValue();
 
-        HashMap inmap = new HashMap();
+        HashMap<String, String> inmap = new HashMap<String, String>();
         for (int i = 0; i < keys.length ; i++) {
             inmap.put(keys[i], itest.getValue(keys[i]));
         }
@@ -36,12 +36,12 @@ public class IndexedTestHandler implements IHandler {
     public final void retrieveCurrentStatus(final Context context, final IWrapper wrapper) throws Exception {
         IndexedTest      itest  = (IndexedTest) wrapper;
         ContextAdultInfo cai    = SampleRes.getContextAdultInfo(context);
-        HashMap          outmap = cai.getIndexedTest();
+        HashMap<String, String>          outmap = cai.getIndexedTest();
         
-        for (Iterator i = outmap.keySet().iterator(); i.hasNext(); ) {
-            String key = (String) i.next();
+        for (Iterator<String> i = outmap.keySet().iterator(); i.hasNext(); ) {
+            String key = i.next();
             if (outmap.get(key) != null) {
-                itest.setValue((String) outmap.get(key), key);
+                itest.setValue(outmap.get(key), key);
             } else {
                 itest.setValue("", key);
             }

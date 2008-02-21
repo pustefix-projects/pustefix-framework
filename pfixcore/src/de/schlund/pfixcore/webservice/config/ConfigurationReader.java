@@ -345,14 +345,14 @@ public class ConfigurationReader extends DefaultHandler {
         }
     }
     
-    private Object getObjectAttribute(Attributes attributes,String attrName,Class superClazz,boolean mandatory) throws ConfigException {
+    private Object getObjectAttribute(Attributes attributes,String attrName,Class<?> superClazz,boolean mandatory) throws ConfigException {
     	String val=attributes.getValue(attrName);
     	if(val==null) {
     		if(mandatory) throw new ConfigException(ConfigException.MISSING_ATTRIBUTE,attrName);
     		else return null;
     	}
     	try {
-    		Class clazz=Class.forName(val);
+    		Class<?> clazz=Class.forName(val);
     		Object obj=clazz.newInstance();
     		if(!superClazz.isInstance(obj)) throw new ClassCastException("Class '"+val+"' can't be casted to '"+superClazz.getName()+"'.");
     		return obj;

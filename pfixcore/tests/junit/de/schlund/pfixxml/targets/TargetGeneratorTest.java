@@ -123,9 +123,9 @@ public class TargetGeneratorTest extends TestCase {
             FileResource res=ResourceUtil.getFileResource(new File("projects/sample1/conf/depend.xml").toURI());
             TargetGenerator generator=new TargetGenerator(res);
             generator.setIsGetModTimeMaybeUpdateSkipped(true);
-            TreeSet topTargets=generator.getPageTargetTree().getToplevelTargets();
+            TreeSet<Target> topTargets=generator.getPageTargetTree().getToplevelTargets();
             final Target[] targets=new Target[topTargets.size()];
-            Iterator it=topTargets.iterator();
+            Iterator<Target> it=topTargets.iterator();
             for(int i=0;i<targets.length;i++) targets[i]=(Target)it.next();
             int threadNo=50;
             final int requestNo=10;

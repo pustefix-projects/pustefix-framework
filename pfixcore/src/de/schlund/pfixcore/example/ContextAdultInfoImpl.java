@@ -41,7 +41,7 @@ import de.schlund.pfixxml.ResultDocument;
 
 public class ContextAdultInfoImpl implements ContextResource, ContextAdultInfo {
     private Boolean adult = null;
-    private HashMap test  = new HashMap();
+    private HashMap<String, String> test  = new HashMap<String, String>();
     private final static Logger LOG = Logger.getLogger(ContextAdultInfoImpl.class);
     
     public void init(Context context) {}
@@ -50,11 +50,11 @@ public class ContextAdultInfoImpl implements ContextResource, ContextAdultInfo {
         adult = null;
     }
 
-    public void setIndexedTest(HashMap inmap) {
+    public void setIndexedTest(HashMap<String, String> inmap) {
         test = inmap;
     }
 
-    public HashMap getIndexedTest() {
+    public HashMap<String, String> getIndexedTest() {
         return test;
     }
     

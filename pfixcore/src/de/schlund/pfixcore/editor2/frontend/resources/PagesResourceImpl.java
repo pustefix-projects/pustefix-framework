@@ -50,9 +50,9 @@ public class PagesResourceImpl implements PagesResource {
                 this.context).getSelectedProject();
         if (project != null) {
             // Make sure pages are in right order
-            TreeSet pages = new TreeSet(project.getTopPages());
-            for (Iterator i = pages.iterator(); i.hasNext();) {
-                Page page = (Page) i.next();
+            TreeSet<Page> pages = new TreeSet<Page>(project.getTopPages());
+            for (Iterator<Page> i = pages.iterator(); i.hasNext();) {
+                Page page = i.next();
                 this.renderPageElement(page, elem);
             }
         }
@@ -71,11 +71,11 @@ public class PagesResourceImpl implements PagesResource {
                 this.renderTarget(pageTarget, targetsElement);
                 
                 // Sort include parts
-                TreeSet includes = new TreeSet(this.selectedPage.getPageTarget().getIncludeDependencies(true));
+                TreeSet<IncludePartThemeVariant> includes = new TreeSet<IncludePartThemeVariant>(this.selectedPage.getPageTarget().getIncludeDependencies(true));
                 if (!includes.isEmpty()) {
                     Element includesElement = resdoc.createSubNode(currentPage, "includes");
-                    for (Iterator i = includes.iterator(); i.hasNext();) {
-                        IncludePartThemeVariant part = (IncludePartThemeVariant) i.next();
+                    for (Iterator<IncludePartThemeVariant> i = includes.iterator(); i.hasNext();) {
+                        IncludePartThemeVariant part = i.next();
                         Element includeElement = resdoc.createSubNode(includesElement, "include");
                         includesElement.appendChild(includeElement);
                         includeElement.setAttribute("path", part.getIncludePart().getIncludeFile().getPath());
@@ -85,11 +85,11 @@ public class PagesResourceImpl implements PagesResource {
                 }
                 
                 // Sort images
-                TreeSet images = new TreeSet(this.selectedPage.getPageTarget().getImageDependencies(true));
+                TreeSet<Image> images = new TreeSet<Image>(this.selectedPage.getPageTarget().getImageDependencies(true));
                 if (!images.isEmpty()) {
                     Element imagesElement = resdoc.createSubNode(currentPage, "images");
-                    for (Iterator i = images.iterator(); i.hasNext();) {
-                        Image image = (Image) i.next();
+                    for (Iterator<Image> i = images.iterator(); i.hasNext();) {
+                        Image image = i.next();
                         Element imageElement = resdoc.createSubNode(imagesElement, "image");
                         imageElement.setAttribute("path", image.getPath());
                         imageElement.setAttribute("modtime", Long.toString(image.getLastModTime()));
@@ -128,9 +128,9 @@ public class PagesResourceImpl implements PagesResource {
         } else {
             // Render subpages for default variant only
             // Make sure pages are in right order
-            TreeSet pages = new TreeSet(page.getSubPages());
-            for (Iterator i = pages.iterator(); i.hasNext();) {
-                Page subpage = (Page) i.next();
+            TreeSet<Page> pages = new TreeSet<Page>(page.getSubPages());
+            for (Iterator<Page> i = pages.iterator(); i.hasNext();) {
+                Page subpage = i.next();
                 this.renderPageElement(subpage, node);
             }
         }
@@ -156,9 +156,9 @@ public class PagesResourceImpl implements PagesResource {
             page = project.getPage(pageName, null);
         } else {
             // Make sure page variants are ordered
-            for (Iterator i = project.getPageByName(pageName).iterator(); i
+            for (Iterator<Page> i = project.getPageByName(pageName).iterator(); i
                     .hasNext();) {
-                Page page2 = (Page) i.next();
+                Page page2 = i.next();
                 // If variant is matching exactly, we have what we want
                 if (page2.getVariant() != null
                         && page2.getVariant().getName().equals(variantName)) {

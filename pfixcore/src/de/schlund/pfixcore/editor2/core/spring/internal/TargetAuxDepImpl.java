@@ -202,21 +202,20 @@ public class TargetAuxDepImpl extends AbstractTarget {
      * @see de.schlund.pfixcore.editor2.core.dom.Target#getAffectedPages()
      */
     public Collection<Page> getAffectedPages() {
-        HashSet pageinfos = new HashSet();
+        HashSet<PageInfo> pageinfos = new HashSet<PageInfo>();
         HashSet<Page> pages = new HashSet<Page>();
-        Set afftargets = TargetDependencyRelation.getInstance()
+        Set<de.schlund.pfixxml.targets.Target> afftargets = TargetDependencyRelation.getInstance()
                 .getAffectedTargets(auxdep);
         if (afftargets == null) {
             return pages;
         }
 
-        for (Iterator i = afftargets.iterator(); i.hasNext();) {
-            de.schlund.pfixxml.targets.Target pfixTarget = (de.schlund.pfixxml.targets.Target) i
-                    .next();
+        for (Iterator<de.schlund.pfixxml.targets.Target> i = afftargets.iterator(); i.hasNext();) {
+            de.schlund.pfixxml.targets.Target pfixTarget = i.next();
             pageinfos.addAll(pfixTarget.getPageInfos());
         }
-        for (Iterator i2 = pageinfos.iterator(); i2.hasNext();) {
-            PageInfo pageinfo = (PageInfo) i2.next();
+        for (Iterator<PageInfo> i2 = pageinfos.iterator(); i2.hasNext();) {
+            PageInfo pageinfo = i2.next();
             Project project = projectfactory
                     .getProjectByPustefixTargetGenerator(pageinfo
                             .getTargetGenerator());
@@ -246,8 +245,8 @@ public class TargetAuxDepImpl extends AbstractTarget {
         }
     }
 
-    public Map<String, String> getParameters() {
-        return new HashMap<String, String>();
+    public Map<String, Object> getParameters() {
+        return new HashMap<String, Object>();
     }
 
     public ThemeList getThemeList() {

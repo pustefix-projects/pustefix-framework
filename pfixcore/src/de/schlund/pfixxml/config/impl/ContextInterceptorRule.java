@@ -43,7 +43,7 @@ public class ContextInterceptorRule extends CheckedRule {
         check(namespace, name, attributes);
         // Use properties until interceptors have been added to XSD
         String classname = attributes.getValue("class");
-        Class clazz;
+        Class<?> clazz;
         try {
             clazz = Class.forName(classname);
         } catch (ClassNotFoundException e) {
@@ -53,10 +53,10 @@ public class ContextInterceptorRule extends CheckedRule {
             throw new SAXException("Context interceptor " + clazz + " does not implmement " + ContextInterceptor.class + " interface!");
         }
         if (type.equals("start")) {
-            config.getContextConfig().addStartInterceptor(clazz);
+            config.getContextConfig().addStartInterceptor(clazz.asSubclass(ContextInterceptor.class));
         }
         if (type.equals("end")) {
-            config.getContextConfig().addEndInterceptor(clazz);
+            config.getContextConfig().addEndInterceptor(clazz.asSubclass(ContextInterceptor.class));
         }
     }
 

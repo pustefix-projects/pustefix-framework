@@ -22,6 +22,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.TreeSet;
 
@@ -172,8 +173,8 @@ public class ProjectImpl extends AbstractProject {
         
         // Create pagename => page map
         HashMap<String, Map<Variant, Page>> pagemap = new HashMap<String, Map<Variant, Page>>();
-        for (Iterator i = pages.iterator(); i.hasNext();) {
-            Page page = (Page) i.next();
+        for (Iterator<Page> i = pages.iterator(); i.hasNext();) {
+            Page page = i.next();
             this.recursePage(page, pagemap);
         }
 
@@ -234,8 +235,8 @@ public class ProjectImpl extends AbstractProject {
             allpages.put(page.getName(), pagetable);
         }
         pagetable.put(page.getVariant(), page);
-        for (Iterator i = page.getSubPages().iterator(); i.hasNext();) {
-            Page page2 = (Page) i.next();
+        for (Iterator<Page> i = page.getSubPages().iterator(); i.hasNext();) {
+            Page page2 = i.next();
             this.recursePage(page2, allpages);
         }
     }
@@ -255,19 +256,19 @@ public class ProjectImpl extends AbstractProject {
      */
     private Collection<Page> recurseNavigationElement(NavigationElement nav,
             Page parent, PageTargetTree ptree) {
-        HashSet<Page> pages = new HashSet<Page>();
+        HashSet<MutablePage> pages = new HashSet<MutablePage>();
         Page defaultPage = null;
 
         String pageName = nav.getName();
         String pageHandler = nav.getHandler();
-        Collection pinfos = ptree.getPageInfoForPageName(pageName);
+        Collection<PageInfo> pinfos = ptree.getPageInfoForPageName(pageName);
         if (pinfos == null) {
             String msg = "Could not load PageInfo from PageTree for page "
                     + pageName + "! No target for page defined?";
             Logger.getLogger(this.getClass()).warn(msg);
         } else {
-            for (Iterator iter = pinfos.iterator(); iter.hasNext();) {
-                PageInfo pinfo = (PageInfo) iter.next();
+            for (Iterator<PageInfo> iter = pinfos.iterator(); iter.hasNext();) {
+                PageInfo pinfo = iter.next();
                 String variantName = pinfo.getVariant();
                 Variant pageVariant;
                 if (variantName != null) {
@@ -315,8 +316,8 @@ public class ProjectImpl extends AbstractProject {
             }
         }
 
-        for (Iterator iter = pages.iterator(); iter.hasNext();) {
-            PageImpl page = (PageImpl) iter.next();
+        for (Iterator<MutablePage> iter = pages.iterator(); iter.hasNext();) {
+            MutablePage page = iter.next();
             if (page == null) {
                 String err = "Page returned by iteration is null!";
                 Logger.getLogger(this.getClass()).error(err);
@@ -324,7 +325,7 @@ public class ProjectImpl extends AbstractProject {
             page.setSubPages(subpages);
         }
 
-        return pages;
+        return new LinkedHashSet<Page>(pages);
     }
 
     /*
@@ -368,7 +369,7 @@ public class ProjectImpl extends AbstractProject {
         if (!this.pagemap.containsKey(pagename)) {
             return null;
         } else {
-            return (Page) ((HashMap) this.pagemap.get(pagename)).get(variant);
+            return this.pagemap.get(pagename).get(variant);
         }
     }
 
@@ -411,14 +412,14 @@ public class ProjectImpl extends AbstractProject {
 
     public Collection<IncludePartThemeVariant> getAllIncludeParts() {
         HashSet<IncludePartThemeVariant> includes = new HashSet<IncludePartThemeVariant>();
-        TreeSet deps = TargetDependencyRelation.getInstance()
+        TreeSet<AuxDependency> deps = TargetDependencyRelation.getInstance()
                 .getProjectDependenciesForType(this.tgen, DependencyType.TEXT);
         if (deps == null) {
             return includes;
         }
 
-        for (Iterator i = deps.iterator(); i.hasNext();) {
-            AuxDependency auxdep = (AuxDependency) i.next();
+        for (Iterator<AuxDependency> i = deps.iterator(); i.hasNext();) {
+            AuxDependency auxdep = i.next();
             try {
                 includes.add(this.includefactory
                         .getIncludePartThemeVariant(auxdep));
@@ -431,12 +432,12 @@ public class ProjectImpl extends AbstractProject {
 
     public Collection<Image> getAllImages() {
         HashSet<Image> images = new HashSet<Image>();
-        TreeSet deps = TargetDependencyRelation.getInstance()
+        TreeSet<AuxDependency> deps = TargetDependencyRelation.getInstance()
                 .getProjectDependenciesForType(this.tgen, DependencyType.IMAGE);
         if (deps == null) {
             return images;
         }
-        for (Iterator i = deps.iterator(); i.hasNext();) {
+        for (Iterator<AuxDependency> i = deps.iterator(); i.hasNext();) {
             AuxDependencyImage auxdep = (AuxDependencyImage) i.next();
             images.add(this.imagefactory.getImage(auxdep.getPath().getRelativePath()));
         }
@@ -450,7 +451,7 @@ public class ProjectImpl extends AbstractProject {
                 .getAuxDependencyInclude(
                         ResourceUtil.getFileResourceFromDocroot(file), part, theme);
 
-        TreeSet deps = TargetDependencyRelation.getInstance()
+        TreeSet<AuxDependency> deps = TargetDependencyRelation.getInstance()
                 .getProjectDependencies(tgen);
         if (deps == null) {
             return null;
@@ -475,7 +476,7 @@ public class ProjectImpl extends AbstractProject {
                 .getInstance()
                 .getAuxDependencyInclude(
                         ResourceUtil.getFileResourceFromDocroot(file), part, theme);
-        TreeSet generators = TargetDependencyRelation.getInstance()
+        TreeSet<TargetGenerator> generators = TargetDependencyRelation.getInstance()
                 .getAffectedTargetGenerators(aux);
         if (generators == null) {
             return false;
