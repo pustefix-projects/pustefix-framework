@@ -58,8 +58,8 @@ public class SecurityManagerServiceImpl implements SecurityManagerService {
     }
 
     public boolean mayEditIncludePartThemeVariant(IncludePartThemeVariant part) {
-        for (Iterator i = part.getAffectedPages().iterator(); i.hasNext();) {
-            Page page = (Page) i.next();
+        for (Iterator<Page> i = part.getAffectedPages().iterator(); i.hasNext();) {
+            Page page = i.next();
             if (page != null && !mayEditIncludePartForProject(page.getProject()))
                 return false;
         }
@@ -102,19 +102,18 @@ public class SecurityManagerServiceImpl implements SecurityManagerService {
             Theme theme) {
         HashSet<Page> pages = new HashSet<Page>();
         HashSet<Theme> themes = new HashSet<Theme>();
-        for (Iterator i = part.getThemeVariants().iterator(); i.hasNext();) {
-            IncludePartThemeVariant variant = (IncludePartThemeVariant) i
-                    .next();
+        for (Iterator<IncludePartThemeVariant> i = part.getThemeVariants().iterator(); i.hasNext();) {
+            IncludePartThemeVariant variant = i.next();
             pages.addAll(variant.getAffectedPages());
             themes.add(variant.getTheme());
         }
         // For all pages which are affected by this IncludePart:
         // Check whether they will use a variant using theme.
-        for (Iterator i = pages.iterator(); i.hasNext();) {
-            Page page = (Page) i.next();
-            for (Iterator i2 = page.getThemes().getThemes().iterator(); i2
+        for (Iterator<Page> i = pages.iterator(); i.hasNext();) {
+            Page page = i.next();
+            for (Iterator<Theme> i2 = page.getThemes().getThemes().iterator(); i2
                     .hasNext();) {
-                Theme currentTheme = (Theme) i2.next();
+                Theme currentTheme = i2.next();
                 if (currentTheme.equals(theme)) {
                     // This page WILL use the new variant
                     if (!mayEditIncludePartForProject(page.getProject())) {
@@ -143,8 +142,8 @@ public class SecurityManagerServiceImpl implements SecurityManagerService {
     }
 
     public boolean mayEditImage(Image image) {
-        for (Iterator i = image.getAffectedPages().iterator(); i.hasNext();) {
-            Page page = (Page) i.next();
+        for (Iterator<Page> i = image.getAffectedPages().iterator(); i.hasNext();) {
+            Page page = i.next();
             if (!mayEditImageForProject(page.getProject()))
                 return false;
         }

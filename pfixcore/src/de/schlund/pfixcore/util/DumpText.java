@@ -19,6 +19,7 @@ import de.schlund.pfixxml.IncludeDocumentFactory;
 import de.schlund.pfixxml.config.GlobalConfigurator;
 import de.schlund.pfixxml.resources.DocrootResource;
 import de.schlund.pfixxml.resources.ResourceUtil;
+import de.schlund.pfixxml.targets.AuxDependency;
 import de.schlund.pfixxml.targets.AuxDependencyInclude;
 import de.schlund.pfixxml.targets.DependencyType;
 import de.schlund.pfixxml.targets.TargetDependencyRelation;
@@ -56,7 +57,7 @@ public class DumpText implements IDumpText {
         GlobalConfigurator.setDocroot(docroot);
         IDumpText trans;
         if (args.length == 3) {
-            Class clazz = Class.forName(args[2]);
+            Class<?> clazz = Class.forName(args[2]);
             trans = (IDumpText) clazz.newInstance();
         } else {
             trans = new DumpText();
@@ -86,8 +87,8 @@ public class DumpText implements IDumpText {
         root.appendChild(list.createTextNode("\n"));
         
         TargetGenerator gen  = new TargetGenerator(ResourceUtil.getFileResourceFromDocroot(depend));
-        TreeSet         incs = TargetDependencyRelation.getInstance().getProjectDependenciesForType(gen, DependencyType.TEXT);
-        for (Iterator i = incs.iterator(); i.hasNext();) {
+        TreeSet<AuxDependency> incs = TargetDependencyRelation.getInstance().getProjectDependenciesForType(gen, DependencyType.TEXT);
+        for (Iterator<AuxDependency> i = incs.iterator(); i.hasNext();) {
             AuxDependencyInclude aux  = (AuxDependencyInclude) i.next();
             if (includePartOK(aux)) {
                 DocrootResource file = aux.getPath();

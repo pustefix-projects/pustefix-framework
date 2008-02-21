@@ -159,10 +159,10 @@ public class HttpServiceRequest implements ServiceRequest {
     }
     
     private void dumpHeaders(StringBuilder sb) {
-        Enumeration names=httpRequest.getHeaderNames();
+        Enumeration<?> names=httpRequest.getHeaderNames();
         while(names.hasMoreElements()) {
             String name=(String)names.nextElement();
-            Enumeration values=httpRequest.getHeaders(name);
+            Enumeration<?> values=httpRequest.getHeaders(name);
             while(values.hasMoreElements()) {
                 String value=(String)values.nextElement();
                 sb.append(name+": "+value+"\n");

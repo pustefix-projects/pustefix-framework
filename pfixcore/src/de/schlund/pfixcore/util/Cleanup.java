@@ -35,7 +35,7 @@ public class Cleanup{
     static {
         dbfac.setNamespaceAware(true);
     }
-    private HashMap changed = new HashMap();
+    private HashMap<String, Document> changed = new HashMap<String, Document>();
     
     public Cleanup() {}
 
@@ -88,9 +88,9 @@ public class Cleanup{
             }
         }
 
-        for (Iterator i = changed.keySet().iterator(); i.hasNext();) {
-            String   path = (String) i.next();
-            Document doc  = (Document) changed.get(path);
+        for (Iterator<String> i = changed.keySet().iterator(); i.hasNext();) {
+            String path = i.next();
+            Document doc = changed.get(path);
             System.out.println("Saving " + path);
 
             Xml.serialize(doc, path, false, true);
@@ -99,7 +99,7 @@ public class Cleanup{
 
     private void cleanPart(Document doc, String path, String part) throws Exception {
         System.out.println("Killing " + path + " => " + part);
-        List nl  = XPath.select(doc, "/include_parts/part[@name = '" + part + "']");
+        List<Node> nl  = XPath.select(doc, "/include_parts/part[@name = '" + part + "']");
         if (nl.size() == 1) {
             Element partel = (Element) nl.get(0);
             Node    parent = partel.getParentNode();
@@ -111,7 +111,7 @@ public class Cleanup{
     
     private void cleanTheme(Document doc, String path, String part, String theme) throws Exception {
         System.out.println("Killing " + path + " => " + part + " => " + theme);
-        List nl  = XPath.select(doc, "/include_parts/part[@name = '" + part + "']/theme[@name = '" + theme + "']");
+        List<Node> nl  = XPath.select(doc, "/include_parts/part[@name = '" + part + "']/theme[@name = '" + theme + "']");
         if (nl.size() == 1) {
             Element themeel = (Element) nl.get(0);
             Node    parent = themeel.getParentNode();

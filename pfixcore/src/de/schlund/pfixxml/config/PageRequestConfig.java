@@ -22,6 +22,9 @@ import java.util.Map;
 import java.util.Properties;
 
 import de.schlund.pfixcore.auth.AuthConstraint;
+import de.schlund.pfixcore.workflow.ContextResource;
+import de.schlund.pfixcore.workflow.State;
+import de.schlund.pfixcore.workflow.app.ResdocFinalizer;
 
 /**
  * Provides configuration for a specific page.  
@@ -82,7 +85,7 @@ public interface PageRequestConfig {
      * 
      * @return class of the state for this page
      */
-    Class getState();
+    Class<? extends State> getState();
 
     /**
      * Returns the policy for the <code>isActive()</code> method.
@@ -96,7 +99,7 @@ public interface PageRequestConfig {
      * 
      * @return finalizer class or <code>null</code> if there is no finalizer
      */
-    Class getFinalizer();
+    Class<? extends ResdocFinalizer> getFinalizer();
 
     /**
      * Returns the list of IWrappers for this page. IWrappers are used
@@ -124,7 +127,7 @@ public interface PageRequestConfig {
      * 
      * @return mapping of tagname to context resource class
      */
-    Map<String, Class> getContextResources();
+    Map<String, Class<? extends ContextResource>> getContextResources();
 
     /**
      * Returns properties defined for this page.

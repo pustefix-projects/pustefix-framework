@@ -68,7 +68,7 @@ public class StateUtil {
      */
     public static void renderContextResources(Context context, ResultDocument resdoc) throws Exception {
         ContextResourceManager crm = context.getContextResourceManager();
-        Map<String, Class> crs = context.getConfigForCurrentPageRequest().getContextResources();
+        Map<String, Class<? extends ContextResource>> crs = context.getConfigForCurrentPageRequest().getContextResources();
         
         for (Iterator<String> i = crs.keySet().iterator(); i.hasNext();) {
             String nodename = i.next();
@@ -106,11 +106,11 @@ public class StateUtil {
         }
 
         // Set global headers first
-        HashMap headers = PropertiesUtils.selectProperties(contextprops, HEADER);
+        HashMap<String, String> headers = PropertiesUtils.selectProperties(contextprops, HEADER);
         if (headers != null && !headers.isEmpty()) {
-            for (Iterator iter = headers.keySet().iterator(); iter.hasNext();) {
-                String key = (String) iter.next();
-                String val = (String) headers.get(key);
+            for (Iterator<String> iter = headers.keySet().iterator(); iter.hasNext();) {
+                String key = iter.next();
+                String val = headers.get(key);
                 LOG.debug("* Adding response header: " + key + " => " + val);
                 doc.addResponseHeader(key, val);
             }
@@ -119,9 +119,9 @@ public class StateUtil {
         // then set page specific headers
         headers = PropertiesUtils.selectProperties(props, HEADER);
         if (headers != null && !headers.isEmpty()) {
-            for (Iterator iter = headers.keySet().iterator(); iter.hasNext();) {
-                String key = (String) iter.next();
-                String val = (String) headers.get(key);
+            for (Iterator<String> iter = headers.keySet().iterator(); iter.hasNext();) {
+                String key = iter.next();
+                String val = headers.get(key);
                 LOG.debug("* Adding response header: " + key + " => " + val);
                 doc.addResponseHeader(key, val);
             }

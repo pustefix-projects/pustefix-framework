@@ -166,11 +166,11 @@ public class PustefixTargetUpdateServiceImpl implements
 
         while (true) {
             LOG.info("*** Starting updater loop ***");
-            ArrayList lowCopy;
-            ArrayList highCopy;
+            ArrayList<Target> lowCopy;
+            ArrayList<Target> highCopy;
             synchronized (this.lock) {
-                lowCopy = (ArrayList) this.lowPriorityQueue.clone();
-                highCopy = (ArrayList) this.highPriorityQueue.clone();
+                lowCopy = new ArrayList<Target>(this.lowPriorityQueue);
+                highCopy = new ArrayList<Target>(this.highPriorityQueue);
                 this.highPriorityQueue.clear();
             }
             LOG.debug("*** Starting HighPrio loop");
@@ -273,7 +273,7 @@ public class PustefixTargetUpdateServiceImpl implements
                                 }
                                 synchronized (lock) {
                                     LOG.debug("##### Adding target list to LowPrio queue");
-                                    for (Iterator i = tgenList.iterator(); i.hasNext();) {
+                                    for (Iterator<TargetGenerator> i = tgenList.iterator(); i.hasNext();) {
                                         TargetGenerator tgen = (TargetGenerator) i.next();
                                         lowPriorityQueue.addAll(tgen.getPageTargetTree().getToplevelTargets());
                                     }

@@ -20,6 +20,8 @@ package de.schlund.pfixxml.config;
 
 import java.util.Properties;
 
+import de.schlund.pfixcore.workflow.DirectOutputState;
+
 /**
  * Provides configuration for a direct output page. This configuration is 
  * used by {@link de.schlund.pfixxml.DirectOutputServlet} to configure the
@@ -42,7 +44,7 @@ public interface DirectOutputPageRequestConfig {
      * 
      * @return state associated with this page
      */
-    Class getState();
+    Class<? extends DirectOutputState> getState();
 
     /**
      * Returns extra configuration parameters.

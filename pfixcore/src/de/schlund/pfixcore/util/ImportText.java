@@ -65,13 +65,13 @@ public class ImportText {
      */
     public void importList(String dump) throws Exception {
         Document dumpeddoc     = Xml.parse(XsltVersion.XSLT1, new File(dump));
-        List     dumpedinclude = XPath.select(dumpeddoc, "/dumpedincludeparts/USEDINCLUDE");
+        List<Node> dumpedinclude = XPath.select(dumpeddoc, "/dumpedincludeparts/USEDINCLUDE");
 
         String oldpath  = null;
         Document incdoc = null;
         DocrootResource incfile = null;
         
-        for (Iterator i = dumpedinclude.iterator(); i.hasNext();) {
+        for (Iterator<Node> i = dumpedinclude.iterator(); i.hasNext();) {
             Element usedinc  = (Element) i.next();
 
             String path = usedinc.getAttribute("PATH");

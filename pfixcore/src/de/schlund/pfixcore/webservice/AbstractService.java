@@ -40,7 +40,7 @@ public abstract class AbstractService {
     	return null;
     }
 
-    protected ContextResource getContextResource(Class clazz) {
+    protected ContextResource getContextResource(Class<? extends ContextResource> clazz) {
     	if(clazz==null) throw new IllegalArgumentException("clazz="+clazz);
         return getContextResource(clazz.getName());
     }

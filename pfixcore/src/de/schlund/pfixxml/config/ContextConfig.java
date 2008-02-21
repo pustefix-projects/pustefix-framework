@@ -25,6 +25,8 @@ import java.util.Properties;
 import de.schlund.pfixcore.auth.AuthConstraint;
 import de.schlund.pfixcore.auth.Role;
 import de.schlund.pfixcore.auth.RoleProvider;
+import de.schlund.pfixcore.workflow.ContextInterceptor;
+import de.schlund.pfixcore.workflow.ContextResource;
 
 /**
  * Provides configuration for a context instance.
@@ -62,7 +64,7 @@ public interface ContextConfig {
      * @param clazz class of the context resource
      * @return configuration object for the context resource
      */
-    ContextResourceConfig getContextResourceConfig(Class clazz);
+    ContextResourceConfig getContextResourceConfig(Class<? extends ContextResource> clazz);
 
     /**
      * Returns a map that maps interfaces to the corresponding context resource
@@ -70,7 +72,7 @@ public interface ContextConfig {
      * 
      * @return map containing interface to context resource configuration mapping
      */
-    Map<Class, ? extends ContextResourceConfig> getInterfaceToContextResourceMap();
+    Map<Class<? extends ContextResource>, ? extends ContextResourceConfig> getInterfaceToContextResourceMap();
 
     /**
      * Returns a list of configurations for all pageflows.
@@ -107,14 +109,14 @@ public interface ContextConfig {
      * 
      * @return list of start interceptors
      */
-    List<Class> getStartInterceptors();
+    List<Class<? extends ContextInterceptor>> getStartInterceptors();
 
     /**
      * Returns a list of all end interceptors.
      * 
      * @return list of end interceptors
      */
-    List<Class> getEndInterceptors();
+    List<Class<? extends ContextInterceptor>> getEndInterceptors();
 
     /**
      * Returns the path to the file containing the navigation tree. The path

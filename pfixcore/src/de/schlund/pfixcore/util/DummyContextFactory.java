@@ -93,6 +93,7 @@ public class DummyContextFactory {
             return getAttribute(arg0);
         }
 
+        @SuppressWarnings("unchecked")
         public Enumeration getAttributeNames() {
             return Collections.enumeration(atts.keySet());
         }

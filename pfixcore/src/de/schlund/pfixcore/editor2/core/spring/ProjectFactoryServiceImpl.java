@@ -140,9 +140,9 @@ public class ProjectFactoryServiceImpl implements ProjectFactoryService {
             doc = filesystem.readXMLDocumentFromFile(new File(pathresolver
                     .resolve(projectsFile)));
         }
-        List projectNodes = XPath.select(doc.getDocumentElement(),
+        List<Node> projectNodes = XPath.select(doc.getDocumentElement(),
                 "project[servlet/@useineditor='true']");
-        for (Iterator i = projectNodes.iterator(); i.hasNext();) {
+        for (Iterator<Node> i = projectNodes.iterator(); i.hasNext();) {
             Element projectElement = (Element) i.next();
             String projectName = "<unknown>";
             try {

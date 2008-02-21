@@ -30,6 +30,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
+import de.schlund.pfixxml.util.Generics;
 import de.schlund.pfixxml.util.XPath;
 import de.schlund.pfixxml.util.Xml;
 
@@ -55,7 +56,7 @@ public class Merge {
     
     public void run() throws SAXException, IOException, TransformerException {
         Document destDoc;
-        List<Element> nodes;
+        List<Node> nodes;
         int modified;
         
         System.out.println("Merge " + src + " into" + dest);
@@ -63,7 +64,7 @@ public class Merge {
         remove(XPath.select(destDoc, "/include_parts/part/theme[count(*) = 0 and normalize-space(text()) = '']"));
         remove(XPath.select(destDoc, "/include_parts/part[count(theme) = 0]"));
         nodes = XPath.select(Xml.parseMutable(src), srcPath);
-        modified = merge(nodes, destDoc);
+        modified = merge(Generics.<Element>convertList(nodes), destDoc);
         System.out.println("  merged: " + modified);
         Xml.serialize(destDoc, dest, true, true);
     }
@@ -146,8 +147,8 @@ public class Merge {
         return name;
     }
     
-    private void remove(List nodes) {
-        Iterator iter;
+    private void remove(List<Node> nodes) {
+        Iterator<Node> iter;
         Node node;
         
         iter = nodes.iterator();
