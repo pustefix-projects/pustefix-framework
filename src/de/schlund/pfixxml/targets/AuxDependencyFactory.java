@@ -35,10 +35,10 @@ import de.schlund.pfixxml.resources.DocrootResource;
 
 public class AuxDependencyFactory {
     private static AuxDependencyFactory instance     = new AuxDependencyFactory();
-    private TreeMap                     includeparts = new TreeMap();
-    private TreeMap                     images       = new TreeMap();
-    private TreeMap                     files        = new TreeMap();
-    private TreeMap                     targets      = new TreeMap();
+    private TreeMap<String, AuxDependencyInclude> includeparts = new TreeMap<String, AuxDependencyInclude>();
+    private TreeMap<String, AuxDependencyImage> images = new TreeMap<String, AuxDependencyImage>();
+    private TreeMap<String, AuxDependencyFile> files = new TreeMap<String, AuxDependencyFile>();
+    private TreeMap<String, AuxDependencyTarget> targets = new TreeMap<String, AuxDependencyTarget>();
     
     private AuxDependencyFactory() {}
     
@@ -68,7 +68,7 @@ public class AuxDependencyFactory {
     
     public synchronized AuxDependencyInclude getAuxDependencyInclude(DocrootResource path, String part, String theme) {
         String key = DependencyType.TEXT.getTag() + "@" + path.toString() + "@" + part + "@" + theme;
-        AuxDependencyInclude ret = (AuxDependencyInclude) includeparts.get(key);
+        AuxDependencyInclude ret = includeparts.get(key);
         if (ret == null) {
             ret = new AuxDependencyInclude(path, part, theme);
             includeparts.put(key, ret);
@@ -106,26 +106,26 @@ public class AuxDependencyFactory {
         return ret;
     }
 
-    public synchronized TreeSet getAllAuxDependencies() {
-        TreeSet retval =  new TreeSet();
+    public synchronized TreeSet<AuxDependency> getAllAuxDependencies() {
+        TreeSet<AuxDependency> retval =  new TreeSet<AuxDependency>();
 
-        for (Iterator i = includeparts.values().iterator(); i.hasNext();) {
-            AuxDependency aux = (AuxDependency) i.next();
+        for (Iterator<AuxDependencyInclude> i = includeparts.values().iterator(); i.hasNext();) {
+            AuxDependency aux = i.next();
             retval.add(aux);
         }
 
-        for (Iterator i = images.values().iterator(); i.hasNext();) {
-            AuxDependency aux = (AuxDependency) i.next();
+        for (Iterator<AuxDependencyImage> i = images.values().iterator(); i.hasNext();) {
+            AuxDependency aux = i.next();
             retval.add(aux);
         }
         
-        for (Iterator i = files.values().iterator(); i.hasNext();) {
-            AuxDependency aux = (AuxDependency) i.next();
+        for (Iterator<AuxDependencyFile> i = files.values().iterator(); i.hasNext();) {
+            AuxDependency aux = i.next();
             retval.add(aux);
         }
 
-        for (Iterator i = targets.values().iterator(); i.hasNext();) {
-            AuxDependency aux = (AuxDependency) i.next();
+        for (Iterator<AuxDependencyTarget> i = targets.values().iterator(); i.hasNext();) {
+            AuxDependency aux = i.next();
             retval.add(aux);
         }
 
@@ -133,10 +133,10 @@ public class AuxDependencyFactory {
     }
     
     public void reset() {
-        includeparts = new TreeMap();
-        images = new TreeMap();
-        files = new TreeMap();
-        targets = new TreeMap();
+        includeparts = new TreeMap<String, AuxDependencyInclude>();
+        images = new TreeMap<String, AuxDependencyImage>();
+        files = new TreeMap<String, AuxDependencyFile>();
+        targets = new TreeMap<String, AuxDependencyTarget>();
     }
     
     

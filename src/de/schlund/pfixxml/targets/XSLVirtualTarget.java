@@ -47,7 +47,7 @@ public class XSLVirtualTarget extends VirtualTarget {
         this.generator = gen;
         this.targetkey = key;
         this.themes = themes;
-        this.params = new TreeMap();
+        this.params = new TreeMap<String, Object>();
         this.auxdepmanager = new AuxDependencyManager(this);
         auxdepmanager.tryInitAuxdepend();
     }

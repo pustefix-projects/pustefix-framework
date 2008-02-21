@@ -54,8 +54,8 @@ public class TargetsResourceImpl implements TargetsResource {
         Project project = EditorResourceLocator.getProjectsResource(
                 this.context).getSelectedProject();
         if (project != null) {
-            for (Iterator i = project.getAllPages().iterator(); i.hasNext();) {
-                Page page = (Page) i.next();
+            for (Iterator<Page> i = project.getAllPages().iterator(); i.hasNext();) {
+                Page page = i.next();
                 Target pageTarget = page.getPageTarget();
                 // Null targets may exist because dummy page objects (for pages
                 // which are only in navigation, not in target section) might
@@ -70,26 +70,26 @@ public class TargetsResourceImpl implements TargetsResource {
             currentTarget.setAttribute("name", this.selectedTarget.getName());
 
             // Render parameters
-            Map params = this.selectedTarget.getParameters();
-            for (Iterator i = params.keySet().iterator(); i.hasNext();) {
-                String key = (String) i.next();
-                String value = (String) params.get(key);
+            Map<String, Object> params = this.selectedTarget.getParameters();
+            for (Iterator<String> i = params.keySet().iterator(); i.hasNext();) {
+                String key = i.next();
+                String value = params.get(key).toString();
                 Element param = resdoc.createSubNode(currentTarget, "param");
                 param.setAttribute("name", key);
                 param.setAttribute("value", value);
             }
 
             // Render affected pages
-            Collection pages = this.selectedTarget.getAffectedPages();
+            Collection<Page> pages = this.selectedTarget.getAffectedPages();
             if (!pages.isEmpty()) {
                 Element pagesNode = resdoc
                         .createSubNode(currentTarget, "pages");
-                HashMap projectNodes = new HashMap();
-                for (Iterator i = pages.iterator(); i.hasNext();) {
-                    Page page = (Page) i.next();
+                HashMap<Project, Element> projectNodes = new HashMap<Project, Element>();
+                for (Iterator<Page> i = pages.iterator(); i.hasNext();) {
+                    Page page = i.next();
                     Element projectNode;
                     if (projectNodes.containsKey(page.getProject())) {
-                        projectNode = (Element) projectNodes.get(page
+                        projectNode = projectNodes.get(page
                                 .getProject());
                     } else {
                         projectNode = resdoc
@@ -109,16 +109,15 @@ public class TargetsResourceImpl implements TargetsResource {
             }
 
             // Render includes
-            TreeSet includes = new TreeSet(this.selectedTarget
+            TreeSet<IncludePartThemeVariant> includes = new TreeSet<IncludePartThemeVariant>(this.selectedTarget
                     .getIncludeDependencies(false));
             // All includes are needed later to render images
-            TreeSet allincludes = new TreeSet(includes);
+            TreeSet<IncludePartThemeVariant> allincludes = new TreeSet<IncludePartThemeVariant>(includes);
             if (!includes.isEmpty()) {
                 Element includesNode = resdoc.createSubNode(currentTarget,
                         "includes");
-                for (Iterator i = includes.iterator(); i.hasNext();) {
-                    IncludePartThemeVariant variant = (IncludePartThemeVariant) i
-                            .next();
+                for (Iterator<IncludePartThemeVariant> i = includes.iterator(); i.hasNext();) {
+                    IncludePartThemeVariant variant = i.next();
                     this.renderInclude(variant, includesNode);
                     allincludes.addAll(variant.getIncludeDependencies(
                             this.selectedTarget, true));
@@ -127,19 +126,18 @@ public class TargetsResourceImpl implements TargetsResource {
 
             // Render images
             // Get images for current target and all include parts
-            TreeSet images = new TreeSet(this.selectedTarget
+            TreeSet<Image> images = new TreeSet<Image>(this.selectedTarget
                     .getImageDependencies(false));
-            for (Iterator i = allincludes.iterator(); i.hasNext();) {
-                IncludePartThemeVariant variant = (IncludePartThemeVariant) i
-                        .next();
+            for (Iterator<IncludePartThemeVariant> i = allincludes.iterator(); i.hasNext();) {
+                IncludePartThemeVariant variant = i.next();
                 images.addAll(variant.getImageDependencies(this.selectedTarget,
                         true));
             }
             if (!images.isEmpty()) {
                 Element imagesNode = resdoc.createSubNode(currentTarget,
                         "images");
-                for (Iterator i = images.iterator(); i.hasNext();) {
-                    Image image = (Image) i.next();
+                for (Iterator<Image> i = images.iterator(); i.hasNext();) {
+                    Image image = i.next();
                     Element imageNode = resdoc.createSubNode(imagesNode,
                             "image");
                     imageNode.setAttribute("path", image.getPath());
@@ -169,11 +167,10 @@ public class TargetsResourceImpl implements TargetsResource {
         includeNode.setAttribute("theme", variant.getTheme().getName());
 
         try {
-            TreeSet variants = new TreeSet(variant.getIncludeDependencies(
+            TreeSet<IncludePartThemeVariant> variants = new TreeSet<IncludePartThemeVariant>(variant.getIncludeDependencies(
                     this.selectedTarget, false));
-            for (Iterator i = variants.iterator(); i.hasNext();) {
-                IncludePartThemeVariant variant2 = (IncludePartThemeVariant) i
-                        .next();
+            for (Iterator<IncludePartThemeVariant> i = variants.iterator(); i.hasNext();) {
+                IncludePartThemeVariant variant2 = i.next();
                 this.renderInclude(variant2, includeNode);
             }
         } catch (EditorParsingException e) {
@@ -211,8 +208,8 @@ public class TargetsResourceImpl implements TargetsResource {
             this.renderTarget(target.getParentXML(), node);
             this.renderTarget(target.getParentXSL(), node);
         }
-        for (Iterator i = target.getAuxDependencies().iterator(); i.hasNext();) {
-            Target auxtarget = (Target) i.next();
+        for (Iterator<Target> i = target.getAuxDependencies().iterator(); i.hasNext();) {
+            Target auxtarget = i.next();
             this.renderTarget(auxtarget, node, true);
         }
     }

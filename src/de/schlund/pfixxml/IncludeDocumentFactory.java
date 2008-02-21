@@ -50,7 +50,7 @@ public class IncludeDocumentFactory {
 
     // private static Logger                 LOG      = Logger.getLogger(IncludeDocumentFactory.class);
     private static IncludeDocumentFactory instance = new IncludeDocumentFactory();
-    private SPCache                       cache    = SPCacheFactory.getInstance().getDocumentCache();
+    private SPCache<String, IncludeDocument> cache = SPCacheFactory.getInstance().getDocumentCache();
        
     private IncludeDocumentFactory() {}
 

@@ -57,9 +57,8 @@ public class DynIncludesResourceImpl extends CommonIncludesResourceImpl
         if (incPart == null) {
             return null;
         }
-        for (Iterator i = incPart.getThemeVariants().iterator(); i.hasNext();) {
-            IncludePartThemeVariant variant = (IncludePartThemeVariant) i
-                    .next();
+        for (Iterator<IncludePartThemeVariant> i = incPart.getThemeVariants().iterator(); i.hasNext();) {
+            IncludePartThemeVariant variant = i.next();
             if (variant.getTheme().getName().equals(theme)) {
                 return variant;
             }
@@ -67,22 +66,22 @@ public class DynIncludesResourceImpl extends CommonIncludesResourceImpl
         return null;
     }
 
-    protected Collection getPossibleThemes(
+    protected Collection<Theme> getPossibleThemes(
             IncludePartThemeVariant selectedIncludePart, Project project,
-            Collection dummy) {
+            Collection<Page> dummy) {
         if (!SpringBeanLocator.getSecurityManagerService().mayEditDynInclude()) {
             // Do not present alternative themes to users who may not
             // edit DynIncludes at all
-            return new TreeSet();
+            return new TreeSet<Theme>();
         }
-        Collection pages = project.getAllPages();
-        TreeSet themes = new TreeSet();
-        for (Iterator i = pages.iterator(); i.hasNext();) {
-            Page page = (Page) i.next();
+        Collection<Page> pages = project.getAllPages();
+        TreeSet<Theme> themes = new TreeSet<Theme>();
+        for (Iterator<Page> i = pages.iterator(); i.hasNext();) {
+            Page page = i.next();
             themes.addAll(page.getThemes().getThemes());
         }
-        for (Iterator i = themes.iterator(); i.hasNext();) {
-            Theme theme = (Theme) i.next();
+        for (Iterator<Theme> i = themes.iterator(); i.hasNext();) {
+            Theme theme = i.next();
             if (selectedIncludePart.getIncludePart().hasThemeVariant(theme)) {
                 i.remove();
             }
@@ -98,11 +97,11 @@ public class DynIncludesResourceImpl extends CommonIncludesResourceImpl
 
     protected void renderAllIncludes(ResultDocument resdoc, Element elem,
             Project project) {
-        TreeSet incFiles = new TreeSet(SpringBeanLocator
+        TreeSet<IncludeFile> incFiles = new TreeSet<IncludeFile>(SpringBeanLocator
                 .getDynIncludeFactoryService().getDynIncludeFiles());
-        Map directoryNodes = new HashMap();
-        for (Iterator i = incFiles.iterator(); i.hasNext();) {
-            IncludeFile incFile = (IncludeFile) i.next();
+        Map<String, Element> directoryNodes = new HashMap<String, Element>();
+        for (Iterator<IncludeFile> i = incFiles.iterator(); i.hasNext();) {
+            IncludeFile incFile = i.next();
             String path = incFile.getPath();
             String dir;
             try {
@@ -110,7 +109,7 @@ public class DynIncludesResourceImpl extends CommonIncludesResourceImpl
             } catch (StringIndexOutOfBoundsException e) {
                 dir = "/";
             }
-            Element directoryNode = (Element) directoryNodes.get(dir);
+            Element directoryNode = directoryNodes.get(dir);
             if (directoryNode == null) {
                 directoryNode = resdoc.createSubNode(elem, "directory");
                 directoryNode.setAttribute("path", dir);
@@ -127,13 +126,12 @@ public class DynIncludesResourceImpl extends CommonIncludesResourceImpl
             if (this.isFileOpen(path)) {
                 fileNode.setAttribute("open", "true");
             }
-            TreeSet incParts = new TreeSet(incFile.getParts());
-            for (Iterator i2 = incParts.iterator(); i2.hasNext();) {
-                IncludePart incPart = (IncludePart) i2.next();
-                TreeSet incVariants = new TreeSet(incPart.getThemeVariants());
-                for (Iterator i3 = incVariants.iterator(); i3.hasNext();) {
-                    IncludePartThemeVariant incVariant = (IncludePartThemeVariant) i3
-                            .next();
+            TreeSet<IncludePart> incParts = new TreeSet<IncludePart>(incFile.getParts());
+            for (Iterator<IncludePart> i2 = incParts.iterator(); i2.hasNext();) {
+                IncludePart incPart = i2.next();
+                TreeSet<IncludePartThemeVariant> incVariants = new TreeSet<IncludePartThemeVariant>(incPart.getThemeVariants());
+                for (Iterator<IncludePartThemeVariant> i3 = incVariants.iterator(); i3.hasNext();) {
+                    IncludePartThemeVariant incVariant = i3.next();
                     Element partNode = resdoc
                             .createSubNode(fileNode, "include");
                     partNode.setAttribute("part", incPart.getName());
@@ -151,9 +149,9 @@ public class DynIncludesResourceImpl extends CommonIncludesResourceImpl
     protected Set<IncludeFile> getIncludeFilesInDirectory(String dirname,
             Project project) {
         TreeSet<IncludeFile> files = new TreeSet<IncludeFile>();
-        for (Iterator i = SpringBeanLocator.getDynIncludeFactoryService()
+        for (Iterator<IncludeFile> i = SpringBeanLocator.getDynIncludeFactoryService()
                 .getDynIncludeFiles().iterator(); i.hasNext();) {
-            IncludeFile file = (IncludeFile) i.next();
+            IncludeFile file = i.next();
             String path = file.getPath();
             try {
                 path = path.substring(0, path.lastIndexOf('/'));
@@ -173,12 +171,11 @@ public class DynIncludesResourceImpl extends CommonIncludesResourceImpl
         IncludeFile incFile = SpringBeanLocator.getDynIncludeFactoryService()
                 .getIncludeFile(filename);
         if (incFile != null) {
-            for (Iterator i = incFile.getParts().iterator(); i.hasNext();) {
-                IncludePart part = (IncludePart) i.next();
-                for (Iterator j = part.getThemeVariants().iterator(); j
+            for (Iterator<IncludePart> i = incFile.getParts().iterator(); i.hasNext();) {
+                IncludePart part = i.next();
+                for (Iterator<IncludePartThemeVariant> j = part.getThemeVariants().iterator(); j
                         .hasNext();) {
-                    IncludePartThemeVariant variant = (IncludePartThemeVariant) j
-                            .next();
+                    IncludePartThemeVariant variant = j.next();
                     parts.add(variant);
                 }
             }

@@ -108,13 +108,13 @@ public class IncludePartThemeVariantImpl extends
     public Collection<IncludePartThemeVariant> getIncludeDependencies(
             boolean recursive) throws EditorParsingException {
         HashSet<IncludePartThemeVariant> includes = new HashSet<IncludePartThemeVariant>();
-        Collection childs = TargetDependencyRelation.getInstance()
+        Collection<AuxDependency> childs = TargetDependencyRelation.getInstance()
                 .getChildrenOverallForAuxDependency(this.getAuxDependency());
         if (childs == null) {
             return includes;
         }
-        for (Iterator i = childs.iterator(); i.hasNext();) {
-            AuxDependency child = (AuxDependency) i.next();
+        for (Iterator<AuxDependency> i = childs.iterator(); i.hasNext();) {
+            AuxDependency child = i.next();
             if (child.getType() == DependencyType.TEXT) {
                 IncludePartThemeVariant variant = this.includefactory
                         .getIncludePartThemeVariant(child);
@@ -135,13 +135,13 @@ public class IncludePartThemeVariantImpl extends
     public Collection<Image> getImageDependencies(boolean recursive)
             throws EditorParsingException {
         HashSet<Image> images = new HashSet<Image>();
-        Collection childs = TargetDependencyRelation.getInstance()
+        Collection<AuxDependency> childs = TargetDependencyRelation.getInstance()
                 .getChildrenOverallForAuxDependency(this.getAuxDependency());
         if (childs == null) {
             return images;
         }
-        for (Iterator i = childs.iterator(); i.hasNext();) {
-            AuxDependency child = (AuxDependency) i.next();
+        for (Iterator<AuxDependency> i = childs.iterator(); i.hasNext();) {
+            AuxDependency child = i.next();
             if (child.getType() == DependencyType.IMAGE) {
                 Image image = this.imagefactory.getImage(((AuxDependencyImage) child).getPath().getRelativePath());
                 images.add(image);
@@ -161,22 +161,21 @@ public class IncludePartThemeVariantImpl extends
      * @see de.schlund.pfixcore.editor2.core.dom.IncludePartThemeVariant#getAffectedPages()
      */
     public Collection<Page> getAffectedPages() {
-        HashSet pageinfos = new HashSet();
+        HashSet<PageInfo> pageinfos = new HashSet<PageInfo>();
         HashSet<Page> pages = new HashSet<Page>();
-        Set afftargets = TargetDependencyRelation.getInstance()
+        Set<Target> afftargets = TargetDependencyRelation.getInstance()
                 .getAffectedTargets(this.getAuxDependency());
         if (afftargets == null) {
             return pages;
         }
 
-        for (Iterator i = afftargets.iterator(); i.hasNext();) {
-            de.schlund.pfixxml.targets.Target pfixTarget = (de.schlund.pfixxml.targets.Target) i
-                    .next();
+        for (Iterator<Target> i = afftargets.iterator(); i.hasNext();) {
+            Target pfixTarget = i.next();
             pageinfos.addAll(pfixTarget.getPageInfos());
         }
 
-        for (Iterator i2 = pageinfos.iterator(); i2.hasNext();) {
-            PageInfo pageinfo = (PageInfo) i2.next();
+        for (Iterator<PageInfo> i2 = pageinfos.iterator(); i2.hasNext();) {
+            PageInfo pageinfo = i2.next();
             Project project = projectfactory
                     .getProjectByPustefixTargetGenerator(pageinfo
                             .getTargetGenerator());
@@ -198,10 +197,10 @@ public class IncludePartThemeVariantImpl extends
             boolean recursive) throws EditorParsingException {
         HashSet<IncludePartThemeVariant> includes = new HashSet<IncludePartThemeVariant>();
 
-        Collection childs = getChildrenForTarget(this.getAuxDependency(),
+        Collection<AuxDependency> childs = getChildrenForTarget(this.getAuxDependency(),
                 target);
-        for (Iterator i = childs.iterator(); i.hasNext();) {
-            AuxDependency child = (AuxDependency) i.next();
+        for (Iterator<AuxDependency> i = childs.iterator(); i.hasNext();) {
+            AuxDependency child = i.next();
             if (child.getType() == DependencyType.TEXT) {
                 IncludePartThemeVariant variant = this.includefactory
                         .getIncludePartThemeVariant(child);
@@ -219,10 +218,10 @@ public class IncludePartThemeVariantImpl extends
             boolean recursive) throws EditorParsingException {
         HashSet<Image> images = new HashSet<Image>();
 
-        Collection childs = getChildrenForTarget(this.getAuxDependency(),
+        Collection<AuxDependency> childs = getChildrenForTarget(this.getAuxDependency(),
                 target);
-        for (Iterator i = childs.iterator(); i.hasNext();) {
-            AuxDependency child = (AuxDependency) i.next();
+        for (Iterator<AuxDependency> i = childs.iterator(); i.hasNext();) {
+            AuxDependency child = i.next();
             if (child.getType() == DependencyType.IMAGE) {
                 Image image = this.imagefactory.getImage(((AuxDependencyImage) child).getPath().getRelativePath());
                 images.add(image);
@@ -249,14 +248,14 @@ public class IncludePartThemeVariantImpl extends
 
     public Collection<Project> getAffectedProjects() {
         HashSet<Project> projects = new HashSet<Project>();
-        Set afftgens = TargetDependencyRelation.getInstance()
+        Set<TargetGenerator> afftgens = TargetDependencyRelation.getInstance()
                 .getAffectedTargetGenerators(this.getAuxDependency());
         if (afftgens == null) {
             return projects;
         }
 
-        for (Iterator i = afftgens.iterator(); i.hasNext();) {
-            TargetGenerator tgen = (TargetGenerator) i.next();
+        for (Iterator<TargetGenerator> i = afftgens.iterator(); i.hasNext();) {
+            TargetGenerator tgen = i.next();
             Project project = this.projectfactory
                     .getProjectByPustefixTargetGenerator(tgen);
             if (project != null) {

@@ -33,8 +33,8 @@ import java.util.StringTokenizer;
  * @version 1.0
  */
 public class Themes {
-    ArrayList themes;
-    String    id;
+    ArrayList<String> themes;
+    String id;
     
     /**
      * Creates a new <code>Themes</code> instance.
@@ -47,7 +47,7 @@ public class Themes {
         if (themesarr.length == 0) {
             throw new RuntimeException("Themes array must not be empty");
         }
-        this.themes = new ArrayList();
+        this.themes = new ArrayList<String>();
         themes.addAll(Arrays.asList(themesarr));
         StringBuffer themesstr = new StringBuffer("");
         for (int i = 0; i < themesarr.length; i++) {
@@ -67,9 +67,8 @@ public class Themes {
             throw new RuntimeException("Themes id must not be empty");
         }
         this.id = id;
-        themes = new ArrayList();
-        StringTokenizer tok    = new StringTokenizer(id);
-        this.themes = new ArrayList();
+        StringTokenizer tok = new StringTokenizer(id);
+        this.themes = new ArrayList<String>();
         while (tok.hasMoreElements()) {
             String currtok = tok.nextToken();
             themes.add(currtok);

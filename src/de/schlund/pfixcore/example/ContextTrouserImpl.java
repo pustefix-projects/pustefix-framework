@@ -53,7 +53,7 @@ public class ContextTrouserImpl extends ContextTShirtImpl implements ContextTrou
             elem.setAttribute("color", "" + getColor());
             
             Integer[] trouserfeatures = getFeature();
-            HashMap   featmap         = PropertiesUtils.selectProperties(context.getProperties(), "contexttrouser.feature");
+            HashMap<String, String> featmap = PropertiesUtils.selectProperties(context.getProperties(), "contexttrouser.feature");
             if (trouserfeatures != null) {
                 for (int i = 0; i < trouserfeatures.length; i++) {
                     Integer feat = trouserfeatures[i];

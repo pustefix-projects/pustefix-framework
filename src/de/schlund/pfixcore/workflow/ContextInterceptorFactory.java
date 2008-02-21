@@ -14,7 +14,7 @@ import de.schlund.pfixxml.XMLException;
  * @version 1.0
  */
 public class ContextInterceptorFactory {
-    private HashMap                          icmap    = new HashMap();
+    private HashMap<String, ContextInterceptor> icmap = new HashMap<String, ContextInterceptor>();
     private static ContextInterceptorFactory instance = new ContextInterceptorFactory();
     
     /**
@@ -35,7 +35,7 @@ public class ContextInterceptorFactory {
             if (ic == null) {
                 ic = (ContextInterceptor) icmap.get(classname);
                 try {
-                    Class stateclass = Class.forName(classname);
+                    Class<?> stateclass = Class.forName(classname);
                     ic = (ContextInterceptor) stateclass.newInstance();
                 } catch (InstantiationException e) {
                     throw new XMLException("unable to instantiate class [" + classname + "] :" + e.getMessage());

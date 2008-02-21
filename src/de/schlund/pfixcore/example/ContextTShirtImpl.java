@@ -84,7 +84,7 @@ public class ContextTShirtImpl implements ContextTShirt{
         tshirt.setAttribute("color", "" + getColor());
         
         Integer[] tshirtfeatures = getFeature();
-        HashMap   featmap        = PropertiesUtils.selectProperties(context.getProperties(), "contexttshirt.feature");
+        HashMap<String, String> featmap = PropertiesUtils.selectProperties(context.getProperties(), "contexttshirt.feature");
         if (tshirtfeatures != null) {
             for (int i = 0; i < tshirtfeatures.length; i++) {
                 Integer feat = tshirtfeatures[i];

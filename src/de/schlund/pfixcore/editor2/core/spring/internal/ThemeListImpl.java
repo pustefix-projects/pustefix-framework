@@ -78,14 +78,14 @@ public class ThemeListImpl implements ThemeList {
             return false;
         }
         ThemeList list = (ThemeList) obj;
-        Iterator i1 = this.getThemes().iterator();
-        Iterator i2 = list.getThemes().iterator();
+        Iterator<Theme> i1 = this.getThemes().iterator();
+        Iterator<Theme> i2 = list.getThemes().iterator();
         while (i1.hasNext()) {
             if (!i2.hasNext()) {
                 return false;
             }
-            Theme theme1 = (Theme) i1.next();
-            Theme theme2 = (Theme) i2.next();
+            Theme theme1 = i1.next();
+            Theme theme2 = i2.next();
             if (!theme1.equals(theme2)) {
                 return false;
             }
@@ -105,8 +105,8 @@ public class ThemeListImpl implements ThemeList {
      */
     public String toString() {
         StringBuffer buf = new StringBuffer();
-        for (Iterator i = this.themes.iterator(); i.hasNext();) {
-            Theme theme = (Theme) i.next();
+        for (Iterator<Theme> i = this.themes.iterator(); i.hasNext();) {
+            Theme theme = i.next();
             buf.append(theme.getName());
             buf.append(" ");
         }
@@ -118,8 +118,8 @@ public class ThemeListImpl implements ThemeList {
             return false;
         }
 
-        for (Iterator i = this.getThemes().iterator(); i.hasNext();) {
-            Theme t = (Theme) i.next();
+        for (Iterator<Theme> i = this.getThemes().iterator(); i.hasNext();) {
+            Theme t = i.next();
             if (t.equals(t1)) {
                 return true;
             } else if (t.equals(t2)) {

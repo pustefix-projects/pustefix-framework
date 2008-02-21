@@ -106,8 +106,8 @@ public class ContextResourceManagerImpl implements ContextResourceManager {
             resourceClassToInstance.put(cr.getClass().getName(), cr);
         }
         
-        Map<Class, ? extends ContextResourceConfig> interfaces = config.getInterfaceToContextResourceMap();
-        for (Class clazz : interfaces.keySet()) {
+        Map<Class<? extends ContextResource>, ? extends ContextResourceConfig> interfaces = config.getInterfaceToContextResourceMap();
+        for (Class<? extends ContextResource> clazz : interfaces.keySet()) {
             String interfacename = clazz.getName();
             String resourceclass = interfaces.get(clazz).getContextResourceClass().getName();
             ContextResource cr = resourceClassToInstance.get(resourceclass);
@@ -116,8 +116,8 @@ public class ContextResourceManagerImpl implements ContextResourceManager {
             resources.put(interfacename, cr);
         }
         
-        for (Iterator i = resourcesToInitialize.iterator(); i.hasNext();) {
-            ContextResource resource = (ContextResource) i.next();
+        for (Iterator<ContextResource> i = resourcesToInitialize.iterator(); i.hasNext();) {
+            ContextResource resource = i.next();
             try {
                 resource.init(context);
             } catch (Exception e) {
@@ -143,7 +143,7 @@ public class ContextResourceManagerImpl implements ContextResourceManager {
     }
     
     private void checkInterface(Object obj, String interfacename) throws PustefixCoreException {
-        Class wantedinterface = null;
+        Class<?> wantedinterface = null;
         
         // Get the class of the requested interface and get all
         // implemented interfaces of the object

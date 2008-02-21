@@ -55,7 +55,7 @@ public class ToFloat extends SimpleCheck implements IWrapperParamCaster {
     
     public void castValue(RequestParam[] param) {
         reset();
-        ArrayList out = new ArrayList();
+        ArrayList<Float> out = new ArrayList<Float>();
         String par;
         Float  val;
         for (int i = 0; i < param.length; i++) {
@@ -69,7 +69,7 @@ public class ToFloat extends SimpleCheck implements IWrapperParamCaster {
             }
         }
         if (!errorHappened()) {
-            value = (Float[]) out.toArray(new Float[] {});
+            value = out.toArray(new Float[] {});
         }
     }
     

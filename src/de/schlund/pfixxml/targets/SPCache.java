@@ -26,11 +26,11 @@ import java.util.Iterator;
  *
  */
 
-public interface SPCache {
+public interface SPCache<T1, T2> {
     void createCache(int capacity);
-    Iterator getIterator();
-    Object   getValue(Object key);
-    void     setValue(Object key, Object value);
+    Iterator<T1> getIterator();
+    T2   getValue(T1 key);
+    void     setValue(T1 key, T2 value);
     int      getCapacity();
     int      getSize();
 }

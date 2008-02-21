@@ -23,19 +23,19 @@ import java.util.HashMap;
 import java.util.Iterator;
 
 public class TargetGenerationReport {
-    private final HashMap hash;
+    private final HashMap<String, ArrayList<Exception>> hash;
 
     public TargetGenerationReport() {
-        this.hash = new HashMap();
+        this.hash = new HashMap<String, ArrayList<Exception>>();
     }
     
     public void addError(Exception e, String project) {
         if (hash.get(project) == null) {
-            ArrayList list = new ArrayList();
+            ArrayList<Exception> list = new ArrayList<Exception>();
             list.add(e);
             hash.put(project, list);
         } else {
-            ((ArrayList) hash.get(project)).add(e);
+            hash.get(project).add(e);
         }
     }
  
@@ -50,12 +50,12 @@ public class TargetGenerationReport {
             sb.append(prod_break);
             return sb.toString();
         }
-        Iterator iter = hash.keySet().iterator();
+        Iterator<String> iter = hash.keySet().iterator();
         while (iter.hasNext()) {
-            Object key = iter.next();
+            String key = iter.next();
             buf.append(prod_break);
-            buf.append("| Project: ").append((String) key).append("\n");
-            ArrayList exs = (ArrayList) hash.get(key);
+            buf.append("| Project: ").append(key).append("\n");
+            ArrayList<Exception> exs = hash.get(key);
             buf.append("| Exceptions: ").append("\n");
             for (int i = 0; i < exs.size(); i++) {
                 TargetGenerationException tgex = (TargetGenerationException) exs

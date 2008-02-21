@@ -59,10 +59,10 @@ public class ProjectInitFactory {
         String projectlist = props.getProperty("projectinit.projectlist");
         if (projectlist == null) {
             // Get a list of all TargetGenerators used by any project
-            List dependNodes = XPath.select(doc.getDocumentElement(),
+            List<Node> dependNodes = XPath.select(doc.getDocumentElement(),
                     "project/depend/text()");
-            for (Iterator i = dependNodes.iterator(); i.hasNext();) {
-                Node dependNode = (Node) i.next();
+            for (Iterator<Node> i = dependNodes.iterator(); i.hasNext();) {
+                Node dependNode = i.next();
                 String dependPath = dependNode.getNodeValue();
                 // Create TargetGenerator to make sure it is cached
                 // by TargetGeneratorFactory

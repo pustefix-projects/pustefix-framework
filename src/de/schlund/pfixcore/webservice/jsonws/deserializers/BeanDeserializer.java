@@ -50,10 +50,10 @@ public class BeanDeserializer extends Deserializer {
         if(jsonValue instanceof JSONObject) {
             JSONObject jsonObj=(JSONObject)jsonValue;
             Class<?> targetClass=null;
-            if(targetType instanceof Class) targetClass=(Class)targetType;
+            if(targetType instanceof Class) targetClass=(Class<?>)targetType;
             else if(targetType instanceof ParameterizedType) {
                 Type rawType=((ParameterizedType)targetType).getRawType();
-                if(rawType instanceof Class) targetClass=(Class)rawType;
+                if(rawType instanceof Class) targetClass=(Class<?>)rawType;
                 else return false;
             }
             if(Map.class.isAssignableFrom(targetClass)) return true;
@@ -82,10 +82,10 @@ public class BeanDeserializer extends Deserializer {
             JSONObject jsonObj=(JSONObject)jsonValue;
             
             Class<?> targetClass=null;
-            if(targetType instanceof Class) targetClass=(Class)targetType;
+            if(targetType instanceof Class) targetClass=(Class<?>)targetType;
             else if(targetType instanceof ParameterizedType) {
                 Type rawType=((ParameterizedType)targetType).getRawType();
-                if(rawType instanceof Class) targetClass=(Class)rawType;
+                if(rawType instanceof Class) targetClass=(Class<?>)rawType;
                 else throw new DeserializationException("Type not supported: "+targetType);
             }
             
@@ -103,15 +103,15 @@ public class BeanDeserializer extends Deserializer {
                     } else throw new DeserializationException("Type not supported: "+targetType);
                 } else throw new DeserializationException("Deserialization of unparameterized Map types isn't supported: "+targetType);
                   
-                Map map=null;
+                Map<Object, Object> map=null;
                 if(!targetClass.isInterface()) {
                     try {
-                        map=(Map)targetClass.newInstance();
+                        map=(Map<Object, Object>)targetClass.newInstance();
                     } catch(Exception x) {}
                 }
                 if(map==null) {
                     if(targetClass.isAssignableFrom(HashMap.class)) {
-                        map=new HashMap();
+                        map=new HashMap<Object, Object>();
                     } else throw new DeserializationException("Can't create instance of class '"+targetClass.getName()+"'.");
                 }
                 
@@ -180,7 +180,7 @@ public class BeanDeserializer extends Deserializer {
      
     }
     
-    private boolean isInstantiable(Class clazz) {
+    private boolean isInstantiable(Class<?> clazz) {
         if(clazz.isInterface()) return false;
         try {
             clazz.getConstructor(new Class[0]);

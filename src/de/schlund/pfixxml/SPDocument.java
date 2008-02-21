@@ -42,7 +42,7 @@ public class SPDocument {
     //~ Instance/static variables ..................................................................
 
     private Document  document;
-    private HashMap   propertiesmap;
+    private HashMap<String, Object> propertiesmap;
     private boolean   updateable     = true;
     // private boolean   nostore        = false;
     private String    pagename       = null;
@@ -52,8 +52,8 @@ public class SPDocument {
     private int       error          = 0;
     private String    errortext      = null;
     private String    contenttype    = null;
-    private HashMap   header         = new HashMap();
-    private ArrayList cookies        = new ArrayList();
+    private HashMap<String, String> header  = new HashMap<String, String>();
+    private ArrayList<Cookie> cookies = new ArrayList<Cookie>();
     private String    redirectURL    = null;
     private boolean trailLogged;
 
@@ -116,24 +116,24 @@ public class SPDocument {
         header.put(key, val);
     }
 
-    public HashMap getResponseHeader() {
+    public HashMap<String, String> getResponseHeader() {
         if (redirectURL == null) {
             return header;
         } else {
-            HashMap newheader = new HashMap();
+            HashMap<String, String> newheader = new HashMap<String, String>();
             newheader.put("Location", redirectURL);
             return newheader;
         }
     }
 
-    public void storeFrameAnchors(Map anchors) {
+    public void storeFrameAnchors(Map<String, String> anchors) {
         if (document == null) {
             throw new RuntimeException("*** Can't store anchors into a null Document ***");
         }
         Element root = document.getDocumentElement();
-        for (Iterator i = anchors.keySet().iterator(); i.hasNext();) {
-            String  frame  = (String) i.next();
-            String  anchor = (String) anchors.get(frame);
+        for (Iterator<String> i = anchors.keySet().iterator(); i.hasNext();) {
+            String  frame  = i.next();
+            String  anchor = anchors.get(frame);
             Element elem   = document.createElement("frameanchor");
             elem.setAttribute("frame", frame);
             elem.setAttribute("anchor", anchor);
@@ -155,7 +155,7 @@ public class SPDocument {
         cookies.add(cookie);
     }
 
-    public ArrayList getCookies() {
+    public ArrayList<Cookie> getCookies() {
         return cookies;
     }
 
@@ -167,7 +167,7 @@ public class SPDocument {
         return document;
     }
 
-    public HashMap getProperties() {
+    public HashMap<String, Object> getProperties() {
         return propertiesmap;
     }
 
@@ -183,13 +183,13 @@ public class SPDocument {
         document = newDocument;
     }
 
-    public void setProperties(HashMap newPropertiesmap) {
+    public void setProperties(HashMap<String, Object> newPropertiesmap) {
         propertiesmap = newPropertiesmap;
     }
 
     public void setProperty(String key, Object value) {
         if (propertiesmap == null) {
-            propertiesmap = new HashMap();
+            propertiesmap = new HashMap<String, Object>();
         }
         propertiesmap.put(key, value);
     }

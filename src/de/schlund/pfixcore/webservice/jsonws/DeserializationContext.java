@@ -31,11 +31,11 @@ public class DeserializationContext {
     }
    
     public boolean canDeserialize(Object jsonObj,Type targetType) throws DeserializationException {
-        Class targetClass=null;
-        if(targetType instanceof Class) targetClass=(Class)targetType;
+        Class<?> targetClass=null;
+        if(targetType instanceof Class) targetClass=(Class<?>)targetType;
         else if(targetType instanceof ParameterizedType) {
             Type rawType=((ParameterizedType)targetType).getRawType();
-            if(rawType instanceof Class) targetClass=(Class)rawType;
+            if(rawType instanceof Class) targetClass=(Class<?>)rawType;
             else return false;
         } else return false;
         if(jsonObj==null) {
@@ -48,11 +48,11 @@ public class DeserializationContext {
     
     public Object deserialize(Object jsonObj,Type targetType) throws DeserializationException {
         if(jsonObj==null) return null;
-        Class targetClass=null;
-        if(targetType instanceof Class) targetClass=(Class)targetType;
+        Class<?> targetClass=null;
+        if(targetType instanceof Class) targetClass=(Class<?>)targetType;
         else if(targetType instanceof ParameterizedType) {
             Type rawType=((ParameterizedType)targetType).getRawType();
-            if(rawType instanceof Class) targetClass=(Class)rawType;
+            if(rawType instanceof Class) targetClass=(Class<?>)rawType;
             else throw new DeserializationException("Unsupported type: "+targetType);
         } else throw new DeserializationException("Unsupported type: "+targetType);
         Deserializer deser=deserReg.getDeserializer(targetClass);

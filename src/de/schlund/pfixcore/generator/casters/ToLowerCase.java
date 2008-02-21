@@ -42,14 +42,14 @@ public class ToLowerCase extends SimpleCheck implements IWrapperParamCaster {
     
     public void castValue(RequestParam[] param) {
         reset();
-        ArrayList out = new ArrayList();
+        ArrayList<String> out = new ArrayList<String>();
         String val;
         for (int i = 0; i < param.length; i++) {
             val = param[i].getValue().toLowerCase();
             out.add(val);
         }
         if (!errorHappened()) {
-            value = (String[]) out.toArray(new String[] {});
+            value = out.toArray(new String[] {});
         }
     }
     

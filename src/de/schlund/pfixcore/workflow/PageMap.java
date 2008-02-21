@@ -36,7 +36,7 @@ public class PageMap {
 
         for (PageRequestConfig pageConfig : config.getPageRequestConfigs()) {
             String page       = pageConfig.getPageName();
-            Class  stateClass = pageConfig.getState();
+            Class<? extends State> stateClass = pageConfig.getState();
             State  state      = StateFactory.getInstance().getState(stateClass.getName());
 
             if (state == null) {
@@ -60,12 +60,12 @@ public class PageMap {
     @Override
     public String toString() {
         String ret = "";
-        for (Iterator i = pagemap.keySet().iterator(); i.hasNext(); ) {
+        for (Iterator<String> i = pagemap.keySet().iterator(); i.hasNext(); ) {
             if (ret.length() > 0) {
                 ret += ", ";
             }
-            String key = (String) i.next();
-            ret += key + " -> " + ((State) pagemap.get(key)).getClass().getName();
+            String key = i.next();
+            ret += key + " -> " + pagemap.get(key).getClass().getName();
         }
         return ret;
     }

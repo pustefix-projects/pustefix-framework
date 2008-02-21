@@ -40,12 +40,12 @@ public final class TargetType {
     private static final TargetType[] typearray = {XSL_LEAF, XML_LEAF, XSL_VIRTUAL, XML_VIRTUAL}; 
     
     private String tag;
-    private Class  theclass;
+    private Class<? extends TargetRW>  theclass;
     
     private TargetType(String tag, String theclass) {
         try {
             this.tag      = tag;
-            this.theclass = Class.forName(theclass);
+            this.theclass = Class.forName(theclass).asSubclass(TargetRW.class);
         } catch (ClassNotFoundException e) {
             throw new RuntimeException(e.toString());
         }
@@ -59,7 +59,7 @@ public final class TargetType {
         return tag;
     }
     
-    public Class getTargetClass() {
+    public Class<? extends TargetRW> getTargetClass() {
         return theclass;
     }
 

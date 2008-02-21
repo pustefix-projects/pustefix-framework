@@ -36,7 +36,7 @@ public class FileCache {
     public FileCache(int size) {
         final int maxSize=size;
         map=new LinkedHashMap<String,FileCacheData>(maxSize,0.75f,true) {
-            protected boolean removeEldestEntry(Map.Entry eldest) {
+            protected boolean removeEldestEntry(Map.Entry<String, FileCacheData> eldest) {
                 boolean exceeded=size()>maxSize;
                 if(exceeded) LOG.warn("Cache maximum size exceeded. Eldest entry to be removed.");
                 return exceeded;

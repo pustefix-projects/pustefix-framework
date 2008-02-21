@@ -38,8 +38,8 @@ public class MsgFlowStepAction implements FlowStepAction {
     private String          text;
     private final static Logger LOG = Logger.getLogger(MsgFlowStepAction.class);
     
-    public void setData(HashMap data) {
-        this.text = (String) data.get("text");
+    public void setData(HashMap<String, String> data) {
+        this.text = data.get("text");
     }
 
     public void doAction(Context context, ResultDocument resdoc) throws Exception {

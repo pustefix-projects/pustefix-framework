@@ -23,7 +23,7 @@ public class Wsdl2Java {
     private boolean all = false;
     private boolean helperGen = false;
     private String factory = null;
-    private HashMap namespaceMap = new HashMap();
+    private HashMap<String, String> namespaceMap = new HashMap<String, String>();
     private String output = "." ;
     private String deployScope = "";
     private String url = "";
@@ -58,7 +58,7 @@ public class Wsdl2Java {
 
             //Set webservice scope
             if(deployScope==null) deployScope=Constants.SERVICE_SCOPE_REQUEST;
-            Class scopeClass=null;
+            Class<?> scopeClass=null;
             try {
             	scopeClass=Class.forName(SCOPE_12_CLASS);
             } catch(ClassNotFoundException x) {

@@ -55,8 +55,8 @@ public class FlowStepActionFactory {
             act = new FlowStepForceStopAction();
         } else {
             try {
-                Constructor constr = Class.forName(action).getConstructor(Misc.NO_CLASSES);
-                act                = (FlowStepAction) constr.newInstance(Misc.NO_OBJECTS);
+                Constructor<? extends FlowStepAction> constr = Class.forName(action).asSubclass(FlowStepAction.class).getConstructor(Misc.NO_CLASSES);
+                act = constr.newInstance(Misc.NO_OBJECTS);
             } catch (InstantiationException e) {
                 LOG.error("unable to instantiate class [" + action + "]", e);
             } catch (IllegalAccessException e) {

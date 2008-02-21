@@ -40,13 +40,13 @@ import de.schlund.pfixcore.webservice.jsonws.deserializers.StringDeserializer;
  */
 public class DeserializerRegistry {
 
-    Map<Class,Deserializer> deserializers;
+    Map<Class<?>,Deserializer> deserializers;
     Deserializer beanDeserializer;
     Deserializer arrayDeserializer;
     
     public DeserializerRegistry(BeanDescriptorFactory beanDescFactory) {
         
-        deserializers=new HashMap<Class,Deserializer>();
+        deserializers=new HashMap<Class<?>,Deserializer>();
         
         beanDeserializer=new BeanDeserializer(beanDescFactory);
         arrayDeserializer=new ArrayDeserializer();
@@ -74,7 +74,7 @@ public class DeserializerRegistry {
         
     }
     
-    public Deserializer getDeserializer(Class clazz) {
+    public Deserializer getDeserializer(Class<?> clazz) {
         Deserializer deser=deserializers.get(clazz);
         if(deser==null) {
             if(clazz.isArray()) deser=arrayDeserializer; 
@@ -85,11 +85,11 @@ public class DeserializerRegistry {
     }
     
     public Deserializer getDeserializer(Type type) {
-        Class clazz=null;
-        if(type instanceof Class) clazz=(Class)type;
+        Class<?> clazz=null;
+        if(type instanceof Class) clazz=(Class<?>)type;
         else if(type instanceof ParameterizedType) {
             Type rawType=((ParameterizedType)type).getRawType();
-            if(rawType instanceof Class) clazz=(Class)rawType;
+            if(rawType instanceof Class) clazz=(Class<?>)rawType;
         }
         if(clazz!=null) return getDeserializer(clazz);
         else throw new RuntimeException("Type not supported: "+type.getClass()+" "+type);

@@ -78,7 +78,7 @@ public class SessionAdmin implements HttpSessionBindingListener, SessionAdminMBe
      * @param trailog a trailog from another session.
      * @param conutil. 
      */
-    public void registerSession(HttpSession session, LinkedList trailog, String serverName, String remoteAddr) {
+    public void registerSession(HttpSession session, LinkedList<SessionInfoStruct.TrailElement> trailog, String serverName, String remoteAddr) {
         SessionInfoStruct info = new SessionInfoStruct(session, trailog, serverName, remoteAddr);
         
         synchronized (sessioninfo) {

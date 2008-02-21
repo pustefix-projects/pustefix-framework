@@ -233,7 +233,7 @@ public class DefaultIWrapperState extends StateImpl {
     // Remember, a ResdocFinalizer is a flyweight!!!
     protected ResdocFinalizer getResdocFinalizer(Context context) throws XMLException {
         PageRequestConfig config = context.getConfigForCurrentPageRequest();
-        Class clazz = config.getFinalizer();
+        Class<? extends ResdocFinalizer> clazz = config.getFinalizer();
         String classname = DEF_FINALIZER;
         if (clazz != null) {
             classname = clazz.getName();

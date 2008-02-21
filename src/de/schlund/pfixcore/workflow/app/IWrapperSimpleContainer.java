@@ -64,10 +64,10 @@ import de.schlund.pfixxml.resources.ResourceUtil;
  */
 
 public class IWrapperSimpleContainer implements IWrapperContainer {
-    private   TreeMap            wrappers           = new TreeMap();
+    private   TreeMap<String, IWrapper> wrappers    = new TreeMap<String, IWrapper>();
 
     // depends on request
-    private   ArrayList          activegroups       = new ArrayList();
+    private   ArrayList<IWrapperGroup> activegroups = new ArrayList<IWrapperGroup>();
     private   IWrapperGroup      currentgroup       = null;
     private   IWrapperGroup      selectedwrappers   = null;
 
@@ -336,8 +336,8 @@ public class IWrapperSimpleContainer implements IWrapperContainer {
         if (wrappers.isEmpty()) return true; // border case
 
         // synchronized (wrappers) {
-            for (Iterator i = wrappers.values().iterator(); i.hasNext(); ) {
-                IWrapper wrapper = (IWrapper) i.next();
+            for (Iterator<IWrapper> i = wrappers.values().iterator(); i.hasNext(); ) {
+                IWrapper wrapper = i.next();
                 IHandler handler = wrapper.gimmeIHandler();
                 if (handler.isActive(context) && handler.needsData(context)) {
                     return true;
@@ -435,8 +435,8 @@ public class IWrapperSimpleContainer implements IWrapperContainer {
         } else {
             IWrapperGroup group = new IWrapperGroup();
             group.setName(GROUP_ANONYMOUS);
-            for (Iterator i = wrappers.values().iterator(); i.hasNext(); ) {
-                group.addIWrapper((IWrapper) i.next());
+            for (Iterator<IWrapper> i = wrappers.values().iterator(); i.hasNext(); ) {
+                group.addIWrapper(i.next());
             }
             activegroups.add(group);
             currentgroup = group;
@@ -523,7 +523,7 @@ public class IWrapperSimpleContainer implements IWrapperContainer {
                 
                 String iface  = iConfig.getWrapperClass().getName();
                                 
-                Class thewrapper = null;
+                Class<?> thewrapper = null;
                 IWrapper wrapper = null;
                 try {
                     thewrapper = Class.forName(iface);
@@ -582,11 +582,11 @@ public class IWrapperSimpleContainer implements IWrapperContainer {
     
     private void readIWrapperGroupsConfigFromProperties() throws Exception {
         Properties props = context.getPropertiesForCurrentPageRequest();
-        TreeMap    pmap  = PropertiesUtils.selectPropertiesSorted(props, GROUP_PROP);
+        TreeMap<String, String> pmap = PropertiesUtils.selectPropertiesSorted(props, GROUP_PROP);
         
-        for (Iterator i = pmap.keySet().iterator(); i.hasNext(); ) {
-            String        page  = (String) i.next();
-            String        spec  = (String) pmap.get(page);
+        for (Iterator<String> i = pmap.keySet().iterator(); i.hasNext(); ) {
+            String        page  = i.next();
+            String        spec  = pmap.get(page);
             IWrapperGroup group = new IWrapperGroup();
             group.setName(page);
             if (spec == null || spec.equals("")) {
@@ -620,7 +620,7 @@ public class IWrapperSimpleContainer implements IWrapperContainer {
     
     private boolean hasGroupDefinition() {
         Properties props = context.getPropertiesForCurrentPageRequest();
-        HashMap    pmap  = PropertiesUtils.selectProperties(props, GROUP_PROP);
+        HashMap<String, String> pmap = PropertiesUtils.selectProperties(props, GROUP_PROP);
         if (pmap.isEmpty()) {
             LOG.debug("*** Properties say: Have NO group definition");
             return false;
@@ -709,7 +709,7 @@ public class IWrapperSimpleContainer implements IWrapperContainer {
     }
 
     private class IWrapperGroup {
-        private TreeSet group = new TreeSet();
+        private TreeSet<IWrapper> group = new TreeSet<IWrapper>();
         private String  name;
         
         public void setName(String name) {
@@ -739,7 +739,7 @@ public class IWrapperSimpleContainer implements IWrapperContainer {
             
         public IWrapper[] getIWrappers() {
             // synchronized (group) {
-                return (IWrapper[]) group.toArray(new IWrapper[] {});
+                return group.toArray(new IWrapper[] {});
             // }
         }
     }// IWrapperGroup

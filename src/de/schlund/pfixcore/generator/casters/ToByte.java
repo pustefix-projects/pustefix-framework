@@ -55,7 +55,7 @@ public class ToByte extends SimpleCheck implements IWrapperParamCaster {
     
     public void castValue(RequestParam[] param) {
         reset();
-        ArrayList out = new ArrayList();
+        ArrayList<Byte> out = new ArrayList<Byte>();
         String par;
         Byte  val;
         for (int i = 0; i < param.length; i++) {
@@ -69,7 +69,7 @@ public class ToByte extends SimpleCheck implements IWrapperParamCaster {
             }
         }
         if (!errorHappened()) {
-            value = (Byte[]) out.toArray(new Byte[] {});
+            value = out.toArray(new Byte[] {});
         }
     }
     

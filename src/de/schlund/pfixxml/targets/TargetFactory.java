@@ -38,7 +38,7 @@ public class TargetFactory {
     private final static Logger  LOG      = Logger.getLogger(TargetFactory.class); 
     private static TargetFactory instance = new TargetFactory();
 
-    private TreeMap targetmap = new TreeMap();
+    private TreeMap<String, TargetRW> targetmap = new TreeMap<String, TargetRW>();
     
     private TargetFactory (){}
 
@@ -73,9 +73,9 @@ public class TargetFactory {
         TargetRW target;
         LOG.debug("===> Creating target '" + targetkey + "' " + type + " [" + gen.getName() + "]");
         try {
-            Class       theclass    = type.getTargetClass();
-            Constructor constructor = theclass.getConstructor(new Class[]{type.getClass(), gen.getClass(), targetkey.getClass(), Themes.class});
-            target = (TargetRW) constructor.newInstance(new Object[]{type, gen, targetkey, themes});
+            Class<? extends TargetRW>       theclass    = type.getTargetClass();
+            Constructor<? extends TargetRW> constructor = theclass.getConstructor(new Class[]{type.getClass(), gen.getClass(), targetkey.getClass(), Themes.class});
+            target = constructor.newInstance(new Object[]{type, gen, targetkey, themes});
         } catch (Exception e) {
             throw new RuntimeException("error creating target '" + targetkey + "' " + type + " [" + gen.getName() + "]: " + e.toString(), e);
         }

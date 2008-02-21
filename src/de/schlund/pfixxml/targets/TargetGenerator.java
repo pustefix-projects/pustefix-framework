@@ -81,7 +81,7 @@ import de.schlund.pfixxml.util.XsltVersion;
  *
  */
 
-public class TargetGenerator implements Comparable {
+public class TargetGenerator implements Comparable<TargetGenerator> {
 
     public static final String XSLPARAM_TG = "__target_gen";
 
@@ -97,7 +97,7 @@ public class TargetGenerator implements Comparable {
 
     private PageTargetTree pagetree = new PageTargetTree();
 
-    private HashMap alltargets = new HashMap();
+    private HashMap<String, Target> alltargets = new HashMap<String, Target>();
 
     private boolean isGetModTimeMaybeUpdateSkipped = false;
 
@@ -116,7 +116,7 @@ public class TargetGenerator implements Comparable {
     private String language;
 
     /* All registered TargetGenerationListener */
-    private Set generationListeners = new HashSet();
+    private Set<TargetGeneratorListener> generationListeners = new HashSet<TargetGeneratorListener>();
 
     private Set<ConfigurationChangeListener> configurationListeners = Collections.synchronizedSet(new HashSet<ConfigurationChangeListener>());
 
@@ -164,9 +164,9 @@ public class TargetGenerator implements Comparable {
 
     //-- targets
 
-    public TreeMap getAllTargets() {
+    public TreeMap<String, Target> getAllTargets() {
         synchronized (alltargets) {
-            return new TreeMap(alltargets);
+            return new TreeMap<String, Target>(alltargets);
         }
     }
 
@@ -217,7 +217,7 @@ public class TargetGenerator implements Comparable {
                 }
             }
             pagetree = new PageTargetTree();
-            alltargets = new HashMap();
+            alltargets = new HashMap<String, Target>();
             loadConfig(this.config_path);
             this.fireConfigurationChangeEvent();
             return true;
@@ -244,8 +244,8 @@ public class TargetGenerator implements Comparable {
     }
 
     private void fireConfigurationChangeEvent() {
-        for (Iterator i = this.configurationListeners.iterator(); i.hasNext();) {
-            ConfigurationChangeListener listener = (ConfigurationChangeListener) i.next();
+        for (Iterator<ConfigurationChangeListener> i = this.configurationListeners.iterator(); i.hasNext();) {
+            ConfigurationChangeListener listener = i.next();
             listener.configurationChanged(new ConfigurationChangeEvent(this));
         }
     }
@@ -400,9 +400,9 @@ public class TargetGenerator implements Comparable {
             LOG.warn("Directory " + disccache + " is not writable!");
         }
 
-        HashSet depxmls = new HashSet();
-        HashSet depxsls = new HashSet();
-        HashMap allstructs = new HashMap();
+        HashSet<String> depxmls = new HashSet<String>();
+        HashSet<String> depxsls = new HashSet<String>();
+        HashMap<String, TargetStruct> allstructs = new HashMap<String, TargetStruct>();
 
         long start = System.currentTimeMillis();
         for (int i = 0; i < targetnodes.getLength(); i++) {
@@ -413,8 +413,8 @@ public class TargetGenerator implements Comparable {
             String variant = node.getAttribute("variant");
             String pagename = node.getAttribute("page");
             TargetStruct struct = new TargetStruct(nameattr, type, themes, variant, pagename);
-            HashMap params = new HashMap();
-            HashSet depaux = new HashSet();
+            HashMap<String, String> params = new HashMap<String, String>();
+            HashSet<DocrootResource> depaux = new HashSet<DocrootResource>();
             Element xmlsub = (Element) node.getElementsByTagName("depxml").item(0);
             Element xslsub = (Element) node.getElementsByTagName("depxsl").item(0);
             NodeList allaux = node.getElementsByTagName("depaux");
@@ -444,7 +444,7 @@ public class TargetGenerator implements Comparable {
             }
             for (int j = 0; j < allaux.getLength(); j++) {
                 Element aux = (Element) allaux.item(j);
-                FileResource auxname = ResourceUtil.getFileResourceFromDocroot(aux.getAttribute("name"));
+                DocrootResource auxname = ResourceUtil.getFileResourceFromDocroot(aux.getAttribute("name"));
                 depaux.add(auxname);
             }
             struct.setDepaux(depaux);
@@ -465,8 +465,8 @@ public class TargetGenerator implements Comparable {
         LOG.warn("\n=====> Preliminaries took " + (System.currentTimeMillis() - start) + "ms. Now looping over " + allstructs.keySet().size() + " targets");
         start = System.currentTimeMillis();
         String tgParam = configFile.toString();
-        for (Iterator i = allstructs.keySet().iterator(); i.hasNext();) {
-            TargetStruct struct = (TargetStruct) allstructs.get(i.next());
+        for (Iterator<String> i = allstructs.keySet().iterator(); i.hasNext();) {
+            TargetStruct struct = allstructs.get(i.next());
             createTargetFromTargetStruct(struct, allstructs, depxmls, depxsls, tgParam);
         }
         LOG.warn("\n=====> Creating targets took " + (System.currentTimeMillis() - start) + "ms. Now init pagetree");
@@ -475,7 +475,7 @@ public class TargetGenerator implements Comparable {
         LOG.warn("\n=====> Init of Pagetree took " + (System.currentTimeMillis() - start) + "ms. Ready...");
     }
 
-    private TargetRW createTargetFromTargetStruct(TargetStruct struct, HashMap allstructs, HashSet depxmls, HashSet depxsls, String tgParam) throws XMLException {
+    private TargetRW createTargetFromTargetStruct(TargetStruct struct, HashMap<String, TargetStruct> allstructs, HashSet<String> depxmls, HashSet<String> depxsls, String tgParam) throws XMLException {
 
         String key = struct.getName();
         String type = struct.getType();
@@ -500,14 +500,14 @@ public class TargetGenerator implements Comparable {
             if (!allstructs.containsKey(xmldep)) {
                 xmlsource = createTarget(TargetType.XML_LEAF, xmldep, null);
             } else {
-                xmlsource = createTargetFromTargetStruct((TargetStruct) allstructs.get(xmldep), allstructs, depxmls, depxsls, tgParam);
+                xmlsource = createTargetFromTargetStruct(allstructs.get(xmldep), allstructs, depxmls, depxsls, tgParam);
             }
 
             // Check if xsldep is a leaf node or virtual:
             if (!allstructs.containsKey(xsldep)) {
                 xslsource = createTarget(TargetType.XSL_LEAF, xsldep, null);
             } else {
-                xslsource = createTargetFromTargetStruct((TargetStruct) allstructs.get(xsldep), allstructs, depxmls, depxsls, tgParam);
+                xslsource = createTargetFromTargetStruct(allstructs.get(xsldep), allstructs, depxmls, depxsls, tgParam);
             }
 
             String themes_str = struct.getThemes();
@@ -530,19 +530,19 @@ public class TargetGenerator implements Comparable {
             virtual.setXSLSource(xslsource);
 
             AuxDependencyManager manager = virtual.getAuxDependencyManager();
-            HashSet auxdeps = struct.getDepaux();
-            for (Iterator i = auxdeps.iterator(); i.hasNext();) {
-                DocrootResource path = (DocrootResource) i.next();
+            HashSet<DocrootResource> auxdeps = struct.getDepaux();
+            for (Iterator<DocrootResource> i = auxdeps.iterator(); i.hasNext();) {
+                DocrootResource path = i.next();
                 manager.addDependencyFile(path);
             }
 
-            HashMap params = struct.getParams();
+            HashMap<String, String> params = struct.getParams();
             // we want to remove already defined params (needed when we do a reload)
             virtual.resetParams();
             
-            for (Iterator i = params.keySet().iterator(); i.hasNext();) {
-                String pname = (String) i.next();
-                String value = (String) params.get(pname);
+            for (Iterator<String> i = params.keySet().iterator(); i.hasNext();) {
+                String pname = i.next();
+                String value = params.get(pname);
                 LOG.debug("* Adding Param " + pname + " with value " + value);
                 virtual.addParam(pname, value);
             }
@@ -594,9 +594,9 @@ public class TargetGenerator implements Comparable {
 
     private class TargetStruct {
 
-        HashSet depaux;
+        HashSet<DocrootResource> depaux;
 
-        HashMap params;
+        HashMap<String, String> params;
 
         String type;
 
@@ -654,19 +654,19 @@ public class TargetGenerator implements Comparable {
             this.xsldep = in;
         }
 
-        public HashSet getDepaux() {
+        public HashSet<DocrootResource> getDepaux() {
             return depaux;
         }
 
-        public void setDepaux(HashSet in) {
+        public void setDepaux(HashSet<DocrootResource> in) {
             this.depaux = in;
         }
 
-        public HashMap getParams() {
+        public HashMap<String, String> getParams() {
             return params;
         }
 
-        public void setParams(HashMap in) {
+        public void setParams(HashMap<String, String> in) {
             this.params = in;
         }
 
@@ -740,8 +740,8 @@ public class TargetGenerator implements Comparable {
      * @throws Exception
      */
     public void generateAll() throws Exception {
-        for (Iterator e = getAllTargets().keySet().iterator(); e.hasNext();) {
-            Target current = getTarget((String) e.next());
+        for (Iterator<String> e = getAllTargets().keySet().iterator(); e.hasNext();) {
+            Target current = getTarget(e.next());
             generateTarget(current);
             /* if all listeners want to stop, 
              * there is no point in continuing ... */
@@ -793,8 +793,8 @@ public class TargetGenerator implements Comparable {
         boolean result = false;
         if (generationListeners.size() > 0) {
             result = true;
-            for (Iterator it = generationListeners.iterator(); it.hasNext();) {
-                TargetGeneratorListener listener = (TargetGeneratorListener) it.next();
+            for (Iterator<TargetGeneratorListener> it = generationListeners.iterator(); it.hasNext();) {
+                TargetGeneratorListener listener = it.next();
                 if (listener.needsStop()) {
                     result = result && true;
                     it.remove();
@@ -811,8 +811,8 @@ public class TargetGenerator implements Comparable {
      * @param target the finished target
      */
     private void notifyListenerTargetDone(Target target) {
-        for (Iterator it = generationListeners.iterator(); it.hasNext();) {
-            TargetGeneratorListener listener = (TargetGeneratorListener) it.next();
+        for (Iterator<TargetGeneratorListener> it = generationListeners.iterator(); it.hasNext();) {
+            TargetGeneratorListener listener = it.next();
             listener.finishedTarget(target);
         }
     }
@@ -823,8 +823,8 @@ public class TargetGenerator implements Comparable {
      * @param tgex the exception!
      */
     private void notifyListenerTargetException(Target target, TargetGenerationException tgex) {
-        for (Iterator it = generationListeners.iterator(); it.hasNext();) {
-            TargetGeneratorListener listener = (TargetGeneratorListener) it.next();
+        for (Iterator<TargetGeneratorListener> it = generationListeners.iterator(); it.hasNext();) {
+            TargetGeneratorListener listener = it.next();
             listener.generationException(target, tgex);
         }
     }
@@ -889,8 +889,7 @@ public class TargetGenerator implements Comparable {
         return attr.getValue();
     }
 
-    public int compareTo(Object o) {
-        TargetGenerator cmp = (TargetGenerator) o;
+    public int compareTo(TargetGenerator cmp) {
         return cmp.getName().compareTo(this.getName());
     }
 

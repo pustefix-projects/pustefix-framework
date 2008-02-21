@@ -116,7 +116,7 @@ public class EmailSender {
     public static void sendMail(
             String subject,
             String text,
-            Map headers,
+            Map<String, String> headers,
             String[] to,
             String from,
             String smtphost)
@@ -146,7 +146,7 @@ public class EmailSender {
     public static void sendMail(
         String subject,
         String text,
-        Map headers,
+        Map<String, String> headers,
         String[] to,
         String from,
         String smtphost,
@@ -235,11 +235,11 @@ public class EmailSender {
             msg.setHeader("Content-Transfer-Encoding", "8bit");
             
             if (headers != null) {
-                Set keys = headers.keySet();
+                Set<String> keys = headers.keySet();
                 
-                for (Iterator iter = keys.iterator(); iter.hasNext();) {
-                    String key = (String) iter.next();
-                    String value = (String) headers.get(key);
+                for (Iterator<String> iter = keys.iterator(); iter.hasNext();) {
+                    String key = iter.next();
+                    String value = headers.get(key);
                     msg.setHeader(key, value);
                 }
                 

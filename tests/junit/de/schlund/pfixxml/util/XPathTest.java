@@ -24,7 +24,7 @@ import org.xml.sax.SAXException;
 
 public class XPathTest extends TestCase {
     
-    private List lst;
+    private List<Node> lst;
     private Node node;
     
     public void testElements() throws Exception {
@@ -82,7 +82,7 @@ public class XPathTest extends TestCase {
         }
     }
 
-    private List select(String doc, String xpath) throws Exception {
+    private List<Node> select(String doc, String xpath) throws Exception {
         return XPath.select(parse(doc), xpath);
     }
 

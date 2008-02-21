@@ -33,10 +33,10 @@ import de.schlund.pfixxml.resources.FileResource;
  *
  */
 
-public class SharedLeaf implements Comparable {
+public class SharedLeaf implements Comparable<SharedLeaf> {
     
     private FileResource path;
-    private TreeSet pageinfos = new TreeSet();
+    private TreeSet<PageInfo> pageinfos = new TreeSet<PageInfo>();
     private long    modtime   = 0;
     
     protected SharedLeaf(FileResource path) {
@@ -51,9 +51,9 @@ public class SharedLeaf implements Comparable {
         }
     }
     
-    public TreeSet getPageInfos() {
+    public TreeSet<PageInfo> getPageInfos() {
         synchronized (pageinfos) {
-            return (TreeSet) pageinfos.clone();
+            return new TreeSet<PageInfo>(pageinfos);
         }
     }
     
@@ -73,8 +73,7 @@ public class SharedLeaf implements Comparable {
    
     // comparable interface
     
-    public int compareTo(Object inobj) {
-        SharedLeaf in = (SharedLeaf) inobj;
+    public int compareTo(SharedLeaf in) {
         return path.compareTo(in.path);
     }
 

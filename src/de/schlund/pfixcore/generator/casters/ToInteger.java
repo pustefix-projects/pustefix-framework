@@ -58,7 +58,7 @@ public class ToInteger extends SimpleCheck implements IWrapperParamCaster {
             LOG.debug("*** IN param: " + param[i]);
         }
         reset();
-        ArrayList out = new ArrayList();
+        ArrayList<Integer> out = new ArrayList<Integer>();
         Integer   val;
         for (int i = 0; i < param.length; i++) {
             try {

@@ -107,7 +107,7 @@ public class TargetDependencyRelation {
         if (allauxs.isEmpty()) {
             return null;
         } else {
-            TreeSet<AuxDependency> tmp = new TreeSet();
+            TreeSet<AuxDependency> tmp = new TreeSet<AuxDependency>();
             for (Iterator<AuxDependency> i = allauxs.keySet().iterator(); i.hasNext(); ) {
                 AuxDependency aux = i.next();
                 if (aux.getType().equals(type)) {
@@ -139,7 +139,7 @@ public class TargetDependencyRelation {
         if (auxsForTarget == null) {
             return null;
         } else {
-            return (TreeSet<AuxDependency>) auxsForTarget.clone();
+            return new TreeSet<AuxDependency>(auxsForTarget);
         }
     }
 
@@ -148,7 +148,7 @@ public class TargetDependencyRelation {
         if (targetsForAux == null) {
             return null;
         } else {
-            return (TreeSet<Target>) targetsForAux.clone();
+            return new TreeSet<Target>(targetsForAux);
         }
     }
 
@@ -170,7 +170,7 @@ public class TargetDependencyRelation {
             for (Iterator<AuxDependency> i = parentchildForTarget.keySet().iterator(); i.hasNext();) {
                 AuxDependency parent = i.next();
                 if (parentchildForTarget.get(parent) != null) {
-                    HashSet<AuxDependency> children = (HashSet<AuxDependency>) parentchildForTarget.get(parent).clone();
+                    HashSet<AuxDependency> children = new HashSet<AuxDependency>(parentchildForTarget.get(parent));
                     retval.put(parent, children);
                 }
             }

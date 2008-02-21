@@ -20,6 +20,7 @@ package de.schlund.pfixxml.config.impl;
 
 import java.util.Properties;
 
+import de.schlund.pfixcore.workflow.FlowStepAction;
 import de.schlund.pfixxml.config.PageFlowStepActionConfig;
 
 /**
@@ -29,17 +30,17 @@ import de.schlund.pfixxml.config.PageFlowStepActionConfig;
  */
 public class PageFlowStepActionConfigImpl implements PageFlowStepActionConfig {
     
-    private Class actionType = null;
+    private Class<? extends FlowStepAction> actionType = null;
     private Properties params = new Properties();
 
-    public void setActionType(Class clazz) {
+    public void setActionType(Class<? extends FlowStepAction> clazz) {
         this.actionType = clazz;
     }
     
     /* (non-Javadoc)
      * @see de.schlund.pfixxml.config.PageFlowStepActionConfig#getActionType()
      */
-    public Class getActionType() {
+    public Class<? extends FlowStepAction> getActionType() {
         return this.actionType;
     }
     

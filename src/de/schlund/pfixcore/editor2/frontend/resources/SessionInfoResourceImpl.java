@@ -68,9 +68,9 @@ public class SessionInfoResourceImpl implements SessionInfoResource {
                     // this task: We iterate through all known contexts and
                     // look if one of them has the same visit id as the
                     // session
-                    for (Iterator j = contextmap.keySet().iterator(); j
+                    for (Iterator<Context> j = contextmap.keySet().iterator(); j
                             .hasNext();) {
-                        Context foreignctx = (Context) j.next();
+                        Context foreignctx = j.next();
                         if (foreignctx.getVisitId().equals(visitId)) {
                             String username = contextmap.get(foreignctx);
                             sessionNode.setAttribute("username", username);
@@ -101,12 +101,11 @@ public class SessionInfoResourceImpl implements SessionInfoResource {
                     sessionNode.setAttribute("requestCount", Long.toString(info
                             .getNumberOfHits()));
 
-                    Collection trail = info.getTraillog();
+                    Collection<SessionInfoStruct.TrailElement> trail = info.getTraillog();
                     SessionInfoStruct.TrailElement lastStep = null;
                     Element stepNode = null;
-                    for (Iterator i2 = trail.iterator(); i2.hasNext();) {
-                        SessionInfoStruct.TrailElement step = (SessionInfoStruct.TrailElement) i2
-                                .next();
+                    for (Iterator<SessionInfoStruct.TrailElement> i2 = trail.iterator(); i2.hasNext();) {
+                        SessionInfoStruct.TrailElement step = i2.next();
                         if (lastStep != null
                                 && lastStep.getStylesheetname().equals(
                                         step.getStylesheetname())

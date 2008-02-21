@@ -61,10 +61,10 @@ public class XMLCreatorVisitor implements ExceptionDataValueVisitor {
 		e.appendChild(sess_info);
 		
 		Element req_params = doc.createElement("requestparams");
-		HashMap params = data.getRequestParams();
-		for(Iterator iter = params.keySet().iterator(); iter.hasNext(); ) {
-			String key = iter.next().toString();
-			String value = params.get(key).toString();
+		HashMap<String, String> params = data.getRequestParams();
+		for(Iterator<String> iter = params.keySet().iterator(); iter.hasNext(); ) {
+			String key = iter.next();
+			String value = params.get(key);
 			Element req_p = doc.createElement("param");
 			req_p.setAttribute("key", key);
 			Text req_p_txt = doc.createTextNode(value);
@@ -74,19 +74,19 @@ public class XMLCreatorVisitor implements ExceptionDataValueVisitor {
 		e.appendChild(req_params);
 		
 		Element last_steps = doc.createElement("laststeps");
-		for(Iterator iter = data.getLastSteps().iterator(); iter.hasNext(); ) {
+		for(Iterator<String> iter = data.getLastSteps().iterator(); iter.hasNext(); ) {
 			Element step = doc.createElement("step");
-			Text step_txt = doc.createTextNode(iter.next().toString());
+			Text step_txt = doc.createTextNode(iter.next());
 			step.appendChild(step_txt);
 			last_steps.appendChild(step);
 		}
 		e.appendChild(last_steps);
 		
 		Element sess_keysnvals = doc.createElement("session_dump");
-		HashMap map = data.getSessionKeysAndValues();
-		for(Iterator iter = map.keySet().iterator(); iter.hasNext(); ) {
-			String key = iter.next().toString();
-			String val = map.get(key).toString();
+		HashMap<String, String> map = data.getSessionKeysAndValues();
+		for(Iterator<String> iter = map.keySet().iterator(); iter.hasNext(); ) {
+			String key = iter.next();
+			String val = map.get(key);
 			Element pair = doc.createElement("pair");
 			pair.setAttribute("key", key);
 			Text cd = doc.createTextNode(val); 

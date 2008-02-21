@@ -38,7 +38,7 @@ public class PagerequestFinalizerRule extends CheckedRule {
         if (className == null) {
             throw new SAXException("Mandatory attribute \"class\" is missing!");
         }
-        Class clazz;
+        Class<?> clazz;
         try {
             clazz = Class.forName(className);
         } catch (ClassNotFoundException e) {
@@ -47,7 +47,7 @@ public class PagerequestFinalizerRule extends CheckedRule {
         if (!ResdocFinalizer.class.isAssignableFrom(clazz)) {
             throw new SAXException("Finalizer class " + clazz + " on page " + pageConfig.getPageName() + " does not implement " + ResdocFinalizer.class + " interface!");
         }
-        pageConfig.setFinalizer(clazz);
+        pageConfig.setFinalizer(clazz.asSubclass(ResdocFinalizer.class));
     }
     
     protected Map<String, Boolean> wantsAttributes() {

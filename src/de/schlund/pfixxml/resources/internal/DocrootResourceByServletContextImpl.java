@@ -76,7 +76,7 @@ class DocrootResourceByServletContextImpl extends AbstractDocrootResourceImpl {
     }
 
     public boolean isDirectory() {
-        Set temp = this.servletContext.getResourcePaths(ROOT_PREFIX + path + "/");
+        Set<?> temp = this.servletContext.getResourcePaths(ROOT_PREFIX + path + "/");
         return (temp != null && temp.size() > 0);
     }
 
@@ -100,7 +100,7 @@ class DocrootResourceByServletContextImpl extends AbstractDocrootResourceImpl {
         if (!isDirectory()) {
             return null;
         }
-        Set paths = this.servletContext.getResourcePaths(ROOT_PREFIX + path + "/");
+        Set<?> paths = this.servletContext.getResourcePaths(ROOT_PREFIX + path + "/");
         ArrayList<String> rpaths = new ArrayList<String>();
         for (Object item : paths) {
             String sitem = (String) item;

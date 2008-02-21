@@ -55,7 +55,7 @@ public class ToDouble extends SimpleCheck implements IWrapperParamCaster {
     
     public void castValue(RequestParam[] param) {
         reset();
-        ArrayList out = new ArrayList();
+        ArrayList<Double> out = new ArrayList<Double>();
         String par;
         Double  val;
         for (int i = 0; i < param.length; i++) {
@@ -69,7 +69,7 @@ public class ToDouble extends SimpleCheck implements IWrapperParamCaster {
             }
         }
         if (!errorHappened()) {
-            value = (Double[]) out.toArray(new Double[] {});
+            value = out.toArray(new Double[] {});
         }
     }
     

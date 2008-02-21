@@ -36,8 +36,8 @@ import de.schlund.pfixcore.util.FlyWeightChecker;
  */
 
 public class IHandlerFactory {
-    private static HashMap         knownhandlers    = new HashMap();
-    private static HashMap         wrapper2handlers = new HashMap();
+    private static HashMap<String, IHandler> knownhandlers = new HashMap<String, IHandler>();
+    private static HashMap<String, IHandler> wrapper2handlers = new HashMap<String, IHandler>();
     // private static Logger          LOG              = Logger.getLogger(IHandlerFactory.class);
     private static IHandlerFactory instance         = new IHandlerFactory();
 
@@ -66,7 +66,7 @@ public class IHandlerFactory {
             IHandler retval = (IHandler) knownhandlers.get(classname); 
             if (retval == null) {
                 try {
-                    Class stateclass = Class.forName(classname);
+                    Class<?> stateclass = Class.forName(classname);
                     retval = (IHandler) stateclass.newInstance();
                     if (!FlyWeightChecker.check(retval)) {
                         throw new IllegalStateException("You MUST NOT use non-static/non-final fields in flyweight class " + classname);
@@ -92,7 +92,7 @@ public class IHandlerFactory {
             IHandler retval = (IHandler) wrapper2handlers.get(classname); 
             if (retval == null) {
                 try {
-                    Class    stateclass = Class.forName(classname);
+                    Class<?> stateclass = Class.forName(classname);
                     IWrapper wrapper    = (IWrapper) stateclass.newInstance();
                     retval              = wrapper.gimmeIHandler();
                     wrapper2handlers.put(classname, retval);

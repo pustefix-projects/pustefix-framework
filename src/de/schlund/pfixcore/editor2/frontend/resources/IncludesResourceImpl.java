@@ -52,13 +52,13 @@ public class IncludesResourceImpl extends CommonIncludesResourceImpl implements
         return variant;
     }
 
-    protected Collection getPossibleThemes(
+    protected Collection<Theme> getPossibleThemes(
             IncludePartThemeVariant selectedIncludePart, Project project,
-            Collection pages) {
-        TreeSet themes = new TreeSet();
-        for (Iterator i = selectedIncludePart.getIncludePart()
+            Collection<Page> pages) {
+        TreeSet<Theme> themes = new TreeSet<Theme>();
+        for (Iterator<Theme> i = selectedIncludePart.getIncludePart()
                 .getPossibleThemes().iterator(); i.hasNext();) {
-            Theme theme = (Theme) i.next();
+            Theme theme = i.next();
             if (!selectedIncludePart.getIncludePart().hasThemeVariant(theme)) {
                 boolean canUseTheme = false;
                 if (!SpringBeanLocator.getSecurityManagerService()
@@ -67,15 +67,15 @@ public class IncludesResourceImpl extends CommonIncludesResourceImpl implements
                     // Omit current theme
                     continue;
                 }
-                for (Iterator i2 = pages.iterator(); i2.hasNext();) {
-                    Page page = (Page) i2.next();
+                for (Iterator<Page> i2 = pages.iterator(); i2.hasNext();) {
+                    Page page = i2.next();
                     if (!page.getProject().equals(project)) {
                         // Ignore pages in other projects
                         continue;
                     }
-                    for (Iterator i3 = page.getThemes().getThemes().iterator(); i3
+                    for (Iterator<Theme> i3 = page.getThemes().getThemes().iterator(); i3
                             .hasNext();) {
-                        Theme pageTheme = (Theme) i3.next();
+                        Theme pageTheme = i3.next();
                         if (pageTheme.equals(theme)) {
                             canUseTheme = true;
                             break;
@@ -107,12 +107,11 @@ public class IncludesResourceImpl extends CommonIncludesResourceImpl implements
 
     protected void renderAllIncludes(ResultDocument resdoc, Element elem,
             Project project) {
-        TreeSet includes = new TreeSet(project.getAllIncludeParts());
-        HashMap directoryNodes = new HashMap();
-        HashMap fileNodes = new HashMap();
-        for (Iterator i = includes.iterator(); i.hasNext();) {
-            IncludePartThemeVariant include = (IncludePartThemeVariant) i
-                    .next();
+        TreeSet<IncludePartThemeVariant> includes = new TreeSet<IncludePartThemeVariant>(project.getAllIncludeParts());
+        HashMap<String, Element> directoryNodes = new HashMap<String, Element>();
+        HashMap<String, Element> fileNodes = new HashMap<String, Element>();
+        for (Iterator<IncludePartThemeVariant> i = includes.iterator(); i.hasNext();) {
+            IncludePartThemeVariant include = i.next();
             String path = include.getIncludePart().getIncludeFile().getPath();
             Element fileNode = (Element) fileNodes.get(path);
             if (fileNode == null) {
@@ -159,8 +158,8 @@ public class IncludesResourceImpl extends CommonIncludesResourceImpl implements
         Collection<IncludePartThemeVariant> parts = project
                 .getAllIncludeParts();
         TreeSet<IncludeFile> files = new TreeSet<IncludeFile>();
-        for (Iterator i = parts.iterator(); i.hasNext();) {
-            IncludePartThemeVariant part = (IncludePartThemeVariant) i.next();
+        for (Iterator<IncludePartThemeVariant> i = parts.iterator(); i.hasNext();) {
+            IncludePartThemeVariant part = i.next();
             IncludeFile file = part.getIncludePart().getIncludeFile();
             String path = file.getPath();
             try {
@@ -180,8 +179,8 @@ public class IncludesResourceImpl extends CommonIncludesResourceImpl implements
         Collection<IncludePartThemeVariant> allparts = project
                 .getAllIncludeParts();
         TreeSet<IncludePartThemeVariant> parts = new TreeSet<IncludePartThemeVariant>();
-        for (Iterator i = allparts.iterator(); i.hasNext();) {
-            IncludePartThemeVariant part = (IncludePartThemeVariant) i.next();
+        for (Iterator<IncludePartThemeVariant> i = allparts.iterator(); i.hasNext();) {
+            IncludePartThemeVariant part = i.next();
             IncludeFile file = part.getIncludePart().getIncludeFile();
             if (file.getPath().equals(filename)) {
                 parts.add(part);

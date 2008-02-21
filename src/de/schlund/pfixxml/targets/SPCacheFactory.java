@@ -24,6 +24,8 @@ import java.util.Properties;
 
 import org.apache.log4j.Logger;
 
+import de.schlund.pfixxml.IncludeDocument;
+
 /**
  * SPCacheFactory.java
  *
@@ -46,8 +48,8 @@ public class SPCacheFactory {
     private final static Logger LOG = Logger.getLogger(SPCacheFactory.class);
     private static SPCacheFactory instance= new SPCacheFactory();
 
-    private SPCache targetCache= new LRUCache();
-    private SPCache documentCache= new LRUCache();
+    private SPCache<Object, Object> targetCache= new LRUCache<Object, Object>();
+    private SPCache<String, IncludeDocument> documentCache= new LRUCache<String, IncludeDocument>();
 
     private static final String PROP_TARGET_CACHE_CLASS= "targetcache.cacheclass";
     private static final String PROP_TARGET_CACHE_SIZE = "targetcache.cachecapacity";
@@ -63,7 +65,7 @@ public class SPCacheFactory {
     public void init(Properties props) {
         synchronized (targetCache) {
             targetCache.createCache(LRUCache.DEFAULT_SIZE);
-            SPCache tmp= getConfiguredCache(props, PROP_TARGET_CACHE_CLASS, PROP_TARGET_CACHE_SIZE);
+            SPCache<Object, Object> tmp= getConfiguredCache(props, PROP_TARGET_CACHE_CLASS, PROP_TARGET_CACHE_SIZE);
             if (tmp != null) {
                 targetCache= tmp;
             }
@@ -71,7 +73,7 @@ public class SPCacheFactory {
         
         synchronized (documentCache) {
             documentCache.createCache(LRUCache.DEFAULT_SIZE);
-            SPCache tmp= getConfiguredCache(props, PROP_DOCUMENT_CACHE_CLASS, PROP_DOCUMENT_CACHE_SIZE);
+            SPCache<String, IncludeDocument> tmp= getConfiguredCache(props, PROP_DOCUMENT_CACHE_CLASS, PROP_DOCUMENT_CACHE_SIZE);
             if (tmp != null) {
                 documentCache= tmp;
             }
@@ -83,8 +85,8 @@ public class SPCacheFactory {
         }
     }
 
-    private SPCache getConfiguredCache(Properties props, String propNameClass, String propNameSize) {
-        SPCache tmp= null;
+    private <T1, T2> SPCache<T1, T2> getConfiguredCache(Properties props, String propNameClass, String propNameSize) {
+        SPCache<T1, T2> tmp= null;
         if (props != null) {
             String classname= props.getProperty(propNameClass);
             String csize= props.getProperty(propNameSize);
@@ -119,11 +121,12 @@ public class SPCacheFactory {
         return tmp;
     }
 
-    private SPCache getCache(String classname) {
-        SPCache retval= null;
+    @SuppressWarnings("unchecked")
+    private <T1, T2> SPCache<T1, T2> getCache(String classname) {
+        SPCache<T1, T2> retval= null;
         try {
-            Constructor constr= Class.forName(classname).getConstructor((Class[]) null);
-            retval= (SPCache) constr.newInstance((Object[]) null);
+            Constructor<? extends SPCache> constr= Class.forName(classname).asSubclass(SPCache.class).getConstructor((Class[]) null);
+            retval= constr.newInstance((Object[]) null);
         } catch (InstantiationException e) {
             LOG.error("unable to instantiate class [" + classname + "]", e);
         } catch (IllegalAccessException e) {
@@ -150,7 +153,7 @@ public class SPCacheFactory {
     /**
      * Get the cache for targets.
      */
-    public synchronized SPCache getCache() {
+    public synchronized SPCache<Object, Object> getCache() {
         synchronized (targetCache) {
             /*LOG.debug("Cache is:          "+targetCache.getClass().getName());
             LOG.debug("Cache capacity is: "+targetCache.getCapacity());
@@ -162,7 +165,7 @@ public class SPCacheFactory {
     /**
      * Get the cache for include-modules.
      */
-    public synchronized SPCache getDocumentCache() {
+    public synchronized SPCache<String, IncludeDocument> getDocumentCache() {
         synchronized (documentCache) {
             /*LOG.debug("DocumentCache is:          "+documentCache.getClass().getName());
             LOG.debug("DocumentCache capacity is: "+documentCache.getCapacity());
@@ -176,8 +179,8 @@ public class SPCacheFactory {
      * through getCache() and getDocumentCache()!
      */
      public void reset() {
-         targetCache= new LRUCache();
-         documentCache= new LRUCache();
+         targetCache= new LRUCache<Object, Object>();
+         documentCache= new LRUCache<String, IncludeDocument>();
      }
     
 

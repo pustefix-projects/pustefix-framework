@@ -57,6 +57,7 @@ import de.schlund.pfixxml.resources.ResourceUtil;
 import de.schlund.pfixxml.serverutil.SessionAdmin;
 import de.schlund.pfixxml.serverutil.SessionHelper;
 import de.schlund.pfixxml.serverutil.SessionInfoStruct;
+import de.schlund.pfixxml.serverutil.SessionInfoStruct.TrailElement;
 import de.schlund.pfixxml.util.MD5Utils;
 
 /**
@@ -92,7 +93,7 @@ public abstract class ServletManager extends HttpServlet {
     private boolean                      cookie_security_not_enforced  = false;
     private Logger                       LOGGER_VISIT                  = Logger.getLogger("LOGGER_VISIT");
     private Logger                       LOG                           = Logger.getLogger(ServletManager.class);
-    private Map<Class, ExceptionConfig> exceptionConfigs = new HashMap<Class, ExceptionConfig>();
+    private Map<Class<? extends Throwable>, ExceptionConfig> exceptionConfigs = new HashMap<Class<? extends Throwable>, ExceptionConfig>();
     private long                         common_mtime                  = -2;
     private long                         servlet_mtime                 = -2;
     private FileResource                 commonpropfile;
@@ -150,7 +151,7 @@ public abstract class ServletManager extends HttpServlet {
             LOG.debug("====> Sessions: " + SessionAdmin.getInstance().toString());
             LOG.debug("\n");
 
-            Enumeration headers = req.getHeaderNames();
+            Enumeration<?> headers = req.getHeaderNames();
 
             while (headers.hasMoreElements()) {
                 String header = (String) headers.nextElement();
@@ -462,11 +463,11 @@ public abstract class ServletManager extends HttpServlet {
         }
 
         LOG.debug("*** Saving session data...");
-        HashMap map = new HashMap();
+        HashMap<String, Object> map = new HashMap<String, Object>();
         SessionHelper.saveSessionData(map, session);
         // Before we invalidate the current session we save the traillog
         SessionInfoStruct infostruct = SessionAdmin.getInstance().getInfo(session);
-        LinkedList traillog = new LinkedList();
+        LinkedList<TrailElement> traillog = new LinkedList<TrailElement>();
         String old_id = session.getId();
         if (infostruct != null) {
             traillog = SessionAdmin.getInstance().getInfo(session).getTraillog();
@@ -604,7 +605,7 @@ public abstract class ServletManager extends HttpServlet {
             session.setAttribute(RAND_SESS_COOKIE_VALUE, testrand);
         }
 
-        LinkedList traillog = SessionAdmin.getInstance().getInfo(child).getTraillog();
+        LinkedList<TrailElement> traillog = SessionAdmin.getInstance().getInfo(child).getTraillog();
         session.setAttribute(SessionHelper.SESSION_ID_URL, SessionHelper.getURLSessionId(req));
         session.setAttribute(VISIT_ID, curr_visit_id);
         SessionAdmin.getInstance().registerSession(session, traillog, getServerName(req), req.getRemoteAddr());
@@ -888,11 +889,11 @@ public abstract class ServletManager extends HttpServlet {
      * @throws ServletException
      * @throws ClassNotFoundException
      */
-    private ExceptionConfig getExceptionConfigForThrowable(Class clazz) throws ServletException {
+    private ExceptionConfig getExceptionConfigForThrowable(Class<? extends Throwable> clazz) throws ServletException {
         ExceptionConfig exConf=null;
         if(clazz!=null) {
             exConf=exceptionConfigs.get(clazz);
-            if(exConf==null) exConf=getExceptionConfigForThrowable(clazz.getSuperclass());
+            if(exConf==null) exConf=getExceptionConfigForThrowable(clazz.getSuperclass().asSubclass(Throwable.class));
         }
         return exConf;
     }
@@ -908,7 +909,7 @@ public abstract class ServletManager extends HttpServlet {
     private void initExceptionConfigs() throws ServletException {
         Map<String, ExceptionConfig> tmpExConf = new HashMap<String, ExceptionConfig>();
         Properties properties = this.getServletManagerConfig().getProperties();
-        Enumeration props = properties.propertyNames();
+        Enumeration<?> props = properties.propertyNames();
         while (props.hasMoreElements()) {
             String propName = (String) props.nextElement();
 
@@ -947,7 +948,7 @@ public abstract class ServletManager extends HttpServlet {
                     } else if ("page".equals(attrName)) {
                         exConf.setPage(propValue);
                     } else if ("processor".equals(attrName)) {
-                        Class procClass = Class.forName(propValue);
+                        Class<?> procClass = Class.forName(propValue);
                         ExceptionProcessor exProc = (ExceptionProcessor) procClass.newInstance();
                         exConf.setProcessor(exProc);
                     }
@@ -970,14 +971,14 @@ public abstract class ServletManager extends HttpServlet {
         exceptionConfigs.clear();
 
         // validate the ExceptionConfig-instances and save them, keyed by their type-attribute
-        for (Iterator values = tmpExConf.values().iterator(); values.hasNext();) {
-            ExceptionConfig exConfig = (ExceptionConfig) values.next();
+        for (Iterator<ExceptionConfig> values = tmpExConf.values().iterator(); values.hasNext();) {
+            ExceptionConfig exConfig = values.next();
             if (exConfig.validate() == false)
                 throw new ServletException("INVALID ExceptionConfig: \n" + exConfig);
             else {
                 try {
-                    Class clazz=Class.forName(exConfig.getType());
-                    exceptionConfigs.put(clazz, exConfig);
+                    Class<?> clazz=Class.forName(exConfig.getType());
+                    exceptionConfigs.put(clazz.asSubclass(Throwable.class), exConfig);
                 } catch(ClassNotFoundException x) {
                     throw new ServletException("Can't find exception class: "+exConfig.getType());
                 }
@@ -1041,13 +1042,11 @@ public abstract class ServletManager extends HttpServlet {
         }
     }
 
-    private class SortableCookie implements Comparable {
+    private class SortableCookie implements Comparable<SortableCookie> {
         public final Cookie cookie;
         public final long   lasttouch;
 
-        public final int compareTo(final Object object) {
-            assert (object instanceof SortableCookie) : "Can only compare SortableCookie objects";
-            SortableCookie in = (SortableCookie) object;
+        public final int compareTo(final SortableCookie in) {
             if (in.lasttouch > lasttouch) return -1;
             if (in.lasttouch < lasttouch)
                 return 1;

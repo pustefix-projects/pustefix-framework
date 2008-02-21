@@ -34,7 +34,7 @@ import java.util.TreeMap;
 
 public class PageInfoFactory {
     private static PageInfoFactory instance = new PageInfoFactory(); 
-    private TreeMap pagemap = new TreeMap();
+    private TreeMap<String, PageInfo> pagemap = new TreeMap<String, PageInfo>();
     
     private PageInfoFactory (){}
 
@@ -55,7 +55,7 @@ public class PageInfoFactory {
     
     
     public void reset() {
-        pagemap = new TreeMap();
+        pagemap = new TreeMap<String, PageInfo>();
     }
     
 }// PageInfoFactory

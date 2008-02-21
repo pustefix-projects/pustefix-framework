@@ -29,15 +29,15 @@ import org.w3c.dom.Document;
  *
  */
 
-public interface Target extends Comparable {
+public interface Target extends Comparable<Target> {
     TargetType      getType();
     String          getTargetKey();
     TargetGenerator getTargetGenerator();
     Target          getXMLSource();
     Target          getXSLSource();
     Themes          getThemes();
-    TreeMap         getParams();
-    TreeSet         getPageInfos();
+    TreeMap<String, Object> getParams();
+    TreeSet<PageInfo> getPageInfos();
     long            getModTime();
     String          toString();
     String          getFullName();

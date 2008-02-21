@@ -48,7 +48,7 @@ public class FactoryInitUtil {
                 "factory.initialize");
         if (factoryProps != null) {
             // sort key to initialize the factories in defined order
-            TreeSet<String> keys = new TreeSet(factoryProps.keySet());
+            TreeSet<String> keys = new TreeSet<String>(factoryProps.keySet());
             for (Iterator<String> i = keys.iterator(); i.hasNext();) {
                 String key = i.next();
                 String factoryClassName = factoryProps.get(key);
@@ -56,7 +56,7 @@ public class FactoryInitUtil {
                     LOG.debug(">>>> Init key: [" + key + "] class: [" + factoryClassName + "] <<<<");
                     long start = 0;
                     long stop = 0;
-                    Class clazz = Class.forName(factoryClassName);
+                    Class<?> clazz = Class.forName(factoryClassName);
                     Object factory = clazz.getMethod("getInstance", Misc.NO_CLASSES).invoke(null, Misc.NO_OBJECTS);
                     LOG.debug("     Object ID: " + factory);
                     start = System.currentTimeMillis();

@@ -44,9 +44,9 @@ import de.schlund.pfixxml.perflogging.PerfEventType;
 
 public class IHandlerSimpleContainer implements IHandlerContainer {
     /** Store all created handlers here*/
-    private HashSet    handlers;
+    private HashSet<IHandler> handlers;
     /** Store all handlers here which do not have a 'ihandlercontainer.ignore' property*/
-    private HashSet    activeset;
+    private HashSet<IHandler> activeset;
     
     private String policy;
     
@@ -63,8 +63,8 @@ public class IHandlerSimpleContainer implements IHandlerContainer {
      * @see de.schlund.pfixcore.workflow.app.IHandlerContainer#initIHandlers(Properties)
      */
     public void initIHandlers(PageRequestConfig config) {
-        handlers  = new HashSet();
-        activeset = new HashSet();
+        handlers  = new HashSet<IHandler>();
+        activeset = new HashSet<IHandler>();
         
         if (config.getIWrapperPolicy() == PageRequestConfig.Policy.ALL) {
             this.policy = "ALL";
@@ -97,8 +97,8 @@ public class IHandlerSimpleContainer implements IHandlerContainer {
     public boolean isPageAccessible(Context context) throws Exception {
         if (handlers.isEmpty()) return true; // border case
         
-        for (Iterator iter = handlers.iterator(); iter.hasNext(); ) {
-            IHandler handler = (IHandler) iter.next();
+        for (Iterator<IHandler> iter = handlers.iterator(); iter.hasNext(); ) {
+            IHandler handler = iter.next();
             PerfEvent pe = new PerfEvent(PerfEventType.IHANDLER_PREREQUISITESMET, handler.getClass().getName());
             pe.start();
             boolean  test = handler.prerequisitesMet(context);
@@ -134,8 +134,8 @@ public class IHandlerSimpleContainer implements IHandlerContainer {
 
         if (policy.equals("ALL")) {
             retval = true;
-            for (Iterator iter = activeset.iterator(); iter.hasNext(); ) {
-                IHandler handler = (IHandler) iter.next();
+            for (Iterator<IHandler> iter = activeset.iterator(); iter.hasNext(); ) {
+                IHandler handler = iter.next();
                 
                 boolean test = doIsActive(handler, context);
                 if (!test) {
@@ -145,8 +145,8 @@ public class IHandlerSimpleContainer implements IHandlerContainer {
             }
         } else if (policy.equals("ANY")) {
             retval = false;
-            for (Iterator iter = activeset.iterator(); iter.hasNext(); ) {
-                IHandler handler = (IHandler) iter.next();
+            for (Iterator<IHandler> iter = activeset.iterator(); iter.hasNext(); ) {
+                IHandler handler = iter.next();
                 
                 boolean test = doIsActive(handler, context);
                 if (test) {
@@ -206,8 +206,8 @@ public class IHandlerSimpleContainer implements IHandlerContainer {
     public boolean needsData(Context context) throws Exception  {
         if (handlers.isEmpty()) return true; // border case
         
-        for (Iterator iter = handlers.iterator(); iter.hasNext(); ) {
-            IHandler handler = (IHandler) iter.next();
+        for (Iterator<IHandler> iter = handlers.iterator(); iter.hasNext(); ) {
+            IHandler handler = iter.next();
             if (handler.isActive(context)) {
                 
                 boolean test = doNeedsData(handler, context);

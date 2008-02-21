@@ -45,7 +45,7 @@ public final class CreateProjectSettings {
     /** Informations given by the user */
     public BufferedReader projectIn = new BufferedReader(new InputStreamReader(
             System.in));
-    private ArrayList servletList = null;
+    private ArrayList<ServletObject> servletList = null;
     /** A counter for the servlet objects id */
     private static int servletCounter = 0;
 

@@ -89,10 +89,12 @@ public class VirtualHttpServletRequest implements HttpServletRequest {
         return orig.getHeader(arg0);
     }
 
+    @SuppressWarnings("unchecked")
     public Enumeration getHeaders(String arg0) {
         return orig.getHeaders(arg0);
     }
 
+    @SuppressWarnings("unchecked")
     public Enumeration getHeaderNames() {
         return orig.getHeaderNames();
     }
@@ -217,6 +219,7 @@ public class VirtualHttpServletRequest implements HttpServletRequest {
         return orig.getAttribute(arg0);
     }
 
+    @SuppressWarnings("unchecked")
     public Enumeration getAttributeNames() {
         return orig.getAttributeNames();
     }
@@ -258,6 +261,7 @@ public class VirtualHttpServletRequest implements HttpServletRequest {
         }
     }
 
+    @SuppressWarnings("unchecked")
     public Enumeration getParameterNames() {
         return Collections.enumeration(params.keySet());
     }
@@ -266,6 +270,7 @@ public class VirtualHttpServletRequest implements HttpServletRequest {
         return params.get(arg0);
     }
 
+    @SuppressWarnings("unchecked")
     public Map getParameterMap() {
         return Collections.unmodifiableMap(params);
     }
@@ -311,6 +316,7 @@ public class VirtualHttpServletRequest implements HttpServletRequest {
         return orig.getLocale();
     }
 
+    @SuppressWarnings("unchecked")
     public Enumeration getLocales() {
         return orig.getLocales();
     }

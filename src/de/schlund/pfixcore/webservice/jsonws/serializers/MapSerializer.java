@@ -43,8 +43,8 @@ public class MapSerializer extends Serializer {
             if(ctx.doClassHinting()) {
                 jsonObj.putMember(ctx.getClassHintPropertyName(),obj.getClass().getName());
             }
-            Map map=(Map)obj;
-            Iterator it=map.keySet().iterator();
+            Map<?, ?> map=(Map<?, ?>)obj;
+            Iterator<?> it=map.keySet().iterator();
             while(it.hasNext()) {
                 Object key=it.next();
                 if(key instanceof String) { 
@@ -71,8 +71,8 @@ public class MapSerializer extends Serializer {
                 writer.write(obj.getClass().getName());
                 writer.write("\",");
             }
-            Map map=(Map)obj;
-            Iterator it=map.keySet().iterator();
+            Map<?, ?> map=(Map<?, ?>)obj;
+            Iterator<?> it=map.keySet().iterator();
             while(it.hasNext()) {
                 Object key=it.next();
                 if(key instanceof String) {

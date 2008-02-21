@@ -33,7 +33,7 @@ public class SessionInfoStruct {
     private HttpSession   session;
     private SessionData   data;
     private long          numberofhits;
-    private LinkedList    traillog;
+    private LinkedList<TrailElement> traillog;
     
    
    /**
@@ -43,14 +43,14 @@ public class SessionInfoStruct {
                      May be null.
     * @param conutil 
     */
-    public SessionInfoStruct(HttpSession session, LinkedList traillog, String serverName, String remoteAddr) {
+    public SessionInfoStruct(HttpSession session, LinkedList<TrailElement> traillog, String serverName, String remoteAddr) {
         this.session  = session;
         this.data = new SessionData(session.getId(), serverName, remoteAddr);
         numberofhits  = 0;
         if (traillog != null) {
             this.traillog = traillog;
         } else {
-            this.traillog = new LinkedList();
+            this.traillog = new LinkedList<TrailElement>();
         }
     }
     
@@ -69,7 +69,7 @@ public class SessionInfoStruct {
         }
     }
 
-    public LinkedList getTraillog() {return traillog;}
+    public LinkedList<SessionInfoStruct.TrailElement> getTraillog() {return traillog;}
     
     /**
      * Get the number of times the session has been accessed (access to subframes isn't counted)

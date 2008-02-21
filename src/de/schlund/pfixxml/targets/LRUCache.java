@@ -25,7 +25,7 @@ import java.util.Map;
 
 import org.apache.oro.util.CacheLRU;
 
-public class LRUCache implements SPCache {
+public class LRUCache<T1, T2> implements SPCache<T1, T2> {
     // private static final Logger   LOG          = Logger.getLogger(LRUCache.class);
     public  static final int DEFAULT_SIZE = 30;
 
@@ -42,26 +42,28 @@ public class LRUCache implements SPCache {
         cache = new CacheLRU(capacity);
     }
     
-    public Iterator getIterator() {
-        Map tmphash = new HashMap();
+    @SuppressWarnings("unchecked")
+    public Iterator<T1> getIterator() {
+        Map<T1, T2> tmphash = new HashMap<T1, T2>();
         synchronized (cache) {
-            for (Iterator iter = cache.keys(); iter.hasNext(); ) {
-                Object k = iter.next();
-                tmphash.put(k, cache.getElement(k));
+            for (Iterator<T1> iter = cache.keys(); iter.hasNext(); ) {
+                T1 k = iter.next();
+                tmphash.put(k, (T2) cache.getElement(k));
             }
         }
         return tmphash.keySet().iterator();
     }
     
-    public Object getValue(Object key) {
-        Object retval;
+    @SuppressWarnings("unchecked")
+    public T2 getValue(T1 key) {
+        T2 retval;
         synchronized (cache) {
-            retval = cache.getElement(key);
+            retval = (T2) cache.getElement(key);
         }
         return retval;
     }
     
-    public void setValue(Object key, Object value) {
+    public void setValue(T1 key, T2 value) {
         // CAT.debug("*** LRU *** Setting " + key + " (free: " + cache.size() + "/" + cache.capacity() +")");
         synchronized (cache) { 
             cache.addElement(key, value);

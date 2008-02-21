@@ -41,7 +41,7 @@ import org.apache.log4j.PropertyConfigurator;
  * @author Sebastian Marsching <sebastian.marsching@1und1.de>
  */
 public class ProxyLogUtil {
-    private Class clFactoryClass = null;
+    private Class<?> clFactoryClass = null;
 
     private Object clFactoryObject = null;
 
@@ -213,7 +213,7 @@ public class ProxyLogUtil {
             // version of commons-logging has been found or
             // we have reached the root (e.g. bootstrap)
             // class loader
-            Class temp;
+            Class<?> temp;
             try {
                 temp = cl.loadClass(LogFactory.class.getName());
             } catch (ClassNotFoundException e) {
@@ -242,7 +242,7 @@ public class ProxyLogUtil {
         ClassLoader webappLoader = Logger.class.getClassLoader();
         ClassLoader cl = webappLoader.getParent();
         while (cl != null) {
-            Class temp;
+            Class<?> temp;
             try {
                 temp = cl.loadClass(Logger.class.getName());
             } catch (ClassNotFoundException e) {
@@ -285,8 +285,8 @@ public class ProxyLogUtil {
             ClassLoader ctxLoader = Thread.currentThread().getContextClassLoader();
             Thread.currentThread().setContextClassLoader(classloader);
 
-            Class log4jLogger;
-            Class log4jPriority;
+            Class<?> log4jLogger;
+            Class<?> log4jPriority;
             try {
                 log4jLogger = classloader.loadClass(Logger.class.getName());
                 log4jPriority = classloader.loadClass(Priority.class.getName());
@@ -363,7 +363,7 @@ public class ProxyLogUtil {
             ClassLoader ctxLoader = Thread.currentThread().getContextClassLoader();
             Thread.currentThread().setContextClassLoader(classloader);
 
-            Class logClass;
+            Class<?> logClass;
             try {
                 clFactoryClass = classloader.loadClass(LogFactory.class.getName());
                 logClass = classloader.loadClass(Log.class.getName());

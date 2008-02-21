@@ -48,9 +48,9 @@ public class UsersResourceImpl implements UsersResource {
             throws Exception {
         UserManagementService ums = SpringBeanLocator
                 .getUserManagementService();
-        TreeSet users = new TreeSet(ums.getUsers());
-        for (Iterator i = users.iterator(); i.hasNext();) {
-            EditorUser user = (EditorUser) i.next();
+        TreeSet<EditorUser> users = new TreeSet<EditorUser>(ums.getUsers());
+        for (Iterator<EditorUser> i = users.iterator(); i.hasNext();) {
+            EditorUser user = i.next();
             Element userNode = resdoc.createSubNode(elem, "user");
             userNode.setAttribute("id", user.getUsername());
             userNode.setAttribute("name", user.getFullname());

@@ -224,9 +224,9 @@ public class DirectOutputServletConfigImpl extends ServletManagerConfigImpl impl
         List<DirectOutputPageRequestConfigImpl> list = this.cachePages;
         if (list == null) {
             list = new ArrayList<DirectOutputPageRequestConfigImpl>();
-            for (Iterator i = this.pages.entrySet().iterator(); i.hasNext();) {
-                Entry entry = (Entry) i.next();
-                list.add((DirectOutputPageRequestConfigImpl) entry.getValue());
+            for (Iterator<Entry<String, DirectOutputPageRequestConfigImpl>> i = this.pages.entrySet().iterator(); i.hasNext();) {
+                Entry<String, DirectOutputPageRequestConfigImpl> entry = i.next();
+                list.add(entry.getValue());
             }
             list = Collections.unmodifiableList(list);
             this.cachePages = list;

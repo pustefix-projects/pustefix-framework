@@ -289,7 +289,7 @@ public class ContextXMLServlet extends AbstractXMLServlet {
         }
     }
 
-    protected void hookBeforeRender(PfixServletRequest preq, SPDocument spdoc, TreeMap paramhash, String stylesheet) {
+    protected void hookBeforeRender(PfixServletRequest preq, SPDocument spdoc, TreeMap<String, Object> paramhash, String stylesheet) {
         super.hookBeforeRender(preq, spdoc, paramhash, stylesheet);
         RequestContextImpl oldRequestContext = (RequestContextImpl) spdoc.getProperties().get(XSLPARAM_REQUESTCONTEXT);
         RequestContextImpl newRequestContext;
@@ -302,7 +302,7 @@ public class ContextXMLServlet extends AbstractXMLServlet {
         newRequestContext.getParentContext().setRequestContextForCurrentThread(newRequestContext);
     }
     
-    protected void hookAfterRender(PfixServletRequest preq, SPDocument spdoc, TreeMap paramhash, String stylesheet) {
+    protected void hookAfterRender(PfixServletRequest preq, SPDocument spdoc, TreeMap<String, Object> paramhash, String stylesheet) {
         super.hookAfterRender(preq, spdoc, paramhash, stylesheet);
         RequestContextImpl rcontext = (RequestContextImpl) spdoc.getProperties().get(XSLPARAM_REQUESTCONTEXT);
         rcontext.getParentContext().setRequestContextForCurrentThread(null);

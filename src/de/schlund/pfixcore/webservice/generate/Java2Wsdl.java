@@ -8,7 +8,7 @@ import org.apache.axis.wsdl.fromJava.Emitter;
 public class Java2Wsdl {
     
     //private String namespace = "";
-    private HashMap namespaceMap = new HashMap();
+    private HashMap<String, String> namespaceMap = new HashMap<String, String>();
     private String location = "";
     private String output = "." ;
     private String className = "." ;

@@ -50,7 +50,8 @@ public class ScriptingUtil {
      * (as Long object) time of the file, when it was stored in the cache and the 
      * second the script as a String object.
      */
-    private static final Map scriptCache = new Hashtable();
+    private static final Map<String, Tupel<Long, String>> fileCache = new Hashtable<String, Tupel<Long, String>>();
+    private static final Map<String, String> classpathCache = new Hashtable<String, String>();
       
     
     /**
@@ -106,7 +107,7 @@ public class ScriptingUtil {
         if ( isCachedResourceCurrent(path) ) {
           
             LOG.debug("Returning Script from cache for path '"+path);
-            script = (String) scriptCache.get(path); 
+            script = classpathCache.get(path); 
             
         } else {
           
@@ -117,7 +118,7 @@ public class ScriptingUtil {
                 throw new IOException("No Resource found for '"+path+"'");
               
             script = copy(stream);
-            scriptCache.put(path, script);
+            classpathCache.put(path, script);
         }
         
         return script;
@@ -132,7 +133,7 @@ public class ScriptingUtil {
         if ( isCachedFileCurrent(relativePath) ) {
           
             LOG.debug("Returning Script from cache for path '"+relativePath);
-            script = (String) ((Object[]) scriptCache.get(relativePath))[1];
+            script = fileCache.get(relativePath).obj2;
             
         } else {
           
@@ -141,7 +142,7 @@ public class ScriptingUtil {
             FileResource file = ResourceUtil.getFileResourceFromDocroot(relativePath);
             script = copy(file.getInputStream());
             
-            scriptCache.put(relativePath, new Object[] {new Long(file.lastModified()), script});
+            fileCache.put(relativePath, new Tupel<Long, String>(new Long(file.lastModified()), script));
             
         }
         
@@ -156,10 +157,10 @@ public class ScriptingUtil {
     private static boolean isCachedFileCurrent(String path) {
         boolean isCurrent = false;
       
-        if ( scriptCache.containsKey(path) ) {
+        if ( fileCache.containsKey(path) ) {
             
-            Object[] cacheEntry = (Object[]) scriptCache.get(path);
-            long lastMod = ((Long) cacheEntry[0]).longValue();
+            Tupel<Long, String> cacheEntry = fileCache.get(path);
+            long lastMod = cacheEntry.obj1.longValue();
             
             FileResource file = ResourceUtil.getFileResourceFromDocroot(path);
             if ( file.lastModified() <= lastMod ) 
@@ -173,7 +174,7 @@ public class ScriptingUtil {
     /**
      */
     private static boolean isCachedResourceCurrent(String path) {
-        return scriptCache.containsKey(path);
+        return classpathCache.containsKey(path);
     }
     
      
@@ -191,5 +192,15 @@ public class ScriptingUtil {
         }
         
         return output.toString();
-    }    
+    }
+    
+    private static class Tupel<A, B> {
+        private A obj1;
+        private B obj2;
+        
+        public Tupel(A v1, B v2) {
+            obj1 = v1;
+            obj2 = v2;
+        }
+    }
 }

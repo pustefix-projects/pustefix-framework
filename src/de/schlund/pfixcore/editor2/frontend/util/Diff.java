@@ -114,7 +114,7 @@ public class Diff {
         }
     }
     
-    public static List<Block> diff(List a, List b) {
+    public static List<Block> diff(List<?> a, List<?> b) {
         // Create hashmap for faster comparison
         HashMap<Object, Collection<Integer>> hashmap = new HashMap<Object, Collection<Integer>>();
         for (int i = 0; i < b.size(); i++) {

@@ -39,8 +39,8 @@ import de.schlund.pfixxml.util.XsltVersion;
  */
 
 public class NavigationFactory {
-    private final static Logger            LOG      = Logger.getLogger(NavigationFactory.class);
-    private static HashMap           navis    = new HashMap();
+    private final static Logger LOG = Logger.getLogger(NavigationFactory.class);
+    private static HashMap<String, Navigation> navis = new HashMap<String, Navigation>();
     private static NavigationFactory instance = new NavigationFactory();
     
     public static NavigationFactory getInstance() {
@@ -56,7 +56,7 @@ public class NavigationFactory {
        
         Navigation navi = null;
         
-        navi = (Navigation) navis.get(navifile.toURI().toString());
+        navi = navis.get(navifile.toURI().toString());
         
         if (navi == null || navi.needsReload()) {
             LOG.warn("***** Creating Navigation object *******");

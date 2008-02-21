@@ -53,7 +53,7 @@ public class RFC822HeadersTest extends TestCase {
         InputStream in=getInputStream("complex_header.dump");
         InternetHeaders mailHeaders=new InternetHeaders(in);
         HashSet<String> headerSet=new HashSet<String>();
-        Enumeration headersEnum=mailHeaders.getAllHeaders();
+        Enumeration<?> headersEnum=mailHeaders.getAllHeaders();
         while(headersEnum.hasMoreElements()) {
             Header header=(Header)headersEnum.nextElement();
             String name=header.getName();

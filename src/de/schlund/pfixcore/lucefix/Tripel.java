@@ -20,7 +20,7 @@
 package de.schlund.pfixcore.lucefix;
 
 
-public class Tripel implements Comparable{
+public class Tripel implements Comparable<Tripel> {
 
     private Type type;
     private String product;
@@ -114,8 +114,7 @@ public class Tripel implements Comparable{
         INSERT, DELETE, EDITORUPDATE;
     }
 
-    public int compareTo(Object arg0) {
-        Tripel a = (Tripel)arg0;
+    public int compareTo(Tripel a) {
         int result;
         result = a.getFilename().compareTo(this.getFilename());
         if (result == 0){

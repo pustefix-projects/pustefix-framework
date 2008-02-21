@@ -36,6 +36,8 @@ import org.xml.sax.SAXException;
 import de.schlund.pfixcore.auth.AuthConstraint;
 import de.schlund.pfixcore.auth.Role;
 import de.schlund.pfixcore.auth.RoleProvider;
+import de.schlund.pfixcore.workflow.ContextInterceptor;
+import de.schlund.pfixcore.workflow.ContextResource;
 import de.schlund.pfixxml.config.ContextConfig;
 import de.schlund.pfixxml.config.ContextResourceConfig;
 import de.schlund.pfixxml.config.PageFlowConfig;
@@ -53,15 +55,15 @@ public class ContextConfigImpl implements ContextConfig, RoleProvider {
     
     private String authPage = null;
     private String defaultFlow = null;
-    private LinkedHashMap<Class, ContextResourceConfigImpl> resources = new LinkedHashMap<Class, ContextResourceConfigImpl>();
+    private LinkedHashMap<Class<? extends ContextResource>, ContextResourceConfigImpl> resources = new LinkedHashMap<Class<? extends ContextResource>, ContextResourceConfigImpl>();
     private List<ContextResourceConfigImpl> cacheResources = null;
-    protected HashMap<Class, ContextResourceConfigImpl> interfaceToResource = new HashMap<Class, ContextResourceConfigImpl>(); 
+    protected HashMap<Class<? extends ContextResource>, ContextResourceConfigImpl> interfaceToResource = new HashMap<Class<? extends ContextResource>, ContextResourceConfigImpl>(); 
     private HashMap<String, PageFlowConfigImpl> pageflows = new HashMap<String, PageFlowConfigImpl>();
     private List<PageFlowConfigImpl> cachePageflows = null;
     private HashMap<String, PageRequestConfigImpl> pagerequests = new HashMap<String, PageRequestConfigImpl>();
     private List<PageRequestConfigImpl> cachePagerequests = null;
-    private ArrayList<Class> startinterceptors = new ArrayList<Class>();
-    private ArrayList<Class> endinterceptors = new ArrayList<Class>();
+    private ArrayList<Class<? extends ContextInterceptor>> startinterceptors = new ArrayList<Class<? extends ContextInterceptor>>();
+    private ArrayList<Class<? extends ContextInterceptor>> endinterceptors = new ArrayList<Class<? extends ContextInterceptor>>();
     private String navigationFile = null;
     private Properties props = new Properties();
     private boolean synchronize = true;
@@ -99,7 +101,7 @@ public class ContextConfigImpl implements ContextConfig, RoleProvider {
         List<ContextResourceConfigImpl> list = cacheResources;
         if (list == null) {
             list = new ArrayList<ContextResourceConfigImpl>();
-            for (Entry<Class, ContextResourceConfigImpl> e : this.resources.entrySet()) {
+            for (Entry<Class<? extends ContextResource>, ContextResourceConfigImpl> e : this.resources.entrySet()) {
                 list.add(e.getValue());
             }
             cacheResources = Collections.unmodifiableList(list);
@@ -107,15 +109,15 @@ public class ContextConfigImpl implements ContextConfig, RoleProvider {
         return list;
     }
     
-    public ContextResourceConfig getContextResourceConfig(Class clazz) {
+    public ContextResourceConfig getContextResourceConfig(Class<? extends ContextResource> clazz) {
         return this.resources.get(clazz);
     }
     
-    public ContextResourceConfig getContextResourceConfigForInterface(Class clazz) {
+    public ContextResourceConfig getContextResourceConfigForInterface(Class<? extends ContextResource> clazz) {
         return interfaceToResource.get(clazz);
     }
     
-    public Map<Class, ContextResourceConfigImpl> getInterfaceToContextResourceMap() {
+    public Map<Class<? extends ContextResource>, ContextResourceConfigImpl> getInterfaceToContextResourceMap() {
         return Collections.unmodifiableMap(interfaceToResource);
     }
     
@@ -155,9 +157,9 @@ public class ContextConfigImpl implements ContextConfig, RoleProvider {
         List<PageRequestConfigImpl> list = this.cachePagerequests;
         if (list == null) {
             list = new ArrayList<PageRequestConfigImpl>();
-            for (Iterator i = this.pagerequests.entrySet().iterator(); i.hasNext();) {
-                Entry entry = (Entry) i.next();
-                list.add((PageRequestConfigImpl) entry.getValue());
+            for (Iterator<Entry<String, PageRequestConfigImpl>> i = this.pagerequests.entrySet().iterator(); i.hasNext();) {
+                Entry<String, PageRequestConfigImpl> entry = i.next();
+                list.add(entry.getValue());
             
             }
             this.cachePagerequests = Collections.unmodifiableList(list);
@@ -169,7 +171,7 @@ public class ContextConfigImpl implements ContextConfig, RoleProvider {
         return this.pagerequests.get(name);
     }
     
-    public void addStartInterceptor(Class clazz) {
+    public void addStartInterceptor(Class<? extends ContextInterceptor> clazz) {
         if (this.startinterceptors.contains(clazz)) {
             LOG.warn("Context interceptor " + clazz.getName() + " not added - it is already present");
         } else {
@@ -177,15 +179,15 @@ public class ContextConfigImpl implements ContextConfig, RoleProvider {
         }
     }
     
-    public List<Class> getStartInterceptors() {
+    public List<Class<? extends ContextInterceptor>> getStartInterceptors() {
         return Collections.unmodifiableList(startinterceptors);
     }
     
-    public List<Class> getEndInterceptors() {
+    public List<Class<? extends ContextInterceptor>> getEndInterceptors() {
         return Collections.unmodifiableList(endinterceptors);
     }
     
-    public void addEndInterceptor(Class clazz) {
+    public void addEndInterceptor(Class<? extends ContextInterceptor> clazz) {
         if (this.endinterceptors.contains(clazz)) {
             LOG.warn("Context interceptor " + clazz.getName() + " not added - it is already present");
         } else {

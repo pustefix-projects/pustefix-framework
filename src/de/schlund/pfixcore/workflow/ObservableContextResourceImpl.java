@@ -35,8 +35,8 @@ import org.apache.log4j.Logger;
  */
 
 public abstract class ObservableContextResourceImpl implements ContextResource, ObservableContextResource {
-    private Vector   observers = new Vector();
-    private Logger   LOG       = Logger.getLogger(this.getClass());
+    private Vector<ContextResourceObserver> observers = new Vector<ContextResourceObserver>();
+    private Logger LOG = Logger.getLogger(this.getClass());
 
     /**
      * Adds an observer to the list of registered observers.
@@ -53,9 +53,9 @@ public abstract class ObservableContextResourceImpl implements ContextResource, 
      *
      */
     public synchronized void notifyObservers() throws Exception {
-        Iterator iter = observers.iterator();
+        Iterator<ContextResourceObserver> iter = observers.iterator();
         while (iter.hasNext()) {
-            ContextResourceObserver obj = (ContextResourceObserver) iter.next();
+            ContextResourceObserver obj = iter.next();
             LOG.debug("Notify observer" + obj.getClass().getName());
             obj.update(this);
             LOG.debug("notify done..." + obj.getClass().getName());

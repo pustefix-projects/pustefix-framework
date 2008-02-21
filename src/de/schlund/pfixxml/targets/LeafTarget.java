@@ -56,7 +56,7 @@ public abstract class LeafTarget extends TargetImpl {
         throw new RuntimeException("Can't add a stylesheet parameter to a leaf");
     }
 
-    public TreeSet getPageInfos() {
+    public TreeSet<PageInfo> getPageInfos() {
         return sharedleaf.getPageInfos();
     }
 
@@ -77,9 +77,9 @@ public abstract class LeafTarget extends TargetImpl {
             long maxmodtime = doc.lastModified();
             boolean depup = true;
 
-            for (Iterator i = this.getAuxDependencyManager().getChildren()
+            for (Iterator<AuxDependency> i = this.getAuxDependencyManager().getChildren()
                     .iterator(); i.hasNext();) {
-                AuxDependency aux = (AuxDependency) i.next();
+                AuxDependency aux = i.next();
                 if (aux.getType() == DependencyType.TARGET) {
                     Target auxtarget = ((AuxDependencyTarget) aux).getTarget();
                     maxmodtime = Math.max(auxtarget.getModTime(), maxmodtime);
@@ -98,7 +98,7 @@ public abstract class LeafTarget extends TargetImpl {
 
     public void storeValue(Object obj) {
         synchronized (sharedleaf) {
-            SPCache cache = SPCacheFactory.getInstance().getCache();
+            SPCache<Object, Object> cache = SPCacheFactory.getInstance().getCache();
             cache.setValue(sharedleaf, obj);
         }
     }
@@ -127,9 +127,9 @@ public abstract class LeafTarget extends TargetImpl {
         NDC.push("    ");
         TREE.debug("> " + getTargetKey());
 
-        for (Iterator i = this.getAuxDependencyManager().getChildren()
+        for (Iterator<AuxDependency> i = this.getAuxDependencyManager().getChildren()
                 .iterator(); i.hasNext();) {
-            AuxDependency aux = (AuxDependency) i.next();
+            AuxDependency aux = i.next();
             if (aux.getType() == DependencyType.TARGET) {
                 long tmpmodtime = 0;
                 Target auxtarget = ((AuxDependencyTarget) aux).getTarget();

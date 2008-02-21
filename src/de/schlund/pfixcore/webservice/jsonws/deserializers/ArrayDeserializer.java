@@ -36,10 +36,10 @@ public class ArrayDeserializer extends Deserializer {
     public boolean canDeserialize(DeserializationContext ctx,Object jsonValue,Type targetType) throws DeserializationException {
         if(jsonValue instanceof JSONArray) {
             Class<?> targetClass=null;
-            if(targetType instanceof Class) targetClass=(Class)targetType;
+            if(targetType instanceof Class) targetClass=(Class<?>)targetType;
             else if(targetType instanceof ParameterizedType) {
                 Type rawType=((ParameterizedType)targetType).getRawType();
-                if(rawType instanceof Class) targetClass=(Class)rawType;
+                if(rawType instanceof Class) targetClass=(Class<?>)rawType;
                 else return false;
             }
             if(targetClass.isArray() || List.class.isAssignableFrom(targetClass)) return true;
@@ -55,16 +55,16 @@ public class ArrayDeserializer extends Deserializer {
             JSONArray jsonArray=(JSONArray)jsonValue;
         
             Class<?> targetClass=null;
-            if(targetType instanceof Class) targetClass=(Class)targetType;
+            if(targetType instanceof Class) targetClass=(Class<?>)targetType;
             else if(targetType instanceof ParameterizedType) {
                 Type rawType=((ParameterizedType)targetType).getRawType();
-                if(rawType instanceof Class) targetClass=(Class)rawType;
+                if(rawType instanceof Class) targetClass=(Class<?>)rawType;
                 else throw new DeserializationException("Type not supported: "+targetType);
             }
             
             if(targetClass.isArray()) {
                 
-                Class compType=targetClass.getComponentType();
+                Class<?> compType=targetClass.getComponentType();
                 Object arrayObj=Array.newInstance(compType,jsonArray.size());
                 for(int i=0;i<jsonArray.size();i++) {
                     Object item=jsonArray.get(i);
@@ -84,15 +84,15 @@ public class ArrayDeserializer extends Deserializer {
                     } else throw new DeserializationException("Type not supported: "+targetType);
                 } else throw new DeserializationException("Deserialization of unparameterized List types isn't supported: "+targetType);
                 
-                List list=null;
+                List<Object> list=null;
                 if(!targetClass.isInterface()) {
                     try {
-                        list=(List)targetClass.newInstance();
+                        list=(List<Object>)targetClass.newInstance();
                     } catch(Exception x) {}
                 }
                 if(list==null) {
                     if(targetClass.isAssignableFrom(ArrayList.class)) {
-                        list=new ArrayList();
+                        list=new ArrayList<Object>();
                     } else throw new DeserializationException("Can't create instance of class '"+targetClass.getName()+"'.");
                 }
                 

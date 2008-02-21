@@ -38,7 +38,7 @@ import de.schlund.util.statuscodes.StatusCode;
  *
  */
 
-public class IWrapperIndexedParam implements IWrapperParamDefinition, Comparable {
+public class IWrapperIndexedParam implements IWrapperParamDefinition, Comparable<IWrapperParamDefinition> {
 
     private static final String TYPE_INDEXED  = "indexed";
     private static final String TYPE_MULTIPLE = "multiple";
@@ -48,10 +48,10 @@ public class IWrapperIndexedParam implements IWrapperParamDefinition, Comparable
     private boolean             trim;
     private boolean             multiple;
     private IWrapperParamCaster caster;
-    private ArrayList           precheck      = new ArrayList();
-    private ArrayList           postcheck     = new ArrayList();
-    private HashMap             params        = new HashMap();
-    private HashMap             errors        = new HashMap();
+    private ArrayList<IWrapperParamPreCheck> precheck = new ArrayList<IWrapperParamPreCheck>();
+    private ArrayList<IWrapperParamPostCheck> postcheck = new ArrayList<IWrapperParamPostCheck>();
+    private HashMap<String, IWrapperParam> params = new HashMap<String, IWrapperParam>();
+    private HashMap<String, IWrapperParam> errors = new HashMap<String, IWrapperParam>();
     // private String              prefix;
     private Logger              LOG           = Logger.getLogger(this.getClass());
     
@@ -90,8 +90,8 @@ public class IWrapperIndexedParam implements IWrapperParamDefinition, Comparable
 
     protected void initValueFromRequest(String prefix, RequestData req) {
         String wholename = prefix + "." + name;
-        for (Iterator i = req.getParameterNames(); i.hasNext(); ) {
-            String pname = (String) i.next();
+        for (Iterator<String> i = req.getParameterNames(); i.hasNext(); ) {
+            String pname = i.next();
             if (pname.startsWith(wholename + ".")) {
                 // Now initialize the IWrapperParams
                 String idx = pname.substring(wholename.length() + 1);
@@ -101,11 +101,11 @@ public class IWrapperIndexedParam implements IWrapperParamDefinition, Comparable
                 synchronized (params) {
                     params.put(pinfo.getName(), pinfo);
                 }
-                for (Iterator j = precheck.iterator(); j.hasNext(); ) {
-                    pinfo.addPreChecker((IWrapperParamPreCheck) j.next());
+                for (Iterator<IWrapperParamPreCheck> j = precheck.iterator(); j.hasNext(); ) {
+                    pinfo.addPreChecker(j.next());
                 }
-                for (Iterator j = postcheck.iterator(); j.hasNext(); ) {
-                    pinfo.addPostChecker((IWrapperParamPostCheck) j.next());
+                for (Iterator<IWrapperParamPostCheck> j = postcheck.iterator(); j.hasNext(); ) {
+                    pinfo.addPostChecker(j.next());
                 }
                 pinfo.initValueFromRequest(prefix, req);
                 if (pinfo.errorHappened()) {
@@ -184,16 +184,15 @@ public class IWrapperIndexedParam implements IWrapperParamDefinition, Comparable
         synchronized (params) {
             keys = new String[params.size()];
             int j = 0;
-            for (Iterator i = params.keySet().iterator(); i.hasNext(); ) {
-                keys[j] = ((String) i.next()).substring(getName().length() + 1);
+            for (Iterator<String> i = params.keySet().iterator(); i.hasNext(); ) {
+                keys[j] = i.next().substring(getName().length() + 1);
                 j++;
             }
         }
         return keys;
     }
     
-    public int compareTo(Object inobj) {
-        IWrapperParamDefinition in = (IWrapperParamDefinition) inobj;
+    public int compareTo(IWrapperParamDefinition in) {
         return name.compareTo(in.getName());
     }
 }// IWrapperIndexedParam

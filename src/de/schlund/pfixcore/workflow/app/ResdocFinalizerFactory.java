@@ -37,7 +37,7 @@ import de.schlund.pfixxml.XMLException;
 
 public class ResdocFinalizerFactory {
     /** Store the already created ResdocFinalizer here, use classname as key*/
-    private static HashMap known = new HashMap();
+    private static HashMap<String, ResdocFinalizer> known = new HashMap<String, ResdocFinalizer>();
     private static ResdocFinalizerFactory instance = new ResdocFinalizerFactory();
 
     private ResdocFinalizerFactory() {
@@ -62,7 +62,7 @@ public class ResdocFinalizerFactory {
             ResdocFinalizer retval = (ResdocFinalizer) known.get(classname);
             if (retval == null) {
                 try {
-                    Class theclass = Class.forName(classname);
+                    Class<?> theclass = Class.forName(classname);
                     retval = (ResdocFinalizer) theclass.newInstance();
                 } catch (InstantiationException e) {
                     throw new XMLException("unable to instantiate class [" + classname + "]" + e.getMessage());

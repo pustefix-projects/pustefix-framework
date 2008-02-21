@@ -44,9 +44,9 @@ public class ExceptionDataValue implements Serializable {
 	private String page;
 	private String servlet;
 	private String query;
-	private HashMap requestParams;
-	private ArrayList lastSteps;
-	private HashMap sessionKeysAndValues;
+	private HashMap<String, String> requestParams;
+	private ArrayList<String> lastSteps;
+	private HashMap<String, String> sessionKeysAndValues;
 	private Integer hashCodeForThrowable;
     
     private String text;
@@ -56,13 +56,13 @@ public class ExceptionDataValue implements Serializable {
 	/**
 	 * @return Returns the sessionKeysAndValues.
 	 */
-	public HashMap getSessionKeysAndValues() {
+	public HashMap<String, String> getSessionKeysAndValues() {
 		return sessionKeysAndValues;
 	}
 	/**
 	 * @param sessionKeysAndValues The sessionKeysAndValues to set.
 	 */
-	public void setSessionKeysAndValues(HashMap sessionKeysAndValues) {
+	public void setSessionKeysAndValues(HashMap<String, String> sessionKeysAndValues) {
 		this.sessionKeysAndValues = sessionKeysAndValues;
 	}
 	/**
@@ -144,7 +144,7 @@ public class ExceptionDataValue implements Serializable {
 		if(requestParams == null) {
 			sb.append("null]]");
 		} else {
-			for(Iterator iter = requestParams.keySet().iterator(); iter.hasNext();) {
+			for(Iterator<String> iter = requestParams.keySet().iterator(); iter.hasNext();) {
 				Object key = iter.next();
 				Object value = requestParams.get(key);
 				sb.append("["+key+"=>"+value+"]");
@@ -156,7 +156,7 @@ public class ExceptionDataValue implements Serializable {
 		if(lastSteps == null) {
 			sb.append("null]]");
 		} else {
-			for(Iterator iter = lastSteps.iterator(); iter.hasNext(); ) {
+			for(Iterator<String> iter = lastSteps.iterator(); iter.hasNext(); ) {
 				sb.append("["+iter.next()+"]");
 			}
 			sb.append("]");
@@ -166,7 +166,7 @@ public class ExceptionDataValue implements Serializable {
 		if(sessionKeysAndValues == null) {
 			sb.append("null]]");
 		} else {
-			for(Iterator iter = sessionKeysAndValues.keySet().iterator(); iter.hasNext(); ) {
+			for(Iterator<String> iter = sessionKeysAndValues.keySet().iterator(); iter.hasNext(); ) {
 				Object key = iter.next();
 				Object value = sessionKeysAndValues.get(key);
 				sb.append("["+key+"=>"+value);
@@ -259,25 +259,25 @@ public class ExceptionDataValue implements Serializable {
 	/**
 	 * @return Returns the sessionKeysNValues.
 	 */
-	public HashMap getRequestParams() {
+	public HashMap<String, String> getRequestParams() {
 		return requestParams;
 	}
 	/**
 	 * @param sessionKeysNValues The sessionKeysNValues to set.
 	 */
-	public void setRequestParams(HashMap sessionKeysNValues) {
+	public void setRequestParams(HashMap<String, String> sessionKeysNValues) {
 		this.requestParams = sessionKeysNValues;
 	}
 	/**
 	 * @return Returns the lastSteps.
 	 */
-	public List getLastSteps() {
+	public List<String> getLastSteps() {
 		return lastSteps;
 	}
 	/**
 	 * @param lastSteps The lastSteps to set.
 	 */
-	public void setLastSteps(ArrayList lastSteps) {
+	public void setLastSteps(ArrayList<String> lastSteps) {
 		this.lastSteps = lastSteps;
 	}
     

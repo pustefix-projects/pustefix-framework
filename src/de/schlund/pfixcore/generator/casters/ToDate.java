@@ -65,7 +65,7 @@ public class ToDate extends SimpleCheck implements IWrapperParamCaster {
         reset();
         format.setLenient(false);
         Date      val;
-        ArrayList dates = new ArrayList();
+        ArrayList<Date> dates = new ArrayList<Date>();
         for (int i = 0; i < param.length; i++) {
             try {
                 val = format.parse(param[i].getValue());
@@ -77,7 +77,7 @@ public class ToDate extends SimpleCheck implements IWrapperParamCaster {
             }
         }
         if (!errorHappened()) {
-            value = (Date[]) dates.toArray(new Date[] {});
+            value = dates.toArray(new Date[] {});
         }
     }
 

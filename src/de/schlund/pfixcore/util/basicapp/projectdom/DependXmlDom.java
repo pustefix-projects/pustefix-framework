@@ -148,7 +148,7 @@ public final class DependXmlDom {
                 AppValues.DEPENDTAG_NAVIGATION).item(0);
         
         // an ArrayList with the servlet spec
-        ArrayList tmpList  = project.getServletList();
+        ArrayList<ServletObject> tmpList  = project.getServletList();
         Element newElement = null;
         String tmpName     = null;
         String myHandler   = null;

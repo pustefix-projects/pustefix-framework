@@ -255,9 +255,9 @@ public abstract class CommonIncludePartImpl extends AbstractIncludePart {
                     this.getIncludeFile().getContentXML(true);
 
                     // Register affected pages for regeneration
-                    for (Iterator i = variant.getAffectedPages().iterator(); i
+                    for (Iterator<Page> i = variant.getAffectedPages().iterator(); i
                             .hasNext();) {
-                        Page page = (Page) i.next();
+                        Page page = i.next();
                         page.registerForUpdate();
                     }
                 }

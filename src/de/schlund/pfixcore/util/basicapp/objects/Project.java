@@ -48,7 +48,7 @@ public final class Project {
      * An ArrayList containing the servlet properties.
      * @see de.schlund.pfixcore.util.basicapp.objects.ServletObject
      */
-    private ArrayList servletList = new ArrayList();
+    private ArrayList<ServletObject> servletList = new ArrayList<ServletObject>();
     
     //  --> Start getter and setter
     /**
@@ -90,7 +90,7 @@ public final class Project {
     /**
      * @return Returns the servletList.
      */
-    public ArrayList getServletList() {
+    public ArrayList<ServletObject> getServletList() {
         return servletList;
     }
     
@@ -109,7 +109,7 @@ public final class Project {
     /**
      * @param servletList The servletList to set.
      */
-    public void setServletList(ArrayList servletList) {
+    public void setServletList(ArrayList<ServletObject> servletList) {
         this.servletList = servletList;
     } //<-- End getter and setter
 }

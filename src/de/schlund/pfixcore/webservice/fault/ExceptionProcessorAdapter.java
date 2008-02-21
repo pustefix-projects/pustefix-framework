@@ -47,7 +47,7 @@ public class ExceptionProcessorAdapter extends FaultHandler {
         String procName=exProcProps.getProperty(PROP_EXPROC);
         if(procName!=null) {
             try {
-                Class clazz=Class.forName(procName);
+                Class<?> clazz=Class.forName(procName);
                 exProc=(ExceptionProcessor)clazz.newInstance();
                 exConf=new ExceptionConfig();
                 exConf.setPage("webservice");

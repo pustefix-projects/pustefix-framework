@@ -40,7 +40,7 @@ public class ServletInfoDefaultIHandlerStateRule extends CheckedRule {
         if (className == null) {
             throw new Exception("Attribute \"class\" is mandatory!");
         }
-        Class clazz;
+        Class<?> clazz;
         try {
             clazz = Class.forName(className);
         } catch (ClassNotFoundException e) {
@@ -49,7 +49,7 @@ public class ServletInfoDefaultIHandlerStateRule extends CheckedRule {
         if (!State.class.isAssignableFrom(clazz)) {
             throw new SAXException("Default IHandler state class " + clazz + " does not implement " + State.class + " interface!");
         }
-        config.setDefaultIHandlerState(clazz);
+        config.setDefaultIHandlerState(clazz.asSubclass(State.class));
     }
     
     protected Map<String, Boolean> wantsAttributes() {

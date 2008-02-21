@@ -418,7 +418,7 @@ public class WebServiceTask extends Task {
        
         private void checkInterface(String className) throws BuildException {
             try {
-                Class clazz=Class.forName(className);
+                Class<?> clazz=Class.forName(className);
                 if(!clazz.isInterface()) throw new BuildException("Web service interface class doesn't represent an interface type");
                 Method[] methods=clazz.getDeclaredMethods();
                 HashSet<String> names=new HashSet<String>();
@@ -436,7 +436,7 @@ public class WebServiceTask extends Task {
            
         private boolean checkChanges(String className,File wsdlFile) throws BuildException {
             try {
-            	Class clazz=Class.forName(className);
+            	Class<?> clazz=Class.forName(className);
             	if(!clazz.isInterface()) throw new BuildException("Web service interface class '"+className+"' doesn't define an interface type.");
                 //Check if interface or dependant interfaces changed
                 boolean changed=checkTypeChange(clazz,wsdlFile);
@@ -444,10 +444,10 @@ public class WebServiceTask extends Task {
                 //Check if method parameter or return type classes changed
                 Method[] meths=clazz.getMethods();
                 for(int i=0;i<meths.length;i++) {
-                    Class ret=meths[i].getReturnType();
+                    Class<?> ret=meths[i].getReturnType();
                     changed=checkTypeChange(ret,wsdlFile);
                     if(changed) return true;
-                    Class[] pars=meths[i].getParameterTypes();
+                    Class<?>[] pars=meths[i].getParameterTypes();
                     for(int j=0;j<pars.length;j++) {
                     	changed=checkTypeChange(pars[j],wsdlFile);
                     	if(changed) return true;
@@ -459,7 +459,7 @@ public class WebServiceTask extends Task {
             }
         }
         
-        private boolean checkTypeChange(Class clazz,File wsdlFile) {
+        private boolean checkTypeChange(Class<?> clazz,File wsdlFile) {
         	if(!clazz.isPrimitive()) {
                 ClassLoader cl=clazz.getClassLoader();
                 if(cl instanceof AntClassLoader) {
@@ -483,13 +483,13 @@ public class WebServiceTask extends Task {
                     }
                     if(wsdlFile.lastModified()<lastMod) return true;
                     if(clazz.isInterface()) {
-                        Class[] itfs=clazz.getInterfaces();
+                        Class<?>[] itfs=clazz.getInterfaces();
                         for(int i=0;i<itfs.length;i++) {
                         	boolean changed=checkTypeChange(itfs[i],wsdlFile);
                         	if(changed) return true;
                         }
                     } else {
-                        Class sup=clazz.getSuperclass();
+                        Class<?> sup=clazz.getSuperclass();
                         boolean changed=checkTypeChange(sup,wsdlFile);
                         if(changed) return true;
                     }
@@ -498,7 +498,7 @@ public class WebServiceTask extends Task {
             return false;
         }
         
-        private Class getArrayType(Class clazz) {
+        private Class<?> getArrayType(Class<?> clazz) {
         	if(clazz.isArray()) return getArrayType(clazz.getComponentType());
             else return clazz;
         }

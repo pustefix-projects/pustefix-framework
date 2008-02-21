@@ -42,6 +42,7 @@ import de.schlund.pfixxml.resources.ResourceUtil;
 import de.schlund.pfixxml.targets.AuxDependency;
 import de.schlund.pfixxml.targets.AuxDependencyFactory;
 import de.schlund.pfixxml.targets.PageInfo;
+import de.schlund.pfixxml.targets.Target;
 import de.schlund.pfixxml.targets.TargetDependencyRelation;
 import de.schlund.pfixxml.targets.TargetGenerator;
 
@@ -85,20 +86,19 @@ public class ImageImpl extends AbstractImage {
     public Collection<Page> getAffectedPages() {
         HashSet<PageInfo> pageinfos = new HashSet<PageInfo>();
         HashSet<Page> pages = new HashSet<Page>();
-        Set afftargets = TargetDependencyRelation.getInstance()
+        Set<Target> afftargets = TargetDependencyRelation.getInstance()
                 .getAffectedTargets(this.auxdep);
         if (afftargets == null) {
             return pages;
         }
 
-        for (Iterator i = afftargets.iterator(); i.hasNext();) {
-            de.schlund.pfixxml.targets.Target pfixTarget = (de.schlund.pfixxml.targets.Target) i
-                    .next();
+        for (Iterator<Target> i = afftargets.iterator(); i.hasNext();) {
+            Target pfixTarget = i.next();
             pageinfos.addAll(pfixTarget.getPageInfos());
         }
 
-        for (Iterator i2 = pageinfos.iterator(); i2.hasNext();) {
-            PageInfo pageinfo = (PageInfo) i2.next();
+        for (Iterator<PageInfo> i2 = pageinfos.iterator(); i2.hasNext();) {
+            PageInfo pageinfo = i2.next();
             TargetGenerator tgen = pageinfo.getTargetGenerator();
             Project project = projectfactory
                     .getProjectByPustefixTargetGenerator(tgen);

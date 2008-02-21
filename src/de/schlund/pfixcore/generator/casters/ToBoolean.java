@@ -58,7 +58,7 @@ public class ToBoolean extends SimpleCheck implements IWrapperParamCaster {
             LOG.debug("*** IN param: " + param[i]);
         }
         reset();
-        ArrayList out = new ArrayList();
+        ArrayList<Boolean> out = new ArrayList<Boolean>();
         Boolean   val;
         for (int i = 0; i < param.length; i++) {
             String tmp = param[i].getValue();

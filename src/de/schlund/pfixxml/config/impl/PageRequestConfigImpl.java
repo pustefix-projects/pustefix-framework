@@ -25,6 +25,10 @@ import java.util.Map;
 import java.util.Properties;
 
 import de.schlund.pfixcore.auth.AuthConstraint;
+import de.schlund.pfixcore.generator.IWrapper;
+import de.schlund.pfixcore.workflow.ContextResource;
+import de.schlund.pfixcore.workflow.State;
+import de.schlund.pfixcore.workflow.app.ResdocFinalizer;
 import de.schlund.pfixxml.config.PageRequestConfig;
 
 /**
@@ -38,15 +42,15 @@ public class PageRequestConfigImpl implements SSLOption, Cloneable, PageRequestC
     private String copyFromPage = null;
 //    private boolean storeXML = true;
     private boolean ssl = false;
-    private Class stateClass = null;
-    private Class defaultStaticStateClass = null;
-    private Class defaultIWrapperStateClass = null;
-    private Class finalizer = null;
+    private Class<? extends State> stateClass = null;
+    private Class<? extends State> defaultStaticStateClass = null;
+    private Class<? extends State> defaultIWrapperStateClass = null;
+    private Class<? extends ResdocFinalizer> finalizer = null;
     private String authPrefix = null;
-    private Class authClass = null;
+    private Class<? extends IWrapper> authClass = null;
     private LinkedHashMap<String, Class<?>> auxwrappers = new LinkedHashMap<String, Class<?>>();
     private LinkedHashMap<String, IWrapperConfigImpl> iwrappers = new LinkedHashMap<String, IWrapperConfigImpl>();
-    private LinkedHashMap<String, Class> resources = new LinkedHashMap<String, Class>();
+    private LinkedHashMap<String, Class<? extends ContextResource>> resources = new LinkedHashMap<String, Class<? extends ContextResource>>();
     private Properties props = new Properties();
     private Policy policy = Policy.ANY;
     private boolean requiresToken = false;
@@ -85,14 +89,14 @@ public class PageRequestConfigImpl implements SSLOption, Cloneable, PageRequestC
         return this.ssl;
     }
     
-    public void setState(Class clazz) {
+    public void setState(Class<? extends State> clazz) {
         this.stateClass = clazz;
     }
     
     /* (non-Javadoc)
      * @see de.schlund.pfixxml.config.PageRequestConfig#getState()
      */
-    public Class getState() {
+    public Class<? extends State> getState() {
         if (this.stateClass != null) {
             return this.stateClass;
         } else {
@@ -116,11 +120,11 @@ public class PageRequestConfigImpl implements SSLOption, Cloneable, PageRequestC
         return (this.copyFromPage != null);
     }
     
-    public void setDefaultStaticState(Class clazz) {
+    public void setDefaultStaticState(Class<? extends State> clazz) {
         this.defaultStaticStateClass = clazz;
     }
     
-    public void setDefaultIHandlerState(Class clazz) {
+    public void setDefaultIHandlerState(Class<? extends State> clazz) {
         this.defaultIWrapperStateClass = clazz;
     }
     
@@ -135,14 +139,14 @@ public class PageRequestConfigImpl implements SSLOption, Cloneable, PageRequestC
         return this.policy;
     }
     
-    public void setFinalizer(Class clazz) {
+    public void setFinalizer(Class<? extends ResdocFinalizer> clazz) {
         this.finalizer = clazz;
     }
     
     /* (non-Javadoc)
      * @see de.schlund.pfixxml.config.PageRequestConfig#getFinalizer()
      */
-    public Class getFinalizer() {
+    public Class<? extends ResdocFinalizer> getFinalizer() {
         return this.finalizer;
     }
     
@@ -154,7 +158,7 @@ public class PageRequestConfigImpl implements SSLOption, Cloneable, PageRequestC
         return Collections.unmodifiableMap(this.iwrappers);
     }
     
-    public void addAuxWrapper(String prefix, Class clazz) {
+    public void addAuxWrapper(String prefix, Class<? extends IWrapper> clazz) {
         this.auxwrappers.put(prefix, clazz);
     }
     
@@ -165,20 +169,20 @@ public class PageRequestConfigImpl implements SSLOption, Cloneable, PageRequestC
         return this.auxwrappers;
     }
     
-    public void addContextResource(String prefix, Class clazz) {
+    public void addContextResource(String prefix, Class<? extends ContextResource> clazz) {
         this.resources.put(prefix, clazz);
     }
     
     /* (non-Javadoc)
      * @see de.schlund.pfixxml.config.PageRequestConfig#getContextResources()
      */
-    public Map<String, Class> getContextResources() {
+    public Map<String, Class<? extends ContextResource>> getContextResources() {
         return this.resources;
     }
     
     public void setProperties(Properties props) {
         this.props = new Properties();
-        Enumeration e = props.propertyNames();
+        Enumeration<?> e = props.propertyNames();
         while (e.hasMoreElements()) {
             String propname = (String) e.nextElement();
             this.props.setProperty(propname, props.getProperty(propname));
@@ -192,13 +196,13 @@ public class PageRequestConfigImpl implements SSLOption, Cloneable, PageRequestC
         return this.props;
     }
     
-    public void addAuthWrapper(String prefix, Class clazz) {
+    public void addAuthWrapper(String prefix, Class<? extends IWrapper> clazz) {
         this.authPrefix = prefix;
         this.authClass = clazz;
         if (this.stateClass == null) {
             // Create class object at runtime due to build dependency problems
             try {
-                this.setState(Class.forName("de.schlund.pfixcore.workflow.app.DefaultAuthIWrapperState"));
+                this.setState(Class.forName("de.schlund.pfixcore.workflow.app.DefaultAuthIWrapperState").asSubclass(State.class));
             } catch (ClassNotFoundException e) {
                 throw new RuntimeException("Class de.schlund.pfixcore.workflow.app.DefaultAuthIWrapperState could not be loaded!", e);
             }
@@ -215,7 +219,7 @@ public class PageRequestConfigImpl implements SSLOption, Cloneable, PageRequestC
     /* (non-Javadoc)
      * @see de.schlund.pfixxml.config.PageRequestConfig#getAuthWrapperClass()
      */
-    public Class getAuthWrapperClass() {
+    public Class<? extends IWrapper> getAuthWrapperClass() {
         return this.authClass;
     }
 

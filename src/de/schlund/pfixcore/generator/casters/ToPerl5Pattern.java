@@ -73,7 +73,7 @@ public class ToPerl5Pattern extends SimpleCheck implements IWrapperParamCaster {
     public void castValue(RequestParam[] param) {
         reset();
         Perl5Pattern val;
-        ArrayList    patterns = new ArrayList();
+        ArrayList<Perl5Pattern> patterns = new ArrayList<Perl5Pattern>();
         for (int i = 0; i < param.length; i++) {
             try {
                 val = tryCompile(param[i].getValue());
