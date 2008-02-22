@@ -312,7 +312,9 @@ or delete the DOCTYPE definition -->
     </apply>
   </target>
 
-  <target name="ant-tasks" depends="init-dirs, tomcat.dir.opt" description="declares the ant task used for generating java source code. This target needs to be run prior to the actual compile.">
+  <target name="ant-tasks" depends="ant-tasks-stage1, ant-tasks-stage2"/>
+  
+  <target name="ant-tasks-stage1" depends="init-dirs, tomcat.dir.opt" description="declares the ant task used for generating java source code. This target needs to be run prior to the actual compile.">
     <taskdef
      name="pfx-xslt"
      classname="de.schlund.pfixcore.util.XsltGenericTask"
@@ -320,6 +322,21 @@ or delete the DOCTYPE definition -->
      loaderref="pfx-loader"
      description="Performs generic XSLT transformations"
      />
+    <taskdef
+  	 name="pfx-buildtime-props"
+  	 classname="de.schlund.pfixxml.config.BuildTimePropTask"
+  	 classpathref="cp.classpath"
+  	 loaderref="pfx-loader"
+  	 description="Stores properties used at buildtime to be used later at runtime"
+  	 />
+    <taskdef
+     resource="net/sf/antcontrib/antlib.xml"
+     classpathref="cp.classpath"
+     loaderref="pfx-loader"   
+     />
+  </target>
+  
+  <target name="ant-tasks-stage2" depends="init-dirs, tomcat.dir.opt" description="declares the ant task used for generating java source code. This target needs to be run prior to the actual compile.">
     <taskdef
      name="pfx-iwrp"
      classname="de.schlund.pfixcore.util.XsltIWrapperTask"
@@ -356,18 +373,6 @@ or delete the DOCTYPE definition -->
      description="Copy passthrough paths during WAR generation"
      />
     <taskdef
-  	 name="pfx-buildtime-props"
-  	 classname="de.schlund.pfixxml.config.BuildTimePropTask"
-  	 classpathref="cp.classpath"
-  	 loaderref="pfx-loader"
-  	 description="Stores properties used at buildtime to be used later at runtime"
-  	 />
-    <taskdef
-     resource="net/sf/antcontrib/antlib.xml"
-     classpathref="cp.classpath"
-     loaderref="pfx-loader"   
-     /> 
-    <taskdef
      name="pfx-unpack-jar-module"
      classname="de.schlund.pfixcore.util.UnpackModuleTask"
      classpathref="cp.classpath"
@@ -382,7 +387,7 @@ or delete the DOCTYPE definition -->
       description="Pustefix APT task"
     />
   </target>
-
+  
   <target name="ant-tasks-webservice">
     <taskdef
       name="pfx-webservice"
@@ -537,6 +542,24 @@ or delete the DOCTYPE definition -->
       <arg value="${dir.projects}/common/conf/factory.xml"/>
       <arg value="${dir.projects}"/>
     </java>
+    <javac
+     srcdir="${dir.src}"
+     destdir="${dir.build}"
+     includes="de/schlund/util/statuscodes/*.java, de/schlund/pfixxml/resources/ResourceUtil.java"
+     debug="${debug}"
+     classpathref="cp.classpath"
+     encoding="${javac.encoding}"
+     >
+    </javac>    
+    <javac
+     srcdir="${dir.gensrc}"
+     destdir="${dir.build}"
+     includes="de/schlund/util/statuscodes/StatusCodeLib.java"
+     debug="${debug}"
+     classpathref="cp.classpath"
+     encoding="${javac.encoding}"
+     >
+    </javac>    
   </target>
   
   <target name="check-permissions">
@@ -600,7 +623,7 @@ or delete the DOCTYPE definition -->
     <echo message="Output written to ${dir.projects}/CHECKOUTPUT.xml" level="info"/>
   </target>
 
-  <target name="propfiles" depends="ant-tasks" description="creates **/*.prop">
+  <target name="propfiles" depends="ant-tasks-stage1" description="creates **/*.prop">
     <!-- Generate propfile with buildtime information -->
     <pfx-buildtime-props
      file="${dir.projects}/common/conf/buildtime.prop"

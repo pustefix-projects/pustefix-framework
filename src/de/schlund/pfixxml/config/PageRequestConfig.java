@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.Properties;
 
 import de.schlund.pfixcore.auth.AuthConstraint;
+import de.schlund.pfixcore.generator.IWrapper;
 import de.schlund.pfixcore.workflow.ContextResource;
 import de.schlund.pfixcore.workflow.State;
 import de.schlund.pfixcore.workflow.app.ResdocFinalizer;
@@ -118,7 +119,7 @@ public interface PageRequestConfig {
      * 
      * @return map containinge prefix to authwrapper mappings
      */
-    Map<String, Class<?>> getAuxWrappers();
+    Map<String, Class<? extends IWrapper>> getAuxWrappers();
 
     /**
      * Returns context resources defined for this page. The map has the form
@@ -152,7 +153,7 @@ public interface PageRequestConfig {
      * @return class of the auth wrapper or <code>null</code> if this
      * is not an auth page
      */
-    Class<?> getAuthWrapperClass();
+    Class<? extends IWrapper> getAuthWrapperClass();
     
     boolean requiresToken();
     

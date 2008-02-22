@@ -37,7 +37,7 @@ import de.schlund.pfixxml.util.XsltVersion;
 public class SharedLeafFactory {
 
     private static SharedLeafFactory instance     = new SharedLeafFactory();
-    private TreeMap                  sharedleaves = new TreeMap();
+    private TreeMap<String, SharedLeaf> sharedleaves = new TreeMap<String, SharedLeaf>();
     
     private SharedLeafFactory() {}
     
@@ -56,7 +56,7 @@ public class SharedLeafFactory {
     
     
     public void reset() {
-        sharedleaves = new TreeMap();
+        sharedleaves = new TreeMap<String, SharedLeaf>();
     }
 
 }// SharedLeafFactory

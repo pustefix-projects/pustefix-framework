@@ -62,16 +62,34 @@ or delete the DOCTYPE definition -->
     
   <!-- TODO: always compiles before invoking skel.ant-tasks? -->
   <target name="ant-tasks" depends="ant-tasks-compile, skel.ant-tasks"/>
+  <target name="ant-tasks-stage1" depends="ant-tasks-compile-stage1, skel.ant-tasks-stage1"/>
+  <target name="ant-tasks-stage2" depends="ant-tasks-compile-stage2, skel.ant-tasks-stage2"/>
     
   <target name="init" depends="skel.init">
     <mkdir dir="${dir.dist}"/>
   </target>
     
-  <target name="ant-tasks-compile" depends="tomcat.dir.opt, init" description="compiles java files needed by ant-tasks">
+  <target name="ant-tasks-compile" depends="ant-tasks-compile-stage2">
+  </target>
+  
+  <target name="ant-tasks-compile-stage1" depends="tomcat.dir.opt, init" description="compiles java files needed by ant-tasks">
     <javac
      srcdir="${dir.src}"
      destdir="${dir.build}"
-     includes="de/schlund/pfixcore/util/Xslt*.java, de/schlund/pfixcore/util/GenerateSCodes.java, de/schlund/pfixcore/util/*Task.java, de/schlund/pfixxml/util/StringUtil.java, de/schlund/pfixcore/webservice/config/*.java, de/schlund/pfixcore/webservice/generate/*.java, de/schlund/pfixxml/config/BuildTimePropTask.java, de/schlund/pfixcore/generator/iwrpgen/AptTask.java"
+     includes="de/schlund/pfixcore/util/XsltGenericTask.java, de/schlund/pfixxml/config/BuildTimePropTask.java, de/schlund/pfixcore/util/GenerateSCodes.java"
+     debug="${debug}"
+     classpathref="cp.classpath"
+     sourcepath="${dir.src}"
+     encoding="${javac.encoding}"
+     >
+    </javac>
+  </target>
+  
+  <target name="ant-tasks-compile-stage2" depends="scgenerate, ant-tasks-compile-stage1" description="compiles java files needed by ant-tasks">
+    <javac
+     srcdir="${dir.src}"
+     destdir="${dir.build}"
+     includes="de/schlund/pfixcore/util/Xslt*.java, de/schlund/pfixcore/util/*Task.java, de/schlund/pfixxml/util/StringUtil.java, de/schlund/pfixcore/webservice/config/*.java, de/schlund/pfixcore/webservice/generate/*.java, de/schlund/pfixcore/generator/iwrpgen/AptTask.java"
      debug="${debug}"
      classpathref="cp.classpath"
      sourcepath="${dir.src}"

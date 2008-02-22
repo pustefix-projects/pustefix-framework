@@ -26,14 +26,14 @@ import java.util.Map;
  */
 public class ReadOnlyBean {
 
-    List mixedList;
+    List<Object> mixedList;
     Map<String,Number> numMap;
  
-    public List getMixedList() {
+    public List<Object> getMixedList() {
         return mixedList;
     }
     
-    public void setMixedList(List mixedList) {
+    public void setMixedList(List<Object> mixedList) {
         this.mixedList=mixedList;
     }
     

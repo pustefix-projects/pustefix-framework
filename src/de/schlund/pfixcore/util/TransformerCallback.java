@@ -144,7 +144,7 @@ public class TransformerCallback {
                 } else if(pageConfig.getAuthWrapperPrefix()!=null && pageConfig.getAuthWrapperPrefix().equals(prefix)) {
                     iwrpClass=(Class<? extends IWrapper>)pageConfig.getAuthWrapperClass();
                 } else {
-                    Map<String,Class<?>> auxWrappers=pageConfig.getAuxWrappers();
+                    Map<String,Class<? extends IWrapper>> auxWrappers=pageConfig.getAuxWrappers();
                     iwrpClass=(Class<? extends IWrapper>)auxWrappers.get(prefix);
                 }
                 if(iwrpClass!=null) return IWrapperInfo.getDocument(iwrpClass, xsltVersion);
@@ -177,7 +177,7 @@ public class TransformerCallback {
                     elem.setAttribute("prefix",pageConfig.getAuthWrapperPrefix());
                     root.appendChild(elem);
                 }
-                Map<String,Class<?>> auxWrappers=pageConfig.getAuxWrappers();
+                Map<String,Class<? extends IWrapper>> auxWrappers=pageConfig.getAuxWrappers();
                 for(String prefix:auxWrappers.keySet()) {
                     Element elem=doc.createElement("iwrapper");
                     elem.setAttribute("type","aux");
