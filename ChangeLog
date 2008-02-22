@@ -1,3 +1,8 @@
+2008-02-22  jtl  <jtl@schoenberg.laudi.ka>
+
+	* src/de/schlund/pfixxml/resources/internal/DocrootResourceOnFileSystemImpl.java (toURL): 
+	toURL is deprecated for file, use toURI().toURL()
+
 2008-02-22  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
 	* .classpath: 
