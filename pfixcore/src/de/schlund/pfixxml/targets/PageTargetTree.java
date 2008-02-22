@@ -76,7 +76,7 @@ public class PageTargetTree {
 
     public Target getTargetForPageInfo(PageInfo pinfo) {
         synchronized (toplevels) {
-            return (Target) toplevels.get(pinfo);
+            return toplevels.get(pinfo);
         }
     }
     

@@ -89,7 +89,7 @@ public class IHandlerFactory {
     
     public IHandler getIHandlerForWrapperClass(String classname) {
         synchronized (wrapper2handlers) {
-            IHandler retval = (IHandler) wrapper2handlers.get(classname); 
+            IHandler retval = wrapper2handlers.get(classname); 
             if (retval == null) {
                 try {
                     Class<?> stateclass = Class.forName(classname);

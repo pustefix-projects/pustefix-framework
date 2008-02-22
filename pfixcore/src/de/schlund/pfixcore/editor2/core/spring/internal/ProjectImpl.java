@@ -187,7 +187,7 @@ public class ProjectImpl extends AbstractProject {
         }
         
         // Add pages from target definitions which are not present in navigation tree
-        for (PageInfo pinfo : (TreeSet<PageInfo>)gen.getPageTargetTree().getPageInfos()) {
+        for (PageInfo pinfo : gen.getPageTargetTree().getPageInfos()) {
             String pageName = pinfo.getName();
             String pageHandler = "none";
             String variantName = pinfo.getVariant();

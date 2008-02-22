@@ -142,7 +142,7 @@ public abstract class AbstractXMLServlet extends ServletManager {
     public final static String SESS_CLEANUP_FLAG_STAGE1 = "__pfx_session_cleanup_stage1";
     public final static String SESS_CLEANUP_FLAG_STAGE2 = "__pfx_session_cleanup_stage2";
     
-    private int maxStoredDoms=DEF_MAX_STORED_DOMS;
+    private int maxStoredDoms = DEF_MAX_STORED_DOMS;
     
     /**
      * Holds the TargetGenerator which is the XML/XSL Cache for this

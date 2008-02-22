@@ -332,7 +332,7 @@ public class RefCountingCollection<E> implements Collection<E> {
         System.out.println(coll);
         System.out.println("-------");
 
-        RefCountingCollection test = new RefCountingCollection();
+        RefCountingCollection<String> test = new RefCountingCollection<String>();
         test.add("Hallo", 2);
         test.add("Bar");
         test.add("TTT", 10);
