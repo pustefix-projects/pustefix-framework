@@ -135,19 +135,19 @@ public class TransformerCallback {
                 else throw new IllegalArgumentException("Missing page name");
             }
             PageRequestConfig pageConfig = context.getContextConfig().getPageRequestConfig(pageName);
-            if(pageConfig!=null) {
+            if (pageConfig!=null) {
                 Map<String, ? extends IWrapperConfig> iwrappers = pageConfig.getIWrappers();
                 Class<? extends IWrapper> iwrpClass=null;
                 IWrapperConfig iwrpConfig = iwrappers.get(prefix);
                 if (iwrpConfig != null) {
-                    iwrpClass=(Class<? extends IWrapper>)iwrpConfig.getWrapperClass();
-                } else if(pageConfig.getAuthWrapperPrefix()!=null && pageConfig.getAuthWrapperPrefix().equals(prefix)) {
-                    iwrpClass=(Class<? extends IWrapper>)pageConfig.getAuthWrapperClass();
+                    iwrpClass = (Class<? extends IWrapper>) iwrpConfig.getWrapperClass();
+                } else if(pageConfig.getAuthWrapperPrefix() != null && pageConfig.getAuthWrapperPrefix().equals(prefix)) {
+                    iwrpClass = (Class<? extends IWrapper>) pageConfig.getAuthWrapperClass();
                 } else {
-                    Map<String,Class<? extends IWrapper>> auxWrappers=pageConfig.getAuxWrappers();
-                    iwrpClass=(Class<? extends IWrapper>)auxWrappers.get(prefix);
+                    Map<String,Class<? extends IWrapper>> auxWrappers = pageConfig.getAuxWrappers();
+                    iwrpClass = (Class<? extends IWrapper>) auxWrappers.get(prefix);
                 }
-                if(iwrpClass!=null) return IWrapperInfo.getDocument(iwrpClass, xsltVersion);
+                if(iwrpClass != null) return IWrapperInfo.getDocument(iwrpClass, xsltVersion);
             }
             return null;
         } catch(RuntimeException x) {

@@ -162,7 +162,7 @@ class FileSystemResourceImpl implements FileSystemResource {
     }
     
     public URL toURL() throws MalformedURLException {
-        return file.toURL();
+        return file.toURI().toURL();
     }
 
     public InputStream getInputStream() throws FileNotFoundException {
