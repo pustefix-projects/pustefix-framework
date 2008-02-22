@@ -91,14 +91,14 @@ public abstract class IWrapperImpl implements IWrapper {
 
     public void tryParamLogging() throws IOException {
         if (logdir != null && pagename != null && visitid != null) {
-            FileResource log=ResourceUtil.getFileResource(logdir,pagename+"#"+prefix);
+            FileResource log = ResourceUtil.getFileResource(logdir,pagename+"#"+prefix);
             Writer       out  = new OutputStreamWriter(new BufferedOutputStream(log.getOutputStream(true)));
             StringBuffer buff = getLogBuffer("VALUES");
-            for (Iterator iter = params.values().iterator(); iter.hasNext(); ) {
-                appendParamLog((IWrapperParam) iter.next(), buff);
+            for (Iterator<IWrapperParam> iter = params.values().iterator(); iter.hasNext(); ) {
+                appendParamLog(iter.next(), buff);
             }
-            for (Iterator iter = idxprms.values().iterator(); iter.hasNext();) {
-                IWrapperIndexedParam pindex  = (IWrapperIndexedParam) iter.next();
+            for (Iterator<IWrapperIndexedParam> iter = idxprms.values().iterator(); iter.hasNext();) {
+                IWrapperIndexedParam pindex  = iter.next();
                 IWrapperParam[] pinfoarr = pindex.getAllParams();
                 for (int i = 0; i < pinfoarr.length; i++) {
                     appendParamLog(pinfoarr[i], buff);
@@ -120,8 +120,8 @@ public abstract class IWrapperImpl implements IWrapper {
     public final void load(RequestData req) throws Exception {
         this.req = req;
 
-        for (Iterator i = params.values().iterator(); i.hasNext();) {
-            IWrapperParam pinfo = (IWrapperParam) i.next();
+        for (Iterator<IWrapperParam> i = params.values().iterator(); i.hasNext();) {
+            IWrapperParam pinfo = i.next();
             if (LOG.isDebugEnabled()) {
                 LOG.debug("===> Doing init for Param: " + pinfo.getName());
             }
@@ -135,8 +135,8 @@ public abstract class IWrapperImpl implements IWrapper {
                 }
             }
         }
-        for (Iterator i = idxprms.values().iterator(); i.hasNext();) {
-            IWrapperIndexedParam pindex = (IWrapperIndexedParam) i.next();
+        for (Iterator<IWrapperIndexedParam> i = idxprms.values().iterator(); i.hasNext();) {
+            IWrapperIndexedParam pindex = i.next();
             if (LOG.isDebugEnabled()) {
                 LOG.debug("===> Doing init for IndexedParam: " + pindex.getName());
             }
@@ -175,8 +175,8 @@ public abstract class IWrapperImpl implements IWrapper {
         boolean noerr = errors.isEmpty();
         if (noerr) {
             synchronized (idxprms) {
-                for (Iterator i = idxprms.values().iterator(); i.hasNext();) {
-                    IWrapperIndexedParam pindx = (IWrapperIndexedParam) i.next();
+                for (Iterator<IWrapperIndexedParam> i = idxprms.values().iterator(); i.hasNext();) {
+                    IWrapperIndexedParam pindx = i.next();
                     if (pindx.errorHappened()) {
                         noerr = false;
                         break;
@@ -188,7 +188,7 @@ public abstract class IWrapperImpl implements IWrapper {
     }
 
     public final IWrapperParamDefinition[] gimmeAllParamDefinitions() {
-        TreeSet retpar = new TreeSet();
+        TreeSet<IWrapperParamDefinition> retpar = new TreeSet<IWrapperParamDefinition>();
         synchronized (params) {
             retpar.addAll(params.values());
         }
@@ -200,13 +200,13 @@ public abstract class IWrapperImpl implements IWrapper {
     
     
     public final IWrapperParam[] gimmeAllParams() {
-        TreeSet retpar = new TreeSet();
+        TreeSet<IWrapperParam> retpar = new TreeSet<IWrapperParam>();
         synchronized (params) {
             retpar.addAll(params.values());
         }
         synchronized (idxprms) {
-            for (Iterator i = idxprms.values().iterator(); i.hasNext();) {
-                IWrapperIndexedParam pindex = (IWrapperIndexedParam) i.next();
+            for (Iterator<IWrapperIndexedParam> i = idxprms.values().iterator(); i.hasNext();) {
+                IWrapperIndexedParam pindex = i.next();
                 retpar.addAll(Arrays.asList(pindex.getAllParams()));
             }
         }
@@ -214,13 +214,13 @@ public abstract class IWrapperImpl implements IWrapper {
     }
 
     public final IWrapperParam[] gimmeAllParamsWithErrors() {
-        TreeSet retpar = new TreeSet();
+        TreeSet<IWrapperParam> retpar = new TreeSet<IWrapperParam>();
         synchronized (errors) {
             retpar.addAll(errors.values());
         }
         synchronized (idxprms) {
-            for (Iterator i = idxprms.values().iterator(); i.hasNext();) {
-                IWrapperIndexedParam pindex = (IWrapperIndexedParam) i.next();
+            for (Iterator<IWrapperIndexedParam> i = idxprms.values().iterator(); i.hasNext();) {
+                IWrapperIndexedParam pindex = i.next();
                 retpar.addAll(Arrays.asList(pindex.getAllParamsWithErrors()));
             }
         }
