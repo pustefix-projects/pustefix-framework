@@ -417,7 +417,7 @@ public class IWrapperAnnotationProcessor implements AnnotationProcessor {
                 if (value != null) {
                     Element defElem = paramElem.getOwnerDocument().createElementNS(XMLNS_IWRP, "iwrp:default");
                     paramElem.appendChild(defElem);
-                    Collection<AnnotationValue> defaults = (Collection<AnnotationValue>) value.getValue();
+                    Collection<AnnotationValue> defaults = getCollectionFromAnnotationValue(value);
                     for (AnnotationValue def : defaults) {
                         Element valElem = paramElem.getOwnerDocument().createElementNS(XMLNS_IWRP, "iwrp:value");
                         valElem.setTextContent(def.getValue().toString());
@@ -437,7 +437,7 @@ public class IWrapperAnnotationProcessor implements AnnotationProcessor {
             casterElem.setAttribute("class", casterType);
             value = MirrorApiUtils.getAnnotationValue(mirror, "properties");
             if (value != null) {
-                Collection<AnnotationValue> casterProps = (Collection<AnnotationValue>) value.getValue();
+                Collection<AnnotationValue> casterProps = getCollectionFromAnnotationValue(value);
                 for (AnnotationValue val : casterProps) {
                     Element propElem = paramElem.getOwnerDocument().createElementNS(XMLNS_IWRP, "iwrp:cparam");
                     casterElem.appendChild(propElem);
@@ -456,7 +456,7 @@ public class IWrapperAnnotationProcessor implements AnnotationProcessor {
             preCheckElem.setAttribute("class", preCheckType);
             value = MirrorApiUtils.getAnnotationValue(mirror, "properties");
             if (value != null) {
-                Collection<AnnotationValue> preCheckProps = (Collection<AnnotationValue>) value.getValue();
+                Collection<AnnotationValue> preCheckProps = getCollectionFromAnnotationValue(value);
                 for (AnnotationValue val : preCheckProps) {
                     Element propElem = paramElem.getOwnerDocument().createElementNS(XMLNS_IWRP, "iwrp:cparam");
                     preCheckElem.appendChild(propElem);
@@ -475,7 +475,7 @@ public class IWrapperAnnotationProcessor implements AnnotationProcessor {
             postCheckElem.setAttribute("class", postCheckType);
             value = MirrorApiUtils.getAnnotationValue(mirror, "properties");
             if (value != null) {
-                Collection<AnnotationValue> postCheckProps = (Collection<AnnotationValue>) value.getValue();
+                Collection<AnnotationValue> postCheckProps = getCollectionFromAnnotationValue(value);
                 for (AnnotationValue val : postCheckProps) {
                     Element propElem = paramElem.getOwnerDocument().createElementNS(XMLNS_IWRP, "iwrp:cparam");
                     postCheckElem.appendChild(propElem);
@@ -626,7 +626,11 @@ public class IWrapperAnnotationProcessor implements AnnotationProcessor {
             }
             return compType;
         }
-
+        
+        @SuppressWarnings("unchecked")
+        private Collection<AnnotationValue> getCollectionFromAnnotationValue(AnnotationValue v) {
+            return (Collection<AnnotationValue>) v.getValue();
+        }
     }
 
 }

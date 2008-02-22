@@ -48,7 +48,7 @@ public class PageRequestConfigImpl implements SSLOption, Cloneable, PageRequestC
     private Class<? extends ResdocFinalizer> finalizer = null;
     private String authPrefix = null;
     private Class<? extends IWrapper> authClass = null;
-    private LinkedHashMap<String, Class<?>> auxwrappers = new LinkedHashMap<String, Class<?>>();
+    private LinkedHashMap<String, Class<? extends IWrapper>> auxwrappers = new LinkedHashMap<String, Class<? extends IWrapper>>();
     private LinkedHashMap<String, IWrapperConfigImpl> iwrappers = new LinkedHashMap<String, IWrapperConfigImpl>();
     private LinkedHashMap<String, Class<? extends ContextResource>> resources = new LinkedHashMap<String, Class<? extends ContextResource>>();
     private Properties props = new Properties();
@@ -165,7 +165,7 @@ public class PageRequestConfigImpl implements SSLOption, Cloneable, PageRequestC
     /* (non-Javadoc)
      * @see de.schlund.pfixxml.config.PageRequestConfig#getAuxWrappers()
      */
-    public Map<String, Class<?>> getAuxWrappers() {
+    public Map<String, Class<? extends IWrapper>> getAuxWrappers() {
         return this.auxwrappers;
     }
     

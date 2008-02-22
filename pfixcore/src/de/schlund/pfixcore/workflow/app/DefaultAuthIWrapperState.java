@@ -86,7 +86,7 @@ public class DefaultAuthIWrapperState extends StateImpl {
     private ArrayList<IWrapper> getAuxWrapper(Context context) throws Exception {
         ArrayList<IWrapper>  aux       = new ArrayList<IWrapper>();
         PageRequestConfig config = context.getConfigForCurrentPageRequest();
-        Map<String, Class<?>> auxwrp = config.getAuxWrappers();
+        Map<String, Class<? extends IWrapper>> auxwrp = config.getAuxWrappers();
         
         if (auxwrp != null) {
             for (Iterator<String> i = auxwrp.keySet().iterator(); i.hasNext(); ) {

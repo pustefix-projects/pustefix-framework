@@ -1,3 +1,23 @@
+2008-02-22  Sebastian Marsching  <sebastian.marsching@1und1.de>
+
+	* src/de/schlund/pfixcore/generator/iwrpgen/IWrapperAnnotationProcessor.java: 
+	* src/de/schlund/pfixcore/util/TransformerCallback.java: 
+	* src/de/schlund/pfixcore/webservice/json/parser/JSONParser.java: 
+	* src/de/schlund/pfixcore/workflow/app/DefaultAuthIWrapperState.java: 
+	* src/de/schlund/pfixxml/config/impl/PageRequestConfigImpl.java: 
+	* src/de/schlund/pfixxml/config/IWrapperConfig.java: 
+	* src/de/schlund/pfixxml/config/PageRequestConfig.java: 
+	* src/de/schlund/pfixxml/targets/SharedLeafFactory.java: 
+	* tests/junit/de/schlund/pfixcore/webservice/jsonws/ReadOnlyBean.java: 
+	Fixed some more compiler warnings.
+	
+	* build.xml: 
+	* skel/build-skel.xml: 
+	Seperated build process for Ant tasks: First the tasks needed for StatusCodeLib
+	generation are built. Then StatusCodeLib is built and then the rest of 
+	the tasks is built.
+
+
 2008-02-21  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
 	* src/de/schlund/pfixcore/lucefix/Tripel.java: 
