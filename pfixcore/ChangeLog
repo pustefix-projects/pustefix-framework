@@ -1,5 +1,12 @@
 2008-02-22  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
+	* .classpath: 
+	* lib/spring-2.0.7.jar: 
+	* lib/spring-2.5.1.jar: 
+	Updated Spring to release 2.5.1.
+
+2008-02-22  Sebastian Marsching  <sebastian.marsching@1und1.de>
+
 	* src/de/schlund/pfixcore/generator/iwrpgen/IWrapperAnnotationProcessor.java: 
 	* src/de/schlund/pfixcore/util/TransformerCallback.java: 
 	* src/de/schlund/pfixcore/webservice/json/parser/JSONParser.java: 
