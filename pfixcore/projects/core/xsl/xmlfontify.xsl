@@ -40,6 +40,7 @@
         </xsl:call-template>
         </table>
         <xsl:call-template name="render_iwrappers"/>
+        <xsl:call-template name="render_roles"/>
         <br/>
       </body>
     </html>
@@ -129,6 +130,28 @@
             </td>
           </tr>
         </xsl:for-each> 
+      </xsl:for-each>
+    </table>
+  </xsl:template>
+
+  <xsl:template name="render_roles">
+    <h1>Roles:</h1>
+    <table cellspacing="0" class="datatable">
+      <tr>
+        <th>Name</th>
+        <th>Initial?</th>
+      </tr>
+      <xsl:for-each select="callback:getRoles($__context__,/)/roles/role">
+        <tr>
+          <td>
+            <xsl:if test="position()=last()"><xsl:attribute name="class">rowsep</xsl:attribute></xsl:if>
+            <xsl:value-of select="@name"/>
+          </td>
+          <td>
+            <xsl:if test="position()=last()"><xsl:attribute name="class">rowsep</xsl:attribute></xsl:if>
+            <xsl:value-of select="@initial"/>
+          </td>
+        </tr>
       </xsl:for-each>
     </table>
   </xsl:template>

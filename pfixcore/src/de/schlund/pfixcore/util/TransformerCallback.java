@@ -17,8 +17,10 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
 import de.schlund.pfixcore.auth.Authentication;
+import de.schlund.pfixcore.auth.Role;
 import de.schlund.pfixcore.generator.IWrapper;
 import de.schlund.pfixcore.generator.IWrapperInfo;
+import de.schlund.pfixcore.workflow.Context;
 import de.schlund.pfixcore.workflow.ContextImpl;
 import de.schlund.pfixcore.workflow.PageRequest;
 import de.schlund.pfixcore.workflow.context.AccessibilityChecker;
@@ -221,4 +223,35 @@ public class TransformerCallback {
         }
     }
     
+    public static Node getRoles(RequestContextImpl requestContext, Node docNode) throws Exception {
+        try {
+            Context context = requestContext.getParentContext();
+            XsltVersion xsltVersion = Xml.getXsltVersion(docNode);
+            DocumentBuilder db = docBuilderFactory.newDocumentBuilder();
+            Document doc = db.newDocument();
+            Element root = doc.createElement("roles");
+            doc.appendChild(root);
+            if (context.getAuthentication() != null && context.getAuthentication().getRoles() != null) {
+	            for (Role role : context.getAuthentication().getRoles()) {
+	                Element elem = doc.createElement("role");
+	                elem.setAttribute("name", role.getName());
+	                elem.setAttribute("initial", Boolean.toString(role.isInitial()));
+	                root.appendChild(elem);            	
+	            }
+            }
+            if (LOG.isDebugEnabled()) {
+                TransformerFactory tf = TransformerFactory.newInstance();
+                Transformer t = tf.newTransformer();
+                t.setOutputProperty(OutputKeys.INDENT, "yes");
+                StringWriter writer = new StringWriter();
+                t.transform(new DOMSource(doc), new StreamResult(writer));
+                LOG.debug(writer.toString());
+            }
+            Node iwrpDoc = Xml.parse(xsltVersion, doc);
+            return iwrpDoc;
+        } catch(Exception x) {
+            ExtensionFunctionUtils.setExtensionFunctionError(x);
+            throw x;
+        }
+    }
 }
