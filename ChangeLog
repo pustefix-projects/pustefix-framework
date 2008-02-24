@@ -1,3 +1,10 @@
+2008-02-24  schst  <schst@stubbles.net>
+
+	* src/de/schlund/pfixcore/util/TransformerCallback.java: added new method
+	which returns a nodelist containing all roles of the current session
+	* projects/core/xsl/xmlfontify.xsl: added XSLT which retrieves the roles 
+	from the current session and shows the data in a table
+
 2008-02-22  jtl  <jtl@schoenberg.laudi.ka>
 
 	* src/de/schlund/pfixxml/resources/internal/DocrootResourceOnFileSystemImpl.java (toURL): 
