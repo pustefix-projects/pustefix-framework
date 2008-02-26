@@ -380,6 +380,13 @@ or delete the DOCTYPE definition -->
      description="Checks JARs for a Pustefix module deployment descriptor and unpacks the resources"
      />
     <taskdef
+     name="pfx-scmerge"
+     classname="de.schlund.pfixcore.util.MergeTask"
+     classpathref="cp.classpath"
+     loaderref="pfx-loader"
+     description="Merge statusmessages from module with existing statusmessages"
+    />
+    <taskdef
       name="pfx-apt"
       classname="de.schlund.pfixcore.generator.iwrpgen.AptTask"
       classpathref="cp.classpath"
@@ -387,7 +394,7 @@ or delete the DOCTYPE definition -->
       description="Pustefix APT task"
     />
   </target>
-  
+
   <target name="ant-tasks-webservice">
     <taskdef
       name="pfx-webservice"
@@ -470,7 +477,8 @@ or delete the DOCTYPE definition -->
   <target name="extract-modules-check">
     <!-- extract only if there are newer jars in the src directory than the target directory -->
     <uptodate property="upd.extract-modules" targetfile="${dir.extract.modules}/TIMESTAMP">
-      <srcfiles dir= "${dir.src.modules}" includes="**/*.jar"/>
+      <srcfiles dir="${dir.src.modules}" includes="**/*.jar"/>
+      <srcfiles dir="${basedir}" includes="${lib.includes}"/>
     </uptodate>
   </target>
 
@@ -488,6 +496,7 @@ or delete the DOCTYPE definition -->
         <include name="*/build.xml"/>
       </fileset>   
     </foreach> 
+    <antcall target="scmerge-modules"/>
   </target>
  
   <target name="-extract-jar-modules" depends="ant-tasks" description="Extracts resource data from JAR libraries">
@@ -520,20 +529,29 @@ or delete the DOCTYPE definition -->
     <untar dest="${dir.projects}" compression="gzip" overwrite="true">
       <fileset refid="id.fs.pfixcore_data_tgz"/>
     </untar>
-    <antcall target="merge"/>
+    <antcall target="scmerge-core"/>
     <chmod perm="444"><fileset dir="${dir.projects}/core" includes="**/*"/></chmod>
     <touch file="${dir.projects}/core/TIMESTAMP"></touch>
   </target>
 
-  <target name="merge">
-    <property name="merge.src" location="${dir.projects}/core/dyntxt/statusmessages.xml"/>
-    <property name="merge.srcPath" location="/include_parts/part/theme[@name='default']"/>
-    <property name="merge.dest" location="${dir.projects}/common/dyntxt/statusmessages-core-merged.xml"/>
-    <java classname="de.schlund.pfixcore.util.Merge" fork="true" classpathref="cp.classpath" failonerror="true">
-      <arg file="${merge.src}"/>
-      <arg value="${merge.srcPath}"/>
-      <arg file="${merge.dest}"/>
-    </java>
+  <target name="scmerge-core" depends="ant-tasks-stage2">
+    <pfx-scmerge 
+      srcdir="${dir.projects}/core" 
+      destdir="${dir.projects}/common" 
+      includes="dyntxt/statusmessages.xml"
+      suffix="-core-merged"
+      selection="/include_parts/part/theme[@name='default']"
+    />
+  </target>
+
+  <target name="scmerge-modules" depends="ant-tasks-stage2">
+    <pfx-scmerge 
+      srcdir="${dir.projects}/modules" 
+      destdir="${dir.projects}/modules-override" 
+      includes="*/dyntxt/statusmessages.xml"
+      suffix="-merged"
+      selection="/include_parts/part/theme[@name='default']"
+    />
   </target>
 
   <target name="scgenerate" depends="propfiles">

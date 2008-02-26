@@ -1,3 +1,20 @@
+2008-02-26  Martin Leidig  <mleidig@schlund.de>
+
+	Added support for merging/overriding statusmessages coming from
+	modules. Therefore the dyntxt/statusmessages.xml files in the 
+	projects/modules/<module> directories are merged into the according
+	projects/modules-override/<module>/dyntxt/statusmessages-merged.xml
+	files.
+	
+	* src/de/schlund/pfixcore/util/MergeTask.java: New ant task for
+	merging statusmessage files
+	* src/de/schlund/pfixxml/util/FileUtils.java: New utility class
+	for file handling stuff
+	* skel/build-skel.xml: Added task definition for MergeTask, added merge
+	targets scmerge-core and scmerge-modules
+	* src/de/schlund/pfixcore/util/Merge.java: Added 'verbose' option
+	to disable output
+
 2008-02-26  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
 	* src/de/schlund/pfixcore/workflow/context/RequestContextImpl.java: 
