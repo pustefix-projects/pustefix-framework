@@ -63,8 +63,6 @@ public class ContextImpl implements Context, AccessibilityChecker, ExtendedConte
      */
     private class SessionContextImpl {
         private HttpSession            session;
-        private String                 lastPageName     = null;
-        private String                 lastPageFlowName = null;
         private Variant                variant          = null;
         private String                 visitId          = null;
         private ContextResourceManagerImpl crm;
@@ -148,22 +146,6 @@ public class ContextImpl implements Context, AccessibilityChecker, ExtendedConte
                 }
             }
             return visitId;
-        }
-
-        public String getLastPageFlowName() {
-            return lastPageFlowName;
-        }
-
-        public void setLastPageFlowName(String lastPageFlowName) {
-            this.lastPageFlowName = lastPageFlowName;
-        }
-
-        public String getLastPageName() {
-            return lastPageName;
-        }
-
-        public void setLastPageName(String lastPageName) {
-            this.lastPageName = lastPageName;
         }
 
         public void addVisitedPage(String pagename) {
@@ -428,22 +410,6 @@ public class ContextImpl implements Context, AccessibilityChecker, ExtendedConte
     
     public void addVisitedPage(String pagename) {
         sessioncontext.addVisitedPage(pagename);
-    }
-    
-    public String getLastPageName() {
-        return sessioncontext.getLastPageName();
-    }
-    
-    public String getLastPageFlowName() {
-        return sessioncontext.getLastPageFlowName();
-    }
-    
-    public void setLastPageName(String pagename) {
-        sessioncontext.setLastPageName(pagename);
-    }
-    
-    public void setLastPageFlowName(String pagename) {
-        sessioncontext.setLastPageFlowName(pagename);
     }
     
     // ----------------
