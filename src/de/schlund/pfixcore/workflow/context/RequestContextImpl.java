@@ -120,32 +120,13 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
         this.variantmanager  = servercontext.getVariantManager();
         this.pagemap         = servercontext.getPageMap();
 
-        // Look for last request in session
-        // this is done to get a behaviour similar to the old one
-        // when requests where only done synchronous
-        String lastpage     = null;
-        String lastpageflow = null;
-        lastpage      = parentcontext.getLastPageName();
-        lastpageflow  = parentcontext.getLastPageFlowName();
         this.variant  = parentcontext.getSessionVariant();
         this.language = parentcontext.getSessionLanguage();
-        if (lastpage != null && lastpageflow != null) {
-            PageFlow tempflow = pageflowmanager.getPageFlowByName(lastpageflow, getVariant());
 
-            // Check if page is in flow - this is important as
-            // we access the properties in an unsynchronized
-            // way and so they may be inconsistent
-            if (tempflow.containsPage(lastpage)) {
-                currentpageflow    = tempflow;
-                currentpagerequest = createPageRequest(lastpage);
-            }
-        }
-        if (currentpageflow == null) {
-            currentpageflow = pageflowmanager.getPageFlowByName(servercontext.getContextConfig().getDefaultFlow(), getVariant());
-        }
-        if (currentpagerequest == null) {
-            currentpagerequest = createPageRequest(currentpageflow.getFirstStep().getPageName());
-        }
+        // Initialize with default values, will be overwritten by 
+        // request parameters
+        currentpageflow = pageflowmanager.getPageFlowByName(servercontext.getContextConfig().getDefaultFlow(), getVariant());
+        currentpagerequest = createPageRequest(currentpageflow.getFirstStep().getPageName());
 
         checkForAuthenticationMode();
     }
@@ -534,10 +515,6 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
             storeCookies(spdoc);
             spdoc.setProperty(ContextXMLServlet.XSLPARAM_REQUESTCONTEXT, this);
         }
-
-        // Save pagerequest and pageflow
-        parentcontext.setLastPageName(getCurrentPageRequest().getRootName());
-        parentcontext.setLastPageFlowName(getCurrentPageFlow().getRootName());
 
         return spdoc;
     }
