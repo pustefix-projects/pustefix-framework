@@ -35,6 +35,7 @@ import de.schlund.pfixxml.util.XPath;
 import de.schlund.pfixxml.util.Xml;
 
 public class Merge {
+    
     public static void main(String[] args) throws Exception {
         if (args.length != 3) {
             throw new IOException("expected 3 arguments, got " + args.length);
@@ -47,11 +48,17 @@ public class Merge {
     private final File src;
     private final String srcPath;
     private final File dest;
+    private final boolean verbose;
     
-    public Merge(File src, String srcPath, File dest) throws IOException {
+    public Merge(File src, String srcPath, File dest) {
+        this(src, srcPath, dest, true);
+    }
+    
+    public Merge(File src, String srcPath, File dest, boolean verbose) {
         this.src = src;
         this.srcPath = srcPath;
         this.dest = dest;
+        this.verbose = verbose;
     }
     
     public void run() throws SAXException, IOException, TransformerException {
@@ -59,13 +66,13 @@ public class Merge {
         List<Node> nodes;
         int modified;
         
-        System.out.println("Merge " + src + " into" + dest);
+        if(verbose) System.out.println("Merge " + src + " into" + dest);
         destDoc = Xml.parseMutable(dest);
         remove(XPath.select(destDoc, "/include_parts/part/theme[count(*) = 0 and normalize-space(text()) = '']"));
         remove(XPath.select(destDoc, "/include_parts/part[count(theme) = 0]"));
         nodes = XPath.select(Xml.parseMutable(src), srcPath);
         modified = merge(Generics.<Element>convertList(nodes), destDoc);
-        System.out.println("  merged: " + modified);
+        if(verbose) System.out.println("  merged: " + modified);
         Xml.serialize(destDoc, dest, true, true);
     }
 
