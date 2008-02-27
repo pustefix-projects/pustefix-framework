@@ -26,7 +26,7 @@
   </authconstraint>
   
   <authconstraint id="CS_ACCOUNT" authpage="login">
-  	<or>
+    <or>
       <hasrole name="UNRESTRICTED"/>
       <hasrole name="ACCOUNT"/>
     </or>
