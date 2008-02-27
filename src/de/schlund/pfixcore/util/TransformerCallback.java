@@ -1,6 +1,8 @@
 package de.schlund.pfixcore.util;
 
 import java.io.StringWriter;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Map;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -24,8 +26,7 @@ import de.schlund.pfixcore.workflow.Context;
 import de.schlund.pfixcore.workflow.ContextImpl;
 import de.schlund.pfixcore.workflow.PageRequest;
 import de.schlund.pfixcore.workflow.context.AccessibilityChecker;
-import de.schlund.pfixcore.workflow.context.RequestContextImpl;
-//import de.schlund.pfixxml.SPDocument;
+import de.schlund.pfixcore.workflow.context.RequestContextImpl; //import de.schlund.pfixxml.SPDocument;
 import de.schlund.pfixxml.config.IWrapperConfig;
 import de.schlund.pfixxml.config.PageRequestConfig;
 import de.schlund.pfixxml.util.ExtensionFunctionUtils;
@@ -42,14 +43,13 @@ import de.schlund.pfixxml.util.XsltVersion;
  * @version 1.0
  */
 public class TransformerCallback {
-    
-    private final static Logger LOG=Logger.getLogger(TransformerCallback.class);
 
-    private static DocumentBuilderFactory  docBuilderFactory = DocumentBuilderFactory.newInstance();
-    
-//    public static void setNoStore(SPDocument spdoc) {
-//        spdoc.setNostore(true);
-//    }
+    private final static Logger           LOG               = Logger.getLogger(TransformerCallback.class);
+    private static DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
+
+    // public static void setNoStore(SPDocument spdoc) {
+    // spdoc.setNostore(true);
+    // }
 
     public static int isAccessible(RequestContextImpl requestcontext, String pagename) throws Exception {
         try {
@@ -71,7 +71,7 @@ public class TransformerCallback {
                 }
             }
             return -1;
-        } catch(Exception x) {
+        } catch (Exception x) {
             ExtensionFunctionUtils.setExtensionFunctionError(x);
             throw x;
         }
@@ -97,67 +97,69 @@ public class TransformerCallback {
                 }
             }
             return -1;
-        } catch(Exception x) {
+        } catch (Exception x) {
             ExtensionFunctionUtils.setExtensionFunctionError(x);
             throw x;
         }
     }
-    
+
     public static String getToken(RequestContextImpl requestContext, String tokenName) throws Exception {
         try {
             tokenName = tokenName.trim();
             if (tokenName.contains(":")) throw new IllegalArgumentException("Illegal token name: " + tokenName);
             String token = requestContext.getParentContext().getToken(tokenName);
             return token;
-        } catch(Exception x) {
+        } catch (Exception x) {
             ExtensionFunctionUtils.setExtensionFunctionError(x);
             throw x;
         }
     }
-    
+
     public static boolean requiresToken(RequestContextImpl requestContext, String pageName) throws Exception {
-    	try {
-    		ContextImpl context = requestContext.getParentContext();
-    		PageRequestConfig pageConfig = context.getContextConfig().getPageRequestConfig(pageName);
-            if(pageConfig!=null) return pageConfig.requiresToken();
-    		return false;
-    	} catch(Exception x) {
+        try {
+            ContextImpl context = requestContext.getParentContext();
+            PageRequestConfig pageConfig = context.getContextConfig().getPageRequestConfig(pageName);
+            if (pageConfig != null) return pageConfig.requiresToken();
+            return false;
+        } catch (Exception x) {
             ExtensionFunctionUtils.setExtensionFunctionError(x);
             throw x;
         }
     }
-    
+
     public static Node getIWrapperInfo(RequestContextImpl requestContext, Node docNode, String pageName, String prefix) {
         try {
             ContextImpl context = requestContext.getParentContext();
             XsltVersion xsltVersion = Xml.getXsltVersion(docNode);
-            if(pageName==null || pageName.equals("")) {
-                PageRequest pg=requestContext.getCurrentPageRequest();
-                if(pg!=null) pageName=pg.getName();
-                else throw new IllegalArgumentException("Missing page name");
+            if (pageName == null || pageName.equals("")) {
+                PageRequest pg = requestContext.getCurrentPageRequest();
+                if (pg != null)
+                    pageName = pg.getName();
+                else
+                    throw new IllegalArgumentException("Missing page name");
             }
             PageRequestConfig pageConfig = context.getContextConfig().getPageRequestConfig(pageName);
-            if (pageConfig!=null) {
+            if (pageConfig != null) {
                 Map<String, ? extends IWrapperConfig> iwrappers = pageConfig.getIWrappers();
-                Class<? extends IWrapper> iwrpClass=null;
+                Class<? extends IWrapper> iwrpClass = null;
                 IWrapperConfig iwrpConfig = iwrappers.get(prefix);
                 if (iwrpConfig != null) {
                     iwrpClass = (Class<? extends IWrapper>) iwrpConfig.getWrapperClass();
-                } else if(pageConfig.getAuthWrapperPrefix() != null && pageConfig.getAuthWrapperPrefix().equals(prefix)) {
+                } else if (pageConfig.getAuthWrapperPrefix() != null && pageConfig.getAuthWrapperPrefix().equals(prefix)) {
                     iwrpClass = (Class<? extends IWrapper>) pageConfig.getAuthWrapperClass();
                 } else {
-                    Map<String,Class<? extends IWrapper>> auxWrappers = pageConfig.getAuxWrappers();
+                    Map<String, Class<? extends IWrapper>> auxWrappers = pageConfig.getAuxWrappers();
                     iwrpClass = (Class<? extends IWrapper>) auxWrappers.get(prefix);
                 }
-                if(iwrpClass != null) return IWrapperInfo.getDocument(iwrpClass, xsltVersion);
+                if (iwrpClass != null) return IWrapperInfo.getDocument(iwrpClass, xsltVersion);
             }
             return null;
-        } catch(RuntimeException x) {
+        } catch (RuntimeException x) {
             ExtensionFunctionUtils.setExtensionFunctionError(x);
             throw x;
         }
     }
-    
+
     public static Node getIWrappers(RequestContextImpl requestContext, Node docNode, String pageName) throws Exception {
         try {
             ContextImpl context = requestContext.getParentContext();
@@ -166,32 +168,34 @@ public class TransformerCallback {
             Document doc = db.newDocument();
             Element root = doc.createElement("iwrappers");
             doc.appendChild(root);
-            if(pageName==null || pageName.equals("")) {
-                PageRequest pg=requestContext.getCurrentPageRequest();
-                if(pg!=null) pageName=pg.getName();
-                else throw new IllegalArgumentException("Missing page name");
+            if (pageName == null || pageName.equals("")) {
+                PageRequest pg = requestContext.getCurrentPageRequest();
+                if (pg != null)
+                    pageName = pg.getName();
+                else
+                    throw new IllegalArgumentException("Missing page name");
             }
             PageRequestConfig pageConfig = context.getContextConfig().getPageRequestConfig(pageName);
-            if(pageConfig!=null) {
-                if(pageConfig.getAuthWrapperPrefix()!=null) {
-                    Element elem=doc.createElement("iwrapper");
-                    elem.setAttribute("type","auth");
-                    elem.setAttribute("prefix",pageConfig.getAuthWrapperPrefix());
+            if (pageConfig != null) {
+                if (pageConfig.getAuthWrapperPrefix() != null) {
+                    Element elem = doc.createElement("iwrapper");
+                    elem.setAttribute("type", "auth");
+                    elem.setAttribute("prefix", pageConfig.getAuthWrapperPrefix());
                     root.appendChild(elem);
                 }
-                Map<String,Class<? extends IWrapper>> auxWrappers=pageConfig.getAuxWrappers();
-                for(String prefix:auxWrappers.keySet()) {
-                    Element elem=doc.createElement("iwrapper");
-                    elem.setAttribute("type","aux");
-                    elem.setAttribute("prefix",prefix);
+                Map<String, Class<? extends IWrapper>> auxWrappers = pageConfig.getAuxWrappers();
+                for (String prefix : auxWrappers.keySet()) {
+                    Element elem = doc.createElement("iwrapper");
+                    elem.setAttribute("type", "aux");
+                    elem.setAttribute("prefix", prefix);
                     root.appendChild(elem);
                 }
                 Map<String, ? extends IWrapperConfig> iwrappers = pageConfig.getIWrappers();
-                for(String prefix:iwrappers.keySet()) {
-                    Element elem=doc.createElement("iwrapper");
-                    elem.setAttribute("prefix",prefix);
+                for (String prefix : iwrappers.keySet()) {
+                    Element elem = doc.createElement("iwrapper");
+                    elem.setAttribute("prefix", prefix);
                     root.appendChild(elem);
-                }          
+                }
             }
             if (LOG.isDebugEnabled()) {
                 TransformerFactory tf = TransformerFactory.newInstance();
@@ -203,27 +207,27 @@ public class TransformerCallback {
             }
             Node iwrpDoc = Xml.parse(xsltVersion, doc);
             return iwrpDoc;
-        } catch(Exception x) {
+        } catch (Exception x) {
             ExtensionFunctionUtils.setExtensionFunctionError(x);
             throw x;
         }
     }
-    
+
     public static boolean hasRole(RequestContextImpl requestContext, String roleName) throws Exception {
         try {
             ContextImpl context = requestContext.getParentContext();
             Authentication auth = context.getAuthentication();
-            if(auth!=null) {
-            	return auth.hasRole(roleName);
+            if (auth != null) {
+                return auth.hasRole(roleName);
             }
             return false;
-        } catch(Exception x) {
+        } catch (Exception x) {
             ExtensionFunctionUtils.setExtensionFunctionError(x);
             throw x;
         }
     }
-    
-    public static Node getRoles(RequestContextImpl requestContext, Node docNode) throws Exception {
+
+    public static Node getAllDefinedRoles(RequestContextImpl requestContext, Node docNode) throws Exception {
         try {
             Context context = requestContext.getParentContext();
             XsltVersion xsltVersion = Xml.getXsltVersion(docNode);
@@ -231,14 +235,24 @@ public class TransformerCallback {
             Document doc = db.newDocument();
             Element root = doc.createElement("roles");
             doc.appendChild(root);
+            Map<String, Role> configuredroles = context.getContextConfig().getRoles();
+            HashSet<Role> currentroles = new HashSet<Role>();
             if (context.getAuthentication() != null && context.getAuthentication().getRoles() != null) {
-	            for (Role role : context.getAuthentication().getRoles()) {
-	                Element elem = doc.createElement("role");
-	                elem.setAttribute("name", role.getName());
-	                elem.setAttribute("initial", Boolean.toString(role.isInitial()));
-	                root.appendChild(elem);            	
-	            }
+                currentroles.addAll(Arrays.asList(context.getAuthentication().getRoles()));
             }
+            
+            for (Role role : configuredroles.values()) {
+                Element elem = doc.createElement("role");
+                elem.setAttribute("name", role.getName());
+                elem.setAttribute("initial", Boolean.toString(role.isInitial()));
+                if (currentroles.contains(role)) {
+                    elem.setAttribute("current", "true");
+                } else {
+                    elem.setAttribute("current", "false");
+                }
+                root.appendChild(elem);
+            }
+            
             if (LOG.isDebugEnabled()) {
                 TransformerFactory tf = TransformerFactory.newInstance();
                 Transformer t = tf.newTransformer();
@@ -249,7 +263,7 @@ public class TransformerCallback {
             }
             Node iwrpDoc = Xml.parse(xsltVersion, doc);
             return iwrpDoc;
-        } catch(Exception x) {
+        } catch (Exception x) {
             ExtensionFunctionUtils.setExtensionFunctionError(x);
             throw x;
         }
