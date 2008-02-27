@@ -1,0 +1,120 @@
+body,div,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,pre,form,fieldset,input,textarea,p,blockquote,th,td {  
+  margin: 0; 
+  padding: 0; 
+  font-size: 13px;
+  font-family: Arial, Verdana, helvetica, sans serif;
+} 
+
+body {
+  padding: 10px 20px;
+}
+
+h1, h2, h3, h4, h6 {
+  color: #144377;
+  font-family: Verdana, Arial, Helvetica, sans-serif;
+  font-weight: 500;
+  padding-top: 14px;
+}
+
+h1 {
+  font-size: 24px;
+}
+
+h2 {
+  font-size: 20px;
+}
+
+h3 {
+  font-size: 18px;
+}
+
+h4 {
+  font-size: 16px;
+}
+
+p, ul, dl {
+  padding-top: 10px;
+  line-height: 1.3em;
+}
+
+dl dl {
+  padding-top: 0;
+}
+
+li {
+  margin-left: 20px;
+}
+
+a {
+  color: #bb0000;
+}
+
+a:hover {
+  color: #555;
+  background-color: #eee;
+}
+
+a:visited {
+  color: #555;
+}
+
+pre {
+  margin-top: 10px;
+  background-color: #edebe5;
+  border: 1px #aea574 solid;
+  padding: 10px;
+}
+
+th, td {
+  padding: 5px;
+}
+
+hr {
+  border: 0 none;
+  border-top: 1px #555 dashed;
+}
+
+
+/* syntax highlighting */
+
+.hl-keyword {
+  font-weight: bold;
+}
+
+.hl-string {
+  color: red;
+  font-style: italic;
+}
+
+.hl-comment {
+  color: silver;
+  font-style: italic;
+}
+
+.hl-tag {
+  color: blue;
+  font-weight: bold;
+}
+
+.hl-attribute {
+  color: blue;
+}
+
+.hl-value {
+  color: blue;
+}
+
+.hl-html {
+  color: red;
+  font-weight: bold;
+  font-style: italic;
+}
+
+.hl-xslt {
+  color: blue;
+  font-weight: bold;
+}
+
+.hl-section {
+  font-weight: bold;
+}

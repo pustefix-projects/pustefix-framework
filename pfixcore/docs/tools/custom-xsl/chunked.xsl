@@ -1,6 +1,7 @@
 <?xml version="1.0"?>
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0">
   <xsl:import href="../docbook-xsl-ns/html/chunkfast.xsl"/>
+  <xsl:import href="style-highlight.xsl"/>
   <xsl:param name="use.id.as.filename" select="1"/>
   <xsl:param name="root.filename" select="'index'"/>
   <xsl:param name="chunk.section.depth" select="0"/>
@@ -17,5 +18,5 @@
   <xsl:param name="admon.graphics" select="1"/>
   <xsl:param name="admon.graphics.path" select="'../images/docbook/'"/>
   <xsl:param name="img.src.path" select="'../'"/>
-  <xsl:param name="html.stylesheet" select="'css/style.css'"/>
+  <xsl:param name="html.stylesheet" select="'../css/style.css'"/>
 </xsl:stylesheet>
