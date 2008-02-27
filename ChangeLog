@@ -1,6 +1,11 @@
 2008-02-26  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
 	* docs/*: 
+	New styles for Docbook HTML generation.
+
+2008-02-26  Sebastian Marsching  <sebastian.marsching@1und1.de>
+
+	* docs/*: 
 	Extended Docbook build mechanism to support CSS.
 
 2008-02-26  Martin Leidig  <mleidig@schlund.de>
