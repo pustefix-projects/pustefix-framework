@@ -53,6 +53,10 @@
     <copy todir="build/chunked/images">
       <fileset dir="build/images" includes="**/**"></fileset>
     </copy>
+    <mkdir dir="build/chunked/css"/>
+    <copy todir="build/chunked/css">
+      <fileset dir="src/css" includes="**/**"></fileset>
+    </copy>
     <foreach target="-transform-chunked" param="filename">
       <path>
         <fileset dir="src" includes="**.xml"/>
@@ -65,6 +69,10 @@
     <mkdir dir="build/html/images"/>
     <copy todir="build/html/images">
       <fileset dir="build/images" includes="**/**"></fileset>
+    </copy>
+    <mkdir dir="build/html/css"/>
+    <copy todir="build/html/css">
+      <fileset dir="src/css" includes="**/**"></fileset>
     </copy>
     <mkdir dir="build/html"/>
     <foreach target="-transform-html" param="filename">
@@ -79,24 +87,8 @@
     <propertyregex property="longbasename" input="${filename}" regexp=".*/([^/]+\.xml)" select="\1"/> 
     <echo level="info" message="Processing ${longbasename}"/> 
     <mkdir dir="build/chunked/${basename}"/> 
-    <xi-xslt style="../tools/docbook-xsl-ns/html/chunkfast.xsl" validate="false" classpathref="xslt.classpath" in="${filename}" out="build/chunked/${basename}.TIMESTAMP">
+    <xi-xslt style="../tools/custom-xsl/chunked.xsl" validate="false" classpathref="xslt.classpath" in="${filename}" out="build/chunked/${basename}.TIMESTAMP">
       <param name="base.dir" expression="build/chunked/${basename}/"/>
-      <param name="use.id.as.filename" expression="1"/>
-      <param name="root.filename" expression="index"/>
-      <param name="chunk.section.depth" expression="0"/>
-      <param name="section.autolabel" expression="1"/>
-      <param name="section.autolabel.max.depth" expression="1"/>
-      <param name="section.label.includes.component.label" expression="1"/>
-      <param name="html.cleanup" expression="1"/>
-      <param name="use.extensions" expression="1"/>
-      <param name="textinsert.extension" expression="1"/>
-      <param name="linenumbering.extension" expression="1"/>
-      <param name="graphicsize.extension" expression="0"/>
-      <param name="highlight.source" expression="1"/>
-      <param name="callout.graphics.path" expression="../images/docbook/callouts/"/>
-      <param name="admon.graphics" expression="1"/>
-      <param name="admon.graphics.path" expression="../images/docbook/"/>
-      <param name="img.src.path" expression="../"/>
     </xi-xslt>
   </target>
   
@@ -104,19 +96,7 @@
     <propertyregex property="basename" input="${filename}" regexp=".*/([^/]+)\.xml" select="\1"/>
     <propertyregex property="longbasename" input="${filename}" regexp=".*/([^/]+\.xml)" select="\1"/>
     <echo level="info" message="Processing ${longbasename}"/> 
-    <xi-xslt style="../tools/docbook-xsl-ns/html/docbook.xsl" classpathref="xslt.classpath" in="${filename}" out="build/html/${basename}.html">
-      <param name="section.autolabel" expression="1"/>
-      <param name="section.label.includes.component.label" expression="1"/>
-      <param name="section.autolabel.max.depth" expression="1"/>
-      <param name="html.cleanup" expression="1"/>
-      <param name="use.extensions" expression="1"/>
-      <param name="textinsert.extension" expression="1"/>
-      <param name="linenumbering.extension" expression="1"/>
-      <param name="graphicsize.extension" expression="0"/>
-      <param name="highlight.source" expression="1"/>
-      <param name="callout.graphics.path" expression="images/docbook/callouts/"/>
-      <param name="admon.graphics" expression="1"/>
-      <param name="admon.graphics.path" expression="images/docbook/"/>
+    <xi-xslt style="../tools/custom-xsl/html.xsl" classpathref="xslt.classpath" in="${filename}" out="build/html/${basename}.html">
     </xi-xslt>
   </target>
   

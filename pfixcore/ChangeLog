@@ -1,3 +1,8 @@
+2008-02-26  Sebastian Marsching  <sebastian.marsching@1und1.de>
+
+	* docs/*: 
+	Extended Docbook build mechanism to support CSS.
+
 2008-02-26  Martin Leidig  <mleidig@schlund.de>
 
 	Added support for merging/overriding statusmessages coming from
