@@ -68,8 +68,9 @@
 <!--    <xsl:variable name="acc_retval">1</xsl:variable>-->
     <xsl:variable name="visited"> 
       <xsl:choose>
-        <xsl:when test="$vis_retval = 1">&#8226;</xsl:when>
+        <xsl:when test="$vis_retval = 1">&#9745;</xsl:when>
         <xsl:when test="$vis_retval = -1"><span style="color:#aaaaaa;">?</span></xsl:when>
+        <xsl:otherwise>&#9744;</xsl:otherwise>
       </xsl:choose>
     </xsl:variable>
     <xsl:variable name="visible">
@@ -89,7 +90,7 @@
         <xsl:value-of select="$ind"/><xsl:value-of select="@name"/>
       </td>
       <td><span style="color:#aaaaaa;"><xsl:value-of select="@handler"/></span></td>
-      <td align="center"><xsl:copy-of select="$visited"/></td>
+      <td align="center" style="font-family: sans;"><xsl:copy-of select="$visited"/></td>
       <td align="center"><xsl:copy-of select="$visible"/></td>
     </tr>
   </xsl:template>
@@ -158,17 +159,22 @@
           <td>
             <xsl:if test="position()=last()"><xsl:attribute name="class">rowsep</xsl:attribute></xsl:if>
             <span>
-              <xsl:if test="@current = 'false'"><xsl:attribute name="style">color:#aaaaaa;</xsl:attribute></xsl:if>
               <xsl:value-of select="@name"/>
             </span>
           </td>
-          <td align="center">
+          <td align="center" style="font-family: sans;">
             <xsl:if test="position()=last()"><xsl:attribute name="class">rowsep</xsl:attribute></xsl:if>
-            <xsl:if test="@current = 'true'">&#8226;</xsl:if>
+            <xsl:choose>
+              <xsl:when test="@current = 'true'">&#9745;</xsl:when>
+              <xsl:otherwise>&#9744;</xsl:otherwise>
+            </xsl:choose>
           </td>
-          <td align="center">
+          <td align="center" style="font-family: sans;">
             <xsl:if test="position()=last()"><xsl:attribute name="class">rowsep</xsl:attribute></xsl:if>
-            <xsl:if test="@initial = 'true'">&#8226;</xsl:if>
+            <xsl:choose> 
+              <xsl:when test="@initial = 'true'">&#9899;</xsl:when>
+              <xsl:otherwise>&#9898;</xsl:otherwise> 
+            </xsl:choose>
           </td>
         </tr>
         </xsl:for-each>
