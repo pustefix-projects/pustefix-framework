@@ -1,3 +1,10 @@
+2008-02-27  jtl  <jtl@schoenberg.laudi.ka>
+
+	* projects/core/xsl/xmlfontify.xsl: 
+	* src/de/schlund/pfixcore/util/TransformerCallback.java (getRoles->getAllDefinedRoles): 
+	changed the getRoles to getAllDefinedRoles, and also change the way it works. 
+	Now it will return ALL defined roles for the current context.
+
 2008-02-26  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
 	* docs/*: 
@@ -8,6 +15,7 @@
 	* docs/*: 
 	Extended Docbook build mechanism to support CSS.
 
+>>>>>>> .r3381
 2008-02-26  Martin Leidig  <mleidig@schlund.de>
 
 	Added support for merging/overriding statusmessages coming from
