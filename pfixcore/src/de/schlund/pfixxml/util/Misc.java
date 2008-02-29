@@ -22,6 +22,6 @@ package de.schlund.pfixxml.util;
 /** util stuff stat doesn't fit anywhere else */
 public class Misc {
     // TODO: there might be a better place for this ...
-    public static final Class[] NO_CLASSES = new Class[] {};
+    public static final Class<?>[] NO_CLASSES = new Class[] {};
     public static final Object[] NO_OBJECTS = new Object[] {};
 }

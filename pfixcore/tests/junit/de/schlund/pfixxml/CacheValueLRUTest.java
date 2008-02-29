@@ -12,11 +12,11 @@ public class CacheValueLRUTest extends TestCase {
         map.put("Key_B", "Val_2");        
         map.put("Key_C", "Val_3");
         System.out.println(map);
-        assertEquals(3, map.sizeOfKeyEntries());
+        assertEquals(3, map.size());
         assertEquals(3, map.sizeOfUniqueValueEntries());
         map.put("Key_X", "Val_1");
         System.out.println(map);
-        assertEquals(4, map.sizeOfKeyEntries());
+        assertEquals(4, map.size());
         assertEquals(3, map.sizeOfUniqueValueEntries());
         assertEquals(map.get("Key_X"), "Val_1");
         assertEquals(map.get("Key_A"), "Val_1");
@@ -52,7 +52,7 @@ public class CacheValueLRUTest extends TestCase {
         assertEquals(1, map.sizeOfKeyEntriesForValue("Val_3"));
         System.out.println(map);
         map.remove("Key_C");
-        assertEquals(2, map.sizeOfKeyEntries());
+        assertEquals(2, map.size());
         System.out.println(map);
     }
 }
