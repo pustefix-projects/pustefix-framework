@@ -237,6 +237,16 @@
     <appender-ref ref="LOGGER_GENERAL"/>
   </category>
   
+  <category name="de.schlund.pfixxml.util.CacheValueLRU" additivity="false">
+    <priority value="INFO"/>
+    <appender-ref ref="LOGGER_GENERAL"/>
+  </category>
+  
+  <category name="de.schlund.pfixcore.generator.IWrapperInfo" additivity="false">
+    <priority value="INFO"/>
+    <appender-ref ref="LOGGER_GENERAL"/>
+  </category>
+
   <!-- special categories for additional logfiles -->
   
   <category name="LOGGER_EDITOR" additivity="false">
@@ -284,6 +294,7 @@
     <priority value="DEBUG"/>
     <appender-ref ref="LOGGER_JMX"/>
   </category>
+
 
   <!-- default category -->
 
