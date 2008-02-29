@@ -24,6 +24,8 @@ package de.schlund.pfixcore.webservice;
  */
 public class AuthenticationException extends ServiceException {
 
+    private static final long serialVersionUID = 6857029225518522671L;
+
     public AuthenticationException(String message) {
         super(message);
     }
