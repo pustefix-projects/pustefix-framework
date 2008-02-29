@@ -82,7 +82,6 @@ public class IWrapperSimpleContainer implements IWrapperContainer {
     private   boolean            is_loaded      = false;
     protected Logger             LOG            = Logger.getLogger(this.getClass());
     
-    public  static final String PROP_CONTAINER       = "iwrappercontainer";
     //private static final String PROP_INTERFACE       = "interface";
     public  static final String PROP_RESTRICED       = "restrictedcontinue";
     public  static final String PROP_ALWAYS_RETRIEVE = "alwaysretrieve";

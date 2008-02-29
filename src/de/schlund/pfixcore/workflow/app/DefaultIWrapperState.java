@@ -46,7 +46,7 @@ public class DefaultIWrapperState extends StateImpl {
     
     private static String DEF_WRP_CONTAINER = "de.schlund.pfixcore.workflow.app.IWrapperSimpleContainer";
     private static String DEF_FINALIZER     = "de.schlund.pfixcore.workflow.app.ResdocSimpleFinalizer";
-
+    private static String PROP_CONTAINER    = "iwrappercontainer";
     private static String IHDL_CONT_MANAGER = "de.schlund.pfixcore.workflow.app.IHandlerContainerManager";
     
     /**
@@ -193,7 +193,7 @@ public class DefaultIWrapperState extends StateImpl {
             throw new XMLException("This should not happen: No submit trigger, no direct trigger, no final page and no workflow???");
         }
 
-        // We want to optimise away the case where the context tells us that we don't need to supply
+        // We want to optimize away the case where the context tells us that we don't need to supply
         // a full document as the context will - because of the current state of the context
         // itself - not use the returned document for displaying the page or any further processing anyway. The context is
         // responsible to only return false when it can be 100% sure that the document is not needed.
@@ -213,7 +213,7 @@ public class DefaultIWrapperState extends StateImpl {
     // Eeek, unfortunately we can't use a flyweight here... (somewhere we need to store state after all)
     protected IWrapperContainer getIWrapperContainer(Context context) throws XMLException  {
         PageRequestConfig config    = context.getConfigForCurrentPageRequest();
-        String            classname = config.getProperties().getProperty(IWrapperSimpleContainer.PROP_CONTAINER);
+        String            classname = config.getProperties().getProperty(PROP_CONTAINER);
         IWrapperContainer obj       = null;
         
         if (classname == null) {
