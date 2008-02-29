@@ -114,7 +114,7 @@
           <xsl:variable name="prefix" select="@prefix"/>
           <xsl:variable name="class" select="@class"/>
           <tr style="background-color:#eeeeee;">
-            <td colspan="4" align="center"><small><xsl:value-of select="$prefix"/> / <xsl:value-of select="$class"/></small></td>
+            <td colspan="4">&#160;<small><b>&#8227; <xsl:value-of select="$prefix"/></b> (<xsl:value-of select="$class"/>)</small></td>
             <td align="center" style="font-family: sans;">
               <xsl:choose>
                 <xsl:when test="@activeignore = 'true'">&#9745;</xsl:when>
