@@ -88,14 +88,15 @@ public class RefCountingCollection<E> implements Collection<E> {
         return true;
     }
 
-    public final boolean removeElement(final E object) {
+    public final boolean removeElement(final Object object) {
         if (!contains(object)) {
             return false;
         }
         return remove(object, map.get(object));
     }
 
-    public final boolean remove(final E object, int cardinality) {
+    @SuppressWarnings("unchecked")
+    public final boolean remove(final Object object, int cardinality) {
         if (cardinality < 0) {
             throw new RuntimeException("Can't remove an element with a negative cardinality");
         }
@@ -103,19 +104,19 @@ public class RefCountingCollection<E> implements Collection<E> {
         if (cardinality == 0 || !map.containsKey(object)) {
             return false;
         }
-        
-        int count = map.get(object);
+        E casted = (E) object;
+        int count = map.get(casted);
         if (cardinality >= count) {
-            map.remove(object);
+            map.remove(casted);
             fullsize = fullsize - count;
         } else {
-            map.put(object, count - cardinality);
+            map.put(casted, count - cardinality);
             fullsize = fullsize - cardinality;
         }
         return true;
     }
     
-    public final int getCardinality(final E object) {
+    public final int getCardinality(final Object object) {
         int retval = 0;
         if (map.containsKey(object)) {
             retval = map.get(object);
@@ -174,7 +175,7 @@ public class RefCountingCollection<E> implements Collection<E> {
     }
 
     public final boolean remove(final Object object) {
-        return remove((E) object, 1);
+        return remove(object, 1);
     }
 
     public final boolean isEmpty() {
@@ -190,9 +191,9 @@ public class RefCountingCollection<E> implements Collection<E> {
     }
 
     public final boolean equals(final Object object) {
-        RefCountingCollection<E> incoll;
+        RefCountingCollection<?> incoll;
         try {
-            incoll = (RefCountingCollection<E>) object;
+            incoll = (RefCountingCollection<?>) object;
         } catch (ClassCastException e) {
             return false;
         }
@@ -214,8 +215,8 @@ public class RefCountingCollection<E> implements Collection<E> {
         
         for (Iterator<?> i  = collection.iterator(); i.hasNext();) {
             if (is_rcc) {
-                E obj   = (E) i.next();
-                int count = ((RefCountingCollection) collection).getCardinality(obj);
+                Object obj   = i.next();
+                int count = ((RefCountingCollection<?>) collection).getCardinality(obj);
                 if (remove(obj, count)) {
                     retval = true;
                 }
@@ -237,7 +238,7 @@ public class RefCountingCollection<E> implements Collection<E> {
                 i.remove();
                 retval = true;
             } else if (is_rcc) {
-                int count = ((RefCountingCollection) collection).getCardinality(obj);
+                int count = ((RefCountingCollection<?>) collection).getCardinality(obj);
                 if (count < getCardinality(obj)) {
                     map.put(obj, count);
                     retval = true;
