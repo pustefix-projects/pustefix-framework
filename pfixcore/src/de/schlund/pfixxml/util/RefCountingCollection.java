@@ -18,10 +18,12 @@
 
 package de.schlund.pfixxml.util;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -153,13 +155,14 @@ public class RefCountingCollection<E> implements Collection<E> {
         return map.containsKey(object);
     }
 
+    @SuppressWarnings("unchecked")
     public final boolean addAll(final Collection<? extends E> collection) {
         for (Iterator<? extends E> i = collection.iterator(); i.hasNext(); ) {
             E item = i.next();
 
             int cardinality = 1;
             if (collection instanceof RefCountingCollection) {
-                cardinality = ((RefCountingCollection) collection).getCardinality(item);
+                cardinality = ((RefCountingCollection<E>) collection).getCardinality(item);
             }
             add(item, cardinality);
         }
@@ -211,7 +214,7 @@ public class RefCountingCollection<E> implements Collection<E> {
         
         for (Iterator<?> i  = collection.iterator(); i.hasNext();) {
             if (is_rcc) {
-                E   obj   = (E) i.next();
+                E obj   = (E) i.next();
                 int count = ((RefCountingCollection) collection).getCardinality(obj);
                 if (remove(obj, count)) {
                     retval = true;
@@ -369,6 +372,19 @@ public class RefCountingCollection<E> implements Collection<E> {
         System.out.println("After remove(1) on iterator:\n" + coll);
         System.out.println("-------");
         
+        RefCountingCollection<String> blah = new RefCountingCollection<String>();
+        blah.add("A");
+        blah.add("A");
+        blah.add("B");
+        List<Integer> fasel = new ArrayList<Integer>();
+        fasel.add(1);
+        fasel.add(1);
+        fasel.add(10);
+        
+        blah.removeAll(fasel);
+        System.out.println("-------");
+        System.out.println("After remove(fasel):\n" + blah);
+        System.out.println("-------");
+        
     }
-
 }

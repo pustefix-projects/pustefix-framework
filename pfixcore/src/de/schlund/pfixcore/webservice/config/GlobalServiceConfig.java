@@ -32,280 +32,283 @@ import de.schlund.pfixcore.webservice.Constants;
 import de.schlund.pfixcore.webservice.fault.FaultHandler;
 
 /**
- * GlobalServiceConfig.java 
+ * GlobalServiceConfig.java
  * 
  * Created: 27.07.2004
  * 
  * @author mleidig@schlund.de
  */
 public class GlobalServiceConfig implements Serializable {
-    
-    private String server;
-    private String reqPath="/xml/webservice";
-    private Boolean wsdlSupport=Boolean.TRUE;
-    private String wsdlRepo="/wsdl";
-    private Boolean stubGeneration=Boolean.TRUE;
-    private String stubRepo="/wsscript";
-    private String jsNamespace=Constants.STUBGEN_JSNAMESPACE_COMPAT;
-    private String protocolType=Constants.PROTOCOL_TYPE_ANY;
-    private String encStyle=Constants.ENCODING_STYLE_RPC;
-    private String encUse=Constants.ENCODING_USE_ENCODED;
-    private Boolean jsonClassHinting=Boolean.FALSE;
-    private String sessType=Constants.SESSION_TYPE_SERVLET;
-    private String scopeType=Constants.SERVICE_SCOPE_APPLICATION;
-    private Boolean sslForce=Boolean.FALSE;
-    private String ctxName;
-    private Boolean ctxSync=Boolean.TRUE;
-    private Boolean admin=Boolean.FALSE;
-    private Boolean monitoring=Boolean.FALSE;
-    private String monitorScope=Constants.MONITOR_SCOPE_SESSION;
-    private Integer monitorSize=20;
-    private Boolean logging=Boolean.FALSE;
+
+    private String                 server;
+    private String                 reqPath          = "/xml/webservice";
+    private Boolean                wsdlSupport      = Boolean.TRUE;
+    private String                 wsdlRepo         = "/wsdl";
+    private Boolean                stubGeneration   = Boolean.TRUE;
+    private String                 stubRepo         = "/wsscript";
+    private String                 jsNamespace      = Constants.STUBGEN_JSNAMESPACE_COMPAT;
+    private String                 protocolType     = Constants.PROTOCOL_TYPE_ANY;
+    private String                 encStyle         = Constants.ENCODING_STYLE_RPC;
+    private String                 encUse           = Constants.ENCODING_USE_ENCODED;
+    private Boolean                jsonClassHinting = Boolean.FALSE;
+    private String                 sessType         = Constants.SESSION_TYPE_SERVLET;
+    private String                 scopeType        = Constants.SERVICE_SCOPE_APPLICATION;
+    private Boolean                sslForce         = Boolean.FALSE;
+    private String                 ctxName;
+    private Boolean                ctxSync          = Boolean.TRUE;
+    private Boolean                admin            = Boolean.FALSE;
+    private Boolean                monitoring       = Boolean.FALSE;
+    private String                 monitorScope     = Constants.MONITOR_SCOPE_SESSION;
+    private Integer                monitorSize      = 20;
+    private Boolean                logging          = Boolean.FALSE;
     private transient FaultHandler faultHandler;
-    private URL defaultBeanMetaDataUrl;
-    
+    private URL                    defaultBeanMetaDataUrl;
+
     public GlobalServiceConfig() {}
-    
+
     public String getServer() {
         return server;
     }
-    
+
     public void setServer(String server) {
-        this.server=server;
+        this.server = server;
     }
-    
+
     public String getRequestPath() {
         return reqPath;
     }
-    
+
     public void setRequestPath(String reqPath) {
-        this.reqPath=reqPath;
+        this.reqPath = reqPath;
     }
-    
+
     public String getWSDLRepository() {
         return wsdlRepo;
     }
-    
+
     public void setWSDLRepository(String wsdlRepo) {
-        this.wsdlRepo=wsdlRepo;
+        this.wsdlRepo = wsdlRepo;
     }
-    
+
     public Boolean getWSDLSupportEnabled() {
         return wsdlSupport;
     }
-    
+
     public void setWSDLSupportEnabled(Boolean wsdlSupport) {
-        this.wsdlSupport=wsdlSupport;
+        this.wsdlSupport = wsdlSupport;
     }
-    
+
     public String getStubRepository() {
         return stubRepo;
     }
-    
+
     public void setStubRepository(String stubRepo) {
-        this.stubRepo=stubRepo;
+        this.stubRepo = stubRepo;
     }
-    
+
     public Boolean getStubGenerationEnabled() {
         return stubGeneration;
     }
-    
+
     public void setStubGenerationEnabled(Boolean stubGeneration) {
-        this.stubGeneration=stubGeneration;
+        this.stubGeneration = stubGeneration;
     }
-    
+
     public String getStubJSNamespace() {
         return jsNamespace;
     }
-    
+
     public void setStubJSNamespace(String jsNamespace) {
-        this.jsNamespace=jsNamespace;
+        this.jsNamespace = jsNamespace;
     }
-    
+
     public String getProtocolType() {
-    	return protocolType;
+        return protocolType;
     }
-    
+
     public void setProtocolType(String protocolType) {
-    	this.protocolType=protocolType;
+        this.protocolType = protocolType;
     }
-    
+
     public String getEncodingStyle() {
         return encStyle;
     }
-    
+
     public void setEncodingStyle(String encStyle) {
-        this.encStyle=encStyle;
+        this.encStyle = encStyle;
     }
-    
+
     public String getEncodingUse() {
         return encUse;
     }
-    
+
     public void setEncodingUse(String encUse) {
-        this.encUse=encUse;
+        this.encUse = encUse;
     }
-    
+
     public Boolean getJSONClassHinting() {
         return jsonClassHinting;
     }
-    
+
     public void setJSONClassHinting(Boolean jsonClassHinting) {
-        this.jsonClassHinting=jsonClassHinting;
+        this.jsonClassHinting = jsonClassHinting;
     }
-        
+
     public String getSessionType() {
         return sessType;
     }
-    
+
     public void setSessionType(String sessType) {
-        this.sessType=sessType;
+        this.sessType = sessType;
     }
-    
+
     public void setScopeType(String scopeType) {
-        this.scopeType=scopeType;
+        this.scopeType = scopeType;
     }
-    
+
     public String getScopeType() {
         return scopeType;
     }
-    
+
     public Boolean getSSLForce() {
         return sslForce;
     }
-    
+
     public void setSSLForce(Boolean sslForce) {
-        this.sslForce=sslForce;
+        this.sslForce = sslForce;
     }
-    
+
     public String getContextName() {
         return ctxName;
     }
-    
+
     public void setContextName(String ctxName) {
-        this.ctxName=ctxName;
+        this.ctxName = ctxName;
     }
-    
+
     public boolean getSynchronizeOnContext() {
         return ctxSync;
     }
-    
+
     public void setSynchronizeOnContext(Boolean ctxSync) {
-        this.ctxSync=ctxSync;
+        this.ctxSync = ctxSync;
     }
-    
+
     public Boolean getAdminEnabled() {
         return admin;
     }
-    
+
     public void setAdminEnabled(Boolean admin) {
-        this.admin=admin;
+        this.admin = admin;
     }
-    
+
     public Boolean getMonitoringEnabled() {
         return monitoring;
     }
-    
+
     public void setMonitoringEnabled(Boolean monitoring) {
-        this.monitoring=monitoring;
+        this.monitoring = monitoring;
     }
-    
+
     public String getMonitoringScope() {
         return monitorScope;
     }
-    
+
     public void setMonitoringScope(String monitorScope) {
-        this.monitorScope=monitorScope;
+        this.monitorScope = monitorScope;
     }
-    
+
     public Integer getMonitoringHistorySize() {
-    	return monitorSize;
+        return monitorSize;
     }
-    
+
     public void setMonitoringHistorySize(Integer monitorSize) {
-        this.monitorSize=monitorSize;
+        this.monitorSize = monitorSize;
     }
-    
+
     public Boolean getLoggingEnabled() {
         return logging;
     }
-    
+
     public void setLoggingEnabled(Boolean logging) {
-        this.logging=logging;
+        this.logging = logging;
     }
-    
+
     public FaultHandler getFaultHandler() {
-    	return faultHandler;
+        return faultHandler;
     }
-    
+
     public void setFaultHandler(FaultHandler faultHandler) {
-    	this.faultHandler=faultHandler;
+        this.faultHandler = faultHandler;
     }
-    
+
     public URL getDefaultBeanMetaDataURL() {
         return defaultBeanMetaDataUrl;
     }
-    
+
     public void setDefaultBeanMetaDataURL(URL defaultBeanMetaDataUrl) {
-        this.defaultBeanMetaDataUrl=defaultBeanMetaDataUrl;
+        this.defaultBeanMetaDataUrl = defaultBeanMetaDataUrl;
     }
-    
+
     @Override
     public boolean equals(Object obj) {
-        
-    	if(obj instanceof GlobalServiceConfig) {
-    		GlobalServiceConfig ref=(GlobalServiceConfig)obj;
-    		Method[] meths=getClass().getDeclaredMethods();
-    		for(int i=0;i<meths.length;i++) {
-    			Method meth=meths[i];		
-    			if(meth.getName().startsWith("get")&&Modifier.isPublic(meth.getModifiers())
-                        &&!meth.getName().equals("getDefaultBeanMetaDataURL")) { 
-    				try {
-    					Object res=meth.invoke(this,new Object[0]);
-    					Object refRes=meth.invoke(ref,new Object[0]);
-    					if(res==null ^ refRes==null) {
-    						System.out.println("Difference found: "+meth.getName()+" "+res+" "+refRes);
-    						return false;
-    					}
-    					if(res!=null && !res.equals(refRes)) {
-    						System.out.println("Difference found: "+meth.getName()+" "+res+" "+refRes);
-    						return false;
-    					}
-    				} catch(Exception x) {
-    					x.printStackTrace();
-    					return false;
-    				}
-    			}
-    		}
-    		return true;
-    	}
-    	return false;
+
+        if (obj instanceof GlobalServiceConfig) {
+            GlobalServiceConfig ref = (GlobalServiceConfig) obj;
+            Method[] meths = getClass().getDeclaredMethods();
+            for (int i = 0; i < meths.length; i++) {
+                Method meth = meths[i];
+                if (meth.getName().startsWith("get") && Modifier.isPublic(meth.getModifiers()) && !meth.getName().equals("getDefaultBeanMetaDataURL")) {
+                    try {
+                        Object res = meth.invoke(this, new Object[0]);
+                        Object refRes = meth.invoke(ref, new Object[0]);
+                        if (res == null ^ refRes == null) {
+                            System.out.println("Difference found: " + meth.getName() + " " + res + " " + refRes);
+                            return false;
+                        }
+                        if (res != null && !res.equals(refRes)) {
+                            System.out.println("Difference found: " + meth.getName() + " " + res + " " + refRes);
+                            return false;
+                        }
+                    } catch (Exception x) {
+                        x.printStackTrace();
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
+        return false;
     }
-    
+
     private void writeObject(ObjectOutputStream out) throws IOException {
         out.defaultWriteObject();
-        if(faultHandler!=null) out.writeObject(faultHandler.getClass().getName());
-        else out.writeObject(null);
-        if(faultHandler!=null&&faultHandler.getParams()!=null) out.writeObject(faultHandler.getParams());
-        else out.writeObject(null);
+        if (faultHandler != null)
+            out.writeObject(faultHandler.getClass().getName());
+        else
+            out.writeObject(null);
+        if (faultHandler != null && faultHandler.getParams() != null)
+            out.writeObject(faultHandler.getParams());
+        else
+            out.writeObject(null);
     }
-         
-    private void readObject(ObjectInputStream in) throws IOException,ClassNotFoundException {
+
+    @SuppressWarnings("unchecked")
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
         in.defaultReadObject();
-        String str=(String)in.readObject();
-        if(str!=null) {
-            Class<?> clazz=Class.forName(str);
+        String str = (String) in.readObject();
+        if (str != null) {
+            Class<?> clazz = Class.forName(str);
             try {
-                faultHandler=(FaultHandler)clazz.newInstance();
-                HashMap<String, String> params = (HashMap<String,String>) in.readObject();
-                if(params!=null) faultHandler.setParams(params);
-            } catch(IllegalAccessException x) {
-                
-            } catch(InstantiationException x) {
-                
+                faultHandler = (FaultHandler) clazz.newInstance();
+                HashMap<String, String> params = (HashMap<String, String>) in.readObject();
+                if (params != null) faultHandler.setParams(params);
+            } catch (IllegalAccessException x) {
+
+            } catch (InstantiationException x) {
+
             }
         }
     }
-   
-    
+
 }

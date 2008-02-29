@@ -33,80 +33,92 @@ import de.schlund.pfixcore.webservice.jsonws.Deserializer;
 public class ArrayDeserializer extends Deserializer {
 
     @Override
-    public boolean canDeserialize(DeserializationContext ctx,Object jsonValue,Type targetType) throws DeserializationException {
-        if(jsonValue instanceof JSONArray) {
-            Class<?> targetClass=null;
-            if(targetType instanceof Class) targetClass=(Class<?>)targetType;
-            else if(targetType instanceof ParameterizedType) {
-                Type rawType=((ParameterizedType)targetType).getRawType();
-                if(rawType instanceof Class) targetClass=(Class<?>)rawType;
-                else return false;
+    public boolean canDeserialize(DeserializationContext ctx, Object jsonValue, Type targetType) throws DeserializationException {
+        if (jsonValue instanceof JSONArray) {
+            Class<?> targetClass = null;
+            if (targetType instanceof Class)
+                targetClass = (Class<?>) targetType;
+            else if (targetType instanceof ParameterizedType) {
+                Type rawType = ((ParameterizedType) targetType).getRawType();
+                if (rawType instanceof Class)
+                    targetClass = (Class<?>) rawType;
+                else
+                    return false;
             }
-            if(targetClass.isArray() || List.class.isAssignableFrom(targetClass)) return true;
+            if (targetClass.isArray() || List.class.isAssignableFrom(targetClass)) return true;
         }
         return false;
     }
-    
-    @Override
-    public Object deserialize(DeserializationContext ctx,Object jsonValue,Type targetType) throws DeserializationException {
 
-        if(jsonValue instanceof JSONArray) {
-            
-            JSONArray jsonArray=(JSONArray)jsonValue;
-        
-            Class<?> targetClass=null;
-            if(targetType instanceof Class) targetClass=(Class<?>)targetType;
-            else if(targetType instanceof ParameterizedType) {
-                Type rawType=((ParameterizedType)targetType).getRawType();
-                if(rawType instanceof Class) targetClass=(Class<?>)rawType;
-                else throw new DeserializationException("Type not supported: "+targetType);
+    @SuppressWarnings("unchecked")
+    @Override
+    public Object deserialize(DeserializationContext ctx, Object jsonValue, Type targetType) throws DeserializationException {
+
+        if (jsonValue instanceof JSONArray) {
+
+            JSONArray jsonArray = (JSONArray) jsonValue;
+
+            Class<?> targetClass = null;
+            if (targetType instanceof Class)
+                targetClass = (Class<?>) targetType;
+            else if (targetType instanceof ParameterizedType) {
+                Type rawType = ((ParameterizedType) targetType).getRawType();
+                if (rawType instanceof Class)
+                    targetClass = (Class<?>) rawType;
+                else
+                    throw new DeserializationException("Type not supported: " + targetType);
             }
-            
-            if(targetClass.isArray()) {
-                
-                Class<?> compType=targetClass.getComponentType();
-                Object arrayObj=Array.newInstance(compType,jsonArray.size());
-                for(int i=0;i<jsonArray.size();i++) {
-                    Object item=jsonArray.get(i);
-                    Object obj=ctx.deserialize(item,compType);
-                    Array.set(arrayObj,i,obj);
+
+            if (targetClass.isArray()) {
+
+                Class<?> compType = targetClass.getComponentType();
+                Object arrayObj = Array.newInstance(compType, jsonArray.size());
+                for (int i = 0; i < jsonArray.size(); i++) {
+                    Object item = jsonArray.get(i);
+                    Object obj = ctx.deserialize(item, compType);
+                    Array.set(arrayObj, i, obj);
                 }
                 return arrayObj;
-            
-            } else if(List.class.isAssignableFrom(targetClass)) {
-            
-                Type argType=null;
-                if(targetType instanceof ParameterizedType) {
-                    ParameterizedType paramType=(ParameterizedType)targetType;
-                    Type[] argTypes=paramType.getActualTypeArguments();
-                    if(argTypes.length==1) {
-                        argType=argTypes[0];
-                    } else throw new DeserializationException("Type not supported: "+targetType);
-                } else throw new DeserializationException("Deserialization of unparameterized List types isn't supported: "+targetType);
-                
-                List<Object> list=null;
-                if(!targetClass.isInterface()) {
+
+            } else if (List.class.isAssignableFrom(targetClass)) {
+
+                Type argType = null;
+                if (targetType instanceof ParameterizedType) {
+                    ParameterizedType paramType = (ParameterizedType) targetType;
+                    Type[] argTypes = paramType.getActualTypeArguments();
+                    if (argTypes.length == 1) {
+                        argType = argTypes[0];
+                    } else
+                        throw new DeserializationException("Type not supported: " + targetType);
+                } else
+                    throw new DeserializationException("Deserialization of unparameterized List types isn't supported: " + targetType);
+
+                List list = null;
+                if (!targetClass.isInterface()) {
                     try {
-                        list=(List<Object>)targetClass.newInstance();
-                    } catch(Exception x) {}
+                        list = (List) targetClass.newInstance();
+                    } catch (Exception x) {}
                 }
-                if(list==null) {
-                    if(targetClass.isAssignableFrom(ArrayList.class)) {
-                        list=new ArrayList<Object>();
-                    } else throw new DeserializationException("Can't create instance of class '"+targetClass.getName()+"'.");
+                if (list == null) {
+                    if (targetClass.isAssignableFrom(ArrayList.class)) {
+                        list = new ArrayList<Object>();
+                    } else
+                        throw new DeserializationException("Can't create instance of class '" + targetClass.getName() + "'.");
                 }
-                
-                for(int i=0;i<jsonArray.size();i++) {
-                    Object item=jsonArray.get(i);
-                    Object obj=ctx.deserialize(item,argType);
+
+                for (int i = 0; i < jsonArray.size(); i++) {
+                    Object item = jsonArray.get(i);
+                    Object obj = ctx.deserialize(item, argType);
                     list.add(obj);
                 }
                 return list;
-                
-            } else throw new DeserializationException("Type not supported: "+targetType);
-            
-        } else throw new DeserializationException("Wrong type: "+jsonValue.getClass().getName());
-   
+
+            } else
+                throw new DeserializationException("Type not supported: " + targetType);
+
+        } else
+            throw new DeserializationException("Wrong type: " + jsonValue.getClass().getName());
+
     }
-    
+
 }

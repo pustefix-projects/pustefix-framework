@@ -40,154 +40,169 @@ import de.schlund.pfixcore.webservice.jsonws.Deserializer;
 public class BeanDeserializer extends Deserializer {
 
     BeanDescriptorFactory beanDescFactory;
-    
+
     public BeanDeserializer(BeanDescriptorFactory beanDescFactory) {
-        this.beanDescFactory=beanDescFactory;
+        this.beanDescFactory = beanDescFactory;
     }
-    
+
     @Override
     public boolean canDeserialize(DeserializationContext ctx, Object jsonValue, Type targetType) {
-        if(jsonValue instanceof JSONObject) {
-            JSONObject jsonObj=(JSONObject)jsonValue;
-            Class<?> targetClass=null;
-            if(targetType instanceof Class) targetClass=(Class<?>)targetType;
-            else if(targetType instanceof ParameterizedType) {
-                Type rawType=((ParameterizedType)targetType).getRawType();
-                if(rawType instanceof Class) targetClass=(Class<?>)rawType;
-                else return false;
+        if (jsonValue instanceof JSONObject) {
+            JSONObject jsonObj = (JSONObject) jsonValue;
+            Class<?> targetClass = null;
+            if (targetType instanceof Class)
+                targetClass = (Class<?>) targetType;
+            else if (targetType instanceof ParameterizedType) {
+                Type rawType = ((ParameterizedType) targetType).getRawType();
+                if (rawType instanceof Class)
+                    targetClass = (Class<?>) rawType;
+                else
+                    return false;
             }
-            if(Map.class.isAssignableFrom(targetClass)) return true;
+            if (Map.class.isAssignableFrom(targetClass))
+                return true;
             else {
-                String className=jsonObj.getStringMember("javaClass");
-                if(className!=null) {
+                String className = jsonObj.getStringMember("javaClass");
+                if (className != null) {
                     try {
-                        Class<?> clazz=Class.forName(className);
-                        if(targetClass!=null && !targetClass.isAssignableFrom(clazz)) return false;
-                        targetClass=clazz;
-                    } catch(ClassNotFoundException x) {
+                        Class<?> clazz = Class.forName(className);
+                        if (targetClass != null && !targetClass.isAssignableFrom(clazz)) return false;
+                        targetClass = clazz;
+                    } catch (ClassNotFoundException x) {
                         return false;
                     }
                 }
-                if(isInstantiable(targetClass)) return true;
+                if (isInstantiable(targetClass)) return true;
             }
         }
         return false;
     }
-    
-    @Override
-    public Object deserialize(DeserializationContext ctx,Object jsonValue,Type targetType) throws DeserializationException {
-      
-        if(jsonValue instanceof JSONObject) {
-            
-            JSONObject jsonObj=(JSONObject)jsonValue;
-            
-            Class<?> targetClass=null;
-            if(targetType instanceof Class) targetClass=(Class<?>)targetType;
-            else if(targetType instanceof ParameterizedType) {
-                Type rawType=((ParameterizedType)targetType).getRawType();
-                if(rawType instanceof Class) targetClass=(Class<?>)rawType;
-                else throw new DeserializationException("Type not supported: "+targetType);
-            }
-            
-            if(Map.class.isAssignableFrom(targetClass)) {
 
-                Type valType=null;
-                if(targetType instanceof ParameterizedType) {
-                    ParameterizedType paramType=(ParameterizedType)targetType;
-                    Type[] argTypes=paramType.getActualTypeArguments();
-                    if(argTypes.length==2) {
-                        Type keyType=argTypes[0];
-                        if(keyType==String.class) {
-                            valType=argTypes[1];
-                        } else throw new DeserializationException("Unsupported Map key type (must be java.lang.String): "+keyType);
-                    } else throw new DeserializationException("Type not supported: "+targetType);
-                } else throw new DeserializationException("Deserialization of unparameterized Map types isn't supported: "+targetType);
-                  
-                Map<Object, Object> map=null;
-                if(!targetClass.isInterface()) {
+    @SuppressWarnings("unchecked")
+    @Override
+    public Object deserialize(DeserializationContext ctx, Object jsonValue, Type targetType) throws DeserializationException {
+
+        if (jsonValue instanceof JSONObject) {
+
+            JSONObject jsonObj = (JSONObject) jsonValue;
+
+            Class<?> targetClass = null;
+            if (targetType instanceof Class)
+                targetClass = (Class<?>) targetType;
+            else if (targetType instanceof ParameterizedType) {
+                Type rawType = ((ParameterizedType) targetType).getRawType();
+                if (rawType instanceof Class)
+                    targetClass = (Class<?>) rawType;
+                else
+                    throw new DeserializationException("Type not supported: " + targetType);
+            }
+
+            if (Map.class.isAssignableFrom(targetClass)) {
+
+                Type valType = null;
+                if (targetType instanceof ParameterizedType) {
+                    ParameterizedType paramType = (ParameterizedType) targetType;
+                    Type[] argTypes = paramType.getActualTypeArguments();
+                    if (argTypes.length == 2) {
+                        Type keyType = argTypes[0];
+                        if (keyType == String.class) {
+                            valType = argTypes[1];
+                        } else
+                            throw new DeserializationException("Unsupported Map key type (must be java.lang.String): " + keyType);
+                    } else
+                        throw new DeserializationException("Type not supported: " + targetType);
+                } else
+                    throw new DeserializationException("Deserialization of unparameterized Map types isn't supported: " + targetType);
+
+                Map map = null;
+                if (!targetClass.isInterface()) {
                     try {
-                        map=(Map<Object, Object>)targetClass.newInstance();
-                    } catch(Exception x) {}
+                        map = (Map) targetClass.newInstance();
+                    } catch (Exception x) {}
                 }
-                if(map==null) {
-                    if(targetClass.isAssignableFrom(HashMap.class)) {
-                        map=new HashMap<Object, Object>();
-                    } else throw new DeserializationException("Can't create instance of class '"+targetClass.getName()+"'.");
+                if (map == null) {
+                    if (targetClass.isAssignableFrom(HashMap.class)) {
+                        map = new HashMap<Object, Object>();
+                    } else
+                        throw new DeserializationException("Can't create instance of class '" + targetClass.getName() + "'.");
                 }
-                
-                Iterator<String> it=jsonObj.getMemberNames();
-                while(it.hasNext()) {
-                    String prop=it.next();
-                    if(!prop.equals("javaClass")) {
-                        Object res=ctx.deserialize(jsonObj.getMember(prop),valType);
-                        map.put(prop,res);
-                    } 
-                }
-                       
-                return map;
-                
-            } else {
-            
-                try {
-                    
-                    String className=jsonObj.getStringMember("javaClass");
-                    if(className!=null) {
-                        Class<?> clazz=Class.forName(className);
-                        if(targetClass!=null && !targetClass.isAssignableFrom(clazz)) 
-                            throw new DeserializationException("Class '"+targetClass.getName()+"' isn't assignable from '"+clazz.getName());
-                        targetClass=clazz;
+
+                Iterator<String> it = jsonObj.getMemberNames();
+                while (it.hasNext()) {
+                    String prop = it.next();
+                    if (!prop.equals("javaClass")) {
+                        Object res = ctx.deserialize(jsonObj.getMember(prop), valType);
+                        map.put(prop, res);
                     }
-                    BeanDescriptor bd=beanDescFactory.getBeanDescriptor(targetClass);
-                
-                    Object newObj=targetClass.newInstance();
-                    Iterator<String> it=jsonObj.getMemberNames();
-                    while(it.hasNext()) {
-                        String prop=it.next();
-                        if(!prop.equals("javaClass")) {
-                            Type propTargetType=bd.getPropertyType(prop);
-                            if(propTargetType!=null) {
-                                Object val=jsonObj.getMember(prop);
-                                Method meth=bd.getSetMethod(prop);
-                                if(meth!=null) {
-                                    if(val==null) {
-                                        meth.invoke(newObj,new Object[] {null}); 
+                }
+
+                return map;
+
+            } else {
+
+                try {
+
+                    String className = jsonObj.getStringMember("javaClass");
+                    if (className != null) {
+                        Class<?> clazz = Class.forName(className);
+                        if (targetClass != null && !targetClass.isAssignableFrom(clazz))
+                            throw new DeserializationException("Class '" + targetClass.getName() + "' isn't assignable from '" + clazz.getName());
+                        targetClass = clazz;
+                    }
+                    BeanDescriptor bd = beanDescFactory.getBeanDescriptor(targetClass);
+
+                    Object newObj = targetClass.newInstance();
+                    Iterator<String> it = jsonObj.getMemberNames();
+                    while (it.hasNext()) {
+                        String prop = it.next();
+                        if (!prop.equals("javaClass")) {
+                            Type propTargetType = bd.getPropertyType(prop);
+                            if (propTargetType != null) {
+                                Object val = jsonObj.getMember(prop);
+                                Method meth = bd.getSetMethod(prop);
+                                if (meth != null) {
+                                    if (val == null) {
+                                        meth.invoke(newObj, new Object[] { null });
                                     } else {
-                                        Object res=ctx.deserialize(val,propTargetType);
-                                        if(res!=null) meth.invoke(newObj,res);
+                                        Object res = ctx.deserialize(val, propTargetType);
+                                        if (res != null) meth.invoke(newObj, res);
                                     }
                                 } else {
-                                    Field field=bd.getDirectAccessField(prop);
-                                    if(field!=null) {
-                                        if(val==null) {
-                                            field.set(newObj,null);
+                                    Field field = bd.getDirectAccessField(prop);
+                                    if (field != null) {
+                                        if (val == null) {
+                                            field.set(newObj, null);
                                         } else {
-                                            Object res=ctx.deserialize(val,propTargetType);
-                                            if(res!=null) field.set(newObj,res);
+                                            Object res = ctx.deserialize(val, propTargetType);
+                                            if (res != null) field.set(newObj, res);
                                         }
-                                    } else throw new DeserializationException("Bean of type '"+targetClass.getName()+"' doesn't "+
-                                            " have setter method or direct access to property '"+prop+"'.");
+                                    } else
+                                        throw new DeserializationException("Bean of type '" + targetClass.getName() + "' doesn't "
+                                                + " have setter method or direct access to property '" + prop + "'.");
                                 }
-                            } else throw new DeserializationException("Bean of type '"+targetClass.getName()+"' doesn't have property '"+prop+"'.");         
+                            } else
+                                throw new DeserializationException("Bean of type '" + targetClass.getName() + "' doesn't have property '" + prop + "'.");
                         }
                     }
                     return newObj;
-                } catch(Exception x) {
-                    if(x instanceof DeserializationException) throw (DeserializationException)x;
-                    throw new DeserializationException("Can't deserialize as bean of type '"+targetClass.getName()+"'.",x);
+                } catch (Exception x) {
+                    if (x instanceof DeserializationException) throw (DeserializationException) x;
+                    throw new DeserializationException("Can't deserialize as bean of type '" + targetClass.getName() + "'.", x);
                 }
             }
-        } else throw new DeserializationException("No instance of JSONObject: "+jsonValue.getClass().getName());
-     
+        } else
+            throw new DeserializationException("No instance of JSONObject: " + jsonValue.getClass().getName());
+
     }
-    
+
     private boolean isInstantiable(Class<?> clazz) {
-        if(clazz.isInterface()) return false;
+        if (clazz.isInterface()) return false;
         try {
             clazz.getConstructor(new Class[0]);
-        } catch(NoSuchMethodException x) {
+        } catch (NoSuchMethodException x) {
             return false;
         }
         return true;
     }
-    
+
 }

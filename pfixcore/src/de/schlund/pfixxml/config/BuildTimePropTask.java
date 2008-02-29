@@ -64,6 +64,7 @@ public class BuildTimePropTask extends Task {
      * 
      * @see org.apache.tools.ant.Task#execute()
      */
+    @SuppressWarnings("unchecked")
     public void execute() throws BuildException {
         try {
             Properties props = new Properties();
