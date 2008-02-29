@@ -1,3 +1,18 @@
+2008-02-29  jtl  <jtl@britten.laudi.ka>
+
+	* src/de/schlund/pfixxml/util/CacheValueLRU.java: make it implement Map<K, V>. Just for the fun of it.
+	
+	* src/de/schlund/pfixcore/workflow/app/IWrapperContainerImpl.java: added. This will be the future implementation 
+	of IWrapperContainer
+	* src/de/schlund/pfixcore/workflow/app/IWrapperContainer.java (stayAfterSubmit): removed from interface 
+	(getAssociatedPfixServletRequest): removed
+	(getAssociatedContext): removed
+	(getAssociatedResultDocument): removed
+	
+	* src/de/schlund/pfixcore/workflow/app/DefaultIWrapperState.java (getDocument): make special instanceof check for
+	the type of the IWrapperContainer to be able to support the removed container.stayAfterSubmit() method for the
+	old case a long it is not removed completely.
+
 2008-02-27  jtl  <jtl@schoenberg.laudi.ka>
 
 	* projects/core/xsl/xmlfontify.xsl: 

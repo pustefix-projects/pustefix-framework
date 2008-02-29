@@ -47,10 +47,7 @@ import de.schlund.pfixxml.resources.ResourceUtil;
  * Default implementation of the <code>IWrapperContainer</code> interface.
  * <br/>
  *
- * Created: Fri Aug 17 14:58:49 2001
- *
  * @author <a href="mailto:jtl@schlund.de">Jens Lautenbacher</a>
- *
  *
  */
 
