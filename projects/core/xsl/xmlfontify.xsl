@@ -102,24 +102,37 @@
       <h1>IWrappers:</h1>
       <table cellspacing="0" class="datatable">
         <tr>
-          <th>Prefix</th>
-          <th>Param name</th>
-          <th>Occurrence</th>
-          <th>Frequency</th>
-          <th>Type</th>
+          <th><b>Parameter</b></th>
+          <th><b>Occurrence</b></th>
+          <th><b>Frequency</b></th>
+          <th><b>Type</b></th>
+          <th><b>activeignore?</b></th>
+          <th><b>alwaysretrieve?</b></th>                    
         </tr>
         <xsl:for-each select="$iwrappers/iwrappers/iwrapper">
           <xsl:variable name="iwrp" select="callback:getIWrapperInfo($__context__,/,'',@prefix)/iwrapper"/>
           <xsl:variable name="prefix" select="@prefix"/>
+          <xsl:variable name="class" select="@class"/>
+          <tr style="background-color:#eeeeee;">
+            <td colspan="4" align="center"><small><xsl:value-of select="$prefix"/> / <xsl:value-of select="$class"/></small></td>
+            <td align="center" style="font-family: sans;">
+              <xsl:choose>
+                <xsl:when test="@activeignore = 'true'">&#9745;</xsl:when>
+                <xsl:otherwise>&#9744;</xsl:otherwise>
+              </xsl:choose>
+            </td>
+            <td align="center" style="font-family: sans;">
+              <xsl:choose>
+                <xsl:when test="@alwaysretrieve = 'true'">&#9745;</xsl:when>
+                <xsl:otherwise>&#9744;</xsl:otherwise>
+              </xsl:choose>
+            </td>
+          </tr> 
           <xsl:if test="not($iwrp/param)">
-            <tr><td class="rowsep" colspan="5" align="center"><small>IWrapper <b><xsl:value-of select="$prefix"/></b> w/o parameters</small></td></tr>
+            <tr><td class="rowsep" colspan="6" align="center"><small>w/o parameters</small></td></tr>
           </xsl:if>
           <xsl:for-each select="$iwrp/param">
             <tr>
-              <td>
-                <xsl:if test="position()=last()"><xsl:attribute name="class">rowsep</xsl:attribute></xsl:if>
-                <xsl:value-of select="$prefix"/>
-              </td>
               <td>
                 <xsl:if test="position()=last()"><xsl:attribute name="class">rowsep</xsl:attribute></xsl:if>
                 <xsl:value-of select="@name"/>
@@ -136,6 +149,12 @@
                 <xsl:if test="position()=last()"><xsl:attribute name="class">rowsep</xsl:attribute></xsl:if>
                 <xsl:value-of select="@type"/>
               </td>
+              <td>
+                <xsl:if test="position()=last()"><xsl:attribute name="class">rowsep</xsl:attribute></xsl:if>&#160;         
+              </td>
+              <td>
+                <xsl:if test="position()=last()"><xsl:attribute name="class">rowsep</xsl:attribute></xsl:if>&#160;
+              </td>              
             </tr>
           </xsl:for-each> 
         </xsl:for-each>
