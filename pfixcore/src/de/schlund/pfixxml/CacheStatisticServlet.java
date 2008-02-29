@@ -39,6 +39,7 @@ import de.schlund.pfixxml.util.Xml;
  */
 public class CacheStatisticServlet extends HttpServlet {
 
+    private static final long serialVersionUID = -8894482678870959667L;
     private static int OUTPUTXML=0;
     private static int OUTPUTTEXT=1;
     
