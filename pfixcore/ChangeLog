@@ -1,6 +1,8 @@
 2008-02-29  jtl  <jtl@britten.laudi.ka>
 
-	* projects/core/xsl/xmlfontify.xsl: fix getRoles -> getAllDefinedRoles
+	* src/de/schlund/pfixcore/util/TransformerCallback.java (getIWrappers): 
+	* projects/core/xsl/xmlfontify.xsl: fix getRoles -> getAllDefinedRoles; add more info for IWrappers (class name, ...)
+	
 	* src/de/schlund/pfixxml/util/CacheValueLRU.java: make it implement Map<K, V>. Just for the fun of it.
 	
 	* src/de/schlund/pfixcore/workflow/app/IWrapperContainerImpl.java: added. This will be the future implementation 

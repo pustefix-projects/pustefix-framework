@@ -181,6 +181,7 @@ public class TransformerCallback {
                     Element elem = doc.createElement("iwrapper");
                     elem.setAttribute("type", "auth");
                     elem.setAttribute("prefix", pageConfig.getAuthWrapperPrefix());
+                    elem.setAttribute("class", pageConfig.getAuthWrapperClass().getClass().getName());                    
                     root.appendChild(elem);
                 }
                 Map<String, Class<? extends IWrapper>> auxWrappers = pageConfig.getAuxWrappers();
@@ -188,12 +189,16 @@ public class TransformerCallback {
                     Element elem = doc.createElement("iwrapper");
                     elem.setAttribute("type", "aux");
                     elem.setAttribute("prefix", prefix);
+                    elem.setAttribute("class", auxWrappers.get(prefix).getClass().getName());
                     root.appendChild(elem);
                 }
                 Map<String, ? extends IWrapperConfig> iwrappers = pageConfig.getIWrappers();
                 for (String prefix : iwrappers.keySet()) {
                     Element elem = doc.createElement("iwrapper");
                     elem.setAttribute("prefix", prefix);
+                    elem.setAttribute("class", iwrappers.get(prefix).getWrapperClass().getName());
+                    elem.setAttribute("activeignore", "" + iwrappers.get(prefix).isActiveIgnore());
+                    elem.setAttribute("alwaysretrieve", "" + iwrappers.get(prefix).isAlwaysRetrieve());
                     root.appendChild(elem);
                 }
             }
