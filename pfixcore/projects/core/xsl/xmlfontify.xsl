@@ -144,7 +144,7 @@
   </xsl:template>
 
   <xsl:template name="render_roles">
-    <xsl:variable name="roles" select="callback:getRoles($__context__,/)"/>
+    <xsl:variable name="roles" select="callback:getAllDefinedRoles($__context__,/)"/>
     <xsl:if test="$roles/roles/role">
       <br/>
       <h1>Roles:</h1>
