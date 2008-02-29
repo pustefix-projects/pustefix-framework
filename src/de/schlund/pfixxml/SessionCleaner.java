@@ -108,7 +108,7 @@ public class SessionCleaner {
                 if (storeddoms.containsKey(key)) {
                     storeddoms.remove(key);
                     LOG.info("*** CALLING TIMERTASK: Removing SPDoc Reference for '" + key + 
-                             "' in session from cache (Curr. Size (= All keys counted!): " + storeddoms.sizeOfKeyEntries() + ")");
+                             "' in session from cache (Curr. Size (= All keys counted!): " + storeddoms.size() + ")");
                 } else {
                     LOG.info("*** CALLING TIMERTASK: nothing to do.");
                 }

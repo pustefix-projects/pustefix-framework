@@ -1,10 +1,12 @@
 package de.schlund.pfixxml.util;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
-import java.util.Map.Entry;
+import java.util.Map;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 
@@ -15,7 +17,7 @@ import org.apache.log4j.Logger;
  * @version 1.0
  */
 
-public class CacheValueLRU<K,V> {
+public class CacheValueLRU<K,V> implements Map<K, V> {
     private static Logger LOG = Logger.getLogger(CacheValueLRU.class);
     CacheValueLRUStack valuestack;
     HashMap<K, V> keytovalue;
@@ -27,7 +29,7 @@ public class CacheValueLRU<K,V> {
         valuestack  = new CacheValueLRUStack(maxsize);
     }
 
-    public synchronized int sizeOfKeyEntries() {
+    public synchronized int size() {
         return keytovalue.size();
     }
     
@@ -49,7 +51,7 @@ public class CacheValueLRU<K,V> {
         return keytovalue.containsKey(key);
     }
 
-    public synchronized V get(K key) {
+    public synchronized V get(Object key) {
         V value = keytovalue.get(key);
         if (value != null) {
             // This is done to update the linked list order of the 
@@ -84,7 +86,7 @@ public class CacheValueLRU<K,V> {
         return old;
     }
 
-    public synchronized V remove(K key) {
+    public synchronized V remove(Object key) {
         V value = keytovalue.get(key);
         HashSet<K> keyset = valuetokeys.get(value);
         if (keyset != null) {
@@ -144,5 +146,35 @@ public class CacheValueLRU<K,V> {
             }
             return buf.toString();
         }
+    }
+
+    public synchronized void clear() {
+        keytovalue.clear();
+        valuetokeys.clear();
+        valuestack.clear();
+    }
+
+    public boolean containsValue(Object value) {
+        return (valuetokeys.get(value) != null);
+    }
+
+    public Set<java.util.Map.Entry<K, V>> entrySet() {
+        throw new IllegalStateException("Method not implemented");
+    }
+
+    public boolean isEmpty() {
+        return keytovalue.isEmpty();
+    }
+
+    public Set<K> keySet() {
+        return keytovalue.keySet();
+    }
+
+    public void putAll(Map<? extends K, ? extends V> t) {
+        throw new IllegalStateException("Method not implemented");
+    }
+
+    public Collection<V> values() {
+        return keytovalue.values();
     }
 }

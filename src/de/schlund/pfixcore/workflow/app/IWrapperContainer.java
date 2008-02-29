@@ -38,8 +38,8 @@ public interface IWrapperContainer {
     void               addIWrapperStatus() throws Exception;
     boolean            needsData() throws Exception;
     boolean            errorHappened() throws Exception;
-    boolean            stayAfterSubmit() throws Exception;
-    PfixServletRequest getAssociatedPfixServletRequest();
-    ResultDocument     getAssociatedResultDocument();
-    Context            getAssociatedContext();
+    // boolean            stayAfterSubmit() throws Exception;
+    // PfixServletRequest getAssociatedPfixServletRequest();
+    // ResultDocument     getAssociatedResultDocument();
+    // Context            getAssociatedContext();
 }

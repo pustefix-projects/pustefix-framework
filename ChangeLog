@@ -15,7 +15,6 @@
 	* docs/*: 
 	Extended Docbook build mechanism to support CSS.
 
->>>>>>> .r3381
 2008-02-26  Martin Leidig  <mleidig@schlund.de>
 
 	Added support for merging/overriding statusmessages coming from

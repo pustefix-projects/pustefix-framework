@@ -96,33 +96,38 @@ public class DefaultIWrapperState extends StateImpl {
         if (isSubmitTrigger(context, preq)) {
             CAT.debug(">>> In SubmitHandling...");
             
-            boolean valid=true;
-            RequestParam rp=preq.getRequestParam("__token");
-            if(rp!=null) {
-                String token=rp.getValue();
-                String[] tokenParts=token.split(":");
-                if(tokenParts.length==3) {
-                    String tokenName=tokenParts[0];
-                    String errorPage=tokenParts[1];
-                    String tokenValue=tokenParts[2];
-                    TokenManager tm=(TokenManager)context;
-                    if(tm.isValidToken(tokenName,tokenValue)) tm.invalidateToken(tokenName);
-                    else {
+            boolean valid = true;
+            RequestParam rp = preq.getRequestParam("__token");
+            if (rp != null) {
+                String token = rp.getValue();
+                String[] tokenParts = token.split(":");
+                if (tokenParts.length == 3) {
+                    String tokenName = tokenParts[0];
+                    String errorPage = tokenParts[1];
+                    String tokenValue = tokenParts[2];
+                    TokenManager tm = (TokenManager) context;
+                    if (tm.isValidToken(tokenName,tokenValue)) {
+                        tm.invalidateToken(tokenName);
+                    } else {
                         context.addPageMessage(StatusCodeLib.PFIXCORE_GENERATOR_FORM_TOKEN_INVALID);
-                        if(errorPage.equals(""))  {
+                        if (errorPage.equals(""))  {
                             pe = new PerfEvent(PerfEventType.PAGE_RETRIEVECURRENTSTATUS, context.getCurrentPageRequest().toString());
                             pe.start();
                             container.retrieveCurrentStatus();
                             pe.save();
                             rfinal.onRetrieveStatus(container);
                             context.prohibitContinue();
-                        } else context.setJumpToPage(errorPage);
-                        valid=false;
+                        } else { 
+                            context.setJumpToPage(errorPage);
+                        }
+                        valid = false;
                     }
-                } else throw new IllegalArgumentException("Invalid token format: "+token);
+                } else { 
+                    throw new IllegalArgumentException("Invalid token format: " + token);
+                }
             } else {
-                PageRequestConfig pageConf=context.getConfigForCurrentPageRequest();
-                if(pageConf!=null && pageConf.requiresToken()) {
+                PageRequestConfig pageConf = context.getConfigForCurrentPageRequest();
+                if (pageConf != null && pageConf.requiresToken()) {
                     context.addPageMessage(StatusCodeLib.PFIXCORE_GENERATOR_FORM_TOKEN_MISSING);
                     pe = new PerfEvent(PerfEventType.PAGE_RETRIEVECURRENTSTATUS, context.getCurrentPageRequest().toString());
                     pe.start();
@@ -130,12 +135,11 @@ public class DefaultIWrapperState extends StateImpl {
                     pe.save();
                     rfinal.onRetrieveStatus(container);
                     context.prohibitContinue();
-                    valid=false;
+                    valid = false;
                 }
             }
             
-            if(valid) {
-            
+            if (valid) {
                 pe = new PerfEvent(PerfEventType.PAGE_HANDLESUBMITTEDDATA, context.getCurrentPageRequest().toString());
                 pe.start();
                 container.handleSubmittedData();
@@ -147,11 +151,14 @@ public class DefaultIWrapperState extends StateImpl {
                     context.prohibitContinue();
                 } else {
                     CAT.debug("    => No error happened during work ...");
-                    if (!context.isJumpToPageSet() && container.stayAfterSubmit()) {
-                        CAT.debug("... Container says he wants to stay on this page and no jumptopage is set: Setting prohibitcontinue=true");
-                        context.prohibitContinue();
-                    } else {
-                        CAT.debug("... Container says he is ready.");
+                    if (container instanceof IWrapperSimpleContainer) { 
+                        // TODO: REMOVE THIS once we don't have to support the old stuff
+                        if (!context.isJumpToPageSet() && ((IWrapperSimpleContainer) container).stayAfterSubmit()) {
+                            CAT.debug("... Container says he wants to stay on this page and no jumptopage is set: Setting prohibitcontinue=true");
+                            context.prohibitContinue();
+                        } else {
+                            CAT.debug("... Container says he is ready.");
+                        }
                     }
     
                     CAT.debug("    => end of submit reached successfully.");
@@ -163,7 +170,6 @@ public class DefaultIWrapperState extends StateImpl {
     
                     rfinal.onSuccess(container);
                 }
-            
             }
         } else if (isDirectTrigger(context, preq) || context.finalPageIsRunning() || context.flowIsRunning()) {
             CAT.debug(">>> Retrieving current status...");
@@ -172,15 +178,14 @@ public class DefaultIWrapperState extends StateImpl {
             pe.start();
             container.retrieveCurrentStatus();
             pe.save();
-            if (isDirectTrigger(context,preq)) {
-                // nothing
-                CAT.debug("    => REASON: DirectTrigger");
-            } else if (context.finalPageIsRunning()) {
-                // nothing
-                CAT.debug("    => REASON: FinalPage");
-            } else {
-                // nothing, too
-                CAT.debug("    => REASON: WorkFlow");
+            if (CAT.isDebugEnabled()) {
+                if (isDirectTrigger(context,preq)) {
+                    CAT.debug("    => REASON: DirectTrigger");
+                } else if (context.finalPageIsRunning()) {
+                    CAT.debug("    => REASON: FinalPage");
+                } else {
+                    CAT.debug("    => REASON: WorkFlow");
+                }
             }
             rfinal.onRetrieveStatus(container);
             context.prohibitContinue();
@@ -190,7 +195,7 @@ public class DefaultIWrapperState extends StateImpl {
 
         // We want to optimise away the case where the context tells us that we don't need to supply
         // a full document as the context will - because of the current state of the context
-        // itself - not use the returned document for displaying the page anyway. The context is
+        // itself - not use the returned document for displaying the page or any further processing anyway. The context is
         // responsible to only return false when it can be 100% sure that the document is not needed.
         // Most notably this is NOT the case whenever the current flow step has pageflow actions attached, because
         // those can possibly call prohibitContinue() which in turn would force the context to display the current page.
