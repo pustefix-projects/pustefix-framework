@@ -53,7 +53,7 @@ import de.schlund.pfixxml.resources.FileResource;
 import de.schlund.pfixxml.resources.ResourceUtil;
 
 /**
- * Default implementation of the <code>IWrapperContainer</code> interface.
+ * Deprecated implementation of the <code>IWrapperContainer</code> interface.
  * <br/>
  *
  * Created: Fri Aug 17 14:58:49 2001
@@ -63,6 +63,7 @@ import de.schlund.pfixxml.resources.ResourceUtil;
  *
  */
 
+@Deprecated
 public class IWrapperSimpleContainer implements IWrapperContainer {
     private   TreeMap<String, IWrapper> wrappers    = new TreeMap<String, IWrapper>();
 
