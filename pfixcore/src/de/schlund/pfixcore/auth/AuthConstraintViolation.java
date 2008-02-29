@@ -20,21 +20,21 @@ package de.schlund.pfixcore.auth;
 /**
  * 
  * @author mleidig@schlund.de
- *
+ * 
  */
 public class AuthConstraintViolation extends AuthorizationException {
-	
-	private final static String TYPESTR="AUTHCONSTRAINT_VIOLATION";
-	    
-	private AuthConstraint constraint;
-	  
-	public AuthConstraintViolation(String message, String subtype, String target, AuthConstraint constraint) {
-		super(message, TYPESTR, subtype, target);
-		this.constraint=constraint;
-	}
 
-	public AuthConstraint getViolatedConstraint() {
-		return constraint;
-	}
-	
+    private static final long   serialVersionUID = 4452140461087940426L;
+    private final static String TYPESTR          = "AUTHCONSTRAINT_VIOLATION";
+    private AuthConstraint      constraint;
+
+    public AuthConstraintViolation(String message, String subtype, String target, AuthConstraint constraint) {
+        super(message, TYPESTR, subtype, target);
+        this.constraint = constraint;
+    }
+
+    public AuthConstraint getViolatedConstraint() {
+        return constraint;
+    }
+
 }
