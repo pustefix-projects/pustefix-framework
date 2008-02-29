@@ -29,41 +29,40 @@ import org.apache.log4j.Logger;
  */
 public class FileCache {
 
-    final static Logger LOG=Logger.getLogger(FileCache.class);
-    
-    private LinkedHashMap<String,FileCacheData> map;
-    
+    final static Logger LOG = Logger.getLogger(FileCache.class);
+    private LinkedHashMap<String, FileCacheData> map;
+
     public FileCache(int size) {
-        final int maxSize=size;
-        map=new LinkedHashMap<String,FileCacheData>(maxSize,0.75f,true) {
+        final int maxSize = size;
+        map = new LinkedHashMap<String, FileCacheData>(maxSize, 0.75f, true) {
             protected boolean removeEldestEntry(Map.Entry<String, FileCacheData> eldest) {
-                boolean exceeded=size()>maxSize;
-                if(exceeded) LOG.warn("Cache maximum size exceeded. Eldest entry to be removed.");
+                boolean exceeded = size() > maxSize;
+                if (exceeded) LOG.warn("Cache maximum size exceeded. Eldest entry to be removed.");
                 return exceeded;
-             }
+            }
         };
     }
-    
-    public synchronized void put(String name,FileCacheData data) {
-        map.put(name,data);
+
+    public synchronized void put(String name, FileCacheData data) {
+        map.put(name, data);
     }
-    
+
     public synchronized FileCacheData get(String name) {
-        FileCacheData data=map.get(name);
+        FileCacheData data = map.get(name);
         return data;
     }
-    
+
     public static void main(String[] args) {
-        FileCache cache=new FileCache(3);
-        cache.put("a",new FileCacheData("aaa".getBytes()));
-        cache.put("b",new FileCacheData("bbb".getBytes()));
-        cache.put("c",new FileCacheData("ccc".getBytes()));
+        FileCache cache = new FileCache(3);
+        cache.put("a", new FileCacheData("aaa".getBytes()));
+        cache.put("b", new FileCacheData("bbb".getBytes()));
+        cache.put("c", new FileCacheData("ccc".getBytes()));
         cache.get("a");
         cache.get("b");
-        cache.put("d",new FileCacheData("ddd".getBytes()));
-        FileCacheData data=cache.get("b");
-        String res=(data==null)?"null":new String(data.bytes)+" "+data.md5;
+        cache.put("d", new FileCacheData("ddd".getBytes()));
+        FileCacheData data = cache.get("b");
+        String res = (data == null) ? "null" : new String(data.bytes) + " " + data.md5;
         System.out.println(res);
     }
-    
+
 }
