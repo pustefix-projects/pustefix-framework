@@ -22,6 +22,8 @@ package de.schlund.pfixcore.auth;
  */
 public class AuthenticationException extends RuntimeException {
 
+    private static final long serialVersionUID = -1122111811565628731L;
+
     public AuthenticationException(String message) {
         super(message);
     }
