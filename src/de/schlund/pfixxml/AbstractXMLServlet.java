@@ -282,6 +282,12 @@ public abstract class AbstractXMLServlet extends ServletManager {
      */
     protected abstract SPDocument getDom(PfixServletRequest preq) throws PustefixApplicationException, PustefixCoreException;
 
+    
+    @SuppressWarnings("unchecked")
+    private CacheValueLRU<String,SPDocument> getLRU(HttpSession session) {
+        return (CacheValueLRU<String,SPDocument>) session.getAttribute(servletname + SUFFIX_SAVEDDOM);
+    }
+    
     /**
      * This is the method that is called for any servlet that inherits from ServletManager.
      * It calls getDom(req, res) to get the SPDocument doc.
@@ -308,7 +314,7 @@ public abstract class AbstractXMLServlet extends ServletManager {
         HttpSession session    = preq.getSession(false);
         CacheValueLRU<String,SPDocument> storeddoms = null;
         if (session != null) {
-            storeddoms = (CacheValueLRU<String,SPDocument>) session.getAttribute(servletname + SUFFIX_SAVEDDOM);
+            storeddoms = getLRU(session);
             if (storeddoms == null) {
                 storeddoms = new CacheValueLRU<String,SPDocument>(maxStoredDoms);
                 session.setAttribute(servletname + SUFFIX_SAVEDDOM, storeddoms);
@@ -820,7 +826,7 @@ public abstract class AbstractXMLServlet extends ServletManager {
         String session_to_link_from_external = SessionAdmin.getInstance().getExternalSessionId(session);
         paramhash.put("__external_session_ref", session_to_link_from_external);
         paramhash.put("__spdoc__", spdoc);
-        paramhash.put("__register_frame_helper__", new RegisterFrameHelper((CacheValueLRU<String, SPDocument>) session.getAttribute(servletname + SUFFIX_SAVEDDOM), spdoc));
+        paramhash.put("__register_frame_helper__", new RegisterFrameHelper(getLRU(session), spdoc));
         return paramhash;
     }
     

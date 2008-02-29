@@ -19,7 +19,6 @@
 
 package de.schlund.pfixcore.workflow.app;
 
-
 import de.schlund.pfixcore.util.TokenManager;
 import de.schlund.pfixcore.workflow.Context;
 import de.schlund.pfixcore.workflow.StateImpl;
@@ -80,6 +79,7 @@ public class DefaultIWrapperState extends StateImpl {
      * @see de.schlund.pfixcore.workflow.State#getDocument(Context, PfixServletRequest)
      */
     @Override
+    @SuppressWarnings("deprecation")
     public ResultDocument getDocument(Context context, PfixServletRequest preq) throws Exception {
         IWrapperContainer container  = getIWrapperContainer(context);
         ResdocFinalizer   rfinal     = getResdocFinalizer(context);

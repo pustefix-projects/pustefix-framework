@@ -52,6 +52,7 @@ public class IWrapperRuntimeGenerator {
         return doc;
     }
 
+    @SuppressWarnings("unchecked")
     public static void generate(Class<?> clazz, File genSrcDir) {
 
         BeanDescriptor beanDesc = new BeanDescriptor(clazz);
@@ -126,6 +127,7 @@ public class IWrapperRuntimeGenerator {
                         throw new RuntimeException("Type not supported: " + targetType);
                 } else
                     throw new RuntimeException("Unparameterized List types aren't supported: " + targetType);
+                
                 List list = null;
                 if (!targetClass.isInterface()) {
                     try {

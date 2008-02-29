@@ -147,10 +147,12 @@ public class SPCacheStatistic {
     /**
 	 * Create cache-statistic in XML-format.
 	 */
+    @SuppressWarnings("unchecked")
     public Document getCacheStatisticAsXML() {
         
         // do clone or synchronize? We need a stable iterator.
-        Hashtable<TargetGenerator, AdvanceCacheStatistic> targetgentoinfomap_clone =  (Hashtable<TargetGenerator, AdvanceCacheStatistic>) targetGen2AdvanceStatMapping.clone();
+        Hashtable<TargetGenerator, AdvanceCacheStatistic> targetgentoinfomap_clone =  
+            (Hashtable<TargetGenerator, AdvanceCacheStatistic>) targetGen2AdvanceStatMapping.clone();
 
         Document doc = Xml.createDocument();
         Element top = doc.createElement("spcachestatistic");
@@ -178,10 +180,12 @@ public class SPCacheStatistic {
     /**
      * Create cache-statistic in special format.
      */
+    @SuppressWarnings("unchecked")
     public String getCacheStatisticAsString() {
         StringBuffer sb = new StringBuffer(128);
         // do clone or synchronize 
-        Hashtable<TargetGenerator, AdvanceCacheStatistic> targetgentoinfomap_clone = (Hashtable<TargetGenerator, AdvanceCacheStatistic>) targetGen2AdvanceStatMapping.clone();
+        Hashtable<TargetGenerator, AdvanceCacheStatistic> targetgentoinfomap_clone = 
+            (Hashtable<TargetGenerator, AdvanceCacheStatistic>) targetGen2AdvanceStatMapping.clone();
 
         long totalmisses = 0;
         long totalhits = 0;
@@ -286,7 +290,7 @@ public class SPCacheStatistic {
     }
 
     /**
-     * Attach general information abou the cache and create the total rates
+     * Attach general information about the cache and create the total rates
      * by iterating over all known targetGenerators in the targetGen2AdvanceStatMapping-map.
      */
     private void setCacheAttributesXML(SPCache<Object, Object> currentcache, Element ele_currentcache) {

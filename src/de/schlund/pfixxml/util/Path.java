@@ -28,7 +28,7 @@ import de.schlund.pfixxml.resources.FileResource;
  * 
  * @deprecated Use {@link FileResource} instead
  */
-public class Path implements Comparable {
+public class Path implements Comparable<Path> {
     private static final String SEP = File.separator; 
     
     public static final File ROOT = new File(SEP); // TODO: windows
@@ -122,9 +122,9 @@ public class Path implements Comparable {
     }
     
     /** TODO: does not consider base */
-    public int compareTo(Object obj) {
+    public int compareTo(Path obj) {
         // TODO: base might be different?!
-        return relative.compareTo(((Path) obj).relative);
+        return relative.compareTo(obj.relative);
     }
     
     public int hashCode() {
