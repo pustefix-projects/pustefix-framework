@@ -252,8 +252,7 @@ public abstract class IWrapperImpl implements IWrapper {
         // super.registerParams() without worrying.
     }
 
-    public final int compareTo(Object inobj) {
-        IWrapper in = (IWrapper) inobj;
+    public final int compareTo(IWrapper in) {
         return (gimmeOrder().compareTo(in.gimmeOrder()));
     }
 
