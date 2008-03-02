@@ -93,7 +93,6 @@ public class Test extends TestCase {
         expected = "<result><weekDay workingHours=\"8\" name=\"MONDAY\"/><priority>LOW</priority></result>";
         expDoc = OxmTestHelper.createDocument(expected);
         XMLUtils.assertEquals(expDoc, doc);
-
     }
 
     public void testComplex() throws Exception {
@@ -145,9 +144,7 @@ public class Test extends TestCase {
         Document doc = OxmTestHelper.createResultDocument();
         Result res = new DOMResult(doc);
         m.marshal(bean, res);
-        // printDocument(doc);
         XMLUtils.assertEquals(expDoc, doc);
-
     }
 
     public void testFragment() throws Exception {
@@ -163,7 +160,6 @@ public class Test extends TestCase {
         Document doc = OxmTestHelper.createResultDocument();
         Result res = new DOMResult(doc);
         m.marshal(fBean, res);
-        OxmTestHelper.printDocument(doc);
         XMLUtils.assertEquals(expDoc, doc);
     }
     
