@@ -28,7 +28,9 @@
       <body>
         <h1>XML data:</h1>
         <xsl:apply-templates mode="static_disp" select="/"/>
-        <xsl:call-template name="render_iwrappers"/>
+        <xsl:call-template name="render_iwrappers">
+          <xsl:with-param name="tree" select="/"/>
+        </xsl:call-template>
         <xsl:call-template name="render_roles"/>
         <br/>
         <h1>Page status:</h1>
@@ -96,6 +98,7 @@
   </xsl:template>
   
   <xsl:template name="render_iwrappers">
+    <xsl:param name="tree"/>
     <xsl:variable name="iwrappers" select="callback:getIWrappers($__context__,/,'')"/>
     <xsl:if test="count($iwrappers/iwrappers/iwrapper) > 0">
       <br/>
@@ -107,7 +110,8 @@
           <th><b>Frequency</b></th>
           <th><b>Type</b></th>
           <th><b>activeignore?</b></th>
-          <th><b>alwaysretrieve?</b></th>                    
+          <th><b>alwaysretrieve?</b></th>               
+          <th><b>active?</b></th>               
         </tr>
         <xsl:for-each select="$iwrappers/iwrappers/iwrapper">
           <xsl:variable name="iwrp" select="callback:getIWrapperInfo($__context__,/,'',@prefix)/iwrapper"/>
@@ -124,6 +128,12 @@
             <td align="center" style="font-family: sans;">
               <xsl:choose>
                 <xsl:when test="@alwaysretrieve = 'true'">&#9745;</xsl:when>
+                <xsl:otherwise>&#9744;</xsl:otherwise>
+              </xsl:choose>
+            </td>            
+            <td align="center" style="font-family: sans;">
+              <xsl:choose>
+                <xsl:when test="$tree/formresult/iwrappergroups/group[@current = 'true']/interface[@prefix=$prefix]/@active = 'true'">&#9745;</xsl:when>
                 <xsl:otherwise>&#9744;</xsl:otherwise>
               </xsl:choose>
             </td>
@@ -154,7 +164,10 @@
               </td>
               <td>
                 <xsl:if test="position()=last()"><xsl:attribute name="class">rowsep</xsl:attribute></xsl:if>&#160;
-              </td>              
+              </td>
+              <td>
+                <xsl:if test="position()=last()"><xsl:attribute name="class">rowsep</xsl:attribute></xsl:if>&#160;
+              </td>
             </tr>
           </xsl:for-each> 
         </xsl:for-each>

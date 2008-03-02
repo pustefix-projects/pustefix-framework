@@ -1,3 +1,7 @@
+2008-03-02  jtl  <jtl@britten.laudi.ka>
+
+	* projects/core/xsl/xmlfontify.xsl: more cosmetics
+
 2008-03-02  schst  <schst@stubbles.net>
 
 	Added writeFragment(String xmlFragment) method to the XMLWriter:
