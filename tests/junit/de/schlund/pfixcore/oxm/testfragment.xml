@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<result>
+   <myFragment>
+      <foo>
+         <bar baz="true"/>character data</foo>
+   </myFragment>
+</result>

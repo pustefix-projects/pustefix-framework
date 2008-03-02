@@ -56,6 +56,7 @@ import de.schlund.pfixxml.util.XMLUtils;
 
 /**
  * @author mleidig@schlund.de
+ * @author  Stephan Schmidt <schst@stubbles.net>
  */
 public class Test extends TestCase {
 
@@ -157,6 +158,22 @@ public class Test extends TestCase {
 
     }
 
+    public void testFragment() throws Exception {
+
+        BeanDescriptorFactory bdf = new BeanDescriptorFactory();
+        SerializerRegistry reg = new SerializerRegistry(bdf);
+        Marshaller m = new MarshallerImpl(reg);
+
+        FragmentBean fBean = new FragmentBean();
+
+        Document expDoc = createDocument(getInputStream("testfragment.xml"));
+        XMLUtils.stripWhitespace(expDoc);
+        Document doc = createResultDocument();
+        Result res = new DOMResult(doc);
+        m.marshal(fBean, res);
+        XMLUtils.assertEquals(expDoc, doc);
+    }
+    
     private Document createResultDocument() {
         try {
             Document doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
@@ -211,5 +228,4 @@ public class Test extends TestCase {
             throw new RuntimeException("Can't print document", x);
         }
     }
-
 }

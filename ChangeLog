@@ -1,3 +1,16 @@
+2008-03-02  schst  <schst@stubbles.net>
+
+	Added writeFragment(String xmlFragment) method to the XMLWriter:
+	* src/de/schlund/pfixcore/oxm/impl/DOMWriter.java
+	* src/de/schlund/pfixcore/oxm/impl/XMLWriter.java
+	
+	Added new OXM serializer for XML fragments contained in String properties:
+	* src/de/schlund/pfixcore/oxm/impl/serializers/XMLFragmentSerializer.java
+	* src/de/schlund/pfixcore/oxm/impl/annotation/XMLFragmentSerializer.java
+	* tests/junit/de/schlund/pfixcore/oxm/Test.java
+	* tests/junit/de/schlund/pfixcore/oxm/testfragment.xml
+	* tests/junit/de/schlund/pfixcore/oxm/FragmentBean.java
+
 2008-02-29  jtl  <jtl@britten.laudi.ka>
 
 	* src/de/schlund/pfixcore/util/TransformerCallback.java (getIWrappers): 
