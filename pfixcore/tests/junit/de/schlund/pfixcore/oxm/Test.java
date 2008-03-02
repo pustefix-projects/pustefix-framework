@@ -148,7 +148,6 @@ public class Test extends TestCase {
     }
 
     public void testFragment() throws Exception {
-
         BeanDescriptorFactory bdf = new BeanDescriptorFactory();
         SerializerRegistry reg = new SerializerRegistry(bdf);
         Marshaller m = new MarshallerImpl(reg);
@@ -160,6 +159,23 @@ public class Test extends TestCase {
         Document doc = OxmTestHelper.createResultDocument();
         Result res = new DOMResult(doc);
         m.marshal(fBean, res);
+        XMLUtils.assertEquals(expDoc, doc);
+    }
+
+    public void testForceElement() throws Exception {
+        BeanDescriptorFactory bdf = new BeanDescriptorFactory();
+        SerializerRegistry reg = new SerializerRegistry(bdf);
+        Marshaller m = new MarshallerImpl(reg);
+
+        ForceElementTestBean bean = new ForceElementTestBean();
+
+        Document doc = OxmTestHelper.createResultDocument();
+        Result res = new DOMResult(doc);
+        m.marshal(bean, res);
+        
+        String expected = "<result><foo>foo</foo><baz>bar</baz><openingDate>2008-03-02 18:43:12</openingDate></result>";
+        Document expDoc = OxmTestHelper.createDocument(expected);
+        
         XMLUtils.assertEquals(expDoc, doc);
     }
     

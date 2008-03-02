@@ -14,7 +14,18 @@
 	Moved some methods from OXM unit test class to a new helper class
 	* tests/junit/de/schlund/pfixcore/oxm/Test.java
 	* tests/junit/de/schlund/pfixcore/oxm/helper/OxmTestHelper.java
-
+	
+	Added ForceElementSerializer to force simple types to be written as XML elements
+	* src/de/schlund/pfixcore/oxm/impl/serializers/ForceElementSerializer.java
+	* src/de/schlund/pfixcore/oxm/impl/annotation/ForceElementSerializer.java
+	
+	Added test case for the new ForceElementSerializer
+	* tests/junit/de/schlund/pfixcore/oxm/Test.java
+	* tests/junit/de/schlund/pfixcore/oxm/ForceElementTestBean.java
+	
+	Added the ability to attach a SimpleTypeSerializer and ComplexTypeSerializer to a bean property
+	* src/de/schlund/pfixcore/oxm/impl/serializers/BeanSerializer.java
+	
 2008-02-29  jtl  <jtl@britten.laudi.ka>
 
 	* src/de/schlund/pfixcore/util/TransformerCallback.java (getIWrappers): 
