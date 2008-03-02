@@ -18,11 +18,19 @@
  */
 package de.schlund.pfixcore.oxm.impl;
 
+import java.io.ByteArrayInputStream;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+
+import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 /**
  * @author mleidig@schlund.de
+ * @author  Stephan Schmidt <schst@stubbles.net>
  */
 public class DOMWriter implements XMLWriter {
 
@@ -55,13 +63,47 @@ public class DOMWriter implements XMLWriter {
         Element elem=(Element)current;
         elem.setAttribute(localName, value);
     }
-    
+
+    /**
+     * Writes an xml fragment to the document.
+     * 
+     * The fragment does not need a root element, but it must
+     * be well-formed xml.
+     * 
+     * @param   xmlFragment     The fragment to be written to the document.
+     */
+    public void writeFragment(String xmlFragment) {
+        try {
+            DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder builder = builderFactory.newDocumentBuilder();
+            
+            // make sure, that we have a root node
+            xmlFragment = "<root>" + xmlFragment + "</root>";
+            
+            byte currentXMLBytes[] = xmlFragment.getBytes();
+            ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(currentXMLBytes);
+            
+            Document doc = builder.parse(byteArrayInputStream);
+            Element root = doc.getDocumentElement();
+            
+            Document originalDoc = this.root.getOwnerDocument();
+            Node rootCopy = originalDoc.importNode(root, true);
+
+            NodeList list = rootCopy.getChildNodes();
+            for (int i = 0; i < list.getLength(); i++) {
+                current.appendChild(list.item(i));
+            }            
+        } catch (Exception e) {
+            throw new RuntimeException("Unable to write XML fragment", e);
+        }
+        
+    }
+
     public Node getNode() {
         return root;
     }
     
     public XPathPosition getCurrentPosition() {
        return new DOMXPathPosition(current);
-    }
-    
+    }   
 }
