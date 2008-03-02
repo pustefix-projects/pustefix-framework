@@ -10,6 +10,10 @@
 	* tests/junit/de/schlund/pfixcore/oxm/Test.java
 	* tests/junit/de/schlund/pfixcore/oxm/testfragment.xml
 	* tests/junit/de/schlund/pfixcore/oxm/FragmentBean.java
+	
+	Moved some methods from OXM unit test class to a new helper class
+	* tests/junit/de/schlund/pfixcore/oxm/Test.java
+	* tests/junit/de/schlund/pfixcore/oxm/helper/OxmTestHelper.java
 
 2008-02-29  jtl  <jtl@britten.laudi.ka>
 

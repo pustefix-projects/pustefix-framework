@@ -22,7 +22,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
-import java.io.StringReader;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -30,14 +29,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Result;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMResult;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
 
 import junit.framework.TestCase;
 
@@ -46,10 +39,9 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
 import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.xml.sax.InputSource;
 
 import de.schlund.pfixcore.beans.BeanDescriptorFactory;
+import de.schlund.pfixcore.oxm.helper.OxmTestHelper;
 import de.schlund.pfixcore.oxm.impl.MarshallerImpl;
 import de.schlund.pfixcore.oxm.impl.SerializerRegistry;
 import de.schlund.pfixxml.util.XMLUtils;
@@ -82,11 +74,11 @@ public class Test extends TestCase {
         bean.setDay(WeekDay.FRIDAY);
         bean.setPrio(EnumTestBean.Priority.HIGH);
 
-        Document doc = createResultDocument();
+        Document doc = OxmTestHelper.createResultDocument();
         Result res = new DOMResult(doc);
         m.marshal(bean, res);
         String expected = "<result prio=\"HIGH\" text=\"abc\"><day name=\"FRIDAY\" workingHours=\"6\"/></result>";
-        Document expDoc = createDocument(expected);
+        Document expDoc = OxmTestHelper.createDocument(expected);
         XMLUtils.assertEquals(expDoc, doc);
 
         // List with enums
@@ -95,11 +87,11 @@ public class Test extends TestCase {
         elist.add(WeekDay.MONDAY);
         elist.add(EnumTestBean.Priority.LOW);
 
-        doc = createResultDocument();
+        doc = OxmTestHelper.createResultDocument();
         res = new DOMResult(doc);
         m.marshal(elist, res);
         expected = "<result><weekDay workingHours=\"8\" name=\"MONDAY\"/><priority>LOW</priority></result>";
-        expDoc = createDocument(expected);
+        expDoc = OxmTestHelper.createDocument(expected);
         XMLUtils.assertEquals(expDoc, doc);
 
     }
@@ -148,9 +140,9 @@ public class Test extends TestCase {
         beanMap.put(bean1.getStrVal(), bean1);
         bean.setChildMap(beanMap);
 
-        Document expDoc = createDocument(getInputStream("testcomplex.xml"));
+        Document expDoc = OxmTestHelper.createDocument(getInputStream("testcomplex.xml"));
         XMLUtils.stripWhitespace(expDoc);
-        Document doc = createResultDocument();
+        Document doc = OxmTestHelper.createResultDocument();
         Result res = new DOMResult(doc);
         m.marshal(bean, res);
         // printDocument(doc);
@@ -166,46 +158,15 @@ public class Test extends TestCase {
 
         FragmentBean fBean = new FragmentBean();
 
-        Document expDoc = createDocument(getInputStream("testfragment.xml"));
+        Document expDoc = OxmTestHelper.createDocument(getInputStream("testfragment.xml"));
         XMLUtils.stripWhitespace(expDoc);
-        Document doc = createResultDocument();
+        Document doc = OxmTestHelper.createResultDocument();
         Result res = new DOMResult(doc);
         m.marshal(fBean, res);
+        OxmTestHelper.printDocument(doc);
         XMLUtils.assertEquals(expDoc, doc);
     }
     
-    private Document createResultDocument() {
-        try {
-            Document doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
-            Element root = doc.createElement("result");
-            doc.appendChild(root);
-            return doc;
-        } catch (Exception x) {
-            throw new RuntimeException("Can't create document", x);
-        }
-    }
-
-    private Document createDocument(String str) {
-        try {
-            StringReader reader = new StringReader(str);
-            InputSource src = new InputSource();
-            src.setCharacterStream(reader);
-            Document doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(src);
-            return doc;
-        } catch (Exception x) {
-            throw new RuntimeException("Can't create document", x);
-        }
-    }
-
-    private Document createDocument(InputStream in) {
-        try {
-            Document doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(in);
-            return doc;
-        } catch (Exception x) {
-            throw new RuntimeException("Can't create document", x);
-        }
-    }
-
     private InputStream getInputStream(String fileName) {
         InputStream in = getClass().getClassLoader().getResourceAsStream("de/schlund/pfixcore/oxm/" + fileName);
         if (in == null) {
@@ -216,16 +177,5 @@ public class Test extends TestCase {
             }
         }
         return in;
-    }
-
-    @SuppressWarnings("unused")
-    private void printDocument(Document doc) {
-        try {
-            Transformer t = TransformerFactory.newInstance().newTransformer();
-            t.setOutputProperty(OutputKeys.INDENT, "yes");
-            t.transform(new DOMSource(doc), new StreamResult(System.out));
-        } catch (Exception x) {
-            throw new RuntimeException("Can't print document", x);
-        }
     }
 }

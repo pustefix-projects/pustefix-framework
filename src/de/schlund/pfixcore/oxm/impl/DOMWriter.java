@@ -86,17 +86,15 @@ public class DOMWriter implements XMLWriter {
             Document doc = builder.parse(byteArrayInputStream);
             Element root = doc.getDocumentElement();
             
-            Document originalDoc = this.root.getOwnerDocument();
-            Node rootCopy = originalDoc.importNode(root, true);
-
-            NodeList list = rootCopy.getChildNodes();
+            Document originalDoc = this.root.getOwnerDocument();            
+            NodeList list = root.getChildNodes();
             for (int i = 0; i < list.getLength(); i++) {
-                current.appendChild(list.item(i));
+                Node node = originalDoc.importNode(list.item(i), true);
+                current.appendChild(node);
             }            
         } catch (Exception e) {
             throw new RuntimeException("Unable to write XML fragment", e);
         }
-        
     }
 
     public Node getNode() {
