@@ -17,7 +17,7 @@ public class XMLFragmentSerializer implements ComplexTypeSerializer {
 
 	public XMLFragmentSerializer() {
 	}
-				
+
 	public void serialize(Object obj, SerializationContext context, XMLWriter writer) throws SerializationException {
         if (!(obj instanceof String)) {
             throw new SerializationException("Type not supported: "+obj.getClass().getName());
@@ -28,5 +28,5 @@ public class XMLFragmentSerializer implements ComplexTypeSerializer {
         } catch (RuntimeException e) {
             throw new SecurityException("Fragment " + fragment + " could not be written to the document.", e.getCause());
         }            
-	}
+    }
 }
