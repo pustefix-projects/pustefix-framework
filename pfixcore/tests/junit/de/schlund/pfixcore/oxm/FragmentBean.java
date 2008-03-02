@@ -1,14 +1,5 @@
 package de.schlund.pfixcore.oxm;
 
-import javax.xml.transform.Result;
-import javax.xml.transform.dom.DOMResult;
-
-import org.w3c.dom.Document;
-
-import de.schlund.pfixcore.beans.BeanDescriptorFactory;
-import de.schlund.pfixcore.oxm.helper.OxmTestHelper;
-import de.schlund.pfixcore.oxm.impl.MarshallerImpl;
-import de.schlund.pfixcore.oxm.impl.SerializerRegistry;
 import de.schlund.pfixcore.oxm.impl.annotation.XMLFragmentSerializer;
 
 /**
