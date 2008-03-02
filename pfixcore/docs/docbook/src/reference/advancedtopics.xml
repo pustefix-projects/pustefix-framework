@@ -479,7 +479,39 @@ public interface Authentication {
       bean, which itself has a reference to all of its <literal>Accounts</literal>. You can see that all
       beans, which were already serialized (as ancestors in the tree) contain an according back-reference.
     </para>
-    
+    <para>
+      Strings that contain XML code can be inserted as XML fragment the the resulting document by using
+      the <literal>@XMLFragmentSerializer</literal>:
+    </para>
+    <para>
+      <programlisting language="java"><![CDATA[
+        public class FragmentBean {
+
+            private String myFragment = "<foo><bar baz=\"true\"/>character data</foo>";
+
+            @XMLFragmentSerializer
+            public String getMyFragment() {
+                return myFragment;
+            }
+        }
+      ]]></programlisting>
+    </para>
+    <para>
+      The XML, that is returned by the <literal>getMyFragment</literal> method is not treated
+      as a simple string, but as an XML fragment and thus, the content is not escaped, when
+      inserted in the document:
+    </para>
+    <para>
+      <programlisting language="java"><![CDATA[
+        <?xml version="1.0" encoding="utf-8"?>
+        <result>
+           <myFragment>
+              <foo>
+                 <bar baz="true"/>character data</foo>
+           </myFragment>
+        </result>
+      ]]></programlisting>
+    </para>
     </section>
     
     <section xml:id="object2xml_customserializers">
