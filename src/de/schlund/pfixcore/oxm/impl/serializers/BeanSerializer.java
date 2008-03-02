@@ -36,6 +36,7 @@ import de.schlund.pfixcore.oxm.impl.XMLWriter;
 
 /**
  * @author mleidig@schlund.de
+ * @author Stephan Schmidt <schst@stubbles.net>
  */
 public class BeanSerializer implements ComplexTypeSerializer {
 
@@ -70,7 +71,15 @@ public class BeanSerializer implements ComplexTypeSerializer {
                 if (val != null) {
                     SimpleTypeSerializer simpleSerializer = getCustomSimpleTypeSerializer(obj.getClass(), prop);
                     if (simpleSerializer != null) {
-                        writer.writeAttribute(prop, ctx.serialize(val, simpleSerializer));
+                        String value = ctx.serialize(val, simpleSerializer);
+                        ComplexTypeSerializer complexSerializer = getCustomComplexTypeSerializer(obj.getClass(), prop);
+                        if (complexSerializer != null) {
+                            writer.writeStartElement(prop);
+                            ctx.serialize(value, writer, complexSerializer);
+                            writer.writeEndElement(prop);
+                        } else {
+                            writer.writeAttribute(prop, value);
+                        }
                     } else {
                         ComplexTypeSerializer complexSerializer = getCustomComplexTypeSerializer(obj.getClass(), prop);
                         if (complexSerializer != null) {
