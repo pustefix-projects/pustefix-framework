@@ -104,13 +104,13 @@ public class RefCountingCollection<E> implements Collection<E> {
         if (cardinality == 0 || !map.containsKey(object)) {
             return false;
         }
-        E casted = (E) object;
-        int count = map.get(casted);
+        int count = map.get(object);
         if (cardinality >= count) {
-            map.remove(casted);
+            map.remove(object);
             fullsize = fullsize - count;
         } else {
-            map.put(casted, count - cardinality);
+            // This cast is OK, as we already know that object is in the map. 
+            map.put((E) object, count - cardinality);
             fullsize = fullsize - cardinality;
         }
         return true;
@@ -264,6 +264,7 @@ public class RefCountingCollection<E> implements Collection<E> {
         return retval;
     }
 
+    @SuppressWarnings("unchecked")
     public final <T> T[] toArray(T[] array) {
         if (array.length < fullsize) {
             array = (T[]) java.lang.reflect.Array.newInstance(array.getClass().getComponentType(), fullsize);

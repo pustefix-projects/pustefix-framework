@@ -1,3 +1,7 @@
+2008-03-03  jtl  <jtl@schoenberg.laudi.ka>
+
+	* src/de/schlund/pfixxml/util/RefCountingCollection.java (toArray): supressed warnings
+
 2008-03-02  jtl  <jtl@britten.laudi.ka>
 
 	* projects/core/xsl/xmlfontify.xsl: more cosmetics
