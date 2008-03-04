@@ -141,18 +141,16 @@ public class AdminWebapp {
                 String name=srvConf.getName();
                 writer.println("<p>");
                 writer.println("<b>"+name+"</b>");
-             
-                String wsdlUri=req.getRequestURI()+"/"+name+";jsessionid="+session.getId()+"?WSDL";
-                
-                writer.println("&nbsp;&nbsp;<a style=\"color:#666666\" target=\"_blank\" href=\""+wsdlUri+"\" title=\"Show generated WSDL\">WSDL</a>");
                 if(srvConf.getProtocolType().equals(Constants.PROTOCOL_TYPE_ANY)||
                         srvConf.getProtocolType().equals(Constants.PROTOCOL_TYPE_SOAP)) {
+                    String wsdlUri=req.getRequestURI()+"/"+name+";jsessionid="+session.getId()+"?WSDL";
+                    writer.println("&nbsp;&nbsp;<a style=\"color:#666666\" target=\"_blank\" href=\""+wsdlUri+"\" title=\"Show generated WSDL\">WSDL</a>");
                     String soapUri=req.getContextPath()+"/xml"+globConf.getStubRepository()+"/"+srvConf.getName()+".js";
                     writer.println("&nbsp;&nbsp;<a style=\"color:#666666\" target=\"_blank\" href=\""+soapUri+"\" title=\"Show generated SOAP Javascript stub\">SOAP JS</a>");
                 }
                 if(srvConf.getProtocolType().equals(Constants.PROTOCOL_TYPE_ANY)||
                         srvConf.getProtocolType().equals(Constants.PROTOCOL_TYPE_JSONWS)) {
-                    String jsonwsUri=req.getRequestURI()+"/"+srvConf.getName()+"?wsscript=jsonws";
+                    String jsonwsUri=req.getRequestURI()+"?wsscript&name="+srvConf.getName()+"&type=jsonws";
                     writer.println("&nbsp;&nbsp;<a style=\"color:#666666\" target=\"_blank\" href=\""+jsonwsUri+"\" title=\"Show generated JSONWS Javascript stub\">JSONWS JS</a>");
                 }
                 writer.println("<br/>");

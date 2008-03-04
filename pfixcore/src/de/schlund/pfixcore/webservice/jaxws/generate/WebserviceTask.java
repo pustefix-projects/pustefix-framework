@@ -158,9 +158,11 @@ public class WebserviceTask extends Task {
                     Element endPointsElem = endPointsDoc.createElementNS(XMLNS_JAXWS_RUNTIME, "ws:endpoints");
                     endPointsElem.setAttribute("version", "2.0");
                     endPointsDoc.appendChild(endPointsElem);
+                    boolean hasSOAPService=false;
                     // Iterate over services
                     for (ServiceConfig conf : srvConf.getServiceConfig()) {
                         if (conf.getProtocolType().equals(Constants.PROTOCOL_TYPE_ANY) || conf.getProtocolType().equals(Constants.PROTOCOL_TYPE_SOAP)) {
+                            hasSOAPService=true;
                             ServiceConfig refConf = null;
                             if (refSrvConf != null) refConf = refSrvConf.getServiceConfig(conf.getName());
                             File wsdlFile = new File(wsdlDir, conf.getName() + ".wsdl");
@@ -236,7 +238,7 @@ public class WebserviceTask extends Task {
                     if (stubCount > 0) log("Generated " + stubCount + " Javascript stub file" + (stubCount == 1 ? "" : "s") + ".");
                     // Generate JAXWS runtime endpoint configuration
                     File endPointsFile = new File(webInfDir, "sun-jaxws.xml");
-                    if (!endPointsFile.exists() || wsdlCount > 0) {
+                    if (hasSOAPService && (!endPointsFile.exists() || wsdlCount > 0)) {
                         Transformer t = TransformerFactory.newInstance().newTransformer();
                         t.setOutputProperty(OutputKeys.INDENT, "yes");
                         t.transform(new DOMSource(endPointsDoc), new StreamResult(new FileOutputStream(endPointsFile)));
