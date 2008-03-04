@@ -15,7 +15,8 @@
         <b>[Error: You can't give both attributes "prefix" and "page" to &lt;pfx:checkactive&gt;]</b>
       </xsl:when>
       <xsl:when test="not($prefix = '')">
-        <ixsl:if test="/formresult/iwrappergroups/group[@current = 'true']/interface[@prefix = '{$prefix}' and @active = 'true']">
+        <ixsl:if test="/formresult/iwrappergroups/group[@current = 'true']/interface[@prefix = '{$prefix}' and @active = 'true'] 
+        or /formresult/iwrapperstatus/interface[@prefix = '{$prefix}' and @active = 'true']">
           <xsl:apply-templates/>
         </ixsl:if>
       </xsl:when>
@@ -39,7 +40,8 @@
         <b>[Error: You can't give both attributes "prefix" and "page" to &lt;pfx:checknotactive&gt;]</b>
       </xsl:when>
       <xsl:when test="not($prefix = '')">
-        <ixsl:if test="/formresult/iwrappergroups/group[@current = 'true']/interface[@prefix = '{$prefix}' and @active = 'false']">
+        <ixsl:if test="/formresult/iwrappergroups/group[@current = 'true']/interface[@prefix = '{$prefix}' and @active = 'false']
+        or /formresult/iwrapperstatus/interface[@prefix = '{$prefix}' and @active = 'false']">
           <xsl:apply-templates/>
         </ixsl:if>
       </xsl:when>

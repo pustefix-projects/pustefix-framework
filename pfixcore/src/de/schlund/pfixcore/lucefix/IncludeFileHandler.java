@@ -38,7 +38,6 @@ import de.schlund.pfixxml.resources.FileResource;
  */
 public class IncludeFileHandler extends DefaultHandler implements LexicalHandler {
 
-
     public IncludeFileHandler(FileResource file) {
         this.lasttouch = file.lastModified();
         if (file instanceof DocrootResource) {
@@ -58,11 +57,9 @@ public class IncludeFileHandler extends DefaultHandler implements LexicalHandler
     private int                 product_count     = 0;
     private Part                currentPart       = null;
     private PreDoc              currentDoc        = null;
-    private Collection<PreDoc> alleDokumente = null;
+    private Collection<PreDoc>  alleDokumente     = null;
     private String              path;
     private long                lasttouch;
-
-
 
     public void comment(char[] arg0, int arg1, int arg2) throws SAXException {
         if (currentDoc != null) for (int i = 0; i < arg0.length; i++) {
@@ -72,7 +69,7 @@ public class IncludeFileHandler extends DefaultHandler implements LexicalHandler
 
     public void startElement(String uri, String name, String qName, Attributes atts) throws SAXException {
         super.startElement(uri, name, qName, atts);
-       String internal = qName;
+        String internal = qName;
         if (INCLUDE_PARTS.equals(internal)) {
             includepart_count++;
             return;
@@ -85,8 +82,7 @@ public class IncludeFileHandler extends DefaultHandler implements LexicalHandler
         } else if (PRODUCT.equals(internal)) {
             product_count++;
             if (product_count == 1) {
-                currentDoc = new PreDoc(currentPart.getFilename(), currentPart.getName(), atts.getValue("name"),
-                        lasttouch);
+                currentDoc = new PreDoc(currentPart.getFilename(), currentPart.getName(), atts.getValue("name"), lasttouch);
                 return;
             }
         }
@@ -107,8 +103,8 @@ public class IncludeFileHandler extends DefaultHandler implements LexicalHandler
     public Document[] getScannedDocuments() {
         return (Document[]) getScannedDocumentsAsVector().toArray(new Document[0]);
     }
-    
-    public Vector<Document> getScannedDocumentsAsVector(){
+
+    public Vector<Document> getScannedDocumentsAsVector() {
         Vector<Document> retval = new Vector<Document>();
         for (Iterator<PreDoc> iter = alleDokumente.iterator(); iter.hasNext();) {
             PreDoc element = iter.next();
@@ -116,9 +112,6 @@ public class IncludeFileHandler extends DefaultHandler implements LexicalHandler
         }
         return retval;
     }
-
-
-
 
     public void endElement(String uri, String name, String qName) throws SAXException {
         super.endElement(uri, name, qName);
@@ -133,61 +126,44 @@ public class IncludeFileHandler extends DefaultHandler implements LexicalHandler
                 alleDokumente.add(currentDoc);
             }
         }
-        }
+    }
 
     public void characters(char ch[], int start, int length) {
         for (int i = start; i < start + length; i++) {
             switch (ch[i]) {
-                case '\\' :
+                case '\\':
                     break;
-                case '"' :
+                case '"':
                     break;
-                case '\n' :
+                case '\n':
                     break;
-                case '\r' :
+                case '\r':
                     break;
-                case '\t' :
+                case '\t':
                     break;
-                default :
+                default:
                     if (currentDoc != null) currentDoc.addContent(ch[i]);
                     break;
             }
         }
     }
 
-
-
     public void endCDATA() throws SAXException {
-        // TODO Auto-generated method stub
-
     }
 
     public void endDTD() throws SAXException {
-        // TODO Auto-generated method stub
-
     }
 
     public void endEntity(String arg0) throws SAXException {
-        // TODO Auto-generated method stub
-
     }
 
     public void startCDATA() throws SAXException {
-        // TODO Auto-generated method stub
-
     }
 
     public void startDTD(String arg0, String arg1, String arg2) throws SAXException {
-        // TODO Auto-generated method stub
-
     }
 
     public void startEntity(String arg0) throws SAXException {
-        // TODO Auto-generated method stub
-
     }
-    
-    
-    
-    
+
 }
