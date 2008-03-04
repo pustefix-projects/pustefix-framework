@@ -220,7 +220,7 @@
     <xsl:param name="bold">true</xsl:param>
     <xsl:variable name="dim">
       <xsl:choose>
-<!--         <xsl:when test="ancestor-or-self::navigation[1] and generate-id(ancestor-or-self::navigation[1]) = generate-id(/formresult/navigation)">true</xsl:when> -->
+        <xsl:when test="ancestor-or-self::iwrapperstatus[1] and generate-id(ancestor-or-self::iwrapperstatus[1]) = generate-id(/formresult/iwrapperstatus)">true</xsl:when>
         <xsl:when test="ancestor-or-self::pageflow[1] and generate-id(ancestor-or-self::pageflow[1]) = generate-id(/formresult/pageflow)">true</xsl:when>
         <xsl:when test="ancestor-or-self::formhiddenvals[1] and generate-id(ancestor-or-self::formhiddenvals[1]) = generate-id(/formresult/formhiddenvals)">true</xsl:when>
         <xsl:when test="generate-id(current()) = generate-id(/formresult/formerrors)">true</xsl:when>
