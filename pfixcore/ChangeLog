@@ -1,6 +1,6 @@
 2008-03-04  jtl  <jtl@schoenberg.laudi.ka>
 
-	* projects/sample1/conf/config.conf.xml: for the sample1 application change the IWrapperContainer bing used to the 
+	* projects/sample1/conf/config.conf.xml: for the sample1 application change the IWrapperContainer being used to the 
 	future default IWrapperContainerImpl.
 	
 	* src/de/schlund/pfixcore/workflow/context/RequestContextImpl.java (runPageFlow): remove the whole skipping of 
