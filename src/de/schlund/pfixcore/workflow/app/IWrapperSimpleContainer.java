@@ -325,27 +325,27 @@ public class IWrapperSimpleContainer implements IWrapperContainer {
     }
 
 
-    /**
-     * The method <code>needsData</code> tells if any of the IWrappers this instance aggregates still needs Data.
-     *
-     * @return a <code>boolean</code> value
-     * @exception Exception if an error occurs
-     * @see de.schlund.pfixcore.workflow.app.IWrapperContainer#needsData()
-     */
-    public boolean needsData() throws Exception{
-        if (wrappers.isEmpty()) return true; // border case
-
-        // synchronized (wrappers) {
-            for (Iterator<IWrapper> i = wrappers.values().iterator(); i.hasNext(); ) {
-                IWrapper wrapper = i.next();
-                IHandler handler = wrapper.gimmeIHandler();
-                if (handler.isActive(context) && handler.needsData(context)) {
-                    return true;
-                }
-            }
-        // }
-        return false;
-    }
+//    /**
+//     * The method <code>needsData</code> tells if any of the IWrappers this instance aggregates still needs Data.
+//     *
+//     * @return a <code>boolean</code> value
+//     * @exception Exception if an error occurs
+//     * @see de.schlund.pfixcore.workflow.app.IWrapperContainer#needsData()
+//     */
+//    public boolean needsData() throws Exception{
+//        if (wrappers.isEmpty()) return true; // border case
+//
+//        // synchronized (wrappers) {
+//            for (Iterator<IWrapper> i = wrappers.values().iterator(); i.hasNext(); ) {
+//                IWrapper wrapper = i.next();
+//                IHandler handler = wrapper.gimmeIHandler();
+//                if (handler.isActive(context) && handler.needsData(context)) {
+//                    return true;
+//                }
+//            }
+//        // }
+//        return false;
+//    }
     
   
     /**

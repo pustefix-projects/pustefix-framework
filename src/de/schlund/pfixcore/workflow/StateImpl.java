@@ -31,7 +31,7 @@ import de.schlund.pfixxml.ResultDocument;
 
 public abstract class StateImpl implements State {
   
-    protected final static Logger CAT = Logger.getLogger(StateImpl.class);
+    protected final Logger CAT = Logger.getLogger(this.getClass());
 
     public  static final String PROP_INSERTCR = "insertcr";
 

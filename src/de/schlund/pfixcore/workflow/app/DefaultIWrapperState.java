@@ -63,10 +63,12 @@ public class DefaultIWrapperState extends StateImpl {
     @Override
     public boolean needsData(Context context, PfixServletRequest preq) throws Exception {
         CAT.debug(">>> Checking needsData()...");
-        IWrapperContainer container = getIWrapperContainer(context);
-        container.initIWrappers(context, preq, new ResultDocument());
-
-        boolean retval = container.needsData();
+//        IWrapperContainer container = getIWrapperContainer(context);
+//        container.initIWrappers(context, preq, new ResultDocument());
+//        boolean retval = container.needsData();
+        IHandlerContainer container = getIHandlerContainer(context);
+        boolean retval = container.needsData(context);
+        
         if (retval) {
             CAT.debug("    TRUE! now going to retrieve the current status.");
         } else {

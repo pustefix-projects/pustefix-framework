@@ -36,8 +36,8 @@ public interface IWrapperContainer {
     void               addErrorCodes() throws Exception;
     void               addStringValues() throws Exception;
     void               addIWrapperStatus() throws Exception;
-    boolean            needsData() throws Exception;
     boolean            errorHappened() throws Exception;
+    // boolean            needsData() throws Exception;
     // boolean            stayAfterSubmit() throws Exception;
     // PfixServletRequest getAssociatedPfixServletRequest();
     // ResultDocument     getAssociatedResultDocument();
