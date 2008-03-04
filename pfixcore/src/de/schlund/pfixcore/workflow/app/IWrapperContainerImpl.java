@@ -89,7 +89,8 @@ public class IWrapperContainerImpl implements IWrapperContainer {
         this.context = context;
         this.preq    = preq;
         this.resdoc  = resdoc;
-
+        this.reqdata = new RequestDataImpl(context,preq);
+        
         createIWrapperGroups(); 
     }
     
@@ -225,26 +226,6 @@ public class IWrapperContainerImpl implements IWrapperContainer {
     }
 
 
-    /**
-     * The method <code>needsData</code> tells if any of the IWrappers this instance aggregates still needs Data.
-     *
-     * @return a <code>boolean</code> value
-     * @exception Exception if an error occurs
-     * @see de.schlund.pfixcore.workflow.app.IWrapperContainer#needsData()
-     */
-    public boolean needsData() throws Exception{
-        if (allwrappers.isEmpty()) return true; // border case
-        for (Iterator<IWrapper> iter = allwrappers.iterator(); iter.hasNext();) {
-            IWrapper wrapper = iter.next();
-            IHandler handler = wrapper.gimmeIHandler();
-            if (handler.isActive(context) && handler.needsData(context)) {
-                return true;
-            }
-        }
-        return false;
-    }
-    
-  
     /**
      * <code>handleSubmittedData</code> will call all or a part of the defined IWrappers
      * (depending on restricting the IWrappers) to get

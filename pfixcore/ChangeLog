@@ -1,3 +1,17 @@
+2008-03-04  jtl  <jtl@britten.laudi.ka>
+
+	* src/de/schlund/pfixcore/workflow/app/DefaultIWrapperState.java (needsData): now call needsData() from the IHandlerContainer, 
+	not the similar (former) method from an IWrapperContainer. See below.
+	* src/de/schlund/pfixcore/workflow/app/IWrapperSimpleContainer.java (needsData): removed. See below.
+	* src/de/schlund/pfixcore/workflow/app/IWrapperContainerImpl.java (initIWrappers): also initialize RequestData reqdata.
+	(needsData): removed. See below...
+	* src/de/schlund/pfixcore/workflow/app/IWrapperContainer.java (needsData): REMOVED! This has been there for years
+	completely unnecessarily. We really should have used an identical implementation already present in IHandlerContainer, 
+	as this container instance is only created once per page, while IWrapperContainer instances are created again 
+	for every request. Oh my.
+	* src/de/schlund/pfixcore/workflow/StateImpl.java: change the (inheriting) logger to be initalized from 
+	the instance
+
 2008-03-03  jtl  <jtl@schoenberg.laudi.ka>
 
 	* src/de/schlund/pfixxml/util/RefCountingCollection.java (toArray): supressed warnings
