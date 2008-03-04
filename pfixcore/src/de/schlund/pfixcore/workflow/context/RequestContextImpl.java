@@ -699,11 +699,14 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
         FlowStep[] workflow = currentpageflow.getAllSteps();
         PageRequest saved = currentpagerequest;
         boolean after_current = false;
-
+        boolean on_current = false;
+        
         for (int i = 0; i < workflow.length; i++) {
+            if (on_current) after_current = true;
             FlowStep step = workflow[i];
             PageRequest page = createPageRequest(step.getPageName());
             if (page.equals(saved)) {
+                on_current = true;
                 if (startwithflow && checkIsAccessible(page, PageRequestStatus.WORKFLOW)) {
                     LOG.debug("=> [" + page + "]: STARTWITHFLOW: Pageflow must stop here at last.");
                     currentpagerequest = page;
@@ -715,14 +718,18 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
                     LOG.debug("* [" + page + "] returned document => show it.");
                     break;
                 } else {
+                    // TODO: This whole "else" branch will be removed as soon as the new behavior for pageflows is implemented
+                    // together with the new IWrapperContainer (IWrapperContainerImpl).
                     LOG.debug("* Skipping step [" + page + "] in page flow (been there already...)");
+                    LOG.debug("  Please IGNORE the next needsData() check, this is only for logging purposes!!! We will skip regardless of the outcome!");
                     if (checkIsAccessible(page, PageRequestStatus.WORKFLOW) && checkNeedsData(page, PageRequestStatus.WORKFLOW)) {
                         LOG.warn("SKIPPEDWOULDSTOP:" + currentpservreq.getServerName() + "|" + page.getName() + "|" + currentpageflow.getName());
                     }
-
-                    after_current = true;
+                    continue;
                 }
-            } else if (!checkIsAccessible(page, PageRequestStatus.WORKFLOW)) {
+            }
+            
+            if (!checkIsAccessible(page, PageRequestStatus.WORKFLOW)) {
                 LOG.debug("* Skipping step [" + page + "] in page flow (state is not accessible...)");
                 // break;
             } else {
