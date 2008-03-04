@@ -105,7 +105,7 @@ public class DumpText implements IDumpText {
 
     /**
      * Overwrite this method to add more attributes to the root node (the dumpincludeparts tag). 
-     * Typically used for adding more xmlns:XXX attributes.
+     * Typically used for adding more xmlns:xxx attributes.
      * @param root
      */
     public void addRootNodeAtributes(Element root) {

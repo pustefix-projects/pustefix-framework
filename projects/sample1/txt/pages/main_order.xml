@@ -83,83 +83,83 @@
 
   <part name="counter">
     <theme name="default">
-        <table bgcolor="#bbccff" cellpadding="2" cellspacing="0" class="boxed">
-          <ixsl:choose>
-            <ixsl:when test="/formresult/counter/@showcounter = 'false'">
-              <tr>
-                <td colspan="2">
-                  <pfx:xinp type="submit" value="Show Counter">
-                    <pfx:argument name="counter.ShowCounter">true</pfx:argument>
-                    <pfx:command name="SELWRP">counter</pfx:command>
-                  </pfx:xinp>
-                </td>
-              </tr>
-            </ixsl:when>
-            <ixsl:otherwise>
-              <tr>
-                <td align="center" colspan="2">
-                  <big><b>
-                    <ixsl:value-of select="/formresult/counter/@counter"/>
-                  </b></big>
-                </td>
-              </tr>
-              <tr>
-                <td>
-                  <pfx:xinp type="submit" value="Add +1">
-                    <pfx:argument name="counter.Add">1</pfx:argument>
-                    <pfx:command name="SELWRP">counter</pfx:command>
-                  </pfx:xinp>
-                </td>
-                <td>
-                  <pfx:xinp type="submit" value="Add -1">
-                    <pfx:argument name="counter.Add">-1</pfx:argument>
-                    <pfx:command name="SELWRP">counter</pfx:command>
-                  </pfx:xinp>
-                </td>
-              </tr>
-              <tr>
-                <pfx:checkfield name="cinput.Set">
-                  <td class="{$pfx_class}">Set Counter:</td>
-                </pfx:checkfield>
-                <td>
-                  <pfx:xinp name="cinput.Set" size="3" type="text"/>
-                  <pfx:xinp type="submit" value="Set">
-                    <pfx:command name="SELWRP">cinput</pfx:command>
-                  </pfx:xinp>
-                </td>
-              </tr>
-              <errormsg name="cinput.Set"/>
-            </ixsl:otherwise>
-          </ixsl:choose>
-          <tr>
-            <td colspan="2"><i>Add to the Counter <br/>to see the "PageMessages" <br/>feature in action.</i></td>
-          </tr>
-        </table>
-      </theme>
+      <table bgcolor="#bbccff" cellpadding="2" cellspacing="0" class="boxed">
+        <ixsl:choose>
+          <ixsl:when test="/formresult/counter/@showcounter = 'false'">
+            <tr>
+              <td colspan="2">
+                <pfx:xinp forcestop="true" type="submit" value="Show Counter">
+                  <pfx:argument name="counter.ShowCounter">true</pfx:argument>
+                  <pfx:command name="SELWRP">counter</pfx:command>
+                </pfx:xinp>
+              </td>
+            </tr>
+          </ixsl:when>
+          <ixsl:otherwise>
+            <tr>
+              <td align="center" colspan="2">
+                <big><b>
+                  <ixsl:value-of select="/formresult/counter/@counter"/>
+                </b></big>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <pfx:xinp forcestop="true" type="submit" value="Add +1">
+                  <pfx:argument name="counter.Add">1</pfx:argument>
+                  <pfx:command name="SELWRP">counter</pfx:command>
+                </pfx:xinp>
+              </td>
+              <td>
+                <pfx:xinp forcestop="true" type="submit" value="Add -1">
+                  <pfx:argument name="counter.Add">-1</pfx:argument>
+                  <pfx:command name="SELWRP">counter</pfx:command>
+                </pfx:xinp>
+              </td>
+            </tr>
+            <tr>
+              <pfx:checkfield name="cinput.Set">
+                <td class="{$pfx_class}">Set Counter:</td>
+              </pfx:checkfield>
+              <td>
+                <pfx:xinp name="cinput.Set" size="3" type="text"/>
+                <pfx:xinp forcestop="true" type="submit" value="Set">
+                  <pfx:command name="SELWRP">cinput</pfx:command>
+                </pfx:xinp>
+              </td>
+            </tr>
+            <errormsg name="cinput.Set"/>
+          </ixsl:otherwise>
+        </ixsl:choose>
+        <tr>
+          <td colspan="2"><i>Add to the Counter <br/>to see the "PageMessages" <br/>feature in action.</i></td>
+        </tr>
+      </table>
+    </theme>
   </part>
   
   <part name="pic">
     <theme name="default">
-        <table bgcolor="#bbccff" class="boxed">
-          <pfx:checkactive prefix="pic">
-            <tr>
-              <td align="center">
-                <pfx:xinp type="submit" value="Toggle Pic">
-                  <pfx:argument name="pic.Toggle">true</pfx:argument>
-                  <pfx:command name="SELWRP">pic</pfx:command>
-                </pfx:xinp>
-              </td>
-            </tr>
-          </pfx:checkactive>
-          <ixsl:if test="/formresult/togglepic[@do_show = 'true']">
-            <tr>
-              <td>
-                <pfx:image src="/sample1/img/test.gif"/>
-              </td>
-            </tr>
-          </ixsl:if>
-        </table>
-      </theme>
+      <table bgcolor="#bbccff" class="boxed">
+        <pfx:checkactive prefix="pic">
+          <tr>
+            <td align="center">
+              <pfx:xinp forcestop="true" type="submit" value="Toggle Pic">
+                <pfx:argument name="pic.Toggle">true</pfx:argument>
+                <pfx:command name="SELWRP">pic</pfx:command>
+              </pfx:xinp>
+            </td>
+          </tr>
+        </pfx:checkactive>
+        <ixsl:if test="/formresult/togglepic[@do_show = 'true']">
+          <tr>
+            <td>
+              <pfx:image src="/sample1/img/test.gif"/>
+            </td>
+          </tr>
+        </ixsl:if>
+      </table>
+    </theme>
   </part>
   
 

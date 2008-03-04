@@ -1,3 +1,24 @@
+2008-03-04  jtl  <jtl@schoenberg.laudi.ka>
+
+	* projects/sample1/conf/config.conf.xml: for the sample1 application change the IWrapperContainer bing used to the 
+	future default IWrapperContainerImpl.
+	
+	* src/de/schlund/pfixcore/workflow/context/RequestContextImpl.java (runPageFlow): remove the whole skipping of 
+	the current page if the IWrapperContainer used in the properties is not the current default IWrapperSimpleContainer.
+	We should remove this whole special handling once we are sure that we don't need to support the old behaviour any more.
+	This cleanup also applies to the special casing in DefaultIWrapperState. 
+	
+	* src/de/schlund/pfixcore/workflow/app/DefaultIWrapperState.java (getIWrapperContainer): use new property
+	defaultiwrapperstate.iwrappercontainer for specifying a different IWrapperCOntainer; also formatting cosmetics.
+	
+	* src/de/schlund/pfixcore/util/DumpText.java: 
+	* src/de/schlund/pfixcore/lucefix/IncludeFileHandler.java: formatting/cosmetics
+
+	* projects/sample1/txt/pages/main_order.xml: change for the counter stuff to always supply forcestop=true --> this is needed 
+	for the "new IWrapperContainer"/"group removal"/"no longer skip current page in workflow" changes to work correctly
+	* projects/core/xsl/forminput.xsl: change to also react on the new IWrapperContainer output /formresult/iwrapperstatus instead 
+	of only the old /formresult/iwrappergroups/group/... because groups will be removed in the new system.
+
 2008-03-04  jtl  <jtl@britten.laudi.ka>
 
 	* src/de/schlund/pfixcore/workflow/context/RequestContextImpl.java (runPageFlow): re-formulated the method a bit 

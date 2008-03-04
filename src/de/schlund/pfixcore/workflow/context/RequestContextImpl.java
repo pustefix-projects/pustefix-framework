@@ -52,6 +52,7 @@ import de.schlund.pfixcore.workflow.PageRequest;
 import de.schlund.pfixcore.workflow.PageRequestStatus;
 import de.schlund.pfixcore.workflow.State;
 import de.schlund.pfixcore.workflow.VariantManager;
+import de.schlund.pfixcore.workflow.app.DefaultIWrapperState;
 import de.schlund.pfixxml.ContextXMLServlet;
 import de.schlund.pfixxml.PfixServletRequest;
 import de.schlund.pfixxml.RequestParam;
@@ -719,13 +720,16 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
                     break;
                 } else {
                     // TODO: This whole "else" branch will be removed as soon as the new behavior for pageflows is implemented
-                    // together with the new IWrapperContainer (IWrapperContainerImpl).
-                    LOG.debug("* Skipping step [" + page + "] in page flow (been there already...)");
-                    LOG.debug("  Please IGNORE the next needsData() check, this is only for logging purposes!!! We will skip regardless of the outcome!");
-                    if (checkIsAccessible(page, PageRequestStatus.WORKFLOW) && checkNeedsData(page, PageRequestStatus.WORKFLOW)) {
-                        LOG.warn("SKIPPEDWOULDSTOP:" + currentpservreq.getServerName() + "|" + page.getName() + "|" + currentpageflow.getName());
+                    // together with the new IWrapperContainer (IWrapperContainerImpl) and we don't need to implement the old behavior anymore.
+                    String containerclazz = servercontext.getContextConfig().getProperties().getProperty(DefaultIWrapperState.PROP_CONTAINER);
+                    if (containerclazz == null || containerclazz.equals(DefaultIWrapperState.DEF_WRP_CONTAINER)) {
+                        LOG.debug("* Skipping step [" + page + "] in page flow (been there already...)");
+                        LOG.debug("  Please IGNORE the next needsData() check, this is only for logging purposes!!! We will skip regardless of the outcome!");
+                        if (checkIsAccessible(page, PageRequestStatus.WORKFLOW) && checkNeedsData(page, PageRequestStatus.WORKFLOW)) {
+                            LOG.warn("SKIPPEDWOULDSTOP:" + currentpservreq.getServerName() + "|" + page.getName() + "|" + currentpageflow.getName());
+                        }
+                        continue;
                     }
-                    continue;
                 }
             }
             
