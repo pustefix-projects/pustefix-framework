@@ -118,7 +118,7 @@ public class WebserviceTask extends Task {
                             refGlobConf = refSrvConf.getGlobalServiceConfig();
                             if (!globConf.equals(refGlobConf)) globalConfChanged = true;
                         } catch (Exception x) {
-                            log("Error deserializing old reference configuration", x, Project.MSG_VERBOSE);
+                            log("Error deserializing old reference configuration", Project.MSG_VERBOSE);
                             log("Warning: Ignore old reference configuration because it can't be deserialized. "
                                     + "Services will be built from scratch.", Project.MSG_WARN);
                         }
