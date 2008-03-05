@@ -1,3 +1,12 @@
+2008-03-05  Martin Leidig  <mleidig@schlund.de>
+
+	Due to changes in reading in the Context configuration (asSubclass cast to ContextResource), 
+	ContextResource interfaces now are required to explicitly implement the ContextResource 
+	interface (until now it also worked when the ContextResource implementation class implemented 
+	this interface).
+
+	* src/de/schlund/pfixcore/example/webservices/ContextData.java: now extends ContextResource
+
 2008-03-04  jtl  <jtl@schoenberg.laudi.ka>
 
 	* projects/sample1/conf/config.conf.xml: for the sample1 application change the IWrapperContainer being used to the 
