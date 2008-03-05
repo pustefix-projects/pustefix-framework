@@ -31,11 +31,11 @@ import de.schlund.pfixcore.webservice.ServiceDescriptor;
 import de.schlund.pfixcore.webservice.ServiceException;
 import de.schlund.pfixcore.webservice.ServiceStubGenerator;
 import de.schlund.pfixcore.webservice.config.ServiceConfig;
-import de.schlund.pfixcore.webservice.generate.js.JsBlock;
-import de.schlund.pfixcore.webservice.generate.js.JsClass;
-import de.schlund.pfixcore.webservice.generate.js.JsMethod;
-import de.schlund.pfixcore.webservice.generate.js.JsParam;
-import de.schlund.pfixcore.webservice.generate.js.JsStatement;
+import de.schlund.pfixcore.webservice.jsgen.JsBlock;
+import de.schlund.pfixcore.webservice.jsgen.JsClass;
+import de.schlund.pfixcore.webservice.jsgen.JsMethod;
+import de.schlund.pfixcore.webservice.jsgen.JsParam;
+import de.schlund.pfixcore.webservice.jsgen.JsStatement;
 
 /**
  * @author mleidig@schlund.de

@@ -26,49 +26,45 @@ import de.schlund.pfixcore.workflow.Context;
  */
 public class ServiceCallContext {
 
-	ServiceRuntime runtime;
-	Context context;
-    ServiceRequest request;
-    ServiceResponse response;
-	
-	public ServiceCallContext(ServiceRuntime runtime) {
-		this.runtime=runtime;
-	}
-	
-	ServiceRuntime getServiceRuntime() {
-		return runtime;
-	}
-	
-	public static ServiceCallContext getCurrentContext() {
-		return ServiceRuntime.getCurrentContext();
-	}
-	
-	protected void setContext(Context context) {
-		this.context=context;
-	}
-	
-	public Context getContext() {
-		return context;
-	}
-    
-    protected void setServiceRequest(ServiceRequest request) {
-        this.request=request;
+    private ServiceRuntime runtime;
+    private Context context;
+    private ServiceRequest request;
+    private ServiceResponse response;
+
+    public ServiceCallContext(ServiceRuntime runtime) {
+        this.runtime = runtime;
     }
-    
+
+    public static ServiceCallContext getCurrentContext() {
+        return ServiceRuntime.getCurrentContext();
+    }
+
+    protected void setContext(Context context) {
+        this.context = context;
+    }
+
+    public Context getContext() {
+        return context;
+    }
+
+    protected void setServiceRequest(ServiceRequest request) {
+        this.request = request;
+    }
+
     public ServiceRequest getServiceRequest() {
         return request;
     }
-    
+
     protected void setServiceResponse(ServiceResponse response) {
-        this.response=response;
+        this.response = response;
     }
-    
+
     public ServiceResponse getServiceResponse() {
         return response;
     }
-    
-    void setInvocationTime(long time) {
-        
+
+    public ServiceRuntime getServiceRuntime() {
+        return runtime;
     }
-	
+
 }

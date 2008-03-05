@@ -16,7 +16,8 @@ public class WeirdBean {
     int wo=6;
     
     public static int staticMember=7;
-    public final int finalMember=8;
+    //Not supported by JAXWS:
+    //public final int finalMember=8;
     
     @Exclude
     public int blah=9;

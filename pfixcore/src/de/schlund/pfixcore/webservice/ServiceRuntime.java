@@ -115,6 +115,13 @@ public class ServiceRuntime {
         ServiceRequest serviceReq=new HttpServiceRequest(req);
         ServiceResponse serviceRes=new HttpServiceResponse(res);
         
+        GlobalServiceConfig globConf=getConfiguration().getGlobalServiceConfig();
+        boolean doRecord=globConf.getMonitoringEnabled()||globConf.getLoggingEnabled();
+        if(doRecord) {
+            serviceReq=new RecordingRequestWrapper(serviceReq);
+            serviceRes=new RecordingResponseWrapper(serviceRes);
+        }
+        
         try {	   
             
             ServiceCallContext callContext=new ServiceCallContext(this);
@@ -188,13 +195,6 @@ public class ServiceRuntime {
             if(protocolType.equals(Constants.PROTOCOL_TYPE_ANY)) protocolType=defaultProtocol;
             ServiceProcessor processor=processors.get(protocolType);
             if(processor==null) throw new ServiceException("No ServiceProcessor found for protocol '"+protocolType+"'.");
-            
-            GlobalServiceConfig globConf=getConfiguration().getGlobalServiceConfig();
-            boolean doRecord=globConf.getMonitoringEnabled()||globConf.getLoggingEnabled();
-            if(doRecord) {
-                serviceReq=new RecordingRequestWrapper(serviceReq);
-                serviceRes=new RecordingResponseWrapper(serviceRes);
-            }
             
             if(LOG.isDebugEnabled()) LOG.debug("Process webservice request: "+serviceName+" "+processor);
 

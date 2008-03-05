@@ -28,13 +28,13 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.axis.encoding.Base64;
 import org.apache.log4j.Logger;
 
 import de.schlund.pfixxml.config.ServletManagerConfig;
 import de.schlund.pfixxml.config.impl.ServletManagerConfigImpl;
 import de.schlund.pfixxml.resources.FileResource;
 import de.schlund.pfixxml.serverutil.SessionHelper;
+import de.schlund.pfixxml.util.Base64Utils;
 import de.schlund.pfixxml.util.MD5Utils;
 
 /**
@@ -160,7 +160,7 @@ public class DerefServlet extends ServletManager {
                     }
                 }
             }
-            String             enclink  = Base64.encode(link.getBytes("utf8"));
+            String             enclink  = Base64Utils.encode(link.getBytes("utf8"),false);
             String             reallink = getServerURL(preq) +
                 SessionHelper.getClearedURI(preq) + "?__enclink=" + URLEncoder.encode(enclink, "utf8") +
                 "&__sign=" + signString(enclink, key);
@@ -199,7 +199,7 @@ public class DerefServlet extends ServletManager {
 
     private void handleEnclink(String enclink, String sign, PfixServletRequest preq, HttpServletResponse res, String key) throws Exception {
         if (checkSign(enclink, key, sign)) {
-            String link = new String( Base64.decode(enclink), "utf8");
+            String link = new String( Base64Utils.decode(enclink), "utf8");
             if (link.startsWith("/")) {
                 link = getServerURL(preq) + link;
             }
@@ -229,4 +229,5 @@ public class DerefServlet extends ServletManager {
         sConf.setSSL(false);
         this.config = sConf;
     }
+    
 }

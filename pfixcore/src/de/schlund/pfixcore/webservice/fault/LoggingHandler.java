@@ -8,10 +8,10 @@ package de.schlund.pfixcore.webservice.fault;
 
 import org.apache.log4j.Logger;
 
-import de.schlund.pfixcore.webservice.HttpServiceRequest;
-
 public class LoggingHandler extends FaultHandler {
 
+    private static final long serialVersionUID = -5523320091746362278L;
+    
     private Logger LOG=Logger.getLogger(getClass().getName());
 	
     public void init() {
@@ -19,14 +19,11 @@ public class LoggingHandler extends FaultHandler {
     }
     
 	public void handleFault(Fault fault) {
-        HttpServiceRequest srvReq=(HttpServiceRequest)fault.getRequest();
-        LOG.error("Request URI: "+srvReq.getRequestURI());
         LOG.error("Service name: "+fault.getServiceName());
-        LOG.error("Fault string: "+fault.getFaultString());
         LOG.error("Exception name: "+fault.getName());
         LOG.error("Exception message: "+fault.getMessage());
         LOG.error("Request message: "+fault.getRequestMessage());
-        LOG.error("Context: "+fault.getContext());
+        LOG.error("Context: "+(fault.getContext()==null?"-":fault.getContext()));
         LOG.error("Stacktrace: "+fault.getStackTrace());
 	}
 	

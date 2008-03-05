@@ -398,9 +398,15 @@ or delete the DOCTYPE definition -->
   <target name="ant-tasks-webservice">
     <taskdef
       name="pfx-webservice"
-      classname="de.schlund.pfixcore.webservice.generate.WebServiceTask"
+      classname="de.schlund.pfixcore.webservice.jaxws.generate.WebserviceTask"
       classpathref="cp.classpath"
       description="Generates/deploys WSDL, WSDD and JS stubs from web service interfaces/configuration"
+    />
+    <taskdef
+      name="pfx-wsproxygen"
+      classname="de.schlund.pfixcore.webservice.jaxws.generate.ProxyGenerator"
+      classpathref="cp.classpath"
+      description="Generates annotated service implementation proxy classes"
     />
   </target>
 
@@ -936,17 +942,45 @@ or delete the DOCTYPE definition -->
     />
   </target>
 
-  <target name="webservice" depends="ant-tasks-webservice">
+  <target name="webservice" depends="ant-tasks-webservice, webservice-proxy">
     <pfx-webservice
-      fqdn="${fqdn}" 
       tmpdir="${dir.projects}/.webservice"
       prjdir="${dir.projects}"
-      wsddskel="${dir.projects}/core/conf/server-config.wsdd"
       prjfile="${file.projects_xml}" 
-      srcdir="${dir.src}"
       builddir="${dir.build}"
       webappsdir="${dir.tomcat}/webapps"
+      classpathref="cp.classpath"
+      standalone="${standalone.tomcat}"
+      portbase="${portbase.tomcat}"
     />
+  </target>
+
+  <target name="webservice-proxygen" depends="ant-tasks-webservice">
+    <pfx-wsproxygen
+      prjfile="${file.projects_xml}"
+      prjdir="${dir.projects}"
+      gensrcdir="${dir.gensrc}"
+      builddir="${dir.build}"
+    />
+  </target>
+
+  <target name="webservice-proxycompile" if="webservice.proxysources">
+    <javac
+      srcdir="${dir.gensrc}"
+      destdir="${dir.build}"
+      debug="${debug}"
+      debuglevel="${debuglevel}"
+      classpathref="cp.classpath"
+      source="${javac.source}"
+      nowarn="${javac.nowarn}"
+      encoding="${javac.encoding}"
+      includes="${webservice.proxysources}"
+      >
+    </javac>
+  </target> 
+
+  <target name="webservice-proxy" depends="webservice-proxygen, webservice-proxycompile">
+    
   </target>
 
   <target name="clean-webservice">
