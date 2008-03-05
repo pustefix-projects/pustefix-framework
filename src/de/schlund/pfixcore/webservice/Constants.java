@@ -56,7 +56,6 @@ public class Constants {
     public static final String CONTENT_TYPE_URLENCODED="application/x-www-form-urlencoded";
     
     public static final String XMLNS_XSD="http://www.w3.org/2001/XMLSchema";
-    public static final String XMLNS_SOAPENC="http://schemas.xmlsoap.org/soap/encoding/";
     public static final String XMLNS_WSDL="http://schemas.xmlsoap.org/wsdl/";
     public static final String XMLNS_APACHESOAP="http://xml.apache.org/xml-soap";
     

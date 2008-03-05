@@ -18,10 +18,10 @@
             <td align="right"><ixsl:value-of select="@debit"/></td>
             <td><ixsl:value-of select="@currency"/></td>
             <td>
-              <pfx:button mode="force">
-				<pfx:argument name="select.AccountNo"><ixsl:value-of select="@accountNo"/></pfx:argument>
-			    Details
-			  </pfx:button>
+              <pfx:button>
+                <pfx:argument name="select.AccountNo"><ixsl:value-of select="@accountNo"/></pfx:argument>
+                  Details
+                </pfx:button>
             </td>
           </tr>
         </ixsl:for-each>
