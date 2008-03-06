@@ -82,36 +82,47 @@ function XML_Utilities() {
 
 XML_Utilities.prototype.getChildElements=function(node) {
   var nodes=new Array();
-  for(var i=0;i<node.childNodes.length;i++) {
-    if(node.childNodes[i].nodeType==1) nodes.push(node.childNodes[i]);
+  var nl=node.childNodes;
+  if(nl!=null) {
+    for(var i=0;i<nl.length;i++) {
+      if(nl[i].nodeType==1) nodes.push(nl[i]);
+    }
   }
   return nodes;
 }
 
 XML_Utilities.prototype.getChildrenByName=function(node,name) {
   if(arguments.length!=2) throw new CORE_WrongArgNoEx("","XML_Utilities.getChildrenByName");
-  //NOTE: getting child elements via childNodes property and name comparison is much slower
-  var nl=node.getElementsByTagName(name);
   var nodes=new Array();
-  for(var i=0;i<nl.length;i++) {
-    if(nl[i].parentNode==node) nodes.push(nl[i]);
+  var nl=node.childNodes;
+  if(nl!=null) {
+    for(var i=0;i<nl.length;i++) {
+      var localName=nl[i].nodeName;
+      var ind=localName.indexOf(":");
+      if(ind>-1) localName=localName.substring(ind+1,localName.length);
+      if(localName==name) nodes.push(nl[i]);
+    }
   }
   return nodes;
 }
 
 XML_Utilities.prototype.getChildrenByNameNS=function(node,nsuri,name) {
   if(arguments.length!=3) throw new CORE_WrongArgNoEx("","XML_Utilities.getChildrenByNameNS");
-  if(node.childNodes==null || node.childNodes.length==0) return null;
+  var nl=node.childNodes;
+  if(nl==null || nl.length==0) return null;
   if(!this.scopeChecked) {
     if(typeof node.scopeName!="undefined") this.scopeSupport=true;
     scopeChecked=true;
   }
   var nodes=new Array();
-  for(var i=0;i<node.childNodes.length;i++) {
+  for(var i=0;i<nl.length;i++) {
+    var localName=nl[i].nodeName;
+    var ind=localName.indexOf(":");
+    if(ind>-1) localName=localName.substring(ind+1,localName.length);
     if(this.scopeSupport) {
-      if(node.childNodes[i].scopeName+":"+node.childNodes[i].nodeName==name) nodes.push(node.childNodes[i]);
+      if(nl[i].tagUrn==nsuri && localName==name) nodes.push(nl[i]);
     } else {
-      if(node.childNodes[i].namespaceURI==nsuri && node.childNodes[i].localName==name) nodes.push(node.childNodes[i]);
+      if(nl[i].namespaceURI==nsuri && localName==name) nodes.push(nl[i]);
     }
   }
   return nodes;
@@ -119,10 +130,11 @@ XML_Utilities.prototype.getChildrenByNameNS=function(node,nsuri,name) {
 
 XML_Utilities.prototype.getText=function(node) {
   if(arguments.length!=1) throw new CORE_WrongArgNoEx("","XML_Utilities.getText");
-  if(node.childNodes==null) return null;
+  var nl=node.childNodes;
+  if(nl==null) return null;
   var text="";
-  for(var i=0;i<node.childNodes.length;i++) {
-    var n=node.childNodes[i];
+  for(var i=0;i<nl.length;i++) {
+    var n=nl[i];
     if(n.nodeType==3) text+=n.nodeValue;
     else if(n.nodeType==1 || n.nodeType==10) text+=this.getText(n);
   }
@@ -436,7 +448,10 @@ SOAP_SimpleSerializer.prototype.serialize=function(value,name,typeInfo,writer,ct
 SOAP_SimpleSerializer.prototype.deserialize=function(typeInfo,element) {
   if(element.getAttribute(XML_NS_PREFIX_MAP[XML_NS_XSI]+":nil")) return null;
   var val="";
-  for(var i=0;i<element.childNodes.length;i++) val+=element.childNodes[i].nodeValue;
+  var nl=element.childNodes;
+  if(nl!=null) {
+    for(var i=0;i<nl.length;i++) val+=nl[i].nodeValue;
+  }
   return val; 
 }
 
@@ -701,17 +716,23 @@ SOAP_ElementSerializer.prototype.serializeSub=function(element,writer) {
     var node=element.attributes.item(j);
     writer.writeAttribute(node.nodeName,node.nodeValue);
   }
-  for(var i=0;i<element.childNodes.length;i++) {
-    var node=element.childNodes[i];
-    if(node.nodeType==1) this.serializeSub(node,writer);
-    else if(node.nodeType==3) writer.writeChars(node.nodeValue);
+  var nl=element.childNodes;
+  if(nl!=null) {
+    for(var i=0;i<nl.length;i++) {
+      var node=nl[i];
+      if(node.nodeType==1) this.serializeSub(node,writer);
+      else if(node.nodeType==3) writer.writeChars(node.nodeValue);
+    }
   }
   writer.endElement(element.nodeName);
 }
 SOAP_ElementSerializer.prototype.deserialize=function(typeInfo,element) {
-  for(var i=0;i<element.childNodes.length;i++) {
-    var node=element.childNodes[i];
-    if(node.nodeType==1) return node;
+  var nl=element.childNodes;
+  if(nl!=null) {
+    for(var i=0;i<nl.length;i++) {
+      var node=nl[i];
+      if(node.nodeType==1) return node;
+    }
   }
 }
 
@@ -794,10 +815,11 @@ SOAP_RPCSerializer.prototype.deserialize=function(element) {
   if(this.retTypeInfo==null) return;
   var serializer=SOAP_TypeMapping.getSerializerByInfo(this.retTypeInfo);
   var retElems=element.getElementsByTagName("return");
-  if(retElems.length==0) return null;
   if(this.retTypeInfo instanceof SOAP_ArrayInfo) {
-  	return serializer.deserialize(this.retTypeInfo,retElems);
+    if(retElems.length==0) return new Array();
+    else return serializer.deserialize(this.retTypeInfo,retElems);
   } else {
+    if(retElems.length==0) return null;
     return serializer.deserialize(this.retTypeInfo,retElems[0]);
   }
 }
@@ -950,7 +972,6 @@ SOAP_Call.prototype.invoke=function() {
 SOAP_Call.prototype.callback=function(xml,reqID) {
   try {
     var soapMsg=new SOAP_Message(xml);
-    
     var fault=soapMsg.getSoapPart().getEnvelope().getBody().getFault();
     if(fault!=null) {
       var ex=new Error();

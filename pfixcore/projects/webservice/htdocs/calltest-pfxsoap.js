@@ -25,7 +25,7 @@ var obj1={
   },
   testError: function(res,id,ex) {
     var test="asynchronous (with callback object and exception)";
-    if(ex.name='java.lang.IllegalArgumentException' && ex.message=='Illegal value: error') consolePrint(test+" OK");
+    if(ex.name=='java.lang.IllegalArgumentException' && ex.message=='Illegal value: error') consolePrint(test+" OK");
     else consolePrint(test+" Error");
     stopTimer();
   }
@@ -40,7 +40,7 @@ var obj2={
   },
   testError: function(res,id,ex) {
     var test="asynchronous (with callback object and request id and exception)";
-    if(ex.name='java.lang.IllegalArgumentException' && ex.message=='Illegal value: error' && id=='4') consolePrint(test+" OK");
+    if(ex.name=='java.lang.IllegalArgumentException' && ex.message=='Illegal value: error' && id=='4') consolePrint(test+" OK");
     else consolePrint(test+" Error");
     stopTimer();
   }
@@ -110,7 +110,7 @@ function testAsyncId() {
 function testAsyncEx() {
   var test="asynchronous (with callback function and exception)";
   var f=function(res,id,ex) {
-    if(ex.name='java.lang.IllegalArgumentException' && ex.message=='Illegal value: error') consolePrint(test+" OK");
+    if(ex.name=='java.lang.IllegalArgumentException' && ex.message=='Illegal value: error') consolePrint(test+" OK");
     else consolePrint(test+" Error");
     stopTimer();
   }
@@ -120,7 +120,7 @@ function testAsyncEx() {
 function testAsyncIdEx() {
   var test="asynchronous (with callback function and request id and exception)";
   var f=function(res,id,ex) {
-    if(ex.name='java.lang.IllegalArgumentException' && ex.message=='Illegal value: error' && id=='2') consolePrint(test+" OK");
+    if(ex.name=='java.lang.IllegalArgumentException' && ex.message=='Illegal value: error' && id=='2') consolePrint(test+" OK");
     else consolePrint(test+" Error");
     stopTimer();
   }
