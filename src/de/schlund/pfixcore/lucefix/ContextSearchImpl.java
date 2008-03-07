@@ -41,7 +41,7 @@ import de.schlund.pfixxml.ResultDocument;
 
 public class ContextSearchImpl implements ContextSearch {
 
-    private static PerFieldAnalyzerWrapper analyzer   = PreDoc.ANALYZER;
+    private final static PerFieldAnalyzerWrapper analyzer   = PreDoc.ANALYZER;
 
     private Context                        context;
     private Query                          lastQuery;

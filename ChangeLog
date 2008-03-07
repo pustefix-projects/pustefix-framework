@@ -1,3 +1,30 @@
+2008-03-07  Sebastian Marsching  <sebastian.marsching@1und1.de>
+
+	* src/de/schlund/pfixcore/example/webservices/ContextDataImpl.java: 
+	* src/de/schlund/pfixcore/generator/casters/ToPerl5Pattern.java: 
+	* src/de/schlund/pfixcore/generator/prechecks/RegexpCheck.java: 
+	* src/de/schlund/pfixcore/lucefix/ContextSearchImpl.java: 
+	* src/de/schlund/pfixcore/util/basicapp/basics/CreateProjectSettings.java: 
+	* src/de/schlund/pfixcore/util/Cleanup.java: 
+	* src/de/schlund/pfixcore/util/DelLang.java: 
+	* src/de/schlund/pfixcore/util/DumpText.java: 
+	* src/de/schlund/pfixcore/util/ImportText.java: 
+	* src/de/schlund/pfixcore/util/TokenUtils.java: 
+	* src/de/schlund/pfixcore/webservice/json/parser/JSONParser.java: 
+	* src/de/schlund/pfixcore/webservice/json/JSONObject.java: 
+	* src/de/schlund/pfixcore/workflow/app/DefaultIWrapperState.java: 
+	* src/de/schlund/pfixcore/workflow/app/FileDownloadDOState.java: 
+	* src/de/schlund/pfixxml/multipart/MultipartHandler.java: 
+	* src/de/schlund/pfixxml/targets/AuxDependencyManager.java: 
+	* src/de/schlund/pfixxml/util/xsltimpl/Saxon1TraceListener.java: 
+	* src/de/schlund/pfixxml/util/XsltProvider.java: 
+	* src/de/schlund/pfixxml/AbstractXMLServlet.java: 
+	* src/de/schlund/pfixxml/CacheStatisticServlet.java: 
+	* src/de/schlund/pfixxml/DerefServlet.java: 
+	* src/de/schlund/pfixxml/FactoryInitServlet.java: 
+	* src/de/schlund/pfixxml/PfixServletRequestImpl.java: 
+	Made some more static fields final
+
 2008-03-06  Martin Leidig  <mleidig@schlund.de>
 
 	* projects/core/script/webservice.js: fixed namespace problem with IE

@@ -7,7 +7,7 @@ import java.util.Set;
 
 public class TokenUtils {
 
-    private static Random RANDOM=new Random();
+    private final static Random RANDOM = new Random();
     
     public static String createRandomToken() {
         return Long.toString(System.currentTimeMillis(),36).toUpperCase()+

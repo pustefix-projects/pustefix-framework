@@ -66,7 +66,7 @@ public class PfixServletRequestImpl implements PfixServletRequest {
     private static final String   PROP_TMPDIR         = "pfixservletrequest.tmpdir";
     private static final String   PROP_MAXPARTSIZE    = "pfixservletrequest.maxpartsize";
     private static final String   ATTR_LASTEXCEPTION  = "REQ_LASTEXCEPTION";
-    private static String         DEF_MAXPARTSIZE     = "" + (10 * 1024 * 1024); // 10 MB
+    private static final String   DEF_MAXPARTSIZE     = "" + (10 * 1024 * 1024); // 10 MB
     private HashMap<String, RequestParam[]> parameters = new HashMap<String, RequestParam[]>();
     private Logger                LOG                 = Logger.getLogger(this.getClass());
     private List<Exception>             multiPartExceptions = new ArrayList<Exception>();

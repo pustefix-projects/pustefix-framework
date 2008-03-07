@@ -39,7 +39,7 @@ import de.schlund.util.statuscodes.StatusCodeLib;
  */
 
 public class RegexpCheck  extends SimpleCheck implements IWrapperParamPreCheck {
-    private static Perl5Util  p5     = new Perl5Util(new PatternCacheLRU(20));
+    private final static Perl5Util p5 = new Perl5Util(new PatternCacheLRU(20));
     private        String     regexp = null;
     private        StatusCode scode;
     

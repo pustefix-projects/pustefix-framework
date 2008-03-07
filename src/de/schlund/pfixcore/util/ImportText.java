@@ -27,7 +27,7 @@ import de.schlund.pfixxml.util.XsltVersion;
  */
 
 public class ImportText {
-    private static DocumentBuilderFactory dbfac = DocumentBuilderFactory.newInstance();
+    private final static DocumentBuilderFactory dbfac = DocumentBuilderFactory.newInstance();
 
     static {
         dbfac.setNamespaceAware(true);

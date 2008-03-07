@@ -43,7 +43,7 @@ public class Saxon1TraceListener implements TraceListener {
    public enum Format {VERBOSE,COMPRESSED};
    
    private final static String FORMATNAME="SaxonTraceDump";
-   private static String FORMATVERSION="1";
+   private final static String FORMATVERSION="1";
    
    private Format format=Format.VERBOSE;
    private Writer writer;

@@ -73,15 +73,15 @@ public class FactoryInitServlet extends HttpServlet {
 
     // ~ Instance/static variables
     // ..................................................................
-    public static String PROP_DOCROOT = "pustefix.docroot";
+    public final static String PROP_DOCROOT = "pustefix.docroot";
 
-    private static String PROP_LOG4J = "pustefix.log4j.config";
+    private final static String PROP_LOG4J = "pustefix.log4j.config";
 
-    private static String PROP_PREFER_CONTAINER_LOGGING = "pustefix.logging.prefercontainer";
+    private final static String PROP_PREFER_CONTAINER_LOGGING = "pustefix.logging.prefercontainer";
 
     private Object LOCK = new Object();
 
-    private static Logger LOG = Logger.getLogger(FactoryInitServlet.class);
+    private final static Logger LOG = Logger.getLogger(FactoryInitServlet.class);
 
     private static boolean configured = false;
     

@@ -36,7 +36,7 @@ import de.schlund.pfixxml.util.Xml;
  */
 
 public class DumpText implements IDumpText {
-    private static DocumentBuilderFactory dbfac = DocumentBuilderFactory.newInstance();
+    private final static DocumentBuilderFactory dbfac = DocumentBuilderFactory.newInstance();
     static {
         dbfac.setNamespaceAware(true);
     }

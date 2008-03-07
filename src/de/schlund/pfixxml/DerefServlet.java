@@ -51,8 +51,8 @@ public class DerefServlet extends ServletManager {
     
     protected final static Logger   DEREFLOG        = Logger.getLogger("LOGGER_DEREF");
     protected final static Logger   LOG             = Logger.getLogger(DerefServlet.class);
-    public static String      PROP_DEREFKEY   = "derefserver.signkey";
-    public static String      PROP_IGNORESIGN = "derefserver.ignoresign";
+    public final static String PROP_DEREFKEY = "derefserver.signkey";
+    public final static String PROP_IGNORESIGN = "derefserver.ignoresign";
     private ServletManagerConfig config;
     
     protected boolean allowSessionCreate() {

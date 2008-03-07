@@ -47,7 +47,7 @@ public final class CreateProjectSettings {
             System.in));
     private ArrayList<ServletObject> servletList = null;
     /** A counter for the servlet objects id */
-    private static int servletCounter = 0;
+    private int servletCounter = 0;
 
     /** Constructor just prepares a new project */
     public CreateProjectSettings() {

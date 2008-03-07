@@ -30,8 +30,8 @@ import de.schlund.pfixxml.util.Xml;
  */
 
 public class Cleanup{
-    private static String CLEANUP = "Cleanup.xml";
-    private static DocumentBuilderFactory dbfac = DocumentBuilderFactory.newInstance();
+    private final static String CLEANUP = "Cleanup.xml";
+    private final static DocumentBuilderFactory dbfac = DocumentBuilderFactory.newInstance();
     static {
         dbfac.setNamespaceAware(true);
     }

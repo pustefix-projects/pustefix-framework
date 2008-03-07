@@ -32,7 +32,7 @@ import de.schlund.pfixxml.util.Xml;
  */
 
 public class DelLang {
-    private static DocumentBuilderFactory dbfac = DocumentBuilderFactory.newInstance();
+    private final static DocumentBuilderFactory dbfac = DocumentBuilderFactory.newInstance();
     //private String docroot;
     private Pattern pattern = Pattern.compile("^\\s*$");
     int onelangcount = 0;
