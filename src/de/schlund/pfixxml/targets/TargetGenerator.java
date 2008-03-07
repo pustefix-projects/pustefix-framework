@@ -284,7 +284,7 @@ public class TargetGenerator implements Comparable<TargetGenerator> {
         fullXml = Xml.serialize(confDoc, false, true);
 
         XMLReader xreader = XMLReaderFactory.createXMLReader();
-        TransformerFactory tf = SAXTransformerFactory.newInstance();
+        TransformerFactory tf = TransformerFactory.newInstance();
         if (tf.getFeature(SAXTransformerFactory.FEATURE)) {
             SAXTransformerFactory stf = (SAXTransformerFactory) tf;
             TransformerHandler th;

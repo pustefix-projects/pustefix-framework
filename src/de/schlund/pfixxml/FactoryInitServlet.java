@@ -257,7 +257,7 @@ public class FactoryInitServlet extends HttpServlet {
     private static void configureLog4j(FileResource configFile) throws SAXException, FileNotFoundException, IOException {
         log4jmtime = configFile.lastModified();
         XMLReader xreader = XMLReaderFactory.createXMLReader();
-        TransformerFactory tf = SAXTransformerFactory.newInstance();
+        TransformerFactory tf = TransformerFactory.newInstance();
         if (tf.getFeature(SAXTransformerFactory.FEATURE)) {
             SAXTransformerFactory stf = (SAXTransformerFactory) tf;
             TransformerHandler th;

@@ -28,6 +28,8 @@ import de.schlund.pfixxml.resources.FileResource;
  * 
  * @deprecated Use {@link FileResource} instead
  */
+
+@Deprecated
 public class Path implements Comparable<Path> {
     private static final String SEP = File.separator; 
     
