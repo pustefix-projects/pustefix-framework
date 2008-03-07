@@ -34,6 +34,7 @@ import de.schlund.pfixxml.util.Path;
  * @version 1.0
  * @deprecated Use {@link ResourceUtil} instead 
  */
+@Deprecated
 public class PathFactory {
     private static PathFactory instance = new PathFactory(); 
     private File docroot;

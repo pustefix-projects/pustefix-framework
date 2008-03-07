@@ -93,8 +93,7 @@ public class XsltCustomizeXmlTask extends XsltGenericTask {
     protected void doTransformation() throws BuildException {
         URIResolver customizationResolver = new CustomizationResolver();
         try {
-            Transformer trans = TransformerFactory.newInstance()
-                    .newTransformer(new StreamSource(stylefile));
+            Transformer trans = TransformerFactory.newInstance().newTransformer(new StreamSource(stylefile));
             trans.setURIResolver(customizationResolver);
             File temp;
             try {
@@ -131,23 +130,21 @@ public class XsltCustomizeXmlTask extends XsltGenericTask {
         }
     }
 
-    private static void customize(File input, Result result)
-            throws FileNotFoundException, TransformerException {
+    private static void customize(File input, Result result) throws FileNotFoundException, TransformerException {
         XMLReader xreader;
         try {
             xreader = XMLReaderFactory.createXMLReader();
         } catch (SAXException e) {
             throw new RuntimeException("Could not create XMLReader", e);
         }
-        TransformerFactory tf = SAXTransformerFactory.newInstance();
+        TransformerFactory tf = TransformerFactory.newInstance();
         if (tf.getFeature(SAXTransformerFactory.FEATURE)) {
             SAXTransformerFactory stf = (SAXTransformerFactory) tf;
             TransformerHandler th;
             try {
                 th = stf.newTransformerHandler();
             } catch (TransformerConfigurationException e) {
-                throw new RuntimeException(
-                        "Failed to configure TransformerFactory!", e);
+                throw new RuntimeException("Failed to configure TransformerFactory!", e);
             }
 
             th.setResult(result);
@@ -168,8 +165,7 @@ public class XsltCustomizeXmlTask extends XsltGenericTask {
                 throw new TransformerException(e);
             }
         } else {
-            throw new RuntimeException(
-                    "Could not get instance of SAXTransformerFactory!");
+            throw new RuntimeException("Could not get instance of SAXTransformerFactory!");
         }
 
     }

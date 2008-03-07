@@ -24,10 +24,12 @@ package de.schlund.pfixcore.webservice.json;
  */
 public interface JSONValue {
 
-    public final static JSONValue NULL=new JSONValue() {
-        public String toJSONString() {return "null";};
+    public final static JSONValue NULL = new JSONValue() {
+        public String toJSONString() {
+            return "null";
+        };
     };
-    
+
     public String toJSONString();
-    
+
 }

@@ -54,11 +54,6 @@ public class StringLength extends SimpleCheck implements IWrapperParamPostCheck 
         this.maxLength = Integer.parseInt(maxLength);
     }
 
-    /** @deprecated due to typo in method name.*/
-    public void put_max_lentgth(String maxLength) {
-        this.maxLength = Integer.parseInt(maxLength);
-    }
-    
     public void check(Object[] obj) {
         reset();
         for (int i=0; i<obj.length; i++) {
