@@ -166,13 +166,7 @@ public class JSONParser implements JSONParserConstants {
   private int jj_ntk;
   private int jj_gen;
   final private int[] jj_la1 = new int[4];
-  static private int[] jj_la1_0;
-  static {
-      jj_la1_0();
-   }
-   private static void jj_la1_0() {
-      jj_la1_0 = new int[] {0x6f140,0x800,0x800,0x6f140,};
-   }
+  final static private int[] jj_la1_0 = new int[] {0x6f140,0x800,0x800,0x6f140,};
 
   public JSONParser(java.io.InputStream stream) {
      this(stream, null);

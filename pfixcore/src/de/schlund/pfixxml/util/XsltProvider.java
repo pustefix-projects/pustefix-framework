@@ -31,15 +31,15 @@ public class XsltProvider {
     
     final static Logger LOG=Logger.getLogger(XsltProvider.class);
 
-    static String DETECT_SAXON1="com.icl.saxon.TransformerFactoryImpl";
-    static String DETECT_SAXON2="net.sf.saxon.TransformerFactoryImpl";
+    final static String DETECT_SAXON1="com.icl.saxon.TransformerFactoryImpl";
+    final static String DETECT_SAXON2="net.sf.saxon.TransformerFactoryImpl";
     
-    static String XPATH_SAXON1="de.schlund.pfixxml.util.xsltimpl.XPathSaxon1";
-    static String XPATH_SAXON2="de.schlund.pfixxml.util.xsltimpl.XPathSaxon2";
-    static String XML_SAXON1="de.schlund.pfixxml.util.xsltimpl.XmlSaxon1";
-    static String XML_SAXON2="de.schlund.pfixxml.util.xsltimpl.XmlSaxon2";
-    static String XSLT_SAXON1="de.schlund.pfixxml.util.xsltimpl.XsltSaxon1";
-    static String XSLT_SAXON2="de.schlund.pfixxml.util.xsltimpl.XsltSaxon2";
+    final static String XPATH_SAXON1="de.schlund.pfixxml.util.xsltimpl.XPathSaxon1";
+    final static String XPATH_SAXON2="de.schlund.pfixxml.util.xsltimpl.XPathSaxon2";
+    final static String XML_SAXON1="de.schlund.pfixxml.util.xsltimpl.XmlSaxon1";
+    final static String XML_SAXON2="de.schlund.pfixxml.util.xsltimpl.XmlSaxon2";
+    final static String XSLT_SAXON1="de.schlund.pfixxml.util.xsltimpl.XsltSaxon1";
+    final static String XSLT_SAXON2="de.schlund.pfixxml.util.xsltimpl.XsltSaxon2";
     
     static Map<XsltVersion,XmlSupport> xmlSupport=new HashMap<XsltVersion,XmlSupport>();
     static Map<XsltVersion,XPathSupport> xpathSupport=new HashMap<XsltVersion,XPathSupport>();

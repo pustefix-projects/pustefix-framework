@@ -45,8 +45,8 @@ import de.schlund.pfixxml.resources.ResourceUtil;
  * @author <a href="mailto:jtl@schlund.de">Jens Lautenbacher</a>
  */
 public class FileDownloadDOState implements DirectOutputState {
-    private static String PROP_FILENAME = "downloadfile";
-    private static String PROP_MIMETYPE = "downloadmimetype";
+    private final static String PROP_FILENAME = "downloadfile";
+    private final static String PROP_MIMETYPE = "downloadmimetype";
     
     /**
      * Describe <code>isAccessible</code> method here.

@@ -74,8 +74,8 @@ public class MultipartHandler {
     public static final String SIZE_PARAM = "size";
     public static final String FNAME_PATTERN = "00000000";
 
-    private static Object lock = new Object();
-    private static DecimalFormat format = new DecimalFormat(FNAME_PATTERN);
+    private final static Object lock = new Object();
+    private final static DecimalFormat format = new DecimalFormat(FNAME_PATTERN);
 
     private HttpServletRequest req = null;
     private String dir = null;

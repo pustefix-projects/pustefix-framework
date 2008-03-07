@@ -49,10 +49,10 @@ import de.schlund.pfixxml.util.Xml;
 
 public class AuxDependencyManager {
     private final static Logger   LOG    = Logger.getLogger(AuxDependencyManager.class);
-    private static String   DEPAUX = "depaux";
+    private final static String   DEPAUX = "depaux";
     private TargetImpl   target;
     
-    public static AuxDependency root = 
+    public final static AuxDependency root = 
         AuxDependencyFactory.getInstance().getAuxDependencyRoot();
     
     public AuxDependencyManager(Target target) {

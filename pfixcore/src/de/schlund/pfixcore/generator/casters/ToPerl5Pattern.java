@@ -45,7 +45,7 @@ import de.schlund.util.statuscodes.StatusCodeLib;
 
 public class ToPerl5Pattern extends SimpleCheck implements IWrapperParamCaster {
     private        Perl5Pattern[] value    = null;
-    private static Perl5Compiler  compiler = new Perl5Compiler();
+    private final static Perl5Compiler compiler = new Perl5Compiler();
     private        StatusCode     scode;
     
     public ToPerl5Pattern() {

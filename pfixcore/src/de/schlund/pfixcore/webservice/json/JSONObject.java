@@ -33,7 +33,7 @@ public class JSONObject implements JSONValue {
     final static char COL=':';
     final static char COM=',';
     
-    static List<String> emptyIteratorList=new ArrayList<String>();
+    final static List<String> emptyIteratorList=new ArrayList<String>();
     
     Map<String,Object> members;
     

@@ -97,7 +97,7 @@ public abstract class AbstractXMLServlet extends ServletManager {
 
     private static final int DEF_MAX_STORED_DOMS = 5;
     
-    public static String        DEF_PROP_TMPDIR       = "java.io.tmpdir";
+    public static final String DEF_PROP_TMPDIR = "java.io.tmpdir";
     private static final String FONTIFY_SSHEET        = "core/xsl/xmlfontify.xsl";
     public  static final String SESS_LANG             = "__SELECTED_LANGUAGE__";
     public  static final String PARAM_XMLONLY         = "__xmlonly";

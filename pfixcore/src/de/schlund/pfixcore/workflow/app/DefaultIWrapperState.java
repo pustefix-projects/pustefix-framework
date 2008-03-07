@@ -43,10 +43,10 @@ import de.schlund.util.statuscodes.StatusCodeLib;
 
 public class DefaultIWrapperState extends StateImpl {
 
-    public  static String DEF_WRP_CONTAINER = "de.schlund.pfixcore.workflow.app.IWrapperSimpleContainer";
-    private static String DEF_FINALIZER     = "de.schlund.pfixcore.workflow.app.ResdocSimpleFinalizer";
-    public  static String PROP_CONTAINER    = "defaultiwrapperstate.iwrappercontainer";
-    private static String IHDL_CONT_MANAGER = "de.schlund.pfixcore.workflow.app.IHandlerContainerManager";
+    public  final static String DEF_WRP_CONTAINER = "de.schlund.pfixcore.workflow.app.IWrapperSimpleContainer";
+    private final static String DEF_FINALIZER     = "de.schlund.pfixcore.workflow.app.ResdocSimpleFinalizer";
+    public  final static String PROP_CONTAINER    = "defaultiwrapperstate.iwrappercontainer";
+    private final static String IHDL_CONT_MANAGER = "de.schlund.pfixcore.workflow.app.IHandlerContainerManager";
 
     /**
      * @see de.schlund.pfixcore.workflow.State#isAccessible(Context,

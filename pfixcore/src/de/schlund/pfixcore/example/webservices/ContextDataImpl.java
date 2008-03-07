@@ -43,7 +43,7 @@ public class ContextDataImpl implements ContextResource, ContextData {
     }
    
     
-    static Random random=new Random();
+    final static Random random=new Random();
 
     public static String generateString(int length) {
         StringBuffer sb=new StringBuffer();
