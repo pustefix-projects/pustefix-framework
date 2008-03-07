@@ -9,7 +9,7 @@ body {
   padding: 10px 20px;
 }
 
-h1, h2, h3, h4, h6 {
+h1, h2, h3, h4, h6, div.navheader th {
   color: #144377;
   font-family: Verdana, Arial, Helvetica, sans-serif;
   font-weight: 500;
@@ -28,7 +28,7 @@ h3 {
   font-size: 18px;
 }
 
-h4 {
+h4, div.navheader th {
   font-size: 16px;
 }
 
@@ -59,6 +59,7 @@ a:visited {
 }
 
 pre {
+  font-family: Courier New;
   margin-top: 10px;
   background-color: #edebe5;
   border: 1px #aea574 solid;
@@ -82,36 +83,36 @@ hr {
 }
 
 .hl-string {
-  color: red;
+  color: #bb1443;
   font-style: italic;
 }
 
 .hl-comment {
-  color: silver;
+  color: #333;
   font-style: italic;
 }
 
 .hl-tag {
-  color: blue;
+  color: #1443bb;
   font-weight: bold;
 }
 
 .hl-attribute {
-  color: blue;
+  color: #1443bb;
 }
 
 .hl-value {
-  color: blue;
+  color: #1443bb;
 }
 
 .hl-html {
-  color: red;
+  color: #bb1443;
   font-weight: bold;
   font-style: italic;
 }
 
 .hl-xslt {
-  color: blue;
+  color: #1443bb;
   font-weight: bold;
 }
 
