@@ -27,23 +27,16 @@ public class DateSerializer implements SimpleTypeSerializer, AnnotationAware {
 		if(annotation instanceof de.schlund.pfixcore.oxm.impl.annotation.DateSerializer) {
 			de.schlund.pfixcore.oxm.impl.annotation.DateSerializer dateAnno=
 				(de.schlund.pfixcore.oxm.impl.annotation.DateSerializer)annotation;
-			pattern=dateAnno.value();
+			pattern = dateAnno.value();
 		}
 	}
 		
 	public String serialize(Object obj, SerializationContext context) throws SerializationException {
-		SimpleDateFormat dateFormat=new SimpleDateFormat(pattern);
+		SimpleDateFormat dateFormat = new SimpleDateFormat(pattern);
 		if(obj instanceof Date) {
 			return dateFormat.format((Date)obj);
 		} else if(obj instanceof Calendar) {
 			return dateFormat.format(((Calendar)obj).getTime());
 		} throw new SerializationException("Type not supported: "+obj.getClass().getName());
 	}
-	
-	public static void main(String[] args) throws Exception {
-		Calendar cal=Calendar.getInstance();
-		DateSerializer ds=new DateSerializer("yyyy-MM-dd'T'HH:mm:ssZ");
-		System.out.println(ds.serialize(cal,null));
-	}
-	
 }

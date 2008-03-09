@@ -20,6 +20,18 @@
 	* src/de/schlund/pfixcore/oxm/impl/serializers/ArraySerializer.java
 	* src/de/schlund/pfixcore/oxm/impl/XMLWriter.java
 
+	Removed obsolete debugging code and did some cosmetic changes:
+	* src/de/schlund/pfixcore/oxm/impl/serializers/BeanSerializer.java
+	* src/de/schlund/pfixcore/oxm/impl/serializers/ClassSerializer.java
+	* src/de/schlund/pfixcore/oxm/impl/serializers/ForceElementSerializer.java
+	* src/de/schlund/pfixcore/oxm/impl/serializers/CollectionSerializer.java
+	* src/de/schlund/pfixcore/oxm/impl/serializers/ComplexEnumSerializer.java
+	* src/de/schlund/pfixcore/oxm/impl/serializers/MapSerializer.java
+	* src/de/schlund/pfixcore/oxm/impl/serializers/DateSerializer.java
+	* src/de/schlund/pfixcore/oxm/impl/serializers/ArraySerializer.java
+	* src/de/schlund/pfixcore/oxm/impl/serializers/SimpleEnumSerializer.java
+	* src/de/schlund/pfixcore/oxm/impl/serializers/ObjectToStringSerializer.java
+
 2008-03-07  jtl  <jtl@schoenberg.laudi.ka>
 
 	* src/de/schlund/pfixxml/util/Xslt.java: deprecate loadTemplates(path)
