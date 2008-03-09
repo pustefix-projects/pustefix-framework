@@ -55,7 +55,7 @@ public class DOMWriter implements XMLWriter {
         current.appendChild(node);
     }
     
-    public void writeEndElement(String localName) {
+    public void writeEndElement() {
         current=current.getParentNode();
     }
     

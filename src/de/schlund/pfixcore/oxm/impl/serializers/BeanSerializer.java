@@ -76,7 +76,7 @@ public class BeanSerializer implements ComplexTypeSerializer {
                         if (complexSerializer != null) {
                             writer.writeStartElement(prop);
                             ctx.serialize(value, writer, complexSerializer);
-                            writer.writeEndElement(prop);
+                            writer.writeEndElement();
                         } else {
                             writer.writeAttribute(prop, value);
                         }
@@ -85,13 +85,13 @@ public class BeanSerializer implements ComplexTypeSerializer {
                         if (complexSerializer != null) {
                             writer.writeStartElement(prop);
                             ctx.serialize(val, writer, complexSerializer);
-                            writer.writeEndElement(prop);
+                            writer.writeEndElement();
                         } else if (ctx.hasSimpleTypeSerializer(val.getClass())) {
                             writer.writeAttribute(prop, ctx.serialize(val));
                         } else {
                             writer.writeStartElement(prop);
                             ctx.serialize(val, writer);
-                            writer.writeEndElement(prop);
+                            writer.writeEndElement();
                         }
                     }
                 }
