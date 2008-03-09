@@ -30,6 +30,13 @@ public interface XMLWriter {
     public void writeAttribute(String localName,String value);
     
     /**
+     * Writes a character data section
+     * 
+     * @param cdata
+     */
+    public void writeCDataSection(String cdata);
+    
+    /**
      * Writes an xml fragment to the document.
      * 
      * The fragment does not need a root element, but it must
@@ -39,5 +46,4 @@ public interface XMLWriter {
      */
     public void writeFragment(String xmlFragment);
     public XPathPosition getCurrentPosition();
-    
 }
