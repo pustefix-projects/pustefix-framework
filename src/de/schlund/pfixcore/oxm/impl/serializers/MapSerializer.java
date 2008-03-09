@@ -18,9 +18,11 @@
  */
 package de.schlund.pfixcore.oxm.impl.serializers;
 
+import java.lang.annotation.Annotation;
 import java.util.Iterator;
 import java.util.Map;
 
+import de.schlund.pfixcore.oxm.impl.AnnotationAware;
 import de.schlund.pfixcore.oxm.impl.ComplexTypeSerializer;
 import de.schlund.pfixcore.oxm.impl.SerializationContext;
 import de.schlund.pfixcore.oxm.impl.SerializationException;
@@ -29,14 +31,16 @@ import de.schlund.pfixcore.oxm.impl.XMLWriter;
 /**
  * @author mleidig@schlund.de
  */
-public class MapSerializer implements ComplexTypeSerializer {
+public class MapSerializer implements ComplexTypeSerializer, AnnotationAware {
 
+    private String elementName = "entry"; 
+    
     public void serialize(Object obj, SerializationContext context, XMLWriter writer) throws SerializationException {
         if(obj instanceof Map) {
             Map<?,?> map = (Map<?,?>)obj;
             Iterator<?> it = map.keySet().iterator();
             while(it.hasNext()) {
-                writer.writeStartElement("entry");
+                writer.writeStartElement(this.elementName);
                 Object key = it.next();
                 String elementName = context.mapClassName(key);
                 writer.writeStartElement(elementName);
@@ -55,5 +59,12 @@ public class MapSerializer implements ComplexTypeSerializer {
                 writer.writeEndElement();
             }
         } else throw new SerializationException("Illegal type: "+obj.getClass().getName());
+    }
+
+    public void setAnnotation(Annotation annotation) {
+        if (annotation instanceof de.schlund.pfixcore.oxm.impl.annotation.MapSerializer) {
+            de.schlund.pfixcore.oxm.impl.annotation.MapSerializer mapAnno = (de.schlund.pfixcore.oxm.impl.annotation.MapSerializer)annotation;
+            this.elementName = mapAnno.elementName();
+        }
     }   
 }
