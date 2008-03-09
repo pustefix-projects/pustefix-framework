@@ -9,6 +9,17 @@
 	* src/de/schlund/pfixcore/oxm/impl/annotation/CDataSerializer.java
 	* tests/junit/de/schlund/pfixcore/oxm/CDataTestBean.java
 
+	Removed element name parameter from XMLWriter.writeEndElement() as it
+	should always close the last opened element:
+	* src/de/schlund/pfixcore/oxm/impl/DOMWriter.java
+	* src/de/schlund/pfixcore/oxm/impl/serializers/BeanSerializer.java
+	* src/de/schlund/pfixcore/oxm/impl/serializers/CollectionSerializer.java
+	* src/de/schlund/pfixcore/oxm/impl/serializers/ComplexEnumSerializer.java
+	* src/de/schlund/pfixcore/oxm/impl/serializers/PropertiesSerializer.java
+	* src/de/schlund/pfixcore/oxm/impl/serializers/MapSerializer.java
+	* src/de/schlund/pfixcore/oxm/impl/serializers/ArraySerializer.java
+	* src/de/schlund/pfixcore/oxm/impl/XMLWriter.java
+
 2008-03-07  jtl  <jtl@schoenberg.laudi.ka>
 
 	* src/de/schlund/pfixxml/util/Xslt.java: deprecate loadTemplates(path)

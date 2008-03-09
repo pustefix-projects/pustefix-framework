@@ -65,7 +65,7 @@ public class ComplexEnumSerializer implements ComplexTypeSerializer {
                     } else {
                         writer.writeStartElement(prop);
                         ctx.serialize(val, writer);
-                        writer.writeEndElement(prop);
+                        writer.writeEndElement();
                     }
                 }
             } catch (Exception x) {

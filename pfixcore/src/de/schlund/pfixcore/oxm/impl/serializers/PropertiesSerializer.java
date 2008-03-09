@@ -41,9 +41,8 @@ public class PropertiesSerializer implements ComplexTypeSerializer {
                 writer.writeAttribute("key", name);
                 String value = props.getProperty(name);
                 writer.writeAttribute("value", value);
-                writer.writeEndElement("property");
+                writer.writeEndElement();
             }
         } else throw new SerializationException("Illegal type: " + obj.getClass().getName());
     }
-
 }

@@ -26,7 +26,7 @@ public interface XMLWriter {
 
     public void writeStartElement(String localName);
     public void writeCharacters(String text);
-    public void writeEndElement(String localName);
+    public void writeEndElement();
     public void writeAttribute(String localName,String value);
     
     /**
