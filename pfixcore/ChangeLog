@@ -31,6 +31,13 @@
 	* src/de/schlund/pfixcore/oxm/impl/serializers/ArraySerializer.java
 	* src/de/schlund/pfixcore/oxm/impl/serializers/SimpleEnumSerializer.java
 	* src/de/schlund/pfixcore/oxm/impl/serializers/ObjectToStringSerializer.java
+	
+	Added the ability to change the element name for MapSerializer
+	* src/de/schlund/pfixcore/oxm/impl/serializers/MapSerializer.java
+	* src/de/schlund/pfixcore/oxm/impl/annotation/MapSerializer.java
+	* tests/junit/de/schlund/pfixcore/oxm/bean
+	* tests/junit/de/schlund/pfixcore/oxm/bean/MapTestBean.java
+	* tests/junit/de/schlund/pfixcore/oxm/MapTest.java
 
 2008-03-07  jtl  <jtl@schoenberg.laudi.ka>
 
