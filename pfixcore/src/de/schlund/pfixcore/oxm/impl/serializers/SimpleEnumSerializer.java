@@ -31,5 +31,4 @@ public class SimpleEnumSerializer implements SimpleTypeSerializer {
         Enum<?> e = (Enum<?>) obj;
         return e.name();
     }
-
 }

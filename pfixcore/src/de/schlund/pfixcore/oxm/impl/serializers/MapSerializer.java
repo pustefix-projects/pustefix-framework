@@ -33,23 +33,27 @@ public class MapSerializer implements ComplexTypeSerializer {
 
     public void serialize(Object obj, SerializationContext context, XMLWriter writer) throws SerializationException {
         if(obj instanceof Map) {
-            Map<?,?> map=(Map<?,?>)obj;
-            Iterator<?> it=map.keySet().iterator();
+            Map<?,?> map = (Map<?,?>)obj;
+            Iterator<?> it = map.keySet().iterator();
             while(it.hasNext()) {
                 writer.writeStartElement("entry");
-                Object key=it.next();
-                String elementName=context.mapClassName(key);
+                Object key = it.next();
+                String elementName = context.mapClassName(key);
                 writer.writeStartElement(elementName);
-                if(key!=null) context.serialize(key, writer);
+                if (key != null) {
+                    context.serialize(key, writer);
+                }
                 writer.writeEndElement();
-                Object val=map.get(key);
-                elementName=context.mapClassName(val);
+                Object val = map.get(key);
+                elementName = context.mapClassName(val);
                 writer.writeStartElement(elementName);
-                if(val!=null) context.serialize(val, writer);
+                if (val != null) {
+                    context.serialize(val, writer);
+                }
                 writer.writeEndElement();
+
                 writer.writeEndElement();
             }
         } else throw new SerializationException("Illegal type: "+obj.getClass().getName());
-    }
-    
+    }   
 }

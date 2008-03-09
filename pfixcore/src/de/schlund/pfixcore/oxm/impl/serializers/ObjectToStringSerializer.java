@@ -28,9 +28,8 @@ import de.schlund.pfixcore.oxm.impl.SimpleTypeSerializer;
 public class ObjectToStringSerializer implements SimpleTypeSerializer {
 
     public String serialize(Object obj,SerializationContext context) throws SerializationException {
-        String str=obj.toString();
-        str=str.replaceAll("\0","");
+        String str = obj.toString();
+        str = str.replaceAll("\0","");
         return str;
-    }
-    
+    }   
 }

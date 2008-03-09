@@ -189,5 +189,4 @@ public class BeanSerializer implements ComplexTypeSerializer {
         customSimpleSerializerCache.put(clazz, simpleSerializers);
         customComplexSerializerCache.put(clazz, complexSerializers);
     }
-
 }

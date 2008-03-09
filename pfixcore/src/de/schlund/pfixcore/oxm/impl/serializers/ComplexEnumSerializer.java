@@ -55,9 +55,12 @@ public class ComplexEnumSerializer implements ComplexTypeSerializer {
                     val = meth.invoke(obj, new Object[0]);
                 } else {
                     Field field = bd.getDirectAccessField(prop);
-                    if (field != null) val = field.get(obj);
-                    else throw new RuntimeException("Enum of type '" + obj.getClass().getName() + "' doesn't "
-                            + " have getter method or direct access to property '" + prop + "'.");
+                    if (field != null) {
+                        val = field.get(obj);
+                    } else {
+                        throw new RuntimeException("Enum of type '" + obj.getClass().getName() + "' doesn't "
+                                + " have getter method or direct access to property '" + prop + "'.");
+                    }
                 }
                 if (val != null) {
                     if (ctx.hasSimpleTypeSerializer(val.getClass())) {
@@ -73,5 +76,4 @@ public class ComplexEnumSerializer implements ComplexTypeSerializer {
             }
         }
     }
-
 }

@@ -33,16 +33,17 @@ public class CollectionSerializer implements ComplexTypeSerializer {
 
     public void serialize(Object obj, SerializationContext context, XMLWriter writer) throws SerializationException {
         if(obj instanceof Collection) {
-            Collection<?> col=(Collection<?>)obj;
-            Iterator<?> it=col.iterator();
-            while(it.hasNext()) {
-                Object item=it.next();
-                String elementName=context.mapClassName(item);
+            Collection<?> col = (Collection<?>)obj;
+            Iterator<?> it = col.iterator();
+            while (it.hasNext()) {
+                Object item = it.next();
+                String elementName = context.mapClassName(item);
                 writer.writeStartElement(elementName);
-                if(item!=null) context.serialize(item, writer);
+                if(item != null) {
+                    context.serialize(item, writer);
+                }
                 writer.writeEndElement();
             }
         } else throw new SerializationException("Illegal type: "+obj.getClass().getName());
-    }
-    
+    }   
 }

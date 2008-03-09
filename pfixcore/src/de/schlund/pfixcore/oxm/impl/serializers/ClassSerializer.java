@@ -31,5 +31,4 @@ public class ClassSerializer implements SimpleTypeSerializer {
         Class<?> clazz = (Class<?>) obj;
         return clazz.getCanonicalName();
     }
-
 }
