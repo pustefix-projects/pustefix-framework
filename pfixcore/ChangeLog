@@ -32,12 +32,17 @@
 	* src/de/schlund/pfixcore/oxm/impl/serializers/SimpleEnumSerializer.java
 	* src/de/schlund/pfixcore/oxm/impl/serializers/ObjectToStringSerializer.java
 	
-	Added the ability to change the element name for MapSerializer
+	Added the ability to change the element name for MapSerializer, added new test case,
+	started structuring tests for OXM
 	* src/de/schlund/pfixcore/oxm/impl/serializers/MapSerializer.java
 	* src/de/schlund/pfixcore/oxm/impl/annotation/MapSerializer.java
 	* tests/junit/de/schlund/pfixcore/oxm/bean
 	* tests/junit/de/schlund/pfixcore/oxm/bean/MapTestBean.java
 	* tests/junit/de/schlund/pfixcore/oxm/MapTest.java
+	
+	Added serialVersionUID to get rid of warnings:
+	* src/de/schlund/pfixcore/auth/NotAuthenticatedException.java
+	* src/de/schlund/pfixcore/auth/RoleNotFoundException.java
 
 2008-03-07  jtl  <jtl@schoenberg.laudi.ka>
 
