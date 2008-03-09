@@ -22,6 +22,8 @@ package de.schlund.pfixcore.auth;
  */
 public class RoleNotFoundException extends AuthenticationException {
 
+    private static final long serialVersionUID = 4659400734858812861L;
+
     private String roleName;
     
     public RoleNotFoundException(String roleName) {
@@ -31,6 +33,5 @@ public class RoleNotFoundException extends AuthenticationException {
     
     public String getRoleName() {
         return roleName;
-    }
-    
+    }   
 }
