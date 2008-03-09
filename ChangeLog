@@ -1,3 +1,14 @@
+2008-03-09  schst  <schst@stubbles.net>
+
+	Added writeCDataSection(String cdata) method to the XMLWriter:
+	* src/de/schlund/pfixcore/oxm/impl/DOMWriter.java
+	* src/de/schlund/pfixcore/oxm/impl/XMLWriter.java
+	
+	Added new OXM serializer for CData section:
+	* src/de/schlund/pfixcore/oxm/impl/serializers/CDataSerializer.java
+	* src/de/schlund/pfixcore/oxm/impl/annotation/CDataSerializer.java
+	* tests/junit/de/schlund/pfixcore/oxm/CDataTestBean.java
+
 2008-03-07  jtl  <jtl@schoenberg.laudi.ka>
 
 	* src/de/schlund/pfixxml/util/Xslt.java: deprecate loadTemplates(path)

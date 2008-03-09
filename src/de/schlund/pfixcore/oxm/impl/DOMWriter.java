@@ -65,6 +65,16 @@ public class DOMWriter implements XMLWriter {
     }
 
     /**
+     * Writes a character data section
+     * 
+     * @param cdata
+     */
+    public void writeCDataSection(String cdata) {
+        Node node = root.getOwnerDocument().createCDATASection(cdata);
+        current.appendChild(node);
+    }
+    
+    /**
      * Writes an xml fragment to the document.
      * 
      * The fragment does not need a root element, but it must
@@ -91,7 +101,7 @@ public class DOMWriter implements XMLWriter {
             for (int i = 0; i < list.getLength(); i++) {
                 Node node = originalDoc.importNode(list.item(i), true);
                 current.appendChild(node);
-            }            
+            }
         } catch (Exception e) {
             throw new RuntimeException("Unable to write XML fragment", e);
         }
