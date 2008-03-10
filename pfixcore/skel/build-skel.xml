@@ -42,7 +42,7 @@ or delete the DOCTYPE definition -->
 
   <property name="pat.pfixcore_jar"         value="pfixcore-*.jar"/>
   <fileset  id="id.fs.pfixcore_jar"         dir="${dir.lib}" includes="pfixcore-*.jar"/>
-  <property name="pat.pfixcore_data_tgz"    value="pfixcore-data-*.tar.gz"/>
+  <property name="pat.pfixcore_data_tgz"    value="pfixcore-*data*.tar.gz"/>
   <fileset  id="id.fs.pfixcore_data_tgz"    dir="${dir.lib}" includes="${pat.pfixcore_data_tgz}"/>
 
   <target name="properties">
