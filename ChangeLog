@@ -1,4 +1,9 @@
-2008-02-20  Martin Leidig  <mleidig@schlund.de>
+2008-03-10  Martin Leidig  <mleidig@schlund.de>
+
+	* skel/build-skel.xml: adjusted pattern to match  pfixcore-data archive
+	to support both traditional and maven file naming style.
+
+2008-03-10  Martin Leidig  <mleidig@schlund.de>
 
 	Released Pfixcore 0.12.2.
 
