@@ -199,6 +199,8 @@ public class WebserviceTask extends Task {
                                     if(!wsgenDir.exists()) wsgenDir.mkdirs();
                                     WsGen wsgen = new WsGen();
                                     wsgen.setProject(getProject());
+                                    wsgen.setDynamicAttribute("keep", "true");
+                                    wsgen.setDynamicAttribute("sourcedestdir", "gensrc");
                                     wsgen.setDynamicAttribute("genwsdl", "true");
                                     wsgen.setDynamicAttribute("destdir", "build");
                                     wsgen.setDynamicAttribute("resourcedestdir", wsgenDir.getAbsolutePath());
