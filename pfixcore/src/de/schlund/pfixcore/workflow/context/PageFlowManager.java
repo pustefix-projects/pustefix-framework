@@ -44,6 +44,7 @@ public class PageFlowManager {
     private Map<String, PageFlow> flowmap = new HashMap<String, PageFlow>();
     
     private VariantManager vmanager;
+    private ContextConfig config;
 
     private final static Logger LOG = Logger.getLogger(PageFlowManager.class);
 
@@ -51,6 +52,7 @@ public class PageFlowManager {
 
     public PageFlowManager(ContextConfig config, VariantManager variantmanager) {
         vmanager = variantmanager;
+        this.config = config;
 
         // Initialize map mapping each page name to a list of
         // flows which contain this page in at least one variant
@@ -81,6 +83,16 @@ public class PageFlowManager {
             if (rootflownames == null) {
                 LOG.debug("===> Page " + page + " isn't a member of any pageflow: Reusing flow " + currentflow.getName());
                 return currentflow;
+            }
+            String defaultFlowForRequest = this.config.getPageRequestConfig(page.getName()).getDefaultFlow();
+            if (defaultFlowForRequest != null) {
+                LOG.debug("===> Page " + page + " has a default flow specified: Using flow " + defaultFlowForRequest);
+                String pageflowname = vmanager.getVariantMatchingPageFlowName(defaultFlowForRequest, variant);
+                PageFlow pf = getPageFlowByName(pageflowname);
+                if (pf.containsPage(page.getRootName())) {
+                    LOG.debug("===> Switching to pageflow: " + pf.getName());
+                    return pf;
+                }
             }
             for (Iterator<String> i = rootflownames.iterator(); i.hasNext();) {
                 String pageflowname = vmanager.getVariantMatchingPageFlowName(i.next(), variant);

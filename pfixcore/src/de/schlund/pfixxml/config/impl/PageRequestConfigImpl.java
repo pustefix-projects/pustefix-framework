@@ -55,6 +55,7 @@ public class PageRequestConfigImpl implements SSLOption, Cloneable, PageRequestC
     private Policy policy = Policy.ANY;
     private boolean requiresToken = false;
     private AuthConstraint authConstraint;
+    private String defaultFlow = null;
     
     public void setPageName(String page) {
         this.pageName = page;
@@ -238,7 +239,15 @@ public class PageRequestConfigImpl implements SSLOption, Cloneable, PageRequestC
     public void setAuthConstraint(AuthConstraint authConstraint) {
     	this.authConstraint = authConstraint;
     }
-    
+
+    public String getDefaultFlow() {
+        return defaultFlow;
+    }
+
+    public void setDefaultFlow(String defaultFlow) {
+        this.defaultFlow = defaultFlow;
+    }
+
     /* (non-Javadoc)
      * @see java.lang.Object#clone()
      */
