@@ -104,6 +104,7 @@ public class ContextXMLServletConfigImpl extends AbstractXMLServletConfigImpl im
         Rule pagerequestRule = new PagerequestRule(config);
         Rule pagerequestVariantRule = new PagerequestVariantRule(config);
         Rule pagerequestStateRule = new PagerequestStateRule(config);
+        Rule pagerequestDefaultFlowRule = new PageRequestDefaultFlowRule(config);
         Rule pagerequestFinalizerRule = new PagerequestFinalizerRule(config);
         Rule pagerequestInputRule = new PagerequestInputRule(config);
         Rule pagerequestInputInterfaceRule = new PagerequestInputInterfaceRule(config);
@@ -156,6 +157,9 @@ public class ContextXMLServletConfigImpl extends AbstractXMLServletConfigImpl im
         digester.addRule("contextxmlserver/pagerequest/ssl", sslRule);
         digester.addRule("contextxmlserver/pagerequest/default/ssl", sslRule);
         digester.addRule("contextxmlserver/pagerequest/variant/ssl", sslRule);
+        digester.addRule("contextxmlserver/pagerequest/defaultflow", pagerequestDefaultFlowRule);
+        digester.addRule("contextxmlserver/pagerequest/default/defaultflow", pagerequestDefaultFlowRule);
+        digester.addRule("contextxmlserver/pagerequest/variant/defaultflow", pagerequestDefaultFlowRule);
         digester.addRule("contextxmlserver/pagerequest/state", pagerequestStateRule);
         digester.addRule("contextxmlserver/pagerequest/default/state", pagerequestStateRule);
         digester.addRule("contextxmlserver/pagerequest/variant/state", pagerequestStateRule);

@@ -159,4 +159,5 @@ public interface PageRequestConfig {
     
     AuthConstraint getAuthConstraint();
     
+    public String getDefaultFlow();
 }

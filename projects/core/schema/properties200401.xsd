@@ -471,6 +471,12 @@
           </xs:complexType>
         </xs:element>
 
+        <xs:element name="defaultflow" minOccurs="0">
+          <xs:complexType>
+            <xs:attribute name="flow" use="required"/>
+          </xs:complexType>
+        </xs:element>
+
         <xs:element name="authconstraint" minOccurs="0">
           <xs:complexType>
             <xs:complexContent>
