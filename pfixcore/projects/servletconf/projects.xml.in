@@ -62,7 +62,7 @@
 
 	<servlet name="jmxport">
       <active>true</active>
-      <class>de.schlund.pfixxml.jmx.JmxPortServlet</class> 
+      <class>de.schlund.pfixxml.JmxPortServlet</class> 
     </servlet>
     
   </project>
