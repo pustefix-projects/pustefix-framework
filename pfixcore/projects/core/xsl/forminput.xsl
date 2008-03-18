@@ -772,14 +772,14 @@
   
   <xsl:template match="pfx:externalform">
   <form method="post" action="/xml/deref">
-    <input type="hidden" name="__addallparams" value="true"/>
+    <xsl:variable name="link">addallparams:<xsl:value-of select="@href"/></xsl:variable>
     <input type="hidden" name="link">
-      <ixsl:attribute name="value"><xsl:value-of select="@href"/></ixsl:attribute>  
+      <ixsl:attribute name="value"><xsl:value-of select="$link"/></ixsl:attribute>  
     </input>  
     <input type="hidden" name="__sign">
       <ixsl:attribute name="value">
         <ixsl:call-template name="__sign">
-          <ixsl:with-param name="in"><xsl:value-of select="@href"/></ixsl:with-param>
+          <ixsl:with-param name="in"><xsl:value-of select="$link"/></ixsl:with-param>
         </ixsl:call-template>
       </ixsl:attribute>
     </input>

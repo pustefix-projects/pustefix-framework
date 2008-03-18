@@ -1,3 +1,11 @@
+2008-03-18  Sebastian Marsching  <sebastian.marsching@1und1.de>
+
+	* src/de/schlund/pfixxml/DerefServlet.java: 
+	* projects/core/xsl/forminput.xsl: 
+	Fixed potential security problem in DerefServlet: The __addallparams option
+	could be abused to do an arbitrary redirect, if the target page did not handle
+	query parameters in a safe manner (e.g. Google search).
+
 2008-03-09  schst  <schst@stubbles.net>
 
     Adde new <defaultflow flow="..."/> configuration option to specify a default

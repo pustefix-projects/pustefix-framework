@@ -117,8 +117,9 @@ public class DerefServlet extends ServletManager {
                             PfixServletRequest preq, HttpServletResponse res, String key) throws Exception {
         boolean checked = false;
         boolean signed  = false;
-
-        if (link.startsWith("/")) {
+        boolean addallparams = false;
+        
+        if (link.startsWith("/") || link.startsWith("addallparams:/")) {
             // This is a "relative absolute" link, no other domain.
             // It doesn't matter if any JS tricks or other stuff is played here, because
             // the link will only be used in the second stage when we do relocate via 302
@@ -132,17 +133,21 @@ public class DerefServlet extends ServletManager {
             checked = true;
         }
 
+        if (link.startsWith("addallparams:")) {
+            addallparams = true;
+            link = link.substring("addallparams:".length());
+        }        
+        
         // We don't currently enforce the signing at this stage. We may change this to enforcing mode,
         // or maybe we will use some clear warning pages in the case of a not signed request.
         if (checked || (!signed && ignore_nosign)) {
             OutputStream       out    = res.getOutputStream();
             OutputStreamWriter writer = new OutputStreamWriter(out, res.getCharacterEncoding());
-            RequestParam addallparams = preq.getRequestParam("__addallparams");
-            if (addallparams != null && addallparams.getValue() != null && addallparams.getValue().equals("true")) {
+            if (addallparams) {
                 String[] allparamnames = preq.getRequestParamNames();
                 StringBuffer urlextension = new StringBuffer();
                 for (String tmpname : allparamnames) {
-                    if (tmpname.equals("link") || tmpname.equals("__sign") || tmpname.equals("__enclink") || tmpname.equals("__addallparams")) {
+                    if (tmpname.equals("link") || tmpname.equals("__sign") || tmpname.equals("__enclink")) {
                         continue;
                     }
                     RequestParam tmpparam = preq.getRequestParam(tmpname);
@@ -216,7 +221,7 @@ public class DerefServlet extends ServletManager {
             return;
         }
     }
-
+    
     protected ServletManagerConfig getServletManagerConfig() {
         return this.config;
     }
