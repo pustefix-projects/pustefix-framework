@@ -1,3 +1,9 @@
+2008-03-19  Martin Leidig  <mleidig@schlund.de>
+
+	Changed version to 0.12.3-pre (build):
+	* build.xml
+	* pom.xml
+
 2008-03-09  schst  <schst@stubbles.net>
 
     Adde new <defaultflow flow="..."/> configuration option to specify a default
