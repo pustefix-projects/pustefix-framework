@@ -977,6 +977,12 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
         String tmppagename = currentpservreq.getPageName();
         if (tmppagename != null) {
             tmp = createPageRequest(tmppagename);
+        } else if(startwithflow) {
+            tmp = getLastPageFromRequestedFlow();
+            if(LOG.isDebugEnabled()) {
+                LOG.debug("Requested startwithflow without current page, set it to last page "+
+                        "of requested flow -> "+(tmp==null?"-":tmp.getName()));
+            }
         }
         RequestParam reqParam = currentpservreq.getRequestParam(PARAM_ROLEAUTH);
         roleAuth = (reqParam != null && reqParam.isTrue());
@@ -1053,6 +1059,22 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
                 setJumpToPageFlow(jumpflow.getValue());
             }
         }
+    }
+    
+    private PageRequest getLastPageFromRequestedFlow() {
+        PageRequest pageReq = null;
+        RequestParam flowname = currentpservreq.getRequestParam(PARAM_FLOW);
+        if (flowname != null && !flowname.getValue().equals("")) {
+            PageFlow flow = pageflowmanager.getPageFlowByName(flowname.getValue(), getVariant());
+            if (flow != null) {
+                FlowStep[] steps=flow.getAllSteps();
+                if(steps.length>0) {
+                    FlowStep step=steps[steps.length-1];
+                    pageReq = createPageRequest(step.getPageName());
+                }
+            } 
+        }
+        return pageReq;
     }
 
     public void forceStopAtNextStep(boolean forcestop) {
