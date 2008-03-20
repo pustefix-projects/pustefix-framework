@@ -8,14 +8,14 @@
 
 2008-03-09  schst  <schst@stubbles.net>
 
-    Adde new <defaultflow flow="..."/> configuration option to specify a default
-    flow per page request
-    * src/de/schlund/pfixcore/workflow/context/PageFlowManager.java
-    * src/de/schlund/pfixxml/config/PageRequestConfig.java
-    * src/de/schlund/pfixxml/config/impl/PageRequestDefaultFlowRule.java
-    * src/de/schlund/pfixxml/config/impl/ContextXMLServletConfigImpl.java
-    * src/de/schlund/pfixxml/config/impl/PageRequestConfigImpl.java
-    * projects/core/schema/properties200401.xsd
+	Added new <defaultflow flow="..."/> configuration option to specify a default
+	flow per page request
+	* src/de/schlund/pfixcore/workflow/context/PageFlowManager.java
+	* src/de/schlund/pfixxml/config/PageRequestConfig.java
+	* src/de/schlund/pfixxml/config/impl/PageRequestDefaultFlowRule.java
+	* src/de/schlund/pfixxml/config/impl/ContextXMLServletConfigImpl.java
+	* src/de/schlund/pfixxml/config/impl/PageRequestConfigImpl.java
+	* projects/core/schema/properties200401.xsd
 
 2008-03-10  Martin Leidig  <mleidig@schlund.de>
 
