@@ -1,3 +1,12 @@
+2008-03-26  Sebastian Marsching  <sebastian.marsching@1und1.de>
+
+	* src/org/pustefixframework/container/annotations/ImplementedBy.java: 
+	* src/org/pustefixframework/container/annotations/Inject.java: 
+	* src/org/pustefixframework/container/annotations/Scope.java: 
+	* src/org/pustefixframework/container/spring/beans/AnnotationBeanDefinitionPostProcessor.java:
+	Created utility classes for Guice-like autowiring in a 
+	Spring ApplicationContext.	 
+
 2008-03-18  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
 	* src/de/schlund/pfixxml/DerefServlet.java: 
