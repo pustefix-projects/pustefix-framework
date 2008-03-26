@@ -33,7 +33,7 @@ import org.w3c.dom.Document;
 
 import de.schlund.pfixcore.exception.PustefixApplicationException;
 import de.schlund.pfixcore.exception.PustefixCoreException;
-import de.schlund.pfixcore.workflow.context.PageFlow;
+import de.schlund.pfixcore.workflow.context.DataDrivenPageFlow;
 import de.schlund.pfixxml.ResultDocument;
 import de.schlund.pfixxml.config.PageFlowStepActionConditionConfig;
 import de.schlund.pfixxml.config.PageFlowStepActionConfig;
@@ -51,7 +51,7 @@ public class FlowStep {
     private ArrayList<String> tests_oncontinue = new ArrayList<String>();
     private PageFlowStepConfig config;
 
-    private final static Logger LOG = Logger.getLogger(PageFlow.class);
+    private final static Logger LOG = Logger.getLogger(DataDrivenPageFlow.class);
     public FlowStep(PageFlowStepConfig config) {
         this.config = config;
         

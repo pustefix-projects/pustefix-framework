@@ -1,5 +1,17 @@
 2008-03-26  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
+	* src/de/schlund/pfixcore/workflow/context/DataDrivenPageFlow.java: 
+	* src/de/schlund/pfixcore/workflow/context/PageFlowManager.java: 
+	* src/de/schlund/pfixcore/workflow/context/RequestContextImpl.java: 
+	* src/de/schlund/pfixcore/workflow/Context.java: 
+	* src/de/schlund/pfixcore/workflow/ContextImpl.java: 
+	* src/de/schlund/pfixcore/workflow/FlowStep.java: 
+	Introduced abstraction layer for page flows: PageFlow is now an interface.
+	The actual page flow logic was moved out of RequestContextImpl into 
+	DataDrivenPageFlow which implements the PageFlow interface.
+
+2008-03-26  Sebastian Marsching  <sebastian.marsching@1und1.de>
+
 	* src/org/pustefixframework/container/annotations/ImplementedBy.java: 
 	* src/org/pustefixframework/container/annotations/Inject.java: 
 	* src/org/pustefixframework/container/annotations/Scope.java: 

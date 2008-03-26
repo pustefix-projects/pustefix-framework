@@ -52,7 +52,7 @@ import de.schlund.pfixxml.config.ContextConfig;
 import de.schlund.pfixxml.config.PageRequestConfig;
 import de.schlund.util.statuscodes.StatusCode;
 
-public class ContextImpl implements Context, AccessibilityChecker, ExtendedContext, TokenManager, HttpSessionBindingListener {
+public class ContextImpl implements Context, AccessibilityChecker, ExtendedContext, PageFlowContext, TokenManager, HttpSessionBindingListener {
 
     /**
      * Implementation of the session part of the context used by
@@ -523,6 +523,26 @@ public class ContextImpl implements Context, AccessibilityChecker, ExtendedConte
         if (ev.getSession() == this.sessioncontext.session) {
             this.sessioncontext.session = null;
         }
+    }
+
+    public boolean checkIsAccessible(PageRequest page, PageRequestStatus status) throws PustefixApplicationException {
+        return getRequestContextForCurrentThreadWithError().checkIsAccessible(page, status);
+    }
+
+    public boolean checkNeedsData(PageRequest page, PageRequestStatus status) throws PustefixApplicationException {
+        return getRequestContextForCurrentThreadWithError().checkNeedsData(page, status);
+    }
+
+    public PageRequest createPageRequest(String name) {
+        return getRequestContextForCurrentThreadWithError().createPageRequest(name);
+    }
+
+    public PfixServletRequest getPfixServletRequest() {
+        return getRequestContextForCurrentThreadWithError().getPfixServletRequest();
+    }
+
+    public boolean isForceStopAtNextStep() {
+        return getRequestContextForCurrentThreadWithError().isForceStopAtNextStep();
     }
 
 }
