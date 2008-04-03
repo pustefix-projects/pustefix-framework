@@ -46,6 +46,7 @@ public class ServiceConfig implements Serializable {
 
     private String                 ctxName;
     private Boolean                ctxSync;
+    private String                 authConstraintRef;
     private String                 sessType;
     private String                 scopeType;
     private Boolean                sslForce;
@@ -100,7 +101,17 @@ public class ServiceConfig implements Serializable {
     public void setContextName(String ctxName) {
         this.ctxName = ctxName;
     }
+    
+    public String getAuthConstraintRef() {
+        if (authConstraintRef == null && globConf != null) return globConf.getAuthConstraintRef();
+        return authConstraintRef;
+    }
 
+    public void setAuthConstraintRef(String authConstraintRef) {
+        this.authConstraintRef = authConstraintRef;
+    }
+
+    
     public boolean getSynchronizeOnContext() {
         if (ctxSync == null && globConf != null) return globConf.getSynchronizeOnContext();
         return ctxSync;

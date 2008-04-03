@@ -30,6 +30,7 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
 
+import de.schlund.pfixcore.auth.AuthConstraint;
 import de.schlund.pfixcore.webservice.config.Configuration;
 import de.schlund.pfixcore.webservice.config.GlobalServiceConfig;
 import de.schlund.pfixcore.webservice.config.ServiceConfig;
@@ -168,6 +169,15 @@ public class ServiceRuntime {
                         
                     ServerContextImpl srvContext=ServerContextStore.getInstance(session.getServletContext()).getContext(srvConf.getContextName());
                     if(srvContext==null) throw new ServiceException("ServerContext '"+srvConf.getContextName()+"' doesn't exist.");
+                    
+                    String authRef=srvConf.getAuthConstraintRef();
+                    if(authRef!=null) {
+                        AuthConstraint authConst=srvContext.getContextConfig().getAuthConstraint(authRef);
+                        if(authConst!=null) {
+                            if(!authConst.isAuthorized(pfxSessionContext.getAuthentication())) 
+                                throw new AuthenticationException("Authentication failed: AuthConstraint violated");
+                        } else throw new ServiceException("AuthConstraint not found: "+authRef);
+                    }
                     
                     try {
                         // Prepare context for current thread.

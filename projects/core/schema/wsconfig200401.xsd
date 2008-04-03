@@ -50,6 +50,7 @@
         <xsd:element ref="scope" minOccurs="0"/>
         <xsd:element ref="ssl" minOccurs="0"/>
         <xsd:element ref="context" minOccurs="0"/>
+        <xsd:element ref="authconstraint" minOccurs="0"/>
         <xsd:choice>
           <xsd:group ref="GlobalCustoms"/>
           <xsd:element name="choose">
@@ -123,6 +124,7 @@
         <xsd:element ref="scope" minOccurs="0"/>
         <xsd:element ref="ssl" minOccurs="0"/>
         <xsd:element ref="context" minOccurs="0"/>
+        <xsd:element ref="authconstraint" minOccurs="0"/>
         <xsd:element ref="faulthandler" minOccurs="0"/>
       </xsd:all>
       <xsd:attribute name="name" type="NameType" use="required"/>
@@ -164,6 +166,12 @@
     <xsd:complexType>
       <xsd:attribute name="name" type="xsd:string"/>
       <xsd:attribute name="synchronize" type="xsd:boolean"/>
+    </xsd:complexType>
+  </xsd:element>
+  
+  <xsd:element name="authconstraint">
+    <xsd:complexType>
+      <xsd:attribute name="ref" type="xsd:string"/>
     </xsd:complexType>
   </xsd:element>
   
