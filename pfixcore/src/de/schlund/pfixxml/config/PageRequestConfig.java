@@ -111,7 +111,7 @@ public interface PageRequestConfig {
     Map<String, ? extends IWrapperConfig> getIWrappers();
 
     /**
-     * Returns the lis of auxiliary IWrappers for the page. They are only
+     * Returns the list of auxiliary IWrappers for the page. They are only
      * used on an authentication page to supply additinal information. These
      * wrappers are used on each request - not only on explicit authentication
      * requests, so extreme care should be taken when choosing prefixes, as they
