@@ -175,7 +175,10 @@ public class ConfigurationReader extends DefaultHandler {
 				 FaultHandler faultHandler=(FaultHandler)getObjectAttribute(atts,"class",FaultHandler.class,false);
 				 globSrvConf.setFaultHandler(faultHandler);
 				 setContext(faultHandler);
-			}
+			} else if(localName.equals("authconstraint")) {
+                String ref=getStringAttribute(atts,"ref",true);
+                if(ref!=null) globSrvConf.setAuthConstraintRef(ref);
+            }
 		} else if(context instanceof ServiceConfig) {
 			ServiceConfig srvConf=(ServiceConfig)context;
 			if(localName.equals("interface")) {
@@ -216,6 +219,9 @@ public class ConfigurationReader extends DefaultHandler {
 				 FaultHandler faultHandler=(FaultHandler)getObjectAttribute(atts,"class",FaultHandler.class,false);
 				 srvConf.setFaultHandler(faultHandler);
 				 setContext(faultHandler);
+			} else if(localName.equals("authconstraint")) {
+			    String ref=getStringAttribute(atts,"ref",true);
+			    if(ref!=null) srvConf.setAuthConstraintRef(ref);
 			}
 		} else if(context instanceof FaultHandler) {
 			FaultHandler faultHandler=(FaultHandler)context;

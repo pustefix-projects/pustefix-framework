@@ -55,6 +55,7 @@ public class GlobalServiceConfig implements Serializable {
     private String                 scopeType        = Constants.SERVICE_SCOPE_APPLICATION;
     private Boolean                sslForce         = Boolean.FALSE;
     private String                 ctxName;
+    private String                 authConstraintRef;
     private Boolean                ctxSync          = Boolean.TRUE;
     private Boolean                admin            = Boolean.FALSE;
     private Boolean                monitoring       = Boolean.FALSE;
@@ -184,6 +185,14 @@ public class GlobalServiceConfig implements Serializable {
 
     public void setContextName(String ctxName) {
         this.ctxName = ctxName;
+    }
+    
+    public String getAuthConstraintRef() {
+        return authConstraintRef;
+    }
+
+    public void setAuthConstraintRef(String authConstraintRef) {
+        this.authConstraintRef = authConstraintRef;
     }
 
     public boolean getSynchronizeOnContext() {
