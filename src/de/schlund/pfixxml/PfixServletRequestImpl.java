@@ -203,7 +203,7 @@ public class PfixServletRequestImpl implements PfixServletRequest {
      * @see de.schlund.pfixxml.PfixServletRequest#getCookies()
      */
     public Cookie[] getCookies() {
-        return request.getCookies();
+        return ServletManager.getCookies(request);
     }
 
     /* (non-Javadoc)
