@@ -58,7 +58,7 @@
   
   <pagerequest name="login">
     <input>
-      <interface prefix="login" class="de.schlund.pfixcore.example.bank.iwrapper.Login"/>
+      <wrapper prefix="login" class="de.schlund.pfixcore.example.bank.iwrapper.Login"/>
     </input>
   </pagerequest>
   
@@ -67,7 +67,7 @@
       <hasrole name="UNRESTRICTED"/>
     </authconstraint>
     <input>
-      <interface prefix="select" class="de.schlund.pfixcore.example.bank.iwrapper.SelectAccount"/>
+      <wrapper prefix="select" class="de.schlund.pfixcore.example.bank.iwrapper.SelectAccount"/>
     </input>
     <output>
       <resource node="accounts" class="de.schlund.pfixcore.example.bank.context.ContextCustomer"/>
@@ -77,7 +77,7 @@
   <pagerequest name="accountdetails">
     <authconstraint ref="CS_ACCOUNT"/>
     <input>
-      <interface prefix="edit" class="de.schlund.pfixcore.example.bank.iwrapper.EditAccount"/>
+      <wrapper prefix="edit" class="de.schlund.pfixcore.example.bank.iwrapper.EditAccount"/>
     </input>
     <output>
       <resource node="details" class="de.schlund.pfixcore.example.bank.context.ContextAccount"/>

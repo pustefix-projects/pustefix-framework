@@ -44,7 +44,7 @@
   <!-- A handler is a class dealing with the request sent by the user. -->
   <pagerequest name="home"> 
     <input>
-      <interface prefix="demo" class="de.skelexamples.DemoText"/>
+      <wrapper prefix="demo" class="de.skelexamples.DemoText"/>
     </input>   
   </pagerequest>
 

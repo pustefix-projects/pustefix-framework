@@ -8,10 +8,6 @@
   <context defaultflow="TestFlow">
     <resource class="de.schlund.pfixcore.example.ContextCounterImpl">
       <implements class="de.schlund.pfixcore.example.ContextCounter"/>
-      <properties>
-        <prop name="foo">bar</prop>
-        <prop name="baz">snafu</prop>
-      </properties>
     </resource>
     
     <resource class="de.schlund.pfixcore.example.webservices.chat.ContextChatImpl">

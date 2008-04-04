@@ -34,7 +34,8 @@
       <implements class="de.schlund.pfixcore.editor2.frontend.resources.SessionInfoResource"/>
     </resource>
     <resource class="de.schlund.pfixcore.editor2.frontend.resources.UsersResourceImpl">
-      <implements class="de.schlund.pfixcore.editor2.frontend.resources.UsersResource"/>   </resource>
+      <implements class="de.schlund.pfixcore.editor2.frontend.resources.UsersResource"/>   
+    </resource>
     <resource class="de.schlund.pfixcore.lucefix.ContextSearchImpl">
       <implements class="de.schlund.pfixcore.lucefix.ContextSearch"/>
     </resource>
@@ -112,16 +113,16 @@
        <hasrole name="ANONYMOUS"/>
     </authconstraint>
     <input>
-      <interface class="de.schlund.pfixcore.editor2.frontend.wrappers.Login" prefix="auth"/>
+      <wrapper class="de.schlund.pfixcore.editor2.frontend.wrappers.Login" prefix="auth"/>
     </input>
   </pagerequest>
   
   <pagerequest name="start">
     <input>
-      <interface class="de.schlund.pfixcore.editor2.frontend.wrappers.SelectProject" prefix="selectproject"/>
-      <interface class="de.schlund.pfixcore.editor2.frontend.wrappers.UserLoginSwitch" prefix="userlogins"/>
-      <interface class="de.schlund.pfixcore.editor2.frontend.wrappers.SelectUser" prefix="selectuser"/>
-      <interface class="de.schlund.pfixcore.editor2.frontend.wrappers.JumpToIncludePart" prefix="jump"/>
+      <wrapper class="de.schlund.pfixcore.editor2.frontend.wrappers.SelectProject" prefix="selectproject"/>
+      <wrapper class="de.schlund.pfixcore.editor2.frontend.wrappers.UserLoginSwitch" prefix="userlogins"/>
+      <wrapper class="de.schlund.pfixcore.editor2.frontend.wrappers.SelectUser" prefix="selectuser"/>
+      <wrapper class="de.schlund.pfixcore.editor2.frontend.wrappers.JumpToIncludePart" prefix="jump"/>
     </input>
     <output>
       <resource node="session" class="de.schlund.pfixcore.editor2.frontend.resources.SessionResource"/>
@@ -138,7 +139,7 @@
   
   <pagerequest name="pages">
     <input>
-      <interface class="de.schlund.pfixcore.editor2.frontend.wrappers.SelectPage" prefix="selectpage"/>
+      <wrapper class="de.schlund.pfixcore.editor2.frontend.wrappers.SelectPage" prefix="selectpage"/>
     </input>
     <output>
       <resource node="session" class="de.schlund.pfixcore.editor2.frontend.resources.SessionResource"/>
@@ -149,7 +150,7 @@
 
   <pagerequest name="targets">
     <input>
-      <interface class="de.schlund.pfixcore.editor2.frontend.wrappers.SelectTarget" prefix="selecttarget"/>
+      <wrapper class="de.schlund.pfixcore.editor2.frontend.wrappers.SelectTarget" prefix="selecttarget"/>
     </input>
     <output>
       <resource node="session" class="de.schlund.pfixcore.editor2.frontend.resources.SessionResource"/>
@@ -160,9 +161,9 @@
 
   <pagerequest name="images">
     <input>
-      <interface class="de.schlund.pfixcore.editor2.frontend.wrappers.SelectImage" prefix="selectimage"/>
-      <interface class="de.schlund.pfixcore.editor2.frontend.wrappers.UploadImage" prefix="upload"/>
-      <interface class="de.schlund.pfixcore.editor2.frontend.wrappers.RestoreImage" prefix="restore"/>
+      <wrapper class="de.schlund.pfixcore.editor2.frontend.wrappers.SelectImage" prefix="selectimage"/>
+      <wrapper class="de.schlund.pfixcore.editor2.frontend.wrappers.UploadImage" prefix="upload"/>
+      <wrapper class="de.schlund.pfixcore.editor2.frontend.wrappers.RestoreImage" prefix="restore"/>
     </input>
     <output>
       <resource node="session" class="de.schlund.pfixcore.editor2.frontend.resources.SessionResource"/>
@@ -173,10 +174,10 @@
   
   <pagerequest name="includes">
     <input>
-      <interface class="de.schlund.pfixcore.editor2.frontend.wrappers.SelectIncludePart" prefix="selectinclude"/>
-      <interface class="de.schlund.pfixcore.editor2.frontend.wrappers.BranchIncludePart" prefix="branch"/>
-      <interface class="de.schlund.pfixcore.editor2.frontend.wrappers.RestoreIncludePart" prefix="restore"/>
-      <interface class="de.schlund.pfixcore.editor2.frontend.wrappers.UploadIncludePart" prefix="upload"/>
+      <wrapper class="de.schlund.pfixcore.editor2.frontend.wrappers.SelectIncludePart" prefix="selectinclude"/>
+      <wrapper class="de.schlund.pfixcore.editor2.frontend.wrappers.BranchIncludePart" prefix="branch"/>
+      <wrapper class="de.schlund.pfixcore.editor2.frontend.wrappers.RestoreIncludePart" prefix="restore"/>
+      <wrapper class="de.schlund.pfixcore.editor2.frontend.wrappers.UploadIncludePart" prefix="upload"/>
     </input>
     <output>
       <resource node="session" class="de.schlund.pfixcore.editor2.frontend.resources.SessionResource"/>
@@ -189,10 +190,10 @@
   
   <pagerequest name="dynincludes">
     <input>
-      <interface class="de.schlund.pfixcore.editor2.frontend.wrappers.SelectDynIncludePart" prefix="selectinclude"/>
-      <interface class="de.schlund.pfixcore.editor2.frontend.wrappers.BranchDynIncludePart" prefix="branch"/>
-      <interface class="de.schlund.pfixcore.editor2.frontend.wrappers.RestoreDynIncludePart" prefix="restore"/>
-      <interface class="de.schlund.pfixcore.editor2.frontend.wrappers.UploadDynIncludePart" prefix="upload"/>
+      <wrapper class="de.schlund.pfixcore.editor2.frontend.wrappers.SelectDynIncludePart" prefix="selectinclude"/>
+      <wrapper class="de.schlund.pfixcore.editor2.frontend.wrappers.BranchDynIncludePart" prefix="branch"/>
+      <wrapper class="de.schlund.pfixcore.editor2.frontend.wrappers.RestoreDynIncludePart" prefix="restore"/>
+      <wrapper class="de.schlund.pfixcore.editor2.frontend.wrappers.UploadDynIncludePart" prefix="upload"/>
     </input>
     <output>
       <resource node="session" class="de.schlund.pfixcore.editor2.frontend.resources.SessionResource"/>
@@ -204,7 +205,7 @@
 	
   <pagerequest name="search">
     <input>
-      <interface class="de.schlund.pfixcore.lucefix.wrappers.Search" prefix="lucefix"/>
+      <wrapper class="de.schlund.pfixcore.lucefix.wrappers.Search" prefix="lucefix"/>
     </input>
     <output>
       <resource node="projects" class="de.schlund.pfixcore.editor2.frontend.resources.ProjectsResource"/>
@@ -218,8 +219,8 @@
   
   <pagerequest name="jumptopage">
     <input>
-      <interface class="de.schlund.pfixcore.editor2.frontend.wrappers.SelectProject" prefix="selectproject"></interface>
-      <interface class="de.schlund.pfixcore.editor2.frontend.wrappers.SelectPage" prefix="selectpage"/>
+      <wrapper class="de.schlund.pfixcore.editor2.frontend.wrappers.SelectProject" prefix="selectproject"/>
+      <wrapper class="de.schlund.pfixcore.editor2.frontend.wrappers.SelectPage" prefix="selectpage"/>
     </input>
   </pagerequest>
   
@@ -231,8 +232,8 @@
   
   <pagerequest name="useradmin">
     <input>
-      <interface class="de.schlund.pfixcore.editor2.frontend.wrappers.SelectUser" prefix="selectuser"/>
-      <interface class="de.schlund.pfixcore.editor2.frontend.wrappers.DeleteUsers" prefix="delete"/>
+      <wrapper class="de.schlund.pfixcore.editor2.frontend.wrappers.SelectUser" prefix="selectuser"/>
+      <wrapper class="de.schlund.pfixcore.editor2.frontend.wrappers.DeleteUsers" prefix="delete"/>
     </input>
     <output>
       <resource node="session" class="de.schlund.pfixcore.editor2.frontend.resources.SessionResource"/>
@@ -242,7 +243,7 @@
   
   <pagerequest name="useredit">
     <input>
-      <interface class="de.schlund.pfixcore.editor2.frontend.wrappers.EditUser" prefix="user"/>
+      <wrapper class="de.schlund.pfixcore.editor2.frontend.wrappers.EditUser" prefix="user"/>
     </input>
     <output>
       <resource node="session" class="de.schlund.pfixcore.editor2.frontend.resources.SessionResource"/>

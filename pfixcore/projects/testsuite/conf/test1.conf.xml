@@ -56,7 +56,7 @@
   
   <pagerequest name="Test2">
     <input>
-      <interface prefix="test" class="de.schlund.pfixcore.testsuite.wrapper.NoInputNoError"/>
+      <wrapper prefix="test" class="de.schlund.pfixcore.testsuite.wrapper.NoInputNoError"/>
     </input>
   </pagerequest>
   <pagerequest name="Test2Failed"/>
@@ -65,7 +65,7 @@
   <pagerequest name="Test3"/>
   <pagerequest name="Test3SetVariant">
     <input>
-      <interface prefix="variant" class="de.schlund.pfixcore.testsuite.wrapper.Test3SetVariant"/>
+      <wrapper prefix="variant" class="de.schlund.pfixcore.testsuite.wrapper.Test3SetVariant"/>
     </input>
   </pagerequest>
   <pagerequest name="Test3Default"/>
@@ -73,7 +73,7 @@
   
   <pagerequest name="Test4">
     <input>
-      <interface prefix="test" class="de.schlund.pfixcore.testsuite.wrapper.NoInputNoError"/>
+      <wrapper prefix="test" class="de.schlund.pfixcore.testsuite.wrapper.NoInputNoError"/>
     </input>
   </pagerequest>
   <pagerequest name="Test4Failed"/>
@@ -82,7 +82,7 @@
   <pagerequest name="Test5"/>
   <pagerequest name="Test5Form">
     <input>
-      <interface prefix="test" class="de.schlund.pfixcore.testsuite.wrapper.Test5PageMessage"/>
+      <wrapper prefix="test" class="de.schlund.pfixcore.testsuite.wrapper.Test5PageMessage"/>
     </input>
   </pagerequest>
   <pagerequest name="Test5Failed"/>

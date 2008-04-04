@@ -105,7 +105,7 @@
   
   <pagerequest name="A">
     <input>
-      <interface prefix="select" class="de.schlund.pfixcore.example.iwrapper.TestSelect"/>
+      <wrapper prefix="select" class="de.schlund.pfixcore.example.iwrapper.TestSelect"/>
     </input>
     <output>
       <resource node="simpledata" class="de.schlund.pfixcore.example.ContextSimpleData"/>
@@ -123,18 +123,18 @@
   </pagerequest>
 
   <pagerequest name="test"/>
-  
+
   <pagerequest name="home">
     <default>
       <input>
-        <interface prefix="info" class="de.schlund.pfixcore.example.iwrapper.AdultInfo"/>
-        <interface prefix="prefix" class="de.schlund.pfixcore.example.iwrapper.IndexedTest"/>
+        <wrapper prefix="info" class="de.schlund.pfixcore.example.iwrapper.AdultInfo"/>
+        <wrapper prefix="prefix" class="de.schlund.pfixcore.example.iwrapper.IndexedTest"/>
       </input>
     </default>
     <variant name="foo:bar:baz">
       <input>
-        <interface prefix="info" class="de.schlund.pfixcore.example.iwrapper.AdultInfo"/>
-        <interface prefix="prefix" class="de.schlund.pfixcore.example.iwrapper.IndexedTest"/>
+        <wrapper prefix="info" class="de.schlund.pfixcore.example.iwrapper.AdultInfo"/>
+        <wrapper prefix="prefix" class="de.schlund.pfixcore.example.iwrapper.IndexedTest"/>
       </input>
       <output>
         <resource node="adultinfo" class="de.schlund.pfixcore.example.ContextAdultInfo"/>
@@ -149,11 +149,11 @@
       </when>
     </choose>
     <input requirestoken="true">
-      <interface prefix="shirt" class="de.schlund.pfixcore.example.iwrapper.TShirt"/>
-      <interface prefix="counter" class="de.schlund.pfixcore.example.iwrapper.Counter"/>
-      <interface prefix="cinput" class="de.schlund.pfixcore.example.iwrapper.CounterInput" alwaysretrieve="true"/>
-      <interface prefix="trouser" class="de.schlund.pfixcore.example.iwrapper.Trouser"/>
-      <interface prefix="pic" class="de.schlund.pfixcore.example.iwrapper.TogglePic"/>
+      <wrapper prefix="shirt" class="de.schlund.pfixcore.example.iwrapper.TShirt"/>
+      <wrapper prefix="counter" class="de.schlund.pfixcore.example.iwrapper.Counter"/>
+      <wrapper prefix="cinput" class="de.schlund.pfixcore.example.iwrapper.CounterInput"/>
+      <wrapper prefix="trouser" class="de.schlund.pfixcore.example.iwrapper.Trouser"/>
+      <wrapper prefix="pic" class="de.schlund.pfixcore.example.iwrapper.TogglePic"/>
     </input>
     <output>
       <resource node="counter" class="de.schlund.pfixcore.example.ContextCounter"/>
@@ -182,7 +182,7 @@
   <pagerequest name="encoding">
     <state class="de.schlund.pfixcore.example.EncodingTestState"/>
     <input>
-      <interface prefix="text" class="de.schlund.pfixcore.example.iwrapper.EncodingTest"/>
+      <wrapper prefix="text" class="de.schlund.pfixcore.example.iwrapper.EncodingTest"/>
     </input>
     <output>
       <resource node="text" class="de.schlund.pfixcore.example.ContextEncodingTest"/>
@@ -194,8 +194,8 @@
   
   <pagerequest name="upload">
     <input>
-      <interface prefix="multiupload" class="de.schlund.pfixcore.example.iwrapper.MultiFileUpload"/>
-      <interface prefix="upload" class="de.schlund.pfixcore.example.iwrapper.FileUpload"/>
+      <wrapper prefix="multiupload" class="de.schlund.pfixcore.example.iwrapper.MultiFileUpload"/>
+      <wrapper prefix="upload" class="de.schlund.pfixcore.example.iwrapper.FileUpload"/>
     </input>
     <output>
       <resource node="uploadfiles" class="de.schlund.pfixcore.example.ContextFileUpload"/>
@@ -211,7 +211,7 @@
   
   <pagerequest name="scripting">
     <input>
-      <interface prefix="shirt" class="de.schlund.pfixcore.example.iwrapper.ScriptingTShirt"/>
+      <wrapper prefix="shirt" class="de.schlund.pfixcore.example.iwrapper.ScriptingTShirt"/>
     </input>
     <output>
       <resource node="tshirt" class="de.schlund.pfixcore.example.ContextTShirt"/>
