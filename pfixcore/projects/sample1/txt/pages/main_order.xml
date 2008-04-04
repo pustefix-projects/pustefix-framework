@@ -108,12 +108,14 @@
                 <pfx:xinp forcestop="true" type="submit" value="Add +1">
                   <pfx:argument name="counter.Add">1</pfx:argument>
                   <pfx:command name="SELWRP">counter</pfx:command>
+                  <pfx:command name="RETONLY">cinput</pfx:command>
                 </pfx:xinp>
               </td>
               <td>
                 <pfx:xinp forcestop="true" type="submit" value="Add -1">
                   <pfx:argument name="counter.Add">-1</pfx:argument>
                   <pfx:command name="SELWRP">counter</pfx:command>
+                  <pfx:command name="RETONLY">cinput</pfx:command>
                 </pfx:xinp>
               </td>
             </tr>

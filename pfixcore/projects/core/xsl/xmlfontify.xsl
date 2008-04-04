@@ -110,7 +110,6 @@
           <th><b>Frequency</b></th>
           <th><b>Type</b></th>
           <th><b>activeignore?</b></th>
-          <th><b>alwaysretrieve?</b></th>               
           <th><b>active?</b></th>               
         </tr>
         <xsl:for-each select="$iwrappers/iwrappers/iwrapper">
@@ -127,19 +126,13 @@
             </td>
             <td align="center" style="font-family: sans;">
               <xsl:choose>
-                <xsl:when test="@alwaysretrieve = 'true'">&#9745;</xsl:when>
-                <xsl:otherwise>&#9744;</xsl:otherwise>
-              </xsl:choose>
-            </td>            
-            <td align="center" style="font-family: sans;">
-              <xsl:choose>
-                <xsl:when test="$tree/formresult/iwrappergroups/group[@current = 'true']/interface[@prefix=$prefix]/@active = 'true'">&#9745;</xsl:when>
+                <xsl:when test="$tree/formresult/iwrapperstatus/interface[@prefix=$prefix]/@active = 'true'">&#9745;</xsl:when>
                 <xsl:otherwise>&#9744;</xsl:otherwise>
               </xsl:choose>
             </td>
           </tr> 
           <xsl:if test="not($iwrp/param)">
-            <tr><td class="rowsep" colspan="6" align="center"><small>w/o parameters</small></td></tr>
+            <tr><td class="rowsep" colspan="5" align="center"><small>w/o parameters</small></td></tr>
           </xsl:if>
           <xsl:for-each select="$iwrp/param">
             <tr>

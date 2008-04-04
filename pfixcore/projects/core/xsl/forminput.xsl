@@ -15,13 +15,11 @@
         <b>[Error: You can't give both attributes "prefix" and "page" to &lt;pfx:checkactive&gt;]</b>
       </xsl:when>
       <xsl:when test="not($prefix = '')">
-        <ixsl:if test="/formresult/iwrappergroups/group[@current = 'true']/interface[@prefix = '{$prefix}' and @active = 'true'] 
-        or /formresult/iwrapperstatus/interface[@prefix = '{$prefix}' and @active = 'true']">
+        <ixsl:if test="/formresult/wrapperstatus/wrapper[@prefix = '{$prefix}' and @active = 'true']">
           <xsl:apply-templates/>
         </ixsl:if>
       </xsl:when>
       <xsl:when test="not($pg = '')">
-<!--         <ixsl:if test="/formresult/navigation//page[@name = '{$pg}' and @visible = '1']"> -->
         <ixsl:if test="callback:isAccessible($__context__, '{$pg}') = 1">
           <xsl:apply-templates/>
         </ixsl:if>
@@ -40,13 +38,11 @@
         <b>[Error: You can't give both attributes "prefix" and "page" to &lt;pfx:checknotactive&gt;]</b>
       </xsl:when>
       <xsl:when test="not($prefix = '')">
-        <ixsl:if test="/formresult/iwrappergroups/group[@current = 'true']/interface[@prefix = '{$prefix}' and @active = 'false']
-        or /formresult/iwrapperstatus/interface[@prefix = '{$prefix}' and @active = 'false']">
+        <ixsl:if test="/formresult/wrapperstatus/wrapper[@prefix = '{$prefix}' and @active = 'false']">
           <xsl:apply-templates/>
         </ixsl:if>
       </xsl:when>
       <xsl:when test="not($pg = '')">
-<!--         <ixsl:if test="/formresult/navigation//page[@name = '{$pg}' and @visible = '0']"> -->
         <ixsl:if test="callback:isAccessible($__context__, '{$pg}') = 0">
           <xsl:apply-templates/>
         </ixsl:if>
@@ -243,12 +239,6 @@
       <xsl:if test="@send-to-pageflow">
         <input type="hidden" name="__pageflow" value="{@send-to-pageflow}"/>
       </xsl:if>
-      <ixsl:if test="/formresult/iwrappergroups/@currentindex">
-        <input type="hidden">
-          <xsl:attribute name="name">__currentindex[<xsl:value-of select="$page"/>]</xsl:attribute>
-          <ixsl:attribute name="value"><ixsl:value-of select="/formresult/iwrappergroups/@currentindex"/></ixsl:attribute>
-        </input>
-      </ixsl:if>
       <ixsl:for-each select="/formresult/formhiddenvals/hidden">
         <input type="hidden">
           <ixsl:attribute name="name"><ixsl:value-of select="./@name"/></ixsl:attribute>
