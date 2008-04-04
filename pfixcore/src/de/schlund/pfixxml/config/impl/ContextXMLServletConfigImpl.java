@@ -172,6 +172,9 @@ public class ContextXMLServletConfigImpl extends AbstractXMLServletConfigImpl im
         digester.addRule("contextxmlserver/pagerequest/input/interface", pagerequestInputInterfaceRule);
         digester.addRule("contextxmlserver/pagerequest/default/input/interface", pagerequestInputInterfaceRule);
         digester.addRule("contextxmlserver/pagerequest/variant/input/interface", pagerequestInputInterfaceRule);
+        digester.addRule("contextxmlserver/pagerequest/input/wrapper", pagerequestInputInterfaceRule);
+        digester.addRule("contextxmlserver/pagerequest/default/input/wrapper", pagerequestInputInterfaceRule);
+        digester.addRule("contextxmlserver/pagerequest/variant/input/wrapper", pagerequestInputInterfaceRule);
         digester.addRule("contextxmlserver/pagerequest/auth", dummyRule);
         digester.addRule("contextxmlserver/pagerequest/default/auth", dummyRule);
         digester.addRule("contextxmlserver/pagerequest/variant/auth", dummyRule);
