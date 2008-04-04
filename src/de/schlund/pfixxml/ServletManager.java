@@ -1162,7 +1162,7 @@ public abstract class ServletManager extends HttpServlet {
                 }
                 cookies = new Cookie[list.size()];
                 list.toArray(cookies);
-                LOG.warn("COOKIEBUG - Cookie: "+header);
+                LOG.warn("COOKIEBUG - Cookie: "+ request.getHeader("Cookie"));
             }
         }
        return cookies;
