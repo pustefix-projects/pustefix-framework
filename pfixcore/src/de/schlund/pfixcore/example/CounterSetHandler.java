@@ -45,19 +45,19 @@ public class CounterSetHandler implements IHandler {
 
         Integer count = counter.getSet();
         if (count != null) {
-            cc.setCounter(count.intValue());
+            
+            cc.setCounter(count);
+
+            if (count > 9 ) {
+                context.addPageMessage(StatusCodeLib.PFIXCORE_EXAMPLE_COUNTER_WARN_GREATER_9, new String[] {"" + count}, "error");
+                context.prohibitContinue();
+            } else if (count > 5 ) {
+                context.addPageMessage(StatusCodeLib.PFIXCORE_EXAMPLE_COUNTER_WARN_GREATER_5, new String[] {"" + count}, "warn");
+            } else if (count > 3 ) {
+                context.addPageMessage(StatusCodeLib.PFIXCORE_EXAMPLE_COUNTER_INFO_GREATER_3, new String[] {"" + count}, "info");
+            }
         }
         
-        // demo of pageMessage feature
-        int c = cc.getCounter();
-        if (c > 9 ) {
-            context.addPageMessage(StatusCodeLib.PFIXCORE_EXAMPLE_COUNTER_WARN_GREATER_9, new String[] {""+c}, "error");
-            context.prohibitContinue();
-        } else if (c > 5 ) {
-            context.addPageMessage(StatusCodeLib.PFIXCORE_EXAMPLE_COUNTER_WARN_GREATER_5, new String[] {""+c}, "warn");
-        } else if (c > 3 ) {
-            context.addPageMessage(StatusCodeLib.PFIXCORE_EXAMPLE_COUNTER_INFO_GREATER_3, new String[] {""+c}, "info");
-        }
     }
     
     public void retrieveCurrentStatus(Context context, IWrapper wrapper) throws Exception {
