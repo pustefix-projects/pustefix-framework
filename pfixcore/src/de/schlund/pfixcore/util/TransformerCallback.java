@@ -198,7 +198,6 @@ public class TransformerCallback {
                     elem.setAttribute("prefix", prefix);
                     elem.setAttribute("class", iwrappers.get(prefix).getWrapperClass().getName());
                     elem.setAttribute("activeignore", "" + iwrappers.get(prefix).isActiveIgnore());
-                    elem.setAttribute("alwaysretrieve", "" + iwrappers.get(prefix).isAlwaysRetrieve());
                     root.appendChild(elem);
                 }
             }

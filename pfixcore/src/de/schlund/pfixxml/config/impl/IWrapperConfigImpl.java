@@ -31,9 +31,7 @@ public class IWrapperConfigImpl implements IWrapperConfig {
     
     private String prefix = null;
     private Class<? extends IWrapper> wrapperClass = null;
-    private boolean continueOnSubmit = false;
     private boolean activeIgnore = false;
-    private boolean alwaysRetrieve = false;
     private boolean dologging = false;
     
     /* (non-Javadoc)
@@ -58,17 +56,6 @@ public class IWrapperConfigImpl implements IWrapperConfig {
         return this.wrapperClass;
     }
     
-    public void setContinue(boolean continueOnSubmit) {
-        this.continueOnSubmit = continueOnSubmit;
-    }
-    
-    /* (non-Javadoc)
-     * @see de.schlund.pfixxml.config.IWrapperConfig#isContinue()
-     */
-    public boolean isContinue() {
-        return this.continueOnSubmit;
-    }
-    
     public void setActiveIgnore(boolean ignore) {
         this.activeIgnore = ignore;
     }
@@ -80,17 +67,6 @@ public class IWrapperConfigImpl implements IWrapperConfig {
         return this.activeIgnore;
     }
     
-    public void setAlwaysRetrieve(boolean retrieve) {
-        this.alwaysRetrieve = retrieve;
-    }
-    
-    /* (non-Javadoc)
-     * @see de.schlund.pfixxml.config.IWrapperConfig#isAlwaysRetrieve()
-     */
-    public boolean isAlwaysRetrieve() {
-        return this.alwaysRetrieve;
-    }
-
     public void setLogging(boolean dologging) {
         this.dologging = dologging;
     }

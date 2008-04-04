@@ -44,14 +44,6 @@ public interface IWrapperConfig {
     Class<? extends IWrapper> getWrapperClass();
 
     /**
-     * Specifies whether the next page in the current pageflow should be triggered
-     * when a sumit to this specific wrapper is triggered. 
-     * 
-     * @return continue flag
-     */
-    boolean isContinue();
-
-    /**
      * If <code>true</code> the state will not check whether the correspondings
      * handler isActive() method returns true when checking whether a page is
      * accessible.
@@ -59,14 +51,6 @@ public interface IWrapperConfig {
      * @return flag indicating handling of active state
      */
     boolean isActiveIgnore();
-
-    /**
-     * If <code>true</code> the <code>retrieveCurrentStatus()</code> method
-     * should always be called on the corresponding IHandler.
-     * 
-     * @return flag indicating retrieveCurrentStatus() handling
-     */
-    boolean isAlwaysRetrieve();
 
     /**
      * If <code>true</code> the IWrapper should enable logging.
