@@ -30,16 +30,11 @@ import de.schlund.pfixxml.ResultDocument;
  */
 
 public interface IWrapperContainer {
-    void               initIWrappers(Context context, PfixServletRequest preq, ResultDocument resdoc) throws Exception;
-    void               handleSubmittedData() throws Exception;
-    void               retrieveCurrentStatus() throws Exception;
-    void               addErrorCodes() throws Exception;
-    void               addStringValues() throws Exception;
-    void               addIWrapperStatus() throws Exception;
-    boolean            errorHappened() throws Exception;
-    // boolean            needsData() throws Exception;
-    // boolean            stayAfterSubmit() throws Exception;
-    // PfixServletRequest getAssociatedPfixServletRequest();
-    // ResultDocument     getAssociatedResultDocument();
-    // Context            getAssociatedContext();
+    void    init(Context context, PfixServletRequest preq, ResultDocument resdoc) throws Exception;
+    void    handleSubmittedData() throws Exception;
+    void    retrieveCurrentStatus() throws Exception;
+    void    addErrorCodes() throws Exception;
+    void    addStringValues() throws Exception;
+    void    addIWrapperStatus() throws Exception;
+    boolean errorHappened() throws Exception;
 }

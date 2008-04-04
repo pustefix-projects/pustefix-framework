@@ -43,9 +43,7 @@ import de.schlund.util.statuscodes.StatusCodeLib;
 
 public class DefaultIWrapperState extends StateImpl {
 
-    public  final static String DEF_WRP_CONTAINER = "de.schlund.pfixcore.workflow.app.IWrapperSimpleContainer";
     private final static String DEF_FINALIZER     = "de.schlund.pfixcore.workflow.app.ResdocSimpleFinalizer";
-    public  final static String PROP_CONTAINER    = "defaultiwrapperstate.iwrappercontainer";
     private final static String IHDL_CONT_MANAGER = "de.schlund.pfixcore.workflow.app.IHandlerContainerManager";
 
     /**
@@ -54,8 +52,7 @@ public class DefaultIWrapperState extends StateImpl {
      */
     @Override
     public boolean isAccessible(Context context, PfixServletRequest preq) throws Exception {
-        IHandlerContainer container = getIHandlerContainer(context);
-        return (container.isPageAccessible(context) && container.areHandlerActive(context));
+        return getIHandlerContainer(context).isAccessible(context);
     }
 
     /**
@@ -65,12 +62,8 @@ public class DefaultIWrapperState extends StateImpl {
     @Override
     public boolean needsData(Context context, PfixServletRequest preq) throws Exception {
         CAT.debug(">>> [" + context.getCurrentPageRequest().getName() + "] Checking needsData()...");
-        // IWrapperContainer container = getIWrapperContainer(context);
-        // container.initIWrappers(context, preq, new ResultDocument());
-        // boolean retval = container.needsData();
-        IHandlerContainer container = getIHandlerContainer(context);
-        boolean retval = container.needsData(context);
 
+        boolean retval = getIHandlerContainer(context).needsData(context);
         if (retval) {
             CAT.debug("    TRUE! now going to retrieve the current status.");
         } else {
@@ -86,16 +79,14 @@ public class DefaultIWrapperState extends StateImpl {
     @Override
     @SuppressWarnings("deprecation")
     public ResultDocument getDocument(Context context, PfixServletRequest preq) throws Exception {
-        IWrapperContainer container = getIWrapperContainer(context);
-        ResdocFinalizer rfinal = getResdocFinalizer(context);
-        ResultDocument resdoc = new ResultDocument();
-
         CAT.debug("[[[[[ " + context.getCurrentPageRequest().getName() + " ]]]]]");
-
-        PerfEvent pe = new PerfEvent(PerfEventType.PAGE_INITIWRAPPERS, context.getCurrentPageRequest().toString());
+        
+        ResdocFinalizer rfinal = getResdocFinalizer(context);
+        ResultDocument  resdoc = new ResultDocument();
+        PerfEvent       pe     = new PerfEvent(PerfEventType.PAGE_INITIWRAPPERS, context.getCurrentPageRequest().toString());
 
         pe.start();
-        container.initIWrappers(context, preq, resdoc);
+        IWrapperContainer wrp_container =  getIHandlerContainer(context).createIWrapperContainerInstance(context, preq, resdoc);
         pe.save();
 
         if (isSubmitTrigger(context, preq)) {
@@ -118,9 +109,9 @@ public class DefaultIWrapperState extends StateImpl {
                         if (errorPage.equals("")) {
                             pe = new PerfEvent(PerfEventType.PAGE_RETRIEVECURRENTSTATUS, context.getCurrentPageRequest().toString());
                             pe.start();
-                            container.retrieveCurrentStatus();
+                            wrp_container.retrieveCurrentStatus();
                             pe.save();
-                            rfinal.onRetrieveStatus(container);
+                            rfinal.onRetrieveStatus(wrp_container);
                             context.prohibitContinue();
                         } else {
                             context.setJumpToPage(errorPage);
@@ -136,9 +127,9 @@ public class DefaultIWrapperState extends StateImpl {
                     context.addPageMessage(StatusCodeLib.PFIXCORE_GENERATOR_FORM_TOKEN_MISSING);
                     pe = new PerfEvent(PerfEventType.PAGE_RETRIEVECURRENTSTATUS, context.getCurrentPageRequest().toString());
                     pe.start();
-                    container.retrieveCurrentStatus();
+                    wrp_container.retrieveCurrentStatus();
                     pe.save();
-                    rfinal.onRetrieveStatus(container);
+                    rfinal.onRetrieveStatus(wrp_container);
                     context.prohibitContinue();
                     valid = false;
                 }
@@ -147,33 +138,22 @@ public class DefaultIWrapperState extends StateImpl {
             if (valid) {
                 pe = new PerfEvent(PerfEventType.PAGE_HANDLESUBMITTEDDATA, context.getCurrentPageRequest().toString());
                 pe.start();
-                container.handleSubmittedData();
+                wrp_container.handleSubmittedData();
                 pe.save();
 
-                if (container.errorHappened()) {
+                if (wrp_container.errorHappened()) {
                     CAT.debug("    => Can't continue, as errors happened during load/work.");
-                    rfinal.onWorkError(container);
+                    rfinal.onWorkError(wrp_container);
                     context.prohibitContinue();
                 } else {
-                    CAT.debug("    => No error happened during work ...");
-                    if (container.getClass().getName().equals(DEF_WRP_CONTAINER)) {
-                        // TODO: REMOVE THIS whole "if" branch we're in completely once we don't have to support the old behavior anymore
-                        if (!context.isJumpToPageSet() && ((IWrapperSimpleContainer) container).stayAfterSubmit()) {
-                            CAT.debug("... Container says he wants to stay on this page and no jumptopage is set: Setting prohibitcontinue=true");
-                            context.prohibitContinue();
-                        } else {
-                            CAT.debug("... Container says he is ready.");
-                        }
-                    }
-
-                    CAT.debug("    => end of submit reached successfully.");
+                    CAT.debug("    => No error happened during work... end of submit reached successfully.");
                     CAT.debug("    => retrieving current status.");
                     pe = new PerfEvent(PerfEventType.PAGE_RETRIEVECURRENTSTATUS, context.getCurrentPageRequest().toString());
                     pe.start();
-                    container.retrieveCurrentStatus();
+                    wrp_container.retrieveCurrentStatus();
                     pe.save();
 
-                    rfinal.onSuccess(container);
+                    rfinal.onSuccess(wrp_container);
                 }
             }
         } else if (isDirectTrigger(context, preq) || context.finalPageIsRunning() || context.flowIsRunning()) {
@@ -181,7 +161,7 @@ public class DefaultIWrapperState extends StateImpl {
 
             pe = new PerfEvent(PerfEventType.PAGE_RETRIEVECURRENTSTATUS, context.getCurrentPageRequest().toString());
             pe.start();
-            container.retrieveCurrentStatus();
+            wrp_container.retrieveCurrentStatus();
             pe.save();
             if (CAT.isDebugEnabled()) {
                 if (isDirectTrigger(context, preq)) {
@@ -192,7 +172,7 @@ public class DefaultIWrapperState extends StateImpl {
                     CAT.debug("    => REASON: WorkFlow");
                 }
             }
-            rfinal.onRetrieveStatus(container);
+            rfinal.onRetrieveStatus(wrp_container);
             context.prohibitContinue();
         } else {
             throw new XMLException("This should not happen: No submit trigger, no direct trigger, no final page and no workflow???");
@@ -213,42 +193,24 @@ public class DefaultIWrapperState extends StateImpl {
         // See the implementation of Context.stateMustSupplyFullDocument() for
         // details.
         if (context.stateMustSupplyFullDocument()) {
-            container.addStringValues();
-            container.addErrorCodes();
-
-            container.addIWrapperStatus();
+            wrp_container.addStringValues();
+            wrp_container.addErrorCodes();
+            wrp_container.addIWrapperStatus();
             renderContextResources(context, resdoc);
             addResponseHeadersAndType(context, resdoc);
         }
         return resdoc;
     }
 
-    // Eeek, unfortunately we can't use a flyweight here... (somewhere we need
-    // to store state after all)
-    protected IWrapperContainer getIWrapperContainer(Context context) throws XMLException {
-        IWrapperContainer obj = null;
-
-        String classname = context.getContextConfig().getProperties().getProperty(PROP_CONTAINER);
-        
-        if (classname == null) {
-            classname = DEF_WRP_CONTAINER;
-        }
-
-        try {
-            obj = (IWrapperContainer) Class.forName(classname).newInstance();
-        } catch (InstantiationException e) {
-            throw new XMLException("unable to instantiate class [" + classname + "] :" + e.getMessage());
-        } catch (IllegalAccessException e) {
-            throw new XMLException("unable access class [" + classname + "] :" + e.getMessage());
-        } catch (ClassNotFoundException e) {
-            throw new XMLException("unable to find class [" + classname + "] :" + e.getMessage());
-        } catch (ClassCastException e) {
-            throw new XMLException("class [" + classname + "] does not implement the interface IWrapperContainer :" + e.getMessage());
-        }
-
-        return obj;
+    // Remember, a IHandlerContainer is a flyweight!!!
+    protected IHandlerContainer getIHandlerContainer(Context context) throws Exception {
+        // Use context config object as dummy configuration object to make sure
+        // each context (server) has its own IHandlerContainerManager
+        IHandlerContainerManager ihcm = (IHandlerContainerManager) PropertyObjectManager.getInstance().getConfigurableObject(context.getContextConfig(), IHDL_CONT_MANAGER);
+        return ihcm.getIHandlerContainer(context);
     }
 
+    
     // Remember, a ResdocFinalizer is a flyweight!!!
     protected ResdocFinalizer getResdocFinalizer(Context context) throws XMLException {
         PageRequestConfig config = context.getConfigForCurrentPageRequest();
@@ -266,13 +228,4 @@ public class DefaultIWrapperState extends StateImpl {
 
         return fin;
     }
-
-    // Remember, a IHandlerContainer is a flyweight!!!
-    protected IHandlerContainer getIHandlerContainer(Context context) throws Exception {
-        // Use context config object as dummy configuration object to make sure
-        // each context (server) has its own IHandlerContainerManager
-        IHandlerContainerManager ihcm = (IHandlerContainerManager) PropertyObjectManager.getInstance().getConfigurableObject(context.getContextConfig(), IHDL_CONT_MANAGER);
-        return ihcm.getIHandlerContainer(context);
-    }
-
 }// DefaultIWrapperState

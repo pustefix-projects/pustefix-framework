@@ -34,8 +34,6 @@ import de.schlund.pfixxml.XMLException;
  */
 
 public class IHandlerContainerManager implements ConfigurableObject {
-    // private static Logger LOG                 = Logger.getLogger(IHandlerContainerManager.class);
-    private static String   DEF_HDL_CONTAINER = "de.schlund.pfixcore.workflow.app.IHandlerSimpleContainer";
     /** Store the already created IHandlerContainer here, use the page as key*/
     private HashMap<PageRequest, IHandlerContainer> known = new HashMap<PageRequest, IHandlerContainer>();
 
@@ -44,7 +42,7 @@ public class IHandlerContainerManager implements ConfigurableObject {
      */
     public void init(Object dummy) {
     	// Takes a dummy context config object, which is only used to ensure
-    	// there is one instance if IHandlerContainerManager per context
+    	// there is one instance of IHandlerContainerManager per context
         // Intentionally do nothing here :-)
     }
     
@@ -57,34 +55,13 @@ public class IHandlerContainerManager implements ConfigurableObject {
      * @throws XMLException on errors when creating the IHandlerContainer.
      */
     public IHandlerContainer getIHandlerContainer(Context context) throws XMLException {
-        String     classname = null;
-        Properties props     = context.getPropertiesForCurrentPageRequest();
-
         synchronized (known) {
             PageRequest       page   = context.getCurrentPageRequest();
             IHandlerContainer retval = known.get(page); 
             if (retval == null) {
-                // LOG.debug("----- cachemiss for IHandlerContainer on page " + page.getName());
-                try {
-                    
-                    classname = props.getProperty(IHandlerSimpleContainer.PROP_CONTAINER);
-                    if (classname == null) {
-                        classname = DEF_HDL_CONTAINER;
-                    }
-                    retval = (IHandlerContainer) Class.forName(classname).newInstance();
-                    retval.initIHandlers(context.getConfigForCurrentPageRequest());
-                } catch (InstantiationException e) {
-                    throw new XMLException("unable to instantiate class [" + classname + "]" + e.getMessage());
-                } catch (IllegalAccessException e) {
-                    throw new XMLException("unable access class [" + classname + "]" + e.getMessage());
-                } catch (ClassNotFoundException e) {
-                    throw new XMLException("unable to find class [" + classname + "]" + e.getMessage());
-                } catch (ClassCastException e) {
-                    throw new XMLException("class [" + classname + "] does not implement the interface IHandlerContainer" + e.getMessage());
-                }
+                retval = new IHandlerContainerImpl();
+                retval.initIHandlers(context.getConfigForCurrentPageRequest());
                 known.put(page, retval);
-            } else {
-                // LOG.debug("+++++ cachehit for IHandlerContainer on page " + page.getName());
             }
             return retval;
         }

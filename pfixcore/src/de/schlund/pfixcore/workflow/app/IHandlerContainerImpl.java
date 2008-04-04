@@ -26,6 +26,8 @@ import java.util.Properties;
 import de.schlund.pfixcore.generator.IHandler;
 import de.schlund.pfixcore.generator.IHandlerFactory;
 import de.schlund.pfixcore.workflow.Context;
+import de.schlund.pfixxml.PfixServletRequest;
+import de.schlund.pfixxml.ResultDocument;
 import de.schlund.pfixxml.config.IWrapperConfig;
 import de.schlund.pfixxml.config.PageRequestConfig;
 import de.schlund.pfixxml.perflogging.PerfEvent;
@@ -42,20 +44,14 @@ import de.schlund.pfixxml.perflogging.PerfEventType;
  *
  */
 
-public class IHandlerSimpleContainer implements IHandlerContainer {
+public class IHandlerContainerImpl implements IHandlerContainer {
     /** Store all created handlers here*/
     private HashSet<IHandler> handlers;
-    /** Store all handlers here which do not have a 'ihandlercontainer.ignore' property*/
+    /** Store all handlers here which do not have a 'activeignore' attribute */
     private HashSet<IHandler> activeset;
     
     private String policy;
     
-    public  static final String   PROP_CONTAINER = "ihandlercontainer";
-    private static final String   PROP_POLICY    = PROP_CONTAINER + ".policy";
-    // private static       Logger   LOG            = Logger.getLogger(IHandlerSimpleContainer.class);
-    
-    // implementation of de.schlund.pfixcore.workflow.app.IHandlerContainer interface
-
     /**
      * Initialize the IHandlers. Get the handlers from {@link IHandlerFactory}
      * and store them.
@@ -85,6 +81,10 @@ public class IHandlerSimpleContainer implements IHandlerContainer {
         
     }
     
+    public boolean isAccessible(Context context) throws Exception {
+        return (isPageAccessible(context) && areHandlerActive(context));
+    }
+    
     /**
      * The principal accessibility of a page is deduced as follows:
      * If ANY of all the associated IHandlers returns false on a call to
@@ -94,7 +94,7 @@ public class IHandlerSimpleContainer implements IHandlerContainer {
      * @exception Exception if an error occurs
      * @see de.schlund.pfixcore.workflow.app.IHandlerContainer#isPageAccessible(Context)
      */
-    public boolean isPageAccessible(Context context) throws Exception {
+    private boolean isPageAccessible(Context context) throws Exception {
         if (handlers.isEmpty()) return true; // border case
         
         for (Iterator<IHandler> iter = handlers.iterator(); iter.hasNext(); ) {
@@ -125,7 +125,7 @@ public class IHandlerSimpleContainer implements IHandlerContainer {
      * @exception Exception if an error occurs
      * @see de.schlund.pfixcore.workflow.app.IHandlerContainer#areHandlerActive(Context)
      */
-    public boolean areHandlerActive(Context context) throws Exception  {
+    private boolean areHandlerActive(Context context) throws Exception  {
         if (activeset.isEmpty() || policy.equals("NONE")) {
             return true; // border case
         }
@@ -155,7 +155,7 @@ public class IHandlerSimpleContainer implements IHandlerContainer {
                 }
             }
         } else {
-            throw new RuntimeException("ERROR: property '" + PROP_POLICY + "' must be 'ALL', 'ANY'(default) or 'NONE'");
+            throw new RuntimeException("ERROR: property policy must be 'ALL', 'ANY'(default) or 'NONE'");
         }
         
         return (retval);
@@ -208,15 +208,23 @@ public class IHandlerSimpleContainer implements IHandlerContainer {
         
         for (Iterator<IHandler> iter = handlers.iterator(); iter.hasNext(); ) {
             IHandler handler = iter.next();
-            if (handler.isActive(context)) {
-                
-                boolean test = doNeedsData(handler, context);
-                if (test) {
-                    return true;
-                }
+            if (handler.isActive(context) && doNeedsData(handler, context)) {
+                return true;
             }
         }
         return false;
     }
     
-}// IHandlerSimpleContainer
+    
+    public IWrapperContainer createIWrapperContainerInstance(Context context, PfixServletRequest preq, ResultDocument resdoc) throws Exception {
+        IWrapperContainer container = new IWrapperContainerImpl();
+        // TODO: This initialization could be made better. We should retrieve all static information
+        // from the config file here ONCE, and give it to the IWrapperContainer instance already aggregated/sorted instead of letting 
+        // the IWrapperContainer do the job all over again each time an instance is created. The only thing that should have to 
+        // be calculated from start in the IWrapperContainer instance are all things depending on the actual request data.
+        container.init(context, preq, resdoc);
+        return container;
+    }
+
+    
+}// IHandlerContainerImpl

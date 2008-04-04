@@ -1,3 +1,58 @@
+2008-04-04  jtl  <jtl@britten.laudi.ka>
+
+	* src/de/schlund/pfixcore/workflow/app/IWrapperContainerImpl.java (createIWrapperGroups): remove the handling of the
+	alwaysretrieve attribute from the configuration, implement the request and pfx:command based selection of wrappers 
+	for submit, retrieve and both. How the final system will work is still under discussion. (see #12 and #23 in trac) 
+	
+	* src/de/schlund/pfixcore/workflow/app/DefaultIWrapperState.java (isAccessible): call method in IHandlerContainer, old 
+	impl. here has been moved into that class.
+	(getDocument): get the IWrapperContainer via a call to IHandlerContainer.createIWrapperContainerInstance().
+	
+	* src/de/schlund/pfixcore/workflow/app/IHandlerContainerManager.java (getIHandlerContainer): always create IHandlerContainerImpl.
+	No need to allow for configuration here, maybe can be brought back via DI. 
+	
+	* src/de/schlund/pfixcore/workflow/app/IHandlerContainer.java 
+	(isAccessible): new method, isPageAccessible and areHandlerActive are 
+	removed, the implementation of them becomes private.
+	(createIWrapperContainerInstance): new method to create the IWrapperContainer here 
+	* src/de/schlund/pfixcore/workflow/app/IHandlerContainerImpl.java: renamed from IHandlerSImpleContainer.
+	(isAccessible): new method, calls private isPageAccessible and areHandlerActive (moved from DefaultIWrapperState).
+	(createIWrapperContainerInstance): implementation moved from DefaultIWrapperState. Also no longer able to set the implementation 
+	via the configuration file, as this is simply not a sensible thing to do for an application programmer.  
+	
+	* src/de/schlund/pfixxml/config/impl/PagerequestInputInterfaceRule.java: 
+	* src/de/schlund/pfixxml/config/impl/IWrapperConfigImpl.java: 
+	* src/de/schlund/pfixxml/config/IWrapperConfig.java: 
+	* src/de/schlund/pfixcore/util/TransformerCallback.java (getIWrappers): remove the alwaysretrieve and continue attributes here, too
+	
+	* src/de/schlund/pfixcore/workflow/context/RequestContextImpl.java: hold the page messages (which means StatusCodeInfo objects) 
+	in a HashSet, to avoid duplicates.
+
+	* src/de/schlund/pfixcore/example/CounterHandler.java:
+	* src/de/schlund/pfixcore/example/CounterSetHandler.java: make the pagemessages work as intended. Unrelated to
+	the other stuff...
+	 
+	* projects/sample1/txt/pages/main_order.xml: use the new pfx:command RETONLY
+	
+	* projects/core/xsl/xmlfontify.xsl: 
+	* projects/core/xsl/forminput.xsl: make it work with the changes made like interface->wrapper, removal of groups is now complete,
+	we don't have alwaysretrieve anymore etc.
+	
+	* src/de/schlund/pfixxml/config/impl/ContextXMLServletConfigImpl.java: 
+	* projects/core/schema/properties200401.xsd: 
+	* docs/docbook/src/reference/configuration.xml: fix to reflect the optional change of <interface> to <wrapper>
+	and removal of alwaysetrieve, continue attributes. Also fix up some old cruft in the documentation,
+	that is no longer valid.
+	
+	* projects/sample1/conf/config.conf.xml: 
+	* projects/core/editor2/conf/edit.conf.xml: 
+	* projects/samplebank/conf/config.conf.xml: 
+	* projects/simpleform/conf/config.conf.xml: 
+	* projects/simplelink/conf/config.conf.xml: 
+	* projects/testsuite/conf/test1.conf.xml: 
+	* projects/webservice/conf/config.conf.xml: change <interface> to <wrapper>, remove 
+	@alwaysretrieve where necessary.
+
 2008-03-26  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
 	* src/de/schlund/pfixcore/workflow/context/DataDrivenPageFlow.java: 

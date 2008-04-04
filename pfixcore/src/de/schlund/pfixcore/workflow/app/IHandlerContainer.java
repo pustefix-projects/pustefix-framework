@@ -20,6 +20,8 @@ package de.schlund.pfixcore.workflow.app;
 
 import de.schlund.pfixcore.generator.IHandler;
 import de.schlund.pfixcore.workflow.Context;
+import de.schlund.pfixxml.PfixServletRequest;
+import de.schlund.pfixxml.ResultDocument;
 import de.schlund.pfixxml.config.PageRequestConfig;
 
 
@@ -32,8 +34,6 @@ import de.schlund.pfixxml.config.PageRequestConfig;
  */
 public interface IHandlerContainer {
 
-    //~ Methods ....................................................................................
-
     /**
      * Initialize all IHandlers in this container.
      * @param config Configuration for pagerequest
@@ -41,22 +41,13 @@ public interface IHandlerContainer {
     void initIHandlers(PageRequestConfig config);
 
     /**
-     * Determine if the requested page is accesible.
+     * Determine if the associated page is accessible.
      * @param context the context identifying the current page
-     * @return true if page is accesible, else false
+     * @return true if page is accessible, else false
      * @throws Exception on errors
      */
-    boolean isPageAccessible(Context context) throws Exception;
-
-    /**
-     * Determine if the IHandler in this container are active.
-     * @param context the context identifying the current page
-     * @return true if handler are active, else false
-     * @throws Exception on errors
-     * 
-     */
-    boolean areHandlerActive(Context context) throws Exception;
-
+    boolean isAccessible(Context context) throws Exception;
+    
     /**
      * Determine if any of the IHandler in this container needs data.
      * @param context the context identifying the current page
@@ -64,4 +55,12 @@ public interface IHandlerContainer {
      * @throws Exception on errors 
      */
     boolean needsData(Context context) throws Exception;
+    
+    /**
+     * create a new IWrapperContainer instance that is used during handling of the actual request data.
+     * This will set up a new copy of IWrapper objects and load them with the submitted values.
+     * @return an fresh instance of IWrapperContainer
+     */
+    IWrapperContainer createIWrapperContainerInstance(Context context, PfixServletRequest preq, ResultDocument resdoc) throws Exception;
+
 }
