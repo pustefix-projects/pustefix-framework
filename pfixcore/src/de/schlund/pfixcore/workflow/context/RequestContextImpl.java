@@ -19,6 +19,7 @@
 package de.schlund.pfixcore.workflow.context;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -109,7 +110,7 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
     private boolean     pageflow_requested_by_user = false;
     private boolean     startwithflow              = false;
 
-    private List<StatusCodeInfo> messages   = new ArrayList<StatusCodeInfo>();
+    private Set<StatusCodeInfo>  messages   = new HashSet<StatusCodeInfo>();
     private List<Cookie>         cookielist = new ArrayList<Cookie>();
     
     public RequestContextImpl(ServerContextImpl servercontext, ContextImpl context) {
@@ -1100,7 +1101,7 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
             copy.authpage.setStatus(authpage.getStatus());
         }
         copy.cookielist = new ArrayList<Cookie>(cookielist);
-        copy.messages = new ArrayList<StatusCodeInfo>(messages);
+        copy.messages = new HashSet<StatusCodeInfo>(messages);
         return copy;
     }
     
