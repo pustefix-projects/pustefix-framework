@@ -1,3 +1,17 @@
+2008-04-07  Martin Leidig  <mleidig@schlund.de>
+
+	Workaround for cookie loss problem: Despite receiving a non-empty request 
+	cookie header from the browser Tomcat sometimes inexplicably returns null 
+	calling HttpServletRequest.getCookies(). In this case we directly parse the 
+	cookie header by calling the utility method CookieUtils.getCookies().
+
+	* src/de/schlund/pfixxml/util/CookieUtils.java: Added utility class
+	for getting/parsing Cookies from the HTTP header
+	* src/de/schlund/pfixxml/ServletManager.java: Use CookieUtils wrapper
+	method to get Cookies and log cookie loss
+	* src/de/schlund/pfixxml/PfixServletRequestImpl.java: Use CookieUtils
+	wrapper method to get Cookies
+
 2008-04-03  Martin Leidig  <mleidig@schlund.de>
 
 	Added role-based authorization support for webservices. Now you can
