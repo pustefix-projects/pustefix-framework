@@ -40,6 +40,7 @@ import de.schlund.pfixxml.multipart.PartData;
 import de.schlund.pfixxml.perflogging.PerfEvent;
 import de.schlund.pfixxml.perflogging.PerfEventType;
 import de.schlund.pfixxml.serverutil.SessionHelper;
+import de.schlund.pfixxml.util.CookieUtils;
 
 /**
  * <p>This class is an abstraction of a servlet request. Is provides wrapper functions
@@ -203,7 +204,7 @@ public class PfixServletRequestImpl implements PfixServletRequest {
      * @see de.schlund.pfixxml.PfixServletRequest#getCookies()
      */
     public Cookie[] getCookies() {
-        return ServletManager.getCookies(request);
+        return CookieUtils.getCookies(request);
     }
 
     /* (non-Javadoc)

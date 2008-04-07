@@ -24,13 +24,11 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.TreeSet;
@@ -60,6 +58,7 @@ import de.schlund.pfixxml.serverutil.SessionAdmin;
 import de.schlund.pfixxml.serverutil.SessionHelper;
 import de.schlund.pfixxml.serverutil.SessionInfoStruct;
 import de.schlund.pfixxml.serverutil.SessionInfoStruct.TrailElement;
+import de.schlund.pfixxml.util.CookieUtils;
 import de.schlund.pfixxml.util.MD5Utils;
 
 /**
@@ -183,7 +182,7 @@ public abstract class ServletManager extends HttpServlet {
         // Delete JSESSIONID cookie
         // Otherwise a redirect loop will be caused when a request with an
         // invalid JSESSIONID cookie is made
-        Cookie[] cookies = getCookies(req);
+        Cookie[] cookies = CookieUtils.getCookies(req);
         if (cookies != null) {
             for (int i = 0; i < cookies.length; i++) {
                 Cookie cookie = cookies[i];
@@ -648,7 +647,22 @@ public abstract class ServletManager extends HttpServlet {
         // to correctly react on people who turn off cookies during the session.
         if (sess != null) {
             LOG.debug("*** Testing for marked session...");
-            Cookie[] cookies = getCookies(req);
+            Cookie[] cookies = req.getCookies();
+            if(cookies == null) {
+                //Workaround for cookie loss problem: 
+                //Despite receiving a non-empty request cookie header from the browser Tomcat
+                //sometimes inexplicably returns null calling HttpServletRequest.getCookies().
+                //In this case we directly parse the cookie header by calling the utility
+                //method CookieUtils.getCookies().
+                cookies = CookieUtils.getCookies(req);
+                if (cookies != null) {
+                    String sessionId = sess.getId();
+                    String userAgent = req.getHeader("User-Agent");
+                    if (userAgent == null) userAgent = "-";
+                    String cookieHeader = req.getHeader("Cookie");
+                    LOG.warn("COOKIE_LOSS_WORKAROUND|" + sessionId + "|" + userAgent + "|" + cookieHeader);
+                }
+            }
             boolean sessionusescookies = false;
             Boolean doescookies = (Boolean) sess.getAttribute(SESSION_COOKIES_MARKER);
             if (doescookies != null && doescookies.booleanValue()) {
@@ -710,7 +724,7 @@ public abstract class ServletManager extends HttpServlet {
     }
 
     private Cookie getSecureSessionCookie(HttpServletRequest req, String sessionid) {
-        Cookie[] cookies = getCookies(req);
+        Cookie[] cookies = CookieUtils.getCookies(req);
         Cookie tmp;
         if (cookies != null) {
             for (int i = 0; i < cookies.length; i++) {
@@ -1071,7 +1085,7 @@ public abstract class ServletManager extends HttpServlet {
         Long timeout = System.currentTimeMillis() - (1000 * session.getMaxInactiveInterval());
         assert (timeout > 0) : "timeout can't be negative...";
 
-        Cookie[] cookies = getCookies(req);
+        Cookie[] cookies = CookieUtils.getCookies(req);
         if (cookies != null && cookies.length > 0) {
             TreeSet<SortableCookie> cset = new TreeSet<SortableCookie>();
 
@@ -1134,38 +1148,6 @@ public abstract class ServletManager extends HttpServlet {
         } else {
             cookie.setPath("/");
         }
-    }
-    
-    public static Cookie[] getCookies(HttpServletRequest request) {
-        Cookie[] cookies = request.getCookies();
-        if(cookies == null) {
-            String header = request.getHeader("Cookie");
-            if(header != null && header.length()>0) {
-                List<Cookie> list = new ArrayList<Cookie>();
-                while (header.length() > 0) {
-                    int pos = header.indexOf(';');
-                    if (pos < 0) pos = header.length();
-                    if (pos == 0) break;
-                    String token = header.substring(0, pos);
-                    if (pos < header.length()) header = header.substring(pos + 1);
-                    else header = "";
-                    try {
-                        int sign = token.indexOf('=');
-                        if (sign > 0) {
-                            String name = token.substring(0, sign).trim();
-                            String value = token.substring(sign+1).trim();
-                            list.add(new Cookie(name, value));
-                        }
-                    } catch (Throwable e) {
-                        LOG.warn("COOKIEPARSINGERROR - "+e.getMessage());
-                    }
-                }
-                cookies = new Cookie[list.size()];
-                list.toArray(cookies);
-                LOG.warn("COOKIEBUG - Cookie: "+ request.getHeader("Cookie"));
-            }
-        }
-       return cookies;
     }
     
 }// ServletManager
