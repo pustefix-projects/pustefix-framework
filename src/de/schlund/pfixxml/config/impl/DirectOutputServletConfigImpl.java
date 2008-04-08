@@ -72,6 +72,8 @@ public class DirectOutputServletConfigImpl extends ServletManagerConfigImpl impl
     
     private boolean sync = true;
 
+    private String authConstraintRef;
+    
     private HashMap<String, DirectOutputPageRequestConfigImpl> pages = new HashMap<String, DirectOutputPageRequestConfigImpl>();
     
     private List<DirectOutputPageRequestConfigImpl> cachePages = null;
@@ -99,6 +101,7 @@ public class DirectOutputServletConfigImpl extends ServletManagerConfigImpl impl
         Rule foreignContextRule = new DirectForeignContextRule(config);
         Rule pagerequestRule = new DirectPagerequestRule(config);
         Rule pagerequestStateRule = new DirectPagerequestStateRule(config);
+        Rule authConstraintRule = new DirectAuthConstraintRule(config);
         Rule pagerequestPropertyRule = new DirectPagerequestPropertyRule(config);
         Rule servletPropertyRule = new ServletPropertyRule(config);
         // Dummy rule doing nothing
@@ -115,11 +118,16 @@ public class DirectOutputServletConfigImpl extends ServletManagerConfigImpl impl
                 sslRule);
         digester.addRule("directoutputserver/foreigncontext",
                 foreignContextRule);
+        digester.addRule("directoutputserver/authconstraint",
+                authConstraintRule);
         digester.addRule("directoutputserver/directoutputpagerequest",
                 pagerequestRule);
         digester.addRule(
                 "directoutputserver/directoutputpagerequest/directoutputstate",
                 pagerequestStateRule);
+        digester.addRule(
+                "directoutputserver/directoutputpagerequest/authconstraint",
+                authConstraintRule);
         digester.addRule(
                 "directoutputserver/directoutputpagerequest/properties",
                 dummyRule);
@@ -209,6 +217,14 @@ public class DirectOutputServletConfigImpl extends ServletManagerConfigImpl impl
         return sync;
     }
 
+    public void setAuthConstraintRef(String authConstraintRef) {
+        this.authConstraintRef = authConstraintRef;
+    }
+    
+    public String getAuthConstraintRef() {
+        return authConstraintRef;
+    }
+    
     public void addPageRequest(DirectOutputPageRequestConfigImpl config) {
         if (this.pages.containsKey(config.getPageName())) {
             LOG.warn("Overwriting configuration for direct output pagerequest" + config.getPageName());
@@ -249,4 +265,5 @@ public class DirectOutputServletConfigImpl extends ServletManagerConfigImpl impl
         }
         return false;
     }
+
 }

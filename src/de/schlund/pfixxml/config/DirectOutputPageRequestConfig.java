@@ -37,6 +37,8 @@ public interface DirectOutputPageRequestConfig {
      * @return name of the page
      */
     String getPageName();
+    
+    String getAuthConstraintRef();
 
     /**
      * Returns class used to construct the state. The state does the actual

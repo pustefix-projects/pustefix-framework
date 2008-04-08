@@ -1,3 +1,24 @@
+2008-04-08  Martin Leidig  <mleidig@schlund.de>
+
+	Added role-based authorization support for directoutputserver requests. Now 
+	you can reference authconstraints defined in the context configuration using
+	<authconstraint ref="..."/> within the directoutputserver configuration 
+	file (as subelement of the directoutputpagerequest element to asssign an
+	authconstraint to a single request or as subelement of the directoutputserver
+	element to assign it to all requests by default). If the authconstraint is
+	violated a 403 error is returned.
+
+	Modified:
+	* src/de/schlund/pfixxml/DirectOutputServlet.java
+	* src/de/schlund/pfixxml/config/impl/DirectOutputServletConfigImpl.java
+	* src/de/schlund/pfixxml/config/impl/DirectOutputPageRequestConfigImpl.java
+	* src/de/schlund/pfixxml/config/DirectOutputServletConfig.java
+	* src/de/schlund/pfixxml/config/DirectOutputPageRequestConfig.java
+	* projects/core/schema/properties200401.xsd
+
+	Added:
+	* src/de/schlund/pfixxml/config/impl/DirectAuthConstraintRule.java
+
 2008-04-07  Martin Leidig  <mleidig@schlund.de>
 
 	Workaround for cookie loss problem: Despite receiving a non-empty request 
