@@ -43,6 +43,8 @@ public interface DirectOutputServletConfig extends ServletManagerConfig {
      * @return flag indicating whether to synchronize on the user session
      */
     boolean isSynchronized();
+    
+    String getAuthConstraintRef();
 
     /**
      * Returns a list of pages configured for this servlet.
