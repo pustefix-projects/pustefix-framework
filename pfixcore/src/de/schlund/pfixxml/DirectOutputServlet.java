@@ -28,6 +28,7 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
 
+import de.schlund.pfixcore.auth.AuthConstraint;
 import de.schlund.pfixcore.exception.PustefixCoreException;
 import de.schlund.pfixcore.workflow.ContextImpl;
 import de.schlund.pfixcore.workflow.ContextResourceManager;
@@ -36,6 +37,7 @@ import de.schlund.pfixcore.workflow.DirectOutputState;
 import de.schlund.pfixcore.workflow.PageRequest;
 import de.schlund.pfixcore.workflow.context.ServerContextImpl;
 import de.schlund.pfixxml.config.ConfigReader;
+import de.schlund.pfixxml.config.DirectOutputPageRequestConfig;
 import de.schlund.pfixxml.config.DirectOutputServletConfig;
 import de.schlund.pfixxml.config.ServletManagerConfig;
 import de.schlund.pfixxml.resources.FileResource;
@@ -165,6 +167,20 @@ public class DirectOutputServlet extends ServletManager {
              res.sendError(HttpServletResponse.SC_NOT_FOUND, "Must specify page name");
              return;
          }
+         
+         String authRef=null;
+         DirectOutputPageRequestConfig pageConfig = config.getPageRequest(pagename);
+         if(pageConfig!=null) authRef=pageConfig.getAuthConstraintRef();
+         if(authRef==null) authRef=config.getAuthConstraintRef();
+         if(authRef!=null) {
+             AuthConstraint authConst=context.getContextConfig().getAuthConstraint(authRef);
+             if(authConst!=null) {
+                 if(!authConst.isAuthorized(context.getAuthentication())) {
+                     res.sendError(HttpServletResponse.SC_FORBIDDEN, "Must authenticate first");
+                 }
+             } else throw new RuntimeException("AuthConstraint not found: "+authRef);
+         }
+         
          PageRequest       page  = new PageRequest(pagename);
          DirectOutputState state = pagemap.getDirectOutputState(page);
          if (state != null) {

@@ -38,6 +38,8 @@ public class DirectOutputPageRequestConfigImpl implements DirectOutputPageReques
     
     private Properties properties = new Properties();
 
+    private String authConstraintRef;
+    
     public void setPageName(String page) {
         this.pageName = page;
     }
@@ -75,4 +77,13 @@ public class DirectOutputPageRequestConfigImpl implements DirectOutputPageReques
     public Properties getProperties() {
         return this.properties;
     }
+    
+    public void setAuthConstraintRef(String authConstraintRef) {
+        this.authConstraintRef = authConstraintRef;
+    }
+    
+    public String getAuthConstraintRef() {
+        return authConstraintRef;
+    }
+    
 }

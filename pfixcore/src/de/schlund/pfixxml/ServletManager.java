@@ -58,6 +58,7 @@ import de.schlund.pfixxml.serverutil.SessionAdmin;
 import de.schlund.pfixxml.serverutil.SessionHelper;
 import de.schlund.pfixxml.serverutil.SessionInfoStruct;
 import de.schlund.pfixxml.serverutil.SessionInfoStruct.TrailElement;
+import de.schlund.pfixxml.util.CookieUtils;
 import de.schlund.pfixxml.util.MD5Utils;
 
 /**
@@ -92,7 +93,7 @@ public abstract class ServletManager extends HttpServlet {
     private static int                   INC_ID                        = 0;
     private boolean                      cookie_security_not_enforced  = false;
     private Logger                       LOGGER_VISIT                  = Logger.getLogger("LOGGER_VISIT");
-    private Logger                       LOG                           = Logger.getLogger(ServletManager.class);
+    private static Logger                       LOG                           = Logger.getLogger(ServletManager.class);
     private Map<Class<? extends Throwable>, ExceptionConfig> exceptionConfigs = new HashMap<Class<? extends Throwable>, ExceptionConfig>();
     private long                         common_mtime                  = -2;
     private long                         servlet_mtime                 = -2;
@@ -181,8 +182,8 @@ public abstract class ServletManager extends HttpServlet {
         // Delete JSESSIONID cookie
         // Otherwise a redirect loop will be caused when a request with an
         // invalid JSESSIONID cookie is made
-        if (req.getCookies() != null) {
-            Cookie[] cookies = req.getCookies();
+        Cookie[] cookies = CookieUtils.getCookies(req);
+        if (cookies != null) {
             for (int i = 0; i < cookies.length; i++) {
                 Cookie cookie = cookies[i];
                 if (cookie.getName().equalsIgnoreCase("JSESSIONID")) {
@@ -647,6 +648,21 @@ public abstract class ServletManager extends HttpServlet {
         if (sess != null) {
             LOG.debug("*** Testing for marked session...");
             Cookie[] cookies = req.getCookies();
+            if(cookies == null) {
+                //Workaround for cookie loss problem: 
+                //Despite receiving a non-empty request cookie header from the browser Tomcat
+                //sometimes inexplicably returns null calling HttpServletRequest.getCookies().
+                //In this case we directly parse the cookie header by calling the utility
+                //method CookieUtils.getCookies().
+                cookies = CookieUtils.getCookies(req);
+                if (cookies != null) {
+                    String sessionId = sess.getId();
+                    String userAgent = req.getHeader("User-Agent");
+                    if (userAgent == null) userAgent = "-";
+                    String cookieHeader = req.getHeader("Cookie");
+                    LOG.warn("COOKIE_LOSS_WORKAROUND|" + sessionId + "|" + userAgent + "|" + cookieHeader);
+                }
+            }
             boolean sessionusescookies = false;
             Boolean doescookies = (Boolean) sess.getAttribute(SESSION_COOKIES_MARKER);
             if (doescookies != null && doescookies.booleanValue()) {
@@ -708,7 +724,7 @@ public abstract class ServletManager extends HttpServlet {
     }
 
     private Cookie getSecureSessionCookie(HttpServletRequest req, String sessionid) {
-        Cookie[] cookies = req.getCookies();
+        Cookie[] cookies = CookieUtils.getCookies(req);
         Cookie tmp;
         if (cookies != null) {
             for (int i = 0; i < cookies.length; i++) {
@@ -1069,7 +1085,7 @@ public abstract class ServletManager extends HttpServlet {
         Long timeout = System.currentTimeMillis() - (1000 * session.getMaxInactiveInterval());
         assert (timeout > 0) : "timeout can't be negative...";
 
-        Cookie[] cookies = req.getCookies();
+        Cookie[] cookies = CookieUtils.getCookies(req);
         if (cookies != null && cookies.length > 0) {
             TreeSet<SortableCookie> cset = new TreeSet<SortableCookie>();
 
@@ -1133,5 +1149,5 @@ public abstract class ServletManager extends HttpServlet {
             cookie.setPath("/");
         }
     }
-
+    
 }// ServletManager

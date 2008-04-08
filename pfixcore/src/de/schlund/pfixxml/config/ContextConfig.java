@@ -148,5 +148,6 @@ public interface ContextConfig {
     boolean hasRoles();
     RoleProvider getRoleProvider();
     AuthConstraint getDefaultAuthConstraint();
+    AuthConstraint getAuthConstraint(String id);
     
 }

@@ -652,6 +652,7 @@
     <xs:sequence>
       <xs:element name="directoutputservletinfo" type="prop:directoutputserverservletinfoType"/>
       <xs:element ref="prop:foreigncontext"/>
+      <xs:element ref="prop:authconstraint" minOccurs="0"/>
       <xs:element name="config-include" type="prop:directOutputConfigIncludeType" />
       <xs:element ref="prop:directoutputpagerequest" minOccurs="0" maxOccurs="unbounded"/>
       <xs:element ref="prop:properties" minOccurs="0"/>
@@ -664,10 +665,17 @@
     <xs:attribute name="externalservletname"/>
   </xs:complexType>
 
+  <xs:element name="authconstraint">
+    <xs:complexType>
+      <xs:attribute name="ref" type="xs:string"/>
+    </xs:complexType>
+  </xs:element>
+
   <xs:element name="directoutputpagerequest" type="prop:directoutputpagerequestType"/>
   <xs:complexType name="directoutputpagerequestType">
     <xs:sequence>
       <xs:element ref="prop:directoutputstate"/>
+      <xs:element ref="prop:authconstraint" minOccurs="0"/>
       <xs:element ref="prop:properties" minOccurs="0"/>
     </xs:sequence>
     <xs:attribute name="name" use="required"/>
