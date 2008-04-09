@@ -658,6 +658,39 @@
       <tag>auxinterface</tag> <classname>IHandler</classname>s.
       <programlisting language="xml"><![CDATA[
     </auth>
+
+    <process>
+      ]]></programlisting>
+      The process node holds a list of actions, which can be referenced from
+      the UI when submitting forms or using GET requests to transmitt data.
+      These actions group IWrappers into two groups: those that should have
+      their handleSubmittedData() method called, and those that should have
+      their retrieveCurrentStatus() method called when a submit has been handled
+      sucessfully (and the same page is redisplayed).
+      
+      The idea beind the latter is, that sometimes you want to update
+      the submitted form data to some canonical form (e.g. adresses or similar), so you
+      don't want to see the exact same input in the form elements as you have submitted it,
+      but some changed values. In other cases, submitting data to one wrapper may change the
+      values of the form elements of another wrapper - in this case the second wrapper
+      needs to be listed under the <![CDATA[<retrieve>]]> node.
+      <programlisting language="xml"><![CDATA[
+      <action name="a_name">
+        <submit>
+          <wrapper ref="a_prefix_1"/>
+          <wrapper ref="a_prefix_2"/>
+          ...
+        </submit>
+        <retrieve>
+          <wrapper ref="a_prefix_1"/>
+          <wrapper ref="a_prefix_X"/>
+          ...
+        </retrieve>
+      </action>
+      <action name="another_name">
+      ...
+      </action>
+    </process>
     
     <output>
       ]]></programlisting>
