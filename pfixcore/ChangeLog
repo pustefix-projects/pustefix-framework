@@ -1,3 +1,8 @@
+2008-04-10  jtl  <jtl@britten.laudi.ka>
+
+	* projects/core/schema/properties200401.xsd: maybe I was able to change the schema according to my latest changes...
+	Someone should better check this.
+
 2008-04-09  jtl  <jtl@britten.laudi.ka>
 
 	* src/de/schlund/pfixxml/config/impl/PagerequestRule.java (end): makes sure to check the referenced wrappers in actions 

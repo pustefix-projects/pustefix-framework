@@ -504,26 +504,26 @@
           <xs:element name="input"  minOccurs="0">
             <xs:complexType>
               <xs:choice>
-              <xs:sequence>
-                <xs:element name="interface" minOccurs="0" maxOccurs="unbounded">
-                  <xs:complexType>
-                    <xs:attribute name="prefix" use="required"/>
-                    <xs:attribute name="class" use="required"/>
-                    <xs:attribute name="activeignore" default="false" type="xs:boolean"/>
-                    <xs:attribute name="logging" default="false" type="xs:boolean"/>
-                  </xs:complexType>
-                </xs:element>
-              </xs:sequence>
-              <xs:sequence>
-                <xs:element name="wrapper" minOccurs="0" maxOccurs="unbounded">
-                  <xs:complexType>
-                    <xs:attribute name="prefix" use="required"/>
-                    <xs:attribute name="class" use="required"/>
-                    <xs:attribute name="activeignore" default="false" type="xs:boolean"/>
-                    <xs:attribute name="logging" default="false" type="xs:boolean"/>
-                  </xs:complexType>
-                </xs:element>
-              </xs:sequence>
+                <xs:sequence>
+                  <xs:element name="interface" minOccurs="0" maxOccurs="unbounded">
+                    <xs:complexType>
+                      <xs:attribute name="prefix" use="required"/>
+                      <xs:attribute name="class" use="required"/>
+                      <xs:attribute name="activeignore" default="false" type="xs:boolean"/>
+                      <xs:attribute name="logging" default="false" type="xs:boolean"/>
+                    </xs:complexType>
+                  </xs:element>
+                </xs:sequence>
+                <xs:sequence>
+                  <xs:element name="wrapper" minOccurs="0" maxOccurs="unbounded">
+                    <xs:complexType>
+                      <xs:attribute name="prefix" use="required"/>
+                      <xs:attribute name="class" use="required"/>
+                      <xs:attribute name="activeignore" default="false" type="xs:boolean"/>
+                      <xs:attribute name="logging" default="false" type="xs:boolean"/>
+                    </xs:complexType>
+                  </xs:element>
+                </xs:sequence>
               </xs:choice>
               <xs:attribute name="policy" default="ANY">
                 <xs:simpleType>
@@ -535,6 +535,53 @@
                 </xs:simpleType>
               </xs:attribute>
               <xs:attribute name="requirestoken" default="false" type="xs:boolean"/>
+            </xs:complexType>
+          </xs:element>
+          <xs:element name="process" minOccurs="0">
+            <xs:complexType>
+              <xs:sequence> 
+                <xs:element name="action" minOccurs="0" maxOccurs="unbounded">
+                  <xs:complexType>
+                    <xs:sequence>
+                      <xs:element name="submit" minOccurs="0" maxOccurs="1">
+                        <xs:complexType>
+                          <xs:sequence>
+                            <xs:element name="wrapper" minOccurs="0" maxOccurs="unbounded">
+                              <xs:complexType>
+                                <xs:attribute name="ref" use="required"/> 
+                              </xs:complexType>
+                            </xs:element>
+                          </xs:sequence>
+                        </xs:complexType>
+                      </xs:element>
+                      <xs:element name="retrieve" minOccurs="0" maxOccurs="1">
+                        <xs:complexType>
+                          <xs:sequence>
+                            <xs:element name="wrapper" minOccurs="0" maxOccurs="unbounded">
+                              <xs:complexType>
+                                <xs:attribute name="ref" use="required"/> 
+                              </xs:complexType>
+                            </xs:element>
+                          </xs:sequence>
+                        </xs:complexType>
+                      </xs:element>
+                    </xs:sequence>
+                    <xs:attribute name="name" use="required"/>
+                    <xs:attribute name="pageflow"/>
+                    <xs:attribute name="forcestop">
+                      <xs:simpleType>
+                        <xs:restriction base="xs:token">
+                          <xs:enumeration value="true"/>
+                          <xs:enumeration value="false"/>
+                          <xs:enumeration value="step"/>
+                        </xs:restriction>
+                      </xs:simpleType>
+                    </xs:attribute>
+                    <xs:attribute name="jumptopage"/>
+                    <xs:attribute name="jumptopageflow"/>
+                  </xs:complexType>
+                </xs:element>
+              </xs:sequence>
             </xs:complexType>
           </xs:element>
           <xs:element name="auth" minOccurs="0">
