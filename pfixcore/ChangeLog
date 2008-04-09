@@ -1,3 +1,58 @@
+2008-04-09  jtl  <jtl@britten.laudi.ka>
+
+	* src/de/schlund/pfixxml/config/impl/PagerequestRule.java (end): makes sure to check the referenced wrappers in actions 
+	against the defined wrappers
+	
+	* src/de/schlund/pfixxml/config/impl/ProcessActionWrapperRule.java: 
+	* src/de/schlund/pfixxml/config/impl/ProcessActionRule.java: 
+	* src/de/schlund/pfixxml/config/impl/ProcessActionConfigImpl.java: 
+	* src/de/schlund/pfixxml/config/ProcessActionConfig.java: new classes. Holds configuration data for a process action
+	and the needed rules for the digester.
+	
+	* src/de/schlund/pfixxml/config/impl/ContextXMLServletConfigImpl.java: attach the action rules to the digester
+	
+	* src/de/schlund/pfixxml/config/impl/PageRequestConfigImpl.java (getProcessActions): 
+	(addProcessAction): 
+	* src/de/schlund/pfixxml/config/PageRequestConfig.java (getProcessActions): add a way to store and access process
+	actions to the pagerequest configuration
+	
+	* src/de/schlund/pfixcore/workflow/context/RequestContextImpl.java: add another core parameter __action. 
+	(handleRequestWorker): mostly commented out stuff that will soon (after refactoring) allow to also set
+	pageflow, forcestop, jumptopage(-flow) via an action definition
+		
+	* src/de/schlund/pfixcore/workflow/app/IWrapperContainer.java (retrieveCurrentStatus): 
+	* src/de/schlund/pfixcore/workflow/app/IWrapperContainerImpl.java (retrieveCurrentStatus): add a boolean parameter
+	"full" to the signature of the method. This is used to decide between the case of a direct trigger of the page
+	where I want to call retrieveCurrentStatus on all wrappers and the case of handling submitted data, where I only
+	want to call retrieveCurrentStatus on the defined set of wrappers; setting "full" to true means always use all wrappers
+	in this method.  
+	* src/de/schlund/pfixcore/workflow/app/DefaultIWrapperState.java (getDocument): use it here accordingly
+
+	* projects/sample1/txt/pages/main_encoding.xml: 
+	* projects/sample1/txt/pages/main_order.xml: 
+	* projects/sample1/txt/pages/main_home.xml:	 
+	* projects/sample1/txt/pages/main_upload.xml: SELWRP->SUBWRP, RETONLY->RETWRP
+	
+	* projects/sample1/txt/pages/main_order.xml: 
+	* projects/sample1/conf/config.conf.xml: add an action example
+	
+	* projects/core/xsl/xmlfontify.xsl: small fixes
+	* projects/core/xsl/navigation.xsl: cosmetics; added @action to pfx:button, pfx:url
+	
+	* projects/core/xsl/utils.xsl: 
+	* projects/core/xsl/forminput.xsl: added $__root in front of all /formresult/... xpath expression to make
+	sure we search in the right document.
+	added @action to <pfx:xinp @type="image|submit">
+	
+	* src/de/schlund/pfixxml/config/impl/AuthConstraintRule.java: cosmetics
+
+	* src/de/schlund/pfixxml/config/impl/PropertyUtil.java (unescapePropertyValue): spelling fix in method name
+	* src/de/schlund/pfixxml/config/impl/ContextResourcePropertyRule.java (end): 
+	* src/de/schlund/pfixxml/config/impl/DirectPagerequestPropertyRule.java (end): 
+	* src/de/schlund/pfixxml/config/impl/PagerequestPropertyRule.java (end): 
+	* src/de/schlund/pfixxml/config/impl/PropertyRule.java (end): 
+	* src/de/schlund/pfixxml/config/impl/ServletPropertyRule.java (end): use it 
+
 2008-04-08  Martin Leidig  <mleidig@schlund.de>
 
 	Added role-based authorization support for directoutputserver requests. Now 

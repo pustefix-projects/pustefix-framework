@@ -51,7 +51,7 @@ public class ServletPropertyRule extends CheckedRule {
         if (config.getProperties().getProperty(propName) != null) {
             LOG.warn("Overwriting already set property \"" + propName + "\" with value \"" + propValue.trim() + "\"!");
         }
-        config.getProperties().setProperty(propName, PropertyUtil.unesacpePropertyValue(propValue.trim()));
+        config.getProperties().setProperty(propName, PropertyUtil.unescapePropertyValue(propValue.trim()));
     }
 
     public void body(String namespace, String name, String text) throws Exception {

@@ -126,7 +126,7 @@
             </td>
             <td align="center" style="font-family: sans;">
               <xsl:choose>
-                <xsl:when test="$tree/formresult/iwrapperstatus/interface[@prefix=$prefix]/@active = 'true'">&#9745;</xsl:when>
+                <xsl:when test="$tree/formresult/wrapperstatus/wrapper[@prefix=$prefix]/@active = 'true'">&#9745;</xsl:when>
                 <xsl:otherwise>&#9744;</xsl:otherwise>
               </xsl:choose>
             </td>
@@ -213,12 +213,11 @@
     <xsl:param name="bold">true</xsl:param>
     <xsl:variable name="dim">
       <xsl:choose>
-        <xsl:when test="ancestor-or-self::iwrapperstatus[1] and generate-id(ancestor-or-self::iwrapperstatus[1]) = generate-id(/formresult/iwrapperstatus)">true</xsl:when>
+        <xsl:when test="ancestor-or-self::wrapperstatus[1] and generate-id(ancestor-or-self::wrapperstatus[1]) = generate-id(/formresult/wrapperstatus)">true</xsl:when>
         <xsl:when test="ancestor-or-self::pageflow[1] and generate-id(ancestor-or-self::pageflow[1]) = generate-id(/formresult/pageflow)">true</xsl:when>
         <xsl:when test="ancestor-or-self::formhiddenvals[1] and generate-id(ancestor-or-self::formhiddenvals[1]) = generate-id(/formresult/formhiddenvals)">true</xsl:when>
         <xsl:when test="generate-id(current()) = generate-id(/formresult/formerrors)">true</xsl:when>
         <xsl:when test="ancestor-or-self::formvalues[1] and generate-id(ancestor-or-self::formvalues[1]) = generate-id(/formresult/formvalues)">true</xsl:when>
-        <xsl:when test="ancestor-or-self::iwrappergroups[1] and generate-id(ancestor-or-self::iwrappergroups[1]) = generate-id(/formresult/iwrappergroups)">true</xsl:when>
         <xsl:when test="ancestor-or-self::iwrapperinfo[1] and generate-id(ancestor-or-self::iwrapperinfo[1]) = generate-id(/formresult/iwrapperinfo)">true</xsl:when>
         <xsl:otherwise>false</xsl:otherwise>
       </xsl:choose>

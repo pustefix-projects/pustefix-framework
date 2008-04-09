@@ -30,7 +30,7 @@ class PropertyUtil {
      * @param value string to parse
      * @return value with unescaped special sequences
      */
-    static String unesacpePropertyValue(String value) {
+    static String unescapePropertyValue(String value) {
         StringBuffer newValue = new StringBuffer(value.length());
         char aChar;
         int off = 0;

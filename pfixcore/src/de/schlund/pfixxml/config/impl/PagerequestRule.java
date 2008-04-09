@@ -57,7 +57,12 @@ public class PagerequestRule extends CheckedRule {
     }
     
     public void end(String namespace, String name) throws Exception {
-        this.getDigester().pop();
+        PageRequestConfigImpl pageConfig = (PageRequestConfigImpl) this.getDigester().pop();
+        Map<String, IWrapperConfigImpl> iwrappers = pageConfig.getIWrappers();
+        Map<String, ProcessActionConfigImpl> actions = pageConfig.getProcessActions();
+        for (ProcessActionConfigImpl action : actions.values()) {
+            action.checkPrefixes(iwrappers);
+        }
     }
 
     protected Map<String, Boolean> wantsAttributes() {

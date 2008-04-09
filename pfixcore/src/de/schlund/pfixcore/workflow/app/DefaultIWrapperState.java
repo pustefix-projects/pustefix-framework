@@ -109,7 +109,7 @@ public class DefaultIWrapperState extends StateImpl {
                         if (errorPage.equals("")) {
                             pe = new PerfEvent(PerfEventType.PAGE_RETRIEVECURRENTSTATUS, context.getCurrentPageRequest().toString());
                             pe.start();
-                            wrp_container.retrieveCurrentStatus();
+                            wrp_container.retrieveCurrentStatus(false);
                             pe.save();
                             rfinal.onRetrieveStatus(wrp_container);
                             context.prohibitContinue();
@@ -127,7 +127,7 @@ public class DefaultIWrapperState extends StateImpl {
                     context.addPageMessage(StatusCodeLib.PFIXCORE_GENERATOR_FORM_TOKEN_MISSING);
                     pe = new PerfEvent(PerfEventType.PAGE_RETRIEVECURRENTSTATUS, context.getCurrentPageRequest().toString());
                     pe.start();
-                    wrp_container.retrieveCurrentStatus();
+                    wrp_container.retrieveCurrentStatus(false);
                     pe.save();
                     rfinal.onRetrieveStatus(wrp_container);
                     context.prohibitContinue();
@@ -150,7 +150,7 @@ public class DefaultIWrapperState extends StateImpl {
                     CAT.debug("    => retrieving current status.");
                     pe = new PerfEvent(PerfEventType.PAGE_RETRIEVECURRENTSTATUS, context.getCurrentPageRequest().toString());
                     pe.start();
-                    wrp_container.retrieveCurrentStatus();
+                    wrp_container.retrieveCurrentStatus(false);
                     pe.save();
 
                     rfinal.onSuccess(wrp_container);
@@ -161,7 +161,7 @@ public class DefaultIWrapperState extends StateImpl {
 
             pe = new PerfEvent(PerfEventType.PAGE_RETRIEVECURRENTSTATUS, context.getCurrentPageRequest().toString());
             pe.start();
-            wrp_container.retrieveCurrentStatus();
+            wrp_container.retrieveCurrentStatus(true);
             pe.save();
             if (CAT.isDebugEnabled()) {
                 if (isDirectTrigger(context, preq)) {

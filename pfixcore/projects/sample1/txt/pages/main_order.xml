@@ -88,9 +88,8 @@
           <ixsl:when test="/formresult/counter/@showcounter = 'false'">
             <tr>
               <td colspan="2">
-                <pfx:xinp forcestop="true" type="submit" value="Show Counter">
+                <pfx:xinp forcestop="true" type="submit" value="Show Counter" action="changeCounter">
                   <pfx:argument name="counter.ShowCounter">true</pfx:argument>
-                  <pfx:command name="SELWRP">counter</pfx:command>
                 </pfx:xinp>
               </td>
             </tr>
@@ -105,17 +104,13 @@
             </tr>
             <tr>
               <td>
-                <pfx:xinp forcestop="true" type="submit" value="Add +1">
+                <pfx:xinp forcestop="true" type="submit" value="Add +1" action="changeCounter">
                   <pfx:argument name="counter.Add">1</pfx:argument>
-                  <pfx:command name="SELWRP">counter</pfx:command>
-                  <pfx:command name="RETONLY">cinput</pfx:command>
                 </pfx:xinp>
               </td>
               <td>
-                <pfx:xinp forcestop="true" type="submit" value="Add -1">
+                <pfx:xinp forcestop="true" type="submit" value="Add -1" action="changeCounter">
                   <pfx:argument name="counter.Add">-1</pfx:argument>
-                  <pfx:command name="SELWRP">counter</pfx:command>
-                  <pfx:command name="RETONLY">cinput</pfx:command>
                 </pfx:xinp>
               </td>
             </tr>
@@ -125,9 +120,7 @@
               </pfx:checkfield>
               <td>
                 <pfx:xinp name="cinput.Set" size="3" type="text"/>
-                <pfx:xinp forcestop="true" type="submit" value="Set">
-                  <pfx:command name="SELWRP">cinput</pfx:command>
-                </pfx:xinp>
+                <pfx:xinp forcestop="true" type="submit" value="Set" action="setCounter"/>
               </td>
             </tr>
             <errormsg name="cinput.Set"/>
@@ -146,9 +139,8 @@
         <pfx:checkactive prefix="pic">
           <tr>
             <td align="center">
-              <pfx:xinp forcestop="true" type="submit" value="Toggle Pic">
+              <pfx:xinp forcestop="true" type="submit" value="Toggle Pic" action="showImage">
                 <pfx:argument name="pic.Toggle">true</pfx:argument>
-                <pfx:command name="SELWRP">pic</pfx:command>
               </pfx:xinp>
             </td>
           </tr>

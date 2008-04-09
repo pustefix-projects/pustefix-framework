@@ -44,7 +44,7 @@
                 <pfx:xinp default="abcdäöüß" id="text" name="text.Text" onchange="setDynHref(this.value)" type="text"/>
                 <ixsl:text> </ixsl:text>
                 <pfx:xinp type="submit" value="Send via GET-method">
-                  <pfx:command name="SELWRP">text</pfx:command>
+                  <pfx:command name="SUBWRP">text</pfx:command>
                 </pfx:xinp>
               </pfx:forminput>
             </td>
@@ -55,7 +55,7 @@
                 <pfx:xinp default="abcdäöüß" name="text.Text" onchange="setDynHref(this.value)" type="text"/>
                 <ixsl:text> </ixsl:text>
                 <pfx:xinp type="submit" value="Send via POST-method">
-                  <pfx:command name="SELWRP">text</pfx:command>
+                  <pfx:command name="SUBWRP">text</pfx:command>
                 </pfx:xinp>
               </pfx:forminput>
             </td>
@@ -80,7 +80,7 @@
           </pfx:xinp>
           <ixsl:text> </ixsl:text>
           <pfx:xinp type="submit" value="Send via GET-method">
-            <pfx:command name="SELWRP">text</pfx:command>
+            <pfx:command name="SUBWRP">text</pfx:command>
           </pfx:xinp>
         </pfx:forminput>
       
@@ -113,7 +113,7 @@
             </td></tr>
             <tr><td>
           <pfx:xinp type="submit" value="Submit">
-            <pfx:command name="SELWRP">upload</pfx:command>
+            <pfx:command name="SUBWRP">upload</pfx:command>
           </pfx:xinp>
             </td></tr>
           </table>

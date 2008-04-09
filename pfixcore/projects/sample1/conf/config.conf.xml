@@ -155,6 +155,18 @@
       <wrapper prefix="trouser" class="de.schlund.pfixcore.example.iwrapper.Trouser"/>
       <wrapper prefix="pic" class="de.schlund.pfixcore.example.iwrapper.TogglePic"/>
     </input>
+    <process>
+      <action name="changeCounter">
+        <submit><wrapper ref="counter"/></submit>
+        <retrieve><wrapper ref="cinput"/></retrieve>
+      </action>
+      <action name="setCounter">
+        <submit><wrapper ref="cinput"/></submit>
+      </action>
+      <action name="showImage">
+        <submit><wrapper ref="pic"/></submit>
+      </action>
+    </process>
     <output>
       <resource node="counter" class="de.schlund.pfixcore.example.ContextCounter"/>
       <resource node="togglepic" class="de.schlund.pfixcore.example.ContextTogglePic"/>

@@ -33,7 +33,9 @@
             <tr>
               <td align="right" nowrap="nowrap">
                 <pfx:xinp type="submit" value="Go!"/>
-                <pfx:xinp forcestop="true" type="submit" value="Don't go"/>
+                <pfx:xinp forcestop="true" type="submit" value="Don't go">
+                  <pfx:argument name="__action">setAge</pfx:argument>
+                </pfx:xinp>
                 <pfx:xinp forcestop="step" type="submit" value="Go Step by Step!"/>
               </td>
             </tr>

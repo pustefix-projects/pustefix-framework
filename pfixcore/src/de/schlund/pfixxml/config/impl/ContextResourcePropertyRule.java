@@ -50,7 +50,7 @@ public class ContextResourcePropertyRule extends CheckedRule {
         if (crConfig.getProperties().getProperty(propName) != null) {
             LOG.warn("Overwriting already set property \"" + propName + "\" with value \"" + propValue.trim() + "\"!");
         }
-        crConfig.getProperties().setProperty(propName, PropertyUtil.unesacpePropertyValue(propValue.trim()));
+        crConfig.getProperties().setProperty(propName, PropertyUtil.unescapePropertyValue(propValue.trim()));
     }
 
     public void body(String namespace, String name, String text) throws Exception {

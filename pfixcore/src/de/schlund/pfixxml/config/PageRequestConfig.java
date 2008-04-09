@@ -62,16 +62,6 @@ public interface PageRequestConfig {
      */
     String getPageName();
 
-//    /**
-//     * Whether to store the XML tree returned by the state. If <code>true</code>
-//     * the XML tree is stored. In most cases, there is no need to explicitly
-//     * store the XML tree.
-//     * 
-//     * @return flag indicating wheter to store the XML tree
-//     * @see de.schlund.pfixxml.SPDocument
-//     */
-//    boolean isStoreXML();
-
     /**
      * If <code>true</code> a SSL connection is forced when this page
      * is requested.
@@ -160,4 +150,6 @@ public interface PageRequestConfig {
     AuthConstraint getAuthConstraint();
     
     public String getDefaultFlow();
+    
+    public Map<String, ? extends ProcessActionConfig> getProcessActions();
 }

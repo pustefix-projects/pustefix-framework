@@ -19,10 +19,11 @@
 
 package de.schlund.pfixcore.workflow.app;
 
-import java.util.ArrayList;
+//import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
@@ -30,17 +31,21 @@ import java.util.TreeSet;
 import org.apache.log4j.Logger;
 import org.w3c.dom.Element;
 
+import de.schlund.pfixcore.exception.PustefixApplicationException;
 import de.schlund.pfixcore.generator.IHandler;
 import de.schlund.pfixcore.generator.IWrapper;
 import de.schlund.pfixcore.generator.IWrapperParam;
 import de.schlund.pfixcore.generator.RequestData;
 import de.schlund.pfixcore.generator.StatusCodeInfo;
 import de.schlund.pfixcore.workflow.Context;
+import de.schlund.pfixcore.workflow.context.RequestContextImpl;
 import de.schlund.pfixxml.PfixServletRequest;
+import de.schlund.pfixxml.RequestParam;
 import de.schlund.pfixxml.ResultDocument;
 import de.schlund.pfixxml.XMLException;
 import de.schlund.pfixxml.config.IWrapperConfig;
 import de.schlund.pfixxml.config.PageRequestConfig;
+import de.schlund.pfixxml.config.ProcessActionConfig;
 import de.schlund.pfixxml.perflogging.PerfEvent;
 import de.schlund.pfixxml.perflogging.PerfEventType;
 import de.schlund.pfixxml.resources.FileResource;
@@ -68,9 +73,13 @@ public class IWrapperContainerImpl implements IWrapperContainer {
 
     protected Logger LOG = Logger.getLogger(this.getClass());
     
+    private static final String SUBMIT_WRAPPER        = "SUBWRP";  
+    private static final String RETRIEVE_WRAPPER      = "RETWRP";  
+
     private static final String SELECT_WRAPPER        = "SELWRP";  
-    private static final String RETRIEVE_ONLY_WRAPPER = "RETONLY";  
-    private static final String SUBMIT_ONLY_WRAPPER   = "SUBONLY";      
+
+//    private static final String RETRIEVE_ONLY_WRAPPER = "RETONLY";  
+//    private static final String SUBMIT_ONLY_WRAPPER   = "SUBONLY";      
     private static final String WRAPPER_LOGDIR        = "interfacelogging";
 
     /**
@@ -203,7 +212,7 @@ public class IWrapperContainerImpl implements IWrapperContainer {
      * the IHandler that these IWrappers are bound to. The IHandler are called in turn to handle the submitted data.
      * This works by calling ihandler.handleSubmittedData(Context context, IWrapper wrapper).
      * See {@link IHandler}.
-     *
+     * 
      * @exception Exception if an error occurs
      * @see de.schlund.pfixcore.workflow.app.IWrapperContainer#handleSubmittedData() 
      */
@@ -228,15 +237,22 @@ public class IWrapperContainerImpl implements IWrapperContainer {
     }
 
     /**
-     * <code>retrieveCurrentStatus</code> will call all or only a subset of the defined IWrappers
-     * (depending on restricting the IWrappers and the RETRONLY and SUBMTONLY commands  to get the 
-     * "active" IHandlers, which are called in turn via ihandler.retrieveCurrentStatus(Context context, IWrapper wrapper).
+     * <code>retrieveCurrentStatus</code> will be called after submit only on wrappers/handlers that have been given
+     * via the RETWRP command (or by calling an action that has them defined that way) if the argument "all"
+     * is false. If it is true, retrieveCurrentStatus() will be called on ALL known wrappers/handlers.
      *
+     * @param boolean if all known handlers should be used to call retrieveCurrentStatus() on. 
      * @exception Exception if an error occurs
      * @see de.schlund.pfixcore.workflow.app.IWrapperContainer#retrieveCurrentStatus() 
      */
-    public void retrieveCurrentStatus() throws Exception {
-        for (Iterator<IWrapper> iter = allretrieve.iterator(); iter.hasNext();) {
+    public void retrieveCurrentStatus(boolean all) throws Exception {
+        Iterator<IWrapper> iter;
+        if (all) {
+            iter = allwrappers.iterator();
+        } else {
+            iter = allretrieve.iterator();
+        }
+        for (; iter.hasNext(); ) {
             IWrapper wrapper = iter.next();
             IHandler handler = wrapper.gimmeIHandler();
             if (handler.isActive(context)) {
@@ -254,7 +270,8 @@ public class IWrapperContainerImpl implements IWrapperContainer {
         Collection<? extends IWrapperConfig> confwrappers = config.getIWrappers().values();
 
         if (confwrappers.size() == 0) {
-            LOG.debug("*** Found no wrappers for this page (page=" + context.getCurrentPageRequest().getName() + ")");
+            LOG.debug("*** Found no wrappers for page '" + context.getCurrentPageRequest().getName() + "'");
+            return;
         } else {
             // Initialize all wrappers
             int order = 0;
@@ -262,7 +279,7 @@ public class IWrapperContainerImpl implements IWrapperContainer {
                 String prefix = iConfig.getPrefix();
                 if (wrappers.get(prefix) != null) {
                     throw new XMLException("FATAL: you have already defined a wrapper with prefix " +
-                                           prefix + " on page " + context.getCurrentPageRequest().getName());
+                            prefix + " on page '" + context.getCurrentPageRequest().getName() + "'");
                 }
                 
                 String iface  = iConfig.getWrapperClass().getName();
@@ -299,73 +316,100 @@ public class IWrapperContainerImpl implements IWrapperContainer {
                 }
             }
 
-            // TODO: This mechanism MUST be at least augmented with a "action based" selection mechanism.
-            // In the future we will only allow to select from a  predefined set of wrapper sets.
-            // The configuration will group wrappers to actions, and the request is only allowed to give one of 
-            // the defined action names, but it will be no longer possible to create any desired grouping from the 
-            // outside.
-            
-            List<IWrapper> selectedwrappers = new ArrayList<IWrapper>();
-            List<IWrapper> only_retrieve    = new ArrayList<IWrapper>();
-            List<IWrapper> only_submit      = new ArrayList<IWrapper>();
-
-            String[] selwrappers = reqdata.getCommands(SELECT_WRAPPER);
-            if (selwrappers != null) {
-                for (int i = 0; i < selwrappers.length; i++) {
-                    String   prefix  = selwrappers[i];
-                    LOG.debug("  >> Restricted to Wrapper: " + prefix);
-                    IWrapper selwrap = (IWrapper) wrappers.get(prefix);
-                    if (selwrap == null) {
-                        LOG.warn(" *** No wrapper found for prefix " + prefix + "! ignoring");
-                        continue;
+            ProcessActionConfig action = null;
+            RequestParam[] actions = reqdata.getParameters(RequestContextImpl.PARAM_ACTION);
+            if (actions != null && actions.length > 0) {
+                String actionname = actions[0].getValue();
+                LOG.debug("======> Found __action parameter " + actionname);
+                Map<String, ? extends ProcessActionConfig> actionmap = config.getProcessActions();
+                if (actionmap != null) {
+                    action = actionmap.get(actionname);
+                    if (action != null) {
+                        LOG.debug("        ...and found matching ProcessAction: " + action);
                     }
-                    selectedwrappers.add(selwrap);
                 }
-            }
-
-            String[] no_retrwrappers = reqdata.getCommands(SUBMIT_ONLY_WRAPPER);
-            if (no_retrwrappers != null) {
-                for (int i = 0; i < no_retrwrappers.length; i++) {
-                    String   prefix  = no_retrwrappers[i];
-                    IWrapper no_retrwrap = (IWrapper) wrappers.get(prefix);
-                    LOG.debug("  >> Don't call retrieveCurrentStatus() for Wrapper: " + prefix);
-                    if (no_retrwrap == null) {
-                        LOG.warn(" *** No wrapper found for prefix " + prefix + "! ignoring");
-                        continue;
-                    }
-                    only_submit.add(no_retrwrap);
+                if (action == null) {
+                    throw new PustefixApplicationException("Page " + config.getPageName() + " has been called with unknown action " + actionname);
                 }
             }
             
-            String[] retrwrappers = reqdata.getCommands(RETRIEVE_ONLY_WRAPPER);
+            String[] submitwrappers = null; 
+            if (action != null) {
+                LOG.debug("* will try to read submit handlers from action definition '" + action.getName() + "'");
+                List<String> list = action.getSubmitPrefixes();
+                if (list != null && !list.isEmpty()) { 
+                    submitwrappers = list.toArray(new String[] {});
+                }
+            } else {
+                LOG.debug("* will try to read SUBMIT handlers from request commands...");
+                submitwrappers = reqdata.getCommands(SUBMIT_WRAPPER);
+            }
+            
+            if (submitwrappers != null) {
+                for (int i = 0; i < submitwrappers.length; i++) {
+                    String   prefix  = submitwrappers[i];
+                    IWrapper subwrap = (IWrapper) wrappers.get(prefix);
+                    LOG.debug("  >> Call handleSubmittedData() for Wrapper: " + prefix);
+                    if (subwrap == null) {
+                        LOG.warn(" *** No wrapper found for prefix " + prefix + "! ignoring");
+                        continue;
+                    }
+                    allsubmit.add(subwrap);
+                }
+            }
+            
+            // CAUTION! this is only for backwards compatibility with the SELWRP command,
+            // this is handled exactly the same as the SUBWRP above!
+            if (action != null) {
+                String[] selwrappers = reqdata.getCommands(SELECT_WRAPPER);
+                if (selwrappers != null) {
+                    for (int i = 0; i < selwrappers.length; i++) {
+                        String   prefix  = selwrappers[i];
+                        LOG.debug("  >> Call handleSubmittedData() for Wrapper: " + prefix);                                        
+                        IWrapper selwrap = (IWrapper) wrappers.get(prefix);
+                        if (selwrap == null) {
+                            LOG.warn(" *** No wrapper found for prefix " + prefix + "! ignoring");
+                            continue;
+                        }
+                        allsubmit.add(selwrap);
+                    }
+                }
+            }
+
+            // CAUTION! We no longer call retreiveCurrentStatus automatically for submitted wrappers!
+            String[] retrwrappers = null; 
+            if (action != null) {
+                LOG.debug("* will try to read RETRIEVE handlers from action definition '" + action.getName() + "'");
+                List<String> list = action.getRetrievePrefixes();
+                if (list != null && !list.isEmpty()) { 
+                    retrwrappers = list.toArray(new String[] {});
+                }
+            } else {
+                LOG.debug("* will try to read RETRIEVE handlers from request commands...");
+                retrwrappers = reqdata.getCommands(RETRIEVE_WRAPPER);
+            }
+            
             if (retrwrappers != null) {
                 for (int i = 0; i < retrwrappers.length; i++) {
                     String   prefix  = retrwrappers[i];
                     IWrapper retrwrap = (IWrapper) wrappers.get(prefix);
-                    LOG.debug("  >> Always call retrieveCurrentStatus() for Wrapper: " + prefix);
+                    LOG.debug("  >> Call retrieveCurrentStatus() for Wrapper: " + prefix);
                     if (retrwrap == null) {
                         LOG.warn(" *** No wrapper found for prefix " + prefix + "! ignoring");
                         continue;
                     }
-                    only_retrieve.add(retrwrap);
+                    allretrieve.add(retrwrap);
                 }
             }
-            
-            allsubmit.addAll(selectedwrappers);
-            allsubmit.addAll(only_submit);
-            // If we don't have any "submit&retrieve" or "submit only" wrappers, use all wrappers
+
             if (allsubmit.isEmpty()) {
                 allsubmit.addAll(allwrappers);
+                LOG.debug("  >> No subset of wrappers given: will call handleSubmittedData() for ALL Wrappers");
             }
-            
-            allretrieve.addAll(selectedwrappers);
-            allretrieve.addAll(only_retrieve);
             if (allretrieve.isEmpty()) {
-                allretrieve.addAll(allwrappers);
+                LOG.debug("  >> No set of wrappers given where to call retrieveCurrentStatus on... ");
             }
-
         }
     }
-
     
 }// IWrapperSimpleContainer

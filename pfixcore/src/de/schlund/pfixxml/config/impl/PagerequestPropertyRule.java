@@ -51,7 +51,7 @@ public class PagerequestPropertyRule extends CheckedRule {
         if (pageConfig.getProperties().getProperty(propName) != null) {
             LOG.warn("Overwriting already set property \"" + propName + "\" with value \"" + propValue.trim() + "\"!");
         }
-        pageConfig.getProperties().setProperty(propName, PropertyUtil.unesacpePropertyValue(propValue.trim()));
+        pageConfig.getProperties().setProperty(propName, PropertyUtil.unescapePropertyValue(propValue.trim()));
     }
 
     public void body(String namespace, String name, String text) throws Exception {

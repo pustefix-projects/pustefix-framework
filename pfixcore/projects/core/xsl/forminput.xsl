@@ -15,7 +15,7 @@
         <b>[Error: You can't give both attributes "prefix" and "page" to &lt;pfx:checkactive&gt;]</b>
       </xsl:when>
       <xsl:when test="not($prefix = '')">
-        <ixsl:if test="/formresult/wrapperstatus/wrapper[@prefix = '{$prefix}' and @active = 'true']">
+        <ixsl:if test="$__root/formresult/wrapperstatus/wrapper[@prefix = '{$prefix}' and @active = 'true']">
           <xsl:apply-templates/>
         </ixsl:if>
       </xsl:when>
@@ -38,7 +38,7 @@
         <b>[Error: You can't give both attributes "prefix" and "page" to &lt;pfx:checknotactive&gt;]</b>
       </xsl:when>
       <xsl:when test="not($prefix = '')">
-        <ixsl:if test="/formresult/wrapperstatus/wrapper[@prefix = '{$prefix}' and @active = 'false']">
+        <ixsl:if test="$__root/formresult/wrapperstatus/wrapper[@prefix = '{$prefix}' and @active = 'false']">
           <xsl:apply-templates/>
         </ixsl:if>
       </xsl:when>
@@ -58,8 +58,8 @@
       <ixsl:variable name="pfx_allmessages_check">
         <xsl:attribute name="select">
           <xsl:choose>
-            <xsl:when test="@level">/formresult/pagemessages/message[@level = '<xsl:value-of select="string(@level)"/>']</xsl:when>
-            <xsl:otherwise>/formresult/pagemessages/message</xsl:otherwise>
+            <xsl:when test="@level">$__root/formresult/pagemessages/message[@level = '<xsl:value-of select="string(@level)"/>']</xsl:when>
+            <xsl:otherwise>$__root/formresult/pagemessages/message</xsl:otherwise>
           </xsl:choose>
         </xsl:attribute>
       </ixsl:variable>
@@ -74,8 +74,8 @@
       <ixsl:variable name="pfx_allmessages">
         <xsl:attribute name="select">
           <xsl:choose>
-            <xsl:when test="@level">/formresult/pagemessages/message[@level = '<xsl:value-of select="string(@level)"/>']</xsl:when>
-            <xsl:otherwise>/formresult/pagemessages/message</xsl:otherwise>
+            <xsl:when test="@level">$__root/formresult/pagemessages/message[@level = '<xsl:value-of select="string(@level)"/>']</xsl:when>
+            <xsl:otherwise>$__root/formresult/pagemessages/message</xsl:otherwise>
           </xsl:choose>
         </xsl:attribute>
       </ixsl:variable>
@@ -93,8 +93,8 @@
       <ixsl:variable name="pfx_allerrors_check">
         <xsl:attribute name="select">
           <xsl:choose>
-            <xsl:when test="@level">/formresult/formerrors/error[@level = '<xsl:value-of select="string(@level)"/>']</xsl:when>
-            <xsl:otherwise>/formresult/formerrors/error</xsl:otherwise>
+            <xsl:when test="@level">$__root/formresult/formerrors/error[@level = '<xsl:value-of select="string(@level)"/>']</xsl:when>
+            <xsl:otherwise>$__root/formresult/formerrors/error</xsl:otherwise>
           </xsl:choose>
         </xsl:attribute>
       </ixsl:variable>
@@ -112,7 +112,7 @@
           <xsl:when test="./pfx:name"><xsl:apply-templates select="./pfx:name/node()"/></xsl:when>
         </xsl:choose>
       </ixsl:variable>
-      <ixsl:variable name="pfx_scode" select="/formresult/formerrors/error[@name=string($pfx_name)]"/>
+      <ixsl:variable name="pfx_scode" select="$__root/formresult/formerrors/error[@name=string($pfx_name)]"/>
       <ixsl:variable name="pfx_level" select="$pfx_scode/@level"/>
       <ixsl:variable name="pfx_class">
         <ixsl:choose>
@@ -202,8 +202,8 @@
             <xsl:choose>
               <xsl:when test="@type='auth'">
                 <ixsl:choose>
-                  <ixsl:when test="/formresult/@authoriginalpage">
-                    <xsl:value-of select="$thehandler"/>/<ixsl:value-of select="/formresult/@authoriginalpage"/>;<ixsl:value-of select="$__sessid"/>
+                  <ixsl:when test="$__root/formresult/@authoriginalpage">
+                    <xsl:value-of select="$thehandler"/>/<ixsl:value-of select="$__root/formresult/@authoriginalpage"/>;<ixsl:value-of select="$__sessid"/>
                   </ixsl:when>
                   <ixsl:otherwise>
                     <xsl:value-of select="concat($thehandler, '/', $page)"/>;<ixsl:value-of select="$__sessid"/><xsl:if test="not($theframe = '')"></xsl:if>?__frame=<xsl:value-of select="$theframe"/>
@@ -212,8 +212,8 @@
               </xsl:when>
               <xsl:when test="@type='roleauth'">
                 <ixsl:choose>
-                  <ixsl:when test="/formresult/authentication/@targetpage">
-                    <xsl:value-of select="$thehandler"/>/<ixsl:value-of select="/formresult/authentication/@targetpage"/>;<ixsl:value-of select="$__sessid"/>
+                  <ixsl:when test="$__root/formresult/authentication/@targetpage">
+                    <xsl:value-of select="$thehandler"/>/<ixsl:value-of select="$__root/formresult/authentication/@targetpage"/>;<ixsl:value-of select="$__sessid"/>
                   </ixsl:when>
                   <ixsl:otherwise>
                     <xsl:value-of select="concat($thehandler, '/', $page)"/>;<ixsl:value-of select="$__sessid"/><xsl:if test="not($theframe = '')"></xsl:if>?__frame=<xsl:value-of select="$theframe"/>
@@ -239,7 +239,7 @@
       <xsl:if test="@send-to-pageflow">
         <input type="hidden" name="__pageflow" value="{@send-to-pageflow}"/>
       </xsl:if>
-      <ixsl:for-each select="/formresult/formhiddenvals/hidden">
+      <ixsl:for-each select="$__root/formresult/formhiddenvals/hidden">
         <input type="hidden">
           <ixsl:attribute name="name"><ixsl:value-of select="./@name"/></ixsl:attribute>
           <ixsl:attribute name="value"><ixsl:value-of select="./text()"/></ixsl:attribute>
@@ -264,6 +264,11 @@
 
   <xsl:template name="generate_coded_input">
     <xsl:variable name="current" select="generate-id(.)"/>
+    <xsl:if test="@action">
+      <input type="hidden">
+        <ixsl:attribute name="name">__SYNT:<ixsl:value-of select="$genname_{$current}"/>:__action</ixsl:attribute>
+      <ixsl:attribute name="value"><xsl:value-of select="@action"/></ixsl:attribute></input>
+    </xsl:if>
     <xsl:if test="@jumptopage">
       <input type="hidden">
         <ixsl:attribute name="name">__SYNT:<ixsl:value-of select="$genname_{$current}"/>:__jumptopage</ixsl:attribute>
@@ -392,8 +397,8 @@
       </xsl:variable>
       <ixsl:attribute name="value">
         <ixsl:choose>
-          <ixsl:when test="not(/formresult/formvalues/param[@name=string($pfx_name)][position() = {$pos}])"><ixsl:value-of select="$pfx_default"/></ixsl:when>
-          <ixsl:otherwise><ixsl:value-of select="/formresult/formvalues/param[@name=string($pfx_name)][position() = {$pos}]"/></ixsl:otherwise>
+          <ixsl:when test="not($__root/formresult/formvalues/param[@name=string($pfx_name)][position() = {$pos}])"><ixsl:value-of select="$pfx_default"/></ixsl:when>
+          <ixsl:otherwise><ixsl:value-of select="$__root/formresult/formvalues/param[@name=string($pfx_name)][position() = {$pos}]"/></ixsl:otherwise>
         </ixsl:choose>
       </ixsl:attribute>
       <xsl:apply-templates/>
@@ -417,7 +422,7 @@
       <xsl:copy-of select="@*[name()!='type' and name()!='name']"/>
       <xsl:if test="@multiple"><xsl:attribute name="multiple">multiple</xsl:attribute></xsl:if>
       <ixsl:attribute name="name"><ixsl:value-of select="string($pfx_name)"/></ixsl:attribute>
-      <ixsl:variable name="pfx_scode" select="/formresult/formerrors/error[@name=string($pfx_name)]"/>
+      <ixsl:variable name="pfx_scode" select="$__root/formresult/formerrors/error[@name=string($pfx_name)]"/>
       <ixsl:variable name="pfx_level" select="$pfx_scode/@level"/>
       <ixsl:variable name="pfx_class">
         <ixsl:choose>
@@ -446,8 +451,8 @@
         <xsl:when test="./pfx:default"><xsl:apply-templates select="./pfx:default/node()"/></xsl:when>
       </xsl:choose></ixsl:variable>
       <ixsl:attribute name="value"><ixsl:value-of select="string($pfx_value)"/></ixsl:attribute>
-      <ixsl:if test="/formresult/formvalues/param[@name=string($pfx_name)]/text()=string($pfx_value) or
-                     ($pfx_default = 'true' and not(/formresult/formvalues/param[@name=string($pfx_name)]))">
+      <ixsl:if test="$__root/formresult/formvalues/param[@name=string($pfx_name)]/text()=string($pfx_value) or
+                     ($pfx_default = 'true' and not($__root/formresult/formvalues/param[@name=string($pfx_name)]))">
         <ixsl:attribute name="selected">selected</ixsl:attribute>
       </ixsl:if>
       <xsl:apply-templates select="./node()"/>
@@ -470,7 +475,7 @@
     <input type="radio">
       <xsl:copy-of select="@*[name()!='type' and name()!='default' and name()!='value' and name()!='name']"/>
       <ixsl:attribute name="name"><ixsl:value-of select="string($pfx_name)"/></ixsl:attribute>
-      <ixsl:variable name="pfx_scode" select="/formresult/formerrors/error[@name=string($pfx_name)]"/>
+      <ixsl:variable name="pfx_scode" select="$__root/formresult/formerrors/error[@name=string($pfx_name)]"/>
       <ixsl:variable name="pfx_level" select="$pfx_scode/@level"/>
       <ixsl:variable name="pfx_class">
         <ixsl:choose>
@@ -489,8 +494,8 @@
         <xsl:when test="@default"><xsl:value-of select="@default"/></xsl:when>
         <xsl:when test="./pfx:default"><xsl:apply-templates select="./pfx:default/node()"/></xsl:when>
       </xsl:choose></ixsl:variable>
-      <ixsl:if test="/formresult/formvalues/param[@name=string($pfx_name)]/text()=string($pfx_value) or
-                     (string($pfx_default) = 'true' and not(/formresult/formvalues/param[@name=string($pfx_name)]))">
+      <ixsl:if test="$__root/formresult/formvalues/param[@name=string($pfx_name)]/text()=string($pfx_value) or
+                     (string($pfx_default) = 'true' and not($__root/formresult/formvalues/param[@name=string($pfx_name)]))">
         <ixsl:attribute name="checked">checked</ixsl:attribute>
       </ixsl:if>
       <xsl:apply-templates/>
@@ -514,7 +519,7 @@
     <input type="checkbox">
       <xsl:copy-of select="@*[name()!='type' and name()!='default' and name()!='value' and name()!='name']"/>
       <ixsl:attribute name="name"><ixsl:value-of select="string($pfx_name)"/></ixsl:attribute>
-      <ixsl:variable name="pfx_scode" select="/formresult/formerrors/error[@name=string($pfx_name)]"/>
+      <ixsl:variable name="pfx_scode" select="$__root/formresult/formerrors/error[@name=string($pfx_name)]"/>
       <ixsl:variable name="pfx_level" select="$pfx_scode/@level"/>
       <ixsl:variable name="pfx_class">
         <ixsl:choose>
@@ -533,8 +538,8 @@
         <xsl:when test="@default"><xsl:value-of select="@default"/></xsl:when>
         <xsl:when test="./pfx:default"><xsl:apply-templates select="./pfx:default/node()"/></xsl:when>
       </xsl:choose></ixsl:variable>
-      <ixsl:if test="/formresult/formvalues/param[@name=string($pfx_name)]/text()=string($pfx_value) or
-                     (string($pfx_default) = 'true' and not(/formresult/formvalues/param[@name=string($pfx_name)]))">
+      <ixsl:if test="$__root/formresult/formvalues/param[@name=string($pfx_name)]/text()=string($pfx_value) or
+                     (string($pfx_default) = 'true' and not($__root/formresult/formvalues/param[@name=string($pfx_name)]))">
         <ixsl:attribute name="checked">checked</ixsl:attribute>
       </ixsl:if>
       <xsl:apply-templates/>
@@ -558,7 +563,7 @@
     <input type="text" size="40" maxlength="200">
       <xsl:copy-of select="@*[name()!='type' and name()!='default' and name()!='position' and name()!='name']"/>
       <ixsl:attribute name="name"><ixsl:value-of select="string($pfx_name)"/></ixsl:attribute>
-      <ixsl:variable name="pfx_scode" select="/formresult/formerrors/error[@name=string($pfx_name)]"/>
+      <ixsl:variable name="pfx_scode" select="$__root/formresult/formerrors/error[@name=string($pfx_name)]"/>
       <ixsl:variable name="pfx_level" select="$pfx_scode/@level"/>
       <ixsl:variable name="pfx_class">
         <ixsl:choose>
@@ -584,8 +589,8 @@
       </xsl:variable>
       <ixsl:attribute name="value">
         <ixsl:choose>
-          <ixsl:when test="not(/formresult/formvalues/param[@name=string($pfx_name)][position() = {$pos}])"><ixsl:value-of select="$pfx_default"/></ixsl:when>
-          <ixsl:otherwise><ixsl:value-of select="/formresult/formvalues/param[@name=string($pfx_name)][position() = {$pos}]"/></ixsl:otherwise>
+          <ixsl:when test="not($__root/formresult/formvalues/param[@name=string($pfx_name)][position() = {$pos}])"><ixsl:value-of select="$pfx_default"/></ixsl:when>
+          <ixsl:otherwise><ixsl:value-of select="$__root/formresult/formvalues/param[@name=string($pfx_name)][position() = {$pos}]"/></ixsl:otherwise>
         </ixsl:choose>
       </ixsl:attribute>
       <xsl:apply-templates/>
@@ -609,7 +614,7 @@
     <input type="password" size="40" maxlength="200">
       <xsl:copy-of select="@*[name()!='type' and name()!='name']"/>
       <ixsl:attribute name="name"><ixsl:value-of select="string($pfx_name)"/></ixsl:attribute>
-      <ixsl:variable name="pfx_scode" select="/formresult/formerrors/error[@name=string($pfx_name)]"/>
+      <ixsl:variable name="pfx_scode" select="$__root/formresult/formerrors/error[@name=string($pfx_name)]"/>
       <ixsl:variable name="pfx_level" select="$pfx_scode/@level"/>
       <ixsl:variable name="pfx_class">
         <ixsl:choose>
@@ -620,7 +625,7 @@
       </ixsl:variable>
       <ixsl:attribute name="class"><ixsl:value-of select="string($pfx_class)"/></ixsl:attribute>
       <ixsl:attribute name="value">
-        <ixsl:value-of select="/formresult/formvalues/param[@name=string($pfx_name)][position() = 1]"/>
+        <ixsl:value-of select="$__root/formresult/formvalues/param[@name=string($pfx_name)][position() = 1]"/>
       </ixsl:attribute>
       <xsl:apply-templates/>
     </input>
@@ -643,7 +648,7 @@
     <textarea cols="38" rows="20">
       <xsl:copy-of select="@*[name()!='type' and name()!='position' and name()!='name']"/>
       <ixsl:attribute name="name"><ixsl:value-of select="string($pfx_name)"/></ixsl:attribute>
-      <ixsl:variable name="pfx_scode" select="/formresult/formerrors/error[@name=string($pfx_name)]"/>
+      <ixsl:variable name="pfx_scode" select="$__root/formresult/formerrors/error[@name=string($pfx_name)]"/>
       <ixsl:variable name="pfx_level" select="$pfx_scode/@level"/>
       <ixsl:variable name="pfx_class">
         <ixsl:choose>
@@ -660,8 +665,8 @@
         </xsl:choose>
       </xsl:variable>
       <ixsl:choose>
-        <ixsl:when test="not(/formresult/formvalues/param[@name=string($pfx_name)][position() = {$pos}])"><xsl:apply-templates/></ixsl:when>
-        <ixsl:otherwise><ixsl:value-of select="/formresult/formvalues/param[@name=string($pfx_name)][position() = {$pos}]"/></ixsl:otherwise>
+        <ixsl:when test="not($__root/formresult/formvalues/param[@name=string($pfx_name)][position() = {$pos}])"><xsl:apply-templates/></ixsl:when>
+        <ixsl:otherwise><ixsl:value-of select="$__root/formresult/formvalues/param[@name=string($pfx_name)][position() = {$pos}]"/></ixsl:otherwise>
       </ixsl:choose>
     </textarea>
     </ixsl:if>

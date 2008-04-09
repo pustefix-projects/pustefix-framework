@@ -20,7 +20,7 @@
               <tr>
                 <td colspan="2" align="center">
                   <pfx:xinp type="submit" value="Upload">
-                    <pfx:command name="SELWRP">upload</pfx:command>
+                    <pfx:command name="SUBWRP">upload</pfx:command>
                   </pfx:xinp>
                 </td>
               </tr>
@@ -49,7 +49,7 @@
               <tr>
                 <td colspan="2" align="center">
                   <pfx:xinp type="submit" value="Upload">
-                    <pfx:command name="SELWRP">multiupload</pfx:command>
+                    <pfx:command name="SUBWRP">multiupload</pfx:command>
                   </pfx:xinp>
                 </td>
               </tr>

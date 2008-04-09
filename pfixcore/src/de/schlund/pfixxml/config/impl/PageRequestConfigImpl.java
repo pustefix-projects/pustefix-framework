@@ -56,6 +56,15 @@ public class PageRequestConfigImpl implements SSLOption, Cloneable, PageRequestC
     private boolean requiresToken = false;
     private AuthConstraint authConstraint;
     private String defaultFlow = null;
+    private LinkedHashMap<String, ProcessActionConfigImpl> actions = new LinkedHashMap<String, ProcessActionConfigImpl>();
+    
+    public Map<String, ProcessActionConfigImpl> getProcessActions() {
+        return Collections.unmodifiableMap(this.actions);
+    }
+    
+    public void addProcessAction(String name, ProcessActionConfigImpl action) {
+        actions.put(name, action);
+    }
     
     public void setPageName(String page) {
         this.pageName = page;

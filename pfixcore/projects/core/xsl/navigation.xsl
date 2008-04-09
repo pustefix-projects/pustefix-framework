@@ -28,8 +28,6 @@
       </xsl:choose>
     </xsl:variable>
     <xsl:variable name="thebuttpage" select="$navitree//page[@name = $pagename_impl]"/>
-<!--     <xsl:variable name="page_path">/formresult/navigation<xsl:for-each select="$thebuttpage/ancestor-or-self::page">/page[@name='<xsl:value-of select="./@name"/>']</xsl:for-each></xsl:variable> -->
-<!--     <ixsl:if test="{$page_path}/@visited = '1'"> -->
     <ixsl:if test="callback:isVisited($__context__, '{$pagename_impl}') = 1">
       <xsl:apply-templates/>
     </ixsl:if>
@@ -48,8 +46,6 @@
       </xsl:choose>
     </xsl:variable>
     <xsl:variable name="thebuttpage" select="$navitree//page[@name = $pagename_impl]"/>
-<!--     <xsl:variable name="page_path">/formresult/navigation<xsl:for-each select="$thebuttpage/ancestor-or-self::page">/page[@name='<xsl:value-of select="./@name"/>']</xsl:for-each></xsl:variable> -->
-<!--     <ixsl:if test="not({$page_path}/@visited = '1')"> -->
     <ixsl:if test="callback:isVisited($__context__, '{$pagename_impl}') = 0">
       <xsl:apply-templates/>
     </ixsl:if>
@@ -126,6 +122,7 @@
       <xsl:with-param name="jumptopage" select="@jumptopage"/>
       <xsl:with-param name="jumptopageflow" select="@jumptopageflow"/>
       <xsl:with-param name="forcestop" select="@forcestop"/>
+      <xsl:with-param name="action" select="@action"/>
       <xsl:with-param name="popup" select="@popup"/>
       <xsl:with-param name="popupwidth" select="@popupwidth"/>
       <xsl:with-param name="popupheight" select="@popupheight"/>
@@ -146,6 +143,7 @@
       <xsl:with-param name="jumptopageflow" select="@jumptopageflow"/>
       <xsl:with-param name="startwithflow" select="@startwithflow"/>
       <xsl:with-param name="forcestop" select="@forcestop"/>
+      <xsl:with-param name="action" select="@action"/>
       <xsl:with-param name="nodata" select="@nodata"/>
       <xsl:with-param name="buttpage" select="@page"/>
       <xsl:with-param name="frame" select="@frame"/>
@@ -175,6 +173,7 @@
     <xsl:param name="target"/>
     <xsl:param name="mode"/>
     <xsl:param name="forcestop"/>
+    <xsl:param name="action"/>
     <xsl:param name="popup"/>
     <xsl:param name="popupwidth"/>
     <xsl:param name="popupheight"/>
@@ -228,7 +227,6 @@
         <xsl:otherwise><xsl:value-of select="$thebuttpage/@accesskey"/></xsl:otherwise>
       </xsl:choose>
     </xsl:variable>
-<!--     <xsl:variable name="path_to_page">/formresult/navigation<xsl:for-each select="$thebuttpage/ancestor-or-self::page">/page[@name='<xsl:value-of select="./@name"/>']</xsl:for-each></xsl:variable> -->
 
     <xsl:variable name="thehandler" select="$thebuttpage/@handler"/>
     <xsl:variable name="thequery">__frame=<xsl:value-of select="$frame_impl"/></xsl:variable>
@@ -243,12 +241,12 @@
       <ixsl:if test="not($pageflow = '')">&amp;__lf=<ixsl:value-of select="$pageflow"/></ixsl:if>
       <xsl:if test="$args and not($nodata)">&amp;__sendingdata=1</xsl:if>
       <xsl:for-each select="$args">&amp;<xsl:value-of select="./@name"/>=<ixsl:call-template name="__enc"><ixsl:with-param name="in"><xsl:apply-templates select="./node()"/></ixsl:with-param></ixsl:call-template></xsl:for-each>
-<!--       <xsl:for-each select="$args">&amp;<xsl:value-of select="./@name"/>=<xsl:apply-templates select="./node()"/></xsl:for-each> -->
       <xsl:if test="$jumptopage">&amp;__jumptopage=<xsl:value-of select="$jumptopage"/></xsl:if>
       <xsl:if test="$jumptopageflow">&amp;__jumptopageflow=<xsl:value-of select="$jumptopageflow"/></xsl:if>
       <xsl:if test="$pageflow">&amp;__pageflow=<xsl:value-of select="$pageflow"/></xsl:if>
       <xsl:if test="$startwithflow">&amp;__startwithflow=<xsl:value-of select="$startwithflow"/></xsl:if>
       <xsl:if test="$forcestop">&amp;__forcestop=<xsl:value-of select="$forcestop"/></xsl:if>
+      <xsl:if test="$action">&amp;__action=<xsl:value-of select="$action"/></xsl:if>
       <xsl:for-each select="$cmds">&amp;__CMD[<xsl:choose><xsl:when test="./@page"><xsl:value-of select="./@page"/></xsl:when><xsl:otherwise><xsl:value-of select="$buttpage_impl"/></xsl:otherwise></xsl:choose>]:<xsl:value-of select="./@name"/>=<xsl:apply-templates select="./node()"/></xsl:for-each>
       <xsl:for-each select="$anchors[@frame != '']">&amp;__anchor=<xsl:value-of select="@frame"/>|<xsl:apply-templates select="./node()"/></xsl:for-each>
       <xsl:if test="$anchors[not(@frame) or @frame = '']">#<xsl:apply-templates select="$anchors[not(@frame) or @frame = ''][1]/node()"/></xsl:if>
@@ -260,7 +258,6 @@
       </xsl:when>
       <xsl:otherwise>
         <ixsl:choose>
-<!--           <ixsl:when test="{$path_to_page}/@visible = '0'"> -->
           <ixsl:when test="callback:isAccessible($__context__, '{$buttpage_impl}') = 0">
             <span>
               <xsl:attribute name="class">

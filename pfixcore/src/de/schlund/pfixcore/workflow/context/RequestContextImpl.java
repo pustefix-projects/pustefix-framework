@@ -23,6 +23,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
@@ -60,6 +61,7 @@ import de.schlund.pfixxml.SPDocument;
 import de.schlund.pfixxml.ServletManager;
 import de.schlund.pfixxml.Variant;
 import de.schlund.pfixxml.config.PageRequestConfig;
+import de.schlund.pfixxml.config.ProcessActionConfig;
 import de.schlund.pfixxml.perflogging.PerfEvent;
 import de.schlund.pfixxml.perflogging.PerfEventType;
 import de.schlund.util.statuscodes.StatusCode;
@@ -74,6 +76,7 @@ import de.schlund.util.statuscodes.StatusCode;
 public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
 
     private final static Logger LOG                  = Logger.getLogger(ContextImpl.class);
+    public  final static String PARAM_ACTION         = "__action";
     private final static String PARAM_JUMPPAGE       = "__jumptopage";
     private final static String PARAM_JUMPPAGEFLOW   = "__jumptopageflow";
     private final static String PARAM_FLOW           = "__pageflow";
@@ -468,8 +471,64 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
             throw new PustefixCoreException("Default flow does not return page!");
         }
 
+        // --------------------------------------------------------------------------------------
+        // TODO: fix the whole logic of setting the values from all the possible places.
+        //       I we find an action, we just overwrite the values here regardless of the
+        //       former initialization. THIS NEEDS TO BE REFACTORED URGENTLY
+
         trySettingPageRequestAndFlow();
 
+//        ProcessActionConfig action = null;
+//        RequestParam actionname = preq.getRequestParam(RequestContextImpl.PARAM_ACTION);
+//        if (actionname != null && !actionname.getValue().equals("")) {
+//            LOG.debug("======> Found __action parameter " + actionname);
+//            Map<String, ? extends ProcessActionConfig> actionmap =  getConfigForCurrentPageRequest().getProcessActions();
+//            if (actionmap != null) {
+//                action = actionmap.get(actionname);
+//                if (action != null) {
+//                    LOG.debug("        ...and found matching ProcessAction: " + action);
+//                }
+//            }
+//            if (action == null) {
+//                throw new PustefixApplicationException("Page " + currentpagerequest.getName() + " has been called with unknown action " + actionname);
+//            }
+//        }
+//        
+//        if (action != null) {
+//            String ac_forcestop = action.getForceStop();
+//            String ac_jumptopage = action.getJumpToPage();
+//            String ac_jumptopageflow = action.getJumpToPageFlow();
+//            
+//            // TODO: wait until refactoring...
+//            // We don't do this here... it's more complicated, as we can't just reset the pageflow to null
+//            // if we don't get the information from the action... We would need to know what the pageflow
+//            // was before it was changed inside trySettigPageRequestAndFlow() by looking at the __pageflow request param.
+//            // String ac_pageflow = action.getPageflow();
+//
+//            // The forcestop handling; reset to false if nothing special is given.
+//            prohibitcontinue = false;
+//            stopnextforcurrentrequest = false;
+//            if (ac_forcestop != null) {
+//                if (ac_forcestop.equals("true")) {
+//                    prohibitcontinue = true;
+//                } else if (ac_forcestop.equals("step")) {
+//                    stopnextforcurrentrequest = true;
+//                }
+//            }
+//            
+//            // jumptopage/jumptopageflow handling; reset to null if nothing special given.
+//            jumptopage = null;
+//            jumptopageflow = null;
+//            if (ac_jumptopage != null) {
+//                setJumpToPage(ac_jumptopage);
+//                if (getJumpToPage() != null && ac_jumptopageflow != null) {
+//                    setJumpToPageFlow(ac_jumptopageflow);
+//                }
+//            }
+//        }
+        
+        //---------------------------------------------------------------------------------------
+        
         SPDocument spdoc = documentFromFlow();
 
         processIC(servercontext.getEndInterceptors());

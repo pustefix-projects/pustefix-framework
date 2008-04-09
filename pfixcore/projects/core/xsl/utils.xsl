@@ -247,8 +247,8 @@
                 <span title="Variant">
                   V: 
                   <ixsl:choose>
-                    <ixsl:when test="/formresult/@requested-variant">
-                      <ixsl:value-of select="/formresult/@requested-variant"/>
+                    <ixsl:when test="$__root/formresult/@requested-variant">
+                      <ixsl:value-of select="$__root/formresult/@requested-variant"/>
                     </ixsl:when>
                     <ixsl:otherwise>
                       <span style="">None</span>
