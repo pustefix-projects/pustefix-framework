@@ -1,98 +1,101 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<contextxmlserver xmlns="http://pustefix.sourceforge.net/properties200401" xmlns:cus="http://www.schlund.de/pustefix/customize" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://pustefix.sourceforge.net/properties200401 http://pustefix.sourceforge.net/properties200401.xsd" version="1.0">
-  
+<contextxmlserver xmlns="http://pustefix.sourceforge.net/properties200401"
+  xmlns:cus="http://www.schlund.de/pustefix/customize" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://pustefix.sourceforge.net/properties200401 ../../core/schema/properties200401.xsd"
+  version="1.0">
+
   <servletinfo depend="samplebank/conf/depend.xml" name="pfixcore_project:samplebank::servlet:config">
-    <editmode allow="true"/>
+    <editmode allow="true" />
   </servletinfo>
-  
+
   <context defaultflow="DefaultFlow">
     <resource class="de.schlund.pfixcore.example.bank.context.ContextCustomerImpl">
-      <implements class="de.schlund.pfixcore.example.bank.context.ContextCustomer"/>
+      <implements class="de.schlund.pfixcore.example.bank.context.ContextCustomer" />
     </resource>
     <resource class="de.schlund.pfixcore.example.bank.context.ContextAccountImpl">
-      <implements class="de.schlund.pfixcore.example.bank.context.ContextAccount"/>
+      <implements class="de.schlund.pfixcore.example.bank.context.ContextAccount" />
     </resource>
     <resource class="de.schlund.pfixcore.example.bank.context.ContextTestImpl">
-      <implements class="de.schlund.pfixcore.example.bank.context.ContextTest"/>
+      <implements class="de.schlund.pfixcore.example.bank.context.ContextTest" />
     </resource>
   </context>
-  
-  <role name="ANONYMOUS" initial="true"/>
-  <role name="UNRESTRICTED"/>
-  <role name="ACCOUNT"/>
-  
+
+  <role name="ANONYMOUS" initial="true" />
+  <role name="UNRESTRICTED" />
+  <role name="ACCOUNT" />
+
   <authconstraint id="DEFAULT" authpage="login" default="true">
-    <hasrole name="ANONYMOUS"/>
+    <hasrole name="ANONYMOUS" />
   </authconstraint>
-  
+
   <authconstraint id="CS_ACCOUNT" authpage="login">
     <or>
-      <hasrole name="UNRESTRICTED"/>
-      <hasrole name="ACCOUNT"/>
+      <hasrole name="UNRESTRICTED" />
+      <hasrole name="ACCOUNT" />
     </or>
   </authconstraint>
-  
+
   <pageflow name="DefaultFlow" final="home">
-    <flowstep name="home"/>
-    <flowstep name="logout"/>
+    <flowstep name="home" />
+    <flowstep name="logout" />
   </pageflow>
-  
+
   <pageflow name="AccountFlow" final="home">
-    <flowstep name="accountoverview"/>
-    <flowstep name="accountdetails"/>
+    <flowstep name="accountoverview" />
+    <flowstep name="accountdetails" />
   </pageflow>
-  
+
   <pageflow name="AccountDetailsFlow" final="home">
-    <flowstep name="accountdetails"/>
+    <flowstep name="accountdetails" />
   </pageflow>
-  
+
   <pageflow name="test">
-    <flowstep name="test"/>
+    <flowstep name="test" />
   </pageflow>
-  
+
   <pagerequest name="home">
     <output>
-      <resource node="test" class="de.schlund.pfixcore.example.bank.context.ContextTest"/>
+      <resource node="test" class="de.schlund.pfixcore.example.bank.context.ContextTest" />
     </output>
   </pagerequest>
-  
+
   <pagerequest name="login">
     <input>
-      <wrapper prefix="login" class="de.schlund.pfixcore.example.bank.iwrapper.Login"/>
+      <wrapper prefix="login" class="de.schlund.pfixcore.example.bank.iwrapper.Login" />
     </input>
   </pagerequest>
-  
+
   <pagerequest name="accountoverview">
     <authconstraint authpage="login">
-      <hasrole name="UNRESTRICTED"/>
+      <hasrole name="UNRESTRICTED" />
     </authconstraint>
     <input>
-      <wrapper prefix="select" class="de.schlund.pfixcore.example.bank.iwrapper.SelectAccount"/>
+      <wrapper prefix="select" class="de.schlund.pfixcore.example.bank.iwrapper.SelectAccount" />
     </input>
     <output>
-      <resource node="accounts" class="de.schlund.pfixcore.example.bank.context.ContextCustomer"/>
+      <resource node="accounts" class="de.schlund.pfixcore.example.bank.context.ContextCustomer" />
     </output>
   </pagerequest>
-  
+
   <pagerequest name="accountdetails">
-    <authconstraint ref="CS_ACCOUNT"/>
+    <authconstraint ref="CS_ACCOUNT" />
     <input>
-      <wrapper prefix="edit" class="de.schlund.pfixcore.example.bank.iwrapper.EditAccount"/>
+      <wrapper prefix="edit" class="de.schlund.pfixcore.example.bank.iwrapper.EditAccount" />
     </input>
     <output>
-      <resource node="details" class="de.schlund.pfixcore.example.bank.context.ContextAccount"/>
+      <resource node="details" class="de.schlund.pfixcore.example.bank.context.ContextAccount" />
     </output>
   </pagerequest>
 
   <pagerequest name="test">
     <authconstraint authpage="login">
-      <hasrole name="UNRESTRICTED"/>
+      <hasrole name="UNRESTRICTED" />
     </authconstraint>
   </pagerequest>
-  
+
   <pagerequest name="logout">
-    <state class="de.schlund.pfixcore.example.bank.LogoutState"/>
+    <state class="de.schlund.pfixcore.example.bank.LogoutState" />
   </pagerequest>
-  
+
 
 </contextxmlserver>

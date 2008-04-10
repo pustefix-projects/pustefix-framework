@@ -1,23 +1,21 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<contextxmlserver 
-  xmlns="http://pustefix.sourceforge.net/properties200401"
+<contextxmlserver xmlns="http://pustefix.sourceforge.net/properties200401"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://pustefix.sourceforge.net/properties200401 http://pustefix.sourceforge.net/properties200401.xsd"
-  version="1.0"
->
-  
+  xsi:schemaLocation="http://pustefix.sourceforge.net/properties200401 ../../core/schema/properties200401.xsd"
+  version="1.0">
+
   <servletinfo depend="testsuite/conf/depend.xml" name="pfixcore::testsuite::servlet::main">
-    <editmode allow="true"/>
+    <editmode allow="true" />
   </servletinfo>
-  
+
   <context defaultflow="StartFlow">
-    
+
   </context>
-  
+
   <pageflow name="StartFlow">
-    <flowstep name="Start"/>
+    <flowstep name="Start" />
   </pageflow>
-  
-  <pagerequest name="Start"/>
-  
+
+  <pagerequest name="Start" />
+
 </contextxmlserver>

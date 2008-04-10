@@ -1,9 +1,9 @@
-2008-04-10  jtl  <jtl@britten.laudi.ka>
+2008-04-10  jtl  <jtl@schlund.de>
 
 	* projects/core/schema/properties200401.xsd: maybe I was able to change the schema according to my latest changes...
 	Someone should better check this.
 
-2008-04-09  jtl  <jtl@britten.laudi.ka>
+2008-04-09  jtl  <jtl@schlund.de>
 
 	* src/de/schlund/pfixxml/config/impl/PagerequestRule.java (end): makes sure to check the referenced wrappers in actions 
 	against the defined wrappers
@@ -111,7 +111,7 @@
 	* src/de/schlund/pfixxml/config/ContextConfig.java
 	* projects/core/schema/wsconfig200401.xsd
 
-2008-04-04  jtl  <jtl@britten.laudi.ka>
+2008-04-04  jtl  <jtl@schlund.de>
 
 	* src/de/schlund/pfixcore/workflow/app/IWrapperContainerImpl.java (createIWrapperGroups): remove the handling of the
 	alwaysretrieve attribute from the configuration, implement the request and pfx:command based selection of wrappers 
@@ -277,7 +277,7 @@
 	* src/de/schlund/pfixcore/auth/NotAuthenticatedException.java
 	* src/de/schlund/pfixcore/auth/RoleNotFoundException.java
 
-2008-03-07  jtl  <jtl@schoenberg.laudi.ka>
+2008-03-07  jtl  <jtl@schlund.de>
 
 	* src/de/schlund/pfixxml/util/Xslt.java: deprecate loadTemplates(path)
 	

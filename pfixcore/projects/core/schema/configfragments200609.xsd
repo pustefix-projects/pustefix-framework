@@ -6,7 +6,8 @@
   xmlns:prop="http://pustefix.sourceforge.net/properties200401"
   elementFormDefault="qualified">
   
-  <xs:import namespace="http://pustefix.sourceforge.net/properties200401" schemaLocation="http://pustefix.sourceforge.net/properties200401.xsd"></xs:import>
+  <xs:import namespace="http://pustefix.sourceforge.net/properties200401" 
+    schemaLocation="http://pustefix.sourceforge.net/properties200401 properties200401.xsd"></xs:import>
   
   <xs:element name="config-fragments" type="fr:configFragmentsType"></xs:element>
 

@@ -698,7 +698,7 @@
   <xs:complexType name="directoutputserverType">
     <xs:sequence>
       <xs:element name="directoutputservletinfo" type="prop:directoutputserverservletinfoType"/>
-      <xs:element ref="prop:foreigncontext"/>
+      <xs:element ref="prop:foreigncontext" minOccurs="0"/>
       <xs:element ref="prop:authconstraint" minOccurs="0"/>
       <xs:element name="config-include" type="prop:directOutputConfigIncludeType" />
       <xs:element ref="prop:directoutputpagerequest" minOccurs="0" maxOccurs="unbounded"/>

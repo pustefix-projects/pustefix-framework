@@ -1,57 +1,54 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<contextxmlserver xmlns="http://pustefix.sourceforge.net/properties200401" xmlns:cus="http://www.schlund.de/pustefix/customize" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://pustefix.sourceforge.net/properties200401 http://pustefix.sourceforge.net/properties200401.xsd" version="1.0">
-  
+<contextxmlserver xmlns="http://pustefix.sourceforge.net/properties200401"
+  xmlns:cus="http://www.schlund.de/pustefix/customize" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://pustefix.sourceforge.net/properties200401 ../../core/schema/properties200401.xsd"
+  version="1.0">
+
   <servletinfo depend="webservice/conf/depend.xml" name="pfixcore_project:webservice::servlet:config">
-    <editmode allow="true"/>
+    <editmode allow="true" />
   </servletinfo>
-  
+
   <context defaultflow="TestFlow">
     <resource class="de.schlund.pfixcore.example.ContextCounterImpl">
-      <implements class="de.schlund.pfixcore.example.ContextCounter"/>
+      <implements class="de.schlund.pfixcore.example.ContextCounter" />
     </resource>
-    
+
     <resource class="de.schlund.pfixcore.example.webservices.chat.ContextChatImpl">
-      <implements class="de.schlund.pfixcore.example.webservices.chat.ContextChat"/>
+      <implements class="de.schlund.pfixcore.example.webservices.chat.ContextChat" />
     </resource>
-    
+
     <resource class="de.schlund.pfixcore.example.webservices.ContextDataImpl">
-      <implements class="de.schlund.pfixcore.example.webservices.ContextData"/>
+      <implements class="de.schlund.pfixcore.example.webservices.ContextData" />
     </resource>
   </context>
-  
+
   <pageflow name="TestFlow">
-    <flowstep name="calculator"/>
-    <flowstep name="counter"/>
-    <flowstep name="data"/>
-    <flowstep name="typetest"/>
-    <flowstep name="calltest"/>
-    <flowstep name="beantest"/>
+    <flowstep name="calculator" />
+    <flowstep name="counter" />
+    <flowstep name="data" />
+    <flowstep name="typetest" />
+    <flowstep name="calltest" />
+    <flowstep name="beantest" />
   </pageflow>
-  
-  <pagerequest name="calculator">
-  </pagerequest>
-  
+
+  <pagerequest name="calculator"></pagerequest>
+
   <pagerequest name="chat">
     <output>
-      <resource node="chat" class="de.schlund.pfixcore.example.webservices.chat.ContextChat"/>
+      <resource node="chat" class="de.schlund.pfixcore.example.webservices.chat.ContextChat" />
     </output>
   </pagerequest>
-  
-  <pagerequest name="counter">
-  </pagerequest>
-  
-  <pagerequest name="data">
-  </pagerequest>
-  
-  <pagerequest name="typetest">
-  </pagerequest>
-  
-  <pagerequest name="calltest">
-  </pagerequest>
-  
-  <pagerequest name="beantest">
-  </pagerequest>
-  
+
+  <pagerequest name="counter"></pagerequest>
+
+  <pagerequest name="data"></pagerequest>
+
+  <pagerequest name="typetest"></pagerequest>
+
+  <pagerequest name="calltest"></pagerequest>
+
+  <pagerequest name="beantest"></pagerequest>
+
   <pagerequest name="gencss" nostore="true">
     <properties>
       <prop name="mimetype">text/css</prop>
@@ -65,5 +62,5 @@
       </choose>
     </properties>
   </pagerequest>
-  
+
 </contextxmlserver>
