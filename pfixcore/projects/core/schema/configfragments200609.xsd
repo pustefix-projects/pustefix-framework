@@ -1,60 +1,39 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xs:schema
-  targetNamespace="http://pustefix.sourceforge.net/configfragments200609"
-  xmlns:xs="http://www.w3.org/2001/XMLSchema"
-  xmlns:fr="http://pustefix.sourceforge.net/configfragments200609"
-  xmlns:prop="http://pustefix.sourceforge.net/properties200401"
-  elementFormDefault="qualified">
-  
-  <xs:import namespace="http://pustefix.sourceforge.net/properties200401" 
-    schemaLocation="http://pustefix.sourceforge.net/properties200401 properties200401.xsd"></xs:import>
-  
-  <xs:element name="config-fragments" type="fr:configFragmentsType"></xs:element>
+<xs:schema targetNamespace="http://pustefix.sourceforge.net/configfragments200609"
+  xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:fr="http://pustefix.sourceforge.net/configfragments200609"
+  xmlns:prop="http://pustefix.sourceforge.net/properties200401" elementFormDefault="qualified">
+
+<!--  <xs:import namespace="http://pustefix.sourceforge.net/properties200401"-->
+<!--    schemaLocation="http://pustefix.sourceforge.net/properties200401 properties200401.xsd" />-->
+  <xs:import namespace="http://pustefix.sourceforge.net/properties200401" schemaLocation="properties200401.xsd" />
+
+  <xs:element name="config-fragments" type="fr:configFragmentsType" />
 
   <xs:complexType name="configFragmentsType">
     <xs:sequence>
-      <xs:element name="navigation" type="fr:navigationType"
-        maxOccurs="unbounded" minOccurs="0">
-      </xs:element>
-      <xs:element name="targets" type="fr:targetsType"
-        maxOccurs="unbounded" minOccurs="0">
-      </xs:element>
-      <xs:element name="resources" type="fr:resourcesType" maxOccurs="unbounded"
-        minOccurs="0">
-      </xs:element>
-      <xs:element name="pageflows" type="fr:pageflowsType" maxOccurs="unbounded"
-        minOccurs="0">
-      </xs:element>
-      <xs:element name="pagerequests" type="fr:pagerequestsType" maxOccurs="unbounded"
-        minOccurs="0">
-      </xs:element>
-      <xs:element name="properties" type="fr:propertiesType" maxOccurs="unbounded"
-        minOccurs="0">
-      </xs:element>
-      <xs:element name="interceptors" type="fr:interceptorsType" maxOccurs="unbounded"
-        minOccurs="0">
-      </xs:element>
-      <xs:element name="scriptedflows" type="fr:scriptedflowsType" maxOccurs="unbounded"
-        minOccurs="0">
-      </xs:element>
-      <xs:element name="roles" type="fr:rolesType" maxOccurs="unbounded"
-        minOccurs="0">
-      </xs:element>
+      <xs:element name="navigation" type="fr:navigationType" maxOccurs="unbounded" minOccurs="0" />
+      <xs:element name="targets" type="fr:targetsType" maxOccurs="unbounded" minOccurs="0" />
+      <xs:element name="resources" type="fr:resourcesType" maxOccurs="unbounded" minOccurs="0" />
+      <xs:element name="pageflows" type="fr:pageflowsType" maxOccurs="unbounded" minOccurs="0" />
+      <xs:element name="pagerequests" type="fr:pagerequestsType" maxOccurs="unbounded" minOccurs="0" />
+      <xs:element name="properties" type="fr:propertiesType" maxOccurs="unbounded" minOccurs="0" />
+      <xs:element name="interceptors" type="fr:interceptorsType" maxOccurs="unbounded" minOccurs="0" />
+      <xs:element name="scriptedflows" type="fr:scriptedflowsType" maxOccurs="unbounded" minOccurs="0" />
+      <xs:element name="roles" type="fr:rolesType" maxOccurs="unbounded" minOccurs="0" />
       <xs:element name="directoutputpagerequests" type="fr:directOutputPagerequestsType" maxOccurs="unbounded"
-        minOccurs="0">
-      </xs:element>
+        minOccurs="0" />
     </xs:sequence>
   </xs:complexType>
 
   <xs:complexType name="sectionType">
-    <xs:attribute name="id" type="xs:ID"></xs:attribute>
+    <xs:attribute name="id" type="xs:ID" />
   </xs:complexType>
 
   <xs:complexType name="navigationType">
     <xs:complexContent>
       <xs:extension base="fr:sectionType">
         <xs:sequence>
-          <xs:any namespace="##local" minOccurs="0" maxOccurs="unbounded" processContents="skip"></xs:any>
+          <xs:any namespace="##local" minOccurs="0" maxOccurs="unbounded" processContents="skip" />
         </xs:sequence>
       </xs:extension>
     </xs:complexContent>
@@ -64,7 +43,7 @@
     <xs:complexContent>
       <xs:extension base="fr:sectionType">
         <xs:sequence>
-          <xs:any namespace="##local" minOccurs="0" maxOccurs="unbounded" processContents="skip"></xs:any>
+          <xs:any namespace="##local" minOccurs="0" maxOccurs="unbounded" processContents="skip" />
         </xs:sequence>
       </xs:extension>
     </xs:complexContent>
@@ -74,47 +53,47 @@
     <xs:complexContent>
       <xs:extension base="fr:sectionType">
         <xs:sequence>
-          <xs:element ref="prop:pageflow" minOccurs="0" maxOccurs="unbounded"></xs:element>
+          <xs:element ref="prop:pageflow" minOccurs="0" maxOccurs="unbounded" />
         </xs:sequence>
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
-  
+
   <xs:complexType name="pagerequestsType">
     <xs:complexContent>
       <xs:extension base="fr:sectionType">
         <xs:sequence>
-          <xs:element ref="prop:pagerequest" minOccurs="0" maxOccurs="unbounded"></xs:element>
+          <xs:element ref="prop:pagerequest" minOccurs="0" maxOccurs="unbounded" />
         </xs:sequence>
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
-  
+
   <xs:complexType name="resourcesType">
     <xs:complexContent>
       <xs:extension base="fr:sectionType">
         <xs:sequence>
-          <xs:element ref="prop:resource" minOccurs="0" maxOccurs="unbounded"></xs:element>
+          <xs:element ref="prop:resource" minOccurs="0" maxOccurs="unbounded" />
         </xs:sequence>
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
-  
+
   <xs:complexType name="interceptorsType">
     <xs:complexContent>
       <xs:extension base="fr:sectionType">
         <xs:sequence>
-          <xs:element ref="prop:interceptor" minOccurs="0" maxOccurs="unbounded"></xs:element>
+          <xs:element ref="prop:interceptor" minOccurs="0" maxOccurs="unbounded" />
         </xs:sequence>
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
-  
+
   <xs:complexType name="scriptedflowsType">
     <xs:complexContent>
       <xs:extension base="fr:sectionType">
         <xs:sequence>
-          <xs:element ref="prop:scriptedflow" minOccurs="0" maxOccurs="unbounded"></xs:element>
+          <xs:element ref="prop:scriptedflow" minOccurs="0" maxOccurs="unbounded" />
         </xs:sequence>
       </xs:extension>
     </xs:complexContent>
@@ -124,7 +103,7 @@
     <xs:complexContent>
       <xs:extension base="fr:sectionType">
         <xs:sequence>
-          <xs:element ref="prop:role" minOccurs="0" maxOccurs="unbounded"></xs:element>
+          <xs:element ref="prop:role" minOccurs="0" maxOccurs="unbounded" />
         </xs:sequence>
       </xs:extension>
     </xs:complexContent>
@@ -132,19 +111,18 @@
 
   <xs:complexType name="propertiesType">
     <xs:complexContent>
-      <xs:extension base="prop:propertiesType">
-      </xs:extension>
+      <xs:extension base="prop:propertiesType" />
     </xs:complexContent>
   </xs:complexType>
-  
+
   <xs:complexType name="directOutputPagerequestsType">
     <xs:complexContent>
       <xs:extension base="fr:sectionType">
         <xs:sequence>
-          <xs:element ref="prop:directoutputpagerequest" minOccurs="0" maxOccurs="unbounded"></xs:element>
+          <xs:element ref="prop:directoutputpagerequest" minOccurs="0" maxOccurs="unbounded" />
         </xs:sequence>
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
-  
+
 </xs:schema>
