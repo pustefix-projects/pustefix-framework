@@ -160,6 +160,7 @@ public class DefaultIWrapperState extends StateImpl {
                         // TODO: REMOVE THIS whole "if" branch we're in completely once we don't have to support the old behavior anymore
                         if (!context.isJumpToPageSet() && ((IWrapperSimpleContainer) container).stayAfterSubmit()) {
                             CAT.debug("... Container says he wants to stay on this page and no jumptopage is set: Setting prohibitcontinue=true");
+                            CAT.warn("CONTAINERWOULDSTOP:" + preq.getServerName() + "|" + context.getCurrentPageRequest().getName());
                             context.prohibitContinue();
                         } else {
                             CAT.debug("... Container says he is ready.");
