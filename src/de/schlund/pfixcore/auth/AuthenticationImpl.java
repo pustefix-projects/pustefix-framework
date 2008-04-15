@@ -20,6 +20,8 @@ package de.schlund.pfixcore.auth;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
+import org.apache.log4j.Logger;
+
 /**
  * 
  * @author mleidig@schlund.de
@@ -27,6 +29,8 @@ import java.util.TreeMap;
  */
 public class AuthenticationImpl implements Authentication {
 
+    private final static Logger LOG = Logger.getLogger(AuthenticationImpl.class);
+    
     private boolean authenticated;
     private SortedMap<String,Role> roles;
     private RoleProvider roleProvider;
@@ -59,7 +63,15 @@ public class AuthenticationImpl implements Authentication {
     }
     
     public synchronized boolean hasRole(String roleName) {
-        return roles.containsKey(roleName);
+        boolean hasRole = roles.containsKey(roleName);
+        if(!hasRole) {
+            try {
+                roleProvider.getRole(roleName);
+            } catch(RoleNotFoundException x) {
+                LOG.warn("ROLE_NOT_FOUND|"+roleName);
+            }
+        }
+        return hasRole;
     }
     
     public synchronized boolean addRole(String roleName) {

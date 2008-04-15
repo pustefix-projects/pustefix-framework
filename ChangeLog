@@ -1,3 +1,8 @@
+2008-04-15  Martin Leidig  <mleidig@schlund.de>
+
+	* src/de/schlund/pfixcore/auth/AuthenticationImpl.java: Log hasRole() calls
+	for role names which don't exist/aren't defined in the context configuration.
+
 2008-04-14  Martin Leidig  <mleidig@schlund.de>
 
 	Use "_" instead of ":" as separator for the secure session cookie value because
