@@ -74,7 +74,10 @@ public abstract class ServletManager extends HttpServlet {
     public static final String           VISIT_ID                      = "__VISIT_ID__";
     public static final String           PROP_LOADINDEX                = "__PROPERTIES_LOAD_INDEX";
     private static final String          STORED_REQUEST                = "__STORED_PFIXSERVLETREQUEST__";
-    private static final String          SECURE_SESS_COOKIE            = "__PFIX_SEC_";
+    private static final String          SECURE_SESS_COOKIE            = "__PFIX_SSC_";
+    private static final String          SECURE_SESS_COOKIE_OLD        = "__PFIX_SEC_";
+    private static final String          COOKIE_VALUE_SEPARATOR        = "_";
+    private static final String          COOKIE_VALUE_SEPARATOR_OLD    = ":";
     private static final String          TEST_COOKIE                   = "__PFIX_TST_";
     private static final String          SESSION_COOKIES_MARKER        = "__COOKIES_USED_DURING_SESSION__";
     private static final String          REFUSE_COOKIES                = "__REFUSE_COOKIES__";
@@ -251,11 +254,11 @@ public abstract class ServletManager extends HttpServlet {
                             if (cookie != null) {
                                 LOG.debug("*** Found a matching cookie ...");
                                 String tmp = cookie.getValue();
-                                String tmp_sec = tmp.substring(tmp.indexOf(":") + 1);
+                                String tmp_sec = tmp.substring(tmp.indexOf(COOKIE_VALUE_SEPARATOR) + 1);
                                 if (tmp_sec.equals(sec_testid)) {
                                     LOG.debug("   ... and the value is correct! (" + tmp_sec + ")");
                                     has_ssl_session_secure = true;
-                                    Cookie cookie_new = new Cookie(cookie.getName(), System.currentTimeMillis() + ":" + tmp_sec);
+                                    Cookie cookie_new = new Cookie(cookie.getName(), System.currentTimeMillis() + COOKIE_VALUE_SEPARATOR + tmp_sec);
                                     setCookiePath(req, cookie_new);
                                     // FIXME (see comment in cleanupCookies
                                     // cookie_new.setMaxAge(session.getMaxInactiveInterval());
@@ -445,7 +448,7 @@ public abstract class ServletManager extends HttpServlet {
                 if (cookie != null) {
                     LOG.debug("*** Found a matching cookie ...");
                     String tmp = cookie.getValue();
-                    String tmp_sec = tmp.substring(tmp.indexOf(":") + 1);
+                    String tmp_sec = tmp.substring(tmp.indexOf(COOKIE_VALUE_SEPARATOR) + 1);
                     if (tmp_sec.equals(sec_testid)) {
                         LOG.debug("   ... and the value is correct! (" + tmp_sec + ")");
                         LOG.debug("==> Redirecting to the secure SSL URL with the already running secure session " + secure_id);
@@ -513,7 +516,7 @@ public abstract class ServletManager extends HttpServlet {
             String sec_cookie = MD5Utils.hex_md5(session.getId());
             session.setAttribute(SECURE_SESS_COOKIE + sec_cookie, sec_testid);
 
-            cookie = new Cookie(SECURE_SESS_COOKIE + sec_cookie, System.currentTimeMillis() + ":" + sec_testid);
+            cookie = new Cookie(SECURE_SESS_COOKIE + sec_cookie, System.currentTimeMillis() + COOKIE_VALUE_SEPARATOR + sec_testid);
             setCookiePath(req, cookie);
             // FIXME (see comment in cleanupCookies
             //cookie.setMaxAge(session.getMaxInactiveInterval());
@@ -1088,12 +1091,23 @@ public abstract class ServletManager extends HttpServlet {
         Cookie[] cookies = CookieUtils.getCookies(req);
         if (cookies != null && cookies.length > 0) {
             TreeSet<SortableCookie> cset = new TreeSet<SortableCookie>();
-
             for (int i = 0; i < cookies.length; i++) {
                 Cookie tmp = cookies[i];
-                if (tmp.getName().startsWith(SECURE_SESS_COOKIE) && (cookie == null || !tmp.getName().equals(cookie.getName()))) {
+                boolean secCookie=tmp.getName().startsWith(SECURE_SESS_COOKIE);
+                boolean oldSecCookie=secCookie?false:tmp.getName().startsWith(SECURE_SESS_COOKIE_OLD);
+                if ( (secCookie || oldSecCookie)  && (cookie == null || !tmp.getName().equals(cookie.getName()))) {
                     String value = tmp.getValue();
-                    String stamp = value.substring(0, value.indexOf(":"));
+                    int sepIndex = -1;
+                    if(secCookie) sepIndex = value.indexOf(COOKIE_VALUE_SEPARATOR);
+                    else {
+                        sepIndex = value.indexOf(COOKIE_VALUE_SEPARATOR_OLD);
+                        if(sepIndex == -1) {
+                            //Value doesn't contain old separator, possibly it's an old cookie
+                            //with a truncated value (due to changed Tomcat cookie parsing behaviour)
+                            sepIndex = value.length();
+                        }
+                    }
+                    String stamp = value.substring(0, sepIndex);
                     try {
                         long lasttouch = Long.parseLong(stamp);
                         cset.add(new SortableCookie(tmp, lasttouch));
