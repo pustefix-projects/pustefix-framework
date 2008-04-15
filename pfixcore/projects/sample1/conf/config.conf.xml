@@ -255,8 +255,6 @@
 
   <properties>
 
-    <prop name="defaultiwrapperstate.iwrappercontainer">de.schlund.pfixcore.workflow.app.IWrapperContainerImpl</prop>
-
     <!-- *** some additional properties needed for this application *** -->
     <!-- <prop name="interfacelogging">sample1/log</prop> -->
     <prop name="contexttshirt.feature.0">Waterproof</prop>
