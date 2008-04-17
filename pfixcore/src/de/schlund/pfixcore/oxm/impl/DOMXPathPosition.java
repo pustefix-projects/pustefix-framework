@@ -24,46 +24,46 @@ import org.w3c.dom.Node;
 /**
  * 
  * @author mleidig@schlund.de
- *
+ * 
  */
 public class DOMXPathPosition implements XPathPosition {
-   
-   private Node node;
-   
-   public DOMXPathPosition(Node node) {
-      this.node=node;
-   }
-   
-   public String getXPath() {
-      StringBuilder sb=new StringBuilder();
-      buildXPath(node,sb);
-      return sb.toString();
-   }
-   
-   private void buildXPath(Node node,StringBuilder builder) {
-      if(node!=null) {
-         if(node.getNodeType()==Node.ELEMENT_NODE) {
-            Element elem=(Element)node;
-            Node parentNode=elem.getParentNode();
-            if(parentNode!=null && parentNode.getNodeType()==Node.ELEMENT_NODE) {
-               int pos=1;
-               Node prevNode=elem.getPreviousSibling();
-               while(prevNode!=null) {
-                  if(prevNode.getNodeType()==Node.ELEMENT_NODE) {
-                     if(prevNode.getNodeName().equals(elem.getNodeName())) pos++;
-                  }
-                  prevNode=prevNode.getPreviousSibling();
-               }
-               builder.insert(0,"/"+elem.getNodeName()+"["+pos+"]");
-               buildXPath(parentNode,builder);
-            } else {
-               builder.insert(0,"/"+elem.getNodeName());
+
+    private Node node;
+
+    public DOMXPathPosition(Node node) {
+        this.node = node;
+    }
+
+    public String getXPath() {
+        StringBuilder sb = new StringBuilder();
+        buildXPath(node, sb);
+        return sb.toString();
+    }
+
+    private void buildXPath(Node node, StringBuilder builder) {
+        if (node != null) {
+            if (node.getNodeType() == Node.ELEMENT_NODE) {
+                Element elem = (Element) node;
+                Node parentNode = elem.getParentNode();
+                if (parentNode != null && parentNode.getNodeType() == Node.ELEMENT_NODE) {
+                    int pos = 1;
+                    Node prevNode = elem.getPreviousSibling();
+                    while (prevNode != null) {
+                        if (prevNode.getNodeType() == Node.ELEMENT_NODE) {
+                            if (prevNode.getNodeName().equals(elem.getNodeName())) pos++;
+                        }
+                        prevNode = prevNode.getPreviousSibling();
+                    }
+                    builder.insert(0, "/" + elem.getNodeName() + "[" + pos + "]");
+                    buildXPath(parentNode, builder);
+                } else {
+                    builder.insert(0, "/" + elem.getNodeName());
+                }
+            } else if (node.getNodeType() == Node.ATTRIBUTE_NODE) {
+                builder.insert(0, "/@" + node.getNodeName());
+                buildXPath(node.getParentNode(), builder);
             }
-         } else if(node.getNodeType()==Node.ATTRIBUTE_NODE) {
-            builder.insert(0,"/@"+node.getNodeName());
-            buildXPath(node.getParentNode(),builder);
-         }
-      }
-   }
+        }
+    }
 
 }

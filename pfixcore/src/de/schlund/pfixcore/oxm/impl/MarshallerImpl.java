@@ -36,23 +36,22 @@ import de.schlund.pfixcore.oxm.MarshallingException;
 public class MarshallerImpl implements Marshaller {
 
     SerializerRegistry registry;
-    
+
     public MarshallerImpl(SerializerRegistry registry) {
-        this.registry=registry;
+        this.registry = registry;
     }
-    
-    public void marshal(Object obj,Result result) throws MarshallingException {
-        if(!(result instanceof DOMResult)) 
-            throw new IllegalArgumentException("Result must be of type: "+DOMResult.class.getName());
-        DOMResult domResult=(DOMResult)result;
-        Node node=domResult.getNode();
-        if(node instanceof Document) node=((Document)node).getDocumentElement();
-        XMLWriter xmlWriter=new DOMWriter(node);
-        SerializationContext context=new SerializationContext(registry);
+
+    public void marshal(Object obj, Result result) throws MarshallingException {
+        if (!(result instanceof DOMResult)) throw new IllegalArgumentException("Result must be of type: " + DOMResult.class.getName());
+        DOMResult domResult = (DOMResult) result;
+        Node node = domResult.getNode();
+        if (node instanceof Document) node = ((Document) node).getDocumentElement();
+        XMLWriter xmlWriter = new DOMWriter(node);
+        SerializationContext context = new SerializationContext(registry);
         try {
-            context.serialize(obj,xmlWriter);
-        } catch(SerializationException x) {
-            throw new MarshallingException("Error while marshalling object.",x);
+            context.serialize(obj, xmlWriter);
+        } catch (SerializationException x) {
+            throw new MarshallingException("Error while marshalling object.", x);
         }
     }
 

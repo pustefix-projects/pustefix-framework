@@ -30,37 +30,36 @@ import org.w3c.dom.NodeList;
 
 /**
  * @author mleidig@schlund.de
- * @author  Stephan Schmidt <schst@stubbles.net>
+ * @author Stephan Schmidt <schst@stubbles.net>
  */
 public class DOMWriter implements XMLWriter {
 
     private Node root;
     private Node current;
-    
+
     public DOMWriter(Node node) {
-        if(node.getNodeType()!=Node.ELEMENT_NODE) 
-            throw new IllegalArgumentException("Illegal node type: must be element node");
-        root=node;
-        current=root;
+        if (node.getNodeType() != Node.ELEMENT_NODE) throw new IllegalArgumentException("Illegal node type: must be element node");
+        root = node;
+        current = root;
     }
-    
+
     public void writeStartElement(String localName) {
-        Element elem=root.getOwnerDocument().createElement(localName);
+        Element elem = root.getOwnerDocument().createElement(localName);
         current.appendChild(elem);
-        current=elem;
+        current = elem;
     }
-    
+
     public void writeCharacters(String text) {
-        Node node=root.getOwnerDocument().createTextNode(text);
+        Node node = root.getOwnerDocument().createTextNode(text);
         current.appendChild(node);
     }
-    
+
     public void writeEndElement() {
-        current=current.getParentNode();
+        current = current.getParentNode();
     }
-    
+
     public void writeAttribute(String localName, String value) {
-        Element elem=(Element)current;
+        Element elem = (Element) current;
         elem.setAttribute(localName, value);
     }
 
@@ -73,30 +72,31 @@ public class DOMWriter implements XMLWriter {
         Node node = root.getOwnerDocument().createCDATASection(cdata);
         current.appendChild(node);
     }
-    
+
     /**
      * Writes an xml fragment to the document.
      * 
-     * The fragment does not need a root element, but it must
-     * be well-formed xml.
+     * The fragment does not need a root element, but it must be well-formed
+     * xml.
      * 
-     * @param   xmlFragment     The fragment to be written to the document.
+     * @param xmlFragment
+     *            The fragment to be written to the document.
      */
     public void writeFragment(String xmlFragment) {
         try {
             DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder builder = builderFactory.newDocumentBuilder();
-            
+
             // make sure, that we have a root node
             xmlFragment = "<root>" + xmlFragment + "</root>";
-            
+
             byte currentXMLBytes[] = xmlFragment.getBytes();
             ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(currentXMLBytes);
-            
+
             Document doc = builder.parse(byteArrayInputStream);
             Element root = doc.getDocumentElement();
-            
-            Document originalDoc = this.root.getOwnerDocument();            
+
+            Document originalDoc = this.root.getOwnerDocument();
             NodeList list = root.getChildNodes();
             for (int i = 0; i < list.getLength(); i++) {
                 Node node = originalDoc.importNode(list.item(i), true);
@@ -110,8 +110,8 @@ public class DOMWriter implements XMLWriter {
     public Node getNode() {
         return root;
     }
-    
+
     public XPathPosition getCurrentPosition() {
-       return new DOMXPathPosition(current);
-    }   
+        return new DOMXPathPosition(current);
+    }
 }
