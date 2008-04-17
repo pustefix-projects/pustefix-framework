@@ -1,5 +1,8 @@
 2008-04-17  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
+	* startTomcat.sh: 
+	Made script compatible with non-bash shells.
+
 	* src/de/schlund/pfixcore/editor2/frontend/util/SessionCookieFilter.java: 
 	* src/de/schlund/pfixxml/AbstractXMLServlet.java: 
 	* projects/common/conf/pustefix.xml: 

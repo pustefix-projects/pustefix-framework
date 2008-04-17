@@ -1,6 +1,6 @@
 #!/bin/sh
 
-if [ "$1" == "-d" ] ; then 
+if [ "x$1" = "x-d" ] ; then 
    cmd="jpda run"
 else
    cmd="run"
