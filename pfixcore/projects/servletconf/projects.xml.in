@@ -25,11 +25,16 @@
       <active>true</active>
       <class>de.schlund.pfixxml.ContextXMLServlet</class>
       <propfile>core/editor2/conf/edit.conf.xml</propfile>
+      <use-filter>session_cookie_filter</use-filter>
     </servlet>
     <servlet name="deref">
       <active>true</active>
       <class>de.schlund.pfixxml.DerefServlet</class>
     </servlet>
+    <filter name="session_cookie_filter">
+      <active>true</active>
+      <class>de.schlund.pfixcore.editor2.frontend.util.SessionCookieFilter</class>
+    </filter>
   </project>
 
   <!-- You should not change this pseudo project below unless you know what you are doing.

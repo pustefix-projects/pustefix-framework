@@ -1,3 +1,25 @@
+2008-04-17  Sebastian Marsching  <sebastian.marsching@1und1.de>
+
+	* src/de/schlund/pfixcore/editor2/frontend/util/SessionCookieFilter.java: 
+	* src/de/schlund/pfixxml/AbstractXMLServlet.java: 
+	* projects/common/conf/pustefix.xml: 
+	* projects/core/prjtemplates/project.tmpl: 
+	* projects/core/xsl/include_xslt2.xsl: 
+	* projects/core/xsl/include.xsl: 
+	* projects/sample1/conf/project.xml.in: 
+	* projects/samplebank/conf/project.xml.in: 
+	* projects/servletconf/projects.xml.in: 
+	* projects/simpleform/conf/project.xml.in: 
+	* projects/simplelink/conf/project.xml.in: 
+	* projects/simplepage/conf/project.xml.in: 
+	* projects/testsuite/conf/project.xml.in:  
+	* projects/webservice/conf/project.xml.in: 
+	* projects/skel/projects/common/conf/pustefix.xml: 
+	* projects/skel/projects/servletconf/projects.xml.in: 
+	Removed editor servlet from project configurations. The editor's session 
+	id is now stored in a cookie and all applications share the same editor
+	instance. The editor URL can be configured using a property in pustefix.xml. 
+
 2008-04-10  jtl  <jtl@schlund.de>
 
 	* projects/core/schema/properties200401.xsd: maybe I was able to change the schema according to my latest changes...

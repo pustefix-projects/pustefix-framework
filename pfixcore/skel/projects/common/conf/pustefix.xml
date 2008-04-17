@@ -15,6 +15,9 @@
         xml document containing all needed information for an external renderer -->
     <!-- <prop name="xmlserver.output.externalrenderer">true</prop> -->
     
+    <!-- URL for the Pustefix editor -->
+    <prop name="xmlserver.editor_url">http://cmsskel.<cus:fqdn/></prop>
+    
     <choose>
       <when test="$mode = 'prod'">
         <!-- Set this to true if you want to skip the check for changed stylesheets on every request -->

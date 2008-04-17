@@ -28,10 +28,4 @@
     <propfile>testsuite/conf/test1.conf.xml</propfile>
   </servlet>
   
-  <servlet name="edit">
-    <active>true</active>
-    <class>de.schlund.pfixxml.ContextXMLServlet</class>
-    <propfile>core/editor2/conf/edit.conf.xml</propfile>
-  </servlet>
-  
 </project>

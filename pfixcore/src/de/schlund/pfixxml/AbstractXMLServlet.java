@@ -121,6 +121,7 @@ public abstract class AbstractXMLServlet extends ServletManager {
     private static final String   XSLPARAM_QUERYSTRING    = "__querystring";
     private static final String   XSLPARAM_FRAME          = "__frame";
     private static final String   XSLPARAM_REUSE          = "__reusestamp";
+    private static final String   XSLPARAM_EDITOR_URL     = "__editor_url";
     private static final String   VALUE_NONE              = "__NONE__";
     private static final String   SUFFIX_SAVEDDOM         = "_SAVED_DOM";
     private static final String   ATTR_SHOWXMLDOC         = "__ATTR_SHOWXMLDOC__";
@@ -133,6 +134,7 @@ public abstract class AbstractXMLServlet extends ServletManager {
     protected static final String PROP_SKIP_GETMODTIME_MU = "targetgenerator.skip_getmodtimemaybeupdate";
     protected static final String PROP_PROHIBITDEBUG      = "xmlserver.prohibitdebug";
     protected static final String PROP_PROHIBITINFO       = "xmlserver.prohibitinfo";
+    protected static final String PROP_EDITOR_URL         = "xmlserver.editor_url";
     private static final String PARAM_DEPENDFILE = "servlet.dependfile";
 
     public static final String PREPROCTIME = "__PREPROCTIME__";
@@ -365,6 +367,7 @@ public abstract class AbstractXMLServlet extends ServletManager {
             params.put(XSLPARAM_QUERYSTRING, preq.getQueryString());
 
         params.put(XSLPARAM_DEREFKEY, this.getAbstractXMLServletConfig().getProperties().getProperty(DerefServlet.PROP_DEREFKEY));
+        params.put(XSLPARAM_EDITOR_URL, this.getAbstractXMLServletConfig().getProperties().getProperty(PROP_EDITOR_URL));
 
         if (session != null) {
             params.put(XSLPARAM_SESSID, session.getAttribute(SessionHelper.SESSION_ID_URL));
