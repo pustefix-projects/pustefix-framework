@@ -20,9 +20,11 @@ package de.schlund.pfixcore.auth;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import de.schlund.pfixcore.workflow.Context;
+
 /**
  * 
- * @author mleidig
+ * @author mleidig@schlund.de
  *
  */
 public class AuthConstraintImpl implements AuthConstraint {
@@ -53,9 +55,9 @@ public class AuthConstraintImpl implements AuthConstraint {
 		return authPage;
 	}
 	
-	public boolean isAuthorized(Authentication auth) {
+	public boolean isAuthorized(Context context) {
 		if(condition!=null) {
-			return condition.evaluate(auth);
+			return condition.evaluate(context);
 		}
 		return true;
 	}

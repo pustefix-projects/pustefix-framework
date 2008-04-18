@@ -31,4 +31,15 @@ public class ContextCustomerImpl implements ContextCustomer {
 		this.customer = customer;
 	}
 	
+	public float getTotalDebit() {
+        if (customer != null) {
+            List<Account> accounts = customer.getAccounts();
+            float total = 0;
+            for (Account account : accounts)
+                total += account.getDebit();
+            return total;
+        }
+        return 0;
+    }
+	
 }

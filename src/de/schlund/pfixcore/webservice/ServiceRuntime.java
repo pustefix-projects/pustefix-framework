@@ -174,7 +174,7 @@ public class ServiceRuntime {
                     if(authRef!=null) {
                         AuthConstraint authConst=srvContext.getContextConfig().getAuthConstraint(authRef);
                         if(authConst!=null) {
-                            if(!authConst.isAuthorized(pfxSessionContext.getAuthentication())) 
+                            if(!authConst.isAuthorized(pfxSessionContext)) 
                                 throw new AuthenticationException("Authentication failed: AuthConstraint violated");
                         } else throw new ServiceException("AuthConstraint not found: "+authRef);
                     }

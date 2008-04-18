@@ -30,61 +30,51 @@ import org.apache.log4j.Logger;
 public class AuthenticationImpl implements Authentication {
 
     private final static Logger LOG = Logger.getLogger(AuthenticationImpl.class);
-    
-    private boolean authenticated;
-    private SortedMap<String,Role> roles;
+
+    private SortedMap<String, Role> roles;
     private RoleProvider roleProvider;
-    
+
     public AuthenticationImpl(RoleProvider roleProvider) {
-    	this.roleProvider=roleProvider;
-    	roles=new TreeMap<String,Role>();
+        this.roleProvider = roleProvider;
+        roles = new TreeMap<String, Role>();
     }
-    
+
     public AuthenticationImpl(RoleProvider roleProvider, String[] roleNames, boolean authenticated) {
-    	this(roleProvider);
-        for(String roleName:roleNames) {
-            roles.put(roleName,roleProvider.getRole(roleName));
+        this(roleProvider);
+        for (String roleName : roleNames) {
+            roles.put(roleName, roleProvider.getRole(roleName));
         }
-        this.authenticated=authenticated;
     }
-    
-    public synchronized boolean isAuthenticated() {
-        return authenticated;
-    }
-    
-    public synchronized void setAuthenticated(boolean authenticated) {
-        this.authenticated = authenticated;
-    }
-    
+
     public synchronized Role[] getRoles() {
-        Role[] rolesCopy=new Role[roles.size()];
+        Role[] rolesCopy = new Role[roles.size()];
         roles.values().toArray(rolesCopy);
         return rolesCopy;
     }
-    
+
     public synchronized boolean hasRole(String roleName) {
         boolean hasRole = roles.containsKey(roleName);
-        if(!hasRole) {
+        if (!hasRole) {
             try {
                 roleProvider.getRole(roleName);
-            } catch(RoleNotFoundException x) {
-                LOG.warn("ROLE_NOT_FOUND|"+roleName);
+            } catch (RoleNotFoundException x) {
+                LOG.warn("ROLE_NOT_FOUND|" + roleName);
             }
         }
         return hasRole;
     }
-    
+
     public synchronized boolean addRole(String roleName) {
-    	if(!roles.containsKey(roleName)) {
-    		Role role=roleProvider.getRole(roleName);
-    		roles.put(roleName,role);
-    		return true;
-    	}
-    	return false;
+        if (!roles.containsKey(roleName)) {
+            Role role = roleProvider.getRole(roleName);
+            roles.put(roleName, role);
+            return true;
+        }
+        return false;
     }
-    
+
     public synchronized boolean revokeRole(String roleName) {
-    	return roles.remove(roleName)!=null;
+        return roles.remove(roleName) != null;
     }
-    
+
 }

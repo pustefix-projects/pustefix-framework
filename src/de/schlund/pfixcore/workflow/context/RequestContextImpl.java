@@ -35,15 +35,14 @@ import org.w3c.dom.Node;
 
 import de.schlund.pfixcore.auth.AuthConstraint;
 import de.schlund.pfixcore.auth.AuthConstraintViolation;
-import de.schlund.pfixcore.auth.Authentication;
 import de.schlund.pfixcore.auth.AuthorizationException;
 import de.schlund.pfixcore.auth.AuthorizationInterceptor;
-import de.schlund.pfixcore.auth.NotAuthenticatedException;
 import de.schlund.pfixcore.auth.Role;
 import de.schlund.pfixcore.exception.PustefixApplicationException;
 import de.schlund.pfixcore.exception.PustefixCoreException;
 import de.schlund.pfixcore.exception.PustefixRuntimeException;
 import de.schlund.pfixcore.generator.StatusCodeInfo;
+import de.schlund.pfixcore.workflow.Context;
 import de.schlund.pfixcore.workflow.ContextImpl;
 import de.schlund.pfixcore.workflow.ContextInterceptor;
 import de.schlund.pfixcore.workflow.FlowStep;
@@ -871,21 +870,15 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
         }
     }
     
-    public void checkAuthorization(Authentication authentication) {
-        if (parentcontext.getContextConfig().hasRoles()) {
-            String pageName = currentpagerequest.getRootName();
-            if (authentication == null) {
-                if (LOG.isDebugEnabled()) LOG.debug("Not yet authenticated.");
-                throw new NotAuthenticatedException("Not yet authenticated.", "pageaccess", pageName);
-            }
-            PageRequestConfig pageConfig = this.getConfigForCurrentPageRequest();
-            AuthConstraint authConstraint = pageConfig.getAuthConstraint();
-            if (authConstraint == null) authConstraint = parentcontext.getContextConfig().getDefaultAuthConstraint();
-            if (authConstraint != null) {
-                if (!authConstraint.isAuthorized(authentication)) {
-                    if (LOG.isDebugEnabled()) LOG.debug("Not authorized to access page '" + pageName + "'");
-                    throw new AuthConstraintViolation("Not authorized to access page '" + pageName + "'.", "pageaccess", pageName, authConstraint);
-                }
+    public void checkAuthorization(Context context) {
+        String pageName = currentpagerequest.getRootName();
+        PageRequestConfig pageConfig = this.getConfigForCurrentPageRequest();
+        AuthConstraint authConstraint = pageConfig.getAuthConstraint();
+        if (authConstraint == null) authConstraint = parentcontext.getContextConfig().getDefaultAuthConstraint();
+        if (authConstraint != null) {
+            if (!authConstraint.isAuthorized(parentcontext)) {
+                if (LOG.isDebugEnabled()) LOG.debug("Not authorized to access page '" + pageName + "'");
+                throw new AuthConstraintViolation("Not authorized to access page '" + pageName + "'.", "pageaccess", pageName, authConstraint);
             }
         }
     }
@@ -893,7 +886,7 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
     private ResultDocument checkPageAuthorization() throws PustefixApplicationException, PustefixCoreException {
         if (!parentcontext.getContextConfig().hasRoles()) return null;
         try {
-            checkAuthorization(parentcontext.getAuthentication());
+            checkAuthorization(parentcontext);
         } catch (AuthorizationException authEx) {
             String targetPage=authEx.getTarget();
             if(roleAuthDeps!=null && roleAuthDeps.contains(targetPage)) { 

@@ -46,6 +46,10 @@
         <xs:element ref="prop:config-include"/>
       </xs:choice>
       <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element name="condition" type="prop:conditionTopLevelType"/>
+        <xs:element ref="prop:config-include"/>
+      </xs:choice>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
         <xs:element name="authconstraint" minOccurs="0">
           <xs:complexType>
             <xs:complexContent>
@@ -182,18 +186,18 @@
   
   <xs:complexType name="authconstraintType">
     <xs:sequence>
-      <xs:element ref="prop:condition" minOccurs="0"/>
+      <xs:element ref="prop:abstractcondition" minOccurs="0"/>
     </xs:sequence>
   </xs:complexType>
 
-  <xs:element name="condition" type="prop:conditionType" abstract="true"/>
-  <xs:complexType name="conditionType" abstract="true"/>
+  <xs:element name="abstractcondition" type="prop:abstractconditionType" abstract="true"/>
+  <xs:complexType name="abstractconditionType" abstract="true"/>
  
   <xs:complexType name="singleconditionType">
     <xs:complexContent>
-      <xs:extension base="prop:conditionType">
+      <xs:extension base="prop:abstractconditionType">
         <xs:sequence>
-          <xs:element ref="prop:condition" minOccurs="1" maxOccurs="1"/>
+          <xs:element ref="prop:abstractcondition" minOccurs="1" maxOccurs="1"/>
         </xs:sequence>
       </xs:extension>
     </xs:complexContent>
@@ -201,26 +205,65 @@
  
   <xs:complexType name="multiconditionType">
     <xs:complexContent>
-      <xs:extension base="prop:conditionType">
+      <xs:extension base="prop:abstractconditionType">
       	<xs:sequence>
-          <xs:element ref="prop:condition" minOccurs="2" maxOccurs="unbounded"/>
+          <xs:element ref="prop:abstractcondition" minOccurs="2" maxOccurs="unbounded"/>
         </xs:sequence>
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
   
-  <xs:element name="or" type="prop:multiconditionType" substitutionGroup="prop:condition"/>
-  <xs:element name="and" type="prop:multiconditionType" substitutionGroup="prop:condition"/>
-  <xs:element name="not" type="prop:singleconditionType" substitutionGroup="prop:condition"/>
+  <xs:element name="or" type="prop:multiconditionType" substitutionGroup="prop:abstractcondition"/>
+  <xs:element name="and" type="prop:multiconditionType" substitutionGroup="prop:abstractcondition"/>
+  <xs:element name="not" type="prop:singleconditionType" substitutionGroup="prop:abstractcondition"/>
   
-  <xs:element name="hasrole" type="prop:hasroleType" substitutionGroup="prop:condition"/>
+  <xs:element name="hasrole" type="prop:hasroleType" substitutionGroup="prop:abstractcondition"/>
   <xs:complexType name="hasroleType">
     <xs:complexContent>
-      <xs:extension base="prop:conditionType">
+      <xs:extension base="prop:abstractconditionType">
          <xs:attribute name="name" type="xs:string" use="required"/>
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
+  
+  <xs:element name="condition" type="prop:conditionType" substitutionGroup="prop:abstractcondition"/>
+  
+  <xs:complexType name="conditionTopLevelType">
+    <xs:complexContent>
+      <xs:extension base="prop:abstractconditionType">
+         <xs:sequence>
+           <xs:element name="property" minOccurs="0" maxOccurs="unbounded">
+             <xs:complexType>
+               <xs:attribute name="name" type="xs:string" use="required"/>
+               <xs:attribute name="value" type="xs:string" use="required"/>
+             </xs:complexType>
+           </xs:element>
+         </xs:sequence>
+         <xs:attribute name="id" type="xs:string" use="required"/>
+         <xs:attribute name="class" type="xs:string" use="required"/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  
+  <xs:complexType name="conditionType">
+    <xs:complexContent>
+      <xs:extension base="prop:abstractconditionType">
+         <xs:sequence>
+           <xs:element name="property" minOccurs="0" maxOccurs="unbounded">
+             <xs:complexType>
+               <xs:attribute name="name" type="xs:string" use="required"/>
+               <xs:attribute name="value" type="xs:string" use="required"/>
+             </xs:complexType>
+           </xs:element>
+         </xs:sequence>
+         <xs:attribute name="ref" type="xs:string" use="optional"/>
+         <xs:attribute name="class" type="xs:string" use="optional"/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  
+  
+  
   
   <xs:element name="encoding" type="prop:encodingType"/>
   <xs:simpleType name="encodingType">
@@ -332,16 +375,8 @@
 
   <xs:element name="role" type="prop:roleType"/>
   <xs:complexType name="roleType">
-    <xs:sequence>
-      <xs:element ref="prop:pageaccess" minOccurs="0" maxOccurs="1"/>
-    </xs:sequence>
     <xs:attribute name="name" type="xs:string" use="required"/>
     <xs:attribute name="initial" type="xs:boolean"/>
-  </xs:complexType>
-  
-  <xs:element name="pageaccess" type="prop:pageaccessType"/>
-  <xs:complexType name="pageaccessType">
-    <xs:attribute name="names" type="xs:string"/>
   </xs:complexType>
   
   <!-- </role> -->

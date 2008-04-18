@@ -175,7 +175,7 @@ public class DirectOutputServlet extends ServletManager {
          if(authRef!=null) {
              AuthConstraint authConst=context.getContextConfig().getAuthConstraint(authRef);
              if(authConst!=null) {
-                 if(!authConst.isAuthorized(context.getAuthentication())) {
+                 if(!authConst.isAuthorized(context)) {
                      res.sendError(HttpServletResponse.SC_FORBIDDEN, "Must authenticate first");
                  }
              } else throw new RuntimeException("AuthConstraint not found: "+authRef);

@@ -20,6 +20,8 @@ package de.schlund.pfixcore.auth;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import de.schlund.pfixcore.workflow.Context;
+
 /**
  * 
  * @author mleidig@schlund.de
@@ -27,7 +29,7 @@ import org.w3c.dom.Element;
  */
 public interface Condition {
 
-	public boolean evaluate(Authentication auth);
+	public boolean evaluate(Context context);
 	public Element toXML(Document doc);
 	
 }

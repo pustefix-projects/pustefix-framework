@@ -17,11 +17,13 @@
  */
 package de.schlund.pfixcore.auth;
 
+import de.schlund.pfixcore.workflow.Context;
+
 /**
  * @author mleidig@schlund.de
  */
 public interface AuthorizationInterceptor {
 
-    public void checkAuthorization(Authentication authentication) throws AuthorizationException;
+    public void checkAuthorization(Context context) throws AuthorizationException;
     
 }
