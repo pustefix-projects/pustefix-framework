@@ -1,3 +1,14 @@
+2008-04-18  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixcore/beans/InsertStatus.java: new marker annotation type for methods. Used to mark the method
+	that should be called for initialization of a resource after creation of the instance in the ContextResourceManager.
+	The method can look like either T:method() or T:method(Context). if the second form is given, the context wil be supplied. 
+	* src/de/schlund/pfixcore/beans/InitResource.java: new marker annotation type for methods. Used to mark the method
+	that is responsible for serializing the resource data into a dom tree. The signature of the method can either be
+	T:method(), in this case the returned object will be directly serialzed according to pustefix XOM and put into the DOM tree; 
+	it can have the form method(Element) or method(ResultDocument, Element), in both cases the method will use the supplied dom tree 
+	to enter the serialization data itself under the supplied Element.
+
 2008-04-17  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
 	* startTomcat.sh: 
