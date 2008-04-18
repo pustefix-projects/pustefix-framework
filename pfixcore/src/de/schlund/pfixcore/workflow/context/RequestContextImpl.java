@@ -653,7 +653,7 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
             if (state == null) {
                 LOG.warn("* Can't get a handling state for page " + currentpagerequest);
                 resdoc = new ResultDocument();
-                Node commentNode = resdoc.getRootElement().getOwnerDocument().createComment(" This XML tree contains no page specific data as no page configuration could be found! ");
+                Node commentNode = resdoc.getRootElement().getOwnerDocument().createComment("\nThis XML tree contains no page specific data as no page configuration could be found! ");
                 if (resdoc.getRootElement().getFirstChild() != null) {
                     resdoc.getRootElement().insertBefore(commentNode, resdoc.getRootElement().getFirstChild());
                 } else {
