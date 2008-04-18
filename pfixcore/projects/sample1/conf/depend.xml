@@ -26,7 +26,8 @@
     <page name="test"     handler="/xml/config"/>
     <page name="tokenerror"    handler="/xml/config"/>
     <page name="iwrapperinfo" handler="/xml/config"/>
-
+    <page name="frames" handler="/xml/config"/>
+    
     <page name="ssltest"  handler="/xml/secure"/>
     <page name="install"  handler="/xml/download"/>
     
