@@ -51,9 +51,9 @@
     <start>
       <interceptor class="de.schlund.pfixcore.example.SampleStartIC" />
     </start>
-    <!--     <end> -->
-    <!--       <interceptor class="de.schlund.pfixcore.example.SampleStartIC"/> -->
-    <!--     </end> -->
+    <!-- <end> -->
+    <!--   <interceptor class="de.schlund.pfixcore.example.SampleStartIC"/> -->
+    <!-- </end> -->
   </interceptors>
 
   <scriptedflow name="forceadult" file="sample1/conf/scriptedflow/forceadult.script.xml" />
@@ -104,8 +104,6 @@
 
   <!-- *** PageRequests and associated properties *** -->
 
-  <pagerequest name="frames" />
-
   <pagerequest name="A">
     <input>
       <wrapper prefix="select" class="de.schlund.pfixcore.example.iwrapper.TestSelect" />
@@ -124,8 +122,6 @@
       <resource node="simpledata" class="de.schlund.pfixcore.example.ContextSimpleData" />
     </output>
   </pagerequest>
-
-  <pagerequest name="test" />
 
   <pagerequest name="home">
     <default>
@@ -245,24 +241,11 @@
     <state class="de.schlund.pfixcore.example.InvalidateSessionState" />
   </pagerequest>
 
-  <pagerequest name="geninc" />
-
-  <pagerequest name="tokenerror" />
-
-  <pagerequest name="iwrapperinfo" />
-
   <config-include file="sample1/conf/fragments.xml" section="pagerequests" />
 
-  <properties>
-
+  <!-- <properties> -->
     <!-- *** some additional properties needed for this application *** -->
     <!-- <prop name="interfacelogging">sample1/log</prop> -->
-    <prop name="contexttshirt.feature.0">Waterproof</prop>
-    <prop name="contexttshirt.feature.1">Extra warm</prop>
-    <prop name="contexttshirt.feature.2">Windproof</prop>
-    <prop name="contexttrouser.feature.0">Waterproof</prop>
-    <prop name="contexttrouser.feature.1">Extra warm</prop>
-    <prop name="contexttrouser.feature.2">Windproof</prop>
-  </properties>
+  <!-- </properties> -->
 
 </contextxmlserver>
