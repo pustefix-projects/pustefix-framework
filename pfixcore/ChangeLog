@@ -84,6 +84,18 @@
 	* src/de/schlund/pfixcore/auth/AuthenticationImpl.java: Log hasRole() calls
 	for role names which don't exist/aren't defined in the context configuration.
 
+2008-04-14  Martin Leidig  <mleidig@schlund.de>
+
+	Use "_" instead of ":" as separator for the secure session cookie value because
+	the colon doesn't work any more since Tomcat 5.5.26 (the right hand side of the
+	value is truncated). Because the cookie cleanup code of former Pfixcore versions
+	doesn't work with such new cookies (throws an exception) and it's possible that
+	old and new versions of the cookie are present at the same time (e.g. when
+	switching to the new pfixcore version), the secure session cookie is renamed
+	and we temporarily support the cleanup of both versions.
+
+	* src/de/schlund/pfixxml/ServletManager.java
+
 2008-04-10  jtl  <jtl@schlund.de>
 
 	* projects/core/schema/properties200401.xsd: maybe I was able to change the schema according to my latest changes...
