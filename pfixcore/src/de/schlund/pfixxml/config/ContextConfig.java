@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.Properties;
 
 import de.schlund.pfixcore.auth.AuthConstraint;
+import de.schlund.pfixcore.auth.Condition;
 import de.schlund.pfixcore.auth.Role;
 import de.schlund.pfixcore.auth.RoleProvider;
 import de.schlund.pfixcore.workflow.ContextInterceptor;
@@ -148,5 +149,6 @@ public interface ContextConfig {
     RoleProvider getRoleProvider();
     AuthConstraint getDefaultAuthConstraint();
     AuthConstraint getAuthConstraint(String id);
+    Condition getCondition(String id);
     
 }

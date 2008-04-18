@@ -17,8 +17,8 @@
  */
 package de.schlund.pfixcore.auth.conditions;
 
-import de.schlund.pfixcore.auth.Authentication;
 import de.schlund.pfixcore.auth.Condition;
+import de.schlund.pfixcore.workflow.Context;
 
 /**
  * 
@@ -31,12 +31,12 @@ public class And extends ConditionGroup {
 		super(conditions);
 	}
 	
-	public boolean evaluate(Authentication auth) {
-		for (Condition condition:conditions) {
-			if (!condition.evaluate(auth)) return false; 
-		}
-		return true;
-	}
+	public boolean evaluate(Context context) {
+        for (Condition condition : conditions) {
+            if (!condition.evaluate(context)) return false;
+        }
+        return true;
+    }
 	
 	@Override
 	public String getOperatorString() {

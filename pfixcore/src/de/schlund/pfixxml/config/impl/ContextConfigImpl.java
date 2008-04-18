@@ -34,6 +34,7 @@ import org.apache.log4j.Logger;
 import org.xml.sax.SAXException;
 
 import de.schlund.pfixcore.auth.AuthConstraint;
+import de.schlund.pfixcore.auth.Condition;
 import de.schlund.pfixcore.auth.Role;
 import de.schlund.pfixcore.auth.RoleProvider;
 import de.schlund.pfixcore.workflow.ContextInterceptor;
@@ -70,6 +71,7 @@ public class ContextConfigImpl implements ContextConfig, RoleProvider {
     private List<Role> initialRoles = new ArrayList<Role>();
     private Map<String,AuthConstraint> authConstraints = new HashMap<String,AuthConstraint>();
     private AuthConstraint defaultAuthConstraint;
+    private Map<String,Condition> conditions = new HashMap<String,Condition>();
     private boolean doLoadTimeChecks = false;
     
     public void setAuthPage(String page) {
@@ -233,6 +235,14 @@ public class ContextConfigImpl implements ContextConfig, RoleProvider {
     
     public AuthConstraint getDefaultAuthConstraint() {
        return defaultAuthConstraint;
+    }
+    
+    public Condition getCondition(String id) {
+        return conditions.get(id);
+    }
+    
+    public void addCondition(String id, Condition condition) {
+        conditions.put(id,condition);
     }
     
     public void setNavigationFile(String filename) {

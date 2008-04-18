@@ -1,3 +1,47 @@
+2008-04-18  Martin Leidig  <mleidig@schlund.de>
+
+	Added custom condition support to the authentication mechanism. Now 
+	application developers can implement their own conditions (additionally
+	to the predefined 'hasRole' condition). A condition class has to
+	implement the Condition interface and can be configured using the
+	'condition' element in the context configuration. Conditions can be
+	defined as top-level elements (and referenced using the id) or inline 
+	within authconstraint elements. Top-level conditions can be checked 
+	from XSL using the pfx:condition('condition-id') function. 
+
+	Modified:
+	* src/de/schlund/pfixcore/auth/AuthenticationImpl.java
+	* src/de/schlund/pfixcore/auth/AuthConstraint.java
+	* src/de/schlund/pfixcore/auth/AuthorizationInterceptor.java
+	* src/de/schlund/pfixcore/auth/Condition.java
+	* src/de/schlund/pfixcore/auth/AuthConstraintImpl.java
+	* src/de/schlund/pfixcore/auth/conditions/Not.java
+	* src/de/schlund/pfixcore/auth/conditions/Or.java
+	* src/de/schlund/pfixcore/auth/conditions/And.java
+	* src/de/schlund/pfixcore/auth/conditions/ConditionGroup.java
+	* src/de/schlund/pfixcore/auth/conditions/HasRole.java
+	* src/de/schlund/pfixcore/workflow/context/RequestContextImpl.java
+	* src/de/schlund/pfixcore/workflow/ContextImpl.java
+	* src/de/schlund/pfixcore/example/bank/context/ContextCustomer.java
+	* src/de/schlund/pfixcore/example/bank/context/ContextCustomerImpl.java
+	* src/de/schlund/pfixcore/example/bank/LogoutState.java
+	* src/de/schlund/pfixcore/util/TransformerCallback.java
+	* src/de/schlund/pfixcore/webservice/ServiceRuntime.java
+	* src/de/schlund/pfixxml/DirectOutputServlet.java
+	* src/de/schlund/pfixxml/config/ContextConfig.java
+	* src/de/schlund/pfixxml/config/impl/ContextXMLServletConfigImpl.java
+	* src/de/schlund/pfixxml/config/impl/ConditionRule.java
+	* src/de/schlund/pfixxml/config/impl/ContextConfigImpl.java
+	* projects/core/schema/properties200401.xsd
+	* projects/core/schema/configfragments200609.xsd
+	* projects/core/xsl/functions.xsl
+	* projects/samplebank/txt/pages/main_home.xml
+	* projects/samplebank/conf/config.conf.xml
+
+	Added:
+	* src/de/schlund/pfixxml/config/impl/ConditionPropertyRule.java
+	* src/de/schlund/pfixcore/example/bank/PremiumCustomerCondition.java
+
 2008-04-18  Jens Lautenbacher  <jtl@schlund.de>
 
 	* src/de/schlund/pfixxml/config/impl/PagerequestOutputResourceRule.java: 

@@ -3,8 +3,29 @@
   <part name="content">
     <theme name="default">
       <h1>New offers:</h1>
-      <h2>Free of charge giro account</h2> <i>Read more...</i>
-      <h2>Time deposit up to a rate of 7%</h2> <i>Read more...</i>
+      <ul>
+        <li>
+          <h2>Free of charge giro account</h2> 
+          <i>Read more...</i>
+ 	    </li>
+ 	    <li>
+          <h2>Time deposit up to a rate of 7%</h2>
+          <i>Read more...</i>
+        </li>
+      </ul>
+      <ixsl:if test="pfx:condition('isPremiumCustomer')">
+        <h1>Premium customer offerings:</h1>
+        <ul>
+          <li>
+            <h2>Inflation linked bonds</h2>
+            <i>Read more...</i>
+          </li>
+          <li>
+            <h2>Inflation derivatives</h2>
+            <i>Read more...</i>
+          </li>
+        </ul>
+      </ixsl:if>
     </theme>
   </part>
   

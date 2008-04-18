@@ -20,8 +20,8 @@ package de.schlund.pfixcore.auth.conditions;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import de.schlund.pfixcore.auth.Authentication;
 import de.schlund.pfixcore.auth.Condition;
+import de.schlund.pfixcore.workflow.Context;
 
 /**
  * 
@@ -43,9 +43,9 @@ public class Not implements Condition {
 		this.condition=condition;
 	}
 	
-	public boolean evaluate(Authentication auth) {
-		return !condition.evaluate(auth);
-	}
+	public boolean evaluate(Context context) {
+        return !condition.evaluate(context);
+    }
 	
 	@Override
 	public String toString() {

@@ -24,8 +24,8 @@ import java.util.List;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import de.schlund.pfixcore.auth.Authentication;
 import de.schlund.pfixcore.auth.Condition;
+import de.schlund.pfixcore.workflow.Context;
 
 /**
  * 
@@ -49,7 +49,7 @@ public abstract class ConditionGroup implements Condition {
 		conditions.add(condition);
 	}
 	
-	public abstract boolean evaluate(Authentication auth);
+	public abstract boolean evaluate(Context context);
 	
 	public abstract String getOperatorString();
 	

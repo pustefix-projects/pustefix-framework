@@ -24,6 +24,10 @@
   <role name="UNRESTRICTED" />
   <role name="ACCOUNT" />
 
+  <condition id="isPremiumCustomer" class="de.schlund.pfixcore.example.bank.PremiumCustomerCondition">
+    <property name="limit" value="10000"/>
+  </condition>
+  
   <authconstraint id="DEFAULT" authpage="login" default="true">
     <hasrole name="ANONYMOUS" />
   </authconstraint>

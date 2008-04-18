@@ -106,8 +106,8 @@ public class ContextImpl implements Context, AccessibilityChecker, ExtendedConte
         }
 
         private void init(Context context) throws PustefixApplicationException, PustefixCoreException {
-        	if(getContextConfig().hasRoles()) {
-            	this.authentication = new AuthenticationImpl(servercontext);
+            this.authentication = new AuthenticationImpl(servercontext);
+            if(getContextConfig().hasRoles()) {
             	for(Role role:getContextConfig().getInitialRoles()) this.authentication.addRole(role.getName());
             }
             crm.init(context, context.getContextConfig());
@@ -186,10 +186,6 @@ public class ContextImpl implements Context, AccessibilityChecker, ExtendedConte
 
         public Authentication getAuthentication() {
             return authentication;
-        }
-        
-        public void setAuthentication(Authentication authentication) {
-            this.authentication = authentication;
         }
         
         @Override
@@ -462,10 +458,6 @@ public class ContextImpl implements Context, AccessibilityChecker, ExtendedConte
     
     public Authentication getAuthentication() {
         return sessioncontext.getAuthentication();
-    }
-    
-    public void setAuthentication(Authentication authentication) {
-        sessioncontext.setAuthentication(authentication);
     }
     
     @Override
