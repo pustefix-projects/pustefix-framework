@@ -18,14 +18,10 @@
  */
 
 package de.schlund.pfixcore.example;
-import java.util.HashMap;
 
 import org.apache.log4j.Logger;
-import org.w3c.dom.Element;
 
-import de.schlund.pfixcore.util.PropertiesUtils;
-import de.schlund.pfixcore.workflow.Context;
-import de.schlund.pfixxml.ResultDocument;
+
 /**
  * ContextTShirt.java
  *
@@ -37,22 +33,11 @@ import de.schlund.pfixxml.ResultDocument;
  *
  */
 
-public class ContextTShirtImpl implements ContextTShirt{
+public class ContextTShirtImpl implements ContextTShirt {
     private String     size     = null;
     private Integer    color    = null;
     private Integer[]  features = null;
-    protected Context  context  = null;
-    private final static Logger LOG = Logger.getLogger(ContextTShirtImpl.class);
-    
-    public void init(Context context) {
-        this.context = context;
-    }
-    
-    public void reset() {
-        size     = null;
-        color    = null;
-        features = null;
-    }
+    private final Logger LOG = Logger.getLogger(this.getClass().getName());
 
     public Integer getColor() { return color; }
 
@@ -75,22 +60,8 @@ public class ContextTShirtImpl implements ContextTShirt{
     }
 
     public String toString() {
-        LOG.debug("Doing ContextTShirt...");
+        LOG.debug("Doing " + this.getClass().getName() + "...");
         return "[Size: " + size + "][Color: " + color + "]";
     }
 
-    public void insertStatus(ResultDocument resdoc, Element tshirt) {
-	tshirt.setAttribute("size", getSize());
-        tshirt.setAttribute("color", "" + getColor());
-        
-        Integer[] tshirtfeatures = getFeature();
-        HashMap<String, String> featmap = PropertiesUtils.selectProperties(context.getProperties(), "contexttshirt.feature");
-        if (tshirtfeatures != null) {
-            for (int i = 0; i < tshirtfeatures.length; i++) {
-                Integer feat = tshirtfeatures[i];
-                ResultDocument.addTextChild(tshirt, "feature", (String) featmap.get(feat.toString()));
-            }
-        }
-    }
-    
 }// ContextTShirt

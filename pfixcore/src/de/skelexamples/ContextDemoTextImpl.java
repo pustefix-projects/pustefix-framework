@@ -19,16 +19,11 @@
 
 package de.skelexamples;
 
-import org.w3c.dom.Element;
-
-import de.schlund.pfixcore.workflow.Context;
-import de.schlund.pfixxml.ResultDocument;
-
 /**
- * A class representing our ContextResource. It has been createdto store the
+ * A class representing our ContextResource. It has been created to store the
  * text sent by the form in order to give it out on the second page.
  * 
- * @author <a href="mailto:rapude@schlund.de">Ralf Rapude </a> 
+ * @author <a href="mailto:rapude@schlund.de">Ralf Rapude </a>
  * @version $Id$
  */
 public class ContextDemoTextImpl implements ContextDemoText {
@@ -38,37 +33,12 @@ public class ContextDemoTextImpl implements ContextDemoText {
 
     /** Setting demoText with the String sent by the form */
     public void setDemoText(String formText) {
-        System.out.println("ContextDemoTextImpl::setDemoText");
         demoText = formText;
     }
 
     /** Certainly we need a getter for the String */
     public String getDemoText() {
-        System.out.println("ContextDemoTextImpl::getDemoText");
         return demoText;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see de.schlund.pfixcore.workflow.ContextResource#init(de.schlund.pfixcore.workflow.Context)
-     */
-    public void init(Context context) throws Exception {
-
-    }
-
-    /**
-     * Inserting the String into the Domtree given back to pustefix
-     * 
-     * @see de.schlund.pfixcore.workflow.ContextResource#insertStatus(
-     *      de.schlund.pfixxml.ResultDocument, org.w3c.dom.Element)
-     */
-    public void insertStatus(ResultDocument resdoc, final Element root)
-            throws Exception {
-        if (demoText != null) {
-            resdoc.createSubNode(root, "demotext").setAttribute("value",
-                    demoText);
-        }
     }
 
 }

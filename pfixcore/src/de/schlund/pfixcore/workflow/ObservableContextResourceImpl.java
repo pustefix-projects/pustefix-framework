@@ -34,7 +34,7 @@ import org.apache.log4j.Logger;
  *
  */
 
-public abstract class ObservableContextResourceImpl implements ContextResource, ObservableContextResource {
+public abstract class ObservableContextResourceImpl implements ObservableContextResource {
     private Vector<ContextResourceObserver> observers = new Vector<ContextResourceObserver>();
     private Logger LOG = Logger.getLogger(this.getClass());
 

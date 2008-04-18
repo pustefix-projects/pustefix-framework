@@ -4,10 +4,7 @@
     <theme name="default">
       <p><pfx:button page="home">Home</pfx:button></p>
       <b>The text received from the form:</b><br/>
-      <!-- ixsl means that this tag will be interpreted at runtime, when the HTML -->
-      <!-- is generated. It means that there will be a node "data" in the DOM tree containing -->
-      <!-- a node called "demotext".  -->
-      <ixsl:value-of select="/formresult/data/demotext/@value"/>
+      <ixsl:value-of select="/formresult/data/@demoText"/>
     </theme>
   </part>
 </include_parts>

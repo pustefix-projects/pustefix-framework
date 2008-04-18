@@ -18,7 +18,6 @@
  */
 
 package de.schlund.pfixcore.example;
-import de.schlund.pfixcore.workflow.ContextResource;
 
 /**
  * ContextSimpleData.java
@@ -28,7 +27,7 @@ import de.schlund.pfixcore.workflow.ContextResource;
  *
  */
 
-public interface ContextSimpleData extends ContextResource {
+public interface ContextSimpleData {
     public void    setValue(String key, String value);
     public String  getValue(String key);
     public void    reset();

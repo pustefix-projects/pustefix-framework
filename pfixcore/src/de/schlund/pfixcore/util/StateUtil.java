@@ -19,18 +19,20 @@
 
 package de.schlund.pfixcore.util;
 
+import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
 
 import org.apache.log4j.Logger;
+import org.w3c.dom.Element;
 
+import de.schlund.pfixcore.beans.InsertStatus;
+import de.schlund.pfixcore.exception.PustefixApplicationException;
 import de.schlund.pfixcore.workflow.Context;
-import de.schlund.pfixcore.workflow.ContextResource;
 import de.schlund.pfixcore.workflow.ContextResourceManager;
 import de.schlund.pfixcore.workflow.State;
-import de.schlund.pfixcore.workflow.StateImpl;
 import de.schlund.pfixxml.PfixServletRequest;
 import de.schlund.pfixxml.RequestParam;
 import de.schlund.pfixxml.ResultDocument;
@@ -46,7 +48,7 @@ import de.schlund.pfixxml.perflogging.PerfEventType;
  */
 public class StateUtil {
   
-    private final static Logger LOG = Logger.getLogger(StateImpl.class);
+    private final static Logger LOG = Logger.getLogger(StateUtil.class);
     
     private static final String MIMETYPE      = "mimetype";
     private static final String HEADER        = "responseheader";
@@ -62,13 +64,11 @@ public class StateUtil {
         return resdoc;
     }
     
-  
-    /**
-     * 
-     */
+    
+    @SuppressWarnings("deprecation")
     public static void renderContextResources(Context context, ResultDocument resdoc) throws Exception {
         ContextResourceManager crm = context.getContextResourceManager();
-        Map<String, Class<? extends ContextResource>> crs = context.getConfigForCurrentPageRequest().getContextResources();
+        Map<String, Class<?>> crs = context.getConfigForCurrentPageRequest().getContextResources();
         
         for (Iterator<String> i = crs.keySet().iterator(); i.hasNext();) {
             String nodename = i.next();
@@ -76,14 +76,45 @@ public class StateUtil {
             if (LOG.isDebugEnabled()) {
                 LOG.debug("*** Auto appending status for " + classname + " at node " + nodename);
             }
-            ContextResource cr = crm.getResource(classname);
+            Object cr = crm.getResource(classname);
             if (cr == null) {
-                throw new XMLException("ContextResource not found: " + classname);
+                throw new XMLException("Resource not found: " + classname);
             }
            
             PerfEvent pe = new PerfEvent(PerfEventType.CONTEXTRESOURCE_INSERTSTATUS, classname);
             pe.start();
-            cr.insertStatus(resdoc, resdoc.createNode(nodename));
+            if (cr instanceof de.schlund.pfixcore.workflow.ContextResource) {
+                LOG.debug("***** Resource implements ContextResource => calling insertStatus(...) of " + cr.getClass().getName());
+                ((de.schlund.pfixcore.workflow.ContextResource) cr).insertStatus(resdoc, resdoc.createNode(nodename));
+            } else {
+                boolean found_annotation = false;
+                for (Method m : cr.getClass().getMethods()) {
+                    if (m.isAnnotationPresent(InsertStatus.class)) {
+                        Class<?>[] params = m.getParameterTypes();
+                        Class<?>  rettype = m.getReturnType();
+                        if (params.length == 0 && rettype != null) {
+                            LOG.debug("***** Found @InsertStatus for Object:" + m.getName() + "() of " + cr.getClass().getName());
+                            ResultDocument.addObject(resdoc.createNode(nodename), m.invoke(cr, new Object[] {}));
+                        } else if (params.length == 1 && params[0].isAssignableFrom(Element.class)) {
+                            LOG.debug("***** Found @InsertStatus for " + m.getName() + "(Element) of " + cr.getClass().getName());
+                            m.invoke(cr, resdoc.createNode(nodename));
+                        } else if (params.length == 2 && params[0].isAssignableFrom(ResultDocument.class) && params[1].isAssignableFrom(Element.class)) {
+                            LOG.debug("***** Found @InsertStatus for " + m.getName() + "(ResultDocument, Element) of " + cr.getClass().getName());
+                            m.invoke(cr, resdoc, resdoc.createNode(nodename));
+                        } else {
+                            throw new PustefixApplicationException("Exception when trying to call annotated method '@InsertStatus' " +
+                                    "of " + cr.getClass().getName() + ": Need either a signature of either " + 
+                            "method(Element) or method(ResultDocument, Element)");
+                        }
+                        found_annotation = true;
+                        break;
+                    }
+                }
+                if (!found_annotation) {
+                    LOG.debug("***** Serializing the complete resource " + cr.getClass().getName());
+                    ResultDocument.addObject(resdoc.createNode(nodename), cr);
+                }
+            }
             pe.save();
         }
     }

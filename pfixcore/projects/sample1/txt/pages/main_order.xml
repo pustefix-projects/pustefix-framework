@@ -1,4 +1,5 @@
-<?xml version="1.0" encoding="ISO-8859-1"?><include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
 
   <part name="content">
     <theme name="default">
@@ -69,9 +70,12 @@
           <tr valign="top">
             <pfx:checkfield name="shirt.Feature"><td class="{$pfx_class}">Features:</td></pfx:checkfield>
             <td>
-              <pfx:xinp default="true" name="shirt.Feature" type="check" value="0"/>Waterproof<br/>
-              <pfx:xinp default="true" name="shirt.Feature" type="check" value="1"/>Extra warm<br/>
-              <pfx:xinp default="true" name="shirt.Feature" type="check" value="2"/>Windproof<br/>
+              <pfx:xinp default="true" name="shirt.Feature" type="check" value="0"/>
+              <pfx:include part="tshirt_feature_0" href="sample1/dyntxt/order_features.xml"/><br/>
+              <pfx:xinp default="true" name="shirt.Feature" type="check" value="1"/>
+              <pfx:include part="tshirt_feature_1" href="sample1/dyntxt/order_features.xml"/><br/>
+              <pfx:xinp default="true" name="shirt.Feature" type="check" value="2"/>
+              <pfx:include part="tshirt_feature_2" href="sample1/dyntxt/order_features.xml"/><br/>
               <pfx:xinp name="shirt.Feature" type="check" value="3"/>[=&gt; Error]
             </td>
           </tr>
@@ -85,7 +89,7 @@
     <theme name="default">
       <table bgcolor="#bbccff" cellpadding="2" cellspacing="0" class="boxed">
         <ixsl:choose>
-          <ixsl:when test="/formresult/counter/@showcounter = 'false'">
+          <ixsl:when test="/formresult/counter/@showCounter = 'false'">
             <tr>
               <td colspan="2">
                 <pfx:xinp forcestop="true" type="submit" value="Show Counter" action="changeCounter">
@@ -145,7 +149,7 @@
             </td>
           </tr>
         </pfx:checkactive>
-        <ixsl:if test="/formresult/togglepic[@do_show = 'true']">
+        <ixsl:if test="/formresult/togglepic[@show = 'true']">
           <tr>
             <td>
               <pfx:image src="/sample1/img/test.gif"/>
@@ -190,9 +194,12 @@
           <tr valign="top">
             <pfx:checkfield name="trouser.Feature"><td class="{$pfx_class}">Features:</td></pfx:checkfield>
             <td>
-              <pfx:xinp name="trouser.Feature" type="check" value="0"/>Waterproof<br/>
-              <pfx:xinp name="trouser.Feature" type="check" value="1"/>Extra warm<br/>
-              <pfx:xinp name="trouser.Feature" type="check" value="2"/>Windproof<br/>
+              <pfx:xinp name="trouser.Feature" type="check" value="0"/>
+              <pfx:include part="trouser_feature_0" href="sample1/dyntxt/order_features.xml"/><br/>
+              <pfx:xinp name="trouser.Feature" type="check" value="1"/>
+              <pfx:include part="trouser_feature_1" href="sample1/dyntxt/order_features.xml"/><br/>
+              <pfx:xinp name="trouser.Feature" type="check" value="2"/>
+              <pfx:include part="trouser_feature_2" href="sample1/dyntxt/order_features.xml"/><br/>
             </td>
           </tr>
           <errormsg name="trouser.Feature"/>

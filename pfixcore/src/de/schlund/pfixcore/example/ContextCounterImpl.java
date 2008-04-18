@@ -20,11 +20,6 @@
 package de.schlund.pfixcore.example;
 
 import org.apache.log4j.Logger;
-import org.w3c.dom.Element;
-
-import de.schlund.pfixcore.workflow.Context;
-import de.schlund.pfixcore.workflow.ContextResource;
-import de.schlund.pfixxml.ResultDocument;
 
 /**
  * ContextCounter.java
@@ -37,16 +32,11 @@ import de.schlund.pfixxml.ResultDocument;
  *
  */
 
-public class ContextCounterImpl implements ContextResource, ContextCounter {
-
+public class ContextCounterImpl implements ContextCounter {
     private Boolean  showcounter = Boolean.FALSE;
     private int      counter     = 0;
-    private final static Logger LOG    = Logger.getLogger(ContextCounterImpl.class);
-    // private Context  context;
-    
-    public void init(Context context) {
-        // this.context = context;
-    }
+
+    private final static Logger LOG = Logger.getLogger(ContextCounterImpl.class);
     
     public void reset() {
         showcounter = Boolean.FALSE;
@@ -78,9 +68,4 @@ public class ContextCounterImpl implements ContextResource, ContextCounter {
         return "[showcounter?: " + showcounter + "][counter?: " + counter + "]";
     }
 
-    public void insertStatus(ResultDocument resdoc, Element overview) {
-	overview.setAttribute("showcounter", "" + showcounter);
-        overview.setAttribute("counter", "" + counter);
-    }
-    
 }// ContextCounter

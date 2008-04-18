@@ -18,7 +18,6 @@
  */
 
 package de.schlund.pfixcore.example;
-import de.schlund.pfixcore.workflow.ContextResource;
 /**
  * ContextCounter.java
  *
@@ -30,7 +29,7 @@ import de.schlund.pfixcore.workflow.ContextResource;
  *
  */
 
-public interface ContextCounter extends ContextResource{
+public interface ContextCounter {
     public Boolean getShowCounter();
     public int getCounter();
     public void setShowCounter(Boolean showcounter);

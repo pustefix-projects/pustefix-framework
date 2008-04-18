@@ -108,8 +108,10 @@
         Goto FTP UniKa!</pfx:elink>
         <br/>
         <pfx:button page="geninc">Test generated runtime stylesheet include</pfx:button>  
-        <pfx:button page="invalidate">Invalidate this session</pfx:button>
+        <pfx:button page="invalidate">Invalidate this session</pfx:button>  
+        <pfx:button page="frames">Goto frames test</pfx:button> 
         <br/>
+        <pfx:button page="upload">Test upload mechanism</pfx:button>         
     </theme>
   </part>
   

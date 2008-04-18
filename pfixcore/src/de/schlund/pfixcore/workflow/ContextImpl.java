@@ -196,9 +196,9 @@ public class ContextImpl implements Context, AccessibilityChecker, ExtendedConte
         public String toString() {
             StringBuffer contextbuf = new StringBuffer("\n");
 
-            contextbuf.append("     >>>> ContextResourcen <<<<\n");
-            for (Iterator<ContextResource> i = crm.getResourceIterator(); i.hasNext();) {
-                ContextResource res = (ContextResource) i.next();
+            contextbuf.append("     >>>> Resources <<<<\n");
+            for (Iterator<Object> i = crm.getResourceIterator(); i.hasNext();) {
+                Object res = i.next();
                 contextbuf.append("         " + res.getClass().getName() + ": ");
                 contextbuf.append(res.toString() + "\n");
             }
@@ -307,7 +307,7 @@ public class ContextImpl implements Context, AccessibilityChecker, ExtendedConte
         return getServerContext().getProperties();
     }
 
-    public Properties getPropertiesForContextResource(ContextResource res) {
+    public Properties getPropertiesForContextResource(Object res) {
         return getServerContext().getPropertiesForContextResource(res);
     }
 

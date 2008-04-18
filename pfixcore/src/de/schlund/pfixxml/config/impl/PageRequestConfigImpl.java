@@ -26,7 +26,6 @@ import java.util.Properties;
 
 import de.schlund.pfixcore.auth.AuthConstraint;
 import de.schlund.pfixcore.generator.IWrapper;
-import de.schlund.pfixcore.workflow.ContextResource;
 import de.schlund.pfixcore.workflow.State;
 import de.schlund.pfixcore.workflow.app.ResdocFinalizer;
 import de.schlund.pfixxml.config.PageRequestConfig;
@@ -50,7 +49,7 @@ public class PageRequestConfigImpl implements SSLOption, Cloneable, PageRequestC
     private Class<? extends IWrapper> authClass = null;
     private LinkedHashMap<String, Class<? extends IWrapper>> auxwrappers = new LinkedHashMap<String, Class<? extends IWrapper>>();
     private LinkedHashMap<String, IWrapperConfigImpl> iwrappers = new LinkedHashMap<String, IWrapperConfigImpl>();
-    private LinkedHashMap<String, Class<? extends ContextResource>> resources = new LinkedHashMap<String, Class<? extends ContextResource>>();
+    private LinkedHashMap<String, Class<?>> resources = new LinkedHashMap<String, Class<?>>();
     private Properties props = new Properties();
     private Policy policy = Policy.ANY;
     private boolean requiresToken = false;
@@ -179,14 +178,14 @@ public class PageRequestConfigImpl implements SSLOption, Cloneable, PageRequestC
         return this.auxwrappers;
     }
     
-    public void addContextResource(String prefix, Class<? extends ContextResource> clazz) {
+    public void addContextResource(String prefix, Class<?> clazz) {
         this.resources.put(prefix, clazz);
     }
     
     /* (non-Javadoc)
      * @see de.schlund.pfixxml.config.PageRequestConfig#getContextResources()
      */
-    public Map<String, Class<? extends ContextResource>> getContextResources() {
+    public Map<String, Class<?>> getContextResources() {
         return this.resources;
     }
     

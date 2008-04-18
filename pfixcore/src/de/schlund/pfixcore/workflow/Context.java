@@ -72,7 +72,7 @@ public interface Context {
     void                   addPageMessage(StatusCode scode, String level);
     void                   addPageMessage(StatusCode scode, String[] args);
     void                   addPageMessage(StatusCode scode, String[] args, String level);
-    Properties             getPropertiesForContextResource(ContextResource res);
+    Properties             getPropertiesForContextResource(Object res);
     ContextConfig          getContextConfig();
     Authentication         getAuthentication();
     

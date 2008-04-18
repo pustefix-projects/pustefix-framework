@@ -24,7 +24,6 @@ import java.util.Map;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
-import de.schlund.pfixcore.workflow.ContextResource;
 import de.schlund.pfixxml.config.ContextXMLServletConfig;
 
 public class PagerequestOutputResourceRule extends CheckedRule {
@@ -48,10 +47,10 @@ public class PagerequestOutputResourceRule extends CheckedRule {
         } catch (ClassNotFoundException e) {
             throw new SAXException("Could not load resource interface \"" + className + "\"!");
         }
-        if (!ContextResource.class.isAssignableFrom(clazz)) {
-            throw new SAXException("Context resource class " + clazz + " on page " + pageConfig.getPageName() + " does not implement " + ContextResource.class + " interface!");
-        }
-        pageConfig.addContextResource(node, clazz.asSubclass(ContextResource.class));
+//        if (!ContextResource.class.isAssignableFrom(clazz)) {
+//            throw new SAXException("Context resource class " + clazz + " on page " + pageConfig.getPageName() + " does not implement " + ContextResource.class + " interface!");
+//        }
+        pageConfig.addContextResource(node, clazz);
     }
 
     protected Map<String, Boolean> wantsAttributes() {

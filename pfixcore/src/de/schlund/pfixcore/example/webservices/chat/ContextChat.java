@@ -6,15 +6,13 @@
  */
 package de.schlund.pfixcore.example.webservices.chat;
 
-import de.schlund.pfixcore.workflow.ContextResource;
-
 /**
  * @author ml
  *
  * To change the template for this generated type comment go to
  * Window - Preferences - Java - Code Generation - Code and Comments
  */
-public interface ContextChat extends ContextResource {
+public interface ContextChat {
     
     public void login(String nickName) throws Exception;
     public void logout() throws Exception;

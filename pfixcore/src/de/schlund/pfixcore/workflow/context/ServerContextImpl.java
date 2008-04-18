@@ -27,7 +27,6 @@ import de.schlund.pfixcore.auth.RoleNotFoundException;
 import de.schlund.pfixcore.auth.RoleProvider;
 import de.schlund.pfixcore.workflow.ContextInterceptor;
 import de.schlund.pfixcore.workflow.ContextInterceptorFactory;
-import de.schlund.pfixcore.workflow.ContextResource;
 import de.schlund.pfixcore.workflow.PageMap;
 import de.schlund.pfixcore.workflow.State;
 import de.schlund.pfixcore.workflow.VariantManager;
@@ -84,7 +83,7 @@ public class ServerContextImpl implements RoleProvider {
         return config.getProperties();
     }
 
-    public Properties getPropertiesForContextResource(ContextResource res) {
+    public Properties getPropertiesForContextResource(Object res) {
         return config.getContextResourceConfig(res.getClass()).getProperties();
     }
     

@@ -18,13 +18,7 @@
  */
 
 package de.schlund.pfixcore.example;
-import java.util.HashMap;
 
-import org.apache.log4j.Logger;
-import org.w3c.dom.Element;
-
-import de.schlund.pfixcore.util.PropertiesUtils;
-import de.schlund.pfixxml.ResultDocument;
 /**
  * ContextTrouser.java
  *
@@ -36,31 +30,15 @@ import de.schlund.pfixxml.ResultDocument;
  *
  */
 
-// Uuugh, you wouldn't want to do this in a normal C-Res.
-// Inheritance from one C-Res to another is asking for trouble.
+// Uuugh, you wouldn't want to do this in a normal Resource.
+// Inheritance from one Resource to another is asking for trouble.
 // But for this example it helps keeping the code small.
 public class ContextTrouserImpl extends ContextTShirtImpl implements ContextTrouser{
-    private final static Logger LOG = Logger.getLogger(ContextTrouserImpl.class);
     
-    public String toString() {
-        LOG.debug("Doing ContextTrouser...");
-        return "[Size: " + getSize() + "][Color: " + getColor() + "]";
+    public void reset() {
+        setSize(null);
+        setColor(null);
+        setFeature(null);
     }
-    
-    public void insertStatus(ResultDocument resdoc, Element elem) {
-        if (getSize() != null && getColor() != null) {
-            elem.setAttribute("size", getSize());
-            elem.setAttribute("color", "" + getColor());
-            
-            Integer[] trouserfeatures = getFeature();
-            HashMap<String, String> featmap = PropertiesUtils.selectProperties(context.getProperties(), "contexttrouser.feature");
-            if (trouserfeatures != null) {
-                for (int i = 0; i < trouserfeatures.length; i++) {
-                    Integer feat = trouserfeatures[i];
-                    ResultDocument.addTextChild(elem, "feature", (String) featmap.get(feat.toString()));
-                } 
-            }
-        }
-    }
-    
+
 }// ContextTrouser

@@ -26,7 +26,6 @@ import de.schlund.pfixcore.auth.AuthConstraint;
 import de.schlund.pfixcore.auth.Role;
 import de.schlund.pfixcore.auth.RoleProvider;
 import de.schlund.pfixcore.workflow.ContextInterceptor;
-import de.schlund.pfixcore.workflow.ContextResource;
 
 /**
  * Provides configuration for a context instance.
@@ -64,7 +63,7 @@ public interface ContextConfig {
      * @param clazz class of the context resource
      * @return configuration object for the context resource
      */
-    ContextResourceConfig getContextResourceConfig(Class<? extends ContextResource> clazz);
+    ContextResourceConfig getContextResourceConfig(Class<?> clazz);
 
     /**
      * Returns a map that maps interfaces to the corresponding context resource
@@ -72,7 +71,7 @@ public interface ContextConfig {
      * 
      * @return map containing interface to context resource configuration mapping
      */
-    Map<Class<? extends ContextResource>, ? extends ContextResourceConfig> getInterfaceToContextResourceMap();
+    Map<Class<?>, ? extends ContextResourceConfig> getInterfaceToContextResourceMap();
 
     /**
      * Returns a list of configurations for all pageflows.

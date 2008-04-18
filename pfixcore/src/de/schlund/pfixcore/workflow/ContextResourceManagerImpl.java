@@ -19,6 +19,7 @@
 
 package de.schlund.pfixcore.workflow;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -27,6 +28,7 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 
+import de.schlund.pfixcore.beans.InitResource;
 import de.schlund.pfixcore.exception.PustefixApplicationException;
 import de.schlund.pfixcore.exception.PustefixCoreException;
 import de.schlund.pfixcore.exception.PustefixRuntimeException;
@@ -34,8 +36,7 @@ import de.schlund.pfixxml.config.ContextConfig;
 import de.schlund.pfixxml.config.ContextResourceConfig;
 
 /**
- * Implements the ability to store objects implementing a number of interfaces extending
- * the ContextResource interface
+ * Implements the ability to store objects implementing a number of interfaces
  *
  * @author jtl, thomas
  *
@@ -43,59 +44,33 @@ import de.schlund.pfixxml.config.ContextResourceConfig;
 
 public class ContextResourceManagerImpl implements ContextResourceManager {
     private final static Logger LOG = Logger.getLogger(ContextResourceManagerImpl.class);
-    private HashMap<String, ContextResource>  resources = new HashMap<String, ContextResource>();
+    private HashMap<String, Object>  resources = new HashMap<String, Object>();
     
     /**
-     * Instanciates the objects and registers the interfaces which
+     * Instantiates the objects and registers the interfaces which
      * should be used from each.
      *
-     * In general such an object implements a number of interfaces extending
-     * the ContextResource interface. You are able to specify the classes
-     * you want to instanciate and to specify which interfaces you want to
+     * In general such an object implements a number of interfaces. You are able to specify the classes
+     * you want to instantiate and to specify which interfaces you want to
      * use from such an object.
      * 
-     * The configuration is done by passing properties, each object you want
-     * to use must be specified in a single property.
-     * <br>
-     * The name of this property consists of the prefix
-     * <code>context.resource.[A_NUMBER].</code> followed by the
-     * full qualified classname of the class.
-     * <br>
-     * The value of the property specifies the interfaces you want to use
-     * from this object. All interfaces are declared by the full qualified
-     * classname of the interface and separated by a comma. 
-     * <br>
-     * An wrong example:<br>
-     * <code>context.rescoure.1.de.foo.FooImpl             = Foo</code><br>
-     * <code>context.rescoure.2.de.foo.FooAndBarAndBazImpl = Foo,Bar,Baz</code>
-     *
-     * This example, written as above, would be invalid as no two ContextRessources
-     * are allowed to act as an implementation for the same interface(Foo in this case).
-     * Note that the classes may implement the same interface, they are just not allowed to act as
-     * an implementation for the same interface in a ContextRessource declaration.
-     *
-     * The correct example could be:<br>
-     * <code>context.rescoure.1.de.foo.FooImpl             = Foo</code><br>
-     * <code>context.rescoure.2.de.foo.FooAndBarAndBazImpl = Bar,Baz</code>
-     *
-     * which is correct without any change in the code of the implementing classes.
      * @throws PustefixApplicationException 
      * @throws PustefixCoreException 
      *
      */
-    
+    @SuppressWarnings("deprecation")
      public void init(Context context, ContextConfig config) throws PustefixApplicationException, PustefixCoreException {
-        LOG.debug("initialize ContextResources...");
+        LOG.debug("Initializing Resources...");
         
-        Collection<ContextResource> resourcesToInitialize = new ArrayList<ContextResource>();
-        Map<String, ContextResource> resourceClassToInstance = new HashMap<String, ContextResource>();
+        Collection<Object> resourcesToInitialize = new ArrayList<Object>();
+        Map<String, Object> resourceClassToInstance = new HashMap<String, Object>();
         
         for (ContextResourceConfig resourceConfig : config.getContextResourceConfigs()) {
-            ContextResource cr = null;
+            Object cr = null;
             String classname = resourceConfig.getContextResourceClass().getName();
             try {
                 LOG.debug("Creating object with name [" + classname + "]");
-                cr = (ContextResource) resourceConfig.getContextResourceClass().newInstance();
+                cr = resourceConfig.getContextResourceClass().newInstance();
             } catch (InstantiationException e) {
                 throw new PustefixRuntimeException("Exception while creating object " + classname + ":" + e);
             } catch (IllegalAccessException e) {
@@ -106,39 +81,63 @@ public class ContextResourceManagerImpl implements ContextResourceManager {
             resourceClassToInstance.put(cr.getClass().getName(), cr);
         }
         
-        Map<Class<? extends ContextResource>, ? extends ContextResourceConfig> interfaces = config.getInterfaceToContextResourceMap();
-        for (Class<? extends ContextResource> clazz : interfaces.keySet()) {
+        Map<Class<?>, ? extends ContextResourceConfig> interfaces = config.getInterfaceToContextResourceMap();
+        for (Class<?> clazz : interfaces.keySet()) {
             String interfacename = clazz.getName();
             String resourceclass = interfaces.get(clazz).getContextResourceClass().getName();
-            ContextResource cr = resourceClassToInstance.get(resourceclass);
+            Object cr = resourceClassToInstance.get(resourceclass);
             checkInterface(cr, interfacename);
             LOG.debug("* Registering [" + cr.getClass().getName() + "] for interface [" + interfacename + "]");
             resources.put(interfacename, cr);
         }
         
-        for (Iterator<ContextResource> i = resourcesToInitialize.iterator(); i.hasNext();) {
-            ContextResource resource = i.next();
-            try {
-                resource.init(context);
-            } catch (Exception e) {
-                throw new PustefixApplicationException("Exception while initializing context resource " + resource.getClass(), e);
+        for (Iterator<Object> i = resourcesToInitialize.iterator(); i.hasNext();) {
+            Object resource = i.next();
+
+            if (resource instanceof ContextResource) {
+                try {
+                    LOG.debug("***** Resource implements ContextResource => calling init(Context) of " + resource.getClass().getName());
+                    ((ContextResource) resource).init(context);
+                } catch (Exception e) {
+                    throw new PustefixApplicationException("Exception while initializing context resource " + resource.getClass(), e);
+                }
+            } else {
+                for (Method m : resource.getClass().getMethods()) {
+                    if (m.isAnnotationPresent(InitResource.class)) {
+                        try {
+                            Class<?>[] params = m.getParameterTypes();
+                            if (params.length == 0) {
+                                LOG.debug("***** Found @InitResource for " + m.getName() + "() of " + resource.getClass().getName());
+                                m.invoke(resource, new Object[]{});
+                            } else if (params.length == 1 && (params[0].isAssignableFrom(Context.class))) {
+                                LOG.debug("***** Found @InitResource for " + m.getName() + "(Context) of " + resource.getClass().getName());
+                                m.invoke(resource, context);
+                            } else {
+                                throw new PustefixApplicationException("Annotated '@InitResource' method must either take " + 
+                                        "no parameters or only one of type 'Context'or a superclass of it.");
+                            } 
+                        } catch (Exception e) {
+                            throw new PustefixApplicationException("Exception while initializing context resource " + resource.getClass(), e);
+                        }
+                        break;
+                    }
+                }
             }
         }
-        
     }
 
     /* (non-Javadoc)
      * @see de.schlund.pfixcore.workflow.ContextResourceManager#getResource(java.lang.String)
      */
-    public ContextResource getResource(String name) {
-        return  (ContextResource) resources.get(name);
+    public Object getResource(String name) {
+        return  resources.get(name);
     }
 
     /* (non-Javadoc)
      * @see de.schlund.pfixcore.workflow.ContextResourceManager#getResource(java.lang.Class)
      */
     @SuppressWarnings("unchecked")
-    public <T extends ContextResource> T getResource(Class<T> clazz) {
+    public <T> T getResource(Class<T> clazz) {
         return (T) resources.get(clazz.getName());
     }
     
@@ -150,8 +149,7 @@ public class ContextResourceManagerImpl implements ContextResourceManager {
         try {
             wantedinterface = Class.forName(interfacename) ;
         } catch (ClassNotFoundException e) {
-            throw new PustefixRuntimeException("Got ClassNotFoundException for classname " +  interfacename +
-                                       "while checking for interface");
+            throw new PustefixRuntimeException("Got ClassNotFoundException for classname " +  interfacename + "while checking for interface");
         }
 	
         LOG.debug("Check if requested interface [" + interfacename + 
@@ -181,7 +179,7 @@ public class ContextResourceManagerImpl implements ContextResourceManager {
     /* (non-Javadoc)
      * @see de.schlund.pfixcore.workflow.ContextResourceManager#getResourceIterator()
      */
-    public Iterator<ContextResource> getResourceIterator() {
+    public Iterator<Object> getResourceIterator() {
         return  resources.values().iterator();
     }
     

@@ -23,7 +23,6 @@ import java.util.Properties;
 
 import de.schlund.pfixcore.auth.AuthConstraint;
 import de.schlund.pfixcore.generator.IWrapper;
-import de.schlund.pfixcore.workflow.ContextResource;
 import de.schlund.pfixcore.workflow.State;
 import de.schlund.pfixcore.workflow.app.ResdocFinalizer;
 
@@ -118,7 +117,7 @@ public interface PageRequestConfig {
      * 
      * @return mapping of tagname to context resource class
      */
-    Map<String, Class<? extends ContextResource>> getContextResources();
+    Map<String, Class<?>> getContextResources();
 
     /**
      * Returns properties defined for this page.

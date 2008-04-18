@@ -22,11 +22,8 @@ package de.schlund.pfixcore.example;
 import java.util.HashMap;
 
 import org.apache.log4j.Logger;
-import org.w3c.dom.Element;
 
-import de.schlund.pfixcore.workflow.Context;
-import de.schlund.pfixcore.workflow.ContextResource;
-import de.schlund.pfixxml.ResultDocument;
+import de.schlund.pfixcore.beans.Exclude;
 
 /**
  * ContextAdultInfo.java
@@ -39,21 +36,16 @@ import de.schlund.pfixxml.ResultDocument;
  *
  */
 
-public class ContextAdultInfoImpl implements ContextResource, ContextAdultInfo {
+public class ContextAdultInfoImpl implements ContextAdultInfo {
     private Boolean adult = null;
     private HashMap<String, String> test  = new HashMap<String, String>();
     private final static Logger LOG = Logger.getLogger(ContextAdultInfoImpl.class);
     
-    public void init(Context context) {}
-   
-    public void reset() {
-        adult = null;
-    }
-
     public void setIndexedTest(HashMap<String, String> inmap) {
         test = inmap;
     }
 
+    @Exclude
     public HashMap<String, String> getIndexedTest() {
         return test;
     }
@@ -75,10 +67,6 @@ public class ContextAdultInfoImpl implements ContextResource, ContextAdultInfo {
     public String toString() {
         LOG.debug("Doing ContextAdultInfo...");
         return "[Adult?: " + adult + "]";
-    }
-
-    public void insertStatus(ResultDocument resdoc, Element node) throws Exception{
-        node.setAttribute("adult", "" + getAdult());
     }
     
 }// ContextAdultInfo

@@ -1,5 +1,50 @@
 2008-04-18  Jens Lautenbacher  <jtl@schlund.de>
 
+	* src/de/schlund/pfixxml/config/impl/PagerequestOutputResourceRule.java: 
+	* src/de/schlund/pfixxml/config/impl/PageRequestConfigImpl.java: 
+	* src/de/schlund/pfixxml/config/impl/ContextResourceRule.java: 
+	* src/de/schlund/pfixxml/config/impl/ContextResourceInterfaceRule.java: 
+	* src/de/schlund/pfixxml/config/impl/ContextResourceConfigImpl.java: 
+	* src/de/schlund/pfixxml/config/impl/ContextConfigImpl.java: 
+	* src/de/schlund/pfixxml/config/PageRequestConfig.java: 
+	* src/de/schlund/pfixxml/config/ContextResourceConfig.java: 
+	* src/de/schlund/pfixxml/config/ContextConfig.java: 
+	* src/de/schlund/pfixcore/workflow/context/ServerContextImpl.java: 
+	* src/de/schlund/pfixcore/workflow/ContextResourceManager.java: 
+	* src/de/schlund/pfixcore/workflow/ContextImpl.java: 
+	* src/de/schlund/pfixcore/workflow/Context.java (getPropertiesForContextResource): 
+	* src/de/schlund/pfixcore/webservice/AbstractService.java: no longer require resources in the context to implement
+	the ContextResource interface. Make changes according to the fact that these resources can be basically any object.
+
+    * src/de/schlund/pfixcore/workflow/ContextResourceManagerImpl.java: 
+    * src/de/schlund/pfixcore/util/StateUtil.java: change to handle initialization and insertStatus functionality 
+    by also handling objects that don't implement COntextResource. Also look out for the new annotations (see below). 
+    We are backwards compatible, but for the init in ContextResourceMangerImpl for non-ContextResource resources we look for
+    @InitResource. In StatueUtil the handling of the insertion of the resource data in the tree for non-ContextResource resources
+    is changed that we also allow for any object even when there is no @InsertStatus present - in this case we 
+    just serialize the whole resource.
+
+    * src/de/schlund/pfixcore/workflow/ContextResource.java: deprecate it
+    * src/de/schlund/pfixcore/workflow/ObservableContextResourceImpl.java: 
+    * src/de/schlund/pfixcore/workflow/ObservableContextResource.java: change accordingly to supress warnings
+
+    * src/de/skelexamples/ContextDemoText*.java: 
+	* src/de/schlund/pfixcore/lucefix/ContextSearch*.java: 
+	* src/de/schlund/pfixcore/example/webservices/chat/ContextChat*.java: 
+	* src/de/schlund/pfixcore/example/webservices/ContextData*.java: 
+	* src/de/schlund/pfixcore/example/bank/context/Context*.java: 
+	* src/de/schlund/pfixcore/example/Context*.java: changed to no longer implement ContextResource, used different 
+	strategies, just a "normal" bean, or also using the new annotations (see below). These changes lead to slightly different
+	serialization formats.
+	 
+	* projects/sample1/txt/pages/main_home.xml: added some more test pages as pfx:buttons
+	* projects/sample1/dyntxt/order_features.xml: new file, holds dynamic include partsfor sample1 app
+
+    * projects/simpleform/txt/pages/main_output.xml: 
+    * projects/sample1/txt/pages/main_overview.xml: 
+    * projects/sample1/txt/pages/main_order.xml: change to use the dynamic includes, also some changes to cope
+    with changed serialization format
+	
 	* src/de/schlund/pfixcore/beans/InsertStatus.java: new marker annotation type for methods. Used to mark the method
 	that should be called for initialization of a resource after creation of the instance in the ContextResourceManager.
 	The method can look like either T:method() or T:method(Context). if the second form is given, the context wil be supplied. 

@@ -20,7 +20,6 @@
 package de.schlund.pfixcore.webservice;
 
 import de.schlund.pfixcore.workflow.Context;
-import de.schlund.pfixcore.workflow.ContextResource;
 import de.schlund.pfixcore.workflow.ContextResourceManager;
 
 /**
@@ -28,29 +27,27 @@ import de.schlund.pfixcore.workflow.ContextResourceManager;
  */
 public abstract class AbstractService {
 
-	protected Context getContext() {
-		ServiceCallContext callContext=ServiceCallContext.getCurrentContext();
-		if(callContext!=null) return callContext.getContext();
-		return null;
-	}
-	
-    protected ContextResourceManager getContextResourceManager() {
-    	Context context=getContext();
-    	if(context!=null) return context.getContextResourceManager();
-    	return null;
+    protected Context getContext() {
+        ServiceCallContext callContext = ServiceCallContext.getCurrentContext();
+        if (callContext != null) return callContext.getContext();
+        return null;
     }
 
-    protected ContextResource getContextResource(Class<? extends ContextResource> clazz) {
-    	if(clazz==null) throw new IllegalArgumentException("clazz="+clazz);
+    protected ContextResourceManager getContextResourceManager() {
+        Context context = getContext();
+        if (context != null) return context.getContextResourceManager();
+        return null;
+    }
+
+    protected Object getContextResource(Class<?> clazz) {
+        if (clazz == null) throw new IllegalArgumentException("clazz=" + clazz);
         return getContextResource(clazz.getName());
     }
 
-    protected ContextResource getContextResource(String name) {
-        ContextResourceManager crm=getContextResourceManager();
-        if(crm!=null) return crm.getResource(name);
+    protected Object getContextResource(String name) {
+        ContextResourceManager crm = getContextResourceManager();
+        if (crm != null) return crm.getResource(name);
         return null;
     }
 
 }
-
-

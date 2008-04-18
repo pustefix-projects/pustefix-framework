@@ -26,79 +26,57 @@ import de.schlund.pfixcore.workflow.ContextResourceManager;
 
 /**
  * A class handling the request sent by the action of the form. This class is
- * similiar to a Struts Action (inherited from
- * org.apache.struts.action.Action). The Struts method perform is similiar to
- * handleSubmittedData.
+ * similar to a Struts Action (inherited from org.apache.struts.action.Action).
+ * The Struts method perform is similar to handleSubmittedData.
  * 
- * @author <a href="mailto:rapude@schlund.de">Ralf Rapude </a> 
+ * @author <a href="mailto:rapude@schlund.de">Ralf Rapude </a>
  * @version $Id$
  */
 public class DemoTextHandler implements IHandler {
 
-    /*
-     * (non-Javadoc)
-     * 
+    /**
      * @see de.schlund.pfixcore.generator.IHandler#handleSubmittedData(de.schlund.pfixcore.workflow.Context,
      *      de.schlund.pfixcore.generator.IWrapper)
      */
-    public void handleSubmittedData(Context context, IWrapper wrapper)
-            throws Exception {
+    public void handleSubmittedData(Context context, IWrapper wrapper) throws Exception {
         ContextResourceManager crm = context.getContextResourceManager();
-        ContextDemoText cdemotxt   = (ContextDemoText) crm
-                .getResource("de.skelexamples.ContextDemoText");
-        DemoText txtwrp            = (DemoText) wrapper;
-        String txt                 = txtwrp.getDemoText();
+        ContextDemoText cdemotxt = (ContextDemoText) crm.getResource("de.skelexamples.ContextDemoText");
+        DemoText txtwrp = (DemoText) wrapper;
+        String txt = txtwrp.getDemoText();
 
-        System.out.println(" ====> Get DemoText from the form: " + txt);
         cdemotxt.setDemoText(txt);
     }
 
     /**
-     * Setting the text for the form by asking the ContextResource for the
-     * content. Afterwards the IWrappers setter is called
-     * 
      * @see de.schlund.pfixcore.generator.IHandler#retrieveCurrentStatus(de.schlund.pfixcore.workflow.Context,
      *      de.schlund.pfixcore.generator.IWrapper)
      */
-    public void retrieveCurrentStatus(Context context, IWrapper wrapper)
-            throws Exception {
-
+    public void retrieveCurrentStatus(Context context, IWrapper wrapper) throws Exception {
         ContextResourceManager crm = context.getContextResourceManager();
-        ContextDemoText cdemotxt   = (ContextDemoText) crm
-                .getResource("de.skelexamples.ContextDemoText");
-        DemoText txtwrp            = (DemoText) wrapper;
-        String txt                 = cdemotxt.getDemoText();
+        ContextDemoText cdemotxt = (ContextDemoText) crm.getResource("de.skelexamples.ContextDemoText");
+        DemoText txtwrp = (DemoText) wrapper;
+        String txt = cdemotxt.getDemoText();
 
         if (txt != null) {
-            System.out.println(" ====> Set DemoText for the form: " + txt);
             txtwrp.setDemoText(txt);
         }
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see de.schlund.pfixcore.generator.IHandler#prerequisitesMet(de.schlund.pfixcore.workflow.Context)
-     */
     public boolean prerequisitesMet(Context context) throws Exception {
         return true;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see de.schlund.pfixcore.generator.IHandler#isActive(de.schlund.pfixcore.workflow.Context)
-     */
     public boolean isActive(Context context) throws Exception {
         return true;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see de.schlund.pfixcore.generator.IHandler#needsData(de.schlund.pfixcore.workflow.Context)
-     */
     public boolean needsData(Context context) throws Exception {
-        return true;
+        ContextResourceManager crm = context.getContextResourceManager();
+        ContextDemoText cdemotxt = (ContextDemoText) crm.getResource("de.skelexamples.ContextDemoText");
+        if (cdemotxt.getDemoText() != null) {
+            return false;
+        } else {
+            return true;
+        }
     }
 }

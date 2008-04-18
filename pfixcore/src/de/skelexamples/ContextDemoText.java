@@ -19,18 +19,15 @@
 
 package de.skelexamples;
 
-import de.schlund.pfixcore.workflow.ContextResource;
-
 /**
- * The Interface for creating the ContextResource class. A ContextResource is
+ * The Interface for creating the Resource class. A Resource is
  * responsible for storing objects in our session. Never use the methods of a
  * HttpSession Object like HttpSession.setAttribute(String name, Object value)
  * and getAttribute().
  * @author <a href="mailto:rapude@schlund.de">Ralf Rapude </a> 
- * @version $Id$
  */
 
-public interface ContextDemoText extends ContextResource {
+public interface ContextDemoText {
     
     void setDemoText(String demoText);
     String getDemoText();

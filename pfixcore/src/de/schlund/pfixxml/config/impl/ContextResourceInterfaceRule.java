@@ -24,7 +24,6 @@ import java.util.Map;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
-import de.schlund.pfixcore.workflow.ContextResource;
 import de.schlund.pfixxml.config.ContextXMLServletConfig;
 
 public class ContextResourceInterfaceRule extends CheckedRule {
@@ -47,7 +46,7 @@ public class ContextResourceInterfaceRule extends CheckedRule {
         if (!clazz.isAssignableFrom(crConfig.getContextResourceClass())) {
             throw new SAXException("ContextResource class " + crConfig.getContextResourceClass() + " does not implement specified interface " + clazz);
         }
-        crConfig.addInterface(clazz.asSubclass(ContextResource.class));
+        crConfig.addInterface(clazz);
     }
 
     protected Map<String, Boolean> wantsAttributes() {

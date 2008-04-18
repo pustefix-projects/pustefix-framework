@@ -19,9 +19,6 @@
 
 package de.schlund.pfixcore.example;
 
-import de.schlund.pfixcore.workflow.ContextResource;
-
-
 /**
  * ContextTogglePic.java
  *
@@ -33,7 +30,7 @@ import de.schlund.pfixcore.workflow.ContextResource;
  *
  */
 
-public interface ContextTogglePic extends ContextResource {
+public interface ContextTogglePic {
     void    setShow(boolean show);
     boolean getShow();
 }// ContextTogglePic

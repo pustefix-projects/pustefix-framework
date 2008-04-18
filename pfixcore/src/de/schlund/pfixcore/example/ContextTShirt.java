@@ -18,7 +18,7 @@
  */
 
 package de.schlund.pfixcore.example;
-import de.schlund.pfixcore.workflow.ContextResource;
+
 /**
  * ContextTShirt.java
  *
@@ -30,7 +30,7 @@ import de.schlund.pfixcore.workflow.ContextResource;
  *
  */
 
-public interface ContextTShirt extends ContextResource {
+public interface ContextTShirt {
     public Integer getColor();
     public Integer[] getFeature();
     public String getSize();

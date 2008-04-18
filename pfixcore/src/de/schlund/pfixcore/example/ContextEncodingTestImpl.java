@@ -8,7 +8,7 @@ import java.util.List;
 
 import org.w3c.dom.Element;
 
-import de.schlund.pfixcore.workflow.Context;
+import de.schlund.pfixcore.beans.InsertStatus;
 import de.schlund.pfixxml.ResultDocument;
 
 /**
@@ -45,9 +45,8 @@ public class ContextEncodingTestImpl implements ContextEncodingTest {
         this.encoding = encoding;
     }
 
-    public void init(Context ctx) {}
-
-    public void insertStatus(ResultDocument resDoc, Element elem) {
+    @InsertStatus
+    public void serializeToXML(Element elem) {
         ResultDocument.addTextChild(elem, "encoding", encoding);
         ResultDocument.addTextChild(elem, "original", text);
         if (file != null) ResultDocument.addTextChild(elem, "file", file.getAbsolutePath());
@@ -80,7 +79,5 @@ public class ContextEncodingTestImpl implements ContextEncodingTest {
         public List<String> getCharacters() {
             return characters;
         }
-
     }
-
 }

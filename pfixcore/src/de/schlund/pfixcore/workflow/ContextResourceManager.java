@@ -29,10 +29,9 @@ public interface ContextResourceManager {
      * null, if no object for the interface name is found. 
      *
      * @param name the classname of the requested interface
-     * @return an object of a class implementing the requested interface, which
-               extends <code>ContextResource</code>
+     * @return an object of a class implementing the requested interface
      */
-    public ContextResource getResource(String name);
+    public Object getResource(String name);
 
     /**
      * Returns the ContextResource object which implements the interface
@@ -42,13 +41,13 @@ public interface ContextResourceManager {
      * @return instance of the class implementing the interface
      */
     @SuppressWarnings("unchecked")
-    public <T extends ContextResource> T getResource(Class<T> clazz);
+    public <T> T getResource(Class<T> clazz);
 
     /**
      * Returns an iterator for all stored objects.
      *
      * @return the <code>Iterator</code>
      */
-    public Iterator<ContextResource> getResourceIterator();
+    public Iterator<Object> getResourceIterator();
 
 }

@@ -21,8 +21,6 @@ package de.schlund.pfixxml.config;
 import java.util.Properties;
 import java.util.Set;
 
-import de.schlund.pfixcore.workflow.ContextResource;
-
 public interface ContextResourceConfig {
 
     /**
@@ -30,7 +28,7 @@ public interface ContextResourceConfig {
      * 
      * @return class of context resource
      */
-    Class<? extends ContextResource> getContextResourceClass();
+    Class<?> getContextResourceClass();
 
     /**
      * Returns all Interfaces the context resource is implementing and should
@@ -38,7 +36,7 @@ public interface ContextResourceConfig {
      * 
      * @return list of interfaces
      */
-    Set<Class<? extends ContextResource>> getInterfaces();
+    Set<Class<?>> getInterfaces();
 
     /**
      * Returns configuration paramters for the context resource.

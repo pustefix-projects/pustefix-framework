@@ -24,8 +24,6 @@ import java.util.Map;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
-import de.schlund.pfixcore.workflow.ContextResource;
-
 public class ContextResourceRule extends CheckedRule {
 
     private ContextXMLServletConfigImpl config;
@@ -47,10 +45,10 @@ public class ContextResourceRule extends CheckedRule {
         } catch (ClassNotFoundException e) {
             throw new SAXException("Could not load class \"" + className + "\"!", e);
         }
-        if (!ContextResource.class.isAssignableFrom(clazz)) {
-            throw new SAXException("ContextResource " + clazz + " does not implement " + ContextResource.class + " interface!");
-        }
-        ContextResourceConfigImpl crConfig = new ContextResourceConfigImpl(clazz.asSubclass(ContextResource.class), config.getContextConfig());
+//        if (!ContextResource.class.isAssignableFrom(clazz)) {
+//            throw new SAXException("ContextResource " + clazz + " does not implement " + ContextResource.class + " interface!");
+//        }
+        ContextResourceConfigImpl crConfig = new ContextResourceConfigImpl(clazz, config.getContextConfig());
         ctxConfig.addContextResource(crConfig);
         this.getDigester().push(crConfig);        
     }

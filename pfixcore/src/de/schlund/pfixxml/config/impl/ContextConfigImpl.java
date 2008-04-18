@@ -37,7 +37,6 @@ import de.schlund.pfixcore.auth.AuthConstraint;
 import de.schlund.pfixcore.auth.Role;
 import de.schlund.pfixcore.auth.RoleProvider;
 import de.schlund.pfixcore.workflow.ContextInterceptor;
-import de.schlund.pfixcore.workflow.ContextResource;
 import de.schlund.pfixxml.config.ContextConfig;
 import de.schlund.pfixxml.config.ContextResourceConfig;
 import de.schlund.pfixxml.config.PageFlowConfig;
@@ -55,9 +54,9 @@ public class ContextConfigImpl implements ContextConfig, RoleProvider {
     
     private String authPage = null;
     private String defaultFlow = null;
-    private LinkedHashMap<Class<? extends ContextResource>, ContextResourceConfigImpl> resources = new LinkedHashMap<Class<? extends ContextResource>, ContextResourceConfigImpl>();
+    private LinkedHashMap<Class<?>, ContextResourceConfigImpl> resources = new LinkedHashMap<Class<?>, ContextResourceConfigImpl>();
     private List<ContextResourceConfigImpl> cacheResources = null;
-    protected HashMap<Class<? extends ContextResource>, ContextResourceConfigImpl> interfaceToResource = new HashMap<Class<? extends ContextResource>, ContextResourceConfigImpl>(); 
+    protected HashMap<Class<?>, ContextResourceConfigImpl> interfaceToResource = new HashMap<Class<?>, ContextResourceConfigImpl>(); 
     private HashMap<String, PageFlowConfigImpl> pageflows = new HashMap<String, PageFlowConfigImpl>();
     private List<PageFlowConfigImpl> cachePageflows = null;
     private HashMap<String, PageRequestConfigImpl> pagerequests = new HashMap<String, PageRequestConfigImpl>();
@@ -101,7 +100,7 @@ public class ContextConfigImpl implements ContextConfig, RoleProvider {
         List<ContextResourceConfigImpl> list = cacheResources;
         if (list == null) {
             list = new ArrayList<ContextResourceConfigImpl>();
-            for (Entry<Class<? extends ContextResource>, ContextResourceConfigImpl> e : this.resources.entrySet()) {
+            for (Entry<Class<?>, ContextResourceConfigImpl> e : this.resources.entrySet()) {
                 list.add(e.getValue());
             }
             cacheResources = Collections.unmodifiableList(list);
@@ -109,15 +108,15 @@ public class ContextConfigImpl implements ContextConfig, RoleProvider {
         return list;
     }
     
-    public ContextResourceConfig getContextResourceConfig(Class<? extends ContextResource> clazz) {
+    public ContextResourceConfig getContextResourceConfig(Class<?> clazz) {
         return this.resources.get(clazz);
     }
     
-    public ContextResourceConfig getContextResourceConfigForInterface(Class<? extends ContextResource> clazz) {
+    public ContextResourceConfig getContextResourceConfigForInterface(Class<?> clazz) {
         return interfaceToResource.get(clazz);
     }
     
-    public Map<Class<? extends ContextResource>, ContextResourceConfigImpl> getInterfaceToContextResourceMap() {
+    public Map<Class<?>, ContextResourceConfigImpl> getInterfaceToContextResourceMap() {
         return Collections.unmodifiableMap(interfaceToResource);
     }
     

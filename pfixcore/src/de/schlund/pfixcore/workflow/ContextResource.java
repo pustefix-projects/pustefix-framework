@@ -22,7 +22,7 @@ package de.schlund.pfixcore.workflow;
 import org.w3c.dom.Element;
 
 import de.schlund.pfixxml.ResultDocument;
-
+@Deprecated
 public interface ContextResource {
     void    init(Context context) throws Exception;
     void    insertStatus(ResultDocument resdoc, Element elem) throws Exception;

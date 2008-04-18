@@ -20,8 +20,6 @@
 package de.schlund.pfixcore.example;
 import java.util.HashMap;
 
-import de.schlund.pfixcore.workflow.ContextResource;
-
 /**
  * ContextAdultInfo.java
  *
@@ -33,13 +31,11 @@ import de.schlund.pfixcore.workflow.ContextResource;
  *
  */
 
-public interface ContextAdultInfo extends ContextResource {
+public interface ContextAdultInfo {
     public Boolean getAdult();
     public void    setAdult(Boolean adult);
     public boolean needsData();
     // These two are just here for convenience reasons so I don't need yet another CR.
     public void    setIndexedTest(HashMap<String, String> inmap);
     public HashMap<String, String> getIndexedTest();
-    
-
 }// ContextAdultInfo

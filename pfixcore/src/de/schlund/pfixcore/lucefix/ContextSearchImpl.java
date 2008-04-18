@@ -33,63 +33,60 @@ import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.w3c.dom.Element;
 
+import de.schlund.pfixcore.beans.InitResource;
+import de.schlund.pfixcore.beans.InsertStatus;
 import de.schlund.pfixcore.editor2.core.dom.Project;
 import de.schlund.pfixcore.editor2.frontend.resources.ProjectsResource;
 import de.schlund.pfixcore.editor2.frontend.util.EditorResourceLocator;
 import de.schlund.pfixcore.workflow.Context;
-import de.schlund.pfixxml.ResultDocument;
 
 public class ContextSearchImpl implements ContextSearch {
 
-    private final static PerFieldAnalyzerWrapper analyzer   = PreDoc.ANALYZER;
+    private final static PerFieldAnalyzerWrapper analyzer = PreDoc.ANALYZER;
 
-    private Context                        context;
-    private Query                          lastQuery;
-    private Hit[] hits;
-    
-    String content, tags, attribkey, attribvalue, comments;
-    
-    
+    private Context context;
+    private Query   lastQuery;
+    private Hit[]   hits;
+    String          content, tags, attribkey, attribvalue, comments;
 
-	public void resetData() {
-		content = null;
-		tags = null;
-		attribkey = null;
-		attribvalue = null;
-		comments = null;
-		hits = null;
-		lastQuery = null;
-	}
-    
+    public void resetData() {
+        content = null;
+        tags = null;
+        attribkey = null;
+        attribvalue = null;
+        comments = null;
+        hits = null;
+        lastQuery = null;
+    }
+
     public String getAttribkey() {
-		return attribkey;
-	}
+        return attribkey;
+    }
 
-	public String getAttribvalue() {
-		return attribvalue;
-	}
+    public String getAttribvalue() {
+        return attribvalue;
+    }
 
-	public String getComments() {
-		return comments;
-	}
+    public String getComments() {
+        return comments;
+    }
 
-	public String getContent() {
-		return content;
-	}
+    public String getContent() {
+        return content;
+    }
 
-	public String getTags() {
-		return tags;
-	}
+    public String getTags() {
+        return tags;
+    }
 
-	public void search(String content, String tags, String attribkey, String attribvalue, String comments)
-            throws IOException, ParseException {
+    public void search(String content, String tags, String attribkey, String attribvalue, String comments) throws IOException, ParseException {
         IndexReader reader = IndexReader.open(PfixQueueManager.lucene_data_path);
         this.content = content;
         this.tags = tags;
         this.attribkey = attribkey;
         this.attribvalue = attribvalue;
         this.comments = comments;
-        
+
         IndexSearcher searcher = new IndexSearcher(reader);
         BooleanQuery query = new BooleanQuery();
         if (content != null) query.add(QueryParser.parse(content, PreDoc.CONTENTS, analyzer), true, false);
@@ -99,9 +96,9 @@ public class ContextSearchImpl implements ContextSearch {
         if (comments != null) query.add(QueryParser.parse(comments, PreDoc.COMMENTS, analyzer), true, false);
         Hits hits = searcher.search(query);
         transformHits(hits);
-        lastQuery = query;     
+        lastQuery = query;
     }
-    
+
     private static String[] splitPath(String input) {
         String[] retval = new String[3];
         int letzterSlash = input.lastIndexOf("/");
@@ -112,57 +109,54 @@ public class ContextSearchImpl implements ContextSearch {
         return retval;
     }
 
+    @InitResource
     public void init(Context context) throws Exception {
         this.context = context;
-        reset();
+        resetData();
     }
-    
+
     private void transformHits(Hits hits) throws IOException {
         ProjectsResource pcon = EditorResourceLocator.getProjectsResource(context);
         Project currentProject = pcon.getSelectedProject();
-        
+
         Document doc;
         Vector<Hit> temp = new Vector<Hit>();
         String[] token;
-        for (int i = 0; i < hits.length(); i++){
-            doc = hits.doc(i);            
-            
+        for (int i = 0; i < hits.length(); i++) {
+            doc = hits.doc(i);
+
             token = splitPath(doc.get(PreDoc.PATH));
-            if (currentProject != null && currentProject.hasIncludePart(token[0],token[1],token[2]) == false){
-            	continue;
+            if (currentProject != null && currentProject.hasIncludePart(token[0], token[1], token[2]) == false) {
+                continue;
             }
-            temp.add(new Hit(doc,hits.score(i)));
+            temp.add(new Hit(doc, hits.score(i)));
         }
         this.hits = temp.toArray(new Hit[0]);
     }
-    public void insertStatus(ResultDocument resdoc, Element elem) throws Exception {
 
+    @InsertStatus
+    public void serializeSearch(Element elem) throws Exception {
         if (hits != null) {
             Element newelem;
             for (Hit doc : hits) {
-                newelem = resdoc.createSubNode(elem, "hit");
-                newelem.setAttribute("score", doc.getScore()+"");
+                newelem = elem.getOwnerDocument().createElement("hit");
+                elem.appendChild(newelem);
+                newelem.setAttribute("score", doc.getScore() + "");
                 newelem.setAttribute("filename", doc.getFilename());
                 newelem.setAttribute("part", doc.getPartname());
                 newelem.setAttribute("product", doc.getProductname());
                 newelem.setAttribute("path", doc.getPath());
-                
             }
         }
         if (lastQuery != null) elem.setAttribute("lastQuery", lastQuery.toString());
     }
 
-    public void reset() throws Exception {
-        hits = null;
-        lastQuery = null;
-    }
-       
-    private class Hit{
+    private class Hit {
         private double score;
         private String filename;
         private String partname;
         private String productname;
-        
+
         /**
          * @param filename
          * @param partname
@@ -175,38 +169,48 @@ public class ContextSearchImpl implements ContextSearch {
             this.productname = productname;
             this.score = score;
         }
-        public Hit(Document lucenedoc, double score){
+
+        public Hit(Document lucenedoc, double score) {
             String[] token = splitPath(lucenedoc.get(PreDoc.PATH));
             this.filename = token[0];
             this.partname = token[1];
             this.productname = token[2];
             this.score = score;
         }
+
         public String getFilename() {
             return filename;
         }
+
         public void setFilename(String filename) {
             this.filename = filename;
         }
+
         public String getPartname() {
             return partname;
         }
+
         public void setPartname(String partname) {
             this.partname = partname;
         }
+
         public String getProductname() {
             return productname;
         }
+
         public void setProductname(String productname) {
             this.productname = productname;
         }
+
         public double getScore() {
             return score;
         }
+
         public void setScore(double score) {
             this.score = score;
         }
-        public String getPath(){
+
+        public String getPath() {
             StringBuffer sb = new StringBuffer(getFilename());
             sb.append("/");
             sb.append(getPartname());

@@ -25,7 +25,7 @@ package de.schlund.pfixcore.workflow;
  * @author jtl
  *
  */
-
+@SuppressWarnings("deprecation")
 public interface ObservableContextResource extends ContextResource {
     void addObserver(ContextResourceObserver obj);
     void notifyObservers() throws Exception;
