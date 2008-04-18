@@ -23,6 +23,7 @@ import org.w3c.dom.Element;
 import de.schlund.pfixcore.auth.Authentication;
 import de.schlund.pfixcore.auth.Condition;
 import de.schlund.pfixcore.auth.Role;
+import de.schlund.pfixcore.workflow.Context;
 
 /**
  * 
@@ -45,13 +46,16 @@ public class HasRole implements Condition {
 		this.roleName=roleName;
 	}
 	
-	public boolean evaluate(Authentication auth) {
-		Role[] roles=auth.getRoles();
-		if(roles!=null) {
-			for(Role role:roles) {
-				if(roleName.equals(role.getName())) return true;
-			}
-		}
+	public boolean evaluate(Context context) {
+	    Authentication auth = context.getAuthentication();
+	    if(auth!=null) {
+	        Role[] roles=auth.getRoles();
+	        if(roles!=null) {
+	            for(Role role:roles) {
+	                if(roleName.equals(role.getName())) return true;
+	            }    
+	        }
+	    }
 		return false;
 	}
 	

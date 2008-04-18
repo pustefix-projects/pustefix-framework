@@ -39,9 +39,11 @@ import de.schlund.pfixcore.auth.conditions.Or;
 public class ConditionRule extends CheckedRule {
 
     ContextXMLServletConfigImpl config;
+    boolean topLevel;
 
-    public ConditionRule(ContextXMLServletConfigImpl config) {
+    public ConditionRule(ContextXMLServletConfigImpl config, boolean topLevel) {
         this.config = config;
+        this.topLevel = topLevel;
     }
 
     public void begin(String namespace, String name, Attributes attributes) throws Exception {
@@ -58,15 +60,31 @@ public class ConditionRule extends CheckedRule {
             condition = new HasRole(roleName);
             Role role = config.getContextConfig().getRole(roleName);
             if (role == null) throw new Exception("Condition hasrole references unknown role: " + roleName);
+        } else if (name.equals("condition")) {
+            if (topLevel) {
+                String id = attributes.getValue("id");
+                condition = createCondition(attributes);
+                config.getContextConfig().addCondition(id, condition);
+            } else {
+                String ref = attributes.getValue("ref");
+                if (ref != null) {
+                    condition = config.getContextConfig().getCondition(ref);
+                    if (condition == null) throw new Exception("Condition reference not found: " + ref);
+                } else {
+                    condition = createCondition(attributes);
+                }
+            }
         } else throw new Exception("Unsupported condition: " + name);
-        Object obj = getDigester().peek();
-        if (obj instanceof AuthConstraint) {
-            ((AuthConstraintImpl) obj).setCondition(condition);
-        } else if (obj instanceof ConditionGroup) {
-            ((ConditionGroup) obj).add(condition);
-        } else if (obj instanceof Not) {
-            ((Not) obj).set(condition);
-        } else throw new Exception("Illegal object: " + obj.getClass().getName());
+        if (!topLevel) {
+            Object obj = getDigester().peek();
+            if (obj instanceof AuthConstraint) {
+                ((AuthConstraintImpl) obj).setCondition(condition);
+            } else if (obj instanceof ConditionGroup) {
+                ((ConditionGroup) obj).add(condition);
+            } else if (obj instanceof Not) {
+                ((Not) obj).set(condition);
+            } else throw new Exception("Illegal object: " + obj.getClass().getName());
+        }
         getDigester().push(condition);
     }
 
@@ -77,7 +95,23 @@ public class ConditionRule extends CheckedRule {
     protected Map<String, Boolean> wantsAttributes() {
         HashMap<String, Boolean> atts = new HashMap<String, Boolean>();
         atts.put("name", false);
+        atts.put("class", false);
+        atts.put("ref", false);
+        atts.put("id", false);
         return atts;
+    }
+
+    private Condition createCondition(Attributes attributes) throws Exception {
+        String className = attributes.getValue("class");
+        if (className == null) throw new Exception("Condition needs class attribute.");
+        try {
+            Class<?> clazz = Class.forName(className);
+            return (Condition) clazz.newInstance();
+        } catch (ClassNotFoundException x) {
+            throw new Exception("Condition class not found: " + className);
+        } catch (Exception x) {
+            throw new Exception("Condition class can't be instantiated: " + className, x);
+        }
     }
 
 }

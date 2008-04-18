@@ -66,4 +66,9 @@
     <func:result select="callback:hasRole($__context__,$roleName)"/>
   </func:function>
   
+  <func:function name="pfx:condition">
+    <xsl:param name="conditionId"/>
+    <func:result select="callback:checkCondition($__context__,$conditionId)"/>
+  </func:function>
+  
 </xsl:stylesheet>

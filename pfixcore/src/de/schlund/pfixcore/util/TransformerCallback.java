@@ -19,6 +19,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
 import de.schlund.pfixcore.auth.Authentication;
+import de.schlund.pfixcore.auth.Condition;
 import de.schlund.pfixcore.auth.Role;
 import de.schlund.pfixcore.generator.IWrapper;
 import de.schlund.pfixcore.generator.IWrapperInfo;
@@ -26,7 +27,7 @@ import de.schlund.pfixcore.workflow.Context;
 import de.schlund.pfixcore.workflow.ContextImpl;
 import de.schlund.pfixcore.workflow.PageRequest;
 import de.schlund.pfixcore.workflow.context.AccessibilityChecker;
-import de.schlund.pfixcore.workflow.context.RequestContextImpl; //import de.schlund.pfixxml.SPDocument;
+import de.schlund.pfixcore.workflow.context.RequestContextImpl;
 import de.schlund.pfixxml.config.IWrapperConfig;
 import de.schlund.pfixxml.config.PageRequestConfig;
 import de.schlund.pfixxml.util.ExtensionFunctionUtils;
@@ -224,6 +225,20 @@ public class TransformerCallback {
             Authentication auth = context.getAuthentication();
             if (auth != null) {
                 return auth.hasRole(roleName);
+            }
+            return false;
+        } catch (Exception x) {
+            ExtensionFunctionUtils.setExtensionFunctionError(x);
+            throw x;
+        }
+    }
+    
+    public static boolean checkCondition(RequestContextImpl requestContext, String conditionId) throws Exception {
+        try {
+            ContextImpl context = requestContext.getParentContext();
+            Condition condition = context.getContextConfig().getCondition(conditionId);
+            if(condition != null) {
+                return condition.evaluate(context);
             }
             return false;
         } catch (Exception x) {

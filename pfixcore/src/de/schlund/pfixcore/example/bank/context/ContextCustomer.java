@@ -7,5 +7,6 @@ public interface ContextCustomer extends ContextResource {
 	
 	public void setCustomer(Customer customer);
 	public Customer getCustomer();
+	public float getTotalDebit();
 
 }

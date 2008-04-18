@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <contextxmlserver xmlns="http://pustefix.sourceforge.net/properties200401" xmlns:cus="http://www.schlund.de/pustefix/customize" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://pustefix.sourceforge.net/properties200401 http://pustefix.sourceforge.net/properties200401.xsd" version="1.0">
-  
   <servletinfo depend="samplebank/conf/depend.xml" name="pfixcore_project:samplebank::servlet:config">
     <editmode allow="true"/>
   </servletinfo>
@@ -20,6 +19,10 @@
   <role name="ANONYMOUS" initial="true"/>
   <role name="UNRESTRICTED"/>
   <role name="ACCOUNT"/>
+  
+  <condition id="isPremiumCustomer" class="de.schlund.pfixcore.example.bank.PremiumCustomerCondition">
+    <property name="limit" value="10000"/>
+  </condition>
   
   <authconstraint id="DEFAULT" authpage="login" default="true">
     <hasrole name="ANONYMOUS"/>
