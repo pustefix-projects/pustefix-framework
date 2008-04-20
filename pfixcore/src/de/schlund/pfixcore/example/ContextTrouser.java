@@ -30,10 +30,15 @@ package de.schlund.pfixcore.example;
  *
  */
 
-
-// Uuugh, you wouldn't want to do this in a normal C-Res.
-// Inheritance from one C-Res to another is asking for trouble.
+// Uuugh, you wouldn't want to do this in a normal Resource.
+// Inheritance from one Resource to another is asking for trouble.
 // But for this example it helps keeping the code small.
-public interface ContextTrouser extends ContextTShirt {
-    void reset();
+public class ContextTrouser extends ContextTShirtImpl {
+    
+    public void reset() {
+        setSize(null);
+        setColor(null);
+        setFeature(null);
+    }
+
 }// ContextTrouser

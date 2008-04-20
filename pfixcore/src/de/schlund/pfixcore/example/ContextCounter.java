@@ -18,6 +18,9 @@
  */
 
 package de.schlund.pfixcore.example;
+
+import org.apache.log4j.Logger;
+
 /**
  * ContextCounter.java
  *
@@ -29,10 +32,40 @@ package de.schlund.pfixcore.example;
  *
  */
 
-public interface ContextCounter {
-    public Boolean getShowCounter();
-    public int getCounter();
-    public void setShowCounter(Boolean showcounter);
-    public void addToCounter(int count);
-    public void setCounter(int count);
+public class ContextCounter {
+    private Boolean  showcounter = Boolean.FALSE;
+    private int      counter     = 0;
+
+    private final static Logger LOG = Logger.getLogger(ContextCounter.class);
+    
+    public void reset() {
+        showcounter = Boolean.FALSE;
+        counter     = 0;
+    }
+
+    public Boolean getShowCounter() { return showcounter; }
+
+    public int getCounter() { return counter; }
+    
+    public void setShowCounter(Boolean showcounter) {
+        this.showcounter = showcounter;
+    }
+
+    public void setCounter(int count) {
+        counter = count;
+    }
+
+    public void addToCounter(int count) {
+        counter += count;
+    }
+
+    public boolean needsData() {
+        return false;
+    }
+
+    public String toString() {
+        LOG.debug("Doing ContextCounter...");
+        return "[showcounter?: " + showcounter + "][counter?: " + counter + "]";
+    }
+
 }// ContextCounter

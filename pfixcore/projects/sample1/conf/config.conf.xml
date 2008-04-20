@@ -9,42 +9,23 @@
   </servletinfo>
 
   <context defaultflow="OrderFlow">
-    <resource class="de.schlund.pfixcore.example.ContextCounterImpl">
-      <implements class="de.schlund.pfixcore.example.ContextCounter" />
-      <properties>
-        <prop name="foo">bar</prop>
-        <prop name="baz">snafu</prop>
-      </properties>
-    </resource>
-
+    <resource class="de.schlund.pfixcore.example.ContextCounter"/>
+    <resource class="de.schlund.pfixcore.example.ContextAdultInfo"/>
+    <resource class="de.schlund.pfixcore.example.ContextTogglePic"/>
+    <resource class="de.schlund.pfixcore.example.ContextFileUpload"/>
+    <resource class="de.schlund.pfixcore.example.ContextEncodingTest"/>
+    <resource class="de.schlund.pfixcore.example.ContextSimpleData"/>
+    <resource class="de.schlund.pfixcore.example.ContextTrouser"/>
+    
     <resource class="de.schlund.pfixcore.example.ContextTShirtImpl">
+    <!-- you can separate the implementation from the interface and only request the interface type in the code -->
+    <!-- via <implements> - you can even use multiple implements if you want to have one instance serve multiple interfaces -->
       <implements class="de.schlund.pfixcore.example.ContextTShirt" />
+<!--      <properties>-->
+<!--        <prop name="foo">bar</prop>-->
+<!--        <prop name="baz">snafu</prop>-->
+<!--      </properties>-->
     </resource>
-
-    <resource class="de.schlund.pfixcore.example.ContextTrouserImpl">
-      <implements class="de.schlund.pfixcore.example.ContextTrouser" />
-    </resource>
-
-    <resource class="de.schlund.pfixcore.example.ContextAdultInfoImpl">
-      <implements class="de.schlund.pfixcore.example.ContextAdultInfo" />
-    </resource>
-
-    <resource class="de.schlund.pfixcore.example.ContextTogglePicImpl">
-      <implements class="de.schlund.pfixcore.example.ContextTogglePic" />
-    </resource>
-
-    <resource class="de.schlund.pfixcore.example.ContextEncodingTestImpl">
-      <implements class="de.schlund.pfixcore.example.ContextEncodingTest" />
-    </resource>
-
-    <resource class="de.schlund.pfixcore.example.ContextFileUploadImpl">
-      <implements class="de.schlund.pfixcore.example.ContextFileUpload" />
-    </resource>
-
-    <resource class="de.schlund.pfixcore.example.ContextSimpleDataImpl">
-      <implements class="de.schlund.pfixcore.example.ContextSimpleData" />
-    </resource>
-
   </context>
 
   <interceptors>

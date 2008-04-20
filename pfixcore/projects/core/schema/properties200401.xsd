@@ -326,7 +326,7 @@
   <xs:element name="resource" type="prop:resourceType"/>
   <xs:complexType name="resourceType">
     <xs:sequence>
-      <xs:element ref="prop:implements" maxOccurs="unbounded"/>
+      <xs:element ref="prop:implements" minOccurs="0" maxOccurs="unbounded"/>
       <xs:element ref="prop:properties" minOccurs="0"/>
     </xs:sequence>
     <xs:attribute name="class" use="required"/>

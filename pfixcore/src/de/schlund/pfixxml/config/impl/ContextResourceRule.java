@@ -45,11 +45,11 @@ public class ContextResourceRule extends CheckedRule {
         } catch (ClassNotFoundException e) {
             throw new SAXException("Could not load class \"" + className + "\"!", e);
         }
-//        if (!ContextResource.class.isAssignableFrom(clazz)) {
-//            throw new SAXException("ContextResource " + clazz + " does not implement " + ContextResource.class + " interface!");
-//        }
         ContextResourceConfigImpl crConfig = new ContextResourceConfigImpl(clazz, config.getContextConfig());
         ctxConfig.addContextResource(crConfig);
+        // We add ourself as an "interface", so even if there's no <implements> we still have one
+        // name to reference this implementation...
+        crConfig.addInterface(clazz);
         this.getDigester().push(crConfig);        
     }
     

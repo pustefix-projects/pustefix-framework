@@ -20,17 +20,25 @@
 package de.schlund.pfixcore.example;
 
 /**
- * ContextTogglePic.java
+ * ContextTogglePicImpl.java
  *
  *
- * Created: Tue Apr 23 19:15:26 2002
+ * Created: Tue Apr 23 19:18:25 2002
  *
  * @author <a href="mailto:jtl@schlund.de">Jens Lautenbacher</a>
  *
  *
  */
 
-public interface ContextTogglePic {
-    void    setShow(boolean show);
-    boolean getShow();
-}// ContextTogglePic
+public class ContextTogglePic {
+    boolean do_show = false;
+    
+    public void setShow(boolean param1) {
+        do_show = param1;
+    }
+
+    public boolean getShow() {
+        return do_show;
+    }
+
+}// ContextTogglePicImpl

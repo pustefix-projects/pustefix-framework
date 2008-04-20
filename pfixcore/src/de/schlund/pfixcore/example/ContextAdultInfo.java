@@ -18,7 +18,12 @@
  */
 
 package de.schlund.pfixcore.example;
+
 import java.util.HashMap;
+
+import org.apache.log4j.Logger;
+
+import de.schlund.pfixcore.beans.Exclude;
 
 /**
  * ContextAdultInfo.java
@@ -31,11 +36,37 @@ import java.util.HashMap;
  *
  */
 
-public interface ContextAdultInfo {
-    public Boolean getAdult();
-    public void    setAdult(Boolean adult);
-    public boolean needsData();
-    // These two are just here for convenience reasons so I don't need yet another CR.
-    public void    setIndexedTest(HashMap<String, String> inmap);
-    public HashMap<String, String> getIndexedTest();
+public class ContextAdultInfo {
+    private Boolean adult = null;
+    private HashMap<String, String> test  = new HashMap<String, String>();
+    private final static Logger LOG = Logger.getLogger(ContextAdultInfo.class);
+    
+    public void setIndexedTest(HashMap<String, String> inmap) {
+        test = inmap;
+    }
+
+    @Exclude
+    public HashMap<String, String> getIndexedTest() {
+        return test;
+    }
+    
+    public Boolean getAdult() { return adult; }
+
+    public void setAdult(Boolean adult) {
+        this.adult = adult;
+    }
+
+    public boolean needsData() {
+        if (adult == null) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public String toString() {
+        LOG.debug("Doing ContextAdultInfo...");
+        return "[Adult?: " + adult + "]";
+    }
+    
 }// ContextAdultInfo
