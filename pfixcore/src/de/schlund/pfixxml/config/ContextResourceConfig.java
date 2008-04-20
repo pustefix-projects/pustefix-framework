@@ -39,7 +39,7 @@ public interface ContextResourceConfig {
     Set<Class<?>> getInterfaces();
 
     /**
-     * Returns configuration paramters for the context resource.
+     * Returns configuration parameters for the context resource.
      * 
      * @return configuration parameters
      */
