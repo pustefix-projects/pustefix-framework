@@ -241,25 +241,27 @@
         </tbody>
       </informaltable>
       <programlisting language="xml"><![CDATA[
-    <resource class="AContextResource">
+    <resource class="A_Resource">
       ]]></programlisting>
       <tag class="attribute">class</tag> is 
-      <emphasis>mandatory</emphasis>, must be a 
-      <classname>ContextResource</classname>. There may be multiple 
-      resource tags given.
+      <emphasis>mandatory</emphasis>, can be any 
+      Java class, that can be created with a default constructor. 
+      Usually it's a bean like class with getters and setters. 
+      There may be multiple resource tags given.
       <programlisting language="xml"><![CDATA[
-      <implements class="An_Interface">
+      <implements class="A_Interface">
       ]]></programlisting>
+      The whole <tag>implements</tag> node is optional. 
       <tag class="attribute">class</tag> is 
-      <emphasis>mandatory</emphasis>, must be an interface 
-      implemented by the <classname>ContextResource</classname>. 
+      <emphasis>mandatory</emphasis>, must be a Java interface 
+      implemented by the resource. 
       There may be more than one <tag>implements</tag> tag for a 
-      <classname>ContextResource</classname>, but each interface 
+      resource, but each interface 
       must be unique in the whole context. In other words: it's 
-      possible for a <classname>ContextResource</classname> to 
+      possible for a resource to 
       implement more than one interface, but not possible for one 
       interface to be implemented by two 
-      <classname>ContextResources</classname> used in the same 
+      resources used in the same 
       <classname>Context</classname> definition.
       <programlisting language="xml"><![CDATA[
       </implements>
@@ -267,16 +269,16 @@
       ]]></programlisting>
       The whole node is optional.
       <programlisting language="xml"><![CDATA[
-        <prop name="AName">AValue</prop>
+        <prop name="A_Name">A_Value</prop>
       ]]></programlisting>
       <tag>prop</tag> is <emphasis>mandatory</emphasis> and can 
       be used multiple times. It's similar to the use as a child 
       of <tag>pagerequest</tag>/<tag>properties</tag>, but used 
       here to create properties that are related to a context 
       resource implementation. The resulting property looks like this:
-      <literal>context.resourceparameter.AContextResource.AName=AValue</literal>
+      <literal>context.resourceparameter.A_Resource.A_Name=A_Value</literal>
       Customization tags may be used around a property to make it 
-      depend on a certain makemode, etc.
+      depend on a certain makemode or other parameters.
       <programlisting language="xml"><![CDATA[
       </properties>
     </resource>
