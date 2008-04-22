@@ -1,3 +1,31 @@
+2008-04-22  Martin Leidig  <mleidig@schlund.de>
+
+	Added custom RoleProvider support to the authentication mechanism.
+	Now application developers can implement their own RoleProvider by
+	implementing the RoleProvider interface and configuring it in the
+	context configuration using the 'roleprovider' tag.
+
+	Modified:
+	* src/de/schlund/pfixcore/auth/AuthenticationImpl.java
+	* src/de/schlund/pfixcore/auth/RoleProvider.java
+	* src/de/schlund/pfixcore/workflow/context/RequestContextImpl.java
+	* src/de/schlund/pfixcore/workflow/context/ServerContextImpl.java
+	* src/de/schlund/pfixcore/workflow/ContextImpl.java
+	* src/de/schlund/pfixcore/util/TransformerCallback.java
+	* src/de/schlund/pfixxml/config/ContextConfig.java
+	* src/de/schlund/pfixxml/config/impl/ContextXMLServletConfigImpl.java
+	* src/de/schlund/pfixxml/config/impl/ConditionRule.java
+	* src/de/schlund/pfixxml/config/impl/RoleRule.java
+	* src/de/schlund/pfixxml/config/impl/ContextConfigImpl.java
+	* projects/core/schema/properties200401.xsd
+	* projects/samplebank/txt/common.xml
+	* projects/samplebank/conf/config.conf.xml
+
+	Added:
+	* src/de/schlund/pfixcore/auth/RoleProviderImpl.java
+	* src/de/schlund/pfixxml/config/impl/RoleProviderRule.java
+	* src/de/schlund/pfixcore/example/bank/BankRoleProvider.java
+
 2008-04-18  Martin Leidig  <mleidig@schlund.de>
 
 	Added custom condition support to the authentication mechanism. Now 

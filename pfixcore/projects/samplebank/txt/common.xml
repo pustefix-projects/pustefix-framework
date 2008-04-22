@@ -42,6 +42,9 @@
       <ixsl:if test="pfx:hasRole('ACCOUNT')">
         &#160;&#160;<i>ACCOUNT</i><br/>
       </ixsl:if>
+      <ixsl:if test="pfx:hasRole('ADMIN')">
+        &#160;&#160;<i>ADMIN</i><br/>
+      </ixsl:if>
     </div>
   </theme>
 </part>
