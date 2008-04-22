@@ -1,14 +1,21 @@
+2008-04-22  Jens Lautenbacher  <jtl@schlund.de>
+
+	* projects/core/schema/properties200401.xsd: removed the constraint on output resources only having
+	class attributes that are also referenced as a class attribute in implements (because we no longer need the 
+	implements node at all) - Maybe someone has a better idea to be able to contrain it to either 
+	implements/@class or ressource/@class???
+
 2008-04-20  Jens Lautenbacher  <jtl@schlund.de>
 
 	* projects/core/schema/properties200401.xsd: 
 	* src/de/schlund/pfixxml/config/impl/ContextResourceRule.java (begin): we always add the class itself to the interfaces, 
 	thereby eliminating the need for a ressource to actually being splitted into an implementation and an interface.
 	You can now configure resources simply by adding a <resource class="..."/> node without <implements class="..."/> child nodes.
-
-    * src/de/schlund/pfixcore/example/Context*.java: removed most of the interfaces and renamed the *Impl to the
-    former name of the interfaces (except for ContextTShirt to still have one example of implementation/interface split)
-
-    * projects/sample1/conf/config.conf.xml: changed accordingly
+	
+	* src/de/schlund/pfixcore/example/Context*.java: removed most of the interfaces and renamed the *Impl to the
+	former name of the interfaces (except for ContextTShirt to still have one example of implementation/interface split)
+	
+	* projects/sample1/conf/config.conf.xml: changed accordingly
 
 2008-04-18  Martin Leidig  <mleidig@schlund.de>
 

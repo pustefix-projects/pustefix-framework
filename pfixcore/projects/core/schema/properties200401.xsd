@@ -14,10 +14,10 @@
   -->
 
   <xs:element name="contextxmlserver" type="prop:contextxmlserverType">
-    <xs:keyref refer="prop:contextresourceimplements" name="contextresourceimplements2pagerequestoutputresource">
-      <xs:selector xpath="prop:pagerequest/prop:output/prop:resource"></xs:selector>
-      <xs:field xpath="@class"></xs:field>
-    </xs:keyref>
+<!--    <xs:keyref refer="prop:contextresourceimplements" name="contextresourceimplements2pagerequestoutputresource">-->
+<!--      <xs:selector xpath="prop:pagerequest/prop:output/prop:resource"></xs:selector>-->
+<!--      <xs:field xpath="@class"></xs:field>-->
+<!--    </xs:keyref>-->
     <xs:unique name="pageflow">
       <xs:selector xpath="."></xs:selector>
       <xs:field xpath="@name"></xs:field>
