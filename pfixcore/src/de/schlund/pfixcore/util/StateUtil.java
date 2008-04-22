@@ -54,9 +54,6 @@ public class StateUtil {
     private static final String HEADER        = "responseheader";
     private static final String def_mime      = "text/html";
 
-    /**
-     * 
-     */
     public static ResultDocument createDefaultResultDocument(Context context) throws Exception {
         ResultDocument  resdoc = new ResultDocument();
         renderContextResources(context, resdoc);
@@ -120,9 +117,6 @@ public class StateUtil {
     }
 
     
-    /**
-     * 
-     */
     public static void addResponseHeadersAndType(Context context, ResultDocument resdoc) {
         Properties props = context.getPropertiesForCurrentPageRequest();
         Properties contextprops = context.getProperties();
@@ -160,26 +154,17 @@ public class StateUtil {
     }
 
     
-    /**
-     * 
-     */
     public static boolean isDirectTrigger(Context context, PfixServletRequest preq) {
         RequestParam sdreq = preq.getRequestParam(State.SENDDATA);
         return (!context.flowIsRunning() && (context.jumpToPageIsRunning() || sdreq == null || !sdreq.isTrue()));
     }
     
     
-    /**
-     * 
-     */
     public static boolean isSubmitTrigger(Context context, PfixServletRequest preq) {
         return isSubmitTriggerHelper(context, preq.getRequestParam(State.SENDDATA));
     }
     
     
-    /**
-     * 
-     */
     public static boolean isSubmitAuthTrigger(Context context, PfixServletRequest preq) {
         return isSubmitTriggerHelper(context, preq.getRequestParam(State.SENDAUTHDATA));
     }
@@ -187,9 +172,6 @@ public class StateUtil {
     
     // ============ private Helper methods ============
     
-    /**
-     * 
-     */
     private static boolean isSubmitTriggerHelper(Context context, RequestParam sdreq) {
         return (!context.flowIsRunning() && !context.finalPageIsRunning() &&
                 !context.jumpToPageIsRunning() && sdreq != null && sdreq.isTrue());
