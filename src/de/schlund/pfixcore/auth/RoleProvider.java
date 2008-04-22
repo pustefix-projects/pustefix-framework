@@ -17,6 +17,9 @@
  */
 package de.schlund.pfixcore.auth;
 
+import java.util.List;
+
+
 /**
  * 
  * @author mleidig@schlund.de
@@ -25,5 +28,6 @@ package de.schlund.pfixcore.auth;
 public interface RoleProvider {
 
 	public Role getRole(String roleName) throws RoleNotFoundException;
+	public List<Role> getRoles();
 	
 }

@@ -58,7 +58,7 @@ public class ConditionRule extends CheckedRule {
         } else if (name.equals("hasrole")) {
             String roleName = attributes.getValue("name");
             condition = new HasRole(roleName);
-            Role role = config.getContextConfig().getRole(roleName);
+            Role role = config.getContextConfig().getRoleProvider().getRole(roleName);
             if (role == null) throw new Exception("Condition hasrole references unknown role: " + roleName);
         } else if (name.equals("condition")) {
             if (topLevel) {

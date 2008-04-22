@@ -884,7 +884,7 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
     }
     
     private ResultDocument checkPageAuthorization() throws PustefixApplicationException, PustefixCoreException {
-        if (!parentcontext.getContextConfig().hasRoles()) return null;
+        if (parentcontext.getContextConfig().getRoleProvider().getRoles().size()==0) return null;
         try {
             checkAuthorization(parentcontext);
         } catch (AuthorizationException authEx) {

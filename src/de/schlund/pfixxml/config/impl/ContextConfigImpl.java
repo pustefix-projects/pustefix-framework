@@ -35,8 +35,8 @@ import org.xml.sax.SAXException;
 
 import de.schlund.pfixcore.auth.AuthConstraint;
 import de.schlund.pfixcore.auth.Condition;
-import de.schlund.pfixcore.auth.Role;
 import de.schlund.pfixcore.auth.RoleProvider;
+import de.schlund.pfixcore.auth.RoleProviderImpl;
 import de.schlund.pfixcore.workflow.ContextInterceptor;
 import de.schlund.pfixcore.workflow.ContextResource;
 import de.schlund.pfixxml.config.ContextConfig;
@@ -48,7 +48,7 @@ import de.schlund.pfixxml.config.PageFlowConfig;
  * 
  * @author Sebastian Marsching <sebastian.marsching@1und1.de>
  */
-public class ContextConfigImpl implements ContextConfig, RoleProvider {
+public class ContextConfigImpl implements ContextConfig {
     // Caution: This implementation is not thread-safe. However, it
     // does not have to be as a configuration is initialized only once.
     
@@ -68,11 +68,10 @@ public class ContextConfigImpl implements ContextConfig, RoleProvider {
     private String navigationFile = null;
     private Properties props = new Properties();
     private boolean synchronize = true;
-    private Map<String,Role> roles = new HashMap<String,Role>();
-    private List<Role> initialRoles = new ArrayList<Role>();
     private Map<String,AuthConstraint> authConstraints = new HashMap<String,AuthConstraint>();
     private AuthConstraint defaultAuthConstraint;
     private Map<String,Condition> conditions = new HashMap<String,Condition>();
+    private RoleProviderImpl roleProvider = new RoleProviderImpl();
     private boolean doLoadTimeChecks = false;
     
     public void setAuthPage(String page) {
@@ -197,29 +196,12 @@ public class ContextConfigImpl implements ContextConfig, RoleProvider {
         }       
     }
     
-    public void addRole(Role role) {
-        roles.put(role.getName(),role);
-        if(role.isInitial()) initialRoles.add(role);
+    public RoleProviderImpl getRoleProvider() {
+        return roleProvider;
     }
     
-    public Role getRole(String roleName) {
-        return roles.get(roleName);
-    }
-    
-    public Map<String,Role> getRoles() {
-        return Collections.unmodifiableMap(roles);
-    }
-    
-    public List<Role> getInitialRoles() {
-    	return initialRoles;
-    }
-    
-    public RoleProvider getRoleProvider() {
-    	return this;
-    }
-    
-    public boolean hasRoles() {
-        return !roles.isEmpty();
+    public void addCustomRoleProvider(RoleProvider customProvider) {
+        roleProvider.addRoles(customProvider);
     }
     
     public void addAuthConstraint(String id,AuthConstraint authConstraint) {
@@ -292,7 +274,7 @@ public class ContextConfigImpl implements ContextConfig, RoleProvider {
         
         this.pagerequests.putAll(newPages);
         this.cachePagerequests = null;
-        
+       
         if(doLoadTimeChecks) checkAuthConstraints();
     }
 

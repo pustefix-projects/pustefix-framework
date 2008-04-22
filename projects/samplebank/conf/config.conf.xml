@@ -16,6 +16,8 @@
     </resource>
   </context>
   
+  <roleprovider class="de.schlund.pfixcore.example.bank.BankRoleProvider"/>
+  
   <role name="ANONYMOUS" initial="true"/>
   <role name="UNRESTRICTED"/>
   <role name="ACCOUNT"/>
@@ -96,6 +98,5 @@
   <pagerequest name="logout">
     <state class="de.schlund.pfixcore.example.bank.LogoutState"/>
   </pagerequest>
-  
 
 </contextxmlserver>
