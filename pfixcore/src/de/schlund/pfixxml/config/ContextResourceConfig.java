@@ -31,7 +31,7 @@ public interface ContextResourceConfig {
     Class<?> getContextResourceClass();
 
     /**
-     * Returns all Interfaces the context resource is implementing and should
+     * Returns all interfaces the context resource is implementing and should
      * be used for.
      * 
      * @return list of interfaces
