@@ -55,6 +55,7 @@ public class ContextConfigImpl implements ContextConfig, RoleProvider {
     
     private String authPage = null;
     private String defaultFlow = null;
+    private String defaultPage = null;
     private LinkedHashMap<Class<?>, ContextResourceConfigImpl> resources = new LinkedHashMap<Class<?>, ContextResourceConfigImpl>();
     private List<ContextResourceConfigImpl> cacheResources = null;
     protected HashMap<Class<?>, ContextResourceConfigImpl> interfaceToResource = new HashMap<Class<?>, ContextResourceConfigImpl>(); 
@@ -88,6 +89,14 @@ public class ContextConfigImpl implements ContextConfig, RoleProvider {
     
     public String getDefaultFlow() {
         return this.defaultFlow;
+    }
+    
+    public void setDefaultPage(String page) {
+        this.defaultPage = page;
+    }
+    
+    public String getDefaultPage() {
+        return this.defaultPage;
     }
     
     public void addContextResource(ContextResourceConfigImpl config) {

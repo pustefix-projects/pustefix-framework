@@ -51,6 +51,14 @@ public interface ContextConfig {
     String getDefaultFlow();
 
     /**
+     * Returns name of the page to use when the user enters the site without
+     * specifying a specific page.
+     * 
+     * @return name of default page
+     */
+    String getDefaultPage();
+    
+    /**
      * Returns a list of the configuration for all context resources that should
      * be created by the context.
      * 

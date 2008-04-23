@@ -5,7 +5,10 @@
         <center>
           <pfx:button pageflow="OrderFlow" startwithflow="true">
             Next Page From OrderFlow
-          </pfx:button>
+          </pfx:button><br/>
+          <pfx:button page="order" pageflow="OrderFlow" startwithflow="true">
+            Next Page From OrderFlow (max. order)
+          </pfx:button><br/>
         </center>
       </theme>
   </part>

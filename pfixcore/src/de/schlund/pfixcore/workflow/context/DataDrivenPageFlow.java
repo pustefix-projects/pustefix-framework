@@ -134,7 +134,7 @@ public class DataDrivenPageFlow implements PageFlow {
         return ret;
     }
 
-    public String findNextPage(PageFlowContext context) throws PustefixApplicationException {
+    public String findNextPage(PageFlowContext context, boolean stopatcurrentpage) throws PustefixApplicationException {
         FlowStep[] workflow = getAllSteps();
         PageRequest saved = context.getCurrentPageRequest();
         boolean after_current = false;
@@ -145,9 +145,12 @@ public class DataDrivenPageFlow implements PageFlow {
 
             if (!context.checkIsAccessible(page, PageRequestStatus.WORKFLOW)) {
                 LOG.debug("* Skipping step [" + page + "] in page flow (state is not accessible...)");
-                // break;
             } else {
                 LOG.debug("* Page flow is at step " + i + ": [" + page + "]");
+                if (stopatcurrentpage && page.equals(saved)) {
+                    LOG.debug("=> Request specified to not advance futher than " + page.getRootName() + " because startwithflow is active");
+                    return page.getRootName();
+                }
                 if (after_current && (step.wantsToStopHere() || context.isForceStopAtNextStep())) {
                     if (context.isForceStopAtNextStep())
                         LOG.debug("=> Request specifies to act like stophere='true'");
@@ -165,6 +168,13 @@ public class DataDrivenPageFlow implements PageFlow {
                 after_current = true;
             }
         }
+        // If we come here, we need to get check for the final page, and use this instead
+//        if (getFinalPage() != null) {
+//            return getFinalPage();
+//        } else if (stopatcurrentpage && (saved != null)) {
+//            return saved.getRootName();
+//        }
+        // Nothing left to do - we give up and return null
         return null;
     }
 

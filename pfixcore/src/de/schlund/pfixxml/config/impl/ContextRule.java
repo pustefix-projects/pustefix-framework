@@ -45,6 +45,11 @@ public class ContextRule extends CheckedRule {
             throw new SAXException("Mandatory attribute \"defaultflow\" is missing!");
         }
         ctxConfig.setDefaultFlow(defaultFlow);
+        String defaultPage = attributes.getValue("defaultpage");
+        if (defaultPage == null) {
+            throw new SAXException("Mandatory attribute \"defaultpage\" is missing!");
+        }
+        ctxConfig.setDefaultPage(defaultPage);
         String authPage = attributes.getValue("authpage");
         if (authPage != null) {
             ctxConfig.setAuthPage(authPage);
@@ -66,6 +71,7 @@ public class ContextRule extends CheckedRule {
     protected Map<String, Boolean> wantsAttributes() {
         HashMap<String, Boolean> atts = new HashMap<String, Boolean>();
         atts.put("defaultflow", true);
+        atts.put("defaultpage", true);
         atts.put("authpage", false);
         atts.put("synchronized", false);
         return atts;

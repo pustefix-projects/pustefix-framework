@@ -46,11 +46,12 @@ public interface PageFlow {
      * Triggers pageflow logic.
      * 
      * @param context contains information about the request and session state
+     * @param boolean stopatcurrentpage true if the "maximum" page to search for should be the current page 
      * @return name of the next page to show
      * @throws PustefixApplicationException if an exception is thrown by the
      * application code called by this method
      */
-    String findNextPage(PageFlowContext context) throws PustefixApplicationException;
+    String findNextPage(PageFlowContext context, boolean stopatcurrentpage) throws PustefixApplicationException;
     
     /**
      * Return the name of this page flow (including variant).

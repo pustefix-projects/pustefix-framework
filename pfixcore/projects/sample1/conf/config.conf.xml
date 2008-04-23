@@ -8,7 +8,7 @@
     <editmode allow="true"/>
   </servletinfo>
 
-  <context defaultflow="OrderFlow">
+  <context defaultflow="OrderFlow" defaultpage="home">
     <resource class="de.schlund.pfixcore.example.ContextCounter"/>
     <resource class="de.schlund.pfixcore.example.ContextAdultInfo"/>
     <resource class="de.schlund.pfixcore.example.ContextTogglePic"/>
@@ -54,7 +54,7 @@
           </when>
         </oncontinue>
       </flowstep>
-      <flowstep name="overview" />
+      <flowstep name="overview"/>
     </default>
     <variant name="foo:bar">
       <flowstep name="home" stophere="true" />
@@ -68,7 +68,7 @@
           </when>
         </oncontinue>
       </flowstep>
-      <flowstep name="overview" stophere="true" />
+      <flowstep name="overview"/>
     </variant>
   </pageflow>
 
@@ -84,6 +84,8 @@
   </pageflow>
 
   <!-- *** PageRequests and associated properties *** -->
+
+  <pagerequest name="test"/>
 
   <pagerequest name="A">
     <input>
@@ -164,7 +166,7 @@
   </pagerequest>
 
   <!-- Here we have a simple state which extends StaticState so we can render ContextResources. -->
-  <!-- It does the isAccessible() part on it's own. -->
+  <!-- It does the isAccessible() and needsData() part on it's own. -->
   <pagerequest name="overview">
     <choose>
       <when test="$mode = 'prod'">

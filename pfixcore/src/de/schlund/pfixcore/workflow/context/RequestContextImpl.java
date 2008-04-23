@@ -458,18 +458,20 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
         }
         
         // Try to initialize using pagename from flow
-        String pagename;
-        pagename = currentpageflow.findNextPage(parentcontext);
-        if (pagename == null) {
-            pagename = pageflowmanager.getPageFlowByName(parentcontext.getContextConfig().getDefaultFlow(), variant).findNextPage(parentcontext);
-        }
-        if (pagename != null) {
-            currentpagerequest = createPageRequest(pagename);
-            currentpagerequest.setStatus(PageRequestStatus.DIRECT);
-        } else {
-            throw new PustefixCoreException("Default flow does not return page!");
-        }
+//        String pagename;
+//        pagename = currentpageflow.findNextPage(parentcontext);
+//        if (pagename == null) {
+//            pagename = pageflowmanager.getPageFlowByName(parentcontext.getContextConfig().getDefaultFlow(), variant).findNextPage(parentcontext);
+//        }
+//        if (pagename != null) {
+//            currentpagerequest = createPageRequest(pagename);
+//            currentpagerequest.setStatus(PageRequestStatus.DIRECT);
+//        } else {
+//            throw new PustefixCoreException("Default flow does not return page!");
+//        }
 
+        currentpagerequest = createPageRequest(parentcontext.getContextConfig().getDefaultPage());
+        
         // --------------------------------------------------------------------------------------
         // TODO: fix the whole logic of setting the values from all the possible places.
         //       I we find an action, we just overwrite the values here regardless of the
@@ -676,13 +678,10 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
             if (!checkIsAccessible(currentpagerequest, PageRequestStatus.DIRECT)) {
                 LOG.warn("[" + currentpagerequest + "]: not accessible! Trying first page of default flow.");
                 currentpageflow = pageflowmanager.getPageFlowByName(servercontext.getContextConfig().getDefaultFlow(), getVariant());
-                String defpage = currentpageflow.findNextPage(parentcontext);
-                if (defpage == null) {
-                    throw new PustefixCoreException("Default page flow does not return page!");
-                }
+                String defpage = parentcontext.getContextConfig().getDefaultPage();
                 currentpagerequest = createPageRequest(defpage);;
                 if (!checkIsAccessible(currentpagerequest, PageRequestStatus.DIRECT)) {
-                    throw new PustefixCoreException("Even first page [" + defpage + "] of default flow was not accessible! Bailing out.");
+                    throw new PustefixCoreException("Even default page [" + defpage + "] was not accessible! Bailing out.");
                 }
             }
 
@@ -744,7 +743,7 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
         }
         
         PageRequest saved = currentpagerequest;
-        String nextPage = currentpageflow.findNextPage(this.parentcontext);
+        String nextPage = currentpageflow.findNextPage(this.parentcontext, startwithflow);
         if (nextPage != null) {
             currentpagerequest = createPageRequest(nextPage);
             currentpagerequest.setStatus(PageRequestStatus.WORKFLOW);
