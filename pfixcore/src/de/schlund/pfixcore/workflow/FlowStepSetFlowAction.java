@@ -37,7 +37,7 @@ public class FlowStepSetFlowAction implements FlowStepAction {
     }
 
     public void doAction(Context context, ResultDocument resdoc) throws Exception {
-        if (pageflow != null && !pageflow.equals("") && !context.isCurrentPageFlowRequestedByUser()) {
+        if (pageflow != null && !pageflow.equals("")) {
             context.setCurrentPageFlow(pageflow);
         }
     }

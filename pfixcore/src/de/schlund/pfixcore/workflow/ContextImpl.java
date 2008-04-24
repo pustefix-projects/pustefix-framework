@@ -327,10 +327,6 @@ public class ContextImpl implements Context, AccessibilityChecker, ExtendedConte
         return sessioncontext.getVisitId();
     }
 
-    public boolean isCurrentPageFlowRequestedByUser() {
-        return getRequestContextForCurrentThreadWithError().isCurrentPageFlowRequestedByUser();
-    }
-
     public boolean isCurrentPageRequestInCurrentFlow() {
         return getRequestContextForCurrentThreadWithError().isCurrentPageRequestInCurrentFlow();
     }

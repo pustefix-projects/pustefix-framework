@@ -77,13 +77,13 @@ public class PageFlowManager {
         }
     }
 
-    protected PageFlow pageFlowToPageRequest(PageFlow currentflow, PageRequest page, Variant variant, PageFlowContext context) {
-        LOG.debug("===> Testing pageflow: " + currentflow.getName() + " / page: " + page);
-        if (!currentflow.containsPage(page.getRootName(), context)) {
+    protected PageFlow pageFlowToPageRequest(PageFlow lastflow, PageRequest page, Variant variant, PageFlowContext context) {
+        //LOG.debug("===> Testing pageflow: " + currentflow.getName() + " / page: " + page);
+        if (lastflow == null || !lastflow.containsPage(page.getRootName(), context)) {
             Set<String> rootflownames = pagetoflowmap.get(page.getRootName());
             if (rootflownames == null) {
-                LOG.debug("===> Page " + page + " isn't a member of any pageflow: Reusing flow " + currentflow.getName());
-                return currentflow;
+                LOG.debug("===> Page " + page + " isn't a member of any pageflow: returning no pageflow");
+                return null;
             }
             String defaultFlowForRequest = this.config.getPageRequestConfig(page.getName()).getDefaultFlow();
             if (defaultFlowForRequest != null) {
@@ -99,15 +99,16 @@ public class PageFlowManager {
                 String pageflowname = vmanager.getVariantMatchingPageFlowName(i.next(), variant);
                 PageFlow pf = getPageFlowByName(pageflowname);
                 if (pf.containsPage(page.getRootName(), context)) {
-                    LOG.debug("===> Switching to pageflow: " + pf.getName());
+                    //LOG.debug("===> Switching to pageflow: " + pf.getName());
                     return pf;
                 }
             }
-            LOG.debug("===> Page " + page + " isn't a member of any pageflow: Reusing flow " + currentflow.getName());
+            LOG.debug("===> Page " + page + " isn't a member of any valid pageflow: returning no pageflow");
+            return null;
         } else {
-            LOG.debug("===> Page " + page + " is member of current pageflow: Reusing flow " + currentflow.getName());
+            LOG.debug("===> Page " + page + " is member of the last used pageflow: Reusing flow " + lastflow.getName());
+            return lastflow;
         }
-        return currentflow;
     }
     
     protected PageFlow getPageFlowByName(String rootname, Variant variant) {

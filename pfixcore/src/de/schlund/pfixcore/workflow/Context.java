@@ -61,7 +61,6 @@ public interface Context {
     boolean                jumpToPageIsRunning();
     boolean                flowIsRunning();
     boolean                isCurrentPageRequestInCurrentFlow();
-    boolean                isCurrentPageFlowRequestedByUser();
     boolean                isJumpToPageSet();
     boolean                isJumpToPageFlowSet();
     boolean                isProhibitContinueSet();

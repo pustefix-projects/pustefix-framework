@@ -208,13 +208,18 @@ public class DataDrivenPageFlow implements PageFlow {
     }
 
     public void hookAfterRequest(ResultDocument resdoc, PageFlowContext context) throws PustefixApplicationException, PustefixCoreException {
-        FlowStep current = getFlowStepForPage(context.getCurrentPageRequest().getRootName());
-        current.applyActionsOnContinue(context, resdoc);
+        if (containsPage(context.getCurrentPageRequest().getRootName(), context)) {
+            FlowStep current = getFlowStepForPage(context.getCurrentPageRequest().getRootName());
+            current.applyActionsOnContinue(context, resdoc);
+        }
     }
 
     public boolean hasHookAfterRequest(PageFlowContext context) {
-        FlowStep current = getFlowStepForPage(context.getCurrentPageRequest().getRootName());
-        return current.hasOnContinueAction();
+        if (containsPage(context.getCurrentPageRequest().getRootName(), context)) {
+            FlowStep current = getFlowStepForPage(context.getCurrentPageRequest().getRootName());
+            return current.hasOnContinueAction();
+        }
+        return false;
     }
 
 }
