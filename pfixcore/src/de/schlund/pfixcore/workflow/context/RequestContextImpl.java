@@ -141,12 +141,12 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
         return currentpagerequest;
     }
 
-    public PageFlow getCurrentPageFlow() {
-        if (currentpservreq == null) {
-            throw new IllegalStateException("PageFlow is only available witihin request handling");
-        }
-        return currentpageflow;
-    }
+//    public PageFlow getCurrentPageFlow() {
+//        if (currentpservreq == null) {
+//            throw new IllegalStateException("PageFlow is only available witihin request handling");
+//        }
+//        return currentpageflow;
+//    }
 
     public void setCurrentPageFlow(String pageflow) {
         if (currentpservreq == null) {

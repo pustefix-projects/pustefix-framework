@@ -156,7 +156,7 @@ public class DefaultIWrapperState extends StateImpl {
                     rfinal.onSuccess(wrp_container);
                 }
             }
-        } else if (isDirectTrigger(context, preq) || context.flowIsRunning()) {
+        } else if (isDirectTrigger(context, preq) || context.isPageFlowRunning()) {
             CAT.debug(">>> Retrieving current status...");
 
             pe = new PerfEvent(PerfEventType.PAGE_RETRIEVECURRENTSTATUS, context.getCurrentPageRequest().toString());

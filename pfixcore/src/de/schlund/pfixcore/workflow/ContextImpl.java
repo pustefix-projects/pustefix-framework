@@ -40,7 +40,6 @@ import de.schlund.pfixcore.exception.PustefixCoreException;
 import de.schlund.pfixcore.util.TokenManager;
 import de.schlund.pfixcore.util.TokenUtils;
 import de.schlund.pfixcore.workflow.context.AccessibilityChecker;
-import de.schlund.pfixcore.workflow.context.PageFlow;
 import de.schlund.pfixcore.workflow.context.RequestContextImpl;
 import de.schlund.pfixcore.workflow.context.ServerContextImpl;
 import de.schlund.pfixxml.AbstractXMLServlet;
@@ -251,7 +250,7 @@ public class ContextImpl implements Context, AccessibilityChecker, ExtendedConte
         getRequestContextForCurrentThreadWithError().addPageMessage(scode, args, level);
     }
 
-    public boolean flowIsRunning() {
+    public boolean isPageFlowRunning() {
         return getRequestContextForCurrentThreadWithError().flowIsRunning();
     }
 
@@ -271,9 +270,9 @@ public class ContextImpl implements Context, AccessibilityChecker, ExtendedConte
         return sessioncontext.getContextResourceManager();
     }
 
-    public PageFlow getCurrentPageFlow() {
-        return getRequestContextForCurrentThreadWithError().getCurrentPageFlow();
-    }
+//    public PageFlow getCurrentPageFlow() {
+//        return getRequestContextForCurrentThreadWithError().getCurrentPageFlow();
+//    }
 
     public PageRequest getCurrentPageRequest() {
         return getRequestContextForCurrentThreadWithError().getCurrentPageRequest();

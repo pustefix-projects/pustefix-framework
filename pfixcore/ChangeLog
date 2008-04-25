@@ -1,3 +1,13 @@
+2008-04-25  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixcore/workflow/context/RequestContextImpl.java: 
+	* src/de/schlund/pfixcore/workflow/ContextImpl.java: 
+	* src/de/schlund/pfixcore/workflow/Context.java (isPageFlowRunning): renamed from flowIsRunning()
+	(getCurrentPageFlow): removed (commented out for now)
+
+	* src/de/schlund/pfixcore/util/StateUtil.java: 
+	* src/de/schlund/pfixcore/workflow/app/DefaultIWrapperState.java: renaming as above 
+	
 2008-04-25  Martin Leidig  <mleidig@schlund.de>
 
 	Removed old authentication mechanism.

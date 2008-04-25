@@ -165,7 +165,7 @@ public class StateUtil {
     
     public static boolean isDirectTrigger(Context context, PfixServletRequest preq) {
         RequestParam sdreq = preq.getRequestParam(State.SENDDATA);
-        return (!context.flowIsRunning() && (context.getCurrentPageRequest().getStatus().equals(PageRequestStatus.JUMP)  || sdreq == null || !sdreq.isTrue()));
+        return (!context.isPageFlowRunning() && (context.getCurrentPageRequest().getStatus().equals(PageRequestStatus.JUMP)  || sdreq == null || !sdreq.isTrue()));
     }
     
     
@@ -182,7 +182,7 @@ public class StateUtil {
     // ============ private Helper methods ============
     
     private static boolean isSubmitTriggerHelper(Context context, RequestParam sdreq) {
-        return (!context.flowIsRunning() &&
+        return (!context.isPageFlowRunning() &&
                 !context.getCurrentPageRequest().getStatus().equals(PageRequestStatus.JUMP) && sdreq != null && sdreq.isTrue());
     }  
 }

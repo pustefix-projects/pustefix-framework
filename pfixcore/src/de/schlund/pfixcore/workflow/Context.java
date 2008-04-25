@@ -24,7 +24,6 @@ import javax.servlet.http.Cookie;
 
 import de.schlund.pfixcore.auth.Authentication;
 import de.schlund.pfixcore.exception.PustefixApplicationException;
-import de.schlund.pfixcore.workflow.context.PageFlow;
 import de.schlund.pfixxml.Variant;
 import de.schlund.pfixxml.config.ContextConfig;
 import de.schlund.pfixxml.config.PageRequestConfig;
@@ -38,39 +37,49 @@ public interface Context {
     ContextResourceManager getContextResourceManager();
     Properties             getProperties();
     Properties             getPropertiesForCurrentPageRequest();
+    Properties             getPropertiesForContextResource(Object res);
+    Authentication         getAuthentication();
+    ContextConfig          getContextConfig();
     PageRequestConfig      getConfigForCurrentPageRequest();
     PageRequest            getCurrentPageRequest();
-    PageFlow               getCurrentPageFlow();
+    // PageFlow               getCurrentPageFlow();
+
     void                   setCurrentPageFlow(String pageflow);
+    
     void                   setJumpToPage(String pagename);
     void                   setJumpToPageFlow(String pageflow);
-    void                   prohibitContinue();
-    Cookie[]               getRequestCookies();
-    void                   setLanguage(String lang);
-    String                 getLanguage();
-    void                   addCookie(Cookie cookie);
-    Variant                getVariant();
-    void                   setVariant(Variant variant);
-    void                   setVariantForThisRequestOnly(Variant variant);
-    String                 getVisitId();
-    void                   addSessionStatusListener(SessionStatusListener l);
-    void                   removeSessionStatusListener(SessionStatusListener l);
-    boolean                precedingFlowNeedsData() throws PustefixApplicationException;
-    boolean                flowIsRunning();
-    // boolean                isCurrentPageRequestInCurrentFlow();
     boolean                isJumpToPageSet();
     boolean                isJumpToPageFlowSet();
+    
+    void                   prohibitContinue();
     boolean                isProhibitContinueSet();
+
+    boolean                isPageFlowRunning();
+    boolean                precedingFlowNeedsData() throws PustefixApplicationException;
+    // boolean                isCurrentPageRequestInCurrentFlow();
     boolean                stateMustSupplyFullDocument();
+    
+    void                   setVariant(Variant variant);
+    void                   setVariantForThisRequestOnly(Variant variant);
+    Variant                getVariant();
+    
+    void                   setLanguage(String lang);
+    String                 getLanguage();
+
+    void                   addCookie(Cookie cookie);
+    Cookie[]               getRequestCookies();
+
     String                 getName();
     Throwable              getLastException();
+    String                 getVisitId();
+
     void                   addPageMessage(StatusCode scode);
     void                   addPageMessage(StatusCode scode, String level);
     void                   addPageMessage(StatusCode scode, String[] args);
     void                   addPageMessage(StatusCode scode, String[] args, String level);
-    Properties             getPropertiesForContextResource(Object res);
-    ContextConfig          getContextConfig();
-    Authentication         getAuthentication();
+
+    void                   addSessionStatusListener(SessionStatusListener l);
+    void                   removeSessionStatusListener(SessionStatusListener l);
     
     /**
      * Tells the servlet that the session for this context is not longer needed 
