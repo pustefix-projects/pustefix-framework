@@ -11,25 +11,17 @@
   <servletinfo depend="simpleform/conf/depend.xml" name="pfixcore_project:simpleform::servlet:config">
     <editmode allow="true" />
   </servletinfo>
-  <!-- A mandatory tag. It has to be the reference to a valid  -->
-  <!-- pageflow (in this case there ist just the one below). -->
-  <!-- For this example the tag also describes the ContextResource classes. -->
-  <!-- They're needed because you're not able to store informations -->
-  <!-- in the sesscion scope by the familiar way!  -->
-  <!-- Using pustefix, you will always do it with a Contextresource (even for a short DemoText). -->
-  <context defaultflow="DefaultFlow">
+  
+    <context defaultpage="home">
     <resource class="de.skelexamples.ContextDemoTextImpl">
       <implements class="de.skelexamples.ContextDemoText" />
     </resource>
   </context>
 
-  <pageflow name="DefaultFlow">
+  <pageflow name="flow">
     <flowstep name="home" />
     <flowstep name="output" />
   </pageflow>
-
-  <!-- The name of a page defined in the corresponding depend.xml file. -->
-  <!-- <pagerequest>. Go to http://pustefix.sourceforge.net/prop.html to learn more. -->
 
   <!-- The class DemoText is described by the "interface" tag. -->
   <!-- It is mentioned in order to give the relation to a class representing the content of our form. -->
@@ -44,8 +36,8 @@
   </pagerequest>
 
   <!-- Our aim is to give out the text received from our form on the output page. -->
-  <!-- Therefore we need a relation to the Contextresource and also the node  -->
-  <!-- containing the text (this is managed by the method ContextDemoTextImpl.insertStatus(Args)) -->
+  <!-- Therefore we need a relation to the resource and also the node  -->
+  <!-- containing the output of the resource's status (the text entered earlier) -->
   <pagerequest name="output">
     <output>
       <resource node="data" class="de.skelexamples.ContextDemoText" />

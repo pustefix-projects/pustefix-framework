@@ -156,7 +156,7 @@ public class DefaultIWrapperState extends StateImpl {
                     rfinal.onSuccess(wrp_container);
                 }
             }
-        } else if (isDirectTrigger(context, preq) || context.finalPageIsRunning() || context.flowIsRunning()) {
+        } else if (isDirectTrigger(context, preq) || context.flowIsRunning()) {
             CAT.debug(">>> Retrieving current status...");
 
             pe = new PerfEvent(PerfEventType.PAGE_RETRIEVECURRENTSTATUS, context.getCurrentPageRequest().toString());
@@ -166,8 +166,6 @@ public class DefaultIWrapperState extends StateImpl {
             if (CAT.isDebugEnabled()) {
                 if (isDirectTrigger(context, preq)) {
                     CAT.debug("    => REASON: DirectTrigger");
-                } else if (context.finalPageIsRunning()) {
-                    CAT.debug("    => REASON: FinalPage");
                 } else {
                     CAT.debug("    => REASON: WorkFlow");
                 }

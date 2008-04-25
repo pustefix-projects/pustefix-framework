@@ -318,7 +318,6 @@
       </xs:choice>
     </xs:sequence>
     <xs:attribute name="class"/>
-    <xs:attribute name="defaultflow" use="required"/>
     <xs:attribute name="defaultpage" use="required"/>
     <xs:attribute name="authpage"/>
     <xs:attribute name="synchronized" type="xs:boolean" default="true"/>

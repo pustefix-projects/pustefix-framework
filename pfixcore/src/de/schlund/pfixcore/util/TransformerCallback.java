@@ -55,7 +55,7 @@ public class TransformerCallback {
     public static int isAccessible(RequestContextImpl requestcontext, String pagename) throws Exception {
         try {
             ContextImpl context = requestcontext.getParentContext();
-            if (context.getContextConfig().getPageRequestConfig(pagename) != null) {
+            //if (context.getContextConfig().getPageRequestConfig(pagename) != null) {
                 AccessibilityChecker check = (AccessibilityChecker) context;
                 boolean retval;
                 if (context.getContextConfig().isSynchronized()) {
@@ -70,8 +70,8 @@ public class TransformerCallback {
                 } else {
                     return 0;
                 }
-            }
-            return -1;
+            // }
+            // return -1;
         } catch (Exception x) {
             ExtensionFunctionUtils.setExtensionFunctionError(x);
             throw x;

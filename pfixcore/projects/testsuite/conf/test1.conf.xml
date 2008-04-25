@@ -10,14 +10,8 @@
     <editmode allow="true"/>
   </servletinfo>
   
-  <context defaultflow="StartFlow">
-    
-  </context>
-  
-  <pageflow name="StartFlow">
-    <flowstep name="Start"/>
-  </pageflow>
-  
+  <context defaultpage="Start"/>
+
   <pageflow name="Test2Flow1">
     <flowstep name="Test2">
       <oncontinue>

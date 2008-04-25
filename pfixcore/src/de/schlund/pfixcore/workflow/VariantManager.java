@@ -77,8 +77,6 @@ public class VariantManager {
     }
     
     public String getVariantMatchingPageFlowName(String name, Variant variant) {
-        LOG.debug("=== Requesting FLOW " + name);
-
         if (variant != null && variant.getVariantFallbackArray() != null) {
             String[] variant_arr = variant.getVariantFallbackArray();
             for (int i = 0; i < variant_arr.length; i++) {

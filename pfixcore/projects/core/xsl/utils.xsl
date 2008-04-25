@@ -89,7 +89,7 @@
               </tr>
               <tr>
                 <td nowrap="nowrap" colspan="2" style="font-family: Verdana,Sans; font-size: 10px; background-color: black; color: white; padding-left: 5px; padding-right: 2px;">
-                  F: <ixsl:value-of select="$pageflow"/>
+                  F: <ixsl:value-of select="$__root/formresult/pageflow/@name"/>
                 </td>
               </tr>
             </table>
@@ -242,7 +242,7 @@
               <div style="padding-left:5px;padding-right:5px">
                 <span title="Page">P: <ixsl:value-of select="$page"/></span>
                 <br/>
-                <span title="Pageflow">F: <ixsl:value-of select="$pageflow"/></span>
+                <span title="Pageflow">F: <ixsl:value-of select="$__root/formresult/pageflow/@name"/></span>
                 <br/>
                 <span title="Variant">
                   V: 

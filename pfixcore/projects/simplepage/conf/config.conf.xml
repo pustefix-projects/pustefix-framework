@@ -11,18 +11,10 @@
     <editmode allow="true" />
   </servletinfo>
 
-  <!-- A mandatory tag. It has to be the reference to a valid -->
-  <!-- pageflow (in this case there ist just the one below -->
-  <context defaultflow="DefaultFlow" />
 
-  <pageflow name="DefaultFlow">
-    <flowstep name="home" />
-  </pageflow>
+  <context defaultpage="home" />
 
   <!-- The name of a page defined in the corresponding depend.xml file. -->
-  <!-- <pagerequest> has also two optional attributes called "nostore"  -->
-  <!-- and "copyfrom". Go to http://pustefix.sourceforge.net/prop.html -->
-  <!-- and search for this items to learn more. -->
   <pagerequest name="home" />
 
 </contextxmlserver>

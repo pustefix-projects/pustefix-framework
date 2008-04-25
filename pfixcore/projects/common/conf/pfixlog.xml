@@ -155,6 +155,11 @@
     <appender-ref ref="LOGGER_GENERAL"/>
   </category>
 
+  <category name="de.schlund.pfixcore.workflow.ContextResourceManagerImpl" additivity="false">
+    <priority value="WARN"/>
+    <appender-ref ref="LOGGER_GENERAL"/>
+  </category>
+
   <category name="de.schlund.pfixcore.workflow.Context" additivity="false">
     <priority value="DEBUG"/>
     <appender-ref ref="LOGGER_GENERAL"/>
@@ -170,7 +175,7 @@
     <appender-ref ref="LOGGER_GENERAL"/>
   </category>
 
-  <category name="de.schlund.pfixxml.PfixServletRequest" additivity="false">
+  <category name="de.schlund.pfixxml.PfixServletRequestImpl" additivity="false">
     <priority value="WARN"/>
     <appender-ref ref="LOGGER_GENERAL"/>
   </category>
@@ -242,8 +247,8 @@
     <appender-ref ref="LOGGER_GENERAL"/>
   </category>
   
-  <category name="de.schlund.pfixcore.generator.IWrapperInfo" additivity="false">
-    <priority value="INFO"/>
+  <category name="de.schlund.pfixcore.generator" additivity="false">
+    <priority value="WARN"/>
     <appender-ref ref="LOGGER_GENERAL"/>
   </category>
 

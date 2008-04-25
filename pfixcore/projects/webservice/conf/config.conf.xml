@@ -8,10 +8,8 @@
     <editmode allow="true" />
   </servletinfo>
 
-  <context defaultflow="TestFlow">
-    <resource class="de.schlund.pfixcore.example.ContextCounterImpl">
-      <implements class="de.schlund.pfixcore.example.ContextCounter" />
-    </resource>
+  <context defaultpage="calculator">
+    <resource class="de.schlund.pfixcore.example.ContextCounter"/>
 
     <resource class="de.schlund.pfixcore.example.webservices.chat.ContextChatImpl">
       <implements class="de.schlund.pfixcore.example.webservices.chat.ContextChat" />
@@ -22,44 +20,16 @@
     </resource>
   </context>
 
-  <pageflow name="TestFlow">
-    <flowstep name="calculator" />
-    <flowstep name="counter" />
-    <flowstep name="data" />
-    <flowstep name="typetest" />
-    <flowstep name="calltest" />
-    <flowstep name="beantest" />
-  </pageflow>
-
-  <pagerequest name="calculator"></pagerequest>
-
   <pagerequest name="chat">
     <output>
       <resource node="chat" class="de.schlund.pfixcore.example.webservices.chat.ContextChat" />
     </output>
   </pagerequest>
 
-  <pagerequest name="counter"></pagerequest>
-
-  <pagerequest name="data"></pagerequest>
-
-  <pagerequest name="typetest"></pagerequest>
-
-  <pagerequest name="calltest"></pagerequest>
-
-  <pagerequest name="beantest"></pagerequest>
-
-  <pagerequest name="gencss" nostore="true">
+  <pagerequest name="gencss">
     <properties>
       <prop name="mimetype">text/css</prop>
-      <choose>
-        <when test="$mode = 'prod'">
-          <prop name="responseheader.Cache-Control">max-age=3600</prop>
-        </when>
-        <otherwise>
-          <prop name="responseheader.Cache-Control">max-age=60</prop>
-        </otherwise>
-      </choose>
+      <prop name="responseheader.Cache-Control">max-age=60</prop>
     </properties>
   </pagerequest>
 

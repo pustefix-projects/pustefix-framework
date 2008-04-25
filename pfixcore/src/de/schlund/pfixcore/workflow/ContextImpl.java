@@ -251,9 +251,9 @@ public class ContextImpl implements Context, AccessibilityChecker, ExtendedConte
         getRequestContextForCurrentThreadWithError().addPageMessage(scode, args, level);
     }
 
-    public boolean finalPageIsRunning() {
-        return getRequestContextForCurrentThreadWithError().finalPageIsRunning();
-    }
+//    public boolean finalPageIsRunning() {
+//        return getRequestContextForCurrentThreadWithError().finalPageIsRunning();
+//    }
 
     public boolean flowIsRunning() {
         return getRequestContextForCurrentThreadWithError().flowIsRunning();
@@ -327,9 +327,9 @@ public class ContextImpl implements Context, AccessibilityChecker, ExtendedConte
         return sessioncontext.getVisitId();
     }
 
-    public boolean isCurrentPageRequestInCurrentFlow() {
-        return getRequestContextForCurrentThreadWithError().isCurrentPageRequestInCurrentFlow();
-    }
+//    public boolean isCurrentPageRequestInCurrentFlow() {
+//        return getRequestContextForCurrentThreadWithError().isCurrentPageRequestInCurrentFlow();
+//    }
 
     public boolean isJumpToPageFlowSet() {
         return getRequestContextForCurrentThreadWithError().isJumpToPageFlowSet();
@@ -343,9 +343,9 @@ public class ContextImpl implements Context, AccessibilityChecker, ExtendedConte
         return getRequestContextForCurrentThreadWithError().isProhibitContinueSet();
     }
 
-    public boolean jumpToPageIsRunning() {
-        return getRequestContextForCurrentThreadWithError().jumpToPageIsRunning();
-    }
+//    public boolean jumpToPageIsRunning() {
+//        return getRequestContextForCurrentThreadWithError().jumpToPageIsRunning();
+//    }
 
     public void prohibitContinue() {
         getRequestContextForCurrentThreadWithError().prohibitContinue();

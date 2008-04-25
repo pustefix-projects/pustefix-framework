@@ -85,14 +85,16 @@ public class PageFlowManager {
                 LOG.debug("===> Page " + page + " isn't a member of any pageflow: returning no pageflow");
                 return null;
             }
-            String defaultFlowForRequest = this.config.getPageRequestConfig(page.getName()).getDefaultFlow();
-            if (defaultFlowForRequest != null) {
-                LOG.debug("===> Page " + page + " has a default flow specified: Using flow " + defaultFlowForRequest);
-                String pageflowname = vmanager.getVariantMatchingPageFlowName(defaultFlowForRequest, variant);
-                PageFlow pf = getPageFlowByName(pageflowname);
-                if (pf.containsPage(page.getRootName(), context)) {
-                    LOG.debug("===> Switching to pageflow: " + pf.getName());
-                    return pf;
+            if (config.getPageRequestConfig(page.getName()) != null) {
+                String defaultFlowForRequest = this.config.getPageRequestConfig(page.getName()).getDefaultFlow();
+                if (defaultFlowForRequest != null) {
+                    LOG.debug("===> Page " + page + " has a default flow specified: Using flow " + defaultFlowForRequest);
+                    String pageflowname = vmanager.getVariantMatchingPageFlowName(defaultFlowForRequest, variant);
+                    PageFlow pf = getPageFlowByName(pageflowname);
+                    if (pf.containsPage(page.getRootName(), context)) {
+                        LOG.debug("===> Switching to pageflow: " + pf.getName());
+                        return pf;
+                    }
                 }
             }
             for (Iterator<String> i = rootflownames.iterator(); i.hasNext();) {

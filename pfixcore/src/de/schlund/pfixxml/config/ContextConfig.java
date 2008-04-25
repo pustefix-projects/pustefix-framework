@@ -27,6 +27,7 @@ import de.schlund.pfixcore.auth.Condition;
 import de.schlund.pfixcore.auth.Role;
 import de.schlund.pfixcore.auth.RoleProvider;
 import de.schlund.pfixcore.workflow.ContextInterceptor;
+import de.schlund.pfixcore.workflow.State;
 
 /**
  * Provides configuration for a context instance.
@@ -43,14 +44,12 @@ public interface ContextConfig {
     String getAuthPage();
 
     /**
-     * Returns name of the flow to use when the user enters the site without
-     * specifying a specific page.
-     * 
-     * @return name of default flow
+     * return the default state to use if no more specific information is available
+     * @return State the default state to use for a page where no other information is given. 
      */
-    String getDefaultFlow();
-
-    /**
+    Class<? extends State> getDefaultState();
+    
+     /**
      * Returns name of the page to use when the user enters the site without
      * specifying a specific page.
      * 

@@ -33,14 +33,35 @@
             <tr>
               <td align="right" nowrap="nowrap">
                 <pfx:xinp type="submit" value="Go!"/>
-                <pfx:xinp forcestop="true" type="submit" value="Don't go">
-                  <pfx:argument name="__action">setAge</pfx:argument>
-                </pfx:xinp>
+                <pfx:xinp forcestop="true" type="submit" value="Don't go"/>
                 <pfx:xinp forcestop="step" type="submit" value="Go Step by Step!"/>
               </td>
             </tr>
           </table>
           <br/>
+          <pfx:token errorpage="tokenerror"/>
+        <p>
+          <h3><pfx:button page="scripting">SCRIPTING IHandler Test</pfx:button></h3>
+        </p>
+        <p>
+          <h3><pfx:button page="scriptingstate">SCRIPTING State Test</pfx:button></h3>
+        </p>
+        <br/>
+        <pfx:include part="buttons"/>
+        <br/>
+        <table cellpadding="10">
+          <tr valign="top">
+            <td>
+              <pfx:include part="env_info"/>
+            </td>
+            <td>
+              <pfx:include part="variant_info"/>
+            </td>
+          </tr>
+        </table>
+        <hr/>
+        <pfx:button page="A">Go to test page A</pfx:button>
+        <hr/>
           <table bgcolor="#bbcc88" class="boxed" id="special">
             <tr>
               <td align="left" colspan="2">
@@ -66,29 +87,8 @@
               <errormsg><name>prefix.Value.<ixsl:value-of select="position()"/></name></errormsg>
             </ixsl:for-each>
           </table>
-          <pfx:token errorpage="tokenerror"/>
-        </pfx:forminput>
-        <p>
-          <h3><pfx:button page="scripting">SCRIPTING IHandler Test</pfx:button></h3>
-        </p>
-        <p>
-          <h3><pfx:button page="scriptingstate">SCRIPTING State Test</pfx:button></h3>
-        </p>
-        <br/>
-        <pfx:include part="buttons"/>
-        <br/>
-        <table cellpadding="10">
-          <tr valign="top">
-            <td>
-              <pfx:include part="env_info"/>
-            </td>
-            <td>
-              <pfx:include part="variant_info"/>
-            </td>
-          </tr>
-        </table>
-        <hr/>
-        <pfx:button page="A">Go to test page A</pfx:button>
+       </pfx:forminput>
+        
       </center>
     </theme>
   </part>

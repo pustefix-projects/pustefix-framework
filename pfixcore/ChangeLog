@@ -1,3 +1,39 @@
+2008-04-25  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixcore/workflow/app/DefaultIWrapperState.java
+	* src/de/schlund/pfixcore/workflow/VariantManager.java
+	* src/de/schlund/pfixcore/workflow/context/PageFlowManager.java
+	* src/de/schlund/pfixcore/workflow/context/RequestContextImpl.java
+	* src/de/schlund/pfixcore/workflow/context/PageFlow.java
+	* src/de/schlund/pfixcore/workflow/context/DataDrivenPageFlow.java
+	* src/de/schlund/pfixcore/workflow/ContextImpl.java
+	* src/de/schlund/pfixcore/workflow/Context.java
+	* src/de/schlund/pfixcore/workflow/PageRequestStatus.java
+	* src/de/schlund/pfixcore/util/StateUtil.java
+	* src/de/schlund/pfixcore/util/TransformerCallback.java
+	* src/de/schlund/pfixxml/config/ContextConfig.java
+	* src/de/schlund/pfixxml/config/impl/ContextRule.java
+	* src/de/schlund/pfixxml/config/impl/PageRequestConfigImpl.java
+	* src/de/schlund/pfixxml/config/impl/ContextConfigImpl.java
+	* projects/simplepage/conf/config.conf.xml
+	* projects/core/schema/properties200401.xsd
+	* projects/core/xsl/utils.xsl
+	* projects/common/conf/pfixlog.xml
+	* projects/testsuite/conf/test1.conf.xml
+	* projects/testsuite/conf/main.conf.xml
+	* projects/webservice/conf/config.conf.xml
+	* projects/sample1/txt/pages/main_home.xml
+	* projects/sample1/txt/pages/main_order.xml
+	* projects/sample1/conf/config.conf.xml
+	* projects/sample1/conf/secure.conf.xml
+	* projects/simplelink/conf/config.conf.xml
+	* projects/simpleform/conf/config.conf.xml
+	* projects/samplebank/conf/config.conf.xml
+	much more work on the rewrite of RequestContextImpl.
+	Now final pages are part of our pageflow implementation and don't leak "outside" - so there is no
+	need for a posible dfifferent implementation of the PageFlow interface to neither implement
+	final pages, nor pageflow actions nor the stophere/stopnext attributes as they are implemented now.
+
 2008-04-23  Jens Lautenbacher  <jtl@schlund.de>
 
 	* src/de/schlund/pfixcore/workflow/context/RequestContextImpl.java

@@ -32,6 +32,7 @@ import de.schlund.pfixcore.beans.InsertStatus;
 import de.schlund.pfixcore.exception.PustefixApplicationException;
 import de.schlund.pfixcore.workflow.Context;
 import de.schlund.pfixcore.workflow.ContextResourceManager;
+import de.schlund.pfixcore.workflow.PageRequestStatus;
 import de.schlund.pfixcore.workflow.State;
 import de.schlund.pfixxml.PfixServletRequest;
 import de.schlund.pfixxml.RequestParam;
@@ -64,6 +65,10 @@ public class StateUtil {
     
     @SuppressWarnings("deprecation")
     public static void renderContextResources(Context context, ResultDocument resdoc) throws Exception {
+        if (context.getConfigForCurrentPageRequest() == null) {
+            // This page is not defined explicitly...
+            return;
+        }
         ContextResourceManager crm = context.getContextResourceManager();
         Map<String, Class<?>> crs = context.getConfigForCurrentPageRequest().getContextResources();
         
@@ -118,6 +123,10 @@ public class StateUtil {
 
     
     public static void addResponseHeadersAndType(Context context, ResultDocument resdoc) {
+        if (context.getConfigForCurrentPageRequest() == null) {
+            // This page is not defined explicitly...
+            return;
+        }
         Properties props = context.getPropertiesForCurrentPageRequest();
         Properties contextprops = context.getProperties();
         
@@ -156,7 +165,7 @@ public class StateUtil {
     
     public static boolean isDirectTrigger(Context context, PfixServletRequest preq) {
         RequestParam sdreq = preq.getRequestParam(State.SENDDATA);
-        return (!context.flowIsRunning() && (context.jumpToPageIsRunning() || sdreq == null || !sdreq.isTrue()));
+        return (!context.flowIsRunning() && (context.getCurrentPageRequest().getStatus().equals(PageRequestStatus.JUMP)  || sdreq == null || !sdreq.isTrue()));
     }
     
     
@@ -173,7 +182,7 @@ public class StateUtil {
     // ============ private Helper methods ============
     
     private static boolean isSubmitTriggerHelper(Context context, RequestParam sdreq) {
-        return (!context.flowIsRunning() && !context.finalPageIsRunning() &&
-                !context.jumpToPageIsRunning() && sdreq != null && sdreq.isTrue());
+        return (!context.flowIsRunning() &&
+                !context.getCurrentPageRequest().getStatus().equals(PageRequestStatus.JUMP) && sdreq != null && sdreq.isTrue());
     }  
 }

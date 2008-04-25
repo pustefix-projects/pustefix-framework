@@ -77,21 +77,6 @@ public class DataDrivenPageFlow implements PageFlow {
         return stepmap.keySet().contains(page);
     }
 
-    /**
-     * Return position of page in the PageFlow, starting with 0. Return -1 if
-     * page isn't a member of the PageFlow.
-     *
-     * @param page a <code>String</code> value
-     * @return an <code>int</code> value
-     */
-    public int getIndexOfPage(String page) {
-        FlowStep step = (FlowStep) stepmap.get(page);
-        if (step != null) {
-            return allsteps.indexOf(step);
-        } else {
-            return -1;
-        }
-    }
 
     public String getName() {
         return flowname;
@@ -99,22 +84,6 @@ public class DataDrivenPageFlow implements PageFlow {
 
     public String getRootName() {
         return rootname;
-    }
-
-    public FlowStep[] getAllSteps() {
-        return (FlowStep[]) allsteps.toArray(new FlowStep[] {});
-    }
-    
-    public FlowStep getFlowStepForPage(String page) {
-        return (FlowStep) stepmap.get(page);
-    }
-
-    public FlowStep getFirstStep() {
-        return (FlowStep) allsteps.get(0);
-    }
-    
-    public String getFinalPage() {
-        return finalpage;
     }
 
     public String toString() {
@@ -164,18 +133,34 @@ public class DataDrivenPageFlow implements PageFlow {
                     LOG.debug("=> [" + page + "]: going to next step in page flow.");
                 }
             }
-            if (saved != null && page.equals(saved)) {
+            if (page.equals(saved)) {
                 after_current = true;
             }
         }
-        // If we come here, we need to get check for the final page, and use this instead
-//        if (getFinalPage() != null) {
-//            return getFinalPage();
-//        } else if (stopatcurrentpage && (saved != null)) {
-//            return saved.getRootName();
-//        }
-        // Nothing left to do - we give up and return null
-        return null;
+        // If we come here, we need to check for the final page, and use this instead.
+        if (finalpage != null) {
+            LOG.debug("=> Pageflow [" + getName() + "] defines page [" + finalpage + "] as final page");
+            if (!context.checkIsAccessible(context.createPageRequest(finalpage), PageRequestStatus.WORKFLOW)) {
+                LOG.debug("   ...but it is not accessible");
+            } else {
+                return finalpage;
+            }
+        }
+        // if we come here, we have no final page, but if we have been called stopatcurrentpage, as a last hope we will use 
+        // the that page as a page to go to. We already know that this page can't be part of the current pageflow (or at least
+        // it is not accessible), because in that case we would have stopped earlier while looking through the pageflow. But it 
+        // could be that that page is a page external to the current flow, so we just try.
+        if (stopatcurrentpage) {
+            LOG.debug("=> Request wants us to use original target page [" + saved + "] as final page");
+            if (!context.checkIsAccessible(context.createPageRequest(saved.getRootName()), PageRequestStatus.WORKFLOW)) {
+                LOG.debug("   ...but it is not accessible");
+            } else {
+                return saved.getRootName();
+            }
+        } 
+        
+        throw new PustefixApplicationException("*** Reached end of page flow '" + getName() + "' " + "without having found a valid, accessible page ***");
+        
     }
 
     public boolean precedingFlowNeedsData(PageFlowContext context) throws PustefixApplicationException {
@@ -199,11 +184,15 @@ public class DataDrivenPageFlow implements PageFlow {
     public void addPageFlowInfo(Element root, PageFlowContext context) {
         Document doc = root.getOwnerDocument();
         FlowStep[] steps = getAllSteps();
+        String pagename = context.getCurrentPageRequest().getRootName();
         for (int i = 0; i < steps.length; i++) {
             String step = steps[i].getPageName();
             Element stepelem = doc.createElement("step");
             root.appendChild(stepelem);
             stepelem.setAttribute("name", step);
+            if (step.equals(pagename)) {
+                stepelem.setAttribute("current", "true");
+            }
         }
     }
 
@@ -221,5 +210,16 @@ public class DataDrivenPageFlow implements PageFlow {
         }
         return false;
     }
+
+    
+    
+    private FlowStep[] getAllSteps() {
+        return (FlowStep[]) allsteps.toArray(new FlowStep[] {});
+    }
+    
+    private FlowStep getFlowStepForPage(String page) {
+        return (FlowStep) stepmap.get(page);
+    }
+
 
 }

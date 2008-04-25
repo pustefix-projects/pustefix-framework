@@ -8,14 +8,8 @@
     <editmode allow="true" />
   </servletinfo>
 
-  <context defaultflow="StartFlow">
+  <context defaultpage="Start"/>
 
-  </context>
-
-  <pageflow name="StartFlow">
-    <flowstep name="Start" />
-  </pageflow>
-
-  <pagerequest name="Start" />
+  <pagerequest name="Start"/>
 
 </contextxmlserver>

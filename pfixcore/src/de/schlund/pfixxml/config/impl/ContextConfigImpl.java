@@ -38,6 +38,7 @@ import de.schlund.pfixcore.auth.Condition;
 import de.schlund.pfixcore.auth.Role;
 import de.schlund.pfixcore.auth.RoleProvider;
 import de.schlund.pfixcore.workflow.ContextInterceptor;
+import de.schlund.pfixcore.workflow.State;
 import de.schlund.pfixxml.config.ContextConfig;
 import de.schlund.pfixxml.config.ContextResourceConfig;
 import de.schlund.pfixxml.config.PageFlowConfig;
@@ -52,9 +53,9 @@ public class ContextConfigImpl implements ContextConfig, RoleProvider {
     // does not have to be as a configuration is initialized only once.
     
     private final static Logger LOG = Logger.getLogger(ContextConfigImpl.class);
+    private Class<? extends State> defaultStateClass = null;
     
     private String authPage = null;
-    private String defaultFlow = null;
     private String defaultPage = null;
     private LinkedHashMap<Class<?>, ContextResourceConfigImpl> resources = new LinkedHashMap<Class<?>, ContextResourceConfigImpl>();
     private List<ContextResourceConfigImpl> cacheResources = null;
@@ -82,14 +83,6 @@ public class ContextConfigImpl implements ContextConfig, RoleProvider {
     public String getAuthPage() {
         return this.authPage;
     }
-
-    public void setDefaultFlow(String flow) {
-        this.defaultFlow = flow;
-    }
-    
-    public String getDefaultFlow() {
-        return this.defaultFlow;
-    }
     
     public void setDefaultPage(String page) {
         this.defaultPage = page;
@@ -99,6 +92,14 @@ public class ContextConfigImpl implements ContextConfig, RoleProvider {
         return this.defaultPage;
     }
     
+    public void setDefaultState(Class<? extends State> clazz) {
+        this.defaultStateClass = clazz;
+    }
+
+    public Class<? extends State> getDefaultState() {
+        return this.defaultStateClass;
+    }
+
     public void addContextResource(ContextResourceConfigImpl config) {
         if (resources.containsKey(config.getContextResourceClass())) {
             LOG.warn("Overwriting configuration for context resource " + config.getContextResourceClass().getName());

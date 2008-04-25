@@ -68,14 +68,6 @@ public interface PageFlow {
     String getRootName();
     
     /**
-     * Returns the name of the page that is to be shown, when the page flow has 
-     * finished. This page is usually not part of the page flow.
-     * 
-     * @return name of the final page
-     */
-    String getFinalPage();
-    
-    /**
      * Checks whether a part of this page flow preceding the current step needs 
      * user input. The actual meaning depends on the implementation.
      * 

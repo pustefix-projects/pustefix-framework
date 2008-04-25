@@ -57,10 +57,10 @@ public interface Context {
     void                   addSessionStatusListener(SessionStatusListener l);
     void                   removeSessionStatusListener(SessionStatusListener l);
     boolean                precedingFlowNeedsData() throws PustefixApplicationException;
-    boolean                finalPageIsRunning();
-    boolean                jumpToPageIsRunning();
+    // boolean                finalPageIsRunning();
+    // boolean                jumpToPageIsRunning();
     boolean                flowIsRunning();
-    boolean                isCurrentPageRequestInCurrentFlow();
+    // boolean                isCurrentPageRequestInCurrentFlow();
     boolean                isJumpToPageSet();
     boolean                isJumpToPageFlowSet();
     boolean                isProhibitContinueSet();

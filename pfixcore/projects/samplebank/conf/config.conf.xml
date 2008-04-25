@@ -8,7 +8,7 @@
     <editmode allow="true" />
   </servletinfo>
 
-  <context defaultflow="DefaultFlow">
+  <context defaultpage="home">
     <resource class="de.schlund.pfixcore.example.bank.context.ContextCustomerImpl">
       <implements class="de.schlund.pfixcore.example.bank.context.ContextCustomer" />
     </resource>

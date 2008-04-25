@@ -9,12 +9,6 @@
     <ssl force="true" />
   </servletinfo>
 
-  <context defaultflow="Def" />
-
-  <pageflow name="Def">
-    <flowstep name="ssltest" />
-  </pageflow>
-
-  <pagerequest name="ssltest" />
+  <context defaultpage="ssltest" />
 
 </contextxmlserver>
