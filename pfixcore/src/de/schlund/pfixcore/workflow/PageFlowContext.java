@@ -26,5 +26,4 @@ public interface PageFlowContext extends Context {
     boolean checkIsAccessible(PageRequest page, PageRequestStatus status) throws PustefixApplicationException;
     boolean checkNeedsData(PageRequest page, PageRequestStatus status) throws PustefixApplicationException;
     PageRequest createPageRequest(String name);
-    boolean isForceStopAtNextStep();
 }

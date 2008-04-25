@@ -251,10 +251,6 @@ public class ContextImpl implements Context, AccessibilityChecker, ExtendedConte
         getRequestContextForCurrentThreadWithError().addPageMessage(scode, args, level);
     }
 
-//    public boolean finalPageIsRunning() {
-//        return getRequestContextForCurrentThreadWithError().finalPageIsRunning();
-//    }
-
     public boolean flowIsRunning() {
         return getRequestContextForCurrentThreadWithError().flowIsRunning();
     }
@@ -343,10 +339,6 @@ public class ContextImpl implements Context, AccessibilityChecker, ExtendedConte
         return getRequestContextForCurrentThreadWithError().isProhibitContinueSet();
     }
 
-//    public boolean jumpToPageIsRunning() {
-//        return getRequestContextForCurrentThreadWithError().jumpToPageIsRunning();
-//    }
-
     public void prohibitContinue() {
         getRequestContextForCurrentThreadWithError().prohibitContinue();
     }
@@ -379,10 +371,6 @@ public class ContextImpl implements Context, AccessibilityChecker, ExtendedConte
 
     public boolean stateMustSupplyFullDocument() {
         return getRequestContextForCurrentThreadWithError().stateMustSupplyFullDocument();
-    }
-    
-    public void forceStopAtNextStep(boolean forcestop) {
-        getRequestContextForCurrentThreadWithError().forceStopAtNextStep(forcestop);
     }
     
     public boolean isPageAccessible(String pagename) throws Exception {
@@ -527,10 +515,6 @@ public class ContextImpl implements Context, AccessibilityChecker, ExtendedConte
 
     public PfixServletRequest getPfixServletRequest() {
         return getRequestContextForCurrentThreadWithError().getPfixServletRequest();
-    }
-
-    public boolean isForceStopAtNextStep() {
-        return getRequestContextForCurrentThreadWithError().isForceStopAtNextStep();
     }
 
 }

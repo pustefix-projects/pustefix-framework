@@ -706,7 +706,7 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
             return document;
         }
 
-        String nextPage = currentpageflow.findNextPage(this.parentcontext, startwithflow);
+        String nextPage = currentpageflow.findNextPage(this.parentcontext, currentpagerequest, startwithflow, stopnextforcurrentrequest);
         assert(nextPage != null);
         
         currentpagerequest = createPageRequest(nextPage);
@@ -888,10 +888,6 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
         return null;
     }
 
-    public void forceStopAtNextStep(boolean forcestop) {
-        this.stopnextforcurrentrequest = forcestop;
-    }
-
     public boolean checkNeedsData(PageRequest page, PageRequestStatus status) throws PustefixApplicationException {
         PageRequest saved = currentpagerequest;
         currentpagerequest = page;
@@ -1018,10 +1014,6 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
         return currentpservreq;
     }
 
-    public boolean isForceStopAtNextStep() {
-        return stopnextforcurrentrequest;
-    }
-    
     
     private State getStateForPageRequest(PageRequest page) {
         State state = pagemap.getState(page);

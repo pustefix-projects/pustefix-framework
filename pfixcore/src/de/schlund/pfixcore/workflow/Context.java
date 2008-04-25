@@ -45,7 +45,6 @@ public interface Context {
     void                   setJumpToPage(String pagename);
     void                   setJumpToPageFlow(String pageflow);
     void                   prohibitContinue();
-    void                   forceStopAtNextStep(boolean forcestop);
     Cookie[]               getRequestCookies();
     void                   setLanguage(String lang);
     String                 getLanguage();
@@ -57,8 +56,6 @@ public interface Context {
     void                   addSessionStatusListener(SessionStatusListener l);
     void                   removeSessionStatusListener(SessionStatusListener l);
     boolean                precedingFlowNeedsData() throws PustefixApplicationException;
-    // boolean                finalPageIsRunning();
-    // boolean                jumpToPageIsRunning();
     boolean                flowIsRunning();
     // boolean                isCurrentPageRequestInCurrentFlow();
     boolean                isJumpToPageSet();

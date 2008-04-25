@@ -103,9 +103,8 @@ public class DataDrivenPageFlow implements PageFlow {
         return ret;
     }
 
-    public String findNextPage(PageFlowContext context, boolean stopatcurrentpage) throws PustefixApplicationException {
+    public String findNextPage(PageFlowContext context, PageRequest currentpagerequest, boolean stopatcurrentpage, boolean stopatnextaftercurrentpage) throws PustefixApplicationException {
         FlowStep[] workflow = getAllSteps();
-        PageRequest saved = context.getCurrentPageRequest();
         boolean after_current = false;
 
         for (int i = 0; i < workflow.length; i++) {
@@ -116,24 +115,26 @@ public class DataDrivenPageFlow implements PageFlow {
                 LOG.debug("* Skipping step [" + page + "] in page flow (state is not accessible...)");
             } else {
                 LOG.debug("* Page flow is at step " + i + ": [" + page + "]");
-                if (stopatcurrentpage && page.equals(saved)) {
-                    LOG.debug("=> Request specified to not advance futher than " + page.getRootName() + " because startwithflow is active");
+                if (stopatcurrentpage && page.equals(currentpagerequest)) {
+                    LOG.debug("=> [" + page + "]: Request specified to not advance futher than the original target page.");
                     return page.getRootName();
                 }
-                if (after_current && (step.wantsToStopHere() || context.isForceStopAtNextStep())) {
-                    if (context.isForceStopAtNextStep())
-                        LOG.debug("=> Request specifies to act like stophere='true'");
-                    LOG.debug("=> [" + page + "]: Page flow wants to stop, getting document now.");
+                if (after_current && (step.wantsToStopHere() || stopatnextaftercurrentpage)) {
+                    if (stopatnextaftercurrentpage) {
+                        LOG.debug("=> [" + page + "]: Request specified to stop right after the current page");
+                    } else {
+                        LOG.debug("=> [" + page + "]: Page flow wants to stop here.");
+                    }
                     return page.getRootName();
                 } else if (context.checkNeedsData(page, PageRequestStatus.WORKFLOW)) {
-                    LOG.debug("=> [" + page + "]: needsData() returned TRUE, leaving page flow and getting document now.");
+                    LOG.debug("=> [" + page + "]: needsData() returned TRUE, leaving page flow.");
                     return page.getRootName();
                 } else {
-                    LOG.debug("=> [" + page + "]: Page flow doesn't want to stop and needsData() returned FALSE");
+                    LOG.debug("=> [" + page + "]: Page flow or request don't specify to stop and needsData() returned FALSE");
                     LOG.debug("=> [" + page + "]: going to next step in page flow.");
                 }
             }
-            if (page.equals(saved)) {
+            if (page.equals(currentpagerequest)) {
                 after_current = true;
             }
         }
@@ -151,11 +152,11 @@ public class DataDrivenPageFlow implements PageFlow {
         // it is not accessible), because in that case we would have stopped earlier while looking through the pageflow. But it 
         // could be that that page is a page external to the current flow, so we just try.
         if (stopatcurrentpage) {
-            LOG.debug("=> Request wants us to use original target page [" + saved + "] as final page");
-            if (!context.checkIsAccessible(context.createPageRequest(saved.getRootName()), PageRequestStatus.WORKFLOW)) {
+            LOG.debug("=> Request wants us to use original target page [" + currentpagerequest + "] as final page");
+            if (!context.checkIsAccessible(context.createPageRequest(currentpagerequest.getRootName()), PageRequestStatus.WORKFLOW)) {
                 LOG.debug("   ...but it is not accessible");
             } else {
-                return saved.getRootName();
+                return currentpagerequest.getRootName();
             }
         } 
         

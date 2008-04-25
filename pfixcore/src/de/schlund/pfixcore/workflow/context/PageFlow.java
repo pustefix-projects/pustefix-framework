@@ -23,6 +23,7 @@ import org.w3c.dom.Element;
 import de.schlund.pfixcore.exception.PustefixApplicationException;
 import de.schlund.pfixcore.exception.PustefixCoreException;
 import de.schlund.pfixcore.workflow.PageFlowContext;
+import de.schlund.pfixcore.workflow.PageRequest;
 import de.schlund.pfixxml.ResultDocument;
 
 /**
@@ -51,7 +52,7 @@ public interface PageFlow {
      * @throws PustefixApplicationException if an exception is thrown by the
      * application code called by this method
      */
-    String findNextPage(PageFlowContext context, boolean stopatcurrentpage) throws PustefixApplicationException;
+    String findNextPage(PageFlowContext context, PageRequest currentpagerequest, boolean stopatcurrentpage, boolean stopatnextaftercurrentpage) throws PustefixApplicationException;
     
     /**
      * Return the name of this page flow (including variant).

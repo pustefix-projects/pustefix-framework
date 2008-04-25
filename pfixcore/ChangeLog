@@ -1,3 +1,21 @@
+2008-04-25  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixcore/workflow/PageFlowContext.java: removed 
+	- isForceStopAtNextStep()
+	* src/de/schlund/pfixcore/workflow/Context.java: removed 
+	- forceStopAtNextStep(boolean)
+	- finalPageIsRunning()
+	- jumpToPageIsRunning()
+	- isCurrentPageRequestInFlow() 
+	* src/de/schlund/pfixcore/workflow/context/RequestContextImpl.java: 
+	* src/de/schlund/pfixcore/workflow/ContextImpl.java: done here accordingly 
+	
+	* src/de/schlund/pfixcore/workflow/context/PageFlow.java (findNextPage): changed signature to 
+	explcitely require to hand over the currentpagerequest, and the boolean 
+	flags "stopatcurrentpage" and "stopatnextaftercurrentpage". 
+	* src/de/schlund/pfixcore/workflow/context/DataDrivenPageFlow.java (findNextPage): implement it like this.
+	This reduces the callbacks into the context that are needed.
+
 2008-04-25  Martin Leidig  <mleidig@schlund.de>
 
 	* src/de/schlund/pfixcore/workflow/context/RequestContextImpl.java: Removed
