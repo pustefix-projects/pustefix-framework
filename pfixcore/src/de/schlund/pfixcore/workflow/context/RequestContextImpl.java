@@ -81,7 +81,6 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
     private final static String PARAM_STARTWITHFLOW = "__startwithflow";
     private final static String PARAM_FORCESTOP = "__forcestop";
     private final static String PARAM_ROLEAUTH = "__roleauth";
-    private final static String PARAM_ROLEAUTHTARGET = "__roleauthtarget";
 
     private ContextImpl parentcontext;
     private ServerContextImpl servercontext;
@@ -400,14 +399,7 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
         RequestParam reqParam = currentpservreq.getRequestParam(PARAM_ROLEAUTH);
         roleAuth = (reqParam != null && reqParam.isTrue());
         if (roleAuth) {
-            roleAuthTarget = null;
-            reqParam = currentpservreq.getRequestParam(PARAM_ROLEAUTHTARGET);
-            if (reqParam != null) {
-                roleAuthTarget = reqParam.getValue();
-            } else {
-                // TODO: do we need this???
-                roleAuthTarget = currentpagerequest.getName();
-            }
+            roleAuthTarget = currentpagerequest.getName();
             PageRequestConfig targetPageConf = servercontext.getContextConfig().getPageRequestConfig(roleAuthTarget);
             if (targetPageConf != null) {
                 AuthConstraint authConst = targetPageConf.getAuthConstraint();
@@ -415,14 +407,8 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
                 if (authConst != null) {
                     String authPageName = authConst.getAuthPage();
                     if (authPageName != null) {
-                        // TODO
-                        // if (currentpagerequest != null &&
-                        // !authPageName.equals(currentpagerequest.getName()))
-                        // throw new RuntimeException("Requested page and
-                        // required authpage " + "don't match: " + authPageName
-                        // + " -> " + currentpagerequest.getName());
                         currentpagerequest = createPageRequest(authPageName);
-                        setJumpToPage(roleAuthTarget);
+                        if(!roleAuthTarget.equals(authPageName)) setJumpToPage(roleAuthTarget);
                     } else throw new RuntimeException("No authpage defined for authconstraint " + "of page: " + roleAuthTarget);
                 } else throw new RuntimeException("No authconstraint defined for page: " + roleAuthTarget);
             } else throw new RuntimeException("Target page not configured: " + roleAuthTarget);
