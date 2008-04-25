@@ -251,7 +251,7 @@ public class ContextImpl implements Context, AccessibilityChecker, ExtendedConte
     }
 
     public boolean isPageFlowRunning() {
-        return getRequestContextForCurrentThreadWithError().flowIsRunning();
+        return getRequestContextForCurrentThreadWithError().isPageFlowRunning();
     }
 
     public boolean precedingFlowNeedsData() throws PustefixApplicationException {

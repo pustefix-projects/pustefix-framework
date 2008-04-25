@@ -241,11 +241,11 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
 //    public boolean jumpToPageIsRunning() {
 //        if (currentpservreq == null) {
 //            throw new IllegalStateException("PageFlow information is only availabe during request handling");
-//        }
+//  }
 //        return on_jumptopage;
 //    }
 
-    public boolean flowIsRunning() {
+    public boolean isPageFlowRunning() {
         if (currentpservreq == null) {
             throw new IllegalStateException("PageFlow information is only availabe during request handling");
         }
@@ -406,7 +406,7 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
                     String authPageName = authConst.getAuthPage();
                     if (authPageName != null) {
                         currentpagerequest = createPageRequest(authPageName);
-                        if(!roleAuthTarget.equals(authPageName)) setJumpToPage(roleAuthTarget);
+                        if (!roleAuthTarget.equals(authPageName)) setJumpToPage(roleAuthTarget);
                     } else throw new RuntimeException("No authpage defined for authconstraint " + "of page: " + roleAuthTarget);
                 } else throw new RuntimeException("No authconstraint defined for page: " + roleAuthTarget);
             } else throw new RuntimeException("Target page not configured: " + roleAuthTarget);
