@@ -102,7 +102,6 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
     private String roleAuthTarget;
     private Set<String> roleAuthDeps;
 
-    private PageRequest authpage = null;
     private boolean prohibitcontinue = false;
     private boolean stopnextforcurrentrequest = false;
     // private boolean on_jumptopage = false;
@@ -120,7 +119,6 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
         this.variant = parentcontext.getSessionVariant();
         this.language = parentcontext.getSessionLanguage();
 
-        checkForAuthenticationMode();
     }
 
     public ServerContextImpl getServerContext() {
@@ -480,27 +478,24 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
             lastflow = pageflowmanager.getPageFlowByName(currentpservreq.getRequestParam(PARAM_LASTFLOW).getValue(), getVariant());
         }
 
-        // TODO: remove authpage
-        if (!currentpagerequest.equals(authpage)) {
-            RequestParam pageflow = currentpservreq.getRequestParam(PARAM_FLOW);
-            if (pageflow != null && !pageflow.getValue().equals("") && pageflowmanager.getPageFlowByName(pageflow.getValue(), getVariant()) != null) {
-                currentpageflow = pageflowmanager.getPageFlowByName(pageflow.getValue(), getVariant());
-                LOG.debug("===> Got pageflow from request parameter as [" + currentpageflow.getName() + "]");
-            } else if (action != null && action.getPageflow() != null
-                    && pageflowmanager.getPageFlowByName(action.getPageflow(), getVariant()) != null) {
-                currentpageflow = pageflowmanager.getPageFlowByName(action.getPageflow(), getVariant());
-                LOG.debug("===> Got pageflow from action [" + action.getName() + "] as [" + currentpageflow.getName() + "]");
+        RequestParam pageflow = currentpservreq.getRequestParam(PARAM_FLOW);
+        if (pageflow != null && !pageflow.getValue().equals("") && pageflowmanager.getPageFlowByName(pageflow.getValue(), getVariant()) != null) {
+            currentpageflow = pageflowmanager.getPageFlowByName(pageflow.getValue(), getVariant());
+            LOG.debug("===> Got pageflow from request parameter as [" + currentpageflow.getName() + "]");
+        } else if (action != null && action.getPageflow() != null
+                && pageflowmanager.getPageFlowByName(action.getPageflow(), getVariant()) != null) {
+            currentpageflow = pageflowmanager.getPageFlowByName(action.getPageflow(), getVariant());
+            LOG.debug("===> Got pageflow from action [" + action.getName() + "] as [" + currentpageflow.getName() + "]");
+        } else {
+            LOG.debug("===> Searching matching pageflow to page [" + currentpagerequest.getName() + "]...");
+            if (lastflow != null) {
+                LOG.debug("     ...prefering flow [" + lastflow.getName() + "]...");
+            }
+            currentpageflow = pageflowmanager.pageFlowToPageRequest(lastflow, currentpagerequest, getVariant(), parentcontext);
+            if (currentpageflow != null) {
+                LOG.debug("     ...got pageflow [" + currentpageflow.getName() + "] as matching flow.");
             } else {
-                LOG.debug("===> Searching matching pageflow to page [" + currentpagerequest.getName() + "]...");
-                if (lastflow != null) {
-                    LOG.debug("     ...prefering flow [" + lastflow.getName() + "]...");
-                }
-                currentpageflow = pageflowmanager.pageFlowToPageRequest(lastflow, currentpagerequest, getVariant(), parentcontext);
-                if (currentpageflow != null) {
-                    LOG.debug("     ...got pageflow [" + currentpageflow.getName() + "] as matching flow.");
-                } else {
-                    LOG.debug("     ...got no matching pageflow for page [" + currentpagerequest.getName() + "]");
-                }
+                LOG.debug("     ...got no matching pageflow for page [" + currentpagerequest.getName() + "]");
             }
         }
         
@@ -766,8 +761,6 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
                 if (authPageName != null) localAuthPage = createPageRequest(authPageName);
             }
             if (localAuthPage == null) throw authEx;
-            if (localAuthPage.equals(authpage))
-                throw new PustefixCoreException("Authconstraint authpage isn't " + "allowed to be equal to context authpage: " + authpage);
             PageRequest saved = currentpagerequest;
             if (LOG.isDebugEnabled()) LOG.debug("===> [" + localAuthPage + "]: Checking authorisation");
             if (!checkIsAccessible(localAuthPage, PageRequestStatus.AUTH)) {
@@ -866,15 +859,6 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
         }
     }
 
-    private void checkForAuthenticationMode() {
-        String authpagename = servercontext.getContextConfig().getAuthPage();
-        if (authpagename != null) {
-            authpage = createPageRequest(authpagename);
-        } else {
-            authpage = null;
-        }
-    }
-
     public boolean isPageAccessible(String pagename) throws Exception {
         PageRequest page = createPageRequest(pagename);
         Variant currentvariant = getVariant();
@@ -923,10 +907,6 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
         if (currentpagerequest != null) {
             copy.currentpagerequest = new PageRequest(currentpagerequest.getName());
             copy.currentpagerequest.setStatus(currentpagerequest.getStatus());
-        }
-        if (authpage != null) {
-            copy.authpage = new PageRequest(authpage.getName());
-            copy.authpage.setStatus(authpage.getStatus());
         }
         copy.cookielist = new ArrayList<Cookie>(cookielist);
         copy.messages = new HashSet<StatusCodeInfo>(messages);
