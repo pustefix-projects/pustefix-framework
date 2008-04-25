@@ -399,10 +399,6 @@ public class ContextImpl implements Context, AccessibilityChecker, ExtendedConte
         this.servercontext = servercontext;
     }
     
-    public boolean isAuthorized() throws Exception {
-        return (this.getRequestContextForCurrentThreadWithError().checkAuthorization(false, false) == null);
-    }
-    
     public void prepareForRequest() {
         // This allows to use OLDER servercontexts during requests
         requestcontextstore.set(new RequestContextImpl(servercontext, this));

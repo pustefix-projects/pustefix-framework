@@ -630,15 +630,6 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
                 LOG.warn("    ...will continue and use the default state '" + parentcontext.getContextConfig().getDefaultState().getName() + "'");
             }
 
-            // Now, check for possibly needed authorization
-            RequestParam sdreq = currentpservreq.getRequestParam(State.SENDAUTHDATA);
-            boolean forceauth = (sdreq != null && sdreq.isTrue());
-
-            document = checkAuthorization(forceauth);
-            if (document != null) {
-                return document;
-            }
-
             // Now we need to make sure that the current page is accessible, and
             // take the right measures if not.
             if (!checkIsAccessible(currentpagerequest, PageRequestStatus.SELECT)) {
@@ -699,12 +690,7 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
 
     private SPDocument runPageFlow(boolean startwithflow) throws PustefixApplicationException, PustefixCoreException {
         ResultDocument resdoc = null;
-        // We need to re-check the authorization because the just handled submit
-        // could have changed the authorisation status.
-        SPDocument document = checkAuthorization(false);
-        if (document != null) {
-            return document;
-        }
+        SPDocument document = null;
 
         String nextPage = currentpageflow.findNextPage(this.parentcontext, currentpagerequest, startwithflow, stopnextforcurrentrequest);
         assert(nextPage != null);
@@ -718,56 +704,6 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
         }
         LOG.debug("* [" + currentpagerequest + "] returned document => show it.");
         return document;
-    }
-
-    public SPDocument checkAuthorization(boolean forceauth) throws PustefixApplicationException, PustefixCoreException {
-        return checkAuthorization(forceauth, true);
-    }
-
-    public SPDocument checkAuthorization(boolean forceauth, boolean needDocument) throws PustefixApplicationException, PustefixCoreException {
-        // The needDocument flag is a hack that should only be used internally:
-        // It is needed, when this method is called only to see, whether
-        // the context is authenticated, but the creation of SPDocument
-        // for the login page would lead to an exception being thrown.
-        if (authpage != null) {
-            ResultDocument resdoc = null;
-            LOG.debug("===> [" + authpage + "]: Checking authorisation");
-            if (!checkIsAccessible(authpage, PageRequestStatus.AUTH)) {
-                throw new PustefixCoreException("*** Authorisation page [" + authpage + "] is not accessible! ***");
-            }
-            if (forceauth) {
-                LOG.debug("* [" + currentpagerequest + "] forceauth is TRUE ***");
-            }
-            PageRequest saved = currentpagerequest;
-            if (checkNeedsData(authpage, PageRequestStatus.AUTH) || forceauth) {
-                if (!needDocument) {
-                    // Return an empty SPDocument that is just used to
-                    // signal the context is not authenticated yet.
-                    return new SPDocument();
-                }
-                LOG.debug("===> [" + authpage + "]: Need authorisation data");
-                currentpagerequest = authpage;
-                resdoc = documentFromCurrentStep();
-                currentpagerequest = saved;
-                if (!prohibitcontinue) {
-                    LOG.debug("===> [" + authpage + "]: Authorisation granted");
-                } else {
-                    LOG.debug("===> [" + authpage + "]: Authorisation failed");
-                }
-            } else {
-                LOG.debug("===> [" + authpage + "]: Already authorised");
-            }
-            if (resdoc != null && prohibitcontinue) {
-                // getting a document here means we need to show the authpage
-                if (resdoc.getSPDocument() == null) {
-                    throw new PustefixCoreException("*** FATAL: " + authpage + " returns a 'null' SPDocument! ***");
-                }
-                resdoc.getSPDocument().getDocument().getDocumentElement().setAttribute("authoriginalpage", saved.getRootName());
-                resdoc.getSPDocument().setPagename(authpage.getName());
-                return resdoc.getSPDocument();
-            }
-        }
-        return null;
     }
 
     private ResultDocument documentFromCurrentStep() throws PustefixApplicationException, PustefixCoreException {
@@ -846,7 +782,6 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
                 if (resdoc.getSPDocument() == null) {
                     throw new PustefixCoreException("*** FATAL: " + localAuthPage + " returns a 'null' SPDocument! ***");
                 }
-                resdoc.getSPDocument().getDocument().getDocumentElement().setAttribute("authoriginalpage", saved.getRootName());
                 resdoc.getSPDocument().setPagename(localAuthPage.getName());
                 Element authElem = addAuthenticationData(resdoc);
                 if (authElem != null) {

@@ -111,8 +111,6 @@ public class ContextXMLServletConfigImpl extends AbstractXMLServletConfigImpl im
         Rule processActionSubmitWrapperRule = new ProcessActionWrapperRule(config, "submit");
         Rule processActionRetrieveWrapperRule = new ProcessActionWrapperRule(config, "retrieve");
         Rule pagerequestInputInterfaceRule = new PagerequestInputInterfaceRule(config);
-        Rule pagerequestAuthInterfaceRule = new PagerequestAuthInterfaceRule(config);
-        Rule pagerequestAuxInterfaceRule = new PagerequestAuxInterfaceRule(config);
         Rule pagerequestOutputResourceRule = new PagerequestOutputResourceRule(config);
         Rule pagerequestPropertyRule = new PagerequestPropertyRule(config);
         Rule contextStartInterceptorRule = new ContextInterceptorRule(config, "start");
@@ -198,15 +196,6 @@ public class ContextXMLServletConfigImpl extends AbstractXMLServletConfigImpl im
         digester.addRule("contextxmlserver/pagerequest/input/wrapper", pagerequestInputInterfaceRule);
         digester.addRule("contextxmlserver/pagerequest/default/input/wrapper", pagerequestInputInterfaceRule);
         digester.addRule("contextxmlserver/pagerequest/variant/input/wrapper", pagerequestInputInterfaceRule);
-        digester.addRule("contextxmlserver/pagerequest/auth", dummyRule);
-        digester.addRule("contextxmlserver/pagerequest/default/auth", dummyRule);
-        digester.addRule("contextxmlserver/pagerequest/variant/auth", dummyRule);
-        digester.addRule("contextxmlserver/pagerequest/auth/authinterface", pagerequestAuthInterfaceRule);
-        digester.addRule("contextxmlserver/pagerequest/default/auth/authinterface", pagerequestAuthInterfaceRule);
-        digester.addRule("contextxmlserver/pagerequest/variant/auth/authinterface", pagerequestAuthInterfaceRule);
-        digester.addRule("contextxmlserver/pagerequest/auth/auxinterface", pagerequestAuxInterfaceRule);
-        digester.addRule("contextxmlserver/pagerequest/default/auth/auxinterface", pagerequestAuxInterfaceRule);
-        digester.addRule("contextxmlserver/pagerequest/variant/auth/auxinterface", pagerequestAuxInterfaceRule);
         digester.addRule("contextxmlserver/pagerequest/output", dummyRule);
         digester.addRule("contextxmlserver/pagerequest/default/output", dummyRule);
         digester.addRule("contextxmlserver/pagerequest/variant/output", dummyRule);

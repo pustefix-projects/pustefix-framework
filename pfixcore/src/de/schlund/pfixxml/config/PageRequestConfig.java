@@ -22,7 +22,6 @@ import java.util.Map;
 import java.util.Properties;
 
 import de.schlund.pfixcore.auth.AuthConstraint;
-import de.schlund.pfixcore.generator.IWrapper;
 import de.schlund.pfixcore.workflow.State;
 import de.schlund.pfixcore.workflow.app.ResdocFinalizer;
 
@@ -100,17 +99,6 @@ public interface PageRequestConfig {
     Map<String, ? extends IWrapperConfig> getIWrappers();
 
     /**
-     * Returns the list of auxiliary IWrappers for the page. They are only
-     * used on an authentication page to supply additinal information. These
-     * wrappers are used on each request - not only on explicit authentication
-     * requests, so extreme care should be taken when choosing prefixes, as they
-     * are global.
-     * 
-     * @return map containinge prefix to authwrapper mappings
-     */
-    Map<String, Class<? extends IWrapper>> getAuxWrappers();
-
-    /**
      * Returns context resources defined for this page. The map has the form
      * tagname => context resource class. Each context resource specified here
      * will be included in the result XML tree.
@@ -125,24 +113,6 @@ public interface PageRequestConfig {
      * @return properties for this page
      */
     Properties getProperties();
-
-    /**
-     * Return prefix of the auth wrapper. This is only valid for an
-     * authentication page.
-     * 
-     * @return prefix for the auth wrapper or <code>null</code> if this
-     * is not an auth page
-     */
-    String getAuthWrapperPrefix();
-
-    /**
-     * Return class of the auth wrapper. This is only valid for an
-     * authentication page.
-     * 
-     * @return class of the auth wrapper or <code>null</code> if this
-     * is not an auth page
-     */
-    Class<? extends IWrapper> getAuthWrapperClass();
     
     boolean requiresToken();
     

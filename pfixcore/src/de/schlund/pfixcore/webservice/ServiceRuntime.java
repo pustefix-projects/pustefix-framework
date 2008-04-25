@@ -170,24 +170,29 @@ public class ServiceRuntime {
                     ServerContextImpl srvContext=ServerContextStore.getInstance(session.getServletContext()).getContext(srvConf.getContextName());
                     if(srvContext==null) throw new ServiceException("ServerContext '"+srvConf.getContextName()+"' doesn't exist.");
                     
+                    //Find authconstraint using the following search order:
+                    //   - authconstraint referenced by webservice 
+                    //   - authconstraint referenced by webservice-global (implicit)
+                    //   - default authconstraint from context configuration
+                    AuthConstraint authConst = null;
                     String authRef=srvConf.getAuthConstraintRef();
-                    if(authRef!=null) {
-                        AuthConstraint authConst=srvContext.getContextConfig().getAuthConstraint(authRef);
-                        if(authConst!=null) {
-                            if(!authConst.isAuthorized(pfxSessionContext)) 
-                                throw new AuthenticationException("Authentication failed: AuthConstraint violated");
-                        } else throw new ServiceException("AuthConstraint not found: "+authRef);
+                    if(authRef != null) {
+                        authConst = srvContext.getContextConfig().getAuthConstraint(authRef);
+                        if(authConst == null) throw new ServiceException("AuthConstraint not found: "+authRef);
+                    }
+                    if(authConst == null) authConst = pfxSessionContext.getContextConfig().getDefaultAuthConstraint();
+                    if(authConst != null) {
+                        if(!authConst.isAuthorized(pfxSessionContext)) 
+                            throw new AuthenticationException("Authentication failed: AuthConstraint violated");
                     }
                     
                     try {
                         // Prepare context for current thread.
                         // Cleanup is performed in finally block.
                         pfxSessionContext.setServerContext(srvContext);
-                        pfxSessionContext.prepareForRequest();
-                        if(!pfxSessionContext.isAuthorized()) throw new AuthenticationException("Authorization failed: Must authenticate first!");                                                                                                                                  
+                        pfxSessionContext.prepareForRequest();                                                                                                                                  
                     } catch(Exception x) {
-                        if(x instanceof AuthenticationException) throw (AuthenticationException)x; 
-                        else throw new AuthenticationException("Authorization failed",x);
+                        throw new ServiceException("Preparing context failed",x);
                     }
                     callContext.setContext(pfxSessionContext);
                 }

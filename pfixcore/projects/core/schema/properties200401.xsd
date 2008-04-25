@@ -8,11 +8,6 @@
   CVS Revision: $Revision$
   -->
 
-  <!--
-  TODO:
-  * make ihandler and authhandler mutually exclusive
-  -->
-
   <xs:element name="contextxmlserver" type="prop:contextxmlserverType">
 <!--    <xs:keyref refer="prop:contextresourceimplements" name="contextresourceimplements2pagerequestoutputresource">-->
 <!--      <xs:selector xpath="prop:pagerequest/prop:output/prop:resource"></xs:selector>-->
@@ -319,7 +314,6 @@
     </xs:sequence>
     <xs:attribute name="class"/>
     <xs:attribute name="defaultpage" use="required"/>
-    <xs:attribute name="authpage"/>
     <xs:attribute name="synchronized" type="xs:boolean" default="true"/>
   </xs:complexType>
 
@@ -535,62 +529,43 @@
           </xs:complexType>
         </xs:element>
 
-        <xs:choice>
-          <xs:element name="input"  minOccurs="0">
-            <xs:complexType>
-              <xs:choice>
-                <xs:sequence>
-                  <xs:element name="interface" minOccurs="0" maxOccurs="unbounded">
-                    <xs:complexType>
-                      <xs:attribute name="prefix" use="required"/>
-                      <xs:attribute name="class" use="required"/>
-                      <xs:attribute name="activeignore" default="false" type="xs:boolean"/>
-                      <xs:attribute name="logging" default="false" type="xs:boolean"/>
-                    </xs:complexType>
-                  </xs:element>
-                </xs:sequence>
-                <xs:sequence>
-                  <xs:element name="wrapper" minOccurs="0" maxOccurs="unbounded">
-                    <xs:complexType>
-                      <xs:attribute name="prefix" use="required"/>
-                      <xs:attribute name="class" use="required"/>
-                      <xs:attribute name="activeignore" default="false" type="xs:boolean"/>
-                      <xs:attribute name="logging" default="false" type="xs:boolean"/>
-                    </xs:complexType>
-                  </xs:element>
-                </xs:sequence>
-              </xs:choice>
-              <xs:attribute name="policy" default="ANY">
-                <xs:simpleType>
-                  <xs:restriction base="xs:token">
-                    <xs:enumeration value="ANY"/>
-                    <xs:enumeration value="ALL"/>
-                    <xs:enumeration value="NONE"/>
-                  </xs:restriction>
-                </xs:simpleType>
-              </xs:attribute>
-              <xs:attribute name="requirestoken" default="false" type="xs:boolean"/>
-            </xs:complexType>
-          </xs:element>
-          <xs:element name="auth" minOccurs="0">
-              <xs:complexType>
-                <xs:sequence>
-                  <xs:element name="authinterface" maxOccurs="1">
-                    <xs:complexType>
-                      <xs:attribute name="prefix" use="required"/>
-                      <xs:attribute name="class" use="required"/>
-                    </xs:complexType>
-                  </xs:element>
-                  <xs:element name="auxinterface" minOccurs="0" maxOccurs="unbounded">
-                    <xs:complexType>
-                      <xs:attribute name="prefix" use="required"/>
-                      <xs:attribute name="class" use="required"/>
-                    </xs:complexType>
-                  </xs:element>
-                </xs:sequence>
-              </xs:complexType>
-          </xs:element>
-        </xs:choice>
+        <xs:element name="input"  minOccurs="0">
+          <xs:complexType>
+            <xs:choice>
+              <xs:sequence>
+                <xs:element name="interface" minOccurs="0" maxOccurs="unbounded">
+                  <xs:complexType>
+                    <xs:attribute name="prefix" use="required"/>
+                    <xs:attribute name="class" use="required"/>
+                    <xs:attribute name="activeignore" default="false" type="xs:boolean"/>
+                    <xs:attribute name="logging" default="false" type="xs:boolean"/>
+                  </xs:complexType>
+                </xs:element>
+              </xs:sequence>
+              <xs:sequence>
+                <xs:element name="wrapper" minOccurs="0" maxOccurs="unbounded">
+                  <xs:complexType>
+                    <xs:attribute name="prefix" use="required"/>
+                    <xs:attribute name="class" use="required"/>
+                    <xs:attribute name="activeignore" default="false" type="xs:boolean"/>
+                    <xs:attribute name="logging" default="false" type="xs:boolean"/>
+                  </xs:complexType>
+                </xs:element>
+              </xs:sequence>
+            </xs:choice>
+            <xs:attribute name="policy" default="ANY">
+              <xs:simpleType>
+                <xs:restriction base="xs:token">
+                  <xs:enumeration value="ANY"/>
+                  <xs:enumeration value="ALL"/>
+                  <xs:enumeration value="NONE"/>
+                </xs:restriction>
+              </xs:simpleType>
+            </xs:attribute>
+            <xs:attribute name="requirestoken" default="false" type="xs:boolean"/>
+          </xs:complexType>
+        </xs:element>
+        
           <xs:element name="process" minOccurs="0">
             <xs:complexType>
               <xs:sequence> 

@@ -153,13 +153,6 @@ public class DirectOutputServlet extends ServletManager {
     
     protected void doProcess(PfixServletRequest preq, HttpServletResponse res, ServerContextImpl servercontext, ContextImpl context) throws Exception {
          ContextResourceManager crm = context.getContextResourceManager();
-
-         // check the authentification first....
-         if (!context.isAuthorized()) {
-             LOG.info("Got request without authorization");
-             res.sendError(HttpServletResponse.SC_FORBIDDEN, "Must authenticate first");
-             return;
-         }
          
          String pagename = preq.getPageName();
          if (pagename == null || pagename.length() == 0) {
@@ -168,17 +161,26 @@ public class DirectOutputServlet extends ServletManager {
              return;
          }
          
-         String authRef=null;
+         //Find authconstraint using the following search order:
+         //   - authconstraint referenced by directoutputpagerequest
+         //   - authconstraint referenced by directoutputserver
+         //   - default authconstraint from context configuration
+         AuthConstraint authConst = null;
+         String authRef = null;
          DirectOutputPageRequestConfig pageConfig = config.getPageRequest(pagename);
-         if(pageConfig!=null) authRef=pageConfig.getAuthConstraintRef();
-         if(authRef==null) authRef=config.getAuthConstraintRef();
-         if(authRef!=null) {
-             AuthConstraint authConst=context.getContextConfig().getAuthConstraint(authRef);
-             if(authConst!=null) {
-                 if(!authConst.isAuthorized(context)) {
-                     res.sendError(HttpServletResponse.SC_FORBIDDEN, "Must authenticate first");
-                 }
-             } else throw new RuntimeException("AuthConstraint not found: "+authRef);
+         if (pageConfig != null) authRef = pageConfig.getAuthConstraintRef();
+         if (authRef == null) authRef = config.getAuthConstraintRef();
+         if (authRef != null) {
+             authConst = context.getContextConfig().getAuthConstraint(authRef);
+             if (authConst == null) throw new RuntimeException("AuthConstraint not found: " + authRef);
+         }
+         if (authConst == null) authConst = context.getContextConfig().getDefaultAuthConstraint();
+         if (authConst != null) {
+             if (!authConst.isAuthorized(context)) {
+                 LOG.info("Got request without authorization");
+                 res.sendError(HttpServletResponse.SC_FORBIDDEN, "Must authenticate first");
+                 return;
+             }
          }
          
          PageRequest       page  = new PageRequest(pagename);

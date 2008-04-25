@@ -142,17 +142,11 @@ public class TransformerCallback {
             PageRequestConfig pageConfig = context.getContextConfig().getPageRequestConfig(pageName);
             if (pageConfig != null) {
                 Map<String, ? extends IWrapperConfig> iwrappers = pageConfig.getIWrappers();
-                Class<? extends IWrapper> iwrpClass = null;
                 IWrapperConfig iwrpConfig = iwrappers.get(prefix);
                 if (iwrpConfig != null) {
-                    iwrpClass = (Class<? extends IWrapper>) iwrpConfig.getWrapperClass();
-                } else if (pageConfig.getAuthWrapperPrefix() != null && pageConfig.getAuthWrapperPrefix().equals(prefix)) {
-                    iwrpClass = (Class<? extends IWrapper>) pageConfig.getAuthWrapperClass();
-                } else {
-                    Map<String, Class<? extends IWrapper>> auxWrappers = pageConfig.getAuxWrappers();
-                    iwrpClass = (Class<? extends IWrapper>) auxWrappers.get(prefix);
+                    Class<? extends IWrapper> iwrpClass = (Class<? extends IWrapper>) iwrpConfig.getWrapperClass();
+                    if (iwrpClass != null) return IWrapperInfo.getDocument(iwrpClass, xsltVersion);
                 }
-                if (iwrpClass != null) return IWrapperInfo.getDocument(iwrpClass, xsltVersion);
             }
             return null;
         } catch (RuntimeException x) {
@@ -178,21 +172,6 @@ public class TransformerCallback {
             }
             PageRequestConfig pageConfig = context.getContextConfig().getPageRequestConfig(pageName);
             if (pageConfig != null) {
-                if (pageConfig.getAuthWrapperPrefix() != null) {
-                    Element elem = doc.createElement("iwrapper");
-                    elem.setAttribute("type", "auth");
-                    elem.setAttribute("prefix", pageConfig.getAuthWrapperPrefix());
-                    elem.setAttribute("class", pageConfig.getAuthWrapperClass().getClass().getName());                    
-                    root.appendChild(elem);
-                }
-                Map<String, Class<? extends IWrapper>> auxWrappers = pageConfig.getAuxWrappers();
-                for (String prefix : auxWrappers.keySet()) {
-                    Element elem = doc.createElement("iwrapper");
-                    elem.setAttribute("type", "aux");
-                    elem.setAttribute("prefix", prefix);
-                    elem.setAttribute("class", auxWrappers.get(prefix).getClass().getName());
-                    root.appendChild(elem);
-                }
                 Map<String, ? extends IWrapperConfig> iwrappers = pageConfig.getIWrappers();
                 for (String prefix : iwrappers.keySet()) {
                     Element elem = doc.createElement("iwrapper");

@@ -25,7 +25,6 @@ import java.util.Map;
 import java.util.Properties;
 
 import de.schlund.pfixcore.auth.AuthConstraint;
-import de.schlund.pfixcore.generator.IWrapper;
 import de.schlund.pfixcore.workflow.State;
 import de.schlund.pfixcore.workflow.app.ResdocFinalizer;
 import de.schlund.pfixxml.config.PageRequestConfig;
@@ -45,9 +44,6 @@ public class PageRequestConfigImpl implements SSLOption, Cloneable, PageRequestC
     private Class<? extends State> defaultStaticStateClass = null;
     private Class<? extends State> defaultIWrapperStateClass = null;
     private Class<? extends ResdocFinalizer> finalizer = null;
-    private String authPrefix = null;
-    private Class<? extends IWrapper> authClass = null;
-    private LinkedHashMap<String, Class<? extends IWrapper>> auxwrappers = new LinkedHashMap<String, Class<? extends IWrapper>>();
     private LinkedHashMap<String, IWrapperConfigImpl> iwrappers = new LinkedHashMap<String, IWrapperConfigImpl>();
     private LinkedHashMap<String, Class<?>> resources = new LinkedHashMap<String, Class<?>>();
     private Properties props = new Properties();
@@ -156,17 +152,6 @@ public class PageRequestConfigImpl implements SSLOption, Cloneable, PageRequestC
         return Collections.unmodifiableMap(this.iwrappers);
     }
     
-    public void addAuxWrapper(String prefix, Class<? extends IWrapper> clazz) {
-        this.auxwrappers.put(prefix, clazz);
-    }
-    
-    /* (non-Javadoc)
-     * @see de.schlund.pfixxml.config.PageRequestConfig#getAuxWrappers()
-     */
-    public Map<String, Class<? extends IWrapper>> getAuxWrappers() {
-        return this.auxwrappers;
-    }
-    
     public void addContextResource(String prefix, Class<?> clazz) {
         this.resources.put(prefix, clazz);
     }
@@ -193,34 +178,7 @@ public class PageRequestConfigImpl implements SSLOption, Cloneable, PageRequestC
     public Properties getProperties() {
         return this.props;
     }
-    
-    public void addAuthWrapper(String prefix, Class<? extends IWrapper> clazz) {
-        this.authPrefix = prefix;
-        this.authClass = clazz;
-        if (this.stateClass == null) {
-            // Create class object at runtime due to build dependency problems
-            try {
-                this.setState(Class.forName("de.schlund.pfixcore.workflow.app.DefaultAuthIWrapperState").asSubclass(State.class));
-            } catch (ClassNotFoundException e) {
-                throw new RuntimeException("Class de.schlund.pfixcore.workflow.app.DefaultAuthIWrapperState could not be loaded!", e);
-            }
-        }
-    }
-    
-    /* (non-Javadoc)
-     * @see de.schlund.pfixxml.config.PageRequestConfig#getAuthWrapperPrefix()
-     */
-    public String getAuthWrapperPrefix() {
-        return this.authPrefix;
-    }
-    
-    /* (non-Javadoc)
-     * @see de.schlund.pfixxml.config.PageRequestConfig#getAuthWrapperClass()
-     */
-    public Class<? extends IWrapper> getAuthWrapperClass() {
-        return this.authClass;
-    }
-
+ 
     public boolean requiresToken() {
         return requiresToken;
     }

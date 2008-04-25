@@ -1,3 +1,25 @@
+2008-04-25  Martin Leidig  <mleidig@schlund.de>
+
+	Removed old authentication mechanism.
+
+	Modified:	
+	* src/de/schlund/pfixcore/workflow/context/RequestContextImpl.java
+	* src/de/schlund/pfixcore/workflow/ContextImpl.java
+	* src/de/schlund/pfixcore/workflow/State.java
+	* src/de/schlund/pfixcore/util/TransformerCallback.java
+	* src/de/schlund/pfixcore/webservice/ServiceRuntime.java
+	* src/de/schlund/pfixxml/DirectOutputServlet.java
+	* src/de/schlund/pfixxml/config/PageRequestConfig.java
+	* src/de/schlund/pfixxml/config/impl/ContextXMLServletConfigImpl.java
+	* src/de/schlund/pfixxml/config/impl/PageRequestConfigImpl.java
+	* projects/core/schema/properties200401.xsd
+	* projects/core/xsl/forminput.xsl
+
+	Removed:
+	* src/de/schlund/pfixcore/workflow/app/DefaultAuthIWrapperState.java
+	* src/de/schlund/pfixxml/config/impl/PagerequestAuxInterfaceRule.java
+	* src/de/schlund/pfixxml/config/impl/PagerequestAuthInterfaceRule.java
+
 2008-04-25  Jens Lautenbacher  <jtl@schlund.de>
 
 	* src/de/schlund/pfixcore/workflow/PageFlowContext.java: removed 
