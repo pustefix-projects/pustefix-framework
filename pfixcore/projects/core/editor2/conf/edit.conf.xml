@@ -4,47 +4,23 @@
   xsi:schemaLocation="http://pustefix.sourceforge.net/properties200401 ../../schema/properties200401.xsd"
   version="1.0">
 
-    <servletinfo depend="core/editor2/conf/depend.xml" name="pfixcore_project:core_editor_servlet:1">
-      <editmode allow="false" />
-    </servletinfo>
+  <servletinfo depend="core/editor2/conf/depend.xml" name="pfixcore_project:core_editor_servlet:1">
+    <editmode allow="false" />
+  </servletinfo>
 
-    <context defaultflow="EditorFlow">
-    <resource class="de.schlund.pfixcore.editor2.frontend.resources.SessionResourceImpl">
-      <implements class="de.schlund.pfixcore.editor2.frontend.resources.SessionResource" />
-    </resource>
-    <resource class="de.schlund.pfixcore.editor2.frontend.resources.SpringHelperResourceImpl">
-      <implements class="de.schlund.pfixcore.editor2.frontend.resources.SpringHelperResource" />
-    </resource>
-    <resource class="de.schlund.pfixcore.editor2.frontend.resources.ProjectsResourceImpl">
-      <implements class="de.schlund.pfixcore.editor2.frontend.resources.ProjectsResource" />
-    </resource>
-    <resource class="de.schlund.pfixcore.editor2.frontend.resources.PagesResourceImpl">
-      <implements class="de.schlund.pfixcore.editor2.frontend.resources.PagesResource" />
-    </resource>
-    <resource class="de.schlund.pfixcore.editor2.frontend.resources.TargetsResourceImpl">
-      <implements class="de.schlund.pfixcore.editor2.frontend.resources.TargetsResource" />
-    </resource>
-    <resource class="de.schlund.pfixcore.editor2.frontend.resources.ImagesResourceImpl">
-      <implements class="de.schlund.pfixcore.editor2.frontend.resources.ImagesResource" />
-    </resource>
-    <resource class="de.schlund.pfixcore.editor2.frontend.resources.IncludesResourceImpl">
-      <implements class="de.schlund.pfixcore.editor2.frontend.resources.IncludesResource" />
-    </resource>
-    <resource class="de.schlund.pfixcore.editor2.frontend.resources.DynIncludesResourceImpl">
-      <implements class="de.schlund.pfixcore.editor2.frontend.resources.DynIncludesResource" />
-    </resource>
-    <resource class="de.schlund.pfixcore.editor2.frontend.resources.SessionInfoResourceImpl">
-      <implements class="de.schlund.pfixcore.editor2.frontend.resources.SessionInfoResource" />
-    </resource>
-    <resource class="de.schlund.pfixcore.editor2.frontend.resources.UsersResourceImpl">
-      <implements class="de.schlund.pfixcore.editor2.frontend.resources.UsersResource" />
-    </resource>
-    <resource class="de.schlund.pfixcore.lucefix.ContextSearchImpl">
-      <implements class="de.schlund.pfixcore.lucefix.ContextSearch" />
-    </resource>
-    <resource class="de.schlund.pfixcore.editor2.frontend.resources.NamespaceInfoResourceImpl">
-      <implements class="de.schlund.pfixcore.editor2.frontend.resources.NamespaceInfoResource" />
-    </resource>
+  <context defaultpage="start">
+    <resource class="de.schlund.pfixcore.editor2.frontend.resources.SessionResource"/>
+    <resource class="de.schlund.pfixcore.editor2.frontend.resources.SpringHelperResource"/>
+    <resource class="de.schlund.pfixcore.editor2.frontend.resources.ProjectsResource"/>
+    <resource class="de.schlund.pfixcore.editor2.frontend.resources.PagesResource"/>
+    <resource class="de.schlund.pfixcore.editor2.frontend.resources.TargetsResource"/>
+    <resource class="de.schlund.pfixcore.editor2.frontend.resources.ImagesResource"/>
+    <resource class="de.schlund.pfixcore.editor2.frontend.resources.IncludesResource"/>
+    <resource class="de.schlund.pfixcore.editor2.frontend.resources.DynIncludesResource"/>
+    <resource class="de.schlund.pfixcore.editor2.frontend.resources.SessionInfoResource"/>
+    <resource class="de.schlund.pfixcore.editor2.frontend.resources.UsersResource"/>
+    <resource class="de.schlund.pfixcore.lucefix.ContextSearch"/>
+    <resource class="de.schlund.pfixcore.editor2.frontend.resources.NamespaceInfoResource"/>
   </context>
 
   <interceptors>
