@@ -18,42 +18,48 @@
 
 package de.schlund.pfixcore.editor2.frontend.resources;
 
-import de.schlund.pfixcore.workflow.ContextResource;
+import java.util.HashMap;
 
-/**
- * This context resource is intended to be used by the
- * {@link de.schlund.pfixcore.editor2.core.spring.PustefixSessionServiceImpl}.
- * 
- * @author Sebastian Marsching <sebastian.marsching@1und1.de>
- */
-public interface SpringHelperResource extends ContextResource {
-    /**
-     * Returns the object bound to a key
-     * 
-     * @param key
-     *            String containing the key for the object
-     * @return The object bound to the key or <code>null</code> if no object
-     *         is bound to this key
-     */
-    Object get(String key);
+import org.w3c.dom.Element;
 
-    /**
-     * Stores an object using a key. If there is already an object stored for
-     * this key, it is replaced by value.
-     * 
-     * @param key
-     *            The key for the object to store
-     * @param value
-     *            The object to store
-     */
-    void set(String key, Object value);
+import de.schlund.pfixcore.beans.InitResource;
+import de.schlund.pfixcore.beans.InsertStatus;
+import de.schlund.pfixcore.workflow.Context;
+import de.schlund.pfixxml.ResultDocument;
 
-    /**
-     * Removes the object stored for a key. If there is no object for this key
-     * this method does nothing.
-     * 
-     * @param key
-     *            The key to use
-     */
-    void unset(String key);
+public class SpringHelperResource {
+    private HashMap<String, Object> values;
+    
+    public Object get(String key) {
+        synchronized (this.values) {
+            return this.values.get(key);
+        }
+    }
+
+    public void set(String key, Object value) {
+        synchronized (this.values) {
+            this.values.put(key, value);
+        }
+    }
+
+    public void unset(String key) {
+        synchronized (this.values) {
+            this.values.remove(key);
+        }
+    }
+
+    @InitResource
+    public void init(Context context) throws Exception {
+        this.values = new HashMap<String, Object>();
+    }
+
+    @InsertStatus
+    public void insertStatus(ResultDocument resdoc, Element elem) throws Exception {
+        // Do nothing
+    }
+
+    public void reset() throws Exception {
+        this.values.clear();
+    }
+
 }

@@ -18,45 +18,81 @@
 
 package de.schlund.pfixcore.editor2.frontend.resources;
 
+import java.util.Iterator;
+
+import org.w3c.dom.Element;
+
+import de.schlund.pfixcore.beans.InitResource;
+import de.schlund.pfixcore.beans.InsertStatus;
 import de.schlund.pfixcore.editor2.core.dom.Project;
-import de.schlund.pfixcore.workflow.ContextResource;
+import de.schlund.pfixcore.editor2.core.spring.ProjectFactoryService;
+import de.schlund.pfixcore.editor2.frontend.util.EditorResourceLocator;
+import de.schlund.pfixcore.editor2.frontend.util.SpringBeanLocator;
+import de.schlund.pfixcore.workflow.Context;
+import de.schlund.pfixxml.ResultDocument;
 
-/**
- * Context resource providing a list of all projects and methods to select a
- * specific project.
- * 
- * @author Sebastian Marsching <sebastian.marsching@1und1.de>
- */
-public interface ProjectsResource extends ContextResource {
-    /**
-     * Selects a project using the supplied name
-     * 
-     * @param projectName
-     *            Name of the project
-     * @return <code>true</code> if specified project was found and selected,
-     *         <code>false</code> if an error occured during selection (e.g.
-     *         project not found)
-     */
-    boolean selectProject(String projectName);
+public class ProjectsResource {
+    private Project selectedProject;
 
-    /**
-     * Returns project that is selected
-     * 
-     * @return Project object or <code>null</code> if no project is selected
-     */
-    Project getSelectedProject();
+    private Context context;
 
-    /**
-     * Selects a project using the name of the corresponding
-     * {@link de.schlund.pfixxml.targets.TargetGenerator}.
-     * 
-     * @param targetGenerator
-     *            Name of the target generator
-     * @return <code>true</code> if specified project was found and selected,
-     *         <code>false</code> if an error occured during selection (e.g.
-     *         project not found)
-     */
-    boolean selectProjectByTargetGeneratorName(String targetGenerator);
+    @InitResource
+    public void init(Context context) throws Exception {
+        this.selectedProject = null;
+        this.context = context;
+    }
 
-    void reset();
+    @InsertStatus
+    public void insertStatus(ResultDocument resdoc, Element elem) throws Exception {
+        ProjectFactoryService projectfactory = SpringBeanLocator.getProjectFactoryService();
+        for (Iterator<Project> i = projectfactory.getProjects().iterator(); i.hasNext();) {
+            Project project = i.next();
+            Element projectElement = resdoc.createSubNode(elem, "project");
+            projectElement.setAttribute("name", project.getName());
+            projectElement.setAttribute("comment", project.getComment());
+            if (this.selectedProject != null && project.equals(this.selectedProject)) {
+                projectElement.setAttribute("selected", "true");
+            }
+        }
+    }
+
+    public void reset() {
+        this.selectedProject = null;
+    }
+
+    public boolean selectProject(String projectName) {
+        Project project = SpringBeanLocator.getProjectFactoryService().getProjectByName(projectName);
+        if (project == null) {
+            return false;
+        } else {
+            this.selectedProject = project;
+            // Reset page selection
+            EditorResourceLocator.getPagesResource(this.context).unselectPage();
+            EditorResourceLocator.getTargetsResource(this.context).unselectTarget();
+            EditorResourceLocator.getImagesResource(this.context).unselectImage();
+            EditorResourceLocator.getIncludesResource(this.context).unselectIncludePart();
+            EditorResourceLocator.getContextSearch(this.context).resetData();
+            return true;
+        }
+    }
+
+    public Project getSelectedProject() {
+        return this.selectedProject;
+    }
+
+    public boolean selectProjectByTargetGeneratorName(String targetGenerator) {
+        Project project = SpringBeanLocator.getProjectFactoryService().getProjectByPustefixTargetGeneratorName(targetGenerator);
+        if (project == null) {
+            return false;
+        } else {
+            this.selectedProject = project;
+            // Reset page selection
+            EditorResourceLocator.getPagesResource(this.context).unselectPage();
+            EditorResourceLocator.getTargetsResource(this.context).unselectTarget();
+            EditorResourceLocator.getImagesResource(this.context).unselectImage();
+            EditorResourceLocator.getIncludesResource(this.context).unselectIncludePart();
+            return true;
+        }
+    }
+
 }

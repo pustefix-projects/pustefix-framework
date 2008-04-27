@@ -18,30 +18,95 @@
 
 package de.schlund.pfixcore.editor2.frontend.resources;
 
+import java.util.Iterator;
+import java.util.TreeSet;
+
+import org.w3c.dom.Element;
+
+import de.schlund.pfixcore.beans.InsertStatus;
 import de.schlund.pfixcore.editor2.core.exception.EditorDuplicateUsernameException;
 import de.schlund.pfixcore.editor2.core.exception.EditorSecurityException;
 import de.schlund.pfixcore.editor2.core.exception.EditorUserNotExistingException;
+import de.schlund.pfixcore.editor2.core.spring.UserManagementService;
 import de.schlund.pfixcore.editor2.core.vo.EditorUser;
-import de.schlund.pfixcore.workflow.ContextResource;
+import de.schlund.pfixcore.editor2.frontend.util.SpringBeanLocator;
+import de.schlund.pfixxml.ResultDocument;
 
 /**
- * ContextResource providing methods to edit, create an delete editor users.
+ * Implementation of UsersResource
  * 
  * @author Sebastian Marsching <sebastian.marsching@1und1.de>
  */
-public interface UsersResource extends ContextResource {
-    void createAndSelectUser(String username)
-            throws EditorDuplicateUsernameException;
+public class UsersResource {
+    private EditorUser selectedUser = null;
 
-    void deleteUsers(String[] usernames) throws EditorUserNotExistingException,
-            EditorSecurityException;
+    @InsertStatus
+    public void insertStatus(ResultDocument resdoc, Element elem) throws Exception {
+        UserManagementService ums = SpringBeanLocator.getUserManagementService();
+        TreeSet<EditorUser> users = new TreeSet<EditorUser>(ums.getUsers());
+        for (Iterator<EditorUser> i = users.iterator(); i.hasNext();) {
+            EditorUser user = i.next();
+            Element userNode = resdoc.createSubNode(elem, "user");
+            userNode.setAttribute("id", user.getUsername());
+            userNode.setAttribute("name", user.getFullname());
+            userNode.setAttribute("section", user.getSectionName());
+            userNode.setAttribute("phone", user.getPhoneNumber());
+            if (this.selectedUser != null && user.getUsername().equals(this.selectedUser.getUsername())) {
+                userNode.setAttribute("selected", "true");
+            }
+        }
 
-    void selectUser(String username) throws EditorUserNotExistingException;
+        if (this.selectedUser != null) {
+            Element currentuser = resdoc.createSubNode(elem, "currentuser");
+            currentuser.setAttribute("id", this.selectedUser.getUsername());
+        }
+    }
 
-    void updateSelectedUser() throws EditorUserNotExistingException,
-            EditorSecurityException, EditorDuplicateUsernameException;
+    public void reset() throws Exception {
+        this.selectedUser = null;
+    }
 
-    EditorUser getSelectedUser();
+    public void createAndSelectUser(String username) throws EditorDuplicateUsernameException {
+        UserManagementService ums = SpringBeanLocator.getUserManagementService();
+        if (ums.hasUser(username)) {
+            throw new EditorDuplicateUsernameException("Cannot create user with already existing name!");
+        } else {
+            this.selectedUser = new EditorUser(username);
+        }
+    }
 
-    boolean existsSelectedUser();
+    public void deleteUsers(String[] usernames) throws EditorUserNotExistingException, EditorSecurityException {
+        UserManagementService ums = SpringBeanLocator.getUserManagementService();
+        for (int i = 0; i < usernames.length; i++) {
+            EditorUser user = ums.getUser(usernames[i]);
+            ums.deleteUser(user);
+        }
+    }
+
+    public void selectUser(String username) throws EditorUserNotExistingException {
+        UserManagementService ums = SpringBeanLocator.getUserManagementService();
+        this.selectedUser = ums.getUser(username);
+    }
+
+    public void updateSelectedUser() throws EditorUserNotExistingException, EditorSecurityException, EditorDuplicateUsernameException {
+        UserManagementService ums = SpringBeanLocator.getUserManagementService();
+        try {
+            if (ums.hasUser(this.selectedUser.getUsername())) {
+                ums.updateUser(this.selectedUser);
+            } else {
+                ums.createUser(this.selectedUser);
+            }
+        } finally {
+            this.selectedUser = ums.getUser(this.selectedUser.getUsername());
+        }
+    }
+
+    public EditorUser getSelectedUser() {
+        return this.selectedUser;
+    }
+
+    public boolean existsSelectedUser() {
+        UserManagementService ums = SpringBeanLocator.getUserManagementService();
+        return ums.hasUser(this.selectedUser.getUsername());
+    }
 }

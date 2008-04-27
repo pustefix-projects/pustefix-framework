@@ -18,8 +18,25 @@
 
 package de.schlund.pfixcore.editor2.frontend.resources;
 
-import de.schlund.pfixcore.workflow.ContextResource;
+import java.util.Map;
 
-public interface NamespaceInfoResource extends ContextResource {
+import org.w3c.dom.Element;
+
+import de.schlund.pfixcore.beans.InsertStatus;
+import de.schlund.pfixcore.editor2.frontend.util.SpringBeanLocator;
+import de.schlund.pfixxml.ResultDocument;
+
+public class NamespaceInfoResource {
+
+    @InsertStatus
+    public void insertStatus(ResultDocument resdoc, Element root) throws Exception {
+        Map<String, String> namespaces = SpringBeanLocator.getConfigurationService().getPrefixToNamespaceMappings();
+        for (String prefix : namespaces.keySet()) {
+            String url = namespaces.get(prefix);
+            Element e = resdoc.createSubNode(root, "namespace");
+            e.setAttribute("prefix", prefix);
+            e.setAttribute("url", url);
+        }
+    }
 
 }

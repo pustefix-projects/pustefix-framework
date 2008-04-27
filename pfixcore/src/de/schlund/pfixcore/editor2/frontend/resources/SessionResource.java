@@ -18,68 +18,127 @@
 
 package de.schlund.pfixcore.editor2.frontend.resources;
 
-import de.schlund.pfixcore.workflow.ContextResource;
+import java.security.Principal;
+
+import org.w3c.dom.Element;
+
+import de.schlund.pfixcore.beans.InitResource;
+import de.schlund.pfixcore.beans.InsertStatus;
+import de.schlund.pfixcore.editor2.core.exception.EditorSecurityException;
+import de.schlund.pfixcore.editor2.core.spring.SecurityManagerService;
+import de.schlund.pfixcore.editor2.core.spring.UserPasswordAuthenticationService;
+import de.schlund.pfixcore.editor2.core.vo.EditorUser;
+import de.schlund.pfixcore.editor2.frontend.util.ContextStore;
+import de.schlund.pfixcore.editor2.frontend.util.SpringBeanLocator;
+import de.schlund.pfixcore.workflow.Context;
+import de.schlund.pfixxml.ResultDocument;
 
 /**
- * Provides methods for the user session in the editor
+ * Generic implementation of SessionResource
  * 
  * @author Sebastian Marsching <sebastian.marsching@1und1.de>
  */
-public interface SessionResource extends ContextResource {
-    /**
-     * Try to login a user
-     * 
-     * @param username
-     *            Name identifying user
-     * @param password
-     *            Password authenticating user
-     * @return <code>true</code> on success, <code>false</code> otherwise
-     */
-    boolean login(String username, String password);
+public class SessionResource {
 
-    /**
-     * Logout user. If user is already logged out, do nothing.
-     */
-    void logout();
+    private UserPasswordAuthenticationService upas;
 
-    /**
-     * Checks whether a user is logged in for the current session
-     * 
-     * @return <code>true</code> if user is logged in, <code>false</code>
-     *         otherwise
-     */
-    boolean isLoggedIn();
+    private SecurityManagerService            secman;
 
-    /**
-     * Returns wheter users are allowed to login
-     * 
-     * @return <code>true</code> if users can login, <code>false</code>
-     *         otherwise
-     */
-    boolean isUserLoginsAllowed();
+    private Context                           context;
 
-    /**
-     * Enables or disables user logins
-     * 
-     * @param flag
-     *            Set to <code>true</code> to enable and <code>false</code>
-     *            to disable user logins
-     * @return <code>true</code> on success, <code>false</code> otherwise
-     */
-    boolean setUserLoginsAllowed(boolean flag);
+    private boolean                           inIncludeEditView = false;
 
-    /**
-     * Returns the flag indicating wheter the user is currently editing some
-     * include part.
-     * 
-     * @return flag indicating whether user is in edit mode
-     */
-    boolean isInIncludeEditView();
+    public SessionResource() {
+        this.upas = SpringBeanLocator.getUserPasswordAuthenticationService();
+        this.secman = SpringBeanLocator.getSecurityManagerService();
+    }
 
-    /**
-     * Sets the flag indicating that the user is editing some include part
-     * 
-     * @param flag when <code>true</code>, indicates user in editing some include
-     */
-    void setInIncludeEditView(boolean flag);
+    public boolean login(String username, String password) {
+        Principal user = this.upas.getPrincipalForUser(username, password);
+        if (user == null) {
+            return false;
+        }
+        this.secman.setPrincipal(user);
+
+        // Register context with ContextStore
+        ContextStore.getInstance().registerContext(this.context, username);
+
+        // Set AUTHENTICATED role on context
+        context.getAuthentication().addRole("AUTHENTICATED");
+
+        return true;
+    }
+
+    public void logout() {
+        secman.setPrincipal(null);
+
+        // Unregister context
+        ContextStore.getInstance().unregisterContext(this.context);
+
+        // Remove AUTHENTICATED role
+        context.getAuthentication().revokeRole("AUTHENTICATED");
+    }
+
+    public boolean isLoggedIn() {
+        return (secman.getPrincipal() != null);
+    }
+
+    public void setInIncludeEditView(boolean flag) {
+        this.inIncludeEditView = flag;
+    }
+
+    public boolean isInIncludeEditView() {
+        return this.inIncludeEditView;
+    }
+
+    @InitResource
+    public void init(Context context) throws Exception {
+        this.context = context;
+    }
+
+    @InsertStatus
+    public void insertStatus(ResultDocument resdoc, Element elem) throws Exception {
+        if (this.upas.isAllowUserLogins()) {
+            elem.setAttribute("userLoginsAllowed", "true");
+        } else {
+            elem.setAttribute("userLoginsAllowed", "false");
+        }
+        if (this.isLoggedIn()) {
+            // Use security manager to render effective permissions
+            SecurityManagerService secman = SpringBeanLocator.getSecurityManagerService();
+            Element user = resdoc.createSubNode(elem, "user");
+            EditorUser userinfo = SpringBeanLocator.getUserManagementService().getUser(this.secman.getPrincipal().getName());
+            user.setAttribute("fullname", userinfo.getFullname());
+            user.setAttribute("username", userinfo.getUsername());
+            Element permissions = resdoc.createSubNode(user, "permissions");
+            if (secman.mayAdmin()) {
+                permissions.setAttribute("admin", "true");
+            } else {
+                permissions.setAttribute("admin", "false");
+            }
+            if (secman.mayEditDynInclude()) {
+                permissions.setAttribute("editDynIncludes", "true");
+            } else {
+                permissions.setAttribute("editDynIncludes", "false");
+            }
+        }
+    }
+
+    public void reset() throws Exception {
+        this.logout();
+    }
+
+    public boolean isUserLoginsAllowed() {
+        return this.upas.isAllowUserLogins();
+    }
+
+    public boolean setUserLoginsAllowed(boolean flag) {
+        try {
+            this.upas.setAllowUserLogins(flag);
+        } catch (EditorSecurityException e) {
+            return false;
+        }
+        return true;
+    }
+
 }

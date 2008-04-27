@@ -18,33 +18,192 @@
 
 package de.schlund.pfixcore.editor2.frontend.resources;
 
-import de.schlund.pfixcore.workflow.ContextResource;
+import java.util.Iterator;
+import java.util.TreeSet;
 
-/**
- * ContextResource providing a list of all pages for the current project and
- * methods to select a page.
- * 
- * @author Sebastian Marsching <sebastian.marsching@1und1.de>
- */
-public interface PagesResource extends ContextResource {
-    /**
-     * Selects page matching page and variant name. If no variant for this page
-     * is found, which is exactly matching the specified variant name, a parent
-     * variant is returned. If no parent variant can be found neither, the
-     * default variant is returned.
-     * 
-     * @param pageName
-     *            Name of the page
-     * @param variantName
-     *            Name of the variant to look for
-     * @return <code>true</code> if a page could be found, <code>false</code>
-     *         otherwise
-     */
-    boolean selectPage(String pageName, String variantName);
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
-    /**
-     * Removes current selection (if there is any)
-     *
-     */
-    void unselectPage();
+import de.schlund.pfixcore.beans.InitResource;
+import de.schlund.pfixcore.beans.InsertStatus;
+import de.schlund.pfixcore.editor2.core.dom.Image;
+import de.schlund.pfixcore.editor2.core.dom.IncludePartThemeVariant;
+import de.schlund.pfixcore.editor2.core.dom.Page;
+import de.schlund.pfixcore.editor2.core.dom.Project;
+import de.schlund.pfixcore.editor2.core.dom.Target;
+import de.schlund.pfixcore.editor2.core.dom.TargetType;
+import de.schlund.pfixcore.editor2.frontend.util.EditorResourceLocator;
+import de.schlund.pfixcore.workflow.Context;
+import de.schlund.pfixxml.ResultDocument;
+
+public class PagesResource {
+    Page            selectedPage;
+
+    private Context context;
+
+    @InitResource
+    public void init(Context context) throws Exception {
+        this.selectedPage = null;
+        this.context = context;
+    }
+
+    @InsertStatus
+    public void insertStatus(ResultDocument resdoc, Element elem) throws Exception {
+        Project project = EditorResourceLocator.getProjectsResource(this.context).getSelectedProject();
+        if (project != null) {
+            // Make sure pages are in right order
+            TreeSet<Page> pages = new TreeSet<Page>(project.getTopPages());
+            for (Iterator<Page> i = pages.iterator(); i.hasNext();) {
+                Page page = i.next();
+                this.renderPageElement(page, elem);
+            }
+        }
+        if (this.selectedPage != null) {
+            Element currentPage = resdoc.createSubNode(elem, "currentpage");
+            currentPage.setAttribute("name", this.selectedPage.getName());
+
+            Element targetsElement = resdoc.createSubNode(currentPage, "targets");
+
+            Target pageTarget = this.selectedPage.getPageTarget();
+            // Null targets may exist because dummy page objects (for pages
+            // which are only in navigation, not in target section) might
+            // exist.
+            if (pageTarget != null) {
+                this.renderTarget(pageTarget, targetsElement);
+
+                // Sort include parts
+                TreeSet<IncludePartThemeVariant> includes = new TreeSet<IncludePartThemeVariant>(this.selectedPage.getPageTarget().getIncludeDependencies(true));
+                if (!includes.isEmpty()) {
+                    Element includesElement = resdoc.createSubNode(currentPage, "includes");
+                    for (Iterator<IncludePartThemeVariant> i = includes.iterator(); i.hasNext();) {
+                        IncludePartThemeVariant part = i.next();
+                        Element includeElement = resdoc.createSubNode(includesElement, "include");
+                        includesElement.appendChild(includeElement);
+                        includeElement.setAttribute("path", part.getIncludePart().getIncludeFile().getPath());
+                        includeElement.setAttribute("part", part.getIncludePart().getName());
+                        includeElement.setAttribute("theme", part.getTheme().getName());
+                    }
+                }
+
+                // Sort images
+                TreeSet<Image> images = new TreeSet<Image>(this.selectedPage.getPageTarget().getImageDependencies(true));
+                if (!images.isEmpty()) {
+                    Element imagesElement = resdoc.createSubNode(currentPage, "images");
+                    for (Iterator<Image> i = images.iterator(); i.hasNext();) {
+                        Image image = i.next();
+                        Element imageElement = resdoc.createSubNode(imagesElement, "image");
+                        imageElement.setAttribute("path", image.getPath());
+                        imageElement.setAttribute("modtime", Long.toString(image.getLastModTime()));
+                    }
+                }
+            }
+        }
+    }
+
+    private void renderTarget(Target target, Element parent) {
+        Document doc = parent.getOwnerDocument();
+        Element targetElement = doc.createElement("target");
+        parent.appendChild(targetElement);
+        targetElement.setAttribute("name", target.getName());
+        if (target.getType() == TargetType.TARGET_XML) {
+            targetElement.setAttribute("type", "xml");
+        } else if (target.getType() == TargetType.TARGET_XSL) {
+            targetElement.setAttribute("type", "xsl");
+        }
+        if (target.isLeafTarget()) {
+            targetElement.setAttribute("leaf", "true");
+        } else {
+            targetElement.setAttribute("leaf", "false");
+            this.renderTarget(target.getParentXML(), targetElement);
+            this.renderTarget(target.getParentXSL(), targetElement);
+        }
+    }
+
+    private void renderPageElement(Page page, Element parent) {
+        Document doc = parent.getOwnerDocument();
+        Element node = doc.createElement("page");
+        parent.appendChild(node);
+        node.setAttribute("name", page.getName());
+        if (page.getVariant() != null) {
+            node.setAttribute("variant", page.getVariant().getName());
+        } else {
+            // Render subpages for default variant only
+            // Make sure pages are in right order
+            TreeSet<Page> pages = new TreeSet<Page>(page.getSubPages());
+            for (Iterator<Page> i = pages.iterator(); i.hasNext();) {
+                Page subpage = i.next();
+                this.renderPageElement(subpage, node);
+            }
+        }
+        node.setAttribute("handler", page.getHandlerPath());
+        if (this.selectedPage != null && page.equals(selectedPage)) {
+            node.setAttribute("selected", "true");
+        }
+
+    }
+
+    public void reset() throws Exception {
+        this.selectedPage = null;
+    }
+
+    public boolean selectPage(String pageName, String variantName) {
+        Project project = EditorResourceLocator.getProjectsResource(this.context).getSelectedProject();
+        if (project == null) {
+            return false;
+        }
+        Page page = null;
+        if (variantName == null || variantName.equals("")) {
+            page = project.getPage(pageName, null);
+        } else {
+            // Make sure page variants are ordered
+            for (Iterator<Page> i = project.getPageByName(pageName).iterator(); i.hasNext();) {
+                Page page2 = i.next();
+                // If variant is matching exactly, we have what we want
+                if (page2.getVariant() != null && page2.getVariant().getName().equals(variantName)) {
+                    page = page2;
+                    break;
+                }
+                if (page == null && page2.getVariant() == null) {
+                    // If we have not yet found a matching variant
+                    // use default variant until we find a better one
+                    page = page2;
+                } else {
+                    // Check if the new variant is better matching
+                    // than the current one
+                    if (page == null) {
+                        // Check using string
+                        if (variantName.startsWith(page2.getVariant().getName())) {
+                            page = page2;
+                        }
+                    } else {
+                        // New variant is matching string and more
+                        // specific than current one
+                        if (variantName.startsWith(page2.getVariant().getName())) {
+                            if (page.getVariant() == null) {
+                                // The current variant is the default one
+                                // so each other matching variant is better
+                                page = page2;
+                            } else if (page2.getVariant().isChildOf(page.getVariant())) {
+                                // New variant is more specific
+                                page = page2;
+                            }
+                        }
+                    }
+                }
+
+            }
+        }
+        if (page == null) {
+            // Found no matching page
+            return false;
+        } else {
+            this.selectedPage = page;
+            return true;
+        }
+    }
+
+    public void unselectPage() {
+        this.selectedPage = null;
+    }
+
 }

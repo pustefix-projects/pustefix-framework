@@ -18,13 +18,97 @@
 
 package de.schlund.pfixcore.editor2.frontend.resources;
 
-import de.schlund.pfixcore.workflow.ContextResource;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Collection;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.Map;
+import java.util.Set;
 
-/**
- * ContextResource providing a list of all active Pustefix sessions
- * 
- * @author Sebastian Marsching <sebastian.marsching@1und1.de>
- */
-public interface SessionInfoResource extends ContextResource {
+import org.w3c.dom.Element;
+
+import de.schlund.pfixcore.beans.InsertStatus;
+import de.schlund.pfixcore.editor2.core.dom.IncludePartThemeVariant;
+import de.schlund.pfixcore.editor2.core.vo.EditorUser;
+import de.schlund.pfixcore.editor2.frontend.util.ContextStore;
+import de.schlund.pfixcore.editor2.frontend.util.EditorResourceLocator;
+import de.schlund.pfixcore.editor2.frontend.util.SpringBeanLocator;
+import de.schlund.pfixcore.workflow.Context;
+import de.schlund.pfixxml.ResultDocument;
+import de.schlund.pfixxml.ServletManager;
+import de.schlund.pfixxml.serverutil.SessionAdmin;
+import de.schlund.pfixxml.serverutil.SessionInfoStruct;
+
+public class SessionInfoResource {
+
+    @InsertStatus
+    public void insertStatus(ResultDocument resdoc, Element elem) throws Exception {
+        SessionAdmin sessadmin = SessionAdmin.getInstance();
+        DateFormat dateformat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+        Map<Context, String> contextmap = ContextStore.getInstance().getContextMap();
+
+        Set<String> allsessionids = new LinkedHashSet<String>(sessadmin.getAllSessionIds());
+        for (Iterator<String> i = allsessionids.iterator(); i.hasNext();) {
+            String sessId = i.next();
+            try {
+                SessionInfoStruct info = sessadmin.getInfo(sessId);
+                if (info != null) {
+                    Element sessionNode = resdoc.createSubNode(elem, "session");
+                    String visitId = (String) info.getSession().getAttribute(ServletManager.VISIT_ID);
+
+                    // This is very dirty, but there is no other way to do
+                    // this task: We iterate through all known contexts and
+                    // look if one of them has the same visit id as the
+                    // session
+                    for (Iterator<Context> j = contextmap.keySet().iterator(); j.hasNext();) {
+                        Context foreignctx = j.next();
+                        if (foreignctx.getVisitId().equals(visitId)) {
+                            String username = contextmap.get(foreignctx);
+                            sessionNode.setAttribute("username", username);
+                            EditorUser userinfo = SpringBeanLocator.getUserManagementService().getUser(username);
+                            if (userinfo != null) {
+                                sessionNode.setAttribute("userphone", userinfo.getPhoneNumber());
+                                sessionNode.setAttribute("userfullname", userinfo.getFullname());
+                            }
+                            if (EditorResourceLocator.getSessionResource(foreignctx).isInIncludeEditView()) {
+                                IncludePartThemeVariant incPart = EditorResourceLocator.getIncludesResource(foreignctx).getSelectedIncludePart();
+                                if (incPart != null) {
+                                    sessionNode.setAttribute("incpart", incPart.toString());
+                                }
+                            }
+                        }
+                    }
+                    sessionNode.setAttribute("id", info.getSessionIdURI());
+                    sessionNode.setAttribute("created", dateformat.format(new Date(info.getData().getCreation())));
+                    sessionNode.setAttribute("lastAccess", dateformat.format(new Date(info.getData().getLastAccess())));
+                    sessionNode.setAttribute("requestCount", Long.toString(info.getNumberOfHits()));
+
+                    Collection<SessionInfoStruct.TrailElement> trail = info.getTraillog();
+                    SessionInfoStruct.TrailElement lastStep = null;
+                    Element stepNode = null;
+                    for (Iterator<SessionInfoStruct.TrailElement> i2 = trail.iterator(); i2.hasNext();) {
+                        SessionInfoStruct.TrailElement step = i2.next();
+                        if (lastStep != null && lastStep.getStylesheetname().equals(step.getStylesheetname()) && lastStep.getServletname().equals(step.getServletname())) {
+                            stepNode.setAttribute("counter", Integer.toString(Integer.parseInt(stepNode.getAttribute("counter")) + 1));
+                        } else {
+                            stepNode = resdoc.createSubNode(sessionNode, "step");
+                            stepNode.setAttribute("stylesheet", step.getStylesheetname());
+                            stepNode.setAttribute("counter", "1");
+                        }
+                        lastStep = step;
+                    }
+                }
+            } catch (IllegalStateException e) {
+                // Ignore and go on
+            }
+        }
+    }
+
+    public void reset() throws Exception {
+    // Do nothing
+    }
 
 }
