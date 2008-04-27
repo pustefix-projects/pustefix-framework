@@ -1,3 +1,9 @@
+2008-04-27  jtl  <jtl@britten.laudi.ka>
+
+	* src/de/schlund/pfixcore/lucefix/ContextSearch*.java: 
+	* src/de/schlund/pfixcore/editor2/frontend/resources/*: removed the resource interfaces,
+	only use implementations, also no longer implement ContextResource 
+	
 2008-04-25  Jens Lautenbacher  <jtl@schlund.de>
 
 	* src/de/schlund/pfixcore/workflow/context/RequestContextImpl.java: 
