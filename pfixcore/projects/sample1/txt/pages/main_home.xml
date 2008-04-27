@@ -257,7 +257,7 @@
           <td>Page name</td><td><ixsl:value-of select="$page"/></td>
         </tr>
         <tr>
-          <td>PageFlow name</td><td><ixsl:value-of select="$pageflow"/></td>
+          <td>Last used PageFlow name</td><td><ixsl:value-of select="$__lf"/></td>
         </tr>
       </table>
   </theme>

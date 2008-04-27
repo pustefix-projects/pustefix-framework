@@ -500,8 +500,8 @@ public class ContextImpl implements Context, AccessibilityChecker, ExtendedConte
         return getRequestContextForCurrentThreadWithError().checkIsAccessible(page, status);
     }
 
-    public boolean checkNeedsData(PageRequest page, PageRequestStatus status) throws PustefixApplicationException {
-        return getRequestContextForCurrentThreadWithError().checkNeedsData(page, status);
+    public boolean checkNeedsData(PageRequest page) throws PustefixApplicationException {
+        return getRequestContextForCurrentThreadWithError().checkNeedsData(page);
     }
 
     public PageRequest createPageRequest(String name) {

@@ -1,5 +1,20 @@
 2008-04-27  jtl  <jtl@britten.laudi.ka>
 
+	* src/de/schlund/pfixcore/workflow/ContextImpl.java: 
+	* src/de/schlund/pfixcore/workflow/PageFlowContext.java: 
+	* src/de/schlund/pfixcore/workflow/context/DataDrivenPageFlow.java: 
+	* src/de/schlund/pfixcore/workflow/context/PageFlow.java: 
+	* src/de/schlund/pfixcore/workflow/context/RequestContextImpl.java: among other, small transient 
+	changes to make the interface for pageflows easier, still not really ok. need to think
+	about it much more.
+	 
+	* projects/core/xsl/forminput.xsl: 
+	* projects/core/xsl/master.xsl: 
+	* projects/core/xsl/navigation.xsl: 
+	* projects/sample1/txt/pages/main_home.xml: change the last used pageflow parameter 
+	to $__lf, there still is a $pageflow, but is only set when the current request actually
+	really had a pageflow.
+	
 	* projects/core/editor2/conf/edit.conf.xml: 
 	* src/de/schlund/pfixcore/lucefix/ContextSearch*.java: 
 	* src/de/schlund/pfixcore/editor2/frontend/resources/*: removed the resource interfaces,

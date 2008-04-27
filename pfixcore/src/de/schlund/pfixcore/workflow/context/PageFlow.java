@@ -23,7 +23,6 @@ import org.w3c.dom.Element;
 import de.schlund.pfixcore.exception.PustefixApplicationException;
 import de.schlund.pfixcore.exception.PustefixCoreException;
 import de.schlund.pfixcore.workflow.PageFlowContext;
-import de.schlund.pfixcore.workflow.PageRequest;
 import de.schlund.pfixxml.ResultDocument;
 
 /**
@@ -48,11 +47,12 @@ public interface PageFlow {
      * 
      * @param context contains information about the request and session state
      * @param boolean stopatcurrentpage true if the "maximum" page to search for should be the current page 
+     * @param boolean stopatnextaftercurrentpage true if the "maximum" page to search for should be the one step after the current page 
      * @return name of the next page to show
      * @throws PustefixApplicationException if an exception is thrown by the
      * application code called by this method
      */
-    String findNextPage(PageFlowContext context, PageRequest currentpagerequest, boolean stopatcurrentpage, boolean stopatnextaftercurrentpage) throws PustefixApplicationException;
+    String findNextPage(PageFlowContext context, boolean stopatcurrentpage, boolean stopatnextaftercurrentpage) throws PustefixApplicationException;
     
     /**
      * Return the name of this page flow (including variant).
@@ -93,7 +93,7 @@ public interface PageFlow {
      * application code called by this method
      * @throws PustefixCoreException if an error occurs within this pageflow's code
      */
-    void hookAfterRequest(ResultDocument resdoc, PageFlowContext context) throws PustefixApplicationException, PustefixCoreException;
+    void hookAfterRequest(PageFlowContext context, ResultDocument resdoc) throws PustefixApplicationException, PustefixCoreException;
     
     /**
      * Signals whether the {@link #hookAfterRequest(ResultDocument, PageFlowContext)}
@@ -118,6 +118,6 @@ public interface PageFlow {
      * information about the pageflow should be attached below this element.
      * @param context contains information about the request and session state
      */
-    void addPageFlowInfo(Element root, PageFlowContext context);
+    void addPageFlowInfo(PageFlowContext context, Element root);
     
 }

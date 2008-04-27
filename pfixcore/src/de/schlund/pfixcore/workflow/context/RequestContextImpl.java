@@ -103,8 +103,6 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
     private Set<String> roleAuthDeps;
 
     private boolean prohibitcontinue = false;
-    private boolean stopnextforcurrentrequest = false;
-    // private boolean on_jumptopage = false;
 
     private Set<StatusCodeInfo> messages = new HashSet<StatusCodeInfo>();
     private List<Cookie> cookielist = new ArrayList<Cookie>();
@@ -230,9 +228,12 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
             throw new IllegalStateException("PageFlow information is only availabe during request handling");
         }
 
+        if (currentpageflow == null) {
+            throw new RuntimeException("*** no current pageflow is set");   
+        }
+        
         if (!currentpageflow.containsPage(currentpagerequest.getRootName(), this.parentcontext)) {
-            throw new RuntimeException("*** current pageflow " + currentpageflow.getName() + " does not contain current pagerequest "
-                    + currentpagerequest);
+            throw new RuntimeException("*** current pageflow " + currentpageflow.getName() + " does not contain current pagerequest " + currentpagerequest);
         }
 
         return currentpageflow.precedingFlowNeedsData(this.parentcontext);
@@ -372,10 +373,8 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
     private SPDocument handleRequestWorker(PfixServletRequest preq) throws PustefixApplicationException, PustefixCoreException {
         currentpservreq = preq;
         prohibitcontinue = false;
-        stopnextforcurrentrequest = false;
         jumptopage = null;
         jumptopageflow = null;
-        // on_jumptopage = false;
         roleAuthDeps = null;
 
 
@@ -450,6 +449,7 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
         }
 
         // forcestop handling
+        boolean stopnextforcurrentrequest = false;
         RequestParam fstop = currentpservreq.getRequestParam(PARAM_FORCESTOP);
         if (fstop != null) {
             if (fstop.getValue().equals("true")) {
@@ -499,7 +499,7 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
             }
         }
         
-        SPDocument spdoc = documentFromFlow(startwithflow);
+        SPDocument spdoc = documentFromFlow(startwithflow, stopnextforcurrentrequest);
 
         processIC(servercontext.getEndInterceptors());
 
@@ -509,11 +509,11 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
             }
 
             if (currentpageflow != null) {
-                // TODO: rename "pageflow" to "lastflow" and search for consequences...
+                spdoc.setProperty("__lf", currentpageflow.getRootName());
                 spdoc.setProperty("pageflow", currentpageflow.getRootName());
                 addPageFlowInfo(spdoc);
             } else if (lastflow != null) {
-                spdoc.setProperty("pageflow", lastflow.getRootName());
+                spdoc.setProperty("__lf", lastflow.getRootName());
             }
 
             Variant var = getVariant();
@@ -580,7 +580,7 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
             Element root = doc.createElement("pageflow");
             doc.getDocumentElement().appendChild(root);
             root.setAttribute("name", currentpageflow.getRootName());
-            currentpageflow.addPageFlowInfo(root, this.parentcontext);
+            currentpageflow.addPageFlowInfo(parentcontext, root);
         }
     }
 
@@ -608,7 +608,7 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
         return servercontext.getContextConfig().getPageRequestConfig(currentpagerequest.getName());
     }
 
-    private SPDocument documentFromFlow(boolean startwithflow) throws PustefixApplicationException, PustefixCoreException {
+    private SPDocument documentFromFlow(boolean startwithflow, boolean stopnextforcurrentrequest) throws PustefixApplicationException, PustefixCoreException {
         SPDocument document = null;
 
         // First, check if the requested page is defined at all
@@ -639,7 +639,7 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
 
             resdoc = documentFromCurrentStep();
             if (currentpageflow != null) {
-                currentpageflow.hookAfterRequest(resdoc, parentcontext);
+                currentpageflow.hookAfterRequest(parentcontext, resdoc);
                 currentpageflow = pageflowmanager.getPageFlowByName(currentpageflow.getRootName(), getVariant());
             }
 
@@ -664,10 +664,10 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
                 // methods isSubmitTrigger & isDirectTrigger
 
                 LOG.debug("******* JUMPING to [" + currentpagerequest + "] *******\n");
-                document = documentFromFlow(false);
+                document = documentFromFlow(false, stopnextforcurrentrequest);
             } else if (currentpageflow != null) {
                 LOG.debug("* [" + currentpagerequest + "] signalled success, starting page flow process");
-                document = runPageFlow(false);
+                document = runPageFlow(false, stopnextforcurrentrequest);
             } else {
                 // throw new XMLException("*** ERROR! *** [" +
                 // currentpagerequest + "] signalled success, but current page
@@ -678,16 +678,16 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
         } else {
             LOG.debug("* Page is determined from flow [" + currentpageflow + "], starting page flow process");
             LOG.debug("* Current page: [" + currentpagerequest + "]");
-            document = runPageFlow(true);
+            document = runPageFlow(true, stopnextforcurrentrequest);
         }
         return document;
     }
 
-    private SPDocument runPageFlow(boolean startwithflow) throws PustefixApplicationException, PustefixCoreException {
+    private SPDocument runPageFlow(boolean startwithflow, boolean stopnextforcurrentrequest) throws PustefixApplicationException, PustefixCoreException {
         ResultDocument resdoc = null;
         SPDocument document = null;
 
-        String nextPage = currentpageflow.findNextPage(this.parentcontext, currentpagerequest, startwithflow, stopnextforcurrentrequest);
+        String nextPage = currentpageflow.findNextPage(this.parentcontext, startwithflow, stopnextforcurrentrequest);
         assert(nextPage != null);
         
         currentpagerequest = createPageRequest(nextPage);
@@ -816,11 +816,11 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
         return null;
     }
 
-    public boolean checkNeedsData(PageRequest page, PageRequestStatus status) throws PustefixApplicationException {
+    public boolean checkNeedsData(PageRequest page) throws PustefixApplicationException {
         PageRequest saved = currentpagerequest;
         currentpagerequest = page;
         State state = getStateForPageRequest(page);
-        page.setStatus(status);
+        page.setStatus(PageRequestStatus.WORKFLOW);
 
         PerfEvent pe = new PerfEvent(PerfEventType.PAGE_NEEDSDATA, page.getName());
         pe.start();

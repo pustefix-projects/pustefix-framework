@@ -211,9 +211,9 @@
           </xsl:otherwise>
         </xsl:choose>
       </ixsl:attribute>
-      <ixsl:if test="not($pageflow = '')">
+      <ixsl:if test="not($__lf = '')">
         <input type="hidden" name="__lf">
-          <ixsl:attribute name="value"><ixsl:value-of select="$pageflow"/></ixsl:attribute>
+          <ixsl:attribute name="value"><ixsl:value-of select="$__lf"/></ixsl:attribute>
         </input>
       </ixsl:if>
       <input type="hidden" name="__sendingdata" value="1"/>

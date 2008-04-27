@@ -162,8 +162,9 @@
       <ixsl:param name="__frame">_top</ixsl:param>
       <ixsl:param name="__reusestamp">-1</ixsl:param>
       
+      <ixsl:param name="__lf"/>
       <ixsl:param name="pageflow"/>
-
+      
       <ixsl:param name="lang"><xsl:value-of select="$lang"/></ixsl:param>
       <ixsl:variable name="page"><xsl:value-of select="$page"/></ixsl:variable>
       <ixsl:variable name="product"><xsl:value-of select="$product"/></ixsl:variable>

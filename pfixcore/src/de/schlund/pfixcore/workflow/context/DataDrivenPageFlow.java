@@ -103,7 +103,8 @@ public class DataDrivenPageFlow implements PageFlow {
         return ret;
     }
 
-    public String findNextPage(PageFlowContext context, PageRequest currentpagerequest, boolean stopatcurrentpage, boolean stopatnextaftercurrentpage) throws PustefixApplicationException {
+    public String findNextPage(PageFlowContext context, boolean stopatcurrentpage, boolean stopatnextaftercurrentpage) throws PustefixApplicationException {
+        PageRequest currentpagerequest = context.getCurrentPageRequest();
         FlowStep[] workflow = getAllSteps();
         boolean after_current = false;
 
@@ -126,7 +127,7 @@ public class DataDrivenPageFlow implements PageFlow {
                         LOG.debug("=> [" + page + "]: Page flow wants to stop here.");
                     }
                     return page.getRootName();
-                } else if (context.checkNeedsData(page, PageRequestStatus.WORKFLOW)) {
+                } else if (context.checkNeedsData(page)) {
                     LOG.debug("=> [" + page + "]: needsData() returned TRUE, leaving page flow.");
                     return page.getRootName();
                 } else {
@@ -175,14 +176,14 @@ public class DataDrivenPageFlow implements PageFlow {
             if (pagename.equals(current.getRootName())) {
                 return false;
             }
-            if (context.checkIsAccessible(page, current.getStatus()) && context.checkNeedsData(page, current.getStatus())) {
+            if (context.checkIsAccessible(page, current.getStatus()) && context.checkNeedsData(page)) {
                 return true;
             }
         }
         return false;
     }
 
-    public void addPageFlowInfo(Element root, PageFlowContext context) {
+    public void addPageFlowInfo(PageFlowContext context, Element root) {
         Document doc = root.getOwnerDocument();
         FlowStep[] steps = getAllSteps();
         String pagename = context.getCurrentPageRequest().getRootName();
@@ -197,7 +198,7 @@ public class DataDrivenPageFlow implements PageFlow {
         }
     }
 
-    public void hookAfterRequest(ResultDocument resdoc, PageFlowContext context) throws PustefixApplicationException, PustefixCoreException {
+    public void hookAfterRequest(PageFlowContext context, ResultDocument resdoc) throws PustefixApplicationException, PustefixCoreException {
         if (containsPage(context.getCurrentPageRequest().getRootName(), context)) {
             FlowStep current = getFlowStepForPage(context.getCurrentPageRequest().getRootName());
             current.applyActionsOnContinue(context, resdoc);

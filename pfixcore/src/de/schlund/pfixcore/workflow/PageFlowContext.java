@@ -24,6 +24,6 @@ import de.schlund.pfixxml.PfixServletRequest;
 public interface PageFlowContext extends Context {
     PfixServletRequest getPfixServletRequest();
     boolean checkIsAccessible(PageRequest page, PageRequestStatus status) throws PustefixApplicationException;
-    boolean checkNeedsData(PageRequest page, PageRequestStatus status) throws PustefixApplicationException;
+    boolean checkNeedsData(PageRequest page) throws PustefixApplicationException;
     PageRequest createPageRequest(String name);
 }
