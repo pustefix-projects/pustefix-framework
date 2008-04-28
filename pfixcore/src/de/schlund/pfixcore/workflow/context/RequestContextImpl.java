@@ -780,7 +780,8 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
                         AuthConstraintViolation authVio = (AuthConstraintViolation) authEx;
                         AuthConstraint authCon = authVio.getViolatedConstraint();
                         if (authCon != null) {
-                            Element constraintElem = authCon.toXML(misElem.getOwnerDocument());
+                            Element constraintElem = parentcontext.getContextConfig()
+                                .getAuthConstraintAsXML(misElem.getOwnerDocument(), authCon);
                             misElem.appendChild(constraintElem);
                         }
                     }

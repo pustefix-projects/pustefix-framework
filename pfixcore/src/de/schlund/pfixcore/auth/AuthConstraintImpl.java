@@ -17,9 +17,6 @@
  */
 package de.schlund.pfixcore.auth;
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-
 import de.schlund.pfixcore.workflow.Context;
 
 /**
@@ -72,12 +69,6 @@ public class AuthConstraintImpl implements AuthConstraint {
 		sb.append(condition);
 		sb.append("}");
 		return sb.toString();
-	}
-	
-	public Element toXML(Document doc) {
-		Element element=doc.createElement("authconstraint");
-		if(condition!=null) element.appendChild(condition.toXML(doc));
-		return element;
 	}
 	
 }

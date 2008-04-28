@@ -28,7 +28,6 @@ import de.schlund.pfixcore.auth.RoleProvider;
 import de.schlund.pfixcore.workflow.ContextInterceptor;
 import de.schlund.pfixcore.workflow.ContextInterceptorFactory;
 import de.schlund.pfixcore.workflow.PageMap;
-import de.schlund.pfixcore.workflow.State;
 import de.schlund.pfixcore.workflow.VariantManager;
 import de.schlund.pfixxml.Variant;
 import de.schlund.pfixxml.config.ContextConfig;
@@ -85,14 +84,6 @@ public class ServerContextImpl implements RoleProvider {
 
     public Properties getPropertiesForContextResource(Object res) {
         return config.getContextResourceConfig(res.getClass()).getProperties();
-    }
-    
-    public State getAuthState() {
-        String authpage = config.getAuthPage();
-        if (authpage == null) {
-            return null;
-        }
-        return pagemap.getState(authpage);
     }
     
     public ContextConfig getContextConfig() {

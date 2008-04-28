@@ -47,10 +47,7 @@ public class ContextRule extends CheckedRule {
             throw new SAXException("Mandatory attribute \"defaultpage\" is missing!");
         }
         ctxConfig.setDefaultPage(defaultPage);
-        String authPage = attributes.getValue("authpage");
-        if (authPage != null) {
-            ctxConfig.setAuthPage(authPage);
-        }
+        
         String syncStr = attributes.getValue("synchronized");
         if (syncStr != null) {
             ctxConfig.setSynchronized(Boolean.parseBoolean(syncStr));

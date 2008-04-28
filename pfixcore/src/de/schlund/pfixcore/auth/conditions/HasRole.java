@@ -17,9 +17,6 @@
  */
 package de.schlund.pfixcore.auth.conditions;
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-
 import de.schlund.pfixcore.auth.Authentication;
 import de.schlund.pfixcore.auth.Condition;
 import de.schlund.pfixcore.auth.Role;
@@ -46,6 +43,10 @@ public class HasRole implements Condition {
 		this.roleName=roleName;
 	}
 	
+	public String getRoleName() {
+	    return roleName;
+	}
+	
 	public boolean evaluate(Context context) {
 	    Authentication auth = context.getAuthentication();
 	    if(auth!=null) {
@@ -65,12 +66,6 @@ public class HasRole implements Condition {
 		sb.append("role==");
 		sb.append(roleName);
 		return sb.toString();
-	}
-	
-	public Element toXML(Document doc) {
-		Element element=doc.createElement("hasrole");
-		element.setAttribute("name",roleName);
-		return element;
 	}
 	
 }

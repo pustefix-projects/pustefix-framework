@@ -21,9 +21,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-
 import de.schlund.pfixcore.auth.Condition;
 import de.schlund.pfixcore.workflow.Context;
 
@@ -49,6 +46,10 @@ public abstract class ConditionGroup implements Condition {
 		conditions.add(condition);
 	}
 	
+	public List<Condition> getConditions() {
+	    return conditions;
+	}
+	
 	public abstract boolean evaluate(Context context);
 	
 	public abstract String getOperatorString();
@@ -65,25 +66,6 @@ public abstract class ConditionGroup implements Condition {
 		}
 		sb.append(" )");
 		return sb.toString();
-	}
-	
-	public Element toXML(Document doc) {
-		Element element=doc.createElement(getClass().getSimpleName().toLowerCase());
-		for(Condition condition:conditions) {
-			element.appendChild(condition.toXML(doc));
-		}
-		return element;
-	}
-	
-	
-	public static void main(String[] args) {
-		HasRole fooRole=new HasRole("foo");
-		HasRole barRole=new HasRole("bar");
-		HasRole bazRole=new HasRole("baz");
-		Condition subCond1=new And(barRole,new Not(bazRole));
-		Condition subCond2=new Not(barRole);
-		Condition cond=new Or(fooRole,subCond1,subCond2);
-		System.out.println(cond);
 	}
 	
 }

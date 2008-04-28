@@ -17,9 +17,6 @@
  */
 package de.schlund.pfixcore.auth;
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-
 import de.schlund.pfixcore.workflow.Context;
 
 /**
@@ -32,6 +29,5 @@ public interface AuthConstraint {
 	public boolean isAuthorized(Context context);
 	public Condition getCondition();
 	public String getAuthPage();
-	public Element toXML(Document doc);
 	
 }

@@ -17,9 +17,6 @@
  */
 package de.schlund.pfixcore.auth.conditions;
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-
 import de.schlund.pfixcore.auth.Condition;
 import de.schlund.pfixcore.workflow.Context;
 
@@ -39,6 +36,10 @@ public class Not implements Condition {
 		this.condition=condition;
 	}
 	
+	public Condition getCondition() {
+	    return condition;
+	}
+	
 	public void set(Condition condition) {
 		this.condition=condition;
 	}
@@ -53,12 +54,6 @@ public class Not implements Condition {
 		sb.append("! ");
 		sb.append(condition);
 		return sb.toString();
-	}
-	
-	public Element toXML(Document doc) {
-		Element element=doc.createElement("not");
-		if(condition!=null) element.appendChild(condition.toXML(doc));
-		return element;
 	}
 	
 }

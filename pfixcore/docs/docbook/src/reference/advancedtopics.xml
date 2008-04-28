@@ -130,83 +130,7 @@ public interface Authentication {
     </formresult>
     ]]></programlisting>
     </para>
-  
-    <section xml:id="rolebasedauth_customconditions">
-      <title>Custom conditions</title>
-      <para>
-        You can extend the authentication mechanism by providing custom conditions (additionally to the predefined conditions: <literal>hasrole</literal>, <literal>and</literal>, <literal>or</literal>, <literal>not</literal>). Therefore you just have to implement the <literal>Condition</literal> interface and register your implementation class in the context configuration file. Then your custom condition can be used within authconstraints, just as the builtin conditions and arbitrarily mixed with them.
-      </para>
-      <para>
-<programlisting language="java"><![CDATA[
-public interface Condition {
 
-	public boolean evaluate(Context context);
-	
-}
-]]></programlisting>
-      </para>
-      <para>
-        You have to implement the <literal>evaluate</literal> method, which returns if the condition is fulfilled. Therefore the evaluation logic can access the Context. Implementations shouldn't change the data model, perform fast and hold only immutable state (or be stateless).
-      </para>
-      <para>
-        The following example shows a condition which retrieves a <literal>ContextResource</literal> for a customer and checks if its debit exceeds a configured limit. The limit is automatically set to a value configured as property in the condition's configuration.
-      </para>
-      <para>
-<programlisting language="java"><![CDATA[
-package example;
-
-import de.schlund.pfixcore.auth.Condition;
-import de.schlund.pfixcore.workflow.Context;
-import example.ContextCustomer;
-
-public class PremiumCustomerCondition implements Condition {
-    
-    private float limit;
-
-    public boolean evaluate(Context context) {
-        ContextCustomer contextCustomer=context.getContextResourceManager().getResource(ContextCustomer.class);
-        return contextCustomer.getTotalDebit() >= limit;
-    }
-    
-    public void setLimit(float limit) {
-        this.limit = limit;
-    }
-    
-}
-]]></programlisting>
-      </para>
-      <para>
-        Let's look how this condition is registered and used in the context configuration:
-      </para>
-      <para>
-    <programlisting language="xml"><![CDATA[
-    <condition id="isPremiumCustomer" class="example.PremiumCustomerCondition">
-      <property name="limit" value="100000"/>
-    </condition>
-  
-    <authconstraint id="..." authpage="...">
-      <and>
-        <hasrole name="..."/>
-        <condition ref="isPremiumCustomer"/>
-      </and>
-    </authconstraint>
-    ]]></programlisting>
-      </para>
-      <para>
-        Conditions are registered using top-level <literal>condition</literal> elements. They require an <literal>id</literal> and a <literal>class</literal> attribute. Authconstraints can reference conditions using <literal>condition</literal> elements with an according <literal>ref</literal> attribute.
-      </para>
-      <para>
-        Conditions can be checked from within XML/XSL using the <literal>pfx:condition</literal> function, e.g.:
-      </para>    
-      <para>
-    <programlisting language="xml"><![CDATA[
-    <ixsl:if test="pfx:condition('isPremiumCustomer')">
-    ...
-    </ixsl:if>
-    ]]></programlisting>
-    </para>
-
-    </section>
        
     <section xml:id="rolebasedauth_example">
     <title>Example</title>
@@ -283,7 +207,90 @@ public class PremiumCustomerCondition implements Condition {
    
   </section>
 
+    <section xml:id="rolebasedauth_customconditions">
+      <title>Custom conditions</title>
+      <para>
+        You can extend the authentication mechanism by providing custom conditions (additionally to the predefined conditions: <literal>hasrole</literal>, <literal>and</literal>, <literal>or</literal>, <literal>not</literal>). Therefore you just have to implement the <literal>Condition</literal> interface and register your implementation class in the context configuration file. Then your custom condition can be used within authconstraints, just as the builtin conditions and arbitrarily mixed with them.
+      </para>
+      <para>
+<programlisting language="java"><![CDATA[
+public interface Condition {
 
+	public boolean evaluate(Context context);
+	
+}
+]]></programlisting>
+      </para>
+      <para>
+        You have to implement the <literal>evaluate</literal> method, which returns if the condition is fulfilled. Therefore the evaluation logic can access the Context. Implementations shouldn't change the data model, perform fast and hold only immutable state (or be stateless).
+      </para>
+      <para>
+        The following example shows a condition which retrieves a <literal>ContextResource</literal> for a customer and checks if its debit exceeds a configured limit. The limit is automatically set to a value configured as property in the condition's configuration.
+      </para>
+      <para>
+<programlisting language="java"><![CDATA[
+package example;
+
+import de.schlund.pfixcore.auth.Condition;
+import de.schlund.pfixcore.workflow.Context;
+import example.ContextCustomer;
+
+public class PremiumCustomerCondition implements Condition {
+    
+    private float limit;
+
+    public boolean evaluate(Context context) {
+        ContextCustomer contextCustomer=context.getContextResourceManager().getResource(ContextCustomer.class);
+        return contextCustomer.getTotalDebit() >= limit;
+    }
+    
+    public void setLimit(float limit) {
+        this.limit = limit;
+    }
+    
+}
+]]></programlisting>
+      </para>
+      <para>
+        Let's look how this condition is registered and used in the context configuration:
+      </para>
+      <para>
+    <programlisting language="xml"><![CDATA[
+    <condition id="isPremiumCustomer" class="example.PremiumCustomerCondition">
+      <property name="limit" value="100000"/>
+    </condition>
+  
+    <authconstraint id="..." authpage="...">
+      <and>
+        <hasrole name="..."/>
+        <condition ref="isPremiumCustomer"/>
+      </and>
+    </authconstraint>
+    ]]></programlisting>
+      </para>
+      <para>
+        Conditions are registered using top-level <literal>condition</literal> elements. They require an <literal>id</literal> and a <literal>class</literal> attribute. Authconstraints can reference conditions using <literal>condition</literal> elements with an according <literal>ref</literal> attribute.
+      </para>
+      <para>
+        Conditions can be checked from within XML/XSL using the <literal>pfx:condition</literal> function, e.g.:
+      </para>    
+      <para>
+    <programlisting language="xml"><![CDATA[
+    <ixsl:if test="pfx:condition('isPremiumCustomer')">
+    ...
+    </ixsl:if>
+    ]]></programlisting>
+    </para>
+
+    </section>
+
+    <section xml:id="rolebasedauth_customroleprovider">
+      <title>Custom RoleProvider</title>
+      <para>
+      
+      </para>
+
+    </section>
 
   </section>
 

@@ -1,3 +1,22 @@
+2008-04-28  Martin Leidig  <mleidig@schlund.de>
+
+	Removed toXML method from Condition interface and Condition implementations.
+	Serializing the authconstraint configuration now is done within ContextConfigImpl:
+	* src/de/schlund/pfixcore/auth/AuthConstraint.java
+	* src/de/schlund/pfixcore/auth/Condition.java
+	* src/de/schlund/pfixcore/auth/AuthConstraintImpl.java
+	* src/de/schlund/pfixcore/auth/conditions/Not.java
+	* src/de/schlund/pfixcore/auth/conditions/ConditionGroup.java
+	* src/de/schlund/pfixcore/auth/conditions/HasRole.java
+	* src/de/schlund/pfixcore/workflow/context/RequestContextImpl.java
+	* src/de/schlund/pfixcore/example/bank/PremiumCustomerCondition.java
+	* src/de/schlund/pfixxml/config/ContextConfig.java
+	* src/de/schlund/pfixxml/config/impl/ContextConfigImpl.java
+
+	Removed last artifacts of the old authorization mechanism:
+	* src/de/schlund/pfixxml/config/impl/ContextRule.java
+	* src/de/schlund/pfixcore/workflow/context/ServerContextImpl.java
+
 2008-04-28  jtl  <jtl@schlund.de>
 
 	* src/de/schlund/pfixcore/workflow/context/RequestContextImpl.java: changed according to assorted interface changes 

@@ -22,6 +22,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+
 import de.schlund.pfixcore.auth.AuthConstraint;
 import de.schlund.pfixcore.auth.Condition;
 import de.schlund.pfixcore.auth.Role;
@@ -35,13 +38,6 @@ import de.schlund.pfixcore.workflow.State;
  * @author Sebastian Marsching <sebastian.marsching@1und1.de>
  */
 public interface ContextConfig {
-
-    /**
-     * Returns name of auth page or <code>null</code> if there is no need for
-     * the context to require user authentication.
-     * @return
-     */
-    String getAuthPage();
 
     /**
      * return the default state to use if no more specific information is available
@@ -157,5 +153,6 @@ public interface ContextConfig {
     AuthConstraint getDefaultAuthConstraint();
     AuthConstraint getAuthConstraint(String id);
     Condition getCondition(String id);
+    Element getAuthConstraintAsXML(Document doc, AuthConstraint authConstraint);
     
 }

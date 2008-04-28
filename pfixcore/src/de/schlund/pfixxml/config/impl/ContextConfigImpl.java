@@ -31,12 +31,17 @@ import java.util.Set;
 import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 
 import de.schlund.pfixcore.auth.AuthConstraint;
 import de.schlund.pfixcore.auth.Condition;
 import de.schlund.pfixcore.auth.Role;
 import de.schlund.pfixcore.auth.RoleProvider;
+import de.schlund.pfixcore.auth.conditions.ConditionGroup;
+import de.schlund.pfixcore.auth.conditions.HasRole;
+import de.schlund.pfixcore.auth.conditions.Not;
 import de.schlund.pfixcore.workflow.ContextInterceptor;
 import de.schlund.pfixcore.workflow.State;
 import de.schlund.pfixxml.config.ContextConfig;
@@ -55,7 +60,6 @@ public class ContextConfigImpl implements ContextConfig, RoleProvider {
     private final static Logger LOG = Logger.getLogger(ContextConfigImpl.class);
     private Class<? extends State> defaultStateClass = null;
     
-    private String authPage = null;
     private String defaultPage = null;
     private LinkedHashMap<Class<?>, ContextResourceConfigImpl> resources = new LinkedHashMap<Class<?>, ContextResourceConfigImpl>();
     private List<ContextResourceConfigImpl> cacheResources = null;
@@ -76,13 +80,6 @@ public class ContextConfigImpl implements ContextConfig, RoleProvider {
     private Map<String,Condition> conditions = new HashMap<String,Condition>();
     private boolean doLoadTimeChecks = false;
     
-    public void setAuthPage(String page) {
-        this.authPage = page;
-    }
-    
-    public String getAuthPage() {
-        return this.authPage;
-    }
     
     public void setDefaultPage(String page) {
         this.defaultPage = page;
@@ -255,6 +252,50 @@ public class ContextConfigImpl implements ContextConfig, RoleProvider {
         conditions.put(id,condition);
     }
     
+    public Element getAuthConstraintAsXML(Document doc, AuthConstraint authConstraint) {
+        Element element = doc.createElement("authconstraint");
+        Condition condition = authConstraint.getCondition();
+        if (condition != null) {
+            element.appendChild(getConditionAsXML(doc, condition));
+        }
+        return element;
+    }
+    
+    private String getConditionId(Condition condition) {
+        Iterator<Entry<String,Condition>> entries = conditions.entrySet().iterator();
+        while(entries.hasNext()) {
+            Entry<String,Condition> entry = entries.next();
+            if(entry.getValue()==condition) return entry.getKey();
+        }
+        return null;
+    }
+    
+    private Element getConditionAsXML(Document doc, Condition condition) {
+        Element result = null;
+        if (ConditionGroup.class.isAssignableFrom(condition.getClass())) {
+            ConditionGroup group = (ConditionGroup) condition;
+            result = doc.createElement(condition.getClass().getSimpleName().toLowerCase());
+            if (group.getConditions() != null) {
+                for (Condition subCond : group.getConditions()) {
+                    result.appendChild(getConditionAsXML(doc, subCond));
+                }
+            }
+        } else if (HasRole.class.isAssignableFrom(condition.getClass())) {
+            HasRole hasRole = (HasRole) condition;
+            result = doc.createElement("hasrole");
+            result.setAttribute("name", hasRole.getRoleName());
+        } else if (Not.class.isAssignableFrom(condition.getClass())) {
+            result = doc.createElement("not");
+            Condition subCond = ((Not) condition).getCondition();
+            if (subCond != null) result.appendChild(getConditionAsXML(doc, subCond));
+        } else {
+            String condId = getConditionId(condition);
+            result = doc.createElement("condition");
+            result.setAttribute("ref", condId);
+        }
+        return result;
+    }
+    
     public void setNavigationFile(String filename) {
         this.navigationFile  = filename;
     }
@@ -322,10 +363,6 @@ public class ContextConfigImpl implements ContextConfig, RoleProvider {
         List<PageRequestConfigImpl> pages = getPageRequestConfigs();
         for (PageRequestConfigImpl page : pages) {
             AuthConstraint authConstraint = page.getAuthConstraint();
-            if (authConstraint != null && getAuthPage() != null) {
-                if (getAuthPage().equals(authConstraint.getAuthPage()))
-                    throw new SAXException("Authconstraint authpage isn't allowed to " + "be equal to context authpage: " + getAuthPage());
-            }
             if (authConstraint == null) authConstraint = getDefaultAuthConstraint();
             if (authConstraint != null) {
                 authPages.clear();
