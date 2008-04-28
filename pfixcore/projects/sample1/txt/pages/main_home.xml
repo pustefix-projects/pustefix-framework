@@ -257,7 +257,14 @@
           <td>Page name</td><td><ixsl:value-of select="$page"/></td>
         </tr>
         <tr>
-          <td>Last used PageFlow name</td><td><ixsl:value-of select="$__lf"/></td>
+	    <ixsl:choose>
+	      <ixsl:when test="not($pageflow)">
+          	<td>Last used PageFlow name (currently none)</td><td><ixsl:value-of select="$__lf"/></td>
+	      </ixsl:when>
+	      <ixsl:otherwise>
+          	<td>PageFlow name</td><td><ixsl:value-of select="$__lf"/></td>
+          </ixsl:otherwise>
+        </ixsl:choose>
         </tr>
       </table>
   </theme>

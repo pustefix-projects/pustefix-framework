@@ -3,6 +3,8 @@
   <part name="content">
     <theme name="default">
         <center>
+          <pfx:include href="sample1/txt/pages/main_home.xml" part="env_info"/>
+		  <hr/>
           <pfx:button pageflow="OrderFlow" startwithflow="true">
             Next Page From OrderFlow
           </pfx:button><br/>
