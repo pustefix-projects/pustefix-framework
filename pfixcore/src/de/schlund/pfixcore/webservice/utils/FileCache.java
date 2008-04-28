@@ -35,9 +35,6 @@ public class FileCache {
     public FileCache(int size) {
         final int maxSize = size;
         map = new LinkedHashMap<String, FileCacheData>(maxSize, 0.75f, true) {
-            /**
-             * 
-             */
             private static final long serialVersionUID = 6172037110210448800L;
 
             protected boolean removeEldestEntry(Map.Entry<String, FileCacheData> eldest) {
