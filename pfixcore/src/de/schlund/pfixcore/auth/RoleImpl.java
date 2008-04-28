@@ -24,39 +24,41 @@ package de.schlund.pfixcore.auth;
  */
 public class RoleImpl implements Role {
 
-    private String name;
+    private String  name;
     private boolean initial;
-    
+
     public RoleImpl(String name) {
-        if(name==null) throw new IllegalArgumentException("Name must not be null!");
-        this.name=name;
+        if (name == null)
+            throw new IllegalArgumentException("Name must not be null!");
+        this.name = name;
     }
-    
+
     public RoleImpl(String name, boolean initial) {
-    	this(name);
-    	this.initial=initial;
+        this(name);
+        this.initial = initial;
     }
-    
+
     public String getName() {
         return name;
     }
-    
+
     public boolean isInitial() {
-    	return initial;
+        return initial;
     }
-    
+
     @Override
     public int hashCode() {
         return name.hashCode();
     }
-    
+
     @Override
     public boolean equals(Object obj) {
-        if(obj instanceof RoleImpl) {
-            Role role=(Role)obj;
-            if(role.getName().equals(name)) return true;
+        if (obj instanceof RoleImpl) {
+            Role role = (Role) obj;
+            if (role.getName().equals(name))
+                return true;
         }
         return false;
     }
-    
+
 }

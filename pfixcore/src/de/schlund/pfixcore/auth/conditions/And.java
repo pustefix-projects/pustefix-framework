@@ -23,24 +23,25 @@ import de.schlund.pfixcore.workflow.Context;
 /**
  * 
  * @author mleidig@schlund.de
- *
+ * 
  */
 public class And extends ConditionGroup {
-	
-	public And(Condition ... conditions) {
-		super(conditions);
-	}
-	
-	public boolean evaluate(Context context) {
+
+    public And(Condition... conditions) {
+        super(conditions);
+    }
+
+    public boolean evaluate(Context context) {
         for (Condition condition : conditions) {
-            if (!condition.evaluate(context)) return false;
+            if (!condition.evaluate(context))
+                return false;
         }
         return true;
     }
-	
-	@Override
-	public String getOperatorString() {
-		return "&&";
-	}
+
+    @Override
+    public String getOperatorString() {
+        return "&&";
+    }
 
 }

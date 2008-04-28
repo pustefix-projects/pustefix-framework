@@ -23,31 +23,31 @@ package de.schlund.pfixcore.auth;
 public class AuthorizationException extends RuntimeException {
 
     private static final long serialVersionUID = -1180372711031615963L;
-    private String type;
-    private String authorization;
-    private String target;
-    
+    private String            type;
+    private String            authorization;
+    private String            target;
+
     public AuthorizationException(String message) {
         super(message);
     }
-    
+
     public AuthorizationException(String message, String type, String authorization, String target) {
         super(message);
         this.type = type;
         this.authorization = authorization;
         this.target = target;
     }
-    
+
     public String getType() {
         return type;
     }
-    
+
     public String getAuthorization() {
         return authorization;
     }
-    
+
     public String getTarget() {
         return target;
     }
-    
+
 }

@@ -22,53 +22,53 @@ import de.schlund.pfixcore.workflow.Context;
 /**
  * 
  * @author mleidig@schlund.de
- *
+ * 
  */
 public class AuthConstraintImpl implements AuthConstraint {
 
-	private Condition condition;
-	private String authPage;
-	
-	public AuthConstraintImpl() {
-	}
-	
-	public AuthConstraintImpl(Condition condition) {
-		this.condition=condition;
-	}
-	
-	public void setCondition(Condition condition) {
-		this.condition=condition;
-	}
-	
-	public Condition getCondition() {
-		return condition;
-	}
-	
-	public void setAuthPage(String authPage) {
-		this.authPage=authPage;
-	}
-	
-	public String getAuthPage() {
-		return authPage;
-	}
-	
-	public boolean isAuthorized(Context context) {
-		if(condition!=null) {
-			return condition.evaluate(context);
-		}
-		return true;
-	}
-	
-	@Override
-	public String toString() {
-		StringBuilder sb=new StringBuilder();
-		sb.append(getClass().getName());
-		sb.append(" ");
-		sb.append("{");
-		sb.append("condition: ");
-		sb.append(condition);
-		sb.append("}");
-		return sb.toString();
-	}
-	
+    private Condition condition;
+    private String    authPage;
+
+    public AuthConstraintImpl() {
+    }
+
+    public AuthConstraintImpl(Condition condition) {
+        this.condition = condition;
+    }
+
+    public void setCondition(Condition condition) {
+        this.condition = condition;
+    }
+
+    public Condition getCondition() {
+        return condition;
+    }
+
+    public void setAuthPage(String authPage) {
+        this.authPage = authPage;
+    }
+
+    public String getAuthPage() {
+        return authPage;
+    }
+
+    public boolean isAuthorized(Context context) {
+        if (condition != null) {
+            return condition.evaluate(context);
+        }
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(getClass().getName());
+        sb.append(" ");
+        sb.append("{");
+        sb.append("condition: ");
+        sb.append(condition);
+        sb.append("}");
+        return sb.toString();
+    }
+
 }

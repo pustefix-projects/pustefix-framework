@@ -23,37 +23,37 @@ import de.schlund.pfixcore.workflow.Context;
 /**
  * 
  * @author mleidig@schlund.de
- *
+ * 
  */
 public class Not implements Condition {
 
-	private Condition condition;
-	
-	public Not() {
-	}
-	
-	public Not(Condition condition) {
-		this.condition=condition;
-	}
-	
-	public Condition getCondition() {
-	    return condition;
-	}
-	
-	public void set(Condition condition) {
-		this.condition=condition;
-	}
-	
-	public boolean evaluate(Context context) {
+    private Condition condition;
+
+    public Not() {
+    }
+
+    public Not(Condition condition) {
+        this.condition = condition;
+    }
+
+    public Condition getCondition() {
+        return condition;
+    }
+
+    public void set(Condition condition) {
+        this.condition = condition;
+    }
+
+    public boolean evaluate(Context context) {
         return !condition.evaluate(context);
     }
-	
-	@Override
-	public String toString() {
-		StringBuilder sb=new StringBuilder();
-		sb.append("! ");
-		sb.append(condition);
-		return sb.toString();
-	}
-	
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("! ");
+        sb.append(condition);
+        return sb.toString();
+    }
+
 }

@@ -25,47 +25,48 @@ import de.schlund.pfixcore.workflow.Context;
 /**
  * 
  * @author mleidig@schlund.de
- *
+ * 
  */
 public class HasRole implements Condition {
 
-	private String roleName;
-	
-	public HasRole() {
-		
-	}
-	
-	public HasRole(String roleName) {
-		this.roleName=roleName;
-	}
-	
-	public void setRoleName(String roleName) {
-		this.roleName=roleName;
-	}
-	
-	public String getRoleName() {
-	    return roleName;
-	}
-	
-	public boolean evaluate(Context context) {
-	    Authentication auth = context.getAuthentication();
-	    if(auth!=null) {
-	        Role[] roles=auth.getRoles();
-	        if(roles!=null) {
-	            for(Role role:roles) {
-	                if(roleName.equals(role.getName())) return true;
-	            }    
-	        }
-	    }
-		return false;
-	}
-	
-	@Override
-	public String toString() {
-		StringBuilder sb=new StringBuilder();
-		sb.append("role==");
-		sb.append(roleName);
-		return sb.toString();
-	}
-	
+    private String roleName;
+
+    public HasRole() {
+
+    }
+
+    public HasRole(String roleName) {
+        this.roleName = roleName;
+    }
+
+    public void setRoleName(String roleName) {
+        this.roleName = roleName;
+    }
+
+    public String getRoleName() {
+        return roleName;
+    }
+
+    public boolean evaluate(Context context) {
+        Authentication auth = context.getAuthentication();
+        if (auth != null) {
+            Role[] roles = auth.getRoles();
+            if (roles != null) {
+                for (Role role : roles) {
+                    if (roleName.equals(role.getName()))
+                        return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("role==");
+        sb.append(roleName);
+        return sb.toString();
+    }
+
 }

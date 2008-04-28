@@ -21,12 +21,11 @@ package de.schlund.pfixcore.auth;
  * @author mleidig@schlund.de
  */
 public class NotAuthenticatedException extends AuthorizationException {
-    
-    private static final long serialVersionUID = -8111961845410611351L;
-    
-    private final static String TYPESTR="NOT_AUTHENTICATED";
-    
+
+    private static final long   serialVersionUID = -8111961845410611351L;
+    private final static String TYPESTR          = "NOT_AUTHENTICATED";
+
     public NotAuthenticatedException(String message, String subtype, String target) {
         super(message, TYPESTR, subtype, target);
-    }    
+    }
 }

@@ -22,12 +22,12 @@ import de.schlund.pfixcore.workflow.Context;
 /**
  * 
  * @author mleidig@schlund.de
- *
+ * 
  */
 public interface AuthConstraint {
-	
-	public boolean isAuthorized(Context context);
-	public Condition getCondition();
-	public String getAuthPage();
-	
+
+    public boolean isAuthorized(Context context);
+    public Condition getCondition();
+    public String getAuthPage();
+
 }

@@ -26,40 +26,41 @@ import java.util.Map;
 /**
  * 
  * @author mleidig@schlund.de
- *
+ * 
  */
 public class RoleProviderImpl implements RoleProvider {
-    
-    private List<Role> roles;
-    private Map<String,Role> roleMap;
-   
+
+    private List<Role>        roles;
+    private Map<String, Role> roleMap;
+
     public RoleProviderImpl() {
         roles = new ArrayList<Role>();
-        roleMap = new HashMap<String,Role>();
+        roleMap = new HashMap<String, Role>();
     }
-    
+
     public void addRole(Role role) {
-        if(roleMap.containsKey(role.getName())) 
-            throw new IllegalArgumentException("Duplicate role: "+role.getName());
+        if (roleMap.containsKey(role.getName()))
+            throw new IllegalArgumentException("Duplicate role: " + role.getName());
         roles.add(role);
         roleMap.put(role.getName(), role);
     }
-    
+
     public Role getRole(String roleName) throws RoleNotFoundException {
         return roleMap.get(roleName);
     }
-    
+
     public List<Role> getRoles() {
         return roles;
     }
-    
+
     public void addRoles(RoleProvider roleProvider) {
         List<Role> roleList = roleProvider.getRoles();
         if (roleList != null) {
-            for (Role role : roleList) addRole(role);
+            for (Role role : roleList)
+                addRole(role);
         }
     }
-    
+
     public void setReadOnly() {
         roles = Collections.unmodifiableList(roles);
         roleMap = Collections.unmodifiableMap(roleMap);

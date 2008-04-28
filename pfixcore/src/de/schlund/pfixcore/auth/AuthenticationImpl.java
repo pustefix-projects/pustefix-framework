@@ -29,10 +29,10 @@ import org.apache.log4j.Logger;
  */
 public class AuthenticationImpl implements Authentication {
 
-    private final static Logger LOG = Logger.getLogger(AuthenticationImpl.class);
+    private final static Logger     LOG = Logger.getLogger(AuthenticationImpl.class);
 
     private SortedMap<String, Role> roles;
-    private RoleProvider roleProvider;
+    private RoleProvider            roleProvider;
 
     public AuthenticationImpl(RoleProvider roleProvider) {
         this.roleProvider = roleProvider;
