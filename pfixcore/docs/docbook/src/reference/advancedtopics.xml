@@ -287,9 +287,90 @@ public class PremiumCustomerCondition implements Condition {
     <section xml:id="rolebasedauth_customroleprovider">
       <title>Custom RoleProvider</title>
       <para>
-      
+        Roles by default are configured within the context configuration.
+        As an alternative approach you're able to plug-in your own RoleProvider
+        implementation. Thus you can provide roles programmatically or from
+        another source.
       </para>
+      <para>
+      	You just have to implement the RoleProvider interface and register the implementation
+      	class in the context configuration.
+      </para>
+      <para>
+      <programlisting language="java"><![CDATA[
+public interface RoleProvider {
 
+	public Role getRole(String roleName) throws RoleNotFoundException;
+	public List<Role> getRoles();
+	
+}
+]]></programlisting>
+      </para>
+      <para>
+        The <literal>getRole</literal> method returns a <literal>Role</literal> object by name. 
+        The <literal>getRoles</literal> method returns a list of all available roles.
+      </para>
+     <para>
+      <programlisting language="java"><![CDATA[
+public interface Role {
+
+    public String getName();
+    public boolean isInitial();
+    
+}
+]]></programlisting>
+      </para>
+      <para>
+        <literal>Role</literal> objects can either be created by implementing the 
+        <literal>Role</literal> interface or by using the default implementation
+        <literal>de.schlund.pfixcore.auth.RoleImpl</literal>. Role implementations
+        have to return a unique name and if they should be initially set.
+      </para>
+      <para>
+        The following example shows a simple <literal>RoleProvider</literal> implementation,
+        which holds the roles in a programmatically filled map.  
+      </para>
+     <para>
+      <programlisting language="java"><![CDATA[
+public class MyRoleProvider implements RoleProvider {
+
+    private Map<String, Role> roles;
+
+    public MyRoleProvider() {
+        roles = new HashMap<String, Role>();
+        Role role = new RoleImpl("ADMIN", false);
+        roles.put(role.getName(), role);
+    	...
+    }
+
+    public Role getRole(String roleName) throws RoleNotFoundException {
+        Role role = roles.get(roleName);
+        if(role == null) throw new RoleNotFoundException(roleName);
+        return role;
+    }
+
+    public List<Role> getRoles() {
+        return new ArrayList<Role>(roles.values());
+    }
+
+}
+]]></programlisting>
+      </para>      
+      <para>
+        The <literal>RoleProvider</literal> implementation is registered using the
+       	context configuration top-level <literal>roleprovider</literal> element with
+       	a <literal>class</literal> attribute, e.g.:
+      </para>     
+      <para>
+    <programlisting language="xml"><![CDATA[
+    <roleprovider class="example.MyRoleProvider"/>
+    ]]></programlisting>
+    </para>
+    <para>
+      You should be aware that the current mechanism doesn't support
+      dynamic RoleProviders. The provided roles have to be constant, i.e. they're read
+      at application startup time and aren't updated at a later time.
+    </para>
     </section>
 
   </section>
