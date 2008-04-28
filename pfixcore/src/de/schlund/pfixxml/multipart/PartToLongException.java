@@ -28,6 +28,10 @@ import java.io.IOException;
 
 public class PartToLongException extends IOException {
 
+    /**
+     * 
+     */
+    private static final long serialVersionUID = -5521242529480357394L;
     private String fieldName = null;
 
     /**

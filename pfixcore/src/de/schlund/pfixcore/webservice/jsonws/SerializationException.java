@@ -21,6 +21,11 @@ package de.schlund.pfixcore.webservice.jsonws;
 
 public class SerializationException extends Exception {
     
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 8149052576948897593L;
+
     public SerializationException(String msg) {
         super(msg);
     }

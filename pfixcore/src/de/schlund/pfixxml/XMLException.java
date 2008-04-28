@@ -26,6 +26,11 @@ package de.schlund.pfixxml;
 
 public class XMLException extends Exception {
 
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 2573026526383430222L;
+
     public XMLException() {
         super();
     }

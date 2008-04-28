@@ -17,6 +17,11 @@ import de.schlund.pfixcore.webservice.HttpServiceRequest;
 
 public class EmailNotifyingHandler extends FaultHandler {
     
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 8853473850594232489L;
+
     private Logger LOG=Logger.getLogger(getClass().getName());
     
     private final static String PARAM_SMTPHOST="smtphost";

@@ -25,6 +25,11 @@ package de.schlund.pfixcore.editor2.core.exception;
  */
 public class EditorParsingException extends EditorException {
 
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 7930667008266320310L;
+
     public EditorParsingException() {
         super();
     }

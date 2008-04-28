@@ -26,6 +26,11 @@ import de.schlund.pfixcore.beans.InitException;
  */
 public class DOMInitException extends InitException {
 
+    /**
+     * 
+     */
+    private static final long serialVersionUID = -6576654708542640144L;
+
     public DOMInitException(String msg) {
         super(msg);
     }

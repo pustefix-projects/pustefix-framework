@@ -30,6 +30,10 @@ import org.xml.sax.SAXException;
  */
 public class ConfigException extends SAXException {
     
+    /**
+     * 
+     */
+    private static final long serialVersionUID = -4775287108925223591L;
     public final static int MISSING_ATTRIBUTE=0;
     public final static int ILLEGAL_ATTRIBUTE_VALUE=1;
     

@@ -13,6 +13,10 @@ import java.util.Map.Entry;
  * @version 1.0
  */
 public class SimpleCacheLRU<K,V> extends LinkedHashMap<K,V> {
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 2578526678043152277L;
     int maxsize = 1;
     
     /**

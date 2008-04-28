@@ -20,6 +20,11 @@ import de.schlund.pfixxml.resources.ResourceUtil;
 
 public class ExceptionProcessorAdapter extends FaultHandler {
 
+    /**
+     * 
+     */
+    private static final long serialVersionUID = -7046404948962289457L;
+
     final static Logger LOG=Logger.getLogger(ExceptionProcessorAdapter.class);
     
     private final static String PARAM_CONFIG="config";

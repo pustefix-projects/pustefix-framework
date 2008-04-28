@@ -25,6 +25,11 @@ package de.schlund.pfixcore.editor2.core.exception;
  */
 public class EditorDuplicateUsernameException extends EditorException {
 
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 8845568882417795786L;
+
     public EditorDuplicateUsernameException() {
         super();
     }

@@ -45,6 +45,11 @@ import de.schlund.pfixxml.resources.ResourceUtil;
  * @author Sebastian Marsching <sebastian.marsching@1und1.de>
  */
 public class DocrootServlet extends HttpServlet {
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 7023669388762729554L;
+
     private String base;
 
     private String defaultpath;

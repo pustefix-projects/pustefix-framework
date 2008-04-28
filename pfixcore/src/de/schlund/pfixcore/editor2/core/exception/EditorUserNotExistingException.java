@@ -25,6 +25,11 @@ package de.schlund.pfixcore.editor2.core.exception;
  */
 public class EditorUserNotExistingException extends EditorException {
 
+    /**
+     * 
+     */
+    private static final long serialVersionUID = -3776086818516263697L;
+
     public EditorUserNotExistingException() {
         super();
     }

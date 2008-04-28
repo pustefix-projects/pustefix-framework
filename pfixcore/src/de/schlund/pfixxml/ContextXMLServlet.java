@@ -52,6 +52,11 @@ import de.schlund.pfixxml.resources.FileResource;
  */
 
 public class ContextXMLServlet extends AbstractXMLServlet {
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 7075704504725269214L;
+
     private Logger LOG = Logger.getLogger(ContextXMLServlet.class);
 
     // private final static String ALREADY_SSL = "__CONTEXT_ALREADY_SSL__";

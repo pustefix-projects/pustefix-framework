@@ -28,6 +28,10 @@ package de.schlund.pfixcore.util.email;
 
 public class EmailSenderException extends Exception {
     
+    /**
+     * 
+     */
+    private static final long serialVersionUID = -4067731464316109717L;
     private String message_;
     
     public EmailSenderException(String message) {

@@ -34,6 +34,10 @@ import java.util.Iterator;
  */
 public class Configuration implements Serializable {
 
+    /**
+     * 
+     */
+    private static final long serialVersionUID = -5274532932784945904L;
     private GlobalServiceConfig globConf;
     private HashMap<String,ServiceConfig> srvsConf;
     

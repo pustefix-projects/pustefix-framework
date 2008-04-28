@@ -38,6 +38,11 @@ import de.schlund.pfixcore.webservice.fault.FaultHandler;
  */
 public class ServiceConfig implements Serializable {
 
+    /**
+     * 
+     */
+    private static final long serialVersionUID = -7058920718918701708L;
+
     private GlobalServiceConfig    globConf;
 
     private String                 name;

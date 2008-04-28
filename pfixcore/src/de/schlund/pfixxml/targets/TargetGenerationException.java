@@ -36,6 +36,10 @@ import de.schlund.pfixxml.util.Xml;
  */
 public class TargetGenerationException extends Exception {
 
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 9097944294112810557L;
     private String targetkey;
 
     public TargetGenerationException() {

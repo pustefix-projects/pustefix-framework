@@ -8,7 +8,12 @@ package de.schlund.pfixcore.webservice;
 
 public class ServiceProcessingException extends ServiceException {
 
-	public ServiceProcessingException(String msg) {
+	/**
+     * 
+     */
+    private static final long serialVersionUID = -5587167087434915343L;
+
+    public ServiceProcessingException(String msg) {
 		super(msg);
 	}
 	

@@ -35,7 +35,11 @@ import org.w3c.dom.Document;
  * Window - Preferences - Java - Code Generation - Code and Comments
  */
 public class ExceptionDataValue implements Serializable {
-	private Throwable throwable;
+	/**
+     * 
+     */
+    private static final long serialVersionUID = -5172124447163345126L;
+    private Throwable throwable;
 	private String scheme;
 	private String servername;
 	private int port;

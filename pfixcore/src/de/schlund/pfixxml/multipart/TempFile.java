@@ -31,6 +31,11 @@ import java.net.URI;
  */
 public class TempFile extends File {
 
+    /**
+     * 
+     */
+    private static final long serialVersionUID = -5489856878726432493L;
+
     public TempFile(File parent,String child) {
         super(parent,child);
     }

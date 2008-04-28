@@ -24,6 +24,10 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class SessionData implements Serializable {
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 1211421548094778389L;
     private final String  id;
     private final long    creation;
     private long          lastaccess;

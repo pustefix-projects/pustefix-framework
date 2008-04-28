@@ -23,7 +23,12 @@ package de.schlund.pfixcore.webservice;
  */
 public class ServiceException extends Exception {
 
-	public ServiceException(String msg) {
+	/**
+     * 
+     */
+    private static final long serialVersionUID = 5826581106091013707L;
+
+    public ServiceException(String msg) {
 		super(msg);
 	}
 	

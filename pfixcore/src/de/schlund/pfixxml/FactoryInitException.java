@@ -23,6 +23,10 @@ package de.schlund.pfixxml;
  */
 public class FactoryInitException extends Exception {
 
+    /**
+     * 
+     */
+    private static final long serialVersionUID = -9023967631132434239L;
     private String factoryName;
     
     public FactoryInitException(String factoryName,Throwable cause) {

@@ -69,6 +69,10 @@ import de.schlund.pfixxml.resources.FileResource;
  * @version $Id$
  */
 public class DirectOutputServlet extends ServletManager {
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 3166699545392707021L;
     private Logger                    LOG       = Logger.getLogger(this.getClass());
     private String                    ext_cname = null;
     private DirectOutputPageMap       pagemap   = null;

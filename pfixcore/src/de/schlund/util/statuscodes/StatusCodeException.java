@@ -20,6 +20,11 @@
 package de.schlund.util.statuscodes;
 
 public class StatusCodeException extends RuntimeException {
+    /**
+     * 
+     */
+    private static final long serialVersionUID = -3312773159624163089L;
+
     public StatusCodeException() {
         super();
     }

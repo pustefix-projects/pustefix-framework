@@ -28,6 +28,11 @@ import java.util.EventObject;
  */
 public class ConfigurationChangeEvent extends EventObject {
 
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 1372729919258707370L;
+
     public ConfigurationChangeEvent(Object source) {
         super(source);
     }

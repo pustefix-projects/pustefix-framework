@@ -105,6 +105,10 @@ public class CacheValueLRU<K,V> implements Map<K, V> {
     }
 
     private class CacheValueLRUStack extends LinkedHashMap<V,Object> {
+        /**
+         * 
+         */
+        private static final long serialVersionUID = -3997081171690331330L;
         private int maxsize = 1;
         
         public CacheValueLRUStack(int maxsize) {

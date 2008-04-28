@@ -26,6 +26,11 @@ package de.schlund.pfixcore.editor2.core.exception;
  */
 public class EditorIncludeHasChangedException extends EditorException {
 
+    /**
+     * 
+     */
+    private static final long serialVersionUID = -1940266869207320438L;
+
     private String merged;
 
     private String hash;
