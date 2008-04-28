@@ -360,7 +360,7 @@ public class IWrapperContainerImpl implements IWrapperContainer {
             
             // CAUTION! this is only for backwards compatibility with the SELWRP command,
             // this is handled exactly the same as the SUBWRP above!
-            if (action != null) {
+            if (action == null) {
                 String[] selwrappers = reqdata.getCommands(SELECT_WRAPPER);
                 if (selwrappers != null) {
                     for (int i = 0; i < selwrappers.length; i++) {
