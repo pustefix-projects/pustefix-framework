@@ -23,7 +23,7 @@
               <ixsl:sort select="./@name"/>
               <li>
                 <pfx:button jumptopage="home" mode="force" normalclass="editor_submit">
-                  <pfx:command name="SELWRP">selectproject</pfx:command>
+                  <pfx:command name="SUBWRP">selectproject</pfx:command>
                   <pfx:argument name="selectproject.ProjectName"><ixsl:value-of select="./@name"/></pfx:argument>
                   <ixsl:value-of select="./@comment"/>
                 </pfx:button>

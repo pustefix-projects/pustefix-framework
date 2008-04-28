@@ -1,3 +1,9 @@
+2008-04-28  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixcore/workflow/PageFlowContext.java (getPfixServletRequest): 
+	(getContextResourceManager): added those methods to PageFlowContext to give more information
+	to a possible new implementation of the PageFlow interface
+
 2008-04-28  Martin Leidig  <mleidig@schlund.de>
 
 	Removed toXML method from Condition interface and Condition implementations.

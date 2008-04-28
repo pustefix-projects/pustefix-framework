@@ -52,7 +52,7 @@ import de.schlund.pfixxml.config.ContextConfig;
 import de.schlund.pfixxml.config.PageRequestConfig;
 import de.schlund.util.statuscodes.StatusCode;
 
-public class ContextImpl implements Context, AccessibilityChecker, ExtendedContext, PageFlowContext, TokenManager, HttpSessionBindingListener {
+public class ContextImpl implements AccessibilityChecker, ExtendedContext, TokenManager, HttpSessionBindingListener {
 
     /**
      * Implementation of the session part of the context used by
@@ -62,23 +62,18 @@ public class ContextImpl implements Context, AccessibilityChecker, ExtendedConte
      * @author Sebastian Marsching <sebastian.marsching@1und1.de>
      */
     private class SessionContextImpl {
-        private HttpSession            session;
-        private Variant                variant          = null;
-        private String                 visitId          = null;
+        private HttpSession                session;
+        private Variant                    variant      = null;
+        private String                     visitId      = null;
         private ContextResourceManagerImpl crm;
-        private SessionEndNotificator  sessionEndNotificator;
-        private Authentication authentication;
+        private SessionEndNotificator      sessionEndNotificator;
+        private Authentication             authentication;
+        private Set<String>                visitedPages = Collections.synchronizedSet(new HashSet<String>());
+        private Map<String, String>        tokens;
 
-        // private Map<NavigationElement, Integer> navigationMap = new
-        // HashMap<NavigationElement, Integer>();
-        private Set<String>            visitedPages     = Collections.synchronizedSet(new HashSet<String>());
-        
-        private Map<String,String>          tokens;
-
-        
         private class SessionEndNotificator implements HttpSessionBindingListener {
             private LinkedHashSet<SessionStatusListener> sessionListeners = new LinkedHashSet<SessionStatusListener>();
-            
+
             public void valueBound(HttpSessionBindingEvent ev) {
                 // Ignore this event
             }
@@ -92,12 +87,12 @@ public class ContextImpl implements Context, AccessibilityChecker, ExtendedConte
                 }
             }
         }
-        
+
         public SessionContextImpl(HttpSession session) {
             this.session = session;
             this.crm = new ContextResourceManagerImpl();
-            synchronized(this.getClass()) {
-                this.sessionEndNotificator = (SessionEndNotificator) this.session.getAttribute("de.schlund.pfixcore.workflow.ContextImpl.SessionContextImpl.dummylistenerobject"); 
+            synchronized (this.getClass()) {
+                this.sessionEndNotificator = (SessionEndNotificator) this.session.getAttribute("de.schlund.pfixcore.workflow.ContextImpl.SessionContextImpl.dummylistenerobject");
                 if (this.sessionEndNotificator == null) {
                     this.sessionEndNotificator = new SessionEndNotificator();
                     this.session.setAttribute("de.schlund.pfixcore.workflow.ContextImpl.SessionContextImpl.dummylistenerobject", this.sessionEndNotificator);
@@ -108,10 +103,11 @@ public class ContextImpl implements Context, AccessibilityChecker, ExtendedConte
         private void init(Context context) throws PustefixApplicationException, PustefixCoreException {
             this.authentication = new AuthenticationImpl(getContextConfig().getRoleProvider());
             List<Role> roles = getContextConfig().getRoleProvider().getRoles();
-            if(roles!=null) {
-            	for(Role role:roles) {
-            	    if(role.isInitial()) authentication.addRole(role.getName());
-            	}
+            if (roles != null) {
+                for (Role role : roles) {
+                    if (role.isInitial())
+                        authentication.addRole(role.getName());
+                }
             }
             crm.init(context, context.getContextConfig());
         }
@@ -158,31 +154,34 @@ public class ContextImpl implements Context, AccessibilityChecker, ExtendedConte
         public boolean isVisitedPage(String pagename) {
             return visitedPages.contains(pagename);
         }
-        
+
         public void invalidateToken(String tokenName) {
-            synchronized(this) {
-                if(tokens!=null) tokens.remove(tokenName);
+            synchronized (this) {
+                if (tokens != null)
+                    tokens.remove(tokenName);
             }
         }
-        
-        public boolean isValidToken(String tokenName,String token) {
-            synchronized(this) {
-                if(tokens==null) return false;
-                String storedToken=tokens.get(tokenName);
-                return storedToken!=null && storedToken.equals(token);
+
+        public boolean isValidToken(String tokenName, String token) {
+            synchronized (this) {
+                if (tokens == null)
+                    return false;
+                String storedToken = tokens.get(tokenName);
+                return storedToken != null && storedToken.equals(token);
             }
         }
-        
+
         public String getToken(String tokenName) {
-            synchronized(this) {
-                if(tokens==null) tokens=new LinkedHashMap<String,String>();
-                String token=TokenUtils.createRandomToken();
-                if(tokens.size()>25) {
-                    Iterator<String> it=tokens.keySet().iterator();
+            synchronized (this) {
+                if (tokens == null)
+                    tokens = new LinkedHashMap<String, String>();
+                String token = TokenUtils.createRandomToken();
+                if (tokens.size() > 25) {
+                    Iterator<String> it = tokens.keySet().iterator();
                     it.next();
                     it.remove();
                 }
-                tokens.put(tokenName,token);
+                tokens.put(tokenName, token);
                 return token;
             }
         }
@@ -190,7 +189,7 @@ public class ContextImpl implements Context, AccessibilityChecker, ExtendedConte
         public Authentication getAuthentication() {
             return authentication;
         }
-        
+
         @Override
         public String toString() {
             StringBuffer contextbuf = new StringBuffer("\n");
@@ -208,7 +207,7 @@ public class ContextImpl implements Context, AccessibilityChecker, ExtendedConte
         public void markSessionForCleanup() {
             this.session.setAttribute(AbstractXMLServlet.SESS_CLEANUP_FLAG_STAGE1, true);
         }
-        
+
         public void addSessionStatusListener(SessionStatusListener l) {
             synchronized (this.sessionEndNotificator) {
                 if (!sessionEndNotificator.sessionListeners.contains(l)) {
@@ -216,18 +215,18 @@ public class ContextImpl implements Context, AccessibilityChecker, ExtendedConte
                 }
             }
         }
-        
+
         public void removeSessionStatusListener(SessionStatusListener l) {
             synchronized (this.sessionEndNotificator) {
                 sessionEndNotificator.sessionListeners.remove(l);
             }
         }
     }
-    
-    private SessionContextImpl sessioncontext;
-    private ServerContextImpl servercontext;
+
+    private SessionContextImpl              sessioncontext;
+    private ServerContextImpl               servercontext;
     private ThreadLocal<RequestContextImpl> requestcontextstore = new ThreadLocal<RequestContextImpl>();
-    
+
     public ContextImpl(ServerContextImpl servercontext, HttpSession session) throws PustefixApplicationException, PustefixCoreException {
         this.servercontext = servercontext;
         this.sessioncontext = new SessionContextImpl(session);
@@ -254,9 +253,9 @@ public class ContextImpl implements Context, AccessibilityChecker, ExtendedConte
         getRequestContextForCurrentThreadWithError().addPageMessage(scode, args, level);
     }
 
-//    public boolean isPageFlowRunning() {
-//        return getRequestContextForCurrentThreadWithError().isPageFlowRunning();
-//    }
+    // public boolean isPageFlowRunning() {
+    // return getRequestContextForCurrentThreadWithError().isPageFlowRunning();
+    // }
 
     public boolean precedingFlowNeedsData() throws PustefixApplicationException {
         return getRequestContextForCurrentThreadWithError().precedingFlowNeedsData();
@@ -274,9 +273,9 @@ public class ContextImpl implements Context, AccessibilityChecker, ExtendedConte
         return sessioncontext.getContextResourceManager();
     }
 
-//    public PageFlow getCurrentPageFlow() {
-//        return getRequestContextForCurrentThreadWithError().getCurrentPageFlow();
-//    }
+    // public PageFlow getCurrentPageFlow() {
+    // return getRequestContextForCurrentThreadWithError().getCurrentPageFlow();
+    // }
 
     public PageRequest getCurrentPageRequest() {
         return getRequestContextForCurrentThreadWithError().getCurrentPageRequest();
@@ -289,7 +288,7 @@ public class ContextImpl implements Context, AccessibilityChecker, ExtendedConte
     public String getLanguage() {
         return getRequestContextForCurrentThreadWithError().getLanguage();
     }
-    
+
     public String getSessionLanguage() {
         return sessioncontext.getLanguage();
     }
@@ -314,14 +313,10 @@ public class ContextImpl implements Context, AccessibilityChecker, ExtendedConte
         return getRequestContextForCurrentThreadWithError().getPropertiesForCurrentPageRequest();
     }
 
-    public Cookie[] getRequestCookies() {
-        return getRequestContextForCurrentThreadWithError().getRequestCookies();
-    }
-
     public Variant getVariant() {
         return getRequestContextForCurrentThreadWithError().getVariant();
     }
-    
+
     public Variant getSessionVariant() {
         return sessioncontext.getVariant();
     }
@@ -330,9 +325,10 @@ public class ContextImpl implements Context, AccessibilityChecker, ExtendedConte
         return sessioncontext.getVisitId();
     }
 
-//    public boolean isCurrentPageRequestInCurrentFlow() {
-//        return getRequestContextForCurrentThreadWithError().isCurrentPageRequestInCurrentFlow();
-//    }
+    // public boolean isCurrentPageRequestInCurrentFlow() {
+    // return
+    // getRequestContextForCurrentThreadWithError().isCurrentPageRequestInCurrentFlow();
+    // }
 
     public boolean isJumpToPageFlowSet() {
         return getRequestContextForCurrentThreadWithError().isJumpToPageFlowSet();
@@ -361,7 +357,7 @@ public class ContextImpl implements Context, AccessibilityChecker, ExtendedConte
     public void setJumpToPageFlow(String pageflow) {
         getRequestContextForCurrentThreadWithError().setJumpToPageFlow(pageflow);
     }
-    
+
     public void setLanguage(String lang) {
         getRequestContextForCurrentThreadWithError().setLanguage(lang);
         sessioncontext.setLanguage(lang);
@@ -379,7 +375,7 @@ public class ContextImpl implements Context, AccessibilityChecker, ExtendedConte
     public boolean stateMustSupplyFullDocument() {
         return getRequestContextForCurrentThreadWithError().stateMustSupplyFullDocument();
     }
-    
+
     public boolean isPageAccessible(String pagename) throws Exception {
         RequestContextImpl requestcontext = getRequestContextForCurrentThreadWithError();
         if (getContextConfig().isSynchronized()) {
@@ -394,23 +390,23 @@ public class ContextImpl implements Context, AccessibilityChecker, ExtendedConte
     public boolean isPageAlreadyVisited(String pagename) throws Exception {
         return sessioncontext.isVisitedPage(pagename);
     }
-    
+
     public void addVisitedPage(String pagename) {
         sessioncontext.addVisitedPage(pagename);
     }
-    
+
     // ----------------
 
     public void setServerContext(ServerContextImpl servercontext) {
         // Update current configuration
         this.servercontext = servercontext;
     }
-    
+
     public void prepareForRequest() {
         // This allows to use OLDER servercontexts during requests
         requestcontextstore.set(new RequestContextImpl(servercontext, this));
     }
-    
+
     public SPDocument handleRequest(PfixServletRequest preq) throws PustefixApplicationException, PustefixCoreException {
         if (getContextConfig().isSynchronized()) {
             synchronized (this) {
@@ -420,33 +416,33 @@ public class ContextImpl implements Context, AccessibilityChecker, ExtendedConte
             return getRequestContextForCurrentThreadWithError().handleRequest(preq);
         }
     }
-    
+
     public void cleanupAfterRequest() {
         requestcontextstore.set(null);
     }
-    
+
     // Used by TransformerCallback to set the right RequestContextImpl when
     // rendering a page
     public void setRequestContextForCurrentThread(RequestContextImpl requestcontext) {
         requestcontextstore.set(requestcontext);
     }
-    
+
     public void invalidateToken(String token) {
         sessioncontext.invalidateToken(token);
     }
-    
+
     public String getToken(String tokenName) {
         return sessioncontext.getToken(tokenName);
     }
-    
-    public boolean isValidToken(String tokenName,String token) {
-        return sessioncontext.isValidToken(tokenName,token);
+
+    public boolean isValidToken(String tokenName, String token) {
+        return sessioncontext.isValidToken(tokenName, token);
     }
-    
+
     public Authentication getAuthentication() {
         return sessioncontext.getAuthentication();
     }
-    
+
     @Override
     public String toString() {
         RequestContextImpl requestcontext = getRequestContextForCurrentThread();
@@ -458,7 +454,7 @@ public class ContextImpl implements Context, AccessibilityChecker, ExtendedConte
     }
 
     // --------------
-    
+
     private RequestContextImpl getRequestContextForCurrentThread() {
         return requestcontextstore.get();
     }
@@ -470,7 +466,7 @@ public class ContextImpl implements Context, AccessibilityChecker, ExtendedConte
         }
         return requestcontext;
     }
-    
+
     private ServerContextImpl getServerContext() {
         RequestContextImpl requestcontext = getRequestContextForCurrentThread();
         if (requestcontext != null) {
@@ -479,7 +475,7 @@ public class ContextImpl implements Context, AccessibilityChecker, ExtendedConte
             return servercontext;
         }
     }
-    
+
     public void markSessionForCleanup() {
         this.sessioncontext.markSessionForCleanup();
     }
@@ -493,7 +489,7 @@ public class ContextImpl implements Context, AccessibilityChecker, ExtendedConte
     }
 
     // Notification on session binding / unbinding
-    
+
     public void valueBound(HttpSessionBindingEvent ev) {
         this.sessioncontext.session = ev.getSession();
     }
@@ -505,17 +501,17 @@ public class ContextImpl implements Context, AccessibilityChecker, ExtendedConte
     }
 
     public boolean checkIsAccessible(String pagename) throws PustefixApplicationException {
-    	PageRequest page = createPageRequest(pagename);
-    	return checkIsAccessible(page);
+        PageRequest page = createPageRequest(pagename);
+        return checkIsAccessible(page);
     }
-    
+
     public boolean checkIsAccessible(PageRequest page) throws PustefixApplicationException {
         return getRequestContextForCurrentThreadWithError().checkIsAccessible(page);
     }
 
     public boolean checkNeedsData(String pagename) throws PustefixApplicationException {
-    	PageRequest page = createPageRequest(pagename);
-    	return checkNeedsData(page);
+        PageRequest page = createPageRequest(pagename);
+        return checkNeedsData(page);
     }
 
     public boolean checkNeedsData(PageRequest page) throws PustefixApplicationException {

@@ -24,7 +24,6 @@ import javax.servlet.http.Cookie;
 
 import de.schlund.pfixcore.auth.Authentication;
 import de.schlund.pfixcore.exception.PustefixApplicationException;
-import de.schlund.pfixxml.PfixServletRequest;
 import de.schlund.pfixxml.Variant;
 import de.schlund.pfixxml.config.ContextConfig;
 import de.schlund.pfixxml.config.PageRequestConfig;
@@ -34,71 +33,67 @@ import de.schlund.util.statuscodes.StatusCode;
  * 
  * @author Sebastian Marsching <sebastian.marsching@1und1.de>
  */
-public interface Context {
-    ContextResourceManager getContextResourceManager();
-    Properties             getProperties();
-    Properties             getPropertiesForCurrentPageRequest();
-    Properties             getPropertiesForContextResource(Object res);
-    Authentication         getAuthentication();
-    ContextConfig          getContextConfig();
-    PageRequestConfig      getConfigForCurrentPageRequest();
-    PageRequest            createPageRequest(String name);
-    PageRequest            getCurrentPageRequest();
-    PageRequestStatus      getCurrentStatus();
-    PfixServletRequest     getPfixServletRequest();
-    
-    boolean                checkIsAccessible(PageRequest page) throws PustefixApplicationException;
-    boolean                checkNeedsData(PageRequest page) throws PustefixApplicationException;
+public interface Context extends PageFlowContext {
+    Properties getProperties();
+    Properties getPropertiesForCurrentPageRequest();
+    Properties getPropertiesForContextResource(Object res);
+    Authentication getAuthentication();
+    ContextConfig getContextConfig();
+    PageRequestConfig getConfigForCurrentPageRequest();
+    PageRequest createPageRequest(String name);
+    PageRequest getCurrentPageRequest();
+    PageRequestStatus getCurrentStatus();
 
-    void                   setCurrentPageFlow(String pageflow);
-    
-    void                   setJumpToPage(String pagename);
-    void                   setJumpToPageFlow(String pageflow);
-    boolean                isJumpToPageSet();
-    boolean                isJumpToPageFlowSet();
-    
-    void                   prohibitContinue();
-    boolean                isProhibitContinueSet();
+    boolean checkIsAccessible(PageRequest page) throws PustefixApplicationException;
+    boolean checkNeedsData(PageRequest page) throws PustefixApplicationException;
 
-    boolean                precedingFlowNeedsData() throws PustefixApplicationException;
-    // boolean                isCurrentPageRequestInCurrentFlow();
-    boolean                stateMustSupplyFullDocument();
-    
-    void                   setVariant(Variant variant);
-    void                   setVariantForThisRequestOnly(Variant variant);
-    Variant                getVariant();
-    
-    void                   setLanguage(String lang);
-    String                 getLanguage();
+    void setCurrentPageFlow(String pageflow);
 
-    void                   addCookie(Cookie cookie);
-    Cookie[]               getRequestCookies();
+    void setJumpToPage(String pagename);
+    boolean isJumpToPageSet();
+    void setJumpToPageFlow(String pageflow);
+    boolean isJumpToPageFlowSet();
+    void prohibitContinue();
+    boolean isProhibitContinueSet();
 
-    String                 getName();
-    Throwable              getLastException();
-    String                 getVisitId();
+    boolean precedingFlowNeedsData() throws PustefixApplicationException;
+    // boolean isCurrentPageRequestInCurrentFlow();
+    boolean stateMustSupplyFullDocument();
 
-    void                   addPageMessage(StatusCode scode);
-    void                   addPageMessage(StatusCode scode, String level);
-    void                   addPageMessage(StatusCode scode, String[] args);
-    void                   addPageMessage(StatusCode scode, String[] args, String level);
+    void setVariant(Variant variant);
+    void setVariantForThisRequestOnly(Variant variant);
+    Variant getVariant();
 
-    void                   addSessionStatusListener(SessionStatusListener l);
-    void                   removeSessionStatusListener(SessionStatusListener l);
-    
+    void setLanguage(String lang);
+    String getLanguage();
+
+    void addCookie(Cookie cookie);
+
+    String getName();
+    Throwable getLastException();
+    String getVisitId();
+
+    void addPageMessage(StatusCode scode);
+    void addPageMessage(StatusCode scode, String level);
+    void addPageMessage(StatusCode scode, String[] args);
+    void addPageMessage(StatusCode scode, String[] args, String level);
+
+    void addSessionStatusListener(SessionStatusListener l);
+    void removeSessionStatusListener(SessionStatusListener l);
+
     /**
-     * Tells the servlet that the session for this context is not longer needed 
-     * and can be deleted. However, there is no guarantee <b>when</b> the session
-     * will be deleted. Usually, there will be some delay, between the call of
-     * this method and the actual invalidation taking place, so the output page
-     * of the current request can still be rendered.
-     * <b>Do not use this method if you are concerned about security!</b> As the
-     * session is not invalidated immediately, session data is still available for
-     * some time after calling this method. If you keep sensitive data in the
-     * session (e.g. login data), you should reset the corresponding context
-     * resources instead of using this method. This method is only provided for
-     * memory reasons (so that memory allocated by this session can be freed, if
-     * it is not needed any more). 
+     * Tells the servlet that the session for this context is not longer needed
+     * and can be deleted. However, there is no guarantee <b>when</b> the
+     * session will be deleted. Usually, there will be some delay, between the
+     * call of this method and the actual invalidation taking place, so the
+     * output page of the current request can still be rendered. <b>Do not use
+     * this method if you are concerned about security!</b> As the session is
+     * not invalidated immediately, session data is still available for some
+     * time after calling this method. If you keep sensitive data in the session
+     * (e.g. login data), you should reset the corresponding context resources
+     * instead of using this method. This method is only provided for memory
+     * reasons (so that memory allocated by this session can be freed, if it is
+     * not needed any more).
      */
-    void                   markSessionForCleanup();
+    void markSessionForCleanup();
 }

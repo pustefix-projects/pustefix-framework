@@ -11,8 +11,5 @@ import de.schlund.pfixxml.SPDocument;
  * @author Sebastian Marsching <sebastian.marsching@1und1.de>
  */
 public interface ExtendedContext extends Context {
-
-	SPDocument handleRequest(PfixServletRequest preq)
-			throws PustefixApplicationException, PustefixCoreException;
-
+    SPDocument handleRequest(PfixServletRequest preq) throws PustefixApplicationException, PustefixCoreException;
 }
