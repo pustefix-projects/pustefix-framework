@@ -3,6 +3,7 @@ package de.schlund.pfixcore.util;
 import java.io.StringWriter;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -233,13 +234,13 @@ public class TransformerCallback {
             Document doc = db.newDocument();
             Element root = doc.createElement("roles");
             doc.appendChild(root);
-            Map<String, Role> configuredroles = context.getContextConfig().getRoles();
+            List<Role> configuredRoles = context.getContextConfig().getRoleProvider().getRoles();
             HashSet<Role> currentroles = new HashSet<Role>();
             if (context.getAuthentication() != null && context.getAuthentication().getRoles() != null) {
                 currentroles.addAll(Arrays.asList(context.getAuthentication().getRoles()));
             }
             
-            for (Role role : configuredroles.values()) {
+            for (Role role : configuredRoles) {
                 Element elem = doc.createElement("role");
                 elem.setAttribute("name", role.getName());
                 elem.setAttribute("initial", Boolean.toString(role.isInitial()));

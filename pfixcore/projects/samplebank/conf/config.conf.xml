@@ -20,10 +20,12 @@
     </resource>
   </context>
 
-  <role name="ANONYMOUS" initial="true" />
-  <role name="UNRESTRICTED" />
-  <role name="ACCOUNT" />
-
+  <roleprovider class="de.schlund.pfixcore.example.bank.BankRoleProvider"/>
+  
+  <role name="ANONYMOUS" initial="true"/>
+  <role name="UNRESTRICTED"/>
+  <role name="ACCOUNT"/>
+  
   <condition id="isPremiumCustomer" class="de.schlund.pfixcore.example.bank.PremiumCustomerCondition">
     <property name="limit" value="10000"/>
   </condition>
@@ -101,5 +103,8 @@
     <state class="de.schlund.pfixcore.example.bank.LogoutState" />
   </pagerequest>
 
+  <properties>
+    <prop name="adminmode">true</prop>
+  </properties>
 
 </contextxmlserver>

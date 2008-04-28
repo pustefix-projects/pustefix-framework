@@ -23,38 +23,44 @@ import java.util.Map;
 
 import org.xml.sax.Attributes;
 
-import de.schlund.pfixcore.auth.RoleImpl;
+import de.schlund.pfixcore.auth.RoleProvider;
 
 /**
  * @author mleidig@schlund.de
  */
-public class RoleRule extends CheckedRule {
+public class RoleProviderRule extends CheckedRule {
     private ContextXMLServletConfigImpl config;
 
-    public RoleRule(ContextXMLServletConfigImpl config) {
+    public RoleProviderRule(ContextXMLServletConfigImpl config) {
         this.config = config;
     }
 
     public void begin(String namespace, String name, Attributes attributes) throws Exception {
         check(namespace, name, attributes);
-        String roleName = attributes.getValue("name");
-        boolean initial=false;
-        String initialStr = attributes.getValue("initial");
-        if(initialStr!=null) initial=Boolean.parseBoolean(initialStr);
-        RoleImpl role=new RoleImpl(roleName,initial);
-        getDigester().push(role);
-        config.getContextConfig().getRoleProvider().addRole(role);
+        String className = attributes.getValue("class");
+        if (className == null || className.trim().equals("")) throw new Exception("Element 'roleprovider' requires 'class' attribute.");
+        try {
+            Class<?> clazz = Class.forName(className);
+            if (!RoleProvider.class.isAssignableFrom(clazz))
+                throw new Exception("Class '" + className + "' doesn't implement the RoleProvider interface.");
+            RoleProvider roleProvider = (RoleProvider) clazz.newInstance();
+            config.getContextConfig().addCustomRoleProvider(roleProvider);
+        } catch (ClassNotFoundException x) {
+            throw new Exception("RoleProvider class not found: " + className);
+        } catch (InstantiationException x) {
+            throw new Exception("RoleProvider class can't be instantiated: " + className, x);
+        } catch (IllegalAccessException x) {
+            throw new Exception("RoleProvider class can't be instantiated: " + className, x);
+        }
     }
-    
+
     public void end(String namespace, String name) throws Exception {
-        this.getDigester().pop();
     }
-    
+
     protected Map<String, Boolean> wantsAttributes() {
         HashMap<String, Boolean> atts = new HashMap<String, Boolean>();
-        atts.put("name", true);
-        atts.put("initial", false);
+        atts.put("class", true);
         return atts;
     }
-    
+
 }

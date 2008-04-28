@@ -23,6 +23,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
@@ -105,9 +106,12 @@ public class ContextImpl implements Context, AccessibilityChecker, ExtendedConte
         }
 
         private void init(Context context) throws PustefixApplicationException, PustefixCoreException {
-            this.authentication = new AuthenticationImpl(servercontext);
-            if(getContextConfig().hasRoles()) {
-            	for(Role role:getContextConfig().getInitialRoles()) this.authentication.addRole(role.getName());
+            this.authentication = new AuthenticationImpl(getContextConfig().getRoleProvider());
+            List<Role> roles = getContextConfig().getRoleProvider().getRoles();
+            if(roles!=null) {
+            	for(Role role:roles) {
+            	    if(role.isInitial()) authentication.addRole(role.getName());
+            	}
             }
             crm.init(context, context.getContextConfig());
         }

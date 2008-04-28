@@ -39,13 +39,6 @@ public class AuthenticationImpl implements Authentication {
         roles = new TreeMap<String, Role>();
     }
 
-    public AuthenticationImpl(RoleProvider roleProvider, String[] roleNames, boolean authenticated) {
-        this(roleProvider);
-        for (String roleName : roleNames) {
-            roles.put(roleName, roleProvider.getRole(roleName));
-        }
-    }
-
     public synchronized Role[] getRoles() {
         Role[] rolesCopy = new Role[roles.size()];
         roles.values().toArray(rolesCopy);

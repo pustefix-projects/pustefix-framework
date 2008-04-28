@@ -27,7 +27,6 @@ import org.w3c.dom.Element;
 
 import de.schlund.pfixcore.auth.AuthConstraint;
 import de.schlund.pfixcore.auth.Condition;
-import de.schlund.pfixcore.auth.Role;
 import de.schlund.pfixcore.auth.RoleProvider;
 import de.schlund.pfixcore.workflow.ContextInterceptor;
 import de.schlund.pfixcore.workflow.State;
@@ -145,10 +144,6 @@ public interface ContextConfig {
      */
     boolean isSynchronized();
 
-    Role getRole(String roleName);
-    Map<String,Role> getRoles();
-    List<Role> getInitialRoles();
-    boolean hasRoles();
     RoleProvider getRoleProvider();
     AuthConstraint getDefaultAuthConstraint();
     AuthConstraint getAuthConstraint(String id);

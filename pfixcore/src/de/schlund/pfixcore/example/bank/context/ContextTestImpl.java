@@ -5,16 +5,25 @@ import java.util.Collection;
 
 import org.w3c.dom.Element;
 
+import de.schlund.pfixcore.beans.InitResource;
 import de.schlund.pfixcore.beans.InsertStatus;
 import de.schlund.pfixcore.example.bank.AuthTokenManager;
 import de.schlund.pfixcore.example.bank.BankApplication;
 import de.schlund.pfixcore.example.bank.model.Account;
 import de.schlund.pfixcore.example.bank.model.BankDAO;
 import de.schlund.pfixcore.example.bank.model.Customer;
+import de.schlund.pfixcore.workflow.Context;
 import de.schlund.pfixxml.ResultDocument;
 
 public class ContextTestImpl implements ContextTest {
 
+    @InitResource
+    public void init(Context context) {
+        String prop = context.getProperties().getProperty("adminmode");
+        if(prop != null && Boolean.parseBoolean(prop)) 
+            context.getAuthentication().addRole("ADMIN");
+    }
+    
     @InsertStatus
     public void serialize(ResultDocument resdoc, Element elem) throws Exception {
         BankDAO bankDAO = BankApplication.getInstance().getBankDAO();
