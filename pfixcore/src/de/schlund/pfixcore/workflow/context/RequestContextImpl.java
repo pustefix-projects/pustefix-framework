@@ -94,7 +94,8 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
     private PageRequest currentpagerequest = null;
     private PageFlow currentpageflow = null;
     private PfixServletRequest currentpservreq = null;
-
+    private PageRequestStatus currentstatus = PageRequestStatus.UNDEF;
+    
     private String jumptopage = null;
     private String jumptopageflow = null;
 
@@ -135,6 +136,10 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
 
     public PageRequest getCurrentPageRequest() {
         return currentpagerequest;
+    }
+
+    public PageRequestStatus getCurrentStatus() {
+        return currentstatus;
     }
 
 //    public PageFlow getCurrentPageFlow() {
@@ -232,31 +237,24 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
             throw new RuntimeException("*** no current pageflow is set");   
         }
         
-        if (!currentpageflow.containsPage(currentpagerequest.getRootName(), this.parentcontext)) {
+        if (!currentpageflow.containsPage(currentpagerequest.getRootName())) {
             throw new RuntimeException("*** current pageflow " + currentpageflow.getName() + " does not contain current pagerequest " + currentpagerequest);
         }
 
-        return currentpageflow.precedingFlowNeedsData(this.parentcontext);
+        return currentpageflow.precedingFlowNeedsData(this.parentcontext, currentpagerequest.getRootName());
     }
 
-//    public boolean jumpToPageIsRunning() {
+//    public boolean isPageFlowRunning() {
 //        if (currentpservreq == null) {
 //            throw new IllegalStateException("PageFlow information is only availabe during request handling");
-//  }
-//        return on_jumptopage;
+//        }
+//
+//        if (getCurrentStatus() == PageRequestStatus.WORKFLOW) {
+//            return true;
+//        } else {
+//            return false;
+//        }
 //    }
-
-    public boolean isPageFlowRunning() {
-        if (currentpservreq == null) {
-            throw new IllegalStateException("PageFlow information is only availabe during request handling");
-        }
-
-        if (currentpagerequest.getStatus() == PageRequestStatus.WORKFLOW) {
-            return true;
-        } else {
-            return false;
-        }
-    }
 
 //    public boolean isCurrentPageRequestInCurrentFlow() {
 //        if (currentpservreq == null) {
@@ -293,7 +291,7 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
             // We will use the returned document no matter what else happens.
             return true;
         }
-        if (currentpageflow != null && currentpageflow.hasHookAfterRequest(parentcontext)) {
+        if (currentpageflow != null && currentpageflow.hasHookAfterRequest(currentpagerequest.getRootName())) {
             // We need the full doc for the post processing no matter what else
             // happens.
             return true;
@@ -376,7 +374,7 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
         jumptopage = null;
         jumptopageflow = null;
         roleAuthDeps = null;
-
+        currentstatus = PageRequestStatus.SELECT;
 
         RequestParam swflow = currentpservreq.getRequestParam(PARAM_STARTWITHFLOW);
         boolean startwithflow = false;
@@ -491,7 +489,7 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
             if (lastflow != null) {
                 LOG.debug("     ...prefering flow [" + lastflow.getName() + "]...");
             }
-            currentpageflow = pageflowmanager.pageFlowToPageRequest(lastflow, currentpagerequest, getVariant(), parentcontext);
+            currentpageflow = pageflowmanager.pageFlowToPageRequest(lastflow, currentpagerequest, getVariant());
             if (currentpageflow != null) {
                 LOG.debug("     ...got pageflow [" + currentpageflow.getName() + "] as matching flow.");
             } else {
@@ -580,7 +578,7 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
             Element root = doc.createElement("pageflow");
             doc.getDocumentElement().appendChild(root);
             root.setAttribute("name", currentpageflow.getRootName());
-            currentpageflow.addPageFlowInfo(parentcontext, root);
+            currentpageflow.addPageFlowInfo(currentpagerequest.getRootName(), root);
         }
     }
 
@@ -627,12 +625,12 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
 
             // Now we need to make sure that the current page is accessible, and
             // take the right measures if not.
-            if (!checkIsAccessible(currentpagerequest, PageRequestStatus.SELECT)) {
+            if (!checkIsAccessible(currentpagerequest)) {
                 LOG.warn("[" + currentpagerequest + "]: not accessible! Trying default page.");
                 String defpage = parentcontext.getContextConfig().getDefaultPage();
                 currentpagerequest = createPageRequest(defpage);
-                currentpageflow = pageflowmanager.pageFlowToPageRequest(currentpageflow, currentpagerequest, variant, parentcontext);
-                if (!checkIsAccessible(currentpagerequest, PageRequestStatus.SELECT)) {
+                currentpageflow = pageflowmanager.pageFlowToPageRequest(currentpageflow, currentpagerequest, variant);
+                if (!checkIsAccessible(currentpagerequest)) {
                     throw new PustefixCoreException("Even default page [" + defpage + "] was not accessible! Bailing out.");
                 }
             }
@@ -649,20 +647,15 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
             } else if (jumptopage != null) {
                 LOG.debug("* [" + currentpagerequest + "] signalled success, jumptopage is set as [" + jumptopage + "].");
                 currentpagerequest = createPageRequest(jumptopage);
-                currentpagerequest.setStatus(PageRequestStatus.JUMP);
+                currentstatus = PageRequestStatus.JUMP;
                 if (jumptopageflow != null) {
                     setCurrentPageFlow(jumptopageflow);
                 } else {
-                    currentpageflow = pageflowmanager.pageFlowToPageRequest(currentpageflow, currentpagerequest, getVariant(), parentcontext);
+                    currentpageflow = pageflowmanager.pageFlowToPageRequest(currentpageflow, currentpagerequest, getVariant());
                 }
                 jumptopage = null; // we don't want to recurse infinitely
                 jumptopageflow = null; // we don't want to recurse infinitely
                 
-                // on_jumptopage = true; // we need this information to supress
-                // the interpretation of
-                // the request as one that submits data. See StateImpl,
-                // methods isSubmitTrigger & isDirectTrigger
-
                 LOG.debug("******* JUMPING to [" + currentpagerequest + "] *******\n");
                 document = documentFromFlow(false, stopnextforcurrentrequest);
             } else if (currentpageflow != null) {
@@ -686,12 +679,12 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
     private SPDocument runPageFlow(boolean startwithflow, boolean stopnextforcurrentrequest) throws PustefixApplicationException, PustefixCoreException {
         ResultDocument resdoc = null;
         SPDocument document = null;
+        currentstatus = PageRequestStatus.WORKFLOW;
 
-        String nextPage = currentpageflow.findNextPage(this.parentcontext, startwithflow, stopnextforcurrentrequest);
+        String nextPage = currentpageflow.findNextPage(this.parentcontext, currentpagerequest.getRootName(), startwithflow, stopnextforcurrentrequest);
         assert(nextPage != null);
-        
         currentpagerequest = createPageRequest(nextPage);
-        currentpagerequest.setStatus(PageRequestStatus.WORKFLOW);
+
         resdoc = documentFromCurrentStep();
         document = resdoc.getSPDocument();
         if (document == null) {
@@ -738,9 +731,9 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
     }
 
     private ResultDocument checkPageAuthorization() throws PustefixApplicationException, PustefixCoreException {
-        if (!parentcontext.getContextConfig().hasRoles()) return null;
+    	if (!parentcontext.getContextConfig().hasRoles()) return null;
         try {
-            checkAuthorization(parentcontext);
+        	checkAuthorization(parentcontext);
         } catch (AuthorizationException authEx) {
             String targetPage = authEx.getTarget();
             if (roleAuthDeps != null && roleAuthDeps.contains(targetPage)) {
@@ -763,7 +756,7 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
             if (localAuthPage == null) throw authEx;
             PageRequest saved = currentpagerequest;
             if (LOG.isDebugEnabled()) LOG.debug("===> [" + localAuthPage + "]: Checking authorisation");
-            if (!checkIsAccessible(localAuthPage, PageRequestStatus.AUTH)) {
+            if (!checkIsAccessible(localAuthPage)) {
                 throw new PustefixCoreException("*** Authorisation page [" + localAuthPage + "] is not accessible! ***");
             }
             if (LOG.isDebugEnabled()) LOG.debug("===> [" + localAuthPage + "]: Need authorisation data");
@@ -820,7 +813,6 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
         PageRequest saved = currentpagerequest;
         currentpagerequest = page;
         State state = getStateForPageRequest(page);
-        page.setStatus(PageRequestStatus.WORKFLOW);
 
         PerfEvent pe = new PerfEvent(PerfEventType.PAGE_NEEDSDATA, page.getName());
         pe.start();
@@ -836,12 +828,11 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
         return retval;
     }
 
-    public boolean checkIsAccessible(PageRequest page, PageRequestStatus status) throws PustefixApplicationException {
+    public boolean checkIsAccessible(PageRequest page) throws PustefixApplicationException {
         PageRequest saved = currentpagerequest;
         try {
             currentpagerequest = page;
             State state = getStateForPageRequest(page);
-            page.setStatus(status);
 
             PerfEvent pe = new PerfEvent(PerfEventType.PAGE_ISACCESSIBLE, page.getName());
             pe.start();
@@ -863,7 +854,7 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
         PageRequest page = createPageRequest(pagename);
         Variant currentvariant = getVariant();
         setVariantForThisRequestOnly(parentcontext.getSessionVariant());
-        boolean retval = checkIsAccessible(page, PageRequestStatus.SELECT);
+        boolean retval = checkIsAccessible(page);
         setVariantForThisRequestOnly(currentvariant);
         return retval;
     }
@@ -896,7 +887,7 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
         contextbuf.append("     PageRequest:   " + currentpagerequest + "\n");
         if (currentpagerequest != null) {
             contextbuf.append("       -> State: " + getStateForPageRequest(currentpagerequest) + "\n");
-            contextbuf.append("       -> Status: " + currentpagerequest.getStatus() + "\n");
+            contextbuf.append("       -> Status: " + getCurrentStatus() + "\n");
         }
 
         return contextbuf.toString();
@@ -906,10 +897,10 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
         RequestContextImpl copy = (RequestContextImpl) super.clone();
         if (currentpagerequest != null) {
             copy.currentpagerequest = new PageRequest(currentpagerequest.getName());
-            copy.currentpagerequest.setStatus(currentpagerequest.getStatus());
         }
         copy.cookielist = new ArrayList<Cookie>(cookielist);
         copy.messages = new HashSet<StatusCodeInfo>(messages);
+        copy.currentstatus = PageRequestStatus.UNDEF;
         return copy;
     }
 

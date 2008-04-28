@@ -24,6 +24,7 @@ import javax.servlet.http.Cookie;
 
 import de.schlund.pfixcore.auth.Authentication;
 import de.schlund.pfixcore.exception.PustefixApplicationException;
+import de.schlund.pfixxml.PfixServletRequest;
 import de.schlund.pfixxml.Variant;
 import de.schlund.pfixxml.config.ContextConfig;
 import de.schlund.pfixxml.config.PageRequestConfig;
@@ -41,8 +42,13 @@ public interface Context {
     Authentication         getAuthentication();
     ContextConfig          getContextConfig();
     PageRequestConfig      getConfigForCurrentPageRequest();
+    PageRequest            createPageRequest(String name);
     PageRequest            getCurrentPageRequest();
-    // PageFlow               getCurrentPageFlow();
+    PageRequestStatus      getCurrentStatus();
+    PfixServletRequest     getPfixServletRequest();
+    
+    boolean                checkIsAccessible(PageRequest page) throws PustefixApplicationException;
+    boolean                checkNeedsData(PageRequest page) throws PustefixApplicationException;
 
     void                   setCurrentPageFlow(String pageflow);
     
@@ -54,7 +60,6 @@ public interface Context {
     void                   prohibitContinue();
     boolean                isProhibitContinueSet();
 
-    boolean                isPageFlowRunning();
     boolean                precedingFlowNeedsData() throws PustefixApplicationException;
     // boolean                isCurrentPageRequestInCurrentFlow();
     boolean                stateMustSupplyFullDocument();

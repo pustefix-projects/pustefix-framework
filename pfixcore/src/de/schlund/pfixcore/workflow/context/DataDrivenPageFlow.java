@@ -28,10 +28,9 @@ import org.w3c.dom.Element;
 
 import de.schlund.pfixcore.exception.PustefixApplicationException;
 import de.schlund.pfixcore.exception.PustefixCoreException;
+import de.schlund.pfixcore.workflow.Context;
 import de.schlund.pfixcore.workflow.FlowStep;
 import de.schlund.pfixcore.workflow.PageFlowContext;
-import de.schlund.pfixcore.workflow.PageRequest;
-import de.schlund.pfixcore.workflow.PageRequestStatus;
 import de.schlund.pfixxml.ResultDocument;
 import de.schlund.pfixxml.config.PageFlowConfig;
 import de.schlund.pfixxml.config.PageFlowStepConfig;
@@ -73,8 +72,8 @@ public class DataDrivenPageFlow implements PageFlow {
         }
     }
 
-    public boolean containsPage(String page, PageFlowContext context) {
-        return stepmap.keySet().contains(page);
+    public boolean containsPage(String pagename) {
+        return stepmap.keySet().contains(pagename);
     }
 
 
@@ -103,46 +102,45 @@ public class DataDrivenPageFlow implements PageFlow {
         return ret;
     }
 
-    public String findNextPage(PageFlowContext context, boolean stopatcurrentpage, boolean stopatnextaftercurrentpage) throws PustefixApplicationException {
-        PageRequest currentpagerequest = context.getCurrentPageRequest();
+    public String findNextPage(PageFlowContext context, String currentpagename, boolean stopatcurrentpage, boolean stopatnextaftercurrentpage) throws PustefixApplicationException {
         FlowStep[] workflow = getAllSteps();
         boolean after_current = false;
 
         for (int i = 0; i < workflow.length; i++) {
             FlowStep step = workflow[i];
-            PageRequest page = context.createPageRequest(step.getPageName());
+            String   stepname = step.getPageName();
 
-            if (!context.checkIsAccessible(page, PageRequestStatus.WORKFLOW)) {
-                LOG.debug("* Skipping step [" + page + "] in page flow (state is not accessible...)");
+            if (!context.checkIsAccessible(stepname)) {
+                LOG.debug("* Skipping step [" + stepname + "] in page flow (state is not accessible...)");
             } else {
-                LOG.debug("* Page flow is at step " + i + ": [" + page + "]");
-                if (stopatcurrentpage && page.equals(currentpagerequest)) {
-                    LOG.debug("=> [" + page + "]: Request specified to not advance futher than the original target page.");
-                    return page.getRootName();
+                LOG.debug("* Page flow is at step " + i + ": [" + stepname + "]");
+                if (stopatcurrentpage && currentpagename.equals(stepname)) {
+                    LOG.debug("=> [" + stepname + "]: Request specified to not advance futher than the original target page.");
+                    return stepname;
                 }
                 if (after_current && (step.wantsToStopHere() || stopatnextaftercurrentpage)) {
                     if (stopatnextaftercurrentpage) {
-                        LOG.debug("=> [" + page + "]: Request specified to stop right after the current page");
+                        LOG.debug("=> [" + stepname + "]: Request specified to stop right after the current page");
                     } else {
-                        LOG.debug("=> [" + page + "]: Page flow wants to stop here.");
+                        LOG.debug("=> [" + stepname + "]: Page flow wants to stop here.");
                     }
-                    return page.getRootName();
-                } else if (context.checkNeedsData(page)) {
-                    LOG.debug("=> [" + page + "]: needsData() returned TRUE, leaving page flow.");
-                    return page.getRootName();
+                    return stepname;
+                } else if (context.checkNeedsData(stepname)) {
+                    LOG.debug("=> [" + stepname + "]: needsData() returned TRUE, leaving page flow.");
+                    return stepname;
                 } else {
-                    LOG.debug("=> [" + page + "]: Page flow or request don't specify to stop and needsData() returned FALSE");
-                    LOG.debug("=> [" + page + "]: going to next step in page flow.");
+                    LOG.debug("=> [" + stepname + "]: Page flow or request don't specify to stop and needsData() returned FALSE");
+                    LOG.debug("=> [" + stepname + "]: going to next step in page flow.");
                 }
             }
-            if (page.equals(currentpagerequest)) {
+            if (currentpagename.equals(stepname)) {
                 after_current = true;
             }
         }
         // If we come here, we need to check for the final page, and use this instead.
         if (finalpage != null) {
             LOG.debug("=> Pageflow [" + getName() + "] defines page [" + finalpage + "] as final page");
-            if (!context.checkIsAccessible(context.createPageRequest(finalpage), PageRequestStatus.WORKFLOW)) {
+            if (!context.checkIsAccessible(finalpage)) {
                 LOG.debug("   ...but it is not accessible");
             } else {
                 return finalpage;
@@ -153,11 +151,11 @@ public class DataDrivenPageFlow implements PageFlow {
         // it is not accessible), because in that case we would have stopped earlier while looking through the pageflow. But it 
         // could be that that page is a page external to the current flow, so we just try.
         if (stopatcurrentpage) {
-            LOG.debug("=> Request wants us to use original target page [" + currentpagerequest + "] as final page");
-            if (!context.checkIsAccessible(context.createPageRequest(currentpagerequest.getRootName()), PageRequestStatus.WORKFLOW)) {
+            LOG.debug("=> Request wants us to use original target page [" + currentpagename + "] as final page");
+            if (!context.checkIsAccessible(currentpagename)) {
                 LOG.debug("   ...but it is not accessible");
             } else {
-                return currentpagerequest.getRootName();
+                return currentpagename;
             }
         } 
         
@@ -165,63 +163,55 @@ public class DataDrivenPageFlow implements PageFlow {
         
     }
 
-    public boolean precedingFlowNeedsData(PageFlowContext context) throws PustefixApplicationException {
-        PageRequest current = context.getCurrentPageRequest();
+    public boolean precedingFlowNeedsData(PageFlowContext context, String currentpagename) throws PustefixApplicationException {
         FlowStep[] workflow = getAllSteps();
 
         for (int i = 0; i < workflow.length; i++) {
             FlowStep step = workflow[i];
             String pagename = step.getPageName();
-            PageRequest page = context.createPageRequest(pagename);
-            if (pagename.equals(current.getRootName())) {
+            if (pagename.equals(currentpagename)) {
                 return false;
             }
-            if (context.checkIsAccessible(page, current.getStatus()) && context.checkNeedsData(page)) {
+            if (context.checkIsAccessible(pagename) && context.checkNeedsData(pagename)) {
                 return true;
             }
         }
         return false;
     }
 
-    public void addPageFlowInfo(PageFlowContext context, Element root) {
+    public void addPageFlowInfo(String currentpagename, Element root) {
         Document doc = root.getOwnerDocument();
         FlowStep[] steps = getAllSteps();
-        String pagename = context.getCurrentPageRequest().getRootName();
         for (int i = 0; i < steps.length; i++) {
             String step = steps[i].getPageName();
             Element stepelem = doc.createElement("step");
             root.appendChild(stepelem);
             stepelem.setAttribute("name", step);
-            if (step.equals(pagename)) {
+            if (step.equals(currentpagename)) {
                 stepelem.setAttribute("current", "true");
             }
         }
     }
 
-    public void hookAfterRequest(PageFlowContext context, ResultDocument resdoc) throws PustefixApplicationException, PustefixCoreException {
-        if (containsPage(context.getCurrentPageRequest().getRootName(), context)) {
-            FlowStep current = getFlowStepForPage(context.getCurrentPageRequest().getRootName());
+    public void hookAfterRequest(Context context, ResultDocument resdoc) throws PustefixApplicationException, PustefixCoreException {
+    	String currentpagename = context.getCurrentPageRequest().getRootName();
+    	if (containsPage(currentpagename)) {
+            FlowStep current = stepmap.get(currentpagename);
             current.applyActionsOnContinue(context, resdoc);
         }
     }
 
-    public boolean hasHookAfterRequest(PageFlowContext context) {
-        if (containsPage(context.getCurrentPageRequest().getRootName(), context)) {
-            FlowStep current = getFlowStepForPage(context.getCurrentPageRequest().getRootName());
+    public boolean hasHookAfterRequest(String currentpagename) {
+    	if (containsPage(currentpagename)) {
+            FlowStep current = stepmap.get(currentpagename);
             return current.hasOnContinueAction();
         }
         return false;
     }
 
-    
-    
+
     private FlowStep[] getAllSteps() {
         return (FlowStep[]) allsteps.toArray(new FlowStep[] {});
     }
-    
-    private FlowStep getFlowStepForPage(String page) {
-        return (FlowStep) stepmap.get(page);
-    }
-
 
 }

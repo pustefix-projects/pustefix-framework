@@ -77,7 +77,6 @@ public class DefaultIWrapperState extends StateImpl {
      *      PfixServletRequest)
      */
     @Override
-    @SuppressWarnings("deprecation")
     public ResultDocument getDocument(Context context, PfixServletRequest preq) throws Exception {
         CAT.debug("[[[[[ " + context.getCurrentPageRequest().getName() + " ]]]]]");
         
@@ -156,7 +155,7 @@ public class DefaultIWrapperState extends StateImpl {
                     rfinal.onSuccess(wrp_container);
                 }
             }
-        } else if (isDirectTrigger(context, preq) || context.isPageFlowRunning()) {
+        } else if (isDirectTrigger(context, preq) || isPageFlowRunning(context)) {
             CAT.debug(">>> Retrieving current status...");
 
             pe = new PerfEvent(PerfEventType.PAGE_RETRIEVECURRENTSTATUS, context.getCurrentPageRequest().toString());

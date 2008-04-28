@@ -36,6 +36,13 @@ public abstract class StateImpl implements State {
     public  static final String PROP_INSERTCR = "insertcr";
 
     /**
+     * @see de.schlund.pfixcore.util.StateUtil#isPageFlowRunning(Context)
+     */
+    public final boolean isPageFlowRunning(Context context) {
+        return StateUtil.isPageFlowRunning(context);
+    }
+
+    /**
      * @see de.schlund.pfixcore.util.StateUtil#isDirectTrigger(Context, PfixServletRequest)
      */
     public final boolean isDirectTrigger(Context context, PfixServletRequest preq) {

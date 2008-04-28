@@ -250,9 +250,9 @@ public class ContextImpl implements Context, AccessibilityChecker, ExtendedConte
         getRequestContextForCurrentThreadWithError().addPageMessage(scode, args, level);
     }
 
-    public boolean isPageFlowRunning() {
-        return getRequestContextForCurrentThreadWithError().isPageFlowRunning();
-    }
+//    public boolean isPageFlowRunning() {
+//        return getRequestContextForCurrentThreadWithError().isPageFlowRunning();
+//    }
 
     public boolean precedingFlowNeedsData() throws PustefixApplicationException {
         return getRequestContextForCurrentThreadWithError().precedingFlowNeedsData();
@@ -276,6 +276,10 @@ public class ContextImpl implements Context, AccessibilityChecker, ExtendedConte
 
     public PageRequest getCurrentPageRequest() {
         return getRequestContextForCurrentThreadWithError().getCurrentPageRequest();
+    }
+
+    public PageRequestStatus getCurrentStatus() {
+        return getRequestContextForCurrentThreadWithError().getCurrentStatus();
     }
 
     public String getLanguage() {
@@ -496,8 +500,18 @@ public class ContextImpl implements Context, AccessibilityChecker, ExtendedConte
         }
     }
 
-    public boolean checkIsAccessible(PageRequest page, PageRequestStatus status) throws PustefixApplicationException {
-        return getRequestContextForCurrentThreadWithError().checkIsAccessible(page, status);
+    public boolean checkIsAccessible(String pagename) throws PustefixApplicationException {
+    	PageRequest page = createPageRequest(pagename);
+    	return checkIsAccessible(page);
+    }
+    
+    public boolean checkIsAccessible(PageRequest page) throws PustefixApplicationException {
+        return getRequestContextForCurrentThreadWithError().checkIsAccessible(page);
+    }
+
+    public boolean checkNeedsData(String pagename) throws PustefixApplicationException {
+    	PageRequest page = createPageRequest(pagename);
+    	return checkNeedsData(page);
     }
 
     public boolean checkNeedsData(PageRequest page) throws PustefixApplicationException {

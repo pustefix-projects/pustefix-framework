@@ -1,4 +1,43 @@
-2008-04-27  jtl  <jtl@britten.laudi.ka>
+2008-04-28  jtl  <jtl@schlund.de>
+
+	* src/de/schlund/pfixcore/workflow/context/RequestContextImpl.java: changed according to assorted interface changes 
+	and the like detailed below. The main difference is that we now hold the status of the current request (the 
+	PageRequestStatus, that has formerly been part of the PageRequest object)
+	
+	* src/de/schlund/pfixcore/workflow/context/PageFlow.java: changed the interface to only submit information
+	that is really needed for the pageflow to do its job. This means that we use a greatly dumbed down PageFlowContext 
+	object in most places. We don't know about PageRequest or PageRequestStatus objects here at all, we only
+	care about names of pages (variant-less) that are members of the pageflow.
+	* src/de/schlund/pfixcore/workflow/context/PageFlowManager.java: change accordingly
+
+	* src/de/schlund/pfixcore/workflow/Context.java (getCurrentStatus): new method
+	(getPfixServletRequest): 
+	(checkIsAccessible): 
+	(checkNeedsData): 
+	(getCurrentPageRequest): these are now part of the Context interface (moved from
+	PageFlowContext)
+	(isPageFlowRunning): removed method. Is now part of StateImpl.
+	
+	* src/de/schlund/pfixcore/workflow/ContextImpl.java (getCurrentStatus): new method.
+	(checkIsAccessible): 
+	(checkNeedsData): new additional signatures.
+	
+	* src/de/schlund/pfixcore/workflow/PageFlowContext.java: completely changed the interface.
+	 No longer extend Context, and the only two methods to remain are checkIsAccessible(String) and 
+	 needsData(String)... this allows to hide a lot of implementation details of the context
+	 and the whole framework from implementing classes of PageFlow (see there)
+	
+	* src/de/schlund/pfixcore/workflow/PageRequest.java: removed the getter/setter and field to hold a
+	PageRequestStatus. This information is now stored in the RequestContextImpl itself.
+	* src/de/schlund/pfixcore/workflow/PageRequestStatus.java: removed AUTH status.
+	
+	* src/de/schlund/pfixcore/workflow/StateImpl.java (isPageFlowRunning): new method; forwards to StateUtil
+	* src/de/schlund/pfixcore/util/StateUtil.java (isPageFlowRunning): new method. 
+	(isDirectTrigger): 
+	(isSubmitTriggerHelper): use the new isPageFlowRunning() method
+	* src/de/schlund/pfixcore/workflow/app/DefaultIWrapperState.java (getDocument): ditto 
+	
+2008-04-27  jtl  <jtl@schlund.de>
 
 	* src/de/schlund/pfixcore/workflow/ContextImpl.java: 
 	* src/de/schlund/pfixcore/workflow/PageFlowContext.java: 

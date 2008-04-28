@@ -29,12 +29,10 @@ package de.schlund.pfixcore.workflow;
  */
 
 public class PageRequestStatus {
-    // public static final PageRequestStatus NAVIGATION = new PageRequestStatus("NAVIGATION");
-    public static final PageRequestStatus WORKFLOW   = new PageRequestStatus("WORKFLOW");
-    public static final PageRequestStatus SELECT     = new PageRequestStatus("SELECT");
-    public static final PageRequestStatus JUMP       = new PageRequestStatus("JUMP");
-    public static final PageRequestStatus AUTH       = new PageRequestStatus("AUTH");
-    public static final PageRequestStatus UNDEF      = new PageRequestStatus("UNDEF");
+    public static final PageRequestStatus WORKFLOW = new PageRequestStatus("WORKFLOW");
+    public static final PageRequestStatus SELECT   = new PageRequestStatus("SELECT");
+    public static final PageRequestStatus JUMP     = new PageRequestStatus("JUMP");
+    public static final PageRequestStatus UNDEF    = new PageRequestStatus("UNDEF");
     
     private String tag;
     

@@ -26,9 +26,8 @@ package de.schlund.pfixcore.workflow;
  * @author <a href="mailto:jtl@schlund.de">Jens Lautenbacher</a>
  */
 public class PageRequest {
-    private              PageRequestStatus status    = PageRequestStatus.UNDEF;
-    private              String            preqname;
-    private              String            rootname;
+    private String preqname;
+    private String rootname;
 
     /**
      * Describe <code>getName</code> method here.
@@ -47,24 +46,6 @@ public class PageRequest {
     @Override
     public String toString() { 
         return getName();
-    }
-
-    /**
-     * Describe <code>setStatus</code> method here.
-     *
-     * @param status a <code>PageRequestStatus</code> value
-     */
-    public void setStatus(PageRequestStatus status) {
-        this.status = status;
-    }
-
-    /**
-     * Describe <code>getStatus</code> method here.
-     *
-     * @return a <code>PageRequestStatus</code> value
-     */
-    public PageRequestStatus getStatus() {
-        return status;
     }
 
     /**
@@ -96,19 +77,6 @@ public class PageRequest {
         }
     }
 
-    /**
-     * Describe <code>isEmpty</code> method here.
-     *
-     * @return a <code>boolean</code> value
-     */
-//     public boolean isEmpty() {
-//         if (preqname == null) {
-//             return true;
-//         } else {
-//             return false;
-//         }
-//     }
-    
     /**
      * Creates a new <code>PageRequest</code> instance.
      *

@@ -27,7 +27,6 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 
-import de.schlund.pfixcore.workflow.PageFlowContext;
 import de.schlund.pfixcore.workflow.PageRequest;
 import de.schlund.pfixcore.workflow.VariantManager;
 import de.schlund.pfixxml.Variant;
@@ -77,9 +76,9 @@ public class PageFlowManager {
         }
     }
 
-    protected PageFlow pageFlowToPageRequest(PageFlow lastflow, PageRequest page, Variant variant, PageFlowContext context) {
+    protected PageFlow pageFlowToPageRequest(PageFlow lastflow, PageRequest page, Variant variant) {
         //LOG.debug("===> Testing pageflow: " + currentflow.getName() + " / page: " + page);
-        if (lastflow == null || !lastflow.containsPage(page.getRootName(), context)) {
+        if (lastflow == null || !lastflow.containsPage(page.getRootName())) {
             Set<String> rootflownames = pagetoflowmap.get(page.getRootName());
             if (rootflownames == null) {
                 LOG.debug("===> Page " + page + " isn't a member of any pageflow: returning no pageflow");
@@ -91,7 +90,7 @@ public class PageFlowManager {
                     LOG.debug("===> Page " + page + " has a default flow specified: Using flow " + defaultFlowForRequest);
                     String pageflowname = vmanager.getVariantMatchingPageFlowName(defaultFlowForRequest, variant);
                     PageFlow pf = getPageFlowByName(pageflowname);
-                    if (pf.containsPage(page.getRootName(), context)) {
+                    if (pf.containsPage(page.getRootName())) {
                         LOG.debug("===> Switching to pageflow: " + pf.getName());
                         return pf;
                     }
@@ -100,7 +99,7 @@ public class PageFlowManager {
             for (Iterator<String> i = rootflownames.iterator(); i.hasNext();) {
                 String pageflowname = vmanager.getVariantMatchingPageFlowName(i.next(), variant);
                 PageFlow pf = getPageFlowByName(pageflowname);
-                if (pf.containsPage(page.getRootName(), context)) {
+                if (pf.containsPage(page.getRootName())) {
                     //LOG.debug("===> Switching to pageflow: " + pf.getName());
                     return pf;
                 }
