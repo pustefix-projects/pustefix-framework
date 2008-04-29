@@ -359,11 +359,15 @@ public class MyRoleProvider implements RoleProvider {
       <para>
         The <literal>RoleProvider</literal> implementation is registered using the
        	context configuration top-level <literal>roleprovider</literal> element with
-       	a <literal>class</literal> attribute, e.g.:
+       	a <literal>class</literal> attribute. You can optionally configure properties,
+       	which will be automatically injected into the RoleProvider instance using
+       	according setter methods (Spring bean-style setter injection).
       </para>     
       <para>
     <programlisting language="xml"><![CDATA[
-    <roleprovider class="example.MyRoleProvider"/>
+    <roleprovider class="example.MyRoleProvider">
+      <property name="..." value="..."/>
+    </roleprovider>
     ]]></programlisting>
     </para>
     <para>
