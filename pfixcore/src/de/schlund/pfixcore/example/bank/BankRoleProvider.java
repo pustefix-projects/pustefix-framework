@@ -23,11 +23,13 @@ public class BankRoleProvider implements RoleProvider {
     }
 
     public Role getRole(String roleName) throws RoleNotFoundException {
-        return roles.get(roleName);
+        Role role = roles.get(roleName);
+        if(role == null) throw new RoleNotFoundException(roleName);
+        return role;
     }
 
     public List<Role> getRoles() {
         return new ArrayList<Role>(roles.values());
     }
-
+    
 }

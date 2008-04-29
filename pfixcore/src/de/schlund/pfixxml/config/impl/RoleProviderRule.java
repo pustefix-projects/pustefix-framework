@@ -45,6 +45,7 @@ public class RoleProviderRule extends CheckedRule {
                 throw new Exception("Class '" + className + "' doesn't implement the RoleProvider interface.");
             RoleProvider roleProvider = (RoleProvider) clazz.newInstance();
             config.getContextConfig().addCustomRoleProvider(roleProvider);
+            getDigester().push(roleProvider);
         } catch (ClassNotFoundException x) {
             throw new Exception("RoleProvider class not found: " + className);
         } catch (InstantiationException x) {
@@ -55,6 +56,7 @@ public class RoleProviderRule extends CheckedRule {
     }
 
     public void end(String namespace, String name) throws Exception {
+        getDigester().pop();
     }
 
     protected Map<String, Boolean> wantsAttributes() {

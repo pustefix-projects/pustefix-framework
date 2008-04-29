@@ -25,16 +25,14 @@ import java.util.Map;
 
 import org.xml.sax.Attributes;
 
-import de.schlund.pfixcore.auth.Condition;
-
 /**
  * @author mleidig@schlund.de
  */
-public class ConditionPropertyRule extends CheckedRule {
+public class GenericPropertyRule extends CheckedRule {
 
     ContextXMLServletConfigImpl config;
 
-    public ConditionPropertyRule(ContextXMLServletConfigImpl config) {
+    public GenericPropertyRule(ContextXMLServletConfigImpl config) {
         this.config = config;
     }
 
@@ -43,9 +41,9 @@ public class ConditionPropertyRule extends CheckedRule {
         String propName = attributes.getValue("name");
         String propValue = attributes.getValue("value");
         Object obj = getDigester().peek();
-        if (obj instanceof Condition) {
+        if (obj!=null) {
             setProperty(obj, propName, propValue);
-        } else throw new Exception("Illegal object: " + obj.getClass().getName());
+        } else throw new Exception("Can't set property because object stack is empty.");
     }
 
     public void end(String namespace, String name) throws Exception {

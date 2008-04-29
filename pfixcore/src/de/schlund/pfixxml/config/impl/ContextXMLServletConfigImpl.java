@@ -122,7 +122,7 @@ public class ContextXMLServletConfigImpl extends AbstractXMLServletConfigImpl im
         Rule topLevelAuthConstraintRule = new AuthConstraintRule(config,true);
         Rule conditionRule = new ConditionRule(config,false);
         Rule topLevelConditionRule = new ConditionRule(config,true);
-        Rule conditionPropertyRule = new ConditionPropertyRule(config);
+        Rule genericPropertyRule = new GenericPropertyRule(config);
 
         // Rule doing nothing
         Rule dummyRule = new Rule() {
@@ -217,16 +217,17 @@ public class ContextXMLServletConfigImpl extends AbstractXMLServletConfigImpl im
         digester.addRule("*/and", conditionRule);
         digester.addRule("*/or", conditionRule);
         digester.addRule("*/condition", conditionRule);
-        digester.addRule("*/condition/property", conditionPropertyRule);
+        digester.addRule("*/condition/property", genericPropertyRule);
         digester.addRule("contextxmlserver/interceptors", dummyRule);
         digester.addRule("contextxmlserver/interceptors/start", dummyRule);
         digester.addRule("contextxmlserver/interceptors/end", dummyRule);
         digester.addRule("contextxmlserver/interceptors/start/interceptor", contextStartInterceptorRule);
         digester.addRule("contextxmlserver/interceptors/end/interceptor", contextEndInterceptorRule);
         digester.addRule("contextxmlserver/roleprovider", roleProviderRule);
+        digester.addRule("contextxmlserver/roleprovider/property", genericPropertyRule);
         digester.addRule("contextxmlserver/role", roleRule);
         digester.addRule("contextxmlserver/condition", topLevelConditionRule);
-        digester.addRule("contextxmlserver/condition/property", conditionPropertyRule);
+        digester.addRule("contextxmlserver/condition/property", genericPropertyRule);
         digester.addRule("contextxmlserver/properties", dummyRule);
         digester.addRule("contextxmlserver/properties/prop", servletPropertyRule);
 

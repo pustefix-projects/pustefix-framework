@@ -1,3 +1,20 @@
+2008-04-29  Martin Leidig  <mleidig@schlund.de>
+
+	Added support for configuration of RoleProvider properties. Properties
+	are configured using the property tag. They're automatically injected
+	using according setter methods (Spring bean style). It's the same
+	mechanism used for conditions, therefore the ConditionPropertyRule
+	was generalized (to GenericPropertyRule) and used for RoleProviders too.
+
+	Modified:
+	* src/de/schlund/pfixxml/config/impl/RoleProviderRule.java
+	* src/de/schlund/pfixxml/config/impl/ContextXMLServletConfigImpl.java
+	* projects/core/schema/properties200401.xsd
+	* src/de/schlund/pfixcore/example/bank/BankRoleProvider.java
+
+	* src/de/schlund/pfixxml/config/impl/GenericPropertyRule.java: Removed
+	* src/de/schlund/pfixxml/config/impl/ConditionPropertyRule.java: Added
+
 2008-04-28  Jens Lautenbacher  <jtl@schlund.de>
 
 	* src/de/schlund/pfixcore/workflow/PageFlowContext.java (getPfixServletRequest): 
