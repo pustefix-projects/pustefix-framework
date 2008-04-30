@@ -51,9 +51,9 @@ public class StateUtil {
   
     private final static Logger LOG = Logger.getLogger(StateUtil.class);
     
-    private static final String MIMETYPE      = "mimetype";
-    private static final String HEADER        = "responseheader";
-    private static final String def_mime      = "text/html";
+    private static final String MIMETYPE    = "mimetype";
+    private static final String HEADER      = "responseheader";
+    private static final String DEFAULTMIME = "text/html";
 
     public static ResultDocument createDefaultResultDocument(Context context) throws Exception {
         ResultDocument  resdoc = new ResultDocument();
@@ -123,20 +123,26 @@ public class StateUtil {
 
     
     public static void addResponseHeadersAndType(Context context, ResultDocument resdoc) {
+        boolean have_config = true;
+        Properties contextprops = context.getProperties();
+        SPDocument doc = resdoc.getSPDocument();
+        
         if (context.getConfigForCurrentPageRequest() == null) {
             // This page is not defined explicitly...
-            return;
+            have_config = false;
         }
-        Properties props = context.getPropertiesForCurrentPageRequest();
-        Properties contextprops = context.getProperties();
         
-        String mime = props.getProperty(MIMETYPE);
-        SPDocument doc = resdoc.getSPDocument();
+        Properties props = null;
+        String mime = null;
+        if (have_config) {
+            props = context.getPropertiesForCurrentPageRequest();
+            mime = props.getProperty(MIMETYPE);
+        }
 
         if (mime != null) {
             doc.setResponseContentType(mime);
         } else {
-            doc.setResponseContentType(def_mime);
+            doc.setResponseContentType(DEFAULTMIME);
         }
 
         // Set global headers first
@@ -151,13 +157,15 @@ public class StateUtil {
         }
 
         // then set page specific headers
-        headers = PropertiesUtils.selectProperties(props, HEADER);
-        if (headers != null && !headers.isEmpty()) {
-            for (Iterator<String> iter = headers.keySet().iterator(); iter.hasNext();) {
-                String key = iter.next();
-                String val = headers.get(key);
-                LOG.debug("* Adding response header: " + key + " => " + val);
-                doc.addResponseHeader(key, val);
+        if (have_config) {
+            headers = PropertiesUtils.selectProperties(props, HEADER);
+            if (headers != null && !headers.isEmpty()) {
+                for (Iterator<String> iter = headers.keySet().iterator(); iter.hasNext();) {
+                    String key = iter.next();
+                    String val = headers.get(key);
+                    LOG.debug("* Adding response header: " + key + " => " + val);
+                    doc.addResponseHeader(key, val);
+                }
             }
         }
     }
@@ -166,6 +174,7 @@ public class StateUtil {
     public static boolean isDirectTrigger(Context context, PfixServletRequest preq) {
         RequestParam sdreq = preq.getRequestParam(State.SENDDATA);
         return (!isPageFlowRunning(context) && 
+                
         		(context.getCurrentStatus() == PageRequestStatus.JUMP  || sdreq == null || !sdreq.isTrue()));
     }
     
