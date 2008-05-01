@@ -16,6 +16,7 @@
   <navigation>
     <page name="home"     handler="/xml/config" accesskey="H">
       <page name="order"    handler="/xml/config" accesskey="O"/>
+      <page name="phantom" handler="/xml/config" accesskey="O" />
       <page name="overview" handler="/xml/config" accesskey="S"/>
     </page>
     
@@ -70,6 +71,8 @@
   <standardpage name="scripting" xml="sample1/xml/one_frame_navi.xml"/>
   <standardpage name="scriptingstate" xml="sample1/xml/one_frame_navi.xml"/>
 
+  <standardpage name="phantom" xml="sample1/xml/one_frame.xml"/>
+  
   <standardpage name="A" xml="sample1/xml/one_frame.xml"/>
   <standardpage name="B" xml="sample1/xml/one_frame.xml"/>
   <standardpage name="C" xml="sample1/xml/one_frame.xml"/>

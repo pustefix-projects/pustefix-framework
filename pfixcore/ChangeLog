@@ -1,3 +1,42 @@
+2008-05-01  Jens Lautenbacher  <jtl@schlund.de>
+
+	* projects/sample1/txt/pages/main_phantom.xml: 
+	* projects/sample1/conf/depend.xml: 
+	* projects/sample1/conf/config.conf.xml: added new test page...
+	
+	* src/de/schlund/pfixxml/AbstractXMLServlet.java: use an enum for render modes. cosmetics.
+	
+	* src/de/schlund/pfixxml/ContextXMLServlet.java: cosmetics
+	
+	* src/de/schlund/pfixcore/workflow/app/DefaultIWrapperState.java (getDocument): page message, also make sure
+	to always call onWorkError of the finalizer in case of something going wrong (not that we want anybody to use
+	finalizers, anyway...)
+	* src/de/schlund/pfixcore/testsuite/handler/Test5PageMessageHandler.java (handleSubmittedData): page message
+	* src/de/schlund/pfixcore/editor2/frontend/handlers/EditUserHandler.java (handleSubmittedData): page message
+    * src/de/schlund/pfixcore/workflow/Context.java (getVariant): removed here, moved to PageFlowContext
+    (addPageMessage): 
+    * src/de/schlund/pfixcore/workflow/ContextImpl.java (addPageMessage): 
+	* src/de/schlund/pfixcore/workflow/context/RequestContextImpl.java (addPageMessage): remove all the addPageMessage 
+	variants  sparing only the general one. Create a helper class if you want to.
+	(documentFromFlow): change the way we react when the currentpage we want to use is somehow suddenly not
+	accessible. We used to just take the default page, now - if the current flow is != null - we try to run 
+	the page flow to find the next page. Of course, if the pageflow doesn't present a suitable page, we just fail
+	with an error. Only when no page flow is active, we try to use the default page (and fail if this is also 
+	not accessible) 
+	* projects/core/xsl/navigation.xsl: change the handling of the mode="force" attribute
+	in buttons to also apply for pages that are not accessible (this allows to override the
+	fact that it is not accessible and creates a link nevertheless). This of course only makes sense 
+	with the change above.
+	In a related move, I removed the mode="desc" case because of over-the-top obscurity reasons...
+
+    * src/de/schlund/pfixcore/workflow/PageFlowContext.java (getVariant): moved here to give more information
+    to pageflow implementations.
+
+	* src/de/schlund/pfixcore/workflow/app/IHandlerContainerImpl.java (needsData): 
+	after the changes to flow handling to also go over the current page again,
+	it's much more sensible to handle the broder case of no handler by returning false
+	instead of true.
+
 2008-04-29  Martin Leidig  <mleidig@schlund.de>
 
 	Added support for configuration of RoleProvider properties. Properties

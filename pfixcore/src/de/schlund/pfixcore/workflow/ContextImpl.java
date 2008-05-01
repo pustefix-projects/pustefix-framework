@@ -237,18 +237,6 @@ public class ContextImpl implements AccessibilityChecker, ExtendedContext, Token
         getRequestContextForCurrentThreadWithError().addCookie(cookie);
     }
 
-    public void addPageMessage(StatusCode scode) {
-        getRequestContextForCurrentThreadWithError().addPageMessage(scode);
-    }
-
-    public void addPageMessage(StatusCode scode, String level) {
-        getRequestContextForCurrentThreadWithError().addPageMessage(scode, level);
-    }
-
-    public void addPageMessage(StatusCode scode, String[] args) {
-        getRequestContextForCurrentThreadWithError().addPageMessage(scode, args);
-    }
-
     public void addPageMessage(StatusCode scode, String[] args, String level) {
         getRequestContextForCurrentThreadWithError().addPageMessage(scode, args, level);
     }

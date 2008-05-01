@@ -47,33 +47,22 @@ import de.schlund.pfixxml.config.PageRequestConfig;
 import de.schlund.pfixxml.resources.FileResource;
 
 /**
- * @author jtl
- *
+ * @author Jens Lautenbacher <jtl@schlund.de>
+ * 
  */
 
 public class ContextXMLServlet extends AbstractXMLServlet {
-    /**
-     * 
-     */
-    private static final long serialVersionUID = 7075704504725269214L;
 
-    private Logger LOG = Logger.getLogger(ContextXMLServlet.class);
+    private static final long       serialVersionUID        = 7075704504725269214L;
+    private Logger                  LOG                     = Logger.getLogger(ContextXMLServlet.class);
+    private final static String     PARAM_SCRIPTEDFLOW      = "__scriptedflow";
+    private final static String     SCRIPTEDFLOW_SUFFIX     = "__SCRIPTEDFLOW__";
+    public final static String      XSLPARAM_REQUESTCONTEXT = "__context__";
+    private ContextXMLServletConfig config                  = null;
+    private ServerContextImpl       servercontext           = null;
+    private Object                  reloadInitLock          = new Object();
+    private boolean                 reloadInitDone;
 
-    // private final static String ALREADY_SSL = "__CONTEXT_ALREADY_SSL__";
-
-    private final static String PARAM_SCRIPTEDFLOW = "__scriptedflow";
-
-    private final static String SCRIPTEDFLOW_SUFFIX = "__SCRIPTEDFLOW__";
-    
-    public final static String XSLPARAM_REQUESTCONTEXT = "__context__";
-
-    private ContextXMLServletConfig config = null;
-
-    private ServerContextImpl servercontext = null;
-
-    private Object reloadInitLock=new Object();
-    private boolean reloadInitDone;
-    
     protected ContextXMLServletConfig getContextXMLServletConfig() {
         return this.config;
     }
@@ -81,7 +70,7 @@ public class ContextXMLServlet extends AbstractXMLServlet {
     protected AbstractXMLServletConfig getAbstractXMLServletConfig() {
         return this.config;
     }
-    
+
     protected boolean needsSSL(PfixServletRequest preq) throws ServletException {
         if (super.needsSSL(preq)) {
             return true;
@@ -106,18 +95,18 @@ public class ContextXMLServlet extends AbstractXMLServlet {
     }
 
     protected boolean tryReloadProperties(PfixServletRequest preq) throws ServletException {
-        //synchronize first method call because of a race condition, which 
-        //can lead to a NullPointerException (servercontext being null)
-        synchronized(reloadInitLock) {
-            if(!reloadInitDone) {
-                boolean result=nosyncTryReloadProperties(preq);
-                reloadInitDone=true;
+        // synchronize first method call because of a race condition, which
+        // can lead to a NullPointerException (servercontext being null)
+        synchronized (reloadInitLock) {
+            if (!reloadInitDone) {
+                boolean result = nosyncTryReloadProperties(preq);
+                reloadInitDone = true;
                 return result;
             }
         }
         return nosyncTryReloadProperties(preq);
     }
-    
+
     private boolean nosyncTryReloadProperties(PfixServletRequest preq) throws ServletException {
         if (super.tryReloadProperties(preq)) {
             try {
@@ -136,21 +125,22 @@ public class ContextXMLServlet extends AbstractXMLServlet {
 
     public SPDocument getDom(PfixServletRequest preq) throws PustefixApplicationException, PustefixCoreException {
         ExtendedContext context = getContext(preq);
-        
+
         // Prepare context for current thread
         // Cleanup is performed in finally block
         ((ContextImpl) context).prepareForRequest();
-        
+
         try {
             SPDocument spdoc;
 
             ScriptedFlowInfo info = getScriptedFlowInfo(preq);
             if (preq.getRequestParam(PARAM_SCRIPTEDFLOW) != null && preq.getRequestParam(PARAM_SCRIPTEDFLOW).getValue() != null) {
                 String scriptedFlowName = preq.getRequestParam(PARAM_SCRIPTEDFLOW).getValue();
-                
+
                 // Do a virtual request without any request parameters
                 // to get an initial SPDocument
-                PfixServletRequest vpreq = new PfixServletRequestImpl(VirtualHttpServletRequest.getVoidRequest(preq.getRequest()), getContextXMLServletConfig().getProperties());
+                PfixServletRequest vpreq = new PfixServletRequestImpl(VirtualHttpServletRequest.getVoidRequest(preq.getRequest()),
+                                                                      getContextXMLServletConfig().getProperties());
                 spdoc = context.handleRequest(vpreq);
 
                 // Reset current scripted flow state
@@ -216,18 +206,20 @@ public class ContextXMLServlet extends AbstractXMLServlet {
                 // handle as usual
                 spdoc = context.handleRequest(preq);
             }
-            
+
             if (spdoc != null && !spdoc.isRedirect() && (preq.getPageName() == null || !preq.getPageName().equals(spdoc.getPagename()))) {
-                // Make sure all requests that don't encode an explicite pagename
+                // Make sure all requests that don't encode an explicit page name
                 // (this normally is only the case for the first request)
-                // OR pages that have the "wrong" pagename in their request 
-                // (this applies to pages selected by stepping ahead in the page flow)
-                // are redirected to the page selected by the business logic below
+                // OR pages that have the "wrong" page name in their request
+                // (this applies to pages selected by stepping ahead in the page
+                // flow)
+                // are redirected to the page selected by the business logic
+                // below
                 String scheme = preq.getScheme();
                 String port = String.valueOf(preq.getServerPort());
-                String redirectURL = scheme + "://" + ServletManager.getServerName(preq.getRequest()) 
-                    + ":" + port + preq.getContextPath() + preq.getServletPath() + "/" + spdoc.getPagename() 
-                    + ";jsessionid=" + preq.getSession(false).getId() + "?__reuse=" + spdoc.getTimestamp();
+                String redirectURL = scheme + "://" + ServletManager.getServerName(preq.getRequest()) + ":" + port + preq.getContextPath()
+                                     + preq.getServletPath() + "/" + spdoc.getPagename() + ";jsessionid=" + preq.getSession(false).getId()
+                                     + "?__reuse=" + spdoc.getTimestamp();
                 RequestParam rp = preq.getRequestParam("__frame");
                 if (rp != null) {
                     redirectURL += "&__frame=" + rp.getValue();
@@ -235,7 +227,7 @@ public class ContextXMLServlet extends AbstractXMLServlet {
                 spdoc.setRedirect(redirectURL);
 
             }
-            
+
             return spdoc;
         } finally {
             ((ContextImpl) context).cleanupAfterRequest();
@@ -258,7 +250,7 @@ public class ContextXMLServlet extends AbstractXMLServlet {
         }
         return info;
     }
-    
+
     private ExtendedContext getContext(PfixServletRequest preq) throws PustefixApplicationException, PustefixCoreException {
         HttpSession session = preq.getSession(false);
         if (session == null) {
@@ -282,7 +274,7 @@ public class ContextXMLServlet extends AbstractXMLServlet {
         }
         // Update reference to server context as it might have changed
         context.setServerContext(servercontext);
-        
+
         return context;
     }
 
@@ -306,11 +298,11 @@ public class ContextXMLServlet extends AbstractXMLServlet {
         newRequestContext.setPfixServletRequest(preq);
         newRequestContext.getParentContext().setRequestContextForCurrentThread(newRequestContext);
     }
-    
+
     protected void hookAfterRender(PfixServletRequest preq, SPDocument spdoc, TreeMap<String, Object> paramhash, String stylesheet) {
         super.hookAfterRender(preq, spdoc, paramhash, stylesheet);
         RequestContextImpl rcontext = (RequestContextImpl) spdoc.getProperties().get(XSLPARAM_REQUESTCONTEXT);
         rcontext.getParentContext().setRequestContextForCurrentThread(null);
     }
-    
+
 }

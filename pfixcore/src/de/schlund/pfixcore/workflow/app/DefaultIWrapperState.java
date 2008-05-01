@@ -104,13 +104,13 @@ public class DefaultIWrapperState extends StateImpl {
                     if (tm.isValidToken(tokenName, tokenValue)) {
                         tm.invalidateToken(tokenName);
                     } else {
-                        context.addPageMessage(StatusCodeLib.PFIXCORE_GENERATOR_FORM_TOKEN_INVALID);
+                        context.addPageMessage(StatusCodeLib.PFIXCORE_GENERATOR_FORM_TOKEN_INVALID, null, null);
                         if (errorPage.equals("")) {
                             pe = new PerfEvent(PerfEventType.PAGE_RETRIEVECURRENTSTATUS, context.getCurrentPageRequest().toString());
                             pe.start();
                             wrp_container.retrieveCurrentStatus(false);
                             pe.save();
-                            rfinal.onRetrieveStatus(wrp_container);
+                            rfinal.onWorkError(wrp_container);
                             context.prohibitContinue();
                         } else {
                             context.setJumpToPage(errorPage);
@@ -123,12 +123,12 @@ public class DefaultIWrapperState extends StateImpl {
             } else {
                 PageRequestConfig pageConf = context.getConfigForCurrentPageRequest();
                 if (pageConf != null && pageConf.requiresToken()) {
-                    context.addPageMessage(StatusCodeLib.PFIXCORE_GENERATOR_FORM_TOKEN_MISSING);
+                    context.addPageMessage(StatusCodeLib.PFIXCORE_GENERATOR_FORM_TOKEN_MISSING, null, null);
                     pe = new PerfEvent(PerfEventType.PAGE_RETRIEVECURRENTSTATUS, context.getCurrentPageRequest().toString());
                     pe.start();
                     wrp_container.retrieveCurrentStatus(false);
                     pe.save();
-                    rfinal.onRetrieveStatus(wrp_container);
+                    rfinal.onWorkError(wrp_container);
                     context.prohibitContinue();
                     valid = false;
                 }

@@ -123,9 +123,8 @@ public class EditUserHandler implements IHandler {
                 user.setProjectPermissions(project, permissions);
             }
 
-            EditorResourceLocator.getUsersResource(context)
-                    .updateSelectedUser();
-            context.addPageMessage(StatusCodeLib.PFIXCORE_EDITOR_USERDATA_CHANGES_SAVED);
+            EditorResourceLocator.getUsersResource(context).updateSelectedUser();
+            context.addPageMessage(StatusCodeLib.PFIXCORE_EDITOR_USERDATA_CHANGES_SAVED, null, null);
         }
 
     }

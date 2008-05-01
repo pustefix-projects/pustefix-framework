@@ -1,18 +1,26 @@
-<?xml version="1.0" encoding="ISO-8859-1"?><include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform"
+  xmlns:pfx="http://www.schlund.de/pustefix/core"
+>
 
   <part name="content">
     <theme name="default">
-        <center>
-          <pfx:include href="sample1/txt/pages/main_home.xml" part="env_info"/>
-		  <hr/>
-          <pfx:button pageflow="OrderFlow" startwithflow="true">
-            Next Page From OrderFlow
-          </pfx:button><br/>
-          <pfx:button page="order" pageflow="OrderFlow" startwithflow="true">
-            Next Page From OrderFlow (max. order)
-          </pfx:button><br/>
-        </center>
-      </theme>
+      <center>
+        <pfx:button pageflow="OrderFlow" startwithflow="true">
+          Next Page From OrderFlow
+        </pfx:button>
+        <br/><br/>
+        The next link will only be active when the "order" page is also accessible.
+        It will look into the pageflow not further than the order page.
+        <br/>
+        <pfx:button page="order" pageflow="OrderFlow" startwithflow="true">
+          Next Page From OrderFlow (max. order)
+        </pfx:button>
+        <br/><br/>
+      </center>
+      <hr/>
+      <pfx:include href="sample1/txt/pages/main_home.xml" part="env_info"/>
+    </theme>
   </part>
 
 </include_parts>

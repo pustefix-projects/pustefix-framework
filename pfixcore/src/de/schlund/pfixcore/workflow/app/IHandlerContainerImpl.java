@@ -204,7 +204,7 @@ public class IHandlerContainerImpl implements IHandlerContainer {
      * @see de.schlund.pfixcore.workflow.app.IHandlerContainer#needsData(Context)
      */
     public boolean needsData(Context context) throws Exception  {
-        if (handlers.isEmpty()) return true; // border case
+        if (handlers.isEmpty()) return false; // border case
         
         for (Iterator<IHandler> iter = handlers.iterator(); iter.hasNext(); ) {
             IHandler handler = iter.next();

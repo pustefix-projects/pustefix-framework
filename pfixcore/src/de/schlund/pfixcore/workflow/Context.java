@@ -62,7 +62,6 @@ public interface Context extends PageFlowContext {
 
     void setVariant(Variant variant);
     void setVariantForThisRequestOnly(Variant variant);
-    Variant getVariant();
 
     void setLanguage(String lang);
     String getLanguage();
@@ -73,9 +72,6 @@ public interface Context extends PageFlowContext {
     Throwable getLastException();
     String getVisitId();
 
-    void addPageMessage(StatusCode scode);
-    void addPageMessage(StatusCode scode, String level);
-    void addPageMessage(StatusCode scode, String[] args);
     void addPageMessage(StatusCode scode, String[] args, String level);
 
     void addSessionStatusListener(SessionStatusListener l);

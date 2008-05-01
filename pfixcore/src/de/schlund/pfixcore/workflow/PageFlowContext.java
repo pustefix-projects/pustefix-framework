@@ -20,10 +20,12 @@ package de.schlund.pfixcore.workflow;
 
 import de.schlund.pfixcore.exception.PustefixApplicationException;
 import de.schlund.pfixxml.PfixServletRequest;
+import de.schlund.pfixxml.Variant;
 
 public interface PageFlowContext {
     boolean checkIsAccessible(String pagename) throws PustefixApplicationException;
     boolean checkNeedsData(String pagename) throws PustefixApplicationException;
     PfixServletRequest getPfixServletRequest();
     ContextResourceManager getContextResourceManager();
+    Variant getVariant();
 }

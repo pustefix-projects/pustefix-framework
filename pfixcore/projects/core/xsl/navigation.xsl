@@ -258,7 +258,7 @@
       </xsl:when>
       <xsl:otherwise>
         <ixsl:choose>
-          <ixsl:when test="callback:isAccessible($__context__, '{$buttpage_impl}') = 0">
+          <ixsl:when test="(callback:isAccessible($__context__, '{$buttpage_impl}') = 0) and not('{$mode_impl}' = 'force')">
             <span>
               <xsl:attribute name="class">
                 <xsl:choose>
@@ -296,27 +296,17 @@
                   </xsl:if>
                   <xsl:attribute name="class">
                     <xsl:choose>
-                      <xsl:when test="$mode_impl = 'desc' and $thebuttpage//page[@name=$page]">
-                        <xsl:choose>
-                          <xsl:when test="$activeclass = ''">core_button_active</xsl:when>
-                          <xsl:otherwise>
-                            <xsl:value-of select="$activeclass"/>
-                          </xsl:otherwise>
-                        </xsl:choose>
+                      <xsl:when test="$normalclass = ''">
+                        core_button_normal
                       </xsl:when>
                       <xsl:otherwise>
-                        <xsl:choose>
-                          <xsl:when test="$normalclass = ''">core_button_normal</xsl:when>
-                          <xsl:otherwise>
-                            <xsl:value-of select="$normalclass"/>
-                          </xsl:otherwise>
-                        </xsl:choose>
+                        <xsl:value-of select="$normalclass" />
                       </xsl:otherwise>
                     </xsl:choose>
                   </xsl:attribute>
-                  <xsl:if test="$omover and not($mode_impl = 'desc' and $thebuttpage//page[@name=$page])">
+                  <xsl:if test="$omover">
                     <xsl:attribute name="onmouseover"><xsl:value-of select="$omover"/></xsl:attribute></xsl:if>
-                  <xsl:if test="$omout and not($mode_impl = 'desc' and $thebuttpage//page[@name=$page])">
+                  <xsl:if test="$omout">
                       <xsl:attribute name="onmouseout"><xsl:value-of select="$omout"/></xsl:attribute></xsl:if>
                   <xsl:if test="@popup='true' or @target='_popup'">
                     <xsl:variable name="windowName">
@@ -340,14 +330,7 @@
                     <ixsl:attribute name="onclick">return !window.open(this.href,'<xsl:value-of select="$windowName"/>'<xsl:value-of select="$windowFeatures"/>);</ixsl:attribute>
                   </xsl:if>
                   <ixsl:attribute name="href"><xsl:copy-of select="$fulllink"/></ixsl:attribute>
-                  <xsl:choose>
-                    <xsl:when test="$mode_impl = 'desc' and $thebuttpage//page[@name=$page]">
-                      <xsl:copy-of select="$active"/>
-                    </xsl:when>
-                    <xsl:otherwise>
-                      <xsl:copy-of select="$normal"/>
-                    </xsl:otherwise>
-                  </xsl:choose>
+                  <xsl:copy-of select="$normal"/>
                 </a>
               </xsl:otherwise>
             </xsl:choose>

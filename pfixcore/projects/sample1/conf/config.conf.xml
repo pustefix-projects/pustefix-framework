@@ -54,6 +54,7 @@
           </when>
         </oncontinue>
       </flowstep>
+      <flowstep name="phantom" stophere="true"/>
       <flowstep name="overview"/>
     </default>
     <variant name="foo:bar">
@@ -68,6 +69,7 @@
           </when>
         </oncontinue>
       </flowstep>
+      <flowstep name="phantom"/>
       <flowstep name="overview"/>
     </variant>
   </pageflow>
@@ -161,6 +163,10 @@
     </output>
     <!-- The next properties can be set additonally for DefaultIWrapperState and descendants (default is shown) -->
     <!-- <finalizer class="de.schlund.pfixcore.workflow.app.ResdocSimpleFinalizer"/> -->
+  </pagerequest>
+
+  <pagerequest name="phantom">
+    <state class="de.schlund.pfixcore.workflow.app.DefaultIWrapperState"/>
   </pagerequest>
 
   <!-- Here we have a simple state which extends StaticState so we can render ContextResources. -->
