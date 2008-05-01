@@ -34,7 +34,7 @@
 
 	* src/de/schlund/pfixcore/workflow/app/IHandlerContainerImpl.java (needsData): 
 	after the changes to flow handling to also go over the current page again,
-	it's much more sensible to handle the broder case of no handler by returning false
+	it's much more sensible to handle the border case of no handler by returning false
 	instead of true.
 
 2008-04-29  Martin Leidig  <mleidig@schlund.de>
