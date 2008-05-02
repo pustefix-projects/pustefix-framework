@@ -18,6 +18,7 @@
     <serveralias>cmscore.<cus:machine/></serveralias>
     <defpath>/xml/edit</defpath>
     <passthrough>core/editor2/img</passthrough>
+    <documentroot><cus:docroot/>core/editor2/docroot</documentroot>
     <ports>
       <port number="80"/>
     </ports>

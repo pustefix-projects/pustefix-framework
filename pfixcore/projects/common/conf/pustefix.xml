@@ -14,7 +14,14 @@
     <!-- <prop name="xmlserver.output.externalrenderer">true</prop> -->
     
     <!-- URL for the Pustefix editor -->
-    <prop name="xmlserver.editor_url">http://cmscore.<cus:fqdn/></prop>
+    <choose>
+      <when test="$__antprop_standalone.tomcat = 'true'">
+        <prop name="xmlserver.editor_url">http://cmscore.<cus:fqdn/>:8080</prop>
+      </when>
+      <otherwise>
+        <prop name="xmlserver.editor_url">http://cmscore.<cus:fqdn/></prop>
+      </otherwise>
+    </choose>
     
     <choose>
       <when test="$mode = 'prod'">

@@ -48,7 +48,7 @@ public abstract class CommonIncludeState extends StaticState {
 
         HttpServletRequest req = preq.getRequest();
         ContextResourceManager crm = context.getContextResourceManager();
-        String action = req.getParameter("__action");
+        String action = req.getParameter("action");
         if (action == null || action.length() == 0) {
             handleError(doc);
             return doc;

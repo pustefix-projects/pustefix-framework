@@ -311,7 +311,7 @@ function pfx_editor_XMLHttpRequest() {
 }
 
 pfx_editor_XMLHttpRequest.prototype._sendRequest = function(action, params) {
-  this._req.open("GET", "/xml/edit/ws_" + pfx_editor_pagename + ";" + pfx_editor_sessid + "?__action=" + action + "&" + params, true);
+  this._req.open("GET", "/xml/edit/ws_" + pfx_editor_pagename + ";" + pfx_editor_sessid + "?action=" + action + "&" + params, true);
   this._req.send("");
   pfx_editor_actionCounter.increase();
 }
