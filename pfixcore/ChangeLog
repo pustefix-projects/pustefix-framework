@@ -1,3 +1,16 @@
+2008-05-02  Sebastian Marsching  <sebastian.marsching@1und1.de>
+
+	* projects/core/script/editor.js: 
+	* src/de/schlund/pfixcore/editor2/frontend/webservice/CommonIncludeState.java:
+	Fixed problems with custom webservice implementation: "__action" parameter 
+	caused problems, because this name is now reserved by Pustefix Core.
+	
+	* projects/common/conf/pustefix.xml: 
+	* projects/servletconf/projects.xml.in: 
+	* skel/common/conf/pustefix.xml: 
+	Fixed problems that caused editor not to work when running with standalone.tomcat.
+	 
+
 2008-05-02  Martin Leidig  <mleidig@schlund.de>
 	
 	Changed version to 0.13.0-pre (build).
