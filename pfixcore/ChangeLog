@@ -1,3 +1,10 @@
+2008-05-02  Martin Leidig  <mleidig@schlund.de>
+	
+	Changed version to 0.13.0-pre (build).
+
+	* build.xml
+	* pom.xml
+
 2008-05-01  Jens Lautenbacher  <jtl@schlund.de>
 
 	* projects/sample1/txt/pages/main_phantom.xml: 
