@@ -9,12 +9,15 @@ import java.util.Map;
 
 import org.xml.sax.SAXException;
 
+import de.schlund.pfixcore.beans.Alias;
+import de.schlund.pfixcore.oxm.impl.annotation.ClassNameAlias;
 import de.schlund.pfixxml.config.ProcessActionConfig;
 
 /**
  * @author jtl
  *
  */
+@ClassNameAlias("action")
 public class ProcessActionConfigImpl implements ProcessActionConfig {
     
     // unfortunate. can be "true", "false", "step" :-(
@@ -64,6 +67,7 @@ public class ProcessActionConfigImpl implements ProcessActionConfig {
     /* (non-Javadoc)
      * @see de.schlund.pfixxml.config.ProcessActionConfig#getRetrieveIWrapperPrefixes()
      */
+    @Alias("retrieve")
     public List<String> getRetrievePrefixes() {
         return retrieveprefixes;
     }
@@ -71,6 +75,7 @@ public class ProcessActionConfigImpl implements ProcessActionConfig {
     /* (non-Javadoc)
      * @see de.schlund.pfixxml.config.ProcessActionConfig#getSubmitIWrapperPrefixes()
      */
+    @Alias("submit")
     public List<String> getSubmitPrefixes() {
         return submitprefixes;
     }

@@ -3,6 +3,7 @@ package de.schlund.pfixcore.util;
 import java.io.StringWriter;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -29,8 +30,10 @@ import de.schlund.pfixcore.workflow.ContextImpl;
 import de.schlund.pfixcore.workflow.PageRequest;
 import de.schlund.pfixcore.workflow.context.AccessibilityChecker;
 import de.schlund.pfixcore.workflow.context.RequestContextImpl;
+import de.schlund.pfixxml.ResultDocument;
 import de.schlund.pfixxml.config.IWrapperConfig;
 import de.schlund.pfixxml.config.PageRequestConfig;
+import de.schlund.pfixxml.config.ProcessActionConfig;
 import de.schlund.pfixxml.util.ExtensionFunctionUtils;
 import de.schlund.pfixxml.util.Xml;
 import de.schlund.pfixxml.util.XsltVersion;
@@ -180,6 +183,15 @@ public class TransformerCallback {
                     elem.setAttribute("class", iwrappers.get(prefix).getWrapperClass().getName());
                     elem.setAttribute("activeignore", "" + iwrappers.get(prefix).isActiveIgnore());
                     root.appendChild(elem);
+                }
+            }
+            Map<String, ? extends ProcessActionConfig> actions = pageConfig.getProcessActions();
+            if (actions != null && !actions.isEmpty()) {
+                Element actionelement = doc.createElement("actions");
+                root.appendChild(actionelement);
+                for (Iterator<? extends ProcessActionConfig> iterator = actions.values().iterator(); iterator.hasNext();) {
+                    ProcessActionConfig action =  iterator.next();
+                    ResultDocument.addObject(actionelement, "action", action);
                 }
             }
             if (LOG.isDebugEnabled()) {

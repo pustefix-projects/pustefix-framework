@@ -32,17 +32,14 @@ import de.schlund.util.statuscodes.StatusCodeLib;
  */
 public class SelectProjectHandler implements IHandler {
 
-    public void handleSubmittedData(Context context, IWrapper wrapper)
-            throws Exception {
+    public void handleSubmittedData(Context context, IWrapper wrapper) throws Exception {
         SelectProject input = (SelectProject) wrapper;
-        if (!EditorResourceLocator.getProjectsResource(context).selectProject(
-                input.getProjectName())) {
+        if (!EditorResourceLocator.getProjectsResource(context).selectProject(input.getProjectName())) {
             input.addSCodeProjectName(StatusCodeLib.PFIXCORE_EDITOR_PRODUCTSELECT_UNKNOWN_PRODUCT);
         }
     }
 
-    public void retrieveCurrentStatus(Context context, IWrapper wrapper)
-            throws Exception {
+    public void retrieveCurrentStatus(Context context, IWrapper wrapper) throws Exception {
         // Do not insert any data
     }
 
@@ -58,8 +55,7 @@ public class SelectProjectHandler implements IHandler {
 
     public boolean needsData(Context context) throws Exception {
         // Ask for project, if none is selected
-        return (EditorResourceLocator.getProjectsResource(context)
-                .getSelectedProject() == null);
+        return (EditorResourceLocator.getProjectsResource(context).getSelectedProject() == null);
     }
 
 }

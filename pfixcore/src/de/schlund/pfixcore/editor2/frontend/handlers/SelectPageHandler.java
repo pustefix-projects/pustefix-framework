@@ -32,24 +32,20 @@ import de.schlund.util.statuscodes.StatusCodeLib;
  */
 public class SelectPageHandler implements IHandler {
 
-    public void handleSubmittedData(Context context, IWrapper wrapper)
-            throws Exception {
+    public void handleSubmittedData(Context context, IWrapper wrapper) throws Exception {
         SelectPage input = (SelectPage) wrapper;
-        if (!EditorResourceLocator.getPagesResource(context).selectPage(
-                input.getPageName(), input.getVariantName())) {
+        if (!EditorResourceLocator.getPagesResource(context).selectPage(input.getPageName(), input.getVariantName())) {
             input.addSCodePageName(StatusCodeLib.PFIXCORE_EDITOR_PAGES_PAGE_UNDEF);
         }
     }
 
-    public void retrieveCurrentStatus(Context context, IWrapper wrapper)
-            throws Exception {
+    public void retrieveCurrentStatus(Context context, IWrapper wrapper) throws Exception {
         // Do not insert any data
     }
 
     public boolean prerequisitesMet(Context context) throws Exception {
         // Allow page selection only if project is selected
-        return (EditorResourceLocator.getProjectsResource(context)
-                .getSelectedProject() != null);
+        return (EditorResourceLocator.getProjectsResource(context).getSelectedProject() != null);
     }
 
     public boolean isActive(Context context) throws Exception {
@@ -59,7 +55,7 @@ public class SelectPageHandler implements IHandler {
 
     public boolean needsData(Context context) throws Exception {
         // Always ask to select page
-        return true;
+        return (EditorResourceLocator.getPagesResource(context).getSelectedPage() == null);
     }
 
 }

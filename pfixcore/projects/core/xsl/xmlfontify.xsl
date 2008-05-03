@@ -166,6 +166,56 @@
         </xsl:for-each>
       </table>
     </xsl:if>
+    <xsl:if test="count($iwrappers/iwrappers/actions) > 0">
+      <br/>
+      <h1>Actions:</h1>
+      <table class="datatable" cellspacing="1">
+        <tr>
+          <th><b>Name</b></th>
+          <th><b>submit</b></th>
+          <th><b>retrieve</b></th>
+          <th><b>pageflow</b></th>
+          <th><b>forcestop</b></th>
+          <th><b>jumptopage</b></th>
+          <th><b>jumptopageflow</b></th>  
+        </tr>
+      <xsl:for-each select="$iwrappers/iwrappers/actions/action">
+        <tr valign="top">
+          <td class="rowsep">
+            <b><xsl:value-of select="@name"/></b>
+          </td>
+          <td class="rowsep">
+            <xsl:if test="not(./submit/string)">&#160;</xsl:if>
+            <xsl:for-each select="./submit/string">
+              <xsl:value-of select="./text()"/><br/>
+            </xsl:for-each>
+          </td>
+          <td class="rowsep">
+            <xsl:if test="not(./retrieve/string)">&#160;</xsl:if>
+            <xsl:for-each select="./retrieve/string">
+              <xsl:value-of select="./text()"/><br/>
+            </xsl:for-each>
+          </td>
+          <td class="rowsep">
+            <xsl:if test="not(./@pageFlow)">&#160;</xsl:if>
+            <xsl:value-of select="@pageFlow"/>
+          </td>
+          <td class="rowsep">
+            <xsl:if test="not(./@forceStop)">&#160;</xsl:if>
+            <xsl:value-of select="@forceStop"/>
+          </td>
+          <td class="rowsep">
+            <xsl:if test="not(./@jumpToPage)">&#160;</xsl:if>
+            <xsl:value-of select="@jumpToPage"/>
+          </td>
+          <td class="rowsep">
+            <xsl:if test="not(./@jumpToPageFlow)">&#160;</xsl:if>
+            <xsl:value-of select="@jumpToPageFlow"/>
+          </td>
+        </tr>
+      </xsl:for-each>
+      </table>
+    </xsl:if> 
   </xsl:template>
 
   <xsl:template name="render_roles">

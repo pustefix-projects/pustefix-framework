@@ -1,3 +1,18 @@
+2008-05-04  Jens Lautenbacher  <jtl@schlund.de>
+
+	* projects/core/editor2/conf/edit.conf.xml: add a stopher="true" in the EditorJumpToPageFlow.
+	* src/de/schlund/pfixcore/editor2/frontend/handlers/SelectProjectHandler.java: cosmetics
+	* src/de/schlund/pfixcore/editor2/frontend/handlers/SelectPageHandler.java (needsData): check for the selected page to
+	decide if we need data
+	* src/de/schlund/pfixcore/editor2/frontend/resources/PagesResource.java (getSelectedPage): new method
+	(reset): removed.
+	
+	* src/de/schlund/pfixcore/util/TransformerCallback.java (getIWrappers): also serialize the process actions
+	if there are any configured.
+	* src/de/schlund/pfixxml/config/impl/ProcessActionConfigImpl.java: add some helper annotations
+	for better serializing
+    * projects/core/xsl/xmlfontify.xsl: display the action information
+
 2008-05-02  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
 	* projects/core/script/editor.js: 

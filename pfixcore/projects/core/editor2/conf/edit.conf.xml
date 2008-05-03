@@ -74,7 +74,7 @@
 
   <pageflow name="EditorJumpToPageFlow">
     <flowstep name="jumptopage" />
-    <flowstep name="pages" />
+    <flowstep name="pages" stophere="true"/>
   </pageflow>
 
   <pagerequest name="login">

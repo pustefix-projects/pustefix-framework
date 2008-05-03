@@ -142,10 +142,10 @@ public class PagesResource {
 
     }
 
-    public void reset() throws Exception {
-        this.selectedPage = null;
+    public Page getSelectedPage() {
+        return selectedPage;
     }
-
+    
     public boolean selectPage(String pageName, String variantName) {
         Project project = EditorResourceLocator.getProjectsResource(this.context).getSelectedProject();
         if (project == null) {
