@@ -1,6 +1,6 @@
 2008-05-04  Jens Lautenbacher  <jtl@schlund.de>
 
-	* projects/core/editor2/conf/edit.conf.xml: add a stopher="true" in the EditorJumpToPageFlow.
+	* projects/core/editor2/conf/edit.conf.xml: add a stophere="true" in the EditorJumpToPageFlow.
 	* src/de/schlund/pfixcore/editor2/frontend/handlers/SelectProjectHandler.java: cosmetics
 	* src/de/schlund/pfixcore/editor2/frontend/handlers/SelectPageHandler.java (needsData): check for the selected page to
 	decide if we need data
