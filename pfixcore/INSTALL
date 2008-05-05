@@ -21,14 +21,6 @@ Prerequisites:
           is evaluated within the ant start script contained in the ant
           distribution.
 
-	----------snip: not valid until jikes can really generate 1.5 code -----------
-        * jikes if you want to compile out-of-the-box.  Compilation
-          with javac is of course possible, just set the build.compiler
-          property to modern if you want to compile with the javac of
-          your java installation. But belive me, you really want to use
-          jikes, it's just lightning fast compared to javac.
-	----------snap----------------------------------------------------------------
-
         * A working apache installation with a working mod_jk
           (the apache connection module for tomcat). You need
           to have this module loaded, but you need no further
