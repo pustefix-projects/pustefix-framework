@@ -39,7 +39,7 @@ import de.schlund.pfixxml.util.XsltVersion;
  * @author <a href="mailto:haecker@schlund.de">Joerg Haecker</a>
  * 
  * 
- * This class realises the factory and the singleton pattern. It is responsible to 
+ * This class realizes the factory and the singleton pattern. It is responsible to 
  * create and store objects of type {@link IncludeDocument}  in a {@link SPCache} 
  * cache created by  {@link SPCacheFactory}. If a requested IncludeDocument is found 
  * in the cache it will be returned, otherwise it will be created and stored in the cache. 
