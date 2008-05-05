@@ -52,7 +52,7 @@ public class TrailLogger extends NotificationBroadcasterSupport implements Trail
     public static final String CLOSE_TYPE ="close";
     
     // TODO: ugly static thing code. 
-    // maps visit_ids auf TrailLogger
+    // maps visit_ids on TrailLogger
     public static final Map<String,TrailLogger> map = new HashMap<String,TrailLogger>();
     
     public static void log(PfixServletRequest preq, SPDocument resdoc, HttpSession session) {
@@ -76,7 +76,6 @@ public class TrailLogger extends NotificationBroadcasterSupport implements Trail
         
         visit = lookupVisit(session);
         if (visit == null) {
-            // TODO
             Enumeration<?> enm = session.getAttributeNames();
             System.out.println("session " + session);
             while (enm.hasMoreElements()) {

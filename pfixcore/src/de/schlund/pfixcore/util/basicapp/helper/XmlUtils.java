@@ -41,13 +41,12 @@ public class XmlUtils {
      * @param domDoc The current document
      * @param tagName The name of the tag changing the related attribute
      * @param attribute The attribtute to change
-     * @param secNodeListItem TODO
+     * @param secNodeListItem
      * @param docName The name of the document in order to
      * avoid problems if a node occurs in different files with the
      * same name
      */
-    public static Document changeAttributes(Document domDoc, String tagName, 
-            String attribute, String newValue, boolean secNodeListItem) {
+    public static Document changeAttributes(Document domDoc, String tagName, String attribute, String newValue, boolean secNodeListItem) {
         System.out.println("Changing the attribute " + attribute);
         
         NodeList nodeList = domDoc.getElementsByTagName(tagName);

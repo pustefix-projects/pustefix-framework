@@ -59,12 +59,13 @@ public class IncludeDocumentFactory {
     }
     
     // FIXME! Don't do the whole method synchronized!!
-    public synchronized IncludeDocument getIncludeDocument(XsltVersion xsltVersion, FileResource path, boolean mutable) throws SAXException, IOException, TransformerException  {
-        //TODO: change method signature (create multiple methods) to reflect mutable vs. immutable document creation
-        if(xsltVersion==null&&!mutable) throw new IllegalArgumentException("XsltVersion has to be specified to create a immutable document.");
+    public synchronized IncludeDocument getIncludeDocument(XsltVersion xsltVersion, FileResource path, boolean mutable) throws SAXException, IOException, TransformerException {
+        // TODO: change method signature (create multiple methods) to reflect
+        // mutable vs. immutable document creation
+        if (xsltVersion == null && !mutable) throw new IllegalArgumentException("XsltVersion has to be specified to create a immutable document.");
         IncludeDocument includeDocument = null;
-        String          key             = getKey(xsltVersion, path, mutable);
-        
+        String key = getKey(xsltVersion, path, mutable);
+
         if (!isDocumentInCache(key) || isDocumentInCacheObsolete(path, key)) {
             includeDocument = new IncludeDocument();
             includeDocument.createDocument(xsltVersion, path, mutable);

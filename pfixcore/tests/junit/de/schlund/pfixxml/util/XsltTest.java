@@ -1,8 +1,6 @@
 /*
  * Created on May 24, 2004
  *
- * TODO To change the template for this generated file go to
- * Window - Preferences - Java - Code Generation - Code and Comments
  */
 package de.schlund.pfixxml.util;
 
@@ -28,22 +26,22 @@ import com.icl.saxon.om.NodeInfo;
 import de.schlund.pfixxml.resources.ResourceUtil;
 
 public class XsltTest extends TestCase {
-    
+
     protected XsltVersion getXsltVersion() {
         return XsltVersion.XSLT1;
     }
-    
-    //-- make sure we have several bug fixes
-    
+
+    // -- make sure we have several bug fixes
+
     public void testBugfix962737_IncorrectNsPrefix() throws Exception {
         Document doc = transform("incorrectnsprefix");
-        NodeList lst =  doc.getDocumentElement().getElementsByTagNameNS("http://www.w3.org/1999/XSL/Transform", "message");
+        NodeList lst = doc.getDocumentElement().getElementsByTagNameNS("http://www.w3.org/1999/XSL/Transform", "message");
         assertEquals(1, lst.getLength());
         assertEquals("alias:message", ((AbstractNode) lst.item(0)).getDisplayName());
     }
 
-    //-- test extensions
-    
+    // -- test extensions
+
     public void testExtension() throws Exception {
         Document doc = transform("extension");
         Element hello = (Element) doc.getDocumentElement().getElementsByTagName("hello").item(0);
@@ -55,16 +53,17 @@ public class XsltTest extends TestCase {
         StringWriter writer;
         Document doc;
 
-        // Xml.serialize does *not* encode urls, thus, I have to use Saxon's stream serialization  
+        // Xml.serialize does *not* encode urls, thus, I have to use Saxon's
+        // stream serialization
         writer = new StringWriter();
         result = new StreamResult(writer);
         transform("html", result);
         doc = Xml.parseString(getXsltVersion(), writer.getBuffer().toString());
         assertEquals("m%C3%BCller", ((Attr) XPath.selectNode(doc, "/html/a/@href")).getValue());
     }
-    
-    //-- helper code
-    
+
+    // -- helper code
+
     private Document transform(String name) throws Exception {
         DOMResult result;
 
@@ -79,13 +78,13 @@ public class XsltTest extends TestCase {
         final String xsl = name + ".xsl";
         Document doc;
         Templates trafo;
-        
-        doc    = Xml.parse(getXsltVersion(), new File(PREFIX + xml));
-        trafo  = Xslt.loadTemplates(getXsltVersion(), ResourceUtil.getFileResource("file://" + (new File(PREFIX + xsl)).getAbsolutePath()));
+
+        doc = Xml.parse(getXsltVersion(), new File(PREFIX + xml));
+        trafo = Xslt.loadTemplates(getXsltVersion(), ResourceUtil.getFileResource("file://" + (new File(PREFIX + xsl)).getAbsolutePath()));
         Xslt.transform(doc, trafo, null, result);
     }
-    
-	public static NodeInfo toDocumentExtension(String str) throws TransformerException {
-	    return (NodeInfo) Xml.parseString(XsltVersion.XSLT1, str);
-	}
+
+    public static NodeInfo toDocumentExtension(String str) throws TransformerException {
+        return (NodeInfo) Xml.parseString(XsltVersion.XSLT1, str);
+    }
 }

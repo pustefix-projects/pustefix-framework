@@ -260,7 +260,7 @@ public abstract class ServletManager extends HttpServlet {
                                     has_ssl_session_secure = true;
                                     Cookie cookie_new = new Cookie(cookie.getName(), System.currentTimeMillis() + COOKIE_VALUE_SEPARATOR + tmp_sec);
                                     setCookiePath(req, cookie_new);
-                                    // FIXME (see comment in cleanupCookies
+                                    // (see comment in cleanupCookies)
                                     // cookie_new.setMaxAge(session.getMaxInactiveInterval());
                                     cookie_new.setMaxAge(-1);
                                     cookie_new.setSecure(true);
@@ -518,8 +518,8 @@ public abstract class ServletManager extends HttpServlet {
 
             cookie = new Cookie(SECURE_SESS_COOKIE + sec_cookie, System.currentTimeMillis() + COOKIE_VALUE_SEPARATOR + sec_testid);
             setCookiePath(req, cookie);
-            // FIXME (see comment in cleanupCookies
-            //cookie.setMaxAge(session.getMaxInactiveInterval());
+            // (see comment in cleanupCookies)
+            // cookie.setMaxAge(session.getMaxInactiveInterval());
             cookie.setMaxAge(-1);
             cookie.setSecure(true);
             res.addCookie(cookie);
@@ -1136,7 +1136,7 @@ public abstract class ServletManager extends HttpServlet {
                     setCookiePath(req, curr_cookie);
                     res.addCookie(curr_cookie);
                 } else if (curr_lasttouch < timeout) {
-                    // FIXME We shoudln't need to check for "old" cookies here, because the
+                    // NOTE: We shoudln't need to check for "old" cookies here, because the
                     // lifetime of a cookie should ideally be set to the max. inactive time of the
                     // session, so the browser would stop sending old cookies by itself. But I'm not
                     // entirely sure if we can really depend on having the time set right on all

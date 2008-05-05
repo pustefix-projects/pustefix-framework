@@ -213,7 +213,6 @@ public final class IncludeDocumentExtension {
                             DependencyTracker.logTyped("text", path, part, curr_theme,
                                                        parent_path, parent_part, parent_theme, target);
                         } catch (Exception e) {
-                            // TODO
                             ok = false;
                         }
                     }
@@ -239,7 +238,7 @@ public final class IncludeDocumentExtension {
                 try {
                     DependencyTracker.logTyped("text", path, part, DEF_THEME,
                                                parent_path, parent_part, parent_theme, target);
-                } catch (Exception e) { // TODO
+                } catch (Exception e) {
                     ok = false;
                 }
             }
