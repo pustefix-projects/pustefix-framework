@@ -54,7 +54,7 @@
           </when>
         </oncontinue>
       </flowstep>
-      <flowstep name="phantom" stophere="true"/>
+      <flowstep name="phantom"/>
       <flowstep name="overview"/>
     </default>
     <variant name="foo:bar">

@@ -27,7 +27,7 @@ function handleSubmittedData(context, wrapper) {
     }
     
     var scode = StatusCodeLib.PFIXCORE_EXAMPLE_TSHIRT_SCRIPTING_SUCCESS;
-    context.addPageMessage(scode);
+    context.addPageMessage(scode, null, null);
 }
 
 function retrieveCurrentStatus(context, wrapper) {
