@@ -1,0 +1,135 @@
+<?xml version="1.0"?>
+<chapter xml:id="concepts" xmlns="http://docbook.org/ns/docbook" xmlns:xlink="www.w3.org/1999/xlink"
+  xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://docbook.org/ns/docbook http://www.docbook.org/xml/5.0CR7/xsd/docbook.xsd"
+>
+  <title>Important Concepts</title>
+
+  <section xml:id="concepts.request_processing">
+    <title>Processing of requests in Pustefix</title>
+    <para>
+      Every request that arrives at a pustefix application is processed in a specific way, depending on the servlet that is being
+      selected by the servlet container to handle it. In this chapter we will take a deeper look at the most important case of a
+      <code>ContextXMLServer</code>
+      being the servlet to handle the request.
+    </para>
+    <para>
+      The special processing of requests by this servlet is called the
+      <emphasis>Pustefix Request Cycle</emphasis>
+      . It is important to understand how this cycle works, and how to configure it in such a way to achieve the desired result
+      for each request.
+    </para>
+    <para>
+      The main "director" in this cycle is the
+      <code>Context</code>
+      object, that will handle all the processing logic and call other objects to handle the business logic part of the request
+      cycle (aka: do something useful with all the user supplied parameters of the request). The other main participants are
+      implementations of the
+      <code>State</code>
+      and
+      <code>PageFlow</code>
+      interfaces.
+    </para>
+    <para>
+      Pustefix supplies default implementations of these interfaces. For the
+      <code>PageFlow</code>
+      interface, there is currently only one implementation, and at the time of this writing it's not yet possible to change this
+      implementation by supplying your own, although this is planned for the near future. The current implementation is called
+      <code>DataDrivenPageFlow</code>
+      , and it will be explained in more detail below.
+    </para>
+    <para>
+      The situation is different for
+      <code>State</code>
+      s; Pustefix supplies implementations to cover most of the needs one may have in a normal application, however there are
+      always situations where it is needed or at least much easier to write a specialized
+      <code>State</code>
+      instead of trying to re- or misuse one of the two "standard" implementations supplied with the framework.
+    </para>
+    <para>
+      These two implementations are
+      <code>StaticState</code>
+      and
+      <code>DefaultIWrapperState</code>
+      . The first is used for all
+      <emphasis>static</emphasis>
+      pages, i.e. pages that don't need to process any input parameters, but merely display more or less static content. The only
+      dynamic thing this state can do is to include information from
+      <emphasis>context resources</emphasis>
+      into it's output DOM tree. The second one implements the concept of
+      <emphasis>wrappers and handlers</emphasis>
+      , which is the standard way in pustefix to handle input data.
+    </para>
+    <para>
+      Both of these states inherit from the abstract class
+      <code>StateImpl</code>
+      , a class that implements a bunch of helper methods useful for basically every conceivable state implementation. So it is
+      strongly suggested to use this (or one of the two described states) as the base class for your own implementations.
+    </para>
+    <para>
+      While both of these states will be explained in detail below, it is important to note that the context only knows about
+      states, not a special implementation of it. So on this level it makes no difference if a request supplies data to be
+      processed, or if it only request the display of a certain page. So the only thing we need to know for this chapter is the
+      interface all states have to implement:
+
+      <programlisting language="java"><![CDATA[
+public interface State {
+    boolean        isAccessible(Context context, PfixServletRequest preq) throws Exception;
+    boolean        needsData(Context context, PfixServletRequest preq) throws Exception;
+    ResultDocument getDocument(Context context, PfixServletRequest preq) throws Exception;
+}
+      ]]></programlisting>
+
+      These three methods are quite easy to explain.
+      <code>isAccessible(...)</code>
+      is used to check if a page is accessible (the exact wording would be "the associated
+      <code>State</code>
+      of the page", but we use page/state interchangeable here, as there is a n:1 association of pages to states anyway, i.e.
+      every page has exactly one associated state, but most of the time many pages share the same state. States are singletons, so
+      they don't store any data themselves. This allows to share them between many pages).
+
+      <code>getDocument(...)</code>
+      is the method that does all the work. Here we produce the result DOM tree that is used to render the final HTML page with.
+
+      <code>needsData(...)</code>
+      is (or better: can be) used only during
+      <emphasis>page flow processing</emphasis>
+      to determine what the next page is that needs to be shown. This method will be explained when we describe the
+      <code>PageFlow</code>
+      and it's default implementation in greater detail below.
+    </para>
+
+    <section>
+      <title>The basic request cycle</title>
+      <para>
+        During the request-response cycle, the context maintains a set of variables that influence the processing of the request.
+        These are
+        <table frame="all">
+        <title>Variables of the context during processing</title>
+          <tgroup cols="3" align="left">
+          <thead>
+          <row>
+            <entry>Variable</entry>
+            <entry>Type</entry>
+            <entry>Usage</entry>
+          </row>
+          </thead>
+          <tbody>
+            <row>
+            <entry>currentpagerequest</entry>
+            <entry>PageRequest</entry>
+            <entry>
+              This is basically the object representing the current page we use to process the request. The value of
+              currentpagerequest that is valid at the end of the processing will become the page to be displayed.
+            </entry>
+          </row>
+          </tbody>
+          </tgroup>
+        </table>
+      </para>
+    </section>
+
+  </section>
+
+
+</chapter>

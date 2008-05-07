@@ -1,12 +1,16 @@
 <?xml version="1.0"?>
-<book version="5.0" xmlns="http://docbook.org/ns/docbook" xmlns:xlink="www.w3.org/1999/xlink" xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://docbook.org/ns/docbook http://www.docbook.org/xml/5.0CR7/xsd/docbook.xsd">
+<book version="5.0" xmlns="http://docbook.org/ns/docbook" xmlns:xlink="www.w3.org/1999/xlink"
+  xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://docbook.org/ns/docbook http://www.docbook.org/xml/5.0CR7/xsd/docbook.xsd"
+>
   <info>
     <title>Pustefix Reference Documentation</title>
     <copyright>
       <holder>1&amp;1 Internet AG</holder>
-      <year>2007</year>
+      <year>2008</year>
     </copyright>
   </info>
-  <xi:include href="reference/configuration.xml"/>
-  <xi:include href="reference/advancedtopics.xml"/>
+  <xi:include href="reference/configuration.xml" />
+  <xi:include href="reference/concepts.xml" />
+  <xi:include href="reference/advancedtopics.xml" />
 </book>
