@@ -1,3 +1,9 @@
+2008-05-08  jtl  <jtl@schoenberg.laudi.ka>
+
+	* docs/docbook/src/reference/concepts.xml: new file: trying to add more documentation, especially the 
+	pustefix request cycle.  
+	* projects/core/xsl/navigation.xsl: changed to never send __sendingdata=1 when startwithflow is true.
+
 2008-05-04  Jens Lautenbacher  <jtl@schlund.de>
 
 	* projects/core/editor2/conf/edit.conf.xml: add a stophere="true" in the EditorJumpToPageFlow.

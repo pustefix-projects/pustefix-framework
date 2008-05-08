@@ -50,7 +50,28 @@ public interface PageFlow {
 }
       ]]></programlisting>
           
+        Both <code>getName()</code> and <code>getRootName()</code> return the name of the pageflow, the difference being that <code>getName()</code> contains the full qualified name (the root name
+        together with any variant name, if present) while get RootName() only returns the root name.   
     </para>
+    <para>
+      <code>containsPage</code> must returns true if the given page name is part of the page flow. 
+    </para>
+    <para>
+      <code>findNextPage(...)</code> is more interesting. It implements the main duty of a page flow: To supply some sort of "next" page, given the context (in the form of a 
+      <code>PageFlowContext</code> which is just a stripped down version of the <code>Context</code> interface to only support getting information, but no
+      changing the inner state of the context object), the information what the current page name is (<code>currentpagename</code>), and two
+      flags:
+        <itemizedlist>
+          <listitem><para><code>stopatcurrentpage</code>: If set to true and the current page is part of the pageflow, then the page flow searches no 
+          further for another matching page then the current page. I.e. for the linear page flows of the <code>DataDrivenPageFlow</code> implementation
+           this means checking all the (accessible) pages starting at the head of the flow if they need data (that means: The associated <code>State</code> returns <code>true</code> for method call
+           <code>needsData(...)</code>) - if yes, that page is returned. But if the page under consideration
+           is the current page, return it in any case even if it doesn't need data.</para></listitem>
+           <listitem><para><code>stopatnextaftercurrent</code>: This is is similar to the first flag, only that we don't stop the page flow search at the current page, but 
+           instead at the next accessible page <emphasis>after</emphasis> the current page.</para></listitem>
+        </itemizedlist>
+    </para>
+    <para>The rest of the methods will be explained in more detail below.</para>
     <para>
       The situation is different for
       <code>State</code>s; Pustefix supplies implementations to cover most of the needs one may have in a normal application, however there are
@@ -109,8 +130,8 @@ public interface State {
     </para>
 
     <section>
-      <title>The basic request cycle</title>
-        <para>During the request-response cycle, the context maintains a set of variables that influence the processing of the request.
+      <title>The "knobs" to influence the page request cycle</title>
+        <para>During the request-response cycle, the <code>Context</code> maintains a set of variables that influence the processing of the request.
         These are listed in the following table. Use these as a reference to see how they can be set and changed, either by specifying
         values for them in the request (directly, or by referencing an action that sets them) or by calling a method of <code>Context</code>
         somewhere from Java code during the processing of the request.</para>
@@ -251,18 +272,130 @@ public interface State {
               <row>
                 <entry>startwithflow</entry>
                 <entry>boolean</entry>
-                <entry>Default is <code>false</code>. </entry>
-                <entry></entry>
+                <entry>Default is <code>false</code>. This variable is used to instruct the <code>Context</code> to not directly use the page that is 
+                submitted with the request (and which is still used to set the <code>currentpagerequest</code> variable), but instead ask the current pageflow for
+                the next page to use. So the caller doesn't actually know which page will be the one to display. Most often, setting this parameter also implies explicitely 
+                setting a page flow via the methods listed above. We will cover this special case in more detail below.</entry>
+                <entry>This variable can be set via the request parameter <code>__startwithflow</code>. With Pustefix tags this is achived by setting the
+                <code>startwithflow</code> attribute of <code>pfx:button</code> to <code>true</code>. 
+                <para>There is no such possibility for <code>pfx:xinp type="submit|image"</code>, because 
+                it makes no sense for a request which supplies data to not know where to submit to. Also using <code>startwithflow="true"</code> with 
+                <code>pfx:button</code> implies that the request will not being marked as one that sends data, even if there are <code>pfx:argument</code> nodes attached.
+                </para>
+                </entry>
               </row>
             </tbody>
           </tgroup>
         </table>
-      <para>
+        <para>
+        The <code>currentpageflow</code> variable needs some more 
+        explanation, as in many cases, it is not given explicitly neither by submitting an action that specifies the page flow nor directly from the request parameter <code>__pageflow</code>.
+        If this is the case, the <code>Context</code> tries to find a <emphasis>matching</emphasis> page flow by using the following algorithm.
         
+        <orderedlist>
+          <listitem><para>
+            If the current page is a member of exactly one page flow, this flow will become the current page flow.
+          </para></listitem>
+          <listitem><para>
+            If the current page is a member of more than one page flow, the <code>Context</code> checks if one of these flows has been the <emphasis>last flow</emphasis> 
+            the system has used in any request before (so this even applies if the system didn't use a page flow at all during the last requests). If this is the case,
+            the system uses this flow as the current page flow. This has the effect that a page flow will remain the current flow as long as the pages used for requests are at least
+            a member of this flow.
+          </para></listitem>
+          <listitem><para>
+            If the last flow isn't part of the list of flows matching the current page, the system checks if the current page specifies a <code>defaultflow</code> in its 
+            configuration (and makes sure that the page is really a member of this flow!). 
+            If yes, this flow is preferred and returned as the current page flow. If not, the first of the list will be returned. 
+          </para></listitem>
+          <listitem><para>
+            If the current page is not a member of any flow, the current page flow remains unset (the <code>currentpageflow</code> variable remains <code>null</code>).
+          </para></listitem>
+        </orderedlist>
       </para>
     </section>
 
+    <section>
+      <title>The basic Pustefix Request Cycle</title>
+      <para> 
+        In this section we want to explain the way the request cycle is handled in Pustefix by the <code>Context</code> and its peer objects (<code>State</code>, <code>PageFlow</code>) used during
+        processing.
+      </para>
+      <para>
+        After the variables have been initialized, we have two different ways to go on. Either <code>startwithflow</code> is set to <code>true</code>, or not.
+        The first case will be explained below in more detail, for now we assume that the value of <code>startwithflow</code> is <code>false</code>.
+        We also do neglect some other aspects, that have to be taken care of during request processing: Role based authentication isn't mentioned here and also the fact that each 
+        <code>State</code> will always be asked if it is accessible before calling one of the other two methods won't be mentioned explicitly for the remainder of this explanation.  
+      </para>
+      <para>
+        <orderedlist>
+          <listitem><para>
+            The first action to take is calling <code>getDocument(...)</code> on the <code>State</code> associated with the current page. 
+          </para></listitem>
+          <listitem><para>
+            If the current page flow has <emphasis>After-Request-Hooks</emphasis> defined (this is checked by calling the method <code>hasHookAfterRequest(...)</code> on 
+            the current <code>PageFlow</code>), these hooks are being run by calling <code>hookAfterRequest(Context context, ResultDocument resdoc)</code>. The <code>ResultDocument</code> used
+            here is the return value from the <code>getDocument(...)</code> call above. These hooks can basically do anything that can be achieved with the help of the <code>Context</code>
+            interface (changing <code>jumptopage/jumptopageflow</code>, calling <code>prohibitContinue()</code> and so on). The interesting thing here is that they not only have access to the
+            <code>Context</code> object, but also the resulting DOM-Tree of the processing of the current page. We will learn about an example of such hooks when we look at the current standard 
+            implementation <code>DataDrivenPageFlow</code>. 
+          </para></listitem>
+          <listitem><para>
+            Now we check if <code>prohibitcontinue</code> is set to <code>true</code>. If yes, the <code>ResultDocument</code> will be used to display the current page. The request cycle ends here.
+          </para></listitem>
+          <listitem><para>
+            If <code>prohibitcontinue</code> is still false, check if  <code>jumptopage</code> is set. If yes, set the <code>currentpagerequest</code> to the <code>jumptopage</code> (and also change
+            <code>currentpageflow</code> to something that matches, preferring <code>jumptopageflow</code>, if it is set; <code>jumptopage/jumptopageflow</code> are unset to avoid recursion, then 
+            we re-enter the process at point 1.
+          </para></listitem>
+          <listitem><para>
+            If also <code>jumptopage</code> is not set, we try to use the current page flow to get the next page by calling <code>findNextPage(...)</code>. We set this page to be the current page, 
+            call <code>getDocument</code> on its associated <code>State</code> and use the returned <code>ResultDocument</code> to display the page. The request cycle ends here (there is 
+            no recursive call of the page flow process!).
+          </para></listitem>
+          <listitem><para>
+            If no current page flow is set (<code>currentpageflow == null</code>), we simply use the resulting ResultDocument of the initial call to <code>getDocument(...)</code> and use it
+            to display the current page.             
+          </para></listitem>
+        </orderedlist>
+      </para>
+      
+      <section>
+         <title>Accessibility of pages and Authentication</title>
+         <para>
+          
+         </para>
+      </section>
+
+      <section>
+         <title>Processing when <code>startwithflow=true</code></title>
+         <para>
+         </para>
+      </section>
+    </section>
+  
+    <section>
+      <title>Pustefix <code>State</code> implementations: <code>StaticState</code> and <code>DefaultIWrapperState</code></title>
+      <para>
+      </para>
+    </section>
+      
+    <section>
+      <title>Pustefix <code>PageFlow</code> implementation: <code>DataDrivenPageFlow</code></title>
+      <para>
+      </para>
+    </section>
+      
   </section>
 
-
+  <section>
+    <title>The data model: Context resources</title>
+    <para>
+    </para>  
+  </section>
+   
+  <section>
+    <title>Wrappers and Handlers</title>
+    <para>
+    </para>
+  </section>
 </chapter>
