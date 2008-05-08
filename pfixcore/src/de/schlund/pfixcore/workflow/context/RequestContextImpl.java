@@ -163,13 +163,6 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
         }
     }
 
-    public String getJumpToPage() {
-        if (currentpservreq == null) {
-            throw new IllegalStateException("JumpToPage is only available witihin request handling");
-        }
-        return jumptopage;
-    }
-
     public void setJumpToPage(String pagename) {
         if (currentpservreq == null) {
             throw new IllegalStateException("JumpToPage is only available witihin request handling");
@@ -178,14 +171,7 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
     }
 
     public boolean isJumpToPageSet() {
-        return getJumpToPage() != null;
-    }
-
-    public String getJumpToPageFlow() {
-        if (currentpservreq == null) {
-            throw new IllegalStateException("JumpToPageFlow is only available witihin request handling");
-        }
-        return jumptopageflow;
+        return (jumptopage != null);
     }
 
     public void setJumpToPageFlow(String pageflow) {
@@ -207,7 +193,7 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
     }
 
     public boolean isJumpToPageFlowSet() {
-        return getJumpToPageFlow() != null;
+        return (jumptopageflow != null);
     }
 
     public void prohibitContinue() {
@@ -285,7 +271,7 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
             // happens.
             return true;
         }
-        if (getJumpToPageFlow() != null) {
+        if (jumptopageflow != null) {
             // We will jump to some page and not use the returned document for
             // creating the UI.
             return false;
@@ -424,7 +410,7 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
             String ac_jumptopageflow = action.getJumpToPageFlow();
             if (ac_jumptopage != null) {
                 setJumpToPage(ac_jumptopage);
-                if (getJumpToPage() != null && ac_jumptopageflow != null) {
+                if (ac_jumptopageflow != null) {
                     setJumpToPageFlow(ac_jumptopageflow);
                 }
             }
