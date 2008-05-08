@@ -136,33 +136,28 @@ public interface State {
         values for them in the request (directly, or by referencing an action that sets them) or by calling a method of <code>Context</code>
         somewhere from Java code during the processing of the request.</para>
          
-        <table frame="all">
-          <title>Variables of the context during processing</title>
-          <tgroup cols="4" align="left">
-            <colspec colnum="1" colname="col1" colwidth="1*"/>
-            <colspec colnum="2" colname="col2" colwidth="1*"/>
-            <colspec colnum="3" colname="col3" colwidth="1.5*"/>
-            <colspec colnum="4" colname="col4" colwidth="1.5*"/>
+        <table rules="all" frame="box">
+          <caption>Variables of the context during processing</caption>
             <thead>
-              <row>
-                <entry>Variable</entry>
-                <entry>Type</entry>
-                <entry>Usage</entry>
-                <entry>How to set?</entry>
-              </row>
+              <tr>
+                <th>Variable</th>
+                <th>Type</th>
+                <th>Usage</th>
+                <th>How to set?</th>
+              </tr>
             </thead>
             <tbody valign="top">
-              <row>
-                <entry>currentpagerequest</entry>
-                <entry>PageRequest</entry>
-                <entry>
+              <tr>
+                <td>currentpagerequest</td>
+                <td>PageRequest</td>
+                <td>
                   This is basically the object representing the current page we use to process the request. The value of
                   currentpagerequest that is valid at the end of processing becomes the page to be displayed.
                   <para> After initialization
                   this variable should never be unset again during the whole request cycle (it only changes to other
                   PageRequests).</para>
-                </entry>
-                <entry>
+                </td>
+                <td>
                   Supplied by the request via either the third request path element (e.g.
                   http://host.dom/xml/config/PAGE?...) or if this is not given via the request parameter
                   <code>__page</code>.
@@ -175,16 +170,16 @@ public interface State {
                   <para> If no page information can be retrieved from 
                   the request, use the default page given in the configuration.
                   </para>
-                </entry>
-              </row>
-              <row>
-                <entry>currentpageflow</entry>
-                <entry>PageFlow</entry>
-                <entry>
+                </td>
+              </tr>
+              <tr>
+                <td>currentpageflow</td>
+                <td>PageFlow</td>
+                <td>
                   Default is null. This object represents the currently valid page flow (if any). 
                   If it is null, there is no page flow selected.
-                </entry>
-                <entry>
+                </td>
+                <td>
                   Can be explicitly set via the parameter <code>__pageflow</code> (in Pustefix used via the 
                   attribute <code>pageflow</code> to either 
                   <code>pfx:button</code> or <code>pfx:xinp type="submit|image"</code> via the request or by setting
@@ -196,16 +191,16 @@ public interface State {
                   The current page flow is very often not set explicitly, but selected automatically by the context. See below for 
                   a detailed explanation of the rules that apply in these cases.
                   </emphasis></para>
-                </entry>
-              </row>
-              <row>
-                <entry>prohibitcontinue</entry>
-                <entry>boolean</entry>
-                <entry>
+                </td>
+              </tr>
+              <tr>
+                <td>prohibitcontinue</td>
+                <td>boolean</td>
+                <td>
                 Default is <code>false</code>, if set to <code>true</code> during the request processing, the context will
                 not use the pageflow (if any) to determine the next page to show, but instead use the currentpagerequest and
-                display the associated page.</entry>
-                <entry>
+                display the associated page.</td>
+                <td>
                 Can be set from the outside by using the request parameter <code>__forcestop=true</code> (maps to setting
                 the <code>forcestop</code> attribute of <code>pfx:button</code> or <code>pfx:xinp type="submit|image"</code> 
                 to <code>true</code> or by calling a configured action with this attribute set to <code>true</code>).
@@ -214,12 +209,12 @@ public interface State {
                 <emphasis>If by any means this value becomes <code>true</code>, there is no way to reset the value
                 to <code>false</code> again!</emphasis>
                 </para>
-                </entry>
-              </row>
-              <row>
-                <entry>jumptopage and jumptopageflow</entry>
-                <entry>String</entry>
-                <entry>
+                </td>
+              </tr>
+              <tr>
+                <td>jumptopage and jumptopageflow</td>
+                <td>String</td>
+                <td>
                 Default is null for both. If set, <code>jumptopage</code> is interpreted as a page name that should be displayed 
                 <emphasis>after</emphasis> the current request is processed and only if <code>prohibitcontinue</code> is 
                 not set to <code>true</code> (in which case, as described below in more detail, no further processing takes place
@@ -231,8 +226,8 @@ public interface State {
                 <para>
                 With other words, 
                 this mechanism is used to <emphasis>jump</emphasis> to another page after the current request has been successfully
-                handled.</para></entry>
-                <entry>
+                handled.</para></td>
+                <td>
                   This entry can be set quite similar to the <code>pageflow</code> variable above: We have <code>__jumptopage</code> and
                   <code>__jumptopageflow</code>, normally created via the attributes <code>jumptopage</code> and 
                   <code>jumptopageflow</code> in either <code>pfx:button</code>, <code>pfx:xinp type="submit|image"</code> or a
@@ -242,12 +237,12 @@ public interface State {
                     <code>setJumpToPage(String name)</code> 
                     and <code>setJumpToPageFlow(String name)</code>.
                   </para>
-                </entry>
-              </row>
-              <row>
-                <entry>stopnextforcurrentrequest</entry>
-                <entry>boolean</entry>
-                <entry>Default is <code>false</code>. Only has an effect if a page flow is set, and the current page is indeed 
+                </td>
+              </tr>
+              <tr>
+                <td>stopnextforcurrentrequest</td>
+                <td>boolean</td>
+                <td>Default is <code>false</code>. Only has an effect if a page flow is set, and the current page is indeed 
                 a member of this page flow.
                 <para> 
                 If set to true the pageflow is expected to return the next accessible page <emphasis>after</emphasis> the 
@@ -257,8 +252,8 @@ public interface State {
                 understanding of what is "before" and "after" a page in the flow. 
                 Other implementations may have a more complicated interpretation.
                 </para>
-                </entry>
-                <entry>
+                </td>
+                <td>
                   Can be set directly in a request by using <code>__forcestop=step</code> (and of course the same for the 
                   attributes to the Pustefix tags and configured actions). 
                   <para>This may seem strange, as that parameter is also 
@@ -267,25 +262,24 @@ public interface State {
                   is being displayed anyway and no page flow is asked for the next page to display), there is no need to have an independent 
                   parameter or attribute.
                   </para> 
-                </entry>
-              </row>
-              <row>
-                <entry>startwithflow</entry>
-                <entry>boolean</entry>
-                <entry>Default is <code>false</code>. This variable is used to instruct the <code>Context</code> to not directly use the page that is 
+                </td>
+              </tr>
+              <tr>
+                <td>startwithflow</td>
+                <td>boolean</td>
+                <td>Default is <code>false</code>. This variable is used to instruct the <code>Context</code> to not directly use the page that is 
                 submitted with the request (and which is still used to set the <code>currentpagerequest</code> variable), but instead ask the current pageflow for
                 the next page to use. So the caller doesn't actually know which page will be the one to display. Most often, setting this parameter also implies explicitely 
-                setting a page flow via the methods listed above. We will cover this special case in more detail below.</entry>
-                <entry>This variable can be set via the request parameter <code>__startwithflow</code>. With Pustefix tags this is achived by setting the
+                setting a page flow via the methods listed above. We will cover this special case in more detail below.</td>
+                <td>This variable can be set via the request parameter <code>__startwithflow</code>. With Pustefix tags this is achived by setting the
                 <code>startwithflow</code> attribute of <code>pfx:button</code> to <code>true</code>. 
                 <para>There is no such possibility for <code>pfx:xinp type="submit|image"</code>, because 
                 it makes no sense for a request which supplies data to not know where to submit to. Also using <code>startwithflow="true"</code> with 
                 <code>pfx:button</code> implies that the request will not being marked as one that sends data, even if there are <code>pfx:argument</code> nodes attached.
                 </para>
-                </entry>
-              </row>
+                </td>
+              </tr>
             </tbody>
-          </tgroup>
         </table>
         <para>
         The <code>currentpageflow</code> variable needs some more 
