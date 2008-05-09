@@ -10,7 +10,9 @@
       <year>2008</year>
     </copyright>
   </info>
+  <xi:include href="reference/overview.xml" />
   <xi:include href="reference/configuration.xml" />
+  <xi:include href="reference/xslt.xml" />
   <xi:include href="reference/concepts.xml" />
   <xi:include href="reference/advancedtopics.xml" />
 </book>

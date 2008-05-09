@@ -1,0 +1,136 @@
+<?xml version="1.0"?>
+<chapter xml:id="xslt" xmlns="http://docbook.org/ns/docbook" xmlns:xlink="www.w3.org/1999/xlink"
+  xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://docbook.org/ns/docbook http://www.docbook.org/xml/5.0CR7/xsd/docbook.xsd"
+>
+  <title>Core Pustefix tag library</title>
+  <para>
+    Pustefix includes a small library of tags defined as XSLT templates which implement low level functionality common to all
+    Pustefix application. These templates are mostly concerned with creating links to Pustefix pages or external URLs, sending
+    data via HTML forms (including the necessary error handling) and including XML ressources (<emphasis>Include Parts</emphasis>).
+  </para>
+  <para>
+    All core tags reside in their own namespace. The prefix usually used is
+    <code>pfx</code>, and the namespace is
+    <code>http://www.schlund.de/pustefix/core</code>. You are not supposed to enter your own private project 
+    specific tags into this namespace.
+  </para>
+
+  <para>
+    The following table lists these tags together with a very short explanation what they do. Refer to the relevant subsections
+    below to find a detailed explanation on their relevant attributes, subnodes and how to use them.
+  </para>
+
+<para>
+  <table rules="all" frame="box">
+    <caption>The Core Pustefix XSLT Tags</caption>
+    <thead>
+      <tr>
+        <th>Tag name</th>
+        <th>Short information</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>pfx:document</td>
+        <td>The top-most container for all Pustefix pages</td>
+      </tr>
+      <tr>
+        <td>pfx:frameset, pfx:frame</td>
+        <td>Used to define pages with framesets and frames.</td>
+      </tr>
+      <tr>
+        <td>pfx:button</td>
+        <td>This tag creates simple links to internal Pustefix pages (possibly submitting parameters for requests)</td>
+      </tr>
+      <tr>
+        <td>pfx:url</td>
+        <td>Used to create only the content of the href attribute of a link to an internal page.</td>
+      </tr>
+      <tr>
+        <td>pfx:elink</td>
+        <td>
+          This tag creates links to external URLs where care must be taken to strip the session ID from the referer header to not leak
+          sensitive information to the outside world
+        </td>
+      </tr>
+      <tr>
+        <td>pfx:include</td>
+        <td>
+          This tag references a file via its href attribute, and includes a named snippet of xml content contained in this file
+          via the part attribute.
+        </td>
+      </tr>
+      <tr>
+        <td>pfx:maincontent</td>
+        <td>This tag is used to include "computed" include parts.</td>
+      </tr>
+      <tr>
+        <td>pfx:image</td>
+        <td>
+          This tag references images to be included in the final page (via
+          img-tags).
+        </td>
+      </tr>
+      <tr>
+        <td>pfx:forminput</td>
+        <td>This tag creates a HTML form.</td>
+      </tr>
+      <tr>
+        <td>pfx:xinp</td>
+        <td>Used to create HTML form elements.</td>
+      </tr>
+      <tr>
+        <td>pfx:checkfield</td>
+        <td>This tag supplies content depending on the error state of a special form field.</td>
+      </tr>
+      <tr>
+        <td>pfx:checkerror</td>
+        <td>Used to check for the presence of any error condition.</td>
+      </tr>
+      <tr>
+        <td>pfx:checkmessage</td>
+        <td>Used to check for the presence of any page message.</td>
+      </tr>
+      <tr>
+        <td>pfx:checkactive, pfx:checknotactive</td>
+        <td>These tags check for visibility (or not) of pages or for the activity (or not) of handlers.</td>
+      </tr>
+      <tr>
+        <td>pfx:themeselect, pfx:langselect</td>
+        <td>Used to select content depending on a matching theme or currently selected language.</td>
+      </tr>
+      <tr>
+        <td>pfx:editconsole, pfx:webserviceconsole</td>
+        <td>create panels of shortcut links useful during development.</td>
+      </tr>
+    </tbody>
+  </table>
+</para>
+
+  <section>
+    <title>Defining the structure of a document</title>
+    <para></para>
+  </section>
+
+  <section>
+    <title>Creating links to internal and external pages</title>
+    <para></para>
+  </section>
+
+  <section>
+    <title>Including text and images</title>
+    <para></para>
+  </section>
+
+  <section>
+    <title>Handling HTML forms</title>
+    <para></para>
+  </section>
+
+  <section>
+    <title>Miscellaneous utility tags</title>
+    <para></para>
+  </section>
+
+</chapter>

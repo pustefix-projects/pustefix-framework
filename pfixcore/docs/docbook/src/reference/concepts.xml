@@ -5,6 +5,16 @@
 >
   <title>Important Concepts</title>
 
+  <section>
+    <title>Themes</title>
+    <para></para>
+  </section>
+
+  <section>
+    <title>Variants</title>
+    <para></para>
+  </section>
+  
   <section xml:id="concepts.request_processing">
     <title>Processing of requests in Pustefix</title>
     <para>
@@ -54,7 +64,7 @@ public interface PageFlow {
         together with any variant name, if present) while get RootName() only returns the root name.   
     </para>
     <para>
-      <code>containsPage</code> must returns true if the given page name is part of the page flow. 
+      <code>containsPage(String pagename)</code> must return true if the given page name is part of the page flow. 
     </para>
     <para>
       <code>findNextPage(...)</code> is more interesting. It implements the main duty of a page flow: To supply some sort of "next" page, given the context (in the form of a 
