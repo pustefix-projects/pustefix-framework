@@ -140,7 +140,7 @@ public interface State {
     </para>
 
     <section>
-      <title>The "knobs" to influence the page request cycle</title>
+      <title>The parameters to influence the page request cycle</title>
         <para>During the request-response cycle, the <code>Context</code> maintains a set of variables that influence the processing of the request.
         These are listed in the following table. Use these as a reference to see how they can be set and changed, either by specifying
         values for them in the request (directly, or by referencing an action that sets them) or by calling a method of <code>Context</code>
