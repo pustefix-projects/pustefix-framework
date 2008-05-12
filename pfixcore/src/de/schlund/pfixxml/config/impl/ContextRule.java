@@ -65,7 +65,6 @@ public class ContextRule extends CheckedRule {
     protected Map<String, Boolean> wantsAttributes() {
         HashMap<String, Boolean> atts = new HashMap<String, Boolean>();
         atts.put("defaultpage", true);
-        atts.put("authpage", false);
         atts.put("synchronized", false);
         return atts;
     }
