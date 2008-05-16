@@ -19,6 +19,7 @@
 package de.schlund.pfixcore.editor2.frontend.handlers;
 
 import org.apache.log4j.Logger;
+import org.pustefixframework.editor.EditorStatusCodes;
 import org.xml.sax.SAXException;
 
 import de.schlund.pfixcore.editor2.core.exception.EditorException;
@@ -29,7 +30,6 @@ import de.schlund.pfixcore.editor2.frontend.wrappers.CommonUploadIncludePart;
 import de.schlund.pfixcore.generator.IHandler;
 import de.schlund.pfixcore.generator.IWrapper;
 import de.schlund.pfixcore.workflow.Context;
-import de.schlund.util.statuscodes.StatusCodeLib;
 
 /**
  * Handles common include part upload
@@ -58,7 +58,7 @@ public abstract class CommonUploadIncludePartHandler implements IHandler {
             try {
                 String path = this.getResource(context).getSelectedIncludePart().getIncludePart().getIncludeFile().getPath();
                 if (path.lastIndexOf('/') == -1 || path.lastIndexOf('/') == 0) {
-                    input.addSCodeContent(StatusCodeLib.PFIXCORE_EDITOR_INCLUDESUPLOAD_FILE_IS_IN_ROOT);
+                    input.addSCodeContent(EditorStatusCodes.INCLUDESUPLOAD_FILE_IS_IN_ROOT);
                     return;
                 }
                 if (input.getDoOverwriteWithStoredContent() != null && input.getDoOverwriteWithStoredContent().booleanValue() && input.getStoredContent() != null && input.getStoredContent().length() != 0) {
@@ -70,17 +70,17 @@ public abstract class CommonUploadIncludePartHandler implements IHandler {
             } catch (SAXException e) {
                 Logger.getLogger(this.getClass()).warn(e);
                 input
-                        .addSCodeContent(StatusCodeLib.PFIXCORE_EDITOR_INCLUDESUPLOAD_PARSE_ERR);
+                        .addSCodeContent(EditorStatusCodes.INCLUDESUPLOAD_PARSE_ERR);
             } catch (EditorIncludeHasChangedException e) {
                 input.setHash(e.getNewHash());
                 input.setStoredContent(content);
                 input.setContent(e.getMerged());
                 input
-                        .addSCodeContent(StatusCodeLib.PFIXCORE_EDITOR_INCLUDESUPLOAD_INCLUDE_HAS_CHANGED);
+                        .addSCodeContent(EditorStatusCodes.INCLUDESUPLOAD_INCLUDE_HAS_CHANGED);
                 return;
             } catch (EditorException e) {
                 input
-                        .addSCodeContent(StatusCodeLib.PFIXCORE_EDITOR_INCLUDESUPLOAD_GEN_ERR);
+                        .addSCodeContent(EditorStatusCodes.INCLUDESUPLOAD_GEN_ERR);
                 return;
             }
         }

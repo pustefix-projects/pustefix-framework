@@ -18,12 +18,13 @@
 
 package de.schlund.pfixcore.editor2.frontend.handlers;
 
+import org.pustefixframework.editor.EditorStatusCodes;
+
 import de.schlund.pfixcore.editor2.frontend.util.EditorResourceLocator;
 import de.schlund.pfixcore.editor2.frontend.wrappers.SelectProject;
 import de.schlund.pfixcore.generator.IHandler;
 import de.schlund.pfixcore.generator.IWrapper;
 import de.schlund.pfixcore.workflow.Context;
-import de.schlund.util.statuscodes.StatusCodeLib;
 
 /**
  * Handles project selection
@@ -35,7 +36,7 @@ public class SelectProjectHandler implements IHandler {
     public void handleSubmittedData(Context context, IWrapper wrapper) throws Exception {
         SelectProject input = (SelectProject) wrapper;
         if (!EditorResourceLocator.getProjectsResource(context).selectProject(input.getProjectName())) {
-            input.addSCodeProjectName(StatusCodeLib.PFIXCORE_EDITOR_PRODUCTSELECT_UNKNOWN_PRODUCT);
+            input.addSCodeProjectName(EditorStatusCodes.PRODUCTSELECT_UNKNOWN_PRODUCT);
         }
     }
 

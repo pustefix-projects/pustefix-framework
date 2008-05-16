@@ -18,12 +18,13 @@
 
 package de.schlund.pfixcore.editor2.frontend.handlers;
 
+import org.pustefixframework.editor.EditorStatusCodes;
+
 import de.schlund.pfixcore.editor2.frontend.resources.CommonIncludesResource;
 import de.schlund.pfixcore.editor2.frontend.wrappers.CommonRestoreIncludePart;
 import de.schlund.pfixcore.generator.IHandler;
 import de.schlund.pfixcore.generator.IWrapper;
 import de.schlund.pfixcore.workflow.Context;
-import de.schlund.util.statuscodes.StatusCodeLib;
 
 /**
  * Handles common include part restore from backup
@@ -40,10 +41,10 @@ public abstract class CommonRestoreIncludePartHandler implements IHandler {
         int ret = this.getResource(context).restoreBackup(input.getVersion(),
                 input.getHash());
         if (ret == 1) {
-            input.addSCodeVersion(StatusCodeLib.PFIXCORE_EDITOR_INCLUDES_INCLUDE_UNDEF);
+            input.addSCodeVersion(EditorStatusCodes.INCLUDES_INCLUDE_UNDEF);
         } else if (ret == 2) {
             input
-                    .addSCodeVersion(StatusCodeLib.PFIXCORE_EDITOR_INCLUDESUPLOAD_INCLUDE_HAS_CHANGED_RESTORE);
+                    .addSCodeVersion(EditorStatusCodes.INCLUDESUPLOAD_INCLUDE_HAS_CHANGED_RESTORE);
         }
     }
 

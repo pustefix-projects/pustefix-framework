@@ -1,7 +1,7 @@
 import de.schlund.pfixcore.util.StateUtil;
 import de.schlund.pfixcore.workflow.Context;
 import de.schlund.pfixxml.PfixServletRequest;
-import de.schlund.util.statuscodes.StatusCodeLib;
+import de.schlund.pfixcore.example.StatusCodeLib;
 
 
 

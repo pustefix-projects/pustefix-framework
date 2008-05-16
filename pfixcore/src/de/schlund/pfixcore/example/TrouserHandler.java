@@ -26,7 +26,6 @@ import de.schlund.pfixcore.example.iwrapper.Trouser;
 import de.schlund.pfixcore.generator.IHandler;
 import de.schlund.pfixcore.generator.IWrapper;
 import de.schlund.pfixcore.workflow.Context;
-import de.schlund.util.statuscodes.StatusCodeLib;
 
 /**
  * TrouserHandler.java

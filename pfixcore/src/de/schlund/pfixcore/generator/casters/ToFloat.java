@@ -20,11 +20,13 @@
 package de.schlund.pfixcore.generator.casters;
 import java.util.ArrayList;
 
+import org.pustefixframework.CoreStatusCodes;
+
 import de.schlund.pfixcore.generator.IWrapperParamCaster;
 import de.schlund.pfixcore.generator.SimpleCheck;
 import de.schlund.pfixxml.RequestParam;
 import de.schlund.util.statuscodes.StatusCode;
-import de.schlund.util.statuscodes.StatusCodeLib;
+import de.schlund.util.statuscodes.StatusCodeHelper;
 
 /**
  * ToFloat.java
@@ -42,11 +44,11 @@ public class ToFloat extends SimpleCheck implements IWrapperParamCaster {
     private StatusCode scode;
 
     public ToFloat() {
-        scode = StatusCodeLib.PFIXCORE_GENERATOR_CASTER_ERR_TO_FLOAT;
+        scode = CoreStatusCodes.CASTER_ERR_TO_FLOAT;
     }
     
     public void put_scode_casterror(String fqscode) {
-        scode = StatusCodeLib.getStatusCodeByName(fqscode);
+        scode = StatusCodeHelper.getStatusCodeByName(fqscode);
     }
 
     public Object[] getValue() {

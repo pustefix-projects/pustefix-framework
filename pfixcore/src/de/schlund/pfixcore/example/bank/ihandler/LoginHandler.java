@@ -3,6 +3,7 @@ package de.schlund.pfixcore.example.bank.ihandler;
 import de.schlund.pfixcore.auth.Authentication;
 import de.schlund.pfixcore.example.bank.AuthTokenManager;
 import de.schlund.pfixcore.example.bank.BankApplication;
+import de.schlund.pfixcore.example.bank.StatusCodeLib;
 import de.schlund.pfixcore.example.bank.context.ContextAccount;
 import de.schlund.pfixcore.example.bank.context.ContextCustomer;
 import de.schlund.pfixcore.example.bank.iwrapper.Login;
@@ -12,7 +13,7 @@ import de.schlund.pfixcore.example.bank.model.Customer;
 import de.schlund.pfixcore.generator.IHandler;
 import de.schlund.pfixcore.generator.IWrapper;
 import de.schlund.pfixcore.workflow.Context;
-import de.schlund.util.statuscodes.StatusCodeLib;
+
 
 public class LoginHandler implements IHandler {
 

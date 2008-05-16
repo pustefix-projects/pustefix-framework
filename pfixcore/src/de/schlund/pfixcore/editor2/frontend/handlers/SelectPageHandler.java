@@ -18,12 +18,13 @@
 
 package de.schlund.pfixcore.editor2.frontend.handlers;
 
+import org.pustefixframework.editor.EditorStatusCodes;
+
 import de.schlund.pfixcore.editor2.frontend.util.EditorResourceLocator;
 import de.schlund.pfixcore.editor2.frontend.wrappers.SelectPage;
 import de.schlund.pfixcore.generator.IHandler;
 import de.schlund.pfixcore.generator.IWrapper;
 import de.schlund.pfixcore.workflow.Context;
-import de.schlund.util.statuscodes.StatusCodeLib;
 
 /**
  * Handles page selection
@@ -35,7 +36,7 @@ public class SelectPageHandler implements IHandler {
     public void handleSubmittedData(Context context, IWrapper wrapper) throws Exception {
         SelectPage input = (SelectPage) wrapper;
         if (!EditorResourceLocator.getPagesResource(context).selectPage(input.getPageName(), input.getVariantName())) {
-            input.addSCodePageName(StatusCodeLib.PFIXCORE_EDITOR_PAGES_PAGE_UNDEF);
+            input.addSCodePageName(EditorStatusCodes.PAGES_PAGE_UNDEF);
         }
     }
 

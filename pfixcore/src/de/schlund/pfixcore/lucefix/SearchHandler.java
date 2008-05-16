@@ -23,6 +23,7 @@ import java.io.IOException;
 
 import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.search.BooleanQuery;
+import org.pustefixframework.editor.EditorStatusCodes;
 
 import de.schlund.pfixcore.editor2.core.dom.Project;
 import de.schlund.pfixcore.editor2.frontend.resources.ProjectsResource;
@@ -31,7 +32,6 @@ import de.schlund.pfixcore.generator.IHandler;
 import de.schlund.pfixcore.generator.IWrapper;
 import de.schlund.pfixcore.lucefix.wrappers.Search;
 import de.schlund.pfixcore.workflow.Context;
-import de.schlund.util.statuscodes.StatusCodeLib;
 
 public class SearchHandler implements IHandler {
 
@@ -55,9 +55,9 @@ public class SearchHandler implements IHandler {
             try {
                 csearch.search(content, tags, attribKey, attribValue, comments);
             } catch (IOException e) {
-                search.addSCodeDoit(StatusCodeLib.PFIXCORE_LUCEFIX_INDEX_NOT_INITED);
+                search.addSCodeDoit(EditorStatusCodes.LUCEFIX_INDEX_NOT_INITED);
             } catch (BooleanQuery.TooManyClauses tmce) {
-                search.addSCodeDoit(StatusCodeLib.PFIXCORE_LUCEFIX_TOO_MANY_CLAUSES);
+                search.addSCodeDoit(EditorStatusCodes.LUCEFIX_TOO_MANY_CLAUSES);
             }
         }
     }

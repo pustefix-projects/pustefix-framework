@@ -20,8 +20,8 @@ package de.schlund.pfixcore.testsuite.handler;
 
 import de.schlund.pfixcore.generator.IHandler;
 import de.schlund.pfixcore.generator.IWrapper;
+import de.schlund.pfixcore.testsuite.StatusCodeLib;
 import de.schlund.pfixcore.workflow.Context;
-import de.schlund.util.statuscodes.StatusCodeLib;
 
 public class Test5PageMessageHandler implements IHandler {
 

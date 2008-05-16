@@ -18,10 +18,12 @@
  */
 package de.schlund.pfixcore.generator.postchecks;
 
+import org.pustefixframework.CoreStatusCodes;
+
 import de.schlund.pfixcore.generator.IWrapperParamPostCheck;
 import de.schlund.pfixcore.generator.SimpleCheck;
 import de.schlund.util.statuscodes.StatusCode;
-import de.schlund.util.statuscodes.StatusCodeLib;
+import de.schlund.util.statuscodes.StatusCodeHelper;
 
 /**
  * @author <a href="mailto:thomas.braun@schlund.de>Tom Braun</a>
@@ -34,16 +36,16 @@ public class StringLength extends SimpleCheck implements IWrapperParamPostCheck 
     private StatusCode scTooLong;
     
     public StringLength () {
-        scTooShort = StatusCodeLib.PFIXCORE_GENERATOR_POSTCHECK_STRING_TOO_SHORT;
-        scTooLong  = StatusCodeLib.PFIXCORE_GENERATOR_POSTCHECK_STRING_TOO_LONG;
+        scTooShort = CoreStatusCodes.POSTCHECK_STRING_TOO_SHORT;
+        scTooLong  = CoreStatusCodes.POSTCHECK_STRING_TOO_LONG;
     }
     
     public void put_scode_too_long(String scode) {
-        scTooLong = StatusCodeLib.getStatusCodeByName(scode);
+        scTooLong = StatusCodeHelper.getStatusCodeByName(scode);
     }
     
     public void put_scode_too_short(String scode) {
-        scTooShort = StatusCodeLib.getStatusCodeByName(scode);
+        scTooShort = StatusCodeHelper.getStatusCodeByName(scode);
     }
     
     public void put_min_length(String minLength) {

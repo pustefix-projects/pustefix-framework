@@ -19,6 +19,8 @@
 
 package de.schlund.pfixcore.workflow.app;
 
+import org.pustefixframework.CoreStatusCodes;
+
 import de.schlund.pfixcore.util.TokenManager;
 import de.schlund.pfixcore.workflow.Context;
 import de.schlund.pfixcore.workflow.StateImpl;
@@ -30,7 +32,6 @@ import de.schlund.pfixxml.XMLException;
 import de.schlund.pfixxml.config.PageRequestConfig;
 import de.schlund.pfixxml.perflogging.PerfEvent;
 import de.schlund.pfixxml.perflogging.PerfEventType;
-import de.schlund.util.statuscodes.StatusCodeLib;
 
 /**
  * DefaultIWrapperState.java
@@ -104,7 +105,7 @@ public class DefaultIWrapperState extends StateImpl {
                     if (tm.isValidToken(tokenName, tokenValue)) {
                         tm.invalidateToken(tokenName);
                     } else {
-                        context.addPageMessage(StatusCodeLib.PFIXCORE_GENERATOR_FORM_TOKEN_INVALID, null, null);
+                        context.addPageMessage(CoreStatusCodes.FORM_TOKEN_INVALID, null, null);
                         if (errorPage.equals("")) {
                             pe = new PerfEvent(PerfEventType.PAGE_RETRIEVECURRENTSTATUS, context.getCurrentPageRequest().toString());
                             pe.start();
@@ -123,7 +124,7 @@ public class DefaultIWrapperState extends StateImpl {
             } else {
                 PageRequestConfig pageConf = context.getConfigForCurrentPageRequest();
                 if (pageConf != null && pageConf.requiresToken()) {
-                    context.addPageMessage(StatusCodeLib.PFIXCORE_GENERATOR_FORM_TOKEN_MISSING, null, null);
+                    context.addPageMessage(CoreStatusCodes.FORM_TOKEN_MISSING, null, null);
                     pe = new PerfEvent(PerfEventType.PAGE_RETRIEVECURRENTSTATUS, context.getCurrentPageRequest().toString());
                     pe.start();
                     wrp_container.retrieveCurrentStatus(false);

@@ -1,3 +1,98 @@
+2008-05-16  Martin Leidig  <mleidig@schlund.de>
+
+	Added StatusCode modularization support. Now multiple classes
+	containing StatusCode constants are supported. You can control
+	the StatusCode constant class generation by supplying a 
+	meta information file (statuscodeinfo.xml), where you can
+	define the class names and which statusmessage files should
+	be used to generate the classes. The meta information file
+	by default can be placed in the configuration or dyntxt
+	directories (projects/*/conf, projects/*/dyntxt).
+	The builtin Pustefix StatusCodes have been modularized too.
+	They were split into core and editor StatusCodes. To obtain
+	backwards compatibility we still have a shared version, 
+	which can be used to generate the old StatusCodeLib class,
+	but we should enforce changing to the modularized approach,
+	therefore we should provide some migration tooling support,
+	e.g. for splitting statusmessage files and renaming statuscodes.
+
+	Modified:
+
+	Use new StatusCodes classes instead of shared StatusCodeLib:
+	* src/de/schlund/pfixcore/lucefix/SearchHandler.java
+	* src/de/schlund/pfixcore/generator/IWrapperParam.java
+	* src/de/schlund/pfixcore/generator/casters/ToDate.java
+	* src/de/schlund/pfixcore/generator/casters/ToInteger.java
+	* src/de/schlund/pfixcore/generator/casters/ToBoolean.java
+	* src/de/schlund/pfixcore/generator/casters/ToFile.java
+	* src/de/schlund/pfixcore/generator/casters/ToLong.java
+	* src/de/schlund/pfixcore/generator/casters/ToByte.java
+	* src/de/schlund/pfixcore/generator/casters/ToUploadFile.java
+	* src/de/schlund/pfixcore/generator/casters/ToFloat.java
+	* src/de/schlund/pfixcore/generator/casters/ToPerl5Pattern.java
+	* src/de/schlund/pfixcore/generator/casters/ToDouble.java
+	* src/de/schlund/pfixcore/generator/postchecks/FloatRange.java
+	* src/de/schlund/pfixcore/generator/postchecks/StringLength.java
+	* src/de/schlund/pfixcore/generator/postchecks/IntegerRange.java
+	* src/de/schlund/pfixcore/generator/prechecks/RegexpCheck.java
+	* src/de/schlund/pfixcore/editor2/frontend/handlers/CommonBranchIncludePartHandler.java
+	* src/de/schlund/pfixcore/editor2/frontend/handlers/SelectProjectHandler.java
+	* src/de/schlund/pfixcore/editor2/frontend/handlers/LoginHandler.java
+	* src/de/schlund/pfixcore/editor2/frontend/handlers/SelectPageHandler.java
+	* src/de/schlund/pfixcore/editor2/frontend/handlers/SelectUserHandler.java
+	* src/de/schlund/pfixcore/editor2/frontend/handlers/SelectImageHandler.java
+	* src/de/schlund/pfixcore/editor2/frontend/handlers/CommonSelectIncludePartHandler.java
+	* src/de/schlund/pfixcore/editor2/frontend/handlers/DeleteUsersHandler.java
+	* src/de/schlund/pfixcore/editor2/frontend/handlers/EditUserHandler.java
+	* src/de/schlund/pfixcore/editor2/frontend/handlers/RestoreImageHandler.java
+	* src/de/schlund/pfixcore/editor2/frontend/handlers/SelectTargetHandler.java
+	* src/de/schlund/pfixcore/editor2/frontend/handlers/CommonRestoreIncludePartHandler.java
+	* src/de/schlund/pfixcore/editor2/frontend/handlers/UploadImageHandler.java
+	* src/de/schlund/pfixcore/editor2/frontend/handlers/CommonUploadIncludePartHandler.java
+	* src/de/schlund/pfixcore/testsuite/handler/Test5PageMessageHandler.java
+	* src/de/schlund/pfixcore/workflow/app/DefaultIWrapperState.java
+	* src/de/schlund/pfixcore/example/TrouserHandler.java
+	* src/de/schlund/pfixcore/example/bank/ihandler/LoginHandler.java
+	* src/de/schlund/pfixcore/example/iwrapper/AdultInfo.iwrp
+	* src/de/schlund/pfixcore/example/TShirtHandler.java
+	* src/de/schlund/pfixcore/example/CounterHandler.java
+	* src/de/schlund/pfixcore/example/CounterSetHandler.java
+	* projects/sample1/script/ScriptingTShirt.js
+	* projects/sample1/script/ScriptingState.bsh
+
+	* projects/common/conf/factory.xml: removed statusmessage properties
+	* src/de/schlund/pfixcore/util/GenerateSCodes.java: added support for statuscode 
+	generation based on meta information in statuscodeinfo.xml files, cache
+	DocrootResources in array, made classname exchangeable
+	* src/de/schlund/util/statuscodes/StatusCode.java: made constructor public
+	* skel/build-skel.xml: use new ant task to generate statuscodes
+	* build.xml: add new ant task to precompilation target
+
+	Added:
+
+	* src/de/schlund/pfixcore/util/GenerateSCodesTask.java: new ant task
+	for statuscode class generation, which uses the GenerateSCodes utility
+	class, the task sets an ant property containing the generated classes, 
+	which are subsequently compiled
+	* src/de/schlund/util/statuscodes/StatusCodeHelper.java: helper class,
+	which should be used to retrieve StatusCodes by their name, it
+	delegates getStatusCodeByName calls to the responsible StatusCodes class 
+	by inspecting the StatusCode name (checks if a class name is supplied,
+	delimited by '#' sign, and calls getStatusCodeByName at this class)
+
+	* projects/core/schema/statuscodeinfo.xsd: schema definition for 
+	statuscode meta information
+
+	Split pfixcore statusmessages.xml in editor and core:
+	* projects/core/dyntxt/statusmessages_editor.xml
+	* projects/core/dyntxt/statusmessages_core.xml
+
+	Added statuscode meta information:
+	* projects/core/dyntxt/statuscodeinfo.xml
+	* projects/testsuite/dyntxt/statuscodeinfo.xml
+	* projects/sample1/dyntxt/statuscodeinfo.xml
+	* projects/samplebank/dyntxt/statuscodeinfo.xml
+
 2008-05-08  jtl  <jtl@schoenberg.laudi.ka>
 
 	* docs/docbook/src/reference/concepts.xml: new file: trying to add more documentation, especially the 

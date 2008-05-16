@@ -18,12 +18,13 @@
 
 package de.schlund.pfixcore.editor2.frontend.handlers;
 
+import org.pustefixframework.editor.EditorStatusCodes;
+
 import de.schlund.pfixcore.editor2.frontend.util.EditorResourceLocator;
 import de.schlund.pfixcore.editor2.frontend.wrappers.Login;
 import de.schlund.pfixcore.generator.IHandler;
 import de.schlund.pfixcore.generator.IWrapper;
 import de.schlund.pfixcore.workflow.Context;
-import de.schlund.util.statuscodes.StatusCodeLib;
 
 /**
  * Handles login form
@@ -39,10 +40,10 @@ public class LoginHandler implements IHandler {
                 input.getUser(), input.getPass())) {
             if (EditorResourceLocator.getSessionResource(context)
                     .isUserLoginsAllowed()) {
-                input.addSCodePass(StatusCodeLib.PFIXCORE_EDITOR_AUTH_WRONG_USER_OR_PASS);
+                input.addSCodePass(EditorStatusCodes.AUTH_WRONG_USER_OR_PASS);
             } else {
                 input
-                        .addSCodePass(StatusCodeLib.PFIXCORE_EDITOR_AUTH_NO_LOGIN_ALLOWED);
+                        .addSCodePass(EditorStatusCodes.AUTH_NO_LOGIN_ALLOWED);
             }
         }
     }

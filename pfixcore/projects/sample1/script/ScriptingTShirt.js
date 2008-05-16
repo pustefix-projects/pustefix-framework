@@ -1,5 +1,5 @@
 
-importClass(Packages.de.schlund.util.statuscodes.StatusCodeLib);
+importClass(Packages.de.schlund.pfixcore.example.StatusCodeLib);
 
 // the LOG object is predefined (declared in BSF terms) in every script 
 LOG.debug("Initializing ScriptingTShirt.js in script itself");

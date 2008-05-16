@@ -18,13 +18,14 @@
 
 package de.schlund.pfixcore.editor2.frontend.handlers;
 
+import org.pustefixframework.editor.EditorStatusCodes;
+
 import de.schlund.pfixcore.editor2.frontend.resources.CommonIncludesResource;
 import de.schlund.pfixcore.editor2.frontend.util.EditorResourceLocator;
 import de.schlund.pfixcore.editor2.frontend.wrappers.CommonSelectIncludePart;
 import de.schlund.pfixcore.generator.IHandler;
 import de.schlund.pfixcore.generator.IWrapper;
 import de.schlund.pfixcore.workflow.Context;
-import de.schlund.util.statuscodes.StatusCodeLib;
 
 /**
  * Handles common include part selection
@@ -40,7 +41,7 @@ public abstract class CommonSelectIncludePartHandler implements IHandler {
         CommonSelectIncludePart input = (CommonSelectIncludePart) wrapper;
         if (!this.getResource(context).selectIncludePart(input.getPath(),
                 input.getPart(), input.getTheme())) {
-            input.addSCodePath(StatusCodeLib.PFIXCORE_EDITOR_INCLUDES_INCLUDE_UNDEF);
+            input.addSCodePath(EditorStatusCodes.INCLUDES_INCLUDE_UNDEF);
         }
     }
 

@@ -21,13 +21,15 @@ package de.schlund.pfixcore.generator.casters;
 import java.io.File;
 import java.util.ArrayList;
 
+import org.pustefixframework.CoreStatusCodes;
+
 import de.schlund.pfixcore.generator.IWrapperParamCaster;
 import de.schlund.pfixcore.generator.SimpleCheck;
 import de.schlund.pfixxml.RequestParam;
 import de.schlund.pfixxml.RequestParamType;
 import de.schlund.pfixxml.multipart.FileData;
 import de.schlund.util.statuscodes.StatusCode;
-import de.schlund.util.statuscodes.StatusCodeLib;
+import de.schlund.util.statuscodes.StatusCodeHelper;
 
 /**
  * ToFile.java
@@ -43,11 +45,11 @@ public class ToFile extends SimpleCheck implements IWrapperParamCaster {
     private StatusCode scode;
 
     public ToFile() {
-        scode = StatusCodeLib.PFIXCORE_GENERATOR_CASTER_ERR_TO_FILE;
+        scode = CoreStatusCodes.CASTER_ERR_TO_FILE;
     }
 
     public void put_scode_casterror(String fqscode) {
-        scode = StatusCodeLib.getStatusCodeByName(fqscode);
+        scode = StatusCodeHelper.getStatusCodeByName(fqscode);
     }
 
     public Object[] getValue() {

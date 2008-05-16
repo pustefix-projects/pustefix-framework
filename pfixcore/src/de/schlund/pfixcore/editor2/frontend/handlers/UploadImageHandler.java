@@ -21,6 +21,8 @@ package de.schlund.pfixcore.editor2.frontend.handlers;
 import java.io.File;
 import java.io.FileInputStream;
 
+import org.pustefixframework.editor.EditorStatusCodes;
+
 import de.schlund.pfixcore.editor2.core.dom.Image;
 import de.schlund.pfixcore.editor2.frontend.util.EditorResourceLocator;
 import de.schlund.pfixcore.editor2.frontend.wrappers.UploadImage;
@@ -28,7 +30,6 @@ import de.schlund.pfixcore.generator.IHandler;
 import de.schlund.pfixcore.generator.IWrapper;
 import de.schlund.pfixcore.workflow.Context;
 import de.schlund.pfixxml.ImageInfo;
-import de.schlund.util.statuscodes.StatusCodeLib;
 
 /**
  * Handles image upload
@@ -44,18 +45,18 @@ public class UploadImageHandler implements IHandler {
         ImageInfo info = new ImageInfo();
         info.setInput(new FileInputStream(uploadFile));
         if (!info.check()) {
-            input.addSCodeImageFile(StatusCodeLib.PFIXCORE_EDITOR_IMAGESUPLOAD_IMAGEUPL_NOFILE);
+            input.addSCodeImageFile(EditorStatusCodes.IMAGESUPLOAD_IMAGEUPL_NOFILE);
             return;
         }
         String mimeType = info.getMimeType();
         Image image = EditorResourceLocator.getImagesResource(context)
                 .getSelectedImage();
         if (image == null) {
-            input.addSCodeImageFile(StatusCodeLib.PFIXCORE_EDITOR_IMAGESUPLOAD_IMAGEUPL_WRONGTYPE);
+            input.addSCodeImageFile(EditorStatusCodes.IMAGESUPLOAD_IMAGEUPL_WRONGTYPE);
         }
         String imagePath = image.getPath();
         if (imagePath.lastIndexOf('/') == -1 || imagePath.lastIndexOf('/') == 0) {
-            input.addSCodeImageFile(StatusCodeLib.PFIXCORE_EDITOR_IMAGESUPLOAD_FILE_IS_IN_ROOT);
+            input.addSCodeImageFile(EditorStatusCodes.IMAGESUPLOAD_FILE_IS_IN_ROOT);
             return;
         }
         String suffix = imagePath.substring(imagePath.lastIndexOf("."));
@@ -64,23 +65,23 @@ public class UploadImageHandler implements IHandler {
                 || (mimeType.equals("image/gif") && suffix.equals(".gif"))) {
             if (image.getLastModTime() != input.getLastModTime().longValue()) {
                 input
-                        .addSCodeImageFile(StatusCodeLib.PFIXCORE_EDITOR_IMAGESUPLOAD_IMAGEUPL_HASCHANGED);
+                        .addSCodeImageFile(EditorStatusCodes.IMAGESUPLOAD_IMAGEUPL_HASCHANGED);
                 return;
             }
             image.replaceFile(uploadFile);
         } else {
             if (suffix.equals(".jpg")) {
                 input
-                        .addSCodeImageFile(StatusCodeLib.PFIXCORE_EDITOR_IMAGESUPLOAD_IMAGEUPL_WRONGTYPEJPG);
+                        .addSCodeImageFile(EditorStatusCodes.IMAGESUPLOAD_IMAGEUPL_WRONGTYPEJPG);
             } else if (suffix.equals(".png")) {
                 input
-                        .addSCodeImageFile(StatusCodeLib.PFIXCORE_EDITOR_IMAGESUPLOAD_IMAGEUPL_WRONGTYPEPNG);
+                        .addSCodeImageFile(EditorStatusCodes.IMAGESUPLOAD_IMAGEUPL_WRONGTYPEPNG);
             } else if (suffix.equals(".gif")) {
                 input
-                        .addSCodeImageFile(StatusCodeLib.PFIXCORE_EDITOR_IMAGESUPLOAD_IMAGEUPL_WRONGTYPEGIF);
+                        .addSCodeImageFile(EditorStatusCodes.IMAGESUPLOAD_IMAGEUPL_WRONGTYPEGIF);
             } else {
                 input
-                        .addSCodeImageFile(StatusCodeLib.PFIXCORE_EDITOR_IMAGESUPLOAD_IMAGEUPL_WRONGTYPE);
+                        .addSCodeImageFile(EditorStatusCodes.IMAGESUPLOAD_IMAGEUPL_WRONGTYPE);
             }
         }
     }

@@ -20,12 +20,13 @@
 package de.schlund.pfixcore.generator.prechecks;
 import org.apache.oro.text.PatternCacheLRU;
 import org.apache.oro.text.perl.Perl5Util;
+import org.pustefixframework.CoreStatusCodes;
 
 import de.schlund.pfixcore.generator.IWrapperParamPreCheck;
 import de.schlund.pfixcore.generator.SimpleCheck;
 import de.schlund.pfixxml.RequestParam;
 import de.schlund.util.statuscodes.StatusCode;
-import de.schlund.util.statuscodes.StatusCodeLib;
+import de.schlund.util.statuscodes.StatusCodeHelper;
 
 /**
  * RegexpCheck.java
@@ -44,7 +45,7 @@ public class RegexpCheck  extends SimpleCheck implements IWrapperParamPreCheck {
     private        StatusCode scode;
     
     public RegexpCheck() {
-        scode = StatusCodeLib.PFIXCORE_GENERATOR_PRECHECK_REGEXP_NO_MATCH;
+        scode = CoreStatusCodes.PRECHECK_REGEXP_NO_MATCH;
     }
 
     public void put_regexp(String regexp) {
@@ -52,7 +53,7 @@ public class RegexpCheck  extends SimpleCheck implements IWrapperParamPreCheck {
     }
 
     public void put_scode_nomatch(String fqscode) {
-        scode = StatusCodeLib.getStatusCodeByName(fqscode);
+        scode = StatusCodeHelper.getStatusCodeByName(fqscode);
     }
     
     public void check(RequestParam[] value) {

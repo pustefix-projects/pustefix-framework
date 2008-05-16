@@ -18,12 +18,13 @@
 
 package de.schlund.pfixcore.editor2.frontend.handlers;
 
+import org.pustefixframework.editor.EditorStatusCodes;
+
 import de.schlund.pfixcore.editor2.frontend.util.EditorResourceLocator;
 import de.schlund.pfixcore.editor2.frontend.wrappers.RestoreImage;
 import de.schlund.pfixcore.generator.IHandler;
 import de.schlund.pfixcore.generator.IWrapper;
 import de.schlund.pfixcore.workflow.Context;
-import de.schlund.util.statuscodes.StatusCodeLib;
 
 /**
  * Handles image restore from backup
@@ -39,10 +40,10 @@ public class RestoreImageHandler implements IHandler {
                 .restoreBackup(input.getVersion(),
                         input.getLastModTime().longValue());
         if (ret == 1) {
-            input.addSCodeVersion(StatusCodeLib.PFIXCORE_EDITOR_IMAGES_IMAGE_UNDEF);
+            input.addSCodeVersion(EditorStatusCodes.IMAGES_IMAGE_UNDEF);
         } else if (ret == 2) {
             input
-                    .addSCodeVersion(StatusCodeLib.PFIXCORE_EDITOR_IMAGESUPLOAD_IMAGEUPL_HASCHANGED);
+                    .addSCodeVersion(EditorStatusCodes.IMAGESUPLOAD_IMAGEUPL_HASCHANGED);
         }
     }
 

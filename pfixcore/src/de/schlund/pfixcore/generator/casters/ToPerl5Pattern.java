@@ -24,12 +24,13 @@ import java.util.ArrayList;
 import org.apache.oro.text.regex.MalformedPatternException;
 import org.apache.oro.text.regex.Perl5Compiler;
 import org.apache.oro.text.regex.Perl5Pattern;
+import org.pustefixframework.CoreStatusCodes;
 
 import de.schlund.pfixcore.generator.IWrapperParamCaster;
 import de.schlund.pfixcore.generator.SimpleCheck;
 import de.schlund.pfixxml.RequestParam;
 import de.schlund.util.statuscodes.StatusCode;
-import de.schlund.util.statuscodes.StatusCodeLib;
+import de.schlund.util.statuscodes.StatusCodeHelper;
 
 
 /**
@@ -49,11 +50,11 @@ public class ToPerl5Pattern extends SimpleCheck implements IWrapperParamCaster {
     private        StatusCode     scode;
     
     public ToPerl5Pattern() {
-        scode = StatusCodeLib.PFIXCORE_GENERATOR_CASTER_ERR_TO_P5PATTERN;
+        scode = CoreStatusCodes.CASTER_ERR_TO_P5PATTERN;
     }
     
     public void put_scode_casterror(String fqscode) {
-        scode = StatusCodeLib.getStatusCodeByName(fqscode);
+        scode = StatusCodeHelper.getStatusCodeByName(fqscode);
     }
 
     // implementation of de.schlund.pfixcore.generator.IWrapperParamCaster interface

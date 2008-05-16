@@ -25,12 +25,13 @@ import java.util.HashSet;
 import java.util.Iterator;
 
 import org.apache.log4j.Logger;
+import org.pustefixframework.CoreStatusCodes;
 
 import de.schlund.pfixxml.RequestParam;
 import de.schlund.pfixxml.RequestParamType;
 import de.schlund.pfixxml.SimpleRequestParam;
 import de.schlund.util.statuscodes.StatusCode;
-import de.schlund.util.statuscodes.StatusCodeLib;
+import de.schlund.util.statuscodes.StatusCodeHelper;
 
 /**
  * Describe class <code>IWrapperParam</code> here.
@@ -59,7 +60,7 @@ public class IWrapperParam implements IWrapperParamCheck, IWrapperParamDefinitio
     private ArrayList<IWrapperParamPostCheck> postcheck = new ArrayList<IWrapperParamPostCheck>();
     private HashSet<StatusCodeInfo> scodeinfos = new HashSet<StatusCodeInfo>();
     private Logger              LOG            = Logger.getLogger(this.getClass());
-    private StatusCodeInfo      missing        = new StatusCodeInfo(StatusCodeLib.PFIXCORE_GENERATOR_MISSING_PARAM, null, null);  
+    private StatusCodeInfo      missing        = new StatusCodeInfo(CoreStatusCodes.MISSING_PARAM, null, null);  
     private boolean             inrequest      = false;
     
     public IWrapperParam(String name, boolean multiple, boolean optional, RequestParam[] defaultval, String type, boolean trim) {
@@ -103,7 +104,8 @@ public class IWrapperParam implements IWrapperParamCheck, IWrapperParamDefinitio
     }
 
     public void setCustomSCode(String scode) {
-        missing = new StatusCodeInfo(StatusCodeLib.getStatusCodeByName(scode), null, null);
+        StatusCode sc = StatusCodeHelper.getStatusCodeByName(scode);
+        missing = new StatusCodeInfo(sc, null, null);
     }
 
     public void setParamCaster(IWrapperParamCaster caster) {

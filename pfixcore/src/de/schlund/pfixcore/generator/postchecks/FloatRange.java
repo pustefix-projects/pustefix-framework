@@ -20,10 +20,12 @@
 package de.schlund.pfixcore.generator.postchecks;
 import java.util.StringTokenizer;
 
+import org.pustefixframework.CoreStatusCodes;
+
 import de.schlund.pfixcore.generator.IWrapperParamPostCheck;
 import de.schlund.pfixcore.generator.SimpleCheck;
 import de.schlund.util.statuscodes.StatusCode;
-import de.schlund.util.statuscodes.StatusCodeLib;
+import de.schlund.util.statuscodes.StatusCodeHelper;
 
 /**
  * FloatRange.java
@@ -45,16 +47,16 @@ public class FloatRange extends SimpleCheck implements IWrapperParamPostCheck {
     private float      upper;
     
     public FloatRange() {
-        scode_small = StatusCodeLib.PFIXCORE_GENERATOR_POSTCHECK_FLOAT_TOO_SMALL;
-        scode_big   = StatusCodeLib.PFIXCORE_GENERATOR_POSTCHECK_FLOAT_TOO_BIG;
+        scode_small = CoreStatusCodes.POSTCHECK_FLOAT_TOO_SMALL;
+        scode_big   = CoreStatusCodes.POSTCHECK_FLOAT_TOO_BIG;
     }
 
     public void put_scode_too_small(String fqscode) {
-        scode_small = StatusCodeLib.getStatusCodeByName(fqscode);
+        scode_small = StatusCodeHelper.getStatusCodeByName(fqscode);
     }
 
     public void put_scode_too_big(String fqscode) {
-        scode_big = StatusCodeLib.getStatusCodeByName(fqscode);
+        scode_big = StatusCodeHelper.getStatusCodeByName(fqscode);
     }
 
     public void put_range(String param) {
