@@ -30,7 +30,7 @@ import java.util.Map;
  */
 public class RoleProviderImpl implements RoleProvider {
 
-    private List<Role>        roles;
+    private List<Role> roles;
     private Map<String, Role> roleMap;
 
     public RoleProviderImpl() {
@@ -39,28 +39,22 @@ public class RoleProviderImpl implements RoleProvider {
     }
 
     public void addRole(Role role) {
-        if (roleMap.containsKey(role.getName()))
+        if (roleMap.containsKey(role.getName())) 
             throw new IllegalArgumentException("Duplicate role: " + role.getName());
         roles.add(role);
         roleMap.put(role.getName(), role);
     }
 
     public Role getRole(String roleName) throws RoleNotFoundException {
-        return roleMap.get(roleName);
+        Role role = roleMap.get(roleName);
+        if (role == null) throw new RoleNotFoundException(roleName);
+        return role;
     }
 
     public List<Role> getRoles() {
         return roles;
     }
-
-    public void addRoles(RoleProvider roleProvider) {
-        List<Role> roleList = roleProvider.getRoles();
-        if (roleList != null) {
-            for (Role role : roleList)
-                addRole(role);
-        }
-    }
-
+    
     public void setReadOnly() {
         roles = Collections.unmodifiableList(roles);
         roleMap = Collections.unmodifiableMap(roleMap);

@@ -19,15 +19,40 @@ package de.schlund.pfixcore.auth;
 
 import java.util.List;
 
-
 /**
  * 
  * @author mleidig@schlund.de
- *
+ * 
  */
 public interface RoleProvider {
 
-	public Role getRole(String roleName) throws RoleNotFoundException;
-	public List<Role> getRoles();
-	
+    /**
+     * This method is called by the framework to add roles defined in the
+     * context configuration.
+     * 
+     * @param role - Role to be added
+     */
+    public void addRole(Role role);
+
+    /**
+     * This method is called by the framework to check if a role with the
+     * denoted name is defined. If an according role can be found the role is
+     * returned, otherwise a RoleNotFoundException is thrown.
+     * 
+     * @param roleName - Role name
+     * @return Found role
+     * @throws RoleNotFoundException
+     */
+    public Role getRole(String roleName) throws RoleNotFoundException;
+
+    /**
+     * This method is called by the framework to check if roles are existing at
+     * all and to find the roles, which have to be initially set. The method has
+     * to return a list containing all available roles. If there are no roles,
+     * it has to return an empty list.
+     * 
+     * @return List of available roles
+     */
+    public List<Role> getRoles();
+
 }

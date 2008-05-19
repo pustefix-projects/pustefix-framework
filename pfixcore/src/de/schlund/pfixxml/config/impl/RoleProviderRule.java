@@ -44,7 +44,7 @@ public class RoleProviderRule extends CheckedRule {
             if (!RoleProvider.class.isAssignableFrom(clazz))
                 throw new Exception("Class '" + className + "' doesn't implement the RoleProvider interface.");
             RoleProvider roleProvider = (RoleProvider) clazz.newInstance();
-            config.getContextConfig().addCustomRoleProvider(roleProvider);
+            config.getContextConfig().setCustomRoleProvider(roleProvider);
             getDigester().push(roleProvider);
         } catch (ClassNotFoundException x) {
             throw new Exception("RoleProvider class not found: " + className);

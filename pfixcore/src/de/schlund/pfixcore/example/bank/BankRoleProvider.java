@@ -22,6 +22,10 @@ public class BankRoleProvider implements RoleProvider {
         roles.put(role.getName(), role);
     }
 
+    public void addRole(Role role) {
+        roles.put(role.getName(),role);
+    }
+    
     public Role getRole(String roleName) throws RoleNotFoundException {
         Role role = roles.get(roleName);
         if(role == null) throw new RoleNotFoundException(roleName);

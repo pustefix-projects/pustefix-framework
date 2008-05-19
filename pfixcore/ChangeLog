@@ -1,3 +1,24 @@
+2008-05-19  Martin Leidig  <mleidig@schlund.de>
+
+	Changed the custom RoleProvider mechanism: Now setting a custom RoleProvider
+	completely replaces the default RoleProvider (instead of just adding
+	the roles). For every role defined in the context configuration the new 
+	RoleProvider interface method addRole is called, leaving it up to the 
+	custom RoleProvider to incorporate, change or remove this role.
+
+	* src/de/schlund/pfixcore/auth/RoleProvider.java: added addRole method
+	* src/de/schlund/pfixcore/auth/RoleProviderImpl.java: removed addRoles
+	method, getRole method now throws RoleNotFoundException if role for
+	name is not found
+	* src/de/schlund/pfixcore/workflow/context/ServerContextImpl.java:
+	removed unused getRole/getRoles methods
+	* src/de/schlund/pfixcore/example/bank/BankRoleProvider.java:
+	implement addRole method
+	* src/de/schlund/pfixxml/config/impl/RoleProviderRule.java: refactored
+	* src/de/schlund/pfixxml/config/impl/ContextConfigImpl.java: custom
+	RoleProvider now replaces default RoleProvider instead of just adding
+	its roles
+
 2008-05-16  Martin Leidig  <mleidig@schlund.de>
 
 	Added StatusCode modularization support. Now multiple classes
