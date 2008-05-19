@@ -20,11 +20,8 @@ package de.schlund.pfixcore.workflow.context;
 
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Properties;
 
-import de.schlund.pfixcore.auth.Role;
-import de.schlund.pfixcore.auth.RoleNotFoundException;
 import de.schlund.pfixcore.workflow.ContextInterceptor;
 import de.schlund.pfixcore.workflow.ContextInterceptorFactory;
 import de.schlund.pfixcore.workflow.ContextResource;
@@ -132,14 +129,4 @@ public class ServerContextImpl {
         }
     }
     
-    public Role getRole(String roleName) throws RoleNotFoundException {
-    	Role role=getContextConfig().getRoleProvider().getRole(roleName);
-    	if(role==null) throw new RoleNotFoundException(roleName);
-    	return role;
-    }
-    
-    public List<Role> getRoles() {
-        return getContextConfig().getRoleProvider().getRoles();
-    }
-
 }
