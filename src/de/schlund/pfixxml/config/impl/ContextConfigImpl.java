@@ -71,7 +71,7 @@ public class ContextConfigImpl implements ContextConfig {
     private Map<String,AuthConstraint> authConstraints = new HashMap<String,AuthConstraint>();
     private AuthConstraint defaultAuthConstraint;
     private Map<String,Condition> conditions = new HashMap<String,Condition>();
-    private RoleProviderImpl roleProvider = new RoleProviderImpl();
+    private RoleProvider roleProvider = new RoleProviderImpl();
     private boolean doLoadTimeChecks = false;
     
     public void setAuthPage(String page) {
@@ -196,12 +196,12 @@ public class ContextConfigImpl implements ContextConfig {
         }       
     }
     
-    public RoleProviderImpl getRoleProvider() {
+    public RoleProvider getRoleProvider() {
         return roleProvider;
     }
     
-    public void addCustomRoleProvider(RoleProvider customProvider) {
-        roleProvider.addRoles(customProvider);
+    public void setCustomRoleProvider(RoleProvider customProvider) {
+        roleProvider = customProvider;
     }
     
     public void addAuthConstraint(String id,AuthConstraint authConstraint) {
