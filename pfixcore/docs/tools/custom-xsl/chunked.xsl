@@ -6,7 +6,7 @@
   <xsl:param name="root.filename" select="'index'"/>
   <xsl:param name="chunk.section.depth" select="0"/>
   <xsl:param name="section.autolabel" select="1"/>
-  <xsl:param name="section.autolabel.max.depth" select="1"/>
+  <xsl:param name="section.autolabel.max.depth" select="2"/>
   <xsl:param name="section.label.includes.component.label" select="1"/>
   <xsl:param name="html.cleanup" select="1"/>
   <xsl:param name="use.extensions" select="1"/>
@@ -19,4 +19,5 @@
   <xsl:param name="admon.graphics.path" select="'../images/docbook/'"/>
   <xsl:param name="img.src.path" select="'../'"/>
   <xsl:param name="html.stylesheet" select="'../css/style.css'"/>
+  <xsl:param name="toc.section.depth" select="1"/>
 </xsl:stylesheet>
