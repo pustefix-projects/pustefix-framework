@@ -27,10 +27,12 @@ import de.schlund.pfixcore.workflow.Context;
  * @author mleidig@schlund.de
  *
  */
-public interface AuthConstraint {
+public interface AuthConstraint extends Condition {
 	
 	public boolean isAuthorized(Context context);
 	public Condition getCondition();
+	public void setCondition(Condition condition);
+	public String getId();
 	public String getAuthPage();
 	public Element toXML(Document doc);
 	

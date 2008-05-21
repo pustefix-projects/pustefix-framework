@@ -37,6 +37,8 @@ import de.schlund.pfixcore.auth.AuthConstraint;
 import de.schlund.pfixcore.auth.Condition;
 import de.schlund.pfixcore.auth.RoleProvider;
 import de.schlund.pfixcore.auth.RoleProviderImpl;
+import de.schlund.pfixcore.auth.conditions.ConditionGroup;
+import de.schlund.pfixcore.auth.conditions.Not;
 import de.schlund.pfixcore.workflow.ContextInterceptor;
 import de.schlund.pfixcore.workflow.ContextResource;
 import de.schlund.pfixxml.config.ContextConfig;
@@ -73,6 +75,7 @@ public class ContextConfigImpl implements ContextConfig {
     private Map<String,Condition> conditions = new HashMap<String,Condition>();
     private RoleProvider roleProvider = new RoleProviderImpl();
     private boolean doLoadTimeChecks = false;
+    private boolean authConstraintRefsResolved = false;
     
     public void setAuthPage(String page) {
         this.authPage = page;
@@ -206,6 +209,7 @@ public class ContextConfigImpl implements ContextConfig {
     
     public void addAuthConstraint(String id,AuthConstraint authConstraint) {
     	authConstraints.put(id,authConstraint);
+    	
     }
     
     public AuthConstraint getAuthConstraint(String id) {
@@ -274,7 +278,7 @@ public class ContextConfigImpl implements ContextConfig {
         
         this.pagerequests.putAll(newPages);
         this.cachePagerequests = null;
-       
+        if(!authConstraintRefsResolved) resolveAuthConstraintRefs();
         if(doLoadTimeChecks) checkAuthConstraints();
     }
 
@@ -290,6 +294,65 @@ public class ContextConfigImpl implements ContextConfig {
         return newConfig;
     }
     
+    public boolean authConstraintRefsResolved() {
+        return authConstraintRefsResolved;
+    }
+    
+    public void resolveAuthConstraintRefs() {
+        LinkedHashSet<String> refList = new LinkedHashSet<String>();
+        for(AuthConstraint constraint:authConstraints.values()) {
+            refList.clear();
+            resolveAuthConstraintRefs(constraint, refList);
+        }
+        authConstraintRefsResolved = true;
+    }
+    
+    private Condition resolveAuthConstraintRefs(Condition condition, LinkedHashSet<String> refList) {
+        if(condition instanceof AuthConstraintRef) {
+            AuthConstraintRef ref = (AuthConstraintRef)condition;
+            if(refList.contains(ref.getRef())) {
+                StringBuilder sb = new StringBuilder();
+                for(String str:refList) {
+                    if(str.equals(ref.getRef())) sb.append("( ");
+                    sb.append(str+" -> ");
+                }
+                sb.append(ref.getRef()+" )");
+                throw new RuntimeException("Circular authconstraint reference: "+sb.toString());
+            }
+            AuthConstraint constraint = getAuthConstraint(ref.getRef());
+            if(constraint == null) throw new RuntimeException("Referenced authconstraint not found: "+ref.getRef());
+            Condition constraintCond = constraint.getCondition();
+            if(constraintCond == null) throw new RuntimeException("Referenced authconstraint has no condition: "+ref.getRef());
+            refList.add(ref.getRef());
+            condition = resolveAuthConstraintRefs(constraintCond, refList);
+            refList.remove(ref.getRef());
+        } else if(condition instanceof ConditionGroup) {
+            ConditionGroup condGroup = (ConditionGroup)condition;
+            List<Condition> conds = condGroup.getConditions();
+            for(Condition cond:conds) {
+                Condition resCond = resolveAuthConstraintRefs(cond,refList);
+                if(cond!=resCond) {
+                    int ind=conds.indexOf(cond);
+                    if(ind == -1) throw new RuntimeException("Condition can't be found: "+cond);
+                    conds.set(ind, resCond);
+                }
+            }
+        } else if(condition instanceof Not) {
+            Not condNot = (Not)condition;
+            Condition cond = condNot.get();
+            Condition resCond = resolveAuthConstraintRefs(cond,refList);
+            if(cond!=resCond) condNot.set(resCond);
+        } else if(condition instanceof AuthConstraint) {
+            AuthConstraint condAuth = (AuthConstraint)condition;
+            Condition cond = condAuth.getCondition();
+            refList.add(condAuth.getId());
+            Condition resCond = resolveAuthConstraintRefs(cond,refList);
+            refList.remove(condAuth.getId());
+            if(cond!=resCond) condAuth.setCondition(resCond);
+        }
+        return condition;
+    }
+      
     private void checkAuthConstraints() throws SAXException {
         Set<String> authPages = new LinkedHashSet<String>();
         List<PageRequestConfigImpl> pages = getPageRequestConfigs();

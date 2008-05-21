@@ -15,19 +15,21 @@
  * along with PFIXCORE; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-package de.schlund.pfixcore.auth;
+package org.pustefixframework.admin.mbeans;
 
 /**
  * 
  * @author mleidig@schlund.de
- *
+ * 
  */
-public interface Authentication {
-    
-    public boolean hasRole(String roleName);
-    public boolean addRole(String roleName) throws RoleNotFoundException;
-    public boolean revokeRole(String roleName);
-    
-    public Role[] getRoles();
-    
+public interface AuthAdminMBean {
+
+    public String[] listAvailableRoles(String sessionId);
+
+    public String[] listCurrentRoles(String sessionId);
+
+    public boolean addRole(String sessionId, String name);
+
+    public boolean revokeRole(String sessionId, String name);
+
 }

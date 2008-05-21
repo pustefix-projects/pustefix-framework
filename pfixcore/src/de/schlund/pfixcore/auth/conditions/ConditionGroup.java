@@ -49,6 +49,10 @@ public abstract class ConditionGroup implements Condition {
 		conditions.add(condition);
 	}
 	
+	public List<Condition> getConditions() {
+	    return conditions;
+	}
+	
 	public abstract boolean evaluate(Context context);
 	
 	public abstract String getOperatorString();
