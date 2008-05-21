@@ -25,67 +25,67 @@ import de.schlund.pfixcore.workflow.Context;
 /**
  * 
  * @author mleidig@schlund.de
- *
+ * 
  */
 public class AuthConstraintImpl implements AuthConstraint {
 
-	private Condition condition;
-	private String authPage;
-	private String id;
-	
-	public AuthConstraintImpl(String id) {
-	    this.id = id;
-	}
-	
-	public void setCondition(Condition condition) {
-		this.condition=condition;
-	}
-	
-	public Condition getCondition() {
-		return condition;
-	}
-	
-	public String getId() {
-	    return id;
-	}
-	
-	public void setAuthPage(String authPage) {
-		this.authPage=authPage;
-	}
-	
-	public String getAuthPage() {
-		return authPage;
-	}
-	
-	public boolean isAuthorized(Context context) {
-		return evaluate(context);
-	}
-	
-	public boolean evaluate(Context context) {
-	    if(condition!=null) {
+    private Condition condition;
+    private String authPage;
+    private String id;
+
+    public AuthConstraintImpl(String id) {
+        this.id = id;
+    }
+
+    public void setCondition(Condition condition) {
+        this.condition = condition;
+    }
+
+    public Condition getCondition() {
+        return condition;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setAuthPage(String authPage) {
+        this.authPage = authPage;
+    }
+
+    public String getAuthPage() {
+        return authPage;
+    }
+
+    public boolean isAuthorized(Context context) {
+        return evaluate(context);
+    }
+
+    public boolean evaluate(Context context) {
+        if (condition != null) {
             return condition.evaluate(context);
         }
         return true;
-	}
-	
-	@Override
-	public String toString() {
-		StringBuilder sb=new StringBuilder();
-		sb.append("authconstraint");
-		sb.append("{");
-		sb.append("id="+id);
-		sb.append(",authpage="+authPage);
-		sb.append("}");
-		sb.append("[");
-		sb.append(condition);
-		sb.append("]");
-		return sb.toString();
-	}
-	
-	public Element toXML(Document doc) {
-		Element element=doc.createElement("authconstraint");
-		if(condition!=null) element.appendChild(condition.toXML(doc));
-		return element;
-	}
-	
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("authconstraint");
+        sb.append("{");
+        sb.append("id=" + id);
+        sb.append(",authpage=" + authPage);
+        sb.append("}");
+        sb.append("[");
+        sb.append(condition);
+        sb.append("]");
+        return sb.toString();
+    }
+
+    public Element toXML(Document doc) {
+        Element element = doc.createElement("authconstraint");
+        if (condition != null) element.appendChild(condition.toXML(doc));
+        return element;
+    }
+
 }
