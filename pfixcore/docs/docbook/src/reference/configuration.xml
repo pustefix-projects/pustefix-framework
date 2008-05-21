@@ -1,11 +1,72 @@
 <?xml version="1.0"?>
 <chapter xml:id="configuration" xmlns="http://docbook.org/ns/docbook" xmlns:xlink="www.w3.org/1999/xlink" xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://docbook.org/ns/docbook http://www.docbook.org/xml/5.0CR7/xsd/docbook.xsd">
-  <title>Configuration Files</title>
+  <title>Configuring Pustefix</title>
+  
+  <section xml:id="configuration.introduction">
+    <title>Overview</title>
+    <para>
+      Starting a new project in your Pustefix environment requires (besides developing
+      the business logic and the UI) that you edit a bunch of configuration files.
+    </para>
+    <para>
+      Three different types of config files exist:
+    </para>
+    <orderedlist>
+      <listitem>
+        <para>
+          The project definition file. This file is used to list all the information
+          that is needed to generate an apache config file and the servlet container's
+          config files for this project. Also the project info needed for the editor
+          application is given here.
+        </para>
+        <para>
+          There is a environment-wide portion of the configuration (located at
+          <literal>DOCROOT/servletconf/projects.xml.in</literal>) that handles properties
+          common to all projects. Additionally, there is, for each project, a file
+          called <literal>DOCROOT/MyProject/conf/project.xml.in</literal> that contains
+          the project specific information.
+        </para>
+        <para>
+          The build system builds the final <literal>DOCROOT/servletconf/projects.xml</literal>
+          file by merging the project specific and the environment-wide files.
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+          The second type of configuration file is a property file for (almost) all
+          servlets that you have defined for your project in the associated project.xml
+          file. Again, there is also a common property file used for all servlets
+          (<literal>DOCROOT/common/conf/pustefix.xml.in</literal>) and a property files
+          for all factory classes (<literal>DOCROOT/common/conf/factory.xml.in</literal>)
+          that are started right at the beginning of the bootup process of the servlet
+          container (These factories offer services that are useful for all projects
+          running in the environment. Much of the framework itself is implemented in
+          these factories).
+        </para>
+        <para>
+          The name of the property file for each servlet can be choosen freely, but it
+          should match the name under which the servlet is accessible. E.g. if the servlet
+          is accessible via the URL http://some.host.com/xml/config then the name of
+          the servlet's property file should be config.prop (But note that you must never
+          edit the config.prop file itself, but a corresponding .prop.in file instead
+          that follows a special XML syntax. The build process takes care to transform
+          this file into the form needed by the framework). The file should be located in
+          the project's conf subdirectory.
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+          The third type is a XML file that defines the UI and page structure of the
+          project. This is also located in each project's conf subdirectory and is called
+          <literal>depend.xml</literal>.
+        </para>
+      </listitem>
+    </orderedlist>
+  </section>
   
   <section xml:id="configuration.format">
     <title>Configuration File Format</title>
     <para>
-      Write Introduction....
     </para>
 
 <!-- 
@@ -262,6 +323,7 @@
   <section xml:id="configuration.project">
     <title>Project configuration</title>
     <para>
+      Describe project.xml here
     </para>
   </section>
 
