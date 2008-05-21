@@ -3,7 +3,7 @@
   <xsl:import href="../docbook-xsl-ns/html/docbook.xsl"/>
   <xsl:import href="style-highlight.xsl"/>
   <xsl:param name="section.autolabel" select="1"/>
-  <xsl:param name="section.autolabel.max.depth" select="1"/>
+  <xsl:param name="section.autolabel.max.depth" select="2"/>
   <xsl:param name="section.label.includes.component.label" select="1"/>
   <xsl:param name="html.cleanup" select="1"/>
   <xsl:param name="use.extensions" select="1"/>
