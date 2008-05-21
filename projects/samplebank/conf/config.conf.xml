@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<contextxmlserver xmlns="http://pustefix.sourceforge.net/properties200401" xmlns:cus="http://www.schlund.de/pustefix/customize" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://pustefix.sourceforge.net/properties200401 http://pustefix.sourceforge.net/properties200401.xsd" version="1.0">
+<contextxmlserver xmlns="http://pustefix.sourceforge.net/properties200401" xmlns:cus="http://www.schlund.de/pustefix/customize" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://pustefix.sourceforge.net/properties200401 ../../core/schema/properties200401.xsd" version="1.0">
   <servletinfo depend="samplebank/conf/depend.xml" name="pfixcore_project:samplebank::servlet:config">
     <editmode allow="true"/>
   </servletinfo>
@@ -35,6 +35,17 @@
       <hasrole name="UNRESTRICTED"/>
       <hasrole name="ACCOUNT"/>
     </or>
+  </authconstraint>
+  
+  <authconstraint id="AC_REFTEST">
+    <and>
+      <authconstraint ref="AC_TEST"/>
+      <hasrole name="UNRESTRICTED"/>
+    </and>
+  </authconstraint>
+  
+  <authconstraint id="AC_TEST">
+    <hasrole name="TEST"/>
   </authconstraint>
   
   <pageflow name="DefaultFlow" final="home">
@@ -91,7 +102,10 @@
 
   <pagerequest name="test">
     <authconstraint authpage="login">
-      <hasrole name="UNRESTRICTED"/>
+      <and>
+        <hasrole name="TEST"/>
+        <authconstraint ref="AC_REFTEST"/>
+      </and>
     </authconstraint>
   </pagerequest>
   

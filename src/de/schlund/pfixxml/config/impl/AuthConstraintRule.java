@@ -37,16 +37,15 @@ public class AuthConstraintRule extends CheckedRule {
         this.config = config;
         this.topLevel = topLevel;
     }
-
+    
     public void begin(String namespace, String name, Attributes attributes) throws Exception {
-    	try {
         check(namespace, name, attributes);
         AuthConstraintImpl constraint=null;
         if(topLevel) {
         	String constraintId = attributes.getValue("id");
         	if(constraintId==null) 
         		throw new Exception("Top-level element 'authconstraint' requires attribute 'id'");
-        	constraint=new AuthConstraintImpl();
+        	constraint=new AuthConstraintImpl(constraintId);
         	getDigester().push(constraint);
         	config.getContextConfig().addAuthConstraint(constraintId,constraint);
         	String defStr=attributes.getValue("default");
@@ -55,6 +54,9 @@ public class AuthConstraintRule extends CheckedRule {
         	   if(def) config.getContextConfig().setDefaultAuthConstraint(constraint);
         	}
         } else {
+            if(!config.getContextConfig().authConstraintRefsResolved()) {
+                config.getContextConfig().resolveAuthConstraintRefs();
+            }
         	Object obj = getDigester().peek();
         	String constraintRef=attributes.getValue("ref");
         	if(constraintRef!=null) {
@@ -62,7 +64,7 @@ public class AuthConstraintRule extends CheckedRule {
         		if(constraint==null)
         			throw new Exception("Referenced 'authconstraint' element can't be found: "+constraintRef);
         	} else {
-        		constraint=new AuthConstraintImpl();
+        		constraint=new AuthConstraintImpl("anonymous");
         	}
         	getDigester().push(constraint);
     		if(obj instanceof PageRequestConfigImpl) {
@@ -71,10 +73,6 @@ public class AuthConstraintRule extends CheckedRule {
         }
         String authPage=attributes.getValue("authpage");
         if(authPage!=null) constraint.setAuthPage(authPage);
-    	} catch(Exception x) {
-    		x.printStackTrace();
-    		throw x;
-    	}
     }
     
     public void end(String namespace, String name) throws Exception {
@@ -85,9 +83,8 @@ public class AuthConstraintRule extends CheckedRule {
     	HashMap<String, Boolean> atts = new HashMap<String, Boolean>();
     	if(topLevel) {
     	   atts.put("id",true);
-    	  atts.put("default",false);
-    	}
-    	else atts.put("ref",false);
+    	   atts.put("default",false);
+    	} else atts.put("ref",false);
     	atts.put("authpage",false);	
         return atts;
     }

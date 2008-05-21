@@ -57,9 +57,10 @@ public class AuthenticationImpl implements Authentication {
         return hasRole;
     }
 
-    public synchronized boolean addRole(String roleName) {
+    public synchronized boolean addRole(String roleName) throws RoleNotFoundException {
         if (!roles.containsKey(roleName)) {
             Role role = roleProvider.getRole(roleName);
+            if(role == null) throw new RoleNotFoundException(roleName);
             roles.put(roleName, role);
             return true;
         }

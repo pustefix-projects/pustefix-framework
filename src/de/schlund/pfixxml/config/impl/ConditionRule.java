@@ -39,15 +39,31 @@ import de.schlund.pfixcore.auth.conditions.Or;
 public class ConditionRule extends CheckedRule {
 
     ContextXMLServletConfigImpl config;
-    boolean topLevel;
 
-    public ConditionRule(ContextXMLServletConfigImpl config, boolean topLevel) {
+    public ConditionRule(ContextXMLServletConfigImpl config) {
         this.config = config;
-        this.topLevel = topLevel;
     }
 
     public void begin(String namespace, String name, Attributes attributes) throws Exception {
+       
         check(namespace, name, attributes);
+       
+        Object ctx = getDigester().peek();
+        boolean inCondition = ctx instanceof Condition;
+        if(!inCondition) {
+            if(name.equals("authconstraint"))
+                throw new RuntimeException("Top- and pagerequest-level authconstraints shouldn't be matched by this rule.");
+            if(!name.equals("condition")) 
+                throw new RuntimeException("Element '"+name+"' not supported outside of condition.");
+        }
+        boolean inPageRequest = false;
+        for(int i=getDigester().getCount()-1;i>-1;i--) {
+            Object tmpCtx=getDigester().peek(i);
+            if(tmpCtx instanceof PageRequestConfigImpl) {
+                inPageRequest = true;
+            }
+        }
+       
         Condition condition = null;
         if (name.equals("or")) {
             condition = new Or();
@@ -61,7 +77,7 @@ public class ConditionRule extends CheckedRule {
             Role role = config.getContextConfig().getRoleProvider().getRole(roleName);
             if (role == null) throw new Exception("Condition hasrole references unknown role: " + roleName);
         } else if (name.equals("condition")) {
-            if (topLevel) {
+            if (!inCondition) {
                 String id = attributes.getValue("id");
                 condition = createCondition(attributes);
                 config.getContextConfig().addCondition(id, condition);
@@ -74,18 +90,32 @@ public class ConditionRule extends CheckedRule {
                     condition = createCondition(attributes);
                 }
             }
+        } else if (name.equals("authconstraint")) {
+            String ref = attributes.getValue("ref");
+          
+                if(ref == null) throw new Exception("Nested authconstraint requires 'ref' attribute.");
+              
+                if(inPageRequest) {
+                    condition = config.getContextConfig().getAuthConstraint(ref);
+                    if(condition == null) throw new Exception("Referenced authconstraint not found: "+ref);
+                } else {
+                    condition = new AuthConstraintRef(ref);
+                }
+            
         } else throw new Exception("Unsupported condition: " + name);
-        if (!topLevel) {
-            Object obj = getDigester().peek();
-            if (obj instanceof AuthConstraint) {
-                ((AuthConstraintImpl) obj).setCondition(condition);
-            } else if (obj instanceof ConditionGroup) {
-                ((ConditionGroup) obj).add(condition);
-            } else if (obj instanceof Not) {
-                ((Not) obj).set(condition);
-            } else throw new Exception("Illegal object: " + obj.getClass().getName());
+      
+        if(inCondition) {
+            if (ctx instanceof AuthConstraint) {
+                ((AuthConstraintImpl) ctx).setCondition(condition);
+            } else if (ctx instanceof ConditionGroup) {
+                ((ConditionGroup) ctx).add(condition);
+            } else if (ctx instanceof Not) {
+                ((Not) ctx).set(condition);
+            } else throw new Exception("Illegal object: " + ctx.getClass().getName());
         }
+         
         getDigester().push(condition);
+      
     }
 
     public void end(String namespace, String name) throws Exception {

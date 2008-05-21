@@ -696,9 +696,13 @@
     <xs:attribute name="externalservletname"/>
   </xs:complexType>
 
-  <xs:element name="authconstraint">
+  <xs:element name="authconstraint" substitutionGroup="prop:abstractcondition">
     <xs:complexType>
-      <xs:attribute name="ref" type="xs:string"/>
+      <xs:complexContent>
+        <xs:extension base="prop:abstractconditionType">
+          <xs:attribute name="ref" type="xs:string"/>
+        </xs:extension>
+      </xs:complexContent>
     </xs:complexType>
   </xs:element>
 
