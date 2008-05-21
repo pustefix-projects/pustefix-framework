@@ -2,9 +2,160 @@
 <chapter xml:id="advancedtopics" xmlns="http://docbook.org/ns/docbook" xmlns:xlink="www.w3.org/1999/xlink" xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://docbook.org/ns/docbook http://www.docbook.org/xml/5.0CR7/xsd/docbook.xsd">
   <title>Advanced topics</title>
 
-  <section xml:id="variantsandthemes">
+  <section xml:id="advanced.variantsandthemes">
     <title>Variants and Themes</title>
     <para></para>
+    <section xml:id="advanced.variantsandthemes.themes">
+      <title>Themes</title>
+      <para>
+        Describe themes here.
+      </para>
+    </section>
+    <section xml:id="advanced.variantsandthemes.variants">
+      <title>Variants</title>
+      <para>
+        Variants are a way to have the same page look and behave different depending
+        on a variant id that can be set freely at runtime. This allows to select different
+        look and behaviour depending on data collected during the user sesion.
+      </para>
+      <section>
+        <title>Selecting a variant</title>
+        <para>
+          Variants can be selected by calling the method <literal>setVariant(Variant var)</literal>
+          in the Context. This will store and reuse the id for the current and all following
+          requests until it is set to a different id (or erased by setting it to null).
+        </para>
+        <para>
+          The <literal>Context</literal> takes care to set the variant in the
+          <literal>SPDocument</literal> it returnes to the AbstractXMLServer which
+          in turn tries to get the matching target for the requested page and
+          requested variant.
+          If no target matching the variant is found, the "root" variant
+          (in other words, the page without a variant at all) will be tried.
+        </para>
+        <para>
+          When defining variants of pages, the system automatically makes sure
+          that you can only define variants for a page that has also a no-variant
+          definition. This works for pages defined using the &lt;standardpage&gt; tag and
+          for pages defined by hand using &lt;target&gt; tags directly.
+        </para>
+        <para>
+          The valid characters for variants are a-zA-Z0-9_+- (but see below for compound variants and the use of the : character).
+        </para>
+      </section>
+      <section>
+        <title>Compound Variants</title>
+        <para>
+          Variants can be variants of variants themself which in turn can be considered variants of another variant. The name of a variant that is a subvariant of another variant must be expressed in the following way: foo:bar:baz
+        </para>
+        <para>
+          Here we have a variant that is a subvariant of foo:bar which in turn is a subvariant of foo. This information is used when determining the right Target for generating the output. Say the variant foo:bar:baz has been set via the setVariant(Variant var) method of the Context and the request wants to display the page Home. When trying to get the matching Target for transforming the output the system first tries to get the matching Target for Home, variant foo:bar:baz. If it gets no result, it goes on trying Home, variant foo:bar; then Home, variant foo before finally requesting the "root" variant of page Home.
+        </para>
+      </section>
+      <section>
+        <title>Variant features</title>
+        <para>
+          Variants can influence the way an application works:
+        </para>
+        <itemizedlist>
+          <listitem>
+            <para>
+              They can change the look and content of a page. This is implemented in
+              terms of themes that depend on the selected variant. See below for more
+              details.
+            </para>
+          </listitem>
+          <listitem>
+            <para>
+              They can change the backend definition of a pagerequest
+              (aka: Handlers, State, and output from ContextRessources)
+            </para>
+          </listitem>
+          <listitem>
+            <para>
+              They can change the definition of a pageflow
+            </para>
+          </listitem>
+        </itemizedlist>
+      </section>
+      <section>
+        <title>Defining variants of pages</title>
+        <para>
+          Different variants of pages are usually defined via the standardpage tag:
+        </para>
+        <programlisting language="xml"><![CDATA[<standardpage xml="MyProject/xml/frame.xml" name="Home" variant="foo:bar:baz">]]></programlisting>
+        <para>
+          What's interesting here is how the system produces the themes attribute used for
+          the two targets that result from the expansion of the standardpage tag.
+        </para>
+        <para>
+          If we have not given a special local themes attribute to the standardpage tag,
+          and no global themes attribute has been given (see here), then the value of the
+          themes attribute for both targets is in this example <literal>baz bar foo MyProject default</literal>.
+        </para>
+        <para>
+          As can be seen, the use of the variant attribute will expand the themes as they would
+          be valid for the targets produced from the standardpage tag (either by using a
+          locally defined themes attribute of the standardpage tag, or automatically by
+          using the global fallback) by putting more specific themes in front of the
+          themes list, which are generated from the given variant id. If the variant id
+          is a compount variant, then each segment of the compound variant will be used,
+          from right to left, to generate a theme name to be put before the "normal"
+          themes valid for the page.
+        </para>
+        <para>
+          If the standardpage had its own themes attribute given (say for example
+          "<literal>theme_a theme_b default</literal>"), the resulting themes after taking the
+          variant id into account would of course be <literal>baz bar foo theme_a theme_b default</literal>.
+        </para>
+      </section>
+      <section>
+        <title>Defining variants of pagerequests</title>
+        <para>
+          Variants can also be used to create different implementations for the same
+          pagerequest. This is done by a simple extension to the way a pagerequest is
+          defined in the servlet configuration file.
+        </para>
+        <programlisting language="xml"><![CDATA[<pagerequest name="foo">
+  <default>
+    [Any other tag that is allowed inside a pagerequest]
+  </default>
+  <variant name="var_id">
+    [Any other tag that is allowed inside a pagerequest]
+  </variant>
+  <variant name="another_var_id">
+    [Any other tag that is allowed inside a pagerequest]
+  </variant>
+ </pagerequest>]]></programlisting>
+        <note>
+          <para>You must give a <literal>&lt;default&gt;</literal> definition when using named variants.</para>
+          <para>Each of the <literal>&lt;default&gt;</literal> and all <literal>&lt;variant&gt;</literal> definitions are self contained, full definitions of pagerequests. Nothing is shared between them.</para>
+        </note>
+       </section>
+      <section>
+        <title>Defining variants of pageflows</title>
+        <para>
+          Variants can also be used to create different implementations for the
+          same pageflow. This is done by a simple extension to the way a pageflow is
+          defined in the servlet configuration file.
+        </para>
+        <programlisting language="xml"><![CDATA[<pageflow name="fooFlow">
+  <default>
+    [Any other tag that is allowed inside a pageflow]
+  </default>
+  <variant name="var_id">
+    [Any other tag that is allowed inside a pageflow]
+  </variant>
+  <variant name="another_var_id">
+    [Any other tag that is allowed inside a pageflow]
+  </variant>
+</pageflow>]]></programlisting>
+        <note>
+          <para>You must give a <literal>&lt;default&gt;</literal> definition when using named variants.</para>
+          <para>Each of the <literal>&lt;default&gt;</literal> and all <literal>&lt;variant&gt;</literal> definitions are self contained, full definitions of pagerequests. Nothing is shared between them.</para>
+        </note>
+      </section>
+    </section>   
   </section>
 
   <section xml:id="i18n">
