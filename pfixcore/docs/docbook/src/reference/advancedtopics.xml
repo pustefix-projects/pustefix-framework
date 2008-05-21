@@ -2,8 +2,18 @@
 <chapter xml:id="advancedtopics" xmlns="http://docbook.org/ns/docbook" xmlns:xlink="www.w3.org/1999/xlink" xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://docbook.org/ns/docbook http://www.docbook.org/xml/5.0CR7/xsd/docbook.xsd">
   <title>Advanced topics</title>
 
+  <section xml:id="variantsandthemes">
+    <title>Variants and Themes</title>
+    <para></para>
+  </section>
+
+  <section xml:id="i18n">
+    <title>Internationalisation</title>
+    <para></para>
+  </section>
+
   <section xml:id="rolebasedauth">
-    <title>Role-based authorization</title>
+    <title>Authentication and authorization</title>
     <para>
       Pustefix provides a role-based authorization mechanism. You can define arbitrary <literal>roles</literal>, 
       declare logical operations/combinations on this roles using <literal>authconstraints</literal>, 
@@ -1071,6 +1081,21 @@ public class MyRoleProvider implements RoleProvider {
     
     </section>
     
+  </section>
+
+  <section xml:id="scriptedflows">
+    <title>Scripted workflows</title>
+    <para></para>
+  </section>
+
+  <section xml:id="scriptedhandlers">
+    <title>Scripted Handlers</title>
+    <para></para>
+  </section>
+
+  <section xml:id="editor">
+    <title>The Pustefix Editor</title>
+    <para></para>
   </section>
 
 </chapter>

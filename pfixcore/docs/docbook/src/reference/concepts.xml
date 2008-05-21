@@ -5,16 +5,11 @@
 >
   <title>Important Concepts</title>
 
-  <section>
-    <title>Themes</title>
+  <section xml:id="concepts.states">
+    <title>States</title>
     <para></para>
   </section>
 
-  <section>
-    <title>Variants</title>
-    <para></para>
-  </section>
-  
   <section xml:id="concepts.request_processing">
     <title>Processing of requests in Pustefix</title>
     <para>
