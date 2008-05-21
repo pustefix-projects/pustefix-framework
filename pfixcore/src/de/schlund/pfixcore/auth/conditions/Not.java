@@ -26,43 +26,43 @@ import de.schlund.pfixcore.workflow.Context;
 /**
  * 
  * @author mleidig@schlund.de
- *
+ * 
  */
 public class Not implements Condition {
 
-	private Condition condition;
-	
-	public Not() {
-	}
-	
-	public Not(Condition condition) {
-		this.condition=condition;
-	}
-	
-	public void set(Condition condition) {
-		this.condition=condition;
-	}
-	
-	public Condition get() {
-	    return condition;
-	}
-	
-	public boolean evaluate(Context context) {
+    private Condition condition;
+
+    public Not() {
+    }
+
+    public Not(Condition condition) {
+        this.condition = condition;
+    }
+
+    public void set(Condition condition) {
+        this.condition = condition;
+    }
+
+    public Condition get() {
+        return condition;
+    }
+
+    public boolean evaluate(Context context) {
         return !condition.evaluate(context);
     }
-	
-	@Override
-	public String toString() {
-		StringBuilder sb=new StringBuilder();
-		sb.append("! ");
-		sb.append(condition);
-		return sb.toString();
-	}
-	
-	public Element toXML(Document doc) {
-		Element element=doc.createElement("not");
-		if(condition!=null) element.appendChild(condition.toXML(doc));
-		return element;
-	}
-	
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("! ");
+        sb.append(condition);
+        return sb.toString();
+    }
+
+    public Element toXML(Document doc) {
+        Element element = doc.createElement("not");
+        if (condition != null) element.appendChild(condition.toXML(doc));
+        return element;
+    }
+
 }
