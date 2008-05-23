@@ -96,8 +96,9 @@ public class ConditionRule extends CheckedRule {
                 if(ref == null) throw new Exception("Nested authconstraint requires 'ref' attribute.");
               
                 if(inPageRequest) {
-                    condition = config.getContextConfig().getAuthConstraint(ref);
-                    if(condition == null) throw new Exception("Referenced authconstraint not found: "+ref);
+                    AuthConstraint constraint = config.getContextConfig().getAuthConstraint(ref);
+                    if(constraint == null) throw new Exception("Referenced authconstraint not found: "+ref);
+                    condition = constraint.getCondition();
                 } else {
                     condition = new AuthConstraintRef(ref);
                 }
