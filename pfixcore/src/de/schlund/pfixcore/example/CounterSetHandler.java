@@ -48,12 +48,12 @@ public class CounterSetHandler implements IHandler {
             cc.setCounter(count);
 
             if (count > 9 ) {
-                context.addPageMessage(StatusCodeLib.PFIXCORE_EXAMPLE_COUNTER_WARN_GREATER_9, new String[] {"" + count}, "error");
+                context.addPageMessage(StatusCodeLib.COUNTER_WARN_GREATER_9, new String[] {"" + count}, "error");
                 context.prohibitContinue();
             } else if (count > 5 ) {
-                context.addPageMessage(StatusCodeLib.PFIXCORE_EXAMPLE_COUNTER_WARN_GREATER_5, new String[] {"" + count}, "warn");
+                context.addPageMessage(StatusCodeLib.COUNTER_WARN_GREATER_5, new String[] {"" + count}, "warn");
             } else if (count > 3 ) {
-                context.addPageMessage(StatusCodeLib.PFIXCORE_EXAMPLE_COUNTER_INFO_GREATER_3, new String[] {"" + count}, "info");
+                context.addPageMessage(StatusCodeLib.COUNTER_INFO_GREATER_3, new String[] {"" + count}, "info");
             }
         }
         

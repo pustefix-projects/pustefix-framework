@@ -54,7 +54,7 @@ public class TrouserHandler implements IHandler {
                 String[]   args  = new String[2];
                 args[0] = "1";
                 args[1] = "2";
-                trouser.addSCodeColor(StatusCodeLib.PFIXCORE_EXAMPLE_TROUSER_FEATURECOLOR_OUTOF_STOCK, args, null);
+                trouser.addSCodeColor(StatusCodeLib.TROUSER_FEATURECOLOR_OUTOF_STOCK, args, null);
                 return;
             }
         }

@@ -1,3 +1,17 @@
+2008-05-23  Martin Leidig  <mleidig@schlund.de>
+
+	Removed 'pfixcore.example' prefix from statuscodes:
+	* src/de/schlund/pfixcore/testsuite/handler/Test5PageMessageHandler.java
+	* src/de/schlund/pfixcore/example/TrouserHandler.java
+	* src/de/schlund/pfixcore/example/bank/ihandler/LoginHandler.java
+	* src/de/schlund/pfixcore/example/iwrapper/AdultInfo.iwrp
+	* src/de/schlund/pfixcore/example/TShirtHandler.java
+	* src/de/schlund/pfixcore/example/CounterHandler.java
+	* src/de/schlund/pfixcore/example/CounterSetHandler.java
+	* projects/testsuite/dyntxt/statusmessages.xml
+	* projects/sample1/dyntxt/statusmessages.xml
+	* projects/samplebank/dyntxt/statusmessages.xml
+
 2008-05-21  Martin Leidig  <mleidig@schlund.de>
 
 	Added support for authconstraint reusage. Now it's possible to

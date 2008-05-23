@@ -1,30 +1,30 @@
 <?xml version="1.0" encoding="ISO-8859-1"?><include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
-  <part name="pfixcore.example.counter.INFO_GREATER_3">
+  <part name="counter.INFO_GREATER_3">
     <theme name="default">The value of counter is already greater 3! (Counter value is <pfx:argref pos="1"/>)</theme>
   </part>
-  <part name="pfixcore.example.counter.WARN_GREATER_5">
+  <part name="counter.WARN_GREATER_5">
     <theme name="default">The value of counter is already greater 5! Beware! (Counter value is <pfx:argref pos="1"/>)</theme>
   </part>
-  <part name="pfixcore.example.counter.WARN_GREATER_9">
+  <part name="counter.WARN_GREATER_9">
     <theme name="default">The value of counter is already greater 9! You can't continue with this.
         (Counter value is <pfx:argref pos="1"/>)</theme>
   </part>
-  <part name="pfixcore.example.home.AGE_MISSING">
+  <part name="home.AGE_MISSING">
     <theme name="default"><pfx:langselect>
       <pfx:lang name="default">Please tell me if you're old enough.</pfx:lang>
       <pfx:lang name="de_*">Bitte geben Sie ihr Alter an</pfx:lang>
     </pfx:langselect></theme>
   </part>
-  <part name="pfixcore.example.home.NO_AGE">
+  <part name="home.NO_AGE">
     <theme name="default">Please answer yes or no!</theme>
   </part>
-  <part name="pfixcore.example.trouser.FEATURECOLOR_OUTOF_STOCK">
+  <part name="trouser.FEATURECOLOR_OUTOF_STOCK">
     <theme name="default">The combination <b><pfx:argref pos="1"/>/<pfx:argref pos="2"/></b> of features/color is out of stock.</theme>
   </part>
-  <part name="pfixcore.example.tshirt.SIZECOLOR_OUTOF_STOCK">
+  <part name="tshirt.SIZECOLOR_OUTOF_STOCK">
     <theme name="default">The combination <b><pfx:argref pos="1"/>/<pfx:argref pos="2"/></b> of size/color is out of stock.</theme>
   </part>
-  <part name="pfixcore.example.tshirt.SCRIPTING_SUCCESS">
+  <part name="tshirt.SCRIPTING_SUCCESS">
     <theme name="default">You're one lucky pal. The Scripting framework is working (for now) and you finally checked it out!</theme>
   </part>
 </include_parts>

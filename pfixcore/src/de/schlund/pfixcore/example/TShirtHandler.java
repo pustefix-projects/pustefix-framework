@@ -45,7 +45,7 @@ public class TShirtHandler implements IHandler {
 
         if (size.equals("L") && color.equals(new Integer(2))) {
             // The combination size "L" and color No. "2" is considered invalid (maybe out of stock) 
-            tshirt.addSCodeSize(StatusCodeLib.PFIXCORE_EXAMPLE_TSHIRT_SIZECOLOR_OUTOF_STOCK, new String[]{"L", "2"}, "note");
+            tshirt.addSCodeSize(StatusCodeLib.TSHIRT_SIZECOLOR_OUTOF_STOCK, new String[]{"L", "2"}, "note");
             return;
         }
 

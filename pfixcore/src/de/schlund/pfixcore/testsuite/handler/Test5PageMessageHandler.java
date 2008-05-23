@@ -27,7 +27,7 @@ public class Test5PageMessageHandler implements IHandler {
 
     public void handleSubmittedData(Context context, IWrapper wrapper) throws Exception {
         // Add page message, so that success is shown
-        context.addPageMessage(StatusCodeLib.PFIXCORE_TESTSUITE_TEST_SUCCESSFUL, null, null);
+        context.addPageMessage(StatusCodeLib.TEST_SUCCESSFUL, null, null);
     }
 
     public void retrieveCurrentStatus(Context context, IWrapper wrapper) throws Exception {

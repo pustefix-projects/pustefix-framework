@@ -29,8 +29,8 @@ public class LoginHandler implements IHandler {
                 if (password == null || !password.equals(customer.getPassword())) customer = null;
             } catch (NumberFormatException x) {}
             if (customer == null) {
-                login.addSCodeCustomerID(StatusCodeLib.PFIXCORE_EXAMPLE_BANK_ILLEGAL_LOGIN);
-                login.addSCodePassword(StatusCodeLib.PFIXCORE_EXAMPLE_BANK_ILLEGAL_LOGIN);
+                login.addSCodeCustomerID(StatusCodeLib.ILLEGAL_LOGIN);
+                login.addSCodePassword(StatusCodeLib.ILLEGAL_LOGIN);
             } else {
                 ContextCustomer contextCustomer = context.getContextResourceManager().getResource(ContextCustomer.class);
                 contextCustomer.setCustomer(customer);
