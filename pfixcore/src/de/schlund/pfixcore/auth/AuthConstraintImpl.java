@@ -27,13 +27,11 @@ import de.schlund.pfixcore.workflow.Context;
 public class AuthConstraintImpl implements AuthConstraint {
 
     private Condition condition;
-    private String    authPage;
+    private String authPage;
+    private String id;
 
-    public AuthConstraintImpl() {
-    }
-
-    public AuthConstraintImpl(Condition condition) {
-        this.condition = condition;
+    public AuthConstraintImpl(String id) {
+        this.id = id;
     }
 
     public void setCondition(Condition condition) {
@@ -42,6 +40,10 @@ public class AuthConstraintImpl implements AuthConstraint {
 
     public Condition getCondition() {
         return condition;
+    }
+
+    public String getId() {
+        return id;
     }
 
     public void setAuthPage(String authPage) {
@@ -53,6 +55,10 @@ public class AuthConstraintImpl implements AuthConstraint {
     }
 
     public boolean isAuthorized(Context context) {
+        return evaluate(context);
+    }
+
+    public boolean evaluate(Context context) {
         if (condition != null) {
             return condition.evaluate(context);
         }
@@ -62,12 +68,14 @@ public class AuthConstraintImpl implements AuthConstraint {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append(getClass().getName());
-        sb.append(" ");
+        sb.append("authconstraint");
         sb.append("{");
-        sb.append("condition: ");
-        sb.append(condition);
+        sb.append("id=" + id);
+        sb.append(",authpage=" + authPage);
         sb.append("}");
+        sb.append("[");
+        sb.append(condition);
+        sb.append("]");
         return sb.toString();
     }
 

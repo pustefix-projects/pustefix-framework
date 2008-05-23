@@ -63,10 +63,10 @@ public abstract class ConditionGroup implements Condition {
         while (it.hasNext()) {
             Condition condition = it.next();
             sb.append(condition);
-            if (it.hasNext())
-                sb.append(" " + getOperatorString() + " ");
+            if (it.hasNext()) sb.append(" " + getOperatorString() + " ");
         }
         sb.append(" )");
         return sb.toString();
     }
+
 }

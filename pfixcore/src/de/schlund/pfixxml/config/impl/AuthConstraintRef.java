@@ -15,45 +15,47 @@
  * along with PFIXCORE; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-package de.schlund.pfixcore.auth.conditions;
+package de.schlund.pfixxml.config.impl;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 import de.schlund.pfixcore.auth.Condition;
 import de.schlund.pfixcore.workflow.Context;
 
 /**
  * 
- * @author mleidig@schlund.de
+ * Helper class for late resolving of authconstraint references.
  * 
+ * @author mleidig@schlund.de
+ *
  */
-public class Not implements Condition {
-
-    private Condition condition;
-
-    public Not() {
+public class AuthConstraintRef implements Condition {
+    
+    private String ref;
+   
+    public AuthConstraintRef(String ref) {
+        this.ref = ref;
     }
-
-    public Not(Condition condition) {
-        this.condition = condition;
+    
+    public String getRef() {
+        return ref;
     }
-
-    public void set(Condition condition) {
-        this.condition = condition;
-    }
-
-    public Condition get() {
-        return condition;
-    }
-
+    
     public boolean evaluate(Context context) {
-        return !condition.evaluate(context);
+        throw new RuntimeException("Method not implemented");
     }
-
+    
+    public Element toXML(Document doc) {
+        throw new RuntimeException("Method not implemented");
+    }
+    
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("! ");
-        sb.append(condition);
+        StringBuilder sb=new StringBuilder();
+        sb.append("authconstraintref");
+        sb.append("{ref="+ref+"}");
         return sb.toString();
     }
-
+    
 }

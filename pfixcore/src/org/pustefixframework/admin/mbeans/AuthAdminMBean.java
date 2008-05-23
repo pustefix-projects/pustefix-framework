@@ -15,25 +15,21 @@
  * along with PFIXCORE; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-package de.schlund.pfixcore.auth;
-
-import de.schlund.pfixcore.workflow.Context;
+package org.pustefixframework.admin.mbeans;
 
 /**
  * 
  * @author mleidig@schlund.de
  * 
  */
-public interface AuthConstraint extends Condition {
+public interface AuthAdminMBean {
 
-    public boolean isAuthorized(Context context);
+    public String[] listAvailableRoles(String sessionId);
 
-    public Condition getCondition();
+    public String[] listCurrentRoles(String sessionId);
 
-    public void setCondition(Condition condition);
+    public boolean addRole(String sessionId, String name);
 
-    public String getId();
-
-    public String getAuthPage();
+    public boolean revokeRole(String sessionId, String name);
 
 }

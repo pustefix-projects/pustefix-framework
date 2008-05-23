@@ -1,3 +1,51 @@
+2008-05-21  Martin Leidig  <mleidig@schlund.de>
+
+	Added support for authconstraint reusage. Now it's possible to
+	reference top-level authconstraints from within other authconstraints
+	or their nested conditions (using <authconstraint ref="..."/>).
+	At runtime the reference will be resolved and replaced by the 
+	authconstraint's condition.
+	Added AuthAdmin MBean to list/add/revoke roles via jconsole (for
+	testing).
+
+	Modified:
+	* src/de/schlund/pfixcore/auth/AuthenticationImpl.java: throw 
+	RoleNotFoundException if non-exisiting role is tried to be added
+	* src/de/schlund/pfixcore/auth/Authentication.java: addRole now
+	throws RoleNotFoundException
+	* src/de/schlund/pfixcore/auth/AuthConstraint.java: extend Condition 
+	interface, added getId() and setCondition() methods
+	* src/de/schlund/pfixcore/auth/AuthConstraintImpl.java: implement new
+	methods from changed interface
+	* src/de/schlund/pfixcore/auth/conditions/Not.java: added getter for
+	contained condition
+	* src/de/schlund/pfixcore/auth/conditions/ConditionGroup.java: added
+	getter for contained conditions
+	* src/de/schlund/pfixxml/config/impl/ContextXMLServletConfigImpl.java:
+	use the same rule for all conditions, the context is detected by the
+	rule itself
+	* src/de/schlund/pfixxml/config/impl/AuthConstraintRule.java: trigger
+	resolving of references within top-level authconstraints
+	* src/de/schlund/pfixxml/config/impl/ConditionRule.java: handling of
+	authconstraint references, use AuthConstraintRef instead of real
+	AuthConstraint objects for late resolving (replacing with contained
+	conditions).
+	* src/de/schlund/pfixxml/config/impl/ContextConfigImpl.java: added
+	methods for resolving of authconstraint references, replacement of
+	references by conditions and circular reference detection.
+	* projects/core/schema/properties200401.xsd: support authconstraint
+	references within authconstraints and nested conditions
+	* projects/common/conf/factory.xml: Added AuthAdmin as factory,
+	registers itself at MBeanServer
+
+	Added:
+	* src/de/schlund/pfixxml/config/impl/AuthConstraintRef.java: helper
+	class for late resolving of authconstraint references
+	* src/org/pustefixframework/admin/mbeans/AuthAdminMBean.java: MBean,
+	which can be used to set/add/revoke roles for a specified session
+	* src/org/pustefixframework/admin/mbeans/AuthAdmin.java:
+	implementation of AuthAdminMBean interface 
+
 2008-05-19  Martin Leidig  <mleidig@schlund.de>
 
 	Changed the custom RoleProvider mechanism: Now setting a custom RoleProvider

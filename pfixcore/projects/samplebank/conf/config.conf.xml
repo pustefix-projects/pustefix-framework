@@ -41,6 +41,17 @@
     </or>
   </authconstraint>
 
+  <authconstraint id="AC_REFTEST">
+    <and>
+      <authconstraint ref="AC_TEST"/>
+      <hasrole name="UNRESTRICTED"/>
+    </and>
+  </authconstraint>
+  
+  <authconstraint id="AC_TEST">
+    <hasrole name="TEST"/>
+  </authconstraint>
+  
   <pageflow name="DefaultFlow" final="home">
     <flowstep name="home" />
     <flowstep name="logout" />
@@ -95,7 +106,10 @@
 
   <pagerequest name="test">
     <authconstraint authpage="login">
-      <hasrole name="UNRESTRICTED" />
+      <and>
+        <hasrole name="TEST"/>
+        <authconstraint ref="AC_REFTEST"/>
+      </and>
     </authconstraint>
   </pagerequest>
 

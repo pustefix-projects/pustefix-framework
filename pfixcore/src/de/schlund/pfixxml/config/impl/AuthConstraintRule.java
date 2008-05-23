@@ -31,7 +31,7 @@ import de.schlund.pfixcore.auth.AuthConstraintImpl;
 public class AuthConstraintRule extends CheckedRule {
 
     private ContextXMLServletConfigImpl config;
-    private boolean                     topLevel;
+    private boolean topLevel;
 
     public AuthConstraintRule(ContextXMLServletConfigImpl config, boolean topLevel) {
         this.config = config;
@@ -39,41 +39,38 @@ public class AuthConstraintRule extends CheckedRule {
     }
 
     public void begin(String namespace, String name, Attributes attributes) throws Exception {
-        try {
-            check(namespace, name, attributes);
-            AuthConstraintImpl constraint = null;
-            if (topLevel) {
-                String constraintId = attributes.getValue("id");
-                if (constraintId == null) throw new Exception("Top-level element 'authconstraint' requires attribute 'id'");
-                constraint = new AuthConstraintImpl();
-                getDigester().push(constraint);
-                config.getContextConfig().addAuthConstraint(constraintId, constraint);
-                String defStr = attributes.getValue("default");
-                if (defStr != null) {
-                    boolean def = Boolean.valueOf(defStr);
-                    if (def) config.getContextConfig().setDefaultAuthConstraint(constraint);
-                }
-            } else {
-                Object obj = getDigester().peek();
-                String constraintRef = attributes.getValue("ref");
-                if (constraintRef != null) {
-                    constraint = (AuthConstraintImpl) config.getContextConfig().getAuthConstraint(constraintRef);
-                    if (constraint == null) throw new Exception("Referenced 'authconstraint' element can't be found: " + constraintRef);
-                } else {
-                    constraint = new AuthConstraintImpl();
-                }
-                getDigester().push(constraint);
-                if (obj instanceof PageRequestConfigImpl) {
-                    ((PageRequestConfigImpl) obj).setAuthConstraint(constraint);
-                } else
-                    throw new Exception("Element 'authconstraint' isn't 'pagerequest' child: " + obj.getClass().getName());
+        check(namespace, name, attributes);
+        AuthConstraintImpl constraint = null;
+        if (topLevel) {
+            String constraintId = attributes.getValue("id");
+            if (constraintId == null) throw new Exception("Top-level element 'authconstraint' requires attribute 'id'");
+            constraint = new AuthConstraintImpl(constraintId);
+            getDigester().push(constraint);
+            config.getContextConfig().addAuthConstraint(constraintId, constraint);
+            String defStr = attributes.getValue("default");
+            if (defStr != null) {
+                boolean def = Boolean.valueOf(defStr);
+                if (def) config.getContextConfig().setDefaultAuthConstraint(constraint);
             }
-            String authPage = attributes.getValue("authpage");
-            if (authPage != null) constraint.setAuthPage(authPage);
-        } catch (Exception x) {
-            x.printStackTrace();
-            throw x;
+        } else {
+            if (!config.getContextConfig().authConstraintRefsResolved()) {
+                config.getContextConfig().resolveAuthConstraintRefs();
+            }
+            Object obj = getDigester().peek();
+            String constraintRef = attributes.getValue("ref");
+            if (constraintRef != null) {
+                constraint = (AuthConstraintImpl) config.getContextConfig().getAuthConstraint(constraintRef);
+                if (constraint == null) throw new Exception("Referenced 'authconstraint' element can't be found: " + constraintRef);
+            } else {
+                constraint = new AuthConstraintImpl("anonymous");
+            }
+            getDigester().push(constraint);
+            if (obj instanceof PageRequestConfigImpl) {
+                ((PageRequestConfigImpl) obj).setAuthConstraint(constraint);
+            } else throw new Exception("Element 'authconstraint' isn't 'pagerequest' child: " + obj.getClass().getName());
         }
+        String authPage = attributes.getValue("authpage");
+        if (authPage != null) constraint.setAuthPage(authPage);
     }
 
     public void end(String namespace, String name) throws Exception {

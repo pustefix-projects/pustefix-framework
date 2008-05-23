@@ -25,7 +25,7 @@ package de.schlund.pfixcore.auth;
 public interface Authentication {
 
     public boolean hasRole(String roleName);
-    public boolean addRole(String roleName);
+    public boolean addRole(String roleName) throws RoleNotFoundException;
     public boolean revokeRole(String roleName);
 
     public Role[] getRoles();
