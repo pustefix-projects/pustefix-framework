@@ -10,6 +10,7 @@ import org.apache.tools.ant.DirectoryScanner;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.taskdefs.MatchingTask;
 
+import de.schlund.pfixcore.util.GenerateSCodes.Result;
 import de.schlund.pfixxml.config.GlobalConfigurator;
 import de.schlund.pfixxml.resources.DocrootResource;
 import de.schlund.pfixxml.resources.ResourceUtil;
@@ -64,20 +65,21 @@ public class GenerateSCodesTask extends MatchingTask {
             resList.add(res);
         }
         try {
-            List<String> genClasses = GenerateSCodes.generateFromInfo(resList, docrootDir.getAbsolutePath(), genDir);
-            if(genClasses.size()>0) {
-                log("Generated "+genClasses.size()+" statuscode class"+(genClasses.size()>1?"es":""), Project.MSG_INFO);
-                if(property!=null) {
-                    StringBuilder sb=new StringBuilder();
-                    Iterator<String> it=genClasses.iterator();
-                    while(it.hasNext()) {
-                        String filePath = it.next();
-                        filePath = filePath.replace('.','/')+".java";
-                        sb.append(filePath);
-                        if(it.hasNext()) sb.append(" ");
-                    }
-                    getProject().setProperty(property, sb.toString());
+            Result result = GenerateSCodes.generateFromInfo(resList, docrootDir.getAbsolutePath(), genDir);
+            if(result.generatedClasses.size()>0) {
+                log("Generated "+result.generatedClasses.size()+" statuscode class"+
+                        (result.generatedClasses.size()>1?"es":""), Project.MSG_INFO);
+            }
+            if(property!=null) {
+                StringBuilder sb=new StringBuilder();
+                Iterator<String> it=result.allClasses.iterator();
+                while(it.hasNext()) {
+                    String filePath = it.next();
+                    filePath = filePath.replace('.','/')+".java";
+                    sb.append(filePath);
+                    if(it.hasNext()) sb.append(" ");
                 }
+                getProject().setProperty(property, sb.toString());
             }
             
         } catch(Exception x) {

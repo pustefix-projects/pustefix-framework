@@ -1,5 +1,17 @@
 2008-05-23  Martin Leidig  <mleidig@schlund.de>
 
+	Improved modification detection: added check which compares file list
+	from configuration with DocrootResources from already generated
+	statuscode class.
+	Improved build: GenerateSCodes now returns Result object containing
+	lists of generated and all statuscode classes, the property used by 
+	the javac task now is set to all statuscode classes (instead of only
+	the generated ones), this fixes a build problem.
+	* src/de/schlund/pfixcore/util/GenerateSCodesTask.java
+	* src/de/schlund/pfixcore/util/GenerateSCodes.java
+
+2008-05-23  Martin Leidig  <mleidig@schlund.de>
+
 	Removed 'pfixcore.example' prefix from statuscodes:
 	* src/de/schlund/pfixcore/testsuite/handler/Test5PageMessageHandler.java
 	* src/de/schlund/pfixcore/example/TrouserHandler.java

@@ -24,6 +24,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -66,21 +67,22 @@ public class GenerateSCodes {
         
     }
     
-    public static List<String> generateFromInfo(List<DocrootResource> infoFiles, String docRoot, File genDir) throws Exception {
-        List<String> allGenClasses = new ArrayList<String>();
+    public static Result generateFromInfo(List<DocrootResource> infoFiles, String docRoot, File genDir) throws Exception {
+        Result totalResult = new Result();
         for(DocrootResource infoFile:infoFiles) {
-            List<String> genClasses = generate(infoFile, docRoot, genDir);
-            allGenClasses.addAll(genClasses);
+            Result result = generate(infoFile, docRoot, genDir);
+            totalResult.addResult(result);
         }
-        return allGenClasses;
+        return totalResult;
     }
     
-    public static List<String> generate(DocrootResource infoFile, String docRoot, File genDir) throws Exception {
+    public static Result generate(DocrootResource infoFile, String docRoot, File genDir) throws Exception {
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         DocumentBuilder db = dbf.newDocumentBuilder();
         Document doc = db.parse(infoFile.getInputStream());
         NodeList scElems = doc.getDocumentElement().getElementsByTagName("statuscodes");
         List<String> genClasses = new ArrayList<String>();
+        List<String> allClasses = new ArrayList<String>();
         for(int i=0; i<scElems.getLength(); i++) {
             Element scElem = (Element)scElems.item(i);
             String className = scElem.getAttribute("class");
@@ -107,8 +109,9 @@ public class GenerateSCodes {
             }
             boolean generated = generate(scXmlFiles, docRoot, genDir, className);
             if(generated) genClasses.add(className);
+            allClasses.add(className);
         }
-        return genClasses;
+        return new Result(allClasses, genClasses);
     }
     
    
@@ -175,14 +178,34 @@ public class GenerateSCodes {
         String scLibPath = className.replace('.','/')+".java";
         File scLibFile = new File(genDir, scLibPath);
         if (scLibFile.exists()) {
-            boolean newer = false;
-            for (FileResource path: scXmlFiles) {
-                if (path.exists() && path.lastModified() > scLibFile.lastModified()) {
-                    newer = true;
-                    break;
-                }
+            boolean differentFiles = false;
+            try {
+                Class<?> clazz = Class.forName(className);
+                Field field = clazz.getDeclaredField("__RES");
+                DocrootResource[] resArr = (DocrootResource[])field.get(null);
+                if(resArr.length == scXmlFiles.size()) {
+                    for(DocrootResource res:resArr) {
+                        if(!scXmlFiles.contains(res)) {
+                            differentFiles = true;
+                            break;
+                        }
+                    }
+                } else differentFiles = true;
+            } catch(ClassNotFoundException x) {
+                //statuscode class not available -> can't check if built from same files -> continue   
+            } catch(Exception x) {
+                throw new RuntimeException("Can't detect from which files statuscode class was built.",x);
             }
-            if(!newer) return false;
+            if(!differentFiles) {
+                boolean newer = false;
+                for (FileResource path: scXmlFiles) {
+                    if (path.exists() && path.lastModified() > scLibFile.lastModified()) {
+                        newer = true;
+                        break;
+                    }
+                }
+                if(!newer) return false;
+            }
         } else {
             if (!scLibFile.getParentFile().exists()) {
                 scLibFile.getParentFile().mkdirs();
@@ -304,4 +327,27 @@ public class GenerateSCodes {
         writer.write("    }\n\n");
     }
 
+    
+    public static class Result {
+        
+        public List<String> allClasses;
+        public List<String> generatedClasses;
+        
+        Result() {
+            allClasses = new ArrayList<String>();
+            generatedClasses = new ArrayList<String>();
+        }
+        
+        Result(List<String> allClasses, List<String> generatedClasses) {
+            this.allClasses = allClasses;
+            this.generatedClasses = generatedClasses;
+        }
+        
+        void addResult(Result result) {
+            allClasses.addAll(result.allClasses);
+            generatedClasses.addAll(result.generatedClasses);
+        }
+    
+    }
+    
 }
