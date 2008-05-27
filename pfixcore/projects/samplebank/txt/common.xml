@@ -15,6 +15,7 @@
             <pfx:button page="home">Home</pfx:button>&#160;
             <pfx:button page="accountoverview">Overview</pfx:button>&#160;
             <pfx:button page="accountdetails">Account</pfx:button>&#160;
+            <pfx:button page="test">Test</pfx:button>&#160;
           </div>
         </td>
         <ixsl:if test="pfx:hasRole('ACCOUNT') or pfx:hasRole('UNRESTRICTED')">

@@ -258,7 +258,7 @@
       </xsl:when>
       <xsl:otherwise>
         <ixsl:choose>
-          <ixsl:when test="(callback:isAccessible($__context__, '{$buttpage_impl}') = 0) and not('{$mode_impl}' = 'force')">
+          <ixsl:when test="(callback:checkAuthorization($__context__,'{$buttpage_impl}') = 3) or (callback:isAccessible($__context__, '{$buttpage_impl}') = 0) and not('{$mode_impl}' = 'force')">
             <span>
               <xsl:attribute name="class">
                 <xsl:choose>

@@ -20,6 +20,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
+import de.schlund.pfixcore.auth.AuthConstraint;
 import de.schlund.pfixcore.auth.Authentication;
 import de.schlund.pfixcore.auth.Condition;
 import de.schlund.pfixcore.auth.Role;
@@ -279,4 +280,52 @@ public class TransformerCallback {
             throw x;
         }
     }
+    
+    /**
+     * Checks authorization state of a page. Possible return values are:
+     * 0 - no authorization required (no authconstraint defined)
+     * 1 - already authorized (authconstraint defined and fulfilled)
+     * 2 - not authorized, but authentication intended (authconstraint has login page)
+     * 3 - not authorized, no authentication intended (authconstraint has no login page)
+     */
+    public static int checkAuthorization(RequestContextImpl requestContext, String pageName) throws Exception {
+        try {
+            int result = 0;
+            ContextImpl context = requestContext.getParentContext();
+            PageRequestConfig config = context.getContextConfig().getPageRequestConfig(pageName);
+            if(config != null) {
+                AuthConstraint authConst = config.getAuthConstraint();
+                if(authConst==null) authConst = context.getContextConfig().getDefaultAuthConstraint();
+                if(authConst != null) {
+                    if(authConst.isAuthorized(context)) result = 1;
+                    else if(authConst.getAuthPage()!=null) result = 2;
+                    else result = 3;
+                }
+            }
+            return result;
+        } catch (Exception x) {
+            ExtensionFunctionUtils.setExtensionFunctionError(x);
+            throw x;
+        }
+    }
+    
+    public static boolean isAuthorized(RequestContextImpl requestContext, String pageName) throws Exception {
+        try {
+            boolean result = true;
+            ContextImpl context = requestContext.getParentContext();
+            PageRequestConfig config = context.getContextConfig().getPageRequestConfig(pageName);
+            if(config != null) {
+                AuthConstraint authConst = config.getAuthConstraint();
+                if(authConst==null) authConst = context.getContextConfig().getDefaultAuthConstraint();
+                if(authConst != null) {
+                    if(!authConst.isAuthorized(context)) result = false;
+                }
+            }
+            return result;
+        } catch (Exception x) {
+            ExtensionFunctionUtils.setExtensionFunctionError(x);
+            throw x;
+        }
+    }
+    
 }
