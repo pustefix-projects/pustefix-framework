@@ -1,5 +1,16 @@
 2008-05-27  Martin Leidig  <mleidig@schlund.de>
 
+	Added pfx:isAuthorized XSLT function, which simply checks if page
+	access is authorized or not (returning a boolean value, as an 
+	alternative or shortcut for the pfx:checkAuthorization function, 
+	which returns more fine-grained authorization status information
+	in the form of integer constants).
+
+	* src/de/schlund/pfixcore/util/TransformerCallback.java
+	* projects/core/xsl/functions.xsl
+
+2008-05-27  Martin Leidig  <mleidig@schlund.de>
+
 	Changed the pfx:button behaviour for pages with authconstraints, which
 	don't set an authpage: until now the links to such pages were active
 	and requesting them ended with an exception. Now these pages are

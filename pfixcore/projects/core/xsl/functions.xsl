@@ -76,4 +76,9 @@
     <func:result select="callback:checkAuthorization($__context__, $pageName)"/>
   </func:function>
   
+  <func:function name="pfx:isAuthorized">
+    <xsl:param name="pageName"/>
+    <func:result select="callback:isAuthorized($__context__,$pageName)"/>
+  </func:function>
+  
 </xsl:stylesheet>
