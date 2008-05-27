@@ -319,4 +319,23 @@ public class TransformerCallback {
         }
     }
     
+    public static boolean isAuthorized(RequestContextImpl requestContext, String pageName) throws Exception {
+        try {
+            boolean result = true;
+            ContextImpl context = requestContext.getParentContext();
+            PageRequestConfig config = context.getContextConfig().getPageRequestConfig(pageName);
+            if(config != null) {
+                AuthConstraint authConst = config.getAuthConstraint();
+                if(authConst==null) authConst = context.getContextConfig().getDefaultAuthConstraint();
+                if(authConst != null) {
+                    if(!authConst.isAuthorized(context)) result = false;
+                }
+            }
+            return result;
+        } catch (Exception x) {
+            ExtensionFunctionUtils.setExtensionFunctionError(x);
+            throw x;
+        }
+    }
+    
 }
