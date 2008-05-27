@@ -39,7 +39,8 @@
         <td style="border-bottom: 1px solid black;">Page name</td>
         <td style="border-bottom: 1px solid black;">Handler</td>
         <td style="border-bottom: 1px solid black;">Visited?</td>
-        <td style="border-bottom: 1px solid black;">Accessible?</td></tr>
+        <td style="border-bottom: 1px solid black;">Accessible?</td>
+        <td style="border-bottom: 1px solid black;">Authorized?</td></tr>
         <xsl:call-template name="render_pages">
           <xsl:with-param name="thepages" select="$navitree/page"/>
         </xsl:call-template>
@@ -67,6 +68,7 @@
     <xsl:param name="ind"/>
     <xsl:variable name="vis_retval" select="callback:isVisited($__context__, string(@name))"/>
     <xsl:variable name="acc_retval" select="callback:isAccessible($__context__, string(@name))"/>
+    <xsl:variable name="auth_retval" select="callback:checkAuthorization($__context__, string(@name))"/>
 <!--    <xsl:variable name="acc_retval">1</xsl:variable>-->
     <xsl:variable name="visited"> 
       <xsl:choose>
@@ -87,6 +89,22 @@
         <span style="color: #cc3333;">false</span></xsl:otherwise>
       </xsl:choose>
     </xsl:variable>
+    <xsl:variable name="authorized">
+      <xsl:choose>
+        <xsl:when test="$auth_retval = 1">
+          <span style="color: #33cc33;">&#11043;</span>&#160;
+        </xsl:when>
+        <xsl:when test="$auth_retval = 2">
+          <span style="color: #cccc33;">&#11043;</span>&#160;
+        </xsl:when>
+        <xsl:when test="$auth_retval = 3">
+          <span style="color: #cc3333;">&#11043;</span>&#160;
+        </xsl:when>
+        <xsl:otherwise>
+          <span style="color: #cccccc;">&#11043;</span>&#160;
+        </xsl:otherwise>
+      </xsl:choose>
+    </xsl:variable>
     <tr>
       <td>  
         <xsl:value-of select="$ind"/><xsl:value-of select="@name"/>
@@ -94,6 +112,7 @@
       <td><span style="color:#aaaaaa;"><xsl:value-of select="@handler"/></span></td>
       <td align="center" style="font-family: sans;"><xsl:copy-of select="$visited"/></td>
       <td align="center"><xsl:copy-of select="$visible"/></td>
+      <td align="center"><xsl:copy-of select="$authorized"/></td>
     </tr>
   </xsl:template>
   

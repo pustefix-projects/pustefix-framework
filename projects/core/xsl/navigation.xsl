@@ -261,7 +261,7 @@
       <xsl:otherwise>
         <ixsl:choose>
 <!--           <ixsl:when test="{$path_to_page}/@visible = '0'"> -->
-          <ixsl:when test="callback:isAccessible($__context__, '{$buttpage_impl}') = 0">
+          <ixsl:when test="callback:checkAuthorization($__context__,'{$buttpage_impl}') = 3 or callback:isAccessible($__context__, '{$buttpage_impl}') = 0">
             <span>
               <xsl:attribute name="class">
                 <xsl:choose>

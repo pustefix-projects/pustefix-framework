@@ -101,7 +101,7 @@
   </pagerequest>
 
   <pagerequest name="test">
-    <authconstraint authpage="login">
+    <authconstraint>
       <and>
         <hasrole name="TEST"/>
         <authconstraint ref="AC_REFTEST"/>
