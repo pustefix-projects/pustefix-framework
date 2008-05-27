@@ -7,7 +7,7 @@
 	created, but a span, optionally using the invisibleclass' CSS (or 
 	pfx:invisible content). On demand we could also introduce special 
 	unauthorized attributes/tags, for now this case is handled together
-	with the non-accessilbe case.
+	with the non-accessible case.
 
 	* src/de/schlund/pfixcore/util/TransformerCallback.java: add method
 	checkAuthorization, which returns the authorization state of a page
