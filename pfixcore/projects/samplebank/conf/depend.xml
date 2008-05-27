@@ -12,6 +12,7 @@
     <page name="login"     handler="/xml/config"/>
     <page name="accountoverview"     handler="/xml/config" accesskey="H"/>
     <page name="accountdetails"    handler="/xml/config" accesskey="O"/>
+    <page name="test"     handler="/xml/config"/>
     <page name="logout"     handler="/xml/config"/>
   </navigation>
   
