@@ -160,6 +160,7 @@ or delete the DOCTYPE definition -->
   <target name="init-dirs">
     <mkdir dir="${dir.build}"/>
     <mkdir dir="${dir.src}"/>
+    <mkdir dir="${dir.gensrc}"/>
   </target>
 
   <target name="init" depends="properties, init-data, check-buildskel, init-dirs">
@@ -568,12 +569,12 @@ or delete the DOCTYPE definition -->
   </target>
 	
   <target name="scgenerate" depends="propfiles">
-	<pfx-sclibgen
-  	  gendir="${dir.gensrc}"
-  	  docroot="${dir.projects}"
-	  property="scgenerate.classes"
-	  includes="*/dyntxt/statuscodeinfo.xml */conf/statuscodeinfo.xml"
-  	/>
+    <pfx-sclibgen
+      gendir="${dir.gensrc}"
+      docroot="${dir.projects}"
+      property="scgenerate.classes"
+      includes="*/dyntxt/statuscodeinfo.xml */conf/statuscodeinfo.xml"
+    />
     <javac
      srcdir="${dir.src}"
      destdir="${dir.build}"

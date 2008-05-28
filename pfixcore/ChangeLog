@@ -1,7 +1,8 @@
 2008-05-28  Martin Leidig  <mleidig@schlund.de>
 
 	* build.xml: exclude projects/core/dyntxt/statuscodeinfo.xml from 
-	pfixcore-data archive
+	pfixcore-data archive; ensure gensrc dir exists by already creating
+	it in init-dirs target.
 
 2008-05-27  Martin Leidig  <mleidig@schlund.de>
 
