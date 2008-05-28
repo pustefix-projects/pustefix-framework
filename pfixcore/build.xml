@@ -204,7 +204,9 @@ or delete the DOCTYPE definition -->
     <echo message="Building ${name.pfixcore_data_tgz} in dist directory" />
     <copy file="${dir.metainf}/${name.svnrevision}" tofile="${dir.projects}/core/${name.svnrevision}"/>
     <tar destfile="${file.pfixcore_data_tgz}" compression="gzip">
-      <tarfileset dir="${dir.projects}/core" prefix="core"/>
+      <tarfileset dir="${dir.projects}/core" prefix="core">
+        <exclude name="dyntxt/statuscodeinfo.xml"/>
+      </tarfileset>
       <tarfileset file="${basedir}/skel/build-skel.xml" prefix="core/build"/>
     </tar>
     <delete file="${dir.projects}/core/${name.svnrevision}"/>

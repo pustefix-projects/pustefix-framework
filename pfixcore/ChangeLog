@@ -1,3 +1,8 @@
+2008-05-28  Martin Leidig  <mleidig@schlund.de>
+
+	* build.xml: exclude projects/core/dyntxt/statuscodeinfo.xml from 
+	pfixcore-data archive
+
 2008-05-27  Martin Leidig  <mleidig@schlund.de>
 
 	Added pfx:isAuthorized XSLT function, which simply checks if page
