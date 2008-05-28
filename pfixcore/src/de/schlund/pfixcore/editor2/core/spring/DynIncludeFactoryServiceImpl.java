@@ -60,7 +60,7 @@ public class DynIncludeFactoryServiceImpl implements DynIncludeFactoryService {
     private final static FileFilter FILTER_INCLUDE_FILE = new FileFilter() {
 
         public boolean accept(File pathname) {
-            return pathname.isFile() && pathname.getName().endsWith(".xml");
+            return pathname.isFile() && pathname.getName().endsWith(".xml") && !pathname.getName().equals("statuscodeinfo.xml");
         }
 
     };

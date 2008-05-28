@@ -1,5 +1,11 @@
 2008-05-28  Martin Leidig  <mleidig@schlund.de>
 
+	* src/de/schlund/pfixcore/editor2/core/spring/DynIncludeFactoryServiceImpl.java:
+	ignore statuscodeinfo.xml files when searching for dyntxt includes
+
+	* projects/core/xsl/include.xsl: Fixed construction of editor link for runtime
+	includes ($__editor_url and $realpath were in wrong scope)
+
 	* build.xml: exclude projects/core/dyntxt/statuscodeinfo.xml from 
 	pfixcore-data archive; ensure gensrc dir exists by already creating
 	it in init-dirs target.
