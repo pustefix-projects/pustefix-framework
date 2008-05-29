@@ -47,21 +47,11 @@
         <xs:element ref="prop:config-include"/>
       </xs:choice>
       <xs:choice minOccurs="0" maxOccurs="unbounded">
-        <xs:element name="condition" type="prop:conditionTopLevelType"/>
+        <xs:element ref="prop:condition"/>
         <xs:element ref="prop:config-include"/>
       </xs:choice>
       <xs:choice minOccurs="0" maxOccurs="unbounded">
-        <xs:element name="authconstraint" minOccurs="0">
-          <xs:complexType>
-            <xs:complexContent>
-              <xs:extension base="prop:authconstraintType">
-                <xs:attribute name="id" use="required" type="xs:ID"/>
-                <xs:attribute name="authpage" use="optional" type="xs:string"/>
-                <xs:attribute name="default" use="optional" type="xs:boolean"/>
-              </xs:extension>
-            </xs:complexContent>
-          </xs:complexType>
-        </xs:element>
+        <xs:element ref="prop:authconstraint" minOccurs="0"/>
         <xs:element ref="prop:config-include"/>
       </xs:choice>
       <xs:choice minOccurs="1" maxOccurs="unbounded">
@@ -184,12 +174,35 @@
   <xs:complexType name="sslType">
     <xs:attribute name="force" type="xs:boolean" use="required"/>
   </xs:complexType>
-  
-  <xs:complexType name="authconstraintType">
-    <xs:sequence>
+
+  <!--  authconstraints -->
+
+  <xs:complexType name="authconstraintTopLevelType">
+    <xs:choice minOccurs="0">
       <xs:element ref="prop:abstractcondition" minOccurs="0"/>
-    </xs:sequence>
+      <xs:element name="authconstraint" type="prop:authconstraintRefType"/>
+    </xs:choice>
+    <xs:attribute name="id" type="xs:ID" use="required"/>
+    <xs:attribute name="authpage" type="xs:string" use="optional"/>
+    <xs:attribute name="default" type="xs:boolean" use="optional"/>
   </xs:complexType>
+
+  <xs:complexType name="authconstraintAnonymousType">
+    <xs:choice minOccurs="0">
+      <xs:element ref="prop:abstractcondition"/>
+      <xs:element name="authconstraint" type="prop:authconstraintRefType"/>
+    </xs:choice>
+    <xs:attribute name="authpage" type="xs:string" use="optional"/>
+    <xs:attribute name="ref" type="xs:string" use="optional"/>
+  </xs:complexType>
+
+  <xs:complexType name="authconstraintRefType">
+    <xs:attribute name="ref" type="xs:string" use="required"/>
+  </xs:complexType>
+  
+  <xs:element name="authconstraint" type="prop:authconstraintTopLevelType"/>
+  
+  <!-- conditions -->
 
   <xs:element name="abstractcondition" type="prop:abstractconditionType" abstract="true"/>
   <xs:complexType name="abstractconditionType" abstract="true"/>
@@ -197,9 +210,10 @@
   <xs:complexType name="singleconditionType">
     <xs:complexContent>
       <xs:extension base="prop:abstractconditionType">
-        <xs:sequence>
-          <xs:element ref="prop:abstractcondition" minOccurs="1" maxOccurs="1"/>
-        </xs:sequence>
+        <xs:choice>
+          <xs:element name="authconstraint" type="prop:authconstraintRefType"/>
+          <xs:element ref="prop:abstractcondition"/>
+        </xs:choice>
       </xs:extension>
     </xs:complexContent>
   </xs:complexType> 
@@ -207,9 +221,11 @@
   <xs:complexType name="multiconditionType">
     <xs:complexContent>
       <xs:extension base="prop:abstractconditionType">
-      	<xs:sequence>
-          <xs:element ref="prop:abstractcondition" minOccurs="2" maxOccurs="unbounded"/>
-        </xs:sequence>
+      	<xs:choice minOccurs="2" maxOccurs="unbounded">
+      	  <xs:element name="authconstraint" type="prop:authconstraintRefType"/>
+          <xs:element ref="prop:abstractcondition"/>
+          <xs:element name="condition" type="prop:conditionType"/>
+        </xs:choice>
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
@@ -227,7 +243,7 @@
     </xs:complexContent>
   </xs:complexType>
   
-  <xs:element name="condition" type="prop:conditionType" substitutionGroup="prop:abstractcondition"/>
+  <xs:element name="condition" type="prop:conditionTopLevelType"/>
   
   <xs:complexType name="conditionTopLevelType">
     <xs:complexContent>
@@ -518,16 +534,7 @@
           </xs:complexType>
         </xs:element>
 
-        <xs:element name="authconstraint" minOccurs="0">
-          <xs:complexType>
-            <xs:complexContent>
-              <xs:extension base="prop:authconstraintType">
-                <xs:attribute name="ref" use="optional" type="xs:IDREF"/>
-                <xs:attribute name="authpage" use="optional" type="xs:string"/>
-              </xs:extension>
-            </xs:complexContent>
-          </xs:complexType>
-        </xs:element>
+        <xs:element name="authconstraint" type="prop:authconstraintAnonymousType" minOccurs="0"/>
         
         <xs:element name="state" minOccurs="0">
           <xs:complexType>
@@ -683,7 +690,7 @@
     <xs:sequence>
       <xs:element name="directoutputservletinfo" type="prop:directoutputserverservletinfoType"/>
       <xs:element ref="prop:foreigncontext"/>
-      <xs:element ref="prop:authconstraint" minOccurs="0"/>
+      <xs:element name="authconstraint" type="prop:authconstraintRefType" minOccurs="0"/>
       <xs:element name="config-include" type="prop:directOutputConfigIncludeType" />
       <xs:element ref="prop:directoutputpagerequest" minOccurs="0" maxOccurs="unbounded"/>
       <xs:element ref="prop:properties" minOccurs="0"/>
@@ -696,21 +703,11 @@
     <xs:attribute name="externalservletname"/>
   </xs:complexType>
 
-  <xs:element name="authconstraint" substitutionGroup="prop:abstractcondition">
-    <xs:complexType>
-      <xs:complexContent>
-        <xs:extension base="prop:abstractconditionType">
-          <xs:attribute name="ref" type="xs:string"/>
-        </xs:extension>
-      </xs:complexContent>
-    </xs:complexType>
-  </xs:element>
-
   <xs:element name="directoutputpagerequest" type="prop:directoutputpagerequestType"/>
   <xs:complexType name="directoutputpagerequestType">
     <xs:sequence>
       <xs:element ref="prop:directoutputstate"/>
-      <xs:element ref="prop:authconstraint" minOccurs="0"/>
+      <xs:element name="authconstraint" type="prop:authconstraintRefType" minOccurs="0"/>
       <xs:element ref="prop:properties" minOccurs="0"/>
     </xs:sequence>
     <xs:attribute name="name" use="required"/>
@@ -744,6 +741,8 @@
           <xs:enumeration value="properties"/>
           <xs:enumeration value="interceptors"/>
           <xs:enumeration value="roles"/>
+          <xs:enumeration value="conditions"/>
+          <xs:enumeration value="authconstraints"/>
           <xs:enumeration value="scriptedflows"/>
         </xs:restriction>
       </xs:simpleType>

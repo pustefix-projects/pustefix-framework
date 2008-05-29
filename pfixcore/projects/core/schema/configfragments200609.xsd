@@ -6,7 +6,7 @@
   xmlns:prop="http://pustefix.sourceforge.net/properties200401"
   elementFormDefault="qualified">
   
-  <xs:import namespace="http://pustefix.sourceforge.net/properties200401" schemaLocation="http://pustefix.sourceforge.net/properties200401.xsd"></xs:import>
+  <xs:import namespace="http://pustefix.sourceforge.net/properties200401" schemaLocation="../../core/schema/properties200401.xsd"></xs:import>
   
   <xs:element name="config-fragments" type="fr:configFragmentsType"></xs:element>
 
@@ -135,7 +135,7 @@
     <xs:complexContent>
       <xs:extension base="fr:sectionType">
         <xs:sequence>
-          <xs:element name="condition" type="prop:conditionTopLevelType" minOccurs="0" maxOccurs="unbounded"/>
+          <xs:element ref="prop:condition" minOccurs="0" maxOccurs="unbounded"/>
         </xs:sequence>
       </xs:extension>
     </xs:complexContent>

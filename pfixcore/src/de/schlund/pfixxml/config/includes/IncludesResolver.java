@@ -144,7 +144,7 @@ public class IncludesResolver {
             try {
                 includeDocument = Xml.parseMutable(includeFile);
             } catch (IOException e) {
-                throw new SAXException("I/O exception on included file " + includeFile.toString());
+                throw new SAXException("I/O exception on included file " + includeFile.toString(), e);
             }
             
             if (!CONFIG_FRAGMENTS_NS.equals(includeDocument.getDocumentElement().getNamespaceURI()) || !CONFIG_FRAGMENTS_ROOT_TAG.equals(includeDocument.getDocumentElement().getLocalName())) {
@@ -183,7 +183,10 @@ public class IncludesResolver {
     }
 
     private boolean checkSectionType(String section) {
-        if (section.equals("targets") || section.equals("navigation") || section.equals("pageflows") || section.equals("pagerequests") || section.equals("properties") || section.equals("interceptors") || section.equals("scriptedflows") || section.equals("roles") || section.equals("authconstraints") || section.equals("resources")) {
+        if (section.equals("targets") || section.equals("navigation") || section.equals("pageflows") || 
+            section.equals("pagerequests") || section.equals("properties") || section.equals("interceptors") || 
+            section.equals("scriptedflows") || section.equals("roles") || section.equals("authconstraints") || 
+            section.equals("conditions") || section.equals("resources")) {
             return true;
         } else {
             return false;

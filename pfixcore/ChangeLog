@@ -1,3 +1,13 @@
+2008-05-29  Martin Leidig  <mleidig@schlund.de>
+
+	* src/de/schlund/pfixxml/config/includes/IncludesResolver.java: added
+	'conditions' section type, add IOExceptions as exception cause
+	* projects/core/schema/properties200401.xsd: refactored for fragment
+	support
+	* projects/core/schema/configfragments200609.xsd: added fragment
+	support for conditions, import schema locally (not outdated version
+	from http://pustefix.sourceforge.net)
+
 2008-05-27  Martin Leidig  <mleidig@schlund.de>
 
 	Added pfx:isAuthorized XSLT function, which simply checks if page
