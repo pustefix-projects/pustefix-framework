@@ -1,7 +1,16 @@
 2008-05-29  Martin Leidig  <mleidig@schlund.de>
 
+	Added pfx:authconstraint XSLT function to check if a given
+	authconstraint is fulfilled:
+	* src/de/schlund/pfixcore/util/TransformerCallback.java: added 
+	checkAuthConstraint method, log warning for non-existing
+	authconstraints
+	* projects/core/xsl/functions.xsl: added pfx:authconstraint XSLT
+	function
+
 	* src/de/schlund/pfixcore/util/TransformerCallback.java: Log warning
 	if pfx:condition is called with non-existing condition id
+
 	* src/de/schlund/pfixxml/config/includes/IncludesResolver.java: added
 	'conditions' section type, add IOExceptions as exception cause
 	* projects/core/schema/properties200401.xsd: refactored for fragment

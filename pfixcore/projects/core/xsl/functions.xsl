@@ -71,6 +71,11 @@
     <func:result select="callback:checkCondition($__context__,$conditionId)"/>
   </func:function>
   
+  <func:function name="pfx:authconstraint">
+    <xsl:param name="authConstraintId"/>
+    <func:result select="callback:checkAuthConstraint($__context__,$authConstraintId)"/>
+  </func:function>
+  
   <func:function name="pfx:checkAuthorization">
     <xsl:param name="pageName"/>
     <func:result select="callback:checkAuthorization($__context__, $pageName)"/>
