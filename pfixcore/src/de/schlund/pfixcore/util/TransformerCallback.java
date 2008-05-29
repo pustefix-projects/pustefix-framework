@@ -231,7 +231,21 @@ public class TransformerCallback {
             Condition condition = context.getContextConfig().getCondition(conditionId);
             if(condition != null) {
                 return condition.evaluate(context);
-            }
+            } else LOG.warn("CONDITION_NOT_FOUND|" + conditionId);
+            return false;
+        } catch (Exception x) {
+            ExtensionFunctionUtils.setExtensionFunctionError(x);
+            throw x;
+        }
+    }
+    
+    public static boolean checkAuthConstraint(RequestContextImpl requestContext, String authConstraintId) throws Exception {
+        try {
+            ContextImpl context = requestContext.getParentContext();
+            AuthConstraint constraint = context.getContextConfig().getAuthConstraint(authConstraintId);
+            if(constraint != null) {
+                return constraint.evaluate(context);
+            } else LOG.warn("AUTHCONSTRAINT_NOT_FOUND|" + authConstraintId);
             return false;
         } catch (Exception x) {
             ExtensionFunctionUtils.setExtensionFunctionError(x);
