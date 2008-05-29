@@ -1,5 +1,7 @@
 2008-05-29  Martin Leidig  <mleidig@schlund.de>
 
+	* src/de/schlund/pfixcore/util/TransformerCallback.java: Log warning
+	if pfx:condition is called with non-existing condition id
 	* src/de/schlund/pfixxml/config/includes/IncludesResolver.java: added
 	'conditions' section type, add IOExceptions as exception cause
 	* projects/core/schema/properties200401.xsd: refactored for fragment

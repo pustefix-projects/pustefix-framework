@@ -241,7 +241,7 @@ public class TransformerCallback {
             Condition condition = context.getContextConfig().getCondition(conditionId);
             if(condition != null) {
                 return condition.evaluate(context);
-            }
+            } else LOG.warn("CONDITION_NOT_FOUND|" + conditionId);
             return false;
         } catch (Exception x) {
             ExtensionFunctionUtils.setExtensionFunctionError(x);
