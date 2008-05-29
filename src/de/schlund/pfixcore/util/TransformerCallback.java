@@ -248,6 +248,20 @@ public class TransformerCallback {
             throw x;
         }
     }
+    
+    public static boolean checkAuthConstraint(RequestContextImpl requestContext, String authConstraintId) throws Exception {
+        try {
+            ContextImpl context = requestContext.getParentContext();
+            AuthConstraint constraint = context.getContextConfig().getAuthConstraint(authConstraintId);
+            if(constraint != null) {
+                return constraint.evaluate(context);
+            } else LOG.warn("AUTHCONSTRAINT_NOT_FOUND|" + authConstraintId);
+            return false;
+        } catch (Exception x) {
+            ExtensionFunctionUtils.setExtensionFunctionError(x);
+            throw x;
+        }
+    }
 
     public static Node getAllDefinedRoles(RequestContextImpl requestContext, Node docNode) throws Exception {
         try {
