@@ -11,6 +11,7 @@ import org.apache.tools.ant.Project;
 import org.apache.tools.ant.taskdefs.MatchingTask;
 
 import de.schlund.pfixcore.util.GenerateSCodes.Result;
+import de.schlund.pfixxml.config.GlobalConfig;
 import de.schlund.pfixxml.config.GlobalConfigurator;
 import de.schlund.pfixxml.resources.DocrootResource;
 import de.schlund.pfixxml.resources.ResourceUtil;
@@ -23,6 +24,7 @@ public class GenerateSCodesTask extends MatchingTask {
     private File sourceFile;
     private String targetPath;
     private String property;
+    private String module;
     
     public void setClass(String className) {
         this.className = className;
@@ -48,6 +50,10 @@ public class GenerateSCodesTask extends MatchingTask {
         this.property = property;
     }
     
+    public void setModule(String module) {
+        this.module = module;
+    }
+    
     @Override
     public void execute() throws BuildException {
         
@@ -55,7 +61,7 @@ public class GenerateSCodesTask extends MatchingTask {
         if(genDir == null) throw new BuildException("Mandatory 'gendir' attribute is missing.");
         
         if(docrootDir == null) throw new BuildException("Mandatory 'docroot' attribute is missing.");
-        GlobalConfigurator.setDocroot(docrootDir.getAbsolutePath());
+        if(GlobalConfig.getDocroot()==null) GlobalConfigurator.setDocroot(docrootDir.getAbsolutePath());
         
         DirectoryScanner scanner = getDirectoryScanner(docrootDir);
         String[] files = scanner.getIncludedFiles();
@@ -65,7 +71,7 @@ public class GenerateSCodesTask extends MatchingTask {
             resList.add(res);
         }
         try {
-            Result result = GenerateSCodes.generateFromInfo(resList, docrootDir.getAbsolutePath(), genDir);
+            Result result = GenerateSCodes.generateFromInfo(resList, docrootDir.getAbsolutePath(), genDir, module);
             if(result.generatedClasses.size()>0) {
                 log("Generated "+result.generatedClasses.size()+" statuscode class"+
                         (result.generatedClasses.size()>1?"es":""), Project.MSG_INFO);

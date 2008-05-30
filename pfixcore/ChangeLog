@@ -1,3 +1,31 @@
+2008-05-30  Martin Leidig  <mleidig@schlund.de>
+
+	Changed statuscode modularization: the modularized pfixcore
+	statusmessage files now are merged into the 'projects/core-override' 
+	directory, the old and deprecated statusmessages file is still
+	merged into 'projects/common/statusmessages-core-merged.xml' (for
+	backwards compatibility, will be removed in the future).
+	The statuscode class generation ant task now has the optional 
+	attribute "module", setting this attribute the docroot relative 
+	path to the merged statuscode file is automatically set, e.g.
+	called for 'mymodule/src/main/resources/dyntxt/statusmessages.xml' 
+	with docroot set to 'src/main/resources' the generated statuscode
+	class will look for the merged statusmessage file 
+	'modules-override/mymodule/dyntxt/statusmessages-merged.xml'.
+
+	Modified:
+	* src/de/schlund/pfixcore/util/GenerateSCodesTask.java
+	* src/de/schlund/pfixcore/util/GenerateSCodes.java
+	* skel/build-skel.xml
+	* build.xml
+	* projects/core/dyntxt/statuscodeinfo.xml
+
+	Renamed:
+	* projects/core/dyntxt/statusmessages_core.xml ->
+	* projects/core/dyntxt/statusmessages-core.xml
+	* projects/core/dyntxt/statusmessages_editor.xml ->
+	* projects/core/dyntxt/statusmessages-editor.xml
+
 2008-05-29  Martin Leidig  <mleidig@schlund.de>
 
 	Added pfx:authconstraint XSLT function to check if a given

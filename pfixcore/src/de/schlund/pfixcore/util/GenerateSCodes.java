@@ -67,16 +67,16 @@ public class GenerateSCodes {
         
     }
     
-    public static Result generateFromInfo(List<DocrootResource> infoFiles, String docRoot, File genDir) throws Exception {
+    public static Result generateFromInfo(List<DocrootResource> infoFiles, String docRoot, File genDir, String module) throws Exception {
         Result totalResult = new Result();
         for(DocrootResource infoFile:infoFiles) {
-            Result result = generate(infoFile, docRoot, genDir);
+            Result result = generate(infoFile, docRoot, genDir, module);
             totalResult.addResult(result);
         }
         return totalResult;
     }
     
-    public static Result generate(DocrootResource infoFile, String docRoot, File genDir) throws Exception {
+    public static Result generate(DocrootResource infoFile, String docRoot, File genDir, String module) throws Exception {
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         DocumentBuilder db = dbf.newDocumentBuilder();
         Document doc = db.parse(infoFile.getInputStream());
@@ -107,7 +107,7 @@ public class GenerateSCodes {
                 if(res==null) throw new RuntimeException("Statusmessage file not found: "+filePath);
                 scXmlFiles.add(res);
             }
-            boolean generated = generate(scXmlFiles, docRoot, genDir, className);
+            boolean generated = generate(scXmlFiles, docRoot, genDir, className, module);
             if(generated) genClasses.add(className);
             allClasses.add(className);
         }
@@ -171,7 +171,7 @@ public class GenerateSCodes {
             
     }
     
-    public static boolean generate(List<DocrootResource> scXmlFiles, String docroot, File genDir, String className) throws IOException, SAXException {
+    public static boolean generate(List<DocrootResource> scXmlFiles, String docroot, File genDir, String className, String module) throws IOException, SAXException {
         
         if(GlobalConfig.getDocroot()==null) GlobalConfigurator.setDocroot(docroot);
         
@@ -214,14 +214,16 @@ public class GenerateSCodes {
 
         Writer writer = new OutputStreamWriter(new FileOutputStream(scLibFile), "ascii");
         createHeader(writer, className);
-        
         List<String> docRelPaths = new ArrayList<String>();
-        for (DocrootResource input: scXmlFiles) docRelPaths.add(input.getRelativePath());
+        for (DocrootResource input: scXmlFiles) {
+            String path = getModulePath(input.getRelativePath(),module);
+            docRelPaths.add(path);
+        }
         createResources(writer, docRelPaths);
         
         for (DocrootResource input: scXmlFiles) {
             Document doc = Xml.parseMutable(input);
-            createStatusCodes(writer, doc, docRelPaths.indexOf(input.getRelativePath()));
+            createStatusCodes(writer, doc, docRelPaths.indexOf(getModulePath(input.getRelativePath(),module)));
         }
             
         writer.write("}\n");
@@ -327,6 +329,21 @@ public class GenerateSCodes {
         writer.write("    }\n\n");
     }
 
+    
+    private static String getModulePath(String relPath, String module) {
+        if(module==null) return relPath;
+        int ind = relPath.lastIndexOf('.');
+        if(ind == -1) throw new RuntimeException("Illegal file name: "+relPath);
+        relPath = relPath.substring(0,ind)+"-merged"+relPath.substring(ind);
+        String modulePath="";
+        if(module.equals("pfixcore")) {
+            if(!relPath.startsWith("core")) throw new RuntimeException("Illegal core file name: "+relPath);
+            modulePath = "core-override/"+relPath.substring(5);
+        } else {
+            modulePath = "modules-override/"+module+"/"+relPath;
+        }
+        return modulePath;
+    }
     
     public static class Result {
         

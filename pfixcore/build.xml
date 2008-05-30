@@ -98,6 +98,19 @@ or delete the DOCTYPE definition -->
     </javac>
   </target>
 
+  <target name="scgenerate" depends="scgenerate-dist, propfiles">
+    <antcall target="skel.scgenerate"/>
+  </target>
+
+  <target name="scgenerate-dist" depends="ant-tasks-stage1" if="dist.build">
+    <pfx-sclibgen
+      gendir="${dir.gensrc}"
+      docroot="${dir.projects}"
+      includes="core/dyntxt/statuscodeinfo.xml"
+      module="pfixcore"
+    />
+  </target>
+
   <target name="pre-compile" depends="init" description="compiles AnnotationProcessors used by apt">
     <javac 
       srcdir="${dir.src}"
@@ -131,6 +144,7 @@ or delete the DOCTYPE definition -->
   </target>
     
   <target name="dist" depends="clean, init, dist-examples" description="Builds release files in dist directory.">
+    <property name="dist.build" value="true"/>
     <delete file="${dir.metainf}/${name.svnrevision}"/>
     <exec executable="svn" outputproperty="dist.autotagmessage">
       <arg line="info"/>

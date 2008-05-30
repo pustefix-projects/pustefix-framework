@@ -556,6 +556,20 @@ or delete the DOCTYPE definition -->
       suffix="-core-merged"
       selection="/include_parts/part/theme[@name='default']"
     />
+    <pfx-scmerge 
+      srcdir="${dir.projects}/core" 
+      destdir="${dir.projects}/core-override" 
+      includes="dyntxt/statusmessages-core.xml"
+      suffix="-merged"
+      selection="/include_parts/part/theme[@name='default']"
+    />
+    <pfx-scmerge 
+      srcdir="${dir.projects}/core" 
+      destdir="${dir.projects}/core-override" 
+      includes="dyntxt/statusmessages-editor.xml"
+      suffix="-merged"
+      selection="/include_parts/part/theme[@name='default']"
+    />
   </target>
 
   <target name="scmerge-modules" depends="ant-tasks-stage2">
