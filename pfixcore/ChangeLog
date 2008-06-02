@@ -301,7 +301,7 @@
 
 2008-03-09  schst  <schst@stubbles.net>
 
-    Adde new <defaultflow flow="..."/> configuration option to specify a default
+    Added new <defaultflow flow="..."/> configuration option to specify a default
     flow per page request
     * src/de/schlund/pfixcore/workflow/context/PageFlowManager.java
     * src/de/schlund/pfixxml/config/PageRequestConfig.java
