@@ -70,8 +70,19 @@ public class BeanDescriptor {
                 Method getter = null;
                 try {
                     getter = clazz.getMethod(createGetterName(fields[i].getName()), new Class[0]);
-                    if (getter != null && (Modifier.isStatic(getter.getModifiers()) || getter.getReturnType() == void.class)) getter = null;
+                    if (getter != null && (Modifier.isStatic(getter.getModifiers()) || getter.getReturnType() == void.class)) {
+                        getter = null;
+                    }
                 } catch (NoSuchMethodException x) {
+                }
+                if (getter == null && fields[i].getDeclaringClass().equals(Boolean.TYPE)) {
+                    try {
+                        getter = clazz.getMethod(createBooleanGetterName(fields[i].getName()), new Class[0]);
+                        if (getter != null && (Modifier.isStatic(getter.getModifiers()) || getter.getReturnType() == void.class)) {
+                            getter = null;
+                        }
+                    } catch (NoSuchMethodException x) {
+                    }
                 }
                 if (getter == null) {
                     String origPropName = fields[i].getName();
@@ -115,57 +126,54 @@ public class BeanDescriptor {
         for (int i = 0; i < methods.length; i++) {
             if (methods[i].getDeclaringClass() != Object.class && methods[i].getDeclaringClass() != Enum.class) {
                 if (!Modifier.isStatic(methods[i].getModifiers())) {
-                    String name = methods[i].getName();
-                    if (name.length() > 3 && Character.isUpperCase(name.charAt(3))) {
-                        if (name.startsWith("get") && methods[i].getParameterTypes().length == 0) {
-                            String origPropName = extractPropertyName(name);
-                            String propName = origPropName;
-                            boolean isExcluded = false;
-                            Bean beanMeta = null;
-                            if (metadata != null) beanMeta = metadata.getBean(methods[i].getDeclaringClass().getName());
-                            if (beanMeta != null) {
-                                Property propMeta = beanMeta.getProperty(origPropName);
-                                if (beanMeta.isExcludedByDefault()) {
-                                    if (propMeta == null || propMeta.isExcluded()) isExcluded = true;
-                                } else {
-                                    if (propMeta != null && propMeta.isExcluded()) isExcluded = true;
-                                }
-                                if (propMeta != null && propMeta.getAlias() != null) propName = propMeta.getAlias();
+                    String origPropName = extractPropertyName(methods[i]);
+                    if (origPropName != null) {
+                        String propName = origPropName;
+                        boolean isExcluded = false;
+                        Bean beanMeta = null;
+                        if (metadata != null) beanMeta = metadata.getBean(methods[i].getDeclaringClass().getName());
+                        if (beanMeta != null) {
+                            Property propMeta = beanMeta.getProperty(origPropName);
+                            if (beanMeta.isExcludedByDefault()) {
+                                if (propMeta == null || propMeta.isExcluded()) isExcluded = true;
                             } else {
-                                Field field = null;
-                                try {
-                                    field = clazz.getField(origPropName);
-                                    if (field != null && (Modifier.isStatic(field.getModifiers()) || Modifier.isFinal(field.getModifiers())))
-                                        field = null;
-                                } catch (NoSuchFieldException x) {
-                                }
-                                ExcludeByDefault exDef = methods[i].getDeclaringClass().getAnnotation(ExcludeByDefault.class);
-                                if (exDef == null) {
-                                    Exclude ex = methods[i].getAnnotation(Exclude.class);
-                                    if (ex == null && field != null) ex = field.getAnnotation(Exclude.class);
-                                    if (ex != null) isExcluded = true;
-                                } else {
-                                    Include inc = methods[i].getAnnotation(Include.class);
-                                    if (inc == null && field != null) inc = field.getAnnotation(Include.class);
-                                    if (inc == null) isExcluded = true;
-                                }
-                                Alias alias = methods[i].getAnnotation(Alias.class);
-                                if (alias == null && field != null) alias = field.getAnnotation(Alias.class);
-                                if (alias != null) propName = alias.value();
+                                if (propMeta != null && propMeta.isExcluded()) isExcluded = true;
                             }
-                            if (!isExcluded) {
-                                if (getters.get(propName) != null) throw new IntrospectionException("Duplicate bean property name: " + propName);
-                                getters.put(propName, methods[i]);
-                                types.put(propName, methods[i].getGenericReturnType());
-                                Method setter = null;
-                                try {
-                                    setter = clazz.getMethod(createSetterName(origPropName), new Class[] { methods[i].getReturnType() });
-                                    if (setter.getReturnType() != void.class) setter = null;
-                                } catch (NoSuchMethodException x) {
-                                }
-                                if (setter != null) {
-                                    setters.put(propName, setter);
-                                }
+                            if (propMeta != null && propMeta.getAlias() != null) propName = propMeta.getAlias();
+                        } else {
+                            Field field = null;
+                            try {
+                                field = clazz.getField(origPropName);
+                                if (field != null && (Modifier.isStatic(field.getModifiers()) || Modifier.isFinal(field.getModifiers())))
+                                    field = null;
+                            } catch (NoSuchFieldException x) {
+                            }
+                            ExcludeByDefault exDef = methods[i].getDeclaringClass().getAnnotation(ExcludeByDefault.class);
+                            if (exDef == null) {
+                                Exclude ex = methods[i].getAnnotation(Exclude.class);
+                                if (ex == null && field != null) ex = field.getAnnotation(Exclude.class);
+                                if (ex != null) isExcluded = true;
+                            } else {
+                                Include inc = methods[i].getAnnotation(Include.class);
+                                if (inc == null && field != null) inc = field.getAnnotation(Include.class);
+                                if (inc == null) isExcluded = true;
+                            }
+                            Alias alias = methods[i].getAnnotation(Alias.class);
+                            if (alias == null && field != null) alias = field.getAnnotation(Alias.class);
+                            if (alias != null) propName = alias.value();
+                        }
+                        if (!isExcluded) {
+                            if (getters.get(propName) != null) throw new IntrospectionException("Duplicate bean property name: " + propName);
+                            getters.put(propName, methods[i]);
+                            types.put(propName, methods[i].getGenericReturnType());
+                            Method setter = null;
+                            try {
+                                setter = clazz.getMethod(createSetterName(origPropName), new Class[] { methods[i].getReturnType() });
+                                if (setter.getReturnType() != void.class) setter = null;
+                            } catch (NoSuchMethodException x) {
+                            }
+                            if (setter != null) {
+                                setters.put(propName, setter);
                             }
                         }
                     }
@@ -174,10 +182,42 @@ public class BeanDescriptor {
         }
     }
 
-    private String extractPropertyName(String methodName) {
-        String name = methodName.substring(3);
-        if (name.length() > 1 && Character.isUpperCase(name.charAt(0)) && Character.isUpperCase(name.charAt(1))) return name;
-        return Character.toLowerCase(name.charAt(0)) + name.substring(1);
+    /**
+     * Check, whether the method is a getter method according
+     * to the Java Bean specifications and extract the name
+     * of the property.
+     * 
+     * If the method is not getter method, null will
+     * be returned.
+     * 
+     * @param method
+     * @return
+     */
+    private String extractPropertyName(Method method) {
+        if (method.getParameterTypes().length != 0) {
+            return null;
+        }
+        String methodName = method.getName();
+        if (methodName.length() > 3
+            && Character.isUpperCase(methodName.charAt(3))
+            && methodName.startsWith("get")) {
+            String name = methodName.substring(3);
+            if (name.length() > 1 && Character.isUpperCase(name.charAt(0)) && Character.isUpperCase(name.charAt(1))) {
+                return name;
+            }
+            return Character.toLowerCase(name.charAt(0)) + name.substring(1);
+        }
+        if (methodName.length() > 2
+            && Character.isUpperCase(methodName.charAt(2))
+            && methodName.startsWith("is")) {
+            String name = methodName.substring(2);
+            if (name.length() > 1 && Character.isUpperCase(name.charAt(0)) && Character.isUpperCase(name.charAt(1))) {
+                return name;
+            }
+            return Character.toLowerCase(name.charAt(0)) + name.substring(1);
+        }
+        return null;
+        
     }
 
     private String createSetterName(String propName) {
@@ -186,6 +226,10 @@ public class BeanDescriptor {
 
     private String createGetterName(String propName) {
         return "get" + Character.toUpperCase(propName.charAt(0)) + propName.substring(1);
+    }
+
+    private String createBooleanGetterName(String propName) {
+        return "is" + Character.toUpperCase(propName.charAt(0)) + propName.substring(1);
     }
 
     public Set<String> getReadableProperties() {
@@ -226,7 +270,6 @@ public class BeanDescriptor {
     }
 
     public static void main(String[] args) {
-
         ConsoleAppender appender = new ConsoleAppender(new PatternLayout("%p: %m\n"));
         Logger logger = Logger.getRootLogger();
         logger.setLevel((Level) Level.DEBUG);
@@ -241,5 +284,4 @@ public class BeanDescriptor {
         BeanDescriptor desc = new BeanDescriptor(DataBean.class, null);
         System.out.println(desc);
     }
-
 }
