@@ -1,3 +1,11 @@
+2008-06-02  schst  <schst@stubbles.net>
+
+    Fixed bug #39: OXM should serialize getter methods for
+    primitive boolean types starting with is*()
+    * src/de/schlund/pfixcore/beans/BeanDescriptor.java
+    * tests/junit/de/schlund/pfixcore/oxm/bean/BooleanPropertyBean.java
+    * tests/junit/de/schlund/pfixcore/oxm/BooleanBeanTest.java
+
 2008-05-29  Martin Leidig  <mleidig@schlund.de>
 
 	Added pfx:authconstraint XSLT function to check if a given
