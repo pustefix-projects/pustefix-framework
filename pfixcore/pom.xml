@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project>
   <modelVersion>4.0.0</modelVersion>
-  <groupId>de.schlund.pfixcore</groupId>
+  <groupId>org.pustefixframework</groupId>
   <artifactId>pfixcore</artifactId>
   <name>pfixcore</name>
-  <version>0.13.0-pre</version>
+  <version>0.13.0-pre-SNAPSHOT</version>
   <dependencies>
     <dependency>
       <groupId>ant-contrib</groupId>
