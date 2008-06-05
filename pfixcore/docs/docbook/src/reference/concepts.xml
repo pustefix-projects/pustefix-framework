@@ -5,13 +5,8 @@
 >
   <title>Important Concepts</title>
 
-  <section xml:id="concepts.states">
-    <title>States</title>
-    <para></para>
-  </section>
-
   <section xml:id="concepts.request_processing">
-    <title>Processing of requests in Pustefix</title>
+    <title>Processing of Requests</title>
     <para>
       Every request that arrives at a pustefix application is processed in a specific way, depending on the servlet that is being
       selected by the servlet container to handle it. In this chapter we will take a deeper look at the most important case of a
@@ -35,12 +30,18 @@
       interfaces.
     </para>
     <para>
-      Pustefix supplies default implementations of these interfaces. For the
-      <code>PageFlow</code>
-      interface, there is currently only one implementation, and at the time of this writing it's not yet possible to change this
+      Pustefix supplies default implementations of these interfaces.
+      </para>
+      
+
+  <section xml:id="concepts.request_processing_pageflow">
+    <title>PageFlow</title>
+      <para>
+      For the <code>PageFlow</code>
+      interface there is currently only one implementation, and at the time of this writing it's not yet possible to change this
       implementation by supplying your own, although this is planned for the near future. The current implementation is called
-      <code>DataDrivenPageFlow</code>, and it will be explained in more detail below. For the discussion here, it is sufficiant to know 
-      the general <code>PageFlow</code> interface.
+      <code>DataDrivenPageFlow</code>, and it will be explained in more detail below. For the discussion presented 
+      here, it is sufficient to know the general <code>PageFlow</code> interface.
 
       <programlisting language="java"><![CDATA[
 public interface PageFlow {
@@ -77,6 +78,10 @@ public interface PageFlow {
         </itemizedlist>
     </para>
     <para>The rest of the methods will be explained in more detail below.</para>
+    </section>
+ 
+    <section xml:id="concepts.request_processing_states">
+    <title>States</title>
     <para>
       The situation is different for
       <code>State</code>s; Pustefix supplies implementations to cover most of the needs one may have in a normal application, however there are
@@ -133,6 +138,7 @@ public interface State {
       <code>PageFlow</code>
       and it's default implementation in greater detail below.
     </para>
+    </section>
 
     <section>
       <title>Influencing the page request cycle</title>
@@ -407,10 +413,22 @@ public interface State {
       <section>
          <title>Processing when <code>startwithflow=true</code></title>
          <para>
+         Another change in request processing happens when the startwithflow variable is set to <code>true</code>. In this case,
+         the context doesn't expect to get a valid pagerequest from the request itself (although there is one supplied, see below
+         for the special meaning of this page name), so it has to "search" for the page to handle
+         the request processing. This search is done by directly switching to the page flow handling part of the code to retrieve 
+         the "next" page that is suggested by the page flow. Other than the usual page flow processing, there is some special trick
+         involved: If during searching for the next page the page flow encounters the supplied page from the request, it will return
+         this page regardless if it needs data or not. In other words: You can limit the search in the page flow by supplying a 
+         page that is part of this flow. If the page is not part of the page flow or it is inaccessible, it is ignored (But note that
+         the default page flow implementation <emphasis>DataDrivenPageFlow</emphasis> also sets the supplied page to be the <emphasis>
+         final page</emphasis> (see below for details on this), so essentially every supplied page becomes part of the 
+         page flow. But this behavior is not part of the contract between PageFlow and Context and just an implementation detail
+         of <code>DataDrivenPageFlow</code>).
          </para>
       </section>
     </section>
-  
+   
     <section>
       <title>Pustefix <code>State</code> implementations: <code>StaticState</code> and <code>DefaultIWrapperState</code></title>
       <para>
@@ -419,12 +437,12 @@ public interface State {
       
     <section>
       <title>Pustefix <code>PageFlow</code> implementation: <code>DataDrivenPageFlow</code></title>
-      <para>
+      <para> 
       </para>
     </section>
       
   </section>
-
+  
   <section>
     <title>The data model: Context resources</title>
     <para>
