@@ -135,7 +135,7 @@ public interface State {
     </para>
 
     <section>
-      <title>The parameters to influence the page request cycle</title>
+      <title>Influencing the page request cycle</title>
         <para>During the request-response cycle, the <code>Context</code> maintains a set of variables that influence the processing of the request.
         These are listed in the following table. Use these as a reference to see how they can be set and changed, either by specifying
         values for them in the request (directly, or by referencing an action that sets them) or by calling a method of <code>Context</code>
@@ -158,8 +158,8 @@ public interface State {
                 <td>
                   This is basically the object representing the current page we use to process the request. The value of
                   currentpagerequest that is valid at the end of processing becomes the page to be displayed.
-                  <para> After initialization
-                  this variable should never be unset again during the whole request cycle (it only changes to other
+                  <para>
+                  This variable must never be unset again after initialization during the whole request cycle (it only changes to other
                   PageRequests).</para>
                 </td>
                 <td>
@@ -169,7 +169,7 @@ public interface State {
                   
                   <para> In Pustefix, this is usually transparent to the user: For POST requests, use the
                   <code>send-to-page</code> attribute of <code>pfx:forminput</code>
-                  (this defaults to the current page if not given which is correct for 99% of all cases) and for GET requests, use
+                  (this defaults to the current page if <code>send-to-page</code> is not given) and for GET requests, use
                   the <code>page</code> attribute of <code>pfx:button</code>.
                   </para>
                   <para> If no page information can be retrieved from 
@@ -343,7 +343,7 @@ public interface State {
           </para></listitem>
           <listitem><para>
             If <code>prohibitcontinue</code> is still false, check if  <code>jumptopage</code> is set. If yes, set the <code>currentpagerequest</code> to the <code>jumptopage</code> (and also change
-            <code>currentpageflow</code> to something that matches, preferring <code>jumptopageflow</code>, if it is set; <code>jumptopage/jumptopageflow</code> are unset to avoid recursion, then 
+            <code>currentpageflow</code> to something that matches, preferring <code>jumptopageflow</code>, if it is set); <code>jumptopage/jumptopageflow</code> are unset to avoid recursion, then 
             we re-enter the process at point 1.
           </para></listitem>
           <listitem><para>
