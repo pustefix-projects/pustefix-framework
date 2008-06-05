@@ -331,37 +331,76 @@ public interface State {
             The first action to take is calling <code>getDocument(...)</code> on the <code>State</code> associated with the current page. 
           </para></listitem>
           <listitem><para>
-            If the current page flow has <emphasis>After-Request-Hooks</emphasis> defined (this is checked by calling the method <code>hasHookAfterRequest(...)</code> on 
-            the current <code>PageFlow</code>), these hooks are being run by calling <code>hookAfterRequest(Context context, ResultDocument resdoc)</code>. The <code>ResultDocument</code> used
-            here is the return value from the <code>getDocument(...)</code> call above. These hooks can basically do anything that can be achieved with the help of the <code>Context</code>
-            interface (changing <code>jumptopage/jumptopageflow</code>, calling <code>prohibitContinue()</code> and so on). The interesting thing here is that they not only have access to the
-            <code>Context</code> object, but also the resulting DOM-Tree of the processing of the current page. We will learn about an example of such hooks when we look at the current standard 
+            If the current page flow has <emphasis>After-Request-Hooks</emphasis> defined (this is checked by calling the method 
+            <code>hasHookAfterRequest(...)</code> on 
+            the current <code>PageFlow</code>), these hooks are being run by calling <code>hookAfterRequest(Context context, 
+            ResultDocument resdoc)</code>. The <code>ResultDocument</code> used
+            here is the return value from the <code>getDocument(...)</code> call above. These hooks can basically do anything that can 
+            be achieved with the help of the <code>Context</code>
+            interface (changing <code>jumptopage/jumptopageflow</code>, calling <code>prohibitContinue()</code> and so on). The interesting 
+            thing here is that they not only have access to the
+            <code>Context</code> object, but also the resulting DOM-Tree of the processing of the current page. We will learn about an 
+            example of such hooks when we look at the current standard 
             implementation <code>DataDrivenPageFlow</code>. 
           </para></listitem>
           <listitem><para>
-            Now we check if <code>prohibitcontinue</code> is set to <code>true</code>. If yes, the <code>ResultDocument</code> will be used to display the current page. The request cycle ends here.
+            Now we check if <code>prohibitcontinue</code> is set to <code>true</code>. If yes, the <code>ResultDocument</code> will be 
+            used to display the current page. The request cycle ends here.
           </para></listitem>
           <listitem><para>
-            If <code>prohibitcontinue</code> is still false, check if  <code>jumptopage</code> is set. If yes, set the <code>currentpagerequest</code> to the <code>jumptopage</code> (and also change
-            <code>currentpageflow</code> to something that matches, preferring <code>jumptopageflow</code>, if it is set); <code>jumptopage/jumptopageflow</code> are unset to avoid recursion, then 
-            we re-enter the process at point 1.
+            If <code>prohibitcontinue</code> is still false, check if  <code>jumptopage</code> is set. If yes, set the 
+            <code>currentpagerequest</code> to the <code>jumptopage</code> (and also change
+            <code>currentpageflow</code> to something that matches, preferring <code>jumptopageflow</code>, if it is set); 
+            <code>jumptopage/jumptopageflow</code> are unset to avoid recursion, then we re-enter the process at point 1.
           </para></listitem>
           <listitem><para>
-            If also <code>jumptopage</code> is not set, we try to use the current page flow to get the next page by calling <code>findNextPage(...)</code>. We set this page to be the current page, 
-            call <code>getDocument</code> on its associated <code>State</code> and use the returned <code>ResultDocument</code> to display the page. The request cycle ends here (there is 
-            no recursive call of the page flow process!).
+            If <code>jumptopage</code> is not set, we try to use the current page flow to get the next page by calling 
+            <code>findNextPage(..., ..., false, stopnextforcurrentrequest)</code>. We set this page to be the current page, 
+            call <code>getDocument</code> on its associated <code>State</code> and use the 
+            returned <code>ResultDocument</code> to display the page. The request cycle ends here (there is 
+            no recursive call of the page flow process!). 
           </para></listitem>
           <listitem><para>
-            If no current page flow is set (<code>currentpageflow == null</code>), we simply use the resulting ResultDocument of the initial call to <code>getDocument(...)</code> and use it
+            If no current page flow is set (<code>currentpageflow == null</code>), we simply use the resulting ResultDocument
+            of the initial call to <code>getDocument(...)</code> and use it
             to display the current page.             
           </para></listitem>
         </orderedlist>
       </para>
       
       <section>
-         <title>Accessibility of pages and Authentication</title>
+         <title>Accessibility of pages</title>
          <para>
-          
+           Up to now, we mostly neglected the fact that a page could also be not accessible, which it is if the associated <code>State</code>
+           returns <code>false</code> for a call to its method <code>isAccessible(...)</code>. This method is checked each time before the
+           <code>Context</code> tries to call <code>getDocument(...)</code> for a page. The <code>PageFlow</code> is also expected to only
+           return a page that is accessible, and to check the accessibility before each call to <code>needsData(...)</code>. 
+           </para>
+           <para>
+           If the initially requested page is not accessible, but a page flow is set, 
+           the <code>Context</code> will try to find a matching page by calling 
+           <code>findNextPage(..., ..., false, stopnextforcurrentrequest)</code>. Because this method is expected to only return 
+           a page that is accessible (if it doesn't find one, it must throw an exception) we can safely set this page to be 
+           the new current page and start with the request cycle as usual.
+         </para>
+         <para>
+            If no page flow is set, the system will try to use the default page from the configuration. If this is indeed accessible,
+            it will be set as the new current page, and the whole process continues normally from there. If also the default page
+            is not accessible, an exception will be thrown.
+         </para>
+         <para>
+           Usually this case won't happen, because you have to force Pustefix to generate a link to a page that is currently 
+           not accessible by using the <code>mode="force"</code> attribute on <code>pfx:button</code>. But this procedure is
+           also done when the current page has been set from the <code>jumptopage</code> variable and the request 
+           cycle is being restarted (see above). To avoid to see any strange behavior and pages that have never been
+           intended to be displayed, it's important to make sure that a <code>jumptopage</code> request only references a page 
+           that will be accessible. 
+         </para>
+         <para>
+           This accessibility check must also be run by the <code>PageFlow</code> before calling <code>needsData(...)</code> or 
+           before returning any page name from <code>findNextPage(...)</code>. It is expected to simply ignore any page that is not
+           accessible and continue searching for another "next" page. As already explained above, if it is not able to find a page that 
+           is accessible, it must throw an exception.
          </para>
       </section>
 
