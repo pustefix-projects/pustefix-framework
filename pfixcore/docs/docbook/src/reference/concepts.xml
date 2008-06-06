@@ -417,14 +417,24 @@ public interface State {
          the context doesn't expect to get a valid pagerequest from the request itself (although there is one supplied, see below
          for the special meaning of this page name), so it has to "search" for the page to handle
          the request processing. This search is done by directly switching to the page flow handling part of the code to retrieve 
-         the "next" page that is suggested by the page flow. Other than the usual page flow processing, there is some special trick
-         involved: If during searching for the next page the page flow encounters the supplied page from the request, it will return
-         this page regardless if it needs data or not. In other words: You can limit the search in the page flow by supplying a 
-         page that is part of this flow. If the page is not part of the page flow or it is inaccessible, it is ignored (But note that
-         the default page flow implementation <emphasis>DataDrivenPageFlow</emphasis> also sets the supplied page to be the <emphasis>
-         final page</emphasis> (see below for details on this), so essentially every supplied page becomes part of the 
-         page flow. But this behavior is not part of the contract between PageFlow and Context and just an implementation detail
-         of <code>DataDrivenPageFlow</code>).
+         the "next" page that is suggested by the page flow. 
+         </para>
+         <para>
+           Other than in the case of the usual page flow processing, 
+           there is some special trick
+           involved: If during searching for the next page the page flow encounters the supplied page from the request, it will return
+           this page regardless if it needs data or not. In other words: You can limit the search in the page flow by supplying a 
+           page that is part of this flow. If the page is not part of the page flow or it is inaccessible, it is ignored (But note that
+           the default page flow implementation <emphasis>DataDrivenPageFlow</emphasis> also sets the supplied page to be the <emphasis>
+           final page</emphasis> (see below for details on this), so essentially every supplied page becomes part of the 
+           page flow. But this behavior is not part of the contract between PageFlow and Context and just an implementation detail
+           of <code>DataDrivenPageFlow</code>).
+         </para>
+         <para>
+           On a quick look, this seems to be almost the same as what is done when a request comes in to a page, that is not
+           accessible (see above). In this case, too, a new page ist searched by asking the page flow for the next page.
+           The main difference is that a "normal" request will always use the supplied page, as long as it is accessible, while
+           in the startwithflow case it will only be used if no other "earlier" candidates have been returned by the page flow.
          </para>
       </section>
     </section>
