@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+
+<project name="webservice" xmlns:cus="http://www.schlund.de/pustefix/customize">
+  <!-- The webservice application. Use this as a template for how to define your own projects -->
+  
+  <active>true</active>
+  <comment>Webservice Demo</comment>
+  <depend>webservice/conf/depend.xml</depend>
+  <virtualhost><cus:fqdn/></virtualhost>
+  <servername>webservice.<cus:fqdn/></servername>
+  <serveralias>webservice.<cus:machine/></serveralias>
+  <!-- The default path you will be sent to when using the url -->
+  <!-- "http://webservice.<servername>/" -->
+  <defpath>/xml/config</defpath>
+  <!-- The Apache DocumentRoot for static content -->
+  <documentroot><cus:docroot/>webservice/htdocs</documentroot>
+  <!-- Here you can enter any additional apache config stuff -->
+  <literalapache>
+    # Add something here...
+  </literalapache>
+  <ports>
+    <port number="80"/>
+  </ports>
+  <!-- Use useineditor="true" for every servlet that handles pages belonging directly to the project -->
+  <!-- (That means for example not the servlet that starts up the editor, as the pages delivered -->
+  <!-- by this servlet belong to the editor project) -->
+  <servlet name="config" useineditor="true">
+    <active>true</active>
+    <class>de.schlund.pfixxml.ContextXMLServlet</class>
+    <propfile>webservice/conf/config.conf.xml</propfile>
+  </servlet>
+  <servlet name="deref">
+    <active>true</active>
+    <class>de.schlund.pfixxml.DerefServlet</class>
+  </servlet>
+  <servlet name="webservice">
+    <active>true</active>
+    <class>de.schlund.pfixcore.webservice.WebServiceServlet</class>
+    <propfile>webservice/conf/webservice.conf.xml</propfile>
+    <foreigncontext>/xml/config</foreigncontext>
+  </servlet>
+</project>
+

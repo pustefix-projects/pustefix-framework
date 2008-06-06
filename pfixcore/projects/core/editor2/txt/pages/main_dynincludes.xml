@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="ISO-8859-1"?><include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
+  
+  <part name="content">
+    <theme name="default">
+      <center>
+        <pfx:checkerror>
+          <pfx:checkfield name="selectinclude.Path">
+            <pfx:error>
+              <br/>
+              <table class="core_errorbox_table" width="400">
+                <tr>
+                  <td class="core_errorlabel_text">
+                    Error!
+                  </td>
+                  <td class="core_errortext">
+                    <pfx:scode/>
+                  </td>
+                </tr>
+              </table>
+            </pfx:error>
+          </pfx:checkfield>
+          <pfx:checkfield name="branch.Action">
+            <pfx:error>
+              <br/>
+              <table class="core_errorbox_table" width="400">
+                <tr>
+                  <td class="core_errorlabel_text">
+                    Error!
+                  </td>
+                  <td class="core_errortext">
+                    <pfx:scode/>
+                  </td>
+                </tr>
+              </table>
+            </pfx:error>
+          </pfx:checkfield>
+          <pfx:checkfield name="restore.Version">
+            <pfx:error>
+              <br/>
+              <table class="core_errorbox_table" width="400">
+                <tr>
+                  <td class="core_errorlabel_text">
+                    Error!
+                  </td>
+                  <td class="core_errortext">
+                    <pfx:scode/>
+                  </td>
+                </tr>
+              </table>
+            </pfx:error>
+          </pfx:checkfield>
+        </pfx:checkerror>
+      </center>
+      <ixsl:choose>
+        <ixsl:when test="/formresult/dynincludes/currentinclude">
+          <pfx:include part="displaycurrentinclude"/>
+          <ixsl:for-each select="/formresult/dynincludes">
+            <pfx:include href="core/editor2/txt/util_includes.xml" part="displayincludedetails"/>
+          </ixsl:for-each>
+          <div>
+            <table><tr><td class="editor_main_emph">Content of whole part:</td></tr></table>
+            <ixsl:choose>
+              <ixsl:when test="/formresult/dynincludes/currentinclude/content">
+                <staticdisplay path="/formresult/dynincludes/currentinclude/content/node()"/>
+              </ixsl:when>
+              <ixsl:otherwise>
+                <div class="editor_box editor_warn">Part is not yet defined!</div>
+              </ixsl:otherwise>
+            </ixsl:choose>
+          </div>
+        </ixsl:when>
+        <ixsl:otherwise>
+          <center>
+            <br/>
+            <div class="editor_main_emph">
+              Please select an include from the list on the left
+            </div>
+          </center>
+        </ixsl:otherwise>
+      </ixsl:choose>
+    </theme>
+  </part>
+  
+  <part name="sidebar">
+    <theme name="default">
+      <pfx:script>
+        var pfx_editor_pagename = "dynincludes";
+      </pfx:script>
+      <ixsl:for-each select="/formresult/dynincludes">
+        <pfx:include href="core/editor2/txt/util_includes.xml" part="displayallincludes"/>
+      </ixsl:for-each>
+    </theme>
+  </part>
+  
+  <part name="displaycurrentinclude">
+    <theme name="default">
+      <div align="right" class="editor_main_emph">
+        [DYNINCLUDE: <ixsl:value-of select="/formresult/dynincludes/currentinclude/@part"/>]
+      </div>
+      <br/>
+    </theme>
+  </part>
+  
+</include_parts>

@@ -1,0 +1,193 @@
+<?xml version="1.0"?>
+<book version="5.0" xmlns="http://docbook.org/ns/docbook" xmlns:xlink="www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://docbook.org/ns/docbook http://www.docbook.org/xml/5.0CR7/xsd/docbook.xsd">
+  <info>
+    <title>Pustefix Tutorial</title>
+    <copyright>
+      <holder>1&amp;1 Internet AG</holder>
+      <year>2007</year>
+    </copyright>
+  </info>
+  <chapter xml:id="introduction">
+    <title>Introduction</title>
+    <para>
+      In this tutorial we will develop a sample shop web application to
+      demonstrate the basic techniques that are needed to develop a Pustefix
+      application. As this tutorial focuses on Pustefix, the backend / 
+      business logic code used in the examples will be as minimal as possible
+      and just provide the functions absolutely needed by the frontend. This 
+      means the shop will not be a real world example in the sense that it will
+      not work completely, however if you replace the backend with a full
+      implementation, it should work, as the frontend part is designed like it
+      was a real world application.
+    </para>
+    <para>
+      The author assumes that you are using the 
+      <link xlink:href="http://www.eclipse.org/">Eclipse IDE</link>, however you can
+      of course work with another IDE, although some of the methods described 
+      in this document might be slightly different.
+    </para>
+  </chapter>
+  <chapter xml:id="gettingstarted">
+    <title>Getting started</title>
+    <section xml:id="requirements">
+      <title>Requirements</title>
+      <para>
+       Before we can get started, you have to make sure that some requirements
+       are met by your development environment. You will need:
+      </para>
+      <itemizedlist>
+        <listitem>JDK 5.0 or newer</listitem>
+        <listitem>POSIX-like operating system (Pustefix has been tested with Linux
+          and Mac OS X, but might also work with other systems like *BSD)</listitem>
+        <listitem>Apache Tomcat 5.5.x</listitem>
+        <listitem>Apache Ant 1.6.5 or newer</listitem>
+      </itemizedlist>
+      <para>
+        The installation of these tools (except Tomcat) is not covered by this
+        tutorial. Please refer to the documentation provided with these tools
+        for installation instructions.
+      </para>
+    </section>
+    <section xml:id="prepareprojectdirectory">
+      <title>Prepare the project directory</title>
+      <para>
+        If you are not using Eclipse, you can just create an empty directory
+        that will contain the project files and proceed with <xref linkend="unpack"/>.
+      </para>
+      <para>
+        Start the Eclipse workbench and create a new project of type Java Project".
+        Make sure that you choose separate source and build folders: Use 
+        <literal>src</literal> for the source and <literal>build</literal> for 
+        the build folder. This is important because the Pustefix build script 
+        expects these folders.
+      </para>
+    </section>
+    <section xml:id="unpack">
+      <title>Unpack the skeleton</title>
+      <para>
+        Download the newest <literal>pfixcore-skel-X.X.X.tar.gz</literal> from 
+        Pustefix's <link xlink:href="http://sourceforge.net/project/showfiles.php?group_id=72089&amp;package_id=71811">downloads page</link>.
+        Unpack the archive to a temporary directory. A new directory with the name 
+        <literal>skel</literal> will be created. Copy the content of this directory
+        to your new project directory.
+      </para>
+      <para>
+        Now you need to download Apache Tomcat. Choose the 
+        <literal>.tar.gz</literal> archive from the download page and place it in 
+        the <literal>lib/tomcat</literal> directory of your project directory.
+      </para>
+      <para>
+        After you are done with that, refresh the resources view in Eclipse to
+        make the new files appear.
+      </para>
+    </section>
+    <section xml:id="configureeclipse">
+      <title>Configure Eclipse</title>
+      <para>
+        To make features like auto-completion and auto-build work, you have to 
+        import the libraries into Eclipse. Right-click on your project in Eclipse
+        and choose "Build Path" ⇒ "Configure Build Path...". Now use the
+        "Add JARs..." button to add all libraries from the project's 
+        <literal>lib</literal> directory.
+      </para>
+      <para>
+        As Pustefix generates some classes, you have to add the folder with the
+        generated sources to Eclipse's source path. To make this work choose the
+        "Source" tab in the same dialog you used to configure the build path and
+        add the <code>gensrc</code> folder to the list of source folders.
+      </para>
+      <para>
+        Finally, you have to configure the path to the JAR file containing Ant.
+        In Eclipse choose "Window" ⇒ "Preferences". In the dialog window
+        choose "Java" ⇒ "Build Path" ⇒ "Classpath Variables". Choose
+        "New..." and create a variable with the name <literal>PFX_ANT_LIB</literal>
+        that contains the path to the <literal>lib/ant.jar</literal> within your
+        Ant installation directory.
+      </para>
+    </section>
+      <section xml:id="firstbuild">
+        <title>Build parameters &amp; first build</title>
+        <para>
+          Within the project directory, create a file called 
+          <literal>build.properties</literal> containing two properties:
+        </para>
+        <programlisting>
+ standalone.tomcat=true
+ makemode=test
+        </programlisting>
+        <para>
+          The first property tells the build process, that we do want to run
+          Tomcat without Apache Httpd integration. Apache Httpd integration can 
+          be useful, because static files can be served faster. However this
+          is an advanced topic and for our purposes Tomcat alone will be okay. 
+        </para>
+        <para>
+          The second parameter set the so-called "make mode". This flag can be
+          set to either "test" or "prod" and will cause the editor console
+          to appear in web pages when in "test" mode. In fact you can even make
+          your own settings depend on the make mode, but we will take care of 
+          this later. For the moment "test" mode is just what we want. By the way,
+          whenever you switch the make mode, you should do a complete rebuild 
+          using <literal>ant realclean &amp;&amp; ant</literal> to make sure, 
+          all resources have been built using the same make mode.
+        </para>
+        <para>
+          Now run <literal>ant</literal> to perform a first build of the 
+          environment. This will create needed symlinks and initialize the 
+          environment.
+        </para>
+      </section>
+      <section xml:id="createapplication">
+        <title>Create an application</title>
+        <para>
+          After all this stuff has be done, we can start with the interesting thing: 
+          Creating our first Pustefix application.
+        </para>
+        <para>
+          The skeleton environment contains a new project wizard that helps you
+          start a new project. Run the <literal>newproject.sh</literal> shell script
+          in the root of your project directory (input is emphasized).
+        </para>
+        <screen>
+**************************************************
+*                                                *
+*         Pustefix ProjectGenerator 1.0          *
+*                                                *
+**************************************************
+
+Please follow the instructions to create a new project.
+You can abort the process by pressing Ctrl + C.
+
+Please type in the projects name e.g. "myproject"
+<emphasis>techshop</emphasis>
+
+Please type in the projects default language (it's english if you leave the field blank).
+<emphasis>&lt;= Leave it blank</emphasis>
+
+
+Please type in a comment for the Project
+It will be "projectname + comment" if you leave it blank.
+<emphasis>Tutorial TechShop</emphasis>
+
+Please type in a name for the servlet 1
+<emphasis>shop</emphasis>
+
+Would you like to create another servlet? [yes] [no]
+<emphasis>no</emphasis>
+        </screen>
+        <para>
+          Now run <literal>ant</literal> to build the new project. You can start the 
+          Tomcat server using the <literal>startTomcat.sh</literal> script in the root
+          of the project environment. After Tomcat reports that it is ready, you
+          can point your browser to <literal>http://techshop.yourhost:8080/</literal>.
+          If you do not have a wildcard DNS record for your host, you might have
+          to create a record in <literal>/etc/hosts</literal> pointing to your IP. 
+        </para>
+        <para>
+          Congratulations! You just created your first running Pustefix web 
+          application. At the moment it is quite simple, but we will change this
+          during the next chapters of course.
+        </para>
+    </section>
+  </chapter>
+</book>

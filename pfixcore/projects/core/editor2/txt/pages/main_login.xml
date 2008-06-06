@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="ISO-8859-1"?><include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
+
+  <part name="logoutbutton">
+    <theme name="default">
+        <span style="color:#ffffff"><b>6100 - More Power</b></span>
+      </theme>
+  </part>
+  
+  <part name="content">
+    <theme name="default">
+      <center>
+        <div class="box" style="width:400px">
+          <h1>Welcome to the Pustefix CMS</h1>
+          <pfx:forminput target="_top" type="roleauth">
+            <span style="color: #ffffff; font-weight: bold;">Enter your userdata below:</span>
+            <table width="350">
+              <tr>
+                <pfx:checkfield name="auth.User">
+                  <td class="{$pfx_class}" align="right" nowrap="nowrap">Username:</td>
+                </pfx:checkfield>
+                <td>
+                  <pfx:xinp class="editor_input" name="auth.User" size="20" type="text"/>
+                </td>
+              </tr>
+              <errmsg name="auth.User"/>
+              <tr>
+                <pfx:checkfield name="auth.Pass">
+                  <td class="{$pfx_class}" align="right" nowrap="nowrap">Password:</td>
+                </pfx:checkfield>
+                <td>
+                  <pfx:xinp class="editor_input" name="auth.Pass" size="20" type="password"/>
+                </td>
+              </tr>
+              <errmsg name="auth.Pass"/>
+              <tr>
+                <td align="right" colspan="2">
+                  <br/><pfx:xinp class="editor_submit" type="submit">Login</pfx:xinp>
+                </td>
+              </tr>
+            </table>
+          </pfx:forminput>
+        </div>
+      </center>
+    </theme>
+  </part>
+</include_parts>

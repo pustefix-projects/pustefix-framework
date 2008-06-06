@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<web-app 
+  xmlns:cus="http://www.schlund.de/pustefix/customize">
+  <cus:filter />
+  <cus:filter-mapping />
+  <cus:listener />
+  <cus:servlet />
+  <cus:servlet-mapping />
+  <cus:session-config />
+  <cus:error-page />
+</web-app>

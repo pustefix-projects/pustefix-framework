@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="ISO-8859-1"?><include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
+  
+  <part name="content">
+    <theme name="default">
+      <center>
+        <pfx:checkerror>
+          <br/>
+          <table class="core_errorbox_table" width="400">
+            <errmsg name="selectinclude.Path" cols="1"/>
+            <errmsg name="branch.Action" cols="1"/>
+            <errmsg name="restore.Version" cols="1"/>
+          </table>
+        </pfx:checkerror>
+      </center>
+      <ixsl:choose>
+        <ixsl:when test="/formresult/includes/currentinclude">
+          <pfx:include part="displaycurrentinclude"/>
+          <ixsl:for-each select="/formresult/includes">
+            <pfx:include href="core/editor2/txt/util_includes.xml" part="displayincludedetails"/>
+          </ixsl:for-each>
+          <ixsl:for-each select="/formresult/includes/currentinclude/pages">
+            <pfx:include href="core/editor2/txt/util.xml" part="displayaffectedpages"/>
+          </ixsl:for-each>
+          <ixsl:for-each select="/formresult/includes/currentinclude/includes">
+            <pfx:include href="core/editor2/txt/util.xml" part="displayincludes"/>
+          </ixsl:for-each>
+          <ixsl:for-each select="/formresult/includes/currentinclude/images">
+            <pfx:include href="core/editor2/txt/util.xml" part="displayimages"/>
+          </ixsl:for-each>
+          <div>
+            <table><tr><td class="editor_main_emph">Content of whole part:</td></tr></table>
+            <ixsl:choose>
+              <ixsl:when test="/formresult/includes/currentinclude/content">
+                <staticdisplay path="/formresult/includes/currentinclude/content/node()"/>
+              </ixsl:when>
+              <ixsl:otherwise>
+                <div class="editor_box editor_warn">Part is not yet defined!</div>
+              </ixsl:otherwise>
+            </ixsl:choose>
+          </div>
+        </ixsl:when>
+        <ixsl:otherwise>
+          <center>
+            <br/>
+            <div class="editor_main_emph">
+              Please select an include from the list on the left
+            </div>
+          </center>
+        </ixsl:otherwise>
+      </ixsl:choose>
+    </theme>
+  </part>
+  
+  <part name="sidebar">
+    <theme name="default">
+      <ixsl:if test="count(/formresult/lucefix/hit) &gt; 0">
+        <div class="editor_includes_sidebar_content">
+          <div class="editor_includes_sidebar_directory">
+            <div class="editor_includes_sidebar_directory_title">
+              <b>Last Search:</b>
+            </div>
+            <ixsl:for-each select="/formresult/lucefix/hit">
+              <pfx:button>
+                <ixsl:value-of select="@filename"/>/<ixsl:value-of select="@part"/>/<ixsl:value-of select="@product"/>
+                <pfx:argument name="selectinclude.Path"><ixsl:value-of select="@filename"/></pfx:argument>
+                <pfx:argument name="selectinclude.Part"><ixsl:value-of select="@part"/></pfx:argument>
+                <pfx:argument name="selectinclude.Theme"><ixsl:value-of select="@product"/></pfx:argument>
+                <pfx:command name="SELWRP">selectinclude</pfx:command>
+                <pfx:command name="SELWRP">upload</pfx:command>
+                </pfx:button><br/>
+            </ixsl:for-each>
+        </div></div>
+      </ixsl:if>
+      <pfx:script>
+        var pfx_editor_pagename = "includes";
+      </pfx:script>
+      <ixsl:for-each select="/formresult/includes">
+        <pfx:include href="core/editor2/txt/util_includes.xml" part="displayallincludes"/>
+      </ixsl:for-each>
+    </theme>
+  </part>
+  
+  <part name="displaycurrentinclude">
+    <theme name="default">
+      <div align="right" class="editor_main_emph">
+        [INCLUDE: <ixsl:value-of select="/formresult/includes/currentinclude/@part"/>]
+      </div>
+      <br/>
+    </theme>
+  </part>
+  
+</include_parts>

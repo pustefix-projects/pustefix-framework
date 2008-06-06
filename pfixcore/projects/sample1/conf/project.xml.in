@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+
+<project name="sample1" xmlns:cus="http://www.schlund.de/pustefix/customize">
+  <!-- The sample1 application. Use this as a template for how to define your own projects -->
+  
+  <active>true</active>
+  <comment>Sample1 Application</comment>
+  <depend>sample1/conf/depend.xml</depend>
+  <!-- <encoding>ISO-8859-1</encoding> -->
+  <virtualhost><cus:fqdn/></virtualhost>
+  <servername>sample1.<cus:fqdn/></servername>
+  <serveralias>sample1.<cus:machine/></serveralias>
+  <!-- <sessiontimeout>60</sessiontimeout> -->
+  <!-- The default path you will be sent to when using the url -->
+  <!-- "http://sample1.<servername>/" -->
+  <defpath>/xml/config</defpath>
+  <passthrough>sample1/img</passthrough>
+  <!-- The Apache DocumentRoot for static content -->
+  <documentroot><cus:docroot/>sample1/htdocs</documentroot>
+  <!-- Here you can enter any additional apache config stuff -->
+  <literalapache>
+    # Add something here...
+  </literalapache>
+  <ports>
+    <port number="80"/>
+    <!-- if you want to use SSL, use something like this -->
+    <port number="443" ssl="true">
+      <sslkey><cus:docroot/>sample1/conf/server.key</sslkey>
+      <sslcrt><cus:docroot/>sample1/conf/server.crt</sslcrt>
+    </port>
+  </ports>
+  <!-- Use useineditor="true" for every servlet that handles pages belonging directly to the project -->
+  <!-- (That means for example not the servlet that starts up the editor, as the pages delivered -->
+  <!-- by this servlet belong to the editor project) -->
+  <servlet name="config" useineditor="true">
+    <active>true</active>
+    <class>de.schlund.pfixxml.ContextXMLServlet</class>
+    <propfile>sample1/conf/config.conf.xml</propfile>
+  </servlet>
+  <servlet name="secure" useineditor="true">
+    <active>true</active>
+    <class>de.schlund.pfixxml.ContextXMLServlet</class>
+    <propfile>sample1/conf/secure.conf.xml</propfile>
+  </servlet>
+  <servlet name="deref">
+    <active>true</active>
+    <class>de.schlund.pfixxml.DerefServlet</class>
+  </servlet>
+  <servlet name="download">
+    <active>true</active>
+    <class>de.schlund.pfixxml.DirectOutputServlet</class>
+    <propfile>sample1/conf/direct.conf.xml</propfile>
+    <foreigncontext>config</foreigncontext>
+  </servlet>
+</project>
+

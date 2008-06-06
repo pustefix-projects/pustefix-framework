@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
+
+   <part name="content">
+      <theme name="default">
+      
+         <div class="service_caption">Calculator service</div>
+         
+         <pfx:include href="webservice/txt/common.xml" part="protocol_select"/>
+         <pfx:include href="webservice/txt/common.xml" part="service_time"/>
+         <pfx:include href="webservice/txt/common.xml" part="service_error"/>
+         <pfx:include href="webservice/txt/common.xml" part="service_result"/>
+         
+         <div class="service_content"> 
+            <form action="" name="service_form">
+               <table class="service_formtable">
+                  <tr>
+                     <td>Value 1:</td><td><input name="val1" size="8" type="text" value="3"/></td>
+                  </tr>
+                  <tr>
+                     <td>Value 2:</td><td><input name="val2" size="8" type="text" value="7"/></td>
+                  </tr>
+                  <tr>
+                     <td align="center" colspan="2">
+                        <input onclick="serviceCall('add',document.service_form.val1.value,document.service_form.val2.value);" type="button" value=" + "/>
+                        <input onclick="serviceCall('subtract',document.service_form.val1.value,document.service_form.val2.value);" type="button" value=" - "/>
+                        <input onclick="serviceCall('multiply',document.service_form.val1.value,document.service_form.val2.value);" type="button" value=" * "/>
+                        <input onclick="serviceCall('divide',document.service_form.val1.value,document.service_form.val2.value);" type="button" value=" / "/>
+                     </td>
+                  </tr>
+                  <tr>
+                     <td>Result:</td><td><input id="service_formresult" readonly="readonly" size="8" type="text"/></td>
+                  </tr>
+               </table> 
+            </form>
+         </div>
+  
+      </theme>
+   </part>
+  
+</include_parts>

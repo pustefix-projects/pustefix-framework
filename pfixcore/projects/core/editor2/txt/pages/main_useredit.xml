@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="ISO-8859-1"?><include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
+  
+  <part name="logoutbutton">
+    <theme name="default">
+      <ixsl:choose>
+        <ixsl:when test="/formresult/session/user/permissions/@admin = 'true'">
+          <pfx:button mode="force" page="useradmin" target="_top">
+            Cancel
+          </pfx:button>
+        </ixsl:when>
+        <ixsl:otherwise>
+          <pfx:button mode="force" page="start" target="_top">
+            Cancel
+          </pfx:button>
+        </ixsl:otherwise>
+      </ixsl:choose>
+    </theme>
+  </part>
+  
+  <part name="content">
+    <theme name="default">
+      <center>
+        <pfx:forminput target="_top">
+          <pfx:include part="displaycurrentuserforedit"/>
+          <pfx:checkmessage>
+            <table class="editor_pagemessages_box" width="400">
+              <ixsl:for-each select="$pfx_allmessages_check">
+                <tr>
+                  <td><ixsl:apply-templates/></td>
+                </tr>
+              </ixsl:for-each>                
+            </table>
+            <br/>
+          </pfx:checkmessage>
+          <table width="400">
+            <tr>
+              <td align="center">
+                <ixsl:variable name="admin_session" select="/formresult/session/user/permissions/@admin = 'true'"/>
+                <table class="editor_box" width="100%">
+                  <tr>
+                    <td colspan="2">
+                      <b>User information:</b><br/><br/>
+                    </td>
+                  </tr>
+                  <tr>
+                    <pfx:checkfield name="user.Name">
+                      <td class="{$pfx_class}" align="right" width="20%">Name:</td>
+                    </pfx:checkfield>
+                    <td>
+                      <pfx:xinp class="editor_input" name="user.Name" type="text"/>
+                    </td>
+                  </tr>
+                  <errmsg name="user.Name"/>
+                  <tr>
+                    <pfx:checkfield name="user.Section">
+                      <td class="{$pfx_class}" align="right">Section:</td>
+                    </pfx:checkfield>
+                    <td>
+                      <pfx:xinp class="editor_input" name="user.Section" type="text"/>
+                    </td>
+                  </tr>
+                  <errmsg name="user.Section"/>
+                  <tr>
+                    <pfx:checkfield name="user.Phone">
+                      <td class="{$pfx_class}" align="right">Phone:</td>
+                    </pfx:checkfield>
+                    <td>
+                      <pfx:xinp class="editor_input" name="user.Phone" type="text"/>
+                    </td>
+                  </tr>
+                  <errmsg name="user.Phone"/>
+                  <tr>
+                    <pfx:checkfield name="user.Password">
+                      <td class="{$pfx_class}" align="right">Pwd:</td>
+                    </pfx:checkfield>
+                    <td>
+                      <input class="editor_input_pwd" name="user.Password" type="password"/>
+                    </td>
+                  </tr>
+                  <errmsg name="user.Password"/>
+                  <tr>
+                    <pfx:checkfield name="user.PasswordRepeat">
+                      <td class="{$pfx_class}" align="right" nowrap="nowrap">Pwd (Rep.):</td>
+                    </pfx:checkfield>
+                    <td>
+                      <input class="editor_input_pwd" name="user.PasswordRepeat" type="password"/>
+                    </td>
+                  </tr>
+                  <errmsg name="user.PasswordRepeat"/>
+                  <tr>
+                    <td colspan="2">
+                      <br/>
+                      <b>Common rights:</b><br/><br/>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td align="right" valign="top">
+                      <pfx:xinp name="user.AdminPrivilege" type="check" value="true">
+                        <ixsl:if test="not($admin_session)">
+                          <ixsl:attribute name="disabled"/>
+                        </ixsl:if>
+                      </pfx:xinp>
+                    </td>
+                    <pfx:checkfield name="user.AdminPrivilege">
+                      <td class="{$pfx_class}">
+                        User has admin role.
+                      </td>
+                    </pfx:checkfield>
+                  </tr>
+                  <tr>
+                    <td align="right" valign="top">
+                      <pfx:xinp name="user.EditDynIncludesPrivilege" type="check" value="true">
+                        <ixsl:if test="not($admin_session)">
+                          <ixsl:attribute name="disabled"/>
+                        </ixsl:if>
+                      </pfx:xinp>
+                    </td>
+                    <pfx:checkfield name="user.EditDynIncludesPrivilege">
+                      <td class="{$pfx_class}">
+                        User is allowed to edit DynIncludes.
+                      </td>
+                    </pfx:checkfield>
+                  </tr>
+                  <tr>
+                    <td colspan="2">
+                      <br/><b>Project specific rights:</b><br/><br/>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td colspan="2"> 
+                      <table cellspacing="0" width="100%">
+                        <tr>
+                          <td class="editor_head"><b>Project</b></td>
+                          <td align="center" class="editor_head"><b>Edit Includes</b></td>
+                          <td align="center" class="editor_head"><b>Edit Images</b></td>
+                        </tr>
+                        <ixsl:for-each select="/formresult/projects/project">
+                          <ixsl:variable name="id"><ixsl:value-of select="@name"/></ixsl:variable>
+                          <tr>
+                            <ixsl:choose>
+                              <ixsl:when test="position() mod 2 = 1">
+                                <ixsl:attribute name="class">editor_even_row</ixsl:attribute>
+                              </ixsl:when>
+                              <ixsl:otherwise>
+                                <ixsl:attribute name="class">editor_odd_row</ixsl:attribute>
+                              </ixsl:otherwise>
+                            </ixsl:choose>
+                            <td>
+                              <ixsl:value-of select="@name"/>
+                            </td>
+                            <td align="center">
+                              <input type="checkbox">
+                                <ixsl:attribute name="name"><ixsl:value-of select="concat('user.EditIncludesPrivilege.', $id)"/></ixsl:attribute>
+                                <ixsl:attribute name="value">true</ixsl:attribute>
+                                <ixsl:if test="not($admin_session)">
+                                  <ixsl:attribute name="disabled"/>
+                                </ixsl:if> 
+                                <ixsl:if test="/formresult/formvalues/param[@name = concat('user.EditIncludesPrivilege.', $id)] = 'true'">
+                                  <ixsl:attribute name="checked">checked</ixsl:attribute>
+                                </ixsl:if>
+                              </input>
+                            </td>
+                            <td align="center">
+                              <input type="checkbox">
+                                <ixsl:attribute name="name"><ixsl:value-of select="concat('user.EditImagesPrivilege.', $id)"/></ixsl:attribute>
+                                <ixsl:attribute name="value">true</ixsl:attribute>
+                                <ixsl:if test="not($admin_session)">
+                                  <ixsl:attribute name="disabled"/>
+                                </ixsl:if> 
+                                <ixsl:if test="/formresult/formvalues/param[@name = concat('user.EditImagesPrivilege.', $id)] = 'true'">
+                                  <ixsl:attribute name="checked">checked</ixsl:attribute>
+                                </ixsl:if>
+                              </input>
+                            </td>
+                          </tr>
+                        </ixsl:for-each>
+                      </table>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td colspan="2">
+                      <hr/>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td align="right" colspan="2">
+                      <pfx:xinp class="editor_submit" type="submit" value="Submit data">
+                        <pfx:command name="SELWRP">change</pfx:command>
+                      </pfx:xinp>
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+          </table>
+        </pfx:forminput>
+      </center>
+    </theme>
+  </part>
+  
+  <part name="displaycurrentuserforedit">
+    <theme name="default">
+      <div align="right" class="editor_main_emph">
+        [USERID: <ixsl:value-of select="/formresult/users/currentuser/@id"/>]
+      </div>
+      <br/>
+    </theme>
+  </part>
+  
+</include_parts>

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+
+<project name="samplebank" xmlns:cus="http://www.schlund.de/pustefix/customize">
+  <active>true</active>
+  <comment>Sample Bank Application</comment>
+  <depend>samplebank/conf/depend.xml</depend>
+  <virtualhost><cus:fqdn/></virtualhost>
+  <servername>samplebank.<cus:fqdn/></servername>
+  <serveralias>samplebank.<cus:machine/></serveralias>
+  <sessiontimeout>60</sessiontimeout>
+  <defpath>/xml/config</defpath>
+  <passthrough>sample1´bank/img</passthrough>
+  <documentroot><cus:docroot/>samplebank/htdocs</documentroot>
+  <literalapache>
+  </literalapache>
+  <ports>
+    <port number="80"/>
+  </ports>
+  <servlet name="config" useineditor="true">
+    <active>true</active>
+    <class>de.schlund.pfixxml.ContextXMLServlet</class>
+    <propfile>samplebank/conf/config.conf.xml</propfile>
+  </servlet>
+  <servlet name="deref">
+    <active>true</active>
+    <class>de.schlund.pfixxml.DerefServlet</class>
+  </servlet>
+</project>
+

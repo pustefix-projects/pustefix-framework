@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<pfx:document 
+  xmlns:pfx="http://www.schlund.de/pustefix/core" 
+  xmlns:ixsl="http://www.w3.org/1999/XSL/Transform"
+>
+  <html>
+    <head>
+      <title>Test suite for pfixcore</title>
+      <link href="{$__contextpath}/style.css" media="all" rel="stylesheet" type="text/css"/>
+    </head>
+    <body>
+      <pfx:maincontent path="testsuite/txt/pages" prefix="main_" part="content"/>
+      <pfx:editconsole/>
+    </body>
+  </html>
+</pfx:document>

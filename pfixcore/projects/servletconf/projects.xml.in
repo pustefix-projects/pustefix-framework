@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+
+<projects xmlns:cus="http://www.schlund.de/pustefix/customize">
+
+  <insertexternalprojects/>
+  
+  <!-- Don't change the two projects below, they are needed to make the whole system work -->
+
+  <!-- This is the Content Management System. You will be able to edit all projects -->
+  <!-- which have at least one servlet with the "useineditor" attribute set to "true" -->
+  
+  <project name="cmscore">
+    <active>true</active>
+    <comment>CMS for Pfixcore</comment>
+    <depend>core/editor2/conf/depend.xml</depend>
+    <virtualhost><cus:fqdn/></virtualhost>
+    <servername>cmscore.<cus:fqdn/></servername>
+    <serveralias>cmscore.<cus:machine/></serveralias>
+    <defpath>/xml/edit</defpath>
+    <passthrough>core/editor2/img</passthrough>
+    <documentroot><cus:docroot/>core/editor2/docroot</documentroot>
+    <ports>
+      <port number="80"/>
+    </ports>
+    <servlet name="edit" useineditor="true">
+      <active>true</active>
+      <class>de.schlund.pfixxml.ContextXMLServlet</class>
+      <propfile>core/editor2/conf/edit.conf.xml</propfile>
+      <use-filter>session_cookie_filter</use-filter>
+    </servlet>
+    <servlet name="deref">
+      <active>true</active>
+      <class>de.schlund.pfixxml.DerefServlet</class>
+    </servlet>
+    <filter name="session_cookie_filter">
+      <active>true</active>
+      <class>de.schlund.pfixcore.editor2.frontend.util.SessionCookieFilter</class>
+    </filter>
+  </project>
+
+  <!-- You should not change this pseudo project below unless you know what you are doing.
+       It is needed for administrative stuff like initializing all the needed factories. -->
+
+  <project name="admcore">
+    <active>true</active>
+    <comment>Adminzone For Pfixcore</comment>
+    <virtualhost><cus:fqdn/></virtualhost>
+    <servername>admcore.<cus:fqdn/></servername>
+    <serveralias>admcore.<cus:machine/></serveralias>
+    <ports>
+      <port number="80"/>
+    </ports>
+    <!-- The autostart attribute will start the servlet as soon as the container starts -->
+    <servlet name="init" autostartup="true">
+      <active>true</active>
+      <class>de.schlund.pfixxml.FactoryInitServlet</class>
+      <propfile>common/conf/factory.xml</propfile>
+      <init-param>
+        <param-name>pustefix.docroot</param-name>
+        <param-value><cus:docroot/></param-value>
+      </init-param>
+    </servlet>
+
+    <servlet name="cachestat">
+      <active>true</active>
+      <class>de.schlund.pfixxml.CacheStatisticServlet</class> 
+    </servlet>
+
+	<servlet name="jmxport">
+      <active>true</active>
+      <class>de.schlund.pfixxml.JmxPortServlet</class> 
+    </servlet>
+    
+  </project>
+
+  <!-- some common definitions that are shared between all projects -->
+  
+  <common>
+    <!-- prefix to namespace url mappings to be used in pages xml -->
+    <namespaces>
+      <namespace-declaration prefix="pfx" url="http://www.schlund.de/pustefix/core"/>
+      <namespace-declaration prefix="ixsl" url="http://www.w3.org/1999/XSL/Transform"/>
+    </namespaces>
+    <commonpropfile>common/conf/pustefix.xml</commonpropfile>
+    <documentation>
+      <doc_file>core/xsl/navigation.xsl.in</doc_file>
+      <doc_file>core/xsl/utils.xsl.in</doc_file>
+      <doc_file>core/xsl/forminput.xsl.in</doc_file>
+      <doc_file>core/xsl/master.xsl.in</doc_file>
+      <doc_file>core/xsl/include.xsl.in</doc_file>
+    </documentation>  
+    <tomcat>
+      <minprocessors>100</minprocessors>
+      <maxprocessors>500</maxprocessors>
+      <connectorport>8009</connectorport>
+      <debug>0</debug>
+      <loglevel>info</loglevel>
+      <jkhost><cus:fqdn/></jkhost>
+      <!-- This is only for mod_jk A matching sample workers.prop file will be generated, but may need -->
+      <!-- additional customization. Clustering will not work out of the box. -->
+      <jkmount>router</jkmount>
+      <defaulthost>admcore.<cus:fqdn/></defaulthost>
+      <jvmroute>foo</jvmroute>
+    </tomcat>
+    <apache>
+      <apachelogdir><cus:docroot/>servletconf/log</apachelogdir>
+      <passthrough>common/img</passthrough>
+      <passthrough>core/img</passthrough>
+      <passthrough>core/script</passthrough>
+    </apache>
+  </common>
+</projects>

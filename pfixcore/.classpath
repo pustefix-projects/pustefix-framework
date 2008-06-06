@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="src" path="tests/junit"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="var" path="PFX_ANT_LIB"/>
+	<classpathentry kind="var" path="PFX_TOOLS_LIB"/>
+	<classpathentry kind="lib" path="lib/activation-1.0.2.jar"/>
+	<classpathentry kind="lib" path="lib/commons-discovery-0.2.jar"/>
+	<classpathentry kind="lib" path="lib/commons-logging-1.0.4.jar"/>
+	<classpathentry kind="lib" path="lib/jakarta-oro-2.0.7.jar"/>
+	<classpathentry kind="lib" path="lib/java-getopt-1.0.9.jar"/>
+	<classpathentry kind="lib" path="lib/jcert.jar"/>
+	<classpathentry kind="lib" path="lib/jnet.jar"/>
+	<classpathentry kind="lib" path="lib/resolver.jar" sourcepath="/sources/xml-commons-resolver-1.1/src"/>
+	<classpathentry kind="lib" path="lib/jmxremote_optional-1.0.1_03.jar"/>
+	<classpathentry kind="lib" path="lib/concurrent.jar"/>
+	<classpathentry kind="lib" path="lib/log4j-1.2.9.jar"/>
+	<classpathentry kind="lib" path="lib/mail-1.3.3.jar"/>
+	<classpathentry kind="lib" path="lib/bsf-2.3.0.jar"/>
+	<classpathentry kind="lib" path="lib/js-1.5R3.jar"/>
+	<classpathentry kind="lib" path="lib/flexiparse-0.0.1.jar"/>
+	<classpathentry kind="lib" path="lib/spring-2.5.3.jar" sourcepath="/home/termi/sources/spring-2.5.3-sources.jar"/>
+	<classpathentry kind="lib" path="lib/spring-webmvc-2.5.3.jar" sourcepath="/home/termi/sources/spring-webmvc-2.5.3-sources.jar"/>
+	<classpathentry kind="src" path="gensrc"/>
+	<classpathentry kind="lib" path="lib/lucene-1.4.3.jar"/>
+	<classpathentry kind="lib" path="lib/saxon6_5_5.jar"/>
+	<classpathentry kind="lib" path="lib/bsh-2.0b4.jar"/>
+	<classpathentry kind="lib" path="lib/commons-collections-3.1.jar"/>
+	<classpathentry kind="lib" path="lib/commons-digester-1.7.jar"/>
+	<classpathentry kind="lib" path="projects/servletconf/tomcat/common/lib/servlet-api.jar"/>
+	<classpathentry kind="lib" path="lib/saxon8.jar"/>
+	<classpathentry kind="lib" path="lib/saxon8-dom.jar"/>
+	<classpathentry kind="lib" path="lib/saxon8-xpath.jar"/>
+	<classpathentry kind="lib" path="lib/junit-4.3.jar"/>
+	<classpathentry kind="lib" path="lib/jaxws-api-2.1.3.jar"/>
+	<classpathentry kind="lib" path="lib/jaxws-tools-2.1.3.jar"/>
+	<classpathentry kind="lib" path="lib/wsdl4j-1.6.2.jar"/>
+	<classpathentry kind="lib" path="lib/saaj-api-1.3.jar"/>
+	<classpathentry kind="lib" path="lib/jaxb-xjc-2.1.6.jar"/>
+	<classpathentry kind="lib" path="lib/jsr181-api-2.0.jar"/>
+	<classpathentry kind="lib" path="lib/jaxws-rt-2.1.3.jar"/>
+	<classpathentry kind="lib" path="lib/jaxb-api-2.1.jar"/>
+	<classpathentry kind="output" path="build"/>
+</classpath>

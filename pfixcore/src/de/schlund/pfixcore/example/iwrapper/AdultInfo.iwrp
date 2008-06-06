@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<interface xmlns="http://pustefix.sourceforge.net/interfacewrapper200401"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://pustefix.sourceforge.net/interfacewrapper200401 http://pustefix.sourceforge.net/interfacewrapper200401.xsd">
+  <ihandler class="de.schlund.pfixcore.example.AdultInfoHandler"/>
+  
+  <param name="Adult" type="java.lang.Boolean" missingscode="de.schlund.pfixcore.example.StatusCodeLib#pfixcore.example.home.AGE_MISSING">
+    <caster class="de.schlund.pfixcore.generator.casters.ToBoolean">
+      <cparam name="scode_casterror" value="de.schlund.pfixcore.example.StatusCodeLib#pfixcore.example.home.NO_AGE"/>
+    </caster>
+  </param>
+
+</interface> 

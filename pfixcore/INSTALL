@@ -1,0 +1,130 @@
+
+This file describes how to get the package up and running.
+
+Prerequisites:
+
+        * A unixoid OS.  Yes, java should be platform independent.
+          Unfortunately portions of the build environment and code
+          are unix specific. Although these platform independant
+          portions mainly deal with file system path secifications -
+          they exist. There may be even more places where the thing
+          wouldn't work on win32.
+
+        * A Java installation.  Version 1.5 is recommended. 
+          The environment variable JAVA_HOME must be set to the 
+          root directory of your java installation.
+          
+        * Apache Ant, the Java-based build tool in version 1.5.4 or higher.
+          If you have really large projects consider increasing the memory
+          for the java vm ant runs in: To do this set the ANT_OPTS
+          environment variable to something like "-mx200m". This variable
+          is evaluated within the ant start script contained in the ant
+          distribution.
+
+        * A working apache installation with a working mod_jk
+          (the apache connection module for tomcat). You need
+          to have this module loaded, but you need no further
+          configuration, the build process will take care of providing
+          you with a sample config file that should at least get you
+          started. Additionally the apache installation must provide mod_rewrite 
+          (This should be pretty standard nowadays).
+
+          Note that there have been problems with the order of
+          inclusion of mod_rewrite and mod_jk in the
+          httpd.conf. It seems that mod_jk needs to be loaded
+          BEFORE mod_rewrite. If you experience problems, try changing
+          the order of these two modules.  Other problems that have
+          been experienced are related to a changed regexp syntax
+          between different versions of mod_rewrite. You may have to
+          customize the relevant regexps in the file core/build/create_apacheconf.xsl.
+        
+        * Your apache needs to have enabled name-based virtual servers
+          for the default hostname of your machine. Furthermore you
+          should have a "* entry" for your machine in DNS (This means that 
+          a lookup to NAME.HOSTNAME.DOMAIN should resolve to HOSTNAME.DOMAIN no
+          matter what NAME is). If you don't have DNS configured like this you can 
+          still supply the names (if you use the skelelton distribution) 
+                 "cmsskel.HOSTNAME.DOMAIN" and "admskel.HOSTNAME.DOMAIN" 
+          or, in case you work with the cvs checkout
+                 "cmscore.HOSTNAME.DOMAIN" and "admcore.HOSTNAME.DOMAIN"
+          via your /etc/hosts file.
+
+          Note that you may be able to work around this last point by tweaking the
+          created apache.conf or by tweaking the producing stylesheet
+          core/build/create_apacheconf.xsl; this is not recommended, though.
+
+        * NOTE: you don't need a external installation of tomcat,
+          everything you need is contained in this package.  I suggest
+          that even if you have your own tomcat setup already,
+          start by using the supplied versions, and, if all goes
+          well, you can try to move the configuration into your own
+          installation.
+
+        * NOTE2: you don't need any additional jar files or classes besides
+          what is supplied with your java installation and this package.
+ 
+1)  Type "ant" to generate all neccesary files and compile all classes.
+
+2)  You may want to type "ant generate" for pre-processing all the templates
+    up-front. This speeds up the first hit of a page in the sample
+    applications as the page doesn't need to be build from scratch then.
+
+3)  Put something  like the following
+
+        NameVirtualHost HOSTNAME.DOMAIN:80
+        # uncomment if you want to use SSL
+        # NameVirtualHost HOSTNAME.DOMAIN:443
+
+        # config for mod_jk
+        include <your path to this directory>/projects/servletconf/tomcat/jk.conf
+
+        # virtual hosts for tomcat:
+        include <your path to this directory>/projects/servletconf/tomcat/apache.conf
+
+    into your httpd.conf. Don't forget to restart apache. Modern apache installations often have a
+    httpd.conf.d directory where to put links to config files that should be included automatically. 
+    In this case you can link the two files there instead of including them via your http.conf
+
+4)  start Tomcat with the following command:
+
+        ./startTomcat.sh
+
+    Note: For stopping Tomcat, just press Control-C to interrupt the script.
+
+    Note: There have been problems with restarting or
+    stopping/starting tomcat. Somtimes a restart of Apache is needed,
+    too, so mod_jk can catch up and reopen the connections to
+    Tomcat. (FIXME: Is this still the case? I have not experienced
+    these problems for quite some time now)
+    
+5)  To see if everything works, you can try to open the editor
+    application. Point your browser to
+        
+        http://cmsskel.HOSTNAME.DOMAIN 
+
+6)  You will find some basic applications in the example.tar.gz.
+    Just unpack the file with "tar xvzf example.tar.gz" in your skel/projects 
+    directory and take a short look to the README_EXAMPLES.txt included in the 
+    tar afterwards.
+    
+7)	Creating your own pustefix project is really simple. If you're in 
+	the skel dir just type in "./newproject.sh" 
+	and follow the command-line
+	instructions. 
+	Afterwards run ant, restart apache, restart tomcat and type in
+		http://myprojectname.HOSTNAME.DOMAIN
+		
+	To see how it works you should take a short look in 
+	de.schlund.pfixcore.util.basicapp. 
+	If you start with InitNewPfixProject.java (in the package basics) it should 
+	be easy to understand the way to go
+    
+    Have Fun.
+
+
+FINAL NOTE:
+
+You could now start building your own applications, but unfortunately
+there is still not much documentation about how to achieve this. Therefore
+I suggest you refer to the mailing list (see pustefix.sf.net).
+

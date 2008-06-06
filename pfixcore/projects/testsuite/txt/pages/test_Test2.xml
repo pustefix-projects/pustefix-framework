@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
+  <part name="title">
+    <theme name="default">
+      Test2: Pageflow action
+    </theme>
+  </part>
+  <part name="content">
+    <theme name="default">
+      <p>
+        This test will check that a pageflow action that jumps to another
+        page after submitting a form works. If the check succeeds, a
+        corresponding message will be displayed. If any error message is
+        displayed or this page is being displayed again after starting the 
+        test, thec check failed. To start the check, click the button below.
+      </p>
+      <p>
+        <pfx:forminput>
+          <pfx:xinp type="submit">Go!</pfx:xinp>
+        </pfx:forminput>
+      </p>
+    </theme>
+  </part>
+</include_parts>

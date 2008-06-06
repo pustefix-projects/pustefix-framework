@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
+  
+  <part name="logoutbutton">
+    <theme name="default">
+      <pfx:button mode="force" page="start" target="_top">Cancel</pfx:button>
+    </theme>
+  </part>
+  
+  <part name="content">
+    <theme name="default">
+      <center>
+        <pfx:forminput target="_top">
+          <br/><br/>
+          <table width="90%">
+            <tr>
+              <td>
+                <span style="color: #ffffff; font-weight: bold;">Currently registered users:</span>
+              </td>
+            </tr>
+            <tr>
+              <td align="center">
+                <pfx:include part="displayallusers"/>
+              </td>
+            </tr>
+          </table>
+          <br/><br/>
+          <table width="90%">
+            <tr>
+              <td>
+                <span style="color: #ffffff; font-weight: bold;">Add new user:</span>
+              </td>
+            </tr>
+            <tr>
+              <td align="center">
+                <table class="editor_box" width="100%">
+                  <tr>
+                    <pfx:checkfield name="selectuser.Username">
+                      <td align="right" class="{$pfx_class}">New user id:</td>
+                    </pfx:checkfield>
+                    <td>
+                      <pfx:xinp class="editor_input" name="selectuser.Username" size="20" type="text"/>
+                    </td>
+                    <td align="right">
+                      <pfx:xinp class="editor_submit" type="submit" value="Create new user">
+                        <pfx:command name="SELWRP">selectuser</pfx:command>
+                        <pfx:argument name="__jumptopage">useredit</pfx:argument>
+                        <pfx:argument name="selectuser.Create">1</pfx:argument>
+                      </pfx:xinp>
+                    </td>
+                  </tr>
+                  <errmsg name="selectuser.Username" cols="3"/>
+                </table>
+              </td>
+            </tr>
+          </table>
+        </pfx:forminput>
+      </center>
+    </theme>
+  </part>
+  
+  <part name="displayallusers">
+    <theme name="default">
+      <table cellspacing="0" class="editor_box" style="padding:0px;" width="100%">
+          <tr>
+            <td class="editor_head">
+              <b>UserId</b>
+            </td>
+            <td class="editor_head">
+              <b>Username</b>
+            </td>
+            <td class="editor_head" colspan="2">
+              <b>Sect/Phone</b>
+            </td>
+            <pfx:checkfield name="delete.Username">
+              <td align="right" class="{$pfx_class} editor_head">
+                <b>Delete user</b>
+                <pfx:error><br/><pfx:scode/></pfx:error>
+              </td>
+            </pfx:checkfield>
+          </tr>
+          <ixsl:for-each select="/formresult/users/user">
+            <ixsl:variable name="class">
+              <ixsl:choose>
+                <ixsl:when test="(count(preceding-sibling::user) mod 2) = 0">editor_even_row</ixsl:when>
+                <ixsl:otherwise>editor_odd_row</ixsl:otherwise>
+              </ixsl:choose>
+            </ixsl:variable>
+            <tr>
+              <ixsl:attribute name="class"><ixsl:value-of select="$class"/></ixsl:attribute>
+              <td nowrap="nowrap" style="padding: 5px">
+                <ixsl:value-of select="@id"/>
+              </td> 
+              <td style="padding: 5px">
+                <ixsl:value-of select="@name"/>
+              </td>
+              <td style="padding: 5px">
+                <ixsl:value-of select="@section"/> (Phone: <ixsl:value-of select="@phone"/>)
+              </td>
+              <td align="right" style="padding: 5px">
+                <pfx:button jumptopage="useredit" mode="force" normalclass="editor_submit">
+                  <pfx:command name="SELWRP">selectuser</pfx:command>
+                  <pfx:argument name="selectuser.Username"><ixsl:value-of select="@id"/></pfx:argument>Edit</pfx:button>
+              </td>
+              <td align="right" style="padding: 5px">
+                <pfx:xinp name="delete.Username" type="check">
+                  <ixsl:attribute name="value"><ixsl:value-of select="@id"/></ixsl:attribute>
+                </pfx:xinp>
+              </td>
+            </tr>
+          </ixsl:for-each>
+          <tr>
+            <td colspan="6" style="padding: 1px;">
+              <hr/>
+            </td>
+          </tr>
+          <tr>
+            <td align="right" colspan="6" style="padding: 5px;">
+              <pfx:xinp class="editor_submit" type="submit" value="Delete selected">
+                <pfx:command name="SELWRP">delete</pfx:command>
+              </pfx:xinp>
+            </td>
+          </tr>
+        </table>
+      </theme>
+  </part>
+  
+</include_parts>

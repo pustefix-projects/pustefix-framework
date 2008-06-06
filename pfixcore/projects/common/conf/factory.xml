@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<standardprops xmlns="http://pustefix.sourceforge.net/properties200401" xmlns:cus="http://www.schlund.de/pustefix/customize" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://pustefix.sourceforge.net/properties200401 http://pustefix.sourceforge.net/properties200401.xsd" version="1.0">
+  
+  <properties>
+    
+    <prop name="pustefix.log4j.config">common/conf/pfixlog.xml</prop>
+    <!-- Set this property to use container logging when application
+         is deployed as a WAR-archive, even if application is unpacked
+         and can use its own logging mechanism                         -->
+    <!--<prop name="pustefix.logging.prefercontainer">true</prop>-->
+    
+    <!-- List of all factories to init -->
+    <prop name="factory.initialize.02">de.schlund.pfixxml.targets.SPCacheFactory</prop>
+    <prop name="factory.initialize.04">de.schlund.pfixxml.targets.cachestat.SPCacheStatistic</prop>
+    <prop name="factory.initialize.05">de.schlund.pfixxml.perflogging.PerfLogging</prop>
+    <prop name="factory.initialize.06">de.schlund.pfixxml.testrecording.TestRecording</prop>
+
+    <choose>
+      <when test="$mode = 'prod'">
+        <!-- Load all projects on startup when in production mode-->
+        <prop name="factory.initialize.07">de.schlund.pfixxml.ProjectInitFactory</prop>
+        <!-- Specify this property to load only certain projects
+             <prop name="projectinit.projectlist">sample1, webservice</prop>
+        -->
+      </when>
+      <otherwise>
+        <!-- Start the editor application when not in production mode instead -->
+        <prop name="factory.initialize.07">de.schlund.pfixcore.editor2.frontend.util.EditorApplicationContextFactory</prop>
+      </otherwise>
+    </choose>
+
+    <!-- ApplicationContext factory for editor -->
+    <prop name="de.schlund.pfixcore.editor2.springconfig">common/conf/editor-spring.xml</prop>
+    <prop name="de.schlund.pfixcore.editor2.updatetargets">true</prop>
+      
+    <!-- SPCacheFactory -->
+    <prop name="targetcache.cacheclass">de.schlund.pfixxml.targets.LRUCache</prop>
+    <prop name="targetcache.cachecapacity">50</prop>
+    <prop name="includecache.cacheclass">de.schlund.pfixxml.targets.LRUCache</prop>
+    <prop name="includecache.cachecapacity">50</prop>
+    
+    <!--SPCacheStatistic-->
+    <prop name="cachestatistic.queuesize">60</prop>
+    <prop name="cachestatistic.queueticks">60000</prop><!--1 minute-->
+    <prop name="cachestatistic.productdata">servletconf/projects.xml</prop>
+    
+    
+    <!--PerfStat-->
+    <!-- size of buffer for perfevents --> 
+    <prop name="perflogging.buffersize">2000</prop>
+    <!-- schedule for dumping perf statistic into logfile -->
+    <prop name="perflogging.logwrite">20000</prop>
+    <!-- is perflogging enabled -->
+    <prop name="perflogging.enabled">1</prop>
+    <!-- start perflogging automatically -->
+    <prop name="perflogging.autostart">0</prop>
+    <!-- max time a the put-thread will wait when putting perfevent into a full buffer -->
+    <prop name="perflogging.offermaxwait">5</prop>
+    
+  </properties>
+</standardprops>

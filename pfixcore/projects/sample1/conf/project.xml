@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project-config xmlns="http://www.pustefix-framework.org/2008/namespace/project-config">
+  
+  <project>
+    <name>sampel1</name>
+    <description>Sample1 Application</description>
+  </project>
+  
+  <editor>
+    <enabled>true</enabled> <!-- Do we really need this? -->
+    <location>http://cmscore.${fqdn}/</location>
+  </editor>
+  
+  <xml-generator>
+    <config-file>pfixroot:/sample1/conf/depend.xml</config-file>
+  </xml-generator>
+  
+  <http-server>
+    
+    <http-port>
+      <address>${fqdn}</address>
+    </http-port>
+    
+    <https-port>
+      <address>${fqdn}</address>
+      <sslkey>pfixroot:/sample1/conf/server.key</sslkey>
+      <sslcrt>pfixroot:/sample1/conf/server.crt</sslcrt>
+    </https-port>
+    
+    <server-name>sample1.${fqdn}</server-name>
+    <server-alias>sample1.${fqdn}</server-alias>
+    
+    <apache>
+      <literal>
+        <!-- Stuff that is copied to the Apache configuration -->
+      </literal>
+    </apache>
+    
+  </http-server>
+  
+  <application>
+    
+    <docroot-path>pfixroot:/sample1/htdocs</docroot-path>
+    <default-path>/xml/config</default-path>
+    
+    <context-xml-service>
+      <path>/xml/config</path>
+      <config-file>pfixroot:/sample1/conf/config.conf.xml</config-file>
+    </context-xml-service>
+    
+    <direct-output-service>
+      <path>/xml/download</path>
+      <config-file>pfixroot:/sample1/conf/direct.conf.xml</config-file>
+    </direct-output-service>
+    
+    <static>
+      <path>sample1/img</path>
+      <path>core/img</path> <!-- FIXME: Get this from central configuration -->
+    </static>
+    
+  </application>
+  
+</project-config>

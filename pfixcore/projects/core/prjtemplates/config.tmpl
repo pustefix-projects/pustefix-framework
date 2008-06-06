@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<contextxmlserver xmlns="http://pustefix.sourceforge.net/properties200401" xmlns:cus="http://www.schlund.de/pustefix/customize" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://pustefix.sourceforge.net/properties200401 http://pustefix.sourceforge.net/properties200401.xsd" version="1.0">
+  
+  <!--
+    A file configuring the java related topics. 
+    More Informations here: 
+    
+    http://pustefix.sourceforge.net/prop.html
+  -->
+  
+  <servletinfo depend="newproject/conf/depend.xml" name="pfixcore_project:newproject::servlet:config">
+    <editmode allow="true"/>
+  </servletinfo>
+  
+  <context defaultflow="DefaultFlow"/>
+
+  <pageflow name="DefaultFlow">
+    <flowstep name="home"/>
+  </pageflow>
+  
+  <pagerequest name="home"/>
+
+</contextxmlserver>

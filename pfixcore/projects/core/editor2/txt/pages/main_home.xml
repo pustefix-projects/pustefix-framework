@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="ISO-8859-1"?><include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
+  
+  <part name="content">
+    <theme name="default">
+        <div class="box">
+        <pfx:include part="welcome"/>
+        </div>
+      </theme>
+  </part>
+
+  <part name="welcome">
+    <theme name="default">
+        <h1>What do you want to do?</h1>
+        <p>
+          Current project: 
+          <em><ixsl:value-of select="/formresult/projects/project[@selected='true']/@comment"/></em>
+        </p>
+        <ul>
+          <li>
+            <pfx:button normalclass="editor_importantlink" page="pages" target="_top">
+              Pages
+            </pfx:button>
+            <br/>
+            Show pages for this project and browse the depencides 
+            for these pages.
+            <br/><br/>
+          </li>
+          <li>
+            <pfx:button normalclass="editor_importantlink" page="targets" target="_top">
+              Targets
+            </pfx:button>
+            <br/>
+            Show targets generated for this project and browse through
+            includeparts and images needed by theses targets.
+            <br/><br/>
+          </li>
+          <li>
+            <pfx:button normalclass="editor_importantlink" page="images" target="_top">
+              Images
+            </pfx:button>
+            <br/>
+            Show images which are used by this project and upload
+            new files or manage theme variants for them.
+            <br/><br/>
+          </li>
+          <li>
+            <pfx:button normalclass="editor_importantlink" page="includes" target="_top">
+              Includes
+            </pfx:button>
+            <br/>
+            Show images which are used by this project and change
+            their content or manage theme variants for them.
+            <br/><br/>
+          </li>
+          <li>
+            <pfx:button normalclass="editor_importantlink" page="dynincludes" target="_top">
+              DynIncludes
+            </pfx:button>
+            <br/>
+            Show a list of runtime include parts and edit their content or
+            manage theme variants for them.
+            <br/><br/>
+          </li>
+          <li>
+            <pfx:button normalclass="editor_importantlink" page="search" target="_top">
+              Search
+            </pfx:button>
+            <br/>
+            Search for an include part containing some expression.
+            <br/><br/>
+          </li>
+          <li>
+            <pfx:button normalclass="editor_importantlink" page="start" target="_top">
+              <em>Select another project</em>
+            </pfx:button>
+            <br/>
+            Go back to the start page and select another project.
+            <br/><br/>
+          </li>
+        </ul>
+      </theme>
+  </part>
+
+</include_parts><!--
+Local Variables:
+mode: xml
+End:
+-->

@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<fr:config-fragments xmlns:fr="http://pustefix.sourceforge.net/configfragments200609"
+  xmlns:pr="http://pustefix.sourceforge.net/properties200401" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://pustefix.sourceforge.net/configfragments200609 ../../core/schema/configfragments200609.xsd">
+
+  <fr:navigation>
+    <page name="IncludeConfPage" handler="/xml/config" />
+  </fr:navigation>
+  <fr:targets>
+    <standardpage name="IncludeConfPage" xml="sample1/xml/one_frame_navi.xml" />
+  </fr:targets>
+  <fr:pagerequests>
+    <pr:pagerequest name="IncludeConfPage" />
+  </fr:pagerequests>
+  <fr:directoutputpagerequests id="directtest">
+    <pr:directoutputpagerequest name="test">
+      <pr:directoutputstate class="de.schlund.pfixcore.workflow.app.FileDownloadDOState" />
+      <pr:properties>
+        <pr:prop name="downloadfile">README.1st</pr:prop>
+        <pr:prop name="downloadmimetype">text/plain</pr:prop>
+      </pr:properties>
+    </pr:directoutputpagerequest>
+  </fr:directoutputpagerequests>
+</fr:config-fragments>

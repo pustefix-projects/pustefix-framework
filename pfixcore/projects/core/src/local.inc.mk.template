@@ -1,0 +1,19 @@
+# 
+# Sub-Makefile for local variables
+#
+
+# this is the conf file with machine specific data
+
+# default localconf your file could be in ../local/
+LOCAL_CONFIG=./tomcat/def.localconf.xml
+
+# alternative path for log files
+# default is the value of DOCROOT
+#LOGROOT = /var/log/httpd
+
+
+CATALINA_HOME=<path to tomcat>
+
+# the dafeult without setting this here is 'webapps'
+WEBAPPS_DIR=webapps.pfix
+

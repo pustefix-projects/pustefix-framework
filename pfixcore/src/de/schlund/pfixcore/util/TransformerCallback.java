@@ -1,0 +1,282 @@
+package de.schlund.pfixcore.util;
+
+import java.io.StringWriter;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+
+import org.apache.log4j.Logger;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+
+import de.schlund.pfixcore.auth.Authentication;
+import de.schlund.pfixcore.auth.Condition;
+import de.schlund.pfixcore.auth.Role;
+import de.schlund.pfixcore.generator.IWrapper;
+import de.schlund.pfixcore.generator.IWrapperInfo;
+import de.schlund.pfixcore.workflow.Context;
+import de.schlund.pfixcore.workflow.ContextImpl;
+import de.schlund.pfixcore.workflow.PageRequest;
+import de.schlund.pfixcore.workflow.context.AccessibilityChecker;
+import de.schlund.pfixcore.workflow.context.RequestContextImpl;
+import de.schlund.pfixxml.ResultDocument;
+import de.schlund.pfixxml.config.IWrapperConfig;
+import de.schlund.pfixxml.config.PageRequestConfig;
+import de.schlund.pfixxml.config.ProcessActionConfig;
+import de.schlund.pfixxml.util.ExtensionFunctionUtils;
+import de.schlund.pfixxml.util.Xml;
+import de.schlund.pfixxml.util.XsltVersion;
+
+/**
+ * Describe class TransformerCallback here.
+ * 
+ * 
+ * Created: Tue Jul 4 14:45:43 2006
+ * 
+ * @author <a href="mailto:jtl@schlund.de">Jens Lautenbacher</a>
+ * @version 1.0
+ */
+public class TransformerCallback {
+
+    private final static Logger           LOG               = Logger.getLogger(TransformerCallback.class);
+    private static DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
+
+    // public static void setNoStore(SPDocument spdoc) {
+    // spdoc.setNostore(true);
+    // }
+
+    public static int isAccessible(RequestContextImpl requestcontext, String pagename) throws Exception {
+        try {
+            ContextImpl context = requestcontext.getParentContext();
+            //if (context.getContextConfig().getPageRequestConfig(pagename) != null) {
+                AccessibilityChecker check = (AccessibilityChecker) context;
+                boolean retval;
+                if (context.getContextConfig().isSynchronized()) {
+                    synchronized (context) {
+                        retval = check.isPageAccessible(pagename);
+                    }
+                } else {
+                    retval = check.isPageAccessible(pagename);
+                }
+                if (retval) {
+                    return 1;
+                } else {
+                    return 0;
+                }
+            // }
+            // return -1;
+        } catch (Exception x) {
+            ExtensionFunctionUtils.setExtensionFunctionError(x);
+            throw x;
+        }
+    }
+
+    public static int isVisited(RequestContextImpl requestcontext, String pagename) throws Exception {
+        try {
+            ContextImpl context = requestcontext.getParentContext();
+            if (context.getContextConfig().getPageRequestConfig(pagename) != null) {
+                AccessibilityChecker check = (AccessibilityChecker) context;
+                boolean retval;
+                if (context.getContextConfig().isSynchronized()) {
+                    synchronized (context) {
+                        retval = check.isPageAlreadyVisited(pagename);
+                    }
+                } else {
+                    retval = check.isPageAlreadyVisited(pagename);
+                }
+                if (retval) {
+                    return 1;
+                } else {
+                    return 0;
+                }
+            }
+            return -1;
+        } catch (Exception x) {
+            ExtensionFunctionUtils.setExtensionFunctionError(x);
+            throw x;
+        }
+    }
+
+    public static String getToken(RequestContextImpl requestContext, String tokenName) throws Exception {
+        try {
+            tokenName = tokenName.trim();
+            if (tokenName.contains(":")) throw new IllegalArgumentException("Illegal token name: " + tokenName);
+            String token = requestContext.getParentContext().getToken(tokenName);
+            return token;
+        } catch (Exception x) {
+            ExtensionFunctionUtils.setExtensionFunctionError(x);
+            throw x;
+        }
+    }
+
+    public static boolean requiresToken(RequestContextImpl requestContext, String pageName) throws Exception {
+        try {
+            ContextImpl context = requestContext.getParentContext();
+            PageRequestConfig pageConfig = context.getContextConfig().getPageRequestConfig(pageName);
+            if (pageConfig != null) return pageConfig.requiresToken();
+            return false;
+        } catch (Exception x) {
+            ExtensionFunctionUtils.setExtensionFunctionError(x);
+            throw x;
+        }
+    }
+
+    public static Node getIWrapperInfo(RequestContextImpl requestContext, Node docNode, String pageName, String prefix) {
+        try {
+            ContextImpl context = requestContext.getParentContext();
+            XsltVersion xsltVersion = Xml.getXsltVersion(docNode);
+            if (pageName == null || pageName.equals("")) {
+                PageRequest pg = requestContext.getCurrentPageRequest();
+                if (pg != null)
+                    pageName = pg.getName();
+                else
+                    throw new IllegalArgumentException("Missing page name");
+            }
+            PageRequestConfig pageConfig = context.getContextConfig().getPageRequestConfig(pageName);
+            if (pageConfig != null) {
+                Map<String, ? extends IWrapperConfig> iwrappers = pageConfig.getIWrappers();
+                IWrapperConfig iwrpConfig = iwrappers.get(prefix);
+                if (iwrpConfig != null) {
+                    Class<? extends IWrapper> iwrpClass = (Class<? extends IWrapper>) iwrpConfig.getWrapperClass();
+                    if (iwrpClass != null) return IWrapperInfo.getDocument(iwrpClass, xsltVersion);
+                }
+            }
+            return null;
+        } catch (RuntimeException x) {
+            ExtensionFunctionUtils.setExtensionFunctionError(x);
+            throw x;
+        }
+    }
+
+    public static Node getIWrappers(RequestContextImpl requestContext, Node docNode, String pageName) throws Exception {
+        try {
+            ContextImpl context = requestContext.getParentContext();
+            XsltVersion xsltVersion = Xml.getXsltVersion(docNode);
+            DocumentBuilder db = docBuilderFactory.newDocumentBuilder();
+            Document doc = db.newDocument();
+            Element root = doc.createElement("iwrappers");
+            doc.appendChild(root);
+            if (pageName == null || pageName.equals("")) {
+                PageRequest pg = requestContext.getCurrentPageRequest();
+                if (pg != null)
+                    pageName = pg.getName();
+                else
+                    throw new IllegalArgumentException("Missing page name");
+            }
+            PageRequestConfig pageConfig = context.getContextConfig().getPageRequestConfig(pageName);
+            if (pageConfig != null) {
+                Map<String, ? extends IWrapperConfig> iwrappers = pageConfig.getIWrappers();
+                for (String prefix : iwrappers.keySet()) {
+                    Element elem = doc.createElement("iwrapper");
+                    elem.setAttribute("prefix", prefix);
+                    elem.setAttribute("class", iwrappers.get(prefix).getWrapperClass().getName());
+                    elem.setAttribute("activeignore", "" + iwrappers.get(prefix).isActiveIgnore());
+                    root.appendChild(elem);
+                }
+            }
+            Map<String, ? extends ProcessActionConfig> actions = pageConfig.getProcessActions();
+            if (actions != null && !actions.isEmpty()) {
+                Element actionelement = doc.createElement("actions");
+                root.appendChild(actionelement);
+                for (Iterator<? extends ProcessActionConfig> iterator = actions.values().iterator(); iterator.hasNext();) {
+                    ProcessActionConfig action =  iterator.next();
+                    ResultDocument.addObject(actionelement, "action", action);
+                }
+            }
+            if (LOG.isDebugEnabled()) {
+                TransformerFactory tf = TransformerFactory.newInstance();
+                Transformer t = tf.newTransformer();
+                t.setOutputProperty(OutputKeys.INDENT, "yes");
+                StringWriter writer = new StringWriter();
+                t.transform(new DOMSource(doc), new StreamResult(writer));
+                LOG.debug(writer.toString());
+            }
+            Node iwrpDoc = Xml.parse(xsltVersion, doc);
+            return iwrpDoc;
+        } catch (Exception x) {
+            ExtensionFunctionUtils.setExtensionFunctionError(x);
+            throw x;
+        }
+    }
+
+    public static boolean hasRole(RequestContextImpl requestContext, String roleName) throws Exception {
+        try {
+            ContextImpl context = requestContext.getParentContext();
+            Authentication auth = context.getAuthentication();
+            if (auth != null) {
+                return auth.hasRole(roleName);
+            }
+            return false;
+        } catch (Exception x) {
+            ExtensionFunctionUtils.setExtensionFunctionError(x);
+            throw x;
+        }
+    }
+    
+    public static boolean checkCondition(RequestContextImpl requestContext, String conditionId) throws Exception {
+        try {
+            ContextImpl context = requestContext.getParentContext();
+            Condition condition = context.getContextConfig().getCondition(conditionId);
+            if(condition != null) {
+                return condition.evaluate(context);
+            }
+            return false;
+        } catch (Exception x) {
+            ExtensionFunctionUtils.setExtensionFunctionError(x);
+            throw x;
+        }
+    }
+
+    public static Node getAllDefinedRoles(RequestContextImpl requestContext, Node docNode) throws Exception {
+        try {
+            Context context = requestContext.getParentContext();
+            XsltVersion xsltVersion = Xml.getXsltVersion(docNode);
+            DocumentBuilder db = docBuilderFactory.newDocumentBuilder();
+            Document doc = db.newDocument();
+            Element root = doc.createElement("roles");
+            doc.appendChild(root);
+            List<Role> configuredRoles = context.getContextConfig().getRoleProvider().getRoles();
+            HashSet<Role> currentroles = new HashSet<Role>();
+            if (context.getAuthentication() != null && context.getAuthentication().getRoles() != null) {
+                currentroles.addAll(Arrays.asList(context.getAuthentication().getRoles()));
+            }
+            
+            for (Role role : configuredRoles) {
+                Element elem = doc.createElement("role");
+                elem.setAttribute("name", role.getName());
+                elem.setAttribute("initial", Boolean.toString(role.isInitial()));
+                if (currentroles.contains(role)) {
+                    elem.setAttribute("current", "true");
+                } else {
+                    elem.setAttribute("current", "false");
+                }
+                root.appendChild(elem);
+            }
+            
+            if (LOG.isDebugEnabled()) {
+                TransformerFactory tf = TransformerFactory.newInstance();
+                Transformer t = tf.newTransformer();
+                t.setOutputProperty(OutputKeys.INDENT, "yes");
+                StringWriter writer = new StringWriter();
+                t.transform(new DOMSource(doc), new StreamResult(writer));
+                LOG.debug(writer.toString());
+            }
+            Node iwrpDoc = Xml.parse(xsltVersion, doc);
+            return iwrpDoc;
+        } catch (Exception x) {
+            ExtensionFunctionUtils.setExtensionFunctionError(x);
+            throw x;
+        }
+    }
+}

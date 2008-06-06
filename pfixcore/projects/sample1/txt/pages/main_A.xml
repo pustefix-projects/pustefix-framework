@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="ISO-8859-1"?><include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
+  <part name="content">
+    <theme name="default">
+      <pfx:forminput>
+        <table style="border: 1px solid black;">
+          <tr>
+            <td colspan="3">
+              <ul>
+                <li>If checked: <i>Submit, jump to B, then flow to C</i></li>
+                <li>If not checked: <i>Submit, then flow to C</i></li>
+              </ul>
+            </td>
+          </tr>
+          <tr>
+            <td width="1px"><pfx:xinp name="select.Do_B" type="check" value="true"/></td>
+            <td nowrap="nowrap">Call Page B</td>
+            <td align="right"><pfx:xinp type="submit" value="Go!"/></td>
+          </tr>
+        </table>
+        <hr/>
+        <pfx:button page="home">Home</pfx:button>
+        <hr/>
+      </pfx:forminput>
+    </theme>
+  </part>
+</include_parts>

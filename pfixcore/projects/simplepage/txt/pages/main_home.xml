@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="ISO-8859-1"?><include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
+<!-- The text given out on the page. This text is included by the <basictext> tag. -->
+  <part name="content">
+    <theme name="default">
+      <basictext>Some text</basictext>
+      <br/>
+      <quadtext>Some repeated text</quadtext>
+      <br/>
+    </theme>
+  </part>
+
+  <part name="test">
+    <theme name="default">
+      INPUT!!!
+    </theme>
+  </part>
+
+</include_parts>
