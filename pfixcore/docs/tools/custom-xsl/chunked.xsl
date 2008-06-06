@@ -19,5 +19,5 @@
   <xsl:param name="admon.graphics.path" select="'../images/docbook/'"/>
   <xsl:param name="img.src.path" select="'../'"/>
   <xsl:param name="html.stylesheet" select="'../css/style.css'"/>
-  <xsl:param name="toc.section.depth" select="1"/>
+  <xsl:param name="toc.section.depth" select="2"/>
 </xsl:stylesheet>
