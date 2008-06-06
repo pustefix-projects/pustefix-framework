@@ -7,7 +7,7 @@
     http://pustefix.sourceforge.net/prop.html
   -->
   
-  <servletinfo depend="ajax-calculator/conf/depend.xml" name="pfixcore_project:ajax-calculator::servlet:calc">
+  <servletinfo depend="ajax-calculator/conf/depend.xml" name="pfixtutorial:ajax-calculator::servlet:calc">
     <editmode allow="true"/>
   </servletinfo>
   

@@ -1,0 +1,26 @@
+<webservice-config xmlns="http://pustefix.sourceforge.net/wsconfig200401"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://pustefix.sourceforge.net/wsconfig200401 ../../core/schema/wsconfig200401.xsd">
+  
+  <webservice-global>
+    <requestpath>/xml/webservice</requestpath>
+    <wsdlsupport enabled="true" repository="/wsdl"/>
+    <stubgeneration enabled="true" repository="/wsscript"/>
+    <protocol type="JSONWS"/>
+    <encoding style="rpc" use="encoded"/>
+    <session type="servlet"/>
+    <scope type="application"/>
+    <admin enabled="true"/>
+    <monitoring enabled="true" scope="session" historysize="10"/>
+    <logging enabled="true"/>
+    <faulthandler class="de.schlund.pfixcore.webservice.fault.LoggingHandler"/>
+  </webservice-global>
+  
+  <webservice name="CalculatorService">
+    <interface name="org.pustefixframework.tutorial.calculator.CalculatorService"/>
+    <implementation name="org.pustefixframework.tutorial.calculator.Calculator"/>
+    <session type="servlet" />
+    <context name="pfixtutorial:ajax-calculator::servlet:calc"/>
+  </webservice>
+
+</webservice-config>

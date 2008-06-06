@@ -34,9 +34,16 @@
     <class>de.schlund.pfixxml.ContextXMLServlet</class>
     <propfile>ajax-calculator/conf/calc.conf.xml</propfile>
   </servlet>
+  
   <servlet name="deref">
     <active>true</active>
     <class>de.schlund.pfixxml.DerefServlet</class>
+  </servlet>
+
+  <servlet name="webservice">
+    <active>true</active>
+    <class>de.schlund.pfixcore.webservice.WebServiceServlet</class>
+    <propfile>ajax-calculator/conf/webservice.conf.xml</propfile>
   </servlet>
 
 </project>
