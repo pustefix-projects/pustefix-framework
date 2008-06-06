@@ -1,0 +1,8 @@
+<archetype>
+  <id>pustefix-module-archetype</id>
+  <resources>
+    <resource>src/main/resources/dyntxt/statusmessages.xml</resource>
+    <resource>src/main/resources/dyntxt/statuscodeinfo.xml</resource>
+    <resource>src/main/resources/META-INF/pustefix-module.xml</resource>
+  </resources>
+</archetype>
