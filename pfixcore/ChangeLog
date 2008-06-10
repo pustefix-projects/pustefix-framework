@@ -1,3 +1,9 @@
+2008-06-10  Martin Leidig  <mleidig@schlund.de>
+
+	* src/de/schlund/pfixxml/IncludeDocumentExtension.java: fixed
+	NullPointerException in get() method, which occurred when a
+	part was defined multiple times and there's no target.
+
 2008-06-02  schst  <schst@stubbles.net>
 
 	Fixed bug #39: OXM should serialize getter methods for

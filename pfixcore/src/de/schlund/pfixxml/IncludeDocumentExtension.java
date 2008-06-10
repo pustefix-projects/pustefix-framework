@@ -175,7 +175,7 @@ public final class IncludeDocumentExtension {
                                                parent_path, parent_part, parent_theme, target);
                 }
                 XMLException ex = new XMLException("*** Part '" + part + "' is multiple times defined! Must be exactly 1");
-                target.setStoredException(ex);
+                if(target!=null) target.setStoredException(ex);
                 throw ex;
             }
 
