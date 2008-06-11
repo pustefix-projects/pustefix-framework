@@ -30,16 +30,7 @@
       <xs:element ref="prop:interceptors" maxOccurs="1" minOccurs="0"/>
       <xs:choice minOccurs="0" maxOccurs="unbounded">
         <xs:element ref="prop:scriptedflow"/>
-        <xs:element name="config-include">
-          <xs:complexType>
-            <xs:attribute name="refid"></xs:attribute>
-          </xs:complexType>
-        </xs:element>
-        <xs:element name="config-include">
-          <xs:complexType>
-            <xs:attribute name="xpath"></xs:attribute>
-          </xs:complexType>
-        </xs:element>
+        <xs:element ref="prop:config-include"/>
       </xs:choice>
       <xs:element ref="prop:roleprovider" minOccurs="0" maxOccurs="1"/>
       <xs:choice minOccurs="0" maxOccurs="unbounded">
