@@ -61,14 +61,23 @@ public class JSONWSProcessor implements ServiceProcessor {
     private SerializerRegistry serializerRegistry;
     private DeserializerRegistry deserializerRegistry;
     
-    public JSONWSProcessor(URL defaultBeanMetaDataURL) throws ServiceException {
+    public JSONWSProcessor() throws ServiceException {
+        init(null);
+    }
+    
+    private void init(URL defaultBeanMetaDataURL) throws ServiceException {
         try {
-            beanDescFactory=new BeanDescriptorFactory(new DefaultLocator(defaultBeanMetaDataURL));
+            if(defaultBeanMetaDataURL==null) beanDescFactory=new BeanDescriptorFactory();
+            else beanDescFactory=new BeanDescriptorFactory(new DefaultLocator(defaultBeanMetaDataURL));
         } catch(InitException x) {
             throw new ServiceException("BeanDescriptorFactory initialization failed.",x);
         }
         serializerRegistry=new SerializerRegistry(beanDescFactory);
         deserializerRegistry=new DeserializerRegistry(beanDescFactory);
+    }
+    
+    public void setBeanMetaDataURL(URL defaultBeanMetaDataURL) throws ServiceException {
+        init(defaultBeanMetaDataURL);
     }
     
     public void process(ServiceRequest req,ServiceResponse res,ServiceRuntime runtime,ServiceRegistry registry,ProcessingInfo procInfo) throws ServiceException {

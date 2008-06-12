@@ -70,9 +70,14 @@ public class JSONQXProcessor implements ServiceProcessor {
     private SerializerRegistry serializerRegistry;
     private DeserializerRegistry deserializerRegistry;
     
-    public JSONQXProcessor(URL defaultBeanMetaDataURL) throws ServiceException {
+    public JSONQXProcessor() throws ServiceException {
+        init(null);
+    }
+    
+    private void init(URL defaultBeanMetaDataURL) throws ServiceException {
         try {
-            beanDescFactory=new BeanDescriptorFactory(new DefaultLocator(defaultBeanMetaDataURL));
+            if(defaultBeanMetaDataURL==null) beanDescFactory=new BeanDescriptorFactory();
+            else beanDescFactory=new BeanDescriptorFactory(new DefaultLocator(defaultBeanMetaDataURL));
         } catch(InitException x) {
             throw new ServiceException("BeanDescriptorFactory initialization failed.",x);
         }
@@ -82,6 +87,10 @@ public class JSONQXProcessor implements ServiceProcessor {
         serializerRegistry.register(Calendar.class,dateSerializer);
         serializerRegistry.register(GregorianCalendar.class,dateSerializer);
         deserializerRegistry=new DeserializerRegistry(beanDescFactory);
+    }
+    
+    public void setBeanMetaDataURL(URL defaultBeanMetaDataURL) throws ServiceException {
+        init(defaultBeanMetaDataURL);
     }
     
     public void process(ServiceRequest req,ServiceResponse res,ServiceRuntime runtime,ServiceRegistry registry,ProcessingInfo procInfo) throws ServiceException {
