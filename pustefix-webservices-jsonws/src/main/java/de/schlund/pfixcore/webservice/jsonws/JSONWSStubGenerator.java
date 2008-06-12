@@ -24,8 +24,6 @@ import java.io.OutputStream;
 import java.lang.reflect.Method;
 import java.util.List;
 
-import de.schlund.pfixcore.example.webservices.CallTest;
-import de.schlund.pfixcore.example.webservices.CallTestImpl;
 import de.schlund.pfixcore.webservice.Constants;
 import de.schlund.pfixcore.webservice.ServiceDescriptor;
 import de.schlund.pfixcore.webservice.ServiceException;
@@ -71,20 +69,6 @@ public class JSONWSStubGenerator implements ServiceStubGenerator {
             }
         }
         jsClass.printCode(out);
-    }
-    
-    public static void main(String[] args) throws Exception {
-        ServiceConfig config=new ServiceConfig(null);
-        config.setInterfaceName(CallTest.class.getName());
-        config.setImplementationName(CallTestImpl.class.getName());
-        config.setName("Test");
-        config.setStubJSNamespace(Constants.STUBGEN_JSNAMESPACE_COMPAT);
-        //config.setStubJSNamespace(Constants.STUBGEN_JSNAMESPACE_COMPATUNIQUE);
-        //config.setStubJSNamespace(Constants.STUBGEN_JSNAMESPACE_JAVANAME);
-        //config.setStubJSNamespace("My");
-        //config.setStubJSNamespace("foo.");
-        //config.setStubJSNamespace("foo.bar");
-        (new JSONWSStubGenerator()).generateStub(config,System.out);
     }
     
 }
