@@ -54,11 +54,18 @@ public class JAXWSProcessor implements ServiceProcessor {
     
     private static ThreadLocal<JAXWSContext> currentJAXWSContext=new ThreadLocal<JAXWSContext>();
     
-    public JAXWSProcessor(ServletContext servletContext) {
-        this.servletContext = servletContext;
+    public JAXWSProcessor() {
+    }
+    
+    private void init(ServletContext servletContext) {
         delegate = (WSServletDelegate)servletContext.getAttribute(WSServlet.JAXWS_RI_RUNTIME_INFO);
     }
 
+    public void setServletContext(ServletContext servletContext) {
+        this.servletContext = servletContext;
+        init(servletContext);
+    }
+    
     public void process(ServiceRequest req, ServiceResponse res, ServiceRuntime runtime, ServiceRegistry registry, ProcessingInfo procInfo) throws ServiceException {
            
         if(!(req.getUnderlyingRequest() instanceof HttpServletRequest)) throw new ServiceException("Service protocol not supported");
