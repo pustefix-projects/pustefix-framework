@@ -23,4 +23,12 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
+  <!-- TODO: add javacc like in ant build -->
+  <!-- 
+    <javacc
+      target="${dir.src}/de/schlund/pfixcore/webservice/json/JSONParser.jj"
+      outputdirectory="${dir.src}/de/schlund/pfixcore/webservice/json/parser"
+      javacchome="${env.JAVACC_HOME}"
+    />
+  -->  
 </project>
