@@ -110,7 +110,96 @@
 
   <section>
     <title>Defining the structure of a document</title>
-    <para></para>
+    <para>
+      This section describes the format for those documents serving as the structure defining
+      xml source of the finally transformed documents. These can be found in the xml
+      subdirectory of your project.
+    </para>
+    <para>
+      The explanation keeps an eye on the expected usage patterns of these documents.
+    </para>
+    <para>
+      There are basically two kind of "pages" you deliver with Pustefix.
+    </para>
+    <itemizedlist>
+      <listitem>
+        <para>
+          Pages that have no frames and may deliver html or any other text based format.
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+          Pages that contain an arbitrary amount of frames and framesets. Those usually deliver html.
+        </para>
+      </listitem>
+    </itemizedlist>
+    <section>
+      <title>Structure of a Type 1 document</title>
+      <para>
+        For a html delivering page without frames:
+      </para>
+      <programlisting language="xml"><![CDATA[
+<pfx:document xmlns:pfx="http://www.schlund.de/pustefix/core">
+  <html>
+    <!--
+      Any content valid for an html document
+    -->
+  </html>
+</pfx:document>]]></programlisting>
+      <para>
+        If you don't want to deliver html, just ommit the &lt;html&gt; tag. The following
+        could be used to implement a CSS stylesheet.
+      </para>
+      <programlisting language="xml"><![CDATA[<pfx:document>.foo { color: #ffff00; font-family: Helvetica; }</pfx:document>]]></programlisting>
+      <para>
+        The rule of thumb is: Whatever you put between &lt;pfx:document&gt; is up to you and
+        will be delivered just as you write it there. Just remember that the &lt;html&gt; is
+        not automatically inserted for you, you have to write it yourself.
+      </para>
+    </section>
+    <section>
+      <title>Structure of a Type 2 document</title>
+      <para>
+        There are only subtle differences. A document is a Type 2 doc by definition
+        whenever there is a &lt;pfx:frameset&gt; and possibly a &lt;head&gt; node as the
+        only direct children of &lt;pfx:document&gt;.
+      </para>
+      <programlisting language="xml"><![CDATA[
+<pfx:document xmlns:pfx="http://www.schlund.de/pustefix/core">
+  <head>
+    <!--
+      Again, put anything you want to appear in the head of the _top frame! This means
+      page title, script stuff or stylesheets.
+    -->
+  </head>
+  <pfx:frameset rows="20,*">
+    <pfx:frame name="navi">
+      <html>
+        <head>...</head>
+        <body>
+          <!-- Any HTML content -->
+        </body>
+      </html>
+    </pfx:frame>
+    <pfx:frame name="main">
+      <html>
+        <body>
+          <!-- Any HTML content -->
+        </body>
+      </html>
+    </pfx:frame>
+  </pfx:frameset>
+</pfx:document>]]></programlisting>
+      <para>
+        As you can see there is NO &lt;html&gt; tag just below &lt;pfx:document&gt;.
+        This is the one important difference between Type 1) and Type 2). As a rule you
+        could say that you only have to insert the &lt;html&gt; yourself wherever the
+        "real" content is. In a Type 1) doc this is the whole content of the
+        &lt;pfx:document&gt; tag, so we need to set it there. But for a Type 2) doc,
+        the "real" content is the content of the &lt;pfx:frame&gt; tags, so you need to
+        set it there.
+      </para>
+    </section>
   </section>
 
   <section>
