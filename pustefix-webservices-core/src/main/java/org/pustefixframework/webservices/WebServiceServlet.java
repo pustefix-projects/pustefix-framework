@@ -53,11 +53,11 @@ public class WebServiceServlet extends HttpServlet {
 
     private AdminWebapp adminWebapp;
 
-    private static final String PROCESSOR_IMPL_JAXWS="de.schlund.pfixcore.webservice.jaxws.JAXWSProcessor";
-    private static final String PROCESSOR_IMPL_JSONWS="de.schlund.pfixcore.webservice.jsonws.JSONWSProcessor";
-    private static final String PROCESSOR_IMPL_JSONQX="de.schlund.pfixcore.webservice.jsonqx.JSONQXProcessor";
+    private static final String PROCESSOR_IMPL_JAXWS="org.pustefixframework.webservices.jaxws.JAXWSProcessor";
+    private static final String PROCESSOR_IMPL_JSONWS="org.pustefixframework.webservices.jsonws.JSONWSProcessor";
+    private static final String PROCESSOR_IMPL_JSONQX="org.pustefixframework.webservices.jsonqx.JSONQXProcessor";
     
-    private static final String GENERATOR_IMPL_JSONWS="de.schlund.pfixcore.webservice.jsonws.JSONWSStubGenerator";
+    private static final String GENERATOR_IMPL_JSONWS="org.pustefixframework.webservices.jsonws.JSONWSStubGenerator";
     
     //TODO: dynamic ServiceProcessor detection/registration
     private ServiceProcessor findServiceProcessor(String protocolType) throws ServletException {

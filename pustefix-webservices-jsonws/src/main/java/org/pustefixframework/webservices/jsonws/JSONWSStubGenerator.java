@@ -24,16 +24,16 @@ import java.io.OutputStream;
 import java.lang.reflect.Method;
 import java.util.List;
 
-import de.schlund.pfixcore.webservice.Constants;
-import de.schlund.pfixcore.webservice.ServiceDescriptor;
-import de.schlund.pfixcore.webservice.ServiceException;
-import de.schlund.pfixcore.webservice.ServiceStubGenerator;
-import de.schlund.pfixcore.webservice.config.ServiceConfig;
-import de.schlund.pfixcore.webservice.jsgen.JsBlock;
-import de.schlund.pfixcore.webservice.jsgen.JsClass;
-import de.schlund.pfixcore.webservice.jsgen.JsMethod;
-import de.schlund.pfixcore.webservice.jsgen.JsParam;
-import de.schlund.pfixcore.webservice.jsgen.JsStatement;
+import org.pustefixframework.webservices.Constants;
+import org.pustefixframework.webservices.ServiceDescriptor;
+import org.pustefixframework.webservices.ServiceException;
+import org.pustefixframework.webservices.ServiceStubGenerator;
+import org.pustefixframework.webservices.config.ServiceConfig;
+import org.pustefixframework.webservices.jsgen.JsBlock;
+import org.pustefixframework.webservices.jsgen.JsClass;
+import org.pustefixframework.webservices.jsgen.JsMethod;
+import org.pustefixframework.webservices.jsgen.JsParam;
+import org.pustefixframework.webservices.jsgen.JsStatement;
 
 /**
  * @author mleidig@schlund.de

@@ -43,11 +43,11 @@ import org.w3c.dom.NodeList;
 
 import com.sun.tools.ws.ant.WsGen;
 
-import de.schlund.pfixcore.webservice.Constants;
-import de.schlund.pfixcore.webservice.config.Configuration;
-import de.schlund.pfixcore.webservice.config.ConfigurationReader;
-import de.schlund.pfixcore.webservice.config.GlobalServiceConfig;
-import de.schlund.pfixcore.webservice.config.ServiceConfig;
+import org.pustefixframework.webservices.Constants;
+import org.pustefixframework.webservices.config.Configuration;
+import org.pustefixframework.webservices.config.ConfigurationReader;
+import org.pustefixframework.webservices.config.GlobalServiceConfig;
+import org.pustefixframework.webservices.config.ServiceConfig;
 import de.schlund.pfixxml.config.GlobalConfigurator;
 import de.schlund.pfixxml.resources.FileResource;
 import de.schlund.pfixxml.resources.ResourceUtil;
@@ -179,13 +179,13 @@ public class WebserviceTask extends Task {
                             chainElem.appendChild(handlerElem);
                             Element handlerClassElem = endPointsDoc.createElementNS(XMLNS_JAVAEE, "ee:handler-class");
                             handlerElem.appendChild(handlerClassElem);
-                            handlerClassElem.setTextContent("de.schlund.pfixcore.webservice.jaxws.ErrorHandler");
+                            handlerClassElem.setTextContent("org.pustefixframework.webservices.jaxws.ErrorHandler");
                             if(globConf.getMonitoringEnabled()||globConf.getLoggingEnabled()) {
                                 handlerElem = endPointsDoc.createElementNS(XMLNS_JAVAEE, "ee:handler");
                                 chainElem.appendChild(handlerElem);
                                 handlerClassElem = endPointsDoc.createElementNS(XMLNS_JAVAEE, "ee:handler-class");
                                 handlerElem.appendChild(handlerClassElem);
-                                handlerClassElem.setTextContent("de.schlund.pfixcore.webservice.jaxws.RecordingHandler");
+                                handlerClassElem.setTextContent("org.pustefixframework.webservices.jaxws.RecordingHandler");
                             }
                             endPointElem.appendChild(chainsElem);
                             // Check if WSDL/Javascript has to be built

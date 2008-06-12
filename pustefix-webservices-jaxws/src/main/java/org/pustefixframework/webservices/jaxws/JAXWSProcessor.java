@@ -31,16 +31,16 @@ import org.apache.log4j.Logger;
 import com.sun.xml.ws.transport.http.servlet.WSServlet;
 import com.sun.xml.ws.transport.http.servlet.WSServletDelegate;
 
-import de.schlund.pfixcore.webservice.Constants;
-import de.schlund.pfixcore.webservice.InsertPIResponseWrapper;
-import de.schlund.pfixcore.webservice.ProcessingInfo;
-import de.schlund.pfixcore.webservice.SOAPActionRequestWrapper;
-import de.schlund.pfixcore.webservice.ServiceException;
-import de.schlund.pfixcore.webservice.ServiceProcessor;
-import de.schlund.pfixcore.webservice.ServiceRegistry;
-import de.schlund.pfixcore.webservice.ServiceRequest;
-import de.schlund.pfixcore.webservice.ServiceResponse;
-import de.schlund.pfixcore.webservice.ServiceRuntime;
+import org.pustefixframework.webservices.Constants;
+import org.pustefixframework.webservices.InsertPIResponseWrapper;
+import org.pustefixframework.webservices.ProcessingInfo;
+import org.pustefixframework.webservices.SOAPActionRequestWrapper;
+import org.pustefixframework.webservices.ServiceException;
+import org.pustefixframework.webservices.ServiceProcessor;
+import org.pustefixframework.webservices.ServiceRegistry;
+import org.pustefixframework.webservices.ServiceRequest;
+import org.pustefixframework.webservices.ServiceResponse;
+import org.pustefixframework.webservices.ServiceRuntime;
 
 /**
  * @author mleidig@schlund.de
