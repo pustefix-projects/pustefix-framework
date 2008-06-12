@@ -29,14 +29,14 @@ import javax.xml.ws.handler.soap.SOAPMessageContext;
 
 import org.apache.log4j.Logger;
 
-import de.schlund.pfixcore.webservice.ServiceCallContext;
-import de.schlund.pfixcore.webservice.ServiceRequest;
-import de.schlund.pfixcore.webservice.ServiceResponse;
-import de.schlund.pfixcore.webservice.ServiceRuntime;
-import de.schlund.pfixcore.webservice.config.GlobalServiceConfig;
-import de.schlund.pfixcore.webservice.utils.RecordingRequestWrapper;
-import de.schlund.pfixcore.webservice.utils.RecordingResponseWrapper;
-import de.schlund.pfixcore.webservice.utils.XMLFormatter;
+import org.pustefixframework.webservices.ServiceCallContext;
+import org.pustefixframework.webservices.ServiceRequest;
+import org.pustefixframework.webservices.ServiceResponse;
+import org.pustefixframework.webservices.ServiceRuntime;
+import org.pustefixframework.webservices.config.GlobalServiceConfig;
+import org.pustefixframework.webservices.utils.RecordingRequestWrapper;
+import org.pustefixframework.webservices.utils.RecordingResponseWrapper;
+import org.pustefixframework.webservices.utils.XMLFormatter;
 
 /**
  * Records SOAP requests and responses for monitoring (only appropriate to development mode).

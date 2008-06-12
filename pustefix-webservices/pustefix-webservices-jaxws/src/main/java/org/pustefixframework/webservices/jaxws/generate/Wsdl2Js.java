@@ -57,12 +57,12 @@ import org.xml.sax.InputSource;
 
 import com.ibm.wsdl.util.xml.DOMUtils;
 
-import de.schlund.pfixcore.webservice.Constants;
-import de.schlund.pfixcore.webservice.jsgen.JsBlock;
-import de.schlund.pfixcore.webservice.jsgen.JsClass;
-import de.schlund.pfixcore.webservice.jsgen.JsMethod;
-import de.schlund.pfixcore.webservice.jsgen.JsParam;
-import de.schlund.pfixcore.webservice.jsgen.JsStatement;
+import org.pustefixframework.webservices.Constants;
+import org.pustefixframework.webservices.jsgen.JsBlock;
+import org.pustefixframework.webservices.jsgen.JsClass;
+import org.pustefixframework.webservices.jsgen.JsMethod;
+import org.pustefixframework.webservices.jsgen.JsParam;
+import org.pustefixframework.webservices.jsgen.JsStatement;
 
 /**
  * This class generates a Javascript stub file from a WSDL description.

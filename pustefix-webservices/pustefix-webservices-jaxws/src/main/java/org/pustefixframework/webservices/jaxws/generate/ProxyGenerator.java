@@ -32,10 +32,10 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
-import de.schlund.pfixcore.webservice.Constants;
-import de.schlund.pfixcore.webservice.config.Configuration;
-import de.schlund.pfixcore.webservice.config.ConfigurationReader;
-import de.schlund.pfixcore.webservice.config.ServiceConfig;
+import org.pustefixframework.webservices.Constants;
+import org.pustefixframework.webservices.config.Configuration;
+import org.pustefixframework.webservices.config.ConfigurationReader;
+import org.pustefixframework.webservices.config.ServiceConfig;
 import de.schlund.pfixxml.config.GlobalConfigurator;
 import de.schlund.pfixxml.resources.FileResource;
 import de.schlund.pfixxml.resources.ResourceUtil;
@@ -131,8 +131,8 @@ public class ProxyGenerator extends Task {
                                 sb.append("package " + pkgName + ";\n");
                                 sb.append("\n");
                                 sb.append("import javax.jws.*;\n");
-                                sb.append("import de.schlund.pfixcore.webservice.jaxws.JAXWSContext;\n");
-                                sb.append("import de.schlund.pfixcore.webservice.jaxws.ProxyInvocationException;\n");
+                                sb.append("import org.pustefixframework.webservices.jaxws.JAXWSContext;\n");
+                                sb.append("import org.pustefixframework.webservices.jaxws.ProxyInvocationException;\n");
                                 sb.append("\n");
                                 sb.append("/**\n");
                                 sb.append("  * Auto-generated Pustefix/JAXWS proxy\n");

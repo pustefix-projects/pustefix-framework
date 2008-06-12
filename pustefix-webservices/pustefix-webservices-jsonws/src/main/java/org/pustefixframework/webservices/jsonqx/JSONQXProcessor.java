@@ -46,18 +46,18 @@ import org.pustefixframework.webservices.jsonws.SerializerRegistry;
 import de.schlund.pfixcore.beans.BeanDescriptorFactory;
 import de.schlund.pfixcore.beans.InitException;
 import de.schlund.pfixcore.beans.metadata.DefaultLocator;
-import de.schlund.pfixcore.webservice.ProcessingInfo;
-import de.schlund.pfixcore.webservice.ServiceCallContext;
-import de.schlund.pfixcore.webservice.ServiceDescriptor;
-import de.schlund.pfixcore.webservice.ServiceException;
-import de.schlund.pfixcore.webservice.ServiceProcessor;
-import de.schlund.pfixcore.webservice.ServiceRegistry;
-import de.schlund.pfixcore.webservice.ServiceRequest;
-import de.schlund.pfixcore.webservice.ServiceResponse;
-import de.schlund.pfixcore.webservice.ServiceRuntime;
-import de.schlund.pfixcore.webservice.config.ServiceConfig;
-import de.schlund.pfixcore.webservice.fault.Fault;
-import de.schlund.pfixcore.webservice.fault.FaultHandler;
+import org.pustefixframework.webservices.ProcessingInfo;
+import org.pustefixframework.webservices.ServiceCallContext;
+import org.pustefixframework.webservices.ServiceDescriptor;
+import org.pustefixframework.webservices.ServiceException;
+import org.pustefixframework.webservices.ServiceProcessor;
+import org.pustefixframework.webservices.ServiceRegistry;
+import org.pustefixframework.webservices.ServiceRequest;
+import org.pustefixframework.webservices.ServiceResponse;
+import org.pustefixframework.webservices.ServiceRuntime;
+import org.pustefixframework.webservices.config.ServiceConfig;
+import org.pustefixframework.webservices.fault.Fault;
+import org.pustefixframework.webservices.fault.FaultHandler;
 
 /**
  * @author mleidig@schlund.de

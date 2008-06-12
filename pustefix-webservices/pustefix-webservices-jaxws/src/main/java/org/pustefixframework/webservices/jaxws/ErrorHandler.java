@@ -35,13 +35,13 @@ import javax.xml.ws.handler.soap.SOAPMessageContext;
 
 import org.apache.log4j.Logger;
 
-import de.schlund.pfixcore.webservice.ServiceCallContext;
-import de.schlund.pfixcore.webservice.ServiceRequest;
-import de.schlund.pfixcore.webservice.ServiceResponse;
-import de.schlund.pfixcore.webservice.config.Configuration;
-import de.schlund.pfixcore.webservice.config.ServiceConfig;
-import de.schlund.pfixcore.webservice.fault.Fault;
-import de.schlund.pfixcore.webservice.fault.FaultHandler;
+import org.pustefixframework.webservices.ServiceCallContext;
+import org.pustefixframework.webservices.ServiceRequest;
+import org.pustefixframework.webservices.ServiceResponse;
+import org.pustefixframework.webservices.config.Configuration;
+import org.pustefixframework.webservices.config.ServiceConfig;
+import org.pustefixframework.webservices.fault.Fault;
+import org.pustefixframework.webservices.fault.FaultHandler;
 import de.schlund.pfixcore.workflow.Context;
 
 /**

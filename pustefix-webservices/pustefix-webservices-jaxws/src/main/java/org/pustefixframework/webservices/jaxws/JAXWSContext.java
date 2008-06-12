@@ -18,7 +18,7 @@
  */
 package org.pustefixframework.webservices.jaxws;
 
-import de.schlund.pfixcore.webservice.ProcessingInfo;
+import org.pustefixframework.webservices.ProcessingInfo;
 
 /**
  * Request processing context stored threadlocal to get access to internal
