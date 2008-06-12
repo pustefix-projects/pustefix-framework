@@ -4,10 +4,60 @@
   xsi:schemaLocation="http://docbook.org/ns/docbook http://www.docbook.org/xml/5.0CR7/xsd/docbook.xsd"
 >
   <title>Module Support</title>
-    
+    <para>
+      Pustefix supports two ways for providing resources (include parts, images,
+      stylesheets, etc.) used by different projects.
+    </para>
     <section>
-      <title>Module Support</title>
-      <para></para>
+      <title>Resources within library JARs</title>
+      <para>
+        The first (preferred) way is to place a JAR archive somewhere in the library
+        path (usually lib/) that contains a special deployment descriptor.
+        This deployment descriptor has to be named META-INF/pustefix-module.xml in
+        order to be recognized by the Pustefix build system. This deployment descriptor
+        is a XML file with the following format:
+      </para>
+      <programlisting language="xml"><![CDATA[<module-descriptor
+  xsi:schemaLocation="http://pustefix.sourceforge.net/moduledescriptor200702 http://pustefix.sourceforge.net/moduledescriptor200702.xsd"
+  xmlns="http://pustefix.sourceforge.net/moduledescriptor200702"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  
+  <!--
+    The module name is used to construct the path the resources will be extracted to.
+    In this example the path would be projects/modules/mytest/.
+  -->  
+  <module-name>mytest</module-name>
+  <resources>
+    <!--
+      The srcpath attributes the directory within the JAR archive that contains the
+      resources. The targetpath attribute is optional and specifies the path the
+      resources are copied to (relative to the module directory). An empty targetpath
+      (the default) specifies the module directory itself
+      (e.g. projects/modules/mymodule) as the target directory.
+    -->
+    <resource-mapping srcpath="resources/txt" targetpath="txt"/>
+    <resource-mapping srcpath="resources/images" targetpath="img"/>
+  </resources>
+</module-descriptor>]]></programlisting>
     </section>
-
+    <section>
+      <title>Resources placed in modules/ directory</title>
+      <para>
+        The old way is to place a JAR file in the modules/ directory of the Pustefix
+        environment. In this case no deplyoment descriptor is needed (and even if
+        present it is not read). However you have to ensure that all files within
+        the JAR file are in a properly named directory as the archive will be directly
+        extracted to the projects/modules/ directory.
+      </para>
+    </section>
+    <section>
+      <title>Actions applied on module resources after unpacking</title>
+      <para>
+        In Pustefix version before 0.10.0 the .xsl.in to .xsl transformation is applied on
+        files placed in the projects/modules/ directory. In Pustefix versions since 0.10.0
+        this transformations are not applied anymore, however after unpacking the resources
+        a build.xml placed in projects/modules/&lt;module-name&gt;/ is run and can perform
+        such actions.
+      </para>
+    </section>
 </chapter>
