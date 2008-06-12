@@ -209,7 +209,168 @@
 
   <section>
     <title>Including text and images</title>
-    <para></para>
+    <para>Introduction here...</para>
+    <section>
+      <title>Include parts (&lt;pfx:include&gt;)</title>
+      <para>
+        Include parts contain the content that is displayed on your pages.
+        The parts are organized into include files. Every part has the same structure:
+      </para>
+      <para>
+        The children of the part tag are theme tags (at least one). The name attribute
+        of the theme tag is the name of a theme as it is defined in the projects
+        depend.xml.in file. Often these themes are just the project name or "default",
+        which is used as the fallback when no more specific theme name matches
+        (see here on how to define themes in the depend.xml.in file).
+      </para>
+      <note>
+        <para>
+          Earlier versions of Pustefix had no special themeing, the only thing that
+          was used was the project name itself and "default" as the fallback. Still today,
+          the default value for the "themes" attribute in the root node of the depend.xml.in
+          file (when not given explicitely) is just "&lt;ProjectName&gt; default", which
+          makes the new system behave exactly as the old one did.
+        </para>
+      </note>
+      <para>
+        The resolution of the matching theme is done at the time the part is included
+        (see below). Every page "knows" which themes are defined for it, and therefore it
+        is possible to decide which product branch to use on generation time. The language
+        on the other hand can be changed dynamically while the user clicks through the
+        application, so the selection of the right language subtree (if more than one is
+        present) is done at runtime.
+      </para>
+      <programlisting language="xml"><![CDATA[<include_parts>
+  <part name="Foo">
+    <theme name="default">
+      <pfx:langselect>
+        <pfx:lang name="default">
+          <!--
+            The default content of part Foo goes here...
+          -->
+        </pfx:lang>
+        <pfx:lang name="en_GB">
+          <!--
+            Default content in british english goes here...
+          -->
+        </pfx:lang>
+        <pfx:lang name="en_*">
+          <!--
+            Default content in any other english language goes here...
+          -->
+        </pfx:lang>
+      </pfx:langselect>
+    </theme>
+    <theme name="Theme_A">
+      <!--
+        The default content for theme Theme_A goes here...
+      -->
+    </theme>
+  </part>
+
+  <part name="Baz">
+    <!-- Other parts -->
+  </part>
+</include_parts>]]></programlisting>
+      <para>
+        A part is referenced with two attributes: The filename of the include file that
+        contains it, and the name of the part.
+      </para>
+      <programlisting language="xml"><![CDATA[<pfx:include href="MyProject/txt/MyIncludefile" part="Foo" noerror="true|false" noedit="true|false"/>]]></programlisting>
+      <para>
+        <table rules="all" frame="box">
+          <caption>Attributes of the pfx:include tag</caption>
+          <thead>
+            <tr>
+              <th>Attribute name</th>
+              <th>Mandatory?</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>href</td>
+              <td>optional</td>
+              <td>If not given, it defaults to the current include part file</td>
+            </tr>
+            <tr>
+              <td>part</td>
+              <td>mandatory</td>
+              <td>The name of the part to include</td>
+            </tr>
+            <tr>
+              <td>noerror</td>
+              <td>optional</td>
+              <td>Defaults to false. Set this to true to imply that no warning sign should be generated when the include is not found. Only set this when you know what you do.</td>
+            </tr>
+            <tr>
+              <td>noedit</td>
+              <td>optional</td>
+              <td>Defaults to false. Set this to true to imply that this include part should not be editable via the pustefix editor. Only set this when you know what you do.</td>
+            </tr>
+          </tbody>
+        </table>
+      </para>
+      <para>
+        Using this tag results in the matching product branch of the include part to be
+        inserted in place of the tag.
+      </para>
+    </section>
+    <section>
+      <title>Generated include requests (&lt;pfx:maincontent&gt;)</title>
+      <para>
+        Looking at the example naturally leads to the question how it is possible to
+        generate different pages with only a small number of structural xml files and
+        always the same XSLT stylesheets. The answer is that at least one of the include
+        parts isn't included via the pfx:include tag (which only handles static attribute values)
+        but instead the filename of the include part is auto generated from the name of the
+        page that is to be produced.
+      </para>
+      <para>
+        Looking at this page, one can see that the two transformations which produce BazPage.xml resp. BazPage.xsl have the page name supplied through the use of an XSLT transformation parameter. Using this parameter, the tag pfx:maincontent constructs an include request depending on the page name.
+      </para>
+      <programlisting language="xml"><![CDATA[<pfx:maincontent part="content" path="MyProject/txt/pages" prefix="main_"/>]]></programlisting>
+      <para>
+        <table rules="all" frame="box">
+          <caption>Attributes of the pfx:maincontent tag</caption>
+          <thead>
+            <tr>
+              <th>Attribute name</th>
+              <th>Mandatory?</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>path</td>
+              <td>optional</td>
+              <td>If not given, but a XSLT parameter $maincontentpath has been defined in the depend.xml.in file, the value of the parameter is used. If there's even no $maincontentpath parameter, it defaults to PROJECTNAME/txt/pages</td>
+            </tr>
+            <tr>
+              <td>prefix</td>
+              <td>optional</td>
+              <td>defaults to main_</td>
+            </tr>
+            <tr>
+              <td>postfix</td>
+              <td>optional</td>
+              <td>defaults to .xml</td>
+            </tr>
+            <tr>
+              <td>part</td>
+              <td>optional</td>
+              <td>defaults to content</td>
+            </tr>
+          </tbody>
+        </table>
+      </para>
+      <para>
+        For the page "home" this is equivalent to <![CDATA[<pfx:include href="MyProject/txt/pages/main_home.xml" part="content"/>]]> and of course similar for every other page.
+      </para>
+      <para>
+        Starting with this page specific include, the content of the page can be included from many different include parts.
+      </para>
+    </section>
   </section>
 
   <section>
