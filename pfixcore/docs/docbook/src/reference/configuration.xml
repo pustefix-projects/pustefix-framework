@@ -323,8 +323,126 @@
   <section xml:id="configuration.project">
     <title>Project configuration</title>
     <para>
-      Describe project.xml here
+      For each project in your Pustefix environment you need to create a definition file
+      that contains all the information about your project that is needed to automatically
+      generate other configuration files for various subsystems.
     </para>
+    <itemizedlist>
+      <listitem>
+        <para>
+          The apache config file, containing the definition for each of the projects of your
+          environment: servletconf/tomcat/apache.conf
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+          The config files for mod_jk: servletconf/tomcat/jk.conf and
+          servletconf/tomcat/workers.prop.
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+          The config file for the tomcat servlet container: servletconf/tomcat/conf/server.xml
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+          The config files for every webapp (each project is mapped to a webapp):
+          servletconf/tomcat/webapps/[project name]/WEB-INF/web.xml
+        </para>
+      </listitem>
+    </itemizedlist>
+    <para>
+      This information is contained in a site wide file servletconf/projects.xml.in which
+      contains information every environment needs. Each project also needs to supply a file
+      to tell the system it's own configuration. These files are at
+      [project name]/conf/project.xml.in. All those files, together with the site wide file
+      are used as the source for creating the above mentioned config files.
+    </para>
+    <section>
+      <title>The site wide configuration servletconf/projects.xml.in</title>
+      <para>
+        The site wide projects.xml.in file contains two "projects" that are needed for
+        Pustefix itself to work properly. The first of these is the editor project. The other
+        project is used to start a servlet automatically when the system starts. This
+        servlet itself is not able to act on any userinput, it's only purpose is to start
+        a bunch of factories that implement functionality shared by other, "real" projects.
+      </para>
+      <para>
+        If you need other servlets for administrative purposes (e.g. to gather some sort of
+        statisitics about the system as a whole) you can add these servlets to this project.
+        The project specific configuration [project name]/conf/project.xml.in
+        <programlisting language="xml"><![CDATA[<project name="test"
+  xmlns:cus="http://www.schlund.de/pustefix/customize">
+  <active>true</active>
+  <!-- The content of this tag is used in the editor to list all defined projects. -->
+  <comment>Test Application</comment>
+  <depend>MyProject/conf/depend.xml</depend>
+
+  <!-- This section is for generating apache.conf in the servletconf/tomcat directory. -->
+  <virtualhost>SomeVirtualHostName</virtualhost>
+  <servername>SomeServerName</servername>
+  <serveralias>SomeServerAlias</serveralias>
+  <defpath>/xml/SomeDefinedServlet</defpath>
+
+  <!--
+    The defpath tag names a default servlet if the user didn't specify one explicitly in
+    the url (the "xml" part is the mount point of the ServletContext in which all servlets
+    are running)
+  -->
+  <documentroot>/Path/To/DocumentRoot</documentroot>
+
+  <!--
+    The apache DocumentRoot for static content, e.g. html pages or pdf files.
+    Required because otherwise apache uses its default DocumentRoot which may not be
+    desirable from a security point of view. If you don't have any static content to
+    server. you can use an empty directory
+    Specify directories which shall not be relative to the DocumentRoot here.
+    This is used for directories containing images, as they are served by apache directly.
+  -->
+  <passthrough>MyProject/img</passthrough>
+
+  <literalapache>
+    <-- Enter arbitrary additional stuff for the apache.conf file here. -->
+  </literalapache>
+  
+  <ports>
+    <port number="80"/>
+    <!-- If you don't want to use SSL, you can remove the SSL section. -->
+    <port number="443" ssl="true">
+      <sslkey>/etc/httpd/conf/ssl.key/server.key</sslkey>
+      <sslcrt>/etc/httpd/conf/ssl.crt/server.crt</sslcrt>
+    </port>
+  </ports>
+
+  <!--
+    Specify at least one servlet here. Create a config file for every servlet you
+    define, as described here.
+  -->
+  <servlet name="myservlet" useineditor="true">
+    <active>true</active>
+    <class>de.schlund.pfixxml.ContextXMLServer</class>
+    <propfile>MyProject/conf/myservlet.prop</propfile>
+  </servlet>
+
+  <!--
+    The edit and deref servlets must always be present. The edit servlet is the
+    Pustefix CMS, and the deref servlet is used to create links to external websites
+    without transmitting Referer-headers which may contain the private session id.
+    You don't need to create config files for these.
+  -->
+  <servlet name="edit">
+    <active>true</active>
+    <class>de.schlund.pfixxml.ContextXMLServer</class>
+    <propfile>core/editor/conf/config.prop</propfile>
+  </servlet>
+  <servlet name="deref">
+    <active>true</active>
+    <class>de.schlund.pfixxml.DerefServer</class>
+  </servlet>
+ </project>]]></programlisting>
+      </para>
+    </section>
   </section>
 
   <section xml:id="configuration.servlet">
