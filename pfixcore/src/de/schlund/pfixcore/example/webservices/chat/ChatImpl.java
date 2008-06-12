@@ -6,7 +6,7 @@
  */
 package de.schlund.pfixcore.example.webservices.chat;
 
-import de.schlund.pfixcore.webservice.AbstractService;
+import org.pustefixframework.webservices.AbstractService;
 
 /**
  * @author ml

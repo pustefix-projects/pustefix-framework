@@ -13,7 +13,7 @@
     <choose>
       <when test="$mode = 'prod'">
         <!--
-        <faulthandler class="de.schlund.pfixcore.webservice.fault.EmailNotifyingHandler">
+        <faulthandler class="org.pustefixframework.webservices.fault.EmailNotifyingHandler">
           <param name="recipients" value="errors@domain.de"/>
         	 <param name="sender" value="pfxerror@domain.de"/>
         	 <param name="smtphost" value="localhost"/>

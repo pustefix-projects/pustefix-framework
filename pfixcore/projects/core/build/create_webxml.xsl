@@ -241,9 +241,9 @@
   <xsl:template match="cus:listener">
 
     <!-- Insert listener for webservices if webservice servlet is configured -->
-    <xsl:if test="$project/servlet[@name='webservice' and class/text()='de.schlund.pfixcore.webservice.WebServiceServlet']">
+    <xsl:if test="$project/servlet[@name='webservice' and class/text()='org.pustefixframework.webservices.WebServiceServlet']">
       <listener>
-        <listener-class>de.schlund.pfixcore.webservice.WebserviceContextListener</listener-class>
+        <listener-class>org.pustefixframework.webservices.WebserviceContextListener</listener-class>
       </listener>
     </xsl:if>
   

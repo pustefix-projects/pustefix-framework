@@ -29,7 +29,7 @@
             Please check manually, whether a migration is necessary.
           </xsl:message>
         </xsl:when>
-        <xsl:when test="parent::node()/class/text() = 'de.schlund.pfixcore.webservice.WebServiceServlet'"><xsl:value-of select="./text()"/>.xml</xsl:when>
+        <xsl:when test="parent::node()/class/text() = 'org.pustefixframework.webservices.WebServiceServlet'"><xsl:value-of select="./text()"/>.xml</xsl:when>
         <xsl:otherwise><xsl:value-of select="substring-before(./text(), '.prop')"/>.conf.xml</xsl:otherwise>
       </xsl:choose>
     </propfile>

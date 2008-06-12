@@ -211,7 +211,7 @@
   </category>
 
   
-  <category name="de.schlund.pfixcore.webservice" additivity="false">
+  <category name="org.pustefixframework.webservices" additivity="false">
     <cus:choose>
       <cus:when test="$mode = 'prod'">
         <priority value="WARN"/>

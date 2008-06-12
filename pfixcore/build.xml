@@ -89,7 +89,7 @@ or delete the DOCTYPE definition -->
     <javac
      srcdir="${dir.src}"
      destdir="${dir.build}"
-     includes="de/schlund/pfixcore/util/Xslt*.java, de/schlund/pfixcore/util/*Task.java, de/schlund/pfixxml/util/StringUtil.java, de/schlund/pfixcore/webservice/config/*.java, de/schlund/pfixcore/webservice/jaxws/generate/*.java, de/schlund/pfixcore/generator/iwrpgen/AptTask.java"
+     includes="de/schlund/pfixcore/util/Xslt*.java, de/schlund/pfixcore/util/*Task.java, de/schlund/pfixxml/util/StringUtil.java, de/schlund/pfixcore/generator/iwrpgen/AptTask.java"
      debug="${debug}"
      classpathref="cp.classpath"
      sourcepath="${dir.src}"
@@ -281,16 +281,6 @@ or delete the DOCTYPE definition -->
     </copy>
     <exec dir="${dir.testskel}/skel" executable="ant" failonerror="true">
     </exec>
-  </target>
-
-  <!-- generate jsonparser from javacc grammar, produced source files are
-  under svn control, so target only has to be called when grammar changed-->
-  <target name="javacc" if="env.JAVACC_HOME">
-    <javacc
-      target="${dir.src}/de/schlund/pfixcore/webservice/json/JSONParser.jj"
-      outputdirectory="${dir.src}/de/schlund/pfixcore/webservice/json/parser"
-      javacchome="${env.JAVACC_HOME}"
-    />
   </target>
 
 </project>

@@ -224,7 +224,7 @@
   </servlet>
   <servlet name="webservice">
     <active>true</active>
-    <class>de.schlund.pfixcore.webservice.WebServiceServlet</class>
+    <class>org.pustefixframework.webservices.WebServiceServlet</class>
     <propfile>webservice/conf/webservice.conf</propfile>
   </servlet>
 </project>

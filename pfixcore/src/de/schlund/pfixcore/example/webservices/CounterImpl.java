@@ -4,7 +4,7 @@
 package de.schlund.pfixcore.example.webservices;
 
 import de.schlund.pfixcore.example.ContextCounter;
-import de.schlund.pfixcore.webservice.AbstractService;
+import org.pustefixframework.webservices.AbstractService;
 
 /**
  * CounterImpl.java 

@@ -1,5 +1,36 @@
 2008-06-12  Martin Leidig  <mleidig@schlund.de>
 
+	Moved webservice unittest into webservice modules.
+	Refactored textual references to old packages.
+	Adapted build process (removed pre-building of
+	webservice ant tasks).
+
+	Removed:
+	* tests/junit/de/schlund/pfixcore/webservice/jsonws
+	* tests/junit/de/schlund/pfixcore/webservice/config
+
+	Modified:
+	* stuff/migration-tool/xsl/project.xsl
+	* src/de/schlund/pfixcore/example/webservices/chat/ChatImpl.java
+	* src/de/schlund/pfixcore/example/webservices/CounterImpl.java
+	* src/de/schlund/pfixcore/example/webservices/DataImpl.java
+	* projects/core/build/create_webxml.xsl
+	* projects/common/conf/pfixlog.xml
+	* projects/webservice/conf/webservice.conf.xml
+	* projects/webservice/conf/project.xml.in
+	* skel/build-skel.xml
+	* build.xml
+	* .classpath
+	* tests/junit/META-INF/beanmetadata.xml
+	* tests/junit/de/schlund/pfixcore/beans/BeanDescriptorTest.java
+	* tests/junit/de/schlund/pfixcore/beans/beanmetadata.xml
+	* tests/junit/de/schlund/pfixxml/jmx/projects.xml
+	* lib/pustefix-webservices-core-1.0-SNAPSHOT.jar
+	* lib/pustefix-webservices-jaxws-1.0-SNAPSHOT.jar
+	* lib/pustefix-webservices-jsonws-1.0-SNAPSHOT.jar
+
+2008-06-12  Martin Leidig  <mleidig@schlund.de>
+
 	Outsourced webservice stuff into pustefix-webservices 
 	module (svnroot/pustefix/trunk/pustefix-webservices).
 	This module consists of three sub-modules:

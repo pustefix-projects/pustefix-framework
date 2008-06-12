@@ -33,7 +33,7 @@ public class BeanDescriptorTest extends TestCase {
         URL url=getClass().getResource("beanmetadata.xml");
         if(url==null) {
             try {
-                url=new URL("file:/tests/junit/de/schlund/pfixcore/webservice/beans/beanmetadata.xml");
+                url=new URL("file:/tests/junit/de/schlund/pfixcore/beans/beanmetadata.xml");
             } catch(MalformedURLException x) {
                 throw new RuntimeException(x);
             }
