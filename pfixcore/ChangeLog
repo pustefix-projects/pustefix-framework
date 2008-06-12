@@ -1,3 +1,23 @@
+2008-06-12  Martin Leidig  <mleidig@schlund.de>
+
+	Outsourced webservice stuff into pustefix-webservices 
+	module (svnroot/pustefix/trunk/pustefix-webservices).
+	This module consists of three sub-modules:
+	- pustefix-webservices-core
+	- pustefix-webservices-jaxws
+	- pustefix-webservices-jsonws
+	The modules are built with maven. Jars with the current
+	snapshot version are statically added to the lib directory,
+	which should be automated in the future.
+
+	Removed complete package:
+	* de.schlund.pfixcore.webservice
+
+	Added webservice module jars:
+	* lib/pustefix-webservices-core-1.0-SNAPSHOT.jar
+	* lib/pustefix-webservices-jaxws-1.0-SNAPSHOT.jar
+	* lib/pustefix-webservices-jsonws-1.0-SNAPSHOT.jar
+
 2008-06-11  Martin Leidig  <mleidig@schlund.de>
 
 	* projects/core/schema/properties200401.xsd: fixed config-include
