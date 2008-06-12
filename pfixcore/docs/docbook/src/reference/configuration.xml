@@ -1325,7 +1325,96 @@
   <section xml:id="configuration.depend">
     <title>Page Configuration (depend.xml)</title>
     <para>
+      The depend.xml configuration file serves two purposes:
+      First, it is used to create the hierarchical page structure of the project by
+      defining a tree of pages. Then, it is used to define the internal structure of the
+      pages by defining, for every single page, the tree of transformations that need to be
+      applied to certain files to get the final stylesheet (which is the representation of
+      the page in Pustefix). For an overview over the transformation aspect of the whole
+      framework, please go here.
     </para>
+    <para>
+      To make life a little easier, you can use convenience tags that are automatically
+      transformed by the runtime system when the file is loaded.
+    </para>
+    <section>
+      <title>Structure of the depend.xml</title>
+      <para>
+        The structure of the config file is show below:
+        <programlisting language="xml"><![CDATA[<make project="MyProject" lang="en" themes="ThemeA ThemeB ... default">
+  <navigation>
+    <page name="foo" handler="/xml/static" accesskey="F">
+      <page name="sub_foo1" handler="/xml/static"/>
+      <page name="sub_foo2" handler="/xml/static"/>
+    </page>
+    <page name="bar" handler="/xml/config">...</page>
+    
+    <!-- Configuration fragements are supported as well -->
+    <config-include file="myproject/conf/myfile.xml" section="navigation"/>
+  </navigation>
+
+  <!--
+    The global section allows to set default values for ALL pages defined via the
+    standardpage tag (see below). It's possible to set default params, and runtime
+    stylesheets (see here). It's also possible to add more runtime stylesheets or
+    overwrite params in the standardpage tag for a single page.
+  -->
+  <global>
+    <param name="AName" value="AValue"/>
+    <include stylesheet="path/to/AStyleSheet"/>
+  </global>
+
+  <config-include file="myproject/conf/myfile.xml" section="targets"/>
+
+  <!--
+    The only other tags allowed besides the navigation tag are target, global,
+    standardmaster, standardmetatags and standardpage. The latter three are only
+    convenience tags that can be expressed fully in terms of target tags
+    (Expanding those tags is one of the duties of the runtime transformation of
+    the depend.xml file mentioned above).
+  -->
+  <target name="a_target_name.xsl" type="[xsl|xml]">...</target>
+  <target name="another_target_name.xml" type="[xsl|xml]">...</target>...
+  <standardmaster name="..."/>
+  <standardmetatags name="..."/>
+  <standardpage name="a_name" master="..."
+                metatags="..." themes="..." variant="..."
+                xml="a_base_xml_file.xml">
+    ...
+  </standardpage>
+</make>]]></programlisting>
+      </para>
+    </section>
+    <section>
+      <title>The &lt;make/&gt; tag</title>
+      <para>
+      </para>
+    </section>
+    <section>
+      <title>The &lt;page/&gt; tag</title>
+      <para>
+      </para>
+    </section>
+    <section>
+      <title>The &lt;target/&gt; tag</title>
+      <para>
+      </para>
+    </section>
+    <section>
+      <title>The &lt;standardpage/&gt; tag</title>
+      <para>
+      </para>
+    </section>
+    <section>
+      <title>The &lt;standardmaster/&gt; tag</title>
+      <para>
+      </para>
+    </section>
+    <section>
+      <title>The &lt;standardmetatags/&gt; tag</title>
+      <para>
+      </para>
+    </section>
   </section>
 
   <section xml:id="configuration.misc">
