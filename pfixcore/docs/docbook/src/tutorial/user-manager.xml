@@ -14,15 +14,13 @@
     <title>Create a new project usermanagement</title>
     <para>Create a new project "usermanagement" (see: <xref linkend="createapplication"/>)</para>
     <para>Use the following data for creating the new project:
-    <itemizedlist>
-      <listitem><para>projects name: usermanagement</para></listitem>
-      <listitem><para>default language: leave blank</para></listitem>
-      <listitem><para>comment: Tutorial Usermanagement</para></listitem>
-      <listitem><para>servlet 1: user</para></listitem>
-      <listitem><para>create another servlet: no</para></listitem>
-       
-    </itemizedlist>
-    
+      <itemizedlist>
+        <listitem><para>projects name: usermanagement</para></listitem>
+        <listitem><para>default language: leave blank</para></listitem>
+        <listitem><para>comment: Tutorial Usermanagement</para></listitem>
+        <listitem><para>servlet 1: user</para></listitem>
+        <listitem><para>create another servlet: no</para></listitem>
+      </itemizedlist>
     </para>
   </section>
 
