@@ -1342,9 +1342,142 @@ public class PremiumCustomerCondition implements Condition {
   </section>
 
   <section xml:id="scriptedhandlers">
-    <title>Scripted Handlers</title>
-    <para></para>
+    <title>Scripting Langauge support</title>
+    <para>
+      Consider these questions:
+    </para>
+    <itemizedlist>
+      <listitem>
+        <para>Do you miss fast-prototyping in Pustefix?</para>
+      </listitem>
+      <listitem>
+        <para>Do you think dynamic programming languages (sometimes called scripting languages) can do more than just interpreting one liners or providing a new form of poetry?</para>
+      </listitem>
+    </itemizedlist>
+    <para>
+      If you answered any of the questions above with yes ... Then this is for you!
+    </para>
+    <para>
+      This feature brings scripting support to IHandlers and States. It's possible to develop
+      any of them in any Bean Scripting Framework supported language, by providing a script
+      file's location inside any IWrapper definition file or inside a pagerequest's definition.
+      Script files can be located in either the application's docroot or the classpath.
+    </para>
+    <section>
+      <title>IHandler</title>
+      <para>
+        Instead of providing a class name inside an IWrapper's IHander definition like this:
+      </para>
+      <programlisting language="xml"><![CDATA[<ihandler class="de.schlund.pfixcore.example.TShirtHandler"/>]]></programlisting>
+      <para>
+        you can define that a file containing dynamic language code should be used as an
+        IHandler. It's done like this:
+      </para>
+      <programlisting language="xml"><![CDATA[<ihandler class="script:sample1/script/ScriptingTShirt.js"/>]]></programlisting>
+      <para>
+        ... that's it! (see below under "Path Definitions" on details about difference between
+        scripts under docroot and scripts placed in classpath).
+      </para>
+      <para>
+        Simply create a file containing the dynamic language code inside the docroot or the classpath.
+      </para>
+    </section>
+    <section>
+      <title>State</title>
+      <para>
+        If you want to script a State, then simply use the above definition format inside a
+        pagerequest's state definition, like in the following example:
+      </para>
+      <programlisting language="xml"><![CDATA[<pagerequest name="scriptingstate">
+  <state class="script:sample1/script/ScriptingState?.bsh"/>
+</pagerequest>]]></programlisting>
+    </section>
+    <section>
+      <title>Implementation Details</title>
+      <para>
+        The following rules have to be considered, when scripting IHandlers and States alike.
+      </para>
+      <itemizedlist>
+        <listitem>
+          <para>
+            You must define all methods of the respective interfaces
+            (<literal>de.schlund.pfixcore.generator.IHandler</literal> and/or
+            <literal>de.schlund.pfixcore.workflow.State</literal>)
+            as functions inside your scripts.
+          </para>
+        </listitem>
+        <listitem>
+          <para>
+            The functions inside your scripts have to return the correct type, if they
+            return values at all. Note that for example en empty String is a valid boolean
+            expression in Javascript.
+          </para>
+        </listitem>
+        <listitem>
+          <para>
+            The file suffix must be one that's recognized by BSF. The listing of current
+            supported language mappings of BSF helps you find the correct suffix for your
+            used scripting lanuage. Basically they're the common suffixes like js for
+            javascript, bsh for Beanshell and py for python.
+          </para>
+        </listitem>
+      </itemizedlist>
+      <section>
+        <title>State</title>
+        <para>
+          Because the StateFactory caches and reuses State-instances across sessions and
+          requests, you should be aware that script-wide global variables inside your
+          scripts will be available to all requests and session.
+        </para>
+        <para>
+          This is basically the same behaviour as for States implemented in Java.
+        </para>
+      </section>
+      <section>
+        <title>Path Definitions</title>
+        <para>
+          There are two alternatives for defining the location of your script file.
+        </para>
+        <itemizedlist>
+          <listitem>
+            <para>
+              If you prepend a <literal>/</literal> (slash character) to the location,
+              the script file is searched for in the classpath of your application.
+              No magic (or great effort) is applied when searching for the script file.
+              Instead simply <literal>ScriptingIHandler.getClass().getResourceAsStream()</literal>
+              is called to get the source of the script file.
+            </para>
+          </listitem>
+          <listitem>
+            <para>
+              If the script: String is not followed by a slash, the string is assumed to be a
+              file's location relative to the docroot of the running pustefix application.
+              This usually means everything downwards from the projects-folder.
+            </para>
+          </listitem>
+        </itemizedlist>
+      </section>
+      <section>
+        <title>Libraries</title>
+        <para>
+          Of course the Java platform can't interpret every arbitrary on it's own.
+          Special Language libraries must be available to the application in order to execute
+          script code in the respective languages.
+        </para>
+        <para>
+          Pfixcore comes with the Mozilla's Javascript implementation and the Beanshell
+          distribution, so you can write IHandlers and States in Javascript or Beanshell
+          without any further requirements.
+        </para>
+        <para>
+          For other languages, like groovy, python or ruby, you'll need their respective
+          implementations for the Java platform. The BSF site holds information about where
+          to find these implementations.
+        </para>
+      </section>
+    </section>
   </section>
+
 
   <section xml:id="editor">
     <title>The Pustefix Editor</title>
