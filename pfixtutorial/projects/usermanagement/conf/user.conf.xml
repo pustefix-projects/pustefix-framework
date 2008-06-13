@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?><contextxmlserver xmlns="http://pustefix.sourceforge.net/properties200401" xmlns:cus="http://www.schlund.de/pustefix/customize" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.0" xsi:schemaLocation="http://pustefix.sourceforge.net/properties200401 http://pustefix.sourceforge.net/properties200401.xsd">
+  
+  <!--
+    A file configuring the java related topics. 
+    More Informations here: 
+    
+    http://pustefix.sourceforge.net/prop.html
+  -->
+  
+  <servletinfo depend="usermanagement/conf/depend.xml" name="pfixcore_project:usermanagement::servlet:user">
+    <editmode allow="true"/>
+  </servletinfo>
+  
+  <context defaultpage="overview">
+    <resource class="org.pustefixframework.tutorial.usermanagement.UserList" />
+  </context>
+
+  <pageflow name="adduserFlow" final="overview">
+    <flowstep name="adduser"/>
+    <flowstep name="overview"/>
+  </pageflow>
+  
+  <pagerequest name="adduser">
+    <input>
+      <interface prefix="user" class="org.pustefixframework.tutorial.usermanagement.UserWrapper" />
+    </input>
+  </pagerequest>
+  
+  <pagerequest name="overview">
+    <output>
+      <resource node="users" class="org.pustefixframework.tutorial.usermanagement.UserList" />
+    </output>
+  </pagerequest>
+
+</contextxmlserver>

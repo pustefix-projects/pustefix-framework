@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?><include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
+  <part name="content">
+    <theme name="default">
+      <h3>Users</h3>
+      <ixsl:for-each select="/formresult/users/users/user">
+        Name: <ixsl:value-of select="./@name"/><br/>
+        Email: <ixsl:value-of select="./@email"/><br/>
+        Birthday: <ixsl:value-of select="./@birthday"/><br/>
+        Sex: <ixsl:value-of select="./@sex"/><br/>
+        <ixsl:if test="./@homepage">
+          Homepage: <ixsl:value-of select="./@homepage"/><br/>
+        </ixsl:if>
+        Admin: <ixsl:value-of select="./@admin"/><br/>
+        <br/><br/>        
+        
+        
+      </ixsl:for-each>
+      
+      <pfx:button page="adduser" >add</pfx:button>
+    </theme>
+  </part>
+ </include_parts>
