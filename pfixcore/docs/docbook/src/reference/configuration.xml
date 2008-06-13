@@ -1516,6 +1516,44 @@
         </tbody>
       </table>
     </section>
+
+    <section xml:id="configuration.misc.webxml">
+      <title>web.xml</title>
+      <para>
+        Usually users of pustefix don't have to worry about such tedious tasks as supplying
+        a <filename>web.xml</filename> file, for their web application, as pustefix generates
+        this file (and many others) as needed. This will suffice in most cases, if you have no
+        special requirements to your web application.
+      </para>
+      <para>
+        If you need some non-pfix magic, like ServletContextListeners, Filters or non-pustefix
+        servlets, you have to provide the build process with a "base web.xml", that will then
+        be used to generate the final <filename>web.xml</filename> file.
+      </para>
+      <para>
+        Just create a file called <filename>web.xml</filename> in your projects conf directory,
+        follow some minor rules, and you will get a web.xml file of your dreams within no time.
+      </para>
+      <programlisting language="xml"><![CDATA[<web-app>
+  <filter>
+    <filter-name>LoggingFilter</filter-name>
+    <filter-class>de.schlund.foo.baz.LoggingFilter</filter-class>
+  </filter>
+  <filter-mapping>
+    <filter-name>LoggingFilter</filter-name>
+    <url-pattern>/*</url-pattern>
+  </filter-mapping>
+  <cus:servlet/>
+  <cus:servlet-mapping/>
+  <cus:session-config/>
+  <cus:error-page/>
+</web-app>]]></programlisting>
+      <warning>
+        <para>
+          Don't change the order, in which the above elements are defined. Tomcat validates
+          web.xml files against the respective DTD, which defines an order for all elements.
+        </para>
+      </warning>
+    </section>
   </section>
-  
 </chapter>
