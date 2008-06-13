@@ -1388,12 +1388,88 @@
     <section>
       <title>The &lt;make/&gt; tag</title>
       <para>
+       The <literal>&lt;make&gt;</literal> tag is the root element of the
+       <filename>depend.xml</filename>
       </para>
+      <table rules="all" frame="box">
+        <caption>Attributes of the &lt;make&gt; tag</caption>
+        <thead>
+          <tr>
+            <th>Attribute</th>
+            <th>Mandatory?</th>
+            <th>Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>project</td>
+            <td>mandatory</td>
+            <td>The name of the project. This is the same as the corresponding entry in the project.xml.in file.</td>
+          </tr>
+          <tr>
+            <td>lang</td>
+            <td>mandatory</td>
+            <td>The default language of the project. This is the same as the value of the lang node's name attribute used in include parts.</td>
+          </tr>
+          <tr>
+            <td>themes</td>
+            <td>optional</td>
+            <td>
+              <para>
+                The attribute is a space separated list of theme names. It acts as a fallback
+                queue of product branch names that should be checked in include parts to decide
+                which branch to use. The least specific theme is always the "default" theme
+                and therefore "default" should be the last theme in the list. The last theme in the list is used when a non-existing include part is created in the Pustefix CMS, so you can omit the "default" theme from the end of the list if you want to use another theme for newly created include parts. However the "default" theme will still be used as a fallback for existing include parts when no other matching theme variant of the include part exists. You should have at least a product branch named "default" in every include part to make sure to always have a valid fallback.
+              </para>
+              <para>
+                If it's not given, it defaults (in our example where the project name is
+                "MyProject") to "MyProject default".
+              </para>
+              <para>
+                Note that this attribute only defines a global value, each target can define
+                it's own themes list (see below for targets and their attributes).
+              </para>
+              <para>
+                The allowed characters for themes are: a-zA-Z0-9_+-
+              </para>
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </section>
     <section>
       <title>The &lt;page/&gt; tag</title>
       <para>
+       The <literal>&lt;page&gt;</literal> tag defines all available
+       pages.
       </para>
+      <table rules="all" frame="box">
+        <caption>Attributes of the &lt;page&gt; tag</caption>
+        <thead>
+          <tr>
+            <th>Attribute</th>
+            <th>Mandatory?</th>
+            <th>Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>name</td>
+            <td>mandatory</td>
+            <td>The name of the page. This name is used throughout Pustefix to reference the page (e.g. when creating internal links and in other config files). The allowed characters for page names are: a-zA-Z0-9_+-</td>
+          </tr>
+          <tr>
+            <td>handler</td>
+            <td>mandatory</td>
+            <td>This attribute tells the system which servlet is used to handle requests for this page. You can think of the handler attribute as a project wide servlet "name" as defined in the project definition</td>
+          </tr>
+          <tr>
+            <td>accesskey</td>
+            <td>optional</td>
+            <td>This attribute defines a default access key that will be used by the pfx:button tag for the links it generates.</td>
+          </tr>
+        </tbody>
+      </table>
     </section>
     <section>
       <title>The &lt;target/&gt; tag</title>
