@@ -462,6 +462,134 @@ public interface State {
   <section>
     <title>Wrappers and Handlers</title>
     <para>
+      Write introduction...
     </para>
+    <section>
+      <title>IWrappers</title>
+      <para>
+        IWrappers are used to store the request data that is used as input for corresponding
+        IHandler classes. IWrappers are not explicitly written by the developer, but are
+        generated from .iwrp files which contain a high level XML description of the parameter
+        types and certain checks that should be applied to them. Each .iwrp file is translated
+        into a .java file with the same name during the build process, and a java class is
+        created. In the corresponding IHandler, you use the IWrapper to access or store data
+        by calling the IWrapper's get and set methods.
+      </para>
+      <para>
+        The syntax of the .iwrp file is given below.
+      </para>
+      <programlisting language="xml"><![CDATA[<interface xsi:schemaLocation="http://pustefix.sourceforge.net/interfacewrapper200401 http://pustefix.sourceforge.net/interfacewrapper200401.xsd" extends="some.other.iwrapper.class"
+  xmlns="http://pustefix.sourceforge.net/interfacewrapper200401"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <!--
+    The class attribute references the associated IHandler class. The class attribute is
+    mandatory. The ihandler node is optional, but if it is left out, the generated
+    IWrapper will be abstract and cannot be used directly, unless an extends attribute
+    has been given to the interface node. Normally you will want to specify an ihandler
+    class here.
+  -->
+  <ihandler class="some.de.schlund.pfixcore.generator.IHandler.class"/>
+  <!--
+    This node can (and usually will) occur multiple times, one for every parameter that
+    should be part of the interface
+  -->
+  <param name="AName" type="some.java.Type" occurrence="optional|mandatory|indexed" frequency="single|multiple" missingscode="some.defined.statuscode">
+    <!--
+      The whole node is optional. It allows to specify a default value (or multiple) for
+      a parameter to use, when no value is supplied via the request. Note that this makes
+      the destinction between optional and mandatory parameters nonsensical.
+    -->
+    <default>
+      <value>a_default_value</value>
+      <value>an_other_default_value</value>
+    </default>
+      
+    <!--
+      To test if a param value conforms to the rules, you can specify Check-Classes here
+      whose check method will be called to test if the param value makes sense.
+      The Check-Classes must implement de.schlund.pfixcore.generator.IWrapperParamPreCheck
+      (the interface defines the check(...) method).
+    -->
+    <precheck class="a.prechecker.class">
+      <cparam name="APreCheckerParamName" value="APreCheckerParamValue"></cparam>
+    </precheck>
+      
+    <!--
+      Each parameter must be casted from a String to the specific type (unless the type is java.lang.String itself, in this case, no caster need to be supplied). This is done by means of a class implementing de.schlund.pfixcore.generator.IWrapperParamCaster. For the usual simple types you can use a caster from the package de.schlund.pfixcore.generator.casters.
+    -->
+    <caster class="de.caster.class">
+      <cparam name="ACasterParamName" value="ACasterParamValue"></cparam>
+    </caster>
+
+    <postcheck class="a.postchecker.class">
+      <cparam name="APostCheckerParamName" value="APostCheckerParamValue"></cparam>
+    </postcheck>
+  </param>
+</interface>]]></programlisting>
+      <section>
+        <title>Parameters</title>
+        <para>
+          When defining the parameters for your wrapper, the following attributes are
+          supported in the <literal>iwrp</literal> format:
+        </para>
+        <para>
+          <table rules="all" frame="box">
+            <caption>Attributes of an iwrp parameter</caption>
+            <thead>
+              <tr>
+                <th>Attribute name</th>
+                <th>Mandatory?</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>name</td>
+                <td>mandatory</td>
+                <td>The name of the parameter. This is used in the getter and setter methods that are generated. E.g. for the parameter name Foo there will be - amongst others - a corresponding java method called getFoo.</td>
+              </tr>
+              <tr>
+                <td>type</td>
+                <td>mandatory</td>
+                <td>The java type of the parameter. This will determine the return type of the generated getter method.</td>
+              </tr>
+              <tr>
+                <td>occurence</td>
+                <td>Optional, default is mandatory</td>
+                <td>This attribute specifies if the parameter must be given (mandatory), or if it's not considered to be an error if it is omitted (optional). The special value indexed tells the system that it should search for occurrences of the parameter name with a suffix appended of the form AParamName.ASuffix. The suffix string must be unique for every occurrence of the parameter named AParamName. Indexed parameters are never mandatory.</td>
+              </tr>
+              <tr>
+                <td>occurence</td>
+                <td>Optional, default is single</td>
+                <td>This attribute specifies if only one parameter of the same name should be accepted or multiple. This determines if the generated getter method's return value is a single object or an array.</td>
+              </tr>
+              <tr>
+                <td>occurence</td>
+                <td>Optional, default is de.schlund.pfixcore.generator.MISSING_PARAM</td>
+                <td>This attribute applies only to mandatory parameters. It allows to specify a different than the default StatusCode to use when the parameter is not supplied.</td>
+              </tr>
+            </tbody>
+          </table>
+        </para>
+        <para>
+          IWrappers support different parameter types that result in  different
+          method signatures in the generated wrapper code.
+        </para>
+        <para>
+          The parameter type is influenced by the attributes <literal>occurance</literal>
+          and <literal>frequency</literal>
+        </para>
+        <section>
+          <title>occurrence="mandatory|optional", frequency="single"</title>
+          <para>
+          </para>
+        </section>
+      </section>
+    </section>
+    <section>
+      <title>The <literal>IHandler</literal> interface</title>
+      <para>
+      </para>
+    </section>
   </section>
 </chapter>
