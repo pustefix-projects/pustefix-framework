@@ -57,7 +57,7 @@ public class User {
     }
 
     @Param(name="admin", mandatory=false)
-    public boolean isAdmin() {
+    public boolean getAdmin() {
         return admin;
     }
 
