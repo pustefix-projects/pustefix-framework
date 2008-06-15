@@ -33,11 +33,11 @@
     <tbody>
       <tr>
         <td>pfx:document</td>
-        <td>The top-most container for all Pustefix pages</td>
+        <td>The top-most container for all Pustefix pages, see <xref linkend="xslt.structure"/></td>
       </tr>
       <tr>
         <td>pfx:frameset, pfx:frame</td>
-        <td>Used to define pages with framesets and frames.</td>
+        <td>Used to define pages with framesets and frames, see <xref linkend="xslt.structure"/></td>
       </tr>
       <tr>
         <td>pfx:button</td>
@@ -108,7 +108,7 @@
   </table>
 </para>
 
-  <section>
+  <section xml:id="xslt.structure">
     <title>Defining the structure of a document</title>
     <para>
       This section describes the format for those documents serving as the structure defining
@@ -202,9 +202,205 @@
     </section>
   </section>
 
-  <section>
+  <section xml:id="xslt.links">
     <title>Creating links to internal and external pages</title>
-    <para></para>
+    <para>Pustefix provides tags that allow you create links to internal and external pages.</para>
+	<section xml:id="xslt.pfx.button">
+	  <title>pfx:button</title>
+	  <para>
+        The <literal>&lt;pfx:button&gt;</literal> tag is responsible for generating links to other
+        pages inside the pustefix environment. In fact, it not always creates a link, but depending on
+        the fact if the target page is accessible ("invisible") or not, or if the target page is the
+        same as the current page ("active", aka "the target page is already active") it can display
+        completely different content, and only when the target page is accessible and is different
+        from the current page, a <literal>&lt;a href="..."&gt;...&lt;/a&gt;</literal> is put around it.
+      </para>
+      <para>
+        The template takes care of constructing the correct url with session information embedded
+        and builds up valid, url encoded query strings.
+      </para>
+      <programlisting language="xml"><![CDATA[<pfx:button page="APage" pageflow="AFlow" jumptopage="APage" jumptopageflow="AFlow" forcestop="true|false|step" startwithflow="true|false">
+  <!--
+    Control the submit commands
+  -->
+  <pfx:command page="APage" name="SELWRP">prefix</pfx:command>
+  <pfx:argument name="AName">AValue</pfx:argument>
+  <pfx:anchor frame="AFrame">AnAnchor</pfx:anchor>
+
+  <!--
+    These three optional child nodes can be used to display different
+    content depending on the situation:
+  -->
+  <pfx:invisible>
+    <!-- Displayed when link is not accessible -->
+  </pfx:invisible>
+  <pfx:normal>
+    <!-- Displayed when link is accessible -->
+  </pfx:normal>
+  <pfx:active>
+    <!-- Displayed when current page == link target -->
+  </pfx:active>
+  <!--
+    Displayed link content
+  -->
+</pfx:button>]]></programlisting>
+      <para>
+        The <literal>&lt;pfx:button&gt;</literal> tag supports the following attributes:
+      </para>
+      <table rules="all" frame="box">
+        <caption>Attributes of the pfx:button tag</caption>
+        <thead>
+          <tr>
+            <th>Attribute name</th>
+            <th>Mandatory?</th>
+            <th>Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>page</td>
+            <td>optional</td>
+            <td>defaults to the current page. Used to give the target page where the link points to. Note: leaving this empty also implies mode="force".</td>
+          </tr>
+          <tr>
+            <td>pageflow / jumptopage / jumptopageflow / forcestop</td>
+            <td>optional</td>
+            <td>These attributes work the same as for form submit controls</td>
+          </tr>
+          <tr>
+            <td>startwithflow</td>
+            <td>optional</td>
+            <td>
+              <para>Defaults to false. When set to true, the request will not go to a page directly, but start with the a processing of the chosen pageflow to determine the page to use.</para>
+              <para>The meaning of the page attribute also changes: If the submitted page is part of the chosen pageflow, the flow will be queried for the page to use up to the point in the flow where the given page is, which is then used in any case. In other words, this constitutes an end point for the search of a matching page in the flow.</para>
+            </td>
+          </tr>
+          <tr>
+            <td>mode</td>
+            <td>optional</td>
+            <td>
+              <para>Default is empty. When set to force, a link is created and the matching CSS is used even in the active button state, i.e. whenever the target page is the current page.</para>
+              <para>When set to desc, the button state is not only active when the current page == target page, but also when the current page is a descendent page of the target page.</para>
+            </td>
+          </tr>
+          <tr>
+            <td>nodata</td>
+            <td>optional</td>
+            <td>Default to false. Normally, whenever you use a pfx:argument tag to attach parameters to the query string, the system automatically also adds the parmeter __sendingdata=1 to the query string, thereby signalling to the backend system, that it should process incoming data. Set this attribute to true to prohibit this behaviour.</td>
+          </tr>
+          <tr>
+            <td>frame / target</td>
+            <td>optional</td>
+            <td>Works the same as for submit controls</td>
+          </tr>
+          <tr>
+            <td>normalclass / activeclass / invisibleclass</td>
+            <td>optional</td>
+            <td>defaults are: core_button_normal, core_button_active and core_button_invisible. These three attributes define the CSS classes to be used for the three different states of a pfx:button</td>
+          </tr>
+        </tbody>
+      </table>
+      <section>
+        <title>Commands and arguments</title>
+        <para>
+		  It is possible to use the same children to control the submit behaviour as it is done
+		  with form controls.
+        </para>
+      </section>
+      <section>
+        <title>Link contents</title>
+        <para>
+          The <literal>pfx:button</literal> template allows you to change the link content depending
+          on the status of the target page.
+        </para>
+        <itemizedlist>
+          <listitem>
+            <para>Content of pfx:invisible will be only displayed when the target page is not accessible.</para>
+          </listitem>
+          <listitem>
+            <para>Content of pfx:active will be only displayed when the target page is the current page.</para>
+          </listitem>
+          <listitem>
+            <para>Content of pfx:normal will be only displayed when the target page is different from the current page and when it's accessible.</para>
+          </listitem>
+        </itemizedlist>
+        <para>
+          Content outside of these tags will be used in any case. If you only want to have different content for
+          the invisible case, just put the content for the active and normal case inside pfx:normal, and add a
+          pfx:invisible child with the differing content. The content of a pfx:normal node serves as the fallback
+          for the other two cases.
+        </para>
+        <note>
+          <para>
+            Note that only in the normal (regardless if the content comes from a dedicated pfx:normal child node or not)
+            a link is put around the generated content.
+          </para>
+        </note>
+        <para>
+          Note also, that for differences between the three cases that can be expressed with CSS, you don't need to
+          use these special child nodes. The system makes sure to use the three associated classes explained above to
+          allow styling.
+        </para>
+        <para>
+          It is also possible to change to content, depending on whether a page has already been visited or
+          not.
+        </para>
+        <itemizedlist>
+          <listitem>
+            <para>Content of pfx:visited will be only displayed when the link has been already visited at least once in this session.</para>
+          </listitem>
+          <listitem>
+            <para>Content of pfx:visited will be only displayed when the link has not been visited in this session.</para>
+          </listitem>
+        </itemizedlist>
+        <para>
+          The two tags above may also be put inside pfx:normal and pfx:invisible tags to express different content for accessible
+          (or inaccessible) pages depending on the fact if they have been visited at least once already.
+        </para>
+        <para>
+          This makes of course not much sense with pfx:active, because a page where this applies is always the current page
+          and by that is always visited.
+        </para>
+      </section>
+    </section>
+    <section xml:id="xslt.pfx.url"> 
+      <title>pfx:url</title>
+      <para>
+        This tag takes mostly the same attributes as <literal>&lt;pfx:button&gt;</literal>, but it only creates the URL and does not build up
+        any content or generate a whole link. You can use this template if you just need the pure URL string.	  
+	  </para>
+	</section>
+    <section xml:id="xslt.pfx.elink"> 
+      <title>pfx:elink</title>
+      <para>
+        When creating links to external URLs care must be taken to ensure that no sensitive data (especially the session ID)
+        leaks into log files of remote servers via the referer header. To make sure that this can't happen, all links to
+        external sites must be propagated via a special servlet, the <literal>de.schlund.pfixxml.DerefServer</literal>.
+      </para>
+      <para>
+        Every Pustefix project has this servlet configured to be accessible under the path <filename>/xml/deref</filename>.
+        To make the handling of external URLs easier, there also exists a special tag <literal>&lt;pfx:elink&gt;</literal>
+        that automates the creation of the correct link.
+      </para>
+      <programlisting language="xml"><![CDATA[<pfx:elink href="http://some.host/location" target="_popup|SomeName">
+  <!--
+    Optional, use the <pfx:host> child instead of the href attribute whenever you
+    need to construct the URL with additional code (e.g. from data only available
+    at runtime)
+  -->
+  <pfx:host>...</pfx:host>
+
+  <!--
+    Optional, use as many of <pfx:argument> tags as you need to supply the
+    parameters for the query string.
+  -->
+  <pfx:argument name="SomeName">...</pfx:argument>
+
+  <!--
+    Place content of the link here
+  -->
+</pfx:elink>]]></programlisting>
+	</section>
   </section>
 
   <section>
