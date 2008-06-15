@@ -1439,7 +1439,7 @@
         </tbody>
       </table>
     </section>
-    <section>
+    <section id="configuration.depend.page">
       <title>The &lt;page/&gt; tag</title>
       <para>
        The <literal>&lt;page&gt;</literal> tag defines all available
@@ -1473,25 +1473,278 @@
         </tbody>
       </table>
     </section>
-    <section>
-      <title>The &lt;target/&gt; tag</title>
+    <section id="configuration.depend.target">
+      <title>Target definition</title>
       <para>
+        The <literal>&lt;target&gt;</literal> tag is used to specify the XSL transformations in Pustefix. In most cases, you will not have
+        to use the rather complex <literal>&lt;target&gt;</literal>, but use the convinience tags described in
+        <xref linkend="configuration.depend.standardpage"/>, <xref linkend="configuration.depend.standardmaster"/> and
+        <xref linkend="configuration.depend.standardmetatags"/>.
       </para>
+      <programlisting language="xml"><![CDATA[<target name="baz.xsl" type="xsl" page="foo" variant="bar" themes="Theme_A Theme_B ... default">
+  <!--
+    depxml and depxsl reference other targets by their name attribute
+    that serve as the XML resp. XSL input used to create this target
+    via a XSL transformation. If for a given name attribute of either
+    depxml or depxsl no other target definition is found, the transformation
+    parent is supposed to be a leaf target and the name attribute is 
+    interpreted as a path relative to the docroot.
+  -->
+  <depxml name="foo/xsl/bar.xsl"/>
+  <depxsl name="foo/xsl/baz.xsl"/>
+
+  <!--
+    Additional dependencies
+  -->
+  <depaux name="foo/xsl/snarf.xsl"/>
+  <depaux name="foo/xsl/fubar.xsl"/>
+
+  <!--
+    param tags supply XSL transformation parameters that are used when the target is generated.
+  -->
+  <param name="AName" value="AValue"/>
+</target>]]></programlisting>
+      <para>
+        The &lt;target&gt; tag supports the following attributes:
+      </para>
+      <table rules="all" frame="box">
+        <caption>Attributes of the &lt;target&gt; tag</caption>
+        <thead>
+          <tr>
+            <th>Attribute</th>
+            <th>Mandatory?</th>
+            <th>Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>name</td>
+            <td>mandatory</td>
+            <td>The name of the target. This name must be unique for the whole project (not the whole environment!)</td>
+          </tr>
+          <tr>
+            <td>type</td>
+            <td>mandatory</td>
+            <td>Must be xsl for a target that should be "compiled" into a templates object. Must be xml for every target that is used as input for a transformation.</td>
+          </tr>
+          <tr>
+            <td>themes</td>
+            <td>optional</td>
+            <td>This is just a local overwrite to the global themes attribute as explained on this page</td>
+          </tr>
+          <tr>
+            <td>page</td>
+            <td>optional</td>
+            <td>It must be set for any top level target (that means a target that is not itself used to generate other targets) that should be accessible via the page name. Note: having a non-toplevel target with a page attribute is considered an error.</td>
+          </tr>
+          <tr>
+            <td>variant</td>
+            <td>optional</td>
+            <td>It makes only sense when also a page attribute is set. This attribute will discriminate between targets that should be associated with the same page, but represent a differnt variant of this page.</td>
+          </tr>
+        </tbody>
+      </table>
+      <section>
+        <title>Adding dependencies</title>
+        <para>
+          <literal>&lt;depaux&gt;</literal> tags create user defined dependencies on the files they reference in
+          their name attribute. Whenever the target generation system is asked for a target, all its dependencies
+          are checked whether their modification time is older than the creation time of the target. Dependencies include
+          by design the <literal>depxml</literal> and <literal>depxsl</literal> targets (which may be files in the case 
+          of a leaf target or another virtual target that returns its own creation time as the modification time) and all
+          include files from which include parts are taken during the transformation of the target.
+        </para>
+        <para>
+          If any of these files or targets has been changed after the target was built, it is taken care of that the target is rebuild.
+        </para>
+        <para>
+          <literal>&lt;depaux&gt;</literal> just adds more dependencies "by hand" that are not automatically detected. In the example
+          above, the file referenced is a XSLT stylesheets that's included via <literal>xsl:include</literal> into the <filename>foo.xsl</filename>
+          stylesheet. Such external dependencies are not currently recognized automatically.
+        </para>
+        <para>
+          E.g. if you use a <filename>foo/xsl/fubar.xsl</filename> stylesheet that serves as a library of templates you want to include into
+          <filename>foo.xsl</filename>, you need to add the following line to the target definition of <filename>foo.xsl</filename> to make
+          the system recognize changes to <filename>foo/xsl/fubar.xsl</filename>.
+        </para>
+        <programlisting language="xml"><![CDATA[<depaux name="foo/xsl/fubar.xsl"/>]]></programlisting>
+      </section>
     </section>
-    <section>
-      <title>The &lt;standardpage/&gt; tag</title>
+    <section id="configuration.depend.standardpage">
+      <title>Standard page definition</title>
       <para>
+        The standardpage tag is a convenience tag that encapsulates the typical definition of a complete page in the Pustefix system.
       </para>
+      <programlisting language="xml"><![CDATA[<standardpage name="BazPage" master="AName" metatags="AName" xml="MyProject/xml/FooBase.xml" themes="Theme_A Theme_B ... default" variant="foo">
+  <!--
+    Note: All the child nodes are optional (and in fact usually not needed)
+  -->
+  <include stylesheet="MyProject/xsl/runtime.xsl"/>
+  <param name="fubar" value="bar"/>
+</standardpage>]]></programlisting>
+      <para>
+        The &lt;standardpage&gt; tag supports the following attributes:
+      </para>
+      <table rules="all" frame="box">
+        <caption>Attributes of the &lt;target&gt; tag</caption>
+        <thead>
+          <tr>
+            <th>Attribute</th>
+            <th>Mandatory?</th>
+            <th>Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>name</td>
+            <td>mandatory</td>
+            <td>The name of the page. This must be a name already defined in a page tag in the navigation tree.</td>
+          </tr>
+          <tr>
+            <td>xml</td>
+            <td>mandatory</td>
+            <td>The name of a xml target to use as input for the "metatags transformation". Often this is a leaf target and one of the projects structural xml files.</td>
+          </tr>
+          <tr>
+            <td>themes</td>
+            <td>optional</td>
+            <td>This attribute is a local overwrite of the global themes attribute explained here.</td>
+          </tr>
+          <tr>
+            <td>variant</td>
+            <td>optional</td>
+            <td>This attribute allows you to define variants of the same page. It's only possible to define variants of pages when there's already a "root" page, in other words a standardpage definition without the variant attribute. Variants also influence the local themes (in fact the visible aspect of variants is implemented in terms of themes).</td>
+          </tr>
+          <tr>
+            <td>master</td>
+            <td>optional</td>
+            <td>Default is to use the default definition of the master stylesheet (standardmaster without a name attribute).</td>
+          </tr>
+          <tr>
+            <td>metatags</td>
+            <td>optional</td>
+            <td>Default is to use the default definition of the metatags stylesheet (standardmetatags without a name attribute).</td>
+          </tr>
+        </tbody>
+      </table>
+      <para>
+        After performing the transformation of the depend.xml on loading (automatically done by the runtime system system) this becomes
+      </para>
+      <programlisting language="xml"><![CDATA[<target name="BazPage::foo.xsl" type="xsl" themes="foo Target_A Target_B ... default" page="BazPage" variant="foo">
+  <!--
+    For every target that is only used in the generation of one single page
+    (if you look at the example given here, this is true for the generated
+    targets BazPage.xml and BazPage.xsl) you must give a parameter called page
+    with the name of the resulting page as the value for the standard XSLT tags
+    to be able to work correctly. They need this information e.g. to create links
+    to other pages and many other things. While the standardpage tag does this
+    automatically for you make sure that you don't forget it for target structures
+    you define yourself.
+
+    If the master attribute is not given, the depxsl will be master.xsl
+  -->
+  <depxml name="BazPage::foo.xml"/>
+  <depxsl name="master-AName.xsl"/>
+  <param name="page" value="BazPage"/>
+
+  <!--
+    parameters given to the standardpage tag are supplied to the first of the two
+    transformations. The outputencoding parameter is inserted by the build system.
+    Refrain from supplying this parameter on your own, unless you really know what
+    you do. Changing the encoding should be done in the project.xml file.
+  -->
+  <param name="fubar" value="bar"/>
+  <param name="outputencoding" value="UTF-8"/>
+
+  <!--
+    All include tags given are runtime stylesheets, given to the transformation via
+    the parameter stylesheets_to_include (as a space separated list if multiple
+    include tags are given). Note that the needed depaux nodes are inserted automatically.
+  -->
+  <param name="stylesheets_to_include" value="MyProject/xsl/runtime.xsl"/>
+  <depaux name="/path/to/pustefix/projects/MyProject/xsl/runtime.xsl"/>
+</target>
+
+<target name="BazPage::foo.xml" type="xml" themes="foo Themes_A Themes_B ... default">
+
+  <!--
+    If the metatags attribute has not been given, the depxsl value is metatags.xsl  
+  -->  
+  <depxml name="MyProject/xml/FooBase.xml"/>
+  <depxsl name="metatags-AName.xsl"/>
+
+  <param name="fubar" value="bar"/>
+  <param name="page" value="BazPage"/>
+</target>]]></programlisting>
     </section>
-    <section>
-      <title>The &lt;standardmaster/&gt; tag</title>
+    <section id="configuration.depend.standardmaster">
+      <title>Standard master target definition</title>
       <para>
+        The <literal>standardmaster</literal> tag is a convenience tag that encapsulates the typical target
+        definition of the master.xsl stylesheet.
       </para>
+      <programlisting language="xml"><![CDATA[<standardmaster name="AName">
+  <!-- The name attribute is optional -->
+  <include stylesheet="MyProject/xsl/skin.xsl"/>
+  <param name="AName" value="AValue"/>
+</standardmaster>]]></programlisting>
+      <para>
+        After performing the transformation of <filename>depend.xml</filename> when the runtime system loads
+        the file this becomes:
+      </para>
+      <programlisting language="xml"><![CDATA[<target name="master-AName.xsl" type="xsl">
+  <!--
+    If the name attribute of the standardmaster tag has not been given,
+    the value for the target's name attribute will be master.xsl.
+  -->
+  <depxml name="core/xsl/master.xsl"/>
+  <depxsl name="core/xsl/customizemaster.xsl"/>
+  <depaux name="/path/to/pustefix/projects/core/xsl/default_copy.xsl"/>
+  <depaux name="/path/to/pustefix/projects/core/xsl/include.xsl"/>
+  <depaux name="/path/to/pustefix/projects/core/xsl/utils.xsl"/>
+  <depaux name="/path/to/pustefix/projects/core/xsl/navigation.xsl"/>
+  <depaux name="/path/to/pustefix/projects/core/xsl/forminput.xsl"/>
+  <depaux name="/path/to/pustefix/projects/sample1/conf/depend.xml"/>
+  <param name="AName" value="AValue"/>
+  <param name="docroot" value="/path/to/pustefix/projects"/>
+  <param name="product" value="MyProject"/>
+  <param name="lang" value="en"/>
+</target>]]></programlisting>
     </section>
-    <section>
-      <title>The &lt;standardmetatags/&gt; tag</title>
+    <section id="configuration.depend.standardmetatags">
+      <title>Standard metatags target definition</title>
       <para>
+        The standardmetatags tag is a convenience tag that encapsulates the typical target definition
+        of the <literal>metatags.xsl</literal> stylesheet.
       </para>
+      <programlisting language="xml"><![CDATA[<standardmetatags name="AName">
+  <!-- The name attribute is optional -->
+  <include stylesheet="MyProject/xsl/metatags.xsl"/>
+  <param name="AName" value="AValue"/>
+</standardmetatags>]]></programlisting>
+      <para>
+        After performing the transformation of <filename>depend.xml</filename> when the runtime system loads
+        the file this becomes:
+      </para>
+      <programlisting language="xml"><![CDATA[<target name="metatags-AName.xsl" type="xsl">
+  <!--
+    If the name attribute of the standardmetatags tag has not been given,
+    the value of the name attribute here becomes metatags.xsl.
+  -->
+
+  <depxml name="core/xsl/metatags.xsl"/>
+  <depxsl name="core/xsl/customizemaster.xsl"/>
+  <depaux name="/path/to/pustefix/projects/core/xsl/default_copy.xsl"/>
+  <depaux name="/path/to/pustefix/projects/core/xsl/include.xsl"/>
+  <depaux name="/path/to/pustefix/projects/core/xsl/utils.xsl"/>
+  <depaux name="/path/to/pustefix/projects/MyProject/conf/depend.xml"/>
+  <depaux name="/path/to/pustefix/projects/MyProject/xsl/metatags.xsl"/>
+  <param name="stylesheets_to_include" value="MyProject/xsl/metatags.xsl "/>
+  <param name="AName" value="AValue"/>
+  <param name="docroot" value="/path/to/pustefix/projects"/>
+  <param name="product" value="MyProject"/>
+  <param name="lang" value="en"/>
+</target>]]></programlisting>
     </section>
   </section>
 
