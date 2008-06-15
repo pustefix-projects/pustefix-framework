@@ -768,6 +768,13 @@ public interface State {
       <title>The <literal>IHandler</literal> interface</title>
       <para>
       </para>
+      <programlisting language="java"><![CDATA[public interface IHandler {
+    void    handleSubmittedData(Context context, IWrapper wrapper) throws Exception;
+    void    retrieveCurrentStatus(Context context, IWrapper wrapper) throws Exception;
+    boolean prerequisitesMet(Context context) throws Exception;
+    boolean isActive(Context context) throws Exception;
+    boolean needsData(Context context) throws Exception;
+}]]></programlisting>
     </section>
   </section>
 </chapter>
