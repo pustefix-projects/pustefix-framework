@@ -580,9 +580,90 @@ public interface State {
           and <literal>frequency</literal>
         </para>
         <section>
-          <title>occurrence="mandatory|optional", frequency="single"</title>
+          <title>Single mandatory/optional parameters</title>
           <para>
+            In most cases, your wrappers will be used to accept and validate simple input parameters, like
+            data entered in input fields. These parameters are created setting <literal>frequency</literal>
+            to <literal>single</literal> and <literal>occurrence</literal> to <literal>mandatory</literal>
+            or <literal>optional</literal>.
           </para>
+          <para>
+            This will lead to the following methods:
+          </para>
+          <programlisting language="java"><![CDATA[public class MyWrapper {
+    Bar  getFoo();
+    void setFoo(Bar value);
+    void setStringValFoo(String str_value);
+    void addSCodeFoo(de.schlund.util.statuscode.StatusCode scode);
+    void addSCodeWithArgsFoo(de.schlund.util.statuscode.StatusCode scode, String[] args);
+}]]></programlisting>
+        </section>
+        <section>
+          <title>Multiple mandatory/optional parameters</title>
+          <para>
+            In some cases, a parameter might be present in a page more than once. This might be the
+            case for a list of checkboxes, where all input tags have the same name, but different
+            values. These parameters are created setting <literal>frequency</literal>
+            to <literal>multiple</literal> and <literal>occurrence</literal> to <literal>mandatory</literal>
+            or <literal>optional</literal>.
+          </para>
+          <para>
+            This will lead to the following methods:
+          </para>
+          <programlisting language="java"><![CDATA[public class MyWrapper {
+    Bar[] getFoo();
+    void  setFoo(Bar[] value);
+    void  setStringValFoo(String[] str_value);
+    void  addSCodeFoo(de.schlund.util.statuscode.StatusCode scode);
+    void  addSCodeWithArgsFoo(de.schlund.util.statuscode.StatusCode scode, String[] args);
+}]]></programlisting>
+        </section>
+        <section>
+          <title>Single indexed parameters</title>
+          <para>
+            Pustefix also allows you to repeat a parameter inside a page/request and access
+            all occurrences of the parameter using an index. In the request, the parameter and
+            the index are separated using a <literal>.</literal> (dot).
+          </para>
+          <para>
+            These parameters are created setting <literal>frequency</literal>
+            to <literal>single</literal> and <literal>occurrence</literal> to <literal>indexed</literal>.
+          </para>
+          <para>
+            This will lead to the following methods:
+          </para>
+          <programlisting language="java"><![CDATA[public class MyWrapper {
+    Bar  getFoo(String index);
+    void setFoo(Bar value, String index);
+    void setStringValFoo(String str_value, String index);
+    void addSCodeFoo(de.schlund.util.statuscode.StatusCode scode, String index);
+    void addSCodeWithArgsFoo(de.schlund.util.statuscode.StatusCode scode, String[] args, String index);
+}]]></programlisting>
+        <para>
+          This is very helpful, if you have a list of entities (like users, books, etc.) and it is possible
+          to edit the data of several of these entities in one form.
+        </para>
+        </section>
+        <section>
+          <title>Multiple indexed parameters</title>
+          <para>
+            Of course, it is also possible to combine multiple and indexed parameters in
+            a wrapper.
+          </para>
+          <para>
+            These parameters are created setting <literal>frequency</literal>
+            to <literal>multiple</literal> and <literal>occurrence</literal> to <literal>indexed</literal>.
+          </para>
+          <para>
+            This will lead to the following methods:
+          </para>
+          <programlisting language="java"><![CDATA[public class MyWrapper {
+    Bar[] getFoo(String index);
+    void  setFoo(Bar[] value, String index);
+    void  setStringValFoo(String[] str_value, String index);
+    void  addSCodeFoo(de.schlund.util.statuscode.StatusCode scode, String index);
+    void  addSCodeWithArgsFoo(de.schlund.util.statuscode.StatusCode scode, String[] args, String index);
+}]]></programlisting>
         </section>
       </section>
     </section>
