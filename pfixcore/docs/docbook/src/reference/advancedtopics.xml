@@ -474,6 +474,13 @@ public class PremiumCustomerCondition implements Condition {
 
   </section>
 
+  <section xml:id="advanced.ajax">
+    <title>AJAX services</title>
+	<para>
+	  Pustefix makes it very easy for you to develop AJAX applications.
+	</para>
+  </section>
+
   <section xml:id="object2xml">
     <title>Object-to-XML mapping</title>
 	<para>

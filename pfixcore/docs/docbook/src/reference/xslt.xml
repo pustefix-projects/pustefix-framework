@@ -406,7 +406,7 @@
   <section>
     <title>Including text and images</title>
     <para>Introduction here...</para>
-    <section>
+    <section xml:id="xslt.pfx.include">
       <title>Include parts (&lt;pfx:include&gt;)</title>
       <para>
         Include parts contain the content that is displayed on your pages.
@@ -653,7 +653,108 @@
 
   <section>
     <title>Miscellaneous utility tags</title>
-    <para></para>
+    <para>Pustefix also provides several utility tags, that might be helpful in your application.</para>
+    <section xml:id="xslt.utility.active">
+      <title>Checking page status</title>
+      <para>
+        The <literal>&lt;pfx:checkactive&gt;</literal> and <literal>&lt;pfx:checknotactive&gt;</literal> allow you
+        to check from the XSL-stylesheet, whether a specific IHandler currently is active or not.
+      </para>
+      <programlisting language="xml"><![CDATA[<pfx:checkactive page="APageName" prefix="AHandlerName">
+  <!--
+    Content to be displayed, if the handler is active
+  -->
+</pfx:checkactive>]]></programlisting>
+      <para>
+        <table rules="all" frame="box">
+          <caption>Attributes of the pfx:checkactive and pfx:checknotactive tags</caption>
+          <thead>
+            <tr>
+              <th>Attribute name</th>
+              <th>Mandatory?</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>page</td>
+              <td>optional</td>
+              <td>
+                <para>
+                  When using the page attribute, the content of the tag is only displayed if the referenced page is accessible.
+                  This is an easy way to display complete subparts of a page depending on the accessibility of another page.
+                </para>
+              </td>
+            </tr>
+            <tr>
+              <td>prefix</td>
+              <td>optional</td>
+              <td>
+                <para>
+                  When using the prefix, the content of the tag is only displayed if a referenced handler on the current
+                  page is active. The prefix is the same name as used in the servlet property file for the handler.
+                </para>
+                <para>
+                  You can only use one of the attributes page and prefix.
+                </para>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </para>
+    </section>
+    <section xml:id="xslt.pfx:langselect">
+      <title>Displaying content based on the language</title>
+      <para>
+        The selection mechanism of <literal>&lt;pfx:langselect&gt;</literal> allows to select matching content anywhere
+        inside a include part depending on the current language that is set in the running session.
+        The <literal>&lt;pfx:lang name="default"&gt;</literal> tag is acting as the fallback for all languages that don't
+        have a better, more specific named <literal>&lt;pfx:lang&gt;</literal> node.
+      </para>
+      <programlisting language="xml"><![CDATA[<pfx:langselect>
+  <pfx:lang name="en_*">...</pfx:lang>
+  <pfx:lang name="en_GB">...</pfx:lang>
+  <pfx:lang name="default">...</pfx:lang>
+</pfx:langselect>]]></programlisting>
+      <para>
+        The system doesn't enforce but expects languages to be of the standard form of ISO language codes. In this case,
+        a <literal>&lt;pfx:lang&gt;</literal> node with a name attribute ending in an asterisk (<literal>*</literal>) can be used to
+        create a fallback for a whole "family" of languages. In the example above, the <literal>en_*</literal> node will serve as a fallback
+        for all language codes starting with en_ except <literal>en_GB</literal> (which has a more specific node below).
+      </para>
+    </section>
+    <section xml:id="xslt.pfx:themeselect">
+      <title>Displaying content based on the theme</title>
+      <para>
+        The selection mechanism of <literal>&lt;pfx:themeselect&gt;</literal> allows to select matching content anywhere inside a
+        include part depending on the same selection mechanism that is used to select the include part the first hand as described
+        in <xref linkend="xslt.pfx.include"/>
+      </para>
+      <programlisting language="xml"><![CDATA[<pfx:themeselect>
+  <pfx:theme name="ATheme">...</pfx:theme>
+  <pfx:theme name="default">...</pfx:theme>
+</pfx:themeselect>]]></programlisting>
+      <para>
+        Of course this makes most sense, when the containing include part uses a general theme, so there are
+        specialized themes in the theme fallback queues to select from.
+      </para>
+      <note>
+        <para>
+          This tag is only to be used in very special situations. Normally you would like to use different themes
+          for the include part to register itself correctly with the runtime system.
+        </para>
+      </note>
+    </section>
+    <section xml:id="xslt.consoles">
+      <title>Using the Pustefix console</title>
+      <para>
+        Pustefix provides an edit-console and webservice-console that are helpful during debugging.
+      </para>
+      <para>
+        Those consoles can be included in your pages using the <literal>&lt;pfx:editconsole&gt;</literal> and
+        <literal>&lt;pfx:webserviceconsole&gt;</literal> tags.
+      </para>
+    </section>
   </section>
 
 </chapter>
