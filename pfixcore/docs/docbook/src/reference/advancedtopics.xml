@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<chapter xml:id="advancedtopics" xmlns="http://docbook.org/ns/docbook" xmlns:xlink="www.w3.org/1999/xlink" xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://docbook.org/ns/docbook http://www.docbook.org/xml/5.0CR7/xsd/docbook.xsd">
+<chapter xml:id="advanced" xmlns="http://docbook.org/ns/docbook" xmlns:xlink="www.w3.org/1999/xlink" xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://docbook.org/ns/docbook http://www.docbook.org/xml/5.0CR7/xsd/docbook.xsd">
   <title>Advanced topics</title>
 
   <section xml:id="advanced.variantsandthemes">
@@ -503,7 +503,7 @@ public class PremiumCustomerCondition implements Condition {
 	</para>
   </section>
 
-  <section xml:id="object2xml">
+  <section xml:id="advanced.object2xml">
     <title>Object-to-XML mapping</title>
 	<para>
 	  Pustefix provides a lightweight object serialization mechanism, which can be used to 
@@ -545,7 +545,7 @@ public class PremiumCustomerCondition implements Condition {
 	  ]]></programlisting>
 	</para>
 	
-	<section xml:id="object2xml_serializationprocess">
+	<section xml:id="advanced.object2xml.serializationprocess">
     <title>Serialization process</title>
 	
 	<para>
@@ -807,7 +807,7 @@ public class PremiumCustomerCondition implements Condition {
     </para>
     </section>
     
-    <section xml:id="object2xml_customserializers">
+    <section xml:id="advanced.object2xml.customserializers">
     <title>Custom serializers</title>
     
     <para>
@@ -989,7 +989,7 @@ public class PremiumCustomerCondition implements Condition {
 
   </section>
   
-  <section xml:id="iwrapperannotations">
+  <section xml:id="advanced.iwrapperannotations">
     <title>Annotation-based IWrapper creation</title>
     <para>
       The annotation-based IWrapper creation provides an alternative to the usual,
@@ -1027,7 +1027,7 @@ public class PremiumCustomerCondition implements Condition {
       the two static methods <literal>&lt;T&gt; T createBean(IWrapper wrapper, Class&lt;T&gt; beanClass)</literal>
       and <literal>populateBean(IWrapper wrapper, Object obj)</literal>.
     </para>
-    <section xml:id="iwrapperannotations_reference">
+    <section xml:id="advanced.iwrapperannotations.reference">
       <title>IWrapper annotations</title>
       <para>
         Every IWrapper configuration element known from the XML configuration has an annotation
@@ -1197,7 +1197,7 @@ public class PremiumCustomerCondition implements Condition {
     
   </section>
 
-  <section xml:id="scriptedflows">
+  <section xml:id="advanced.scriptedflows">
     <title>Scripted workflows</title>
     <para>
       Scripted flows are script files written in XML that can be used to control a
@@ -1370,7 +1370,7 @@ public class PremiumCustomerCondition implements Condition {
     </section>
   </section>
 
-  <section xml:id="scriptedhandlers">
+  <section xml:id="advanced.scripting">
     <title>Scripting Langauge support</title>
     <para>
       Consider these questions:
@@ -1508,7 +1508,7 @@ public class PremiumCustomerCondition implements Condition {
   </section>
 
 
-  <section xml:id="editor">
+  <section xml:id="advanced.editor">
     <title>The Pustefix Editor</title>
     <para></para>
   </section>
