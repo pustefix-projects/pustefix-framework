@@ -158,9 +158,31 @@
     </section>   
   </section>
 
-  <section xml:id="i18n">
+  <section xml:id="advanced.i18n">
     <title>Internationalisation</title>
-    <para></para>
+    <para>
+      Pustefix allows you to implement multi-language applications. As there is a clean separation between business
+      logic and presentation, you can easily change the presentation layer to a new language.
+    </para>
+    <section xml:id="advanced.i18n.xsl">
+      <title>Internationalisation in the presentation layer</title>
+      <para>
+        See <xref linkend="xslt.pfx:langselect"/> on more information on how the access the currently selected
+        language in the presentation layer.
+      </para>
+    </section>
+    <section xml:id="advanced.i18n.context">
+      <title>Internationalisation in the business logic</title>
+      <para>
+		If your business logic needs to react to the currently selected language, you can retrieve
+		the current language of the application via the <literal>getLanguage() : String</literal> of the
+		<literal>Context</literal>.
+      </para>
+      <para>
+		The <literal>Context</literal> also provides a method <literal>setLangauge(String language)</literal>,
+		which allows you to change the selected language at run-time.
+      </para>
+    </section>
   </section>
 
   <section xml:id="advanved.rolebasedauth">
