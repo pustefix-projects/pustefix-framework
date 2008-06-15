@@ -35,25 +35,25 @@
       that has still the old session id embedded in every link) to the new, currently running secure session and silenty and
       securely redirects to this session.
     </para>
-    <section>
+    <section xml:id="concepts.servlets.core">
       <title>Servlets provided by the core framework</title>
       <para>
-        The following servlets are already provided by the core framework and should be sufficient for most of your needs
-        when building a web application with Pustefix.
+        <xref linkend="concepts.servlets.core.figure"/> shows the servlets that are already provided by the core framework
+        and should be sufficient for most of your needs when building a web application with Pustefix.
       </para>
-      <informalfigure>
+      <figure xml:id="concepts.servlets.core.figure">
+        <title>Pustefix servlets</title>
         <mediaobject>
           <imageobject>
             <imagedata fileref="images/reference/concepts-servlets.png" format="PNG"/>
           </imageobject>
-          <textobject>Servlets provided by Pustefix</textobject>
         </mediaobject>
-      </informalfigure>
+      </figure>
       <section>
         <title>DerefServlet</title>
         <para>
           This is a small servlet that should be used whenever a link to a URL outside the own site is made. All such
-          external links must be of the form <url>/xml/deref?link=http://some.other.domain/foo/bar</url>. This is important
+          external links must be of the form <uri>/xml/deref?link=http://some.other.domain/foo/bar</uri>. This is important
           because for any link that goes directly to a foreign destination (e.g. <literal>&lt;a href="http://some.other.domain/foo/bar"&gt;</literal>)
           the session id visible in the logfile of the foreign site's webserver (via the Referer header). This is of course
           a security problem. Using the <literal>DerefServlet</literal> avoids this by using a redirect loop so the <literal>Referer</literal>

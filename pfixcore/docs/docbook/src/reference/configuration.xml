@@ -1481,6 +1481,9 @@
         <xref linkend="configuration.depend.standardpage"/>, <xref linkend="configuration.depend.standardmaster"/> and
         <xref linkend="configuration.depend.standardmetatags"/>.
       </para>
+      <para>
+        <xref linkend="architecture.xsl.targets"/> provides more information on the concept of targets in Pustefix.
+      </para>
       <programlisting language="xml"><![CDATA[<target name="baz.xsl" type="xsl" page="foo" variant="bar" themes="Theme_A Theme_B ... default">
   <!--
     depxml and depxsl reference other targets by their name attribute

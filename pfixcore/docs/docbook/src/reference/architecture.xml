@@ -5,14 +5,141 @@
 >
   <title>Architecture</title>
     
-    <section>
-      <title>Overview</title>
-      <para></para>
+    <section xml:id="architecture.high-level">
+      <title>High Level View</title>
+      <para>
+        <xref linkend="architecture.high-level.figure"/> shows the two main parts of the Pustefix system.
+        On the left you can see the java framework. A request coming from the browser enters the business
+        logic. After the processing has finished, the business logic delivers the result as a (in memory)
+        DOM tree. To get a more detailed overview of the business logic, take a look at
+        <xref linkend="concepts"/>.
+      </para>
+      <para>
+        The stylesheet that's responsible to render the UI to displays the result data is requested from
+        the XML/XSLT generator. It uses the DOM tree as input to create the HTML output that is displayed
+        on the browser.
+      </para>
+      <figure xml:id="architecture.high-level.figure">
+        <title>High Level View of the system</title>
+        <mediaobject>
+          <imageobject>
+            <imagedata fileref="images/reference/architecture-high-level.png" format="PNG"/>
+          </imageobject>
+        </mediaobject>
+      </figure>
+      <para>
+        The stylesheet generator makes heavy use of caching to ensure that transformations are never made
+        twice unless the result is out of date. Normally all generated stylesheets are cached in memory
+        (and on disc). If you don't have enough memory to hold your site in RAM, you can specify other
+        cache objects. E.g. we supply a LRU cache that can be configured to hold only the last N generated
+        objects in memory.
+      </para>
     </section>
 
-    <section>
-      <title>XSL Transformations</title>
-      <para></para>
+    <section xml:id="architecture.xsl">
+      <title>Recursive XSL Transformations</title>
+      <para>
+        The XML/XSLT System of Pustefix is responsible for generating the final stylesheet that
+        represents the static content of a page. This stylesheet is then used together with the DOM
+        tree that holds the result of the request (as given by the business logic) to produce the
+        final HTML output.
+      </para>
+      <para>
+        <xref linkend="architecture.xsl.figure"/> shows the typical transformations and files that are
+        involved in producing the final stylesheet <filename>BazPage.xsl</filename>.
+      </para>
+      <para>
+        Note that we only discuss the common case here, arbitrary complex and deep transformation trees
+        are in fact possible.
+      </para>
+      <figure xml:id="architecture.xsl.figure">
+        <title>Recursive XSL transformations</title>
+        <mediaobject>
+          <imageobject>
+            <imagedata fileref="images/reference/architecture-xsl-transformations.png" format="PNG"/>
+          </imageobject>
+        </mediaobject>
+      </figure>
+      <para>
+        The red boxes are supplied by the framework, you don't need to create them yourself and as an
+        application programmer, you can't change them. Currently this is only the case for
+        <filename>core/xsl/master.xsl</filename>, <filename>core/xsl/metatags.xsl</filename>,
+        <filename>core/xsl/customizemaster.xsl</filename> and other stylesheets that make up the core
+        environment (these are not shown as they are included into <filename>master.xsl</filename> and
+        <filename>metatags.xsl</filename> via <literal>xsl:include</literal> transparently for the user).
+      </para>
+      <para>
+        The green boxes are the result of XSL transformations.
+      </para>
+      <para>
+        The blue boxes represent files that you need to create yourself. The <literal>[PROJECT]</literal>/xsl/skin.xsl and
+        <literal>[PROJECT]</literal>/xsl/metatags.xsl files are special, as they are not a target (see below) but just another
+        XSLT stylesheet that can be included via xsl:include into master.xsl and metatags.xsl resp.
+        <literal>[PROJECT]</literal>/xsl/skin.xsl contains the project specific templates that should apply on the last
+        transformation stage, while <literal>[PROJECT]</literal>/xsl/metatags.xsl contains the project specific templates that
+        apply only on the first stage.
+      </para>
+      <para>
+        There are projects that don't use a <literal>[PROJECT]</literal>/xsl/skin.xsl stylesheet at all or include even more
+        stylesheets. Making master.xsl aware of the presence of the <literal>[PROJECT]</literal>/xsl/skin.xsl stylesheet is
+        part of the transformation from core/xsl/master.xsl + core/xsl/customizemaster.xsl --> master.xsl
+      </para>
+      <para>
+        It'a also posible that a project doesn't use a <literal>[PROJECT]</literal>/xsl/metatags.xsl stylesheet or includes
+        more stylesheets: Similar to master.xsl it's the responsibility of the transformation from
+        core/xsl/metatags.xsl + core/xsl/customizemaster.xsl --> metatags.xsl to customize the resulting 
+        metatags.xsl to include the stylesheets.
+      </para>
+      <para>
+        The <literal>[PROJECT]</literal>/xml/FooBase.xml file defines the structure of the "BazPage" page (e.g. frames, the outer
+        table structure if you do the layout with tables or divs and the like). You define one of these
+        structural xml files for every layout you want to use in your project (the number of structural xml
+        files is typically quite small, as many pages share the same layout).
+      </para>
+      <para>
+        The blue discs blue discs represent include parts. These are little snippets of XML code that make 
+        up the actual content of the page. As can be seen from the diagram, they can include each other, as
+        long as there is no cyclic inclusion (so no include part can include itself either directly or
+        indirectly). Include parts have a name and are organized into so called include documents. These
+        can hold an arbitrary number of parts.
+      </para>
+      <section xml:id="architecture.xsl.targets">
+        <title>XSL Targets</title>
+        <para>
+          A target is everything that is the result of a XSLT transformation as seen in <xref linkend="architecture.xsl.figure"/>.
+          It is also obvious that a target can be used to create new targets. For the sake of completeness,
+          the initial XML or XSL files that are used in transformations are called targets, too.
+        </para>
+        <para>
+          The Pustefix system knows different types of targets:
+        </para>
+        <itemizedlist>
+          <listitem>
+            <para>
+              Leaf targets are targets that are not the result of a XSL transformation, but are read
+              directly from files. You only edit leaf targets, never virtual targets.
+              The distinction between XML/XSL is made depending on the purpose the target serves.
+              An XML target is read into the system without doing any special processing, while an XSL
+              target is compiled into a templates object that is able to transform XML input.
+            </para>
+            <para>
+              Examples for leaf targets in <xref linkend="architecture.xsl.figure"/> are <filename>FooBase.xml</filename>,
+              <filename>core/xsl/metatags.xsl</filename> and <filename>core/xsl/master.xsl</filename>.
+            </para>
+          </listitem>
+          <listitem>
+            <para>
+              Virtual targets are the result of a XSL transformation. They don't exist as files
+              (in fact they do, but only to cache the result on the harddisk. These cache files must never
+              be edited by hand). The difference between the XML/XSL type is the same as with the leaf targets.
+            </para>
+            <para>
+              Examples for leaf targets in <xref linkend="architecture.xsl.figure"/> are <filename>BazPage.xml</filename>,
+              and <filename>BazPage.xsl</filename>.
+            </para>
+          </listitem>
+        </itemizedlist>
+      </section>
     </section>
 
 </chapter>
