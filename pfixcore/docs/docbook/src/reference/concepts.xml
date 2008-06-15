@@ -5,6 +5,103 @@
 >
   <title>Important Concepts</title>
 
+  <section xml:id="concepts.servlets">
+    <title>Servlets</title>
+    <para>
+      The processing of a request in Pustefix starts with a servlet that is derived from
+      <literal>de.schlund.pfixxml.ServletManager</literal>. This class implements session creation,redirecting into
+      sessions, handling of SSL and other services for it's descendants.
+    </para>
+    <para>
+      The main feature of it's session handling is that it's mostly transparent to the user. You can submit data
+      to a URL, and the system will take care to store the supplied data (this is done in the form of a
+      <literal>PfixServletRequest</literal>, which can be seen as basically the same as a
+      <literal>HttpServletRequest</literal>, with some additional features, e.g. more or less transparent handling of
+      file uploads), create a session, redirect to the URL with an embedded session id, and continue with the business
+      logic and the data submitted with the original request afterwards.
+    </para>
+    <para>
+      Even SSL is handled transparently. A descending servlet must implement the method <literal>+ needsSession(): boolean</literal>
+      to decide if the the current request should result into the session to be "secure". You don't have to make sure that
+      the webpages use "https://" in all needed links, the target itself tells the system that it want's to run under SSL.
+    </para>
+    <para>
+      If the servlet decides that it want's to run under SSL from now on, a complex redirect sequence happens that makes sure
+      that all data is copied from the previous insecure session into a new, secure session (a session is secure if it's
+      session id was never transmitted over an insecure channel). After a session has once transformed into a secure one, there's
+      no way back: Every time you try to use the session with "http://" it will create a new, secure session dropping the old
+      one (because it's tainted now). If the visitor's browser supports cookies, the system manages to map request with the old, 
+      original, insecure session id (which can happen whenever the user uses the back button of her browser to go back to a page
+      that has still the old session id embedded in every link) to the new, currently running secure session and silenty and
+      securely redirects to this session.
+    </para>
+    <section>
+      <title>Servlets provided by the core framework</title>
+      <para>
+        The following servlets are already provided by the core framework and should be sufficient for most of your needs
+        when building a web application with Pustefix.
+      </para>
+      <informalfigure>
+        <mediaobject>
+          <imageobject>
+            <imagedata fileref="images/reference/concepts-servlets.png" format="PNG"/>
+          </imageobject>
+          <textobject>Servlets provided by Pustefix</textobject>
+        </mediaobject>
+      </informalfigure>
+      <section>
+        <title>DerefServlet</title>
+        <para>
+          This is a small servlet that should be used whenever a link to a URL outside the own site is made. All such
+          external links must be of the form <url>/xml/deref?link=http://some.other.domain/foo/bar</url>. This is important
+          because for any link that goes directly to a foreign destination (e.g. <literal>&lt;a href="http://some.other.domain/foo/bar"&gt;</literal>)
+          the session id visible in the logfile of the foreign site's webserver (via the Referer header). This is of course
+          a security problem. Using the <literal>DerefServlet</literal> avoids this by using a redirect loop so the <literal>Referer</literal>
+          header transmitted will no longer contain the session id.
+        </para>
+      </section>
+      <section>
+        <title>AbstractXMLServlet</title>
+        <para>
+          This servlet, while still abstract, implements most of the output handling needed for servlets that want use XSLT/XML to produce
+          the final html sent to the browser.
+        </para>
+        <para>
+          The only thing a descendant needs to implement is the abstract method <literal>+ getDom(PfixServletRequest) : SPDocument</literal>,
+          whose return value can be thought of as a small container around a <literal>org.w3c.Document</literal>. The additional data stored in
+          a <literal>SPDocument</literal> is among other things a map of XSLT transformation parameters that should be set and the "page name"
+          which the system uses to choose the correct target stylesheet to transform the DOM with.
+        </para>
+      </section>
+      <section>
+        <title>DirectOutputServlet</title>
+        <para>
+          In contrast to AbstractXMLServlet and descendants, this servlet does not produce it's output by transforming XML with a XSLT
+          stylesheet into HTML. There are situations where you need to stream some other format like pdf or images like PNG or GIF instead.
+          The <literal>DirectOutputServlet</literal> is used for exactly this purpose, because it delegates request processing to
+          <literal>DirectOutputState</literal> objects which are allowed to write directly to the <literal>HttpServletResponse</literal>'s
+          <literal>OutputStream</literal>.
+        </para>
+      </section>
+      <section>
+        <title>ContextXMLServlet</title>
+        <para>
+          This is the main servlet that handles almost all pages in a typical Pustefix application - everything that produces HTML to be
+          precise. The servlet doesn't do much on it's own, it delegates the request processing to a
+          <literal>de.schlund.pfixcore.workflow.Context</literal> object. This Context is created by the <literal>ContextXMLServlet</literal>
+          once for every session, stored into the <literal>HttpSession</literal> and reused for all later requests.
+        </para>
+        <para>
+          A Pustefix application usually consists of one <literal>ContextXMLServlet</literal> servlet. It's possible to use more than one
+          <literal>ContextXMLServlet</literal>, but most often it's better to only use one, because exchanging data between the different
+          associated <literal>Context</literal> objects is cumbersome. Using one or many additional <literal>DirectOutputServlets</literal>
+          is no problem, because <literal>DirectOutputServlets</literal> don't have a <literal>Context</literal> of their own, but use the
+          data of the Context of a "foreign" ContextXMLServlet.
+        </para>
+      </section>
+    </section>
+  </section>
+
   <section xml:id="concepts.request_processing">
     <title>Processing of Requests</title>
     <para>

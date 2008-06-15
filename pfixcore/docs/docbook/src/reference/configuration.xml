@@ -448,7 +448,9 @@
   <section xml:id="configuration.servlet">
     <title>Servlet configuration</title>
     <para>
-      General introduction to the configuration of servlets
+      The processing of a request in Pustefix starts with a servlet that is derived from
+      <literal>de.schlund.pfixxml.ServletManager</literal>. The following section explains
+      how the different servlet types are configured.
     </para>
   
     <section xml:id="configuration.servlet.contextxml">
