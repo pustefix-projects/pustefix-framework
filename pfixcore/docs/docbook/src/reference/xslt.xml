@@ -655,9 +655,637 @@
     </section>
   </section>
 
-  <section>
+  <section xml:id="xslt.forms">
     <title>Handling HTML forms</title>
-    <para></para>
+    <para>
+      Pustefix supplies a complete set of tags that replace the standard HTML form element tags.
+      The advantage of using these tags is that they are automatically pre-filled with values delivered from the backend.
+    </para>
+    <section xml:id="xslt.pfx.forminput">
+      <title>Form creation</title>
+      <para>
+        The creation of a html form is done with the help of the tag <literal>&lt;pfx:forminput&gt;</literal>.
+        Most often you don't need to set any attributes, the defaults should work just fine.
+      </para>
+      <programlisting language="xml"><![CDATA[<pfx:forminput send-to-page="APage" send-to-pageflow="APageFlow" frame="AFrameName" target="ATargetName" type="auth|data">
+  <!-- place form elements here -->
+</pfx:forminput>]]></programlisting>
+      <para>
+        <table rules="all" frame="box">
+          <caption>Attributes of the pfx:forminput tag</caption>
+          <thead>
+            <tr>
+              <th>Attribute name</th>
+              <th>Mandatory?</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>type</td>
+              <td>optional</td>
+              <td>
+                <para>
+                  Defaults to <literal>data</literal>. Must be set to <literal>auth</literal>, if the submitted information contains
+                  authentication data (e.g. userid, password).
+                </para>
+              </td>
+            </tr>
+            <tr>
+              <td>target</td>
+              <td>optional</td>
+              <td>
+                <para>
+                  Defaults to the parent frame (if frames are used, current window otherwise)
+                </para>
+              </td>
+            </tr>
+            <tr>
+              <td>frame</td>
+              <td>optional</td>
+              <td>
+                <para>
+                  This is used to select which named frame is about to be loaded into the target frame after submit. The default when frames are used is the parent frame.
+                </para>
+                <para>
+                  Most often you have to set neither frame nor target.
+                </para>
+              </td>
+            </tr>
+            <tr>
+              <td>send-to-page</td>
+              <td>optional</td>
+              <td>
+                <para>
+                  Selects the page the submitted data is send to. Default is to use the current page. Most of the time, this is the right thing to do.
+                </para>
+              </td>
+            </tr>
+            <tr>
+              <td>send-to-pageflow</td>
+              <td>optional</td>
+              <td>
+                <para>
+                  Should not be used. Selects the pageflow to use. Default is to not set a pageflow name explicitely, but
+                  let the backend reuse the current flow or select a matching one. Leave it that way if you don't know
+                  why you want to change it. If you want to select a pageflow to use, better do so via the submit button as
+                  explained below. Note that this mechanism will most likely not work when using the
+                  <literal>send-to-pageflow</literal> attribute here.        
+                </para>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </para>
+    </section>      
+    <section xml:id="xslt.forms.submit">
+      <title>Submitting forms</title>
+      <para>
+        Make sure that all the other form related tags detailed below are contained inside a <literal>pfx:forminput</literal> block.
+      </para>
+      <para>
+        The form can be submitted by clicking on submit controls which can be realized in two ways:
+        The simple html submit button is made with the tag <literal>&lt;pfx:xinp type="submit"&gt;</literal>, while using an
+        image as the submit control is done with <literal>&lt;pfx:xinp type="image"&gt;</literal>.
+      </para>
+      <para>
+        A very useful ability of both submit controls is that it's possible to attach additional form parameters to them,
+        that are only transmitted when that exact submit control is pressed. This way it's possible for a form to have two or
+        more submit controls, each with different additional data attached and submitted, depending on which submit
+        control the user clicks on.
+      </para>
+      <programlisting language="xml"><![CDATA[pfx:xinp type="submit|image" pageflow="APageFlow" jumptopage="APage" jumptopageflow="APageFlow" forcestop="true|false|step">
+  <!--
+    Attach additional information to the controls
+  -->
+  <pfx:command page="APage" name="SELWRP">prefix</pfx:command>
+  <pfx:argument name="AName">AValue</pfx:argument>
+  <pfx:anchor frame="AFrame">AnAnchor</pfx:anchor>
+</pfx:xinp>]]></programlisting>
+      <para>
+        <table rules="all" frame="box">
+          <caption>Attributes of form submit controls</caption>
+          <thead>
+            <tr>
+              <th>Attribute name</th>
+              <th>Mandatory?</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>type</td>
+              <td>mandatory</td>
+              <td>
+                <para>
+                  <literal>submit</literal> creates a simple html submit button, <literal>image</literal> uses an image as the submit button.
+                </para>
+              </td>
+            </tr>
+            <tr>
+              <td>pageflow</td>
+              <td>optional</td>
+              <td>
+                <para>
+                  Used to explicitely set a pagflow to use after the submit has been handled sucessfully.
+                  Note that there is no corresponding way to set the page the submit is directed at, you need to
+                  set the send-to-page attribute of the <literal>pfx:forminput</literal> tag.
+                </para>
+              </td>
+            </tr>
+            <tr>
+              <td>jumptopage / jumptopageflow</td>
+              <td>optional</td>
+              <td>
+                <para>
+                  If you don't want the pageflow mechanism to control which page to display as the next page after a
+                  successful submit, you can set this page via the <literal>jumptopage</literal> attribute. In this case,
+                  you also have the possibility to set the pageflow to use for this follow-up page and submit circle via
+                  the <literal>jumptopageflow</literal> attribute.
+                </para>
+              </td>
+            </tr>
+            <tr>
+              <td>forcestop</td>
+              <td>optional</td>
+              <td>
+                <para>
+                  Default is false. If you don't want the pageflow mechanism control wether to stay on the current page
+                  after a successful submit or not, you can unconditionally force it to stay on the current page
+                  (when setting the attribute to <literal>true</literal>). Alternatively, if you want the pageflow mechanism
+                  to stop at most no more than one step further in the flow (e.g. a wizard like application) you can set
+                  this attribute to <literal>step</literal>.
+                </para>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </para>
+      <para>
+        When setting the type to <literal>image</literal>, you may also specify the attributes <literal>src</literal>,
+        <literal>themed-path</literal> and <literal>themed-img</literal>. These attributes work exactly as described in
+        <xref linkend="xslt.pfx.image"/>.
+      </para>
+    </section>
+    <section xml:id="xslt.controls.arguments">
+      <title>Arguments, comands and anchors</title>
+      <para>
+        Command controls (like described in <xref linkend="xslt.forms.submit"/>) and links (like described in <xref linkend="xslt.pfx.button"/>)
+        can contain child tags that are used to pass additional data when the link or button is clicked.
+      </para>
+      <section xml:id="xslt.pfx.anchor">
+        <title>Anchors</title>
+        <para>
+          The <literal>&lt;pfx:anchor&gt;</literal> tag is used to supply an anchor for a link or submit button.
+        </para>
+        <programlisting language="xml"><![CDATA[<pfx:anchor frame="AFrame">AnAnchor</pfx:anchor>]]></programlisting>
+        <para>
+          The content gives the name of the anchor as it's defined in the target page.
+        </para>
+        <para>
+          <table rules="all" frame="box">
+            <caption>Attributes of pfx:anchor</caption>
+            <thead>
+              <tr>
+                <th>Attribute name</th>
+                <th>Mandatory?</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>frame</td>
+                <td>optional</td>
+                <td>
+                  <para>
+                    You need to set it if the page uses frames or not. In this case you can use more than on pfx:anchor tag, one for
+                    each frame you want to define an anchor for. This way it's possible to scroll each frame independently to the
+                    desired position with one request (without the need for JavaScript). If you don't use frames, only one pfx:anchor
+                    tag makes sense, without a frame attribute. 
+                  </para>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </para>
+      </section>
+      <section xml:id="xslt.pfx.argument">
+        <title>Arguments</title>
+        <para>
+          The <literal>&lt;pfx:argument&gt;</literal> tag is used to supply additional parameters for the request.
+        </para>
+        <programlisting language="xml"><![CDATA[<pfx:argument name="AName">AValue</pfx:argument>]]></programlisting>
+        <para>
+          The content gives the value of the parameter to submit. It's also possible that this value is only known at runtime by using values dynamically supplied from the DOM tree. This may be handled like here:
+       </para>
+       <programlisting language="xml"><![CDATA[<pfx:argument name="foo"><ixsl:value-of select="/formresult/bar"/><pfx:argument>]]></programlisting>
+        <para>
+          <table rules="all" frame="box">
+            <caption>Attributes of pfx:argument</caption>
+            <thead>
+              <tr>
+                <th>Attribute name</th>
+                <th>Mandatory?</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>name</td>
+                <td>mandatory</td>
+                <td>
+                  <para>
+                    The name of the argument to submit.
+                  </para>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </para>
+      </section>
+      <section xml:id="xslt.pfx.command">
+        <title>Commands</title>
+        <para>
+          The <literal>&lt;pfx:command&gt;</literal> tag is used to explicitly select the wrappers to submit on a page.
+        </para>
+        <programlisting language="xml"><![CDATA[ <pfx:command page="APage" name="SELWRP">prefix</pfx:command>]]></programlisting>
+        <para>
+          The content gives the prefix of the wrapper to select as defined on the target page.
+        </para>
+        <note>
+          <para>
+            Note: If you don't give and selected wrappers, all wrappers defined on the target page become selected. 
+          </para>
+        </note>
+        <para>
+          <table rules="all" frame="box">
+            <caption>Attributes of pfx:command</caption>
+            <thead>
+              <tr>
+                <th>Attribute name</th>
+                <th>Mandatory?</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>name</td>
+                <td>mandatory</td>
+                <td>
+                  <para>
+                    The name of the command. Currently, the only non-deprecated command is the <literal>SELWRP</literal> command.
+                    This is used to select a wrapper with the matching prefix on the page that is designated by the page attribute
+                    (or the current page, when empty) as a wrapper that should be used for handling the data that is submitted.
+                    You can use more than one pfx:command to select as many wrappers as you want.
+                  </para>
+                  <para>
+                    Note: As this is the only command left, it is possible that the whole pfx:command stuff will go away, being
+                    replaced by e.g. an attribute of the submit control that holds all selected wrappers. 
+                  </para>
+                </td>
+              </tr>
+              <tr>
+                <td>page</td>
+                <td>optional</td>
+                <td>
+                  <para>
+                    Most often empty. This should be set to the page the request is directed at if it's not the current page.
+                  </para>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </para>
+      </section>
+    </section>
+    <section xml:id="xslt.forms.elements">
+      <title>Form elements</title>
+      <para>
+        Using these form element tags ensures that values, that are supplied by the backend application are used as
+        values for the generated html form elements. This is done dynamically by generating the necessary <literal>ixsl:</literal>
+        statements that will check the DOM tree for matching values and adding them as value attributes (text, password and hidden
+        input fields) or content (text areas) or selecting them according to their value (check boxes, radio boxes, option menus).
+      </para>
+      <para>
+        Another thing these tags do is to automatically check if the runtime DOM tree contains an error attached to their name.
+        In this case, the resulting html input field is augmented with special CSS classes to help with styling these fields
+        depending on the state they have (error/no error).
+      </para>
+      <para>
+        Typically the CSS used when no attached error is detected is just the value of a class attribute given to the pustefix
+        input tag. On the other hand, if an error is attached, the class attribute looks like this:
+      </para>
+      <programlisting>[@class] PfxError PfxInputTextError [PfxErrorLevel_$level]</programlisting>
+      <para>
+        where <literal>@class</literal> is the user supplied class attribute mentioned above (if it's there at all) and
+        <literal>$level</literal> is an optional attribute of the error element in the runtime DOM tree. The example works the
+        same for other input fields of the form <literal>&lt;input type="..."&gt;</literal>, by replacing
+        <literal>"Text"</literal> with <literal>"Password"</literal>, <literal>"Check"</literal> or <literal>"Radio"</literal>
+        (Hidden input fields are not visible anyway. Select menus and text areas don't need a special class as they can be easily
+        selected via CSS rules. For the last two, the error CSS looks like this:
+      </para>
+      <programlisting>[@class] PfxError [PfxErrorLevel_$level])</programlisting>
+      <section xml:id="xslt.forms.elements.text">
+        <title>Creating a text input field</title>
+        <para>
+          Text input fields are created using the <literal>&lt;pfx:xinp&gt;</literal> tag.
+        </para>
+        <programlisting language="xml"><![CDATA[<pfx:xinp type="text" name="AName" default="AValue" position="1|..|n" class="ACssClass">
+  <!--
+    name and default can also be set at runtime
+  -->
+  <pfx:default>
+    <ixsl:value-of select="/some/runtime/value"/>
+  </pfx:default>
+  <pfx:name>
+    <ixsl:value-of select="/some/runtime/name"/>
+  </pfx:name>
+ </pfx:xinp>]]></programlisting>
+        <para>
+          <table rules="all" frame="box">
+            <caption>Attributes of pfx:xinp[@type="text"]</caption>
+            <thead>
+              <tr>
+                <th>Attribute name</th>
+                <th>Mandatory?</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>name or &lt;pfx:name&gt;</td>
+                <td>mandatory</td>
+                <td>
+                  <para>
+                    The name of the parameter. Use the name attribute when the name is a known literal value. If it must be
+                    computed at runtime (e.g. from the runtime DOM tree), you can use the <literal>&lt;pfx:name&gt;</literal>
+                    child element. In the end, the form of a parameter name should be prefix.InternalName.
+                  </para>
+                </td>
+              </tr>
+              <tr>
+                <td>name or &lt;pfx:default&gt;</td>
+                <td>optional</td>
+                <td>
+                  <para>
+                    The difference between the attribute and the child element form is analog to the description given above.
+                    You can use the default specification to pre-set a value for the case that the backend doesn't
+                    set one on it's own.
+                  </para>
+                </td>
+              </tr>
+              <tr>
+                <td>position</td>
+                <td>optional</td>
+                <td>
+                  <para>
+                    Default is <literal>1</literal>. Useful only for parameters which are defined to occur multiple times, i.e.
+                    the same parameter name may appear more than one time in the output from the backend system to pre-fill
+                    elements on the UI. Wiht position you can decide, which of those multiple outputs under the same name you
+                    want to reference for the pre-filled value.
+                  </para>
+                </td>
+              </tr>
+              <tr>
+                <td>class</td>
+                <td>optional</td>
+                <td>
+                  <para>
+                    See <xref linkend="xslt.forms.elements"/> for an explanation on how the CSS class(es) for the html
+                    element are constructed.
+                  </para>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </para>
+      </section>
+      <section xml:id="xslt.forms.elements.textarea">
+        <title>Creating a text area field</title>
+        <para>
+          Text area fields are created the same way as text input fields (see <xref linkend="xslt.forms.elements.text"/>),
+          you only have to set the <literal>type</literal> attribute to <literal>area</literal>.
+        </para>
+        <para>
+          Basically the same attributes as for <literal>&lt;pfx:xinp type="text"&gt;</literal>, with the exception
+          that there's no default attribute or child node. The same way as it works for the html textarea tag, the content
+          of the element (minus the special <literal>&lt;pfx:name&gt;</literal> child) becomes the default value
+          for the form input element.
+        </para>
+      </section>
+      <section xml:id="xslt.forms.elements.password">
+        <title>Creating a password field</title>
+        <para>
+          Password fields are created the same way as text input fields (see <xref linkend="xslt.forms.elements.text"/>),
+          you only have to set the <literal>type</literal> attribute to <literal>password</literal>.
+        </para>
+        <para>
+          Similar to <literal>&lt;pfx:xinp type="text"&gt;</literal>, but without the ability to set a default value from the UI and the position is fixed to be "1".
+        </para>
+      </section>
+      <section xml:id="xslt.forms.elements.hidden">
+        <title>Creating a hidden field</title>
+        <para>
+          Hidden fields are created the same way as text input fields (see <xref linkend="xslt.forms.elements.text"/>),
+          you only have to set the <literal>type</literal> attribute to <literal>password</literal>.
+        </para>
+        <para>
+          Basically the same attributes as for <literal>&lt;pfx:xinp type="text"&gt;</literal>. Of course no special class attribute handling, as the result is invisible anyway.
+        </para>
+      </section>
+      <section xml:id="xslt.forms.elements.radio">
+        <title>Creating a radio or check box</title>
+        <para>
+          Radio buttons and checkboxes are created using the <literal>&lt;pfx:xinp&gt;</literal> tag as well.
+        </para>
+<programlisting language="xml"><![CDATA[<pfx:xinp type="radio|check" name="AName" value="AValue" default="true|false" class="ACssClass">
+  <pfx:name>
+    <ixsl:value-of select="/some/runtime/name"/>
+  </pfx:name>
+  <pfx:value>
+    <ixsl:value-of select="/some/runtime/value"/>
+  </pfx:value>
+  <pfx:default>
+    <ixsl:value-of select="/runtime/true/or/false"/>
+  </pfx:default>
+</pfx:xinp>]]></programlisting>
+        <para>
+          <table rules="all" frame="box">
+            <caption>Attributes of pfx:xinp[@type="radio|check"]</caption>
+            <thead>
+              <tr>
+                <th>Attribute name</th>
+                <th>Mandatory?</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>name or &lt;pfx:name&gt;</td>
+                <td>mandatory</td>
+                <td>
+                  <para>
+                    The name of the parameter. Use the name attribute when the name is a known literal value. If it must be computed at
+                    runtime (e.g. from the runtime DOM tree), you can use the <literal>&lt;pfx:name&gt;</literal> child element. In the end,
+                    the form of a parameter name should be prefix.InternalName.
+                  </para>
+                  <para>
+                    A group of radio- or checkboxes share the same name and differ by the value they submit when they are checked. 
+                  </para>
+                </td>
+              </tr>
+              <tr>
+                <td>value or &lt;pfx:value&gt;</td>
+                <td>mandatory</td>
+                <td>
+                  <para>
+                    Needed to set the value that is to be submitted when the element is checked. The difference between the attribute and
+                    the child element form is analog to the description given above.
+                  </para>
+                </td>
+              </tr>
+              <tr>
+                <td>default or &lt;pfx:default&gt;</td>
+                <td>optional</td>
+                <td>
+                  <para>
+                    Allowed values are <literal>true</literal> and <literal>false</literal>. The difference between the attribute and
+                    the child element form is analog to the description given above. You can use the default specification to decide if
+                    the form element is checked for the case that the backend doesn't supply which of the group's members are to be checked.
+                  </para>
+                </td>
+              </tr>
+              <tr>
+                <td>class</td>
+                <td>optional</td>
+                <td>
+                  <para>
+                    See <xref linkend="xslt.forms.elements"/> for an explanation on how the CSS class(es) for the html
+                    element are constructed.
+                  </para>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </para>
+      </section>
+      <section xml:id="xslt.forms.elements.select">
+        <title>Creating option menus</title>
+        <para>
+          Radio buttons and checkboxes are created using the <literal>&lt;pfx:xinp&gt;</literal> and <literal>&lt;pfx:option&gt;</literal> tags.
+        </para>
+        <programlisting language="xml"><![CDATA[<pfx:xinp type="select" name="AName" class="ACssClass" multiple="true|false">
+  <pfx:name>
+    <ixsl:value-of select="/some/runtime/name"/>
+  </pfx:name>
+
+  <!--
+    One option tag per option that is available in the menu
+  -->
+  <pfx:option value="AValue" default="true|false">
+    <pfx:value>
+      <ixsl:value-of select="/some/runtime/value"/>
+    </pfx:value>
+    <pfx:default>
+      <ixsl:value-of select="/runtime/true/or/false"/>
+    </pfx:default>
+  </pfx:option>
+</pfx:xinp>]]></programlisting>
+        <para>
+          <table rules="all" frame="box">
+            <caption>Attributes of pfx:xinp[@type="select"]</caption>
+            <thead>
+              <tr>
+                <th>Attribute name</th>
+                <th>Mandatory?</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>name or &lt;pfx:name&gt;</td>
+                <td>mandatory</td>
+                <td>
+                  <para>
+                    The name of the parameter. Use the name attribute when the name is a known literal value. If it must be computed at
+                    runtime (e.g. from the runtime DOM tree), you can use the <literal>&lt;pfx:name&gt;</literal> child element. In the end,
+                    the form of a parameter name should be prefix.InternalName.
+                  </para>
+                </td>
+              </tr>
+              <tr>
+                <td>class</td>
+                <td>optional</td>
+                <td>
+                  <para>
+                    See <xref linkend="xslt.forms.elements"/> for an explanation on how the CSS class(es) for the html
+                    element are constructed.
+                  </para>
+                </td>
+              </tr>
+              <tr>
+                <td>multiple</td>
+                <td>optional</td>
+                <td>
+                  <para>
+                    Defaults to false. Set to true when you want to have a select menu with multiple selectable options.
+                  </para>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </para>
+        <para>
+          <table rules="all" frame="box">
+            <caption>Attributes of pfx:option</caption>
+            <thead>
+              <tr>
+                <th>Attribute name</th>
+                <th>Mandatory?</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>value or &lt;pfx:value&gt;</td>
+                <td>mandatory</td>
+                <td>
+                  <para>
+                    Needed to set the value that is to be submitted when the element is checked. The difference between
+                    the attribute and the child element form is analog to the description given above.
+                  </para>
+                </td>
+              </tr>
+              <tr>
+                <td>default or &lt;pfx:default&gt;</td>
+                <td>optional</td>
+                <td>
+                  <para>
+                    See <xref linkend="xslt.forms.elements"/> for an explanation on how the CSS class(es) for the html
+                    element are constructed.
+                  </para>
+                </td>
+              </tr>
+              <tr>
+                <td>multiple</td>
+                <td>optional</td>
+                <td>
+                  <para>
+                    Allowed values are <literal>true</literal> and <literal>false</literal>. The difference between the
+                    attribute and the child element form is analog to the description given above. You can use the default
+                    specification to decide if the option is selected for the case that the backend doesn't supply which
+                    of the options are to be selected.
+                  </para>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </para>
+        <para>
+          All other attributes are copied to the resulting HTML element.
+        </para>
+      </section>
+    </section>
   </section>
 
   <section>
