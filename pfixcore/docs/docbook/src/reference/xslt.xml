@@ -1286,6 +1286,192 @@
         </para>
       </section>
     </section>
+    <section id="xslt.forms.errors">
+      <title>Handling error conditions</title>
+      <para>
+        Errors in Pustefix come in two variants:
+      </para>
+      <orderedlist>
+        <listitem>
+          <para>
+            Field errors that are attached to a form input field and which must be handled on the page the form element is defined on.
+          </para>
+        </listitem>
+        <listitem>
+          <para>
+            Page messages which are (not neccessary fatal) errors or warnings which may or may not be displayed on the current or the following page.
+          </para>
+          <para>
+            Page messages are not associated to a single form element, but are used for general feedback on the status of the application.
+          </para>
+        </listitem>
+      </orderedlist>
+      <section id="xslt.forms.errors.fields">
+        <title>Errors attached to a field</title>
+        <para>
+          The <literal>&lt;pfx:checkerror&gt;</literal> tag is used to display content depending on the fact if a field error
+          (or possibly a field error with a special level attribute) is present in the runtime DOM tree.
+        </para>
+        <programlisting language="xml"><![CDATA[<pfx:checkerror level="AString">
+  <!--
+    Content to be displayed when any error with the matching level attribute is present in the
+    runtime DOM tree. The level attribute is optional, when it's missing, any error will trigger
+    the display of the content of the pfx:checkerror tag.
+  -->
+</pfx:checkerror>]]></programlisting>
+        <para>
+          The <literal>&lt;pfx:checkfield&gt;</literal> tag is used to display error messages depending on the form
+          field they are attached to.
+        </para>
+        <programlisting language="xml"><![CDATA[<pfx:checkfield name="prefix.Name">
+  <pfx:error>
+    <!--
+      Content that's displayed when an error associated to the form field referenced
+      in the name attribute is present in the runtime DOM tree.
+    -->
+  </pfx:error>
+  <pfx:normal>
+    <!--
+      Content that's displayed when no error associated to the form field referenced
+      in the name attribute is present in the runtime DOM tree.
+    -->
+  </pfx:normal>
+  <!--
+    Content outside of the two child nodes is displayed in both cases.
+  -->
+</pfx:checkfield>]]></programlisting>
+        <para>
+          There can be more than one of <literal>&lt;pfx:error&gt;</literal> and <literal>&lt;pfx:normal&gt;</literal>
+          child nodes. These can be used to display completely different content based on the presence or not of an error.
+        </para>
+        <para>
+          The <literal>&lt;pfx:checkfield&gt;</literal> tag defines a set of ixsl variables that can be used inside its body. These are
+        </para>
+        <itemizedlist>
+          <listitem>
+            <literal>$pfx_scode</literal>: The StatusCode node that represents the error. This can be used to call
+            <literal>ixsl:apply-templates</literal> on to display the error message.
+          </listitem>
+          <listitem>
+            <literal>$pfx_level</literal>: The level attribute of the error in the runtime DOM tree (or empty, if
+            there's no level attribute).
+          </listitem>
+          <listitem>
+            <literal>$pfx_class</literal>: The CSS class that has been constructed depending on the presence of the error.
+            If there's no error, this variable is empty. Else, if the error is present and has no level attribute set,
+            the value is just <literal>PfxError</literal>. If the error has a level attribute, the class is set to be
+            <literal>PfxError PfxErrorLevel_{$pfx_level}</literal>.
+          </listitem>
+        </itemizedlist>
+        <example>
+          <title>Using <literal>&lt;pfx:checkfield&gt;</literal></title>
+          <programlisting language="xml"><![CDATA[<tr>
+  <pfx:checkfield name="addr.Street">
+    <td class="{$pfx_class}">Street:</td>
+  </pfx:checkfield>
+  <td><pfx:xinp type="text" name="addr.Street"/></td>
+</tr> 
+<pfx:checkfield name="addr.Street">
+  <pfx:error>
+    <tr>
+      <td colspan="2" class="{$pfx_class}">
+        <ixsl:apply-templates select="$pfx_scode"/>
+      </td>
+    </tr>
+  </pfx:error>
+</pfx:checkfield>]]></programlisting>
+        <para>
+          You can see how the second <literal>&lt;pfx:checkfield&gt;</literal> inserts a whole new row in the table structure
+          when and only when a matching error happens. Also note how the defined <literal>$pfx_class</literal> variable is used
+          to style content depending on the presence of an error.
+        </para>
+        </example>
+      </section>
+      
+      <section id="xslt.forms.errors.page">
+        <title>Checking for pagemessages</title>
+        <para>
+          The <literal>&lt;pfx:checkmessage&gt;</literal> tag is used to display content depending on the fact if a
+          page message (or possibly a page message with a special level attribute) is present in the runtime DOM tree.
+        </para>
+        <programlisting language="xml"><![CDATA[<pfx:checkmessage level="AString">
+  <!--
+    Content to be displayed when any page message with the matching level attribute is
+    present in the runtime DOM tree. The level attribute is optional, when it's missing,
+    any page message will trigger the display of the content of the pfx:checkmessage tag.
+  -->
+<pfx:checkmessage>]]></programlisting>
+        <para>
+          The <literal>&lt;pfx:messageloop&gt;</literal> tag can be used to repeat content for every page message
+          that is present in the runtime DOM tree.
+        </para>
+        <programlisting language="xml"><![CDATA[<pfx:checkmessage level="AString">
+  <pfx:messageloop>
+    <!--
+      This content is repeated for all the page messages that match the restrictions imposed by
+      the parent's level attribute (or all page messages, if the attribute isn not given).
+    -->
+  </pfx:messageloop>.
+</pfx:checkmessage>]]></programlisting>
+        <para>
+          The <literal>&lt;pfx:messageloop&gt;</literal> tag defines a set of ixsl variables that can be used inside its body. These are
+        </para>
+        <itemizedlist>
+          <listitem>
+            <literal>$pfx_scode</literal>: The StatusCode node that represents the error. This can be used to call
+            <literal>ixsl:apply-templates</literal> on to display the error message.
+          </listitem>
+          <listitem>
+            <literal>$pfx_level</literal>: The level attribute of the error in the runtime DOM tree (or empty, if
+            there's no level attribute).
+          </listitem>
+          <listitem>
+            <literal>$pfx_class</literal>: The CSS class that has been constructed depending on the presence of the error.
+            If there's no error, this variable is empty. Else, if the error is present and has no level attribute set,
+            the value is just <literal>PfxError</literal>. If the error has a level attribute, the class is set to be
+            <literal>PfxError PfxErrorLevel_{$pfx_level}</literal>.
+          </listitem>
+        </itemizedlist>
+      </section>
+    </section>
+    <section xml:id="xslt.forms.token">
+      <title>Avoiding duplicate form submission</title>
+      <para>
+        You may face situations where you want to prevent, that the same form is submitted multiple times (e.g. by double-click,
+        back button) or that a form, opened in a new window/tab, but already opened in another window/tab, can still be
+        submitted from the old window/tab.
+      </para>
+      <para>
+        Using the <literal>&lt;pfx:token&gt;</literal> tag a hidden field with a random token is included into its parent form.
+        The token is stored in the Context, keyed by a customizable name (by default pagename#elementid, which can be overwritten/replaced
+        using the name attribute). After the form is submitted, the token is invalidated and submitting the form again causes the setting
+        of a page message. Via the errorpage attribute you can optionally jump to an error page.
+      </para>
+      <programlisting language="xml"><![CDATA[<pfx:forminput>
+  <pfx:token errorpage="multisubmiterror"/>
+  <!-- place form elements here -->
+</pfx:forminput>]]></programlisting>
+      <para>
+        You should be aware that this mechanism depends on the caching behaviour of the used browser, e.g. for browsers, which don't
+        cache but reload pages accessed via the back button, it can't prevent the repeated form submission, because the form in
+        fact is a new instance and we can't detect or decide that the submit is illegal.
+      </para>
+      <para>
+        This mechanism by default only prevents forms with illegal tokens from being processed. If you want to ensure that form submits
+        including no token will fail too, you can force this behaviour by setting the requirestoken attribute at the pagerequest's input
+        element to true. This will force tokens for every form that's submitted to this page.
+      </para>
+      <programlisting language="xml"><![CDATA[<contextxmlserver>
+  <!--
+    servlet config options
+  -->
+  <pagerequest name="...">
+    <input requirestoken="true">
+      <interface prefix="..." class="..."/>
+    </input>
+  </pagerequest>
+</contextxmlserver>]]></programlisting>
+    </section>
   </section>
 
   <section>
