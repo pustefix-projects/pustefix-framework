@@ -1510,7 +1510,10 @@ public class PremiumCustomerCondition implements Condition {
 
   <section xml:id="advanced.editor">
     <title>The Pustefix Editor</title>
-    <para></para>
+    <para>
+      This has to be re-written from scratch. The old wiki did not contain any
+      useful information.
+    </para>
   </section>
 
 </chapter>
