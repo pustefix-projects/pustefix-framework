@@ -405,7 +405,16 @@
 
   <section>
     <title>Including text and images</title>
-    <para>Introduction here...</para>
+    <para>
+      There are two types of ressources that need to be included into a Pustefix page. Textual content ("Include Parts") is
+      included with the help of the <literal>&lt;pfx:include&gt;</literal> tag while images are included via the
+      <literal>&lt;pfx:image&gt;</literal> tag. Both tags make sure to register the ressources in the runtime system, so at all
+      times the system knows which ressources a certain page uses. This information is used to check if the page is still
+      up-to-date or needs rebuilding (by comparing file modification times of the ressources with the creation time of the page itself).
+    </para>
+    <para>
+      Of course this check can be disabled for a "live" system, as there is typically no need to check for changed ressources.
+    </para>
     <section xml:id="xslt.pfx.include">
       <title>Include parts (&lt;pfx:include&gt;)</title>
       <para>
