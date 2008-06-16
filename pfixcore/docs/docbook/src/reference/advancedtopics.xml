@@ -167,7 +167,7 @@
     <section xml:id="advanced.i18n.xsl">
       <title>Internationalisation in the presentation layer</title>
       <para>
-        See <xref linkend="xslt.pfx:langselect"/> on more information on how the access the currently selected
+        See <xref linkend="xslt.pfx.langselect"/> on more information on how the access the currently selected
         language in the presentation layer.
       </para>
     </section>

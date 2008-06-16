@@ -41,68 +41,67 @@
       </tr>
       <tr>
         <td>pfx:button</td>
-        <td>This tag creates simple links to internal Pustefix pages (possibly submitting parameters for requests)</td>
+        <td>This tag creates simple links to internal Pustefix pages (possibly submitting parameters for requests), see <xref linkend="xslt.pfx.button"/></td>
       </tr>
       <tr>
         <td>pfx:url</td>
-        <td>Used to create only the content of the href attribute of a link to an internal page.</td>
+        <td>Used to create only the content of the href attribute of a link to an internal page, see <xref linkend="xslt.pfx.url"/></td>
       </tr>
       <tr>
         <td>pfx:elink</td>
         <td>
           This tag creates links to external URLs where care must be taken to strip the session ID from the referer header to not leak
-          sensitive information to the outside world
+          sensitive information to the outside world, see <xref linkend="xslt.pfx.elink"/>
         </td>
       </tr>
       <tr>
         <td>pfx:include</td>
         <td>
           This tag references a file via its href attribute, and includes a named snippet of xml content contained in this file
-          via the part attribute.
+          via the part attribute, see <xref linkend="xslt.pfx.include"/>
         </td>
       </tr>
       <tr>
         <td>pfx:maincontent</td>
-        <td>This tag is used to include "computed" include parts.</td>
+        <td>This tag is used to include "computed" include parts, see <xref linkend="xslt.pfx.maincontent"/></td>
       </tr>
       <tr>
         <td>pfx:image</td>
         <td>
-          This tag references images to be included in the final page (via
-          img-tags).
+          This tag references images to be included in the final page (via <literal>img</literal>-tags), see <xref linkend="xslt.pfx.image"/>
         </td>
       </tr>
       <tr>
         <td>pfx:forminput</td>
-        <td>This tag creates a HTML form.</td>
+        <td>This tag creates a HTML form, see <xref linkend="xslt.pfx.forminput"/></td>
       </tr>
       <tr>
         <td>pfx:xinp</td>
-        <td>Used to create HTML form elements.</td>
+        <td>Used to create HTML form elements, see <xref linkend="xslt.forms.elements"/></td>
       </tr>
       <tr>
         <td>pfx:checkfield</td>
-        <td>This tag supplies content depending on the error state of a special form field.</td>
+        <td>This tag supplies content depending on the error state of a special form field, see <xref linkend="xslt.forms.errors.fields"/></td>
       </tr>
       <tr>
         <td>pfx:checkerror</td>
-        <td>Used to check for the presence of any error condition.</td>
+        <td>Used to check for the presence of any error condition, see <xref linkend="xslt.forms.errors.fields"/></td>
       </tr>
       <tr>
         <td>pfx:checkmessage</td>
-        <td>Used to check for the presence of any page message.</td>
+        <td>Used to check for the presence of any page message, see <xref linkend="xslt.forms.errors.page"/></td>
       </tr>
       <tr>
         <td>pfx:checkactive, pfx:checknotactive</td>
-        <td>These tags check for visibility (or not) of pages or for the activity (or not) of handlers.</td>
+        <td>These tags check for visibility (or not) of pages or for the activity (or not) of handlers, see <xref linkend="xslt.utility.active"/></td>
       </tr>
       <tr>
         <td>pfx:themeselect, pfx:langselect</td>
-        <td>Used to select content depending on a matching theme or currently selected language.</td>
+        <td>Used to select content depending on a matching theme or currently selected language, see <xref linkend="xslt.pfx.themeselect"/> and <xref linkend="xslt.pfx.langselect"/></td>
       </tr>
       <tr>
         <td>pfx:editconsole, pfx:webserviceconsole</td>
-        <td>create panels of shortcut links useful during development.</td>
+        <td>create panels of shortcut links useful during development, see <xref linkend="xslt.consoles"/></td>
       </tr>
     </tbody>
   </table>
@@ -521,7 +520,7 @@
         inserted in place of the tag.
       </para>
     </section>
-    <section>
+    <section xml:id="xslt.pfx.maincontent">
       <title>Generated include requests (&lt;pfx:maincontent&gt;)</title>
       <para>
         Looking at the example naturally leads to the question how it is possible to
@@ -1526,7 +1525,7 @@
         </table>
       </para>
     </section>
-    <section xml:id="xslt.pfx:langselect">
+    <section xml:id="xslt.pfx.langselect">
       <title>Displaying content based on the language</title>
       <para>
         The selection mechanism of <literal>&lt;pfx:langselect&gt;</literal> allows to select matching content anywhere
@@ -1546,7 +1545,7 @@
         for all language codes starting with en_ except <literal>en_GB</literal> (which has a more specific node below).
       </para>
     </section>
-    <section xml:id="xslt.pfx:themeselect">
+    <section xml:id="xslt.pfx.themeselect">
       <title>Displaying content based on the theme</title>
       <para>
         The selection mechanism of <literal>&lt;pfx:themeselect&gt;</literal> allows to select matching content anywhere inside a
