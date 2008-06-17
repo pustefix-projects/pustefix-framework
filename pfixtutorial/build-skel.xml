@@ -406,13 +406,13 @@ or delete the DOCTYPE definition -->
   <target name="ant-tasks-webservice">
     <taskdef
       name="pfx-webservice"
-      classname="de.schlund.pfixcore.webservice.jaxws.generate.WebserviceTask"
+      classname="org.pustefixframework.webservices.jaxws.generate.WebserviceTask"
       classpathref="cp.classpath"
       description="Generates/deploys WSDL, WSDD and JS stubs from web service interfaces/configuration"
     />
     <taskdef
       name="pfx-wsproxygen"
-      classname="de.schlund.pfixcore.webservice.jaxws.generate.ProxyGenerator"
+      classname="org.pustefixframework.webservices.jaxws.generate.ProxyGenerator"
       classpathref="cp.classpath"
       description="Generates annotated service implementation proxy classes"
     />

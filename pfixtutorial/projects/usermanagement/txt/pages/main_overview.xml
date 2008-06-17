@@ -11,9 +11,11 @@
           Homepage: <ixsl:value-of select="./@homepage"/><br/>
         </ixsl:if>
         Admin: <ixsl:value-of select="./@admin"/><br/>
-        <br/><br/>        
-        
-        
+        <br/>        
+        <pfx:button>delete
+          <pfx:argument name="delete.id"><ixsl:value-of select="./@id"/></pfx:argument>
+        </pfx:button>
+        <br/><br/><br/>
       </ixsl:for-each>
       
       <pfx:button page="adduser" >add</pfx:button>

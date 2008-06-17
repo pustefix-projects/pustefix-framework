@@ -13,7 +13,7 @@
     <admin enabled="true"/>
     <monitoring enabled="true" scope="session" historysize="10"/>
     <logging enabled="true"/>
-    <faulthandler class="de.schlund.pfixcore.webservice.fault.LoggingHandler"/>
+    <faulthandler class="org.pustefixframework.webservices.fault.LoggingHandler"/>
   </webservice-global>
   
   <webservice name="CalculatorService">

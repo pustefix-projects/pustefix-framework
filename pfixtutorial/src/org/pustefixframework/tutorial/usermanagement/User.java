@@ -16,10 +16,22 @@ public class User {
     private String name;
     private String email;
     private Date birthday;
-    private boolean admin;
+    private Boolean admin;
     private URL homepage;
     private String sex;
 
+    public User() {
+    }
+    
+    public User (String name, String email, Date birthday, Boolean admin, URL homepage, String sex) {
+        this.name = name;
+        this.email = email;
+        this.birthday = birthday;
+        this.admin = admin;
+        this.homepage = homepage;
+        this.sex = sex;
+    }
+    
     @Transient
     public int getId() {
         return id;
@@ -57,11 +69,11 @@ public class User {
     }
 
     @Param(name="admin", mandatory=false)
-    public boolean getAdmin() {
+    public Boolean isAdmin() {
         return admin;
     }
 
-    public void setAdmin(boolean admin) {
+    public void setAdmin(Boolean admin) {
         this.admin = admin;
     }
 

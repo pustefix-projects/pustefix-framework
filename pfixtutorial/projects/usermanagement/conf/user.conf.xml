@@ -27,6 +27,9 @@
   </pagerequest>
   
   <pagerequest name="overview">
+    <input>
+      <interface prefix="delete" class="org.pustefixframework.tutorial.usermanagement.DeleteUserWrapper" />
+    </input>
     <output>
       <resource node="users" class="org.pustefixframework.tutorial.usermanagement.UserList" />
     </output>

@@ -5,12 +5,12 @@ import de.schlund.pfixcore.generator.IWrapper;
 import de.schlund.pfixcore.generator.iwrpgen.IWrapperToBean;
 import de.schlund.pfixcore.workflow.Context;
 
-public class UserHandler implements IHandler {
+public class DeleteUserHandler implements IHandler {
 
     public void handleSubmittedData(Context context, IWrapper wrapper) throws Exception {
-        User user = IWrapperToBean.createBean(wrapper, User.class);
+        DeleteUser deleteUser = IWrapperToBean.createBean(wrapper, DeleteUser.class);
         UserList userList = context.getContextResourceManager().getResource(UserList.class);
-        userList.addUser(user);
+        userList.deleteUser(deleteUser.getId());
     }
 
     public boolean isActive(Context context) throws Exception {
@@ -26,6 +26,6 @@ public class UserHandler implements IHandler {
     }
 
     public void retrieveCurrentStatus(Context context, IWrapper wrapper) throws Exception {
-        
     }
+    
 }

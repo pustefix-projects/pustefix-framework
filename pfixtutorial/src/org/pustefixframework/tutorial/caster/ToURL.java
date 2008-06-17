@@ -5,7 +5,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.pustefixframework.CoreStatusCodes;
+import org.pustefixframework.tutorial.StatusCodeLib;
 
 import de.schlund.pfixcore.generator.IWrapperParamCaster;
 import de.schlund.pfixcore.generator.SimpleCheck;
@@ -18,7 +18,7 @@ public class ToURL extends SimpleCheck implements IWrapperParamCaster {
     private StatusCode scode;
     
     public ToURL() {
-        scode = CoreStatusCodes.CASTER_ERR_TO_BOOLEAN;
+        scode = StatusCodeLib.CASTER_URL_URL_INVALID;
     }
     
     public void castValue(RequestParam[] requestParams) {
