@@ -87,47 +87,53 @@ public class BeanDescriptor {
             if(methods[i].getDeclaringClass()!=Object.class) {
                 if(!Modifier.isStatic(methods[i].getModifiers())) {
                     String name=methods[i].getName();
-                    if(name.length()>3&&Character.isUpperCase(name.charAt(3))) {
-                        if(name.startsWith("get") && methods[i].getParameterTypes().length==0) {
-                            String origPropName=extractPropertyName(name);
-                            String propName=origPropName;
-                            boolean isExcluded=false;
-                            Field field=null;
+                    if (methods[i].getParameterTypes().length == 0 && 
+                            ((name.length() > 3 && Character.isUpperCase(name.charAt(3)) && name.startsWith("get")) || 
+                            (name.length() > 2 && Character.isUpperCase(name.charAt(2)) && name.startsWith("is")))) {
+                        String origPropName=extractPropertyName(name);
+                        String propName=origPropName;
+                        boolean isExcluded=false;
+                        Field field=null;
+                        try {
+                            field=clazz.getField(origPropName);
+                            if(field!=null && (Modifier.isStatic(field.getModifiers()) || Modifier.isFinal(field.getModifiers()))) field=null;
+                        } catch(NoSuchFieldException x) {}
+                        Transient ex=methods[i].getAnnotation(Transient.class);
+                        if(ex==null&&field!=null) ex=field.getAnnotation(Transient.class);
+                        if(ex!=null) isExcluded=true;
+                        Param param=methods[i].getAnnotation(Param.class);
+                        if(param==null&&field!=null) param=field.getAnnotation(Param.class);
+                        if(param!=null&&!param.name().equals("")) propName=param.name();
+                        if(!isExcluded) {
+                            if(getters.get(propName)!=null) throw new RuntimeException("Duplicate bean property name: "+propName);
+                            Method setter=null;
                             try {
-                                field=clazz.getField(origPropName);
-                                if(field!=null && (Modifier.isStatic(field.getModifiers()) || Modifier.isFinal(field.getModifiers()))) field=null;
-                            } catch(NoSuchFieldException x) {}
-                            Transient ex=methods[i].getAnnotation(Transient.class);
-                            if(ex==null&&field!=null) ex=field.getAnnotation(Transient.class);
-                            if(ex!=null) isExcluded=true;
-                            Param param=methods[i].getAnnotation(Param.class);
-                            if(param==null&&field!=null) param=field.getAnnotation(Param.class);
-                            if(param!=null&&!param.name().equals("")) propName=param.name();
-                            if(!isExcluded) {
-                                if(getters.get(propName)!=null) throw new RuntimeException("Duplicate bean property name: "+propName);
-                                Method setter=null;
-                                try {
-                                    setter=clazz.getMethod(createSetterName(origPropName),new Class[] {methods[i].getReturnType()});
-                                    if(setter.getReturnType()!=void.class) setter=null;
-                                } catch(NoSuchMethodException x) {}
-                                if(setter!=null) {
-                                    setters.put(propName,setter);
-                                    getters.put(propName,methods[i]);
-                                    types.put(propName,methods[i].getGenericReturnType());
-                                }
-                            }   
-                        } 
-                    }
+                                setter=clazz.getMethod(createSetterName(origPropName),new Class[] {methods[i].getReturnType()});
+                                if(setter.getReturnType()!=void.class) setter=null;
+                            } catch(NoSuchMethodException x) {}
+                            if(setter!=null) {
+                                setters.put(propName,setter);
+                                getters.put(propName,methods[i]);
+                                types.put(propName,methods[i].getGenericReturnType());
+                            }
+                        }   
+                    } 
                 }
             }
         }   
     }
     
     private String extractPropertyName(String methodName) {
-        String name=methodName.substring(3);
-        if(name.length()>1&&Character.isUpperCase(name.charAt(0))&&
-                Character.isUpperCase(name.charAt(1))) return name;
-        return Character.toLowerCase(name.charAt(0))+name.substring(1);
+        String name = "";
+        if (methodName.startsWith("is") && Character.isUpperCase(methodName.charAt(2)) && methodName.length() > 2) {
+            name = methodName.substring(2);
+        } else if (methodName.startsWith("get") && Character.isUpperCase(methodName.charAt(3)) && methodName.length() > 3) {
+            name = methodName.substring(3);
+        }
+        if (name.length() > 1 && Character.isUpperCase(name.charAt(0)) && Character.isUpperCase(name.charAt(1))) {
+            return name;
+        }
+        return Character.toLowerCase(name.charAt(0)) + name.substring(1);
     }
     
     private String createSetterName(String propName) {

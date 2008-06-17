@@ -133,8 +133,12 @@ public class IWrapperAnnotationProcessor implements AnnotationProcessor {
     }
 
     protected String extractPropertyName(String methodName) {
-        String name = methodName.substring(3);
-        if (name.length() > 1 && Character.isUpperCase(name.charAt(0)) && Character.isUpperCase(name.charAt(1))) return name;
+        String name = "";
+        if (methodName.length() > 3 && methodName.startsWith("get") && Character.isUpperCase(methodName.charAt(3))) {
+            name = methodName.substring(3);
+        } else  if (methodName.length() > 2 && methodName.startsWith("is") && Character.isUpperCase(methodName.charAt(2))) {
+            name = methodName.substring(2);
+        }
         return Character.toLowerCase(name.charAt(0)) + name.substring(1);
     }
 
@@ -300,8 +304,10 @@ public class IWrapperAnnotationProcessor implements AnnotationProcessor {
 
         public void visitMethodDeclaration(MethodDeclaration methDecl) {
             String getterName = methDecl.getSimpleName();
-            if (MirrorApiUtils.isPublicNonStatic(methDecl) && getterName.length() > 3 && Character.isUpperCase(getterName.charAt(3))
-                    && getterName.startsWith("get") && methDecl.getParameters().size() == 0 && !(methDecl.getReturnType() instanceof VoidType)) {
+            if (MirrorApiUtils.isPublicNonStatic(methDecl) && 
+                    ((getterName.length() > 3 && Character.isUpperCase(getterName.charAt(3)) && getterName.startsWith("get")) || 
+                    (getterName.length() > 2 && Character.isUpperCase(getterName.charAt(2)) && getterName.startsWith("is")))
+                    && methDecl.getParameters().size() == 0 && !(methDecl.getReturnType() instanceof VoidType)) {
                 String propName = extractPropertyName(getterName);
                 ClassDeclaration classDecl = (ClassDeclaration) methDecl.getDeclaringType();
                 FieldDeclaration fieldDecl = MirrorApiUtils.getFieldDeclaration(classDecl, propName);
