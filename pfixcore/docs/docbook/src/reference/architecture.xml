@@ -36,6 +36,27 @@
       </para>
     </section>
 
+    <section xml:id="architecture.backend">
+      <title>The Pustefix backend system</title>
+      <para>
+        <xref linkend="architecture.backend.figure"/> shows, how the different interfaces and classes
+        in Pustefix are connected.
+      </para>
+      <figure xml:id="architecture.backend.figure">
+        <title>The Pustefix backend system</title>
+        <mediaobject>
+          <imageobject>
+            <imagedata fileref="images/reference/architecture-backend.gif" format="GIF"/>
+          </imageobject>
+        </mediaobject>
+        <para>
+          Please note that this graph is somehow out-dated as <literal>de.schlund.pfixcore.workflow.Context</literal>
+          is no longer a class but only a interface providing the application's view on the functions provided by the
+          "real" context implementation used by the servlet.
+        </para>
+      </figure>
+    </section>
+    
     <section xml:id="architecture.xsl">
       <title>Recursive XSL Transformations</title>
       <para>

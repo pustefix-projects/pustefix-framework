@@ -128,8 +128,58 @@
     </para>
     <para>
       Pustefix supplies default implementations of these interfaces.
-      </para>
+    </para>
       
+    <section xml:id="concepts.request_processing.context">
+      <title>The Context</title>
+      <para>
+        The <literal>de.schlund.pfixxml.ContextXMLServer</literal> does most of the request handling in an object called the
+        <literal>"context"</literal>. The inteface <literal>de.schlund.pfixcore.workflow.Context</literal> provides the applications
+        view on this object. From the applications view the context mainly is:
+      </para>
+      <itemizedlist>
+        <listitem>
+          <para>
+            Providing an interface to <literal>de.schlund.pfixcore.workflow.ContextResource</literal> objects.
+            These objects contain the data and the methods needed to implement the desired functionality of a project.
+            Each Context objects initializes one de.schlund.pfixcore.workflow.ContextResourceManager, which in turn
+            initializes all the requested ContextResources. All user data must be stored in ContextResources instead
+            of directly into the HttpSession (this is by design, because a HttpSession only allows to store untyped
+            String-to-Object relations, while the ContextResources can expose arbitrary complex access methods to the stored data).
+          </para>
+        </listitem>
+        <listitem>
+          <para>
+            Providing a pluggable authentication mechanism that is called before any request processing to check if the
+            current session has the needed privileges.
+          </para>
+        </listitem>
+        <listitem>
+          <para>
+            Mapping of requested pagenames (aka "PageRequests") to the objects that implement the functionality that should
+            be supplied by the page. The Context (with the help of a PageMap object initialized on startup of the Context)
+            checks which page is requested and uses the associated de.schlund.pfixcore.workflow.State object to dispatch the
+            request processing to. See below for more details on this process. Note that for each State only one instance is
+            created, so no local data can be stored in States - all session data must be stored in ContextResources.
+          </para>
+        </listitem>
+        <listitem>
+          <para>
+            Organizing pages into PageFlows to provide a small scale "workflow management". PageFlows are linear lists of
+            PageRequests which should be stepped through in order. The Context advances a PageFlow after a request has been
+            handled sucessfully, ie. no error has happened as the result of processing the request data. The detailed rules on how
+            page flows work and how the Context steps through them are explained below.
+          </para>
+        </listitem>
+      </itemizedlist>
+      <para>
+        The context provides a de.schlund.pfixxml.SPDocument to the servlet. This class is a small wrapper around a
+        org.w3c.Document and supplies the XML input document for the final transformation which produces the HTML output.
+        Besides the DOM tree it contains the information the system needs to choose the right stylesheet for the desired
+        page that is to be shown plus some other stuff like XSLT parameters that should be set for the transformation process.
+        The Context doesn't produce the SPDocument itself but delegates this to the State's getDocument() method.      
+      </para>
+    </section>
 
   <section xml:id="concepts.request_processing_pageflow">
     <title>PageFlow</title>
