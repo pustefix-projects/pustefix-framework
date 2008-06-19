@@ -5,12 +5,12 @@
 
   <title>Usermanager tutorial</title>
     
-  <section>
+  <section xml:id="um.introduction">
     <title>Introduction</title>
     <para></para>
   </section>
 
-  <section>
+  <section xml:id="um.newproject">
     <title>Create a new project usermanagement</title>
     <para>Create a new project "usermanagement" (see: <xref linkend="createapplication"/>)</para>
     <para>Use the following data for creating the new project:
@@ -24,7 +24,7 @@
     </para>
   </section>
 
-  <section>
+  <section xml:id="um.newbean">
     <title>Create a new bean</title>
     <para>We create a new class User where we store our user data.</para>
     <programlisting language="java">package org.pustefixframework.tutorial.usermanagement;
@@ -39,7 +39,7 @@ public class User {
     private Date birthday;
     private boolean admin;
     private URL homepage;
-    private String sex;
+    private String gender;
 
     public int getId() {
         return id;
@@ -89,21 +89,21 @@ public class User {
         this.homepage = homepage;
     }
 
-    public String getSex() {
-        return sex;
+    public String getGender() {
+        return gender;
     }
 
-    public void setSex(String sex) {
-        this.sex = sex;
+    public void setGender(String gender) {
+        this.gender = gender;
     }
 }</programlisting>
   </section>
 
-  <section>
+  <section xml:id="um.beanannotations">
     <title>Annotate the bean</title>
     <para>To create a wrapper class from the bean we have to annotate it</para>
 
-    <section>
+    <section xml:id="um.beanannotations.class">
       <title>Annotate the class</title>
       <para>todo</para>
       <programlisting language="java">@IWrapper(name="UserWrapper", ihandler=UserHandler.class)
@@ -111,7 +111,7 @@ public class User {
     ...</programlisting>
     </section>
 
-    <section>
+    <section xml:id="um.beanannotations.getter">
       <title>Annotate the getter</title>
       <para>todo</para>
       <programlisting language="java">@Transient
@@ -139,16 +139,16 @@ public boolean getAdmin() {
 public URL getHomepage() {
     ...</programlisting>
       <para>todo</para>
-      <programlisting language="java">@Param(name="sex", mandatory=true)
-public String getSex() {
+      <programlisting language="java">@Param(name="gender", mandatory=true)
+public String getGender() {
     ...</programlisting>
     </section>
   </section>
 
-  <section>
+  <section xml:id="um.caster">>
     <title>Create a caster</title>
     <para>We need a caster to cast the String which contains the homepage to a java.net.URL object.</para>
-    <section>
+    <section xml:id="um.caster.statuscode">
       <title>Create a new statuscode for the caster</title>
       <para>To show an appropriate errormessage we have to create a new statuscode here. Create the file projects/common/dyntxt/statuscodeinfo.xml 
       with the following content</para>
@@ -172,7 +172,7 @@ public String getSex() {
 </include_parts>]]></programlisting>
     </section>
 
-    <section>
+    <section xml:id="um.caster.tourl">
       <title>Create the ToURL-caster</title>
       <para>Create a new class ToURL which extends SimpleCheck.</para>
       <programlisting language="java">package org.pustefixframework.tutorial.caster;
@@ -220,8 +220,16 @@ public class ToURL extends SimpleCheck implements IWrapperParamCaster {
 }</programlisting>
     </section>
   </section>
+  
+  <section xml:id="um.generation">
+    <title>Generate wrapper and StatusCodeLib</title>
+    <para>type <prompt>ant generate-src</prompt> to generate the wrapper class and the StatusCodeLib class</para>
+    <para>When the build was successful you can find the classes <classname>UserWrapper</classname> and
+    <classname>StatusCodeLib</classname> in your <filename>gensrc</filename> directory.
+    </para>
+  </section>
 
-  <section>
+  <section xml:id="um.userlist">
     <title>Create a class to hold our users</title>
     <para>Create the class UserList</para>
     <programlisting language="java">package org.pustefixframework.tutorial.usermanagement;
@@ -255,13 +263,13 @@ public class UserList {
 }</programlisting>
   </section>
 
-  <section>
+  <section xml:id="um.contextresource">
     <title>Set UserList as a context resource</title>
     <para>Add the line to the context element in user.conf.xml</para>
     <programlisting language="xml"><![CDATA[<resource class="org.pustefixframework.tutorial.usermanagement.UserList" />]]></programlisting>
   </section>
 
-  <section>
+  <section xml:id="um.userhandler">
     <title>Create the handler</title>
     <para>Create a new class which implements de.schlund.pfixcore.generator.IHandler</para>
     <programlisting language="java">package org.pustefixframework.tutorial.usermanagement;
@@ -301,12 +309,12 @@ userList.addUser(user);</programlisting>
     </section>
   </section>
 
-  <section>
-    <title>Create pages</title>
+  <section xml:id="um.pages">
+    <title>Create the pages</title>
     <para>todo</para>
-    <section>
+    <section xml:id="um.pages.userform">
       <title>Create a page for data input</title>
-      <para>Create a new file "main_adduser.xml" in the folder projects/usermanagement/txt/pages</para>
+      <para>Create a new file <filename>main_userform.xml</filename> in the folder projects/usermanagement/txt/pages</para>
       <programlisting language="xml"><![CDATA[<?xml version="1.0" encoding="utf-8"?><include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
   <part name="content">
     <theme name="default">
@@ -329,12 +337,12 @@ userList.addUser(user);</programlisting>
         </pfx:checkfield>
         <br/>
 
-        Sex: 
-        <pfx:xinp type="select" name="user.sex">
+        Gender: 
+        <pfx:xinp type="select" name="user.gender">
           <pfx:option value="m" >male</pfx:option>
           <pfx:option value="f" >female</pfx:option>
         </pfx:xinp>
-        <pfx:checkfield name="user.sex">
+        <pfx:checkfield name="user.gender">
           <pfx:error><pfx:scode/></pfx:error>
         </pfx:checkfield>
         <br/>
@@ -354,7 +362,7 @@ userList.addUser(user);</programlisting>
  </include_parts>]]></programlisting>
     </section>
 
-    <section>
+    <section xml:id="um.pages.overview">
       <title>Create page for listing users</title>
       <para>todo</para>
       <programlisting language="xml"><![CDATA[<?xml version="1.0" encoding="utf-8"?><include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
@@ -371,28 +379,25 @@ userList.addUser(user);</programlisting>
         </ixsl:if>
         Admin: <ixsl:value-of select="./@admin"/><br/>
         <br/><br/>        
-        
-        
       </ixsl:for-each>
-      
+
       <pfx:button page="adduser" >add</pfx:button>
     </theme>
   </part>
  </include_parts>]]></programlisting>
     </section>
 
-    <section>
+    <section xml:id="um.pages.configuration">
       <title>Add pages to xml configuration files</title>
-      <section>
+      <section xml:id="um.pages.configuration.servlet">
         <title>user.conf.xml</title>
-        <para>todo</para>
-        <programlisting language="xml"><![CDATA[<pagerequest name="adduser">
+        <para>Add two new pagerequest elements in the user.conf.xml configuration file.</para>
+        <programlisting language="xml"><![CDATA[<pagerequest name="userform">
   <input>
     <interface prefix="user" class="org.pustefixframework.tutorial.usermanagement.UserWrapper" />
   </input>
 </pagerequest>]]></programlisting>
 
-        <para>todo</para>
         <programlisting language="xml"><![CDATA[<pagerequest name="overview">
   <output>
     <resource node="users" class="org.pustefixframework.tutorial.usermanagement.UserList" />
@@ -400,24 +405,153 @@ userList.addUser(user);</programlisting>
 </pagerequest>]]></programlisting>
       </section>
 
-      <section>
+      <section xml:id="um.pages.configuration.depend">
         <title>depend.xml</title>
         <para>within navigation tags</para>
-        <programlisting language="xml"><![CDATA[<page handler="/xml/user" name="adduser"/>
+        <programlisting language="xml"><![CDATA[<page handler="/xml/user" name="userform"/>
 <page handler="/xml/user" name="overview"/>]]></programlisting>
         <para>after standardmetatags</para>
-        <programlisting language="xml"><![CDATA[<standardpage name="adduser" xml="usermanagement/xml/frame.xml"/>
+        <programlisting language="xml"><![CDATA[<standardpage name="userform" xml="usermanagement/xml/frame.xml"/>
 <standardpage name="overview" xml="usermanagement/xml/frame.xml"/>]]></programlisting>
       </section>
     </section>
   </section>
 
-  <section>
+  <section xml:id="um.pageflow">
     <title>Add pageflow in user.conf.xml</title>
-    <para>Add a pageflow between context and pageflow elements</para>
-    <programlisting language="xml"><![CDATA[<pageflow name="adduserFlow" final="overview">
-  <flowstep name="adduser"/>
+    <para>Add a pageflow element between context and pageflow elements</para>
+    <programlisting language="xml"><![CDATA[<pageflow name="userFlow" final="overview">
+  <flowstep name="userform"/>
   <flowstep name="overview"/>
 </pageflow>]]></programlisting>
+  </section>
+  
+  <section xml:id="um.sampleusers">
+    <title>Add sample users</title>
+    <para>todo</para>
+    <section xml:id="um.sampleusers.constructor">
+      <title>Add a constructor to your UserList class</title>
+      <para>To add sample users more easy we add an constructor to set the mandatory data at once.</para>
+      <programlisting language="java">public User(String name, String email, Date birthday, Boolean admin, URL homepage, String gender) {
+  this.name = name;
+  this.email = email;
+  this.birthday = birthday;
+  this.admin = admin;
+  this.homepage = homepage;
+  this.gender = gender;
+}</programlisting>
+      <para>Further we need here a default constructor</para>
+      <programlisting language="java">public User() {
+}</programlisting>
+    </section>
+    <section xml:id="um.sampleusers.initmethod">
+      <title>Add init method to UserList</title>
+      <para>To add the users when the context resource is initialized we need to an an method annotated with @InitResource.</para>
+      <programlisting language="java">@InitResource
+public void createSampleUsers() throws Exception {
+  addUser(new User("Neo", "neo@pustefix-framework.org", new GregorianCalendar(1964, 8, 2).getTime(), true, 
+      new URL("http://pustefix-framework.org"), "m"));
+  addUser(new User("Trinity", "trinity@pustefix-framework.org", new GregorianCalendar(1967, 7, 21).getTime(), true, 
+      new URL("http://pustefix-framework.org"), "f"));
+  addUser(new User("Morpheus", "morpheus@pustefix-framework.org", new GregorianCalendar(1961, 6, 30).getTime(), true, 
+      new URL("http://pustefix-framework.org"), "m"));
+}</programlisting>
+    </section>
+  </section>
+  
+  <section xml:id="um.deleteusers">
+    <title>Add feature to delete an user</title>
+    <para>We want to add feature to delete existing users</para>
+    <section xml:id="um.deleteusers.bean">
+      <title>Create a new bean</title>
+      <para>We need to create another bean with annotations to generate a wrapper.</para>
+      <programlisting language="java">package org.pustefixframework.tutorial.usermanagement;
+
+import de.schlund.pfixcore.generator.annotation.IWrapper;
+import de.schlund.pfixcore.generator.annotation.Param;
+
+@IWrapper(name="DeleteUserWrapper", ihandler=DeleteUserHandler.class)
+public class DeleteUser {
+    private int id;
+
+    @Param(name="id", mandatory=true)
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+}</programlisting>
+    </section>
+
+    <section xml:id="um.deleteusers.method">
+      <title>Add a method to delete a user to our UserList class</title>
+      <para>In order to delete a user we need a method to do so. We add the following method to the UserList class</para>
+      <programlisting language="java">public void deleteUser(Integer id) {
+        User userToDelete = null;
+        for (User user: users) {
+            if (user.getId() == id) {
+                userToDelete = user; 
+            }
+        }
+        if (userToDelete != null) {
+            users.remove(userToDelete);
+        }
+    }</programlisting>
+    </section>
+
+    <section xml:id="um.deleteusers.handler">
+      <title>Create a new handler</title>
+      <para>We also need another handler.</para>
+      <programlisting language="java">package org.pustefixframework.tutorial.usermanagement;
+
+import de.schlund.pfixcore.generator.IHandler;
+import de.schlund.pfixcore.generator.IWrapper;
+import de.schlund.pfixcore.generator.iwrpgen.IWrapperToBean;
+import de.schlund.pfixcore.workflow.Context;
+
+public class DeleteUserHandler implements IHandler {
+
+    public void handleSubmittedData(Context context, IWrapper wrapper) throws Exception {
+        DeleteUser deleteUser = IWrapperToBean.createBean(wrapper, DeleteUser.class);
+        UserList userList = context.getContextResourceManager().getResource(UserList.class);
+        userList.deleteUser(deleteUser.getId());
+    }
+
+    public boolean isActive(Context context) throws Exception {
+        return true;
+    }
+
+    public boolean needsData(Context context) throws Exception {
+        return false;
+    }
+
+    public boolean prerequisitesMet(Context context) throws Exception {
+        return true;
+    }
+
+    public void retrieveCurrentStatus(Context context, IWrapper wrapper) throws Exception {
+    }
+}</programlisting>
+    </section>
+    
+    <section xml:id="um.deleteusers.button">
+      <title>Add a delete button</title>
+      <para>We need a button to trigger to deletion of a user. We add the following code inside the for-each loop in the main_overview.xml file</para>
+      <programlisting language="xml"><![CDATA[<pfx:button>delete
+  <pfx:command name="SELWRP">delete</pfx:command>
+  <pfx:argument name="delete.id"><ixsl:value-of select="./@id"/></pfx:argument>
+</pfx:button>]]></programlisting>
+    </section>
+
+    <section xml:id="um.deleteusers.configuration">
+      <title>Adjust the servlet configuration</title>
+      <para>Add the following input element to the existing pagerequest of the overview page.</para>
+      <programlisting language="xml"><![CDATA[<input>
+  <interface prefix="delete" class="org.pustefixframework.tutorial.usermanagement.DeleteUserWrapper" />
+  <interface prefix="edit" class="org.pustefixframework.tutorial.usermanagement.EditUserWrapper" />
+</input>]]></programlisting> 
+    </section>
   </section>
 </chapter>
