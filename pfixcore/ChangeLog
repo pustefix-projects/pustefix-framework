@@ -1,3 +1,22 @@
+2008-06-19  Martin Leidig  <mleidig@schlund.de>
+
+	Added postrender Interceptor hook - triggered after rendering
+	from ContextXMLServlet.hookAfterRender(). Postrender interceptors
+	have to implement the ContextInterceptor interface and are
+	configured with a "postrender" tag. 
+	
+	* src/de/schlund/pfixxml/ContextXMLServlet.java: create and call
+	postrender interceptors
+	* src/de/schlund/pfixxml/config/ContextConfig.java: add method
+	getPostRenderInterceptors()
+	* src/de/schlund/pfixxml/config/impl/ContextXMLServletConfigImpl.java:
+	added digester rules for postrender interceptors
+	* src/de/schlund/pfixxml/config/impl/ContextInterceptorRule.java:
+	added support for postrender trigger
+	* src/de/schlund/pfixxml/config/impl/ContextConfigImpl.java: manage
+	postrender interceptors
+	* projects/core/schema/properties200401.xsd: add postrender definition	
+
 2008-06-11  Martin Leidig  <mleidig@schlund.de>
 
 	* projects/core/schema/properties200401.xsd: fixed config-include
