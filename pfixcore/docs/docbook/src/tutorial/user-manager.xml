@@ -127,6 +127,7 @@ public String getEmail() {
     ...</programlisting>
       <para>todo</para>
       <programlisting language="java">@Param(name="birthday", mandatory=true)
+@DateSerializer("yyyy/MM/dd")
 public Date getBirthday() {
     ...</programlisting>
       <para>todo</para>
