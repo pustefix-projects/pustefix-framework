@@ -353,12 +353,13 @@
     <xs:sequence>
       <xs:element ref="prop:start" maxOccurs="1" minOccurs="0"/>
       <xs:element ref="prop:end" maxOccurs="1" minOccurs="0"/>
+      <xs:element ref="prop:postrender" maxOccurs="1" minOccurs="0"/>
     </xs:sequence>
   </xs:complexType>
   
   <xs:element name="start" type="prop:interceptorGroupType"/>	
   <xs:element name="end" type="prop:interceptorGroupType"/>	
-
+  <xs:element name="postrender" type="prop:interceptorGroupType"/>
 
   <xs:complexType name="interceptorGroupType">
 	<xs:sequence maxOccurs="unbounded" minOccurs="0">
