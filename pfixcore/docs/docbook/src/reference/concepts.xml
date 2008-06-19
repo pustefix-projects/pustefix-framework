@@ -7,7 +7,7 @@
 
   <section xml:id="concepts.servlets">
     <title>Servlets</title>
-    <para>
+    <para>     
       The processing of a request in Pustefix starts with a servlet that is derived from
       <literal>de.schlund.pfixxml.ServletManager</literal>. This class implements session creation,redirecting into
       sessions, handling of SSL and other services for it's descendants.
@@ -134,7 +134,7 @@
       <title>The Context</title>
       <para>
         The <literal>de.schlund.pfixxml.ContextXMLServer</literal> does most of the request handling in an object called the
-        <literal>"context"</literal>. The inteface <literal>de.schlund.pfixcore.workflow.Context</literal> provides the applications
+        <literal>"context"</literal>. The interface <literal>de.schlund.pfixcore.workflow.Context</literal> provides the applications
         view on this object. From the applications view the context mainly is:
       </para>
       <itemizedlist>
@@ -622,26 +622,49 @@ public interface State {
           An IHandler has the following simple interface:
         </para>
         <itemizedlist>
-          <listitem>boolean needsData(Context)</listitem>
-          <listitem>boolean prerequisitesMet(Context)</listitem>
-          <listitem>boolean isActive(Context)</listitem>
-          <listitem>void retrieveCurrentStatus(Context, IWrapper)</listitem>
-          <listitem>void handleSubmittedData(Context, IWrapper)</listitem>
+          <listitem><para>boolean needsData(Context)</para></listitem>
+          <listitem><para>boolean prerequisitesMet(Context)</para></listitem>
+          <listitem><para>boolean isActive(Context)</para></listitem>
+          <listitem><para>void retrieveCurrentStatus(Context, IWrapper)</para></listitem>
+          <listitem><para>void handleSubmittedData(Context, IWrapper)</para></listitem>
         </itemizedlist>
         <para>
-          The corresponding methods of the <literal>State</literal> interface and the mappings to the <literal>IHandler</literal> methods are:
+          The corresponding methods of the <literal>State</literal> interface and the mappings to the <literal>IHandler</literal> 
+          methods are:
         </para>
         <itemizedlist>
-          <listitem><literal>boolean needsData(Context, PfixServletRequest)</literal>: this method is just delegated to all defined IHandlers. If any of those returns true, the return value of the State methods is true, too and false otherwise.</listitem>
-          <listitem><literal>boolean isAccessible(Context, PfixServletRequest)</literal>: this method maps on the two IHandler methods prerequisitesMet and isActive. The default algorithm works like this: In a first round, on all IHandlers the prerequisitesMet() method is called. If any of the IHandlers returns false here, the return value of the whole State method is false. If all IHandler return true, a second iteration over the IHandler is made with a call to their isActive method. This time, the logic is reversed: if any IHandler returns true, the State method is true, too. It only returns false when no IHandler's isActive method returns true. It's possible to customise the behaviour for this second iteration in the config file with the policy attribute of the <literal>&lt;input&gt;</literal> node.</listitem>
-          <listitem><literal>ResultDocument getDocument(Context, PfixServletRequest)</literal>: this method is mapped on either retrieveCurrentStatus or handleSubmittedData depending if the request is submitting user data by means of a GET request or a form submit (in this case handleSubmittedData would be called) or if the request just wants a page to be displayed (which would result in retrieveCurrentStatus to be called).</listitem>
+          <listitem><para><literal>boolean needsData(Context, PfixServletRequest)</literal>: 
+           this method is just delegated to all defined IHandlers. If any of those returns true, the return value of the State
+           methods is true, too and false otherwise.</para></listitem>
+          <listitem><para><literal>boolean isAccessible(Context, PfixServletRequest)</literal>: this method maps on the two 
+          IHandler methods prerequisitesMet and isActive. The default algorithm works like this: In a first round, on all 
+          IHandlers the prerequisitesMet() method is called. If any of the IHandlers returns false here, the return value of 
+          the whole State method is false. If all IHandler return true, a second iteration over the IHandler is made with a call 
+          to their isActive method. This time, the logic is reversed: if any IHandler returns true, the State method is true, too.
+           It only returns false when no IHandler's isActive method returns true. It's possible to customize the behavior for this 
+           second iteration in the config file with the policy attribute of the <literal>&lt;input&gt;</literal> node.</para></listitem>
+          <listitem><para><literal>ResultDocument getDocument(Context, PfixServletRequest)</literal>: this method is mapped on 
+          either retrieveCurrentStatus or handleSubmittedData depending if the request is submitting user data by means of a GET
+           request or a form submit (in this case handleSubmittedData would be called) or if the request just wants a page to be 
+           displayed (which would result in retrieveCurrentStatus to be called).</para></listitem>
         </itemizedlist>
         <para>
           Some important things to note:
         </para>
         <itemizedlist>
-          <listitem>No IHandler method returns a ResultDocument (which is basically a wrapper around the DOM tree that is used for the final transformation to generate the HTML output). In a State it's possible (in fact needed) to create the ResultDocument itself and it's easy to put additional nodes into the DOM tree inside the getDocument method. By design, this no longer works with IHandlers. All output should be generated from the configured ContextRessources listed below the <literal>&lt;output&gt;</literal> node of the config file.</listitem>
-          <listitem>IHandlers don't have access to the PfixServletRequest (which is basically a wrapper around HttpServletRequest). All in- or output of parameters must take place via the typesave getter and setter methods of the associated IWrapper object. In the handleSubmittedData method one typically reads the values as they are supplied from the request, and in the retrieveCurrentStatus method one sets the parameters as they are given by the current status of the application to pre-fill form elements on the user interface (Note: the Pustefix elements to create form elements take care to automatically use the values as supplied via the IWrapper to pre-fill form elements. If you generate your form with other XSLT tags or with the original html elements, this will no longer work ot of the box).</listitem>
+          <listitem><para>No IHandler method returns a ResultDocument (which is basically a wrapper around the DOM tree that is 
+          used for the final transformation to generate the HTML output). In a State it's possible (in fact needed) to 
+          create the ResultDocument itself and it's easy to put additional nodes into the DOM tree inside the getDocument 
+          method. By design, this no longer works with IHandlers. All output should be generated from the configured
+           ContextRessources listed below the <literal>&lt;output&gt;</literal> node of the config file.</para></listitem>
+          <listitem><para>IHandlers don't have access to the PfixServletRequest (which is basically a wrapper around 
+          HttpServletRequest). All in- or output of parameters must take place via the typesave getter and setter methods 
+          of the associated IWrapper object. In the handleSubmittedData method one typically reads the values as they are 
+          supplied from the request, and in the retrieveCurrentStatus method one sets the parameters as they are given by the
+          current status of the application to pre-fill form elements on the user interface (Note: the Pustefix elements
+          to create form elements take care to automatically use the values as supplied via the IWrapper to pre-fill form
+          elements. If you generate your form with other XSLT tags or with the original html elements, this will no longer
+          work ot of the box).</para></listitem>
         </itemizedlist>
         <section>
           <title>The Context and DefaultIWrapperState</title>
@@ -710,11 +733,11 @@ public interface State {
                         This will happen if one of three conditions is true:
                       </para>
                       <itemizedlist>
-                        <listitem>A JumpToPage has been set.</listitem>
-                        <listitem>The current page is part of the current pageflow</listitem>
-                        <listitem>
-                          Or the current pageflow has been set explicitely by the request (in this case, the current page
-                          doesn't need to be a member of this flow).
+                        <listitem><para>A JumpToPage has been set.</para></listitem>
+                        <listitem><para>The current page is part of the current pageflow</para></listitem>
+                        <listitem><para>
+                          Or the current pageflow has been set explicitly by the request (in this case, the current page
+                          doesn't need to be a member of this flow).</para>
                         </listitem>
                       </itemizedlist>
                     </listitem>
@@ -740,10 +763,10 @@ public interface State {
                 is processed or a request that is the result of a final page instruction.
               </para>
               <itemizedlist>
-                <listitem>All IWrappers will initialize their data from the request.</listitem>
-                <listitem>
+                <listitem><para>All IWrappers will initialize their data from the request.</para></listitem>
+                <listitem><para>
                   call retrieveCurrentStatus() on all the defined IHandlers, and force the Context to stop
-                  further processing by calling prohibitContinue(). EOR.
+                  further processing by calling prohibitContinue(). EOR.</para>
                 </listitem>
              </itemizedlist>
            </listitem>
