@@ -6,6 +6,7 @@
   <part name="content">
     <theme name="default">
       <center>
+      <br/><br/>
         <pfx:button pageflow="OrderFlow" startwithflow="true">
           Next Page From OrderFlow
         </pfx:button>
@@ -17,6 +18,12 @@
           Next Page From OrderFlow (max. order)
         </pfx:button>
         <br/><br/>
+        The next link will also be active when the "order" page is not accessible, because we use mode="force"...<br/>
+        It will look into the pageflow not further than the order page.
+        <br/>
+        <pfx:button page="order" pageflow="OrderFlow" startwithflow="true" mode="force">
+          Next Page From OrderFlow (max. order)
+        </pfx:button>
       </center>
       <hr/>
       <pfx:include href="sample1/txt/pages/main_home.xml" part="env_info"/>
