@@ -9,6 +9,7 @@ import de.schlund.pfixcore.generator.annotation.Caster;
 import de.schlund.pfixcore.generator.annotation.IWrapper;
 import de.schlund.pfixcore.generator.annotation.Param;
 import de.schlund.pfixcore.generator.annotation.Transient;
+import de.schlund.pfixcore.oxm.impl.annotation.DateSerializer;
 
 @IWrapper(name="UserWrapper", ihandler=UserHandler.class)
 public class User {
@@ -60,6 +61,7 @@ public class User {
     }
 
     @Param(name="birthday", mandatory=true)
+    @DateSerializer("yyyy/MM/dd")
     public Date getBirthday() {
         return birthday;
     }
