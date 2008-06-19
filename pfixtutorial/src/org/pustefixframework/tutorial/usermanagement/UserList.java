@@ -2,7 +2,7 @@ package org.pustefixframework.tutorial.usermanagement;
 
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
 
 import de.schlund.pfixcore.beans.InitResource;
@@ -31,7 +31,7 @@ public class UserList {
         return null;
     }
     
-    public void deleteUser(int id) {
+    public void deleteUser(Integer id) {
         User userToDelete = null;
         for (User user: users) {
             if (user.getId() == id) {
@@ -43,9 +43,23 @@ public class UserList {
         }
     }
     
+    public void replaceUser(User user) {
+        User userToReplace = null;
+        for (User existingUser : users) {
+            if (existingUser.getId().equals(user.getId())) {
+                userToReplace = existingUser;
+            }
+        }
+        if (userToReplace != null) {
+            users.remove(userToReplace);
+            users.add(user);
+        }
+    }
+    
     @InitResource
     public void createSampleUsers() throws Exception {
-        addUser(new User("Tobias Fehrenbach", "fehrenbach@schlund.de", new Date(), true, new URL("http://1und1.de"), "m"));
-        addUser(new User("Tobias Fehrenbach2", "fehrenbach@schlund.de", new Date(), true, new URL("http://1und1.de"), "m"));
+        addUser(new User("Neo", "neo@pustefix-framework.org", new GregorianCalendar(1964, 8, 2).getTime(), true, new URL("http://pustefix-framework.org"), "m"));
+        addUser(new User("Trinity", "trinity@pustefix-framework.org", new GregorianCalendar(1967, 7, 21).getTime(), true, new URL("http://pustefix-framework.org"), "f"));
+        addUser(new User("Morpheus", "morpheus@pustefix-framework.org", new GregorianCalendar(1961, 6, 30).getTime(), true, new URL("http://pustefix-framework.org"), "m"));
     }
 }

@@ -3,16 +3,18 @@ package org.pustefixframework.tutorial.usermanagement;
 import de.schlund.pfixcore.generator.annotation.IWrapper;
 import de.schlund.pfixcore.generator.annotation.Param;
 
-@IWrapper(name="DeleteUserWrapper", ihandler=DeleteUserHandler.class)
-public class DeleteUser {
-    private int id;
+@IWrapper(name="EditUserWrapper", ihandler=EditUserHandler.class)
+public class EditUser {
+    private Integer id;
 
     @Param(name="id", mandatory=true)
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
+    
+    
 }

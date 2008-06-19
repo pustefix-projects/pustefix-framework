@@ -12,32 +12,32 @@ import de.schlund.pfixcore.generator.annotation.Transient;
 
 @IWrapper(name="UserWrapper", ihandler=UserHandler.class)
 public class User {
-    private int id;
+    private Integer id;
     private String name;
     private String email;
     private Date birthday;
     private Boolean admin;
     private URL homepage;
-    private String sex;
+    private String gender;
 
     public User() {
     }
     
-    public User (String name, String email, Date birthday, Boolean admin, URL homepage, String sex) {
+    public User(String name, String email, Date birthday, Boolean admin, URL homepage, String gender) {
         this.name = name;
         this.email = email;
         this.birthday = birthday;
         this.admin = admin;
         this.homepage = homepage;
-        this.sex = sex;
+        this.gender = gender;
     }
     
     @Transient
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -87,12 +87,12 @@ public class User {
         this.homepage = homepage;
     }
 
-    @Param(name="sex", mandatory=true)
-    public String getSex() {
-        return sex;
+    @Param(name="gender", mandatory=true)
+    public String getGender() {
+        return gender;
     }
 
-    public void setSex(String sex) {
-        this.sex = sex;
+    public void setGender(String gender) {
+        this.gender = gender;
     }
 }

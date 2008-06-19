@@ -13,14 +13,15 @@
   
   <context defaultpage="overview">
     <resource class="org.pustefixframework.tutorial.usermanagement.UserList" />
+    <resource class="org.pustefixframework.tutorial.usermanagement.EditUser" />
   </context>
 
-  <pageflow name="adduserFlow" final="overview">
-    <flowstep name="adduser"/>
+  <pageflow name="userFlow" final="overview">
+    <flowstep name="userform"/>
     <flowstep name="overview"/>
   </pageflow>
   
-  <pagerequest name="adduser">
+  <pagerequest name="userform">
     <input>
       <interface prefix="user" class="org.pustefixframework.tutorial.usermanagement.UserWrapper" />
     </input>
@@ -29,6 +30,7 @@
   <pagerequest name="overview">
     <input>
       <interface prefix="delete" class="org.pustefixframework.tutorial.usermanagement.DeleteUserWrapper" />
+      <interface prefix="edit" class="org.pustefixframework.tutorial.usermanagement.EditUserWrapper" />
     </input>
     <output>
       <resource node="users" class="org.pustefixframework.tutorial.usermanagement.UserList" />

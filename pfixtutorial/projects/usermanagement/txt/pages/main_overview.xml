@@ -6,19 +6,24 @@
         Name: <ixsl:value-of select="./@name"/><br/>
         Email: <ixsl:value-of select="./@email"/><br/>
         Birthday: <ixsl:value-of select="./@birthday"/><br/>
-        Sex: <ixsl:value-of select="./@sex"/><br/>
+        Gender: <ixsl:value-of select="./@gender"/><br/>
         <ixsl:if test="./@homepage">
           Homepage: <ixsl:value-of select="./@homepage"/><br/>
         </ixsl:if>
         Admin: <ixsl:value-of select="./@admin"/><br/>
         <br/>        
+        <pfx:button jumptopage="userform">edit
+          <pfx:command name="SELWRP">edit</pfx:command>
+          <pfx:argument name="edit.id"><ixsl:value-of select="./@id"/></pfx:argument>
+        </pfx:button>
         <pfx:button>delete
+          <pfx:command name="SELWRP">delete</pfx:command>
           <pfx:argument name="delete.id"><ixsl:value-of select="./@id"/></pfx:argument>
         </pfx:button>
         <br/><br/><br/>
       </ixsl:for-each>
       
-      <pfx:button page="adduser" >add</pfx:button>
+      <pfx:button page="userform" >add</pfx:button>
     </theme>
   </part>
  </include_parts>

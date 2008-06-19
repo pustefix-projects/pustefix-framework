@@ -8,7 +8,7 @@
  -->
 
   <navigation>
-      <page handler="/xml/user" name="adduser"/>
+      <page handler="/xml/user" name="userform"/>
       <page handler="/xml/user" name="overview"/>
   </navigation>
 
@@ -20,7 +20,7 @@
   	<include stylesheet="usermanagement/xsl/metatags.xsl"/>
   </standardmetatags>
   
-  <standardpage name="adduser" xml="usermanagement/xml/frame.xml"/>
+  <standardpage name="userform" xml="usermanagement/xml/frame.xml"/>
   <standardpage name="overview" xml="usermanagement/xml/frame.xml"/>
   
 </make>

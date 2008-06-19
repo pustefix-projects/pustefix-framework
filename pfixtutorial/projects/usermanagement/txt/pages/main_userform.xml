@@ -20,12 +20,12 @@
         </pfx:checkfield>
         <br/>
 
-        Sex: 
-        <pfx:xinp type="select" name="user.sex">
+        Gender: 
+        <pfx:xinp type="select" name="user.gender">
           <pfx:option value="m" >male</pfx:option>
           <pfx:option value="f" >female</pfx:option>
         </pfx:xinp>
-        <pfx:checkfield name="user.sex">
+        <pfx:checkfield name="user.gender">
           <pfx:error><pfx:scode/></pfx:error>
         </pfx:checkfield>
         <br/>
