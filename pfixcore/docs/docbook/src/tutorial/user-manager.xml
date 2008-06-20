@@ -146,7 +146,7 @@ public String getGender() {
     </section>
   </section>
 
-  <section xml:id="um.caster">>
+  <section xml:id="um.caster">
     <title>Create a caster</title>
     <para>We need a caster to cast the String which contains the homepage to a java.net.URL object.</para>
     <section xml:id="um.caster.statuscode">
@@ -460,10 +460,10 @@ public void createSampleUsers() throws Exception {
     </section>
   </section>
   
-  <section xml:id="um.deleteusers">
-    <title>Add feature to delete an user</title>
-    <para>We want to add feature to delete existing users</para>
-    <section xml:id="um.deleteusers.bean">
+  <section xml:id="um.deleteuser">
+    <title>Delete an user</title>
+    <para>We want to add the feature to delete an existing user</para>
+    <section xml:id="um.deleteuser.bean">
       <title>Create a new bean</title>
       <para>We need to create another bean with annotations to generate a wrapper.</para>
       <programlisting language="java">package org.pustefixframework.tutorial.usermanagement;
@@ -486,8 +486,8 @@ public class DeleteUser {
 }</programlisting>
     </section>
 
-    <section xml:id="um.deleteusers.method">
-      <title>Add a method to delete a user to our UserList class</title>
+    <section xml:id="um.deleteuser.method">
+      <title>Add a method to delete a user from our UserList class</title>
       <para>In order to delete a user we need a method to do so. We add the following method to the UserList class</para>
       <programlisting language="java">public void deleteUser(Integer id) {
         User userToDelete = null;
@@ -502,7 +502,7 @@ public class DeleteUser {
     }</programlisting>
     </section>
 
-    <section xml:id="um.deleteusers.handler">
+    <section xml:id="um.deleteuser.handler">
       <title>Create a new handler</title>
       <para>We also need another handler.</para>
       <programlisting language="java">package org.pustefixframework.tutorial.usermanagement;
@@ -537,7 +537,7 @@ public class DeleteUserHandler implements IHandler {
 }</programlisting>
     </section>
     
-    <section xml:id="um.deleteusers.button">
+    <section xml:id="um.deleteuser.button">
       <title>Add a delete button</title>
       <para>We need a button to trigger to deletion of a user. We add the following code inside the for-each loop in the main_overview.xml file</para>
       <programlisting language="xml"><![CDATA[<pfx:button>delete
@@ -546,7 +546,7 @@ public class DeleteUserHandler implements IHandler {
 </pfx:button>]]></programlisting>
     </section>
 
-    <section xml:id="um.deleteusers.configuration">
+    <section xml:id="um.deleteuser.configuration">
       <title>Adjust the servlet configuration</title>
       <para>Add the following input element to the existing pagerequest of the overview page.</para>
       <programlisting language="xml"><![CDATA[<input>
@@ -554,5 +554,117 @@ public class DeleteUserHandler implements IHandler {
   <interface prefix="edit" class="org.pustefixframework.tutorial.usermanagement.EditUserWrapper" />
 </input>]]></programlisting> 
     </section>
+  </section>
+
+  <section xml:id="um.edituser">
+    <title>Edit an user</title>
+    <para>We want to add the feature to edit an existing user</para> 
+    <section xml:id="um.edituser.bean">
+      <title>Create a new bean</title>
+      <para>We need to create another bean with annotations to generate a wrapper.</para>
+      <programlisting language="java">package org.pustefixframework.tutorial.usermanagement;
+
+import de.schlund.pfixcore.generator.annotation.IWrapper;
+import de.schlund.pfixcore.generator.annotation.Param;
+
+@IWrapper(name="EditUserWrapper", ihandler=EditUserHandler.class)
+public class EditUser {
+    private Integer id;
+
+    @Param(name="id", mandatory=true)
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+}</programlisting>
+    </section>
+    
+    <section xml:id="um.edituser.method">
+      <title>Add a method to edit a user of our UserList class</title>
+      <para>In order to edit a user we need a method to replace an existing user. We add the following method to the UserList class</para>
+      <programlisting language="java">public void replaceUser(User user) {
+    User userToReplace = null;
+    for (User existingUser : users) {
+        if (existingUser.getId().equals(user.getId())) {
+            userToReplace = existingUser;
+        }
+    }
+    if (userToReplace != null) {
+        users.remove(userToReplace);
+        users.add(user);
+    }
+}</programlisting>
+    </section>
+    
+    <section xml:id="um.edituser.handler">
+      <title>Create a new handler</title>
+      <para>We also need another handler.</para>
+      <programlisting language="java">package org.pustefixframework.tutorial.usermanagement;
+
+import de.schlund.pfixcore.generator.IHandler;
+import de.schlund.pfixcore.generator.IWrapper;
+import de.schlund.pfixcore.generator.iwrpgen.IWrapperToBean;
+import de.schlund.pfixcore.workflow.Context;
+
+public class EditUserHandler implements IHandler {
+
+    public void handleSubmittedData(Context context, IWrapper wrapper) throws Exception {
+        EditUser editUser = IWrapperToBean.createBean(wrapper, EditUser.class);
+        EditUser editUserContext = context.getContextResourceManager().getResource(EditUser.class);
+        editUserContext.setId(editUser.getId());
+    }
+
+    public boolean isActive(Context context) throws Exception {
+        return true;
+    }
+
+    public boolean needsData(Context context) throws Exception {
+        return false;
+    }
+
+    public boolean prerequisitesMet(Context context) throws Exception {
+        return true;
+    }
+
+    public void retrieveCurrentStatus(Context context, IWrapper wrapper) throws Exception {
+    }
+
+}</programlisting>
+    </section>
+    
+    <section xml:id="um.edituser.button">
+      <title>Add an edit button</title>
+      <para>We need a button to edit an user. We add the following code inside the for-each loop in the main_overview.xml file</para>
+      <programlisting language="xml"><![CDATA[<pfx:button jumptopage="userform">edit
+  <pfx:command name="SELWRP">edit</pfx:command>
+  <pfx:argument name="edit.id"><ixsl:value-of select="./@id"/></pfx:argument>
+</pfx:button>]]></programlisting>
+    </section>
+    
+    <section xml:id="um.edituser.configuration">
+      <title>Adjust the servlet configuration</title>
+      <para>Add the EditUser class as an resource to the context element</para>
+      <programlisting language="xml"><![CDATA[<resource class="org.pustefixframework.tutorial.usermanagement.EditUser" />]]></programlisting>
+      <para>Add the following interface element into the input element of the pagerequest of the overview page.</para>
+      <programlisting language="xml"><![CDATA[<interface prefix="edit" class="org.pustefixframework.tutorial.usermanagement.EditUserWrapper" />]]></programlisting>
+    </section>
+    
+    <section xml:id="um.edituser.userhandler">
+      <title>Add user to form</title>
+      <para>To add the userdata to the existing form of our userform page we need to implement the retrieveCurrentStatus method
+      of our UserHandler class.</para>
+      <programlisting language="java">    public void retrieveCurrentStatus(Context context, IWrapper wrapper) throws Exception {
+        EditUser editUser = context.getContextResourceManager().getResource(EditUser.class);
+        if (editUser.getId() != null) {
+            UserList userList = context.getContextResourceManager().getResource(UserList.class);
+            User user = userList.getUser(editUser.getId());
+            BeanToIWrapper.populateIWrapper(user, wrapper);
+        }
+    }</programlisting>
+    </section>
+
   </section>
 </chapter>
