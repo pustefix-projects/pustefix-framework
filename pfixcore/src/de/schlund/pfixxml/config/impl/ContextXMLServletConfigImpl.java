@@ -115,6 +115,7 @@ public class ContextXMLServletConfigImpl extends AbstractXMLServletConfigImpl im
         Rule pagerequestPropertyRule = new PagerequestPropertyRule(config);
         Rule contextStartInterceptorRule = new ContextInterceptorRule(config, "start");
         Rule contextEndInterceptorRule = new ContextInterceptorRule(config, "end");
+        Rule contextPostRenderInterceptorRule = new ContextInterceptorRule(config, "postrender");
         Rule roleProviderRule = new RoleProviderRule(config);
         Rule roleRule = new RoleRule(config);
         Rule servletPropertyRule = new ServletPropertyRule(config);
@@ -220,8 +221,10 @@ public class ContextXMLServletConfigImpl extends AbstractXMLServletConfigImpl im
         digester.addRule("contextxmlserver/interceptors", dummyRule);
         digester.addRule("contextxmlserver/interceptors/start", dummyRule);
         digester.addRule("contextxmlserver/interceptors/end", dummyRule);
+        digester.addRule("contextxmlserver/interceptors/postrender", dummyRule);
         digester.addRule("contextxmlserver/interceptors/start/interceptor", contextStartInterceptorRule);
         digester.addRule("contextxmlserver/interceptors/end/interceptor", contextEndInterceptorRule);
+        digester.addRule("contextxmlserver/interceptors/postrender/interceptor", contextPostRenderInterceptorRule);
         digester.addRule("contextxmlserver/roleprovider", roleProviderRule);
         digester.addRule("contextxmlserver/roleprovider/property", genericPropertyRule);
         digester.addRule("contextxmlserver/role", roleRule);

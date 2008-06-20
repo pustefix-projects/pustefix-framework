@@ -70,6 +70,7 @@ public class ContextConfigImpl implements ContextConfig {
     private List<PageRequestConfigImpl> cachePagerequests = null;
     private ArrayList<Class<? extends ContextInterceptor>> startinterceptors = new ArrayList<Class<? extends ContextInterceptor>>();
     private ArrayList<Class<? extends ContextInterceptor>> endinterceptors = new ArrayList<Class<? extends ContextInterceptor>>();
+    private ArrayList<Class<? extends ContextInterceptor>> postRenderInterceptors = new ArrayList<Class<? extends ContextInterceptor>>();
     private String navigationFile = null;
     private Properties props = new Properties();
     private boolean synchronize = true;
@@ -201,6 +202,18 @@ public class ContextConfigImpl implements ContextConfig {
         } else {
             this.endinterceptors.add(clazz);
         }       
+    }
+    
+    public void addPostRenderInterceptor(Class<? extends ContextInterceptor> clazz) {
+        if (this.postRenderInterceptors.contains(clazz)) {
+            LOG.warn("Postrender interceptor " + clazz.getName() + " not added - it is already present");
+        } else {
+            this.postRenderInterceptors.add(clazz);
+        }
+    }
+    
+    public List<Class<? extends ContextInterceptor>> getPostRenderInterceptors() {
+        return Collections.unmodifiableList(postRenderInterceptors);
     }
     
     public RoleProvider getRoleProvider() {

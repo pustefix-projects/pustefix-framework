@@ -33,7 +33,7 @@ public class ContextInterceptorRule extends CheckedRule {
 
     public ContextInterceptorRule(ContextXMLServletConfigImpl config, String type) {
         this.config = config;
-        if (!(type.equals("start") || type.equals("end"))) {
+        if (!(type.equals("start") || type.equals("end") || type.equals("postrender"))) {
             throw new IllegalArgumentException("\"" + type + "\" is not a valid context interceptor type!");
         }
         this.type = type;
@@ -57,6 +57,9 @@ public class ContextInterceptorRule extends CheckedRule {
         }
         if (type.equals("end")) {
             config.getContextConfig().addEndInterceptor(clazz.asSubclass(ContextInterceptor.class));
+        }
+        if (type.equals("postrender")) {
+            config.getContextConfig().addPostRenderInterceptor(clazz.asSubclass(ContextInterceptor.class));
         }
     }
 

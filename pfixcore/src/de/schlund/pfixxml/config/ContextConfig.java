@@ -119,6 +119,13 @@ public interface ContextConfig {
      * @return list of end interceptors
      */
     List<Class<? extends ContextInterceptor>> getEndInterceptors();
+    
+    /**
+     * Returns a list of all postrender interceptors.
+     * 
+     * @return list of end interceptors
+     */
+    List<Class<? extends ContextInterceptor>> getPostRenderInterceptors();
 
     /**
      * Returns the path to the file containing the navigation tree. The path
