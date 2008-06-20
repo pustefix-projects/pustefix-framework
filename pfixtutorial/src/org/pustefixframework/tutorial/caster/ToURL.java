@@ -18,7 +18,7 @@ public class ToURL extends SimpleCheck implements IWrapperParamCaster {
     private StatusCode scode;
     
     public ToURL() {
-        scode = StatusCodeLib.CASTER_URL_URL_INVALID;
+        scode = StatusCodeLib.CASTER_URL_INVALID;
     }
     
     public void castValue(RequestParam[] requestParams) {
