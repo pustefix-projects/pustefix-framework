@@ -327,7 +327,8 @@ userList.addUser(user);</programlisting>
     <section xml:id="um.pages.userform">
       <title>Create a page for data input</title>
       <para>Create a new file <filename>main_userform.xml</filename> in the directory projects/usermanagement/txt/pages</para>
-      <programlisting language="xml"><![CDATA[<?xml version="1.0" encoding="utf-8"?><include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
+      <programlisting language="xml"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
+<include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
   <part name="content">
     <theme name="default">
       <pfx:forminput>
@@ -377,7 +378,8 @@ userList.addUser(user);</programlisting>
     <section xml:id="um.pages.overview">
       <title>Create page for listing users</title>
       <para>Create a new file main_overview.xml in the directory projects/usermanagement/txt/pages</para>
-      <programlisting language="xml"><![CDATA[<?xml version="1.0" encoding="utf-8"?><include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
+      <programlisting language="xml"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
+<include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
   <part name="content">
     <theme name="default">
       <h3>Users</h3>
@@ -576,8 +578,8 @@ public class DeleteUser {</programlisting>
         <title>Annotate the getter</title>
         <para>todo</para>
         <programlisting language="java">import de.schlund.pfixcore.generator.annotation.Param;</programlisting>
-        <programlisting language="java">@IWrapper(name="DeleteUserWrapper", ihandler=DeleteUserHandler.class)
-public class DeleteUser {</programlisting>
+        <programlisting language="java">@Param(name="id", mandatory=true)
+public int getId() {</programlisting>
       </section>
     </section>
 
@@ -637,17 +639,13 @@ public class DeleteUser {</programlisting>
     <para>The last feature we want to add is to edit an existing user</para> 
     <section xml:id="um.edituser.bean">
       <title>Create a new bean</title>
-      <para>We need to create another bean with annotations to generate a wrapper.</para>
+      <para>We need to create another bean DeleteUser in the package org.pustefixframework.tutorial.usermanagement.</para>
       <programlisting language="java">package org.pustefixframework.tutorial.usermanagement;
 
-import de.schlund.pfixcore.generator.annotation.IWrapper;
-import de.schlund.pfixcore.generator.annotation.Param;
 
-@IWrapper(name="EditUserWrapper", ihandler=EditUserHandler.class)
 public class EditUser {
     private Integer id;
 
-    @Param(name="id", mandatory=true)
     public Integer getId() {
         return id;
     }
@@ -658,39 +656,18 @@ public class EditUser {
 }</programlisting>
     </section>
     
-    <section xml:id="um.edituser.method">
-      <title>Add a method to edit a user of our UserList class</title>
-      <para>In order to edit a user we need a method to replace an existing user. We add the following method to the UserList class</para>
-      <programlisting language="java">public void replaceUser(User user) {
-    User userToReplace = null;
-    for (User existingUser : users) {
-        if (existingUser.getId().equals(user.getId())) {
-            userToReplace = existingUser;
-        }
-    }
-    if (userToReplace != null) {
-        users.remove(userToReplace);
-        users.add(user);
-    }
-}</programlisting>
-    </section>
-    
     <section xml:id="um.edituser.handler">
       <title>Create a new handler</title>
-      <para>We also need another handler.</para>
+      <para>Create a new handler class EditUserHandler in the package org.pustefixframework.tutorial.usermanagement.</para>
       <programlisting language="java">package org.pustefixframework.tutorial.usermanagement;
 
 import de.schlund.pfixcore.generator.IHandler;
 import de.schlund.pfixcore.generator.IWrapper;
-import de.schlund.pfixcore.generator.iwrpgen.IWrapperToBean;
 import de.schlund.pfixcore.workflow.Context;
 
 public class EditUserHandler implements IHandler {
 
     public void handleSubmittedData(Context context, IWrapper wrapper) throws Exception {
-        EditUser editUser = IWrapperToBean.createBean(wrapper, EditUser.class);
-        EditUser editUserContext = context.getContextResourceManager().getResource(EditUser.class);
-        editUserContext.setId(editUser.getId());
     }
 
     public boolean isActive(Context context) throws Exception {
@@ -711,9 +688,62 @@ public class EditUserHandler implements IHandler {
 }</programlisting>
     </section>
     
+    <section xml:id="um.edituser.annotations">
+      <title>Annotate the EditUser bean</title>
+      <para>To generate a wrapper class from this bean we have to annotate it.</para>
+      <section xml:id="um.edituser.annotations.class">
+        <title>Annotate the class</title>
+        <para>todo</para>
+        <programlisting language="java">import de.schlund.pfixcore.generator.annotation.IWrapper;</programlisting>
+        <programlisting language="java">@IWrapper(name="EditUserWrapper", ihandler=EditUserHandler.class)
+public class EditUser {</programlisting>
+      </section>
+      
+      <section xml:id="um.edituser.annotations.getter">
+        <title>Annotate the getter</title>
+        <para>todo</para>
+        <programlisting language="java">import de.schlund.pfixcore.generator.annotation.Param;</programlisting>
+        <programlisting language="java">@Param(name="id", mandatory=true)
+public int getId() {</programlisting>
+      </section>
+    </section>
+    
+    <section xml:id="um.edituser.generate">
+      <title>Generate the wrapper class</title>
+      <para>Type <command>ant generate-src</command> to generate the wrapper class</para>
+    </section>
+    
+    <section xml:id="um.edituser.method">
+      <title>Add a method to edit a user of our UserList class</title>
+      <para>In order to edit a user we need a method to replace an existing user. We add the following method to the UserList class</para>
+      <programlisting language="java">public void replaceUser(User user) {
+    User userToReplace = null;
+    for (User existingUser : users) {
+        if (existingUser.getId().equals(user.getId())) {
+            userToReplace = existingUser;
+        }
+    }
+    if (userToReplace != null) {
+        users.remove(userToReplace);
+        users.add(user);
+    }
+}</programlisting>
+    </section>
+    
+    <section xml:id="um.edituser.handlesubmitteddata">
+      <title>Implement handleSubmittedData of the DeleteUserHandler class</title>
+      <para>todo</para>
+      <programlisting language="java">import de.schlund.pfixcore.generator.iwrpgen.IWrapperToBean;</programlisting>
+      <programlisting language="java">public void handleSubmittedData(Context context, IWrapper wrapper) throws Exception {
+    EditUser editUser = IWrapperToBean.createBean(wrapper, EditUser.class);
+    EditUser editUserContext = context.getContextResourceManager().getResource(EditUser.class);
+    editUserContext.setId(editUser.getId());
+}</programlisting>
+    </section>
+    
     <section xml:id="um.edituser.button">
       <title>Add an edit button</title>
-      <para>We need a button to edit an user. We add the following code inside the for-each loop in the main_overview.xml file</para>
+      <para>We need a button to edit an user. We add the following code below the delete button in the main_overview.xml file</para>
       <programlisting language="xml"><![CDATA[<pfx:button jumptopage="userform">edit
   <pfx:command name="SELWRP">edit</pfx:command>
   <pfx:argument name="edit.id"><ixsl:value-of select="./@id"/></pfx:argument>
@@ -732,15 +762,34 @@ public class EditUserHandler implements IHandler {
       <title>Add user to form</title>
       <para>To add the userdata to the existing form of our userform page we need to implement the retrieveCurrentStatus method
       of our UserHandler class.</para>
-      <programlisting language="java">    public void retrieveCurrentStatus(Context context, IWrapper wrapper) throws Exception {
-        EditUser editUser = context.getContextResourceManager().getResource(EditUser.class);
-        if (editUser.getId() != null) {
-            UserList userList = context.getContextResourceManager().getResource(UserList.class);
-            User user = userList.getUser(editUser.getId());
-            BeanToIWrapper.populateIWrapper(user, wrapper);
-        }
-    }</programlisting>
+      <programlisting language="java">import de.schlund.pfixcore.generator.iwrpgen.BeanToIWrapper;</programlisting>
+      <programlisting language="java">public void retrieveCurrentStatus(Context context, IWrapper wrapper) throws Exception {
+    EditUser editUser = context.getContextResourceManager().getResource(EditUser.class);
+    if (editUser.getId() != null) {
+        UserList userList = context.getContextResourceManager().getResource(UserList.class);
+        User user = userList.getUser(editUser.getId());
+        BeanToIWrapper.populateIWrapper(user, wrapper);
+    }
+}</programlisting>
     </section>
 
+    <section>
+      <title>Replace method handleSubmittedData of UserHandler</title>
+      <para>In order to replace an existing user we have to edit the method handleSubmittedData:</para>
+      <programlisting language="java">public void handleSubmittedData(Context context, IWrapper wrapper) throws Exception {
+    UserList userList = context.getContextResourceManager().getResource(UserList.class);
+    EditUser editUser = context.getContextResourceManager().getResource(EditUser.class);
+    User user = IWrapperToBean.createBean(wrapper, User.class);
+    if (editUser.getId() != null) {
+        // replace existing user
+        user.setId(editUser.getId());
+        userList.replaceUser(user);
+        editUser.setId(null);            
+    } else {
+        // add new user
+        userList.addUser(user);    
+    }
+}</programlisting>
+    </section>
   </section>
 </chapter>
