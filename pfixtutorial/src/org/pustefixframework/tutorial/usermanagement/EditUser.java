@@ -15,6 +15,4 @@ public class EditUser {
     public void setId(Integer id) {
         this.id = id;
     }
-    
-    
 }
