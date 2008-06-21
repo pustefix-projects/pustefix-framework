@@ -40,7 +40,7 @@ public interface ContextResourceManager {
      * @param clazz the interface class
      * @return instance of the class implementing the interface
      */
-    @SuppressWarnings("unchecked")
+    //@SuppressWarnings("unchecked")
     public <T> T getResource(Class<T> clazz);
 
     /**
