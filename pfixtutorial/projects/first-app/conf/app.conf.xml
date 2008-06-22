@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<contextxmlserver xmlns="http://pustefix.sourceforge.net/properties200401" xmlns:cus="http://www.schlund.de/pustefix/customize" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.0" xsi:schemaLocation="http://pustefix.sourceforge.net/properties200401 http://pustefix.sourceforge.net/properties200401.xsd">
+  
+  <servletinfo depend="first-app/conf/depend.xml" name="pfixcore_project:first-app::servlet:app">
+    <editmode allow="true"/>
+  </servletinfo>
+  
+  <context defaultpage="EnterData"/>
+
+  <pageflow name="RegisterUser" final="Confirm">
+    <flowstep name="EnterData"/>
+    <flowstep name="ReviewData" stophere="true"/>
+  </pageflow>
+
+  <pagerequest name="EnterData">
+    <input>
+      <interface prefix="user" class="org.pustefixframework.tutorial.firstapp.wrapper.EnterUserDataWrapper" />
+    </input>
+  </pagerequest>
+  
+  <pagerequest name="ReviewData"/>
+
+</contextxmlserver>
