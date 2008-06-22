@@ -12,7 +12,7 @@
 
   <section xml:id="um.newproject">
     <title>Create a new project usermanagement</title>
-    <para>Create a new project "usermanagement" (see: <xref linkend="createapplication"/>)</para>
+    <para>Create a new project "usermanagement" (see: <xref linkend="wrapper-handler.setup"/>)</para>
     <para>Use the following data for creating the new project:
       <itemizedlist>
         <listitem><para>projects name: usermanagement</para></listitem>
