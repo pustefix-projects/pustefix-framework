@@ -30,14 +30,14 @@
       </author>
     </authorgroup>
   </bookinfo>
-  <xi:include href="reference/introduction.xml" />
+  <xi:include href="reference/preface.xml" />
   <xi:include href="reference/installation.xml" />
+  <xi:include href="reference/architecture.xml" />
   <xi:include href="reference/configuration.xml" />
   <xi:include href="reference/xslt.xml" />
   <xi:include href="reference/concepts.xml" />
   <xi:include href="reference/advancedtopics.xml" />
   <xi:include href="reference/module-support.xml" />
-  <xi:include href="reference/architecture.xml" />
   <xi:include href="reference/glossary.xml" />
 
 </book>
