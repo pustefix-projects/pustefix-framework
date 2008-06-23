@@ -3,13 +3,25 @@
   xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://docbook.org/ns/docbook http://www.docbook.org/xml/5.0CR7/xsd/docbook.xsd"
 >
-  <info>
+  <bookinfo>
     <title>Pustefix Tutorial</title>
     <copyright>
       <holder>1&amp;1 Internet AG</holder>
       <year>2007</year>
+      <year>2008</year>
     </copyright>
-  </info>
+    <authorgroup>
+      <author>
+        <firstname>Tobias</firstname>
+        <surname>Fehrenbach</surname>
+      </author>
+      <author>
+        <firstname>Stephan</firstname>
+        <surname>Schmidt</surname>
+      </author>
+    </authorgroup>
+  </bookinfo>
+  
   <xi:include href="tutorial/getting-started.xml" />
   <xi:include href="tutorial/wrapper-handler.xml" />
   <xi:include href="tutorial/user-manager.xml" />
