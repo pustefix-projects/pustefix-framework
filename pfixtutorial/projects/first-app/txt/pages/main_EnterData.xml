@@ -16,7 +16,12 @@
           </tr>
           <tr>
             <td>Name:</td>
-            <td><pfx:xinp type="text" name="user.name"/></td>
+            <td>
+              <pfx:xinp type="text" name="user.name"/>
+              <pfx:checkfield name="user.name">
+                <pfx:error><div style="color:#ff0000;"><pfx:scode/></div></pfx:error>
+              </pfx:checkfield>
+            </td>
           </tr>
           <tr>
             <td>Email:</td>

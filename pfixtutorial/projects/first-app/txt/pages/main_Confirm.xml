@@ -2,7 +2,8 @@
 <include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
   <part name="content">
     <theme name="default">
-      <h1>Review your data</h1>
+      <h1>Congratulations</h1>
+      <p>Your data has been saved</p>
     </theme>
   </part>
  </include_parts>

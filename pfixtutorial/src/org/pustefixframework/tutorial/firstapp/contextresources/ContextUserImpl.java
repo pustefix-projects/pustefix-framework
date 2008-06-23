@@ -25,6 +25,14 @@ public class ContextUserImpl implements ContextUser {
 
     public void insertStatus(ResultDocument document, Element element)
             throws Exception {
-        // will be implemented later
+        if (this.user == null) {
+            return;
+        }
+        ResultDocument.addTextChild(element, "sex", this.user.getSex());
+        ResultDocument.addTextChild(element, "name", this.user.getName());
+        ResultDocument.addTextChild(element, "email", this.user.getEmail());
+        ResultDocument.addTextChild(element, "homepage", String.valueOf(this.user.getHomepage()));
+        ResultDocument.addTextChild(element, "birthday", String.valueOf(this.user.getBirthday()));
+        ResultDocument.addTextChild(element, "admin", String.valueOf(this.user.getAdmin()));
     }
 }

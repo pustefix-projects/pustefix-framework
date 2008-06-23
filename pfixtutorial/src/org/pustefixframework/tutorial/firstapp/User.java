@@ -1,14 +1,12 @@
 package org.pustefixframework.tutorial.firstapp;
 
-import java.net.URL;
-import java.util.Date;
 
 public class User {
     private String name;
     private String email;
-    private Date birthday;
+    private String birthday;
     private boolean admin;
-    private URL homepage;
+    private String homepage;
     private String sex;
 
     public String getName() {
@@ -27,11 +25,11 @@ public class User {
         this.email = email;
     }
 
-    public Date getBirthday() {
+    public String getBirthday() {
         return birthday;
     }
 
-    public void setBirthday(Date birthday) {
+    public void setBirthday(String birthday) {
         this.birthday = birthday;
     }
 
@@ -43,11 +41,11 @@ public class User {
         this.admin = admin;
     }
 
-    public URL getHomepage() {
+    public String getHomepage() {
         return homepage;
     }
 
-    public void setHomepage(URL homepage) {
+    public void setHomepage(String homepage) {
         this.homepage = homepage;
     }
 

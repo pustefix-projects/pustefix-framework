@@ -5,7 +5,11 @@
     <editmode allow="true"/>
   </servletinfo>
   
-  <context defaultpage="EnterData"/>
+  <context defaultpage="EnterData">
+    <resource class="org.pustefixframework.tutorial.firstapp.contextresources.ContextUserImpl">
+      <implements class="org.pustefixframework.tutorial.firstapp.contextresources.ContextUser"/>
+    </resource>
+  </context>
 
   <pageflow name="RegisterUser" final="Confirm">
     <flowstep name="EnterData"/>
@@ -18,6 +22,22 @@
     </input>
   </pagerequest>
   
-  <pagerequest name="ReviewData"/>
+  <pagerequest name="ReviewData">
+    <input>
+      <interface prefix="user" class="org.pustefixframework.tutorial.firstapp.wrapper.SaveUserDataWrapper" />
+    </input>
+    <output>
+      <resource node="user" class="org.pustefixframework.tutorial.firstapp.contextresources.ContextUser"/>
+    </output>
+  </pagerequest>
+
+  <pagerequest name="ConfirmData">
+    <input>
+      <interface prefix="user" class="org.pustefixframework.tutorial.firstapp.wrapper.SaveUserDataWrapper" />
+    </input>
+    <output>
+      <resource node="user" class="org.pustefixframework.tutorial.firstapp.contextresources.ContextUser"/>
+    </output>
+  </pagerequest>
 
 </contextxmlserver>
