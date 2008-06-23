@@ -3,7 +3,21 @@
   xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://docbook.org/ns/docbook http://www.docbook.org/xml/5.0CR7/xsd/docbook.xsd"
 >
-  <title>Wrapper/Handler tutorial</title>
+  <chapterinfo>
+    <title>Basic tutorial</title>
+    <copyright>
+      <holder>1&amp;1 Internet AG</holder>
+      <year>2008</year>
+    </copyright>
+    <authorgroup>
+      <author>
+        <firstname>Stephan</firstname>
+        <surname>Schmidt</surname>
+      </author>
+    </authorgroup>
+  </chapterinfo>
+
+  <title>Basic tutorial</title>
   <para>
     In this tutorial, you will learn how to work with the basic features provided by the Pustefix framework.
     You will accept user input, store it in the session and display it back to the user.
