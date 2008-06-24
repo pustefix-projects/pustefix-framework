@@ -3,11 +3,13 @@
   xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://docbook.org/ns/docbook http://www.docbook.org/xml/5.0CR7/xsd/docbook.xsd"
 >
+  <title>Basic tutorial</title>
+
   <chapterinfo>
     <title>Basic tutorial</title>
     <copyright>
-      <holder>1&amp;1 Internet AG</holder>
       <year>2008</year>
+      <holder>1&amp;1 Internet AG</holder>
     </copyright>
     <authorgroup>
       <author>
@@ -17,7 +19,6 @@
     </authorgroup>
   </chapterinfo>
 
-  <title>Basic tutorial</title>
   <para>
     In this tutorial, you will learn how to work with the basic features provided by the Pustefix framework.
     You will accept user input, store it in the session and display it back to the user.
@@ -1321,10 +1322,16 @@ public class ContextUserImpl implements ContextUser {
      the information you entered.
    </para>
   </section>
-  <section xml:id="wrapper-handler.finish">
-    <title>Finishing the application</title>
+  <section xml:id="wrapper-handler.save">
+    <title>Saving the data</title>
     <para>
-      todo
+      Your application now handles the input of user data and displays it again to the user. To complete the last requirement, your application
+      will have to provide another button on the <literal>ReviewData</literal> page, which lets the user confirm the data and then executes
+      the business logic to store the data in your persistence layer. 
+    </para>
+    <para>
+      To achieve this, you will have to implement a new pair of wrapper and handler. As the <literal>ReviewData</literal> page does not
+      contain any input fields, the new wrapper does not need any parameters:
     </para>
     <programlisting language="xml"><![CDATA[<interface xsi:schemaLocation="http://pustefix.sourceforge.net/interfacewrapper200401 http://pustefix.sourceforge.net/interfacewrapper200401.xsd"
   xmlns="http://pustefix.sourceforge.net/interfacewrapper200401"
@@ -1334,7 +1341,11 @@ public class ContextUserImpl implements ContextUser {
   <ihandler class="org.pustefixframework.tutorial.firstapp.handler.SaveUserDataHandler"/>
 </interface>]]></programlisting>
     <para>
-      todo
+      After you implemented the wrapper, continue by creating a new <classname>SaveUserData</classname> class, which implements the
+      <classname>IHandler</classname> interface. Make sure that the handler is active by returning <literal>true</literal> from the
+      <function>prerequisitesMet</function> and <function>isActive</function> methods. Place the business logic that saves the new user
+      in the <function>handleSubmittedData</function> method. In this example, the business logic has been replaced by a simple
+      <function>System.out.println</function> call.
     </para>
     <programlisting language="java"><![CDATA[package org.pustefixframework.tutorial.firstapp.handler;
 
@@ -1370,7 +1381,36 @@ public class SaveUserDataHandler implements IHandler {
     }
 }]]></programlisting>
     <para>
-      todo
+      As the handler should be triggered from the <literal>ReviewData</literal> page, you have to add the handler to the
+      <literal>&lt;pagerequest/&gt;</literal> tag in the servlet configuration:
+    </para>
+    <programlisting language="xml"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
+<contextxmlserver xmlns="http://pustefix.sourceforge.net/properties200401"
+  xmlns:cus="http://www.schlund.de/pustefix/customize"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.0"
+  xsi:schemaLocation="http://pustefix.sourceforge.net/properties200401 http://pustefix.sourceforge.net/properties200401.xsd">
+  
+  <pagerequest name="ReviewData">
+    <input>
+      <interface prefix="user" class="org.pustefixframework.tutorial.firstapp.wrapper.SaveUserDataWrapper" />
+    </input>
+    <output>
+      <resource node="user" class="org.pustefixframework.tutorial.firstapp.contextresources.ContextUser"/>
+    </output>
+  </pagerequest>
+
+</contextxmlserver>]]></programlisting>
+    <para>
+      All that is left your you now, is to add a possibility to submit the <literal>ReviewData</literal> page. But as there is no
+      input form needed, you will learn a new way, how data can be submitted using Pustefix. The <literal>&lt;pfx:button/&gt;</literal>
+      tag is used, to create links between different Pustefix pages. But it can also be used to link to the same page again and
+      pass any arguments using the <literal>&lt;pfx:argument/&gt;</literal>. If you use the <literal>&lt;pfx:argument/&gt;</literal>
+      tag, Pustefix will treat the request as if the page had been submitted and call the <function>handleSubmittedData</function> method
+      on all handlers on the page.
+    </para>
+    <para>
+      As your handler does not accept any parameters, you can pass any argument as you like, for example setting the argument
+      <literal>user.save</literal> to <literal>true</literal>.
     </para>
     <programlisting language="xml"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
 <include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
@@ -1386,7 +1426,12 @@ public class SaveUserDataHandler implements IHandler {
   </part>
  </include_parts>]]></programlisting>
     <para>
-      todo
+      If you click on this link, the page will be submitted and if you placed the business logic inside the handler, it will
+      be executed.
+    </para>
+    <para>
+      Open the <filename>txt/pages/main_Confirm.xml</filename> file and add some HTML, that will be displayed after the Pustefix
+      workflow will continue to the last page.
     </para>
     <programlisting language="xml"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
 <include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
@@ -1397,21 +1442,53 @@ public class SaveUserDataHandler implements IHandler {
     </theme>
   </part>
  </include_parts>]]></programlisting>
+    <para>
+      Now you have implemented all specified requirements and finished your first Pustefix application.
+    </para>
+    <para>
+      In the last part of the tutorial you will polish some of the rough edges of your applications, which you did not deal with
+      while implementing the application.
+    </para>
   </section>
   <section xml:id="wrapper-handler.tweaks">
-    <title>Fixing some left-overs</title>
+    <title>The finishing touch</title>
     <para>
-      todo
+      Although your application is already working, there are some minor problems that you should deal with.
     </para>
     <section xml:id="wrapper-handler.tweaks.retrieve">
       <title>Changing data</title>
       <para>
-        todo
+        In a typical application, the review page does not only display the entered data, but offer you a link to go back and modify
+        the data you entered before. Your application currently lacks this feature, but you will now learn how this is implemented in
+        Pustefix.
+      </para>
+      <para>
+        At first, you have to add a new link to the <filename>main_ReviewData.xml</filename> page, which sends the user back to the
+        <literal>EnterData</literal> page. This can be done using the <literal>&lt;pfx:button/&gt;</literal> tag: 
       </para>
       <programlisting language="xml"><![CDATA[<pfx:button page="EnterData">Go back and edit data</pfx:button>]]></programlisting>
       <para>
-        todo
+        If you click on this link, the <literal>EnterData</literal> page will be loaded and the form will be displayed again.
+        But the application does not behave exactly as you would like it to, as the form fields are empty and not filled with
+        the data that the user entered before. This can be easily changed.
       </para>
+      <para>
+        Every time a page is rendered, Pustefix will call the <function>retrieveCurrentStatus</function> method of all handlers that
+        are registered for the page and pass in the <literal>context</literal> and the matching wrapper for the handler. In this method
+        you may use the generated setter methods of the wrapper class to assign values to the form fields.
+      </para>
+      <para>
+        To prefill the form fields with the values the user entered before, you need to fetch the <classname>User</classname> instance
+        from the context resource, extract the properties and assign them to the form elements. This is almost the opposite of what you
+        implemented in the <function>handleSubmittedData</function> method:
+      </para>
+      <itemizedlist>
+        <listitem><para>Fetch the <classname>ContextUser</classname> context resource using the <classname>ContextResourceManager</classname>.</para></listitem>
+        <listitem><para>Fetch the <classname>User</classname> instance from the context resource.</para></listitem>
+        <listitem><para>If the user equals <literal>null</literal> the page is accessed for the first time, no user data has been entered, and there is nothing left to do. You can leave the method using the <literal>return</literal> statement.</para></listitem>
+        <listitem><para>Cast the generic wrapper parameter to the concrete <classname>EnterUserDataWrapper</classname> implementation.</para></listitem>
+        <listitem><para>Get the properties from the <classname>User</classname> instance and set them to the corresponding properties in the wrapper.</para></listitem>
+      </itemizedlist>
       <programlisting language="java"><![CDATA[package org.pustefixframework.tutorial.firstapp.handler;
 
 import org.pustefixframework.tutorial.firstapp.User;
@@ -1443,11 +1520,30 @@ public class EnterUserDataHandler implements IHandler {
         euWrapper.setAdmin(user.getAdmin());
     }
 }]]></programlisting>
+      <para>
+        If you restart the application, enter some data and then go back to the form, you can see, that the form fields contain the
+        values that you wanted them to contain and that you entered before.
+      </para>
     </section>
     <section xml:id="wrapper-handler.tweaks.needsdata">
       <title>Avoiding unwanted access</title>
       <para>
-        todo
+        Another problem ist, that your pages are not protected against unwanted access. If you open the URL
+        <uri>http://first-app.$YOURHOSTNAME/xml/app/ReviewData</uri>, Pustefix will display this page,
+        although there is not data to review.
+      </para>
+      <para>
+        It is the responsibility of the application developer to make sure, that the page can only be
+        displayed, if it makes sense in the application context. However, Pustefix provides an easy
+        way to disable the availability of a page. The method <function>prerequisitesMet</function> will be called on
+        every handler, every time a page should be displayed. If this method returns <literal>false</literal>, the page
+        will not be displayed.
+      </para>
+      <para>
+        To protect the <literal>ReviewData</literal> page, you have to modify the <function>prerequisitesMet</function> method
+        of the <classname>SaveUserDataHandler</classname> handler. As the page should only be accessible, if a user has
+        been entered, you only need to fetch the <classname>ContextUser</classname> context resource and check, whether it contains
+        user data. If no user has been set, the method must return <literal>false</literal>, otherwise it must return <literal>true</literal>.
       </para>
       <programlisting language="java"><![CDATA[package org.pustefixframework.tutorial.firstapp.handler;
 
@@ -1468,10 +1564,25 @@ public class SaveUserDataHandler implements IHandler {
         }
         return false;
     }
-
 }]]></programlisting>
       <para>
-        todo
+        If you now open the <uri>http://first-app.$YOURHOSTNAME/xml/app/ReviewData</uri>, the page cannot be displayed.
+        Now the workflow mechanism kicks in and selects the next page, that should be displayed. This is the <literal>Confirm</literal>
+        page, which has been defined as the final page of the workflow.
+      </para>
+      <para>
+        It would have been better, if the <literal>EnterData</literal> page would have been displayed instead of the <literal>Confirm</literal>,
+        page, as the user must enter data before any other page can be displayed. This can easily be achieved using Pustefix.
+      </para>
+      <para>
+        Each handler has a <function>needsData</function> method, which will be called, when the workflow mechanism selects the next
+        page to display. The workflow will start with the first page in the current workflow and if the <function>needsData</function>
+        method returns <literal>true</literal>, it will stop at this page until the handler is satisfied.
+      </para>
+      <para>
+        To make sure, that the user will stay on this page, you only need to implement the <function>needsData</function> method of the
+        <classname>EnterUserDataHandler</classname> handler: the method must return <literal>true</literal>, unless the context
+        resource has a <classname>User</classname> instance.
       </para>
       <programlisting language="java"><![CDATA[package org.pustefixframework.tutorial.firstapp.handler;
 
@@ -1496,6 +1607,25 @@ public class EnterUserDataHandler implements IHandler {
     }
 }
 ]]></programlisting>
+      <para>
+        if you now try to access the <literal>ReviewData</literal> page directly, Pustefix will redirect you to the 
+        <literal>EnterData</literal> page instead until you entered the data of a new user.
+      </para>
     </section>
+  </section>
+  <section xml:id="wrapper-handler.conclusion">
+    <title>Conclusion</title>
+    <para>
+      In this tutorial you learned the basics about the core features of Pustefix and developed a very simple, but typical, web
+      application. For details about the features that you got to know in this tutorial, take a look at the comprehensive reference
+      documentation, which describes all the configuration options, XML tags and interfaces in detail.
+    </para>
+    <para>
+      Of course, Pustefix provides features to automate these tasks, there is no need to re-implement everything from
+      scratch for your applications.
+      See <xref linkend="user-manager"/> to learn how Pustefix will automatically generate wrapper definitions from your
+      existing beans, how to add custom validations and how you can avoid working with DOM and adding any object structure to
+      the generated XML tree automatically.
+    </para>
   </section>
 </chapter>
