@@ -1,6 +1,6 @@
 package org.pustefixframework.tutorial.calculator;
 
-import de.schlund.pfixcore.webservice.AbstractService;
+import org.pustefixframework.webservices.AbstractService;
 
 /**
  * Calculator

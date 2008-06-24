@@ -1,5 +1,24 @@
-<?xml version="1.0" encoding="utf-8"?><include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
+<?xml version="1.0" encoding="utf-8"?>
+<include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
   <part name="content">
-    <theme name="default">AJAX Calculator Tutorial</theme>
+    <theme name="default">
+      <!-- Include external JavaScript -->
+      <pfx:include part="javascript"/>
+
+      <h1>AJAX Calculator Tutorial</h1>
+      <fieldset>
+        <legend>Calculator</legend>
+        A: <input type="text" id="a"/><br/>
+        B: <input type="text" id="b"/><br/>
+      </fieldset>
+    </theme>
   </part>
- </include_parts>
+  
+  <part name="javascript">
+    <theme name="default">
+      <script type="text/javascript" src="/core/script/httpRequest.js"></script>
+      <script type="text/javascript" src="/core/script/webservice_json.js"></script>
+      <pfx:wsscript name="Calculator"/>
+    </theme>
+  </part>
+</include_parts>
