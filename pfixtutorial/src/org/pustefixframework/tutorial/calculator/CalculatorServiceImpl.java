@@ -1,5 +1,7 @@
 package org.pustefixframework.tutorial.calculator;
 
+import de.schlund.pfixcore.webservice.AbstractService;
+
 /**
  * Calculator
  * 
@@ -7,7 +9,7 @@ package org.pustefixframework.tutorial.calculator;
  *
  * @author  Stephan Schmidt <stephan.schmidt@1und1.de>
  */
-public class Calculator implements CalculatorService {
+public class CalculatorServiceImpl extends AbstractService implements CalculatorService {
     public int add(int a, int b) {
         return a+b;
     }

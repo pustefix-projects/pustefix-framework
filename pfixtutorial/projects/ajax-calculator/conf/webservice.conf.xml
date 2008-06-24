@@ -18,7 +18,7 @@
   
   <webservice name="CalculatorService">
     <interface name="org.pustefixframework.tutorial.calculator.CalculatorService"/>
-    <implementation name="org.pustefixframework.tutorial.calculator.Calculator"/>
+    <implementation name="org.pustefixframework.tutorial.calculator.CalculatorServiceImpl"/>
     <session type="servlet" />
     <context name="pfixtutorial:ajax-calculator::servlet:calc"/>
   </webservice>
