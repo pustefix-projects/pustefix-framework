@@ -6,8 +6,8 @@
   <chapterinfo>
     <title>AJAX Calculator tutorial</title>
     <copyright>
-      <holder>1&amp;1 Internet AG</holder>
       <year>2008</year>
+      <holder>1&amp;1 Internet AG</holder>
     </copyright>
     <authorgroup>
       <author>
@@ -22,10 +22,209 @@
   </chapterinfo>
 
   <title>AJAX Calculator tutorial</title>
-    
-    <section>
-      <title>Introduction</title>
-      <para></para>
-    </section>
+  <para>
+    In this tutorial you will learn how to create an AJAX application with Pustefix. As an example, you will build a very simple
+    calculator, which does the real calculation in Java on the server. As in the other tutorials, the business logic has been kept
+    extremely simple to focus on the tasks that are required to implement an AJAX application with the Pustefix framework.
+  </para>
+  <para>
+    No matter how complex your business logic is, the tasks required to set up an AJAX application will be almost the same as in
+    this tutorial.
+  </para>
+  <section xml:id="ajax-calculator.setup">
+    <title>Setup</title>
+    <para>
+      To build this tutorial, create a new project <literal>ajax-caculator</literal> with one servlet as described in
+      <xref linkend="wrapper-handler.setup"/> with the following data:
+    </para>
+    <informaltable>
+      <thead>
+        <tr>
+          <th>Property</th>
+          <th>Value</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Project name</td>
+          <td><literal>ajax-calculator</literal></td>
+        </tr>
+        <tr>
+          <td>Project language</td>
+          <td>Use the default value</td>
+        </tr>
+        <tr>
+          <td>Project comment</td>
+          <td><literal>AJAX Calculator tutorial</literal></td>
+        </tr>
+        <tr>
+          <td>Servlet name</td>
+          <td><literal>calc</literal></td>
+        </tr>
+      </tbody>
+    </informaltable>
+    <para>
+      Although you are building an AJAX application and will not need any wrappers and handlers which process your submit requests, you
+      still need at least one HTML page as a starting point for your application. Please create a page called <literal>Calculator</literal>
+      by adding the necessary tags to the <filename>depend.xml</filename> as described in <xref linkend="wrapper-handler.pages"/>. As the pages
+      itself do not trigger any business logic, there is no need to make the page known in the servlet configuration file. 
+    </para>
+    <para>
+      Set the new <literal>Calculator</literal> page as the default page as described in <xref linkend="wrapper-handler.entrypage"/>
+    </para>
+  </section>
+  <section xml:id="ajax-calculator.servlet">
+    <title>Using the webservice servlet</title>
+    <para>
+      todo
+    </para>
+    <programlisting language="xml"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
+<project xmlns:cus="http://www.schlund.de/pustefix/customize" name="ajax-calculator">
 
+  <!-- These lines have been generated -->
+  <active>true</active>
+  <comment>AJAX calculator tutorial</comment>
+  <depend>ajax-calculator/conf/depend.xml</depend>
+  <virtualhost><cus:fqdn/></virtualhost>
+  <servername>ajax-calculator.<cus:fqdn/></servername>
+  <serveralias>ajax-calculator.<cus:machine/></serveralias>
+  
+  <defpath>/xml/calc</defpath>
+  <passthrough>ajax-calculator/img</passthrough>
+  
+  <documentroot><cus:docroot/>ajax-calculator/htdocs</documentroot>
+  
+  <literalapache>
+    # Add something here...
+  </literalapache>
+  <ports>
+    <port number="80"/>
+  </ports>
+  
+  <servlet name="calc" useineditor="true">
+    <active>true</active>
+    <class>de.schlund.pfixxml.ContextXMLServlet</class>
+    <propfile>ajax-calculator/conf/calc.conf.xml</propfile>
+  </servlet>
+  
+  <servlet name="deref">
+    <active>true</active>
+    <class>de.schlund.pfixxml.DerefServlet</class>
+  </servlet>
+
+  <!-- Add these lines manually -->
+  <servlet name="webservice">
+    <active>true</active>
+    <class>de.schlund.pfixcore.webservice.WebServiceServlet</class>
+    <propfile>ajax-calculator/conf/webservice.conf.xml</propfile>
+  </servlet>
+
+</project>]]></programlisting>
+    <para>
+      todo
+    </para>
+    <programlisting language="xml"><![CDATA[<webservice-config xmlns="http://pustefix.sourceforge.net/wsconfig200401"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://pustefix.sourceforge.net/wsconfig200401 ../../core/schema/wsconfig200401.xsd">
+  
+  <webservice-global>
+    <requestpath>/xml/webservice</requestpath>
+    <wsdlsupport enabled="true" repository="/wsdl"/>
+    <stubgeneration enabled="true" repository="/wsscript"/>
+    <protocol type="JSONWS"/>
+    <encoding style="rpc" use="encoded"/>
+    <session type="servlet"/>
+    <scope type="application"/>
+    <admin enabled="true"/>
+    <monitoring enabled="true" scope="session" historysize="10"/>
+    <logging enabled="true"/>
+    <faulthandler class="de.schlund.pfixcore.webservice.fault.LoggingHandler"/>
+  </webservice-global>
+  
+</webservice-config>]]></programlisting>
+    <para>
+      todo
+    </para>
+  </section>
+  <section xml:id="ajax-calculator.businesslogic">
+    <title>Implementing the business logic</title>
+    <para>
+      todo
+    </para>
+    <programlisting language="java"><![CDATA[package org.pustefixframework.tutorial.calculator;
+
+public interface CalculatorService {
+    public int add(int a, int b);
+    public int subtract(int a, int b);
+    public int multiply(int a, int b);
+    public int divide(int a, int b);
+}]]></programlisting>
+    <para>
+      todo
+    </para>
+    <programlisting language="java"><![CDATA[package org.pustefixframework.tutorial.calculator;
+
+import de.schlund.pfixcore.webservice.AbstractService;
+
+public class CalculatorServiceImpl extends AbstractService implements CalculatorService {
+    public int add(int a, int b) {
+        return a+b;
+    }
+
+    public int divide(int a, int b) {
+        return a-b;
+    }
+
+    public int multiply(int a, int b) {
+        return a*b;
+    }
+
+    public int subtract(int a, int b) {
+        return a/b;
+    }
+}]]></programlisting>
+    <para>
+      todo
+    </para>
+    <tip>
+      <title>Accessing the context</title>
+      <para>
+        The <classname>AbstractService</classname> class provides a <function>getContext</function> method
+        which gives you access to the <classname>Context</classname> of the current user. This allows you to
+        access any data that your application stored in the context.
+      </para>
+    </tip>
+  </section>
+  <section xml:id="ajax-calculator.expose">
+    <title>Exposing the service</title>
+    <para>
+      todo
+    </para>
+    <programlisting language="xml"><![CDATA[<webservice-config xmlns="http://pustefix.sourceforge.net/wsconfig200401"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://pustefix.sourceforge.net/wsconfig200401 ../../core/schema/wsconfig200401.xsd">
+
+  <!-- global config -->  
+  
+  <webservice name="CalculatorService">
+    <interface name="org.pustefixframework.tutorial.calculator.CalculatorService"/>
+    <implementation name="org.pustefixframework.tutorial.calculator.CalculatorServiceImpl"/>
+    <session type="servlet" />
+    <context name="pfixtutorial:ajax-calculator::servlet:calc"/>
+  </webservice>
+
+</webservice-config>]]></programlisting>
+  </section>
+  <section xml:id="ajax-calculator.consume">
+    <title>Consuming the service</title>
+    <para>
+      todo
+    </para>
+  </section>
+  <section xml:id="ajax-calculator.conclusion">
+    <title>Conclusion</title>
+    <para>
+      todo
+    </para>
+  </section>
 </chapter>
