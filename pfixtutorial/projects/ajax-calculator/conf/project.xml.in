@@ -42,7 +42,7 @@
 
   <servlet name="webservice">
     <active>true</active>
-    <class>de.schlund.pfixcore.webservice.WebServiceServlet</class>
+    <class>org.pustefixframework.webservices.WebServiceServlet</class>
     <propfile>ajax-calculator/conf/webservice.conf.xml</propfile>
   </servlet>
 

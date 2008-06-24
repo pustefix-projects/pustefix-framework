@@ -16,7 +16,7 @@
     <faulthandler class="org.pustefixframework.webservices.fault.LoggingHandler"/>
   </webservice-global>
   
-  <webservice name="CalculatorService">
+  <webservice name="Calculator">
     <interface name="org.pustefixframework.tutorial.calculator.CalculatorService"/>
     <implementation name="org.pustefixframework.tutorial.calculator.CalculatorServiceImpl"/>
     <session type="servlet" />
