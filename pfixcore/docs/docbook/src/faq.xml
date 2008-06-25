@@ -12,5 +12,10 @@
     </copyright>
   </bookinfo>
   
+  <xi:include href="faq/installation.xml" />
+  <xi:include href="faq/configuration.xml" />
+  <xi:include href="faq/xmlandxsl.xml" />
+  <xi:include href="faq/pageflows.xml" />
   <xi:include href="faq/states.xml" />
+  <xi:include href="faq/handler.xml" />
 </book>

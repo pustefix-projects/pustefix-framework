@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<chapter xml:id="configuration" xmlns="http://docbook.org/ns/docbook" xmlns:xlink="www.w3.org/1999/xlink" xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://docbook.org/ns/docbook http://www.docbook.org/xml/5.0CR7/xsd/docbook.xsd">
+  <title>Configuration</title>
+
+  <qandaset>
+    <qandaentry xml:id="configuration.props">
+      <question>
+        <para>
+          I need some custom java properties for my application. Where should I put them?
+        </para>
+      </question>
+      <answer>
+        <para>
+          You can add those in the <literal>&lt;properties/&gt;</literal> section of your servlet configuration file.
+          For example at the end of your <filename>app.conf.xml</filename> you can have something like:
+        </para>
+        <programlisting language="xml"><![CDATA[<properties>
+  <prop name="jdbc_conn_string">jdbc:mysql://foo/bar</prop>
+</properties>]]></programlisting>
+      </answer>
+    </qandaentry>
+  </qandaset>
+
+</chapter>
