@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<book version="5.0" xmlns="http://docbook.org/ns/docbook" xmlns:xlink="www.w3.org/1999/xlink"
+  xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://docbook.org/ns/docbook http://www.docbook.org/xml/5.0CR7/xsd/docbook.xsd"
+>
+  <bookinfo>
+    <title>Pustefix Frequently Asked Questions</title>
+    <copyright>
+      <holder>1&amp;1 Internet AG</holder>
+      <year>2007</year>
+      <year>2008</year>
+    </copyright>
+  </bookinfo>
+  
+  <xi:include href="faq/states.xml" />
+</book>
