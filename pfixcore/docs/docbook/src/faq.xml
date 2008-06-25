@@ -18,4 +18,5 @@
   <xi:include href="faq/pageflows.xml" />
   <xi:include href="faq/states.xml" />
   <xi:include href="faq/handler.xml" />
+  <xi:include href="faq/ajax.xml" />
 </book>
