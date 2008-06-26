@@ -437,6 +437,35 @@ body { background-image: url('</xsl:text>
       <xsl:call-template name="user.header.content">
         <xsl:with-param name="node" select="$doc"/>
       </xsl:call-template>
+      <div id="header">
+        <h1><a href="http://pustefix-framework.org/">Pustefix-Framework</a></h1>
+      </div>
+      <div id="navi">
+        <li>
+          <a href="faq.html">
+            <xsl:attribute name="class">
+              <xsl:if test="$doc/d:bookinfo/d:title = 'Pustefix Frequently Asked Questions'">active</xsl:if>
+            </xsl:attribute>
+            FAQ
+          </a>
+        </li>
+        <li>
+          <a href="reference.html">
+            <xsl:attribute name="class">
+              <xsl:if test="$doc/d:bookinfo/d:title = 'Pustefix Reference Documentation'">active</xsl:if>
+            </xsl:attribute>
+            Reference
+          </a>
+        </li>
+        <li>
+          <a href="tutorial.html">
+            <xsl:attribute name="class">
+              <xsl:if test="$doc/d:bookinfo/d:title = 'Pustefix Tutorial'">active</xsl:if>
+            </xsl:attribute>
+            Tutorials
+          </a>
+        </li>
+      </div>
       <xsl:apply-templates select="."/>
       <xsl:call-template name="user.footer.content">
         <xsl:with-param name="node" select="$doc"/>

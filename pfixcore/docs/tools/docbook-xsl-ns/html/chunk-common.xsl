@@ -1800,6 +1800,10 @@ xmlns:exsl="http://exslt.org/common"
       <xsl:call-template name="body.attributes"/>
       <xsl:call-template name="user.header.navigation"/>
 
+      <div id="header">
+        <h1><a href="http://pustefix-framework.org/">Pustefix-Framework</a></h1>
+      </div>
+      
       <xsl:call-template name="header.navigation">
         <xsl:with-param name="prev" select="$prev"/>
         <xsl:with-param name="next" select="$next"/>

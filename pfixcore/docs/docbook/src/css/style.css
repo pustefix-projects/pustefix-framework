@@ -2,22 +2,24 @@ body,div,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,pre,form,fieldset,input,textarea,p,
   margin: 0; 
   padding: 0; 
   font-size: 13px;
-  font-family: Arial, Verdana, helvetica, sans serif;
 } 
 
 body {
-  padding: 10px 20px;
+  background: #fff url(../images/common/background.gif) 0 0 repeat-x;
+  font-family: verdana, helvetica, arial, sans serif;
+  padding: 0 44px 44px 44px;
 }
 
-h1, h2, h3, h4, h6, div.navheader th {
+h1, h2, h3, h4, h5, h6 {
   color: #144377;
-  font-family: Verdana, Arial, Helvetica, sans-serif;
+  font-family: verdana, helvetica, arial, sans-serif;
   font-weight: 500;
   padding-top: 14px;
 }
 
 h1 {
-  font-size: 24px;
+  font-size: 26px;
+  padding-top: 0;
 }
 
 h2 {
@@ -28,8 +30,8 @@ h3 {
   font-size: 18px;
 }
 
-h4, div.navheader th {
-  font-size: 16px;
+h4, h5, h6 {
+  font-size: 18px;
 }
 
 p, ul, dl {
@@ -56,14 +58,6 @@ a:hover {
 
 a:visited {
   color: #555;
-}
-
-pre {
-  font-family: Courier New;
-  margin-top: 10px;
-  background-color: #edebe5;
-  border: 1px #aea574 solid;
-  padding: 10px;
 }
 
 th, td {
@@ -119,3 +113,135 @@ hr {
 .hl-section {
   font-weight: bold;
 }
+
+#header h1 {
+  margin: 20px 0 0 0;
+  padding: 0;
+  width: 251px;
+  height: 101px;
+}
+
+#header h1 a {
+  display: block;
+  width: 251px;
+  height: 101px;
+  text-indent: -999em;
+  background: #000 url(../images/common/pustefix_logo.gif) 0 0 no-repeat;
+}
+
+#navi,
+div.navheader {
+  position: relative;
+  overflow: hidden;
+  height: 32px;
+  margin-top: 24px;
+  background: #fff url(../images/common/navi_bg.gif) 0 0 repeat-x;
+}
+
+div.navheader td,
+div.navheader th {
+  line-height: 1em;
+  padding: 0;
+  border: 0 none;
+}
+
+div.navheader td {
+  padding: 5px 20px;
+}
+
+div.navheader th {
+  position: absolute;
+  padding: 5px 0;
+  font-size: 15px;
+  font-weight: bold;
+  height: 0;
+  overflow: visible;
+}
+
+div.navheader hr {
+  border: 0 none;
+}
+
+#navi ul {
+  margin: 0;
+  padding: 0;
+}
+
+#navi li {
+  margin: 0;
+  padding: 0;
+  list-style-type: none;
+  line-height: 1em;
+  float: right;
+  font-size: 15px;
+  font-weight: bold;
+  border-left: 1px #C2C9C5 solid;  
+}
+
+#navi li a {
+  display: block;
+  color: #092956;
+  padding: 8px 20px;
+  text-decoration: none;
+}
+
+#navi li a:hover {
+  background-image: url(../images/common/navi_hover.gif);
+}
+
+#navi li a.active {
+  color: #fff;
+  background-image: url(../images/common/navi_active.gif);
+}
+
+#navi li a.active:hover {
+  background-image: url(../images/common/navi_active.gif);
+}
+
+div.preface,
+div.book,
+div.glossary,
+div.chapter {
+  background: #fff;
+  padding: 20px;
+  border-top: 16px #7BD738 solid;
+  border-left: 1px #E6E6E6 solid;
+  border-right: 1px #E6E6E6 solid;
+  border-bottom: 1px #E6E6E6 solid;
+}
+
+div.note {
+  margin: 10px 0 0 15px;
+  padding: 8px;
+  background-color: #F4F8F4;
+  border-top: 1px #AACCAA dotted;
+  border-bottom: 1px #AACCAA dotted;
+}
+
+div.tip {
+  margin: 10px 0 0 15px;
+  padding: 8px;
+  background-color: #F8F8F4;
+  border-top: 1px #CCCCAA dotted;
+  border-bottom: 1px #CCCCAA dotted;
+}
+
+div.warning {
+  margin: 10px 0 0 15px;
+  padding: 8px;
+  background-color: #F8F4F4;
+  border-top: 1px #CCAAAA dotted;
+  border-bottom: 1px #CCAAAA dotted;
+}
+
+pre.programlisting,
+pre.screen {
+  margin-left: 15px;
+  margin-top: 10px;
+  font-family: Courier New;
+  background-color: #F4F5F6;
+  border-top: 1px #AAB2BA dotted;
+  border-bottom: 1px #AAB2BA dotted;
+  padding: 8px;
+}
+
