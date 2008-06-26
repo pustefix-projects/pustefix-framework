@@ -210,6 +210,8 @@ div.chapter {
   border-bottom: 1px #E6E6E6 solid;
 }
 
+div.book div.preface,
+div.book div.glossary,
 div.book div.chapter {
   padding: 0;
   border: 0 none;
