@@ -115,7 +115,7 @@ hr {
 }
 
 #header h1 {
-  margin: 20px 0 0 0;
+  margin: 10px 0 0 0;
   padding: 0;
   width: 251px;
   height: 101px;
@@ -145,17 +145,25 @@ div.navheader th {
   border: 0 none;
 }
 
-div.navheader td {
+div.navheader div.left,
+div.navheader div.right {
   padding: 5px 20px;
+  position: absolute;
+  top: 0;
+}
+
+div.navheader div.left {
+  left: 0;
+}
+
+div.navheader div.right {
+  right: 0;
 }
 
 div.navheader th {
-  position: absolute;
   padding: 5px 0;
   font-size: 15px;
   font-weight: bold;
-  height: 0;
-  overflow: visible;
 }
 
 div.navheader hr {

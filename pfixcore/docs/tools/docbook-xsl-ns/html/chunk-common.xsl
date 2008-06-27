@@ -1480,56 +1480,57 @@ xmlns:exsl="http://exslt.org/common"
               </th>
             </tr>
           </xsl:if>
-
-          <xsl:if test="$row2">
-            <tr>
-              <td width="20%" align="left">
-                <xsl:if test="count($prev)>0">
-                  <a accesskey="p">
-                    <xsl:attribute name="href">
-                      <xsl:call-template name="href.target">
-                        <xsl:with-param name="object" select="$prev"/>
-                      </xsl:call-template>
-                    </xsl:attribute>
-                    <xsl:call-template name="navig.content">
-                      <xsl:with-param name="direction" select="'prev'"/>
-                    </xsl:call-template>
-                  </a>
-                </xsl:if>
-                <xsl:text>&#160;</xsl:text>
-              </td>
-              <th width="60%" align="center">
-                <xsl:choose>
-                  <xsl:when test="count($up) > 0
-                                  and generate-id($up) != generate-id($home)
-                                  and $navig.showtitles != 0">
-                    <xsl:apply-templates select="$up" mode="object.title.markup"/>
-                  </xsl:when>
-                  <xsl:otherwise>&#160;</xsl:otherwise>
-                </xsl:choose>
-              </th>
-              <td width="20%" align="right">
-                <xsl:text>&#160;</xsl:text>
-                <xsl:if test="count($next)>0">
-                  <a accesskey="n">
-                    <xsl:attribute name="href">
-                      <xsl:call-template name="href.target">
-                        <xsl:with-param name="object" select="$next"/>
-                      </xsl:call-template>
-                    </xsl:attribute>
-                    <xsl:call-template name="navig.content">
-                      <xsl:with-param name="direction" select="'next'"/>
-                    </xsl:call-template>
-                  </a>
-                </xsl:if>
-              </td>
-            </tr>
-          </xsl:if>
         </table>
+        <xsl:if test="$row2">
+          <div class="left">
+            <xsl:if test="count($prev)>0">
+              <a accesskey="p">
+                <xsl:attribute name="href">
+                  <xsl:call-template name="href.target">
+                    <xsl:with-param name="object" select="$prev"/>
+                  </xsl:call-template>
+                </xsl:attribute>
+                <xsl:call-template name="navig.content">
+                  <xsl:with-param name="direction" select="'prev'"/>
+                </xsl:call-template>
+              </a>
+            </xsl:if>
+            <xsl:text>&#160;</xsl:text>
+          </div>
+          <!--
+          <th width="60%" align="center">
+            <xsl:choose>
+              <xsl:when test="count($up) > 0
+                              and generate-id($up) != generate-id($home)
+                              and $navig.showtitles != 0">
+                <xsl:apply-templates select="$up" mode="object.title.markup"/>
+              </xsl:when>
+              <xsl:otherwise>&#160;</xsl:otherwise>
+            </xsl:choose>
+          </th>
+          -->
+          <div class="right">
+            <xsl:text>&#160;</xsl:text>
+            <xsl:if test="count($next)>0">
+              <a accesskey="n">
+                <xsl:attribute name="href">
+                  <xsl:call-template name="href.target">
+                    <xsl:with-param name="object" select="$next"/>
+                  </xsl:call-template>
+                </xsl:attribute>
+                <xsl:call-template name="navig.content">
+                  <xsl:with-param name="direction" select="'next'"/>
+                </xsl:call-template>
+              </a>
+            </xsl:if>
+          </div>
+        </xsl:if>
       </xsl:if>
+      <!--
       <xsl:if test="$header.rule != 0">
         <hr/>
       </xsl:if>
+      -->
     </div>
   </xsl:if>
 </xsl:template>
