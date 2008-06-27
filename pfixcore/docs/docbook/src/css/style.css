@@ -73,6 +73,7 @@ hr {
 /* syntax highlighting */
 
 .hl-keyword {
+  color: #14bb43;
   font-weight: bold;
 }
 
