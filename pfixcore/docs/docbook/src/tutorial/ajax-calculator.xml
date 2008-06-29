@@ -14,10 +14,6 @@
         <firstname>Stephan</firstname>
         <surname>Schmidt</surname>
       </author>
-      <author>
-        <firstname>Nico</firstname>
-        <surname>Steiner</surname>
-      </author>
     </authorgroup>
   </chapterinfo>
 
@@ -76,7 +72,10 @@
   <section xml:id="ajax-calculator.servlet">
     <title>Using the webservice servlet</title>
     <para>
-      todo
+      In AJAX applications, you will need a servlet, that is able to process the AJAX requests sent by the client.
+      Pustefix provides a ready-to-use servlet, that is able to expose any Java class as a webservice and process
+      requests made by the client. To use this servlet, open the <filename>project.xml.in</filename> configuration
+      file and add a new servlet <literal>webservice</literal> at the end of the file.     
     </para>
     <programlisting language="xml"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
 <project xmlns:cus="http://www.schlund.de/pustefix/customize" name="ajax-calculator">
@@ -115,13 +114,19 @@
   <!-- Add these lines manually -->
   <servlet name="webservice">
     <active>true</active>
-    <class>de.schlund.pfixcore.webservice.WebServiceServlet</class>
+    <class>org.pustefixframework.webservices.WebServiceServlet</class>
     <propfile>ajax-calculator/conf/webservice.conf.xml</propfile>
   </servlet>
 
 </project>]]></programlisting>
     <para>
-      todo
+      Instead of using the <classname>ContextXMLServlet</classname> for the servlet, you need to use the
+      <classname>org.pustefixframework.webservices.WebServiceServlet</classname> instead. To configure the webservice servlet
+      you add the <filename>ajax-calculator/conf/webservice.conf.xml</filename> file in the <literal>&lt;propfile/&gt;</literal> tag.
+    </para>
+    <para>
+      This <filename>webservice.conf.xml</filename> file makes use of the XML syntax like all the previous configuration files
+      you encountered in Pustefix. Add the following content to the file:
     </para>
     <programlisting language="xml"><![CDATA[<webservice-config xmlns="http://pustefix.sourceforge.net/wsconfig200401"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -129,10 +134,9 @@
   
   <webservice-global>
     <requestpath>/xml/webservice</requestpath>
-    <wsdlsupport enabled="true" repository="/wsdl"/>
-    <stubgeneration enabled="true" repository="/wsscript"/>
+    <wsdlsupport enabled="false"/>
+    <stubgeneration enabled="false"/>
     <protocol type="JSONWS"/>
-    <encoding style="rpc" use="encoded"/>
     <session type="servlet"/>
     <scope type="application"/>
     <admin enabled="true"/>
@@ -143,13 +147,105 @@
   
 </webservice-config>]]></programlisting>
     <para>
-      todo
+      <xref linkend="ajax-calculator.servlet.config"/> lists all used configuration options and describes
+      their usage in this example. 
+    </para>
+    <table xml:id="ajax-calculator.servlet.config" rules="all" frame="box">
+      <caption>Global webservice configuration </caption>
+      <thead>
+        <tr>
+          <th>Option</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><literal>requestpath</literal></td>
+          <td>
+            The path where the webservice requests will be sent to.
+          </td>
+        </tr>
+        <tr>
+          <td><literal>wsdlsupport</literal></td>
+          <td>
+            Whether WSDL for SOAP webservices should be generated. As you will be using a JSON protocol instead of SOAP, this is not needed.
+          </td>
+        </tr>
+        <tr>
+          <td><literal>stubgeneration</literal></td>
+          <td>
+            Whether JavaScript stub classes should be generated in the build process. Again, this is not needed when using a JSON-based protocol.
+          </td>
+        </tr>
+        <tr>
+          <td><literal>protocol</literal></td>
+          <td>
+            The protocol to use. In this example, you will be using the <literal>JSONWS</literal> protocol, which is very similar to JSON-RPC.
+          </td>
+        </tr>
+        <tr>
+          <td><literal>session</literal></td>
+          <td>
+            Which session type to use. Using <literal>servlet</literal> means that there must be an HTTP-session that can be used in your services.
+          </td>
+        </tr>
+        <tr>
+          <td><literal>scope</literal></td>
+          <td>
+            Specifies the scope in which your web services will be executed. When using <literal>application</literal>, the service object is created only once and reused for all requests.
+          </td>
+        </tr>
+        <tr>
+          <td><literal>admin</literal></td>
+          <td>
+            Whether to enable the web service admin console.
+          </td>
+        </tr>
+        <tr>
+          <td><literal>monitoring</literal></td>
+          <td>
+            Whether to enable the web service monitoring, which is useful for debgging.
+          </td>
+        </tr>
+        <tr>
+          <td><literal>logging</literal></td>
+          <td>
+            Whether to enable the pustefix-webservice.log, which contains all requests and responses.
+          </td>
+        </tr>
+        <tr>
+          <td><literal>faulthandler</literal></td>
+          <td>
+            Specifies a class that will receive all exceptions that are thrown in your web services.
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <para>
+      You have now configured the <classname>WebServiceServlet</classname> and it is now available at
+      <uri>http://ajax-calculator.HOSTNAME.DOMAIN.de/xml/webservice/</uri>. If you open this URL in your
+      browser, you will get an HTTP Code <literal>400 Bad Request</literal> as you made a simple HTTP
+      request instead of a webservice request.
+    </para>
+    <para>
+      To make web service requests, you will at first have to implement a service that you can send
+      requests to.
     </para>
   </section>
   <section xml:id="ajax-calculator.businesslogic">
     <title>Implementing the business logic</title>
     <para>
-      todo
+      In Pustefix, a web service always has to consist of a service interface and an implementation.
+      In this tutorial, you will implement a very simple webservice which provides three methods to
+      execute mathematical operations.
+    </para>
+    <itemizedlist>
+      <listitem><para>Add two integer numbers</para></listitem>
+      <listitem><para>Subtract two integer numbers</para></listitem>
+      <listitem><para>Multiply two integer numbers</para></listitem>
+    </itemizedlist>
+    <para>
+      The interface for this business logic is very easy to implement:
     </para>
     <programlisting language="java"><![CDATA[package org.pustefixframework.tutorial.calculator;
 
@@ -157,34 +253,33 @@ public interface CalculatorService {
     public int add(int a, int b);
     public int subtract(int a, int b);
     public int multiply(int a, int b);
-    public int divide(int a, int b);
 }]]></programlisting>
     <para>
-      todo
+      The implementation for this interface is not any harder to implement than the interface iteself:
     </para>
     <programlisting language="java"><![CDATA[package org.pustefixframework.tutorial.calculator;
 
-import de.schlund.pfixcore.webservice.AbstractService;
+import org.pustefixframework.webservices.AbstractService;
 
 public class CalculatorServiceImpl extends AbstractService implements CalculatorService {
     public int add(int a, int b) {
         return a+b;
     }
 
-    public int divide(int a, int b) {
+    public int subtract(int a, int b) {
         return a-b;
     }
 
     public int multiply(int a, int b) {
         return a*b;
     }
-
-    public int subtract(int a, int b) {
-        return a/b;
-    }
 }]]></programlisting>
     <para>
-      todo
+      As you can see, the <classname>CalculatorServiceImpl</classname> implements the
+      <classname>CalculatorService</classname> service interface <emphasis>and</emphasis> extends
+      the abstract class <classname>AbstractService</classname> provided by Pustefix.
+      All of your web service implementations should extend this class to inherit some methods
+      that are useful when working with web services. 
     </para>
     <tip>
       <title>Accessing the context</title>
@@ -198,7 +293,13 @@ public class CalculatorServiceImpl extends AbstractService implements Calculator
   <section xml:id="ajax-calculator.expose">
     <title>Exposing the service</title>
     <para>
-      todo
+      Now that you have defined the interface for your service and also provided an implementation for it, the next
+      step is to expose this service using the <classname>WebServiceServlet</classname> provided by Pustefix
+    </para>
+    <para>
+      This is done by adding some additional configuration options to the <filename>webservice.conf.xml</filename> file
+      you created earler (in <xref linkend="ajax-calculator.servlet"/>). For each webservice you want to expose, you
+      have to add one <literal>&lt;webservice/&gt;</literal> tag in this configuration file:
     </para>
     <programlisting language="xml"><![CDATA[<webservice-config xmlns="http://pustefix.sourceforge.net/wsconfig200401"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -209,22 +310,249 @@ public class CalculatorServiceImpl extends AbstractService implements Calculator
   <webservice name="CalculatorService">
     <interface name="org.pustefixframework.tutorial.calculator.CalculatorService"/>
     <implementation name="org.pustefixframework.tutorial.calculator.CalculatorServiceImpl"/>
-    <session type="servlet" />
-    <context name="pfixtutorial:ajax-calculator::servlet:calc"/>
   </webservice>
 
 </webservice-config>]]></programlisting>
+    <para>
+      Each of these webservice configurations requires at least the following options to be set:
+    </para>
+    <table xml:id="ajax-calculator.expose.config" rules="all" frame="box">
+      <caption>Local webservice configuration</caption>
+      <thead>
+        <tr>
+          <th>Option</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><literal>name</literal></td>
+          <td>
+            The <literal>name</literal> attribute specifies the name of the webservice. This name does not have to match
+            the name of the Java class. It will be used to identify the service, when the web service servlet is
+            requested by a client.
+          </td>
+        </tr>
+        <tr>
+          <td><literal>interface</literal></td>
+          <td>
+            The <literal>&lt;interface/&gt;</literal> tag specifies the name of interface for the web service. Only methods
+            defined in this interface will be exposed as web service methods.
+          </td>
+        </tr>
+        <tr>
+          <td><literal>implementation</literal></td>
+          <td>
+            The <literal>&lt;implementation/&gt;</literal> tag references the actual implementation of the service.
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <para>
+      Also, most of the global options (see <xref linkend="ajax-calculator.servlet.config"/>) can be used in the local
+      web service configuration to override them for the specified service.
+    </para>
+    <tip>
+      <title>Accessing the context</title>
+      <para>
+        If your web service extends the <classname>AbstractService</classname> class and you want to access the <classname>Context</classname>
+        of your application, you can use the <literal>&lt;context/&gt;</literal> tag to reference the context you want to
+        access in your service:
+      </para>
+      <programlisting language="xml"><![CDATA[<context name="pfixtutorial:ajax-calculator::servlet:calc"/>]]></programlisting>
+    </tip>    
   </section>
   <section xml:id="ajax-calculator.consume">
     <title>Consuming the service</title>
     <para>
-      todo
+      With these steps, you have finished all Java and configuration work packages and can continue implementing the client
+      side of your application. Open the <filename>main_Calculator.xml</filename> file and add some HTML as a frontend for
+      your calculator application:
+    </para>
+    <programlisting language="xml"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
+<include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform"
+  xmlns:pfx="http://www.schlund.de/pustefix/core">
+  <part name="content">
+    <theme name="default">
+      <!-- Include external JavaScript -->
+      <pfx:include part="javascript-includes"/>
+
+      <h1>AJAX Calculator Tutorial</h1>
+      <fieldset>
+        <legend>Calculator</legend>
+        A: <input type="text" id="a"/><br/>
+        B: <input type="text" id="b"/><br/>
+        <input type="button" value="add" onClick="add();"/>
+        <input type="button" value="subtract" onClick="subtract();"/>
+        <input type="button" value="multiply" onClick="multiply();"/>
+      </fieldset>
+    </theme>
+  </part>
+</include_parts>]]></programlisting>
+    <para>
+      The HTML page contains several controls:
+    </para>
+    <itemizedlist>
+      <listitem><para>Two text input fields (with ids <literal>a</literal> and <literal>b</literal>), in which the user enters the two values, that are used for the calculation.</para></listitem>
+      <listitem><para>A button labeled <literal>add</literal> which will call the JavaScript function <function>add()</function> when clicked.</para></listitem>
+      <listitem><para>A button labeled <literal>subtract</literal> which will call the JavaScript function <function>subtract()</function> when clicked.</para></listitem>
+      <listitem><para>A button labeled <literal>multiply</literal> which will call the JavaScript function <function>multiply()</function> when clicked.</para></listitem>
+    </itemizedlist>
+    <para>
+      To implement an AJAX application, you will have to use JavaScript. This has been left out in the last example of your page,
+      there is only a <literal>&lt;pfx:include/&gt;</literal> tag, which includes a second part <literal>javascript-includes</literal>
+      defined in the same page. This part is used to separate the HTML from all your JavaScript includes and make the page
+      more maintainable.
+    </para>
+    <para>
+      Pustefix does not only provide server side implementation helpers for your AJAX applications, but also some client side JavaScript
+      classes which hide all transportation details from you. Pustefix will also generate JavaScript stub classes for the Java services
+      you exposed via the <classname>WebServiceServlet</classname>. To use the <literal>JSONWS</literal> implementation, you have to
+      include the following files:
+    </para>
+    <itemizedlist>
+      <listitem><para><filename>/core/script/httpRequest.js</filename> provides an abstraction over the different <literal>XmlHttpRequest</literal> implementations in the different browsers.</para></listitem>
+      <listitem><para><filename>/core/script/webservice_json.js</filename> provides an abstraction of the <literal>JSONWS</literal> protocol used by Pustefix.</para></listitem>
+      <listitem>
+        <para>
+          The JavaScript stub for your calculator service is not available as a file, but is generated on demand by the servlet.
+          To include this generated JavaScript code, Pustefix provides the <literal>&lt;pfxwsscript/&gt;</literal> tag, which takes the name of the
+          service (as specified in the <literal>&lt;webservice/&gt;</literal> tag in your web service configuration) in the <literal>name</literal>
+          attribute. This tag will generate the <literal>&lt;script/&gt;</literal> tag that requests the generated JavaScript code from
+          the web service servlet. 
+        </para>
+      </listitem>
+    </itemizedlist>
+    <para>
+      The following listing shows the <literal>javascript-includes</literal> part, which is referenced by the frontend of your application:
+    </para>
+    <programlisting language="xml"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
+<include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform"
+  xmlns:pfx="http://www.schlund.de/pustefix/core">
+  <part name="javascript-includes">
+    <theme name="default">
+      <script type="text/javascript" src="/core/script/httpRequest.js"></script>
+      <script type="text/javascript" src="/core/script/webservice_json.js"></script>
+      <pfx:wsscript name="Calculator"/>
+    </theme>
+  </part>
+</include_parts>]]></programlisting>
+    <para>
+      If you are taking a look at the generated JavaScript code, you will see, that this code defines a new class called
+      <classname>WS_Calculator</classname>, which provides three methods:
+    </para>
+    <itemizedlist>
+      <listitem><para><function>add()</function></para></listitem>
+      <listitem><para><function>subtract()</function></para></listitem>
+      <listitem><para><function>divide()</function></para></listitem>
+    </itemizedlist>
+    <para>
+      These are exactly the same methods that the <classname>CalculatorService</classname> interface declared in your Java code.
+    </para>
+    <programlisting>//Autogenerated webservice stub (don't modify this code manually!)
+function WS_Calculator(context) {
+  pfx.ws.json.BaseStub.call(this,"Calculator",context);
+}
+WS_Calculator.prototype=new pfx.ws.json.BaseStub;
+WS_Calculator.prototype.add=function() {
+  return this.callMethod("add",arguments,2);
+}
+WS_Calculator.prototype.multiply=function() {
+  return this.callMethod("multiply",arguments,2);
+}
+WS_Calculator.prototype.subtract=function() {
+  return this.callMethod("subtract",arguments,2);
+}</programlisting>
+    <para>
+      This class acts as a <emphasis>remote proxy</emphasis> for the Java business logic you implemented earlier. If you call
+      any of these methods, the calculation will not be done on the client, but the request will be sent to the server, where
+      it will be processed by the Java implementation. The response will then be sent back to the client and is available
+      in your JavaScript application.
+    </para>
+    <para>
+      So all that is left to do, is implement the client side logic, that will create the proxy object and delegate the
+      calculation to it. This is done in a new part <literal>javascript-logic</literal>, which you need to include
+      in the <literal>content</literal> part of your application:
+    </para>
+    <programlisting language="xml"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
+<include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
+  <part name="content">
+    <theme name="default">
+      <!-- Include external JavaScript -->
+      <pfx:include part="javascript-includes"/>
+      <pfx:include part="javascript-logic"/>
+
+      <!-- HTML has been left out --> 
+    </theme>
+  </part>
+</include_parts>]]></programlisting>
+    <para>
+      In this part, you are using the <literal>&lt;pfx:script/&gt;</literal> tag, which is used to insert inline JavaScript
+      into your page. In this script, you create a new instance of <classname>WS_Calculator</classname> and assign it to
+      a global JavaScript variable.
+    </para>
+    <para>
+      Furthermore, you implement the three missing functions <function>add()</function>, <function>subtract()</function> and
+      <function>multiply()</function>, which are called, if the corresponding buttons are clicked. All three methods are implemented
+      the same way: The values of the two input fields are read and the corresponding method of the proxy object is called with
+      these values. The return value of the proxy method is displayed to the user, using the <function>alert()</function> function.
+    </para>
+    <programlisting language="xml"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
+<include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
+  
+  <part name="javascript-logic">
+    <theme name="default">
+      <pfx:script>
+var calcProxy = new WS_Calculator();
+function add() {
+  var a = document.getElementById('a').value;
+  var b = document.getElementById('b').value;
+  alert(calcProxy.add(a,b));
+}
+function subtract() {
+  var a = document.getElementById('a').value;
+  var b = document.getElementById('b').value;
+  alert(calcProxy.subtract(a,b));
+}
+function multiply() {
+  var a = document.getElementById('a').value;
+  var b = document.getElementById('b').value;
+  alert(calcProxy.multiply(a,b));
+}
+      </pfx:script>
+    </theme>
+  </part>
+</include_parts>]]></programlisting>
+    <para>
+      Now you can open the page, enter any two integer numbers and click on any button. Your application will send the request to
+      your business logic on the server and display the result on the client without reloading the page.
     </para>
   </section>
   <section xml:id="ajax-calculator.conclusion">
     <title>Conclusion</title>
     <para>
-      todo
+      This tutorial showed you, how to implement an AJAX application based on Pustefix in several minutes. While this example only used
+      a very simple business logic and transferred only primitive type, AJAX applications in Pustefix are not restricted to built-in
+      Java types. Pustefix is able to send any Java-bean style objects from the client to the server and vice-versa. You only need to
+      make sure, that there is an empty constructor in your beans.
+    </para>
+    <para>
+      Furthermore, the following features are also supported by Pustefix:
+    </para>
+    <itemizedlist>
+      <listitem>
+        <para>Access any property of the context (including context resources) in your services.</para>
+      </listitem>
+      <listitem>
+        <para>Switch from JSONWS to SOAP without changing any of your services.</para>
+      </listitem>
+      <listitem>
+        <para>Implement custom protocols or custom serializers to fit your special needs.</para>
+      </listitem>
+    </itemizedlist>
+    <para>
+      Of course, you can combine the AJAX features of Pustefix with any other feature in Pustefix with ease. For example, it
+      is possible to force AJAX requests to be made secure or to restrict a service to users with sepcial roles attached.
     </para>
   </section>
 </chapter>
