@@ -4,10 +4,9 @@
   
   <webservice-global>
     <requestpath>/xml/webservice</requestpath>
-    <wsdlsupport enabled="true" repository="/wsdl"/>
-    <stubgeneration enabled="true" repository="/wsscript"/>
+    <wsdlsupport enabled="false"/>
+    <stubgeneration enabled="false"/>
     <protocol type="JSONWS"/>
-    <encoding style="rpc" use="encoded"/>
     <session type="servlet"/>
     <scope type="application"/>
     <admin enabled="true"/>
@@ -19,8 +18,6 @@
   <webservice name="Calculator">
     <interface name="org.pustefixframework.tutorial.calculator.CalculatorService"/>
     <implementation name="org.pustefixframework.tutorial.calculator.CalculatorServiceImpl"/>
-    <session type="servlet" />
-    <context name="pfixtutorial:ajax-calculator::servlet:calc"/>
   </webservice>
 
 </webservice-config>
