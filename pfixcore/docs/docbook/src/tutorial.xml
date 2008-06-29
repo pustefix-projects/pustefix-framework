@@ -19,13 +19,10 @@
         <firstname>Stephan</firstname>
         <surname>Schmidt</surname>
       </author>
-      <author>
-        <firstname>Nico</firstname>
-        <surname>Steiner</surname>
-      </author>
     </authorgroup>
   </bookinfo>
   
+  <xi:include href="tutorial/preface.xml" />
   <xi:include href="tutorial/getting-started.xml" />
   <xi:include href="tutorial/wrapper-handler.xml" />
   <xi:include href="tutorial/user-manager.xml" />

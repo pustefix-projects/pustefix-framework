@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<preface xml:id="introduction" xmlns="http://docbook.org/ns/docbook" xmlns:xlink="www.w3.org/1999/xlink"
+  xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://docbook.org/ns/docbook http://www.docbook.org/xml/5.0CR7/xsd/docbook.xsd"
+>
+  <title>Introduction</title>
+  <para>
+    These tutorials are meant as a starting point for developers that have never worked with Pustefix.
+    They introduce you to the different types of applications that can be implemented with Pustefix.
+    Of course, they can only scratch at the surface of most of the features, if you are interested in 
+    an in-depth look at Pustefix, refer to the reference documentation. 
+  </para>
+  <para>
+    The source code used in the tutorials is available for public checkout. To test the tutorials on
+    you local development machine, execute the following commands:
+  </para>
+  <screen>$ svn co https://pustefix.svn.sourceforge.net/svnroot/pustefix/trunk/pfixtutorial
+$ cd pfixtutorial
+$ ant
+$ ./startTomcat.sh</screen>
+  <para>
+    Of course, you can also start with a skeleton application and implement the tutorials from
+    scratch.
+  </para>
+</preface>
