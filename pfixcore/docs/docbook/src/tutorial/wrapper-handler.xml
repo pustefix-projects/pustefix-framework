@@ -247,7 +247,7 @@ Then type in "http://first-app.HOSTNAME.DOMAIN"]]></screen>
       after <command>ant</command> has finished its work.
     </para>
     <para>
-      After you restarted your web server, please open a web browser and open the URL <uri>http://first-app.$YOURHOSTNAME</uri>.
+      After you restarted your web server, please open a web browser and open the URL <uri>http://first-app.HOSTNAME.DOMAIN</uri>.
       Figure <xref linkend="wrapper-handler.first-app"/> shows the output of the new Pustefix project.
     </para>
     <figure xml:id="wrapper-handler.first-app">
@@ -372,7 +372,7 @@ Then type in "http://first-app.HOSTNAME.DOMAIN"]]></screen>
   
 </make>]]></programlisting>
     <para>
-      You can now open the <literal>EnterData</literal> page by browsing to <uri>http://first-app.$YOURHOSTNAME/xml/app/EnterData</uri>.
+      You can now open the <literal>EnterData</literal> page by browsing to <uri>http://first-app.HOSTNAME.DOMAIN/xml/app/EnterData</uri>.
     </para>
     <para>
       As you did not provide any content for this page, Pustefix will display an error icon. When hovering
@@ -421,7 +421,7 @@ Then type in "http://first-app.HOSTNAME.DOMAIN"]]></screen>
     <para>
       The entry page is specified using the <literal>defaultpage</literal> attribute of the
       <literal>&lt;context/&gt;</literal> tag. After you set this attribute to <literal>EnterData</literal>
-      open the URL <uri>http://first-app.$YOURHOSTNAME</uri> in your browser and you will be automatically
+      open the URL <uri>http://first-app.HOSTNAME.DOMAIN</uri> in your browser and you will be automatically
       redirected to the page to register new users.
     </para>
     <para>
@@ -1529,7 +1529,7 @@ public class EnterUserDataHandler implements IHandler {
       <title>Avoiding unwanted access</title>
       <para>
         Another problem ist, that your pages are not protected against unwanted access. If you open the URL
-        <uri>http://first-app.$YOURHOSTNAME/xml/app/ReviewData</uri>, Pustefix will display this page,
+        <uri>http://first-app.HOSTNAME.DOMAIN/xml/app/ReviewData</uri>, Pustefix will display this page,
         although there is not data to review.
       </para>
       <para>
@@ -1566,7 +1566,7 @@ public class SaveUserDataHandler implements IHandler {
     }
 }]]></programlisting>
       <para>
-        If you now open the <uri>http://first-app.$YOURHOSTNAME/xml/app/ReviewData</uri>, the page cannot be displayed.
+        If you now open the <uri>http://first-app.HOSTNAME.DOMAIN/xml/app/ReviewData</uri>, the page cannot be displayed.
         Now the workflow mechanism kicks in and selects the next page, that should be displayed. This is the <literal>Confirm</literal>
         page, which has been defined as the final page of the workflow.
       </para>
