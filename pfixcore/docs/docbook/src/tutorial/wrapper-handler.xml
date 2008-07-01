@@ -31,7 +31,7 @@
     <listitem>
       <para>
         Provide an HTML form that can be used to register new users. The data for a new user must contain:
-        gender, name, email-address, homepage, birthdate and a flag to mark the user as an administrator.
+        gender, name, email-address, homepage, date of birth and a flag to mark the user as an administrator.
       </para>
     </listitem>
     <listitem>
