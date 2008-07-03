@@ -42,6 +42,7 @@ public class AdultInfoHandler implements IHandler {
         AdultInfo              info    = (AdultInfo) wrapper;
         ContextAdultInfo       cai     = SampleRes.getContextAdultInfo(context);
         cai.setAdult(info.getAdult());
+        cai.setDate(info.getDate());
     }
     
     public void retrieveCurrentStatus(Context context, IWrapper wrapper) throws Exception {
@@ -49,7 +50,8 @@ public class AdultInfoHandler implements IHandler {
         ContextAdultInfo       cai  = SampleRes.getContextAdultInfo(context);
         if (!cai.needsData()) {
             info.setAdult(cai.getAdult());
-        } 
+        }
+        info.setDate(cai.getDate());
     }
     
     public boolean needsData(Context context) throws Exception{

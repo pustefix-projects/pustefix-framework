@@ -9,5 +9,10 @@
       <cparam name="scode_casterror" value="de.schlund.pfixcore.example.StatusCodeLib#home.NO_AGE"/>
     </caster>
   </param>
+  <param name="Date" type="java.util.Date" occurance="optional">
+    <caster class="de.schlund.pfixcore.generator.casters.ToDate">
+      <cparam name="param_format" value="yy/MM/dd" />
+    </caster>
+  </param>
 
 </interface> 

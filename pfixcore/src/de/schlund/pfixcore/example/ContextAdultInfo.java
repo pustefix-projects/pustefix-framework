@@ -19,6 +19,7 @@
 
 package de.schlund.pfixcore.example;
 
+import java.util.Date;
 import java.util.HashMap;
 
 import org.apache.log4j.Logger;
@@ -38,6 +39,7 @@ import de.schlund.pfixcore.beans.Exclude;
 
 public class ContextAdultInfo {
     private Boolean adult = null;
+    private Date date = null;
     private HashMap<String, String> test  = new HashMap<String, String>();
     private final static Logger LOG = Logger.getLogger(ContextAdultInfo.class);
     
@@ -54,6 +56,14 @@ public class ContextAdultInfo {
 
     public void setAdult(Boolean adult) {
         this.adult = adult;
+    }
+    
+    public void setDate(Date date) {
+    	this.date = date;
+    }
+    
+    public Date getDate() {
+    	return date;
     }
 
     public boolean needsData() {

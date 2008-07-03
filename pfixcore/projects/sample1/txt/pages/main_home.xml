@@ -28,6 +28,11 @@
               </td>
             </tr>
             <errormsg name="info.Adult"/>
+            <tr>
+              <td>
+                Date of birth: <pfx:xinp name="info.Date" type="text" size="10"/>
+              </td>
+            </tr>
           </table>
           <table width="400">
             <tr>
