@@ -22,10 +22,12 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import org.pustefixframework.CoreStatusCodes;
 
 import de.schlund.pfixcore.generator.IWrapperParamCaster;
+import de.schlund.pfixcore.generator.IWrapperParamUncaster;
 import de.schlund.pfixcore.generator.SimpleCheck;
 import de.schlund.pfixxml.RequestParam;
 import de.schlund.util.statuscodes.StatusCode;
@@ -42,9 +44,10 @@ import de.schlund.util.statuscodes.StatusCodeHelper;
  *
  */
 
-public class ToDate extends SimpleCheck implements IWrapperParamCaster {
+public class ToDate extends SimpleCheck implements IWrapperParamCaster, IWrapperParamUncaster {
     private Date[]           value  = null;
     private SimpleDateFormat format = new SimpleDateFormat("yyyy/MM/dd");
+    private SimpleDateFormat paramFormat = new SimpleDateFormat("yyyy/MM/dd");
     private StatusCode       scode;
     
     public ToDate() {
@@ -57,6 +60,10 @@ public class ToDate extends SimpleCheck implements IWrapperParamCaster {
 
     public void put_format(String fmtstr) {
         format = new SimpleDateFormat(fmtstr);
+    }
+
+    public void put_param_format(String fmtstr) {
+    	paramFormat = new SimpleDateFormat(fmtstr);
     }
     
     public Object[] getValue() {
@@ -82,5 +89,17 @@ public class ToDate extends SimpleCheck implements IWrapperParamCaster {
             value = dates.toArray(new Date[] {});
         }
     }
+
+	@Override
+	public String[] uncastValue(Object[] objArray) {
+		List<String> uncastedValues = new ArrayList<String>();
+		for (Object obj : objArray) {
+			if (obj instanceof Date) {
+				Date date = (Date)obj;
+				uncastedValues.add(paramFormat.format(date));
+			}
+		}
+		return uncastedValues.toArray(new String[] {});
+	}
 
 }// ToDate
