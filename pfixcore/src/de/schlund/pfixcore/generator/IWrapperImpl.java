@@ -320,4 +320,13 @@ public abstract class IWrapperImpl implements IWrapper {
         return sb.toString();
     }
 
+    public void setStringValue(Object[] values, IWrapperParam param) {
+        IWrapperParamCaster caster = param.getCaster();
+        if (caster instanceof IWrapperParamUncaster) {
+            IWrapperParamUncaster uncaster = (IWrapperParamUncaster)caster;
+            param.setStringValue(uncaster.uncastValue(values));
+        } else {
+            param.setStringValue(values);
+        }
+    }
 } // IWrapperImpl

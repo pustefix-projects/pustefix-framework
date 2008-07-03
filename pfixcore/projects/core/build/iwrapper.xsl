@@ -256,9 +256,9 @@ public <xsl:if test="not(/iwrp:interface/iwrp:ihandler) and not(@extends)">abstr
     }
 
     public void set<xsl:value-of select="$cpname"/>(<xsl:value-of select="$ptype"/><xsl:value-of select="$freq"/> v) {
-        gimmeParamForKey("<xsl:value-of select="$pname"/>").
-          <xsl:choose><xsl:when test="string($freq) = ''">setStringValue(new <xsl:value-of select="$ptype"/>[] {v});</xsl:when>
-            <xsl:otherwise>setStringValue(v);</xsl:otherwise></xsl:choose>
+        IWrapperParam iwrpParam = gimmeParamForKey("<xsl:value-of select="$pname"/>");
+        <xsl:choose><xsl:when test="string($freq) = ''">setStringValue(new <xsl:value-of select="$ptype"/>[] {v}, iwrpParam);</xsl:when>
+        <xsl:otherwise>setStringValue(v, iwrpParam);</xsl:otherwise></xsl:choose>
     }
 
     public void addSCode<xsl:value-of select="$cpname"/>(de.schlund.util.statuscodes.StatusCode scode) {
