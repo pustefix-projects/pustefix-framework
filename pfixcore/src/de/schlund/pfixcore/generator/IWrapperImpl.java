@@ -297,21 +297,21 @@ public abstract class IWrapperImpl implements IWrapper {
     
     public String toString() {
         StringBuffer sb = new StringBuffer(255);
-        String name=getClass().getName();
-        int ind=name.lastIndexOf('.');
-        if(ind>-1) name=name.substring(ind+1);
-        sb.append("*** All wrapper-data for "+name+" {\n");
-        IWrapperParam[] params=gimmeAllParams();
-        for(IWrapperParam param:params) {
-            if(param.getFrequency().equals("single")) {
-                sb.append(param.getName()+" = "+param.getValue()).append("\n");
+        String name = getClass().getName();
+        int ind = name.lastIndexOf('.');
+        if (ind > -1) name = name.substring(ind + 1);
+        sb.append("*** All wrapper-data for " + name + " {\n");
+        IWrapperParam[] params = gimmeAllParams();
+        for (IWrapperParam param : params) {
+            if (param.getFrequency().equals("single")) {
+                sb.append(param.getName() + " = " + param.getValue()).append("\n");
             } else {
-                if(param.getValueArr()==null) {
-                    sb.append(param.getName()+"[] = NULL");
+                if (param.getValueArr() == null) {
+                    sb.append(param.getName() + "[] = NULL");
                 } else {
-                    Object[] values=param.getValueArr();
-                    for(int i=0;i<values.length;i++) {
-                        sb.append(param.getName()+"["+i+"] = "+values[i]).append("\n");
+                    Object[] values = param.getValueArr();
+                    for (int i = 0; i < values.length; i++) {
+                        sb.append(param.getName() + "[" + i + "] = " + values[i]).append("\n");
                     }
                 }
             }

@@ -90,16 +90,16 @@ public class ToDate extends SimpleCheck implements IWrapperParamCaster, IWrapper
         }
     }
 
-	@Override
-	public String[] uncastValue(Object[] objArray) {
-		List<String> uncastedValues = new ArrayList<String>();
-		for (Object obj : objArray) {
-			if (obj instanceof Date) {
-				Date date = (Date)obj;
-				uncastedValues.add(paramFormat.format(date));
-			}
-		}
-		return uncastedValues.toArray(new String[] {});
-	}
+    @Override
+    public String[] uncastValue(Object[] objArray) {
+        List<String> uncastedValues = new ArrayList<String>();
+        for (Object obj : objArray) {
+            if (obj instanceof Date) {
+                Date date = (Date)obj;
+                uncastedValues.add(paramFormat.format(date));
+            }
+        }
+        return uncastedValues.toArray(new String[] {});
+    }
 
 }// ToDate
