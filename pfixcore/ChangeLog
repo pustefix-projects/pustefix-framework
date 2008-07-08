@@ -1,3 +1,22 @@
+2008-07-03  Tobias Fehrenbach <fehrenbach@schlund.de>
+
+	Added IWrapperParamUncaster - controls how objects are casted
+	to String values to show them in form fields. Casters can implement
+	IWrapperParamUncaster.
+	Added new feature to sample application
+
+	Modified:
+	* projects/core/build/iwrapper.xsl
+	* src/de/schlund/pfixcore/generator/IWrapperImpl.java
+	* src/de/schlund/pfixcore/generator/casters/ToDate.java
+	* projects/sample1/txt/pages/main_home.xml
+	* src/de/schlund/pfixcore/example/AdultInfoHandler.java
+	* src/de/schlund/pfixcore/example/ContextAdultInfo.java
+	* src/de/schlund/pfixcore/example/iwrapper/AdultInfo.iwrp
+
+	Added:
+	* src/de/schlund/pfixcore/generator/IWrapperParamUncaster.java
+	
 2008-06-19  Martin Leidig  <mleidig@schlund.de>
 
 	Added postrender Interceptor hook - triggered after rendering
