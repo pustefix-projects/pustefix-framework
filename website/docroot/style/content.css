@@ -98,6 +98,39 @@ ul.screens li {
   margin-bottom: 20px;
 }
 
-#content p img.texticon {
 
+div.features p {
+  padding-left: 120px;
+}
+p.opensoruce {
+  background: url(../img/icon-pfeat-opensource.gif) no-repeat;
+		height: 80px;
+}
+p.architecture {
+  background: url(../img/icon-pfeat-architecture.gif) no-repeat;
+		height: 100px;
+}
+p.auth {
+  background: url(../img/icon-pfeat-auth.gif) no-repeat;
+		height: 100px;
+}
+p.design {
+  background: url(../img/icon-pfeat-design.gif) no-repeat;
+		height: 80px;
+}
+p.ajax {
+  background: url(../img/icon-pfeat-ajax.gif) no-repeat;
+		height: 80px;
+}
+p.language {
+  background: url(../img/icon-pfeat-lang.gif) no-repeat;
+		height: 100px;
+}
+p.xsl {
+  background: url(../img/icon-pfeat-xsl.gif) no-repeat;
+		height: 100px;
+}
+p.mvc {
+  background: url(../img/icon-pfeat-mvc.gif) no-repeat;
+		height: 90px;
 }
