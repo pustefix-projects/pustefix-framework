@@ -97,3 +97,7 @@ ul.screens li {
   margin-right: 25px;
   margin-bottom: 20px;
 }
+
+#content p img.texticon {
+  float: left;
+}
