@@ -1010,4 +1010,92 @@ public interface State {
 }]]></programlisting>
     </section>
   </section>
+<section xml:id="concepts.statuscodes">
+<title>StatusCodes</title>
+<para>
+StatusCodes are assigned to IWrapper parameters and form fields to indicate invalid data and display according error messages. They are automatically assigned by the framework when prechecks, casters or postchecks fail, or they can be assigned programmatically by the application logic.
+</para>
+<para>
+The framework predefines some common StatusCodes, e.g. <literal>MISSING_PARAM</literal> - indicating the missing of a mandatory form value, or StatusCodes for builtin prechecks, casters and postchecks, like <literal>precheck.REGEXP_NO_MATCH</literal> - indicating that a form field's value doesn't match a given regular expression. Application developers can arbitrarily define additional StatusCodes.
+</para>
+<para>
+StatusCodes are defined as normal include parts. They're placed in their own files located under the <literal>dyntxt</literal> directory. Within such a statuscode file the part names uniquely identify the StatusCode, the content nested inside the part element represents the message. 
+</para>
+<programlisting language="xml"><![CDATA[
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
+  <part name="ILLEGAL_LOGIN">
+    <theme name="default">Illegal login data.</theme>
+  </part>
+  ...
+</include_parts>
+]]></programlisting>
+<para>
+Those StatusCode files are used by the build process to automatically create Java classes containing the StatusCodes as constants, using the part names as field names (in uppercase form). Thus the StatusCodes can be safely referenced from within Java code. 
+</para>
+<para>
+Before the StatusCode files are recognized by the build process, they have to be configured inside a statuscode metainformation file. The file has to be called statuscodeinfo.xml and has to be located in the project's <literal>conf</literal> directory or in the <literal>dyntxt</literal> directory. Within this file you define which StatusCode constant class is built from which StatusCode files.
+</para>
+<programlisting language="xml"><![CDATA[
+<?xml version="1.0" encoding="UTF-8"?>
+<statuscodeinfo xmlns="http://pustefix-framework.org/statuscodeinfo" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                xsi:schemaLocation="http://pustefix-framework.org/statuscodeinfo ../../core/schema/statuscodeinfo.xsd">
+  <statuscodes class="example.bank.BankStatusCodes">
+    <file>statusmessages.xml</file>
+  </statuscodes>
+  ...
+</statuscodeinfo>
+]]></programlisting>
+<para>
+Using the above examples Pustefix will build the following Java class (excerpt):
+</para>
+<programlisting language="java"><![CDATA[
+package example.bank;
+...
+public class BankStatusCodes {
+    public static StatusCode getStatusCodeByName(String name) { ... }
+    ...
+    public static final StatusCode ILLEGAL_LOGIN = new StatusCode("ILLEGAL_LOGIN", __RES[0]);
+}
+]]></programlisting>
+<para>
+The following login handling example uses the generated StatusCode class to indicate a failed login:
+</para>
+<programlisting language="java"><![CDATA[
+public class LoginHandler implements IHandler {
+    public void handleSubmittedData(Context context, IWrapper wrapper) throws Exception {
+        Login login = (Login) wrapper;
+        //check login data
+        //if invalid
+        login.addSCodeUser(BankStatusCodes.ILLEGAL_LOGIN);
+    }
+}
+]]></programlisting>
+<para>
+If you take a look at the resulting XML tree, you see like the according include part is referenced inside the <literal>error</literal> element (and thus can be displayed on the page using the <literal>pfx:checkfield</literal>, <literal>pfx:error</literal> and <literal>pfx:scode</literal> tags).
+</para>
+<programlisting language="xml"><![CDATA[
+<formresult ...>
+   ...
+   <formvalues>
+      <param name="login.User">xyz</param>
+      ...
+   </formvalues>
+   <formerrors>
+     <error name="login.User">
+        <pfx:include href="samplebank/dyntxt/statusmessages.xml" part="ILLEGAL_LOGIN"/>
+     </error>
+   </formerrors>
+   ...
+</formresult>
+]]></programlisting>
+<para>
+If your error message should contain dynamic data, you can use placeholders, which will be replaced by the arguments passed along with the addScode call at the IWrapper:
+</para>
+<programlisting language="xml"><![CDATA[
+<part name="ILLEGAL_LOGIN">
+  <theme name="default">User <pfx:argref pos="1"/> is illegal.</theme>
+</part>
+]]></programlisting>
+</section>
 </chapter>
