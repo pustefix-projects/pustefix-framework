@@ -261,3 +261,7 @@ pre.screen {
   padding: 8px;
 }
 
+div.toc dd {
+  margin-left: 2em;
+}
+
