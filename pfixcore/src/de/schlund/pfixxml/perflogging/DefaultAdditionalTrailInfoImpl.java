@@ -2,15 +2,16 @@ package de.schlund.pfixxml.perflogging;
 
 import java.util.LinkedHashMap;
 
-import de.schlund.pfixxml.AbstractXMLServlet;
+import org.pustefixframework.http.AbstractPustefixXMLRequestHandler;
+
 import de.schlund.pfixxml.PfixServletRequest;
 
 public class DefaultAdditionalTrailInfoImpl implements AdditionalTrailInfo {
 
     public LinkedHashMap<String,Object> getData(PfixServletRequest preq) {
-        Object pptime    = preq.getRequest().getAttribute(AbstractXMLServlet.PREPROCTIME);
-        Object doctime   = preq.getRequest().getAttribute(AbstractXMLServlet.GETDOMTIME);
-        Object trafotime = preq.getRequest().getAttribute(AbstractXMLServlet.TRAFOTIME);
+        Object pptime    = preq.getRequest().getAttribute(AbstractPustefixXMLRequestHandler.PREPROCTIME);
+        Object doctime   = preq.getRequest().getAttribute(AbstractPustefixXMLRequestHandler.GETDOMTIME);
+        Object trafotime = preq.getRequest().getAttribute(AbstractPustefixXMLRequestHandler.TRAFOTIME);
         
         LinkedHashMap<String,Object> retval = new LinkedHashMap<String,Object>();
         retval.put("GET_DOM", ""+doctime);

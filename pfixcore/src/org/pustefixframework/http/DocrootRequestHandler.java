@@ -16,25 +16,25 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-package de.schlund.pfixxml;
+package org.pustefixframework.http;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.StringTokenizer;
 
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.pustefixframework.container.spring.http.UriProvidingHttpRequestHandler;
+import org.springframework.web.context.ServletContextAware;
+
+import de.schlund.pfixxml.resources.FileResource;
 import de.schlund.pfixxml.resources.ResourceUtil;
 
 /**
@@ -44,31 +44,52 @@ import de.schlund.pfixxml.resources.ResourceUtil;
  * 
  * @author Sebastian Marsching <sebastian.marsching@1und1.de>
  */
-public class DocrootServlet extends HttpServlet {
-    /**
-     * 
-     */
-    private static final long serialVersionUID = 7023669388762729554L;
-
+public class DocrootRequestHandler implements UriProvidingHttpRequestHandler, ServletContextAware {
     private String base;
 
     private String defaultpath;
     
     private List<String> passthroughPaths;
+    
+    private ServletContext servletContext;
 
-    protected void doGet(HttpServletRequest req, HttpServletResponse res)
+    public ServletContext getServletContext() {
+        return servletContext;
+    }
+
+    public void setServletContext(ServletContext servletContext) {
+        this.servletContext = servletContext;
+    }
+
+    public void setDefaultPath(String defaultpath) {
+        this.defaultpath = defaultpath;
+    }
+
+    public void setPassthroughPaths(List<String> passthroughPaths) {
+        this.passthroughPaths = passthroughPaths;
+    }
+    
+    public void setBase(String path) {
+        this.base = path;
+    }
+
+    public void handleRequest(HttpServletRequest req, HttpServletResponse res)
             throws ServletException, IOException {
 
         boolean docrootMode;
 
         // Get path and determine whether to deliver files from
         // webapplication or docroot directory
-        String path = req.getPathInfo();
+        String reqPath = req.getPathInfo();
+        String path = reqPath;
+        String servletPath = req.getServletPath();
+        
 
-        if (path != null) {
+        if (path != null && (servletPath != null && servletPath.length() > 0)) {
             docrootMode = false;
         } else {
-            path = req.getServletPath();
+            path = (servletPath != null) ? servletPath : "";
+            path += (reqPath != null) ? reqPath : "";
             docrootMode = true;
         }
 
@@ -102,6 +123,10 @@ public class DocrootServlet extends HttpServlet {
             InputStream in = null;
 
             if (docrootMode) {
+                if (path.startsWith("/")) {
+                    path = path.substring(1);
+                }
+                
                 if (passthroughPaths != null) {
                     for (String prefix : this.passthroughPaths) {
                         if (path.startsWith(prefix)) {
@@ -111,8 +136,9 @@ public class DocrootServlet extends HttpServlet {
                 }
                 
                 if (in == null) {
-                    File file = new File(base, path);
-                    in = new BufferedInputStream(new FileInputStream(file));
+                    FileResource baseResource = ResourceUtil.getFileResource(base);
+                    FileResource resource = ResourceUtil.getFileResource(baseResource, path);
+                    in = new BufferedInputStream(resource.getInputStream());
                 }
             } else {
                 // Use getResourceAsStream() to make sure we can
@@ -145,41 +171,7 @@ public class DocrootServlet extends HttpServlet {
         }
     }
 
-    public void init() throws ServletException {
-        // In standalone mode, the context sets a parameter
-        // containing the path to the docroot
-        this.base = this.getServletContext().getInitParameter("staticDocBase");
-
-        this.defaultpath = null;
-        String temp = this.getInitParameter("defaultpath");
-        if (temp != null && temp.length() > 0) {
-            if (temp.charAt(0) != '/') {
-                temp = "/" + temp;
-            }
-            if (temp.length() > 1) {
-                this.defaultpath = temp;
-            }
-        }
-        
-        // Create a list of passthrough paths
-        String passthroughParam = this.getInitParameter("passthroughPaths");
-        if (passthroughParam != null && passthroughParam.length() > 0) {
-            ArrayList<String> passthroughPaths = new ArrayList<String>();
-            StringTokenizer st = new StringTokenizer(passthroughParam, ":");
-            while (st.hasMoreTokens()) {
-                String token = st.nextToken().trim();
-                if (token.length() > 0) {
-                    if (token.charAt(0) != '/') {
-                        token = "/" + token;
-                    }
-                    if (token.charAt(token.length()-1) != '/') {
-                        token = token + "/";
-                    }
-                    passthroughPaths.add(token);
-                }
-            }
-            this.passthroughPaths = passthroughPaths;
-        }
+    public String[] getRegisteredURIs() {
+        return new String[] {"/**"};
     }
-
 }

@@ -27,6 +27,7 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
+import org.pustefixframework.http.AbstractPustefixRequestHandler;
 import org.w3c.dom.Element;
 
 import de.schlund.pfixcore.beans.InsertStatus;
@@ -37,7 +38,6 @@ import de.schlund.pfixcore.editor2.frontend.util.EditorResourceLocator;
 import de.schlund.pfixcore.editor2.frontend.util.SpringBeanLocator;
 import de.schlund.pfixcore.workflow.Context;
 import de.schlund.pfixxml.ResultDocument;
-import de.schlund.pfixxml.ServletManager;
 import de.schlund.pfixxml.serverutil.SessionAdmin;
 import de.schlund.pfixxml.serverutil.SessionInfoStruct;
 
@@ -57,7 +57,7 @@ public class SessionInfoResource {
                 SessionInfoStruct info = sessadmin.getInfo(sessId);
                 if (info != null) {
                     Element sessionNode = resdoc.createSubNode(elem, "session");
-                    String visitId = (String) info.getSession().getAttribute(ServletManager.VISIT_ID);
+                    String visitId = (String) info.getSession().getAttribute(AbstractPustefixRequestHandler.VISIT_ID);
 
                     // This is very dirty, but there is no other way to do
                     // this task: We iterate through all known contexts and

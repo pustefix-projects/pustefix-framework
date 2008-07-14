@@ -17,11 +17,10 @@
  *
  */
 
-package de.schlund.pfixxml;
+package org.pustefixframework.http;
 
 import java.util.Properties;
 
-import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -36,6 +35,8 @@ import de.schlund.pfixcore.workflow.DirectOutputPageMap;
 import de.schlund.pfixcore.workflow.DirectOutputState;
 import de.schlund.pfixcore.workflow.PageRequest;
 import de.schlund.pfixcore.workflow.context.ServerContextImpl;
+import de.schlund.pfixxml.PfixServletRequest;
+import de.schlund.pfixxml.PropertyObjectManager;
 import de.schlund.pfixxml.config.ConfigReader;
 import de.schlund.pfixxml.config.DirectOutputPageRequestConfig;
 import de.schlund.pfixxml.config.DirectOutputServletConfig;
@@ -66,19 +67,12 @@ import de.schlund.pfixxml.resources.FileResource;
  * The value must be the servlet name of the ContextXMLServlet whose Context you want to use.
  *  
  * @author <a href="mailto:jtl@schlund.de">Jens Lautenbacher</a>
- * @version $Id$
+ * @version $Id: DirectOutputServlet.java 3515 2008-04-28 22:11:18Z jenstl $
  */
-public class DirectOutputServlet extends ServletManager {
-    /**
-     * 
-     */
-    private static final long serialVersionUID = 3166699545392707021L;
+public class PustefixContextDirectOutputRequestHandler extends AbstractPustefixRequestHandler {
     private Logger                    LOG       = Logger.getLogger(this.getClass());
-    private String                    ext_cname = null;
     private DirectOutputPageMap       pagemap   = null;
     private DirectOutputServletConfig config;
-    
-    private final static String PROP_CONTEXT_NAME = "servlet.contextname";
     
     /**
      * The usual <code>needsSession</code> method. Is set to return
@@ -129,14 +123,14 @@ public class DirectOutputServlet extends ServletManager {
              return;
          }
          
-         ContextImpl context = SessionContextStore.getInstance(session).getContext(ext_cname);
+         ContextImpl context = SessionContextStore.getInstance(session).getContext(null);
          if (context == null) {
-             throw new RuntimeException("*** didn't find Context " + ext_cname + " in Session " + session.getId()
+             throw new RuntimeException("*** didn't find Context in Session " + session.getId()
                                         + ", maybe it's not yet initialized??? ***");
          }
-         ServerContextImpl servercontext = ServerContextStore.getInstance(getServletContext()).getContext(ext_cname);
+         ServerContextImpl servercontext = ServerContextStore.getInstance(getServletContext()).getContext(null);
          if (servercontext == null) {
-             throw new RuntimeException("*** didn't find ServerContext " + ext_cname + " in ServletContext, maybe it's not yet initialized??? ***");
+             throw new RuntimeException("*** didn't find ServerContext in ServletContext, maybe it's not yet initialized??? ***");
          }
          
          // Make sure the context is initialized and deinitialized this thread
@@ -221,16 +215,6 @@ public class DirectOutputServlet extends ServletManager {
     }
 
     private void initValues() throws ServletException {
-        String cname = this.config.getExternalServletName();
-        String initCName = this.getInitParameter(PROP_CONTEXT_NAME);
-        if (cname != null && !cname.equals("")) {
-            ext_cname = cname;
-        } else if (initCName != null && initCName.length() > 0) {
-            ext_cname = initCName;
-        } else {
-            throw new ServletException ("*** Need external servlet name! *****");
-        }
-
         try {
             pagemap = (DirectOutputPageMap) PropertyObjectManager.getInstance().
                 getConfigurableObject(this.config, de.schlund.pfixcore.workflow.DirectOutputPageMap.class);
@@ -240,8 +224,8 @@ public class DirectOutputServlet extends ServletManager {
         }
     }
     
-    public void init(ServletConfig config) throws ServletException {
-        super.init(config);
+    public void init() throws ServletException {
+        super.init();
         initValues();
     }
 
@@ -257,5 +241,5 @@ public class DirectOutputServlet extends ServletManager {
         }
         
     }
-
+    
 }

@@ -7,13 +7,13 @@
   </project>
   
   <editor>
-    <enabled>true</enabled> <!-- <-- Do we really need this? -->
+    <enabled>true</enabled> <!-- Do we really need this? -->
     <location>http://cmscore.${fqdn}/</location>
   </editor>
   
-  <xmlgenerator>
+  <xml-generator>
     <config-file>pfixroot:/sample1/conf/depend.xml</config-file>
-  </xmlgenerator>
+  </xml-generator>
   
   <http-server>
     
@@ -40,19 +40,22 @@
   
   <application>
     
+    <docroot-path>pfixroot:/sample1/htdocs</docroot-path>
     <default-path>/xml/config</default-path>
     
-    <context-xml-servlet>
+    <context-xml-service>
       <path>/xml/config</path>
       <config-file>pfixroot:/sample1/conf/config.conf.xml</config-file>
-    </context-xml-servlet>
+    </context-xml-service>
     
-    <direct-output-servlet>
+    <direct-output-service>
       <path>/xml/download</path>
-    </direct-output-servlet>
+      <config-file>pfixroot:/sample1/conf/direct.conf.xml</config-file>
+    </direct-output-service>
     
     <static>
       <path>sample1/img</path>
+      <path>core/img</path> <!-- FIXME: Get this from central configuration -->
     </static>
     
   </application>

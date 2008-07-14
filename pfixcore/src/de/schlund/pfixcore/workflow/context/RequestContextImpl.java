@@ -30,6 +30,8 @@ import java.util.Set;
 import javax.servlet.http.Cookie;
 
 import org.apache.log4j.Logger;
+import org.pustefixframework.http.AbstractPustefixRequestHandler;
+import org.pustefixframework.http.PustefixContextXMLRequestHandler;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -51,12 +53,10 @@ import de.schlund.pfixcore.workflow.PageRequestStatus;
 import de.schlund.pfixcore.workflow.State;
 import de.schlund.pfixcore.workflow.StateFactory;
 import de.schlund.pfixcore.workflow.VariantManager;
-import de.schlund.pfixxml.ContextXMLServlet;
 import de.schlund.pfixxml.PfixServletRequest;
 import de.schlund.pfixxml.RequestParam;
 import de.schlund.pfixxml.ResultDocument;
 import de.schlund.pfixxml.SPDocument;
-import de.schlund.pfixxml.ServletManager;
 import de.schlund.pfixxml.Variant;
 import de.schlund.pfixxml.config.PageRequestConfig;
 import de.schlund.pfixxml.config.ProcessActionConfig;
@@ -310,12 +310,12 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
             // as "secure"
             String scheme = "https";
             String port = getServerContext().getProperties().getProperty(
-                    ServletManager.PROP_SSL_REDIRECT_PORT + String.valueOf(preq.getOriginalServerPort()));
+                    AbstractPustefixRequestHandler.PROP_SSL_REDIRECT_PORT + String.valueOf(preq.getOriginalServerPort()));
             if (port == null) {
                 port = "443";
             }
 
-            String redirectURL = scheme + "://" + ServletManager.getServerName(preq.getRequest()) + ":" + port + preq.getContextPath()
+            String redirectURL = scheme + "://" + AbstractPustefixRequestHandler.getServerName(preq.getRequest()) + ":" + port + preq.getContextPath()
                     + preq.getServletPath() + "/" + spdoc.getPagename() + ";jsessionid=" + preq.getSession(false).getId() + "?__reuse="
                     + spdoc.getTimestamp();
 
@@ -501,7 +501,7 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
             LOG.debug("\n");
             insertPageMessages(spdoc);
             storeCookies(spdoc);
-            spdoc.setProperty(ContextXMLServlet.XSLPARAM_REQUESTCONTEXT, this);
+            spdoc.setProperty(PustefixContextXMLRequestHandler.XSLPARAM_REQUESTCONTEXT, this);
         }
 
         return spdoc;

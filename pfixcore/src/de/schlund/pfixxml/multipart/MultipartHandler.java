@@ -47,8 +47,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.log4j.Logger;
 import org.apache.oro.text.perl.Perl5Util;
-
-import de.schlund.pfixxml.AbstractXMLServlet;
+import org.pustefixframework.http.AbstractPustefixXMLRequestHandler;
 
 /**
  *
@@ -129,7 +128,7 @@ public class MultipartHandler {
         }
 
         if (dir == null) {
-            dir = System.getProperty(AbstractXMLServlet.DEF_PROP_TMPDIR);
+            dir = System.getProperty(AbstractPustefixXMLRequestHandler.DEF_PROP_TMPDIR);
         }
         dirFile = new File(dir);
         if (!dirFile.isDirectory()) {

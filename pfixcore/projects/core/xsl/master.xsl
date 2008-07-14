@@ -92,9 +92,9 @@
                      xmlns:pfx="http://www.schlund.de/pustefix/core"
                      xmlns:func="http://exslt.org/functions"
                      xmlns:url="xalan://java.net.URLEncoder"
-                     xmlns:deref="xalan://de.schlund.pfixxml.DerefServlet"
+                     xmlns:deref="xalan://org.pustefixframework.http.dereferer.SignUtil"
                      xmlns:callback="xalan://de.schlund.pfixcore.util.TransformerCallback"
-                     xmlns:rfh="java:de.schlund.pfixxml.AbstractXMLServlet$RegisterFrameHelper" 
+                     xmlns:rfh="java:org.pustefixframework.http.AbstractPustefixXMLRequestHandler$RegisterFrameHelper" 
                      exclude-result-prefixes="pfx cus xsl url deref callback func rfh">
 
       <ixsl:import href="core/xsl/default_copy.xsl"/>

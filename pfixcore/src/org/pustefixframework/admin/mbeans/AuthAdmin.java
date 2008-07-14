@@ -30,12 +30,12 @@ import javax.management.ObjectName;
 import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
+import org.pustefixframework.http.SessionContextStore;
 
 import de.schlund.pfixcore.auth.Role;
 import de.schlund.pfixcore.auth.RoleNotFoundException;
 import de.schlund.pfixcore.workflow.Context;
 import de.schlund.pfixcore.workflow.ContextImpl;
-import de.schlund.pfixxml.SessionContextStore;
 import de.schlund.pfixxml.serverutil.SessionAdmin;
 
 /**
@@ -63,6 +63,8 @@ public class AuthAdmin implements AuthAdminMBean {
         }
     }
 
+    // FIXME: Create a new implementation or dump this class
+    /*
     private Context getContext(String sessionId) {
         SessionAdmin sessionAdmin = SessionAdmin.getInstance();
         try {
@@ -81,7 +83,11 @@ public class AuthAdmin implements AuthAdminMBean {
             throw new RuntimeException("Can't get context!", x);
         }
     }
-
+    */
+    private Context getContext(String sessionId) {
+        throw new UnsupportedOperationException("This method has to be fixed.");
+    }
+    
     public String[] listAvailableRoles(String sessionId) {
         Context context = getContext(sessionId);
         List<Role> roles = context.getContextConfig().getRoleProvider().getRoles();

@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
-package de.schlund.pfixxml;
+package org.pustefixframework.http;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -31,7 +31,6 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.TreeMap;
 
-import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -46,12 +45,19 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
 import org.apache.log4j.Logger;
+import org.pustefixframework.http.dereferer.DerefRequestHandler;
 import org.w3c.dom.Document;
 
 import de.schlund.pfixcore.exception.PustefixApplicationException;
 import de.schlund.pfixcore.exception.PustefixCoreException;
 import de.schlund.pfixcore.workflow.NavigationFactory;
 import de.schlund.pfixcore.workflow.NavigationInitializationException;
+import de.schlund.pfixxml.PfixServletRequest;
+import de.schlund.pfixxml.RenderingException;
+import de.schlund.pfixxml.RequestParam;
+import de.schlund.pfixxml.SPDocument;
+import de.schlund.pfixxml.SessionCleaner;
+import de.schlund.pfixxml.Variant;
 import de.schlund.pfixxml.config.AbstractXMLServletConfig;
 import de.schlund.pfixxml.config.ServletManagerConfig;
 import de.schlund.pfixxml.perflogging.AdditionalTrailInfo;
@@ -86,88 +92,93 @@ import de.schlund.pfixxml.util.Xslt;
  * getDom(HttpServletRequest req, HttpServletResponse res)
  * which returns a SPDocument. <br>
  */
-public abstract class AbstractXMLServlet extends ServletManager {
+public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefixRequestHandler {
 
-    // ~ Instance/static variables
-    // ..................................................................
+    //~ Instance/static variables ..................................................................
     // how to write xml to the result stream
     private enum RENDERMODE { RENDER_NORMAL, RENDER_EXTERNAL, RENDER_FONTIFY, RENDER_XMLONLY };
-    private static final int      DEF_MAX_STORED_DOMS      = 5;
 
-    public static final String    DEF_PROP_TMPDIR          = "java.io.tmpdir";
-    private static final String   FONTIFY_SSHEET           = "core/xsl/xmlfontify.xsl";
-    public static final String    SESS_LANG                = "__SELECTED_LANGUAGE__";
-    public static final String    PARAM_XMLONLY            = "__xmlonly";
-    public static final String    VALUE_XMLONLY_FONTIFY    = "1";  // ->  RENDER_FONFIFY
-    public static final String    VALUE_XMLONLY_XMLONLY    = "2";  // ->  RENDER_XMLONLY
-    public static final String    PARAM_ANCHOR             = "__anchor";
-    private static final String   PARAM_EDITMODE           = "__editmode";
-    private static final String   PARAM_LANG               = "__language";
-    private static final String   PARAM_FRAME              = "__frame";
-    private static final String   PARAM_REUSE              = "__reuse"; // internally used
+    private static final int DEF_MAX_STORED_DOMS = 5;
+    
+    public static final String DEF_PROP_TMPDIR = "java.io.tmpdir";
+    private static final String FONTIFY_SSHEET        = "core/xsl/xmlfontify.xsl";
+    public  static final String SESS_LANG             = "__SELECTED_LANGUAGE__";
+    public  static final String PARAM_XMLONLY         = "__xmlonly";
+    public  static final String PARAM_XMLONLY_FONTIFY = "1"; // -> RENDER_FONFIFY
+    public  static final String PARAM_XMLONLY_XMLONLY = "2"; // -> RENDER_XMLONLY
+    public  static final String PARAM_ANCHOR          = "__anchor";
+    private static final String PARAM_EDITMODE        = "__editmode";
+    private static final String PARAM_LANG            = "__language";
+    private static final String PARAM_FRAME           = "__frame";
+    private static final String PARAM_REUSE           = "__reuse"; // internally used
+    
+    private static final String   XSLPARAM_LANG           = "lang";
+    private static final String   XSLPARAM_DEREFKEY       = "__derefkey";
+    private static final String   XSLPARAM_SESSID         = "__sessid";
+    private static final String   XSLPARAM_URI            = "__uri";
+    private static final String   XSLPARAM_SERVP          = "__servletpath";
+    private static final String   XSLPARAM_CONTEXTPATH    = "__contextpath";
+    private static final String   XSLPARAM_REMOTE_ADDR    = "__remote_addr";
+    private static final String   XSLPARAM_SERVER_NAME    = "__server_name";
+    private static final String   XSLPARAM_REQUEST_SCHEME = "__request_scheme";
+    private static final String   XSLPARAM_QUERYSTRING    = "__querystring";
+    private static final String   XSLPARAM_FRAME          = "__frame";
+    private static final String   XSLPARAM_REUSE          = "__reusestamp";
+    private static final String   XSLPARAM_EDITOR_URL     = "__editor_url";
+    private static final String   VALUE_NONE              = "__NONE__";
+    private static final String   SUFFIX_SAVEDDOM         = "_SAVED_DOM";
+    private static final String   ATTR_SHOWXMLDOC         = "__ATTR_SHOWXMLDOC__";
+    protected static final String PROP_ADD_TRAIL_INFO     = "xmlserver.additionalinfo.implementation";
+    protected static final String PROP_NAME               = "xmlserver.servlet.name";
+    protected static final String PROP_NOEDIT             = "xmlserver.noeditmodeallowed";
+    protected static final String PROP_RENDER_EXT         = "xmlserver.output.externalrenderer";
+    protected static final String PROP_CLEANER_TO         = "sessioncleaner.timeout";
+    protected static final String PROP_MAX_STORED_DOMS    = "xmlserver.maxStoredDoms";
+    protected static final String PROP_SKIP_GETMODTIME_MU = "targetgenerator.skip_getmodtimemaybeupdate";
+    protected static final String PROP_PROHIBITDEBUG      = "xmlserver.prohibitdebug";
+    protected static final String PROP_PROHIBITINFO       = "xmlserver.prohibitinfo";
+    protected static final String PROP_EDITOR_URL         = "xmlserver.editor_url";
 
-    private static final String   XSLPARAM_LANG            = "lang";
-    private static final String   XSLPARAM_DEREFKEY        = "__derefkey";
-    private static final String   XSLPARAM_SESSID          = "__sessid";
-    private static final String   XSLPARAM_URI             = "__uri";
-    private static final String   XSLPARAM_SERVP           = "__servletpath";
-    private static final String   XSLPARAM_CONTEXTPATH     = "__contextpath";
-    private static final String   XSLPARAM_REMOTE_ADDR     = "__remote_addr";
-    private static final String   XSLPARAM_SERVER_NAME     = "__server_name";
-    private static final String   XSLPARAM_REQUEST_SCHEME  = "__request_scheme";
-    private static final String   XSLPARAM_QUERYSTRING     = "__querystring";
-    private static final String   XSLPARAM_FRAME           = "__frame";
-    private static final String   XSLPARAM_REUSE           = "__reusestamp";
-    private static final String   XSLPARAM_EDITOR_URL      = "__editor_url";
-    private static final String   VALUE_NONE               = "__NONE__";
-    private static final String   SUFFIX_SAVEDDOM          = "_SAVED_DOM";
-    private static final String   ATTR_SHOWXMLDOC          = "__ATTR_SHOWXMLDOC__";
-    protected static final String PROP_ADD_TRAIL_INFO      = "xmlserver.additionalinfo.implementation";
-    protected static final String PROP_NAME                = "xmlserver.servlet.name";
-    protected static final String PROP_NOEDIT              = "xmlserver.noeditmodeallowed";
-    protected static final String PROP_RENDER_EXT          = "xmlserver.output.externalrenderer";
-    protected static final String PROP_CLEANER_TO          = "sessioncleaner.timeout";
-    protected static final String PROP_MAX_STORED_DOMS     = "xmlserver.maxStoredDoms";
-    protected static final String PROP_SKIP_GETMODTIME_MU  = "targetgenerator.skip_getmodtimemaybeupdate";
-    protected static final String PROP_PROHIBITDEBUG       = "xmlserver.prohibitdebug";
-    protected static final String PROP_PROHIBITINFO        = "xmlserver.prohibitinfo";
-    protected static final String PROP_EDITOR_URL          = "xmlserver.editor_url";
-    private static final String   PARAM_DEPENDFILE         = "servlet.dependfile";
-
-    public static final String    PREPROCTIME              = "__PREPROCTIME__";
-    public static final String    GETDOMTIME               = "__GETDOMTIME__";
-    public static final String    TRAFOTIME                = "__TRAFOTIME__";
-
-    public final static String    SESS_CLEANUP_FLAG_STAGE1 = "__pfx_session_cleanup_stage1";
-    public final static String    SESS_CLEANUP_FLAG_STAGE2 = "__pfx_session_cleanup_stage2";
-
-    private int                   maxStoredDoms            = DEF_MAX_STORED_DOMS;
+    public static final String PREPROCTIME = "__PREPROCTIME__";
+    public static final String GETDOMTIME  = "__GETDOMTIME__";
+    public static final String TRAFOTIME   = "__TRAFOTIME__";
+    
+    public final static String SESS_CLEANUP_FLAG_STAGE1 = "__pfx_session_cleanup_stage1";
+    public final static String SESS_CLEANUP_FLAG_STAGE2 = "__pfx_session_cleanup_stage2";
+    
+    private int maxStoredDoms = DEF_MAX_STORED_DOMS;
     
     /**
-     * Holds the TargetGenerator which is the XML/XSL Cache for this class of
-     * servlets.
+     * Holds the TargetGenerator which is the XML/XSL Cache for this
+     * class of servlets.
      */
-    protected TargetGenerator     generator                  = null;
+    protected TargetGenerator generator = null;
 
     /**
-     * The unique Name of this servlet, needed to create a Namespace in the
-     * HttpSession Session.
+     * The unique Name of this servlet, needed to create a Namespace in
+     * the HttpSession Session.
      */
-    protected String              servletname                = null;
-
+    protected String servletname = null;
+    
+    protected ServletManagerConfig getServletManagerConfig() {
+        return this.getAbstractXMLServletConfig();
+    }
+    
+    protected abstract AbstractXMLServletConfig getAbstractXMLServletConfig();
+    
     /**
      * The configuration file for the TargetGeneratorFacory.
      */
-    private FileResource          targetconf                 = null;
-    private boolean               render_external            = false;
-    private boolean               editmodeAllowed            = false;
-    private boolean               skip_getmodtimemaybeupdate = false;
-    private int                   scleanertimeout            = 300;
-
-    private final static Logger   LOGGER_TRAIL               = Logger.getLogger("LOGGER_TRAIL");
-    private final static Logger   LOGGER                     = Logger.getLogger(AbstractXMLServlet.class);
-
-    private AdditionalTrailInfo   addtrailinfo               = null;
+    private FileResource targetconf                 = null;
+    private boolean      render_external            = false;
+    private boolean      editmodeAllowed            = false;
+    private boolean      skip_getmodtimemaybeupdate = false;
+    private int          scleanertimeout            = 300;
+    
+    private final static Logger LOGGER_TRAIL = Logger.getLogger("LOGGER_TRAIL");
+    private final static Logger LOGGER       = Logger.getLogger(AbstractPustefixXMLRequestHandler.class);
+    
+    private AdditionalTrailInfo addtrailinfo = null;
     
     //~ Methods ....................................................................................
     /**
@@ -177,14 +188,8 @@ public abstract class AbstractXMLServlet extends ServletManager {
      * @return void
      * @exception ServletException thrown when the initialisation goes havoc somehow
      */
-    protected ServletManagerConfig getServletManagerConfig() {
-        return this.getAbstractXMLServletConfig();
-    }
-    
-    protected abstract AbstractXMLServletConfig getAbstractXMLServletConfig();
-    
-    public void init(ServletConfig config) throws ServletException {
-        super.init(config);
+    public void init() throws ServletException {
+        super.init();
         if (LOGGER.isDebugEnabled()) {
             LOGGER.debug("\n>>>> In init of AbstractXMLServlet <<<<");
         }
@@ -196,11 +201,6 @@ public abstract class AbstractXMLServlet extends ServletManager {
     }
 
     private void initValues() throws ServletException {
-        if (this.getAbstractXMLServletConfig().getDependFile() != null) {
-            targetconf = ResourceUtil.getFileResourceFromDocroot(this.getAbstractXMLServletConfig().getDependFile());
-        } else {
-            targetconf = ResourceUtil.getFileResourceFromDocroot(this.getInitParameter(PARAM_DEPENDFILE));
-        }
         servletname = this.getAbstractXMLServletConfig().getServletName();
 
         try {
@@ -213,9 +213,9 @@ public abstract class AbstractXMLServlet extends ServletManager {
         editmodeAllowed = this.getAbstractXMLServletConfig().isEditMode();
 
         String render_external_prop = this.getAbstractXMLServletConfig().getProperties().getProperty(PROP_RENDER_EXT);
-        render_external = ((render_external_prop != null) && render_external_prop.equals("true"));
+        render_external             = ((render_external_prop != null) && render_external_prop.equals("true"));
         
-        String skip_gmmu_prop = this.getAbstractXMLServletConfig().getProperties().getProperty(PROP_SKIP_GETMODTIME_MU);
+        String skip_gmmu_prop      = this.getAbstractXMLServletConfig().getProperties().getProperty(PROP_SKIP_GETMODTIME_MU);
         skip_getmodtimemaybeupdate = ((skip_gmmu_prop != null) && skip_gmmu_prop.equals("true"));
 
         generator.setIsGetModTimeMaybeUpdateSkipped(skip_getmodtimemaybeupdate);
@@ -363,7 +363,7 @@ public abstract class AbstractXMLServlet extends ServletManager {
         if (preq.getQueryString() != null)
             params.put(XSLPARAM_QUERYSTRING, preq.getQueryString());
 
-        params.put(XSLPARAM_DEREFKEY, this.getAbstractXMLServletConfig().getProperties().getProperty(DerefServlet.PROP_DEREFKEY));
+        params.put(XSLPARAM_DEREFKEY, this.getAbstractXMLServletConfig().getProperties().getProperty(DerefRequestHandler.PROP_DEREFKEY));
         params.put(XSLPARAM_EDITOR_URL, this.getAbstractXMLServletConfig().getProperties().getProperty(PROP_EDITOR_URL));
 
         if (session != null) {
@@ -780,9 +780,9 @@ public abstract class AbstractXMLServlet extends ServletManager {
             return RENDERMODE.RENDER_NORMAL;
         }
         value = xmlonly.getValue();
-        if (value.equals(VALUE_XMLONLY_XMLONLY)) {
+        if (value.equals(PARAM_XMLONLY_XMLONLY)) {
             rendering = RENDERMODE.RENDER_XMLONLY;
-        } else if (value.equals(VALUE_XMLONLY_FONTIFY)) {
+        } else if (value.equals(PARAM_XMLONLY_FONTIFY)) {
             rendering = RENDERMODE.RENDER_FONTIFY;
         } else {
             throw new IllegalArgumentException("invalid value for " + PARAM_XMLONLY + ": " + value);
@@ -993,5 +993,8 @@ public abstract class AbstractXMLServlet extends ServletManager {
             storeddoms.remove(reuseKey);
         }
     }
-
+    
+    public void setDependFile(String path) {
+        targetconf = ResourceUtil.getFileResource(path);
+    }
 }

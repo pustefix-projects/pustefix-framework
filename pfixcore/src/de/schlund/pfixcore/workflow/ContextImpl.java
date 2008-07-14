@@ -33,6 +33,9 @@ import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpSessionBindingEvent;
 import javax.servlet.http.HttpSessionBindingListener;
 
+import org.pustefixframework.http.AbstractPustefixRequestHandler;
+import org.pustefixframework.http.AbstractPustefixXMLRequestHandler;
+
 import de.schlund.pfixcore.auth.Authentication;
 import de.schlund.pfixcore.auth.AuthenticationImpl;
 import de.schlund.pfixcore.auth.Role;
@@ -43,10 +46,8 @@ import de.schlund.pfixcore.util.TokenUtils;
 import de.schlund.pfixcore.workflow.context.AccessibilityChecker;
 import de.schlund.pfixcore.workflow.context.RequestContextImpl;
 import de.schlund.pfixcore.workflow.context.ServerContextImpl;
-import de.schlund.pfixxml.AbstractXMLServlet;
 import de.schlund.pfixxml.PfixServletRequest;
 import de.schlund.pfixxml.SPDocument;
-import de.schlund.pfixxml.ServletManager;
 import de.schlund.pfixxml.Variant;
 import de.schlund.pfixxml.config.ContextConfig;
 import de.schlund.pfixxml.config.PageRequestConfig;
@@ -117,12 +118,12 @@ public class ContextImpl implements AccessibilityChecker, ExtendedContext, Token
         }
 
         public void setLanguage(String langcode) {
-            session.setAttribute(AbstractXMLServlet.SESS_LANG, langcode);
+            session.setAttribute(AbstractPustefixXMLRequestHandler.SESS_LANG, langcode);
         }
 
         public String getLanguage() {
             try {
-                return (String) session.getAttribute(AbstractXMLServlet.SESS_LANG);
+                return (String) session.getAttribute(AbstractPustefixXMLRequestHandler.SESS_LANG);
             } catch (IllegalStateException e) {
                 // May be thrown if session has been invalidated
                 return null;
@@ -139,7 +140,7 @@ public class ContextImpl implements AccessibilityChecker, ExtendedContext, Token
 
         public String getVisitId() {
             if (visitId == null) {
-                visitId = (String) session.getAttribute(ServletManager.VISIT_ID);
+                visitId = (String) session.getAttribute(AbstractPustefixRequestHandler.VISIT_ID);
                 if (visitId == null) {
                     throw new RuntimeException("visit_id not set, but asked for!!!!");
                 }
@@ -205,7 +206,7 @@ public class ContextImpl implements AccessibilityChecker, ExtendedContext, Token
         }
 
         public void markSessionForCleanup() {
-            this.session.setAttribute(AbstractXMLServlet.SESS_CLEANUP_FLAG_STAGE1, true);
+            this.session.setAttribute(AbstractPustefixXMLRequestHandler.SESS_CLEANUP_FLAG_STAGE1, true);
         }
 
         public void addSessionStatusListener(SessionStatusListener l) {

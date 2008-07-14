@@ -17,7 +17,7 @@
  *
  */
 
-package de.schlund.pfixxml;
+package org.pustefixframework.http.dereferer;
 
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
@@ -29,7 +29,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
+import org.pustefixframework.http.AbstractPustefixRequestHandler;
 
+import de.schlund.pfixxml.PfixServletRequest;
+import de.schlund.pfixxml.RequestParam;
 import de.schlund.pfixxml.config.ServletManagerConfig;
 import de.schlund.pfixxml.config.impl.ServletManagerConfigImpl;
 import de.schlund.pfixxml.resources.FileResource;
@@ -45,12 +48,12 @@ import de.schlund.pfixxml.util.MD5Utils;
  *
  */
 
-public class DerefServlet extends ServletManager {
+public class DerefRequestHandler extends AbstractPustefixRequestHandler {
    
     private static final long serialVersionUID = 4003807093421866709L;
     
     protected final static Logger   DEREFLOG        = Logger.getLogger("LOGGER_DEREF");
-    protected final static Logger   LOG             = Logger.getLogger(DerefServlet.class);
+    protected final static Logger   LOG             = Logger.getLogger(DerefRequestHandler.class);
     public final static String PROP_DEREFKEY = "derefserver.signkey";
     public final static String PROP_IGNORESIGN = "derefserver.ignoresign";
     private ServletManagerConfig config;
@@ -63,11 +66,11 @@ public class DerefServlet extends ServletManager {
         return (false);
     }
 
-    public static String signString(String input, String key) {
-        return MD5Utils.hex_md5(input+key, "utf8");
+    private String signString(String input, String key) {
+        return SignUtil.signString(input, key);
     }
 
-    public static boolean checkSign(String input, String key, String sign) {
+    private boolean checkSign(String input, String key, String sign) {
         if (input == null || sign == null) {
             return false;
         }

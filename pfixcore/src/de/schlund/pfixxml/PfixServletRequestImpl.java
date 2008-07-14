@@ -34,6 +34,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
+import org.pustefixframework.http.AbstractPustefixXMLRequestHandler;
 
 import de.schlund.pfixxml.multipart.MultipartHandler;
 import de.schlund.pfixxml.multipart.PartData;
@@ -392,7 +393,7 @@ public class PfixServletRequestImpl implements PfixServletRequest {
         String  tmpdir = properties.getProperty(PROP_TMPDIR);
         HashSet<String> names = new HashSet<String>();
         if (tmpdir == null || tmpdir.equals("")) {
-            tmpdir = System.getProperty(AbstractXMLServlet.DEF_PROP_TMPDIR);
+            tmpdir = System.getProperty(AbstractPustefixXMLRequestHandler.DEF_PROP_TMPDIR);
         }
         
         String maxsize = properties.getProperty(PROP_MAXPARTSIZE);

@@ -28,9 +28,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
+import org.pustefixframework.http.AbstractPustefixRequestHandler;
 
 import de.schlund.pfixxml.PfixServletRequest;
-import de.schlund.pfixxml.ServletManager;
 
 public class SessionHelper {
 
@@ -163,14 +163,14 @@ public class SessionHelper {
 
         rcBuf = new StringBuffer();
         rcBuf.append(scheme).append("://").append(host);
-        if (ServletManager.isDefault(req.getScheme(), req.getServerPort())) {
+        if (AbstractPustefixRequestHandler.isDefault(req.getScheme(), req.getServerPort())) {
             // don't care about port -- stick with defaults
         } else {
             // we are using non-default ports and are redirecting to ssl:
             // try to get the right ssl port from the configuration
             if ("https".equals(scheme) && !req.isSecure()) {
                 if (props != null) {
-                    String redirectPort = props.getProperty(ServletManager.PROP_SSL_REDIRECT_PORT + String.valueOf(req.getServerPort()));
+                    String redirectPort = props.getProperty(AbstractPustefixRequestHandler.PROP_SSL_REDIRECT_PORT + String.valueOf(req.getServerPort()));
                     if (redirectPort == null) {
                         // we have not found the right port, so try the default one
                         redirectPort = "";

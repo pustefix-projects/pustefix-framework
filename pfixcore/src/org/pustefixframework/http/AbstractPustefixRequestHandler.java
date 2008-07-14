@@ -17,7 +17,7 @@
  *
  */
 
-package de.schlund.pfixxml;
+package org.pustefixframework.http;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -34,18 +34,24 @@ import java.util.Properties;
 import java.util.TreeSet;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
+import org.pustefixframework.container.spring.http.UriProvidingHttpRequestHandler;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.web.context.ServletContextAware;
 import org.xml.sax.SAXException;
 
+import de.schlund.pfixxml.FactoryInitException;
+import de.schlund.pfixxml.FactoryInitServlet;
+import de.schlund.pfixxml.FactoryInitUtil;
+import de.schlund.pfixxml.PfixServletRequest;
+import de.schlund.pfixxml.PfixServletRequestImpl;
 import de.schlund.pfixxml.config.ServletManagerConfig;
 import de.schlund.pfixxml.config.XMLPropertiesUtil;
 import de.schlund.pfixxml.exceptionprocessor.ExceptionConfig;
@@ -70,7 +76,7 @@ import de.schlund.pfixxml.util.MD5Utils;
  * @author <a href="mailto:jtl@schlund.de">Jens Lautenbacher</a>
  */
 
-public abstract class ServletManager extends HttpServlet {
+public abstract class AbstractPustefixRequestHandler implements UriProvidingHttpRequestHandler, ServletContextAware, InitializingBean {
     public static final String           VISIT_ID                      = "__VISIT_ID__";
     public static final String           PROP_LOADINDEX                = "__PROPERTIES_LOAD_INDEX";
     private static final String          STORED_REQUEST                = "__STORED_PFIXSERVLETREQUEST__";
@@ -96,7 +102,7 @@ public abstract class ServletManager extends HttpServlet {
     private static int                   INC_ID                        = 0;
     private boolean                      cookie_security_not_enforced  = false;
     private Logger                       LOGGER_VISIT                  = Logger.getLogger("LOGGER_VISIT");
-    private static Logger                       LOG                           = Logger.getLogger(ServletManager.class);
+    private static Logger                       LOG                           = Logger.getLogger(AbstractPustefixRequestHandler.class);
     private Map<Class<? extends Throwable>, ExceptionConfig> exceptionConfigs = new HashMap<Class<? extends Throwable>, ExceptionConfig>();
     private long                         common_mtime                  = -2;
     private long                         servlet_mtime                 = -2;
@@ -104,6 +110,8 @@ public abstract class ServletManager extends HttpServlet {
     private FileResource                 servletpropfile;
     private String                       servletEncoding;
     private AtomicInteger                configLoadIndex               = new AtomicInteger(0);
+    private ServletContext servletContext;
+    private String handlerURI;
 
     protected abstract ServletManagerConfig getServletManagerConfig();
 
@@ -138,12 +146,16 @@ public abstract class ServletManager extends HttpServlet {
         res.setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY);
         res.setHeader("Location", reloc_url);
     }
-
-    public void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
-        doGet(req, res);
+    
+    public void setHandlerURI(String uri) {
+        this.handlerURI = uri;
+    }
+    
+    public String[] getRegisteredURIs() {
+        return new String[] { handlerURI };
     }
 
-    public void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
+    public void handleRequest(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
         req.setCharacterEncoding(servletEncoding);
         res.setCharacterEncoding(servletEncoding);
         if (LOG.isDebugEnabled()) {
@@ -260,7 +272,7 @@ public abstract class ServletManager extends HttpServlet {
                                     has_ssl_session_secure = true;
                                     Cookie cookie_new = new Cookie(cookie.getName(), System.currentTimeMillis() + COOKIE_VALUE_SEPARATOR + tmp_sec);
                                     setCookiePath(req, cookie_new);
-                                    // (see comment in cleanupCookies)
+                                    // FIXME (see comment in cleanupCookies
                                     // cookie_new.setMaxAge(session.getMaxInactiveInterval());
                                     cookie_new.setMaxAge(-1);
                                     cookie_new.setSecure(true);
@@ -518,8 +530,8 @@ public abstract class ServletManager extends HttpServlet {
 
             cookie = new Cookie(SECURE_SESS_COOKIE + sec_cookie, System.currentTimeMillis() + COOKIE_VALUE_SEPARATOR + sec_testid);
             setCookiePath(req, cookie);
-            // (see comment in cleanupCookies)
-            // cookie.setMaxAge(session.getMaxInactiveInterval());
+            // FIXME (see comment in cleanupCookies
+            //cookie.setMaxAge(session.getMaxInactiveInterval());
             cookie.setMaxAge(-1);
             cookie.setSecure(true);
             res.addCookie(cookie);
@@ -777,10 +789,13 @@ public abstract class ServletManager extends HttpServlet {
         }
     }
 
-    public void init(ServletConfig config) throws ServletException {
-        super.init(config);
-
-        ServletContext ctx = config.getServletContext();
+    
+    public void afterPropertiesSet() throws Exception {
+        init();
+    }
+    
+    public void init() throws ServletException {
+        ServletContext ctx = getServletContext();
         LOG.debug("*** Servlet container is '" + ctx.getServerInfo() + "'");
         int major = ctx.getMajorVersion();
         int minor = ctx.getMinorVersion();
@@ -792,24 +807,9 @@ public abstract class ServletManager extends HttpServlet {
 
         Properties properties = new Properties(System.getProperties());
 
-        String commonpropfilename = config.getInitParameter("servlet.commonpropfile");
-        if (commonpropfilename != null) {
-            if (!commonpropfilename.startsWith("/")) {
-                commonpropfile = ResourceUtil.getFileResourceFromDocroot(commonpropfilename);
-            } else {
-                commonpropfile = ResourceUtil.getFileResource("file://" + commonpropfilename);
-            }
+        if (commonpropfile != null) {
             // Load on first request
             common_mtime = loadPropertyfile(properties, commonpropfile);
-        }
-
-        String servletpropfilename = config.getInitParameter("servlet.propfile");
-        if (servletpropfilename != null) {
-            if (!servletpropfilename.startsWith("/")) {
-                servletpropfile = ResourceUtil.getFileResourceFromDocroot(servletpropfilename);
-            } else {
-                servletpropfile = ResourceUtil.getFileResource("file://" + servletpropfilename);
-            }
         }
 
         // Make sure configuration is available
@@ -894,7 +894,7 @@ public abstract class ServletManager extends HttpServlet {
                 if ( preq.getLastException() == null ) {  
                     ExceptionProcessor eproc = exconf.getProcessor();
                     eproc.processException(e, exconf, preq,
-                                       getServletConfig().getServletContext(),
+                                       getServletContext(),
                                        req, res, this.getServletManagerConfig().getProperties());
                 }
             } 
@@ -1029,7 +1029,7 @@ public abstract class ServletManager extends HttpServlet {
 
         //Try to get servlet encoding from init parameters:
         if (servletEncoding == null) {
-            encoding = getServletConfig().getInitParameter(SERVLET_ENCODING);
+            encoding = getServletEncoding();
             if (encoding == null || encoding.trim().equals(""))
                 LOG.warn("No servlet encoding init parameter set");
             else if (!Charset.isSupported(encoding))
@@ -1136,7 +1136,7 @@ public abstract class ServletManager extends HttpServlet {
                     setCookiePath(req, curr_cookie);
                     res.addCookie(curr_cookie);
                 } else if (curr_lasttouch < timeout) {
-                    // NOTE: We shoudln't need to check for "old" cookies here, because the
+                    // FIXME We shoudln't need to check for "old" cookies here, because the
                     // lifetime of a cookie should ideally be set to the max. inactive time of the
                     // session, so the browser would stop sending old cookies by itself. But I'm not
                     // entirely sure if we can really depend on having the time set right on all
@@ -1164,4 +1164,27 @@ public abstract class ServletManager extends HttpServlet {
         }
     }
     
-}// ServletManager
+    public void setServletEncoding(String encoding) {
+        this.servletEncoding = encoding;
+    }
+    
+    public String getServletEncoding() {
+        return servletEncoding;
+    }
+    
+    public void setServletContext(ServletContext context) {
+        this.servletContext = context;
+    }
+    
+    public ServletContext getServletContext() {
+        return this.servletContext;
+    }
+    
+    public void setCommonPropFile(String path) {
+        commonpropfile = ResourceUtil.getFileResource(path);
+    }
+    
+    public void setPropFile(String path) {
+        servletpropfile = ResourceUtil.getFileResource(path);
+    }
+}

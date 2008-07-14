@@ -29,6 +29,7 @@ import javax.management.NotificationBroadcasterSupport;
 import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
+import org.pustefixframework.http.AbstractPustefixRequestHandler;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -37,7 +38,6 @@ import org.w3c.dom.Text;
 import de.schlund.pfixxml.PfixServletRequest;
 import de.schlund.pfixxml.RequestParam;
 import de.schlund.pfixxml.SPDocument;
-import de.schlund.pfixxml.ServletManager;
 import de.schlund.pfixxml.util.Xml;
 
 /**
@@ -88,7 +88,7 @@ public class TrailLogger extends NotificationBroadcasterSupport implements Trail
     }
     
     public static String lookupVisit(HttpSession session) {
-        return (String) session.getAttribute(ServletManager.VISIT_ID);
+        return (String) session.getAttribute(AbstractPustefixRequestHandler.VISIT_ID);
     }
     
     //--

@@ -1,3 +1,43 @@
+2008-07-14  Sebastian Marsching  <sebastian.marsching@1und1.de>
+
+	* src/org/pustefixframework/container/spring/beans/PustefixProjectBeanDefinitionReader.java:
+	* src/org/pustefixframework/container/spring/beans/PustefixWebApplicationContext.java: 
+	* src/de/schlund/pfixcore/scriptedflow/ScriptedFlowConfig.java: 
+    * src/de/schlund/pfixcore/editor2/frontend/resources/SessionInfoResource.java: 
+	* src/de/schlund/pfixcore/workflow/context/RequestContextImpl.java: 
+	* src/de/schlund/pfixcore/workflow/ContextImpl.java: 
+	* src/de/schlund/pfixxml/multipart/MultipartHandler.java: 
+	* src/de/schlund/pfixxml/serverutil/SessionHelper.java: 
+	* src/de/schlund/pfixxml/testrecording/TrailLogger.java: 
+	* src/de/schlund/pfixxml/PfixServletRequestImpl.java: 
+	* src/de/schlund/pfixxml/AbstractContextServletFilter.java: 
+	* src/de/schlund/pfixxml/perflogging/DefaultAdditionalTrailInfoImpl.java: 
+	* .classpath: 
+    * lib/spring-2.5.3.jar: 
+    * lib/spring-webmvc-2.5.3.jar: 
+	* lib/flexiparse-0.0.1.jar: 
+	* lib/spring-2.5.1.jar: 
+	* projects/core/xsl/master.xsl: 
+	Updated Spring to version 2.5.1 and converted Pustefix to Spring
+	WebMVC components.
+	
+	* projects/core/build/projectxml_to_webxml.xsl: 
+	* projects/sample1/conf/spring.xml: 
+	* projects/sample1/conf/project.xml: 
+	New project configuration (example), that is not yet integrated with the
+	build process.
+	
+	* src/de/schlund/pfixxml/SessionContextStore.java: 
+	* src/de/schlund/pfixxml/ServerContextStore.java: 
+	* src/de/schlund/pfixxml/ContextXMLServlet.java:
+	* src/de/schlund/pfixxml/DirectOutputServlet.java: 
+	* src/de/schlund/pfixxml/DocrootServlet.java: 
+	* src/de/schlund/pfixxml/ServletManager.java: 
+	* src/de/schlund/pfixxml/ServletManagerCompat.java: 
+	* src/de/schlund/pfixxml/AbstractXMLServlet.java: 
+	* src/de/schlund/pfixxml/DerefServlet.java: 
+	Removed old classes. 
+	
 2008-07-03  Tobias Fehrenbach <fehrenbach@schlund.de>
 
 	Added IWrapperParamUncaster - controls how objects are casted
