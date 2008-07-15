@@ -3,25 +3,35 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
   
-  <!-- 
-  <bean class="org.pustefixframework.http.PustefixContextXMLRequestHandler">
+  <bean class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+    <property name="alwaysUseFullPath" value="true"/>
+    <property name="mappings">
+      <value>
+        /xml/config/**=__pfx_contexthandler
+        /xml/download/**=__pfx_directhandler
+        /xml/deref/**=__pfx_derefhandler
+      </value>
+    </property>
+  </bean>
+  
+  <bean id="__pfx_contexthandler" class="org.pustefixframework.http.PustefixContextXMLRequestHandler">
     <property name="commonPropFile">
-      <value>common/conf/pustefix.xml</value>
+      <value>pfixroot:/common/conf/pustefix.xml</value>
     </property>
     <property name="propFile">
-      <value>sample1/conf/config.conf.xml</value>
+      <value>pfixroot:/sample1/conf/config.conf.xml</value>
     </property>
     <property name="dependFile">
-      <value>sample1/conf/depend.xml</value>
+      <value>pfixroot:/sample1/conf/depend.xml</value>
     </property>
     <property name="handlerURI">
       <value>/xml/config/**</value>
     </property>
   </bean>
-  -->
   
-  <!-- 
-  <bean class="org.pustefixframework.http.PustefixContextDirectOutputRequestHandler">
+  
+  
+  <bean id="__pfx_directhandler" class="org.pustefixframework.http.PustefixContextDirectOutputRequestHandler">
     <property name="commonPropFile">
       <value>pfixroot:/common/conf/pustefix.xml</value>
     </property>
@@ -33,7 +43,7 @@
     </property>
   </bean>
   
-  <bean class="org.pustefixframework.http.dereferer.DerefRequestHandler">
+  <bean id="__pfx_derefhandler" class="org.pustefixframework.http.dereferer.DerefRequestHandler">
     <property name="commonPropFile">
       <value>pfixroot:/common/conf/pustefix.xml</value>
     </property>
@@ -41,6 +51,6 @@
       <value>/xml/deref/**</value>
     </property>
   </bean>
-  -->
+  
   
 </beans>

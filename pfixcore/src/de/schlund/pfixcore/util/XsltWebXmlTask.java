@@ -96,6 +96,8 @@ public class XsltWebXmlTask extends XsltGenericTask {
             for (int i = 0; i < nl.getLength(); i++) {
                 Element currproject  = (Element) nl.item(i);
                 String  name = currproject.getAttribute("name");
+                //TODO: Remove exclusion of sample1
+                if(name.equals("sample1")) continue;
                 log("found project "+name+" in "+projectsFile, Project.MSG_DEBUG);
 
                 File cusWebXml = new File(srcdirResolved+"/"+name+"/conf", "web.xml");

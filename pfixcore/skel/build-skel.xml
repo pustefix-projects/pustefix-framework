@@ -353,12 +353,19 @@ or delete the DOCTYPE definition -->
      description="Generates .java files out of .iwrp (Interface Wrapper) files"
      />
     <taskdef
-     name="pfx-webxml"
+     name="pfx-webxml-deprecated"
      classname="de.schlund.pfixcore.util.XsltWebXmlTask"
      classpathref="cp.classpath"
      loaderref="pfx-loader"
      description="Creates WEB-INF/web.xml config files for each project"
      />
+  	<taskdef
+  	 name="pfx-webxml"
+  	 classname="org.pustefixframework.config.build.CreateWebXmlTask"
+  	 classpathref="cp.classpath"
+  	 loaderref="pfx-loader"
+  	 description="Creates WEB-INF/web.xml config files for each project"
+  	 />
     <taskdef
      name="pfx-xsltcus"
      classname="de.schlund.pfixcore.util.XsltCustomizeXmlTask"
@@ -726,8 +733,8 @@ or delete the DOCTYPE definition -->
 
   <target name="web_xml" depends="ant-tasks, projects_xml, defaultwebxml" description="creates servletconf/tomcat/webapps/**/WEB-INF/web.xml">
     <!-- old target name in Makefile was "zoneprops" -->
-    <pfx-webxml
-      style="${dir.projects}/core/build/create_webxml.xsl"
+    <pfx-webxml-deprecated
+      style="${dir.projects}/core/build/create_webxml_deprecated.xsl"
       srcdir="${dir.projects}"
       destdir="${dir.tomcat}"
       extension=".xml"
@@ -739,7 +746,15 @@ or delete the DOCTYPE definition -->
       <param name="uid"     expression="${uid}"/>
       <param name="machine" expression="${machine}"/>
       <param name="mode"    expression="${makemode}"/>
-    </pfx-webxml>
+    </pfx-webxml-deprecated>
+  	<pfx-webxml 
+  		basedir="${dir.projects}" 
+  		webappsdir="${dir.tomcat}/webapps"
+  		includes="*/conf/project.xml"
+  		commonconfig="${dir.projects}/common/conf/projects.xml"
+  	    webapptemplate="${dir.projects}/core/conf/web.xml"
+  		stylesheet="${dir.projects}/core/build/create_webxml.xsl"
+  	/>
   </target>
 
   <target name="init-autodeploy">
@@ -1083,8 +1098,8 @@ or delete the DOCTYPE definition -->
         </fileset>    
     </copy>
    
-    <pfx-webxml
-      style="${dir.projects}/core/build/create_webxml.xsl"
+    <pfx-webxml-deprecated
+      style="${dir.projects}/core/build/create_webxml_deprecated.xsl"
       srcdir="${webapp.pfixroot}"
       destdir="dist"
       extension=".xml"
@@ -1097,7 +1112,7 @@ or delete the DOCTYPE definition -->
       <param name="machine" expression="${machine}"/>
       <param name="mode"    expression="${makemode}"/>
       <param name="warmode" expression="true"/>   
-    </pfx-webxml>
+    </pfx-webxml-deprecated>
    
     <antcall target="-webapp.context">
       <param name="file" value="${host.dir}/context-main.xml"/>   

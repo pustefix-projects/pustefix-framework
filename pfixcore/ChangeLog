@@ -1,3 +1,32 @@
+2008-07-15  Martin Leidig  <mleidig@schlund.de>
+
+	Adapted build process and fixed some problems to get sample1 project
+	working on Spring base.
+
+	* skel/build-skel.xml: added new task for spring web.xml creation, 
+	mark old task as deprecated (use both temporarily)
+	* build.xml: add new spring web.xml task to pre-compilation
+	* projects/sample1/conf/spring.xml: uncommented HttpRequestHandlers
+	and added SimpleUrlHandlerMapping bean to dispatch URLs to the
+	HttpRequestHandlers (to get the sample application working and
+	fix the 404 errors caused by missing Dispatcher mapping)
+	* projects/core/build/create_webxml.xsl: new web.xml generation
+	stylesheet, which adds Spring Dispatcher stuff to the web.xml
+	template, added customization handling using Java callbacks,
+	reading of common project configuration is already done and has
+	to be adapted when configuration format is defined
+	* projects/common/conf/projects.xml: added common project 
+	configuration file, format still has to be defined
+	* src/de/schlund/pfixcore/util/XsltWebXmlTask.java: excluded
+	sample1 application from old/deprecated web.xml generation, new
+	task is used instead
+	* src/org/pustefixframework/config/customization/PropertiesBasedCustomizationInfo.java:
+	fixed NullPointerException when calling XPath.evaluate with null
+	argument, pass dummy Document instead. Added evaluateXPathExpression
+	method for boolean type (called by XSLT extension function)
+	* src/org/pustefixframework/config/build/CreateWebXmlTask.java: added
+	new task for web.xml generation
+
 2008-07-14  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
 	* src/org/pustefixframework/container/spring/beans/PustefixProjectBeanDefinitionReader.java:

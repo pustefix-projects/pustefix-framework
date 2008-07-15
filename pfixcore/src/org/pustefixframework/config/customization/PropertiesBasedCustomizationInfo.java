@@ -21,10 +21,16 @@ package org.pustefixframework.config.customization;
 import java.util.Properties;
 
 import javax.xml.namespace.QName;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 import javax.xml.xpath.XPathVariableResolver;
+
+import org.w3c.dom.Document;
+import org.xml.sax.InputSource;
 
 
 /**
@@ -45,6 +51,7 @@ public class PropertiesBasedCustomizationInfo implements CustomizationInfo {
     
     private Properties properties;
     private XPath xpath;
+    private Document dummyDoc;
     
     /**
      * Creates a new customization info using the supplied 
@@ -57,10 +64,19 @@ public class PropertiesBasedCustomizationInfo implements CustomizationInfo {
         XPathFactory xpfac = XPathFactory.newInstance();
         xpfac.setXPathVariableResolver(new MyResolver());
         xpath = xpfac.newXPath();
+        try {
+            dummyDoc = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
+        } catch (ParserConfigurationException e) {
+            throw new RuntimeException("Can't create dummy document for XPath evaluation", e);
+        }
     }
     
     public Object evaluateXPathExpression(String expression, QName returnType) throws XPathExpressionException {
-        return xpath.evaluate(expression, null, returnType);
+        return xpath.evaluate(expression, dummyDoc, returnType);
+    }
+    
+    public boolean evaluateXPathExpression(String expression) throws XPathExpressionException {
+        return (Boolean)evaluateXPathExpression(expression, XPathConstants.BOOLEAN);
     }
 
     public String replaceVariables(String expression) {
