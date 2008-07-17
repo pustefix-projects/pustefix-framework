@@ -1,3 +1,9 @@
+2008-07-17  Sebastian Marsching  <sebastian.marsching@1und1.de>
+
+	* src/org/pustefixframework/config/project/parser/project-config.xml: 
+	* res/org/pustefixframework/config/project/parser/project-config.xml: 
+	Moved configuration file, so that it is copied to the classpath.
+
 2008-07-15  Martin Leidig  <mleidig@schlund.de>
 
 	Adapted build process and fixed some problems to get sample1 project
