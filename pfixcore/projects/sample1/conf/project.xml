@@ -58,6 +58,18 @@
       <path>core/img</path> <!-- FIXME: Get this from central configuration -->
     </static>
     
+    <!--  Custom Deplyment descriptor code
+    <web-xml>
+      <jee:web-app xmlns:jee="http://java.sun.com/xml/ns/javaee">
+        <choose>
+          <when test="$mode='test'">
+            <jee:display-name>foo</jee:display-name>
+          </when>
+        </choose>
+      </jee:web-app>
+    </web-xml>
+    -->
+    
   </application>
   
 </project-config>

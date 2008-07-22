@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="iso-8859-1"?>
 <xsl:stylesheet version="1.1"
+                xmlns="http://java.sun.com/xml/ns/javaee"
+                xmlns:jee="http://java.sun.com/xml/ns/javaee"
                 xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
                 xmlns:cus="http://www.schlund.de/pustefix/customize"
                 xmlns:p="http://www.pustefix-framework.org/2008/namespace/project-config"
                 xmlns:ci="java:org.pustefixframework.config.customization.PropertiesBasedCustomizationInfo"
-                exclude-result-prefixes="cus p ci">
+                exclude-result-prefixes="cus p ci jee">
 
   <!-- Config files that should be loaded by the ApplicationContext,
        separated by spaces                                           -->
@@ -13,274 +15,99 @@
   <xsl:param name="projectname"/>
   <xsl:param name="warmode"/>
   
-  <xsl:param name="projectfile"/>
+  <xsl:param name="projectsfile"/>
   <xsl:param name="commonprojectsfile"/>
   
   <xsl:param name="customizationinfo"/>
 
-  <xsl:variable name="project" select="document(concat('file://', $projectfile))/p:project-config" />
   <xsl:variable name="common" select="document(concat('file://', $commonprojectsfile))/p:projects" />
 
   <xsl:output method="xml" encoding="ISO-8859-1" indent="yes"/>
-
-  <xsl:template match="cus:servlet-mapping">
-    <xsl:call-template name="create_dispatcher_mappings"/>
-    <xsl:for-each select="$project/servlet">
-      <xsl:variable name="active_node">
-        <xsl:apply-templates select="./active/node()"/>
-      </xsl:variable>
-      <xsl:variable name="active">
-        <xsl:value-of select="normalize-space($active_node)"/>
-      </xsl:variable>
-
-      <xsl:if test="$active = 'true'">
-        <servlet-mapping>
-          <servlet-name><xsl:value-of select="@name"/></servlet-name>
-          <url-pattern>/xml/<xsl:value-of select="@name"/>/*</url-pattern>
-        </servlet-mapping>
-      </xsl:if>
-    </xsl:for-each>
-    
-    <xsl:if test="not($warmode = 'true')">
-      <!-- Default servlet for retrieving static files from /xml/* -->
-      <!-- 
-      <servlet-mapping>
-        <servlet-name>static-docroot</servlet-name>
-        <url-pattern>/xml/*</url-pattern>
-      </servlet-mapping>
-      -->
-    </xsl:if>
-    
-    <!-- Servlet for static files in / for standalone mode -->
-    <!-- 
-    <servlet-mapping>
-      <servlet-name>static-docroot</servlet-name>
-      <url-pattern>/</url-pattern>
-    </servlet-mapping>
-    -->
-      </xsl:template>
-
-  <xsl:template match="cus:servlet">
-    <xsl:call-template name="create_dispatcher_servlet"/>
-    <!-- Docroot servlet -->
-    <!-- 
-    <servlet>
-      <servlet-name>static-docroot</servlet-name>
-      <servlet-class>de.schlund.pfixxml.DocrootServlet</servlet-class>
-      <xsl:if test="$project/defpath/text()">
-        <init-param>
-          <param-name>defaultpath</param-name>
-          <param-value><xsl:value-of select="$project/defpath"/></param-value>
-        </init-param>
-        <init-param>
-          <param-name>passthroughPaths</param-name>
-          <param-value>
-            <xsl:for-each select="$project/passthrough">
-              <xsl:value-of select="text()"/><xsl:text>:</xsl:text>
-            </xsl:for-each>
-            <xsl:for-each select="$common/apache/passthrough">
-              <xsl:value-of select="text()"/><xsl:text>:</xsl:text>
-            </xsl:for-each>
-          </param-value>
-        </init-param>
-      </xsl:if>
-    </servlet>
-    -->
-    <xsl:for-each select="$project/p:servlet">
-      <xsl:variable name="active_node">
-        <xsl:apply-templates select="./p:active/node()"/>
-      </xsl:variable>
-      <xsl:variable name="active">
-        <xsl:value-of select="normalize-space($active_node)"/>
-      </xsl:variable>
-
-      <xsl:if test="$active = 'true'">
-        <servlet>
-          <servlet-name><xsl:value-of select="@name"/></servlet-name>
-          <servlet-class><xsl:apply-templates select="class/node()"/></servlet-class>
-          <xsl:for-each select="$common/p:init-param">
-            <init-param>
-              <param-name><xsl:apply-templates select="./p:param-name/node()"/></param-name>
-              <param-value><xsl:apply-templates select="./p:param-value/node()"/></param-value>
-            </init-param>
-          </xsl:for-each>
-          <xsl:for-each select="p:init-param">
-            <init-param>
-              <param-name><xsl:apply-templates select="./p:param-name/node()"/></param-name>
-              <param-value><xsl:apply-templates select="./p:param-value/node()"/></param-value>
-            </init-param>
-          </xsl:for-each>
-          <xsl:if test="$common/p:commonpropfile/node()">
-            <init-param>
-              <param-name>servlet.commonpropfile</param-name>
-              <param-value><xsl:apply-templates select="$common/p:commonpropfile/node()"/></param-value>
-            </init-param>
-          </xsl:if>
-          <xsl:if test="p:propfile/node()">
-            <init-param>
-              <param-name>servlet.propfile</param-name>
-              <param-value><xsl:apply-templates select="p:propfile/node()"/></param-value>
-            </init-param>
-          </xsl:if>
-          <xsl:if test="p:foreigncontext/node()">
-            <init-param>
-              <param-name>servlet.contextname</param-name>
-              <param-value><xsl:apply-templates select="p:foreigncontext/node()"/></param-value>
-            </init-param>
-          </xsl:if>
-          <init-param>
-          	<param-name>servlet.encoding</param-name>
-            <param-value><xsl:apply-templates select="$project/p:encoding/text()"/></param-value>
-          </init-param>
-          <init-param>
-            <param-name>servlet.dependfile</param-name>
-            <param-value><xsl:apply-templates select="$project/p:depend/node()"/></param-value>
-          </init-param>
-          <xsl:if test="@autostartup = 'true'">
-            <load-on-startup>666</load-on-startup>
-          </xsl:if>
-
-        </servlet>
-      </xsl:if>
-    </xsl:for-each>
-  </xsl:template>
-
-  <xsl:template match="cus:error-page">
-    <xsl:for-each select="$project/tomcat/error-page">
-      <error-page>
-        <xsl:choose>
-          <xsl:when test="exception-type">
-            <exception-type><xsl:apply-templates select="exception-type/node()"/></exception-type>
-          </xsl:when>
-          <xsl:when test="error-code">
-            <error-code><xsl:apply-templates select="error-code/node()"/></error-code>
-          </xsl:when>
-          <xsl:otherwise>
-            <xsl:message terminate="yes">one element "error-code" or "exception-type" is needed!</xsl:message>
-          </xsl:otherwise>
-        </xsl:choose>
-        <xsl:if test="not(location/node())">
-          <xsl:message terminate="yes">one element "location" is needed!</xsl:message>
-        </xsl:if>
-        <location><xsl:apply-templates select="location/node()"/></location>
-      </error-page>
-    </xsl:for-each>
-  </xsl:template>
-
-  <xsl:template match="cus:session-config">
-    <!-- if a 'sessiontimeout'-node exists use it, else use default -->
+  
+  <xsl:template match="/">
     <xsl:choose>
-      <xsl:when test="$project/sessiontimeout">
-        <session-config>
-          <session-timeout><xsl:value-of select="$project/sessiontimeout"/></session-timeout>
-        </session-config>
+      <xsl:when test="/p:project-config/p:application/p:web-xml//jee:web-app">
+        <xsl:variable name="wxt">
+          <xsl:apply-templates select="/p:project-config/p:application/p:web-xml/*"/>
+        </xsl:variable>
+        <web-app>
+          <xsl:copy-of select="$wxt/jee:web-app/@*"/>
+          <xsl:apply-templates select="$wxt/jee:web-app/jee:icon|$wxt/jee:web-app/jee:display-name|$wxt/jee:web-app/jee:description|$wxt/jee:web-app/jee:distributable|$wxt/jee:web-app/jee:context-param|$wxt/jee:web-app/jee:filter|$wxt/jee:web-app/jee:filter-mapping|$wxt/jee:web-app/jee:listener"/>
+          <xsl:call-template name="create-servlet-definitions"/>
+          <xsl:apply-templates select="$wxt/jee:web-app/jee:servlet"/>
+          <xsl:call-template name="create-servlet-mappings"/>
+          <xsl:apply-templates select="$wxt/jee:web-app/jee:servlet-mapping"/>
+          <xsl:choose>
+            <xsl:when test="$wxt/jee:web-app/jee:session-config">
+              <xsl:apply-templates select="$wxt/jee:web-app/jee:session-config"/>
+            </xsl:when>
+            <xsl:otherwise>
+              <xsl:call-template name="create-session-config"/>
+            </xsl:otherwise>
+          </xsl:choose>
+          <xsl:apply-templates select="$wxt/jee:web-app/jee:mime-mapping|$wxt/jee:web-app/jee:welcome-file-list|$wxt/jee:web-app/jee:error-page|$wxt/jee:web-app/jee:taglib|$wxt/jee:web-app/jee:resource-env-ref|$wxt/jee:web-app/jee:resource-ref|$wxt/jee:web-app/jee:security-constraint|$wxt/jee:web-app/jee:login-config|$wxt/jee:web-app/jee:security-role|$wxt/jee:web-app/jee:env-entry|$wxt/jee:web-app/jee:ejb-ref|$wxt/jee:web-app/jee:ejb-local-ref"/>
+        </web-app>
       </xsl:when>
       <xsl:otherwise>
-        <session-config>
-          <session-timeout>60</session-timeout>
-        </session-config>
+        <web-app>
+          <xsl:call-template name="create-servlet-definitions"/>
+          <xsl:call-template name="create-servlet-mappings"/>
+          <xsl:call-template name="create-session-config"/>
+        </web-app>
       </xsl:otherwise>
     </xsl:choose>
   </xsl:template>
-
-  <xsl:template match="cus:filter">
-    <xsl:for-each select="$project/filter">
-      
-      <xsl:variable name="active_node">
-        <xsl:apply-templates select="./active/node()"/>
-      </xsl:variable>
-      <xsl:variable name="active">
-        <xsl:value-of select="normalize-space($active_node)"/>
-      </xsl:variable>
-      
-      <xsl:if test="$active = 'true'">
-        <filter>
-          <filter-name><xsl:value-of select="@name"/></filter-name>
-          <filter-class><xsl:apply-templates select="class/node()"/></filter-class>
-          <xsl:if test="foreigncontext/node()">
-            <init-param>
-              <param-name>contextRef</param-name>
-              <param-value><xsl:apply-templates select="foreigncontext/node()"/></param-value>
-            </init-param>
-          </xsl:if>
-          <xsl:apply-templates select="init-param"/>
-        </filter>
-      </xsl:if>
-      
-    </xsl:for-each>
+  
+  <xsl:template name="create-servlet-definitions">
+    <xsl:call-template name="create-dispatcher-servlet"/>
+  </xsl:template>
+    
+  <xsl:template name="create-servlet-mappings">
+    <xsl:apply-templates mode="servlet-mappings" select="/p:project-config/p:application/*"/>
+    <servlet-mapping>
+      <servlet-name>dispatcher</servlet-name>
+      <url-pattern>/xml/deref/*</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+      <servlet-name>dispatcher</servlet-name>
+      <url-pattern>/*</url-pattern>
+    </servlet-mapping>
   </xsl:template>
   
-  <xsl:template match="cus:filter-mapping">
-  
-    <xsl:for-each select="$project/servlet/use-filter">
-      
-      <xsl:variable name="filter-name-node">
-        <xsl:apply-templates select="node()"/>
-      </xsl:variable>
-      <xsl:variable name="filter-name">
-        <xsl:value-of select="normalize-space($filter-name-node)"/>
-      </xsl:variable>
-      
-      <xsl:variable name="servlet-name">
-        <xsl:value-of select="normalize-space(parent::servlet/@name)"/>
-      </xsl:variable>
-      
-      <xsl:variable name="servlet-active-node">
-        <xsl:apply-templates select="parent::servlet/active/node()"/>
-      </xsl:variable>
-      <xsl:variable name="servlet-active">
-        <xsl:value-of select="normalize-space($servlet-active-node)"/>
-      </xsl:variable>
-      
-      <xsl:variable name="filter-active-node">
-        <xsl:apply-templates select="$project/filter[@name=$filter-name]/active/node()"/>
-      </xsl:variable>
-      <xsl:variable name="filter-active">
-        <xsl:value-of select="normalize-space($filter-active-node)"/>
-      </xsl:variable>
-      
-      <xsl:if test="$servlet-active = 'true' and $filter-active='true'">
-        <filter-mapping>
-          <filter-name><xsl:value-of select="$filter-name"/></filter-name>
-          <servlet-name><xsl:value-of select="$servlet-name"/></servlet-name>
-        </filter-mapping>
-      </xsl:if>
-      
-    </xsl:for-each>
-    
-    <xsl:apply-templates match="$project/filter-mapping"/>
-    
+  <xsl:template name="create-session-config">
+    <session-config>
+      <session-timeout>60</session-timeout>
+    </session-config>
   </xsl:template>
-
-  <xsl:template match="cus:listener">
-
-    <!-- Insert listener for webservices if webservice servlet is configured -->
-    <xsl:if test="$project/servlet[@name='webservice' and class/text()='org.pustefixframework.webservices.WebServiceServlet']">
-      <listener>
-        <listener-class>org.pustefixframework.webservices.WebserviceContextListener</listener-class>
-      </listener>
-    </xsl:if>
   
-    <xsl:for-each select="$project/listener">
-    
-      <xsl:variable name="active_node">
-        <xsl:apply-templates select="./active/node()"/>
-      </xsl:variable>
-      <xsl:variable name="active">
-        <xsl:value-of select="normalize-space($active_node)"/>
-      </xsl:variable>
-      
-      <xsl:if test="$active = 'true'">
-        <listener>
-          <listener-class><xsl:apply-templates select="class/node()"/></listener-class>
-        </listener>
-      </xsl:if>
-      
-    </xsl:for-each>
-
+  <xsl:template mode="serlvet-mappings" match="p:choose">
+    <xsl:variable name="matches" select="p:when[ci:evaluateXPathExpression($customizationinfo,@test)]"/>
+    <xsl:choose>
+      <xsl:when test="count($matches)=0">
+        <xsl:apply-templates select="p:otherwise/node()" mode="servlet-mappings"/>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:apply-templates select="$matches[1]/node()" mode="servlet-mappings"/>
+      </xsl:otherwise>
+    </xsl:choose>
   </xsl:template>
-
-  <xsl:template name="create_dispatcher_servlet">
+  
+  <xsl:template mode="servlet-mappings" match="text()">
+    <xsl:call-template name="text"/>
+  </xsl:template>
+  
+  <xsl:template mode="servlet-mappings" match="*">
+    <!-- Ignore anything not matched explicitly -->
+  </xsl:template>
+  
+  <xsl:template mode="servlet-mappings" match="p:direct-output-service|p:context-xml-service">
+    <servlet-mapping>
+      <servlet-name>dispatcher</servlet-name>
+      <url-pattern><xsl:value-of select="p:path/text()"/>/*</url-pattern>
+    </servlet-mapping>
+  </xsl:template>
+  
+  <xsl:template name="create-dispatcher-servlet">
     <servlet>
       <servlet-name>dispatcher</servlet-name>
       <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
@@ -313,6 +140,20 @@
     </servlet-mapping>
   </xsl:template>
   
+  <xsl:template match="servlet[not(preceding-sibling::servlet)]">
+    <xsl:call-template name="create-servlet-definitions"/>
+    <xsl:element name="{name()}" namespace="{namespace-uri()}">
+      <xsl:copy-of select="./@*"/><xsl:apply-templates/>
+    </xsl:element>
+  </xsl:template>
+  
+  <xsl:template match="servlet-mapping[not(preceding-sibling::servlet-mapping)]">
+    <xsl:call-template name="create-servlet-mappings"/>
+    <xsl:element name="{name()}" namespace="{namespace-uri()}">
+      <xsl:copy-of select="./@*"/><xsl:apply-templates/>
+    </xsl:element>
+  </xsl:template>
+  
   <xsl:template match="p:choose">
     <xsl:variable name="matches" select="p:when[ci:evaluateXPathExpression($customizationinfo,@test)]"/>
     <xsl:choose>
@@ -325,13 +166,20 @@
     </xsl:choose>
   </xsl:template>
 
-  <xsl:template match="text()">
+  <xsl:template match="text()" name="text">
     <xsl:value-of select="ci:replaceVariables($customizationinfo,.)"/>
   </xsl:template>
 
+  <xsl:template match="jee:*">
+    <xsl:element name="{local-name()}" namespace="{namespace-uri()}">
+      <xsl:copy-of select="./@*"/><xsl:apply-templates/>
+    </xsl:element>
+  </xsl:template>
+  
   <xsl:template match="*">
     <xsl:element name="{name()}" namespace="{namespace-uri()}">
-      <xsl:copy-of select="./@*"/><xsl:apply-templates/></xsl:element>
+      <xsl:copy-of select="./@*"/><xsl:apply-templates/>
+    </xsl:element>
   </xsl:template>
 
 </xsl:stylesheet>

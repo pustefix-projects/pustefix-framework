@@ -44,7 +44,6 @@ public class CreateWebXmlTask extends MatchingTask {
 
     private File baseDir;
     private File webappsDir;
-    private File webappTemplate;
     private File styleSheet;
     private File commonConfig;
     
@@ -65,9 +64,6 @@ public class CreateWebXmlTask extends MatchingTask {
             File confDir = srcFile.getParentFile();
             String projectName = confDir.getParentFile().getName();
                 
-            File customTemplate = new File(confDir,"web.xml");
-            if(customTemplate.exists()) webappTemplate = customTemplate;
-                
             File destFile = new File(webappsDir, projectName+"/"+"WEB-INF/web.xml");
             
             long refModTime = destFile.lastModified();
@@ -75,7 +71,7 @@ public class CreateWebXmlTask extends MatchingTask {
             //TODO: Modification check doesn't honour creation/removal of
             //spring.xml or project specific web.xml template
             if(srcFile.lastModified()>refModTime || commonConfig.lastModified()>refModTime ||
-                   webappTemplate.lastModified()>refModTime || styleSheet.lastModified()>refModTime) {
+                   styleSheet.lastModified()>refModTime) {
          
                 String configFiles = srcFile.toURI().toString();
                 File springConfigFile = new File(confDir,"spring.xml");
@@ -84,7 +80,7 @@ public class CreateWebXmlTask extends MatchingTask {
                 TransformerFactory tf = new TransformerFactoryImpl();
                 try {
                     StreamSource xsl = new StreamSource(styleSheet);
-                    StreamSource xml = new StreamSource(webappTemplate);
+                    StreamSource xml = new StreamSource(srcFile);
                     StreamResult out = new StreamResult(destFile);
                     Transformer t = tf.newTransformer(xsl);
                     t.setParameter("projectname", projectName);
@@ -110,10 +106,6 @@ public class CreateWebXmlTask extends MatchingTask {
         
     public void setWebappsDir(File webappsDir) {
         this.webappsDir = webappsDir;
-    }
-    
-    public void setWebappTemplate(File webappTemplate) {
-        this.webappTemplate = webappTemplate;
     }
     
     public void setStyleSheet(File styleSheet) {

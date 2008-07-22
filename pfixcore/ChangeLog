@@ -1,3 +1,12 @@
+2008-07-22  Sebastian Marsching  <sebastian.marsching@1und1.de>
+
+	* src/org/pustefixframework/config/build/CreateWebXmlTask.java: 
+	* projects/core/build/create_webxml.xsl: 
+	* projects/core/conf/web.xml: 
+	* projects/sample1/conf/project.xml: 
+	* skel/build-skel.xml: 
+	Added support for custom deployment descriptor code in project.xml.
+
 2008-07-17  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
 	* src/org/pustefixframework/config/project/parser/project-config.xml: 

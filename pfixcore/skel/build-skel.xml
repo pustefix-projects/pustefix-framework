@@ -752,7 +752,6 @@ or delete the DOCTYPE definition -->
   		webappsdir="${dir.tomcat}/webapps"
   		includes="*/conf/project.xml"
   		commonconfig="${dir.projects}/common/conf/projects.xml"
-  	    webapptemplate="${dir.projects}/core/conf/web.xml"
   		stylesheet="${dir.projects}/core/build/create_webxml.xsl"
   	/>
   </target>
