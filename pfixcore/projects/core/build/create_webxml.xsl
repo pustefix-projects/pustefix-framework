@@ -62,7 +62,7 @@
       </xsl:when>
       <xsl:otherwise>
         <web-app>
-          <xsl:call-template name="create-servlet-definitions"/>/p:projects
+          <xsl:call-template name="create-servlet-definitions"/>
           <xsl:call-template name="create-servlet-mappings">
             <xsl:with-param name="tree" select="$tree"/>
           </xsl:call-template>
@@ -140,10 +140,10 @@
     <xsl:variable name="matches" select="p:when[ci:evaluateXPathExpression($customizationinfo,@test)]"/>
     <xsl:choose>
       <xsl:when test="count($matches)=0">
-        <xsl:apply-templates select="p:otherwise/node()"/>
+        <xsl:apply-templates select="p:otherwise/node()" mode="customization"/>
       </xsl:when>
       <xsl:otherwise>
-        <xsl:apply-templates select="$matches[1]/node()"/>
+        <xsl:apply-templates select="$matches[1]/node()" mode="customization"/>
       </xsl:otherwise>
     </xsl:choose>
   </xsl:template>

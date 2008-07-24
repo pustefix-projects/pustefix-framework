@@ -342,6 +342,14 @@ or delete the DOCTYPE definition -->
   	 loaderref="pfx-loader"
   	 description="Generate StatusCodeLib from statusmessages"
   	/>
+  	<taskdef
+  	 name="pfx-init-resource-util"
+  	 classname="org.pustefixframework.config.build.InitResourceUtilTask"
+  	 classpathref="cp.classpath"
+  	 loaderref="pfx-loader"
+  	 description="Initialize ResourceUtil use by other tasks"
+  	/>
+  	<pfx-init-resource-util docroot="${dir.docroot}"/>
   </target>
   
   <target name="ant-tasks-stage2" depends="init-dirs, tomcat.dir.opt" description="declares the ant task used for generating java source code. This target needs to be run prior to the actual compile.">
@@ -712,33 +720,7 @@ or delete the DOCTYPE definition -->
     </pfx-xslt>
   </target>
 
-  <target name="projects_xml" depends="ant-tasks, init" description="creates projects.xml out of projects.xml.in and multiple project.xml files" >
-    <fileset id="id.fileset.projectxmlin" dir="${dir.projects}" includes="**/project.xml.in"/>
-    <pathconvert property="projectxmlins" refid="id.fileset.projectxmlin" pathsep="|">
-      <map from="${dir.projects}/" to=""/>
-    </pathconvert>
-    <echo level="verbose" message="**/project.xml.in matches ${projectxmlins}"/>
-    <dependset>
-      <srcfileset refid="id.fileset.projectxmlin"/>
-      <targetfileset dir="${dir.projects}/servletconf" includes="projects.xml"/>
-    </dependset>
-    <pfx-xsltcus
-     style="${dir.projects}/core/build/create_projects.xsl"
-     docroot="${dir.projects}"
-     srcdir="${dir.projects}"
-     destdir="${dir.projects}"
-     includes="servletconf/projects.xml.in"
-     >
-      <param name="docroot" expression="${dir.docroot}"/>
-      <param name="files"   expression="${projectxmlins}"/>
-      <param name="fqdn"    expression="${fqdn}"/>
-      <param name="uid"     expression="${uid}"/>
-      <param name="machine" expression="${machine}"/>
-      <param name="mode"    expression="${makemode}"/>
-    </pfx-xsltcus>
-  </target>
-
-  <target name="web_xml" depends="ant-tasks, projects_xml, defaultwebxml" description="creates servletconf/tomcat/webapps/**/WEB-INF/web.xml">
+  <target name="web_xml" depends="ant-tasks, defaultwebxml" description="creates servletconf/tomcat/webapps/**/WEB-INF/web.xml">
   	<pfx-webxml 
   		basedir="${dir.projects}" 
   		webappsdir="${dir.tomcat}/webapps"
@@ -791,7 +773,7 @@ or delete the DOCTYPE definition -->
     </pfx-xsltcus>
   </target>
 
-  <target name="apache_conf" depends="ant-tasks, projects_xml" description="creates servletconf/tomcat/apache.conf from servletconf/projects.xml with core/build/create_apacheconf.xsl">
+  <target name="apache_conf" depends="ant-tasks" description="creates servletconf/tomcat/apache.conf from servletconf/projects.xml with core/build/create_apacheconf.xsl">
     <pfx-server-config
       basedir="${dir.projects}"
       outfile="${dir.tomcat}/apache.conf"
@@ -803,7 +785,7 @@ or delete the DOCTYPE definition -->
     </pfx-server-config>
   </target>
 
-  <target name="jk_conf" depends="ant-tasks, projects_xml" description="creates servletconf/tomcat/jk.conf from servletconf/projects.xml with core/build/create_jkconf.xsl">
+  <target name="jk_conf" depends="ant-tasks" description="creates servletconf/tomcat/jk.conf from servletconf/projects.xml with core/build/create_jkconf.xsl">
     <pfx-xslt
      infile="${dir.projects}/common/conf/projects.xml"
      outfile="${dir.tomcat}/jk.conf"
@@ -817,7 +799,7 @@ or delete the DOCTYPE definition -->
     </pfx-xslt>
   </target>
   
-  <target name="ajp_conf" depends="ant-tasks, projects_xml" description="creates servletconf/tomcat/ajp.conf from servletconf/projects.xml with core/build/create_ajpconf.xsl">
+  <target name="ajp_conf" depends="ant-tasks" description="creates servletconf/tomcat/ajp.conf from servletconf/projects.xml with core/build/create_ajpconf.xsl">
     <pfx-xslt
      infile="${dir.projects}/common/conf/projects.xml"
      outfile="${dir.tomcat}/ajp.conf"
@@ -831,7 +813,7 @@ or delete the DOCTYPE definition -->
     </pfx-xslt>
   </target>
   
-  <target name="workers_prop" depends="ant-tasks, projects_xml" description="creates servletconf/tomcat/workers.prop from servletconf/projects.xml with core/build/create_workersprop.xsl">
+  <target name="workers_prop" depends="ant-tasks" description="creates servletconf/tomcat/workers.prop from servletconf/projects.xml with core/build/create_workersprop.xsl">
     <pfx-xslt
      infile="${dir.projects}/common/conf/projects.xml"
      outfile="${dir.projects}/servletconf/tomcat/workers.prop"
@@ -846,7 +828,7 @@ or delete the DOCTYPE definition -->
     </pfx-xslt>
   </target>
 
-  <target name="server_xml" depends="ant-tasks, projects_xml" description="creates servletconf/tomcat/conf/server.xml from servletconf/projects.xml with core/build/create_serverxml.xsl">
+  <target name="server_xml" depends="ant-tasks" description="creates servletconf/tomcat/conf/server.xml from servletconf/projects.xml with core/build/create_serverxml.xsl">
     <pfx-server-config
       basedir="${dir.projects}"
       outfile="${dir.tomcat}/conf/server.xml"
@@ -968,6 +950,8 @@ or delete the DOCTYPE definition -->
   </target>
 
   <target name="webservice" depends="ant-tasks-webservice, webservice-proxy">
+    <!-- FIXME: Adapt webservice tasks to new project.xml format -->
+    <!--
     <pfx-webservice
       tmpdir="${dir.projects}/.webservice"
       prjdir="${dir.projects}"
@@ -978,15 +962,19 @@ or delete the DOCTYPE definition -->
       standalone="${standalone.tomcat}"
       portbase="${portbase.tomcat}"
     />
+    -->
   </target>
 
   <target name="webservice-proxygen" depends="ant-tasks-webservice">
+    <!-- FIXME: Adapt webservice tasks to new project.xml format -->
+    <!--
     <pfx-wsproxygen
       prjfile="${file.projects_xml}"
       prjdir="${dir.projects}"
       gensrcdir="${dir.gensrc}"
       builddir="${dir.build}"
     />
+    -->
   </target>
 
   <target name="webservice-proxycompile" if="webservice.proxysources">
@@ -1030,6 +1018,7 @@ or delete the DOCTYPE definition -->
   </target>    
 
   <target name="webapp.dir" depends="webapp.init, webservice, generate">
+    <!-- FIXME: Fix webapp generation -->
     <delete dir="${webapp.dir}"/>
     <mkdir dir="${webapp.dir}"/> 
     <mkdir dir="${webapp.pfixroot}"/>
@@ -1130,6 +1119,7 @@ or delete the DOCTYPE definition -->
   </target>
 
   <target name="webapp.tomcat" depends="webapp.init">
+    <!-- FIXME: Fix webapp generation for new project.xml -->
     <antcall target="tomcat.dir">
       <param name="dir.tomcat" value="${webapp.tomcat.dir}"/>
     </antcall> 

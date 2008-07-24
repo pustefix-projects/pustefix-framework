@@ -1,5 +1,49 @@
 2008-07-24  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
+	* projects/servletconf/projects.xml: 
+	* projects/sample1/conf/project.xml.in: 
+	* projects/samplebank/conf/project.xml.in: 
+	* projects/simpleform/conf/project.xml.in: 
+	* projects/simplelink/conf/project.xml.in: 
+	* projects/simplepage/conf/project.xml.in: 
+	* projects/testsuite/conf/project.xml.in: 
+	Removed old files.
+	
+	* projects/samplebank/conf/project.xml: 
+	* projects/simpleform/conf/project.xml: 
+	* projects/simplelink/conf/project.xml: 
+	* projects/simplepage/conf/project.xml: 
+	* projects/testsuite/conf/project.xml: 
+	New configuration files.
+	
+	* projects/simplepage/conf/main.conf.xml: 
+	* projects/simplepage/conf/test1.conf.xml: 
+	* projects/simplepage/conf/depend.xml: 
+	Merged all pages into one servlet.
+	
+	* src/org/pustefixframework/config/build/CreateServerConfigurationTask.java: 
+	* src/org/pustefixframework/config/build/InitResourceUtilTask.java: 
+	* src/org/pustefixframework/config/customization/PropertiesBasedCustomizationInfo.java: 
+	* projects/core/build/create_ajpconf.xsl: 
+	* projects/core/build/create_apacheconf.xsl: 
+	* projects/core/build/create_jkconf.xsl: 
+	* projects/core/build/create_serverxml.xsl: 
+	* projects/core/build/create_webxml.xsl: 
+	* projects/core/build/create_workersprop.xsl: 
+	Fixed some bugs.
+	
+	* res/org/pustefixframework/config/global/parser/global-projects-config.xml: 
+	* src/org/pustefixframework/config/global/parser/GlobalConfigurationReader.java: 
+	* src/org/pustefixframework/config/global/parser/StaticPathParsingHandler.java: 
+	* src/org/pustefixframework/config/global/GlobalConfigurationHolder.java: 
+	* src/org/pustefixframework/config/global/StaticPathInfo.java: 
+	* src/org/pustefixframework/config/project/parser/spring/DocrootRequestHandlerParsingHandler.java: 
+	* src/org/pustefixframework/container/spring/beans/PustefixProjectBeanDefinitionReader.java: 
+	* src/org/pustefixframework/container/spring/beans/PustefixWebApplicationContext.java: 
+	Added support for factory initialization and global static paths.
+
+2008-07-24  Sebastian Marsching  <sebastian.marsching@1und1.de>
+
 	* src/de/schlund/pfixcore/util/XsltTransformer.java: 
 	* src/org/pustefixframework/config/build/CreateServerConfigurationTask.java: 
 	* src/org/pustefixframework/http/DocrootRequestHandler.java: 

@@ -35,10 +35,10 @@
     <xsl:variable name="matches" select="p:when[ci:evaluateXPathExpression($customizationinfo,@test)]"/>
     <xsl:choose>
       <xsl:when test="count($matches)=0">
-        <xsl:apply-templates select="p:otherwise/node()"/>
+        <xsl:apply-templates select="p:otherwise/node()" mode="customization"/>
       </xsl:when>
       <xsl:otherwise>
-        <xsl:apply-templates select="$matches[1]/node()"/>
+        <xsl:apply-templates select="$matches[1]/node()" mode="customization"/>
       </xsl:otherwise>
     </xsl:choose>
   </xsl:template>

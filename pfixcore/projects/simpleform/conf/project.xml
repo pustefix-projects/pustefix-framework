@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project-config xmlns="http://www.pustefix-framework.org/2008/namespace/project-config">
+  
+  <project>
+    <name>simpleform</name>
+    <description>Demo 3</description>
+  </project>
+  
+  <editor>
+    <enabled>true</enabled> <!-- Do we really need this? -->
+    <location>http://cms.${fqdn}/</location>
+  </editor>
+  
+  <xml-generator>
+    <config-file>pfixroot:/simpleform/conf/depend.xml</config-file>
+  </xml-generator>
+  
+  <http-server>
+    
+    <http-port>
+      <address>${fqdn}</address>
+    </http-port>
+    
+    <server-name>simpleform.${fqdn}</server-name>
+    <server-alias>simpleform.${machine}</server-alias>
+    
+  </http-server>
+  
+  <application>
+    
+    <docroot-path>pfixroot:/simpleform/htdocs</docroot-path>
+    <default-path>/xml/config</default-path>
+    
+    <context-xml-service>
+      <path>/xml/config</path>
+      <config-file>pfixroot:/simpleform/conf/config.conf.xml</config-file>
+    </context-xml-service>
+    
+    <static>
+      <!-- <path>simpleform/img</path> -->
+    </static>
+    
+  </application>
+  
+</project-config>

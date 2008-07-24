@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project-config xmlns="http://www.pustefix-framework.org/2008/namespace/project-config">
+  
+  <project>
+    <name>editor2</name>
+    <description>Pustefix CMS</description>
+  </project>
+  
+  <editor>
+    <enabled>false</enabled> <!-- Do we really need this? -->
+    <location>http://cms.${fqdn}/</location>
+  </editor>
+  
+  <xml-generator>
+    <config-file>pfixroot:/core/editor2/conf/depend.xml</config-file>
+  </xml-generator>
+  
+  <http-server>
+    
+    <choose>
+      <when test="pfx:isSet('__antprop_pustefix.editor.address')">
+        <http-port>
+          <address>${__antprop_pustefix.editor.address}</address>
+        </http-port>
+      </when>
+      <otherwise>
+        <http-port>
+          <address>${fqdn}</address>
+        </http-port>
+      </otherwise>
+    </choose>
+    
+    <choose>
+      <when test="pfx:isSet('__antprop_pustefix.editor.servername')">
+        <server-name>${__antprop_pustefix.editor.servername}</server-name>
+      </when>
+      <otherwise>
+        <server-name>cms.${fqdn}</server-name>
+      </otherwise>
+    </choose>
+    
+    <choose>
+      <when test="pfx:isSet('__antprop_pustefix.editor.serveralias')">
+        <server-alias>${__antprop_pustefix.editor.serveralias}</server-alias>
+      </when>
+      <otherwise>
+        <server-alias>cms.${machine}</server-alias>
+      </otherwise>
+    </choose>
+    
+  </http-server>
+  
+  <application>
+    
+    <docroot-path>pfixroot:/core/editor2/docroot</docroot-path>
+    <default-path>/xml/edit</default-path>
+    
+    <context-xml-service>
+      <path>/xml/edit</path>
+      <config-file>pfixroot:/sample1/conf/edit.conf.xml</config-file>
+    </context-xml-service>
+    
+    <static>
+      <path>core/editor2/img</path>
+    </static>
+    
+  </application>
+  
+</project-config>

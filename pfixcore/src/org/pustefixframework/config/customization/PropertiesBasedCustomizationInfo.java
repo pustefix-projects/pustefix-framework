@@ -18,6 +18,8 @@
 
 package org.pustefixframework.config.customization;
 
+import java.util.HashMap;
+import java.util.List;
 import java.util.Properties;
 
 import javax.xml.namespace.QName;
@@ -27,10 +29,14 @@ import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
+import javax.xml.xpath.XPathFunction;
+import javax.xml.xpath.XPathFunctionException;
+import javax.xml.xpath.XPathFunctionResolver;
 import javax.xml.xpath.XPathVariableResolver;
 
 import org.w3c.dom.Document;
-import org.xml.sax.InputSource;
+
+import com.marsching.flexiparse.util.MapBasedNamespaceContext;
 
 
 /**
@@ -41,10 +47,29 @@ import org.xml.sax.InputSource;
  */
 public class PropertiesBasedCustomizationInfo implements CustomizationInfo {
     
-    private class MyResolver implements XPathVariableResolver {
+    private class MyVariableResolver implements XPathVariableResolver {
 
         public Object resolveVariable(QName variableName) {
             return properties.getProperty(variableName.getLocalPart());
+        }
+        
+    }
+    
+    private class MyFunctionResolver implements XPathFunctionResolver {
+
+        public XPathFunction resolveFunction(QName functionName, int arity) {
+            if (functionName.getNamespaceURI().equals("http://www.pustefix-framework.org/2008/namespace/xpath-functions") && functionName.getLocalPart().equalsIgnoreCase("isSet") && arity == 1) {
+                return new XPathFunction() {
+
+                    public Object evaluate(List args) throws XPathFunctionException {
+                        String varName = (String) args.get(0);
+                        return properties.getProperty(varName);
+                    }
+                    
+                };
+            } else {
+                return null;
+            }
         }
         
     }
@@ -62,8 +87,13 @@ public class PropertiesBasedCustomizationInfo implements CustomizationInfo {
     public PropertiesBasedCustomizationInfo(Properties properties) {
         this.properties = properties;
         XPathFactory xpfac = XPathFactory.newInstance();
-        xpfac.setXPathVariableResolver(new MyResolver());
+        xpfac.setXPathVariableResolver(new MyVariableResolver());
+        xpfac.setXPathFunctionResolver(new MyFunctionResolver());
         xpath = xpfac.newXPath();
+        HashMap<String, String> namespacePrefixes = new HashMap<String, String>();
+        namespacePrefixes.put("pfx", "http://www.pustefix-framework.org/2008/namespace/xpath-functions");
+        xpath.setNamespaceContext(new MapBasedNamespaceContext(namespacePrefixes));
+ 
         try {
             dummyDoc = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
         } catch (ParserConfigurationException e) {

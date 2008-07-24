@@ -137,7 +137,8 @@
       <Host xmlValidation="false" unpackWARs="false" autoDeploy="false">
         <xsl:attribute name="debug"><xsl:value-of select="$debug"/></xsl:attribute>
         <xsl:attribute name="name">
-          <xsl:apply-templates select="p:http-server/server-name/node()"/>
+          <!-- <xsl:apply-templates select="p:http-server/server-name/node()"/> -->
+          <xsl:value-of select="p:http-server/p:server-name/text()"/>
         </xsl:attribute>
         <xsl:if test="p:http-server/p:tomcat/p:enable-extra-webapps/text() = 'true'">
           <xsl:attribute name="appBase">webapps_<xsl:value-of select="p:project/p:name/text()"/></xsl:attribute>
@@ -215,6 +216,8 @@
       <xsl:if test="$staticDocBase and not($staticDocBase = '')">
         <Parameter name="staticDocBase" value="{$staticDocBase}"/>
       </xsl:if>
+      <!-- Path to Pustefix docroot -->
+      <Parameter name="pustefix.docroot" value="{$docroot}"/>
     </Context>
   </xsl:template>
   
@@ -238,10 +241,10 @@
     <xsl:variable name="matches" select="p:when[ci:evaluateXPathExpression($customizationinfo,@test)]"/>
     <xsl:choose>
       <xsl:when test="count($matches)=0">
-        <xsl:apply-templates select="p:otherwise/node()"/>
+        <xsl:apply-templates select="p:otherwise/node()" mode="customization"/>
       </xsl:when>
       <xsl:otherwise>
-        <xsl:apply-templates select="$matches[1]/node()"/>
+        <xsl:apply-templates select="$matches[1]/node()" mode="customization"/>
       </xsl:otherwise>
     </xsl:choose>
   </xsl:template>

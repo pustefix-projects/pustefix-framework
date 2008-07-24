@@ -8,20 +8,20 @@
   
   <navigation>
     <page name="Start" handler="/xml/main"/>
-    <page name="Test1" handler="/xml/test1"/>
-    <page name="Test2" handler="/xml/test1"/>
-    <page name="Test2Failed" handler="/xml/test1"/>
-    <page name="Test2Succeeded" handler="/xml/test1"/>
-    <page name="Test3" handler="/xml/test1"/>
-    <page name="Test3SetVariant" handler="/xml/test1"/>
-    <page name="Test3Default" handler="/xml/test1"/>
-    <page name="Test3VariantA" handler="/xml/test1"/>
-    <page name="Test4" handler="/xml/test1"/>
-    <page name="Test4Failed" handler="/xml/test1"/>
-    <page name="Test4Succeeded" handler="/xml/test1"/>
-    <page name="Test5" handler="/xml/test1"/>
-    <page name="Test5Form" handler="/xml/test1"/>
-    <page name="Test5Failed" handler="/xml/test1"/>
+    <page name="Test1" handler="/xml/main"/>
+    <page name="Test2" handler="/xml/main"/>
+    <page name="Test2Failed" handler="/xml/main"/>
+    <page name="Test2Succeeded" handler="/xml/main"/>
+    <page name="Test3" handler="/xml/main"/>
+    <page name="Test3SetVariant" handler="/xml/main"/>
+    <page name="Test3Default" handler="/xml/main"/>
+    <page name="Test3VariantA" handler="/xml/main"/>
+    <page name="Test4" handler="/xml/main"/>
+    <page name="Test4Failed" handler="/xml/main"/>
+    <page name="Test4Succeeded" handler="/xml/main"/>
+    <page name="Test5" handler="/xml/main"/>
+    <page name="Test5Form" handler="/xml/main"/>
+    <page name="Test5Failed" handler="/xml/main"/>
   </navigation>
   
   <standardmaster/>

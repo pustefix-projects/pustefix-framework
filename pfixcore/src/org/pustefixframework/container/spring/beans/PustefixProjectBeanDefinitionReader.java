@@ -24,6 +24,8 @@ import java.util.Properties;
 
 import org.pustefixframework.config.customization.CustomizationInfo;
 import org.pustefixframework.config.customization.PropertiesBasedCustomizationInfo;
+import org.pustefixframework.config.global.GlobalConfigurationHolder;
+import org.pustefixframework.config.global.parser.GlobalConfigurationReader;
 import org.springframework.beans.factory.BeanDefinitionStoreException;
 import org.springframework.beans.factory.config.BeanDefinitionHolder;
 import org.springframework.beans.factory.support.AbstractBeanDefinitionReader;
@@ -50,8 +52,9 @@ public class PustefixProjectBeanDefinitionReader extends AbstractBeanDefinitionR
         Properties buildTimeProperties = BuildTimeProperties.getProperties();
         CustomizationInfo info = new PropertiesBasedCustomizationInfo(buildTimeProperties);
         try {
+            GlobalConfigurationHolder globalConfig = (new GlobalConfigurationReader()).readGlobalConfiguration();
             Parser projectConfigParser = new ClasspathConfiguredParser("org/pustefixframework/config/project/parser/project-config.xml");
-            projectConfigTree = projectConfigParser.parse(resource.getInputStream(), info);
+            projectConfigTree = projectConfigParser.parse(resource.getInputStream(), info, globalConfig);
         } catch (ParserException e) {
             throw new BeanDefinitionStoreException("Error while parsing " + resource + ": " + e.getMessage(), e);
         } catch (IOException e) {

@@ -1,5 +1,19 @@
 /*
- * Place license here
+ * This file is part of PFIXCORE.
+ *
+ * PFIXCORE is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * PFIXCORE is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with PFIXCORE; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
 package org.pustefixframework.config.project.parser.spring;
@@ -7,6 +21,8 @@ package org.pustefixframework.config.project.parser.spring;
 import java.util.ArrayList;
 
 import org.pustefixframework.config.Constants;
+import org.pustefixframework.config.global.GlobalConfigurationHolder;
+import org.pustefixframework.config.global.StaticPathInfo;
 import org.pustefixframework.http.DocrootRequestHandler;
 import org.springframework.beans.factory.config.BeanDefinitionHolder;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
@@ -37,6 +53,15 @@ public class DocrootRequestHandlerParsingHandler implements ParsingHandler {
         String basePath = basePathElement.getTextContent();
         
         ArrayList<String> paths = new ArrayList<String>();
+        
+        GlobalConfigurationHolder gch = context.getObjectTreeElement().getRoot().getObjectsOfTypeFromSubTree(GlobalConfigurationHolder.class).iterator().next();
+        for (StaticPathInfo pathInfo : gch.getConfigurationRoot().getObjectsOfTypeFromSubTree(StaticPathInfo.class)) {
+            String path = pathInfo.getPath();
+            if (!paths.contains(path)) {
+                paths.add(path);
+            }
+        }
+        
         NodeList staticList = applicationElement.getElementsByTagNameNS(Constants.NS_PROJECT, "static");
         for (int i = 0; i < staticList.getLength(); i++) {
             Element staticElement = (Element) staticList.item(i);
@@ -44,7 +69,9 @@ public class DocrootRequestHandlerParsingHandler implements ParsingHandler {
             for (int j = 0; j < pathList.getLength(); j++) {
                 Element pathElement = (Element) pathList.item(j);
                 String path = pathElement.getTextContent();
-                paths.add(path);
+                if (!paths.contains(path)) {
+                    paths.add(path);
+                }
             }
         }
         

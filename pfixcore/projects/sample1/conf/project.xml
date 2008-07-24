@@ -8,7 +8,7 @@
   
   <editor>
     <enabled>true</enabled> <!-- Do we really need this? -->
-    <location>http://cmscore.${fqdn}/</location>
+    <location>http://cms.${fqdn}/</location>
   </editor>
   
   <xml-generator>
@@ -28,7 +28,7 @@
     </https-port>
     
     <server-name>sample1.${fqdn}</server-name>
-    <server-alias>sample1.${fqdn}</server-alias>
+    <server-alias>sample1.${machine}</server-alias>
     
     <apache>
       <literal>
@@ -59,7 +59,6 @@
     
     <static>
       <path>sample1/img</path>
-      <path>core/img</path> <!-- FIXME: Get this from central configuration -->
     </static>
     
     <!--  Custom Deplyment descriptor code
