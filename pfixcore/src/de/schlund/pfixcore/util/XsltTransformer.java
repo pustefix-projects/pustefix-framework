@@ -36,12 +36,15 @@ import javax.xml.transform.stream.StreamSource;
 
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
+import org.pustefixframework.config.customization.PropertiesBasedCustomizationInfo;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
 
 import com.icl.saxon.TransformerFactoryImpl;
 import com.sun.org.apache.xerces.internal.parsers.SAXParser;
+
+import de.schlund.pfixxml.config.BuildTimeProperties;
 
 /**
  * @author adam
@@ -250,6 +253,8 @@ public class XsltTransformer {
                 XsltParam param = iter.next();
                 transformer.setParameter(param.getName(), param.getExpression());
             }
+            // FIXME: Ugly hack for customization support
+            transformer.setParameter("__customization_info", new PropertiesBasedCustomizationInfo(BuildTimeProperties.getProperties()));
         }
     }
 

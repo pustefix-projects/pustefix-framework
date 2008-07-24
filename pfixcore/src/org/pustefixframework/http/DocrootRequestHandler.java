@@ -172,6 +172,6 @@ public class DocrootRequestHandler implements UriProvidingHttpRequestHandler, Se
     }
 
     public String[] getRegisteredURIs() {
-        return new String[] {"/**"};
+        return new String[] {"/**", "/xml/**"};
     }
 }

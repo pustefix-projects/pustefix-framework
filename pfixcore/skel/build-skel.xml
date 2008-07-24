@@ -367,6 +367,13 @@ or delete the DOCTYPE definition -->
   	 description="Creates WEB-INF/web.xml config files for each project"
   	 />
     <taskdef
+      	 name="pfx-server-config"
+      	 classname="org.pustefixframework.config.build.CreateServerConfigurationTask"
+      	 classpathref="cp.classpath"
+      	 loaderref="pfx-loader"
+      	 description="Creates central server configuration file"
+      	 />
+    <taskdef
      name="pfx-xsltcus"
      classname="de.schlund.pfixcore.util.XsltCustomizeXmlTask"
      classpathref="cp.classpath"
@@ -732,25 +739,10 @@ or delete the DOCTYPE definition -->
   </target>
 
   <target name="web_xml" depends="ant-tasks, projects_xml, defaultwebxml" description="creates servletconf/tomcat/webapps/**/WEB-INF/web.xml">
-    <!-- old target name in Makefile was "zoneprops" -->
-    <pfx-webxml-deprecated
-      style="${dir.projects}/core/build/create_webxml_deprecated.xsl"
-      srcdir="${dir.projects}"
-      destdir="${dir.tomcat}"
-      extension=".xml"
-      projects="servletconf/projects.xml"
-      corewebxml="core/conf/web.xml"
-     >
-      <param name="docroot" expression="${dir.docroot}"/>
-      <param name="fqdn"    expression="${fqdn}"/>
-      <param name="uid"     expression="${uid}"/>
-      <param name="machine" expression="${machine}"/>
-      <param name="mode"    expression="${makemode}"/>
-    </pfx-webxml-deprecated>
   	<pfx-webxml 
   		basedir="${dir.projects}" 
   		webappsdir="${dir.tomcat}/webapps"
-  		includes="*/conf/project.xml"
+  		includes="**/conf/project.xml"
   		commonconfig="${dir.projects}/common/conf/projects.xml"
   		stylesheet="${dir.projects}/core/build/create_webxml.xsl"
   	/>
@@ -800,22 +792,20 @@ or delete the DOCTYPE definition -->
   </target>
 
   <target name="apache_conf" depends="ant-tasks, projects_xml" description="creates servletconf/tomcat/apache.conf from servletconf/projects.xml with core/build/create_apacheconf.xsl">
-    <pfx-xslt
-     infile="${dir.projects}/servletconf/projects.xml"
-     outfile="${dir.tomcat}/apache.conf"
-     style="${dir.projects}/core/build/create_apacheconf.xsl"
-     >
-      <param name="docroot"   expression="${dir.docroot}"/>
-      <param name="fqdn"      expression="${fqdn}"/>
-      <param name="uid"       expression="${uid}"/>
-      <param name="machine"   expression="${machine}"/>
-      <param name="mode"      expression="${makemode}"/>
-    </pfx-xslt>
+    <pfx-server-config
+      basedir="${dir.projects}"
+      outfile="${dir.tomcat}/apache.conf"
+      includes="**/conf/project.xml"
+      commonconfig="${dir.projects}/common/conf/projects.xml"
+      docroot="${dir.docroot}"
+      stylesheet="${dir.projects}/core/build/create_apacheconf.xsl"
+    >
+    </pfx-server-config>
   </target>
 
   <target name="jk_conf" depends="ant-tasks, projects_xml" description="creates servletconf/tomcat/jk.conf from servletconf/projects.xml with core/build/create_jkconf.xsl">
     <pfx-xslt
-     infile="${dir.projects}/servletconf/projects.xml"
+     infile="${dir.projects}/common/conf/projects.xml"
      outfile="${dir.tomcat}/jk.conf"
      style="${dir.projects}/core/build/create_jkconf.xsl"
      >
@@ -829,7 +819,7 @@ or delete the DOCTYPE definition -->
   
   <target name="ajp_conf" depends="ant-tasks, projects_xml" description="creates servletconf/tomcat/ajp.conf from servletconf/projects.xml with core/build/create_ajpconf.xsl">
     <pfx-xslt
-     infile="${dir.projects}/servletconf/projects.xml"
+     infile="${dir.projects}/common/conf/projects.xml"
      outfile="${dir.tomcat}/ajp.conf"
      style="${dir.projects}/core/build/create_ajpconf.xsl"
      >
@@ -843,7 +833,7 @@ or delete the DOCTYPE definition -->
   
   <target name="workers_prop" depends="ant-tasks, projects_xml" description="creates servletconf/tomcat/workers.prop from servletconf/projects.xml with core/build/create_workersprop.xsl">
     <pfx-xslt
-     infile="${dir.projects}/servletconf/projects.xml"
+     infile="${dir.projects}/common/conf/projects.xml"
      outfile="${dir.projects}/servletconf/tomcat/workers.prop"
      style="${dir.projects}/core/build/create_workersprop.xsl"
      >
@@ -857,20 +847,18 @@ or delete the DOCTYPE definition -->
   </target>
 
   <target name="server_xml" depends="ant-tasks, projects_xml" description="creates servletconf/tomcat/conf/server.xml from servletconf/projects.xml with core/build/create_serverxml.xsl">
-    <pfx-xslt
-     infile="${dir.projects}/servletconf/projects.xml"
-     outfile="${dir.projects}/servletconf/tomcat/conf/server.xml"
-     style="${dir.projects}/core/build/create_serverxml.xsl"
-     >
-      <param name="docroot"   expression="${dir.docroot}"/>
-      <param name="fqdn"      expression="${fqdn}"/>
-      <param name="uid"       expression="${uid}"/>
-      <param name="machine"   expression="${machine}"/>
-      <param name="mode"      expression="${makemode}"/>
+    <pfx-server-config
+      basedir="${dir.projects}"
+      outfile="${dir.tomcat}/conf/server.xml"
+      includes="**/conf/project.xml"
+      commonconfig="${dir.projects}/common/conf/projects.xml"
+      docroot="${dir.docroot}"
+      stylesheet="${dir.projects}/core/build/create_serverxml.xsl"
+    >
       <param name="trusted"   expression="${trusted.tomcat}"/>
       <param name="standalone" expression="${standalone.tomcat}"/>
       <param name="portbase"   expression="${portbase.tomcat}"/>
-    </pfx-xslt>
+    </pfx-server-config>
   </target>
 
   <target name="tomcat.dir.opt">

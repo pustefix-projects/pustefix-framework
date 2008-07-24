@@ -1,3 +1,20 @@
+2008-07-24  Sebastian Marsching  <sebastian.marsching@1und1.de>
+
+	* src/de/schlund/pfixcore/util/XsltTransformer.java: 
+	* src/org/pustefixframework/config/build/CreateServerConfigurationTask.java: 
+	* src/org/pustefixframework/http/DocrootRequestHandler.java: 
+	* projects/common/conf/projects.xml: 
+	* projects/core/build/create_ajpconf.xsl: 
+	* projects/core/build/create_apacheconf.xsl: 
+	* projects/core/build/create_jkconf.xsl: 
+	* projects/core/build/create_serverxml.xsl: 
+	* projects/core/build/create_webxml.xsl: 
+	* projects/core/build/create_workersprop.xsl: 
+	* projects/sample1/conf/project.xml: 
+	* skel/build-skel.xml: 
+	* build.xml: 
+	Build support for new project.xml format.
+
 2008-07-22  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
 	* src/org/pustefixframework/config/build/CreateWebXmlTask.java: 

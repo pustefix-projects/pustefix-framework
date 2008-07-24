@@ -1,29 +1,42 @@
 <?xml version="1.0" encoding="iso-8859-1"?>
-<xsl:stylesheet version="1.0"
+<xsl:stylesheet version="1.1"
                 xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+                xmlns:ci="java:org.pustefixframework.config.customization.PropertiesBasedCustomizationInfo"
+                xmlns:p="http://www.pustefix-framework.org/2008/namespace/project-config"
                 xmlns:ext="xalan://de.schlund.pfixcore.util.XsltTransformer"
                 >
 
   <xsl:param name="standalone">true</xsl:param>
   <xsl:param name="portbase"/>
   <xsl:param name="trusted"/>
+  <xsl:param name="commonprojectsfile"/>
+  <xsl:param name="customizationinfo"/>
   
   <xsl:include href="create_lib.xsl"/>
   <xsl:output method="xml" encoding="ISO-8859-1" indent="yes"/>
   
+  <xsl:variable name="common-temp" select="document(concat('file://', $commonprojectsfile))" />
+  <xsl:variable name="common">
+    <xsl:apply-templates select="$common-temp" mode="customization"/>
+  </xsl:variable>
+  
+  <xsl:variable name="tree">
+    <xsl:apply-templates mode="customization" select="/"/>
+  </xsl:variable>
+  
   <xsl:variable name="debug">
-    <xsl:apply-templates select="/projects/common/tomcat/debug/node()"/>
+    <xsl:apply-templates select="$common/p:global-config/p:http-server/p:tomcat/p:debug/node()"/>
   </xsl:variable>
 
-  <xsl:template match="projects">
+  <xsl:template match="/">
     <xsl:variable name="adminport">
-      <xsl:apply-templates select="/projects/common/tomcat/adminport/node()"/>
+      <xsl:apply-templates select="$common/p:global-config/p:http-server/p:tomcat/p:adminport/node()"/>
     </xsl:variable>
     <xsl:variable name="tomcat_defaulthost">
-      <xsl:apply-templates select="/projects/common/tomcat/defaulthost/node()"/>
+      <xsl:apply-templates select="$common/p:global-config/p:http-server/p:tomcat/p:defaulthost/node()"/>
     </xsl:variable>
     <xsl:variable name="tomcat_jvmroute">
-      <xsl:apply-templates select="/projects/common/tomcat/jvmroute/node()"/>
+      <xsl:apply-templates select="$common/p:global-config/p:http-server/p:tomcat/p:jvmroute/node()"/>
     </xsl:variable>
     <Server shutdown="SHUTDOWN">
       <xsl:attribute name="port">
@@ -61,7 +74,7 @@
             <xsl:value-of select="normalize-space($tomcat_jvmroute)"/>
           </xsl:attribute>
           <!-- TODO Logger className="org.apache.catalina.logger.FileLogger" prefix="catalina_log." suffix=".txt" timestamp="true"/ -->
-          <xsl:apply-templates select="/projects/project"/>
+          <xsl:apply-templates select="$tree/projects/p:project-config"/>
         </Engine>
       </Service>
     </Server>
@@ -117,21 +130,20 @@
     </xsl:if>
   </xsl:template>
 
-  <xsl:template match="project">
-    <xsl:variable name="active">
-      <xsl:apply-templates select="active/node()"/>
-    </xsl:variable>
+  <xsl:template match="p:project-config">
+    <!-- TODO: Reintroduce active mechanism? -->
+    <xsl:variable name="active" select="'true'"/>
     <xsl:if test="normalize-space($active) = 'true'">
       <Host xmlValidation="false" unpackWARs="false" autoDeploy="false">
         <xsl:attribute name="debug"><xsl:value-of select="$debug"/></xsl:attribute>
         <xsl:attribute name="name">
-          <xsl:apply-templates select="servername/node()"/>
+          <xsl:apply-templates select="p:http-server/server-name/node()"/>
         </xsl:attribute>
-        <xsl:if test="webapps[@hostbased='true']">
-          <xsl:attribute name="appBase">webapps_<xsl:value-of select="@name"/></xsl:attribute>
+        <xsl:if test="p:http-server/p:tomcat/p:enable-extra-webapps/text() = 'true'">
+          <xsl:attribute name="appBase">webapps_<xsl:value-of select="p:project/p:name/text()"/></xsl:attribute>
         </xsl:if>
         <xsl:call-template name="create_tomcat_aliases">
-          <xsl:with-param name="all_aliases"><xsl:apply-templates select="serveralias/node()"/></xsl:with-param>
+          <xsl:with-param name="all_aliases"><xsl:apply-templates select="p:http-server/p:server-alias/node()"/></xsl:with-param>
         </xsl:call-template>
 
         <Valve className="org.apache.catalina.valves.AccessLogValve"
@@ -142,7 +154,7 @@
         
         <xsl:call-template name="create_context_list">
           <xsl:with-param name="defpath"></xsl:with-param>
-          <xsl:with-param name="hostbased"><xsl:value-of select="webapps/@hostbased"/></xsl:with-param>
+          <xsl:with-param name="hostbased"><xsl:value-of select="p:http-server/p:tomcat/p:enable-extra-webapps/text()"/></xsl:with-param>
         </xsl:call-template>
       </Host>
     </xsl:if>
@@ -154,11 +166,24 @@
     <xsl:call-template name="create_context">
       <xsl:with-param name="cookies">false</xsl:with-param>
       <xsl:with-param name="path"><xsl:value-of select="$defpath"/></xsl:with-param>
-      <xsl:with-param name="docBase">webapps/<xsl:apply-templates select="@name"/></xsl:with-param>
+      <xsl:with-param name="docBase">webapps/<xsl:apply-templates select="p:project/p:name/text()"/></xsl:with-param>
       <xsl:with-param name="staticDocBase">
         <xsl:if test="$standalone = 'true'">
-          <xsl:if test="documentroot">
-            <xsl:variable name="abs_path"><xsl:apply-templates select="documentroot/node()"/></xsl:variable>
+          <xsl:if test="p:application/p:docroot-path/text()">
+            <xsl:variable name="docroot" select="p:application/p:docroot-path/text()"/>
+            <xsl:variable name="abs_path">
+              <xsl:choose>
+                <xsl:when test="starts-with(normalize-space(text()), 'pfixroot:')">
+                  <xsl:value-of select="$docroot"/><xsl:value-of select="substring-after(normalize-space(text()), 'pfixroot:')"/>
+                </xsl:when>
+                <xsl:when test="starts-with(normalize-space(text()), 'file:')">
+                  <xsl:value-of select="substring-after(normalize-space(text()), 'file:')"/>
+                </xsl:when>
+                <xsl:otherwise>
+                  <xsl:value-of select="normalize-space(text())"/>
+                </xsl:otherwise>
+              </xsl:choose>
+            </xsl:variable>
             <xsl:choose>
               <xsl:when test="ext:exists($abs_path)">
                 <xsl:value-of select="$abs_path"/>
@@ -172,25 +197,6 @@
       </xsl:with-param>
       <xsl:with-param name="hostbased" select="$hostbased"/>
     </xsl:call-template>
-  </xsl:template>
-
-  <xsl:template match="passthrough">
-    <xsl:param name="hostbased"/>
-    <xsl:variable name="rel_path" select="normalize-space(./node())"/>
-    <xsl:variable name="abs_path" select="concat($docroot, '/', $rel_path)"/>
-    <xsl:choose>
-      <xsl:when test="ext:exists($abs_path)">
-        <xsl:call-template name="create_context">
-          <xsl:with-param name="path">/<xsl:value-of select="$rel_path"/></xsl:with-param>
-          <xsl:with-param name="docBase">../../<xsl:value-of select="$rel_path"/></xsl:with-param>
-          <xsl:with-param name="cookies">false</xsl:with-param>
-          <xsl:with-param name="hostbased" select="$hostbased"/>
-        </xsl:call-template>
-      </xsl:when>
-      <xsl:otherwise>
-        <xsl:message>CAUTION: passthrough path not found: <xsl:value-of select="$abs_path"/></xsl:message>
-      </xsl:otherwise>
-    </xsl:choose>
   </xsl:template>
 
   <xsl:template name="create_context">
@@ -227,6 +233,28 @@
       </xsl:otherwise> 
     </xsl:choose>
   </xsl:template>
-
+  
+  <xsl:template mode="customization" match="p:choose">
+    <xsl:variable name="matches" select="p:when[ci:evaluateXPathExpression($customizationinfo,@test)]"/>
+    <xsl:choose>
+      <xsl:when test="count($matches)=0">
+        <xsl:apply-templates select="p:otherwise/node()"/>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:apply-templates select="$matches[1]/node()"/>
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:template>
+  
+  <xsl:template mode="customization" match="text()">
+    <xsl:value-of select="ci:replaceVariables($customizationinfo,.)"/>
+  </xsl:template>
+  
+  <xsl:template mode="customization" match="*">
+    <xsl:element name="{name()}" namespace="{namespace-uri()}">
+      <xsl:copy-of select="./@*"/><xsl:apply-templates mode="customization"/>
+    </xsl:element>
+  </xsl:template>
+  
 </xsl:stylesheet>
 
