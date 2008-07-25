@@ -717,6 +717,18 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
         }
     }
 
+    /**
+     * Returns if accessing the current page is already permitted or 
+     * it it will be possible by authenticating using an according authpage 
+     */
+    private boolean isAuthorizationPossible() {
+        PageRequestConfig pageConfig = getConfigForCurrentPageRequest();
+        AuthConstraint authConstraint = pageConfig.getAuthConstraint();
+        if (authConstraint == null) authConstraint = parentcontext.getContextConfig().getDefaultAuthConstraint();
+        if (authConstraint != null && !authConstraint.isAuthorized(parentcontext) && authConstraint.getAuthPage()==null) return false;
+        return true;
+    }
+    
     private ResultDocument checkPageAuthorization() throws PustefixApplicationException, PustefixCoreException {
         if (parentcontext.getContextConfig().getRoleProvider().getRoles().size() == 0)
             return null;
@@ -833,6 +845,9 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
         PageRequest saved = currentpagerequest;
         try {
             currentpagerequest = page;
+            
+            if(!isAuthorizationPossible()) return false;
+            
             State state = getStateForPageRequest(page);
 
             PerfEvent pe = new PerfEvent(PerfEventType.PAGE_ISACCESSIBLE, page.getName());

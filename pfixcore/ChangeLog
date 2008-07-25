@@ -1,3 +1,12 @@
+2008-07-25  Martin Leidig  <mleidig@schlund.de>
+
+	* src/de/schlund/pfixcore/workflow/context/RequestContextImpl.java:
+	Changed checkIsAccessible() behaviour for role-based authentication:
+	Now the method returns false for pages having assigned an
+	authconstraint, which isn't fulfilled and has no authpage defined. 
+	Thus the pageflow mechanism skips these page steps (like it was done so 
+	far only for pages whose state returned that they are not accessible).
+
 2008-07-25  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
 	* src/de/schlund/pfixxml/FactoryInitServlet.java: 
