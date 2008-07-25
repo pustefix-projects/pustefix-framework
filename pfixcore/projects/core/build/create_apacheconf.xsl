@@ -57,8 +57,8 @@ RewriteEngine on
 
 <xsl:if test="self::p:https-port">
   SSLEngine on
-  <xsl:apply-templates select="ssl-crt"/>
-  <xsl:apply-templates select="ssl-key"/>
+  <xsl:apply-templates select="p:ssl-crt"/>
+  <xsl:apply-templates select="p:ssl-key"/>
 </xsl:if>
 
 &lt;IfDefine PFX_USE_JK&gt;
@@ -150,13 +150,39 @@ CustomLog  <xsl:value-of select="$path"/>/access_log combined
   
   <xsl:template match="p:ssl-crt">
     <xsl:if test="node()">
-      SSLCertificateFile <xsl:apply-templates select="node()"/>
+      <xsl:variable name="path">
+        <xsl:choose>
+          <xsl:when test="starts-with(normalize-space(text()), 'pfixroot:')">
+            <xsl:value-of select="$docroot"/><xsl:value-of select="substring-after(normalize-space(text()), 'pfixroot:')"/>
+          </xsl:when>
+          <xsl:when test="starts-with(normalize-space(text()), 'file:')">
+            <xsl:value-of select="substring-after(normalize-space(text()), 'file:')"/>
+          </xsl:when>
+          <xsl:otherwise>
+            <xsl:value-of select="normalize-space(text())"/>
+          </xsl:otherwise>
+        </xsl:choose>
+      </xsl:variable>
+      SSLCertificateFile <xsl:value-of select="$path"/>
     </xsl:if>
   </xsl:template>
   
   <xsl:template match="p:ssl-key">
     <xsl:if test="node()">
-      SSLCertificateKeyFile <xsl:apply-templates select="node()"/>
+      <xsl:variable name="path">
+        <xsl:choose>
+          <xsl:when test="starts-with(normalize-space(text()), 'pfixroot:')">
+            <xsl:value-of select="$docroot"/><xsl:value-of select="substring-after(normalize-space(text()), 'pfixroot:')"/>
+          </xsl:when>
+          <xsl:when test="starts-with(normalize-space(text()), 'file:')">
+            <xsl:value-of select="substring-after(normalize-space(text()), 'file:')"/>
+          </xsl:when>
+          <xsl:otherwise>
+            <xsl:value-of select="normalize-space(text())"/>
+          </xsl:otherwise>
+        </xsl:choose>
+      </xsl:variable>
+      SSLCertificateKeyFile <xsl:value-of select="$path"/>
     </xsl:if>
   </xsl:template>
 

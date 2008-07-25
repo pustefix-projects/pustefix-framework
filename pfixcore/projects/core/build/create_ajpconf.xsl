@@ -27,7 +27,7 @@
 
 &lt;Proxy balancer://<xsl:value-of select="$jkmount"/>&gt;
   # In a clustered environment add a BalancerMember entry for every host participating in the cluster
-  BalancerMember ajp://<xsl:value-of select="$jkmount"/>:<xsl:choose><xsl:when test="not(string($port) = '')"><xsl:value-of select="$port"/></xsl:when><xsl:otherwise>8009</xsl:otherwise></xsl:choose> <xsl:if test="not($jvmroute='')"> route=<xsl:value-of select="$jvmroute"/></xsl:if>
+  BalancerMember ajp://<xsl:value-of select="$tree/p:global-config/p:http-server/p:tomcat/p:jkhost/text()"/>:<xsl:choose><xsl:when test="not(string($port) = '')"><xsl:value-of select="$port"/></xsl:when><xsl:otherwise>8009</xsl:otherwise></xsl:choose> <xsl:if test="not($jvmroute='')"> route=<xsl:value-of select="$jvmroute"/></xsl:if>
 &lt;/Proxy&gt;
   </xsl:template>
   
