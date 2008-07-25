@@ -36,7 +36,9 @@
         <xsl:for-each select="$tree/p:project-config/p:application/p:web-xml/jee:web-app">
           <web-app>
             <xsl:copy-of select="@*"/>
-            <xsl:apply-templates select="jee:icon|jee:display-name|jee:description|jee:distributable|jee:context-param|jee:filter|jee:filter-mapping|jee:listener"/>
+            <xsl:apply-templates select="jee:icon|jee:display-name|jee:description|jee:distributable|jee:context-param|jee:filter|jee:filter-mapping"/>
+            <xsl:call-template name="create-listeners"/>
+            <xsl:apply-templates select="jee:listener"/>
             <xsl:call-template name="create-servlet-definitions"/>
             <xsl:apply-templates select="jee:servlet"/>
             <xsl:call-template name="create-servlet-mappings">
@@ -62,6 +64,7 @@
       </xsl:when>
       <xsl:otherwise>
         <web-app>
+          <xsl:call-template name="create-listeners"/>
           <xsl:call-template name="create-servlet-definitions"/>
           <xsl:call-template name="create-servlet-mappings">
             <xsl:with-param name="tree" select="$tree"/>
@@ -78,7 +81,13 @@
   <xsl:template name="create-servlet-definitions">
     <xsl:call-template name="create-dispatcher-servlet"/>
   </xsl:template>
-    
+  
+  <xsl:template name="create-listeners">
+    <listener>
+      <listener-class>org.pustefixframework.http.FactoryInitServletContextListener</listener-class>
+    </listener>
+  </xsl:template>
+  
   <xsl:template name="create-servlet-mappings">
     <xsl:param name="tree"/>
     <xsl:for-each select="$tree/p:project-config/p:application/p:context-xml-service|$tree/p:project-config/p:application/p:direct-output-service">

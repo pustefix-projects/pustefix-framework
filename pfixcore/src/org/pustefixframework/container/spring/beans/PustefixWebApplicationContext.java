@@ -34,33 +34,10 @@ import org.springframework.web.context.support.AbstractRefreshableWebApplication
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
-import de.schlund.pfixxml.FactoryInitException;
-import de.schlund.pfixxml.FactoryInitUtil;
-import de.schlund.pfixxml.config.GlobalConfigurator;
-import de.schlund.pfixxml.config.XMLPropertiesUtil;
-import de.schlund.pfixxml.resources.ResourceUtil;
-
 public class PustefixWebApplicationContext extends AbstractRefreshableWebApplicationContext {
     
     @Override
     protected void loadBeanDefinitions(DefaultListableBeanFactory beanFactory) throws IOException, BeansException {
-        // FIXME: Don't use singleton for docroot configuration
-        try {
-            String docroot = this.getServletContext().getInitParameter("pustefix.docroot");
-            GlobalConfigurator.setDocroot(docroot);
-        } catch (IllegalStateException e) {
-            // Ignore exception if docroot has already been set
-        }
-        
-        // FIXME: Do not use FactoryUtil
-        try {
-            FactoryInitUtil.initialize(XMLPropertiesUtil.loadPropertiesFromXMLFile(ResourceUtil.getFileResourceFromDocroot("common/conf/factory.xml")));
-        } catch (FactoryInitException e) {
-            throw new RuntimeException("Could not initialize factories", e);
-        } catch (SAXException e) {
-            throw new RuntimeException("Could not initialize factories", e);
-        }
-        
         String configLocations[] = getConfigLocations();
         if (configLocations == null) {
             configLocations = getDefaultConfigLocations();

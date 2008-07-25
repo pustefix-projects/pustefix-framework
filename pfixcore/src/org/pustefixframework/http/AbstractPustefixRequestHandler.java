@@ -43,12 +43,12 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
 import org.pustefixframework.container.spring.http.UriProvidingHttpRequestHandler;
+import org.pustefixframework.http.internal.FactoryInitWorker;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.web.context.ServletContextAware;
 import org.xml.sax.SAXException;
 
 import de.schlund.pfixxml.FactoryInitException;
-import de.schlund.pfixxml.FactoryInitServlet;
 import de.schlund.pfixxml.FactoryInitUtil;
 import de.schlund.pfixxml.PfixServletRequest;
 import de.schlund.pfixxml.PfixServletRequestImpl;
@@ -379,7 +379,7 @@ public abstract class AbstractPustefixRequestHandler implements UriProvidingHttp
             preq = new PfixServletRequestImpl(req, this.getServletManagerConfig().getProperties());
         }
 
-        FactoryInitServlet.tryReloadLog4j();
+        FactoryInitWorker.tryReloadLog4j();
         tryReloadProperties(preq);
 
         // End of initialization. Now we handle all cases where we need to redirect.
@@ -877,8 +877,8 @@ public abstract class AbstractPustefixRequestHandler implements UriProvidingHttp
 
     private void callProcess(PfixServletRequest preq, HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
         try {
-            if(!FactoryInitServlet.isConfigured() && !FactoryInitUtil.isInitialized()) {
-                FactoryInitException initEx=FactoryInitServlet.getInitException();
+            if(!FactoryInitWorker.isConfigured() && !FactoryInitUtil.isInitialized()) {
+                FactoryInitException initEx=FactoryInitWorker.getInitException();
                 if(initEx!=null) {
                     initEx=initEx.copy();
                     initEx.fillInStackTrace();

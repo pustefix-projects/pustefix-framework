@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
-package de.schlund.pfixxml;
+package org.pustefixframework.http.internal;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -25,10 +25,8 @@ import java.io.IOException;
 import java.util.Properties;
 
 import javax.servlet.ServletConfig;
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -54,6 +52,9 @@ import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
 import org.xml.sax.helpers.XMLReaderFactory;
 
+import de.schlund.pfixxml.FactoryInitException;
+import de.schlund.pfixxml.FactoryInitUtil;
+import de.schlund.pfixxml.PathFactory;
 import de.schlund.pfixxml.config.CustomizationHandler;
 import de.schlund.pfixxml.config.GlobalConfigurator;
 import de.schlund.pfixxml.config.XMLPropertiesUtil;
@@ -69,7 +70,7 @@ import de.schlund.pfixxml.util.logging.ProxyLogUtil;
  * "servlet.propfile" parameter which points to a file where all factories are
  * listed.
  */
-public class FactoryInitServlet extends HttpServlet {
+public class FactoryInitWorker {
 
     /**
      * 
@@ -78,15 +79,11 @@ public class FactoryInitServlet extends HttpServlet {
 
     // ~ Instance/static variables
     // ..................................................................
-    public final static String PROP_DOCROOT = "pustefix.docroot";
-
     private final static String PROP_LOG4J = "pustefix.log4j.config";
 
     private final static String PROP_PREFER_CONTAINER_LOGGING = "pustefix.logging.prefercontainer";
 
-    private Object LOCK = new Object();
-
-    private final static Logger LOG = Logger.getLogger(FactoryInitServlet.class);
+    private final static Logger LOG = Logger.getLogger(FactoryInitWorker.class);
 
     private static boolean configured = false;
     
@@ -98,35 +95,9 @@ public class FactoryInitServlet extends HttpServlet {
     
     private boolean warMode = false;
     private boolean standaloneMode = false;
-
-    // ~ Methods
-    // ....................................................................................
-
-    /**
-     * Handle the HTTP-Post method.
-     * 
-     * @see javax.servlet.http.HttpServlet#doPost(HttpServletRequest,
-     *      HttpServletResponse)
-     * @throws ServletException
-     *             on all
-     */
-    public void doPost(HttpServletRequest req, HttpServletResponse res)
-            throws ServletException {
-        doGet(req, res);
-    }
-
-    /**
-     * Handle the HTTP-Get method
-     * 
-     * @see javax.servlet.http.HttpServlet#doGet(HttpServletRequest,
-     *      HttpServletResponse)
-     * @throws ServletException
-     *             on call
-     */
-    public void doGet(HttpServletRequest req, HttpServletResponse res)
-            throws ServletException {
-        throw new ServletException("This servlet can't be called interactively");
-    }
+    
+    private final static Object initLock = new Object();
+    private static boolean initRunning = false;
 
     public static void tryReloadLog4j() {
         if (log4jconfig != null) {
@@ -139,20 +110,29 @@ public class FactoryInitServlet extends HttpServlet {
                 try {
                     configureLog4j(l4jfile);
                 } catch (FileNotFoundException e) {
-                    Logger.getLogger(FactoryInitServlet.class).error(
+                    Logger.getLogger(FactoryInitWorker.class).error(
                             "Reloading log4j config failed!", e);
                 } catch (SAXException e) {
-                    Logger.getLogger(FactoryInitServlet.class).error(
+                    Logger.getLogger(FactoryInitWorker.class).error(
                             "Reloading log4j config failed!", e);
                 } catch (IOException e) {
-                    Logger.getLogger(FactoryInitServlet.class).error(
+                    Logger.getLogger(FactoryInitWorker.class).error(
                             "Reloading log4j config failed!", e);
                 }
                 log4jmtime = tmpmtime;
             }
         }
     }
-
+    
+    public static void init(ServletContext servletContext) throws ServletException {
+        synchronized (initLock) {
+            if (!initRunning) {
+                initRunning = true;
+                (new FactoryInitWorker()).doInit(servletContext);
+            }
+        }
+    }
+    
     /**
      * Initialize this servlet. Also call the 'init' method of all classes
      * listed in the configuration. These classes must implement the FactoryInit
@@ -165,15 +145,14 @@ public class FactoryInitServlet extends HttpServlet {
      *             on errors
      */
     @SuppressWarnings("deprecation")
-    public void init(ServletConfig Config) throws ServletException {
-        super.init(Config);
+    private void doInit(ServletContext servletContext) throws ServletException {
         Properties properties = new Properties(System.getProperties());
         // old webapps specify docroot -- true webapps don't
-        String docrootstr = Config.getInitParameter(PROP_DOCROOT);
+        String docrootstr = servletContext.getInitParameter("pustefix.docroot");
         if (docrootstr != null && !docrootstr.equals("")) {
             standaloneMode = true;
         } else {
-            docrootstr = Config.getServletContext().getRealPath("/WEB-INF/pfixroot");
+            docrootstr = servletContext.getRealPath("/WEB-INF/pfixroot");
             if (docrootstr == null) {
                 warMode = true;
             }
@@ -184,7 +163,7 @@ public class FactoryInitServlet extends HttpServlet {
             GlobalConfigurator.setDocroot(docrootstr);
         }
         if (warMode) {
-            GlobalConfigurator.setServletContext(getServletContext());
+            GlobalConfigurator.setServletContext(servletContext);
         }
         
         if (docrootstr != null) {
@@ -192,7 +171,7 @@ public class FactoryInitServlet extends HttpServlet {
             PathFactory.getInstance().init(docrootstr);
         }
 
-        String confname = Config.getInitParameter("servlet.propfile");
+        String confname = "common/conf/factory.xml";
         if (confname != null) {
             FileResource confFile = ResourceUtil.getFileResourceFromDocroot(confname);
             try {
@@ -218,28 +197,24 @@ public class FactoryInitServlet extends HttpServlet {
             properties.setProperty("pustefix.docroot", docrootstr);
         }
 
-        synchronized (LOCK) {
-            if (!configured) {
-                configureLogging(properties);
-                LOG.debug(">>>> LOG4J Init OK <<<<");
 
-                try {
-                    FactoryInitUtil.initialize(properties);
-                } catch (FactoryInitException e) {
-                    throw new ServletException(e.getCause().toString());
-                }
-            }
-            configured = true;
-            LOG.debug("***** INIT of FactoryInitServlet done *****");
+        configureLogging(properties, servletContext);
+        LOG.debug(">>>> LOG4J Init OK <<<<");
 
+        try {
+            FactoryInitUtil.initialize(properties);
+        } catch (FactoryInitException e) {
+            throw new ServletException(e.getCause().toString());
         }
+        LOG.debug("***** INIT of FactoryInitServlet done *****");
+
     }
 
-    private void configureLogging(Properties properties) throws ServletException {
+    private void configureLogging(Properties properties, ServletContext servletContext) throws ServletException {
         String containerProp = properties.getProperty(PROP_PREFER_CONTAINER_LOGGING);
         if (warMode || (!standaloneMode && (containerProp != null && containerProp.toLowerCase().equals("true")))) {
             ProxyLogUtil.getInstance().configureLog4jProxy();
-            ProxyLogUtil.getInstance().setServletContext(getServletContext());
+            ProxyLogUtil.getInstance().setServletContext(servletContext);
         } else {
             log4jconfig = properties.getProperty(PROP_LOG4J);
             if (log4jconfig == null || log4jconfig.equals("")) {

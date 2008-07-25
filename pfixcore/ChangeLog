@@ -1,3 +1,12 @@
+2008-07-25  Sebastian Marsching  <sebastian.marsching@1und1.de>
+
+	* src/de/schlund/pfixxml/FactoryInitServlet.java: 
+	* src/org/pustefixframework/container/spring/beans/PustefixWebApplicationContext.java: 
+	* src/org/pustefixframework/http/internal/FactoryInitWorker.java: 
+	* src/org/pustefixframework/http/AbstractPustefixRequestHandler.java: 
+	* projects/core/build/create_webxml.xsl: 
+	Trigger factory init mechanism using a servlet context listener.
+
 2008-07-24  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
 	* projects/servletconf/projects.xml: 
