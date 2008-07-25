@@ -723,9 +723,11 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
      */
     private boolean isAuthorizationPossible() {
         PageRequestConfig pageConfig = getConfigForCurrentPageRequest();
-        AuthConstraint authConstraint = pageConfig.getAuthConstraint();
-        if (authConstraint == null) authConstraint = parentcontext.getContextConfig().getDefaultAuthConstraint();
-        if (authConstraint != null && !authConstraint.isAuthorized(parentcontext) && authConstraint.getAuthPage()==null) return false;
+        if(pageConfig != null) {
+            AuthConstraint authConstraint = pageConfig.getAuthConstraint();
+            if (authConstraint == null) authConstraint = parentcontext.getContextConfig().getDefaultAuthConstraint();
+            if (authConstraint != null && !authConstraint.isAuthorized(parentcontext) && authConstraint.getAuthPage()==null) return false;
+        }
         return true;
     }
     
