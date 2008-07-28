@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
-<glossary xml:id="glossary" xmlns="http://docbook.org/ns/docbook" xmlns:xlink="www.w3.org/1999/xlink"
+<glossary xml:id="glossary" xmlns="http://docbook.org/ns/docbook" xmlns:xlink="http://www.w3.org/1999/xlink"
   xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://docbook.org/ns/docbook http://www.docbook.org/xml/5.0CR7/xsd/docbook.xsd">
   <title>Glossary</title>
   
   <glossdiv>
     <title>C</title>
-    <glossentry id="glossary.core">
+    <glossentry xml:id="glossary.core">
       <glossterm>Core</glossterm>
       <glossdef>
         <para>
@@ -19,7 +19,7 @@
   
   <glossdiv>
     <title>E</title>
-    <glossentry id="glossary.editor">
+    <glossentry xml:id="glossary.editor">
       <glossterm>Editor</glossterm>
       <glossdef>
         <para>
@@ -28,7 +28,7 @@
         </para>
       </glossdef>
     </glossentry>
-    <glossentry id="glossary.environment">
+    <glossentry xml:id="glossary.environment">
       <glossterm>Environment</glossterm>
       <glossdef>
         <para>
@@ -45,7 +45,7 @@
 
   <glossdiv>
     <title>P</title>
-    <glossentry id="glossary.project">
+    <glossentry xml:id="glossary.project">
       <glossterm>Project</glossterm>
       <glossdef>
         <para>
@@ -59,7 +59,7 @@
         </para>
       </glossdef>
     </glossentry>
-    <glossentry id="glossary.pfixcore">
+    <glossentry xml:id="glossary.pfixcore">
       <glossterm>Pfixcore</glossterm>
       <glossdef>
         <para>
@@ -67,7 +67,7 @@
         </para>
       </glossdef>
     </glossentry>
-    <glossentry id="glossary.pustefix">
+    <glossentry xml:id="glossary.pustefix">
       <glossterm>Pustefix</glossterm>
       <glossdef>
         <para>

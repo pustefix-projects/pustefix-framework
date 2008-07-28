@@ -1,5 +1,33 @@
 2008-07-28  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
+	* docs/docbook/src/faq/ajax.xml: 
+	* docs/docbook/src/faq/configuration.xml: 
+	* docs/docbook/src/faq/handler.xml: 
+	* docs/docbook/src/faq/installation.xml: 
+	* docs/docbook/src/faq/pageflows.xml: 
+	* docs/docbook/src/faq/states.xml: 
+	* docs/docbook/src/faq/xmlandxsl.xml: 
+	* docs/docbook/src/reference/advancedtopics.xml: 
+	* docs/docbook/src/reference/architecture.xml: 
+	* docs/docbook/src/reference/concepts.xml: 
+	* docs/docbook/src/reference/configuration.xml: 
+	* docs/docbook/src/reference/glossary.xml: 
+	* docs/docbook/src/reference/installation.xml: 
+	* docs/docbook/src/reference/module-support.xml: 
+	* docs/docbook/src/reference/preface.xml: 
+	* docs/docbook/src/reference/xslt.xml: 
+	* docs/docbook/src/tutorial/ajax-calculator.xml: 
+	* docs/docbook/src/tutorial/getting-started.xml: 
+	* docs/docbook/src/tutorial/preface.xml: 
+	* docs/docbook/src/tutorial/user-manager.xml: 
+	* docs/docbook/src/tutorial/wrapper-handler.xml: 
+	* docs/docbook/src/faq.xml: 
+	* docs/docbook/src/reference.xml: 
+	* docs/docbook/src/tutorial.xml: 
+	Fixed some problems in docbook documentation.
+
+2008-07-28  Sebastian Marsching  <sebastian.marsching@1und1.de>
+
 	* src/org/pustefixframework/config/global/parser/GlobalConfigurationReader.java: 
 	* src/org/pustefixframework/container/spring/beans/PustefixProjectBeanDefinitionReader.java: 
 	* META-INF: 

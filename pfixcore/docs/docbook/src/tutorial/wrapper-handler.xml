@@ -1,11 +1,11 @@
 <?xml version="1.0"?>
-<chapter xml:id="wrapper-handler" xmlns="http://docbook.org/ns/docbook" xmlns:xlink="www.w3.org/1999/xlink"
+<chapter xml:id="wrapper-handler" xmlns="http://docbook.org/ns/docbook" xmlns:xlink="http://www.w3.org/1999/xlink"
   xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://docbook.org/ns/docbook http://www.docbook.org/xml/5.0CR7/xsd/docbook.xsd"
 >
   <title>Basic tutorial</title>
 
-  <chapterinfo>
+  <info>
     <title>Basic tutorial</title>
     <copyright>
       <year>2008</year>
@@ -13,11 +13,13 @@
     </copyright>
     <authorgroup>
       <author>
-        <firstname>Stephan</firstname>
-        <surname>Schmidt</surname>
+        <personname>
+          <firstname>Stephan</firstname>
+          <surname>Schmidt</surname>
+        </personname>
       </author>
     </authorgroup>
-  </chapterinfo>
+  </info>
 
   <para>
     In this tutorial, you will learn how to work with the basic features provided by the Pustefix framework.

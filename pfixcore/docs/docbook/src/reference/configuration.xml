@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<chapter xml:id="configuration" xmlns="http://docbook.org/ns/docbook" xmlns:xlink="www.w3.org/1999/xlink" xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://docbook.org/ns/docbook http://www.docbook.org/xml/5.0CR7/xsd/docbook.xsd">
+<chapter xml:id="configuration" xmlns="http://docbook.org/ns/docbook" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://docbook.org/ns/docbook http://www.docbook.org/xml/5.0CR7/xsd/docbook.xsd">
   <title>Configuring Pustefix</title>
   
   <section xml:id="configuration.introduction">
@@ -1439,7 +1439,7 @@
         </tbody>
       </table>
     </section>
-    <section id="configuration.depend.page">
+    <section xml:id="configuration.depend.page">
       <title>The &lt;page/&gt; tag</title>
       <para>
        The <literal>&lt;page&gt;</literal> tag defines all available
@@ -1473,7 +1473,7 @@
         </tbody>
       </table>
     </section>
-    <section id="configuration.depend.target">
+    <section xml:id="configuration.depend.target">
       <title>Target definition</title>
       <para>
         The <literal>&lt;target&gt;</literal> tag is used to specify the XSL transformations in Pustefix. In most cases, you will not have
@@ -1573,7 +1573,7 @@
         <programlisting language="xml"><![CDATA[<depaux name="foo/xsl/fubar.xsl"/>]]></programlisting>
       </section>
     </section>
-    <section id="configuration.depend.standardpage">
+    <section xml:id="configuration.depend.standardpage">
       <title>Standard page definition</title>
       <para>
         The standardpage tag is a convenience tag that encapsulates the typical definition of a complete page in the Pustefix system.
@@ -1680,7 +1680,7 @@
   <param name="page" value="BazPage"/>
 </target>]]></programlisting>
     </section>
-    <section id="configuration.depend.standardmaster">
+    <section xml:id="configuration.depend.standardmaster">
       <title>Standard master target definition</title>
       <para>
         The <literal>standardmaster</literal> tag is a convenience tag that encapsulates the typical target
@@ -1714,7 +1714,7 @@
   <param name="lang" value="en"/>
 </target>]]></programlisting>
     </section>
-    <section id="configuration.depend.standardmetatags">
+    <section xml:id="configuration.depend.standardmetatags">
       <title>Standard metatags target definition</title>
       <para>
         The standardmetatags tag is a convenience tag that encapsulates the typical target definition

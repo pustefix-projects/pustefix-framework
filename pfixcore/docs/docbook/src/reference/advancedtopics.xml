@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<chapter xml:id="advanced" xmlns="http://docbook.org/ns/docbook" xmlns:xlink="www.w3.org/1999/xlink" xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://docbook.org/ns/docbook http://www.docbook.org/xml/5.0CR7/xsd/docbook.xsd">
+<chapter xml:id="advanced" xmlns="http://docbook.org/ns/docbook" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://docbook.org/ns/docbook http://www.docbook.org/xml/5.0CR7/xsd/docbook.xsd">
   <title>Advanced topics</title>
 
   <section xml:id="advanced.variantsandthemes">
@@ -59,22 +59,22 @@
         </para>
         <itemizedlist>
           <listitem>
-            <para>
+            <simpara>
               They can change the look and content of a page. This is implemented in
               terms of themes that depend on the selected variant. See below for more
               details.
-            </para>
+            </simpara>
           </listitem>
           <listitem>
-            <para>
+            <simpara>
               They can change the backend definition of a pagerequest
               (aka: Handlers, State, and output from ContextRessources)
-            </para>
+            </simpara>
           </listitem>
           <listitem>
-            <para>
+            <simpara>
               They can change the definition of a pageflow
-            </para>
+            </simpara>
           </listitem>
         </itemizedlist>
       </section>
@@ -541,7 +541,7 @@ public class PremiumCustomerCondition implements Condition {
       <para>
         The webservices are configured in the <filename>webservices.conf.xml</filename> file.
       </para>
-      <programlisting langauge="xml"><![CDATA[<webservice-config schemaLocation="http://pustefix.sourceforge.net/wsconfig200401 ../../core/schema/wsconfig200401.xsd"
+      <programlisting language="xml"><![CDATA[<webservice-config schemaLocation="http://pustefix.sourceforge.net/wsconfig200401 ../../core/schema/wsconfig200401.xsd"
   xmlns="http://pustefix.sourceforge.net/wsconfig200401"
   xmlns:xsi="xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 
@@ -721,20 +721,20 @@ public class PremiumCustomerCondition implements Condition {
       </para>
       <itemizedlist>
         <listitem>
-          <para>
+          <simpara>
             <literal>de.schlund.pfixcore.webservice.fault.LoggingHandler</literal>: as its name denotes, it just logs all Exceptions
             via log4j (location can be configured within the general log4j configuration)
-          </para>
+          </simpara>
         </listitem>
         <listitem>
-          <para>
+          <simpara>
             <literal>de.schlund.pfixcore.webservice.fault.EmailNotifyingHandler</literal>: this handler sends Email notifications (recipients, sender and smtphost can be configured as parameters, see the Configuration section)
-          </para>
+          </simpara>
         </listitem>
         <listitem>
-          <para>
+          <simpara>
             <literal>de.schlund.pfixcore.webservice.fault.ExceptionProcessorAdapter</literal>: this handler implements a direct connection to the general Pustefix exception processing mechanism via ExceptionProcessors (and only makes sense if the configured ExceptionProcessor only consumes exceptions, but doesn't produce any output, like a HTML error page)
-          </para>
+          </simpara>
         </listitem>
       </itemizedlist>
       <para>
@@ -820,12 +820,12 @@ service.serviceMethod(arg0, arg1, ... , requestid); //asynchronous with requesti
         Supported Java types are:
       </para>
       <itemizedlist>
-        <listitem>Primitive Java types (boolean, byte, short, int, long, float, double)</listitem>
-        <listitem>Object wrappers for primitive types (Boolean, Byte, Short, Integer, Long, Float, Double from java.lang)</listitem>
-        <listitem>String type (java.lang.String)</listitem>
-        <listitem>Date types (java.util.Calendar, java.util.Date)</listitem>
-        <listitem>Java beans (nested arbitrarily)</listitem>
-        <listitem>Arrays of all other supported types (except for java.util.Date with SOAP), including multidimensional arrays</listitem>
+        <listitem><simpara>Primitive Java types (boolean, byte, short, int, long, float, double)</simpara></listitem>
+        <listitem><simpara>Object wrappers for primitive types (Boolean, Byte, Short, Integer, Long, Float, Double from java.lang)</simpara></listitem>
+        <listitem><simpara>String type (java.lang.String)</simpara></listitem>
+        <listitem><simpara>Date types (java.util.Calendar, java.util.Date)</simpara></listitem>
+        <listitem><simpara>Java beans (nested arbitrarily)</simpara></listitem>
+        <listitem><simpara>Arrays of all other supported types (except for java.util.Date with SOAP), including multidimensional arrays</simpara></listitem>
       </itemizedlist>
       <para>
         Primitive, wrapper, String and Date types are mapped to their according Javascript counterpart
@@ -841,8 +841,8 @@ service.serviceMethod(arg0, arg1, ... , requestid); //asynchronous with requesti
         Additional Java types supported by JSON services:
       </para>
       <itemizedlist>
-        <listitem>Arbitrary Lists (Java -> JSON), parameterized Lists with type parameter of instantiable type (JSON -> Java)</listitem>
-        <listitem>Arbitrary Maps with keys of type java.lang.String (Java -> JSON), parameterized Maps with key type parameter of type java.lang.String and value type parameter of instantiable type (JSON -> Java)</listitem>
+        <listitem><simpara>Arbitrary Lists (Java -> JSON), parameterized Lists with type parameter of instantiable type (JSON -> Java)</simpara></listitem>
+        <listitem><simpara>Arbitrary Maps with keys of type java.lang.String (Java -> JSON), parameterized Maps with key type parameter of type java.lang.String and value type parameter of instantiable type (JSON -> Java)</simpara></listitem>
       </itemizedlist>
       <para>
         Because of the restrictions of the JSON format, especially the absence of type information and the usage of
@@ -1853,10 +1853,10 @@ public class B extends A {
     </para>
     <itemizedlist>
       <listitem>
-        <para>Do you miss fast-prototyping in Pustefix?</para>
+        <simpara>Do you miss fast-prototyping in Pustefix?</simpara>
       </listitem>
       <listitem>
-        <para>Do you think dynamic programming languages (sometimes called scripting languages) can do more than just interpreting one liners or providing a new form of poetry?</para>
+        <simpara>Do you think dynamic programming languages (sometimes called scripting languages) can do more than just interpreting one liners or providing a new form of poetry?</simpara>
       </listitem>
     </itemizedlist>
     <para>
@@ -1904,27 +1904,27 @@ public class B extends A {
       </para>
       <itemizedlist>
         <listitem>
-          <para>
+          <simpara>
             You must define all methods of the respective interfaces
             (<literal>de.schlund.pfixcore.generator.IHandler</literal> and/or
             <literal>de.schlund.pfixcore.workflow.State</literal>)
             as functions inside your scripts.
-          </para>
+          </simpara>
         </listitem>
         <listitem>
-          <para>
+          <simpara>
             The functions inside your scripts have to return the correct type, if they
             return values at all. Note that for example en empty String is a valid boolean
             expression in Javascript.
-          </para>
+          </simpara>
         </listitem>
         <listitem>
-          <para>
+          <simpara>
             The file suffix must be one that's recognized by BSF. The listing of current
             supported language mappings of BSF helps you find the correct suffix for your
             used scripting lanuage. Basically they're the common suffixes like js for
             javascript, bsh for Beanshell and py for python.
-          </para>
+          </simpara>
         </listitem>
       </itemizedlist>
       <section>
@@ -1945,20 +1945,20 @@ public class B extends A {
         </para>
         <itemizedlist>
           <listitem>
-            <para>
+            <simpara>
               If you prepend a <literal>/</literal> (slash character) to the location,
               the script file is searched for in the classpath of your application.
               No magic (or great effort) is applied when searching for the script file.
               Instead simply <literal>ScriptingIHandler.getClass().getResourceAsStream()</literal>
               is called to get the source of the script file.
-            </para>
+            </simpara>
           </listitem>
           <listitem>
-            <para>
+            <simpara>
               If the script: String is not followed by a slash, the string is assumed to be a
               file's location relative to the docroot of the running pustefix application.
               This usually means everything downwards from the projects-folder.
-            </para>
+            </simpara>
           </listitem>
         </itemizedlist>
       </section>

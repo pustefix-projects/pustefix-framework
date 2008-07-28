@@ -1,17 +1,18 @@
 <?xml version="1.0"?>
 <chapter id="gettingstarted" version="5.0" xmlns="http://docbook.org/ns/docbook"
-  xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:xlink="www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://docbook.org/ns/docbook http://www.docbook.org/xml/5.0CR7/xsd/docbook.xsd">
-
-  <chapterinfo>
-    <title>Getting started</title>
-    <copyright>
-      <holder>1&amp;1 Internet AG</holder>
-      <year>2007</year>
-      <year>2008</year>
-    </copyright>
-  </chapterinfo>
+  xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://docbook.org/ns/docbook http://www.docbook.org/xml/5.0CR7/xsd/docbook.xsd">
 
   <title>Getting started</title>
+  
+  <info>
+    <title>Getting started</title>
+    <copyright>
+      <year>2007</year>
+      <year>2008</year>
+      <holder>1&amp;1 Internet AG</holder>
+    </copyright>
+  </info>
+  
   <section xml:id="gettingstarted.requirements">
     <title>Requirements</title>
     <para>
