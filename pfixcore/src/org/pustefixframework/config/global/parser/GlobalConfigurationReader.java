@@ -36,7 +36,7 @@ public class GlobalConfigurationReader {
         // FIXME: Inject ResourceUtil instead of using singleton
         FileResource resource = ResourceUtil.getFileResourceFromDocroot("common/conf/projects.xml");
         PropertiesBasedCustomizationInfo customizationInfo = new PropertiesBasedCustomizationInfo(BuildTimeProperties.getProperties());
-        ClasspathConfiguredParser parser = new ClasspathConfiguredParser("org/pustefixframework/config/global/parser/global-projects-config.xml");
+        ClasspathConfiguredParser parser = new ClasspathConfiguredParser("META-INF/org/pustefixframework/config/global/parser/global-projects-config.xml");
         try {
             return new GlobalConfigurationHolder(parser.parse(resource.getInputStream(), customizationInfo));
         } catch (FileNotFoundException e) {

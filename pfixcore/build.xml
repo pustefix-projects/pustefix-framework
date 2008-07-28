@@ -16,7 +16,7 @@ or delete the DOCTYPE definition -->
 
   <!-- additional properties -->
   <property name="name.svnrevision"       value="SVN_REVISION"/>
-  <property name="dir.metainf"            location="META-INF"/>
+  <property name="dir.metainf"            location="${dir.build}/META-INF"/>
   <property name="dir.dist"               location="dist"/>
   <property name="dir.toconf"             value="${dir.projects}/common/conf/"/>
   <property name="name.testskel"          value="testskel"/>
@@ -229,7 +229,6 @@ or delete the DOCTYPE definition -->
   <target name="jar" depends="dist-properties, autotag">
     <mkdir dir="${dir.dist}" description="creates ${name.pfixcore_jar}"/>
     <jar destfile="${file.pfixcore_jar}">
-      <fileset dir="${basedir}" includes="META-INF/**"/>
       <fileset dir="${dir.build}">
         <exclude name="de/schlund/util/statuscodes/StatusCodeLib.class"/>
         <exclude name="de/schlund/pfixcore/example/**"/>
@@ -242,7 +241,6 @@ or delete the DOCTYPE definition -->
   <target name="srcjar" depends="dist-properties">
     <mkdir dir="${dir.dist}"/>
     <jar destfile="${file.pfixcore_srcjar}">
-      <fileset dir="${basedir}" includes="META-INF/**"/>
       <fileset dir="${dir.src}">
         <exclude name="de/schlund/pfixcore/example/**"/>
         <exclude name="de/skelexamples/**"/>

@@ -1,3 +1,16 @@
+2008-07-28  Sebastian Marsching  <sebastian.marsching@1und1.de>
+
+	* src/org/pustefixframework/config/global/parser/GlobalConfigurationReader.java: 
+	* src/org/pustefixframework/container/spring/beans/PustefixProjectBeanDefinitionReader.java: 
+	* META-INF: 
+	* res/org/pustefixframework/config/project/parser/project-config.xml: 
+	* res/org/pustefixframework/config/global/parser/global-project-config.xml: 
+	* res/META-INF/org/pustefixframework/config/project/parser/project-config.xml: 
+	* res/META-INF/org/pustefixframework/config/global/parser/global-project-config.xml: 
+	* build.xml: 
+	Removed META-INF directory and copy content of build/META-INF into JAR files.
+	Moved parser configuration into META-INF.
+	
 2008-07-25  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
 	* projects/core/build/create_ajpconf.xml: 
