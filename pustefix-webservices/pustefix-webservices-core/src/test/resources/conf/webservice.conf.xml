@@ -13,41 +13,10 @@
     <logging enabled="true"/>
   </webservice-global>
  
-  <webservice name="Counter">
-    <interface name="org.pustefixframework.webservices.example.Counter"/>
-    <implementation name="org.pustefixframework.webservices.example.CounterImpl"/>
+  <webservice name="TestOld">
+    <interface name="org.pustefixframework.webservices.example.Test"/>
+    <implementation name="org.pustefixframework.webservices.example.TestImpl"/>
+    <protocol type="TEST"/>
   </webservice>
- 
-  <!-- 
-  <webservice name="Chat">
-    <interface name="de.schlund.pfixcore.example.webservices.chat.Chat"/>
-    <implementation name="de.schlund.pfixcore.example.webservices.chat.ChatImpl"/>
-  </webservice>
-
-  <webservice name="Counter">
-    <interface name="de.schlund.pfixcore.example.webservices.Counter"/>
-    <implementation name="de.schlund.pfixcore.example.webservices.CounterImpl"/>
-  </webservice>
-
-  <webservice name="Data">
-    <interface name="de.schlund.pfixcore.example.webservices.Data"/>
-    <implementation name="de.schlund.pfixcore.example.webservices.DataImpl"/>
-  </webservice>
-
-  <webservice name="TypeTest">
-    <interface name="de.schlund.pfixcore.example.webservices.TypeTest"/>
-    <implementation name="de.schlund.pfixcore.example.webservices.TypeTestImpl"/>
-  </webservice>
-  
-  <webservice name="CallTest">
-    <interface name="de.schlund.pfixcore.example.webservices.CallTest"/>
-    <implementation name="de.schlund.pfixcore.example.webservices.CallTestImpl"/>
-  </webservice>
-  
-  <webservice name="BeanTest" ref="testbean">
-    <interface name="de.schlund.pfixcore.example.webservices.BeanTest"/>
-    <implementation name="de.schlund.pfixcore.example.webservices.BeanTestImpl"/>
-  </webservice>
-  -->
   
 </webservice-config>

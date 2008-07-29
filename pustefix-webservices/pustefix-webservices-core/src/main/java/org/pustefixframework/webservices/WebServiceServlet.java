@@ -87,8 +87,8 @@ public class WebServiceServlet extends HttpServlet {
                 if (servletProp != null) {
                     FileResource wsConfFile = ResourceUtil.getFileResourceFromDocroot(servletProp);
                     try {
-                        Configuration srvConf = ConfigurationReader.read(wsConfFile);
                         runtime = new ServiceRuntime();
+                        Configuration srvConf = ConfigurationReader.read(wsConfFile);
                         runtime.setConfiguration(srvConf);
                         runtime.setApplicationServiceRegistry(new ServiceRegistry(runtime.getConfiguration(),
                                 ServiceRegistry.RegistryType.APPLICATION));

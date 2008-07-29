@@ -30,6 +30,7 @@ public class WebServiceRegistration {
     private Object target;
     private String interfaceName;
     private String protocol;
+    private String sessionType;
     
     public String getTargetBeanName() {
         return targetBeanName;
@@ -69,6 +70,14 @@ public class WebServiceRegistration {
 
     public void setProtocol(String protocol) {
         this.protocol = protocol;
+    }
+    
+    public String getSessionType() {
+        return sessionType;
+    }
+    
+    public void setSessionType(String sessionType) {
+        this.sessionType = sessionType;
     }
     
 }
