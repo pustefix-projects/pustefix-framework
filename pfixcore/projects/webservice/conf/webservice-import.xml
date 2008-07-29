@@ -4,10 +4,9 @@
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://pustefix.sourceforge.net/wsconfig200401 ../../core/schema/wsconfig200401.xsd">
 
-  <webservice name="Calculator">
-    <interface name="de.schlund.pfixcore.example.webservices.Calculator"/>
-    <implementation name="de.schlund.pfixcore.example.webservices.CalculatorImpl"/>
-    <session type="none"/>
+  <webservice name="Counter">
+    <interface name="de.schlund.pfixcore.example.webservices.Counter"/>
+    <implementation name="de.schlund.pfixcore.example.webservices.CounterImpl"/>
   </webservice>
 
 </webservice-config>

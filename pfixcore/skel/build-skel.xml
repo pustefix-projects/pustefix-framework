@@ -950,31 +950,25 @@ or delete the DOCTYPE definition -->
   </target>
 
   <target name="webservice" depends="ant-tasks-webservice, webservice-proxy">
-    <!-- FIXME: Adapt webservice tasks to new project.xml format -->
-    <!--
     <pfx-webservice
       tmpdir="${dir.projects}/.webservice"
       prjdir="${dir.projects}"
-      prjfile="${file.projects_xml}" 
       builddir="${dir.build}"
       webappsdir="${dir.tomcat}/webapps"
       classpathref="cp.classpath"
       standalone="${standalone.tomcat}"
       portbase="${portbase.tomcat}"
+      includes="**/conf/project.xml"
     />
-    -->
   </target>
 
   <target name="webservice-proxygen" depends="ant-tasks-webservice">
-    <!-- FIXME: Adapt webservice tasks to new project.xml format -->
-    <!--
     <pfx-wsproxygen
-      prjfile="${file.projects_xml}"
       prjdir="${dir.projects}"
       gensrcdir="${dir.gensrc}"
       builddir="${dir.build}"
+      includes="**/conf/project.xml"
     />
-    -->
   </target>
 
   <target name="webservice-proxycompile" if="webservice.proxysources">

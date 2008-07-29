@@ -33,11 +33,6 @@
     <implementation name="de.schlund.pfixcore.example.webservices.chat.ChatImpl"/>
   </webservice>
 
-  <webservice name="Counter">
-    <interface name="de.schlund.pfixcore.example.webservices.Counter"/>
-    <implementation name="de.schlund.pfixcore.example.webservices.CounterImpl"/>
-  </webservice>
-
   <webservice name="Data">
     <interface name="de.schlund.pfixcore.example.webservices.Data"/>
     <implementation name="de.schlund.pfixcore.example.webservices.DataImpl"/>

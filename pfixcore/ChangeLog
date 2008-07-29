@@ -1,5 +1,22 @@
 2008-07-29  Martin Leidig  <mleidig@schlund.de>
 
+	Fixed JAXWS build, made JSON webservices working again.
+
+	* lib/pustefix-webservices-core-1.0-SNAPSHOT.jar: New version with
+	improved Spring support
+	* lib/pustefix-webservices-jaxws-1.0-SNAPSHOT.jar: New version with
+	adapted ant build tasks for new project.xml format
+	* skel/build-skel.xml: Adapted to changed ant build tasks
+	* lib/cglib-nodep-2.1_3.jar: Added library to support AOP proxies
+	
+	Sample Calculator webservice now is configured in spring.xml:
+	* projects/webservice/conf/webservice.conf.xml
+	* projects/webservice/conf/spring.xml
+	* projects/webservice/conf/webservice-import.xml
+	* projects/webservice/conf/project.xml
+
+2008-07-29  Martin Leidig  <mleidig@schlund.de>
+
 	* src/org/pustefixframework/container/spring/http/PustefixHandlerMapping.java:
 	Test if URIProvidingHttpRequestHandler is assignable from the bean class
 	before retrieving the bean instance from the ApplicationContext - instead of 
