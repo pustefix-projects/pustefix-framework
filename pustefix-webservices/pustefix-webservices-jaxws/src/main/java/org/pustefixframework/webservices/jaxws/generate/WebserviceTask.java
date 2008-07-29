@@ -121,9 +121,6 @@ public class WebserviceTask extends MatchingTask {
                     FileResource springConfigRes = ResourceUtil.getFileResource(springConfigFile.toURI());
                     if(springConfigFile.exists()) {
                         List<ServiceConfig> serviceList = WebServiceBeanConfigReader.read(springConfigRes);
-                        for(ServiceConfig serviceConfig:serviceList) {
-                            System.out.println("########### "+serviceConfig.getName());
-                        }
                         srvConf.addServiceConfigs(serviceList);
                     }
                     
