@@ -1,3 +1,11 @@
+2008-07-29  Martin Leidig  <mleidig@schlund.de>
+
+	* src/org/pustefixframework/container/spring/http/PustefixHandlerMapping.java:
+	Test if URIProvidingHttpRequestHandler is assignable from the bean class
+	before retrieving the bean instance from the ApplicationContext - instead of 
+	doing an instanceof test, which led to IllegalStateExceptions for session 
+	scoped beans (due to the initial absence of a session).
+
 2008-07-28  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
 	* docs/docbook/src/faq/ajax.xml: 

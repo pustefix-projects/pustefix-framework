@@ -29,8 +29,10 @@ public class PustefixHandlerMapping extends AbstractDetectingUrlHandlerMapping {
 
     @Override
     protected String[] determineUrlsForHandler(String beanName) {
-        Object bean = getApplicationContext().getBean(beanName);
-        if (bean instanceof UriProvidingHttpRequestHandler) {
+        
+        Class<?> beanClass = getApplicationContext().getType(beanName);
+        if(UriProvidingHttpRequestHandler.class.isAssignableFrom(beanClass)) {
+            Object bean = getApplicationContext().getBean(beanName);
             UriProvidingHttpRequestHandler handler = (UriProvidingHttpRequestHandler) bean;
             return handler.getRegisteredURIs();
         }
