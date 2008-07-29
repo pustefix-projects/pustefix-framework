@@ -19,6 +19,7 @@
                <xsd:attribute name="interface" type="ClassType" use="required"/>
                <xsd:attribute name="ref" type="xsd:string" use="optional"/>
                <xsd:attribute name="protocol" type="ProtocolType" use="optional" default="JSONWS"/>
+               <xsd:attribute name="session" type="SessionType" use="optional" default="servlet"/>
             </xsd:extension>
          </xsd:complexContent>
       </xsd:complexType>
@@ -43,6 +44,13 @@
       <xsd:enumeration value="JSONQX"/>
       <xsd:enumeration value="TEST"/>
       <xsd:enumeration value="ANY"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name="SessionType">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="servlet"/>
+      <xsd:enumeration value="none"/>
     </xsd:restriction>
   </xsd:simpleType>
 

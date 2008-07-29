@@ -48,6 +48,9 @@ public class WebServiceBeanDefinitionParser extends AbstractSingleBeanDefinition
        String protocol = element.getAttribute("protocol");
        if(protocol!=null) beanDefBuilder.addPropertyValue("protocol", protocol);
        
+       String sessionType = element.getAttribute("session");
+       if(sessionType!=null) beanDefBuilder.addPropertyValue("sessionType", sessionType);
+       
        Object target = null;
        if (element.hasAttribute("ref")) { 
            target = new RuntimeBeanReference(element.getAttribute("ref"));

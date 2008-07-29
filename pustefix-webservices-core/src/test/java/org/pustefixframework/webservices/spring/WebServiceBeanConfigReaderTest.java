@@ -18,32 +18,43 @@
  */
 package org.pustefixframework.webservices.spring;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.pustefixframework.webservices.BaseTestCase;
-import org.pustefixframework.webservices.Constants;
-import org.pustefixframework.webservices.config.Configuration;
 import org.pustefixframework.webservices.config.ServiceConfig;
-import org.springframework.beans.MutablePropertyValues;
-import org.springframework.beans.PropertyValue;
-import org.springframework.beans.factory.config.BeanDefinition;
-import org.springframework.beans.factory.support.SimpleBeanDefinitionRegistry;
-import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
-import org.springframework.core.io.FileSystemResource;
+import org.pustefixframework.webservices.example.CalculatorImpl;
+import org.pustefixframework.webservices.example.TestImpl;
 
 import de.schlund.pfixxml.resources.FileResource;
 import de.schlund.pfixxml.resources.ResourceUtil;
 
+/**
+ * 
+ * @author mleidig
+ *
+ */
 public class WebServiceBeanConfigReaderTest extends BaseTestCase {
 
-    public void testRead() throws Exception {
+    public void testReading() throws Exception {
     
+        Map<String,String> services = new HashMap<String,String>();
+        services.put("Calculator", CalculatorImpl.class.getName());
+        services.put("Test", TestImpl.class.getName());
+        services.put("TestNested", TestImpl.class.getName());
+        services.put("TestNestedRef", TestImpl.class.getName());
+        
         FileResource res = ResourceUtil.getFileResource("pfixroot:/conf/spring.xml");
         List<ServiceConfig> serviceList = WebServiceBeanConfigReader.read(res);
-        for(ServiceConfig service:serviceList) {
-            System.out.println("***** "+service.getName()+" "+service.getInterfaceName()+" "+service.getImplementationName());
-        }
+        assertEquals(services.size(), serviceList.size());
         
+        for(ServiceConfig service:serviceList) {
+            String impl = services.get(service.getName());
+            assertNotNull(impl);
+            assertEquals(impl, service.getImplementationName());
+        }
+   
     }
     
 }

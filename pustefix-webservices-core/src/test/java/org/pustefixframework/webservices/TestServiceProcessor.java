@@ -1,21 +1,14 @@
-package org.pustefixframework.webservices.test;
+package org.pustefixframework.webservices;
 
 import java.io.IOException;
+import java.lang.reflect.Method;
 
-import org.pustefixframework.webservices.ProcessingInfo;
-import org.pustefixframework.webservices.ServiceException;
-import org.pustefixframework.webservices.ServiceProcessor;
-import org.pustefixframework.webservices.ServiceRegistry;
-import org.pustefixframework.webservices.ServiceRequest;
-import org.pustefixframework.webservices.ServiceResponse;
-import org.pustefixframework.webservices.ServiceRuntime;
-
-public class MockServiceProcessor implements ServiceProcessor {
+public class TestServiceProcessor implements ServiceProcessor {
 
     private String contentType = "text/plain";
     private String encoding = "UTF-8";
     private String content = "";
-    private String serviceMethod;
+    private String serviceMethod = "test";
    
     public void process(ServiceRequest req, ServiceResponse res, ServiceRuntime runtime, ServiceRegistry registry, ProcessingInfo procInfo)
             throws ServiceException {
@@ -25,21 +18,33 @@ public class MockServiceProcessor implements ServiceProcessor {
         
         Object serviceObject = registry.getServiceObject(serviceName);
         
+        String reqMsg = null;
+        try {
+            reqMsg = req.getMessage();
+        } catch(IOException x) {
+            throw new ServiceException("Can't get request message",x);
+        }
         
+        Object result = null;
+        try {
+            Method meth = serviceObject.getClass().getMethod(serviceMethod,String.class);
+            result = meth.invoke(serviceObject, reqMsg);
+        } catch (Exception x) {
+            throw new ServiceException("Error invoking service method",x);
+        }
         
         res.setContentType(contentType);
         res.setCharacterEncoding(encoding);
+   
         try {
-            res.setMessage(content);
-            
+            if(result==Void.class) res.setMessage(content);
+            else res.setMessage(result.toString());
         } catch(IOException x) {
-            throw new ServiceException("IO error",x);
+            throw new ServiceException("Can't set response message",x);
         }
     }
     
     public void processException(ServiceRequest req, ServiceResponse res, Exception exception) throws ServiceException {
-        // TODO Auto-generated method stub
-        
     }
     
     public void setContentType(String contentType) {

@@ -4,10 +4,11 @@
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://pustefix.sourceforge.net/wsconfig200401 ../../core/schema/wsconfig200401.xsd">
 
-  <webservice name="Calculator">
-    <interface name="de.schlund.pfixcore.example.webservices.Calculator"/>
-    <implementation name="de.schlund.pfixcore.example.webservices.CalculatorImpl"/>
+  <webservice name="CalculatorOld">
+    <interface name="org.pustefixframework.webservices.example.Calculator"/>
+    <implementation name="org.pustefixframework.webservices.example.CalculatorImpl"/>
     <session type="none"/>
+    <protocol type="TEST"/>
   </webservice>
 
 </webservice-config>

@@ -1,4 +1,5 @@
-package test;
+package org.pustefixframework.webservices.example;
+
 
 public class TestImpl implements Test {
     

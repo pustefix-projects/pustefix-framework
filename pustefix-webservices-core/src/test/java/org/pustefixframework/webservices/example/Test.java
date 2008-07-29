@@ -1,4 +1,4 @@
-package test;
+package org.pustefixframework.webservices.example;
 
 public interface Test {
 

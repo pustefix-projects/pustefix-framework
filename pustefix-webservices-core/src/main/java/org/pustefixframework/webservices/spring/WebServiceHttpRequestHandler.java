@@ -72,7 +72,6 @@ public class WebServiceHttpRequestHandler implements UriProvidingHttpRequestHand
     private static final String PROCESSOR_IMPL_JAXWS="org.pustefixframework.webservices.jaxws.JAXWSProcessor";
     private static final String PROCESSOR_IMPL_JSONWS="org.pustefixframework.webservices.jsonws.JSONWSProcessor";
     private static final String PROCESSOR_IMPL_JSONQX="org.pustefixframework.webservices.jsonqx.JSONQXProcessor";
-    private static final String PROCESSOR_IMPL_TEST="org.pustefixframework.webservices.test.MockServiceProcessor";
     
     private static final String GENERATOR_IMPL_JSONWS="org.pustefixframework.webservices.jsonws.JSONWSStubGenerator";
     
@@ -95,9 +94,7 @@ public class WebServiceHttpRequestHandler implements UriProvidingHttpRequestHand
         }
     }
     
-    public void afterPropertiesSet() throws Exception {
-        System.out.println("////////////////  WS afterPropertiesSet");
-        
+    public void afterPropertiesSet() throws Exception {   
         synchronized (initLock) {
            
             runtime = (ServiceRuntime) getServletContext().getAttribute(ServiceRuntime.class.getName());
@@ -152,15 +149,13 @@ public class WebServiceHttpRequestHandler implements UriProvidingHttpRequestHand
     
     private void initServices() {
         LOG.info("Register Spring backed webservices");
-       
-        System.out.println("~~~ Register");
         String[] names = applicationContext.getBeanNamesForType(WebServiceRegistration.class);
         for(String name:names) {
             WebServiceRegistration reg = (WebServiceRegistration)applicationContext.getBean(name);
             ServiceConfig serviceConfig = new ServiceConfig(runtime.getConfiguration().getGlobalServiceConfig());
             serviceConfig.setName(reg.getServiceName());
             serviceConfig.setScopeType(Constants.SERVICE_SCOPE_APPLICATION);
-            
+            serviceConfig.setSessionType(reg.getSessionType());
             String ref = reg.getTargetBeanName();
             serviceConfig.setInterfaceName(reg.getInterface());
             Object serviceObject = null;
@@ -173,10 +168,8 @@ public class WebServiceHttpRequestHandler implements UriProvidingHttpRequestHand
             serviceConfig.setProtocolType(reg.getProtocol());
             runtime.getConfiguration().addServiceConfig(serviceConfig);
             runtime.getAppServiceRegistry().register(reg.getServiceName(), serviceObject);
-            System.out.println("~~~ Register "+reg.getServiceName());
             LOG.info("Registered webservice "+reg.getServiceName());
         }
-        System.out.println("IIIIIIIIIIIIIIIIIIIIIIIIIiINIT DONE");
     }
 
     public void handleRequest(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {

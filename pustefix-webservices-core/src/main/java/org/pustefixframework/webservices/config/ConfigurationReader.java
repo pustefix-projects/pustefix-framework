@@ -57,6 +57,7 @@ public class ConfigurationReader extends DefaultHandler {
 	List<FileResource> importedFiles=new ArrayList<FileResource>();
     boolean isRootFile;
     
+    
     public static Configuration read(FileResource file) throws Exception {
         return read(file,true);
     }
@@ -67,14 +68,15 @@ public class ConfigurationReader extends DefaultHandler {
 		return reader.getConfiguration();
 	}
 	
-	public Configuration getConfiguration() {
-		return config;
-	}
-	
-	public ConfigurationReader(FileResource configFile,boolean isRootFile) {
+
+	private ConfigurationReader(FileResource configFile,boolean isRootFile) {
 		this.configFile=configFile;
         this.isRootFile=isRootFile;
         configDir=configFile.getParentAsFileResource();
+	}
+	
+	public Configuration getConfiguration() {
+	    return config;
 	}
 	
 	public void read() throws Exception {
