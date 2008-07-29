@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:ws="http://pustefixframework.org/schema/webservices"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="
+http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd
+http://pustefixframework.org/schema/webservices http://pustefixframework.org/schema/webservices/pustefix-webservices.xsd">
+
+  <bean id="org.pustefixframework.webservices.spring.WebServiceHttpRequestHandler"
+        class="org.pustefixframework.webservices.spring.WebServiceHttpRequestHandler">
+    <property name="configFile" value="pfixroot:/conf/webservice.conf.xml"/>
+  </bean>
+ 
+  <bean id="testbean" class="test.TestImpl" scope="session">
+    <aop:scoped-proxy proxy-target-class="false"/>
+    <property name="text" value="dfadfasdfasd"/>
+  </bean>
+  
+  <bean id="foo" class="test.MyBean">
+    <property name="test" ref="testbean"/>
+  </bean>
+  <!-- 
+  <ws:webservice id="Test" 
+    servicename="Test"
+    interface="test.Test"
+    >
+      <bean class="test.TestImpl"/>
+  </ws:webservice>
+  -->
+  <ws:webservice id="Test" servicename="Test" interface="test.Test" ref="testbean" protocol="TEST"/>
+  
+  <ws:webservice id="Foo" servicename="Foo" interface="test.Test" ref="foo"/>
+  
+  <ws:webservice id="Bar" servicename="Bar" interface="test.Test">
+    <bean class="test.MyBean"/>
+  </ws:webservice>
+  
+  <ws:webservice id="Baz" servicename="Baz" interface="test.Test">
+    <ref bean="foo"/>
+  </ws:webservice>
+  
+</beans>

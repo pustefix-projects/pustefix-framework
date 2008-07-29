@@ -29,6 +29,8 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
+import org.pustefixframework.http.ServerContextStore;
+import org.pustefixframework.http.SessionContextStore;
 import org.pustefixframework.webservices.config.Configuration;
 import org.pustefixframework.webservices.config.GlobalServiceConfig;
 import org.pustefixframework.webservices.config.ServiceConfig;
@@ -42,8 +44,6 @@ import org.pustefixframework.webservices.utils.RecordingResponseWrapper;
 import de.schlund.pfixcore.auth.AuthConstraint;
 import de.schlund.pfixcore.workflow.ContextImpl;
 import de.schlund.pfixcore.workflow.context.ServerContextImpl;
-import de.schlund.pfixxml.ServerContextStore;
-import de.schlund.pfixxml.SessionContextStore;
 import de.schlund.pfixxml.serverutil.SessionAdmin;
 
 /**
@@ -137,7 +137,6 @@ public class ServiceRuntime {
             if(wsType!=null) wsType=wsType.toUpperCase();
             
             HttpSession session=req.getSession(false);
-            
             ServiceRegistry serviceReg=null;
             ServiceConfig srvConf=appServiceRegistry.getService(serviceName);
             if(srvConf!=null) serviceReg=appServiceRegistry;
@@ -152,51 +151,51 @@ public class ServiceRuntime {
                 } 
             }
             if(srvConf==null) throw new ServiceException("Service not found: "+serviceName);
-             
-            if(srvConf.getContextName()!=null) {
-                if(srvConf.getSessionType().equals(Constants.SESSION_TYPE_SERVLET)) {
-                    if(session==null) throw new AuthenticationException("Authentication failed: No valid session.");
-                    if(srvConf.getSSLForce() && !req.getScheme().equals("https")) 
-                        throw new AuthenticationException("Authentication failed: SSL connection required");
-                    if(req.getScheme().equals("https")) {
-                        Boolean secure=(Boolean)session.getAttribute(SessionAdmin.SESSION_IS_SECURE);
-                        if(secure==null || !secure.booleanValue()) 
-                            throw new AuthenticationException("Authentication failed: No secure session");
-                    }
-                        
-                    pfxSessionContext=SessionContextStore.getInstance(session).getContext(srvConf.getContextName());
-                    if(pfxSessionContext==null) throw new ServiceException("Context '"+srvConf.getContextName()+"' doesn't exist.");
-                        
-                    ServerContextImpl srvContext=ServerContextStore.getInstance(session.getServletContext()).getContext(srvConf.getContextName());
-                    if(srvContext==null) throw new ServiceException("ServerContext '"+srvConf.getContextName()+"' doesn't exist.");
-                    
-                    //Find authconstraint using the following search order:
-                    //   - authconstraint referenced by webservice 
-                    //   - authconstraint referenced by webservice-global (implicit)
-                    //   - default authconstraint from context configuration
-                    AuthConstraint authConst = null;
-                    String authRef=srvConf.getAuthConstraintRef();
-                    if(authRef != null) {
-                        authConst = srvContext.getContextConfig().getAuthConstraint(authRef);
-                        if(authConst == null) throw new ServiceException("AuthConstraint not found: "+authRef);
-                    }
-                    if(authConst == null) authConst = pfxSessionContext.getContextConfig().getDefaultAuthConstraint();
-                    if(authConst != null) {
-                        if(!authConst.isAuthorized(pfxSessionContext)) 
-                            throw new AuthenticationException("Authentication failed: AuthConstraint violated");
-                    }
-                    
-                    try {
-                        // Prepare context for current thread.
-                        // Cleanup is performed in finally block.
-                        pfxSessionContext.setServerContext(srvContext);
-                        pfxSessionContext.prepareForRequest();                                                                                                                                  
-                    } catch(Exception x) {
-                        throw new ServiceException("Preparing context failed",x);
-                    }
-                    callContext.setContext(pfxSessionContext);
+           
+           
+            if(srvConf.getSessionType().equals(Constants.SESSION_TYPE_SERVLET)) {
+                if(session==null) throw new AuthenticationException("Authentication failed: No valid session.");
+                if(srvConf.getSSLForce() && !req.getScheme().equals("https")) 
+                    throw new AuthenticationException("Authentication failed: SSL connection required");
+                if(req.getScheme().equals("https")) {
+                    Boolean secure=(Boolean)session.getAttribute(SessionAdmin.SESSION_IS_SECURE);
+                    if(secure==null || !secure.booleanValue()) 
+                        throw new AuthenticationException("Authentication failed: No secure session");
                 }
+                            
+                pfxSessionContext=SessionContextStore.getInstance(session).getContext(null);
+                if(pfxSessionContext==null) throw new ServiceException("Context '"+srvConf.getContextName()+"' doesn't exist.");
+                
+                ServerContextImpl srvContext=ServerContextStore.getInstance(session.getServletContext()).getContext(null);
+                if(srvContext==null) throw new ServiceException("ServerContext '"+srvConf.getContextName()+"' doesn't exist.");
+                        
+                //Find authconstraint using the following search order:
+                //   - authconstraint referenced by webservice 
+                //   - authconstraint referenced by webservice-global (implicit)
+                //   - default authconstraint from context configuration
+                AuthConstraint authConst = null;
+                String authRef=srvConf.getAuthConstraintRef();
+                if(authRef != null) {
+                    authConst = srvContext.getContextConfig().getAuthConstraint(authRef);
+                    if(authConst == null) throw new ServiceException("AuthConstraint not found: "+authRef);
+                }
+                if(authConst == null) authConst = pfxSessionContext.getContextConfig().getDefaultAuthConstraint();
+                if(authConst != null) {
+                    if(!authConst.isAuthorized(pfxSessionContext)) 
+                        throw new AuthenticationException("Authentication failed: AuthConstraint violated");
+                }
+                        
+                try {
+                    // Prepare context for current thread.
+                    // Cleanup is performed in finally block.
+                    pfxSessionContext.setServerContext(srvContext);
+                    pfxSessionContext.prepareForRequest();                                                                                                                                  
+                } catch(Exception x) {
+                    throw new ServiceException("Preparing context failed",x);
+                }
+                callContext.setContext(pfxSessionContext);
             }
+            
           
             String protocolType=srvConf.getProtocolType();
             if(protocolType==null) protocolType=getConfiguration().getGlobalServiceConfig().getProtocolType();
@@ -362,6 +361,10 @@ public class ServiceRuntime {
             res.getOutputStream().write(data.getBytes());
             res.getOutputStream().close();
         }
+    }
+
+    public ServiceRegistry getAppServiceRegistry() {
+        return appServiceRegistry;
     }
 
 }

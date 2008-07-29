@@ -13,6 +13,12 @@
     <logging enabled="true"/>
   </webservice-global>
  
+  <webservice name="Counter">
+    <interface name="org.pustefixframework.webservices.example.Counter"/>
+    <implementation name="org.pustefixframework.webservices.example.CounterImpl"/>
+  </webservice>
+ 
+  <!-- 
   <webservice name="Chat">
     <interface name="de.schlund.pfixcore.example.webservices.chat.Chat"/>
     <implementation name="de.schlund.pfixcore.example.webservices.chat.ChatImpl"/>
@@ -38,9 +44,10 @@
     <implementation name="de.schlund.pfixcore.example.webservices.CallTestImpl"/>
   </webservice>
   
-  <webservice name="BeanTest">
+  <webservice name="BeanTest" ref="testbean">
     <interface name="de.schlund.pfixcore.example.webservices.BeanTest"/>
     <implementation name="de.schlund.pfixcore.example.webservices.BeanTestImpl"/>
   </webservice>
-
+  -->
+  
 </webservice-config>
