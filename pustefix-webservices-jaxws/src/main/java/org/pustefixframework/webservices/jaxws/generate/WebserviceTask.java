@@ -22,6 +22,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.lang.reflect.Method;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -33,21 +34,22 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
 import org.apache.tools.ant.BuildException;
+import org.apache.tools.ant.DirectoryScanner;
 import org.apache.tools.ant.Project;
-import org.apache.tools.ant.Task;
+import org.apache.tools.ant.taskdefs.MatchingTask;
 import org.apache.tools.ant.types.Path;
 import org.apache.tools.ant.types.Reference;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
-
-import com.sun.tools.ws.ant.WsGen;
-
 import org.pustefixframework.webservices.Constants;
 import org.pustefixframework.webservices.config.Configuration;
 import org.pustefixframework.webservices.config.ConfigurationReader;
 import org.pustefixframework.webservices.config.GlobalServiceConfig;
 import org.pustefixframework.webservices.config.ServiceConfig;
+import org.pustefixframework.webservices.spring.WebServiceBeanConfigReader;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+
+import com.sun.tools.ws.ant.WsGen;
+
 import de.schlund.pfixxml.config.GlobalConfigurator;
 import de.schlund.pfixxml.resources.FileResource;
 import de.schlund.pfixxml.resources.ResourceUtil;
@@ -61,12 +63,11 @@ import de.schlund.pfixxml.util.FileUtils;
  * 
  * @author mleidig@schlund.de
  */
-public class WebserviceTask extends Task {
+public class WebserviceTask extends MatchingTask {
 
     private final static String XMLNS_JAXWS_RUNTIME = "http://java.sun.com/xml/ns/jax-ws/ri/runtime";
     private final static String XMLNS_JAVAEE = "http://java.sun.com/xml/ns/javaee";
 
-    private File prjfile;
     private File prjdir;
     private File builddir;
     private File tmpdir;
@@ -90,164 +91,188 @@ public class WebserviceTask extends Task {
             // if the docroot has already been configured
         }
         try {
+            DirectoryScanner scanner = getDirectoryScanner(prjdir);
+            String[] files = scanner.getIncludedFiles();
+            
             wsgenDirs = new HashSet<File>();
-            Document doc = TaskUtils.loadDoc(prjfile);
-            NodeList nl = doc.getElementsByTagName("project");
-            // iterate over projects
-            for (int i = 0; i < nl.getLength(); i++) {
-                Element elem = (Element) nl.item(i);
-                String prjName = elem.getAttribute("name");
-                FileResource wsConfFile = ResourceUtil.getFileResource("file://" + prjdir.getAbsolutePath() + "/" + prjName + "/" + "conf" + "/"
-                        + "webservice.conf.xml");
-                // go on processing if webservices found
-                if (wsConfFile.exists()) {
-                    int wsdlCount = 0;
-                    int stubCount = 0;
-                    File tmpDir = getTmpDir(prjName);
-                    // read webservice configuration
-                    Configuration srvConf = ConfigurationReader.read(wsConfFile);
-                    GlobalServiceConfig globConf = srvConf.getGlobalServiceConfig();
-                    Configuration refSrvConf = null;
-                    GlobalServiceConfig refGlobConf = null;
-                    boolean globalConfChanged = false;
-                    // read last built webservice configuration
-                    FileResource refWsConfFile = ResourceUtil.getFileResource("file://" + tmpDir.getAbsolutePath() + "/" + "webservice.conf.ser");
-                    if (refWsConfFile.exists()) {
-                        try {
-                            refSrvConf = ConfigurationReader.deserialize(refWsConfFile);
-                            refGlobConf = refSrvConf.getGlobalServiceConfig();
-                            if (!globConf.equals(refGlobConf)) globalConfChanged = true;
-                        } catch (Exception x) {
-                            log("Error deserializing old reference configuration", Project.MSG_VERBOSE);
-                            log("Warning: Ignore old reference configuration because it can't be deserialized. "
-                                    + "Services will be built from scratch.", Project.MSG_WARN);
-                        }
+            
+            for (String file : files) {
+                File prjFile = new File(prjdir, file);
+                File confDir = prjFile.getParentFile();
+                String projectName = confDir.getParentFile().getName();
+                Document doc = TaskUtils.loadDoc(prjFile);
+                Element serviceElem = (Element)doc.getElementsByTagName("webservice-service").item(0);
+                if(serviceElem != null) {
+                    
+                    Configuration srvConf = null;
+                    Element configFileElem = (Element)serviceElem.getElementsByTagName("config-file").item(0);
+                    if(configFileElem == null) throw new BuildException("The 'webservice-service' element requires "+
+                            " a 'config-file' child element in file '"+prjFile.getAbsolutePath()+"'.");
+                    String configFileUri = configFileElem.getTextContent().trim();
+                    FileResource configFile = ResourceUtil.getFileResource(configFileUri);
+                    
+                    if (configFile.exists()) {
+                        srvConf = ConfigurationReader.read(configFile);
+                    } else {
+                        srvConf = new Configuration(); 
                     }
-                    // Setup WSDL repository
-                    File appDir = new File(webappsdir, prjName);
-                    if (!appDir.exists()) throw new BuildException("Web application directory of project '" + prjName + "' doesn't exist");
-                    File wsdlDir = tmpDir;
-                    if (globConf.getWSDLSupportEnabled()) {
-                        String wsdlRepo = globConf.getWSDLRepository();
-                        if (wsdlRepo.startsWith("/")) wsdlRepo.substring(1);
-                        wsdlDir = new File(appDir, wsdlRepo);
-                        if (!wsdlDir.exists()) {
-                            boolean ok = wsdlDir.mkdir();
-                            if (!ok) throw new BuildException("Can't create WSDL directory " + wsdlDir.getAbsolutePath());
+                    
+                    File springConfigFile = new File(prjFile.getParentFile(), "spring.xml");
+                    FileResource springConfigRes = ResourceUtil.getFileResource(springConfigFile.toURI());
+                    if(springConfigFile.exists()) {
+                        List<ServiceConfig> serviceList = WebServiceBeanConfigReader.read(springConfigRes);
+                        for(ServiceConfig serviceConfig:serviceList) {
+                            System.out.println("########### "+serviceConfig.getName());
                         }
+                        srvConf.addServiceConfigs(serviceList);
                     }
-                    // Setup javascript stub repository
-                    File stubDir = tmpDir;
-                    if (globConf.getStubGenerationEnabled()) {
-                        String stubRepo = globConf.getStubRepository();
-                        if (stubRepo.startsWith("/")) stubRepo.substring(1);
-                        stubDir = new File(appDir, stubRepo);
-                        if (!stubDir.exists()) {
-                            boolean ok = stubDir.mkdir();
-                            if (!ok) throw new BuildException("Can't create webservice stub directory " + stubDir.getAbsolutePath());
-                        }
-                    }
-                    // Check if WEB-INF exists
-                    File webInfDir = new File(appDir, "WEB-INF");
-                    if (!webInfDir.exists())
-                        throw new BuildException("Web application WEB-INF subdirectory of project '" + prjName + "' doesn't exist");
-                    // Setup endpoint document
-                    DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-                    DocumentBuilder db = dbf.newDocumentBuilder();
-                    Document endPointsDoc = db.newDocument();
-                    Element endPointsElem = endPointsDoc.createElementNS(XMLNS_JAXWS_RUNTIME, "ws:endpoints");
-                    endPointsElem.setAttribute("version", "2.0");
-                    endPointsDoc.appendChild(endPointsElem);
-                    boolean hasSOAPService=false;
-                    // Iterate over services
-                    for (ServiceConfig conf : srvConf.getServiceConfig()) {
-                        if (conf.getProtocolType().equals(Constants.PROTOCOL_TYPE_ANY) || conf.getProtocolType().equals(Constants.PROTOCOL_TYPE_SOAP)) {
-                            hasSOAPService=true;
-                            ServiceConfig refConf = null;
-                            if (refSrvConf != null) refConf = refSrvConf.getServiceConfig(conf.getName());
-                            File wsdlFile = new File(wsdlDir, conf.getName() + ".wsdl");
-                            // Add endpoint configuration
-                            Element endPointElem = endPointsDoc.createElementNS(XMLNS_JAXWS_RUNTIME, "ws:endpoint");
-                            endPointsElem.appendChild(endPointElem);
-                            endPointElem.setAttribute("name", conf.getName());
-                            endPointElem.setAttribute("implementation", conf.getImplementationName() + "JAXWS");
-                            endPointElem.setAttribute("url-pattern", globConf.getRequestPath() + "/" + conf.getName());
-                            Element chainsElem = endPointsDoc.createElementNS(XMLNS_JAVAEE, "ee:handler-chains");
-                            Element chainElem = endPointsDoc.createElementNS(XMLNS_JAVAEE, "ee:handler-chain");
-                            chainsElem.appendChild(chainElem);
-                            Element handlerElem = endPointsDoc.createElementNS(XMLNS_JAVAEE, "ee:handler");
-                            chainElem.appendChild(handlerElem);
-                            Element handlerClassElem = endPointsDoc.createElementNS(XMLNS_JAVAEE, "ee:handler-class");
-                            handlerElem.appendChild(handlerClassElem);
-                            handlerClassElem.setTextContent("org.pustefixframework.webservices.jaxws.ErrorHandler");
-                            if(globConf.getMonitoringEnabled()||globConf.getLoggingEnabled()) {
-                                handlerElem = endPointsDoc.createElementNS(XMLNS_JAVAEE, "ee:handler");
-                                chainElem.appendChild(handlerElem);
-                                handlerClassElem = endPointsDoc.createElementNS(XMLNS_JAVAEE, "ee:handler-class");
-                                handlerElem.appendChild(handlerClassElem);
-                                handlerClassElem.setTextContent("org.pustefixframework.webservices.jaxws.RecordingHandler");
+                    
+                    if(srvConf.getServiceConfig().size()>0) {
+                        
+                        int wsdlCount = 0;
+                        int stubCount = 0;
+                        File tmpDir = getTmpDir(projectName);
+                      
+                        GlobalServiceConfig globConf = srvConf.getGlobalServiceConfig();
+                        Configuration refSrvConf = null;
+                        GlobalServiceConfig refGlobConf = null;
+                        boolean globalConfChanged = false;
+                        // read last built webservice configuration
+                        FileResource refWsConfFile = ResourceUtil.getFileResource("file://" + tmpDir.getAbsolutePath() + "/" + "webservice.conf.ser");
+                        if (refWsConfFile.exists()) {
+                            try {
+                                refSrvConf = ConfigurationReader.deserialize(refWsConfFile);
+                                refGlobConf = refSrvConf.getGlobalServiceConfig();
+                                if (!globConf.equals(refGlobConf)) globalConfChanged = true;
+                            } catch (Exception x) {
+                                log("Error deserializing old reference configuration", Project.MSG_VERBOSE);
+                                log("Warning: Ignore old reference configuration because it can't be deserialized. "
+                                        + "Services will be built from scratch.", Project.MSG_WARN);
                             }
-                            endPointElem.appendChild(chainsElem);
-                            // Check if WSDL/Javascript has to be built
-                            if (refConf == null || !wsdlFile.exists() || globalConfChanged || !conf.equals(refConf)
-                                    || TaskUtils.checkInterfaceChange(conf.getInterfaceName(), builddir, wsdlFile)) {
-                                checkInterface(conf.getInterfaceName());
-                                Class<?> implClass = Class.forName(conf.getImplementationName());
-                                // Generate WSDL
-                                File wsgenDir=new File(tmpdir,"wsdl/"+conf.getName()+"/"+conf.getImplementationName());
-                                if(!wsgenDirs.contains(wsgenDir)) {
-                                    if(!wsgenDir.exists()) wsgenDir.mkdirs();
-                                    WsGen wsgen = new WsGen();
-                                    wsgen.setProject(getProject());
-                                    wsgen.setDynamicAttribute("keep", "true");
-                                    wsgen.setDynamicAttribute("sourcedestdir", "gensrc");
-                                    wsgen.setDynamicAttribute("genwsdl", "true");
-                                    wsgen.setDynamicAttribute("destdir", "build");
-                                    wsgen.setDynamicAttribute("resourcedestdir", wsgenDir.getAbsolutePath());
-                                    wsgen.setDynamicAttribute("classpath", classPath.toString());
-                                    wsgen.setDynamicAttribute("sei", conf.getImplementationName() + "JAXWS");
-                                    String serviceName = "{" + TaskUtils.getTargetNamespace(implClass) + "}" + conf.getName();
-                                    wsgen.setDynamicAttribute("servicename", serviceName);
-                                    wsgen.execute();
-                                    wsgenDirs.add(wsgenDir);
-                                } 
-                                FileUtils.copyFiles(wsgenDir, wsdlDir, ".*wsdl", ".*xsd");
-                                // Replace endpoint URL
-                                Element srvElem = (Element) elem.getElementsByTagName("servername").item(0);
-                                if (srvElem == null)
-                                    throw new BuildException("Missing servername element in configuration of project '" + prjName + "'");
-                                String srvName = srvElem.getTextContent().trim();
-                                String srvPort = "";
-                                if (standalone) srvPort = ":" + (portbase + 80);
-                                String wsUrl = "http://" + srvName + srvPort + globConf.getRequestPath() + "/" + conf.getName();
-                                FileUtils.searchAndReplace(wsdlFile, "UTF-8", "REPLACE_WITH_ACTUAL_URL", wsUrl);
-                                wsdlCount++;
-                                // Generate javascript stubs
-                                if (globConf.getStubGenerationEnabled()) {
-                                    File stubFile = new File(stubDir, conf.getName() + ".js");
-                                    if (!stubFile.exists() || stubFile.lastModified() < wsdlFile.lastModified()) {
-                                        Wsdl2Js task = new Wsdl2Js();
-                                        task.setInputFile(wsdlFile);
-                                        task.setOutputFile(stubFile);
-                                        task.generate();
-                                        stubCount++;
+                        }
+                        // Setup WSDL repository
+                        File appDir = new File(webappsdir, projectName);
+                        if (!appDir.exists()) throw new BuildException("Web application directory of project '" + projectName + "' doesn't exist");
+                        File wsdlDir = tmpDir;
+                        if (globConf.getWSDLSupportEnabled()) {
+                            String wsdlRepo = globConf.getWSDLRepository();
+                            if (wsdlRepo.startsWith("/")) wsdlRepo.substring(1);
+                            wsdlDir = new File(appDir, wsdlRepo);
+                            if (!wsdlDir.exists()) {
+                                boolean ok = wsdlDir.mkdir();
+                                if (!ok) throw new BuildException("Can't create WSDL directory " + wsdlDir.getAbsolutePath());
+                            }
+                        }
+                        // Setup javascript stub repository
+                        File stubDir = tmpDir;
+                        if (globConf.getStubGenerationEnabled()) {
+                            String stubRepo = globConf.getStubRepository();
+                            if (stubRepo.startsWith("/")) stubRepo.substring(1);
+                            stubDir = new File(appDir, stubRepo);
+                            if (!stubDir.exists()) {
+                                boolean ok = stubDir.mkdir();
+                                if (!ok) throw new BuildException("Can't create webservice stub directory " + stubDir.getAbsolutePath());
+                            }
+                        }
+                        // Check if WEB-INF exists
+                        File webInfDir = new File(appDir, "WEB-INF");
+                        if (!webInfDir.exists())
+                            throw new BuildException("Web application WEB-INF subdirectory of project '" + projectName + "' doesn't exist");
+                        // Setup endpoint document
+                        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+                        DocumentBuilder db = dbf.newDocumentBuilder();
+                        Document endPointsDoc = db.newDocument();
+                        Element endPointsElem = endPointsDoc.createElementNS(XMLNS_JAXWS_RUNTIME, "ws:endpoints");
+                        endPointsElem.setAttribute("version", "2.0");
+                        endPointsDoc.appendChild(endPointsElem);
+                        boolean hasSOAPService=false;
+                        // Iterate over services
+                        for (ServiceConfig conf : srvConf.getServiceConfig()) {
+                            if (conf.getProtocolType().equals(Constants.PROTOCOL_TYPE_ANY) || conf.getProtocolType().equals(Constants.PROTOCOL_TYPE_SOAP)) {
+                                hasSOAPService=true;
+                                ServiceConfig refConf = null;
+                                if (refSrvConf != null) refConf = refSrvConf.getServiceConfig(conf.getName());
+                                File wsdlFile = new File(wsdlDir, conf.getName() + ".wsdl");
+                                // Add endpoint configuration
+                                Element endPointElem = endPointsDoc.createElementNS(XMLNS_JAXWS_RUNTIME, "ws:endpoint");
+                                endPointsElem.appendChild(endPointElem);
+                                endPointElem.setAttribute("name", conf.getName());
+                                endPointElem.setAttribute("implementation", conf.getImplementationName() + "JAXWS");
+                                endPointElem.setAttribute("url-pattern", globConf.getRequestPath() + "/" + conf.getName());
+                                Element chainsElem = endPointsDoc.createElementNS(XMLNS_JAVAEE, "ee:handler-chains");
+                                Element chainElem = endPointsDoc.createElementNS(XMLNS_JAVAEE, "ee:handler-chain");
+                                chainsElem.appendChild(chainElem);
+                                Element handlerElem = endPointsDoc.createElementNS(XMLNS_JAVAEE, "ee:handler");
+                                chainElem.appendChild(handlerElem);
+                                Element handlerClassElem = endPointsDoc.createElementNS(XMLNS_JAVAEE, "ee:handler-class");
+                                handlerElem.appendChild(handlerClassElem);
+                                handlerClassElem.setTextContent("org.pustefixframework.webservices.jaxws.ErrorHandler");
+                                if(globConf.getMonitoringEnabled()||globConf.getLoggingEnabled()) {
+                                    handlerElem = endPointsDoc.createElementNS(XMLNS_JAVAEE, "ee:handler");
+                                    chainElem.appendChild(handlerElem);
+                                    handlerClassElem = endPointsDoc.createElementNS(XMLNS_JAVAEE, "ee:handler-class");
+                                    handlerElem.appendChild(handlerClassElem);
+                                    handlerClassElem.setTextContent("org.pustefixframework.webservices.jaxws.RecordingHandler");
+                                }
+                                endPointElem.appendChild(chainsElem);
+                                // Check if WSDL/Javascript has to be built
+                                if (refConf == null || !wsdlFile.exists() || globalConfChanged || !conf.equals(refConf)
+                                        || TaskUtils.checkInterfaceChange(conf.getInterfaceName(), builddir, wsdlFile)) {
+                                    checkInterface(conf.getInterfaceName());
+                                    Class<?> implClass = Class.forName(conf.getImplementationName());
+                                    // Generate WSDL
+                                    File wsgenDir=new File(tmpdir,"wsdl/"+conf.getName()+"/"+conf.getImplementationName());
+                                    if(!wsgenDirs.contains(wsgenDir)) {
+                                        if(!wsgenDir.exists()) wsgenDir.mkdirs();
+                                        WsGen wsgen = new WsGen();
+                                        wsgen.setProject(getProject());
+                                        wsgen.setDynamicAttribute("keep", "true");
+                                        wsgen.setDynamicAttribute("sourcedestdir", "gensrc");
+                                        wsgen.setDynamicAttribute("genwsdl", "true");
+                                        wsgen.setDynamicAttribute("destdir", "build");
+                                        wsgen.setDynamicAttribute("resourcedestdir", wsgenDir.getAbsolutePath());
+                                        wsgen.setDynamicAttribute("classpath", classPath.toString());
+                                        wsgen.setDynamicAttribute("sei", conf.getImplementationName() + "JAXWS");
+                                        String serviceName = "{" + TaskUtils.getTargetNamespace(implClass) + "}" + conf.getName();
+                                        wsgen.setDynamicAttribute("servicename", serviceName);
+                                        wsgen.execute();
+                                        wsgenDirs.add(wsgenDir);
+                                    } 
+                                    FileUtils.copyFiles(wsgenDir, wsdlDir, ".*wsdl", ".*xsd");
+                                    // Replace endpoint URL
+                                    String srvName = "HOST";
+                                    String srvPort = "";
+                                    if (standalone) srvPort = ":" + (portbase + 80);
+                                    String wsUrl = "http://" + srvName + srvPort + globConf.getRequestPath() + "/" + conf.getName();
+                                    FileUtils.searchAndReplace(wsdlFile, "UTF-8", "REPLACE_WITH_ACTUAL_URL", wsUrl);
+                                    wsdlCount++;
+                                    // Generate javascript stubs
+                                    if (globConf.getStubGenerationEnabled()) {
+                                        File stubFile = new File(stubDir, conf.getName() + ".js");
+                                        if (!stubFile.exists() || stubFile.lastModified() < wsdlFile.lastModified()) {
+                                            Wsdl2Js task = new Wsdl2Js();
+                                            task.setInputFile(wsdlFile);
+                                            task.setOutputFile(stubFile);
+                                            task.generate();
+                                            stubCount++;
+                                        }
                                     }
                                 }
                             }
                         }
+                        if (wsdlCount > 0) log("Generated " + wsdlCount + " WSDL file" + (wsdlCount == 1 ? "" : "s") + ".");
+                        if (stubCount > 0) log("Generated " + stubCount + " Javascript stub file" + (stubCount == 1 ? "" : "s") + ".");
+                        // Generate JAXWS runtime endpoint configuration
+                        File endPointsFile = new File(webInfDir, "sun-jaxws.xml");
+                        if (hasSOAPService && (!endPointsFile.exists() || wsdlCount > 0)) {
+                            Transformer t = TransformerFactory.newInstance().newTransformer();
+                            t.setOutputProperty(OutputKeys.INDENT, "yes");
+                            t.transform(new DOMSource(endPointsDoc), new StreamResult(new FileOutputStream(endPointsFile)));
+                            log("Generated JAXWS runtime endpoint configuration.");
+                        }
+                        // Store current webservice configuration file
+                        ConfigurationReader.serialize(srvConf, refWsConfFile);
                     }
-                    if (wsdlCount > 0) log("Generated " + wsdlCount + " WSDL file" + (wsdlCount == 1 ? "" : "s") + ".");
-                    if (stubCount > 0) log("Generated " + stubCount + " Javascript stub file" + (stubCount == 1 ? "" : "s") + ".");
-                    // Generate JAXWS runtime endpoint configuration
-                    File endPointsFile = new File(webInfDir, "sun-jaxws.xml");
-                    if (hasSOAPService && (!endPointsFile.exists() || wsdlCount > 0)) {
-                        Transformer t = TransformerFactory.newInstance().newTransformer();
-                        t.setOutputProperty(OutputKeys.INDENT, "yes");
-                        t.transform(new DOMSource(endPointsDoc), new StreamResult(new FileOutputStream(endPointsFile)));
-                        log("Generated JAXWS runtime endpoint configuration.");
-                    }
-                    // Store current webservice configuration file
-                    ConfigurationReader.serialize(srvConf, refWsConfFile);
                 }
             }
         } catch (Exception x) {
@@ -296,14 +321,7 @@ public class WebserviceTask extends Task {
     }
 
     // Ant-task properties:
-
-    /**
-     * Set project configuration file.
-     */
-    public void setPrjfile(File prjfile) {
-        this.prjfile = prjfile;
-    }
-
+    
     /**
      * Set project directory.
      */

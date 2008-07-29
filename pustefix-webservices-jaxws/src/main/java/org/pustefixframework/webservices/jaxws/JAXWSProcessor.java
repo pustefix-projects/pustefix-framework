@@ -25,12 +25,9 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.xml.namespace.QName;
 
 import org.apache.log4j.Logger;
-
-import com.sun.xml.ws.transport.http.servlet.WSServlet;
-import com.sun.xml.ws.transport.http.servlet.WSServletDelegate;
-
 import org.pustefixframework.webservices.Constants;
 import org.pustefixframework.webservices.InsertPIResponseWrapper;
 import org.pustefixframework.webservices.ProcessingInfo;
@@ -41,6 +38,17 @@ import org.pustefixframework.webservices.ServiceRegistry;
 import org.pustefixframework.webservices.ServiceRequest;
 import org.pustefixframework.webservices.ServiceResponse;
 import org.pustefixframework.webservices.ServiceRuntime;
+import org.pustefixframework.webservices.config.Configuration;
+import org.pustefixframework.webservices.config.ServiceConfig;
+
+import com.sun.xml.ws.api.BindingID;
+import com.sun.xml.ws.api.WSBinding;
+import com.sun.xml.ws.api.server.InstanceResolver;
+import com.sun.xml.ws.api.server.Invoker;
+import com.sun.xml.ws.api.server.WSEndpoint;
+import com.sun.xml.ws.binding.BindingImpl;
+import com.sun.xml.ws.transport.http.servlet.ServletAdapterList;
+import com.sun.xml.ws.transport.http.servlet.WSServletDelegate;
 
 /**
  * @author mleidig@schlund.de
@@ -58,7 +66,30 @@ public class JAXWSProcessor implements ServiceProcessor {
     }
     
     private void init(ServletContext servletContext) {
-        delegate = (WSServletDelegate)servletContext.getAttribute(WSServlet.JAXWS_RI_RUNTIME_INFO);
+      this.servletContext = servletContext;
+    }
+    
+    private void createDelegate(ServiceRuntime runtime, ServiceRegistry registry) throws ServiceException {
+        ServletAdapterList adapterList = new ServletAdapterList();
+        Configuration conf = runtime.getConfiguration();
+        for(ServiceConfig serviceConf:conf.getServiceConfig()) {
+            String serviceName = serviceConf.getName();
+            String serviceClassName = serviceConf.getImplementationName()+"JAXWS";
+            Object serviceObj = null;
+            try {
+                Class<?> serviceClass = Class.forName(serviceClassName);
+                serviceObj = serviceClass.newInstance();
+            } catch(Exception x) {
+                throw new ServiceException("Can't create service object: "+serviceClassName,x);
+            }
+            Invoker invoker = InstanceResolver.createSingleton(serviceObj).createInvoker();
+            QName serviceQName = new QName(JAXWSUtils.getTargetNamespace(serviceObj.getClass()),serviceName);
+            WSBinding binding = BindingImpl.create(BindingID.SOAP11_HTTP);
+            WSEndpoint<?> endpoint = WSEndpoint.create(serviceObj.getClass(), false, invoker, serviceQName, null, null, binding, null, null, null, true);    
+            String url = conf.getGlobalServiceConfig().getRequestPath()+"/"+serviceName;
+            adapterList.createAdapter(serviceName, url, endpoint);     
+        }
+        delegate = new WSServletDelegate(adapterList, servletContext);
     }
 
     public void setServletContext(ServletContext servletContext) {
@@ -67,7 +98,11 @@ public class JAXWSProcessor implements ServiceProcessor {
     }
     
     public void process(ServiceRequest req, ServiceResponse res, ServiceRuntime runtime, ServiceRegistry registry, ProcessingInfo procInfo) throws ServiceException {
-           
+        
+        synchronized(this) {
+            if(delegate==null) createDelegate(runtime,registry);
+        }
+        
         if(!(req.getUnderlyingRequest() instanceof HttpServletRequest)) throw new ServiceException("Service protocol not supported");
         HttpServletRequest httpReq=(HttpServletRequest)req.getUnderlyingRequest();
         HttpServletResponse httpRes=(HttpServletResponse)res.getUnderlyingResponse();
