@@ -24,6 +24,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 
 /**
  * Configuration.java 
@@ -54,7 +55,17 @@ public class Configuration implements Serializable {
     }
     
     public void addServiceConfig(ServiceConfig srvConf) {
+        //TODO: uncomment
+        //if(srvsConf.containsKey(srvConf.getName())) 
+        //    throw new IllegalArgumentException("Service with name '"+srvConf.getName()+"' already exists!");
+        if(globConf!=null) srvConf.setGlobalServiceConfig(globConf);
         srvsConf.put(srvConf.getName(),srvConf);
+    }
+    
+    public void addServiceConfigs(List<ServiceConfig> srvConfList) {
+        for(ServiceConfig srvConf:srvConfList) {
+            addServiceConfig(srvConf);
+        }
     }
     
     public ServiceConfig getServiceConfig(String name) {

@@ -33,10 +33,9 @@ import org.pustefixframework.webservices.config.ServiceConfig;
  */
 public class ServiceRegistry {
 	
-	enum RegistryType {APPLICATION,SESSION};
+	public enum RegistryType {APPLICATION,SESSION};
 	
 	Configuration configuration;
-    Map<String,ServiceConfig> runtimeServices;
     
 	RegistryType registryType;
 	Map<String,ServiceDescriptor> serviceDescriptors;
@@ -47,7 +46,6 @@ public class ServiceRegistry {
 		this.registryType=registryType;
         serviceDescriptors=new HashMap<String,ServiceDescriptor>();
         serviceObjects=new HashMap<String,Object>();
-        runtimeServices=new HashMap<String,ServiceConfig>();
 	}
 
     public void deregisterService(String serviceName) {
@@ -61,11 +59,6 @@ public class ServiceRegistry {
 
 	public ServiceConfig getService(String serviceName) {
 		ServiceConfig srvConf=configuration.getServiceConfig(serviceName);
-        if(srvConf==null) {
-            synchronized(runtimeServices) {
-                srvConf=runtimeServices.get(serviceName);
-            }
-        }
 		if(srvConf!=null) {
 			String scope=srvConf.getScopeType();
 			if((scope.equals(Constants.SERVICE_SCOPE_APPLICATION)&&registryType==RegistryType.APPLICATION)||
@@ -133,5 +126,10 @@ public class ServiceRegistry {
 		}
 	}
 	
+	public void register(String serviceName, Object serviceObject) {
+	    synchronized(serviceObjects) {
+	        serviceObjects.put(serviceName, serviceObject);
+	    }
+	}
     
 }
