@@ -54,7 +54,7 @@ public class PustefixProjectBeanDefinitionReader extends AbstractBeanDefinitionR
         try {
             GlobalConfigurationHolder globalConfig = (new GlobalConfigurationReader()).readGlobalConfiguration();
             Parser projectConfigParser = new ClasspathConfiguredParser("META-INF/org/pustefixframework/config/project/parser/project-config.xml");
-            projectConfigTree = projectConfigParser.parse(resource.getInputStream(), info, globalConfig);
+            projectConfigTree = projectConfigParser.parse(resource.getInputStream(), info, globalConfig, getRegistry());
         } catch (ParserException e) {
             throw new BeanDefinitionStoreException("Error while parsing " + resource + ": " + e.getMessage(), e);
         } catch (IOException e) {
