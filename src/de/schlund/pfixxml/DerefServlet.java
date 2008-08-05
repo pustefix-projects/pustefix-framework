@@ -53,6 +53,8 @@ public class DerefServlet extends ServletManager {
     protected final static Logger   LOG             = Logger.getLogger(DerefServlet.class);
     public final static String PROP_DEREFKEY = "derefserver.signkey";
     public final static String PROP_IGNORESIGN = "derefserver.ignoresign";
+    public final static String PROP_VALIDTIME = "derefserver.validtime";
+    private final static long DEFAULT_VALIDTIME = 1000 * 60 * 60;
     private ServletManagerConfig config;
     
     protected boolean allowSessionCreate() {
@@ -63,24 +65,40 @@ public class DerefServlet extends ServletManager {
         return (false);
     }
 
-    public static String signString(String input, String key) {
-        return MD5Utils.hex_md5(input+key, "utf8");
+    public static String signString(String input, long timeStamp, String key) {
+        return MD5Utils.hex_md5(input+timeStamp+key, "utf8");
     }
 
-    public static boolean checkSign(String input, String key, String sign) {
-        if (input == null || sign == null) {
+    public static String getTimeStamp() {
+        return String.valueOf(System.currentTimeMillis());
+    }
+    
+    public static boolean checkSign(String input, long timeStamp, long validTime, String key, String sign) {
+        if (input == null || sign == null ) {
             return false;
         }
-        return MD5Utils.hex_md5(input+key, "utf8").equals(sign);
+        if( (System.currentTimeMillis()-timeStamp) > validTime) {
+            return false;
+        }
+        return MD5Utils.hex_md5(input+timeStamp+key, "utf8").equals(sign);
     }
     
     protected void process(PfixServletRequest preq, HttpServletResponse res) throws Exception {
         RequestParam linkparam    = preq.getRequestParam("link");
         RequestParam enclinkparam = preq.getRequestParam("__enclink");
         RequestParam signparam    = preq.getRequestParam("__sign");
+        RequestParam tsparam      = preq.getRequestParam("__ts");
         String       key          = config.getProperties().getProperty(PROP_DEREFKEY);
         String       ign          = config.getProperties().getProperty(PROP_IGNORESIGN);
-
+        
+        long validTime = DEFAULT_VALIDTIME;
+        if(config.getProperties().getProperty(PROP_VALIDTIME)!=null) {
+            validTime = Long.parseLong(config.getProperties().getProperty(PROP_VALIDTIME)) * 1000;
+            if(validTime > DEFAULT_VALIDTIME) {
+                LOG.warn("The chosen deref-link valid time (" + validTime/1000 + "s) is very long.");
+            }
+        }
+        
         // This is currently set to true by default for backward compatibility. 
         boolean ignore_nosign = true;
         if (ign != null && ign.equals("false")) {
@@ -93,18 +111,21 @@ public class DerefServlet extends ServletManager {
         LOG.debug("===> sign key: " + key);
         LOG.debug("===> Referer: " + referer);
         
+        long timeStamp = 0;
+        if(tsparam!=null && tsparam.getValue()!=null) timeStamp=Long.parseLong(tsparam.getValue());
+        
         if (linkparam != null && linkparam.getValue() != null) {
             LOG.debug(" ==> Handle link: " + linkparam.getValue());
             if (signparam != null && signparam.getValue() != null) {
                 LOG.debug("     with sign: " + signparam.getValue());
             }
-            handleLink(linkparam.getValue(), signparam, ignore_nosign, preq, res, key);
+            handleLink(linkparam.getValue(), signparam, timeStamp, validTime, ignore_nosign, preq, res, key);
             return;
         } else if (enclinkparam != null && enclinkparam.getValue() != null &&
                    signparam != null && signparam.getValue() != null) {
             LOG.debug(" ==> Handle enclink: " + enclinkparam.getValue());
             LOG.debug("     with sign: " + signparam.getValue());
-            handleEnclink(enclinkparam.getValue(), signparam.getValue(), preq, res, key);
+            handleEnclink(enclinkparam.getValue(), timeStamp, validTime, signparam.getValue(), preq, res, key);
             return;
         } else {
             res.sendError(HttpServletResponse.SC_BAD_REQUEST);
@@ -113,7 +134,7 @@ public class DerefServlet extends ServletManager {
     }
 
 
-    private void handleLink(String link, RequestParam signparam, boolean ignore_nosign,
+    private void handleLink(String link, RequestParam signparam, long timeStamp, long validTime, boolean ignore_nosign,
                             PfixServletRequest preq, HttpServletResponse res, String key) throws Exception {
         boolean checked = false;
         boolean signed  = false;
@@ -128,7 +149,7 @@ public class DerefServlet extends ServletManager {
         if  (signparam != null && signparam.getValue() != null) {
             signed = true;
         }
-        if (signed && checkSign(link, key, signparam.getValue())) {
+        if (signed && checkSign(link, timeStamp, validTime, key, signparam.getValue())) {
             checked = true;
         }
 
@@ -161,9 +182,10 @@ public class DerefServlet extends ServletManager {
                 }
             }
             String             enclink  = Base64Utils.encode(link.getBytes("utf8"),false);
+            if(!signed && ignore_nosign) timeStamp = System.currentTimeMillis();
             String             reallink = getServerURL(preq) +
                 SessionHelper.getClearedURI(preq) + "?__enclink=" + URLEncoder.encode(enclink, "utf8") +
-                "&__sign=" + signString(enclink, key);
+                "&__sign=" + signString(enclink, timeStamp, key) + "&__ts=" + timeStamp;
             
             LOG.debug("===> Meta refresh to link: " + reallink);
             DEREFLOG.info(preq.getServerName() + "|" + link + "|" + preq.getRequest().getHeader("Referer"));
@@ -197,8 +219,8 @@ public class DerefServlet extends ServletManager {
         return url;
     }
 
-    private void handleEnclink(String enclink, String sign, PfixServletRequest preq, HttpServletResponse res, String key) throws Exception {
-        if (checkSign(enclink, key, sign)) {
+    private void handleEnclink(String enclink, long timeStamp, long validTime, String sign, PfixServletRequest preq, HttpServletResponse res, String key) throws Exception {
+        if (checkSign(enclink, timeStamp, validTime, key, sign)) {
             String link = new String( Base64Utils.decode(enclink), "utf8");
             if (link.startsWith("/")) {
                 link = getServerURL(preq) + link;
