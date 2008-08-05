@@ -4,6 +4,8 @@
 	of deref links by adding/signing a timestamp. The valid time can be 
 	configured using the 'derefserver.validtime' property (default value 
 	is 3600s).
+	* projects/core/xsl/master.xsl: Add timestamp to deref link and
+	signing.
 
 2008-06-19  Martin Leidig  <mleidig@schlund.de>
 

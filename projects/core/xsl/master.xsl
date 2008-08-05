@@ -183,7 +183,8 @@
 
       <ixsl:template name="__sign">
         <ixsl:param name="in"/>
-        <ixsl:value-of select="deref:signString($in, $__derefkey)"/>
+        <ixsl:param name="ts"/>
+        <ixsl:value-of select="deref:signString($in, $ts, $__derefkey)"/>
       </ixsl:template>
       
       <ixsl:template name="__deref">
@@ -193,13 +194,17 @@
             <ixsl:with-param name="in" select="$link"/>
           </ixsl:call-template>
         </ixsl:variable>
+        <ixsl:variable name="ts">
+          <ixsl:value-of select="deref:getTimeStamp()"/>
+        </ixsl:variable>
         <ixsl:variable name="sign">
           <ixsl:call-template name="__sign">
             <ixsl:with-param name="in" select="$link"/>
+            <ixsl:with-param name="ts" select="$ts"/>
           </ixsl:call-template>
         </ixsl:variable>
         <ixsl:text>/xml/deref?link=</ixsl:text>
-        <ixsl:value-of select="$enclink"/>&amp;__sign=<ixsl:value-of select="$sign"/>
+        <ixsl:value-of select="$enclink"/>&amp;__sign=<ixsl:value-of select="$sign"/>&amp;__ts=<ixsl:value-of select="$ts"/>
       </ixsl:template>
 
       <ixsl:template name="__formwarn">
