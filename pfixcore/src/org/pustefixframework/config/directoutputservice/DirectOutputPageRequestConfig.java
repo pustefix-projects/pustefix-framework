@@ -16,11 +16,9 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-package de.schlund.pfixxml.config;
+package org.pustefixframework.config.directoutputservice;
 
 import java.util.Properties;
-
-import de.schlund.pfixcore.workflow.DirectOutputState;
 
 /**
  * Provides configuration for a direct output page. This configuration is 
@@ -41,12 +39,11 @@ public interface DirectOutputPageRequestConfig {
     String getAuthConstraintRef();
 
     /**
-     * Returns class used to construct the state. The state does the actual
-     * request handling for the page.
+     * Returns the name of the bean that represents the state.
      * 
-     * @return state associated with this page
+     * @return name of the bean representing the state
      */
-    Class<? extends DirectOutputState> getState();
+    String getBeanName();
 
     /**
      * Returns extra configuration parameters.

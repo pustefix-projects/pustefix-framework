@@ -16,16 +16,18 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-package de.schlund.pfixxml.config;
+package org.pustefixframework.config.directoutputservice;
 
 import java.util.List;
+
+import de.schlund.pfixxml.config.ServletManagerConfig;
 
 /**
  * Provides configuration for {@link de.schlund.pfixxml.DirectOutputServlet}.  
  * 
  * @author Sebastian Marsching <sebastian.marsching@1und1.de>
  */
-public interface DirectOutputServletConfig extends ServletManagerConfig {
+public interface DirectOutputServiceConfig extends ServletManagerConfig {
 
     /**
      * Returns the name of the corresponding {@link de.schlund.pfixxml.ContextXMLServlet}

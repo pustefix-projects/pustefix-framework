@@ -76,6 +76,9 @@ public class PustefixWebApplicationContext extends AbstractRefreshableWebApplica
             }
 
         }
+        
+        AnnotationBeanDefinitionPostProcessor annotationPostProcessor = new AnnotationBeanDefinitionPostProcessor();
+        annotationPostProcessor.postProcess(beanFactory);
     }
     
 }

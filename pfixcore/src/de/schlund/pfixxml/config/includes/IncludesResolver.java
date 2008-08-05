@@ -35,6 +35,8 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
+import com.marsching.flexiparse.util.DOMBasedNamespaceContext;
+
 import de.schlund.pfixxml.resources.FileResource;
 import de.schlund.pfixxml.resources.ResourceUtil;
 import de.schlund.pfixxml.util.Generics;
@@ -48,16 +50,12 @@ public class IncludesResolver {
     
     private String includeTag;
     
-    private SimpleNamespaceContext nsContext;
-
     private final static String TAGNAME = "config-include";
     
     private final static String CONFIG_FRAGMENTS_NS = "http://pustefix.sourceforge.net/configfragments200609";
     
     private final static String CONFIG_FRAGMENTS_ROOT_TAG = "config-fragments";
     
-    private final static String CONTEXTXML_NS = "http://pustefix.sourceforge.net/properties200401";
-
     private ThreadLocal<Set<Tupel<String, String>>> includesList = new ThreadLocal<Set<Tupel<String, String>>>();
 
     public IncludesResolver(String namespace) {
@@ -67,9 +65,6 @@ public class IncludesResolver {
     public IncludesResolver(String namespace, String includeTag) {
         this.namespace = namespace;
         this.includeTag = includeTag;
-        this.nsContext = new SimpleNamespaceContext();
-        this.nsContext.addNamespace("fr", CONFIG_FRAGMENTS_NS);
-        this.nsContext.addNamespace("pr", CONTEXTXML_NS);
     }
 
     public void registerListener(FileIncludeEventListener listener) {
@@ -108,8 +103,7 @@ public class IncludesResolver {
                 if (section != null || xpath != null) {
                     throw new SAXException("Only one of the \"xpath\", \"refid\" or \"section\" attributes may be supplied to the include tag!");
                 }
-                // xpath = "/*[local-name()='config-fragments']/*[@id='" + refid + "']/node()";
-                xpath = "/fr:config-fragments/*[@id='" + refid + "']/node()";
+                xpath = "/*[local-name() = '" + CONFIG_FRAGMENTS_ROOT_TAG + "' and namespace-uri()='" + CONFIG_FRAGMENTS_NS + "']/*[@id='" + refid + "']/node()";
             } else if (section != null) {
                 if (xpath != null || refid != null) {
                     throw new SAXException("Only one of the \"xpath\", \"refid\" or \"section\" attributes may be supplied to the include tag!");
@@ -117,8 +111,7 @@ public class IncludesResolver {
                 if (!checkSectionType(section)) {
                     throw new SAXException("\"" + section + "\" is not a valid include section type!");
                 }
-                // xpath = "/*[local-name()='config-fragments']/*[local-name()='" + section + "']/node()";
-                xpath = "/fr:config-fragments/fr:" + section + "/node()";
+                xpath = "/*[local-name()='" + CONFIG_FRAGMENTS_ROOT_TAG + "' and namespace-uri()='" + CONFIG_FRAGMENTS_NS + "']/*[local-name()='" + section + "' and namespace-uri()='" + CONFIG_FRAGMENTS_NS + "']/node()";
             } else {
                 throw new SAXException("One of the \"xpath\", \"refid\" or \"section\" attributes must be set for the include tag!");
             }
@@ -161,7 +154,7 @@ public class IncludesResolver {
             NodeList includeNodes;
             try {
                 javax.xml.xpath.XPath xpathProc = XPathFactory.newInstance().newXPath();
-                xpathProc.setNamespaceContext(this.nsContext);
+                xpathProc.setNamespaceContext(new DOMBasedNamespaceContext(elem));
                 includeNodes = (NodeList) xpathProc.evaluate(xpath, includeDocument, XPathConstants.NODESET);
             } catch (XPathExpressionException e) {
                 throw new SAXException("XPath Expression invalid: " + xpath);

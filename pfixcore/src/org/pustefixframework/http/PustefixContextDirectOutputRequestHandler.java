@@ -19,6 +19,7 @@
 
 package org.pustefixframework.http;
 
+import java.util.Map;
 import java.util.Properties;
 
 import javax.servlet.ServletException;
@@ -26,20 +27,16 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
+import org.pustefixframework.config.directoutputservice.DirectOutputPageRequestConfig;
+import org.pustefixframework.config.directoutputservice.DirectOutputServiceConfig;
 
 import de.schlund.pfixcore.auth.AuthConstraint;
-import de.schlund.pfixcore.exception.PustefixCoreException;
 import de.schlund.pfixcore.workflow.ContextImpl;
 import de.schlund.pfixcore.workflow.ContextResourceManager;
-import de.schlund.pfixcore.workflow.DirectOutputPageMap;
 import de.schlund.pfixcore.workflow.DirectOutputState;
 import de.schlund.pfixcore.workflow.PageRequest;
 import de.schlund.pfixcore.workflow.context.ServerContextImpl;
 import de.schlund.pfixxml.PfixServletRequest;
-import de.schlund.pfixxml.PropertyObjectManager;
-import de.schlund.pfixxml.config.ConfigReader;
-import de.schlund.pfixxml.config.DirectOutputPageRequestConfig;
-import de.schlund.pfixxml.config.DirectOutputServletConfig;
 import de.schlund.pfixxml.config.ServletManagerConfig;
 import de.schlund.pfixxml.resources.FileResource;
 
@@ -71,8 +68,8 @@ import de.schlund.pfixxml.resources.FileResource;
  */
 public class PustefixContextDirectOutputRequestHandler extends AbstractPustefixRequestHandler {
     private Logger                    LOG       = Logger.getLogger(this.getClass());
-    private DirectOutputPageMap       pagemap   = null;
-    private DirectOutputServletConfig config;
+    private DirectOutputServiceConfig config;
+    private Map<String, DirectOutputState> stateMap;
     
     /**
      * The usual <code>needsSession</code> method. Is set to return
@@ -182,7 +179,7 @@ public class PustefixContextDirectOutputRequestHandler extends AbstractPustefixR
          }
          
          PageRequest       page  = new PageRequest(pagename);
-         DirectOutputState state = pagemap.getDirectOutputState(page);
+         DirectOutputState state = stateMap.get(page.getName());
          if (state != null) {
              Properties props   = config.getPageRequest(page.getName()).getProperties();
              boolean    allowed = state.isAccessible(crm, props, preq);
@@ -205,41 +202,20 @@ public class PustefixContextDirectOutputRequestHandler extends AbstractPustefixR
          }
     }
     
-    protected boolean tryReloadProperties(PfixServletRequest preq) throws ServletException {
-        if (super.tryReloadProperties(preq)) {
-            initValues();
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    private void initValues() throws ServletException {
-        try {
-            pagemap = (DirectOutputPageMap) PropertyObjectManager.getInstance().
-                getConfigurableObject(this.config, de.schlund.pfixcore.workflow.DirectOutputPageMap.class);
-        } catch (Exception e) {
-            LOG.warn("==================> XPTN " + e.getMessage());
-            throw new ServletException(e.getMessage(), e);
-        }
-    }
-    
-    public void init() throws ServletException {
-        super.init();
-        initValues();
-    }
-
     protected ServletManagerConfig getServletManagerConfig() {
         return this.config;
     }
 
     protected void reloadServletConfig(FileResource configFile, Properties globalProperties) throws ServletException {
-        try {
-            this.config = ConfigReader.readDirectOutputServletConfig(configFile, globalProperties);
-        } catch (PustefixCoreException e) {
-            throw new ServletException("Error on reading config file " + configFile.toURI(), e);
-        }
-        
+        // Do nothing, configuration is injected
+    }
+    
+    public void setStateMap(Map<String, DirectOutputState> stateMap) {
+        this.stateMap = stateMap;
+    }
+    
+    public void setConfiguration(DirectOutputServiceConfig config) {
+        this.config = config;
     }
     
 }

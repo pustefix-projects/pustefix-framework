@@ -1,0 +1,47 @@
+<?xml version="1.0"?>
+<configuration
+  xmlns="http://www.marsching.com/2008/flexiparse/configurationNS"
+  xmlns:c="http://www.pustefix-framework.org/2008/namespace/direct-output-service-config"
+>
+  
+  <handler class="org.pustefixframework.config.directoutputservice.parser.DirectOutputPageRequestParsingHandler" run-order="both">
+    <match>/c:direct-output-service-config//c:directoutputpagerequest</match>
+  </handler>
+  
+  <handler class="org.pustefixframework.config.directoutputservice.parser.DirectOutputServiceConfigParsingHandler" run-order="both">
+    <match>/c:direct-output-service-config</match>
+  </handler>
+  
+  <handler class="org.pustefixframework.config.directoutputservice.parser.DirectOutputForceSslParsingHandler">
+    <match>/c:direct-output-service-config/c:global-config//c:force-ssl</match>
+  </handler>
+  
+  <handler class="org.pustefixframework.config.directoutputservice.parser.DirectOutputForceSerialRequestsParsingHandler">
+    <match>/c:direct-output-service-config/c:global-config//c:force-serial-requests</match>
+  </handler>
+  
+  <handler class="org.pustefixframework.config.directoutputservice.parser.DirectOutputRegisterGlobalPropertiesParsingHandler" run-order="end">
+    <preceding-module>org.pustefixframework.config.generic.PropertiesParsingHandler</preceding-module>
+    <match>/c:direct-output-service-config/c:properties</match>
+  </handler>
+  
+  <handler class="org.pustefixframework.config.generic.PropertiesParsingHandler">
+    <match>/c:direct-output-service-config//c:directoutputpagerequest/c:properties</match>
+    <match>/c:direct-output-service-config/c:properties</match>
+  </handler>
+  
+  <handler class="org.pustefixframework.config.generic.PropertyParsingHandler">
+    <match>/c:direct-output-service-config//c:directoutputpagerequest/c:properties//c:prop</match>
+    <match>/c:direct-output-service-config/c:properties//c:prop</match>
+  </handler>
+  
+  
+  <handler id="org.pustefixframework.config.project.customization.WhenParsingHandler" class="org.pustefixframework.config.customization.CustomizationWhenParsingHandler">
+    <match>//c:choose/c:when</match>
+  </handler>
+  
+  <handler id="org.pustefixframework.config.project.customization.OtherwiseParsingHandler" class="org.pustefixframework.config.customization.CustomizationOtherwiseParsingHandler">
+    <match>//c:choose/c:otherwise</match>
+  </handler>
+  
+</configuration>

@@ -1,15 +1,16 @@
-<?xml version="1.0" encoding="ISO-8859-1"?>
-<directoutputserver xmlns="http://pustefix.sourceforge.net/properties200401"
-  xmlns:cus="http://www.schlund.de/pustefix/customize" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<?xml version="1.0" encoding="utf-8"?>
+<direct-output-service-config xmlns="http://www.pustefix-framework.org/2008/namespace/direct-output-service-config"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://pustefix.sourceforge.net/properties200401 ../../core/schema/properties200401.xsd"
   version="1.0">
-
-  <directoutputservletinfo name="pfixcore_project:sample1::servlet:directoutput">
-    <ssl force="true" />
-  </directoutputservletinfo>
-
+  
+  <global-config>
+    <force-ssl>true</force-ssl>
+    <!-- <force-serial-requests>true</force-serial-requests> -->
+  </global-config>
+  
   <config-include file="sample1/conf/fragments.xml" refid="directtest" />
-
+  
   <directoutputpagerequest name="install">
     <directoutputstate class="de.schlund.pfixcore.workflow.app.FileDownloadDOState" />
     <properties>
@@ -17,11 +18,5 @@
       <prop name="downloadmimetype">text/plain</prop>
     </properties>
   </directoutputpagerequest>
-
-</directoutputserver>
-
-<!--
-Local Variables:
-mode: xml
-End:
--->
+  
+</direct-output-service-config>

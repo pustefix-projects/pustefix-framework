@@ -200,7 +200,7 @@ public class AnnotationBeanDefinitionPostProcessor {
                 processBeanDefinition(matchingBeanName, beanDefinition, beanFactory);
                 BeanDefinitionHolder beanHolder = new BeanDefinitionHolder(beanDefinition, matchingBeanName);
                 if (scopeName != null && !(scopeName.equals("singleton") || scopeName.equals("prototype"))) {
-                    ScopedProxyUtils.createScopedProxy(beanHolder, beanFactory, true);
+                    beanHolder = ScopedProxyUtils.createScopedProxy(beanHolder, beanFactory, true);
                 }
                 beanFactory.registerBeanDefinition(beanHolder.getBeanName(), beanHolder.getBeanDefinition());
             }

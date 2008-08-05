@@ -16,13 +16,12 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-package de.schlund.pfixxml.config.impl;
+package org.pustefixframework.config.directoutputservice.parser.internal;
 
 import java.util.Enumeration;
 import java.util.Properties;
 
-import de.schlund.pfixcore.workflow.DirectOutputState;
-import de.schlund.pfixxml.config.DirectOutputPageRequestConfig;
+import org.pustefixframework.config.directoutputservice.DirectOutputPageRequestConfig;
 
 
 /**
@@ -33,8 +32,8 @@ import de.schlund.pfixxml.config.DirectOutputPageRequestConfig;
 public class DirectOutputPageRequestConfigImpl implements DirectOutputPageRequestConfig {
 
     private String pageName = null;
-
-    private Class<? extends DirectOutputState> stateClass = null;
+    
+    private String stateBean = null;
     
     private Properties properties = new Properties();
 
@@ -51,15 +50,12 @@ public class DirectOutputPageRequestConfigImpl implements DirectOutputPageReques
         return this.pageName;
     }
 
-    public void setState(Class<? extends DirectOutputState> clazz) {
-        this.stateClass = clazz;
+    public void setBeanName(String beanName) {
+        this.stateBean = beanName;
     }
-
-    /* (non-Javadoc)
-     * @see de.schlund.pfixxml.config.DirectOutputPageRequestConfig#getState()
-     */
-    public Class<? extends DirectOutputState> getState() {
-        return this.stateClass;
+    
+    public String getBeanName() {
+        return this.stateBean;
     }
     
     public void setProperties(Properties props) {

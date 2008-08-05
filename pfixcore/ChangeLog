@@ -1,3 +1,33 @@
+2008-08-05  Sebastian Marsching  <sebastian.marsching@1und1.de>
+
+	* src/de/schlund/pfixxml/config/includes/IncludesResolver.java: 
+	* src/de/schlund/pfixxml/config/ConfigReader.java: 
+	* src/org/pustefixframework/config/directoutputservice/parser/internal/DirectOutputPageRequestConfigImpl.java: 
+	* src/org/pustefixframework/config/directoutputservice/parser/internal/DirectOutputServiceConfigImpl.java: 
+	* src/org/pustefixframework/config/directoutputservice/parser/DirectOutputForceSerialRequestsParsingHandler.java: 
+	* src/org/pustefixframework/config/directoutputservice/parser/DirectOutputForceSslParsingHandler.java: 
+	* src/org/pustefixframework/config/directoutputservice/parser/DirectOutputPageRequestParsingHandler.java: 
+	* src/org/pustefixframework/config/directoutputservice/parser/DirectOutputRegisterGlobalPropertiesParsingHandler.java: 
+	* src/org/pustefixframework/config/directoutputservice/parser/DirectOutputServiceConfigParsingHandler.java: 
+	* src/org/pustefixframework/config/directoutputservice/DirectOutputPageRequestConfig.java: 
+	* src/org/pustefixframework/config/directoutputservice/DirectOutputServiceConfig.java: 
+	* src/org/pustefixframework/config/generic/PropertiesParsingHandler.java: 
+	* src/org/pustefixframework/config/generic/PropertyParsingHandler.java: 
+	* src/org/pustefixframework/config/project/parser/spring/PustefixContextDirectOutputRequestHandlerParsingHandler.java: 
+	* src/org/pustefixframework/config/Constants.java: 
+	* src/org/pustefixframework/http/PustefixContextDirectOutputRequestHandler.java: 
+	* res/META-INF/org/pustefixframework/config/direct-output-service/parser/direct-output-service-config.xml: 
+	Moved DirectOutput service configuration to new parser framework and 
+	ported life-cycle management to Spring.
+
+	* projects/sample1/conf/direct.conf.xml: 
+	* projects/sample1/conf/fragments.xml: 
+	Changed example configuration files.
+
+	* src/org/pustefixframework/container/spring/beans/AnnotationBeanDefinitionPostProcessor.java: 
+	* src/org/pustefixframework/container/spring/beans/PustefixWebApplicationContext.java: 
+	Fixed AnnotationBeanDefinitionPostProcessor.
+
 2008-07-29  Martin Leidig  <mleidig@schlund.de>
 
 	Fixed JAXWS build, made JSON webservices working again.

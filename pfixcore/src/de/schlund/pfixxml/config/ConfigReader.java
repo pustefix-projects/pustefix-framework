@@ -25,7 +25,6 @@ import org.xml.sax.SAXException;
 
 import de.schlund.pfixcore.exception.PustefixCoreException;
 import de.schlund.pfixxml.config.impl.ContextXMLServletConfigImpl;
-import de.schlund.pfixxml.config.impl.DirectOutputServletConfigImpl;
 import de.schlund.pfixxml.resources.FileResource;
 
 /**
@@ -49,26 +48,6 @@ public class ConfigReader {
     public static ContextXMLServletConfig readContextXMLServletConfig(FileResource file, Properties globalProperties) throws PustefixCoreException {
         try {
             return ContextXMLServletConfigImpl.readFromFile(file, globalProperties);
-        } catch (SAXException e) {
-            throw new PustefixCoreException("Error while reading configuration file " + file + ": " + e.getMessage(), e);
-        } catch (IOException e) {
-            throw new PustefixCoreException("Error while reading configuration file " + file + ": " + e.getMessage(), e);
-        }
-    }
-    
-    /**
-     * Used to read a configuration for the 
-     * {@link de.schlund.pfixxml.DirectOutputServlet}.
-     * 
-     * @param file configuration file to read
-     * @param globalProperties globally defined properties the configuration
-     * should inherit from
-     * @return configuration initialized from file
-     * @throws PustefixCoreException if a parsing error occurs
-     */
-    public static DirectOutputServletConfig readDirectOutputServletConfig(FileResource file, Properties globalProperties) throws PustefixCoreException {
-        try {
-            return DirectOutputServletConfigImpl.readFromFile(file, globalProperties);
         } catch (SAXException e) {
             throw new PustefixCoreException("Error while reading configuration file " + file + ": " + e.getMessage(), e);
         } catch (IOException e) {
