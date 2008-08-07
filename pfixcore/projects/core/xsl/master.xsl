@@ -164,11 +164,14 @@
             <ixsl:with-param name="in" select="$link"/>
           </ixsl:call-template>
         </ixsl:variable>
+        <ixsl:variable name="ts">
+          <ixsl:value-of select="deref:getTimeStamp()"/>
+        </ixsl:variable>
         <ixsl:variable name="sign">
-          <ixsl:value-of select="deref:signString($link, $__derefkey)"/>
+          <ixsl:value-of select="deref:signString($link, $ts, $__derefkey)"/>
         </ixsl:variable>
         <ixsl:text>/xml/deref?link=</ixsl:text>
-        <ixsl:value-of select="$enclink"/>&amp;sign=<ixsl:value-of select="$sign"/>
+        <ixsl:value-of select="$enclink"/>&amp;sign=<ixsl:value-of select="$sign"/>&amp;ts=<ixsl:value-of select="$ts"/>
       </ixsl:template>
 
       <ixsl:template match="/">
