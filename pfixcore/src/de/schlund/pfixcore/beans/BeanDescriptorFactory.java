@@ -23,6 +23,8 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
+import net.sf.cglib.proxy.Enhancer;
+
 import de.schlund.pfixcore.beans.metadata.Beans;
 import de.schlund.pfixcore.beans.metadata.DOMInit;
 import de.schlund.pfixcore.beans.metadata.Locator;
@@ -54,7 +56,11 @@ public class BeanDescriptorFactory {
         metadata=domInit.getBeans();
     }
     
+    @SuppressWarnings("unchecked")
     public synchronized <T> BeanDescriptor getBeanDescriptor(Class<T> clazz) {
+        if(Enhancer.isEnhanced(clazz)) {
+            clazz = (Class<T>)clazz.getSuperclass();
+        }
         BeanDescriptor desc=descriptors.get(clazz);
         if(desc==null) {
             desc=new BeanDescriptor(clazz,metadata);
