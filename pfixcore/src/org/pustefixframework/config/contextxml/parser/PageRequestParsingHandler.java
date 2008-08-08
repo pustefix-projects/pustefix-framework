@@ -27,13 +27,13 @@ public class PageRequestParsingHandler implements ParsingHandler {
        
         PageRequestConfigImpl pageConfig = new PageRequestConfigImpl();
         String pageName = element.getAttribute("name").trim();
-        if (pageName.isEmpty()) {
+        if (pageName.length()==0) {
             throw new ParserException("Mandatory attribute \"name\" is missing!");
         }
         System.out.println("ADD PAGE: "+pageName);
         pageConfig.setPageName(pageName);
         String copyfrom = element.getAttribute("copyfrom").trim();
-        if (!copyfrom.isEmpty()) {
+        if (copyfrom.length()>0) {
             pageConfig.setCopyFromPage(copyfrom);
         }
         

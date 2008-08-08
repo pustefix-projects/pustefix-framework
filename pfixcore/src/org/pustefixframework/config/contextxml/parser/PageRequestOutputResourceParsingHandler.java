@@ -22,11 +22,11 @@ public class PageRequestOutputResourceParsingHandler implements ParsingHandler {
         
         PageRequestConfigImpl pageConfig = ParsingUtils.getSingleTopObject(PageRequestConfigImpl.class, context);
         String node = element.getAttribute("node").trim();
-        if (node.isEmpty()) {
+        if (node.length()==0) {
             throw new ParserException("Mandatory attribute \"node\" is missing!");
         }
         String className = element.getAttribute("class").trim();
-        if (className.isEmpty()) {
+        if (className.length()==0) {
             throw new ParserException("Mandatory attribute \"class\" is missing!");
         }
         Class<?> clazz;

@@ -53,7 +53,7 @@ public class ContextResourceParsingHandler implements ParsingHandler {
         Set<String> registeredInterfaces = new HashSet<String>();
         
         String className = element.getAttribute("class").trim();
-        if(!className.isEmpty()) {
+        if(className.length()>0) {
             
             Class<?> implClass = null;
             try {
@@ -101,7 +101,7 @@ public class ContextResourceParsingHandler implements ParsingHandler {
             BeanDefinition beanDefinition = beanBuilder.getBeanDefinition();
             
             String beanName = element.getAttribute("bean-name").trim();
-            if(beanName.isEmpty()) {
+            if(beanName.length()>0) {
                 BeanNameGenerator nameGenerator = new DefaultBeanNameGenerator();
                 beanName = nameGenerator.generateBeanName(beanDefinition, beanReg);
             }
