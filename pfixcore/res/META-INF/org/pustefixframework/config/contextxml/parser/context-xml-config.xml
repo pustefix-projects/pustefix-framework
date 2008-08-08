@@ -47,6 +47,12 @@
     <match>/c:context-xml-config/c:interceptors//c:interceptor</match>
   </handler>
   
+  <!-- /context-xml/scriptedflow -->
+  <handler class="org.pustefixframework.config.contextxml.parser.ScriptedFlowParsingHandler">
+    <match>/c:context-xml-config/c:scriptedflow</match>
+  </handler>
+  
+  
   
   <handler class="org.pustefixframework.config.contextxml.parser.PageRequestParsingHandler">
     <match>/c:context-xml-config/c:pagerequest</match>
