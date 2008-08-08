@@ -18,24 +18,26 @@ public class PageRequestOutputResourceParsingHandler implements ParsingHandler {
     public void handleNode(HandlerContext context) throws ParserException {
        
         Element element = (Element)context.getNode();
-        ParsingUtils.checkAttributes(element, new String[] {"node"}, new String[] {"class"});
+        ParsingUtils.checkAttributes(element, new String[] {"node"}, new String[] {"class","bean-ref"});
         
         PageRequestConfigImpl pageConfig = ParsingUtils.getSingleTopObject(PageRequestConfigImpl.class, context);
         String node = element.getAttribute("node").trim();
-        if (node.length()==0) {
-            throw new ParserException("Mandatory attribute \"node\" is missing!");
-        }
+       
         String className = element.getAttribute("class").trim();
-        if (className.length()==0) {
-            throw new ParserException("Mandatory attribute \"class\" is missing!");
+        String beanRef = element.getAttribute("bean-ref").trim();
+        if (className.length()==0 && beanRef.length()==0) {
+            throw new ParserException("Either attribute 'class' or attribute 'bean-ref' required.");
         }
-        Class<?> clazz;
-        try {
-            clazz = Class.forName(className);
-        } catch (ClassNotFoundException e) {
-            throw new ParserException("Could not load resource interface \"" + className + "\"!");
+        //TODO: inject resources in state
+        if(className.length()>0) {
+            Class<?> clazz;
+            try {
+                clazz = Class.forName(className);
+            } catch (ClassNotFoundException e) {
+                throw new ParserException("Could not load resource interface \"" + className + "\"!");
+            }
+            pageConfig.addContextResource(node, clazz);
         }
-        pageConfig.addContextResource(node, clazz);
         
     }
 
