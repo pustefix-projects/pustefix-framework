@@ -101,7 +101,7 @@ public class ContextResourceParsingHandler implements ParsingHandler {
             BeanDefinition beanDefinition = beanBuilder.getBeanDefinition();
             
             String beanName = element.getAttribute("bean-name").trim();
-            if(beanName.length()>0) {
+            if(beanName.length()==0) {
                 BeanNameGenerator nameGenerator = new DefaultBeanNameGenerator();
                 beanName = nameGenerator.generateBeanName(beanDefinition, beanReg);
             }
