@@ -42,6 +42,10 @@
     <match>/c:context-xml-config/c:context/c:resource</match>
   </handler>
   
+  <!-- /context-xml-config/interceptors -->
+  <handler class="org.pustefixframework.config.contextxml.parser.ContextInterceptorParsingHandler">
+    <match>/c:context-xml-config/c:interceptors//c:interceptor</match>
+  </handler>
   
   
   <handler class="org.pustefixframework.config.contextxml.parser.PageRequestParsingHandler">
