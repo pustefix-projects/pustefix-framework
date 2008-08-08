@@ -21,17 +21,17 @@ package de.schlund.pfixcore.workflow;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Map;
+import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.springframework.beans.BeansException;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 
 import de.schlund.pfixcore.beans.InitResource;
 import de.schlund.pfixcore.exception.PustefixApplicationException;
 import de.schlund.pfixcore.exception.PustefixCoreException;
-import de.schlund.pfixcore.exception.PustefixRuntimeException;
 import de.schlund.pfixxml.config.ContextConfig;
 import de.schlund.pfixxml.config.ContextResourceConfig;
 
@@ -42,68 +42,31 @@ import de.schlund.pfixxml.config.ContextResourceConfig;
  *
  */
 
-public class ContextResourceManagerImpl implements ContextResourceManager {
-    private final static Logger LOG = Logger.getLogger(ContextResourceManagerImpl.class);
-    private HashMap<String, Object>  resources = new HashMap<String, Object>();
+public class ContextResourceManagerImpl implements ContextResourceManager, ApplicationContextAware {
     
-    /**
-     * Instantiates the objects and registers the interfaces which
-     * should be used from each.
-     *
-     * In general such an object implements a number of interfaces. You are able to specify the classes
-     * you want to instantiate and to specify which interfaces you want to
-     * use from such an object.
-     * 
-     * @throws PustefixApplicationException 
-     * @throws PustefixCoreException 
-     *
-     */
+    private final static Logger LOG = Logger.getLogger(ContextResourceManagerImpl.class);
+    private ApplicationContext applicationContext;
+    private ContextConfig contextConfig;
+    
     @SuppressWarnings("deprecation")
      public void init(Context context, ContextConfig config) throws PustefixApplicationException, PustefixCoreException {
         LOG.debug("Initializing Resources...");
+        this.contextConfig = config;
         
-        Collection<Object> resourcesToInitialize = new ArrayList<Object>();
-        Map<String, Object> resourceClassToInstance = new HashMap<String, Object>();
-        
-        for (ContextResourceConfig resourceConfig : config.getContextResourceConfigs()) {
-            Object cr = null;
-            String classname = resourceConfig.getContextResourceClass().getName();
-            try {
-                LOG.debug("Creating object with name [" + classname + "]");
-                cr = resourceConfig.getContextResourceClass().newInstance();
-            } catch (InstantiationException e) {
-                throw new PustefixRuntimeException("Exception while creating object " + classname + ":" + e);
-            } catch (IllegalAccessException e) {
-                throw new PustefixRuntimeException("Exception while creating object " + classname + ":" + e);
-            }
-            
-            resourcesToInitialize.add(cr);
-            resourceClassToInstance.put(cr.getClass().getName(), cr);
-        }
-        
-        Map<Class<?>, ? extends ContextResourceConfig> interfaces = config.getInterfaceToContextResourceMap();
-        for (Class<?> clazz : interfaces.keySet()) {
-            String interfacename = clazz.getName();
-            String resourceclass = interfaces.get(clazz).getContextResourceClass().getName();
-            Object cr = resourceClassToInstance.get(resourceclass);
-            checkInterface(cr, interfacename);
-            LOG.debug("* Registering [" + cr.getClass().getName() + "] for interface [" + interfacename + "]");
-            resources.put(interfacename, cr);
-        }
-        
-        for (Iterator<Object> i = resourcesToInitialize.iterator(); i.hasNext();) {
-            Object resource = i.next();
-
-            if (resource instanceof ContextResource) {
+        for (ContextResourceConfig resConfig : config.getContextResourceConfigs()) {
+            Class<?> clazz = resConfig.getContextResourceClass();
+            if(ContextResource.class.isAssignableFrom(clazz)) {
                 try {
-                    LOG.debug("***** Resource implements ContextResource => calling init(Context) of " + resource.getClass().getName());
-                    ((ContextResource) resource).init(context);
+                    LOG.debug("***** Resource implements ContextResource => calling init(Context) of " + clazz.getName());
+                    ContextResource resource = (ContextResource)applicationContext.getBean(resConfig.getBeanName());
+                    resource.init(context);
                 } catch (Exception e) {
-                    throw new PustefixApplicationException("Exception while initializing context resource " + resource.getClass(), e);
+                    throw new PustefixApplicationException("Exception while initializing context resource " + clazz, e);
                 }
             } else {
-                for (Method m : resource.getClass().getMethods()) {
+                for (Method m : clazz.getMethods()) {
                     if (m.isAnnotationPresent(InitResource.class)) {
+                        Object resource = applicationContext.getBean(resConfig.getBeanName());
                         try {
                             Class<?>[] params = m.getParameterTypes();
                             if (params.length == 0) {
@@ -130,7 +93,9 @@ public class ContextResourceManagerImpl implements ContextResourceManager {
      * @see de.schlund.pfixcore.workflow.ContextResourceManager#getResource(java.lang.String)
      */
     public Object getResource(String name) {
-        return  resources.get(name);
+        ContextResourceConfig conf = contextConfig.getContextResourceConfig(name);
+        if(conf==null) throw new IllegalArgumentException("Resource not found: "+name);
+        return applicationContext.getBean(conf.getBeanName());
     }
 
     /* (non-Javadoc)
@@ -138,49 +103,25 @@ public class ContextResourceManagerImpl implements ContextResourceManager {
      */
     @SuppressWarnings("unchecked")
     public <T> T getResource(Class<T> clazz) {
-        return (T) resources.get(clazz.getName());
+        ContextResourceConfig conf = contextConfig.getContextResourceConfig(clazz.getName());
+        return (T)applicationContext.getBean(conf.getBeanName());
     }
     
-    private void checkInterface(Object obj, String interfacename) throws PustefixCoreException {
-        Class<?> wantedinterface = null;
-        
-        // Get the class of the requested interface and get all
-        // implemented interfaces of the object
-        try {
-            wantedinterface = Class.forName(interfacename) ;
-        } catch (ClassNotFoundException e) {
-            throw new PustefixRuntimeException("Got ClassNotFoundException for classname " +  interfacename + "while checking for interface");
-        }
-	
-        LOG.debug("Check if requested interface [" + interfacename + 
-                  "] is implemented by [" + obj.getClass().getName() + "]");
-        
-        // Check for all implemented interfaces, if it equals the interface that
-        // we want, than break.
-        
-        if (wantedinterface.isInstance(obj)) {
-            LOG.debug("Got requested interface " + interfacename);
-        } else {
-            // Uh, the requested interface is not implemented by the
-            // object, that's not nice!
-            throw new PustefixCoreException("The class [" + obj.getClass().getName() +
-                                       "] doesn't implemented requested interface " +
-                                       interfacename);
-        }
-        
-        // Now check if the interface is already registered...
-        if (resources.containsKey(interfacename)) {
-            throw new PustefixCoreException("Interface [" + interfacename +
-                                       "] already registered for instance of [" +
-                                       resources.get(interfacename).getClass().getName() + "]");
-        }
-    }
+ 
     
     /* (non-Javadoc)
      * @see de.schlund.pfixcore.workflow.ContextResourceManager#getResourceIterator()
      */
     public Iterator<Object> getResourceIterator() {
-        return  resources.values().iterator();
+        List<Object> resources = new ArrayList<Object>();
+        for (ContextResourceConfig resConfig : contextConfig.getContextResourceConfigs()) {
+            resources.add(applicationContext.getBean(resConfig.getBeanName()));
+        }
+        return  resources.iterator();
+    }
+    
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        this.applicationContext = applicationContext;
     }
     
 }

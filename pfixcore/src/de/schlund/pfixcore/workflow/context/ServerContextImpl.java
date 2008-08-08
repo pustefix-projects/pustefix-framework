@@ -35,6 +35,7 @@ import de.schlund.pfixxml.config.ContextConfig;
  * 
  * @author Sebastian Marsching <sebastian.marsching@1und1.de>
  */
+//TODO: remove ServerContextImpl
 public class ServerContextImpl {
 	
     private ContextConfig config;
@@ -48,7 +49,12 @@ public class ServerContextImpl {
     private ContextInterceptor[] startInterceptors;
     private ContextInterceptor[] endInterceptors;
     
-    public ServerContextImpl(ContextConfig config, String contextName) throws Exception {
+    public ServerContextImpl() {
+        
+    }
+    
+    //TODO: inject dependencies
+    public void init(ContextConfig config, String contextName) throws Exception {
         this.config = config;
         this.name = contextName;
         

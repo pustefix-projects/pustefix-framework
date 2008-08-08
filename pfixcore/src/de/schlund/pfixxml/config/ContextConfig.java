@@ -67,14 +67,7 @@ public interface ContextConfig {
      * @return configuration object for the context resource
      */
     ContextResourceConfig getContextResourceConfig(Class<?> clazz);
-
-    /**
-     * Returns a map that maps interfaces to the corresponding context resource
-     * configurations.
-     * 
-     * @return map containing interface to context resource configuration mapping
-     */
-    Map<Class<?>, ? extends ContextResourceConfig> getInterfaceToContextResourceMap();
+    ContextResourceConfig getContextResourceConfig(String name);
 
     /**
      * Returns a list of configurations for all pageflows.

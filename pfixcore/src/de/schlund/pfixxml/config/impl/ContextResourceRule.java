@@ -45,7 +45,7 @@ public class ContextResourceRule extends CheckedRule {
         } catch (ClassNotFoundException e) {
             throw new SAXException("Could not load class \"" + className + "\"!", e);
         }
-        ContextResourceConfigImpl crConfig = new ContextResourceConfigImpl(clazz, config.getContextConfig());
+        ContextResourceConfigImpl crConfig = new ContextResourceConfigImpl(clazz);
         ctxConfig.addContextResource(crConfig);
         // We add ourself as an "interface", so even if there's no <implements> we still have one
         // name to reference this implementation...

@@ -5,6 +5,7 @@ import java.util.Collection;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 
+import com.marsching.flexiparse.objectree.ObjectTreeElement;
 import com.marsching.flexiparse.parser.HandlerContext;
 import com.marsching.flexiparse.parser.exception.ParserException;
 
@@ -36,6 +37,17 @@ public class ParsingUtils {
     
     public static <T> T getSingleTopObject(Class<T> clazz, HandlerContext context) throws ParserException {
         Collection<T> configs = context.getObjectTreeElement().getObjectsOfTypeFromTopTree(clazz);
+        if(configs.size()==0) {
+            throw new ParserException("Object tree contains no instance of type '"+clazz.getName()+"'.");
+        } else if(configs.size()>1) {
+            throw new ParserException("Object tree contains multiple instances of type '"+clazz.getName()+"'.");
+        }
+        return configs.iterator().next();
+    }
+    
+    public static <T> T getSingleSubObjectFromRoot(Class<T> clazz, HandlerContext context) throws ParserException {
+        ObjectTreeElement treeElem = context.getObjectTreeElement().getRoot();
+        Collection<T> configs = treeElem.getObjectsOfTypeFromSubTree(clazz);
         if(configs.size()==0) {
             throw new ParserException("Object tree contains no instance of type '"+clazz.getName()+"'.");
         } else if(configs.size()>1) {

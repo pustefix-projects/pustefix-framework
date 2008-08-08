@@ -71,6 +71,9 @@ public class PustefixContextDirectOutputRequestHandler extends AbstractPustefixR
     private DirectOutputServiceConfig config;
     private Map<String, DirectOutputState> stateMap;
     
+    private ServerContextImpl serverContext;
+    private ContextImpl context;
+    
     /**
      * The usual <code>needsSession</code> method. Is set to return
      * true, as any other value wouldn't make sense (You need to get a
@@ -120,26 +123,16 @@ public class PustefixContextDirectOutputRequestHandler extends AbstractPustefixR
              return;
          }
          
-         ContextImpl context = SessionContextStore.getInstance(session).getContext(null);
-         if (context == null) {
-             throw new RuntimeException("*** didn't find Context in Session " + session.getId()
-                                        + ", maybe it's not yet initialized??? ***");
-         }
-         ServerContextImpl servercontext = ServerContextStore.getInstance(getServletContext()).getContext(null);
-         if (servercontext == null) {
-             throw new RuntimeException("*** didn't find ServerContext in ServletContext, maybe it's not yet initialized??? ***");
-         }
-         
          // Make sure the context is initialized and deinitialized this thread
-         context.setServerContext(servercontext);
+         context.setServerContext(serverContext);
          context.prepareForRequest();
          try {
              if (config.isSynchronized()) {
                  synchronized (context) {
-                     doProcess(preq, res, servercontext, context);
+                     doProcess(preq, res, serverContext, context);
                  }
              } else {
-                 doProcess(preq, res, servercontext, context);
+                 doProcess(preq, res, serverContext, context);
              }
          } finally {
              context.cleanupAfterRequest();
@@ -208,6 +201,14 @@ public class PustefixContextDirectOutputRequestHandler extends AbstractPustefixR
 
     protected void reloadServletConfig(FileResource configFile, Properties globalProperties) throws ServletException {
         // Do nothing, configuration is injected
+    }
+    
+    public void setServerContext(ServerContextImpl serverContext) {
+        this.serverContext = serverContext;
+    }
+    
+    public void setContext(ContextImpl context) {
+        this.context = context;
     }
     
     public void setStateMap(Map<String, DirectOutputState> stateMap) {

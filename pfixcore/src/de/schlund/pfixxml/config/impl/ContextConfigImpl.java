@@ -61,9 +61,10 @@ public class ContextConfigImpl implements ContextConfig {
     private Class<? extends State> defaultStateClass = null;
     
     private String defaultPage = null;
+    
+    private Map<String,ContextResourceConfigImpl> resourceMap = new HashMap<String,ContextResourceConfigImpl>();
     private LinkedHashMap<Class<?>, ContextResourceConfigImpl> resources = new LinkedHashMap<Class<?>, ContextResourceConfigImpl>();
-    private List<ContextResourceConfigImpl> cacheResources = null;
-    protected HashMap<Class<?>, ContextResourceConfigImpl> interfaceToResource = new HashMap<Class<?>, ContextResourceConfigImpl>(); 
+    private List<ContextResourceConfigImpl> cacheResources = null; 
     private HashMap<String, PageFlowConfigImpl> pageflows = new HashMap<String, PageFlowConfigImpl>();
     private List<PageFlowConfigImpl> cachePageflows = null;
     private HashMap<String, PageRequestConfigImpl> pagerequests = new HashMap<String, PageRequestConfigImpl>();
@@ -103,6 +104,10 @@ public class ContextConfigImpl implements ContextConfig {
             LOG.warn("Overwriting configuration for context resource " + config.getContextResourceClass().getName());
         }
         resources.put(config.getContextResourceClass(), config);
+        resourceMap.put(config.getContextResourceClass().getName(), config);
+        for(Class<?> itf:config.getInterfaces()) {
+            resourceMap.put(itf.getClass().getName(), config);
+        }
         cacheResources = null;
     }
     
@@ -122,12 +127,8 @@ public class ContextConfigImpl implements ContextConfig {
         return this.resources.get(clazz);
     }
     
-    public ContextResourceConfig getContextResourceConfigForInterface(Class<?> clazz) {
-        return interfaceToResource.get(clazz);
-    }
-    
-    public Map<Class<?>, ContextResourceConfigImpl> getInterfaceToContextResourceMap() {
-        return Collections.unmodifiableMap(interfaceToResource);
+    public ContextResourceConfig getContextResourceConfig(String name) {
+        return resourceMap.get(name);
     }
     
     public void addPageFlow(PageFlowConfigImpl config) {

@@ -17,26 +17,20 @@
  */
 package org.pustefixframework.admin.mbeans;
 
-import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
-import java.util.Set;
 
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
-import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
-import org.pustefixframework.http.SessionContextStore;
 
 import de.schlund.pfixcore.auth.Role;
 import de.schlund.pfixcore.auth.RoleNotFoundException;
 import de.schlund.pfixcore.workflow.Context;
-import de.schlund.pfixcore.workflow.ContextImpl;
-import de.schlund.pfixxml.serverutil.SessionAdmin;
 
 /**
  * 

@@ -44,5 +44,7 @@ public interface ContextResourceConfig {
      * @return configuration parameters
      */
     Properties getProperties();
+    
+    String getBeanName();
 
 }

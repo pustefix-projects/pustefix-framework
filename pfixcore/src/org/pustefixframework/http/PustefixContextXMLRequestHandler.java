@@ -50,7 +50,6 @@ import de.schlund.pfixxml.PfixServletRequestImpl;
 import de.schlund.pfixxml.RequestParam;
 import de.schlund.pfixxml.SPDocument;
 import de.schlund.pfixxml.config.AbstractXMLServletConfig;
-import de.schlund.pfixxml.config.ConfigReader;
 import de.schlund.pfixxml.config.ContextXMLServletConfig;
 import de.schlund.pfixxml.config.PageRequestConfig;
 import de.schlund.pfixxml.resources.FileResource;
@@ -74,6 +73,7 @@ public class PustefixContextXMLRequestHandler extends AbstractPustefixXMLRequest
     private ContextXMLServletConfig config = null;
 
     private ServerContextImpl servercontext = null;
+    private ContextImpl context = null;
 
     private Object reloadInitLock=new Object();
     private boolean reloadInitDone;
@@ -86,6 +86,10 @@ public class PustefixContextXMLRequestHandler extends AbstractPustefixXMLRequest
         return this.config;
     }
 
+    public void setConfiguration(ContextXMLServletConfig config) {
+        this.config = config;
+    }
+    
     protected AbstractXMLServletConfig getAbstractXMLServletConfig() {
         return this.config;
     }
@@ -129,8 +133,8 @@ public class PustefixContextXMLRequestHandler extends AbstractPustefixXMLRequest
     private boolean nosyncTryReloadProperties(PfixServletRequest preq) throws ServletException {
         if (super.tryReloadProperties(preq)) {
             try {
-                servercontext = new ServerContextImpl(getContextXMLServletConfig().getContextConfig(), servletname);
-                ServerContextStore.getInstance(this.getServletContext()).storeContext(beanName, preq, servletname, servercontext);
+                //TODO: remove
+                servercontext.init(getContextXMLServletConfig().getContextConfig(), servletname);
             } catch (Exception e) {
                 String msg = "Error during reload of servlet configuration";
                 LOG.error(msg, e);
@@ -144,7 +148,6 @@ public class PustefixContextXMLRequestHandler extends AbstractPustefixXMLRequest
 
     public SPDocument getDom(PfixServletRequest preq) throws PustefixApplicationException, PustefixCoreException {
         ExtendedContext context = getContext(preq);
-        
         // Prepare context for current thread
         // Cleanup is performed in finally block
         ((ContextImpl) context).prepareForRequest();
@@ -274,32 +277,17 @@ public class PustefixContextXMLRequestHandler extends AbstractPustefixXMLRequest
             throw new PustefixRuntimeException("No valid session found! Aborting...");
         }
 
-        SessionContextStore store = SessionContextStore.getInstance(session);
-        ContextImpl context = store.getContext(beanName, preq);
-        // Session does not have a context yet?
-        if (context == null) {
-            // Synchronize on session object to make sure only ONE
-            // context per session is created
-            synchronized (session) {
-                context = store.getContext(beanName, preq);
-                if (context == null) {
-                    context = new ContextImpl(servercontext, session);
-                    store.storeContext(beanName, preq, this.servletname, context);
-                }
-            }
+        //TODO: remove
+        synchronized (session) {
+                context.setServerContext(servercontext);
+                context.setSession(session);
         }
-        // Update reference to server context as it might have changed
-        context.setServerContext(servercontext);
         
         return context;
     }
 
     protected void reloadServletConfig(FileResource configFile, Properties globalProperties) throws ServletException {
-        try {
-            this.config = ConfigReader.readContextXMLServletConfig(configFile, globalProperties);
-        } catch (PustefixCoreException e) {
-            throw new ServletException("Could not read servlet configuration from " + configFile.toURI(), e);
-        }
+        //TODO: remove
         try {
             createInterceptors();
         } catch (Exception e) {
@@ -341,5 +329,13 @@ public class PustefixContextXMLRequestHandler extends AbstractPustefixXMLRequest
         }
         postRenderInterceptors = (ContextInterceptor[]) list.toArray(new ContextInterceptor[] {});
     } 
+    
+    public void setServerContext(ServerContextImpl servercontext) {
+        this.servercontext = servercontext;
+    }
+    
+    public void setContext(ContextImpl context) {
+        this.context = context;
+    }
     
 }

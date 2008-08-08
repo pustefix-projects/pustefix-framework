@@ -51,6 +51,7 @@ public class PagerequestOutputResourceRule extends CheckedRule {
 //            throw new SAXException("Context resource class " + clazz + " on page " + pageConfig.getPageName() + " does not implement " + ContextResource.class + " interface!");
 //        }
         pageConfig.addContextResource(node, clazz);
+        System.out.println("ADD OUTPUT RESOURCE: "+node);
     }
 
     protected Map<String, Boolean> wantsAttributes() {

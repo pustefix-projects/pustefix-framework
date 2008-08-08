@@ -66,7 +66,7 @@ public class ContextImpl implements AccessibilityChecker, ExtendedContext, Token
         private HttpSession                session;
         private Variant                    variant      = null;
         private String                     visitId      = null;
-        private ContextResourceManagerImpl crm;
+        private ContextResourceManager     crm;
         private SessionEndNotificator      sessionEndNotificator;
         private Authentication             authentication;
         private Set<String>                visitedPages = Collections.synchronizedSet(new HashSet<String>());
@@ -89,9 +89,8 @@ public class ContextImpl implements AccessibilityChecker, ExtendedContext, Token
             }
         }
 
-        public SessionContextImpl(HttpSession session) {
-            this.session = session;
-            this.crm = new ContextResourceManagerImpl();
+        private void init(Context context, HttpSession session) throws PustefixApplicationException, PustefixCoreException {
+            //TODO: rework session stuff
             synchronized (this.getClass()) {
                 this.sessionEndNotificator = (SessionEndNotificator) this.session.getAttribute("de.schlund.pfixcore.workflow.ContextImpl.SessionContextImpl.dummylistenerobject");
                 if (this.sessionEndNotificator == null) {
@@ -99,9 +98,7 @@ public class ContextImpl implements AccessibilityChecker, ExtendedContext, Token
                     this.session.setAttribute("de.schlund.pfixcore.workflow.ContextImpl.SessionContextImpl.dummylistenerobject", this.sessionEndNotificator);
                 }
             }
-        }
-
-        private void init(Context context) throws PustefixApplicationException, PustefixCoreException {
+            
             this.authentication = new AuthenticationImpl(getContextConfig().getRoleProvider());
             List<Role> roles = getContextConfig().getRoleProvider().getRoles();
             if (roles != null) {
@@ -110,13 +107,17 @@ public class ContextImpl implements AccessibilityChecker, ExtendedContext, Token
                         authentication.addRole(role.getName());
                 }
             }
-            crm.init(context, context.getContextConfig());
+            ((ContextResourceManagerImpl)crm).init(context, context.getContextConfig());
         }
 
         public ContextResourceManager getContextResourceManager() {
             return crm;
         }
 
+        public void setContextResourceManager(ContextResourceManager crm) {
+            this.crm = crm;
+        }
+        
         public void setLanguage(String langcode) {
             session.setAttribute(AbstractPustefixXMLRequestHandler.SESS_LANG, langcode);
         }
@@ -227,13 +228,21 @@ public class ContextImpl implements AccessibilityChecker, ExtendedContext, Token
     private SessionContextImpl              sessioncontext;
     private ServerContextImpl               servercontext;
     private ThreadLocal<RequestContextImpl> requestcontextstore = new ThreadLocal<RequestContextImpl>();
-
-    public ContextImpl(ServerContextImpl servercontext, HttpSession session) throws PustefixApplicationException, PustefixCoreException {
-        this.servercontext = servercontext;
-        this.sessioncontext = new SessionContextImpl(session);
-        sessioncontext.init(this);
+    
+    
+    public ContextImpl() {
+        this.sessioncontext = new SessionContextImpl();
     }
-
+    
+    //TODO: rework
+    public void setSession(HttpSession session) throws PustefixApplicationException, PustefixCoreException {
+        sessioncontext.init(this, session);
+    }
+    
+    public void setContextResourceManager(ContextResourceManager crm) {
+        sessioncontext.setContextResourceManager(crm);
+    }
+    
     public void addCookie(Cookie cookie) {
         getRequestContextForCurrentThreadWithError().addCookie(cookie);
     }
@@ -479,10 +488,11 @@ public class ContextImpl implements AccessibilityChecker, ExtendedContext, Token
 
     // Notification on session binding / unbinding
 
+    //TODO: remove
     public void valueBound(HttpSessionBindingEvent ev) {
         this.sessioncontext.session = ev.getSession();
     }
-
+    //TODO: remove
     public void valueUnbound(HttpSessionBindingEvent ev) {
         if (ev.getSession() == this.sessioncontext.session) {
             this.sessioncontext.session = null;
@@ -514,5 +524,5 @@ public class ContextImpl implements AccessibilityChecker, ExtendedContext, Token
     public PfixServletRequest getPfixServletRequest() {
         return getRequestContextForCurrentThreadWithError().getPfixServletRequest();
     }
-
+    
 }

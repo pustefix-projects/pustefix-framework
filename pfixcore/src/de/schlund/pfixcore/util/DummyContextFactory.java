@@ -43,8 +43,11 @@ public class DummyContextFactory {
 
     public static Context getDummyContext(ContextXMLServletConfig config) throws Exception {
         HttpSession        session        = new DummySession();
-        ServerContextImpl  servercontext  = new ServerContextImpl(config.getContextConfig(), "Dummy");
-        ContextImpl        context        = new ContextImpl(servercontext, session);
+        ServerContextImpl  servercontext  = new ServerContextImpl();
+        servercontext.init(config.getContextConfig(), "Dummy");
+        ContextImpl        context        = new ContextImpl();
+        context.setServerContext(servercontext);
+        context.setSession(session);
         context.prepareForRequest();
         return context;
     }

@@ -135,6 +135,7 @@ public class ContextXMLServletConfigImpl extends AbstractXMLServletConfigImpl im
         digester.addRule("contextxmlserver/servletinfo/defaultihandlerstate", servletInfoDefaultIHandlerStateRule);
         digester.addRule("contextxmlserver/servletinfo/ssl", sslRule);
         digester.addRule("contextxmlserver/context", contextRule);
+        
         digester.addRule("contextxmlserver/context/resource", contextResourceRule);
         digester.addRule("contextxmlserver/context/resource/implements", contextResourceInterfaceRule);
         digester.addRule("contextxmlserver/context/resource/properties", dummyRule);

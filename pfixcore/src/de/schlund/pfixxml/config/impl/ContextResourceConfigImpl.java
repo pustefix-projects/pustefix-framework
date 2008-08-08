@@ -37,11 +37,10 @@ public class ContextResourceConfigImpl implements ContextResourceConfig {
     private Class<?> resourceClass = null;
     private HashSet<Class<?>> interfaces = new HashSet<Class<?>>();
     private Properties props = new Properties();
-    private ContextConfigImpl parent;
+    private String beanName;
     
-    public ContextResourceConfigImpl(Class<?> clazz, ContextConfigImpl parent) {
+    public ContextResourceConfigImpl(Class<?> clazz) {
         this.resourceClass = clazz;
-        this.parent = parent;
     }
     
     /* (non-Javadoc)
@@ -53,11 +52,6 @@ public class ContextResourceConfigImpl implements ContextResourceConfig {
     
     public void addInterface(Class<?> clazz) {
         this.interfaces.add(clazz); 
-        ContextResourceConfig oldConfig = this.parent.getContextResourceConfigForInterface(clazz);
-        if (oldConfig != null) {
-            LOG.warn("Binding interface " + clazz.getName() + " already bound to " + oldConfig.getClass().getName() + " to new class " + this.resourceClass.getName());
-        }
-        this.parent.interfaceToResource.put(clazz, this);
     }
     
     /* (non-Javadoc)
@@ -73,4 +67,13 @@ public class ContextResourceConfigImpl implements ContextResourceConfig {
     public Properties getProperties() {
         return this.props;
     }
+    
+    public void setBeanName(String beanName) {
+        this.beanName = beanName;
+    }
+    
+    public String getBeanName() {
+        return beanName;
+    }
+    
 }

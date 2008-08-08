@@ -1,0 +1,66 @@
+<?xml version="1.0"?>
+<configuration
+  xmlns="http://www.marsching.com/2008/flexiparse/configurationNS"
+  xmlns:c="http://www.pustefix-framework.org/2008/namespace/context-xml-config"
+>
+   
+  <!--  /context-xml-config -->
+  
+  <handler class="org.pustefixframework.config.contextxml.parser.ContextXMLParsingHandler">
+    <match>/c:context-xml-config</match>
+  </handler>
+
+  <!-- /context-xml-config/servletinfo -->
+
+  <handler class="org.pustefixframework.config.contextxml.parser.ServletInfoParsingHandler">
+    <match>/c:context-xml-config/c:servletinfo</match>
+  </handler>
+    
+  <handler class="org.pustefixframework.config.contextxml.parser.ServletInfoEditModeParsingHandler">
+    <match>/c:context-xml-config/c:servletinfo//c:editmode</match>
+  </handler>
+  
+  <handler class="org.pustefixframework.config.contextxml.parser.ServletInfoDefaultStateParsingHandler">
+    <match>/c:context-xml-config/c:servletinfo/c:defaultstate</match>
+  </handler>
+  
+  <handler class="org.pustefixframework.config.contextxml.parser.ServletInfoDefaultIHandlerStateParsingHandler">
+    <match>/c:context-xml-config/c:servletinfo/c:defaultihandlerstate</match>
+  </handler>
+  
+  <handler class="org.pustefixframework.config.contextxml.parser.SSLParsingHandler">
+    <match>/c:context-xml-config/c:servletinfo//c:ssl</match>
+  </handler>
+  
+  <!-- /context-xml-config/context -->
+  
+  <handler class="org.pustefixframework.config.contextxml.parser.ContextParsingHandler">
+    <match>/c:context-xml-config/c:context</match>
+  </handler>
+  
+  <handler class="org.pustefixframework.config.contextxml.parser.ContextResourceParsingHandler">
+    <match>/c:context-xml-config/c:context/c:resource</match>
+  </handler>
+  
+  
+  
+  <handler class="org.pustefixframework.config.contextxml.parser.PageRequestParsingHandler">
+    <match>/c:context-xml-config/c:pagerequest</match>
+  </handler>
+  
+  <handler class="org.pustefixframework.config.contextxml.parser.PageRequestOutputResourceParsingHandler">
+    <match>/c:context-xml-config/c:pagerequest//c:output/c:resource</match>
+  </handler>
+  
+  
+  <handler id="org.pustefixframework.config.project.customization.WhenParsingHandler" class="org.pustefixframework.config.customization.CustomizationWhenParsingHandler">
+    <match>/c:context-xml-config/c:servletinfo/c:choose/c:when</match>
+    <!-- <match></match>-->
+  </handler>
+  
+  <handler id="org.pustefixframework.config.project.customization.OtherwiseParsingHandler" class="org.pustefixframework.config.customization.CustomizationOtherwiseParsingHandler">
+    <match>/c:context-xml-config/c:servletinfo/c:choose/c:otherwise</match>
+    <!--<match></match>-->
+  </handler>
+  
+</configuration>
