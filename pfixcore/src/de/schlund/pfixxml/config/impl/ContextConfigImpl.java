@@ -104,9 +104,8 @@ public class ContextConfigImpl implements ContextConfig {
             LOG.warn("Overwriting configuration for context resource " + config.getContextResourceClass().getName());
         }
         resources.put(config.getContextResourceClass(), config);
-        resourceMap.put(config.getContextResourceClass().getName(), config);
         for(Class<?> itf:config.getInterfaces()) {
-            resourceMap.put(itf.getClass().getName(), config);
+            resourceMap.put(itf.getName(), config);
         }
         cacheResources = null;
     }
@@ -124,7 +123,7 @@ public class ContextConfigImpl implements ContextConfig {
     }
     
     public ContextResourceConfig getContextResourceConfig(Class<?> clazz) {
-        return this.resources.get(clazz);
+        return getContextResourceConfig(clazz.getName());
     }
     
     public ContextResourceConfig getContextResourceConfig(String name) {
