@@ -30,7 +30,7 @@ public class PageRequestParsingHandler implements ParsingHandler {
         if (pageName.length()==0) {
             throw new ParserException("Mandatory attribute \"name\" is missing!");
         }
-        System.out.println("ADD PAGE: "+pageName);
+        
         pageConfig.setPageName(pageName);
         String copyfrom = element.getAttribute("copyfrom").trim();
         if (copyfrom.length()>0) {

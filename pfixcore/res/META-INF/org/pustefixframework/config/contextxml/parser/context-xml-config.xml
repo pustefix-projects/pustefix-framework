@@ -42,18 +42,49 @@
     <match>/c:context-xml-config/c:context/c:resource</match>
   </handler>
   
-  <!-- /context-xml-config/interceptors -->
+  <!-- interceptors -->
   <handler class="org.pustefixframework.config.contextxml.parser.ContextInterceptorParsingHandler">
     <match>/c:context-xml-config/c:interceptors//c:interceptor</match>
   </handler>
   
-  <!-- /context-xml/scriptedflow -->
+  <!-- scriptedflows -->
   <handler class="org.pustefixframework.config.contextxml.parser.ScriptedFlowParsingHandler">
     <match>/c:context-xml-config/c:scriptedflow</match>
   </handler>
   
+  <!-- authorization -->
   
+  <handler class="org.pustefixframework.config.contextxml.parser.RoleProviderParsingHandler">
+    <match>/c:context-xml-config/c:roleprovider</match>
+  </handler>
   
+  <handler class="org.pustefixframework.config.contextxml.parser.RoleParsingHandler">
+    <match>/c:context-xml-config/c:role</match>
+  </handler>
+  
+  <handler class="org.pustefixframework.config.contextxml.parser.ConditionParsingHandler">
+    <match>/c:context-xml-config/c:condition</match>
+    <match>/c:context-xml-config/c:authconstraint//c:and</match>
+    <match>/c:context-xml-config/c:authconstraint//c:or</match>
+    <match>/c:context-xml-config/c:authconstraint//c:not</match>
+    <match>/c:context-xml-config/c:authconstraint//c:condition</match>
+    <match>/c:context-xml-config/c:authconstraint//c:authconstraint</match>
+    <match>/c:context-xml-config/c:authconstraint//c:hasrole</match>
+    <match>/c:context-xml-config/c:pagerequest/c:authconstraint//c:and</match>
+    <match>/c:context-xml-config/c:pagerequest/c:authconstraint//c:or</match>
+    <match>/c:context-xml-config/c:pagerequest/c:authconstraint//c:not</match>
+    <match>/c:context-xml-config/c:pagerequest/c:authconstraint//c:condition</match>
+    <match>/c:context-xml-config/c:pagerequest/c:authconstraint//c:authconstraint</match>
+    <match>/c:context-xml-config/c:pagerequest/c:authconstraint//c:hasrole</match>
+  </handler>
+ 
+  <handler class="org.pustefixframework.config.contextxml.parser.AuthConstraintParsingHandler">
+    <match>/c:context-xml-config/c:authconstraint</match>
+    <match>/c:context-xml-config/c:pagerequest/c:authconstraint</match>
+  </handler>
+    
+    
+    
   <handler class="org.pustefixframework.config.contextxml.parser.PageRequestParsingHandler">
     <match>/c:context-xml-config/c:pagerequest</match>
   </handler>
