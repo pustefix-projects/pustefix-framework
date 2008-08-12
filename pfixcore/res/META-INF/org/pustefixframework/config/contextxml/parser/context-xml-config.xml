@@ -90,6 +90,32 @@
     <match>/c:context-xml-config/c:pagerequest/*[self::default or self::variant]/c:authconstraint</match>
   </handler>
     
+  <!--  pageflows -->
+  
+  <handler class="org.pustefixframework.config.contextxml.parser.PageFlowParsingHandler">
+    <match>/c:context-xml-config/c:pageflow</match>
+  </handler>
+  
+  <handler class="org.pustefixframework.config.contextxml.parser.PageFlowVariantParsingHandler">
+    <match>/c:context-xml-config/c:pageflow/c:variant</match>
+  </handler>
+  
+  <handler class="org.pustefixframework.config.contextxml.parser.PageFlowStepParsingHandler">
+    <match>/c:context-xml-config/c:pageflow//c:flowstep</match>
+  </handler>
+  
+  <handler class="org.pustefixframework.config.contextxml.parser.PageFlowStepOnContinueParsingHandler">
+    <match>/c:context-xml-config/c:pageflow//c:flowstep/c:oncontinue</match>
+  </handler>
+  
+  <handler class="org.pustefixframework.config.contextxml.parser.PageFlowStepConditionParsingHandler">
+    <match>/c:context-xml-config/c:pageflow//c:flowstep/c:oncontinue/c:when</match>
+  </handler>
+  
+  <handler class="org.pustefixframework.config.contextxml.parser.PageFlowStepActionParsingHandler">
+    <match>/c:context-xml-config/c:pageflow//c:flowstep/c:oncontinue/c:when/c:action</match>
+  </handler>
+  
     
     
   <handler class="org.pustefixframework.config.contextxml.parser.PageRequestParsingHandler">
@@ -99,6 +125,7 @@
   <handler class="org.pustefixframework.config.contextxml.parser.PageRequestVariantParsingHandler">
     <match>/c:context-xml-config/c:pagerequest/c:variant</match>
   </handler>
+  
   
   <handler class="org.pustefixframework.config.contextxml.parser.PageRequestInputWrapperParsingHandler">
     <match>/c:context-xml-config/c:pagerequest//c:input/c:wrapper</match>
