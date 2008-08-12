@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <context-xml-config xmlns="http://www.pustefix-framework.org/2008/namespace/context-xml-config">
 
-  <servletinfo depend="sample1/conf/depend.xml" name="pfixcore_project:sample1::servlet:config">
+  <global-config>
     <editmode allow="true"/>
-    <choose><when test="$mode='test'"><ssl force="false"/></when></choose>
-  </servletinfo>
+    <choose><when test="$mode='test'"><force-ssl>false</force-ssl>></when></choose>
+  </global-config>
 
   <context defaultpage="home">
     <resource class="de.schlund.pfixcore.example.ContextCounter" bean-name="foo"/>

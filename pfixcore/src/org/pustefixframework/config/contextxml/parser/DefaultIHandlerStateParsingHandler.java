@@ -19,7 +19,7 @@ import de.schlund.pfixxml.config.impl.ContextXMLServletConfigImpl;
  * @author mleidig
  *
  */
-public class ServletInfoDefaultStateParsingHandler implements ParsingHandler {
+public class DefaultIHandlerStateParsingHandler implements ParsingHandler {
 
     public void handleNode(HandlerContext context) throws ParserException {
         
@@ -27,7 +27,7 @@ public class ServletInfoDefaultStateParsingHandler implements ParsingHandler {
         ParsingUtils.checkAttributes(element, new String[] {"class"}, null);
    
         ContextXMLServletConfigImpl config = ParsingUtils.getSingleTopObject(ContextXMLServletConfigImpl.class, context);     
-        
+   
         String className = element.getAttribute("class");
         Class<?> clazz;
         try {
@@ -36,9 +36,9 @@ public class ServletInfoDefaultStateParsingHandler implements ParsingHandler {
             throw new ParserException("Could not load class \"" + className + "\"!", e);
         }
         if (!State.class.isAssignableFrom(clazz)) {
-            throw new ParserException("Default state class " + clazz + " does not implement " + State.class + " interface!");
+            throw new ParserException("Default IHandler state class " + clazz + " does not implement " + State.class + " interface!");
         }
-        config.setDefaultStaticState(clazz.asSubclass(State.class));
+        config.setDefaultIHandlerState(clazz.asSubclass(State.class));
         
     }
 
