@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<contextxmlserver xmlns="http://pustefix.sourceforge.net/properties200401"
-  xmlns:cus="http://www.schlund.de/pustefix/customize" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://pustefix.sourceforge.net/properties200401 ../../core/schema/properties200401.xsd"
-  version="1.0">
+<context-xml-config xmlns="http://www.pustefix-framework.org/2008/namespace/context-xml-config" 
+                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                    xsi:schemaLocation="http://www.pustefix-framework.org/2008/namespace/context-xml-config ../../core/schema/context-xml-config.xsd"
+                    version="1.0">
 
-  <servletinfo depend="sample1/conf/depend.xml" name="pfixcore_project:sample1::servlet:config">
-    <editmode allow="true"/>
-  </servletinfo>
+  <global-config>
+    <!-- <force-ssl>true</force-ssl> -->
+  </global-config>
 
   <context defaultpage="home">
     <resource class="de.schlund.pfixcore.example.ContextCounter"/>
@@ -127,7 +127,7 @@
   <pagerequest name="order">
     <choose>
       <when test="$mode = 'prod'">
-        <ssl force="true"/>
+        <force-ssl>true</force-ssl>
       </when>
     </choose>
     <input requirestoken="true">
@@ -174,7 +174,7 @@
   <pagerequest name="overview">
     <choose>
       <when test="$mode = 'prod'">
-        <ssl force="true" />
+        <force-ssl>true</force-ssl>
       </when>
     </choose>
     <state class="de.schlund.pfixcore.example.OverviewState" />
@@ -235,4 +235,4 @@
     <!-- <prop name="interfacelogging">sample1/log</prop> -->
   <!-- </properties> -->
 
-</contextxmlserver>
+</context-xml-config>
