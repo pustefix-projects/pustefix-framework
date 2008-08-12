@@ -96,9 +96,30 @@
     <match>/c:context-xml-config/c:pagerequest</match>
   </handler>
   
+  <handler class="org.pustefixframework.config.contextxml.parser.PageRequestVariantParsingHandler">
+    <match>/c:context-xml-config/c:pagerequest/c:variant</match>
+  </handler>
+  
+  <handler class="org.pustefixframework.config.contextxml.parser.PageRequestInputWrapperParsingHandler">
+    <match>/c:context-xml-config/c:pagerequest//c:input/c:wrapper</match>
+  </handler>
+  
   <handler class="org.pustefixframework.config.contextxml.parser.PageRequestOutputResourceParsingHandler">
     <match>/c:context-xml-config/c:pagerequest//c:output/c:resource</match>
   </handler>
+  
+  <!-- actions -->
+  
+  <handler class="org.pustefixframework.config.contextxml.parser.ProcessActionParsingHandler">
+    <match>/c:context-xml-config/c:pagerequest//c:process/c:action</match>
+  </handler>
+  
+  <handler class="org.pustefixframework.config.contextxml.parser.ProcessActionWrapperParsingHandler">
+    <match>/c:context-xml-config/c:pagerequest//c:process/c:action/c:submit/c:wrapper</match>
+    <match>/c:context-xml-config/c:pagerequest//c:process/c:action/c:retrieve/c:wrapper</match>
+  </handler>
+  
+  
   
   
   <handler id="org.pustefixframework.config.project.customization.WhenParsingHandler" class="org.pustefixframework.config.customization.CustomizationWhenParsingHandler">
