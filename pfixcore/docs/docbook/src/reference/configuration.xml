@@ -738,7 +738,7 @@
       </flowstep>
     </pageflow>
     
-    <pagerequest name="APageName" nostore="true|false" copyfrom="APageName">
+    <pagerequest name="APageName" copyfrom="APageName">
         ]]></programlisting>
         <informaltable rules="all" frame="box">
           <thead align="left">
