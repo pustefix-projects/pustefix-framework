@@ -61,12 +61,19 @@ public interface ContextConfig {
     List<? extends ContextResourceConfig> getContextResourceConfigs();
 
     /**
-     * Returns the configuration for the context resource of the specified class
+     * Returns the configuration for the context resource of the specified class or interface
      * 
-     * @param clazz class of the context resource
+     * @param clazz class or interface of the context resource
      * @return configuration object for the context resource
      */
     ContextResourceConfig getContextResourceConfig(Class<?> clazz);
+    
+    /**
+     * Returns the configuration for the context resource of the specified class or interface name
+     * 
+     * @param name class or interface name of the context resource
+     * @return configuration object for the context resource
+     */
     ContextResourceConfig getContextResourceConfig(String name);
 
     /**
