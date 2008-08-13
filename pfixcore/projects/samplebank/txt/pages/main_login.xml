@@ -3,7 +3,7 @@
   <part name="content">
     <theme name="default">
       <h1>Customer login:</h1>
-      <pfx:forminput type="roleauth">
+      <pfx:forminput type="auth">
         <table>
           <tr>
             <td>Customer ID:</td>

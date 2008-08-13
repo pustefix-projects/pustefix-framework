@@ -521,7 +521,7 @@
         <programlisting language="xml"><![CDATA[
     </servletinfo>
     
-    <context defaultflow="AFlowName" authpage="APageName" synchronized="true">
+    <context defaultflow="AFlowName" synchronized="true">
         ]]></programlisting>
         <informaltable rules="all" frame="box">
           <thead align="left">
@@ -535,13 +535,6 @@
               <td><literal>defaultflow</literal></td>
               <td><emphasis>Mandatory</emphasis>. Must reference a 
               valid <literal>pageflow</literal> (See below).</td>
-            </tr>
-            <tr>
-              <td><literal>authpage</literal></td>
-              <td>Optional. It must be given, if the servlet should 
-              supply a login/authentification page. If given, it must 
-              reference a valid <literal>pagerequest</literal> with an 
-              auth child node.</td>
             </tr>
             <tr>
               <td><literal>synchronized</literal></td>
@@ -604,12 +597,12 @@
         are a special method to control a session and do automatic 
         requests based on initial user input.
         <programlisting language="xml"><![CDATA[
-    <role name="MY_ROLE">
-      <pageaccess names="mypage*"/>
-    </role>
+    <role name="A_ROLE"/>
+    <condition id="A_CONDITION"/>
+    <authconstraint id="AN_AUTHCONSTRAINT"/>
         ]]></programlisting>
-         You can define an arbitrary number of roles and assigned 
-         authorizations here, for details see Role-based authorization.
+         You can define an arbitrary number of roles, conditions and 
+         authconstraints here, for details see <xref linkend="advanced.rolebasedauth"/>.
          <!-- TODO Add link here -->
          <programlisting language="xml"><![CDATA[
     <pageflow name="AName" final="APageName" stopnext="true|false">
@@ -796,13 +789,7 @@
         <orderedlist>
           <listitem>
             <para>If state is given, use the value of it's 
-            <tag class="attribute">class</tag> attribute. Else:</para>
-          </listitem>
-          <listitem>
-            <para>If the <tag>pagerequest</tag> has a <tag>auth</tag> 
-            child, use 
-            <classname>de.schlund.pfixcore.workflow.app.DefaultAuthIWrapperState</classname>. 
-            Else:</para>
+            <tag class="attribute">class</tag> attribute.</para>
           </listitem>
           <listitem>
             <para>If the pagerequest has an <tag>input</tag> child, use 
@@ -933,47 +920,7 @@
         <programlisting language="xml"><![CDATA[
       </input>
         ]]></programlisting>
-        <caution>
-          <para>
-            Only one of <tag>input</tag> or <tag>auth</tag> may be 
-            given as a child node!
-          </para>
-        </caution>
         <programlisting language="xml"><![CDATA[
-      <auth>
-        ]]></programlisting>
-        The whole node is optional. It may only be given for a page 
-        using a <classname>State</classname> that is either 
-        <classname>de.schlund.pfixcore.workflow.app.DefaultAuthIWrapperState</classname> 
-        or a descendent of it!
-        There may be only one pagerequest using such a 
-        <classname>State</classname>, it must be the one that is also 
-        referred to via the <tag class="attribute">authpage</tag> 
-        attribute of the <tag>context</tag> node above. Other 
-        <tag>pagerequest</tag> nodes must not have this subnode!
-        <programlisting language="xml"><![CDATA[
-        <authinterface prefix="AName" class="AClassName"/>
-        <auxinterface prefix="AName" class="AClassName"/>
-        ]]></programlisting>
-        One and only one <tag>authinterface</tag> node must be given. 
-        <tag>auxinterface</tag> nodes are optional and can be given 
-        multiple times.
-        The <tag class="attribute">prefix</tag> and 
-        <tag class="attribute">class</tag> attributes are mandatory for 
-        both nodes. The meaning is the same as for the 
-        <tag>interface</tag> subnodes of the <tag>ihandler</tag> node.
-        The <tag>authinterface</tag> node denotes the one 
-        <classname>IWrapper</classname>/<classname>IHandler</classname> 
-        combo that is responsible for checking the authentification of a 
-        user session. The <tag>auxinterface</tag> nodes denote 
-        additional <classname>IWrapper</classname>s/<classname>IHandler</classname>s 
-        that are called after the authentification handler if the 
-        authorization is granted.
-        Note that no error handling whatsoever takes place for 
-        <tag>auxinterface</tag> <classname>IHandler</classname>s.
-        <programlisting language="xml"><![CDATA[
-      </auth>
-  
       <process>
         ]]></programlisting>
         The process node holds a list of actions, which can be referenced from
@@ -1242,15 +1189,20 @@
          The <classname>Context</classname> (or better: the 
          <classname>ContextResourceManager</classname>) of this servlet 
          is used for getting stored application data.
-         Additionally, if the <classname>ContextXMLServlet</classname> 
-         requires authentication, it's authentication page is checked 
-         before any <classname>DirectOutputState</classname> is called.
          The <tag class="attribute">synchronized</tag> attribute is 
          optional. It defaults to <literal>true</literal>. If set to 
          <literal>true</literal>, only one request per session is 
          handled concurrently. If set to <literal>false</literal> all 
          requests will be handled concurrently, requiring thread-safe 
          business logic.
+         <programlisting language="xml"><![CDATA[
+    <authconstraint ref="AN_AUTHCONSTRAINT"/>
+         ]]></programlisting>
+         You can reference an authconstraint from the context configuration, which
+         has to be fulfilled to access a page. This default authconstraint can be overridden
+	 for single pages. If no default authconstraint is set here, the context's
+         default authconstraint will be used. If no authconstraint is set at all, a
+         page requires no authentication.
          <programlisting language="xml"><![CDATA[
     <config-include file="myproject/conf/myfile.xml" section="directoutputpagerequests"/>
          ]]></programlisting>
@@ -1303,6 +1255,13 @@
         <programlisting language="xml"><![CDATA[
     <directoutputpagerequest name="APageName">
       <directoutputstate class="AClassName"/>
+        ]]></programlisting>
+        <programlisting language="xml"><![CDATA[
+      <authconstraint ref="AN_AUTHCONSTRAINT"/>
+        ]]></programlisting>
+        You can optionally reference an authconstraint from the context
+        configuration to override the default authconstraint.
+        <programlisting language="xml"><![CDATA[
       <properties>
         ]]></programlisting>
         The whole <tag>properties</tag> node is optional.

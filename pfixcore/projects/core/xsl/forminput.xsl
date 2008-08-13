@@ -194,7 +194,7 @@
           </xsl:when>
           <xsl:otherwise>
             <xsl:choose>
-              <xsl:when test="@type='roleauth'">
+              <xsl:when test="@type='auth'">
                 <ixsl:choose>
                   <ixsl:when test="$__root/formresult/authentication/@targetpage">
                     <xsl:value-of select="$thehandler"/>/<ixsl:value-of select="$__root/formresult/authentication/@targetpage"/>;<ixsl:value-of select="$__sessid"/>
@@ -217,8 +217,8 @@
         </input>
       </ixsl:if>
       <input type="hidden" name="__sendingdata" value="1"/>
-      <xsl:if test="@type='roleauth'">
-        <input type="hidden" name="__roleauth" value="1"/>
+      <xsl:if test="@type='auth'">
+        <input type="hidden" name="__sendingauthdata" value="1"/>
       </xsl:if>
       <xsl:if test="@send-to-pageflow">
         <input type="hidden" name="__pageflow" value="{@send-to-pageflow}"/>

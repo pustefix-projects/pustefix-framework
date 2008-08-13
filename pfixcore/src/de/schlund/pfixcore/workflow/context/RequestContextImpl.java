@@ -81,7 +81,7 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
     private final static String PARAM_LASTFLOW      = "__lf";
     private final static String PARAM_STARTWITHFLOW = "__startwithflow";
     private final static String PARAM_FORCESTOP     = "__forcestop";
-    private final static String PARAM_ROLEAUTH      = "__roleauth";
+    private final static String PARAM_ROLEAUTH      = "__sendingauthdata";
 
     private ContextImpl         parentcontext;
     private ServerContextImpl   servercontext;

@@ -1,3 +1,25 @@
+2008-08-13  Martin Leidig  <mleidig@schlund.de>
+
+	Removed last remains of old-style login mechanism. 
+	The 'type' attribute for login forms now has to be set to
+	'auth' for role-based authentication too, no more 'roleauth',
+	because there's only one mechanism. The hidden parameter
+	of such forms now is named '__sendingauthdata' instead of
+	'__roleauth' because there's no collision of the two 
+	authentication mechanisms any more and '__sendingauthdata'
+	is already well known. 
+	Removed all references to the old-style login mechanism
+	from the documentation.
+
+	* src/de/schlund/pfixcore/workflow/context/RequestContextImpl.java
+	* src/de/schlund/pfixcore/workflow/State.java
+	* docs/docbook/src/reference/advancedtopics.xml
+	* docs/docbook/src/reference/configuration.xml
+	* projects/core/xsl/forminput.xsl
+	* projects/core/editor2/txt/pages/main_login.xml
+	* projects/samplebank/txt/pages/main_login.xml
+	* projects/samplebank/txt/common.xml
+
 2008-08-13  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
 	* docs/docbook/src/reference/configuration.xml: 

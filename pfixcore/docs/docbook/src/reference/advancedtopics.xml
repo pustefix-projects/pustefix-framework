@@ -185,14 +185,14 @@
     </section>
   </section>
 
-  <section xml:id="advanved.rolebasedauth">
+  <section xml:id="advanced.rolebasedauth">
     <title>Authentication and authorization</title>
     <para>
       Pustefix provides a role-based authorization mechanism. You can define arbitrary <literal>roles</literal>, 
       declare logical operations/combinations on this roles using <literal>authconstraints</literal>, 
       and assign these authconstraints to <literal>pagerequests</literal>.
     </para>
-    <section xml:id="advanved.rolebasedauth.roles">
+    <section xml:id="advanced.rolebasedauth.roles">
       <title>Managing Roles</title>
       <para>
         A <literal>role</literal> is defined using an according XML element with a unique 
@@ -259,12 +259,10 @@
 </ixsl:if>]]></programlisting>
       <para>
         If you try to access a page for which the authconstraint isn't fulfilled, you're forwarded
-        to the according login page. The login page has to be a regular page, i.e. IWrappers on the
-        page are configured the regular way (no <literal>authinterface</literal> elements). 
-        Login forms require the <literal>type</literal> attribute set to <literal>roleauth</literal>
-        (instead of <literal>auth</literal> in the traditional login forms).
+        to the according login page. The login page has to be a regular page, e.g. containing a login form.
+        Login forms require the <literal>type</literal> attribute set to <literal>auth</literal>.
       </para>
-      <programlisting language="xml"><![CDATA[<pfx:forminput type="roleauth">
+      <programlisting language="xml"><![CDATA[<pfx:forminput type="auth">
   ...
 </pfx:forminput>]]></programlisting>
       <para>
