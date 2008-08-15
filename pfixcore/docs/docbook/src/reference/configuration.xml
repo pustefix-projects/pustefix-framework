@@ -359,7 +359,7 @@
       [project name]/conf/project.xml.in. All those files, together with the site wide file
       are used as the source for creating the above mentioned config files.
     </para>
-    <section>
+    <section xml:id="configuration.project.file">
       <title>The site wide configuration servletconf/projects.xml.in</title>
       <para>
         The site wide projects.xml.in file contains two "projects" that are needed for
@@ -441,6 +441,13 @@
     <class>de.schlund.pfixxml.DerefServer</class>
   </servlet>
  </project>]]></programlisting>
+      </para>
+    </section>
+    <section xml:id="configuration.project.servletfilters">
+      <title>Servlet filter configuration</title>
+      <para>
+        See <xref linkend="advanced.servletfilters.configuration"/> for information on how to configure
+        servlet filters in a pustefix application. 
       </para>
     </section>
   </section>
