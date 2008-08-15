@@ -5,19 +5,25 @@
 >
   <title>Module Support</title>
     <para>
-      Pustefix supports two ways for providing resources (include parts, images,
-      stylesheets, etc.) used by different projects.
+      Modules allow you to share functionality, configuration options and view elements
+      between different Pustefix installations.
     </para>
-    <section>
-      <title>Resources within library JARs</title>
+    <section xml:id="modulessupport.types">
+      <title>Different module types</title>
       <para>
-        The first (preferred) way is to place a JAR archive somewhere in the library
-        path (usually lib/) that contains a special deployment descriptor.
-        This deployment descriptor has to be named META-INF/pustefix-module.xml in
-        order to be recognized by the Pustefix build system. This deployment descriptor
-        is a XML file with the following format:
+        Pustefix supports two ways for providing resources (include parts, images,
+        stylesheets, etc.) used by different projects.
       </para>
-      <programlisting language="xml"><![CDATA[<module-descriptor
+      <section xml:id="modulessupport.types.new">
+        <title>Resources within library JARs</title>
+        <para>
+          The first (preferred) way is to place a JAR archive somewhere in the library
+          path (usually <filename>lib/</filename>) that contains a special deployment descriptor.
+          This deployment descriptor has to be named <filename>META-INF/pustefix-module.xml</filename> in
+          order to be recognized by the Pustefix build system. This deployment descriptor
+          is a XML file with the following format:
+        </para>
+        <programlisting language="xml"><![CDATA[<module-descriptor
   xsi:schemaLocation="http://pustefix.sourceforge.net/moduledescriptor200702 http://pustefix.sourceforge.net/moduledescriptor200702.xsd"
   xmlns="http://pustefix.sourceforge.net/moduledescriptor200702"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
@@ -39,25 +45,34 @@
     <resource-mapping srcpath="resources/images" targetpath="img"/>
   </resources>
 </module-descriptor>]]></programlisting>
+      </section>
+      <section xml:id="modulessupport.types.old">
+        <title>Resources placed in modules/ directory</title>
+        <para>
+          The old way is to place a JAR file in the <filename>modules/</filename> directory of the Pustefix
+          environment. In this case no deplyoment descriptor is needed (and even if
+          present it is not read). However you have to ensure that all files within
+          the JAR file are in a properly named directory as the archive will be directly
+          extracted to the <filename>projects/modules/</filename> directory.
+        </para>
+        <warning>
+          <title>Deprecated</title>
+          <para>
+            It is not recommended to use these types of modules in Pustefix 0.12.x or higher.
+            The the new way (see <xref linkend="modulessupport.types.new"/>) is much more
+            powerful, we will drop support for the <filename>modules</filename> directory
+            in a future Pustefix release.
+          </para>
+        </warning>
+      </section>
     </section>
-    <section>
-      <title>Resources placed in modules/ directory</title>
-      <para>
-        The old way is to place a JAR file in the modules/ directory of the Pustefix
-        environment. In this case no deplyoment descriptor is needed (and even if
-        present it is not read). However you have to ensure that all files within
-        the JAR file are in a properly named directory as the archive will be directly
-        extracted to the projects/modules/ directory.
-      </para>
-    </section>
-    <section>
+    <section xml:id="modulessupport.actions">
       <title>Actions applied on module resources after unpacking</title>
       <para>
-        In Pustefix version before 0.10.0 the .xsl.in to .xsl transformation is applied on
-        files placed in the projects/modules/ directory. In Pustefix versions since 0.10.0
-        this transformations are not applied anymore, however after unpacking the resources
-        a build.xml placed in projects/modules/&lt;module-name&gt;/ is run and can perform
-        such actions.
+        If your module contains an ant build file, Pustefix can execute this build
+        file after unpacking. If you want to deploy a build file, that is run automatically,
+        place a buildfile called <filename>build.xml</filename> in the folder
+        <filename>projects/modules/&lt;module-name&gt;/</filename>.
       </para>
     </section>
 </chapter>
