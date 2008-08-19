@@ -25,13 +25,12 @@ import java.util.Properties;
 import org.pustefixframework.config.customization.CustomizationAwareParsingHandler;
 import org.pustefixframework.config.directoutputservice.DirectOutputPageRequestConfig;
 import org.pustefixframework.config.directoutputservice.parser.internal.DirectOutputServiceConfigImpl;
-import org.xml.sax.SAXException;
+import org.pustefixframework.config.generic.PropertyFileReader;
 
 import com.marsching.flexiparse.configuration.RunOrder;
 import com.marsching.flexiparse.parser.HandlerContext;
 import com.marsching.flexiparse.parser.exception.ParserException;
 
-import de.schlund.pfixxml.config.XMLPropertiesUtil;
 import de.schlund.pfixxml.resources.ResourceUtil;
 
 public class DirectOutputServiceConfigParsingHandler extends CustomizationAwareParsingHandler {
@@ -42,8 +41,8 @@ public class DirectOutputServiceConfigParsingHandler extends CustomizationAwareP
             DirectOutputServiceConfigImpl serviceConfig = new DirectOutputServiceConfigImpl();
             Properties properties = new Properties(System.getProperties());
             try {
-                XMLPropertiesUtil.loadPropertiesFromXMLFile(ResourceUtil.getFileResourceFromDocroot("common/conf/pustefix.xml"), properties);
-            } catch (SAXException e) {
+                PropertyFileReader.read(ResourceUtil.getFileResourceFromDocroot("common/conf/pustefix.xml"), properties);
+            } catch (ParserException e) {
                 throw new ParserException("Error while reading common/conf/pustefix.xml", e);
             } catch (IOException e) {
                 throw new ParserException("Error while reading common/conf/pustefix.xml", e);

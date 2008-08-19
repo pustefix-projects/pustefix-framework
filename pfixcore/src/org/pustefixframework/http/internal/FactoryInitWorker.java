@@ -42,6 +42,7 @@ import javax.xml.transform.stream.StreamSource;
 
 import org.apache.log4j.Logger;
 import org.apache.log4j.xml.DOMConfigurator;
+import org.pustefixframework.config.generic.PropertyFileReader;
 import org.w3c.dom.Document;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.ErrorHandler;
@@ -52,12 +53,13 @@ import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
 import org.xml.sax.helpers.XMLReaderFactory;
 
+import com.marsching.flexiparse.parser.exception.ParserException;
+
 import de.schlund.pfixxml.FactoryInitException;
 import de.schlund.pfixxml.FactoryInitUtil;
 import de.schlund.pfixxml.PathFactory;
 import de.schlund.pfixxml.config.CustomizationHandler;
 import de.schlund.pfixxml.config.GlobalConfigurator;
-import de.schlund.pfixxml.config.XMLPropertiesUtil;
 import de.schlund.pfixxml.resources.FileResource;
 import de.schlund.pfixxml.resources.ResourceUtil;
 import de.schlund.pfixxml.util.TransformerHandlerAdapter;
@@ -146,65 +148,72 @@ public class FactoryInitWorker {
      */
     @SuppressWarnings("deprecation")
     private void doInit(ServletContext servletContext) throws ServletException {
-        Properties properties = new Properties(System.getProperties());
-        // old webapps specify docroot -- true webapps don't
-        String docrootstr = servletContext.getInitParameter("pustefix.docroot");
-        if (docrootstr != null && !docrootstr.equals("")) {
-            standaloneMode = true;
-        } else {
-            docrootstr = servletContext.getRealPath("/WEB-INF/pfixroot");
-            if (docrootstr == null) {
-                warMode = true;
-            }
-        }
-
-        // Setup global configuration before doing anything else
-        if (docrootstr != null) {
-            GlobalConfigurator.setDocroot(docrootstr);
-        }
-        if (warMode) {
-            GlobalConfigurator.setServletContext(servletContext);
-        }
         
-        if (docrootstr != null) {
-            // For compatibility with old apps, initialize PathFactory
-            PathFactory.getInstance().init(docrootstr);
-        }
-
-        String confname = "common/conf/factory.xml";
-        if (confname != null) {
-            FileResource confFile = ResourceUtil.getFileResourceFromDocroot(confname);
-            try {
-                XMLPropertiesUtil.loadPropertiesFromXMLFile(confFile, properties);
-            } catch (FileNotFoundException e) {
-                throw new ServletException("*** [" + confname + "] Not found: "
-                        + e.toString());
-            } catch (IOException e) {
-                throw new ServletException("*** [" + confname + "] IO-error: "
-                        + e.toString());
-            } catch (SAXException e) {
-                throw new ServletException("*** [" + confname + "] Parsing-error: "
-                        + e.toString());
-            }
-        } else {
-            throw new ServletException(
-                    "*** FATAL: Need the servlet.propfile property as init parameter! ***");
-        }
-        
-        if (docrootstr != null) {
-            // this is for stuff that can't use the PathFactory. Should not be used
-            // when possible...
-            properties.setProperty("pustefix.docroot", docrootstr);
-        }
-
-
-        configureLogging(properties, servletContext);
-        LOG.debug(">>>> LOG4J Init OK <<<<");
-
         try {
+        
+            Properties properties = new Properties(System.getProperties());
+            
+            // old webapps specify docroot -- true webapps don't
+            String docrootstr = servletContext.getInitParameter("pustefix.docroot");
+            if (docrootstr != null && !docrootstr.equals("")) {
+                standaloneMode = true;
+            } else {
+                docrootstr = servletContext.getRealPath("/WEB-INF/pfixroot");
+                if (docrootstr == null) {
+                    warMode = true;
+                }
+            }
+    
+            // Setup global configuration before doing anything else
+            if (docrootstr != null) {
+                GlobalConfigurator.setDocroot(docrootstr);
+            }
+            if (warMode) {
+                GlobalConfigurator.setServletContext(servletContext);
+            }
+            
+            if (docrootstr != null) {
+                // For compatibility with old apps, initialize PathFactory
+                PathFactory.getInstance().init(docrootstr);
+            }
+    
+            String confname = "common/conf/factory.xml";
+            if (confname != null) {
+                FileResource confFile = ResourceUtil.getFileResourceFromDocroot(confname);
+                try {
+                    PropertyFileReader.read(confFile, properties);
+                } catch (FileNotFoundException e) {
+                    throw new ServletException("*** [" + confname + "] Not found: "
+                            + e.toString(), e);
+                } catch (ParserException e) {
+                    throw new ServletException("*** [" + confname + "] Parsing-error: "
+                            + e.toString(), e);
+                }
+            } else {
+                throw new ServletException(
+                        "*** FATAL: Need the servlet.propfile property as init parameter! ***");
+            }
+            
+            if (docrootstr != null) {
+                // this is for stuff that can't use the PathFactory. Should not be used
+                // when possible...
+                properties.setProperty("pustefix.docroot", docrootstr);
+            }
+    
+    
+            configureLogging(properties, servletContext);
+            LOG.debug(">>>> LOG4J Init OK <<<<");
+        
             FactoryInitUtil.initialize(properties);
+            
         } catch (FactoryInitException e) {
             throw new ServletException(e.getCause().toString());
+        } catch (ServletException e) {
+            initException = new FactoryInitException("<init>", (e.getRootCause()==null?e:e.getRootCause()));
+            throw e;
+        } catch (RuntimeException e) {
+            initException = new FactoryInitException("<init>", e);
+            throw e;
         }
         LOG.debug("***** INIT of FactoryInitServlet done *****");
 

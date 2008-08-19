@@ -1,3 +1,32 @@
+2008-08-19  Martin Leidig  <mleidig@schlund.de>
+
+	Added new Reader and ant task for XML property files using the new configuration
+	mechanism (e.g. for factory.xml, pustefix.xml, *.prop.in) files:
+	* src/org/pustefixframework/config/generic/PropertyFileReader.java:
+	* res/META-INF/org/pustefixframework/config/generic/properties-config.xml
+	* src/org/pustefixframework/config/build/CreatePropertyFileTask.java
+	
+	* src/de/schlund/pfixxml/config/XMLPropertiesUtil.java: Removed
+
+	Changed XML property file format: removed superfluous 'standardprops'
+	tag, property files now need only the 'properties' root tag.
+	* projects/common/conf/factory.xml
+	* projects/common/conf/pustefix.xml
+
+	* skel/build-skel.xml: Use new task for transformation of *.prop.in
+	files, removed XSLT based task 
+
+	Use PropertyFileReader instead of XMLPropertiesUtil:
+	* src/org/pustefixframework/http/AbstractPustefixRequestHandler.java
+	* src/org/pustefixframework/http/internal/FactoryInitWorker.java
+	* src/org/pustefixframework/config/contextxml/parser/ContextXMLParsingHandler.java
+	* src/org/pustefixframework/config/directoutputservice/parser/DirectOutputServiceConfigParsingHandler.java
+	* src/de/schlund/pfixcore/util/GenerateSCodes.java
+
+	Added unit test:
+	* tests/junit/org/pustefixframework/config/generic/PropertyFileReaderTest.java
+	* tests/junit/org/pustefixframework/config/generic/properties.xml
+
 2008-08-13  Martin Leidig  <mleidig@schlund.de>
 
 	Removed last remains of old-style login mechanism. 

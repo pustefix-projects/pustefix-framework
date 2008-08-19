@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<standardprops xmlns="http://pustefix.sourceforge.net/properties200401" xmlns:cus="http://www.schlund.de/pustefix/customize" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://pustefix.sourceforge.net/properties200401 http://pustefix.sourceforge.net/properties200401.xsd" version="1.0">
-  
-  <properties>
+<properties xmlns="http://www.pustefix-framework.org/2008/namespace/properties-config">  
     
     <prop name="pustefix.log4j.config">common/conf/pfixlog.xml</prop>
     <!-- Set this property to use container logging when application
@@ -59,5 +57,5 @@
     <!-- max time a the put-thread will wait when putting perfevent into a full buffer -->
     <prop name="perflogging.offermaxwait">5</prop>
     
-  </properties>
-</standardprops>
+</properties>
+

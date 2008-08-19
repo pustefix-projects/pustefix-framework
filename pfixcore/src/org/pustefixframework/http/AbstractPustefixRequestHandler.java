@@ -42,18 +42,19 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
+import org.pustefixframework.config.generic.PropertyFileReader;
 import org.pustefixframework.container.spring.http.UriProvidingHttpRequestHandler;
 import org.pustefixframework.http.internal.FactoryInitWorker;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.web.context.ServletContextAware;
-import org.xml.sax.SAXException;
+
+import com.marsching.flexiparse.parser.exception.ParserException;
 
 import de.schlund.pfixxml.FactoryInitException;
 import de.schlund.pfixxml.FactoryInitUtil;
 import de.schlund.pfixxml.PfixServletRequest;
 import de.schlund.pfixxml.PfixServletRequestImpl;
 import de.schlund.pfixxml.config.ServletManagerConfig;
-import de.schlund.pfixxml.config.XMLPropertiesUtil;
 import de.schlund.pfixxml.exceptionprocessor.ExceptionConfig;
 import de.schlund.pfixxml.exceptionprocessor.ExceptionProcessor;
 import de.schlund.pfixxml.perflogging.PerfEvent;
@@ -864,12 +865,10 @@ public abstract class AbstractPustefixRequestHandler implements UriProvidingHttp
         long mtime;
         try {
             mtime = propfile.lastModified();
-            XMLPropertiesUtil.loadPropertiesFromXMLFile(propfile, props);
+            PropertyFileReader.read(propfile, props);
         } catch (FileNotFoundException e) {
             throw new ServletException("*** [" + propfile.getName() + "] Not found: " + e.toString());
-        } catch (IOException e) {
-            throw new ServletException("*** [" + propfile.getName() + "] IO-error: " + e.toString());
-        } catch (SAXException e) {
+        } catch (ParserException e) {
             throw new ServletException("*** [" + propfile.getName() + "] Parsing-error: " + e.toString());
         }
         return mtime;

@@ -7,13 +7,12 @@ package org.pustefixframework.config.contextxml.parser;
 import java.io.IOException;
 import java.util.Properties;
 
-import org.xml.sax.SAXException;
+import org.pustefixframework.config.generic.PropertyFileReader;
 
 import com.marsching.flexiparse.parser.HandlerContext;
 import com.marsching.flexiparse.parser.ParsingHandler;
 import com.marsching.flexiparse.parser.exception.ParserException;
 
-import de.schlund.pfixxml.config.XMLPropertiesUtil;
 import de.schlund.pfixxml.config.impl.ContextXMLServletConfigImpl;
 import de.schlund.pfixxml.resources.ResourceUtil;
 
@@ -31,8 +30,8 @@ public class ContextXMLParsingHandler implements ParsingHandler {
         
         Properties properties = new Properties(System.getProperties());
         try {
-            XMLPropertiesUtil.loadPropertiesFromXMLFile(ResourceUtil.getFileResourceFromDocroot("common/conf/pustefix.xml"), properties);
-        } catch (SAXException e) {
+            PropertyFileReader.read(ResourceUtil.getFileResourceFromDocroot("common/conf/pustefix.xml"), properties);
+        } catch (ParserException e) {
             throw new ParserException("Error while reading common/conf/pustefix.xml", e);
         } catch (IOException e) {
             throw new ParserException("Error while reading common/conf/pustefix.xml", e);

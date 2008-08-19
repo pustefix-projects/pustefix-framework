@@ -34,14 +34,16 @@ import java.util.Properties;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
+import org.pustefixframework.config.generic.PropertyFileReader;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
+import com.marsching.flexiparse.parser.exception.ParserException;
+
 import de.schlund.pfixxml.config.GlobalConfig;
 import de.schlund.pfixxml.config.GlobalConfigurator;
-import de.schlund.pfixxml.config.XMLPropertiesUtil;
 import de.schlund.pfixxml.resources.DocrootResource;
 import de.schlund.pfixxml.resources.FileResource;
 import de.schlund.pfixxml.resources.ResourceUtil;
@@ -116,13 +118,13 @@ public class GenerateSCodes {
     
    
     
-    public static void generate(File configFile, String docroot, File genDir, String className) throws IOException, SAXException {
+    public static void generate(File configFile, String docroot, File genDir, String className) throws IOException, SAXException, ParserException {
         GlobalConfigurator.setDocroot(docroot);
         Properties props = new Properties();
         if (configFile.getName().endsWith(".prop") || configFile.getName().endsWith(".properties")) {
             props.load(new FileInputStream(configFile));
         } else {
-            XMLPropertiesUtil.loadPropertiesFromXMLFile(configFile, props);
+            PropertyFileReader.read(configFile, props);
         }
         generate(props, docroot, genDir, className);
     }

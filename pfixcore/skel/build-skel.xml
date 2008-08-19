@@ -331,6 +331,13 @@ or delete the DOCTYPE definition -->
   	 description="Stores properties used at buildtime to be used later at runtime"
   	 />
     <taskdef
+         name="pfx-propfiles"
+         classname="org.pustefixframework.config.build.CreatePropertyFileTask"
+         classpathref="cp.classpath"
+         loaderref="pfx-loader"
+         description="Creates standard Java property files from customizable XML property files"
+         />
+    <taskdef
      resource="net/sf/antcontrib/antlib.xml"
      classpathref="cp.classpath"
      loaderref="pfx-loader"   
@@ -701,23 +708,12 @@ or delete the DOCTYPE definition -->
      machine="${machine}"
      fqdn="${fqdn}"
     />
-    
-    <pfx-xslt
-     style="${dir.projects}/core/build/create_propfiles.xsl"
-     srcdir="${dir.projects}"
-     destdir="${dir.projects}"
-     includes="**/*.prop.in"
-     excludes="modules/**"   
-     extension=""
-     validate="${validate}"
-     catalogfile="${catalogfile}"
-     >
-      <param name="docroot" expression="${dir.docroot}"/>
-      <param name="fqdn"    expression="${fqdn}"/>
-      <param name="uid"     expression="${uid}"/>
-      <param name="machine" expression="${machine}"/>
-      <param name="mode"    expression="${makemode}"/>
-    </pfx-xslt>
+    <pfx-propfiles 
+      basedir="${dir.projects}" 
+      includes="**/*.prop.in" 
+      excludes="modules/**"      
+      extension="prop"
+    />
   </target>
 
   <target name="web_xml" depends="ant-tasks, defaultwebxml" description="creates servletconf/tomcat/webapps/**/WEB-INF/web.xml">
@@ -1162,7 +1158,7 @@ or delete the DOCTYPE definition -->
       </classpath>
       <batchtest todir="${dir.test.report}">
         <fileset dir="${dir.test.src}">
-          <include name="**/*Test.java"/>
+          <include name="**/PropertyFileReaderTest.java"/>
         </fileset>
       </batchtest>
     </junit>
