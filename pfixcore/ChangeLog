@@ -9,12 +9,16 @@
 	* src/de/schlund/pfixxml/config/XMLPropertiesUtil.java: Removed
 
 	Changed XML property file format: removed superfluous 'standardprops'
-	tag, property files now need only the 'properties' root tag.
+	tag, property files now need only the 'properties' root tag with the
+	new "http://www.pustefix-framework.org/2008/namespace/properties-config"
+	namespace.
 	* projects/common/conf/factory.xml
 	* projects/common/conf/pustefix.xml
 
 	* skel/build-skel.xml: Use new task for transformation of *.prop.in
-	files, removed XSLT based task 
+	files, removed XSLT based task (prop.in files are still used in some
+	projects to generate configuration for non-Pustefix classes, so
+	we probably should still support this in the build process)
 
 	Use PropertyFileReader instead of XMLPropertiesUtil:
 	* src/org/pustefixframework/http/AbstractPustefixRequestHandler.java
