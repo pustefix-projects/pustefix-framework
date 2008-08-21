@@ -56,9 +56,8 @@ public class WebServiceHttpRequestHandler implements UriProvidingHttpRequestHand
 
     private static final long serialVersionUID = -5686011510105975584L;
 
-    private Logger LOG = Logger.getLogger(getClass().getName());
+    private Logger LOG = Logger.getLogger(WebServiceHttpRequestHandler.class.getName());
 
-    private static Object initLock = new Object();
     private ServiceRuntime runtime;
 
     private AdminWebapp adminWebapp;
@@ -94,61 +93,61 @@ public class WebServiceHttpRequestHandler implements UriProvidingHttpRequestHand
         }
     }
     
-    public void afterPropertiesSet() throws Exception {   
-        synchronized (initLock) {
-           
-            runtime = (ServiceRuntime) getServletContext().getAttribute(ServiceRuntime.class.getName());
-            if (runtime == null) {
+    public void afterPropertiesSet() throws Exception {
+        LOG.info("Initialize ServiceRuntime ...");
+        try {
+            Configuration srvConf = ConfigurationReader.read(configFile);
+            //if (srvConf.getGlobalServiceConfig().getContextName() == null && config.getInitParameter(Constants.PROP_CONTEXT_NAME) != null) {
+            //    srvConf.getGlobalServiceConfig().setContextName(config.getInitParameter(Constants.PROP_CONTEXT_NAME));
+            //}
+            runtime.setConfiguration(srvConf);
+            runtime.setApplicationServiceRegistry(new ServiceRegistry(runtime.getConfiguration(),
+                    ServiceRegistry.RegistryType.APPLICATION));
+            //TODO: dynamic ServiceProcessor detection/registration
+            ServiceProcessor sp = findServiceProcessor(Constants.PROTOCOL_TYPE_SOAP);
+            if(sp!=null) {
+                Method meth = sp.getClass().getMethod("setServletContext", ServletContext.class);
+                meth.invoke(sp, getServletContext());
+                runtime.addServiceProcessor(Constants.PROTOCOL_TYPE_SOAP, sp);
+                LOG.info("Registered ServiceProcessor for "+Constants.PROTOCOL_TYPE_SOAP);
+            }
+            URL metaURL = srvConf.getGlobalServiceConfig().getDefaultBeanMetaDataURL();
+            sp = findServiceProcessor(Constants.PROTOCOL_TYPE_JSONWS);
+            if(sp!=null) {
+                Method meth = sp.getClass().getMethod("setBeanMetaDataURL", URL.class);
+                meth.invoke(sp, metaURL);
+                runtime.addServiceProcessor(Constants.PROTOCOL_TYPE_JSONWS, sp);
                 try {
-                    Configuration srvConf = ConfigurationReader.read(configFile);
-                    //if (srvConf.getGlobalServiceConfig().getContextName() == null && config.getInitParameter(Constants.PROP_CONTEXT_NAME) != null) {
-                    //    srvConf.getGlobalServiceConfig().setContextName(config.getInitParameter(Constants.PROP_CONTEXT_NAME));
-                    //}
-                    runtime = new ServiceRuntime();
-                    runtime.setConfiguration(srvConf);
-                    runtime.setApplicationServiceRegistry(new ServiceRegistry(runtime.getConfiguration(),
-                            ServiceRegistry.RegistryType.APPLICATION));
-                    //TODO: dynamic ServiceProcessor detection/registration
-                    ServiceProcessor sp = findServiceProcessor(Constants.PROTOCOL_TYPE_SOAP);
-                    if(sp!=null) {
-                        Method meth = sp.getClass().getMethod("setServletContext", ServletContext.class);
-                        meth.invoke(sp, getServletContext());
-                        runtime.addServiceProcessor(Constants.PROTOCOL_TYPE_SOAP, sp);
-                    }
-                    URL metaURL = srvConf.getGlobalServiceConfig().getDefaultBeanMetaDataURL();
-                    sp = findServiceProcessor(Constants.PROTOCOL_TYPE_JSONWS);
-                    if(sp!=null) {
-                        Method meth = sp.getClass().getMethod("setBeanMetaDataURL", URL.class);
-                        meth.invoke(sp, metaURL);
-                        runtime.addServiceProcessor(Constants.PROTOCOL_TYPE_JSONWS, sp);
-                        try {
-                            Class<?> clazz = Class.forName(GENERATOR_IMPL_JSONWS);
-                            ServiceStubGenerator gen = (ServiceStubGenerator)clazz.newInstance();
-                            runtime.addServiceStubGenerator(Constants.PROTOCOL_TYPE_JSONWS, gen);
-                        } catch(Exception x) {
-                            throw new ServletException("Can't instantiate ServiceStubGenerator: "+GENERATOR_IMPL_JSONWS,x);
-                        }
-                    }
-                    sp = findServiceProcessor(Constants.PROTOCOL_TYPE_JSONQX);
-                    if(sp!=null) {
-                        Method meth = sp.getClass().getMethod("setBeanMetaDataURL", URL.class);
-                        meth.invoke(sp, metaURL);
-                        runtime.addServiceProcessor(Constants.PROTOCOL_TYPE_JSONQX, sp);
-                    }
-                    getServletContext().setAttribute(ServiceRuntime.class.getName(), runtime);
-                    adminWebapp = new AdminWebapp(runtime);
-                } catch (Exception x) {
-                    LOG.error("Error while initializing ServiceRuntime", x);
-                    throw new ServletException("Error while initializing ServiceRuntime", x);
+                    Class<?> clazz = Class.forName(GENERATOR_IMPL_JSONWS);
+                    ServiceStubGenerator gen = (ServiceStubGenerator)clazz.newInstance();
+                    runtime.addServiceStubGenerator(Constants.PROTOCOL_TYPE_JSONWS, gen);
+                    LOG.info("Registered ServiceProcessor for "+Constants.PROTOCOL_TYPE_JSONWS);
+                } catch(Exception x) {
+                    throw new ServletException("Can't instantiate ServiceStubGenerator: "+GENERATOR_IMPL_JSONWS,x);
                 }
-            } else LOG.error("No webservice configuration found!!!");
+            }
+            sp = findServiceProcessor(Constants.PROTOCOL_TYPE_JSONQX);
+            if(sp!=null) {
+                Method meth = sp.getClass().getMethod("setBeanMetaDataURL", URL.class);
+                meth.invoke(sp, metaURL);
+                runtime.addServiceProcessor(Constants.PROTOCOL_TYPE_JSONQX, sp);
+                LOG.info("Registered ServiceProcessor for "+Constants.PROTOCOL_TYPE_JSONQX);
+            }
+            getServletContext().setAttribute(ServiceRuntime.class.getName(), runtime);
+            adminWebapp = new AdminWebapp(runtime);
+        } catch (Exception x) {
+            LOG.error("Error while initializing ServiceRuntime", x);
+            throw new ServletException("Error while initializing ServiceRuntime", x);
         }
+       
         initServices();
+        
+        LOG.info("Initialization of ServiceRuntime done.");
     }
     
     
     private void initServices() {
-        LOG.info("Register Spring backed webservices");
+        LOG.info("Register Spring backed webservices ...");
         String[] names = applicationContext.getBeanNamesForType(WebServiceRegistration.class);
         for(String name:names) {
             WebServiceRegistration reg = (WebServiceRegistration)applicationContext.getBean(name);
@@ -211,6 +210,10 @@ public class WebServiceHttpRequestHandler implements UriProvidingHttpRequestHand
     
     public ServiceRuntime getServiceRuntime() {
         return runtime;
+    }
+    
+    public void setServiceRuntime(ServiceRuntime runtime) {
+        this.runtime = runtime;
     }
     
 }

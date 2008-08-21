@@ -1,14 +1,11 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <configuration
   xmlns="http://www.marsching.com/2008/flexiparse/configurationNS"
-  xmlns:p="http://www.pustefix-framework.org/2008/namespace/project-config"
->
+  xmlns:p="http://www.pustefix-framework.org/2008/namespace/project-config">
 
   <handler class="org.pustefixframework.webservices.spring.WebServiceRequestHandlerParsingHandler">
     <match>/p:project-config/p:application/p:webservice-service</match>
   </handler>
-  
-  
   
 </configuration>
   

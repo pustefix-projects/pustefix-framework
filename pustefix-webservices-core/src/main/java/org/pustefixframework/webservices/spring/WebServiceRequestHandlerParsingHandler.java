@@ -19,14 +19,19 @@
 package org.pustefixframework.webservices.spring;
 
 import org.pustefixframework.config.Constants;
+import org.pustefixframework.webservices.ServiceRuntime;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinitionHolder;
+import org.springframework.beans.factory.config.RuntimeBeanReference;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.w3c.dom.Element;
 
 import com.marsching.flexiparse.parser.HandlerContext;
 import com.marsching.flexiparse.parser.ParsingHandler;
 import com.marsching.flexiparse.parser.exception.ParserException;
+
+import de.schlund.pfixcore.workflow.ContextImpl;
+import de.schlund.pfixcore.workflow.context.ServerContextImpl;
 
 /**
  * 
@@ -51,9 +56,17 @@ public class WebServiceRequestHandlerParsingHandler implements ParsingHandler {
         beanBuilder.setScope("singleton");
         beanBuilder.addPropertyValue("configFile", configurationFile);
         beanBuilder.addPropertyValue("handlerURI", path + "/**");
-     
+        beanBuilder.addPropertyValue("serviceRuntime", new RuntimeBeanReference(ServiceRuntime.class.getName()));
         BeanDefinition beanDefinition = beanBuilder.getBeanDefinition();
         BeanDefinitionHolder beanHolder = new BeanDefinitionHolder(beanDefinition, WebServiceHttpRequestHandler.class.getName()+"#"+path);
+        context.getObjectTreeElement().addObject(beanHolder);
+        
+        beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(ServiceRuntime.class);
+        beanBuilder.setScope("singleton");
+        beanBuilder.addPropertyValue("serverContext", new RuntimeBeanReference(ServerContextImpl.class.getName()));
+        beanBuilder.addPropertyValue("context", new RuntimeBeanReference(ContextImpl.class.getName()));
+        beanDefinition = beanBuilder.getBeanDefinition();
+        beanHolder = new BeanDefinitionHolder(beanDefinition, ServiceRuntime.class.getName());
         context.getObjectTreeElement().addObject(beanHolder);
         
     }

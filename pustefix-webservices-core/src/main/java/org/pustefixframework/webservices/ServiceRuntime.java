@@ -29,8 +29,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
-import org.pustefixframework.http.ServerContextStore;
-import org.pustefixframework.http.SessionContextStore;
 import org.pustefixframework.webservices.config.Configuration;
 import org.pustefixframework.webservices.config.GlobalServiceConfig;
 import org.pustefixframework.webservices.config.ServiceConfig;
@@ -68,6 +66,9 @@ public class ServiceRuntime {
     private ServiceDescriptorCache srvDescCache;
     private ServiceRegistry appServiceRegistry;
 	
+    private ServerContextImpl serverContext;
+    private ContextImpl context;
+    
     public ServiceRuntime() {
         srvDescCache=new ServiceDescriptorCache();
         processors=new HashMap<String,ServiceProcessor>();
@@ -111,7 +112,6 @@ public class ServiceRuntime {
 	
     public void process(HttpServletRequest req,HttpServletResponse res) throws ServiceException {
         
-        ContextImpl pfxSessionContext=null;
         String wsType=null;
         ServiceRequest serviceReq=new HttpServiceRequest(req);
         ServiceResponse serviceRes=new HttpServiceResponse(res);
@@ -163,12 +163,6 @@ public class ServiceRuntime {
                         throw new AuthenticationException("Authentication failed: No secure session");
                 }
                             
-                pfxSessionContext=SessionContextStore.getInstance(session).getContext(null);
-                if(pfxSessionContext==null) throw new ServiceException("Context '"+srvConf.getContextName()+"' doesn't exist.");
-                
-                ServerContextImpl srvContext=ServerContextStore.getInstance(session.getServletContext()).getContext(null);
-                if(srvContext==null) throw new ServiceException("ServerContext '"+srvConf.getContextName()+"' doesn't exist.");
-                        
                 //Find authconstraint using the following search order:
                 //   - authconstraint referenced by webservice 
                 //   - authconstraint referenced by webservice-global (implicit)
@@ -176,24 +170,24 @@ public class ServiceRuntime {
                 AuthConstraint authConst = null;
                 String authRef=srvConf.getAuthConstraintRef();
                 if(authRef != null) {
-                    authConst = srvContext.getContextConfig().getAuthConstraint(authRef);
+                    authConst = serverContext.getContextConfig().getAuthConstraint(authRef);
                     if(authConst == null) throw new ServiceException("AuthConstraint not found: "+authRef);
                 }
-                if(authConst == null) authConst = pfxSessionContext.getContextConfig().getDefaultAuthConstraint();
+                if(authConst == null) authConst = context.getContextConfig().getDefaultAuthConstraint();
                 if(authConst != null) {
-                    if(!authConst.isAuthorized(pfxSessionContext)) 
+                    if(!authConst.isAuthorized(context)) 
                         throw new AuthenticationException("Authentication failed: AuthConstraint violated");
                 }
                         
                 try {
                     // Prepare context for current thread.
                     // Cleanup is performed in finally block.
-                    pfxSessionContext.setServerContext(srvContext);
-                    pfxSessionContext.prepareForRequest();                                                                                                                                  
+                    context.setServerContext(serverContext);
+                    context.prepareForRequest();                                                                                                                                  
                 } catch(Exception x) {
                     throw new ServiceException("Preparing context failed",x);
                 }
-                callContext.setContext(pfxSessionContext);
+                callContext.setContext(context);
             }
             
           
@@ -216,8 +210,8 @@ public class ServiceRuntime {
             procInfo.setStartTime(System.currentTimeMillis());
             procInfo.startProcessing();
                                                                   
-            if(pfxSessionContext!=null&&srvConf.getSynchronizeOnContext()) {
-                synchronized(pfxSessionContext) {
+            if(context!=null&&srvConf.getSynchronizeOnContext()) {
+                synchronized(context) {
                     processor.process(serviceReq,serviceRes,this,serviceReg,procInfo);
                 }
             } else {
@@ -276,8 +270,8 @@ public class ServiceRuntime {
             else throw x;
         } finally {
             setCurrentContext(null);
-            if (pfxSessionContext != null) {
-                pfxSessionContext.cleanupAfterRequest();
+            if (context != null) {
+                context.cleanupAfterRequest();
             }
         }
     }
@@ -365,6 +359,14 @@ public class ServiceRuntime {
 
     public ServiceRegistry getAppServiceRegistry() {
         return appServiceRegistry;
+    }
+    
+    public void setServerContext(ServerContextImpl serverContext) {
+        this.serverContext = serverContext;
+    }
+    
+    public void setContext(ContextImpl context) {
+        this.context = context;
     }
 
 }

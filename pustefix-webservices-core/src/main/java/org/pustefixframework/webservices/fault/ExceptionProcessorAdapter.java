@@ -7,12 +7,12 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
+import org.pustefixframework.config.generic.PropertyFileReader;
 import org.pustefixframework.webservices.ServiceRequest;
 import org.pustefixframework.webservices.ServiceResponse;
 
 import de.schlund.pfixxml.PfixServletRequest;
 import de.schlund.pfixxml.PfixServletRequestImpl;
-import de.schlund.pfixxml.config.XMLPropertiesUtil;
 import de.schlund.pfixxml.exceptionprocessor.ExceptionConfig;
 import de.schlund.pfixxml.exceptionprocessor.ExceptionProcessor;
 import de.schlund.pfixxml.resources.FileResource;
@@ -45,7 +45,7 @@ public class ExceptionProcessorAdapter extends FaultHandler {
         FileResource configFile=ResourceUtil.getFileResourceFromDocroot(config);
         exProcProps=new Properties();
         try {
-            XMLPropertiesUtil.loadPropertiesFromXMLFile(configFile,exProcProps);
+            PropertyFileReader.read(configFile,exProcProps);
         } catch(Exception x) {
             throw new RuntimeException("Can't load properties from "+configFile,x);
         }

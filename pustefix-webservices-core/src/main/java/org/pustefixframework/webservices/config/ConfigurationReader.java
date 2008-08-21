@@ -307,7 +307,6 @@ public class ConfigurationReader extends DefaultHandler {
                     }
                 }
             } catch(Exception x) {
-                x.printStackTrace();
                 throw new SAXException("Error processing imported file: "+importedFiles.get(i),x);
             }
         }
