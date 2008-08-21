@@ -19,19 +19,12 @@
 package org.pustefixframework.webservices.jaxws.generate;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.lang.reflect.Method;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
+import javax.jws.WebService;
 
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.DirectoryScanner;
@@ -64,9 +57,6 @@ import de.schlund.pfixxml.util.FileUtils;
  * @author mleidig@schlund.de
  */
 public class WebserviceTask extends MatchingTask {
-
-    private final static String XMLNS_JAXWS_RUNTIME = "http://java.sun.com/xml/ns/jax-ws/ri/runtime";
-    private final static String XMLNS_JAVAEE = "http://java.sun.com/xml/ns/javaee";
 
     private File prjdir;
     private File builddir;
@@ -175,48 +165,23 @@ public class WebserviceTask extends MatchingTask {
                         File webInfDir = new File(appDir, "WEB-INF");
                         if (!webInfDir.exists())
                             throw new BuildException("Web application WEB-INF subdirectory of project '" + projectName + "' doesn't exist");
-                        // Setup endpoint document
-                        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-                        DocumentBuilder db = dbf.newDocumentBuilder();
-                        Document endPointsDoc = db.newDocument();
-                        Element endPointsElem = endPointsDoc.createElementNS(XMLNS_JAXWS_RUNTIME, "ws:endpoints");
-                        endPointsElem.setAttribute("version", "2.0");
-                        endPointsDoc.appendChild(endPointsElem);
-                        boolean hasSOAPService=false;
+                        
                         // Iterate over services
                         for (ServiceConfig conf : srvConf.getServiceConfig()) {
                             if (conf.getProtocolType().equals(Constants.PROTOCOL_TYPE_ANY) || conf.getProtocolType().equals(Constants.PROTOCOL_TYPE_SOAP)) {
-                                hasSOAPService=true;
                                 ServiceConfig refConf = null;
                                 if (refSrvConf != null) refConf = refSrvConf.getServiceConfig(conf.getName());
                                 File wsdlFile = new File(wsdlDir, conf.getName() + ".wsdl");
-                                // Add endpoint configuration
-                                Element endPointElem = endPointsDoc.createElementNS(XMLNS_JAXWS_RUNTIME, "ws:endpoint");
-                                endPointsElem.appendChild(endPointElem);
-                                endPointElem.setAttribute("name", conf.getName());
-                                endPointElem.setAttribute("implementation", conf.getImplementationName() + "JAXWS");
-                                endPointElem.setAttribute("url-pattern", globConf.getRequestPath() + "/" + conf.getName());
-                                Element chainsElem = endPointsDoc.createElementNS(XMLNS_JAVAEE, "ee:handler-chains");
-                                Element chainElem = endPointsDoc.createElementNS(XMLNS_JAVAEE, "ee:handler-chain");
-                                chainsElem.appendChild(chainElem);
-                                Element handlerElem = endPointsDoc.createElementNS(XMLNS_JAVAEE, "ee:handler");
-                                chainElem.appendChild(handlerElem);
-                                Element handlerClassElem = endPointsDoc.createElementNS(XMLNS_JAVAEE, "ee:handler-class");
-                                handlerElem.appendChild(handlerClassElem);
-                                handlerClassElem.setTextContent("org.pustefixframework.webservices.jaxws.ErrorHandler");
-                                if(globConf.getMonitoringEnabled()||globConf.getLoggingEnabled()) {
-                                    handlerElem = endPointsDoc.createElementNS(XMLNS_JAVAEE, "ee:handler");
-                                    chainElem.appendChild(handlerElem);
-                                    handlerClassElem = endPointsDoc.createElementNS(XMLNS_JAVAEE, "ee:handler-class");
-                                    handlerElem.appendChild(handlerClassElem);
-                                    handlerClassElem.setTextContent("org.pustefixframework.webservices.jaxws.RecordingHandler");
-                                }
-                                endPointElem.appendChild(chainsElem);
                                 // Check if WSDL/Javascript has to be built
                                 if (refConf == null || !wsdlFile.exists() || globalConfChanged || !conf.equals(refConf)
                                         || TaskUtils.checkInterfaceChange(conf.getInterfaceName(), builddir, wsdlFile)) {
                                     checkInterface(conf.getInterfaceName());
                                     Class<?> implClass = Class.forName(conf.getImplementationName());
+                                    WebService anno = implClass.getAnnotation(WebService.class);
+                                    if(anno == null) {
+                                        throw new BuildException("Missing @WebService annotation at service implementation "+
+                                                "class '"+conf.getImplementationName()+"' of service '"+conf.getName()+"'.");
+                                    }
                                     // Generate WSDL
                                     File wsgenDir=new File(tmpdir,"wsdl/"+conf.getName()+"/"+conf.getImplementationName());
                                     if(!wsgenDirs.contains(wsgenDir)) {
@@ -229,7 +194,7 @@ public class WebserviceTask extends MatchingTask {
                                         wsgen.setDynamicAttribute("destdir", "build");
                                         wsgen.setDynamicAttribute("resourcedestdir", wsgenDir.getAbsolutePath());
                                         wsgen.setDynamicAttribute("classpath", classPath.toString());
-                                        wsgen.setDynamicAttribute("sei", conf.getImplementationName() + "JAXWS");
+                                        wsgen.setDynamicAttribute("sei", conf.getImplementationName());
                                         String serviceName = "{" + TaskUtils.getTargetNamespace(implClass) + "}" + conf.getName();
                                         wsgen.setDynamicAttribute("servicename", serviceName);
                                         wsgen.execute();
@@ -259,14 +224,7 @@ public class WebserviceTask extends MatchingTask {
                         }
                         if (wsdlCount > 0) log("Generated " + wsdlCount + " WSDL file" + (wsdlCount == 1 ? "" : "s") + ".");
                         if (stubCount > 0) log("Generated " + stubCount + " Javascript stub file" + (stubCount == 1 ? "" : "s") + ".");
-                        // Generate JAXWS runtime endpoint configuration
-                        File endPointsFile = new File(webInfDir, "sun-jaxws.xml");
-                        if (hasSOAPService && (!endPointsFile.exists() || wsdlCount > 0)) {
-                            Transformer t = TransformerFactory.newInstance().newTransformer();
-                            t.setOutputProperty(OutputKeys.INDENT, "yes");
-                            t.transform(new DOMSource(endPointsDoc), new StreamResult(new FileOutputStream(endPointsFile)));
-                            log("Generated JAXWS runtime endpoint configuration.");
-                        }
+                       
                         // Store current webservice configuration file
                         ConfigurationReader.serialize(srvConf, refWsConfFile);
                     }

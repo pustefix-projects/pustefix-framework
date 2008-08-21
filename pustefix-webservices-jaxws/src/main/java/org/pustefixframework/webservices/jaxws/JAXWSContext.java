@@ -40,6 +40,7 @@ public class JAXWSContext {
     }
 
     public void startInvocation() {
+        System.out.println("START INVOC");
         procInfo.startInvocation();
     }
 
