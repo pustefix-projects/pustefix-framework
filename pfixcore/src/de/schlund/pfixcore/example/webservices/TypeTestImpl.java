@@ -8,6 +8,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import javax.jws.WebMethod;
+import javax.jws.WebService;
+
 import org.w3c.dom.Element;
 
 /**
@@ -17,6 +20,7 @@ import org.w3c.dom.Element;
  * 
  * @author mleidig
  */
+@WebService
 public class TypeTestImpl implements TypeTest {
     
     public String info() {
@@ -127,10 +131,12 @@ public class TypeTestImpl implements TypeTest {
         return objs;
     }
     
+    @WebMethod(exclude=true)
     public Element echoElement(Element elem) {
         return elem;
     }
     
+    @WebMethod(exclude=true)
     public Element[] echoElementArray(Element[] elems) {
         return elems;
     }
@@ -143,18 +149,22 @@ public class TypeTestImpl implements TypeTest {
         return data;
     }
     
+    @WebMethod(exclude=true)
     public List<String> echoStringList(List<String> stringList) {
         return stringList;
     }
     
+    @WebMethod(exclude=true)
     public List<DataBean> echoDataBeanList(List<DataBean> dataBeanList) {
         return dataBeanList;
     }
     
+    @WebMethod(exclude=true)
     public Map<String,String> echoStringMap(Map<String,String> map) {
         return map;
     }
     
+    @WebMethod(exclude=true)
     public Map<String,DataBean> echoDataBeanMap(Map<String,DataBean> dataBeanMap) {
         return dataBeanMap;
     }

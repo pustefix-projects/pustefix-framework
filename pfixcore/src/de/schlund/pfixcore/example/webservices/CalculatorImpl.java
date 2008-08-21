@@ -3,6 +3,8 @@
  */
 package de.schlund.pfixcore.example.webservices;
 
+import javax.jws.WebService;
+
 /**
  * CalculatorImpl.java 
  * 
@@ -10,6 +12,7 @@ package de.schlund.pfixcore.example.webservices;
  * 
  * @author mleidig
  */
+@WebService
 public class CalculatorImpl implements Calculator {
 
     public int add(int value1,int value2) {

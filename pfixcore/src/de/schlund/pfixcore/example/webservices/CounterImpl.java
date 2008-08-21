@@ -3,6 +3,8 @@
  */
 package de.schlund.pfixcore.example.webservices;
 
+import javax.jws.WebService;
+
 import de.schlund.pfixcore.example.ContextCounter;
 import org.pustefixframework.webservices.AbstractService;
 
@@ -13,6 +15,7 @@ import org.pustefixframework.webservices.AbstractService;
  * 
  * @author mleidig
  */
+@WebService
 public class CounterImpl extends AbstractService implements Counter {
 
     public int getValue() throws Exception {

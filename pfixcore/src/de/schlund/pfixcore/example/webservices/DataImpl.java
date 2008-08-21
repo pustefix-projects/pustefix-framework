@@ -3,6 +3,8 @@
  */
 package de.schlund.pfixcore.example.webservices;
 
+import javax.jws.WebService;
+
 import org.pustefixframework.webservices.AbstractService;
 
 /**
@@ -12,6 +14,7 @@ import org.pustefixframework.webservices.AbstractService;
  * 
  * @author mleidig
  */
+@WebService
 public class DataImpl extends AbstractService implements Data {
     
     public String exchangeData(String data,int strSize) throws Exception {

@@ -439,12 +439,6 @@ or delete the DOCTYPE definition -->
       classpathref="cp.classpath"
       description="Generates/deploys WSDL, WSDD and JS stubs from web service interfaces/configuration"
     />
-    <taskdef
-      name="pfx-wsproxygen"
-      classname="org.pustefixframework.webservices.jaxws.generate.ProxyGenerator"
-      classpathref="cp.classpath"
-      description="Generates annotated service implementation proxy classes"
-    />
   </target>
 
   <target name="dtd" depends="dtd-check, ant-tasks" unless="upd.dtd" description="creates a DTD for this build file">
@@ -945,7 +939,7 @@ or delete the DOCTYPE definition -->
     />
   </target>
 
-  <target name="webservice" depends="ant-tasks-webservice, webservice-proxy">
+  <target name="webservice" depends="ant-tasks-webservice">
     <pfx-webservice
       tmpdir="${dir.projects}/.webservice"
       prjdir="${dir.projects}"
@@ -956,34 +950,6 @@ or delete the DOCTYPE definition -->
       portbase="${portbase.tomcat}"
       includes="**/conf/project.xml"
     />
-  </target>
-
-  <target name="webservice-proxygen" depends="ant-tasks-webservice">
-    <pfx-wsproxygen
-      prjdir="${dir.projects}"
-      gensrcdir="${dir.gensrc}"
-      builddir="${dir.build}"
-      includes="**/conf/project.xml"
-    />
-  </target>
-
-  <target name="webservice-proxycompile" if="webservice.proxysources">
-    <javac
-      srcdir="${dir.gensrc}"
-      destdir="${dir.build}"
-      debug="${debug}"
-      debuglevel="${debuglevel}"
-      classpathref="cp.classpath"
-      source="${javac.source}"
-      nowarn="${javac.nowarn}"
-      encoding="${javac.encoding}"
-      includes="${webservice.proxysources}"
-      >
-    </javac>
-  </target> 
-
-  <target name="webservice-proxy" depends="webservice-proxygen, webservice-proxycompile">
-    
   </target>
 
   <target name="clean-webservice">

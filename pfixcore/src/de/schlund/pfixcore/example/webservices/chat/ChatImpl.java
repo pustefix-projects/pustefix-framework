@@ -6,6 +6,8 @@
  */
 package de.schlund.pfixcore.example.webservices.chat;
 
+import javax.jws.WebService;
+
 import org.pustefixframework.webservices.AbstractService;
 
 /**
@@ -14,6 +16,7 @@ import org.pustefixframework.webservices.AbstractService;
  * To change the template for this generated type comment go to
  * Window - Preferences - Java - Code Generation - Code and Comments
  */
+@WebService
 public class ChatImpl extends AbstractService implements Chat {
 
     public void login(String nickName) throws Exception {
