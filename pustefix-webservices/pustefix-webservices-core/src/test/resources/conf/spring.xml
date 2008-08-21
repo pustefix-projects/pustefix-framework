@@ -10,11 +10,14 @@
         http://pustefixframework.org/schema/webservices http://pustefixframework.org/schema/webservices/pustefix-webservices.xsd"
 >
 
-
   <bean id="org.pustefixframework.webservices.spring.WebServiceHttpRequestHandler"
         class="org.pustefixframework.webservices.spring.WebServiceHttpRequestHandler">
     <property name="configFile" value="pfixroot:/conf/webservice.conf.xml"/>
+    <property name="serviceRuntime" ref="serviceRuntime"/>
   </bean>
+
+  <bean id="serviceRuntime"
+        class="org.pustefixframework.webservices.ServiceRuntime"/>
 
   <bean id="calculator" class="org.pustefixframework.webservices.example.CalculatorImpl"/>
   
