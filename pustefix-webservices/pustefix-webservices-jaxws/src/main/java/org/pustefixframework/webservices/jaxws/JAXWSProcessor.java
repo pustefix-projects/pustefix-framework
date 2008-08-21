@@ -20,13 +20,20 @@ package org.pustefixframework.webservices.jaxws;
 
 import java.io.IOException;
 import java.io.Writer;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.namespace.QName;
+import javax.xml.ws.handler.Handler;
 
+import net.sf.cglib.proxy.Enhancer;
+
+import org.aopalliance.intercept.MethodInterceptor;
+import org.aopalliance.intercept.MethodInvocation;
 import org.apache.log4j.Logger;
 import org.pustefixframework.webservices.Constants;
 import org.pustefixframework.webservices.InsertPIResponseWrapper;
@@ -39,7 +46,9 @@ import org.pustefixframework.webservices.ServiceRequest;
 import org.pustefixframework.webservices.ServiceResponse;
 import org.pustefixframework.webservices.ServiceRuntime;
 import org.pustefixframework.webservices.config.Configuration;
+import org.pustefixframework.webservices.config.GlobalServiceConfig;
 import org.pustefixframework.webservices.config.ServiceConfig;
+import org.springframework.aop.framework.ProxyFactory;
 
 import com.sun.xml.ws.api.BindingID;
 import com.sun.xml.ws.api.WSBinding;
@@ -72,20 +81,45 @@ public class JAXWSProcessor implements ServiceProcessor {
     private void createDelegate(ServiceRuntime runtime, ServiceRegistry registry) throws ServiceException {
         ServletAdapterList adapterList = new ServletAdapterList();
         Configuration conf = runtime.getConfiguration();
+        
+        @SuppressWarnings("unchecked")
+        List<Handler> handlerChain =new ArrayList<Handler>();
+        handlerChain.add(new ErrorHandler()); 
+        GlobalServiceConfig globConf = conf.getGlobalServiceConfig();
+        if(globConf.getMonitoringEnabled()||globConf.getLoggingEnabled()) {
+            handlerChain.add(new RecordingHandler());
+        }
+        
         for(ServiceConfig serviceConf:conf.getServiceConfig()) {
             String serviceName = serviceConf.getName();
-            String serviceClassName = serviceConf.getImplementationName()+"JAXWS";
+            
             Object serviceObj = null;
-            try {
-                Class<?> serviceClass = Class.forName(serviceClassName);
-                serviceObj = serviceClass.newInstance();
-            } catch(Exception x) {
-                throw new ServiceException("Can't create service object: "+serviceClassName,x);
+            Object proxyObj = null;
+            if(serviceName.equals("Calculator")) {
+                serviceObj = runtime.getAppServiceRegistry().getServiceObject(serviceName);
+                ProxyFactory pf = new ProxyFactory(serviceObj);
+                pf.setProxyTargetClass(true);
+                pf.addAdvice(new TracingInterceptor());
+                proxyObj = pf.getProxy();
             }
-            Invoker invoker = InstanceResolver.createSingleton(serviceObj).createInvoker();
+            if(serviceObj == null) {
+                String serviceClassName = serviceConf.getImplementationName();
+                try {
+                    Class<?> serviceClass = Class.forName(serviceClassName);
+                    serviceObj = serviceClass.newInstance();
+                    proxyObj = serviceObj;
+                } catch(Exception x) {
+                    throw new ServiceException("Can't create service object: "+serviceClassName,x);
+                }
+            }
+            Invoker invoker = InstanceResolver.createSingleton(proxyObj).createInvoker();
             QName serviceQName = new QName(JAXWSUtils.getTargetNamespace(serviceObj.getClass()),serviceName);
             WSBinding binding = BindingImpl.create(BindingID.SOAP11_HTTP);
-            WSEndpoint<?> endpoint = WSEndpoint.create(serviceObj.getClass(), false, invoker, serviceQName, null, null, binding, null, null, null, true);    
+            binding.setHandlerChain(handlerChain);
+            System.out.println("CREATE "+serviceObj.getClass().getName());
+            Class<?> serviceClass = serviceObj.getClass();
+            if(Enhancer.isEnhanced(serviceClass)) serviceClass = serviceClass.getSuperclass();
+            WSEndpoint<?> endpoint = WSEndpoint.create(serviceClass, false, invoker, serviceQName, null, null, binding, null, null, null, true);    
             String url = conf.getGlobalServiceConfig().getRequestPath()+"/"+serviceName;
             adapterList.createAdapter(serviceName, url, endpoint);     
         }
@@ -174,5 +208,17 @@ public class JAXWSProcessor implements ServiceProcessor {
     protected static JAXWSContext getCurrentContext() {
         return currentJAXWSContext.get();
     }
+ 
+    
+    class TracingInterceptor implements MethodInterceptor {
+        
+        public Object invoke(MethodInvocation i) throws Throwable {
+            JAXWSContext ctx=JAXWSContext.getCurrentContext();
+            ctx.startInvocation();
+            Object ret=i.proceed();
+            ctx.endInvocation();
+            return ret;
+        }
+    }  
     
 }
