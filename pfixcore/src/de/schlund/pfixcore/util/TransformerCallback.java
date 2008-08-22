@@ -16,6 +16,9 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
 import org.apache.log4j.Logger;
+import org.pustefixframework.config.contextxml.IWrapperConfig;
+import org.pustefixframework.config.contextxml.PageRequestConfig;
+import org.pustefixframework.config.contextxml.ProcessActionPageRequestConfig;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -28,13 +31,13 @@ import de.schlund.pfixcore.generator.IWrapper;
 import de.schlund.pfixcore.generator.IWrapperInfo;
 import de.schlund.pfixcore.workflow.Context;
 import de.schlund.pfixcore.workflow.ContextImpl;
+import de.schlund.pfixcore.workflow.IWrapperState;
 import de.schlund.pfixcore.workflow.PageRequest;
+import de.schlund.pfixcore.workflow.RequestTokenAwareState;
+import de.schlund.pfixcore.workflow.State;
 import de.schlund.pfixcore.workflow.context.AccessibilityChecker;
 import de.schlund.pfixcore.workflow.context.RequestContextImpl;
 import de.schlund.pfixxml.ResultDocument;
-import de.schlund.pfixxml.config.IWrapperConfig;
-import de.schlund.pfixxml.config.PageRequestConfig;
-import de.schlund.pfixxml.config.ProcessActionConfig;
 import de.schlund.pfixxml.util.ExtensionFunctionUtils;
 import de.schlund.pfixxml.util.Xml;
 import de.schlund.pfixxml.util.XsltVersion;
@@ -124,9 +127,21 @@ public class TransformerCallback {
     public static boolean requiresToken(RequestContextImpl requestContext, String pageName) throws Exception {
         try {
             ContextImpl context = requestContext.getParentContext();
-            PageRequestConfig pageConfig = context.getContextConfig().getPageRequestConfig(pageName);
-            if (pageConfig != null) return pageConfig.requiresToken();
-            return false;
+            State state;
+            if (pageName != null) {
+                state = context.getPageMap().getState(pageName);
+            } else {
+                state = context.getPageMap().getState(context.getCurrentPageRequest());
+            }
+            if (state == null) {
+                return false;
+            }
+            if (state instanceof RequestTokenAwareState) {
+                RequestTokenAwareState rtaState = (RequestTokenAwareState) state;
+                return rtaState.requiresToken();
+            } else {
+                return false;
+            }
         } catch (Exception x) {
             ExtensionFunctionUtils.setExtensionFunctionError(x);
             throw x;
@@ -144,13 +159,24 @@ public class TransformerCallback {
                 else
                     throw new IllegalArgumentException("Missing page name");
             }
-            PageRequestConfig pageConfig = context.getContextConfig().getPageRequestConfig(pageName);
-            if (pageConfig != null) {
-                Map<String, ? extends IWrapperConfig> iwrappers = pageConfig.getIWrappers();
+            State state;
+            if (pageName != null) {
+                state = context.getPageMap().getState(pageName);
+            } else {
+                state = context.getPageMap().getState(context.getCurrentPageRequest());
+            }
+            if (state == null) {
+                return null;
+            }
+            if (state instanceof IWrapperState) {
+                IWrapperState iwState = (IWrapperState) state;
+                Map<String, ? extends IWrapperConfig> iwrappers = iwState.getIWrapperConfigMap();
                 IWrapperConfig iwrpConfig = iwrappers.get(prefix);
                 if (iwrpConfig != null) {
                     Class<? extends IWrapper> iwrpClass = (Class<? extends IWrapper>) iwrpConfig.getWrapperClass();
-                    if (iwrpClass != null) return IWrapperInfo.getDocument(iwrpClass, xsltVersion);
+                    if (iwrpClass != null) {
+                        return IWrapperInfo.getDocument(iwrpClass, xsltVersion);
+                    }
                 }
             }
             return null;
@@ -176,8 +202,10 @@ public class TransformerCallback {
                     throw new IllegalArgumentException("Missing page name");
             }
             PageRequestConfig pageConfig = context.getContextConfig().getPageRequestConfig(pageName);
-            if (pageConfig != null) {
-                Map<String, ? extends IWrapperConfig> iwrappers = pageConfig.getIWrappers();
+            State state = context.getPageMap().getState(pageName);
+            if (state instanceof IWrapperState) {
+                IWrapperState iwState = (IWrapperState) state;
+                Map<String, ? extends IWrapperConfig> iwrappers = iwState.getIWrapperConfigMap();
                 for (String prefix : iwrappers.keySet()) {
                     Element elem = doc.createElement("iwrapper");
                     elem.setAttribute("prefix", prefix);
@@ -186,12 +214,12 @@ public class TransformerCallback {
                     root.appendChild(elem);
                 }
             }
-            Map<String, ? extends ProcessActionConfig> actions = pageConfig.getProcessActions();
+            Map<String, ? extends ProcessActionPageRequestConfig> actions = pageConfig.getProcessActions();
             if (actions != null && !actions.isEmpty()) {
                 Element actionelement = doc.createElement("actions");
                 root.appendChild(actionelement);
-                for (Iterator<? extends ProcessActionConfig> iterator = actions.values().iterator(); iterator.hasNext();) {
-                    ProcessActionConfig action =  iterator.next();
+                for (Iterator<? extends ProcessActionPageRequestConfig> iterator = actions.values().iterator(); iterator.hasNext();) {
+                    ProcessActionPageRequestConfig action =  iterator.next();
                     ResultDocument.addObject(actionelement, "action", action);
                 }
             }

@@ -19,17 +19,22 @@
 
 package de.schlund.pfixcore.workflow.app;
 
+import java.util.Map;
+
 import org.pustefixframework.CoreStatusCodes;
+import org.pustefixframework.config.contextxml.IWrapperConfig;
+import org.pustefixframework.config.contextxml.StateConfig;
 
 import de.schlund.pfixcore.util.TokenManager;
 import de.schlund.pfixcore.workflow.Context;
+import de.schlund.pfixcore.workflow.IWrapperState;
+import de.schlund.pfixcore.workflow.RequestTokenAwareState;
 import de.schlund.pfixcore.workflow.StateImpl;
 import de.schlund.pfixxml.PfixServletRequest;
 import de.schlund.pfixxml.PropertyObjectManager;
 import de.schlund.pfixxml.RequestParam;
 import de.schlund.pfixxml.ResultDocument;
 import de.schlund.pfixxml.XMLException;
-import de.schlund.pfixxml.config.PageRequestConfig;
 import de.schlund.pfixxml.perflogging.PerfEvent;
 import de.schlund.pfixxml.perflogging.PerfEventType;
 
@@ -42,7 +47,7 @@ import de.schlund.pfixxml.perflogging.PerfEventType;
  * @author <a href="mailto:jtl@schlund.de">Jens Lautenbacher</a>
  */
 
-public class DefaultIWrapperState extends StateImpl {
+public class DefaultIWrapperState extends StateImpl implements IWrapperState, RequestTokenAwareState {
 
     private final static String DEF_FINALIZER     = "de.schlund.pfixcore.workflow.app.ResdocSimpleFinalizer";
     private final static String IHDL_CONT_MANAGER = "de.schlund.pfixcore.workflow.app.IHandlerContainerManager";
@@ -122,8 +127,8 @@ public class DefaultIWrapperState extends StateImpl {
                     throw new IllegalArgumentException("Invalid token format: " + token);
                 }
             } else {
-                PageRequestConfig pageConf = context.getConfigForCurrentPageRequest();
-                if (pageConf != null && pageConf.requiresToken()) {
+                StateConfig stateConf = getConfig();
+                if (stateConf != null && stateConf.requiresToken()) {
                     context.addPageMessage(CoreStatusCodes.FORM_TOKEN_MISSING, null, null);
                     pe = new PerfEvent(PerfEventType.PAGE_RETRIEVECURRENTSTATUS, context.getCurrentPageRequest().toString());
                     pe.start();
@@ -205,13 +210,13 @@ public class DefaultIWrapperState extends StateImpl {
         // Use context config object as dummy configuration object to make sure
         // each context (server) has its own IHandlerContainerManager
         IHandlerContainerManager ihcm = (IHandlerContainerManager) PropertyObjectManager.getInstance().getConfigurableObject(context.getContextConfig(), IHDL_CONT_MANAGER);
-        return ihcm.getIHandlerContainer(context);
+        return ihcm.getIHandlerContainer(context, this.getConfig());
     }
 
     
     // Remember, a ResdocFinalizer is a flyweight!!!
     protected ResdocFinalizer getResdocFinalizer(Context context) throws XMLException {
-        PageRequestConfig config = context.getConfigForCurrentPageRequest();
+        StateConfig config = getConfig();
         Class<? extends ResdocFinalizer> clazz = config.getFinalizer();
         String classname = DEF_FINALIZER;
         if (clazz != null) {
@@ -225,5 +230,13 @@ public class DefaultIWrapperState extends StateImpl {
         }
 
         return fin;
+    }
+
+    public Map<String, ? extends IWrapperConfig> getIWrapperConfigMap() {
+        return getConfig().getIWrappers();
+    }
+
+    public boolean requiresToken() {
+        return getConfig().requiresToken();
     }
 }// DefaultIWrapperState

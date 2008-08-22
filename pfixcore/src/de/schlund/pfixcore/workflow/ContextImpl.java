@@ -25,6 +25,9 @@ import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpSessionBindingEvent;
 import javax.servlet.http.HttpSessionBindingListener;
 
+import org.pustefixframework.config.contextxml.ContextConfig;
+import org.pustefixframework.config.contextxml.PageRequestConfig;
+
 import de.schlund.pfixcore.auth.Authentication;
 import de.schlund.pfixcore.exception.PustefixApplicationException;
 import de.schlund.pfixcore.exception.PustefixCoreException;
@@ -36,8 +39,6 @@ import de.schlund.pfixcore.workflow.context.SessionContextImpl;
 import de.schlund.pfixxml.PfixServletRequest;
 import de.schlund.pfixxml.SPDocument;
 import de.schlund.pfixxml.Variant;
-import de.schlund.pfixxml.config.ContextConfig;
-import de.schlund.pfixxml.config.PageRequestConfig;
 import de.schlund.util.statuscodes.StatusCode;
 
 public class ContextImpl implements AccessibilityChecker, ExtendedContext, TokenManager, HttpSessionBindingListener {
@@ -111,9 +112,9 @@ public class ContextImpl implements AccessibilityChecker, ExtendedContext, Token
     public Throwable getLastException() {
         return getRequestContextForCurrentThreadWithError().getLastException();
     }
-
+    
     public String getName() {
-        return getServerContext().getName();
+        return null;
     }
 
     public Properties getProperties() {
@@ -342,4 +343,7 @@ public class ContextImpl implements AccessibilityChecker, ExtendedContext, Token
         return getRequestContextForCurrentThreadWithError().getPfixServletRequest();
     }
     
+    public PageMap getPageMap() {
+        return getServerContext().getPageMap();
+    }
 }

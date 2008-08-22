@@ -29,12 +29,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
+import org.pustefixframework.config.contextxml.ServletManagerConfig;
+import org.pustefixframework.config.contextxml.parser.internal.ServletManagerConfigImpl;
 import org.pustefixframework.http.AbstractPustefixRequestHandler;
 
 import de.schlund.pfixxml.PfixServletRequest;
 import de.schlund.pfixxml.RequestParam;
-import de.schlund.pfixxml.config.ServletManagerConfig;
-import de.schlund.pfixxml.config.impl.ServletManagerConfigImpl;
 import de.schlund.pfixxml.resources.FileResource;
 import de.schlund.pfixxml.serverutil.SessionHelper;
 import de.schlund.pfixxml.util.Base64Utils;

@@ -28,19 +28,18 @@ import java.util.Properties;
 import net.sf.cglib.proxy.Enhancer;
 
 import org.apache.log4j.Logger;
+import org.pustefixframework.config.contextxml.StateConfig;
 import org.w3c.dom.Element;
 
 import de.schlund.pfixcore.beans.InsertStatus;
 import de.schlund.pfixcore.exception.PustefixApplicationException;
 import de.schlund.pfixcore.workflow.Context;
-import de.schlund.pfixcore.workflow.ContextResourceManager;
 import de.schlund.pfixcore.workflow.PageRequestStatus;
 import de.schlund.pfixcore.workflow.State;
 import de.schlund.pfixxml.PfixServletRequest;
 import de.schlund.pfixxml.RequestParam;
 import de.schlund.pfixxml.ResultDocument;
 import de.schlund.pfixxml.SPDocument;
-import de.schlund.pfixxml.XMLException;
 import de.schlund.pfixxml.perflogging.PerfEvent;
 import de.schlund.pfixxml.perflogging.PerfEventType;
 
@@ -57,36 +56,28 @@ public class StateUtil {
     private static final String HEADER      = "responseheader";
     private static final String DEFAULTMIME = "text/html";
 
-    public static ResultDocument createDefaultResultDocument(Context context) throws Exception {
+    public static ResultDocument createDefaultResultDocument(Context context, StateConfig config) throws Exception {
         ResultDocument  resdoc = new ResultDocument();
-        renderContextResources(context, resdoc);
-        addResponseHeadersAndType(context, resdoc);
+        renderContextResources(context, resdoc, config);
+        addResponseHeadersAndType(context, resdoc, config);
         return resdoc;
     }
     
     
     @SuppressWarnings("deprecation")
-    public static void renderContextResources(Context context, ResultDocument resdoc) throws Exception {
-        if (context.getConfigForCurrentPageRequest() == null) {
-            // This page is not defined explicitly...
-            return;
-        }
-        ContextResourceManager crm = context.getContextResourceManager();
-        Map<String, Class<?>> crs = context.getConfigForCurrentPageRequest().getContextResources();
+    public static void renderContextResources(Context context, ResultDocument resdoc, StateConfig config) throws Exception {
+        Map<String, ?> contextResources = config.getContextResources();
         
-        for (Iterator<String> i = crs.keySet().iterator(); i.hasNext();) {
-            String nodename = i.next();
-            String classname = crs.get(nodename).getName();
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("*** Auto appending status for " + classname + " at node " + nodename);
-            }
-            Object cr = crm.getResource(classname);
-            if (cr == null) {
-                throw new XMLException("Resource not found: " + classname);
-            }
+        for (String nodename : contextResources.keySet()) {
+            Object cr = contextResources.get(nodename);
+            String classname = cr.getClass().getName();
             Class<?> clazz = cr.getClass();
             if(Enhancer.isEnhanced(clazz)) {
                 clazz = clazz.getSuperclass();
+                classname = clazz.getName();
+            }
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("*** Auto appending status for " + classname + " at node " + nodename);
             }
             PerfEvent pe = new PerfEvent(PerfEventType.CONTEXTRESOURCE_INSERTSTATUS, classname);
             pe.start();
@@ -127,12 +118,12 @@ public class StateUtil {
     }
 
     
-    public static void addResponseHeadersAndType(Context context, ResultDocument resdoc) {
+    public static void addResponseHeadersAndType(Context context, ResultDocument resdoc, StateConfig config) {
         boolean have_config = true;
         Properties contextprops = context.getProperties();
         SPDocument doc = resdoc.getSPDocument();
         
-        if (context.getConfigForCurrentPageRequest() == null) {
+        if (config == null) {
             // This page is not defined explicitly...
             have_config = false;
         }

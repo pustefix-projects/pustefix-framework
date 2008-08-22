@@ -27,6 +27,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
+import org.pustefixframework.config.contextxml.ServletManagerConfig;
 import org.pustefixframework.config.directoutputservice.DirectOutputPageRequestConfig;
 import org.pustefixframework.config.directoutputservice.DirectOutputServiceConfig;
 
@@ -37,7 +38,6 @@ import de.schlund.pfixcore.workflow.DirectOutputState;
 import de.schlund.pfixcore.workflow.PageRequest;
 import de.schlund.pfixcore.workflow.context.ServerContextImpl;
 import de.schlund.pfixxml.PfixServletRequest;
-import de.schlund.pfixxml.config.ServletManagerConfig;
 import de.schlund.pfixxml.resources.FileResource;
 
 /**

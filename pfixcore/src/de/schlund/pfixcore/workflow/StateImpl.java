@@ -20,6 +20,7 @@
 package de.schlund.pfixcore.workflow;
 
 import org.apache.log4j.Logger;
+import org.pustefixframework.config.contextxml.StateConfig;
 
 import de.schlund.pfixcore.util.StateUtil;
 import de.schlund.pfixxml.PfixServletRequest;
@@ -29,11 +30,21 @@ import de.schlund.pfixxml.ResultDocument;
  * @author jtl
  */
 
-public abstract class StateImpl implements State {
+public abstract class StateImpl implements ConfigurableState {
   
     protected final Logger CAT = Logger.getLogger(this.getClass());
 
     public  static final String PROP_INSERTCR = "insertcr";
+    
+    protected StateConfig config;
+    
+    public void setConfig(StateConfig config) {
+        this.config = config;
+    }
+    
+    protected StateConfig getConfig() {
+        return this.config;
+    }
 
     /**
      * @see de.schlund.pfixcore.util.StateUtil#isPageFlowRunning(Context)
@@ -70,7 +81,7 @@ public abstract class StateImpl implements State {
      * @see de.schlund.pfixcore.util.StateUtil#createDefaultResultDocument(Context)
      */
     protected ResultDocument createDefaultResultDocument(Context context) throws Exception {
-        return StateUtil.createDefaultResultDocument(context);
+        return StateUtil.createDefaultResultDocument(context, getConfig());
     }
     
     
@@ -78,7 +89,7 @@ public abstract class StateImpl implements State {
      * @see de.schlund.pfixcore.util.StateUtil#renderContextResources(Context, ResultDocument)
      */
     protected void renderContextResources(Context context, ResultDocument resdoc) throws Exception {
-        StateUtil.renderContextResources(context, resdoc);
+        StateUtil.renderContextResources(context, resdoc, getConfig());
     }
 
     
@@ -86,7 +97,7 @@ public abstract class StateImpl implements State {
      * @see de.schlund.pfixcore.util.StateUtil#addResponseHeadersAndType(Context, ResultDocument)
      */
     protected void addResponseHeadersAndType(Context context, ResultDocument resdoc) {
-        StateUtil.addResponseHeadersAndType(context, resdoc);
+        StateUtil.addResponseHeadersAndType(context, resdoc, getConfig());
     }
 
 

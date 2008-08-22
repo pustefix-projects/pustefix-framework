@@ -18,6 +18,8 @@
 
 package org.pustefixframework.config.contextxml.parser;
 
+import org.pustefixframework.config.contextxml.parser.internal.PageFlowStepActionConditionConfigImpl;
+import org.pustefixframework.config.contextxml.parser.internal.PageFlowStepActionConfigImpl;
 import org.pustefixframework.config.generic.ParsingUtils;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
@@ -27,8 +29,6 @@ import com.marsching.flexiparse.parser.ParsingHandler;
 import com.marsching.flexiparse.parser.exception.ParserException;
 
 import de.schlund.pfixcore.workflow.FlowStepAction;
-import de.schlund.pfixxml.config.impl.PageFlowStepActionConditionConfigImpl;
-import de.schlund.pfixxml.config.impl.PageFlowStepActionConfigImpl;
 
 /**
  * 

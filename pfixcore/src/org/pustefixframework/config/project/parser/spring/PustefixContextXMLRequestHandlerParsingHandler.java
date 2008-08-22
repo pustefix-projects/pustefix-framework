@@ -25,6 +25,7 @@ import java.util.Iterator;
 import java.util.Properties;
 
 import org.pustefixframework.config.Constants;
+import org.pustefixframework.config.contextxml.ContextXMLServletConfig;
 import org.pustefixframework.config.customization.CustomizationAwareParsingHandler;
 import org.pustefixframework.config.customization.CustomizationInfo;
 import org.pustefixframework.config.customization.PropertiesBasedCustomizationInfo;
@@ -52,7 +53,6 @@ import com.marsching.flexiparse.parser.exception.ParserException;
 import de.schlund.pfixcore.workflow.ContextImpl;
 import de.schlund.pfixcore.workflow.context.ServerContextImpl;
 import de.schlund.pfixxml.config.BuildTimeProperties;
-import de.schlund.pfixxml.config.ContextXMLServletConfig;
 import de.schlund.pfixxml.resources.FileResource;
 import de.schlund.pfixxml.resources.ResourceUtil;
 

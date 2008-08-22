@@ -21,6 +21,8 @@ package de.schlund.pfixcore.workflow.app;
 import java.util.HashMap;
 import java.util.Properties;
 
+import org.pustefixframework.config.contextxml.StateConfig;
+
 import de.schlund.pfixcore.workflow.Context;
 import de.schlund.pfixcore.workflow.PageRequest;
 import de.schlund.pfixxml.ConfigurableObject;
@@ -54,13 +56,13 @@ public class IHandlerContainerManager implements ConfigurableObject {
      * @return the desired IHandlerContainer
      * @throws XMLException on errors when creating the IHandlerContainer.
      */
-    public IHandlerContainer getIHandlerContainer(Context context) throws XMLException {
+    public IHandlerContainer getIHandlerContainer(Context context, StateConfig stateConfig) throws XMLException {
         synchronized (known) {
             PageRequest       page   = context.getCurrentPageRequest();
             IHandlerContainer retval = known.get(page); 
             if (retval == null) {
                 retval = new IHandlerContainerImpl();
-                retval.initIHandlers(context.getConfigForCurrentPageRequest());
+                retval.initIHandlers(stateConfig);
                 known.put(page, retval);
             }
             return retval;

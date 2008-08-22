@@ -18,6 +18,10 @@
 
 package org.pustefixframework.config.contextxml.parser;
 
+import org.pustefixframework.config.contextxml.parser.internal.PageRequestConfigImpl;
+import org.pustefixframework.config.contextxml.parser.internal.ProcessActionPageRequestConfigImpl;
+import org.pustefixframework.config.contextxml.parser.internal.ProcessActionStateConfigImpl;
+import org.pustefixframework.config.contextxml.parser.internal.StateConfigImpl;
 import org.pustefixframework.config.generic.ParsingUtils;
 import org.w3c.dom.Element;
 
@@ -25,8 +29,6 @@ import com.marsching.flexiparse.parser.HandlerContext;
 import com.marsching.flexiparse.parser.ParsingHandler;
 import com.marsching.flexiparse.parser.exception.ParserException;
 
-import de.schlund.pfixxml.config.impl.PageRequestConfigImpl;
-import de.schlund.pfixxml.config.impl.ProcessActionConfigImpl;
 
 /**
  * 
@@ -41,10 +43,19 @@ public class ProcessActionParsingHandler implements ParsingHandler {
         ParsingUtils.checkAttributes(element, new String[] {"name"}, new String[] {"pageflow", "jumptopage", "jumptopageflow", "forcestop"});
          
         PageRequestConfigImpl pageConfig = ParsingUtils.getFirstTopObject(PageRequestConfigImpl.class, context, true);
-        ProcessActionConfigImpl actionConfig = new ProcessActionConfigImpl();
+        ProcessActionPageRequestConfigImpl actionConfig = new ProcessActionPageRequestConfigImpl();
+        
+        StateConfigImpl stateConfig = ParsingUtils.getFirstTopObject(StateConfigImpl.class, context, false);
+        ProcessActionStateConfigImpl actionStateConfig = null;
+        if (stateConfig != null) {
+            actionStateConfig = new ProcessActionStateConfigImpl();
+        }
         
         String actionname = element.getAttribute("name").trim();
         actionConfig.setName(actionname);
+        if (actionStateConfig != null) {
+            actionStateConfig.setName(actionname);
+        }
         
         String pageflow = element.getAttribute("pageflow").trim();
         if (pageflow.length()>0) actionConfig.setPageflow(pageflow);
@@ -67,9 +78,12 @@ public class ProcessActionParsingHandler implements ParsingHandler {
         if (jumptopageflow.length()>0) actionConfig.setJumpToPageflow(jumptopageflow);
         
         pageConfig.addProcessAction(actionname, actionConfig);
-        
         context.getObjectTreeElement().addObject(actionConfig);
         
+        if (actionStateConfig != null) {
+            stateConfig.addProcessAction(actionname, actionStateConfig);
+            context.getObjectTreeElement().addObject(actionStateConfig);
+        }
     }
 
 }

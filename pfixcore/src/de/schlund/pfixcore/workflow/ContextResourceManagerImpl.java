@@ -25,6 +25,8 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.pustefixframework.config.contextxml.ContextConfig;
+import org.pustefixframework.config.contextxml.ContextResourceConfig;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -32,8 +34,6 @@ import org.springframework.context.ApplicationContextAware;
 import de.schlund.pfixcore.beans.InitResource;
 import de.schlund.pfixcore.exception.PustefixApplicationException;
 import de.schlund.pfixcore.exception.PustefixCoreException;
-import de.schlund.pfixxml.config.ContextConfig;
-import de.schlund.pfixxml.config.ContextResourceConfig;
 
 /**
  * Implements the ability to store objects implementing a number of interfaces

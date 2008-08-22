@@ -19,34 +19,15 @@
 
 package de.schlund.pfixcore.workflow;
 
-import java.util.HashMap;
 import java.util.Iterator;
-
-import org.apache.log4j.Logger;
-
-import de.schlund.pfixxml.config.ContextConfig;
-import de.schlund.pfixxml.config.PageRequestConfig;
+import java.util.Map;
 
 public class PageMap {
 
-    protected            HashMap<String, State> pagemap = new HashMap<String, State>();
-    private final static Logger                 LOG = Logger.getLogger(PageMap.class);
+    private Map<String, ? extends State> pagemap;
     
-    public PageMap(ContextConfig config) {
-
-        for (PageRequestConfig pageConfig : config.getPageRequestConfigs()) {
-            String page       = pageConfig.getPageName();
-            Class<? extends State> stateClass = pageConfig.getState();
-            State  state      = StateFactory.getInstance().getState(stateClass.getName());
-
-            if (state == null) {
-                LOG.error("***** Skipping page '" + page + "' as it's corresponding class " + stateClass.getName() +
-                          "couldn't be initialized by the StateFactory");
-            } else {
-                pagemap.put(page, state);
-            }
-        }
-
+    public void setMap(Map<String, ? extends State> map) {
+        this.pagemap = map;
     }
 
     public State getState(PageRequest page) {

@@ -28,10 +28,12 @@ import java.util.Map;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpSession;
 
+import org.pustefixframework.config.contextxml.ContextXMLServletConfig;
+
 import de.schlund.pfixcore.workflow.Context;
 import de.schlund.pfixcore.workflow.ContextImpl;
+import de.schlund.pfixcore.workflow.PageMap;
 import de.schlund.pfixcore.workflow.context.ServerContextImpl;
-import de.schlund.pfixxml.config.ContextXMLServletConfig;
 
 /**
  * Helper class that provides a dummy context instance that can
@@ -44,7 +46,10 @@ public class DummyContextFactory {
     public static Context getDummyContext(ContextXMLServletConfig config) throws Exception {
         HttpSession        session        = new DummySession();
         ServerContextImpl  servercontext  = new ServerContextImpl();
-        servercontext.init(config.getContextConfig(), "Dummy");
+        servercontext.setConfig(config.getContextConfig());
+        // TODO: Check whether pages are needed for the dummy context
+        servercontext.setPageMap(new PageMap());
+        servercontext.init();
         ContextImpl        context        = new ContextImpl();
         context.setServerContext(servercontext);
         context.setSession(session);

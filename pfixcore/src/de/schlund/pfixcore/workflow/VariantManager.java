@@ -23,9 +23,9 @@ package de.schlund.pfixcore.workflow;
 import java.util.HashMap;
 
 import org.apache.log4j.Logger;
+import org.pustefixframework.config.contextxml.ContextConfig;
 
 import de.schlund.pfixxml.Variant;
-import de.schlund.pfixxml.config.ContextConfig;
 
 /**
  * VariantManager.java

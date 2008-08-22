@@ -20,7 +20,6 @@
 package de.schlund.pfixcore.scripting;
 
 import java.io.IOException;
-import java.util.Properties;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -28,9 +27,10 @@ import org.apache.bsf.BSFEngine;
 import org.apache.bsf.BSFException;
 import org.apache.bsf.BSFManager;
 import org.apache.log4j.Logger;
+import org.pustefixframework.config.contextxml.StateConfig;
 
+import de.schlund.pfixcore.workflow.ConfigurableState;
 import de.schlund.pfixcore.workflow.Context;
-import de.schlund.pfixcore.workflow.State;
 import de.schlund.pfixxml.PfixServletRequest;
 import de.schlund.pfixxml.ResultDocument;
 
@@ -41,16 +41,12 @@ import de.schlund.pfixxml.ResultDocument;
  *
  * @author Benjamin Reitzammer <benjamin@schlund.de>
  */
-public class ScriptingState implements State {
+public class ScriptingState implements ConfigurableState {
   
-    public  static final String   PROP_SCRIPT_PATH = "SCRIPTINGSTATE_SRC_PATH";
     private static final String   REQATTR_BSFENG   = "SCRIPTINGSTATE_REQUEST_BSFENGINE";
     private static final Logger   LOG              = Logger.getLogger(ScriptingState.class);
-    
-    /**
-     */
-    public ScriptingState() {
-    }
+    private String scriptPath = null;
+    private StateConfig config;
     
     
     /**
@@ -86,7 +82,7 @@ public class ScriptingState implements State {
      */
     protected BSFEngine getEngine(Context context, PfixServletRequest preq) throws BSFException, IOException {
       
-        String    path      = getScriptPath(context);
+        String    path      = scriptPath;
         BSFEngine bsfengine = null;
         
         HttpServletRequest req = preq.getRequest();
@@ -102,6 +98,7 @@ public class ScriptingState implements State {
       
             BSFManager manager = new BSFManager();
             manager.declareBean("LOG", LOG, Logger.class);
+            manager.declareBean("stateConfig", this.config, StateConfig.class);
             manager.exec(lang, path, 0, 0, ScriptingUtil.getScript(path));
             
             bsfengine = manager.loadScriptingEngine(lang);
@@ -112,21 +109,13 @@ public class ScriptingState implements State {
         return bsfengine;
     }
     
-    
-    /**
-     * 
-     */
-    public String getScriptPath(Context context) {
-        Properties props = context.getPropertiesForCurrentPageRequest();
-        String     path  = props.getProperty(ScriptingState.PROP_SCRIPT_PATH);
-        
-        if ( path == null ) {
-            String pr = context.getCurrentPageRequest().getName();
-            throw new IllegalArgumentException("ScriptingState for " + pr + " has no script path specified");
-        } else {
-            return path;
-        }
+    public void setScriptPath(String scriptPath) {
+        this.scriptPath = scriptPath;
     }
-    
+
+
+    public void setConfig(StateConfig config) {
+        this.config = config;
+    }
     
 }

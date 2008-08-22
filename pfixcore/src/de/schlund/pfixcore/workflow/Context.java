@@ -22,11 +22,11 @@ import java.util.Properties;
 
 import javax.servlet.http.Cookie;
 
+import org.pustefixframework.config.contextxml.ContextConfig;
+
 import de.schlund.pfixcore.auth.Authentication;
 import de.schlund.pfixcore.exception.PustefixApplicationException;
 import de.schlund.pfixxml.Variant;
-import de.schlund.pfixxml.config.ContextConfig;
-import de.schlund.pfixxml.config.PageRequestConfig;
 import de.schlund.util.statuscodes.StatusCode;
 
 /**
@@ -39,7 +39,6 @@ public interface Context extends PageFlowContext {
     Properties getPropertiesForContextResource(Object res);
     Authentication getAuthentication();
     ContextConfig getContextConfig();
-    PageRequestConfig getConfigForCurrentPageRequest();
     PageRequest createPageRequest(String name);
     PageRequest getCurrentPageRequest();
     PageRequestStatus getCurrentStatus();
@@ -68,7 +67,6 @@ public interface Context extends PageFlowContext {
 
     void addCookie(Cookie cookie);
 
-    String getName();
     Throwable getLastException();
     String getVisitId();
 

@@ -29,15 +29,15 @@ import java.util.Properties;
 import javax.xml.transform.TransformerException;
 
 import org.apache.log4j.Logger;
+import org.pustefixframework.config.contextxml.PageFlowStepActionConditionConfig;
+import org.pustefixframework.config.contextxml.PageFlowStepActionConfig;
+import org.pustefixframework.config.contextxml.PageFlowStepConfig;
 import org.w3c.dom.Document;
 
 import de.schlund.pfixcore.exception.PustefixApplicationException;
 import de.schlund.pfixcore.exception.PustefixCoreException;
 import de.schlund.pfixcore.workflow.context.DataDrivenPageFlow;
 import de.schlund.pfixxml.ResultDocument;
-import de.schlund.pfixxml.config.PageFlowStepActionConditionConfig;
-import de.schlund.pfixxml.config.PageFlowStepActionConfig;
-import de.schlund.pfixxml.config.PageFlowStepConfig;
 import de.schlund.pfixxml.util.XPath;
 
 /**

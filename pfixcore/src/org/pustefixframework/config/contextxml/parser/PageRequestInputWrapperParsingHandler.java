@@ -18,6 +18,9 @@
 
 package org.pustefixframework.config.contextxml.parser;
 
+import org.pustefixframework.config.contextxml.PageRequestConfig;
+import org.pustefixframework.config.contextxml.parser.internal.IWrapperConfigImpl;
+import org.pustefixframework.config.contextxml.parser.internal.StateConfigImpl;
 import org.pustefixframework.config.generic.ParsingUtils;
 import org.w3c.dom.Element;
 
@@ -26,8 +29,6 @@ import com.marsching.flexiparse.parser.ParsingHandler;
 import com.marsching.flexiparse.parser.exception.ParserException;
 
 import de.schlund.pfixcore.generator.IWrapper;
-import de.schlund.pfixxml.config.impl.IWrapperConfigImpl;
-import de.schlund.pfixxml.config.impl.PageRequestConfigImpl;
 
 /**
  * 
@@ -41,7 +42,8 @@ public class PageRequestInputWrapperParsingHandler implements ParsingHandler {
         Element element = (Element)context.getNode();
         ParsingUtils.checkAttributes(element, new String[] {"class", "prefix"}, new String[] {"activeignore", "logging"});
          
-        PageRequestConfigImpl pageConfig = ParsingUtils.getFirstTopObject(PageRequestConfigImpl.class, context, true);
+        StateConfigImpl stateConfig = ParsingUtils.getFirstTopObject(StateConfigImpl.class, context, true);
+        PageRequestConfig pageConfig = ParsingUtils.getFirstTopObject(PageRequestConfig.class, context, true);
         IWrapperConfigImpl wrapperConfig = new IWrapperConfigImpl();
         
         String prefix = element.getAttribute("prefix").trim();
@@ -72,7 +74,7 @@ public class PageRequestInputWrapperParsingHandler implements ParsingHandler {
         } else {
             wrapperConfig.setLogging(false);
         }
-        pageConfig.addIWrapper(wrapperConfig);
+        stateConfig.addIWrapper(wrapperConfig);
         
     }
 

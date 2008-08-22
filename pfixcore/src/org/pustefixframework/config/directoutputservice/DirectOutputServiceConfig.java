@@ -20,7 +20,8 @@ package org.pustefixframework.config.directoutputservice;
 
 import java.util.List;
 
-import de.schlund.pfixxml.config.ServletManagerConfig;
+import org.pustefixframework.config.contextxml.ServletManagerConfig;
+
 
 /**
  * Provides configuration for {@link de.schlund.pfixxml.DirectOutputServlet}.  

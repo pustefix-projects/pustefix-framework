@@ -19,9 +19,9 @@ needsData(context, preq) {
 getDocument(Context context, PfixServletRequest preq) throws Exception {
     context.prohibitContinue();
     
-    var scode = StatusCodeLib.PFIXCORE_EXAMPLE_TSHIRT_SCRIPTING_SUCCESS;
+    var scode = StatusCodeLib.TSHIRT_SCRIPTING_SUCCESS;
     context.addPageMessage(scode, null, null);   
     
-    return StateUtil.createDefaultResultDocument(context);
+    return StateUtil.createDefaultResultDocument(context, stateConfig);
 }
     

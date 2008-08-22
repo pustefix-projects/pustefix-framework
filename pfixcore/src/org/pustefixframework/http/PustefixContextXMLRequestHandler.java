@@ -28,6 +28,9 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
+import org.pustefixframework.config.contextxml.AbstractXMLServletConfig;
+import org.pustefixframework.config.contextxml.ContextXMLServletConfig;
+import org.pustefixframework.config.contextxml.PageRequestConfig;
 import org.springframework.beans.factory.BeanNameAware;
 
 import de.schlund.pfixcore.exception.PustefixApplicationException;
@@ -49,9 +52,6 @@ import de.schlund.pfixxml.PfixServletRequest;
 import de.schlund.pfixxml.PfixServletRequestImpl;
 import de.schlund.pfixxml.RequestParam;
 import de.schlund.pfixxml.SPDocument;
-import de.schlund.pfixxml.config.AbstractXMLServletConfig;
-import de.schlund.pfixxml.config.ContextXMLServletConfig;
-import de.schlund.pfixxml.config.PageRequestConfig;
 import de.schlund.pfixxml.resources.FileResource;
 
 /**
@@ -131,19 +131,7 @@ public class PustefixContextXMLRequestHandler extends AbstractPustefixXMLRequest
     }
     
     private boolean nosyncTryReloadProperties(PfixServletRequest preq) throws ServletException {
-        if (super.tryReloadProperties(preq)) {
-            try {
-                //TODO: remove
-                servercontext.init(getContextXMLServletConfig().getContextConfig(), servletname);
-            } catch (Exception e) {
-                String msg = "Error during reload of servlet configuration";
-                LOG.error(msg, e);
-                throw new ServletException(msg, e);
-            }
-            return true;
-        } else {
-            return false;
-        }
+        return super.tryReloadProperties(preq);
     }
 
     public SPDocument getDom(PfixServletRequest preq) throws PustefixApplicationException, PustefixCoreException {

@@ -5,7 +5,7 @@
 >
    
   
-  <handler class="org.pustefixframework.config.contextxml.parser.ContextXMLParsingHandler">
+  <handler class="org.pustefixframework.config.contextxml.parser.ContextXMLParsingHandler" run-order="both">
     <match>/c:context-xml-config</match>
   </handler>
 
@@ -23,6 +23,11 @@
     <match>/c:context-xml-config/c:global-config//c:force-ssl</match>
   </handler>
   
+  <handler class="org.pustefixframework.config.contextxml.parser.ContextXMLRegisterGlobalPropertiesParsingHandler" run-order="end">
+    <preceding-module>org.pustefixframework.config.generic.PropertiesParsingHandler</preceding-module>
+    <match>/c:context-xml-config//c:properties</match>
+  </handler>
+  
   <!-- context -->
   
   <handler class="org.pustefixframework.config.contextxml.parser.ContextParsingHandler">
@@ -31,6 +36,11 @@
   
   <handler class="org.pustefixframework.config.contextxml.parser.ContextResourceParsingHandler">
     <match>/c:context-xml-config/c:context/c:resource</match>
+  </handler>
+  
+  <handler class="org.pustefixframework.config.contextxml.parser.ContextResourceRegisterPropertiesParsingHandler" run-order="end">
+    <preceding-module>org.pustefixframework.config.generic.PropertiesParsingHandler</preceding-module>
+    <match>/c:context-xml-config/c:context//c:resource//c:properties</match>
   </handler>
   
   <!-- interceptors -->
@@ -109,14 +119,15 @@
   
     
     
-  <handler class="org.pustefixframework.config.contextxml.parser.PageRequestParsingHandler">
-    <match>/c:context-xml-config/c:pagerequest</match>
-  </handler>
-  
-  <handler class="org.pustefixframework.config.contextxml.parser.PageRequestVariantParsingHandler">
+  <handler class="org.pustefixframework.config.contextxml.parser.PageRequestParsingHandler" run-order="both">
+    <match>/c:context-xml-config/c:pagerequest[not(child::variant) and not (child::default)]</match>
+    <match>/c:context-xml-config/c:pagerequest/c:default</match>
     <match>/c:context-xml-config/c:pagerequest/c:variant</match>
   </handler>
-  
+
+  <handler class="org.pustefixframework.config.contextxml.parser.PageRequestStateParsingHandler">
+    <match>/c:context-xml-config/c:pagerequest//c:state</match>
+  </handler>
   
   <handler class="org.pustefixframework.config.contextxml.parser.PageRequestInputWrapperParsingHandler">
     <match>/c:context-xml-config/c:pagerequest//c:input/c:wrapper</match>
@@ -137,7 +148,23 @@
     <match>/c:context-xml-config/c:pagerequest//c:process/c:action/c:retrieve/c:wrapper</match>
   </handler>
   
+  <handler class="org.pustefixframework.config.contextxml.parser.PageRequestRegisterPropertiesParsingHandler" run-order="end">
+    <preceding-module>org.pustefixframework.config.generic.PropertiesParsingHandler</preceding-module>
+    <match>/c:context-xml-config/c:pagerequest//c:properties</match>
+  </handler>
   
+  
+  <handler class="org.pustefixframework.config.generic.PropertiesParsingHandler">
+    <match>/c:context-xml-config//c:properties</match>
+    <match>/c:context-xml-config/c:context//c:resource//c:properties</match>
+    <match>/c:context-xml-config/c:pagerequest//c:properties</match>
+  </handler>
+  
+  <handler class="org.pustefixframework.config.generic.PropertyParsingHandler">
+    <match>/c:context-xml-config//c:properties//c:prop</match>
+    <match>/c:context-xml-config/c:context//c:resource//c:properties/c:prop</match>
+    <match>/c:context-xml-config/c:pagerequest//c:properties//c:prop</match>
+  </handler>
   
   
   <handler id="org.pustefixframework.config.project.customization.WhenParsingHandler" class="org.pustefixframework.config.customization.CustomizationWhenParsingHandler">

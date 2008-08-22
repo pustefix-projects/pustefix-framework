@@ -18,11 +18,12 @@
  */
 package de.schlund.pfixcore.workflow.app;
 
+import org.pustefixframework.config.contextxml.StateConfig;
+
 import de.schlund.pfixcore.generator.IHandler;
 import de.schlund.pfixcore.workflow.Context;
 import de.schlund.pfixxml.PfixServletRequest;
 import de.schlund.pfixxml.ResultDocument;
-import de.schlund.pfixxml.config.PageRequestConfig;
 
 
 /**
@@ -38,7 +39,7 @@ public interface IHandlerContainer {
      * Initialize all IHandlers in this container.
      * @param config Configuration for pagerequest
      */
-    void initIHandlers(PageRequestConfig config);
+    void initIHandlers(StateConfig config);
 
     /**
      * Determine if the associated page is accessible.

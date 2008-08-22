@@ -22,12 +22,13 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Properties;
 
+import org.pustefixframework.config.contextxml.ContextConfig;
+
 import de.schlund.pfixcore.workflow.ContextInterceptor;
 import de.schlund.pfixcore.workflow.ContextInterceptorFactory;
 import de.schlund.pfixcore.workflow.PageMap;
 import de.schlund.pfixcore.workflow.VariantManager;
 import de.schlund.pfixxml.Variant;
-import de.schlund.pfixxml.config.ContextConfig;
 
 /**
  * Provides server-wide context information for the {@link de.schlund.pfixxml.ContextXMLServlet}.
@@ -40,8 +41,6 @@ public class ServerContextImpl {
 	
     private ContextConfig config;
     
-    private String name;
-    
     private PageFlowManager pageflowmanager;
     private VariantManager variantmanager;
     private PageMap pagemap;
@@ -49,20 +48,23 @@ public class ServerContextImpl {
     private ContextInterceptor[] startInterceptors;
     private ContextInterceptor[] endInterceptors;
     
-    public ServerContextImpl() {
-        
-    }
-    
-    //TODO: inject dependencies
-    public void init(ContextConfig config, String contextName) throws Exception {
-        this.config = config;
-        this.name = contextName;
+    public void init() throws Exception {
+        if (config == null || pagemap == null) {
+            throw new IllegalStateException("Properties have to be set before calling init().");
+        }
         
         variantmanager  = (VariantManager) new VariantManager(config);
         pageflowmanager = new PageFlowManager(config, variantmanager);
-        pagemap         = new PageMap(config);
         
         createInterceptors();
+    }
+    
+    public void setConfig(ContextConfig config) {
+        this.config = config;
+    }
+    
+    public void setPageMap(PageMap pageMap) {
+        this.pagemap = pageMap;
     }
     
     private void createInterceptors() throws Exception {
@@ -111,10 +113,6 @@ public class ServerContextImpl {
     
     public ContextInterceptor[] getEndInterceptors() {
         return endInterceptors;
-    }
-    
-    public String getName() {
-        return name;
     }
     
     public String getPageMatchingVariant(String pagename, Variant variant) {

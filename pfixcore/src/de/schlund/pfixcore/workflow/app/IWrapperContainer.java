@@ -18,6 +18,8 @@
  */
 
 package de.schlund.pfixcore.workflow.app;
+import org.pustefixframework.config.contextxml.StateConfig;
+
 import de.schlund.pfixcore.workflow.Context;
 import de.schlund.pfixxml.PfixServletRequest;
 import de.schlund.pfixxml.ResultDocument;
@@ -30,7 +32,7 @@ import de.schlund.pfixxml.ResultDocument;
  */
 
 public interface IWrapperContainer {
-    void    init(Context context, PfixServletRequest preq, ResultDocument resdoc) throws Exception;
+    void    init(Context context, PfixServletRequest preq, ResultDocument resdoc, StateConfig stateConfig) throws Exception;
     void    handleSubmittedData() throws Exception;
     void    retrieveCurrentStatus(boolean all) throws Exception;
     void    addErrorCodes() throws Exception;

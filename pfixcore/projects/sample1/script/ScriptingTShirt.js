@@ -10,7 +10,7 @@ function handleSubmittedData(context, wrapper) {
     
     if ( wrapper.size == "L" && wrapper.color == 2 ) {
         // The combination size "L" and color No. "2" is considered invalid (maybe out of stock) 
-        var scode = StatusCodeLib.PFIXCORE_EXAMPLE_TSHIRT_SIZECOLOR_OUTOF_STOCK;
+        var scode = StatusCodeLib.TSHIRT_SIZECOLOR_OUTOF_STOCK;
         wrapper.addSCodeSize(scode, ["L", "2"], "note");
         return;
     }
@@ -26,7 +26,7 @@ function handleSubmittedData(context, wrapper) {
         // the user decided to NOT check any checkbox in the UI (this makes defaults work)
     }
     
-    var scode = StatusCodeLib.PFIXCORE_EXAMPLE_TSHIRT_SCRIPTING_SUCCESS;
+    var scode = StatusCodeLib.TSHIRT_SCRIPTING_SUCCESS;
     context.addPageMessage(scode, null, null);
 }
 

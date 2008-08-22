@@ -18,14 +18,19 @@
 
 package org.pustefixframework.config.contextxml.parser;
 
+import org.pustefixframework.config.contextxml.ContextConfig;
+import org.pustefixframework.config.contextxml.ContextResourceConfig;
+import org.pustefixframework.config.contextxml.ContextXMLServletConfig;
+import org.pustefixframework.config.contextxml.parser.internal.StateConfigImpl;
 import org.pustefixframework.config.generic.ParsingUtils;
+import org.springframework.beans.factory.config.RuntimeBeanReference;
 import org.w3c.dom.Element;
 
 import com.marsching.flexiparse.parser.HandlerContext;
 import com.marsching.flexiparse.parser.ParsingHandler;
 import com.marsching.flexiparse.parser.exception.ParserException;
 
-import de.schlund.pfixxml.config.impl.PageRequestConfigImpl;
+
 
 /**
  * 
@@ -39,23 +44,30 @@ public class PageRequestOutputResourceParsingHandler implements ParsingHandler {
         Element element = (Element)context.getNode();
         ParsingUtils.checkAttributes(element, new String[] {"node"}, new String[] {"class","bean-ref"});
         
-        PageRequestConfigImpl pageConfig = ParsingUtils.getFirstTopObject(PageRequestConfigImpl.class, context, true);
+        StateConfigImpl stateConfig = ParsingUtils.getFirstTopObject(StateConfigImpl.class, context, true);
         String node = element.getAttribute("node").trim();
        
         String className = element.getAttribute("class").trim();
         String beanRef = element.getAttribute("bean-ref").trim();
-        if (className.length()==0 && beanRef.length()==0) {
+        if (className.length() == 0 && beanRef.length() == 0) {
             throw new ParserException("Either attribute 'class' or attribute 'bean-ref' required.");
         }
-        //TODO: inject resources in state
-        if(className.length()>0) {
+        if (className.length() > 0) {
             Class<?> clazz;
             try {
                 clazz = Class.forName(className);
             } catch (ClassNotFoundException e) {
                 throw new ParserException("Could not load resource interface \"" + className + "\"!");
             }
-            pageConfig.addContextResource(node, clazz);
+            ContextXMLServletConfig servletConfig = ParsingUtils.getSingleTopObject(ContextXMLServletConfig.class, context);
+            ContextConfig contextConfig = servletConfig.getContextConfig();
+            ContextResourceConfig resourceConfig = contextConfig.getContextResourceConfig(clazz);
+            if (resourceConfig == null) {
+                throw new ParserException("Could not find suitable context resource for class or interface \"" + className + "\"!");
+            }
+            stateConfig.addContextResource(node, new RuntimeBeanReference(resourceConfig.getBeanName()));
+        } else if (beanRef.length() > 0) {
+            stateConfig.addContextResource(node, new RuntimeBeanReference(beanRef));
         }
         
     }

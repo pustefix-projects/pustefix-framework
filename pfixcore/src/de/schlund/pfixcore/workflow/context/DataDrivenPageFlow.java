@@ -23,6 +23,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.apache.log4j.Logger;
+import org.pustefixframework.config.contextxml.PageFlowConfig;
+import org.pustefixframework.config.contextxml.PageFlowStepConfig;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -32,8 +34,6 @@ import de.schlund.pfixcore.workflow.Context;
 import de.schlund.pfixcore.workflow.FlowStep;
 import de.schlund.pfixcore.workflow.PageFlowContext;
 import de.schlund.pfixxml.ResultDocument;
-import de.schlund.pfixxml.config.PageFlowConfig;
-import de.schlund.pfixxml.config.PageFlowStepConfig;
 
 /**
  * @author: jtl

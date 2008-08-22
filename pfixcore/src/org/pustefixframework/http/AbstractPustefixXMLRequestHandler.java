@@ -45,6 +45,8 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
 import org.apache.log4j.Logger;
+import org.pustefixframework.config.contextxml.AbstractXMLServletConfig;
+import org.pustefixframework.config.contextxml.ServletManagerConfig;
 import org.pustefixframework.http.dereferer.DerefRequestHandler;
 import org.w3c.dom.Document;
 
@@ -58,8 +60,6 @@ import de.schlund.pfixxml.RequestParam;
 import de.schlund.pfixxml.SPDocument;
 import de.schlund.pfixxml.SessionCleaner;
 import de.schlund.pfixxml.Variant;
-import de.schlund.pfixxml.config.AbstractXMLServletConfig;
-import de.schlund.pfixxml.config.ServletManagerConfig;
 import de.schlund.pfixxml.perflogging.AdditionalTrailInfo;
 import de.schlund.pfixxml.perflogging.AdditionalTrailInfoFactory;
 import de.schlund.pfixxml.perflogging.PerfEvent;

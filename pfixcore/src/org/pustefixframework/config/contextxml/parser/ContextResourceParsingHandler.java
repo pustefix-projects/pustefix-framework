@@ -7,6 +7,8 @@ package org.pustefixframework.config.contextxml.parser;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.pustefixframework.config.contextxml.parser.internal.ContextConfigImpl;
+import org.pustefixframework.config.contextxml.parser.internal.ContextResourceConfigImpl;
 import org.pustefixframework.config.generic.ParsingUtils;
 import org.springframework.aop.scope.ScopedProxyUtils;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -22,8 +24,6 @@ import com.marsching.flexiparse.parser.HandlerContext;
 import com.marsching.flexiparse.parser.ParsingHandler;
 import com.marsching.flexiparse.parser.exception.ParserException;
 
-import de.schlund.pfixxml.config.impl.ContextConfigImpl;
-import de.schlund.pfixxml.config.impl.ContextResourceConfigImpl;
 
 /**
  * 
@@ -108,6 +108,7 @@ public class ContextResourceParsingHandler implements ParsingHandler {
         crConfig.setBeanName(beanName);
           
         config.addContextResource(crConfig);
+        context.getObjectTreeElement().addObject(crConfig);
             
         BeanDefinitionHolder beanHolder = new BeanDefinitionHolder(beanDefinition, beanName );
         beanHolder = ScopedProxyUtils.createScopedProxy(beanHolder, beanReg, true);

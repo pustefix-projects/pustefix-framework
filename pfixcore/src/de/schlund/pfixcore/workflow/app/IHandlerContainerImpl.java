@@ -23,13 +23,14 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Properties;
 
+import org.pustefixframework.config.contextxml.IWrapperConfig;
+import org.pustefixframework.config.contextxml.StateConfig;
+
 import de.schlund.pfixcore.generator.IHandler;
 import de.schlund.pfixcore.generator.IHandlerFactory;
 import de.schlund.pfixcore.workflow.Context;
 import de.schlund.pfixxml.PfixServletRequest;
 import de.schlund.pfixxml.ResultDocument;
-import de.schlund.pfixxml.config.IWrapperConfig;
-import de.schlund.pfixxml.config.PageRequestConfig;
 import de.schlund.pfixxml.perflogging.PerfEvent;
 import de.schlund.pfixxml.perflogging.PerfEventType;
 
@@ -52,19 +53,22 @@ public class IHandlerContainerImpl implements IHandlerContainer {
     
     private String policy;
     
+    private StateConfig stateConfig;
+    
     /**
      * Initialize the IHandlers. Get the handlers from {@link IHandlerFactory}
      * and store them.
      * @param props the properties containing the interface names
      * @see de.schlund.pfixcore.workflow.app.IHandlerContainer#initIHandlers(Properties)
      */
-    public void initIHandlers(PageRequestConfig config) {
+    public void initIHandlers(StateConfig config) {
         handlers  = new HashSet<IHandler>();
         activeset = new HashSet<IHandler>();
+        stateConfig = config;
         
-        if (config.getIWrapperPolicy() == PageRequestConfig.Policy.ALL) {
+        if (config.getIWrapperPolicy() == StateConfig.Policy.ALL) {
             this.policy = "ALL";
-        } else if (config.getIWrapperPolicy() == PageRequestConfig.Policy.ANY) {
+        } else if (config.getIWrapperPolicy() == StateConfig.Policy.ANY) {
             this.policy = "ANY";
         } else {
             this.policy = "NONE";
@@ -222,7 +226,7 @@ public class IHandlerContainerImpl implements IHandlerContainer {
         // from the config file here ONCE, and give it to the IWrapperContainer instance already aggregated/sorted instead of letting 
         // the IWrapperContainer do the job all over again each time an instance is created. The only thing that should have to 
         // be calculated from start in the IWrapperContainer instance are all things depending on the actual request data.
-        container.init(context, preq, resdoc);
+        container.init(context, preq, resdoc, stateConfig);
         return container;
     }
 

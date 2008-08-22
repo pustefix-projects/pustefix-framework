@@ -30,6 +30,8 @@ import java.util.Set;
 import javax.servlet.http.Cookie;
 
 import org.apache.log4j.Logger;
+import org.pustefixframework.config.contextxml.PageRequestConfig;
+import org.pustefixframework.config.contextxml.ProcessActionPageRequestConfig;
 import org.pustefixframework.http.AbstractPustefixRequestHandler;
 import org.pustefixframework.http.PustefixContextXMLRequestHandler;
 import org.w3c.dom.Document;
@@ -58,8 +60,6 @@ import de.schlund.pfixxml.RequestParam;
 import de.schlund.pfixxml.ResultDocument;
 import de.schlund.pfixxml.SPDocument;
 import de.schlund.pfixxml.Variant;
-import de.schlund.pfixxml.config.PageRequestConfig;
-import de.schlund.pfixxml.config.ProcessActionConfig;
 import de.schlund.pfixxml.perflogging.PerfEvent;
 import de.schlund.pfixxml.perflogging.PerfEventType;
 import de.schlund.util.statuscodes.StatusCode;
@@ -381,11 +381,11 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
         }
 
         // action lookup
-        ProcessActionConfig action = null;
+        ProcessActionPageRequestConfig action = null;
         RequestParam actionname = preq.getRequestParam(RequestContextImpl.PARAM_ACTION);
         if (actionname != null && !actionname.getValue().equals("")) {
             LOG.debug("======> Found __action parameter " + actionname);
-            Map<String, ? extends ProcessActionConfig> actionmap = getConfigForCurrentPageRequest().getProcessActions();
+            Map<String, ? extends ProcessActionPageRequestConfig> actionmap = getConfigForCurrentPageRequest().getProcessActions();
             if (actionmap != null) {
                 action = actionmap.get(actionname.getValue());
                 if (action != null) {

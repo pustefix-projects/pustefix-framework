@@ -26,13 +26,13 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
+import org.pustefixframework.config.contextxml.ContextConfig;
+import org.pustefixframework.config.contextxml.PageFlowConfig;
+import org.pustefixframework.config.contextxml.PageFlowStepConfig;
 
 import de.schlund.pfixcore.workflow.PageRequest;
 import de.schlund.pfixcore.workflow.VariantManager;
 import de.schlund.pfixxml.Variant;
-import de.schlund.pfixxml.config.ContextConfig;
-import de.schlund.pfixxml.config.PageFlowConfig;
-import de.schlund.pfixxml.config.PageFlowStepConfig;
 
 /**
  * @author: jtl

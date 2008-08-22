@@ -20,6 +20,8 @@ package org.pustefixframework.config.contextxml.parser;
 
 import java.util.Iterator;
 
+import org.pustefixframework.config.contextxml.parser.internal.AuthConstraintRef;
+import org.pustefixframework.config.contextxml.parser.internal.ContextXMLServletConfigImpl;
 import org.pustefixframework.config.generic.ParsingUtils;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -37,8 +39,6 @@ import de.schlund.pfixcore.auth.conditions.ConditionGroup;
 import de.schlund.pfixcore.auth.conditions.HasRole;
 import de.schlund.pfixcore.auth.conditions.Not;
 import de.schlund.pfixcore.auth.conditions.Or;
-import de.schlund.pfixxml.config.impl.AuthConstraintRef;
-import de.schlund.pfixxml.config.impl.ContextXMLServletConfigImpl;
 
 /**
  * 

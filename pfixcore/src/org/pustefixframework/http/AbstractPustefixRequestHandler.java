@@ -42,6 +42,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
+import org.pustefixframework.config.contextxml.ServletManagerConfig;
 import org.pustefixframework.config.generic.PropertyFileReader;
 import org.pustefixframework.container.spring.http.UriProvidingHttpRequestHandler;
 import org.pustefixframework.http.internal.FactoryInitWorker;
@@ -54,7 +55,6 @@ import de.schlund.pfixxml.FactoryInitException;
 import de.schlund.pfixxml.FactoryInitUtil;
 import de.schlund.pfixxml.PfixServletRequest;
 import de.schlund.pfixxml.PfixServletRequestImpl;
-import de.schlund.pfixxml.config.ServletManagerConfig;
 import de.schlund.pfixxml.exceptionprocessor.ExceptionConfig;
 import de.schlund.pfixxml.exceptionprocessor.ExceptionProcessor;
 import de.schlund.pfixxml.perflogging.PerfEvent;

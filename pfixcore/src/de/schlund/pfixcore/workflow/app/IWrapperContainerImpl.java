@@ -28,6 +28,9 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
+import org.pustefixframework.config.contextxml.IWrapperConfig;
+import org.pustefixframework.config.contextxml.ProcessActionStateConfig;
+import org.pustefixframework.config.contextxml.StateConfig;
 import org.w3c.dom.Element;
 
 import de.schlund.pfixcore.exception.PustefixApplicationException;
@@ -42,9 +45,6 @@ import de.schlund.pfixxml.PfixServletRequest;
 import de.schlund.pfixxml.RequestParam;
 import de.schlund.pfixxml.ResultDocument;
 import de.schlund.pfixxml.XMLException;
-import de.schlund.pfixxml.config.IWrapperConfig;
-import de.schlund.pfixxml.config.PageRequestConfig;
-import de.schlund.pfixxml.config.ProcessActionConfig;
 import de.schlund.pfixxml.perflogging.PerfEvent;
 import de.schlund.pfixxml.perflogging.PerfEventType;
 import de.schlund.pfixxml.resources.FileResource;
@@ -88,7 +88,7 @@ public class IWrapperContainerImpl implements IWrapperContainer {
      * @see de.schlund.pfixcore.workflow.app.IWrapperContainer#initIWrappers(Context,
      *      PfixServletRequest, ResultDocument)
      */
-    public synchronized void init(Context context, PfixServletRequest preq, ResultDocument resdoc) throws Exception {
+    public synchronized void init(Context context, PfixServletRequest preq, ResultDocument resdoc, StateConfig stateConfig) throws Exception {
         if (context == null)
             throw new IllegalArgumentException("A 'null' value for the Context argument is not acceptable here.");
         if (preq == null)
@@ -100,7 +100,7 @@ public class IWrapperContainerImpl implements IWrapperContainer {
         this.resdoc = resdoc;
         this.reqdata = new RequestDataImpl(context, preq);
 
-        createIWrapperGroups();
+        createIWrapperGroups(stateConfig);
     }
 
     /**
@@ -275,8 +275,7 @@ public class IWrapperContainerImpl implements IWrapperContainer {
     // PRIVATE
     // 
 
-    private void createIWrapperGroups() throws Exception {
-        PageRequestConfig config = context.getConfigForCurrentPageRequest();
+    private void createIWrapperGroups(StateConfig config) throws Exception {
         Collection<? extends IWrapperConfig> confwrappers = config.getIWrappers().values();
 
         if (confwrappers.size() == 0) {
@@ -325,12 +324,12 @@ public class IWrapperContainerImpl implements IWrapperContainer {
                 }
             }
 
-            ProcessActionConfig action = null;
+            ProcessActionStateConfig action = null;
             RequestParam[] actions = reqdata.getParameters(RequestContextImpl.PARAM_ACTION);
             if (actions != null && actions.length > 0) {
                 String actionname = actions[0].getValue();
                 LOG.debug("======> Found __action parameter " + actionname);
-                Map<String, ? extends ProcessActionConfig> actionmap = config.getProcessActions();
+                Map<String, ? extends ProcessActionStateConfig> actionmap = config.getProcessActions();
                 if (actionmap != null) {
                     action = actionmap.get(actionname);
                     if (action != null) {
@@ -338,7 +337,7 @@ public class IWrapperContainerImpl implements IWrapperContainer {
                     }
                 }
                 if (action == null) {
-                    throw new PustefixApplicationException("Page " + config.getPageName() + " has been called with unknown action " + actionname);
+                    throw new PustefixApplicationException("Page has been called with unknown action " + actionname);
                 }
             }
 
@@ -420,6 +419,7 @@ public class IWrapperContainerImpl implements IWrapperContainer {
             if (allretrieve.isEmpty()) {
                 LOG.debug("  >> No set of wrappers given where to call retrieveCurrentStatus on... ");
             }
+            
         }
     }
 
