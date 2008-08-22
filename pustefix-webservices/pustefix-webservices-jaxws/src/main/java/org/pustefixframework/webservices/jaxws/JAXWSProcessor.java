@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -92,31 +93,17 @@ public class JAXWSProcessor implements ServiceProcessor {
         
         for(ServiceConfig serviceConf:conf.getServiceConfig()) {
             String serviceName = serviceConf.getName();
-            
-            Object serviceObj = null;
-            Object proxyObj = null;
-            if(serviceName.equals("Calculator")) {
-                serviceObj = runtime.getAppServiceRegistry().getServiceObject(serviceName);
-                ProxyFactory pf = new ProxyFactory(serviceObj);
-                pf.setProxyTargetClass(true);
-                pf.addAdvice(new TracingInterceptor());
-                proxyObj = pf.getProxy();
-            }
-            if(serviceObj == null) {
-                String serviceClassName = serviceConf.getImplementationName();
-                try {
-                    Class<?> serviceClass = Class.forName(serviceClassName);
-                    serviceObj = serviceClass.newInstance();
-                    proxyObj = serviceObj;
-                } catch(Exception x) {
-                    throw new ServiceException("Can't create service object: "+serviceClassName,x);
-                }
-            }
+           
+            Object serviceObj = runtime.getAppServiceRegistry().getServiceObject(serviceName);
+            ProxyFactory pf = new ProxyFactory(serviceObj);
+            pf.setProxyTargetClass(true);
+            pf.addAdvice(new TracingInterceptor());
+            Object proxyObj = pf.getProxy();
+           
             Invoker invoker = InstanceResolver.createSingleton(proxyObj).createInvoker();
             QName serviceQName = new QName(JAXWSUtils.getTargetNamespace(serviceObj.getClass()),serviceName);
             WSBinding binding = BindingImpl.create(BindingID.SOAP11_HTTP);
             binding.setHandlerChain(handlerChain);
-            System.out.println("CREATE "+serviceObj.getClass().getName());
             Class<?> serviceClass = serviceObj.getClass();
             if(Enhancer.isEnhanced(serviceClass)) serviceClass = serviceClass.getSuperclass();
             WSEndpoint<?> endpoint = WSEndpoint.create(serviceClass, false, invoker, serviceQName, null, null, binding, null, null, null, true);    
@@ -124,6 +111,14 @@ public class JAXWSProcessor implements ServiceProcessor {
             adapterList.createAdapter(serviceName, url, endpoint);     
         }
         delegate = new WSServletDelegate(adapterList, servletContext);
+    }
+    
+    private void tweakLogging() {
+        //make JAXWS less verbose (shouldn't be hard-coded here)
+        java.util.logging.Logger.getLogger("com.sun.xml.ws.server.sei.EndpointMethodHandler").setLevel(Level.OFF);
+        java.util.logging.Logger.getLogger("com.sun.xml.ws.transport.http.servlet").setLevel(Level.SEVERE);
+        java.util.logging.Logger.getLogger("javax.enterprise.resource.webservices.jaxws.server.http").setLevel(Level.SEVERE);
+        java.util.logging.Logger.getLogger("javax.enterprise.resource.webservices.jaxws.servlet.http").setLevel(Level.SEVERE);
     }
 
     public void setServletContext(ServletContext servletContext) {
@@ -134,7 +129,10 @@ public class JAXWSProcessor implements ServiceProcessor {
     public void process(ServiceRequest req, ServiceResponse res, ServiceRuntime runtime, ServiceRegistry registry, ProcessingInfo procInfo) throws ServiceException {
         
         synchronized(this) {
-            if(delegate==null) createDelegate(runtime,registry);
+            if(delegate==null) {
+                tweakLogging();
+                createDelegate(runtime,registry);
+            }
         }
         
         if(!(req.getUnderlyingRequest() instanceof HttpServletRequest)) throw new ServiceException("Service protocol not supported");
@@ -215,9 +213,14 @@ public class JAXWSProcessor implements ServiceProcessor {
         public Object invoke(MethodInvocation i) throws Throwable {
             JAXWSContext ctx=JAXWSContext.getCurrentContext();
             ctx.startInvocation();
-            Object ret=i.proceed();
-            ctx.endInvocation();
-            return ret;
+            try {
+                return i.proceed();
+            } catch(Throwable t) {
+                ctx.setThrowable(t);
+                throw new ProxyInvocationException(t);
+            } finally {
+                ctx.endInvocation();
+            }
         }
     }  
     
