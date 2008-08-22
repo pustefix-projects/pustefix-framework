@@ -82,6 +82,7 @@ public class TaskUtils {
      * modification of a reference file.
      */
     public static boolean checkInterfaceChange(String className, File buildDir, File refFile) throws BuildException {
+        if(className == null) return false;
         try {
             Class<?> clazz = Class.forName(className);
             if (!clazz.isInterface()) throw new BuildException("Web service interface class '" + className + "' doesn't define an interface type.");

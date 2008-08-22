@@ -48,9 +48,13 @@ public class ServiceDescriptor {
 	public ServiceDescriptor(ServiceConfig serviceConfig) throws ServiceException {
         try {
             ClassLoader cl=Thread.currentThread().getContextClassLoader();
-            Class<?> itf=Class.forName(serviceConfig.getInterfaceName(),true,cl);
+            Class<?> itf = null;
+            if(serviceConfig.getInterfaceName()!=null) {
+                itf = Class.forName(serviceConfig.getInterfaceName(),true,cl);
+            }
             Class<?> clazz=Class.forName(serviceConfig.getImplementationName(),true,cl);
-            serviceMethods=introspect(clazz,itf);
+            if(itf==null) serviceMethods=introspect(clazz);
+            else serviceMethods=introspect(clazz,itf);
             serviceClass=itf;
         } catch (ClassNotFoundException x) {
             throw new ServiceException("Can't instantiate service class.",x);
