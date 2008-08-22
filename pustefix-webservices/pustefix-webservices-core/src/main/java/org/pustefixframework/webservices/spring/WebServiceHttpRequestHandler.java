@@ -28,6 +28,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import net.sf.cglib.proxy.Enhancer;
+
 import org.apache.log4j.Logger;
 import org.pustefixframework.container.spring.http.UriProvidingHttpRequestHandler;
 import org.pustefixframework.webservices.AdminWebapp;
@@ -163,7 +165,9 @@ public class WebServiceHttpRequestHandler implements UriProvidingHttpRequestHand
             } else {
                 serviceObject = applicationContext.getBean(ref);
             }
-            serviceConfig.setImplementationName(serviceObject.getClass().getName());
+            Class<?> serviceObjectClass = serviceObject.getClass();
+            if(Enhancer.isEnhanced(serviceObjectClass)) serviceObjectClass = serviceObjectClass.getSuperclass();
+            serviceConfig.setImplementationName(serviceObjectClass.getName());
             serviceConfig.setProtocolType(reg.getProtocol());
             runtime.getConfiguration().addServiceConfig(serviceConfig);
             runtime.getAppServiceRegistry().register(reg.getServiceName(), serviceObject);

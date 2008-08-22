@@ -38,7 +38,7 @@ public class WebServiceBeanConfigReader {
            
                 String serviceName = getStringValue(props,"serviceName",true);
                 String protocol = getStringValue(props,"protocol",false);
-                String interfaceName = getStringValue(props,"interface",true);
+                String interfaceName = getStringValue(props,"interface",false);
                 String targetBeanName = getStringValue(props,"targetBeanName",false);
                 String implName = null;
                 if(targetBeanName == null) {
@@ -62,7 +62,6 @@ public class WebServiceBeanConfigReader {
                 serviceConfig.setInterfaceName(interfaceName);
                 serviceConfig.setImplementationName(implName);
                 serviceConfig.setProtocolType(protocol);
-                
                 serviceList.add(serviceConfig);
             }
             
@@ -82,7 +81,11 @@ public class WebServiceBeanConfigReader {
         String value = null;
         PropertyValue prop = props.getPropertyValue(propName);
         if(prop!=null) value = (String)prop.getValue();
-        else if(mandatory) throw new IllegalArgumentException("BeanDefinition property '"+propName+"' is mandatory.");
+        if(value!=null) {
+            value = value.trim();
+            if(value.equals("")) value = null;
+        }
+        if(value == null && mandatory) throw new IllegalArgumentException("BeanDefinition property '"+propName+"' is mandatory.");
         return value;
     }
     

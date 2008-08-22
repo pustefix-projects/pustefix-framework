@@ -42,8 +42,8 @@ public class WebServiceBeanDefinitionParser extends AbstractSingleBeanDefinition
        String serviceName = element.getAttribute("servicename");
        beanDefBuilder.addPropertyValue("serviceName", serviceName);
       
-       String interfaceName = element.getAttribute("interface");
-       beanDefBuilder.addPropertyValue("interface", interfaceName);
+       String interfaceName = element.getAttribute("interface").trim();
+       if(interfaceName.length()>0) beanDefBuilder.addPropertyValue("interface", interfaceName);
        
        String protocol = element.getAttribute("protocol");
        if(protocol!=null) beanDefBuilder.addPropertyValue("protocol", protocol);

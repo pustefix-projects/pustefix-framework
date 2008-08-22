@@ -16,7 +16,7 @@
                  <xsd:any namespace="##other" minOccurs="0" maxOccurs="1" processContents="skip"/>
                </xsd:sequence>
                <xsd:attribute name="servicename" type="NameType" use="required"/>
-               <xsd:attribute name="interface" type="ClassType" use="required"/>
+               <xsd:attribute name="interface" type="ClassType" use="optional"/>
                <xsd:attribute name="ref" type="xsd:string" use="optional"/>
                <xsd:attribute name="protocol" type="ProtocolType" use="optional" default="JSONWS"/>
                <xsd:attribute name="session" type="SessionType" use="optional" default="servlet"/>

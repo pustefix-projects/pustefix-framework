@@ -175,7 +175,7 @@ public class WebserviceTask extends MatchingTask {
                                 // Check if WSDL/Javascript has to be built
                                 if (refConf == null || !wsdlFile.exists() || globalConfChanged || !conf.equals(refConf)
                                         || TaskUtils.checkInterfaceChange(conf.getInterfaceName(), builddir, wsdlFile)) {
-                                    checkInterface(conf.getInterfaceName());
+                                    if(conf.getInterfaceName()!=null) checkInterface(conf.getInterfaceName());
                                     Class<?> implClass = Class.forName(conf.getImplementationName());
                                     WebService anno = implClass.getAnnotation(WebService.class);
                                     if(anno == null) {
