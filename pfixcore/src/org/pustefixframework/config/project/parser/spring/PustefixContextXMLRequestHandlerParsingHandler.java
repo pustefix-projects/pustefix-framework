@@ -115,10 +115,9 @@ public class PustefixContextXMLRequestHandlerParsingHandler extends Customizatio
         
         BeanDefinitionBuilder beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(PustefixContextXMLRequestHandler.class);
         beanBuilder.setScope("singleton");
-        beanBuilder.addPropertyValue("propFile", configurationFile);
+        beanBuilder.setInitMethodName("init");
         beanBuilder.addPropertyValue("dependFile", dependFile);
         beanBuilder.addPropertyValue("handlerURI", path + "/**");
-        beanBuilder.addPropertyValue("commonPropFile", "pfixroot:/common/conf/pustefix.xml");
         beanBuilder.addPropertyValue("serverContext", new RuntimeBeanReference(ServerContextImpl.class.getName()));
         beanBuilder.addPropertyValue("context", new RuntimeBeanReference(ContextImpl.class.getName()));
         beanBuilder.addPropertyValue("configuration", config);

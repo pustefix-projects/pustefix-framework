@@ -1,5 +1,19 @@
 2008-08-22  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
+	* src/org/pustefixframework/config/project/parser/spring/DerefRequestHandlerParsingHandler.java: 
+	* src/org/pustefixframework/config/project/parser/spring/PustefixContextDirectOutputRequestHandlerParsingHandler.java: 
+	* src/org/pustefixframework/config/project/parser/spring/PustefixContextXMLRequestHandlerParsingHandler.java: 
+	* src/org/pustefixframework/http/dereferer/DerefRequestHandler.java: 
+	* src/org/pustefixframework/http/AbstractPustefixRequestHandler.java: 
+	* src/org/pustefixframework/http/AbstractPustefixXMLRequestHandler.java: 
+	* src/org/pustefixframework/http/PustefixContextXMLRequestHandler.java: 
+	Removed old configuration file code from request handlers.
+	
+	* projects/common/conf/pustefix.xml: 
+	Changed derefserver.validtime to 300 seconds.
+
+2008-08-22  Sebastian Marsching  <sebastian.marsching@1und1.de>
+
 	* src/de/schlund/pfixcore/scripting/ScriptingState.java: 
 	* src/de/schlund/pfixcore/util/DummyContextFactory.java: 
 	* src/de/schlund/pfixcore/util/StateUtil.java: 

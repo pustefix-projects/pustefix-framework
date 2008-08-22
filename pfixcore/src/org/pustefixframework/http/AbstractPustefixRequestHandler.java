@@ -19,7 +19,6 @@
 
 package org.pustefixframework.http;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.text.NumberFormat;
@@ -32,7 +31,6 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Properties;
 import java.util.TreeSet;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -43,13 +41,10 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
 import org.pustefixframework.config.contextxml.ServletManagerConfig;
-import org.pustefixframework.config.generic.PropertyFileReader;
 import org.pustefixframework.container.spring.http.UriProvidingHttpRequestHandler;
 import org.pustefixframework.http.internal.FactoryInitWorker;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.web.context.ServletContextAware;
-
-import com.marsching.flexiparse.parser.exception.ParserException;
 
 import de.schlund.pfixxml.FactoryInitException;
 import de.schlund.pfixxml.FactoryInitUtil;
@@ -59,8 +54,6 @@ import de.schlund.pfixxml.exceptionprocessor.ExceptionConfig;
 import de.schlund.pfixxml.exceptionprocessor.ExceptionProcessor;
 import de.schlund.pfixxml.perflogging.PerfEvent;
 import de.schlund.pfixxml.perflogging.PerfEventType;
-import de.schlund.pfixxml.resources.FileResource;
-import de.schlund.pfixxml.resources.ResourceUtil;
 import de.schlund.pfixxml.serverutil.SessionAdmin;
 import de.schlund.pfixxml.serverutil.SessionHelper;
 import de.schlund.pfixxml.serverutil.SessionInfoStruct;
@@ -105,18 +98,11 @@ public abstract class AbstractPustefixRequestHandler implements UriProvidingHttp
     private Logger                       LOGGER_VISIT                  = Logger.getLogger("LOGGER_VISIT");
     private static Logger                       LOG                           = Logger.getLogger(AbstractPustefixRequestHandler.class);
     private Map<Class<? extends Throwable>, ExceptionConfig> exceptionConfigs = new HashMap<Class<? extends Throwable>, ExceptionConfig>();
-    private long                         common_mtime                  = -2;
-    private long                         servlet_mtime                 = -2;
-    private FileResource                 commonpropfile;
-    private FileResource                 servletpropfile;
     private String                       servletEncoding;
-    private AtomicInteger                configLoadIndex               = new AtomicInteger(0);
     private ServletContext servletContext;
     private String handlerURI;
 
     protected abstract ServletManagerConfig getServletManagerConfig();
-
-    protected abstract void reloadServletConfig(FileResource configFile, Properties globalProperties) throws ServletException;
 
     protected boolean runningUnderSSL(HttpServletRequest req) {
         return req.isSecure();
@@ -381,8 +367,7 @@ public abstract class AbstractPustefixRequestHandler implements UriProvidingHttp
         }
 
         FactoryInitWorker.tryReloadLog4j();
-        tryReloadProperties(preq);
-
+        
         // End of initialization. Now we handle all cases where we need to redirect.
 
         if (force_jump_back_to_ssl && allowSessionCreate()) {
@@ -805,44 +790,10 @@ public abstract class AbstractPustefixRequestHandler implements UriProvidingHttp
         } else {
             throw new ServletException("*** Can't detect servlet container with support for Servlet API 2.3 or higher");
         }
-
-        Properties properties = new Properties(System.getProperties());
-
-        if (commonpropfile != null) {
-            // Load on first request
-            common_mtime = loadPropertyfile(properties, commonpropfile);
-        }
-
-        // Make sure configuration is available
-        this.reloadServletConfig(servletpropfile, properties);
-
+        
         initCookieSec();
         initExceptionConfigs();
         initServletEncoding();
-    }
-
-    protected boolean tryReloadProperties(PfixServletRequest preq) throws ServletException {
-        if ((commonpropfile != null && commonpropfile.lastModified() > common_mtime) || (servletpropfile != null && servletpropfile.lastModified() > servlet_mtime)
-                || (this.getServletManagerConfig() != null && this.getServletManagerConfig().needsReload())) {
-
-            int currLoadIndex = configLoadIndex.incrementAndGet();
-
-            LOG.warn("\n\n##############################\n" + "#### Reloading properties ####\n" + "##############################\n");
-            Properties properties = new Properties(System.getProperties());
-
-            if (commonpropfile != null) {
-                common_mtime = loadPropertyfile(properties, commonpropfile);
-            }
-            servlet_mtime = servletpropfile.lastModified();
-            this.reloadServletConfig(servletpropfile, properties);
-            this.getServletManagerConfig().getProperties().setProperty(PROP_LOADINDEX, String.valueOf(currLoadIndex));
-
-            initCookieSec();
-            return true;
-        } else {
-            return false;
-        }
-
     }
 
     /**
@@ -859,19 +810,6 @@ public abstract class AbstractPustefixRequestHandler implements UriProvidingHttp
         } else {
             cookie_security_not_enforced = false;
         }
-    }
-
-    private long loadPropertyfile(Properties props, FileResource propfile) throws ServletException {
-        long mtime;
-        try {
-            mtime = propfile.lastModified();
-            PropertyFileReader.read(propfile, props);
-        } catch (FileNotFoundException e) {
-            throw new ServletException("*** [" + propfile.getName() + "] Not found: " + e.toString());
-        } catch (ParserException e) {
-            throw new ServletException("*** [" + propfile.getName() + "] Parsing-error: " + e.toString());
-        }
-        return mtime;
     }
 
     private void callProcess(PfixServletRequest preq, HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
@@ -1177,13 +1115,5 @@ public abstract class AbstractPustefixRequestHandler implements UriProvidingHttp
     
     public ServletContext getServletContext() {
         return this.servletContext;
-    }
-    
-    public void setCommonPropFile(String path) {
-        commonpropfile = ResourceUtil.getFileResource(path);
-    }
-    
-    public void setPropFile(String path) {
-        servletpropfile = ResourceUtil.getFileResource(path);
     }
 }

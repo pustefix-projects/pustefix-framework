@@ -21,7 +21,6 @@ package org.pustefixframework.http;
 
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.Properties;
 import java.util.TreeMap;
 
 import javax.servlet.ServletException;
@@ -52,7 +51,6 @@ import de.schlund.pfixxml.PfixServletRequest;
 import de.schlund.pfixxml.PfixServletRequestImpl;
 import de.schlund.pfixxml.RequestParam;
 import de.schlund.pfixxml.SPDocument;
-import de.schlund.pfixxml.resources.FileResource;
 
 /**
  * @author jtl
@@ -75,9 +73,6 @@ public class PustefixContextXMLRequestHandler extends AbstractPustefixXMLRequest
     private ServerContextImpl servercontext = null;
     private ContextImpl context = null;
 
-    private Object reloadInitLock=new Object();
-    private boolean reloadInitDone;
-    
     private ContextInterceptor[] postRenderInterceptors;
     
     private String beanName;
@@ -115,23 +110,6 @@ public class PustefixContextXMLRequestHandler extends AbstractPustefixXMLRequest
 
     protected boolean allowSessionCreate() {
         return true;
-    }
-
-    protected boolean tryReloadProperties(PfixServletRequest preq) throws ServletException {
-        //synchronize first method call because of a race condition, which 
-        //can lead to a NullPointerException (servercontext being null)
-        synchronized(reloadInitLock) {
-            if(!reloadInitDone) {
-                boolean result=nosyncTryReloadProperties(preq);
-                reloadInitDone=true;
-                return result;
-            }
-        }
-        return nosyncTryReloadProperties(preq);
-    }
-    
-    private boolean nosyncTryReloadProperties(PfixServletRequest preq) throws ServletException {
-        return super.tryReloadProperties(preq);
     }
 
     public SPDocument getDom(PfixServletRequest preq) throws PustefixApplicationException, PustefixCoreException {
@@ -274,15 +252,6 @@ public class PustefixContextXMLRequestHandler extends AbstractPustefixXMLRequest
         return context;
     }
 
-    protected void reloadServletConfig(FileResource configFile, Properties globalProperties) throws ServletException {
-        //TODO: remove
-        try {
-            createInterceptors();
-        } catch (Exception e) {
-            throw new ServletException("Could not create interceptors from " + configFile.toURI(), e);
-        } 
-    }
-
     protected void hookBeforeRender(PfixServletRequest preq, SPDocument spdoc, TreeMap<String, Object> paramhash, String stylesheet) {
         super.hookBeforeRender(preq, spdoc, paramhash, stylesheet);
         RequestContextImpl oldRequestContext = (RequestContextImpl) spdoc.getProperties().get(XSLPARAM_REQUESTCONTEXT);
@@ -326,4 +295,12 @@ public class PustefixContextXMLRequestHandler extends AbstractPustefixXMLRequest
         this.context = context;
     }
     
+    public void init() throws ServletException {
+        super.init();
+        try {
+            createInterceptors();
+        } catch (Exception e) {
+            throw new ServletException("Error while initializing " + this.getClass().getName(), e);
+        }
+    }
 }

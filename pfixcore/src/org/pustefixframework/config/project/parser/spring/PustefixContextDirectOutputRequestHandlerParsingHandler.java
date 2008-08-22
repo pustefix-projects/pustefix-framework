@@ -132,6 +132,7 @@ public class PustefixContextDirectOutputRequestHandlerParsingHandler extends Cus
         
         beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(PustefixContextDirectOutputRequestHandler.class);
         beanBuilder.setScope("singleton");
+        beanBuilder.setInitMethodName("init");
         beanBuilder.addPropertyValue("handlerURI", path + "/**");
         beanBuilder.addPropertyValue("serverContext", new RuntimeBeanReference(ServerContextImpl.class.getName()));
         beanBuilder.addPropertyValue("context", new RuntimeBeanReference(ContextImpl.class.getName()));

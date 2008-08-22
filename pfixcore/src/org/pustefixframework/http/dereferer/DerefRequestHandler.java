@@ -22,20 +22,16 @@ package org.pustefixframework.http.dereferer;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.URLEncoder;
-import java.util.Properties;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
 import org.pustefixframework.config.contextxml.ServletManagerConfig;
-import org.pustefixframework.config.contextxml.parser.internal.ServletManagerConfigImpl;
 import org.pustefixframework.http.AbstractPustefixRequestHandler;
 
 import de.schlund.pfixxml.PfixServletRequest;
 import de.schlund.pfixxml.RequestParam;
-import de.schlund.pfixxml.resources.FileResource;
 import de.schlund.pfixxml.serverutil.SessionHelper;
 import de.schlund.pfixxml.util.Base64Utils;
 import de.schlund.pfixxml.util.MD5Utils;
@@ -246,14 +242,9 @@ public class DerefRequestHandler extends AbstractPustefixRequestHandler {
     protected ServletManagerConfig getServletManagerConfig() {
         return this.config;
     }
-
-    protected void reloadServletConfig(FileResource configFile, Properties globalProperties) throws ServletException {
-        // Deref server does not use a servlet specific configuration
-        // So simply initialize configuration with global properties
-        ServletManagerConfigImpl sConf = new ServletManagerConfigImpl();
-        sConf.setProperties(globalProperties);
-        sConf.setSSL(false);
-        this.config = sConf;
+    
+    public void setConfiguration(ServletManagerConfig config) {
+        this.config = config;
     }
     
 }
