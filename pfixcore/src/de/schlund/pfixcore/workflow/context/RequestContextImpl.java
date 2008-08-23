@@ -19,6 +19,7 @@
 package de.schlund.pfixcore.workflow.context;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
@@ -30,8 +31,11 @@ import java.util.Set;
 import javax.servlet.http.Cookie;
 
 import org.apache.log4j.Logger;
+import org.pustefixframework.config.contextxml.IWrapperConfig;
 import org.pustefixframework.config.contextxml.PageRequestConfig;
 import org.pustefixframework.config.contextxml.ProcessActionPageRequestConfig;
+import org.pustefixframework.config.contextxml.ProcessActionStateConfig;
+import org.pustefixframework.config.contextxml.StateConfig;
 import org.pustefixframework.http.AbstractPustefixRequestHandler;
 import org.pustefixframework.http.PustefixContextXMLRequestHandler;
 import org.w3c.dom.Document;
@@ -46,6 +50,7 @@ import de.schlund.pfixcore.exception.PustefixApplicationException;
 import de.schlund.pfixcore.exception.PustefixCoreException;
 import de.schlund.pfixcore.exception.PustefixRuntimeException;
 import de.schlund.pfixcore.generator.StatusCodeInfo;
+import de.schlund.pfixcore.workflow.ConfigurableState;
 import de.schlund.pfixcore.workflow.Context;
 import de.schlund.pfixcore.workflow.ContextImpl;
 import de.schlund.pfixcore.workflow.ContextInterceptor;
@@ -53,8 +58,8 @@ import de.schlund.pfixcore.workflow.PageMap;
 import de.schlund.pfixcore.workflow.PageRequest;
 import de.schlund.pfixcore.workflow.PageRequestStatus;
 import de.schlund.pfixcore.workflow.State;
-import de.schlund.pfixcore.workflow.StateFactory;
 import de.schlund.pfixcore.workflow.VariantManager;
+import de.schlund.pfixcore.workflow.app.ResdocFinalizer;
 import de.schlund.pfixxml.PfixServletRequest;
 import de.schlund.pfixxml.RequestParam;
 import de.schlund.pfixxml.ResultDocument;
@@ -131,7 +136,9 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
                 return conf.getProperties();
             }
         }
-        return null;
+        // Return empty Properties object instead of null because we need
+        // this to handle not explicitly declared pages
+        return new Properties();
     }
 
     public PageRequest getCurrentPageRequest() {
@@ -897,7 +904,11 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
         contextbuf.append("     pageflow:      " + currentpageflow + "\n");
         contextbuf.append("     PageRequest:   " + currentpagerequest + "\n");
         if (currentpagerequest != null) {
-            contextbuf.append("       -> State: " + getStateForPageRequest(currentpagerequest) + "\n");
+            try {
+                contextbuf.append("       -> State: " + getStateForPageRequest(currentpagerequest) + "\n");
+            } catch (PustefixApplicationException e) {
+                // Ignore
+            }
             contextbuf.append("       -> Status: " + getCurrentStatus() + "\n");
         }
 
@@ -931,11 +942,64 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
         return currentpservreq;
     }
 
-    private State getStateForPageRequest(PageRequest page) {
+    private State getStateForPageRequest(PageRequest page) throws PustefixApplicationException {
         State state = pagemap.getState(page);
         if (state == null) {
-            Class<? extends State> clazz = parentcontext.getContextConfig().getDefaultState();
-            state = StateFactory.getInstance().getState(clazz.getName());
+            final Class<? extends State> clazz = parentcontext.getContextConfig().getDefaultState();
+            try {
+                state = clazz.newInstance();
+            } catch (InstantiationException e) {
+                throw new PustefixApplicationException("Could not create instance of default state class " + clazz.getName());
+            } catch (IllegalAccessException e) {
+                throw new PustefixApplicationException("Could not create instance of default state class " + clazz.getName());
+            }
+            if (state instanceof ConfigurableState) {
+                ConfigurableState configurableState = (ConfigurableState) state;
+                StateConfig config = new StateConfig() {
+
+                    public Map<String, ?> getContextResources() {
+                        return Collections.emptyMap();
+                    }
+
+                    public Class<? extends ResdocFinalizer> getFinalizer() {
+                        return null;
+                    }
+
+                    public Policy getIWrapperPolicy() {
+                        return Policy.ANY;
+                    }
+
+                    public Map<String, ? extends IWrapperConfig> getIWrappers() {
+                        return Collections.emptyMap();
+                    }
+
+                    public Map<String, ? extends ProcessActionStateConfig> getProcessActions() {
+                        return Collections.emptyMap();
+                    }
+
+                    public Properties getProperties() {
+                        return new Properties();
+                    }
+
+                    public String getScope() {
+                        return "prototype";
+                    }
+
+                    public Class<? extends ConfigurableState> getState() {
+                        return clazz.asSubclass(ConfigurableState.class);
+                    }
+
+                    public boolean isExternalBean() {
+                        return false;
+                    }
+
+                    public boolean requiresToken() {
+                        return false;
+                    }
+                    
+                };
+                configurableState.setConfig(config);
+            }
         }
         return state;
     }

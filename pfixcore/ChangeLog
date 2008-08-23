@@ -1,3 +1,13 @@
+2008-08-23  Sebastian Marsching  <sebastian.marsching@1und1.de>
+
+	* src/de/schlund/pfixcore/workflow/context/RequestContextImpl.java: 
+	Fixed default pages (pages that are not explicitly declared in the
+	configuration file but have XML targets).
+
+	* src/org/pustefixframework/config/contextxml/parser/ContextResourceParsingHandler.java: 
+	* src/org/pustefixframework/config/contextxml/parser/PageRequestParsingHandler.java: 
+	Fixed scope handling.
+
 2008-08-22  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
 	* src/org/pustefixframework/config/project/parser/spring/DerefRequestHandlerParsingHandler.java: 
