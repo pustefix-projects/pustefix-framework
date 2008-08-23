@@ -1,5 +1,9 @@
 2008-08-23  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
+	* src/de/schlund/pfixcore/workflow/StateFactory.java: 
+	* src/de/schlund/pfixcore/workflow/DirectOutputStateFactory.java: 
+	Removed state factories.
+	
 	* src/de/schlund/pfixcore/workflow/context/RequestContextImpl.java: 
 	Fixed default pages (pages that are not explicitly declared in the
 	configuration file but have XML targets).
