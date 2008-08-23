@@ -68,7 +68,6 @@ public interface IWrapper extends Comparable<IWrapper> {
     // result in a method getPrefix be generated)
     Integer         gimmeOrder(); 
     String          gimmePrefix();
-    IHandler        gimmeIHandler();
     IWrapperParam[] gimmeAllParams();
     IWrapperParam[] gimmeAllParamsWithErrors();
     IWrapperParamDefinition[] gimmeAllParamDefinitions();

@@ -60,17 +60,6 @@ public class ScriptingIHandler implements IHandler{
     
     
     /**
-     * @exception IllegalArgumentException if the provided path is <code>null</code>,
-     */
-    public ScriptingIHandler(String path) {
-        if ( path == null )
-            throw new IllegalArgumentException("Parameter 'path' is not allowed to be null");
-        
-        this.path = path;
-    }
-    
-    
-    /**
      */
     public void handleSubmittedData(Context context, IWrapper wrapper) throws Exception {
         init();
@@ -131,4 +120,7 @@ public class ScriptingIHandler implements IHandler{
             
     }
     
+    public void setScriptPath(String scriptPath) {
+        this.path = scriptPath;
+    }
 }

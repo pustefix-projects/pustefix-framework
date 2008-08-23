@@ -1,9 +1,26 @@
 2008-08-23  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
+	* src/de/schlund/pfixcore/generator/IHandlerFactory.java: 
+	* src/de/schlund/pfixcore/generator/IWrapper.java: 
+	* src/de/schlund/pfixcore/generator/IWrapperImpl.java: 
+	* src/de/schlund/pfixcore/generator/UseHandlerClass.java: 
+	* src/de/schlund/pfixcore/generator/UseHandlerScript.java: 
+	* src/de/schlund/pfixcore/scripting/ScriptingIHandler.java: 
+	* src/de/schlund/pfixcore/workflow/app/IHandlerContainerImpl.java: 
+	* src/de/schlund/pfixcore/workflow/app/IWrapperContainerImpl.java: 
+	* src/org/pustefixframework/config/contextxml/parser/internal/IWrapperConfigImpl.java: 
+	* src/org/pustefixframework/config/contextxml/parser/PageRequestInputWrapperParsingHandler.java: 
+	* src/org/pustefixframework/config/contextxml/parser/PageRequestParsingHandler.java: 
+	* src/org/pustefixframework/config/contextxml/IWrapperConfig.java: 
+	* projects/core/build/iwrapper.xsl: 
+	Removed IHandlerFactory and create handlers as Spring beans instead.
+
+2008-08-23  Sebastian Marsching  <sebastian.marsching@1und1.de>
+
 	* src/de/schlund/pfixcore/workflow/StateFactory.java: 
 	* src/de/schlund/pfixcore/workflow/DirectOutputStateFactory.java: 
 	Removed state factories.
-	
+
 	* src/de/schlund/pfixcore/workflow/context/RequestContextImpl.java: 
 	Fixed default pages (pages that are not explicitly declared in the
 	configuration file but have XML targets).

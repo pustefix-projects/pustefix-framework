@@ -22,8 +22,10 @@ import java.util.Collection;
 import java.util.Map;
 
 import org.pustefixframework.config.Constants;
+import org.pustefixframework.config.contextxml.IWrapperConfig;
 import org.pustefixframework.config.contextxml.parser.internal.ContextConfigImpl;
 import org.pustefixframework.config.contextxml.parser.internal.ContextXMLServletConfigImpl;
+import org.pustefixframework.config.contextxml.parser.internal.IWrapperConfigImpl;
 import org.pustefixframework.config.contextxml.parser.internal.PageRequestConfigImpl;
 import org.pustefixframework.config.contextxml.parser.internal.ScriptingStatePathInfo;
 import org.pustefixframework.config.contextxml.parser.internal.StateConfigImpl;
@@ -31,6 +33,7 @@ import org.pustefixframework.config.generic.ParsingUtils;
 import org.springframework.aop.scope.ScopedProxyUtils;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinitionHolder;
+import org.springframework.beans.factory.config.RuntimeBeanReference;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.DefaultBeanNameGenerator;
@@ -41,6 +44,12 @@ import com.marsching.flexiparse.configuration.RunOrder;
 import com.marsching.flexiparse.parser.HandlerContext;
 import com.marsching.flexiparse.parser.ParsingHandler;
 import com.marsching.flexiparse.parser.exception.ParserException;
+
+import de.schlund.pfixcore.generator.IHandler;
+import de.schlund.pfixcore.generator.IWrapper;
+import de.schlund.pfixcore.generator.UseHandlerClass;
+import de.schlund.pfixcore.generator.UseHandlerScript;
+import de.schlund.pfixcore.scripting.ScriptingIHandler;
 
 
 public class PageRequestParsingHandler implements ParsingHandler {
@@ -136,6 +145,56 @@ public class PageRequestParsingHandler implements ParsingHandler {
                 String configBeanName;
                 String stateBeanName;
                 
+                @SuppressWarnings("unchecked")
+                Map<String, Object> wrapperMap = new ManagedMap(stateConfig.getIWrappers().size());
+                for (String prefix : stateConfig.getIWrappers().keySet()) {
+                    IWrapperConfig wrapperConfig = stateConfig.getIWrappers().get(prefix);
+                    Class<? extends IWrapper> wrapperClass = wrapperConfig.getWrapperClass();
+                    
+                    Class<? extends IHandler> handlerClass = null;
+                    String handlerScriptPath = null;
+                    UseHandlerClass handlerClassAnnotation = wrapperClass.getAnnotation(UseHandlerClass.class);
+                    UseHandlerScript handlerScriptAnnotation = wrapperClass.getAnnotation(UseHandlerScript.class);
+                    if (handlerClassAnnotation != null) {
+                        handlerClass = handlerClassAnnotation.value();
+                    } else if (handlerScriptAnnotation != null) {
+                        handlerClass = ScriptingIHandler.class;
+                        handlerScriptPath = handlerScriptAnnotation.value();
+                    } else {
+                        throw new ParserException("Wrapper class " + wrapperClass.getName() + " has no handler annotation.");
+                    }
+                    
+                    beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(handlerClass);
+                    beanBuilder.setScope(wrapperConfig.getScope());
+                    if (handlerScriptPath != null) {
+                        beanBuilder.addPropertyValue("scriptPath", handlerScriptPath);
+                    }
+                    beanDefinition = beanBuilder.getBeanDefinition();
+                    String handlerBeanName = nameGenerator.generateBeanName(beanDefinition, beanRegistry);
+                    BeanDefinitionHolder beanHolder = new BeanDefinitionHolder(beanDefinition, handlerBeanName);
+                    if (!beanDefinition.getScope().equals("singleton") && !beanDefinition.getScope().equals("prototype")) {
+                        beanHolder = ScopedProxyUtils.createScopedProxy(beanHolder, beanRegistry, true);
+                    }
+                    beanRegistry.registerBeanDefinition(beanHolder.getBeanName(), beanHolder.getBeanDefinition());
+                    if (beanHolder.getAliases() != null) {
+                        for (String alias : beanHolder.getAliases()) {
+                            beanRegistry.registerAlias(beanHolder.getBeanName(), alias);
+                        }
+                    }
+                    
+                    beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(IWrapperConfigImpl.class);
+                    beanBuilder.setScope(wrapperConfig.getScope());
+                    beanBuilder.addPropertyValue("prefix", wrapperConfig.getPrefix());
+                    beanBuilder.addPropertyValue("wrapperClass", wrapperConfig.getWrapperClass());
+                    beanBuilder.addPropertyValue("logging", wrapperConfig.getLogging());
+                    beanBuilder.addPropertyReference("handler", handlerBeanName);
+                    beanBuilder.addPropertyValue("scope", wrapperConfig.getScope());
+                    beanDefinition = beanBuilder.getBeanDefinition();
+                    String wrapperConfigBeanName = nameGenerator.generateBeanName(beanDefinition, beanRegistry);
+                    beanRegistry.registerBeanDefinition(wrapperConfigBeanName, beanDefinition);
+                    wrapperMap.put(prefix, new RuntimeBeanReference(wrapperConfigBeanName));
+                }
+                
                 beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(StateConfigImpl.class);
                 beanBuilder.setScope("singleton");
                 @SuppressWarnings("unchecked")
@@ -144,7 +203,7 @@ public class PageRequestParsingHandler implements ParsingHandler {
                 beanBuilder.addPropertyValue("contextResources", contextResources);
                 beanBuilder.addPropertyValue("finalizer", stateConfig.getFinalizer());
                 beanBuilder.addPropertyValue("IWrapperPolicy", stateConfig.getIWrapperPolicy());
-                beanBuilder.addPropertyValue("IWrappers", stateConfig.getIWrappers());
+                beanBuilder.addPropertyValue("IWrappers", wrapperMap);
                 beanBuilder.addPropertyValue("processActions", stateConfig.getProcessActions());
                 beanBuilder.addPropertyValue("properties", stateConfig.getProperties());
                 beanBuilder.addPropertyValue("state", stateConfig.getState());

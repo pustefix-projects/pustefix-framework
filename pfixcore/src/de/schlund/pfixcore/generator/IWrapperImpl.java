@@ -59,8 +59,6 @@ public abstract class IWrapperImpl implements IWrapper {
     protected HashMap<String, IWrapperParam>     params   = null; // single static parameters (of the form PREFIX.NAME)
     protected HashMap<String, IWrapperParam>     errors   = null; // errors on single parameters
     protected HashMap<String, IWrapperIndexedParam>     idxprms  = null; // array like indexed parameters (of the form PREFIX.NAME.INDEX)
-    protected IHandler    handler  = null; // Make sure that you set the handler in the
-                                           // constructor of a derived class
     
     public void initLogging(FileResource logdir, String pagename, String visitid) {
         LOG.debug("*** Logging input for " + prefix + " into " + logdir + " " + pagename + " " + visitid + " ***");
@@ -148,15 +146,6 @@ public abstract class IWrapperImpl implements IWrapper {
     public final void loadFromStringValues() throws Exception {
     	for(IWrapperParam pinfo:params.values()) pinfo.initFromStringValue();
     	for(IWrapperIndexedParam pindex:idxprms.values()) pindex.initFromStringValue();
-    }
-    
-    public final IHandler gimmeIHandler() {
-        if (handler == null) {
-            throw new RuntimeException(
-                "ERROR: You need to define a IHandler for IWrapper "
-                    + this.getClass().getName());
-        }
-        return handler;
     }
 
     public final String gimmePrefix() {

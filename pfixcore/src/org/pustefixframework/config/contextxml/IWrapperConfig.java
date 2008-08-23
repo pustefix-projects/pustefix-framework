@@ -18,6 +18,7 @@
 
 package org.pustefixframework.config.contextxml;
 
+import de.schlund.pfixcore.generator.IHandler;
 import de.schlund.pfixcore.generator.IWrapper;
 
 
@@ -58,5 +59,20 @@ public interface IWrapperConfig {
      * @return flag indicating whether to enable logging
      */
     boolean getLogging();
-
+    
+    /**
+     * Returns the scope in which the corresponding handler should be
+     * instantiated.
+     * 
+     * @return Scope of the handler
+     */
+    String getScope();
+    
+    /**
+     * Return the handler associated with this wrapper.
+     * 
+     * @return matching handler
+     */
+    IHandler getHandler();
+    
 }

@@ -27,7 +27,6 @@ import org.pustefixframework.config.contextxml.IWrapperConfig;
 import org.pustefixframework.config.contextxml.StateConfig;
 
 import de.schlund.pfixcore.generator.IHandler;
-import de.schlund.pfixcore.generator.IHandlerFactory;
 import de.schlund.pfixcore.workflow.Context;
 import de.schlund.pfixxml.PfixServletRequest;
 import de.schlund.pfixxml.ResultDocument;
@@ -75,8 +74,7 @@ public class IHandlerContainerImpl implements IHandlerContainer {
         }
         
         for (IWrapperConfig iConfig : config.getIWrappers().values()) {
-            String wrapperclass = iConfig.getWrapperClass().getName();
-            IHandler handler = IHandlerFactory.getInstance().getIHandlerForWrapperClass(wrapperclass);
+            IHandler handler = iConfig.getHandler();
             handlers.add(handler);
             if (!iConfig.isActiveIgnore()) {
                 activeset.add(handler);

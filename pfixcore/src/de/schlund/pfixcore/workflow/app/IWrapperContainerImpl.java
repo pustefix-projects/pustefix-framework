@@ -20,6 +20,7 @@
 package de.schlund.pfixcore.workflow.app;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -68,6 +69,7 @@ public class IWrapperContainerImpl implements IWrapperContainer {
     private ResultDocument            resdoc           = null;
     private RequestData               reqdata          = null;
     private boolean                   is_loaded        = false;
+    private Map<String, IWrapperConfig> wrapperConfigs = new HashMap<String, IWrapperConfig>();
     private static final String       SUBMIT_WRAPPER   = "SUBWRP";
     private static final String       RETRIEVE_WRAPPER = "RETWRP";
     private static final String       SELECT_WRAPPER   = "SELWRP";
@@ -201,7 +203,8 @@ public class IWrapperContainerImpl implements IWrapperContainer {
         Element status = resdoc.createNode("wrapperstatus");
         for (Iterator<IWrapper> iter = allwrappers.iterator(); iter.hasNext();) {
             IWrapper wrapper = iter.next();
-            IHandler handler = wrapper.gimmeIHandler();
+            IWrapperConfig wrapperConfig = wrapperConfigs.get(wrapper.gimmePrefix());
+            IHandler handler = wrapperConfig.getHandler();
             Element wrap = resdoc.createSubNode(status, "wrapper");
             wrap.setAttribute("active", "" + handler.isActive(context));
             wrap.setAttribute("name", wrapper.getClass().getName());
@@ -224,7 +227,8 @@ public class IWrapperContainerImpl implements IWrapperContainer {
     public void handleSubmittedData() throws Exception {
         for (Iterator<IWrapper> iter = allwrappers.iterator(); iter.hasNext();) {
             IWrapper wrapper = iter.next();
-            IHandler handler = wrapper.gimmeIHandler();
+            IWrapperConfig wrapperConfig = wrapperConfigs.get(wrapper.gimmePrefix());
+            IHandler handler = wrapperConfig.getHandler();
             if (handler.isActive(context)) {
                 wrapper.load(reqdata);
                 if (allsubmit.contains(wrapper)) {
@@ -264,7 +268,8 @@ public class IWrapperContainerImpl implements IWrapperContainer {
         }
         for (; iter.hasNext();) {
             IWrapper wrapper = iter.next();
-            IHandler handler = wrapper.gimmeIHandler();
+            IWrapperConfig wrapperConfig = wrapperConfigs.get(wrapper.gimmePrefix());
+            IHandler handler = wrapperConfig.getHandler();
             if (handler.isActive(context)) {
                 handler.retrieveCurrentStatus(context, wrapper);
             }
@@ -310,6 +315,7 @@ public class IWrapperContainerImpl implements IWrapperContainer {
                 wrapper.defineOrder(order++);
 
                 wrappers.put(prefix, wrapper);
+                wrapperConfigs .put(prefix, iConfig);
                 wrapper.init(prefix);
 
                 allwrappers.add(wrapper);

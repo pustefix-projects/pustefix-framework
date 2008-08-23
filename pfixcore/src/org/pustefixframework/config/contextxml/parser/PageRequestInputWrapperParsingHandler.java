@@ -61,6 +61,11 @@ public class PageRequestInputWrapperParsingHandler implements ParsingHandler {
         }
         wrapperConfig.setWrapperClass(wrapperClass.asSubclass(IWrapper.class));
         
+        String scope = element.getAttribute("scope").trim();
+        if (scope.length() > 0) {
+            wrapperConfig.setScope(scope);
+        }
+        
         String activeignore = element.getAttribute("activeignore").trim();
         if (activeignore.length()>0) {
             wrapperConfig.setActiveIgnore(Boolean.parseBoolean(activeignore));

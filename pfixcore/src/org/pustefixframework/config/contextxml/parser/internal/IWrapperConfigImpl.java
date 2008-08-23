@@ -20,6 +20,7 @@ package org.pustefixframework.config.contextxml.parser.internal;
 
 import org.pustefixframework.config.contextxml.IWrapperConfig;
 
+import de.schlund.pfixcore.generator.IHandler;
 import de.schlund.pfixcore.generator.IWrapper;
 
 
@@ -34,6 +35,8 @@ public class IWrapperConfigImpl implements IWrapperConfig {
     private Class<? extends IWrapper> wrapperClass = null;
     private boolean activeIgnore = false;
     private boolean dologging = false;
+    private IHandler handler;
+    private String scope = "singleton";
     
     /* (non-Javadoc)
      * @see de.schlund.pfixxml.config.IWrapperConfig#getPrefix()
@@ -77,5 +80,21 @@ public class IWrapperConfigImpl implements IWrapperConfig {
      */
     public boolean getLogging() {
         return this.dologging;
+    }
+
+    public void setHandler(IHandler handler) {
+        this.handler = handler;
+    }
+    
+    public IHandler getHandler() {
+        return this.handler;
+    }
+    
+    public void setScope(String scope) {
+        this.scope = scope;
+    }
+    
+    public String getScope() {
+        return this.scope;
     }
 }
