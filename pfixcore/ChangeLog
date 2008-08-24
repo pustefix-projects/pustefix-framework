@@ -1,4 +1,20 @@
-2008-08-24  termi  <termi@terra>
+2008-08-24  Sebastian Marsching  <sebastian.marsching@1und1.de>
+
+	* projects/simpleform/conf/config.conf.xml: 
+	* projects/simplelink/conf/config.conf.xml: 
+	* projects/simplepage/conf/config.conf.xml: 
+	* projects/testsuite/conf/main.conf.xml: 
+	* projects/webservice/conf/project.xml.in: 
+	Changed configuration files to new format.
+
+	* res/META-INF/org/pustefixframework/config/context-xml-service/parser/context-xml-service-config.xml: 
+	Fixed handling of global properties elements.
+
+	* lib/flexiparse-0.0.1.jar: 
+	* lib/flexiparse-0.1.1.jar: 
+	Updated fleXiParse version.
+
+2008-08-24  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
 	* src/org/pustefixframework/config/contextxml/*: 
 	* src/org/pustefixframework/config/directoutputservice/parser/internal/DirectOutputServiceConfigImpl.java: 

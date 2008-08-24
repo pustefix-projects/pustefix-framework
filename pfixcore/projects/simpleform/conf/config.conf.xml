@@ -1,18 +1,10 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<contextxmlserver xmlns="http://pustefix.sourceforge.net/properties200401"
-  xmlns:cus="http://www.schlund.de/pustefix/customize" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://pustefix.sourceforge.net/properties200401 ../../core/schema/properties200401.xsd"
+<context-xml-service-config xmlns="http://www.pustefix-framework.org/2008/namespace/context-xml-service-config"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.pustefix-framework.org/2008/namespace/context-xml-service-config ../../core/schema/context-xml-service-config.xsd"
   version="1.0">
-  <!-- <servletinfo with the attributes "depend" and "name" is mandatory. -->
-  <!-- If depend starts with a '/' the value is used unchanged, otherwise  -->
-  <!-- (which is the usual case) it's interpreted as a path relative to the docroot. -->
-  <!-- The attribute name has to be a unique name for the servlet being generated. -->
-
-  <servletinfo depend="simpleform/conf/depend.xml" name="pfixcore_project:simpleform::servlet:config">
-    <editmode allow="true" />
-  </servletinfo>
   
-    <context defaultpage="home">
+  <context defaultpage="home">
     <resource class="de.skelexamples.ContextDemoTextImpl">
       <implements class="de.skelexamples.ContextDemoText" />
     </resource>
@@ -43,8 +35,5 @@
       <resource node="data" class="de.skelexamples.ContextDemoText" />
     </output>
   </pagerequest>
-
-
-
-
-</contextxmlserver>
+  
+</context-xml-service-config>

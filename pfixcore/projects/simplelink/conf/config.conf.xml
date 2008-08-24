@@ -1,27 +1,18 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<contextxmlserver xmlns="http://pustefix.sourceforge.net/properties200401"
-  xmlns:cus="http://www.schlund.de/pustefix/customize" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://pustefix.sourceforge.net/properties200401 ../../core/schema/properties200401.xsd"
+<context-xml-service-config xmlns="http://www.pustefix-framework.org/2008/namespace/context-xml-service-config"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.pustefix-framework.org/2008/namespace/context-xml-service-config ../../core/schema/context-xml-service-config.xsd"
   version="1.0">
-  <!-- <servletinfo with the attributes "depend" and "name" is mandatory. -->
-  <!-- If depend starts with a '/' the value is used unchanged, otherwise  -->
-  <!-- (which is the usual case) it's interpreted as a path relative to the docroot. -->
-  <!-- The attribute name has to be a unique name for the servlet being generated. -->
-
-  <servletinfo depend="simpleform/conf/depend.xml" name="pfixcore_project:simpleform::servlet:config">
-    <editmode allow="true" />
-  </servletinfo>
- 
- 
-  <context defaultpage="home">
+  
+  <context defaultpage="page_one">
     <resource class="de.skelexamples.ContextDemoTextImpl">
       <implements class="de.skelexamples.ContextDemoText" />
     </resource>
   </context>
 
   <pageflow name="flow">
-    <flowstep name="home" />
-    <flowstep name="output" />
+    <flowstep name="page_one" />
+    <flowstep name="page_two" />
   </pageflow>
 
   <!-- The class DemoText is described by the "interface" tag. -->
@@ -30,7 +21,7 @@
   <!-- DemoText.iwrp (you will find it in de/schlund/pfixcore/example/iwrapper) -->
   <!-- The handler being responsible for the action is also mentioned in the xml file.  -->
   <!-- A handler is a class dealing with the request sent by the user. -->
-  <pagerequest name="home">
+  <pagerequest name="page_one">
     <input>
       <wrapper prefix="demo" class="de.skelexamples.DemoText" />
     </input>
@@ -39,13 +30,10 @@
   <!-- Our aim is to give out the text received from our form on the output page. -->
   <!-- Therefore we need a relation to the resource and also the node  -->
   <!-- containing the output of the resource's status (the text entered earlier) -->
-  <pagerequest name="output">
+  <pagerequest name="page_two">
     <output>
       <resource node="data" class="de.skelexamples.ContextDemoText" />
     </output>
   </pagerequest>
-
-
-
-
-</contextxmlserver>
+  
+</context-xml-service-config>
