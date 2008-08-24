@@ -9,11 +9,11 @@
     <match>/c:properties//c:property</match>
   </handler> 
   
-  <handler id="org.pustefixframework.config.project.customization.WhenParsingHandler" class="org.pustefixframework.config.customization.CustomizationWhenParsingHandler">
+  <handler id="org.pustefixframework.config.customization.WhenParsingHandler" class="org.pustefixframework.config.customization.CustomizationWhenParsingHandler">
     <match>//c:choose/c:when</match>
   </handler>
   
-  <handler id="org.pustefixframework.config.project.customization.OtherwiseParsingHandler" class="org.pustefixframework.config.customization.CustomizationOtherwiseParsingHandler">
+  <handler id="org.pustefixframework.config.customization.OtherwiseParsingHandler" class="org.pustefixframework.config.customization.CustomizationOtherwiseParsingHandler">
     <match>//c:choose/c:otherwise</match>
   </handler>
   

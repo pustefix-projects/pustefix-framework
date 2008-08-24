@@ -16,9 +16,9 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
 import org.apache.log4j.Logger;
-import org.pustefixframework.config.contextxml.IWrapperConfig;
-import org.pustefixframework.config.contextxml.PageRequestConfig;
-import org.pustefixframework.config.contextxml.ProcessActionPageRequestConfig;
+import org.pustefixframework.config.contextxmlservice.IWrapperConfig;
+import org.pustefixframework.config.contextxmlservice.PageRequestConfig;
+import org.pustefixframework.config.contextxmlservice.ProcessActionPageRequestConfig;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;

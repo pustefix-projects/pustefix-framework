@@ -45,8 +45,8 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
 import org.apache.log4j.Logger;
-import org.pustefixframework.config.contextxml.AbstractXMLServletConfig;
-import org.pustefixframework.config.contextxml.ServletManagerConfig;
+import org.pustefixframework.config.contextxmlservice.AbstractXMLServletConfig;
+import org.pustefixframework.config.contextxmlservice.ServletManagerConfig;
 import org.pustefixframework.http.dereferer.DerefRequestHandler;
 import org.w3c.dom.Document;
 

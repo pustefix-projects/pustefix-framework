@@ -19,7 +19,7 @@
 
 package de.schlund.pfixxml;
 
-import org.pustefixframework.config.contextxml.ContextConfig;
+import org.pustefixframework.config.contextxmlservice.ContextConfig;
 
 /**
  *

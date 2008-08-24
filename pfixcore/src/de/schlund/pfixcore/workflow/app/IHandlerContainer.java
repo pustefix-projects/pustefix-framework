@@ -18,7 +18,7 @@
  */
 package de.schlund.pfixcore.workflow.app;
 
-import org.pustefixframework.config.contextxml.StateConfig;
+import org.pustefixframework.config.contextxmlservice.StateConfig;
 
 import de.schlund.pfixcore.generator.IHandler;
 import de.schlund.pfixcore.workflow.Context;

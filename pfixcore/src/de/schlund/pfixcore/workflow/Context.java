@@ -22,7 +22,7 @@ import java.util.Properties;
 
 import javax.servlet.http.Cookie;
 
-import org.pustefixframework.config.contextxml.ContextConfig;
+import org.pustefixframework.config.contextxmlservice.ContextConfig;
 
 import de.schlund.pfixcore.auth.Authentication;
 import de.schlund.pfixcore.exception.PustefixApplicationException;

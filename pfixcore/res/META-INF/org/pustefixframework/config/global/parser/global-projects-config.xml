@@ -10,12 +10,12 @@
   </handler>
   
   
-  <handler id="org.pustefixframework.config.project.customization.WhenParsingHandler" class="org.pustefixframework.config.customization.CustomizationWhenParsingHandler">
+  <handler id="org.pustefixframework.config.customization.WhenParsingHandler" class="org.pustefixframework.config.customization.CustomizationWhenParsingHandler">
     <match>/p:project-config/p:application/p:choose/p:when</match>
     <match>/p:project-config/p:xml-generator/p:choose/p:when</match>
   </handler>
   
-  <handler id="org.pustefixframework.config.project.customization.OtherwiseParsingHandler" class="org.pustefixframework.config.customization.CustomizationOtherwiseParsingHandler">
+  <handler id="org.pustefixframework.config.customization.OtherwiseParsingHandler" class="org.pustefixframework.config.customization.CustomizationOtherwiseParsingHandler">
     <match>/p:project-config/p:application/p:choose/p:otherwise</match>
     <match>/p:project-config/p:xml-generator/p:choose/p:otherwise</match>
   </handler>

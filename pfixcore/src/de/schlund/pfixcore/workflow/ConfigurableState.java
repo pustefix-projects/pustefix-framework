@@ -18,7 +18,7 @@
 
 package de.schlund.pfixcore.workflow;
 
-import org.pustefixframework.config.contextxml.StateConfig;
+import org.pustefixframework.config.contextxmlservice.StateConfig;
 
 public interface ConfigurableState extends State {
     /**

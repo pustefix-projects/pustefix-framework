@@ -1,3 +1,17 @@
+2008-08-24  termi  <termi@terra>
+
+	* src/org/pustefixframework/config/contextxml/*: 
+	* src/org/pustefixframework/config/directoutputservice/parser/internal/DirectOutputServiceConfigImpl.java: 
+	* src/org/pustefixframework/config/directoutputservice/DirectOutputServiceConfig.java: 
+	* src/org/pustefixframework/config/project/parser/spring/*: 
+	* res/META-INF/org/pustefixframework/config/context-xml-service/parser/context-xml-service-config.xml: 
+	* res/META-INF/org/pustefixframework/config/direct-output-service/parser/direct-output-service-config.xml: 
+	* res/META-INF/org/pustefixframework/config/generic/properties-config.xml: 
+	* res/META-INF/org/pustefixframework/config/global/parser/global-projects-config.xml: 
+	* res/META-INF/org/pustefixframework/config/project/parser/project-config.xml: 
+	Unified naming scheme for configuration XML namespaces and 
+	java packages.
+
 2008-08-23  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
 	* src/de/schlund/pfixcore/generator/IHandlerFactory.java: 

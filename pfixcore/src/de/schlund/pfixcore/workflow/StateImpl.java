@@ -20,7 +20,7 @@
 package de.schlund.pfixcore.workflow;
 
 import org.apache.log4j.Logger;
-import org.pustefixframework.config.contextxml.StateConfig;
+import org.pustefixframework.config.contextxmlservice.StateConfig;
 
 import de.schlund.pfixcore.util.StateUtil;
 import de.schlund.pfixxml.PfixServletRequest;

@@ -27,7 +27,7 @@ import org.apache.bsf.BSFEngine;
 import org.apache.bsf.BSFException;
 import org.apache.bsf.BSFManager;
 import org.apache.log4j.Logger;
-import org.pustefixframework.config.contextxml.StateConfig;
+import org.pustefixframework.config.contextxmlservice.StateConfig;
 
 import de.schlund.pfixcore.workflow.ConfigurableState;
 import de.schlund.pfixcore.workflow.Context;

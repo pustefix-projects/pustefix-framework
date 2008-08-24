@@ -29,9 +29,9 @@ import java.util.Properties;
 import javax.xml.transform.TransformerException;
 
 import org.apache.log4j.Logger;
-import org.pustefixframework.config.contextxml.PageFlowStepActionConditionConfig;
-import org.pustefixframework.config.contextxml.PageFlowStepActionConfig;
-import org.pustefixframework.config.contextxml.PageFlowStepConfig;
+import org.pustefixframework.config.contextxmlservice.PageFlowStepActionConditionConfig;
+import org.pustefixframework.config.contextxmlservice.PageFlowStepActionConfig;
+import org.pustefixframework.config.contextxmlservice.PageFlowStepConfig;
 import org.w3c.dom.Document;
 
 import de.schlund.pfixcore.exception.PustefixApplicationException;

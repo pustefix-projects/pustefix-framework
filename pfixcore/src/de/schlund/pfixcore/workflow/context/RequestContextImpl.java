@@ -31,11 +31,11 @@ import java.util.Set;
 import javax.servlet.http.Cookie;
 
 import org.apache.log4j.Logger;
-import org.pustefixframework.config.contextxml.IWrapperConfig;
-import org.pustefixframework.config.contextxml.PageRequestConfig;
-import org.pustefixframework.config.contextxml.ProcessActionPageRequestConfig;
-import org.pustefixframework.config.contextxml.ProcessActionStateConfig;
-import org.pustefixframework.config.contextxml.StateConfig;
+import org.pustefixframework.config.contextxmlservice.IWrapperConfig;
+import org.pustefixframework.config.contextxmlservice.PageRequestConfig;
+import org.pustefixframework.config.contextxmlservice.ProcessActionPageRequestConfig;
+import org.pustefixframework.config.contextxmlservice.ProcessActionStateConfig;
+import org.pustefixframework.config.contextxmlservice.StateConfig;
 import org.pustefixframework.http.AbstractPustefixRequestHandler;
 import org.pustefixframework.http.PustefixContextXMLRequestHandler;
 import org.w3c.dom.Document;

@@ -23,8 +23,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.apache.log4j.Logger;
-import org.pustefixframework.config.contextxml.PageFlowConfig;
-import org.pustefixframework.config.contextxml.PageFlowStepConfig;
+import org.pustefixframework.config.contextxmlservice.PageFlowConfig;
+import org.pustefixframework.config.contextxmlservice.PageFlowStepConfig;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 

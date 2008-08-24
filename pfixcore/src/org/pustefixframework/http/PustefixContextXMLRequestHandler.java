@@ -27,9 +27,9 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
-import org.pustefixframework.config.contextxml.AbstractXMLServletConfig;
-import org.pustefixframework.config.contextxml.ContextXMLServletConfig;
-import org.pustefixframework.config.contextxml.PageRequestConfig;
+import org.pustefixframework.config.contextxmlservice.AbstractXMLServletConfig;
+import org.pustefixframework.config.contextxmlservice.ContextXMLServletConfig;
+import org.pustefixframework.config.contextxmlservice.PageRequestConfig;
 import org.springframework.beans.factory.BeanNameAware;
 
 import de.schlund.pfixcore.exception.PustefixApplicationException;

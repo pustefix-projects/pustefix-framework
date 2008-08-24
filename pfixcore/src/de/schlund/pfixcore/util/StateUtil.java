@@ -28,7 +28,7 @@ import java.util.Properties;
 import net.sf.cglib.proxy.Enhancer;
 
 import org.apache.log4j.Logger;
-import org.pustefixframework.config.contextxml.StateConfig;
+import org.pustefixframework.config.contextxmlservice.StateConfig;
 import org.w3c.dom.Element;
 
 import de.schlund.pfixcore.beans.InsertStatus;

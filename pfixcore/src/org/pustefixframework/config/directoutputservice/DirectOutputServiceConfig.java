@@ -20,7 +20,7 @@ package org.pustefixframework.config.directoutputservice;
 
 import java.util.List;
 
-import org.pustefixframework.config.contextxml.ServletManagerConfig;
+import org.pustefixframework.config.contextxmlservice.ServletManagerConfig;
 
 
 /**

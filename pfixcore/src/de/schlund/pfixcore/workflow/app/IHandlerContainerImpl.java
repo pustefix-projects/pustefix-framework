@@ -23,8 +23,8 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Properties;
 
-import org.pustefixframework.config.contextxml.IWrapperConfig;
-import org.pustefixframework.config.contextxml.StateConfig;
+import org.pustefixframework.config.contextxmlservice.IWrapperConfig;
+import org.pustefixframework.config.contextxmlservice.StateConfig;
 
 import de.schlund.pfixcore.generator.IHandler;
 import de.schlund.pfixcore.workflow.Context;

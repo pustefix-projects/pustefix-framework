@@ -21,7 +21,7 @@ package de.schlund.pfixcore.workflow.app;
 import java.util.HashMap;
 import java.util.Properties;
 
-import org.pustefixframework.config.contextxml.StateConfig;
+import org.pustefixframework.config.contextxmlservice.StateConfig;
 
 import de.schlund.pfixcore.workflow.Context;
 import de.schlund.pfixcore.workflow.PageRequest;

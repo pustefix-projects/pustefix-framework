@@ -28,8 +28,8 @@ import java.util.Set;
 import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
-import org.pustefixframework.config.contextxml.SSLOption;
-import org.pustefixframework.config.contextxml.parser.internal.ServletManagerConfigImpl;
+import org.pustefixframework.config.contextxmlservice.SSLOption;
+import org.pustefixframework.config.contextxmlservice.parser.internal.ServletManagerConfigImpl;
 import org.pustefixframework.config.directoutputservice.DirectOutputPageRequestConfig;
 import org.pustefixframework.config.directoutputservice.DirectOutputServiceConfig;
 

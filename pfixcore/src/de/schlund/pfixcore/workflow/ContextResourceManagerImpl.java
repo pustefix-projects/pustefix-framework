@@ -25,8 +25,8 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.pustefixframework.config.contextxml.ContextConfig;
-import org.pustefixframework.config.contextxml.ContextResourceConfig;
+import org.pustefixframework.config.contextxmlservice.ContextConfig;
+import org.pustefixframework.config.contextxmlservice.ContextResourceConfig;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;

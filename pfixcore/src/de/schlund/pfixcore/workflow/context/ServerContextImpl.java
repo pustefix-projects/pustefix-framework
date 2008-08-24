@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Properties;
 
-import org.pustefixframework.config.contextxml.ContextConfig;
+import org.pustefixframework.config.contextxmlservice.ContextConfig;
 
 import de.schlund.pfixcore.workflow.ContextInterceptor;
 import de.schlund.pfixcore.workflow.ContextInterceptorFactory;

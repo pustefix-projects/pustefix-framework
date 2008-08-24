@@ -29,9 +29,9 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
-import org.pustefixframework.config.contextxml.IWrapperConfig;
-import org.pustefixframework.config.contextxml.ProcessActionStateConfig;
-import org.pustefixframework.config.contextxml.StateConfig;
+import org.pustefixframework.config.contextxmlservice.IWrapperConfig;
+import org.pustefixframework.config.contextxmlservice.ProcessActionStateConfig;
+import org.pustefixframework.config.contextxmlservice.StateConfig;
 import org.w3c.dom.Element;
 
 import de.schlund.pfixcore.exception.PustefixApplicationException;

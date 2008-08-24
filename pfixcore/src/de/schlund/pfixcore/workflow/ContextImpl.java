@@ -25,8 +25,8 @@ import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpSessionBindingEvent;
 import javax.servlet.http.HttpSessionBindingListener;
 
-import org.pustefixframework.config.contextxml.ContextConfig;
-import org.pustefixframework.config.contextxml.PageRequestConfig;
+import org.pustefixframework.config.contextxmlservice.ContextConfig;
+import org.pustefixframework.config.contextxmlservice.PageRequestConfig;
 
 import de.schlund.pfixcore.auth.Authentication;
 import de.schlund.pfixcore.exception.PustefixApplicationException;

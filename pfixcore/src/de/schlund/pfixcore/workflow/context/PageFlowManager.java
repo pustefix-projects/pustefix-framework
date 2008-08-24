@@ -26,9 +26,9 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
-import org.pustefixframework.config.contextxml.ContextConfig;
-import org.pustefixframework.config.contextxml.PageFlowConfig;
-import org.pustefixframework.config.contextxml.PageFlowStepConfig;
+import org.pustefixframework.config.contextxmlservice.ContextConfig;
+import org.pustefixframework.config.contextxmlservice.PageFlowConfig;
+import org.pustefixframework.config.contextxmlservice.PageFlowStepConfig;
 
 import de.schlund.pfixcore.workflow.PageRequest;
 import de.schlund.pfixcore.workflow.VariantManager;

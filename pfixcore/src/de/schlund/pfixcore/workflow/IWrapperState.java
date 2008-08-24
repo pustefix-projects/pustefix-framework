@@ -20,7 +20,7 @@ package de.schlund.pfixcore.workflow;
 
 import java.util.Map;
 
-import org.pustefixframework.config.contextxml.IWrapperConfig;
+import org.pustefixframework.config.contextxmlservice.IWrapperConfig;
 
 
 public interface IWrapperState extends State {
