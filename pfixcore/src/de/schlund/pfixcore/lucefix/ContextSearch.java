@@ -31,23 +31,29 @@ import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.Hits;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
+import org.pustefixframework.container.annotations.Inject;
 import org.w3c.dom.Element;
 
 import de.schlund.pfixcore.beans.InitResource;
 import de.schlund.pfixcore.beans.InsertStatus;
 import de.schlund.pfixcore.editor2.core.dom.Project;
 import de.schlund.pfixcore.editor2.frontend.resources.ProjectsResource;
-import de.schlund.pfixcore.editor2.frontend.util.EditorResourceLocator;
 import de.schlund.pfixcore.workflow.Context;
 
 public class ContextSearch {
 
+    private ProjectsResource projectsResource;
+
     private final static PerFieldAnalyzerWrapper analyzer = PreDoc.ANALYZER;
 
-    private Context                              context;
     private Query                                lastQuery;
     private Hit[]                                hits;
     String                                       content, tags, attribkey, attribvalue, comments;
+
+    @Inject
+    public void setProjectsResource(ProjectsResource projectsResource) {
+        this.projectsResource = projectsResource;
+    }
 
     public void resetData() {
         content = null;
@@ -111,12 +117,11 @@ public class ContextSearch {
 
     @InitResource
     public void init(Context context) throws Exception {
-        this.context = context;
         resetData();
     }
 
     private void transformHits(Hits hits) throws IOException {
-        ProjectsResource pcon = EditorResourceLocator.getProjectsResource(context);
+        ProjectsResource pcon = projectsResource;
         Project currentProject = pcon.getSelectedProject();
 
         Document doc;

@@ -18,13 +18,19 @@
 
 package de.schlund.pfixcore.editor2.core.spring;
 
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Properties;
 
 import org.apache.log4j.Logger;
+import org.pustefixframework.config.generic.PropertyFileReader;
+
+import com.marsching.flexiparse.parser.exception.ParserException;
 
 import de.schlund.pfixcore.lucefix.PfixReadjustment;
+import de.schlund.pfixxml.resources.ResourceUtil;
 import de.schlund.pfixxml.targets.Target;
 import de.schlund.pfixxml.targets.TargetGenerationException;
 import de.schlund.pfixxml.targets.TargetGenerator;
@@ -82,7 +88,24 @@ public class PustefixTargetUpdateServiceImpl implements
             this.lock.notifyAll();
         }
     }
-
+    
+    private void checkAutoUpdating() {
+        Properties properties = new Properties();
+        try {
+            PropertyFileReader.read(ResourceUtil.getFileResourceFromDocroot("common/conf/factory.xml"), properties);
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException("Error while reading common/conf/factory.xml", e);
+        } catch (ParserException e) {
+            throw new RuntimeException("Error while reading common/conf/factory.xml", e);
+        }
+        String generatorProp = properties.getProperty("de.schlund.pfixcore.editor2.updatetargets");
+        boolean generatorFlag = false;
+        if (generatorProp == null || generatorProp.equals("1") || generatorProp.equalsIgnoreCase("true")) {
+            generatorFlag = true;
+        }
+        enableAutoUpdating(generatorFlag);
+    }
+    
     public void setStartupDelay(long delay) {
         this.startupDelay = delay;
     }
@@ -113,6 +136,7 @@ public class PustefixTargetUpdateServiceImpl implements
     }
 
     public void init() {
+        checkAutoUpdating();
         Thread thread = new Thread(this, "pustefix-target-update");
         thread.setPriority(Thread.MIN_PRIORITY);
         thread.setDaemon(true);

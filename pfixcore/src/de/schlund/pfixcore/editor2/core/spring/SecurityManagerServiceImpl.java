@@ -33,28 +33,20 @@ import de.schlund.pfixcore.editor2.core.exception.EditorUserNotExistingException
 import de.schlund.pfixcore.editor2.core.vo.EditorUser;
 
 public class SecurityManagerServiceImpl implements SecurityManagerService {
-    private SessionService session;
+    private Principal principal;
 
     private UserManagementService usermanagement;
-
-    private final static String PRINCIPAL_KEY = SecurityManagerServiceImpl.class
-            .getName()
-            + ".principal";
-
-    public void setSessionService(SessionService session) {
-        this.session = session;
-    }
 
     public void setUserManagementService(UserManagementService usermanagement) {
         this.usermanagement = usermanagement;
     }
 
     public void setPrincipal(Principal principal) {
-        this.session.set(PRINCIPAL_KEY, principal);
+        this.principal = principal;
     }
 
     public Principal getPrincipal() {
-        return (Principal) this.session.get(PRINCIPAL_KEY);
+        return this.principal;
     }
 
     public boolean mayEditIncludePartThemeVariant(IncludePartThemeVariant part) {

@@ -18,10 +18,11 @@
 
 package de.schlund.pfixcore.editor2.frontend.handlers;
 
+import org.pustefixframework.container.annotations.Inject;
 import org.pustefixframework.editor.EditorStatusCodes;
 
 import de.schlund.pfixcore.editor2.frontend.resources.CommonIncludesResource;
-import de.schlund.pfixcore.editor2.frontend.util.EditorResourceLocator;
+import de.schlund.pfixcore.editor2.frontend.resources.ProjectsResource;
 import de.schlund.pfixcore.editor2.frontend.wrappers.CommonSelectIncludePart;
 import de.schlund.pfixcore.generator.IHandler;
 import de.schlund.pfixcore.generator.IWrapper;
@@ -33,7 +34,8 @@ import de.schlund.pfixcore.workflow.Context;
  * @author Sebastian Marsching <sebastian.marsching@1und1.de>
  */
 public abstract class CommonSelectIncludePartHandler implements IHandler {
-
+    private ProjectsResource projectsResource;
+    
     protected abstract CommonIncludesResource getResource(Context context);
 
     public void handleSubmittedData(Context context, IWrapper wrapper)
@@ -52,8 +54,7 @@ public abstract class CommonSelectIncludePartHandler implements IHandler {
 
     public boolean prerequisitesMet(Context context) throws Exception {
         // Allow only if project is selected
-        return (EditorResourceLocator.getProjectsResource(context)
-                .getSelectedProject() != null);
+        return (projectsResource.getSelectedProject() != null);
     }
 
     public boolean isActive(Context context) throws Exception {
@@ -64,6 +65,11 @@ public abstract class CommonSelectIncludePartHandler implements IHandler {
     public boolean needsData(Context context) throws Exception {
         // Always ask to select image
         return true;
+    }
+
+    @Inject
+    public void setProjectsResource(ProjectsResource projectsResource) {
+        this.projectsResource = projectsResource;
     }
 
 }

@@ -123,7 +123,7 @@ public class ProjectImpl extends AbstractProject {
         this.imagefactory = imagefactory;
         this.targetfactory = targetfactory;
 
-        this.dependPath = ResourceUtil.getFileResourceFromDocroot(dependFile);
+        this.dependPath = ResourceUtil.getFileResource(dependFile);
 
         TargetGenerator gen;
         try {

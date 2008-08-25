@@ -18,9 +18,10 @@
 
 package de.schlund.pfixcore.editor2.frontend.handlers;
 
+import org.pustefixframework.container.annotations.Inject;
 import org.pustefixframework.editor.EditorStatusCodes;
 
-import de.schlund.pfixcore.editor2.frontend.util.EditorResourceLocator;
+import de.schlund.pfixcore.editor2.frontend.resources.ProjectsResource;
 import de.schlund.pfixcore.editor2.frontend.wrappers.SelectProject;
 import de.schlund.pfixcore.generator.IHandler;
 import de.schlund.pfixcore.generator.IWrapper;
@@ -33,9 +34,11 @@ import de.schlund.pfixcore.workflow.Context;
  */
 public class SelectProjectHandler implements IHandler {
 
+    private ProjectsResource projectsResource;
+    
     public void handleSubmittedData(Context context, IWrapper wrapper) throws Exception {
         SelectProject input = (SelectProject) wrapper;
-        if (!EditorResourceLocator.getProjectsResource(context).selectProject(input.getProjectName())) {
+        if (!projectsResource.selectProject(input.getProjectName())) {
             input.addSCodeProjectName(EditorStatusCodes.PRODUCTSELECT_UNKNOWN_PRODUCT);
         }
     }
@@ -56,7 +59,12 @@ public class SelectProjectHandler implements IHandler {
 
     public boolean needsData(Context context) throws Exception {
         // Ask for project, if none is selected
-        return (EditorResourceLocator.getProjectsResource(context).getSelectedProject() == null);
+        return (projectsResource.getSelectedProject() == null);
+    }
+
+    @Inject
+    public void setProjectsResource(ProjectsResource projectsResource) {
+        this.projectsResource = projectsResource;
     }
 
 }

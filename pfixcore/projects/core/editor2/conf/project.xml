@@ -4,10 +4,15 @@
   <project>
     <name>editor2</name>
     <description>Pustefix CMS</description>
+    <choose>
+      <when test="$makemode = 'prod'">
+        <enabled>false</enabled>
+      </when>
+    </choose>
   </project>
   
   <editor>
-    <enabled>false</enabled> <!-- Do we really need this? -->
+    <enabled>false</enabled>
     <location>http://cms.${fqdn}/</location>
   </editor>
   
@@ -57,7 +62,7 @@
     
     <context-xml-service>
       <path>/xml/edit</path>
-      <config-file>pfixroot:/sample1/conf/edit.conf.xml</config-file>
+      <config-file>pfixroot:/core/editor2/conf/edit.conf.xml</config-file>
     </context-xml-service>
     
     <static>

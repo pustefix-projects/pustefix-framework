@@ -28,6 +28,7 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import org.pustefixframework.container.annotations.Inject;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -47,17 +48,28 @@ import de.schlund.pfixcore.editor2.core.exception.EditorIOException;
 import de.schlund.pfixcore.editor2.core.exception.EditorIncludeHasChangedException;
 import de.schlund.pfixcore.editor2.core.exception.EditorParsingException;
 import de.schlund.pfixcore.editor2.core.exception.EditorSecurityException;
+import de.schlund.pfixcore.editor2.core.spring.BackupService;
+import de.schlund.pfixcore.editor2.core.spring.ConfigurationService;
 import de.schlund.pfixcore.editor2.frontend.util.ContextStore;
 import de.schlund.pfixcore.editor2.frontend.util.DiffUtil;
 import de.schlund.pfixcore.editor2.frontend.util.EditorResourceLocator;
-import de.schlund.pfixcore.editor2.frontend.util.SpringBeanLocator;
 import de.schlund.pfixcore.editor2.frontend.util.DiffUtil.ComparedLine;
 import de.schlund.pfixcore.workflow.Context;
 import de.schlund.pfixxml.ResultDocument;
 import de.schlund.pfixxml.util.Xml;
 
 public abstract class CommonIncludesResource {
-
+    
+    private ConfigurationService configuration;
+    
+    private ProjectsResource projectsResource;
+    
+    private IncludesResource includesResource;
+    
+    private SessionResource sessionResource;
+    
+    private BackupService backup;
+    
     private Context                 context;
 
     private IncludePartThemeVariant selectedIncludePart;
@@ -92,7 +104,7 @@ public abstract class CommonIncludesResource {
     @InsertStatus
     public void insertStatus(ResultDocument resdoc, Element elem) throws Exception {
         // System.out.println("In IS");
-        Project project = EditorResourceLocator.getProjectsResource(context).getSelectedProject();
+        Project project = projectsResource.getSelectedProject();
         if (project != null) {
             this.renderAllIncludes(resdoc, elem, project);
         }
@@ -123,7 +135,7 @@ public abstract class CommonIncludesResource {
             }
 
             // Render backups
-            Collection<String> backups = SpringBeanLocator.getBackupService().listIncludeVersions(this.selectedIncludePart);
+            Collection<String> backups = backup.listIncludeVersions(this.selectedIncludePart);
             if (!backups.isEmpty()) {
                 Element backupsNode = resdoc.createSubNode(currentInclude, "backups");
                 for (Iterator<String> i = backups.iterator(); i.hasNext();) {
@@ -241,7 +253,7 @@ public abstract class CommonIncludesResource {
     }
 
     public boolean selectIncludePart(String path, String part, String theme) {
-        Project project = EditorResourceLocator.getProjectsResource(context).getSelectedProject();
+        Project project = projectsResource.getSelectedProject();
         if (project == null) {
             return false;
         }
@@ -277,7 +289,7 @@ public abstract class CommonIncludesResource {
         }
 
         try {
-            if (SpringBeanLocator.getBackupService().restoreInclude(this.selectedIncludePart, version)) {
+            if (backup.restoreInclude(this.selectedIncludePart, version)) {
                 return 0;
             } else {
                 return 1;
@@ -318,7 +330,7 @@ public abstract class CommonIncludesResource {
 
         // Make sure xmlns declarations are present in top-level element
         if (xml instanceof Element) {
-            Map<String, String> xmlnsMappings = SpringBeanLocator.getConfigurationService().getPrefixToNamespaceMappings();
+            Map<String, String> xmlnsMappings = configuration.getPrefixToNamespaceMappings();
             Element elem = (Element) xml;
             for (Iterator<String> i = xmlnsMappings.keySet().iterator(); i.hasNext();) {
                 String prefix = i.next();
@@ -382,7 +394,7 @@ public abstract class CommonIncludesResource {
         xmlcode.append("<part");
 
         // Add predefined prefixes
-        Map<String, String> xmlnsMappings = SpringBeanLocator.getConfigurationService().getPrefixToNamespaceMappings();
+        Map<String, String> xmlnsMappings = configuration.getPrefixToNamespaceMappings();
         for (Iterator<String> i = xmlnsMappings.keySet().iterator(); i.hasNext();) {
             String prefix = i.next();
             String url = xmlnsMappings.get(prefix);
@@ -403,7 +415,7 @@ public abstract class CommonIncludesResource {
 
     public boolean createAndSelectBranch(String themeName) throws EditorIOException, EditorParsingException, EditorSecurityException {
         Theme theme = null;
-        for (Iterator<Theme> i = this.getPossibleThemes(this.selectedIncludePart, EditorResourceLocator.getProjectsResource(context).getSelectedProject(),
+        for (Iterator<Theme> i = this.getPossibleThemes(this.selectedIncludePart, projectsResource.getSelectedProject(),
                 this.selectedIncludePart.getAffectedPages()).iterator(); i.hasNext();) {
             Theme theme2 = i.next();
             if (theme2.getName().equals(themeName)) {
@@ -478,7 +490,7 @@ public abstract class CommonIncludesResource {
      * @see de.schlund.pfixcore.editor2.frontend.resources.CommonIncludesResource#openDirectoryTree(java.lang.String)
      */
     public SortedSet<IncludeFile> openDirectoryTree(String name) {
-        SortedSet<IncludeFile> files = new TreeSet<IncludeFile>(this.getIncludeFilesInDirectory(name, EditorResourceLocator.getProjectsResource(context).getSelectedProject()));
+        SortedSet<IncludeFile> files = new TreeSet<IncludeFile>(this.getIncludeFilesInDirectory(name, projectsResource.getSelectedProject()));
         openDirectories.add(name);
         return files;
     }
@@ -496,8 +508,7 @@ public abstract class CommonIncludesResource {
             this.openDirectoryTree("/");
         }
 
-        TreeSet<IncludePartThemeVariant> parts = new TreeSet<IncludePartThemeVariant>(this.getIncludePartsInFile(name, EditorResourceLocator.getProjectsResource(context)
-                .getSelectedProject()));
+        TreeSet<IncludePartThemeVariant> parts = new TreeSet<IncludePartThemeVariant>(this.getIncludePartsInFile(name, projectsResource.getSelectedProject()));
         openFiles.add(name);
         return parts;
     }
@@ -604,5 +615,30 @@ public abstract class CommonIncludesResource {
         }
 
         return output.toString();
+    }
+    
+    @Inject
+    public void setConfigurationService(ConfigurationService configuration) {
+        this.configuration = configuration;
+    }
+    
+    @Inject
+    public void setBackupService(BackupService backup) {
+        this.backup = backup;
+    }
+
+    @Inject
+    public void setProjectsResource(ProjectsResource projectsResource) {
+        this.projectsResource = projectsResource;
+    }
+
+    @Inject
+    public void setIncludesResource(IncludesResource includesResource) {
+        this.includesResource = includesResource;
+    }
+
+    @Inject
+    public void setSessionResource(SessionResource sessionResource) {
+        this.sessionResource = sessionResource;
     }
 }

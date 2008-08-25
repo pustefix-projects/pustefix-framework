@@ -25,10 +25,24 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.HashMap;
 
+import javax.xml.transform.Result;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMResult;
+import javax.xml.transform.sax.SAXTransformerFactory;
+import javax.xml.transform.sax.TransformerHandler;
+
 import org.w3c.dom.Document;
+import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
+import org.xml.sax.XMLReader;
+import org.xml.sax.helpers.DefaultHandler;
+import org.xml.sax.helpers.XMLReaderFactory;
 
 import de.schlund.pfixcore.editor2.core.exception.EditorIOException;
+import de.schlund.pfixxml.config.CustomizationHandler;
+import de.schlund.pfixxml.util.TransformerHandlerAdapter;
 import de.schlund.pfixxml.util.Xml;
 
 /**
@@ -64,6 +78,17 @@ public class FileSystemServiceImpl implements FileSystemService {
          * FileInputStream(file));
          */
         return Xml.parseMutable(file);
+    }
+    
+    public Document readCustomizedXMLDocumentFromFile(File file, String namespace)
+            throws FileNotFoundException, SAXException, IOException {
+        DOMResult result = new DOMResult();
+        try {
+            customize(file, result, namespace);
+        } catch (TransformerException e) {
+            throw new SAXException(e);
+        }
+        return result.getNode().getOwnerDocument();
     }
 
     public void storeXMLDocumentToFile(File file, Document document)
@@ -110,5 +135,46 @@ public class FileSystemServiceImpl implements FileSystemService {
             throw new EditorIOException(err, e);
         }
     }
+    
+    private static void customize(File input, Result result, String namespace) throws FileNotFoundException, TransformerException {
+        XMLReader xreader;
+        try {
+            xreader = XMLReaderFactory.createXMLReader();
+        } catch (SAXException e) {
+            throw new RuntimeException("Could not create XMLReader", e);
+        }
+        TransformerFactory tf = TransformerFactory.newInstance();
+        if (tf.getFeature(SAXTransformerFactory.FEATURE)) {
+            SAXTransformerFactory stf = (SAXTransformerFactory) tf;
+            TransformerHandler th;
+            try {
+                th = stf.newTransformerHandler();
+            } catch (TransformerConfigurationException e) {
+                throw new RuntimeException("Failed to configure TransformerFactory!", e);
+            }
+
+            th.setResult(result);
+            DefaultHandler dh = new TransformerHandlerAdapter(th);
+            DefaultHandler cushandler = new CustomizationHandler(dh, namespace);
+            xreader.setContentHandler(cushandler);
+            xreader.setDTDHandler(cushandler);
+            xreader.setErrorHandler(cushandler);
+            xreader.setEntityResolver(cushandler);
+
+            try {
+                xreader.parse(new InputSource(new FileInputStream(input)));
+            } catch (FileNotFoundException e) {
+                throw e;
+            } catch (IOException e) {
+                throw new TransformerException(e);
+            } catch (SAXException e) {
+                throw new TransformerException(e);
+            }
+        } else {
+            throw new RuntimeException("Could not get instance of SAXTransformerFactory!");
+        }
+
+    }
+
 
 }

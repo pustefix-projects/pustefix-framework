@@ -18,17 +18,17 @@
 
 package de.schlund.pfixcore.editor2.frontend.handlers;
 
-import java.util.Iterator;
-
 import org.pustefixframework.CoreStatusCodes;
+import org.pustefixframework.container.annotations.Inject;
 import org.pustefixframework.editor.EditorStatusCodes;
 
 import de.schlund.pfixcore.editor2.core.dom.Project;
+import de.schlund.pfixcore.editor2.core.spring.ProjectFactoryService;
 import de.schlund.pfixcore.editor2.core.vo.EditorGlobalPermissions;
 import de.schlund.pfixcore.editor2.core.vo.EditorProjectPermissions;
 import de.schlund.pfixcore.editor2.core.vo.EditorUser;
+import de.schlund.pfixcore.editor2.frontend.resources.UsersResource;
 import de.schlund.pfixcore.editor2.frontend.util.EditorResourceLocator;
-import de.schlund.pfixcore.editor2.frontend.util.SpringBeanLocator;
 import de.schlund.pfixcore.editor2.frontend.wrappers.EditUser;
 import de.schlund.pfixcore.generator.IHandler;
 import de.schlund.pfixcore.generator.IWrapper;
@@ -41,6 +41,9 @@ import de.schlund.pfixcore.workflow.Context;
  * @author Sebastian Marsching <sebastian.marsching@1und1.de>
  */
 public class EditUserHandler implements IHandler {
+    private ProjectFactoryService projectfactory;
+    
+    private UsersResource usersResource;
 
     public void handleSubmittedData(Context context, IWrapper wrapper)
             throws Exception {
@@ -60,8 +63,7 @@ public class EditUserHandler implements IHandler {
         if (phone == null) {
             input.addSCodePhone(CoreStatusCodes.MISSING_PARAM);
         }
-        EditorUser user = EditorResourceLocator.getUsersResource(context)
-                .getSelectedUser();
+        EditorUser user = usersResource.getSelectedUser();
         if (name != null && section != null && phone != null) {
             String pwd = input.getPassword();
             if (pwd != null) {
@@ -79,7 +81,7 @@ public class EditUserHandler implements IHandler {
             }
             
             // Make sure user is always created with a password
-            if (!EditorResourceLocator.getUsersResource(context).existsSelectedUser()
+            if (!usersResource.existsSelectedUser()
                     && pwd == null && input.getPasswordRepeat() == null) {
                 input.addSCodePassword(CoreStatusCodes.MISSING_PARAM);
                 return;
@@ -104,9 +106,7 @@ public class EditUserHandler implements IHandler {
             gPermissions.setEditDynIncludes(isEditDynIncludes);
             user.setGlobalPermissions(gPermissions);
 
-            for (Iterator<Project> i = SpringBeanLocator.getProjectFactoryService()
-                    .getProjects().iterator(); i.hasNext();) {
-                Project project = i.next();
+            for (Project project : projectfactory.getProjects()) {
                 boolean isEditImages = false;
                 if (input.getEditImagesPrivilege(project.getName()) != null
                         && input.getEditImagesPrivilege(project.getName())
@@ -134,8 +134,7 @@ public class EditUserHandler implements IHandler {
     public void retrieveCurrentStatus(Context context, IWrapper wrapper)
             throws Exception {
         EditUser input = (EditUser) wrapper;
-        EditorUser user = EditorResourceLocator.getUsersResource(context)
-                .getSelectedUser();
+        EditorUser user = usersResource.getSelectedUser();
         input.setName(user.getFullname());
         input.setSection(user.getSectionName());
         input.setPhone(user.getPhoneNumber());
@@ -149,9 +148,7 @@ public class EditUserHandler implements IHandler {
         } else {
             input.setEditDynIncludesPrivilege(new Boolean(false));
         }
-        for (Iterator<Project> i = SpringBeanLocator.getProjectFactoryService()
-                .getProjects().iterator(); i.hasNext();) {
-            Project project = i.next();
+        for (Project project : projectfactory.getProjects()) {
             EditorProjectPermissions permissions = user
                     .getProjectPermissions(project);
             if (permissions.isEditImages()) {
@@ -173,8 +170,7 @@ public class EditUserHandler implements IHandler {
 
     public boolean prerequisitesMet(Context context) throws Exception {
         // User has to be selected
-        return (EditorResourceLocator.getUsersResource(context)
-                .getSelectedUser() != null);
+        return (usersResource.getSelectedUser() != null);
     }
 
     public boolean isActive(Context context) throws Exception {
@@ -185,6 +181,16 @@ public class EditUserHandler implements IHandler {
     public boolean needsData(Context context) throws Exception {
         // Always ask for selection
         return true;
+    }
+
+    @Inject
+    public void setProjectFactoryService(ProjectFactoryService projectfactory) {
+        this.projectfactory = projectfactory;
+    }
+
+    @Inject
+    public void setUsersResource(UsersResource usersResource) {
+        this.usersResource = usersResource;
     }
 
 }

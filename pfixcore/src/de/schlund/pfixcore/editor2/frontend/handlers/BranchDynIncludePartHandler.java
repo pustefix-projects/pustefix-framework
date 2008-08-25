@@ -18,8 +18,10 @@
 
 package de.schlund.pfixcore.editor2.frontend.handlers;
 
+import org.pustefixframework.container.annotations.Inject;
+
 import de.schlund.pfixcore.editor2.frontend.resources.CommonIncludesResource;
-import de.schlund.pfixcore.editor2.frontend.util.EditorResourceLocator;
+import de.schlund.pfixcore.editor2.frontend.resources.DynIncludesResource;
 import de.schlund.pfixcore.workflow.Context;
 
 /**
@@ -28,9 +30,15 @@ import de.schlund.pfixcore.workflow.Context;
  * @author Sebastian Marsching <sebastian.marsching@1und1.de>
  */
 public class BranchDynIncludePartHandler extends CommonBranchIncludePartHandler {
+    private DynIncludesResource dynIncludeResource;
+    
+    @Inject
+    public void setDynIncludeResource(DynIncludesResource dynIncludeResource) {
+        this.dynIncludeResource = dynIncludeResource;
+    }
 
     protected CommonIncludesResource getResource(Context context) {
-        return EditorResourceLocator.getDynIncludesResource(context);
+        return dynIncludeResource;
     }
 
 }

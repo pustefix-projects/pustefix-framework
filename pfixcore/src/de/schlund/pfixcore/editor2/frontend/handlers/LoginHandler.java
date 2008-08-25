@@ -18,9 +18,10 @@
 
 package de.schlund.pfixcore.editor2.frontend.handlers;
 
+import org.pustefixframework.container.annotations.Inject;
 import org.pustefixframework.editor.EditorStatusCodes;
 
-import de.schlund.pfixcore.editor2.frontend.util.EditorResourceLocator;
+import de.schlund.pfixcore.editor2.frontend.resources.SessionResource;
 import de.schlund.pfixcore.editor2.frontend.wrappers.Login;
 import de.schlund.pfixcore.generator.IHandler;
 import de.schlund.pfixcore.generator.IWrapper;
@@ -33,17 +34,16 @@ import de.schlund.pfixcore.workflow.Context;
  */
 public class LoginHandler implements IHandler {
 
+    private SessionResource sessionResource;
+
     public void handleSubmittedData(Context context, IWrapper wrapper)
             throws Exception {
         Login input = (Login) wrapper;
-        if (!EditorResourceLocator.getSessionResource(context).login(
-                input.getUser(), input.getPass())) {
-            if (EditorResourceLocator.getSessionResource(context)
-                    .isUserLoginsAllowed()) {
+        if (!sessionResource.login(input.getUser(), input.getPass())) {
+            if (sessionResource.isUserLoginsAllowed()) {
                 input.addSCodePass(EditorStatusCodes.AUTH_WRONG_USER_OR_PASS);
             } else {
-                input
-                        .addSCodePass(EditorStatusCodes.AUTH_NO_LOGIN_ALLOWED);
+                input.addSCodePass(EditorStatusCodes.AUTH_NO_LOGIN_ALLOWED);
             }
         }
     }
@@ -64,7 +64,12 @@ public class LoginHandler implements IHandler {
     }
 
     public boolean needsData(Context context) throws Exception {
-        return !EditorResourceLocator.getSessionResource(context).isLoggedIn();
+        return !sessionResource.isLoggedIn();
+    }
+
+    @Inject
+    public void setSessionResource(SessionResource sessionResource) {
+        this.sessionResource = sessionResource;
     }
 
 }

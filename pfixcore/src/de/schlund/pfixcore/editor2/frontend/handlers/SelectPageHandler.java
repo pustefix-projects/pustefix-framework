@@ -18,9 +18,11 @@
 
 package de.schlund.pfixcore.editor2.frontend.handlers;
 
+import org.pustefixframework.container.annotations.Inject;
 import org.pustefixframework.editor.EditorStatusCodes;
 
-import de.schlund.pfixcore.editor2.frontend.util.EditorResourceLocator;
+import de.schlund.pfixcore.editor2.frontend.resources.PagesResource;
+import de.schlund.pfixcore.editor2.frontend.resources.ProjectsResource;
 import de.schlund.pfixcore.editor2.frontend.wrappers.SelectPage;
 import de.schlund.pfixcore.generator.IHandler;
 import de.schlund.pfixcore.generator.IWrapper;
@@ -33,9 +35,12 @@ import de.schlund.pfixcore.workflow.Context;
  */
 public class SelectPageHandler implements IHandler {
 
+    private PagesResource pagesResource;
+    private ProjectsResource projectsResource;
+
     public void handleSubmittedData(Context context, IWrapper wrapper) throws Exception {
         SelectPage input = (SelectPage) wrapper;
-        if (!EditorResourceLocator.getPagesResource(context).selectPage(input.getPageName(), input.getVariantName())) {
+        if (!pagesResource.selectPage(input.getPageName(), input.getVariantName())) {
             input.addSCodePageName(EditorStatusCodes.PAGES_PAGE_UNDEF);
         }
     }
@@ -46,7 +51,7 @@ public class SelectPageHandler implements IHandler {
 
     public boolean prerequisitesMet(Context context) throws Exception {
         // Allow page selection only if project is selected
-        return (EditorResourceLocator.getProjectsResource(context).getSelectedProject() != null);
+        return (projectsResource.getSelectedProject() != null);
     }
 
     public boolean isActive(Context context) throws Exception {
@@ -56,7 +61,17 @@ public class SelectPageHandler implements IHandler {
 
     public boolean needsData(Context context) throws Exception {
         // Always ask to select page
-        return (EditorResourceLocator.getPagesResource(context).getSelectedPage() == null);
+        return (pagesResource.getSelectedPage() == null);
+    }
+
+    @Inject
+    public void setPagesResource(PagesResource pagesResource) {
+        this.pagesResource = pagesResource;
+    }
+
+    @Inject
+    public void setProjectsResource(ProjectsResource projectsResource) {
+        this.projectsResource = projectsResource;
     }
 
 }

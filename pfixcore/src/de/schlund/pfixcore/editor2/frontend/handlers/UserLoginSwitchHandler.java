@@ -18,7 +18,9 @@
 
 package de.schlund.pfixcore.editor2.frontend.handlers;
 
-import de.schlund.pfixcore.editor2.frontend.util.EditorResourceLocator;
+import org.pustefixframework.container.annotations.Inject;
+
+import de.schlund.pfixcore.editor2.frontend.resources.SessionResource;
 import de.schlund.pfixcore.editor2.frontend.wrappers.UserLoginSwitch;
 import de.schlund.pfixcore.generator.IHandler;
 import de.schlund.pfixcore.generator.IWrapper;
@@ -31,11 +33,13 @@ import de.schlund.pfixcore.workflow.Context;
  */
 public class UserLoginSwitchHandler implements IHandler {
 
+    private SessionResource sessionResource;
+
     public void handleSubmittedData(Context context, IWrapper wrapper)
             throws Exception {
         UserLoginSwitch input = (UserLoginSwitch) wrapper;
         if (input.getAllow() != null) {
-            EditorResourceLocator.getSessionResource(context).setUserLoginsAllowed(input.getAllow().booleanValue());
+            sessionResource.setUserLoginsAllowed(input.getAllow().booleanValue());
         }
     }
 
@@ -57,6 +61,11 @@ public class UserLoginSwitchHandler implements IHandler {
     public boolean needsData(Context context) throws Exception {
         // Never ask for input
         return false;
+    }
+
+    @Inject
+    public void setSessionResource(SessionResource sessionResource) {
+        this.sessionResource = sessionResource;
     }
 
 }

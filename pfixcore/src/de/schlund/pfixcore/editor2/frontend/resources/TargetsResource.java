@@ -24,6 +24,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.TreeSet;
 
+import org.pustefixframework.container.annotations.Inject;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -36,25 +37,23 @@ import de.schlund.pfixcore.editor2.core.dom.Project;
 import de.schlund.pfixcore.editor2.core.dom.Target;
 import de.schlund.pfixcore.editor2.core.dom.TargetType;
 import de.schlund.pfixcore.editor2.core.exception.EditorParsingException;
-import de.schlund.pfixcore.editor2.frontend.util.EditorResourceLocator;
 import de.schlund.pfixcore.workflow.Context;
 import de.schlund.pfixxml.ResultDocument;
 
 public class TargetsResource {
 
-    private Context context;
+    private ProjectsResource projectsResource;
 
     private Target  selectedTarget;
 
     @InitResource
     public void init(Context context) throws Exception {
-        this.context = context;
         this.selectedTarget = null;
     }
 
     @InsertStatus
     public void insertStatus(ResultDocument resdoc, Element elem) throws Exception {
-        Project project = EditorResourceLocator.getProjectsResource(this.context).getSelectedProject();
+        Project project = projectsResource.getSelectedProject();
         if (project != null) {
             for (Iterator<Page> i = project.getAllPages().iterator(); i.hasNext();) {
                 Page page = i.next();
@@ -203,7 +202,7 @@ public class TargetsResource {
     }
 
     public boolean selectTarget(String targetName) {
-        Project project = EditorResourceLocator.getProjectsResource(this.context).getSelectedProject();
+        Project project = projectsResource.getSelectedProject();
         Target target = project.getTarget(targetName);
         if (target == null) {
             return false;
@@ -215,5 +214,10 @@ public class TargetsResource {
 
     public void unselectTarget() {
         this.selectedTarget = null;
+    }
+
+    @Inject
+    public void setProjectsResource(ProjectsResource projectsResource) {
+        this.projectsResource = projectsResource;
     }
 }

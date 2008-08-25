@@ -21,6 +21,7 @@ package de.schlund.pfixcore.editor2.frontend.resources;
 import java.util.Iterator;
 import java.util.TreeSet;
 
+import org.pustefixframework.container.annotations.Inject;
 import org.w3c.dom.Element;
 
 import de.schlund.pfixcore.beans.InsertStatus;
@@ -29,7 +30,6 @@ import de.schlund.pfixcore.editor2.core.exception.EditorSecurityException;
 import de.schlund.pfixcore.editor2.core.exception.EditorUserNotExistingException;
 import de.schlund.pfixcore.editor2.core.spring.UserManagementService;
 import de.schlund.pfixcore.editor2.core.vo.EditorUser;
-import de.schlund.pfixcore.editor2.frontend.util.SpringBeanLocator;
 import de.schlund.pfixxml.ResultDocument;
 
 /**
@@ -39,10 +39,17 @@ import de.schlund.pfixxml.ResultDocument;
  */
 public class UsersResource {
     private EditorUser selectedUser = null;
+    
+    private UserManagementService usermanagement;
+    
+    @Inject
+    public void setUserManagementService(UserManagementService usermanagement) {
+        this.usermanagement = usermanagement;
+    }
 
     @InsertStatus
     public void insertStatus(ResultDocument resdoc, Element elem) throws Exception {
-        UserManagementService ums = SpringBeanLocator.getUserManagementService();
+        UserManagementService ums = usermanagement;
         TreeSet<EditorUser> users = new TreeSet<EditorUser>(ums.getUsers());
         for (Iterator<EditorUser> i = users.iterator(); i.hasNext();) {
             EditorUser user = i.next();
@@ -67,7 +74,7 @@ public class UsersResource {
     }
 
     public void createAndSelectUser(String username) throws EditorDuplicateUsernameException {
-        UserManagementService ums = SpringBeanLocator.getUserManagementService();
+        UserManagementService ums = usermanagement;
         if (ums.hasUser(username)) {
             throw new EditorDuplicateUsernameException("Cannot create user with already existing name!");
         } else {
@@ -76,7 +83,7 @@ public class UsersResource {
     }
 
     public void deleteUsers(String[] usernames) throws EditorUserNotExistingException, EditorSecurityException {
-        UserManagementService ums = SpringBeanLocator.getUserManagementService();
+        UserManagementService ums = usermanagement;
         for (int i = 0; i < usernames.length; i++) {
             EditorUser user = ums.getUser(usernames[i]);
             ums.deleteUser(user);
@@ -84,12 +91,12 @@ public class UsersResource {
     }
 
     public void selectUser(String username) throws EditorUserNotExistingException {
-        UserManagementService ums = SpringBeanLocator.getUserManagementService();
+        UserManagementService ums = usermanagement;
         this.selectedUser = ums.getUser(username);
     }
 
     public void updateSelectedUser() throws EditorUserNotExistingException, EditorSecurityException, EditorDuplicateUsernameException {
-        UserManagementService ums = SpringBeanLocator.getUserManagementService();
+        UserManagementService ums = usermanagement;
         try {
             if (ums.hasUser(this.selectedUser.getUsername())) {
                 ums.updateUser(this.selectedUser);
@@ -106,7 +113,7 @@ public class UsersResource {
     }
 
     public boolean existsSelectedUser() {
-        UserManagementService ums = SpringBeanLocator.getUserManagementService();
+        UserManagementService ums = usermanagement;
         return ums.hasUser(this.selectedUser.getUsername());
     }
 }

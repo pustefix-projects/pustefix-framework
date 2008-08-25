@@ -18,9 +18,11 @@
 
 package de.schlund.pfixcore.editor2.frontend.handlers;
 
+import org.pustefixframework.container.annotations.Inject;
 import org.pustefixframework.editor.EditorStatusCodes;
 
-import de.schlund.pfixcore.editor2.frontend.util.EditorResourceLocator;
+import de.schlund.pfixcore.editor2.frontend.resources.ImagesResource;
+import de.schlund.pfixcore.editor2.frontend.resources.ProjectsResource;
 import de.schlund.pfixcore.editor2.frontend.wrappers.SelectImage;
 import de.schlund.pfixcore.generator.IHandler;
 import de.schlund.pfixcore.generator.IWrapper;
@@ -33,11 +35,13 @@ import de.schlund.pfixcore.workflow.Context;
  */
 public class SelectImageHandler implements IHandler {
 
+    private ImagesResource imagesResource;
+    private ProjectsResource projectsResource;
+
     public void handleSubmittedData(Context context, IWrapper wrapper)
             throws Exception {
         SelectImage input = (SelectImage) wrapper;
-        if (!EditorResourceLocator.getImagesResource(context).selectImage(
-                input.getPath())) {
+        if (!imagesResource.selectImage(input.getPath())) {
             input.addSCodePath(EditorStatusCodes.IMAGES_IMAGE_UNDEF);
         }
     }
@@ -49,8 +53,7 @@ public class SelectImageHandler implements IHandler {
 
     public boolean prerequisitesMet(Context context) throws Exception {
         // Allow only if project is selected
-        return (EditorResourceLocator.getProjectsResource(context)
-                .getSelectedProject() != null);
+        return (projectsResource.getSelectedProject() != null);
     }
 
     public boolean isActive(Context context) throws Exception {
@@ -61,6 +64,16 @@ public class SelectImageHandler implements IHandler {
     public boolean needsData(Context context) throws Exception {
         // Always ask to select image
         return true;
+    }
+
+    @Inject
+    public void setImagesResource(ImagesResource imagesResource) {
+        this.imagesResource = imagesResource;
+    }
+
+    @Inject
+    public void setProjectsResource(ProjectsResource projectsResource) {
+        this.projectsResource = projectsResource;
     }
 
 }

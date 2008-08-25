@@ -19,7 +19,7 @@
 package de.schlund.pfixcore.editor2.frontend.handlers;
 
 import de.schlund.pfixcore.editor2.frontend.resources.CommonIncludesResource;
-import de.schlund.pfixcore.editor2.frontend.util.EditorResourceLocator;
+import de.schlund.pfixcore.editor2.frontend.resources.DynIncludesResource;
 import de.schlund.pfixcore.workflow.Context;
 
 /**
@@ -29,8 +29,14 @@ import de.schlund.pfixcore.workflow.Context;
  */
 public class RestoreDynIncludePartHandler extends CommonRestoreIncludePartHandler {
 
+    private DynIncludesResource dynIncludesResource;
+
     protected CommonIncludesResource getResource(Context context) {
-        return EditorResourceLocator.getDynIncludesResource(context);
+        return dynIncludesResource;
     }
- 
+
+    public void setDynIncludesResource(DynIncludesResource dynIncludesResource) {
+        this.dynIncludesResource = dynIncludesResource;
+    }
+
 }

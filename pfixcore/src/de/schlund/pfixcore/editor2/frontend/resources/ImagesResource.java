@@ -24,17 +24,16 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.TreeSet;
 
+import org.pustefixframework.container.annotations.Inject;
 import org.w3c.dom.Element;
 
-import de.schlund.pfixcore.beans.InitResource;
 import de.schlund.pfixcore.beans.InsertStatus;
 import de.schlund.pfixcore.editor2.core.dom.Image;
 import de.schlund.pfixcore.editor2.core.dom.Page;
 import de.schlund.pfixcore.editor2.core.dom.Project;
 import de.schlund.pfixcore.editor2.core.exception.EditorSecurityException;
-import de.schlund.pfixcore.editor2.frontend.util.EditorResourceLocator;
-import de.schlund.pfixcore.editor2.frontend.util.SpringBeanLocator;
-import de.schlund.pfixcore.workflow.Context;
+import de.schlund.pfixcore.editor2.core.spring.BackupService;
+import de.schlund.pfixcore.editor2.core.spring.SecurityManagerService;
 import de.schlund.pfixxml.ResultDocument;
 import de.schlund.pfixxml.config.GlobalConfig;
 
@@ -44,8 +43,9 @@ import de.schlund.pfixxml.config.GlobalConfig;
  * @author Sebastian Marsching <sebastian.marsching@1und1.de>
  */
 public class ImagesResource {
-
-    private Context context;
+    private SecurityManagerService securitymanager;
+    private BackupService backup;
+    private ProjectsResource projectsResource;
 
     private Image   selectedImage;
 
@@ -53,7 +53,7 @@ public class ImagesResource {
         if (path == null || path.equals("")) {
             return false;
         }
-        Project project = EditorResourceLocator.getProjectsResource(this.context).getSelectedProject();
+        Project project = projectsResource.getSelectedProject();
         if (project == null) {
             return false;
         }
@@ -76,14 +76,9 @@ public class ImagesResource {
         return this.selectedImage;
     }
 
-    @InitResource
-    public void init(Context context) throws Exception {
-        this.context = context;
-    }
-
     @InsertStatus
     public void insertStatus(ResultDocument resdoc, Element elem) throws Exception {
-        Project project = EditorResourceLocator.getProjectsResource(this.context).getSelectedProject();
+        Project project = projectsResource.getSelectedProject();
 
         if (project != null) {
             TreeSet<Image> allimages = new TreeSet<Image>(project.getAllImages());
@@ -133,14 +128,14 @@ public class ImagesResource {
                 File imageFile = new File(GlobalConfig.getDocroot(), path);
                 long modtime = imageFile.lastModified();
                 currentImage.setAttribute("modtime", Long.toString(modtime));
-                if (SpringBeanLocator.getSecurityManagerService().mayEditImage(this.selectedImage)) {
+                if (securitymanager.mayEditImage(this.selectedImage)) {
                     currentImage.setAttribute("mayEdit", "true");
                 } else {
                     currentImage.setAttribute("mayEdit", "false");
                 }
 
                 // Render backups
-                Collection<String> backups = SpringBeanLocator.getBackupService().listImageVersions(this.selectedImage);
+                Collection<String> backups = backup.listImageVersions(this.selectedImage);
                 if (!backups.isEmpty()) {
                     Element backupsNode = resdoc.createSubNode(currentImage, "backups");
                     for (Iterator<String> i = backups.iterator(); i.hasNext();) {
@@ -188,7 +183,7 @@ public class ImagesResource {
         }
 
         try {
-            if (SpringBeanLocator.getBackupService().restoreImage(this.selectedImage, version)) {
+            if (backup.restoreImage(this.selectedImage, version)) {
                 return 0;
             } else {
                 return 1;
@@ -196,6 +191,21 @@ public class ImagesResource {
         } catch (EditorSecurityException e) {
             return 1;
         }
+    }
+
+    @Inject
+    public void setSecurityManagerService(SecurityManagerService securitymanager) {
+        this.securitymanager = securitymanager;
+    }
+
+    @Inject
+    public void setBackupService(BackupService backup) {
+        this.backup = backup;
+    }
+
+    @Inject
+    public void setProjectsResource(ProjectsResource projectsResource) {
+        this.projectsResource = projectsResource;
     }
 
 }

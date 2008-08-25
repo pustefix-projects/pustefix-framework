@@ -1,16 +1,11 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<contextxmlserver xmlns="http://pustefix.sourceforge.net/properties200401"
-  xmlns:cus="http://www.schlund.de/pustefix/customize" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://pustefix.sourceforge.net/properties200401 ../../schema/properties200401.xsd"
+<context-xml-service-config xmlns="http://www.pustefix-framework.org/2008/namespace/context-xml-service-config"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.pustefix-framework.org/2008/namespace/context-xml-service-config ../../schema/context-xml-service-config.xsd"
   version="1.0">
-
-  <servletinfo depend="core/editor2/conf/depend.xml" name="pfixcore_project:core_editor_servlet:1">
-    <editmode allow="false" />
-  </servletinfo>
-
+  
   <context defaultpage="start">
     <resource class="de.schlund.pfixcore.editor2.frontend.resources.SessionResource"/>
-    <resource class="de.schlund.pfixcore.editor2.frontend.resources.SpringHelperResource"/>
     <resource class="de.schlund.pfixcore.editor2.frontend.resources.ProjectsResource"/>
     <resource class="de.schlund.pfixcore.editor2.frontend.resources.PagesResource"/>
     <resource class="de.schlund.pfixcore.editor2.frontend.resources.TargetsResource"/>
@@ -25,8 +20,6 @@
 
   <interceptors>
     <start>
-      <!-- This ContextInterceptor has to be called BEFORE all other interceptors -->
-      <interceptor class="de.schlund.pfixcore.editor2.frontend.util.SpringHelperStartContextInterceptor" />
       <!-- Resets edit state flag -->
       <interceptor class="de.schlund.pfixcore.editor2.frontend.util.EditViewResetContextInterceptor" />
     </start>    
@@ -235,4 +228,4 @@
     </properties>
   </pagerequest>
 
-</contextxmlserver>
+</context-xml-service-config>

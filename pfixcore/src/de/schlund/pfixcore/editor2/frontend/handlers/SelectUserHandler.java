@@ -18,11 +18,12 @@
 
 package de.schlund.pfixcore.editor2.frontend.handlers;
 
+import org.pustefixframework.container.annotations.Inject;
 import org.pustefixframework.editor.EditorStatusCodes;
 
 import de.schlund.pfixcore.editor2.core.exception.EditorDuplicateUsernameException;
-import de.schlund.pfixcore.editor2.frontend.util.EditorResourceLocator;
-import de.schlund.pfixcore.editor2.frontend.util.SpringBeanLocator;
+import de.schlund.pfixcore.editor2.core.spring.SecurityManagerService;
+import de.schlund.pfixcore.editor2.frontend.resources.UsersResource;
 import de.schlund.pfixcore.editor2.frontend.wrappers.SelectUser;
 import de.schlund.pfixcore.generator.IHandler;
 import de.schlund.pfixcore.generator.IWrapper;
@@ -34,24 +35,22 @@ import de.schlund.pfixcore.workflow.Context;
  * @author Sebastian Marsching <sebastian.marsching@1und1.de>
  */
 public class SelectUserHandler implements IHandler {
+    private SecurityManagerService securitymanager;
+    private UsersResource usersResource;
 
     public void handleSubmittedData(Context context, IWrapper wrapper)
             throws Exception {
         SelectUser input = (SelectUser) wrapper;
         if (input.getCreate() != null && input.getCreate().booleanValue()) {
             try {
-                EditorResourceLocator.getUsersResource(context)
-                        .createAndSelectUser(input.getUsername());
+                usersResource.createAndSelectUser(input.getUsername());
             } catch (EditorDuplicateUsernameException e) {
                 input.addSCodeUsername(EditorStatusCodes.ADDUSER_USER_EXISTS);
             }
         } else {
-            if (SpringBeanLocator.getSecurityManagerService().mayAdmin()
-                    || input.getUsername().equals(
-                            SpringBeanLocator.getSecurityManagerService()
-                                    .getPrincipal().getName())) {
-                EditorResourceLocator.getUsersResource(context).selectUser(
-                        input.getUsername());
+            if (securitymanager.mayAdmin()
+                    || input.getUsername().equals(securitymanager.getPrincipal().getName())) {
+                usersResource.selectUser(input.getUsername());
             }
         }
     }
@@ -74,6 +73,16 @@ public class SelectUserHandler implements IHandler {
     public boolean needsData(Context context) throws Exception {
         // Do not affect pageflow
         return false;
+    }
+
+    @Inject
+    public void setSecurityManagerService(SecurityManagerService securitymanager) {
+        this.securitymanager = securitymanager;
+    }
+
+    @Inject
+    public void setUsersResource(UsersResource usersResource) {
+        this.usersResource = usersResource;
     }
 
 }

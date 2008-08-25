@@ -26,6 +26,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
+import org.pustefixframework.container.annotations.Inject;
 import org.w3c.dom.Element;
 
 import de.schlund.pfixcore.editor2.core.dom.IncludeFile;
@@ -34,17 +35,30 @@ import de.schlund.pfixcore.editor2.core.dom.IncludePartThemeVariant;
 import de.schlund.pfixcore.editor2.core.dom.Page;
 import de.schlund.pfixcore.editor2.core.dom.Project;
 import de.schlund.pfixcore.editor2.core.dom.Theme;
-import de.schlund.pfixcore.editor2.frontend.util.SpringBeanLocator;
+import de.schlund.pfixcore.editor2.core.spring.DynIncludeFactoryService;
+import de.schlund.pfixcore.editor2.core.spring.SecurityManagerService;
 import de.schlund.pfixxml.ResultDocument;
 
 public class DynIncludesResource extends CommonIncludesResource {
+    private SecurityManagerService securitymanager;
+    private DynIncludeFactoryService dynincludefactory;
+    
+    @Inject
+    public void setSecurityManagerService(SecurityManagerService securitymanager) {
+        this.securitymanager = securitymanager;
+    }
+
+    @Inject
+    public void setDynIncludeFactoryService(DynIncludeFactoryService dynincludefactory) {
+        this.dynincludefactory = dynincludefactory;
+    }
 
     protected boolean securityMayCreateIncludePartThemeVariant(IncludePart includePart, Theme theme) {
-        return SpringBeanLocator.getSecurityManagerService().mayEditDynInclude();
+        return securitymanager.mayEditDynInclude();
     }
 
     protected IncludePartThemeVariant internalSelectIncludePart(Project project, String path, String part, String theme) {
-        IncludeFile incFile = SpringBeanLocator.getDynIncludeFactoryService().getIncludeFile(path);
+        IncludeFile incFile = dynincludefactory.getIncludeFile(path);
         if (incFile == null) {
             return null;
         }
@@ -62,7 +76,7 @@ public class DynIncludesResource extends CommonIncludesResource {
     }
 
     protected Collection<Theme> getPossibleThemes(IncludePartThemeVariant selectedIncludePart, Project project, Collection<Page> dummy) {
-        if (!SpringBeanLocator.getSecurityManagerService().mayEditDynInclude()) {
+        if (!securitymanager.mayEditDynInclude()) {
             // Do not present alternative themes to users who may not
             // edit DynIncludes at all
             return new TreeSet<Theme>();
@@ -83,11 +97,11 @@ public class DynIncludesResource extends CommonIncludesResource {
     }
 
     protected boolean securityMayEditIncludePartThemeVariant(IncludePartThemeVariant variant) {
-        return SpringBeanLocator.getSecurityManagerService().mayEditDynInclude();
+        return securitymanager.mayEditDynInclude();
     }
 
     protected void renderAllIncludes(ResultDocument resdoc, Element elem, Project project) {
-        TreeSet<IncludeFile> incFiles = new TreeSet<IncludeFile>(SpringBeanLocator.getDynIncludeFactoryService().getDynIncludeFiles());
+        TreeSet<IncludeFile> incFiles = new TreeSet<IncludeFile>(dynincludefactory.getDynIncludeFiles());
         Map<String, Element> directoryNodes = new HashMap<String, Element>();
         for (Iterator<IncludeFile> i = incFiles.iterator(); i.hasNext();) {
             IncludeFile incFile = i.next();
@@ -133,7 +147,7 @@ public class DynIncludesResource extends CommonIncludesResource {
 
     protected Set<IncludeFile> getIncludeFilesInDirectory(String dirname, Project project) {
         TreeSet<IncludeFile> files = new TreeSet<IncludeFile>();
-        for (Iterator<IncludeFile> i = SpringBeanLocator.getDynIncludeFactoryService().getDynIncludeFiles().iterator(); i.hasNext();) {
+        for (Iterator<IncludeFile> i = dynincludefactory.getDynIncludeFiles().iterator(); i.hasNext();) {
             IncludeFile file = i.next();
             String path = file.getPath();
             try {
@@ -150,7 +164,7 @@ public class DynIncludesResource extends CommonIncludesResource {
 
     protected Set<IncludePartThemeVariant> getIncludePartsInFile(String filename, Project project) {
         TreeSet<IncludePartThemeVariant> parts = new TreeSet<IncludePartThemeVariant>();
-        IncludeFile incFile = SpringBeanLocator.getDynIncludeFactoryService().getIncludeFile(filename);
+        IncludeFile incFile = dynincludefactory.getIncludeFile(filename);
         if (incFile != null) {
             for (Iterator<IncludePart> i = incFile.getParts().iterator(); i.hasNext();) {
                 IncludePart part = i.next();

@@ -1,6 +1,9 @@
 package de.schlund.pfixcore.editor2.frontend.handlers;
 
-import de.schlund.pfixcore.editor2.frontend.util.EditorResourceLocator;
+import org.pustefixframework.container.annotations.Inject;
+
+import de.schlund.pfixcore.editor2.frontend.resources.ProjectsResource;
+import de.schlund.pfixcore.editor2.frontend.resources.SessionResource;
 import de.schlund.pfixcore.workflow.Context;
 import de.schlund.pfixcore.workflow.StateImpl;
 import de.schlund.pfixxml.PfixServletRequest;
@@ -16,16 +19,29 @@ import de.schlund.pfixxml.ResultDocument;
  * @version 1.0
  */
 public class LogoutState extends StateImpl {
-    
+
+    SessionResource sessionResource;
+    ProjectsResource projectsResource;
+
     public ResultDocument getDocument(Context context, PfixServletRequest req) throws Exception {;
         
         if (!isDirectTrigger(context, req) || isSubmitAuthTrigger(context, req)) {
             // we are not direct triggered or we got authdata, don't do a logout,
         } else {
-            EditorResourceLocator.getSessionResource(context).logout();
-            EditorResourceLocator.getProjectsResource(context).reset();
+            sessionResource.logout();
+            projectsResource.reset();
         }
 
         return new ResultDocument();                
+    }
+
+    @Inject
+    public void setSessionResource(SessionResource sessionResource) {
+        this.sessionResource = sessionResource;
+    }
+
+    @Inject
+    public void setProjectsResource(ProjectsResource projectsResource) {
+        this.projectsResource = projectsResource;
     }
 }

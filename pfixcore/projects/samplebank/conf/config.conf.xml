@@ -121,4 +121,4 @@
     <prop name="adminmode">true</prop>
   </properties>
 
-</context-xml-config>
+</context-xml-service-config>

@@ -18,7 +18,11 @@
 
 package de.schlund.pfixcore.editor2.frontend.handlers;
 
-import de.schlund.pfixcore.editor2.frontend.util.EditorResourceLocator;
+import org.pustefixframework.container.annotations.Inject;
+
+import de.schlund.pfixcore.editor2.frontend.resources.DynIncludesResource;
+import de.schlund.pfixcore.editor2.frontend.resources.IncludesResource;
+import de.schlund.pfixcore.editor2.frontend.resources.ProjectsResource;
 import de.schlund.pfixcore.editor2.frontend.wrappers.JumpToIncludePart;
 import de.schlund.pfixcore.generator.IHandler;
 import de.schlund.pfixcore.generator.IWrapper;
@@ -30,6 +34,10 @@ import de.schlund.pfixcore.workflow.Context;
  * @author Sebastian Marsching <sebastian.marsching@1und1.de>
  */
 public class JumpToIncludePartHandler implements IHandler {
+    
+    private ProjectsResource projectsResource;
+    private IncludesResource includesResource;
+    private DynIncludesResource dynIncludesResource;
 
     public void handleSubmittedData(Context context, IWrapper wrapper)
             throws Exception {
@@ -40,19 +48,11 @@ public class JumpToIncludePartHandler implements IHandler {
             return;
         }
         if (input.getType().equals("include")) {
-            EditorResourceLocator.getProjectsResource(context)
-                    .selectProjectByTargetGeneratorName(
-                            input.getTargetGenerator());
-            EditorResourceLocator.getIncludesResource(context)
-                    .selectIncludePart(input.getPath(), input.getPart(),
-                            input.getTheme());
+            projectsResource.selectProjectByTargetGeneratorName(input.getTargetGenerator());
+            includesResource.selectIncludePart(input.getPath(), input.getPart(), input.getTheme());
         } else if (input.getType().equals("dyninclude")) {
-            EditorResourceLocator.getProjectsResource(context)
-                    .selectProjectByTargetGeneratorName(
-                            input.getTargetGenerator());
-            EditorResourceLocator.getDynIncludesResource(context)
-                    .selectIncludePart(input.getPath(), input.getPart(),
-                            input.getTheme());
+            projectsResource.selectProjectByTargetGeneratorName(input.getTargetGenerator());
+            dynIncludesResource.selectIncludePart(input.getPath(), input.getPart(), input.getTheme());
         }
     }
 
@@ -74,6 +74,21 @@ public class JumpToIncludePartHandler implements IHandler {
     public boolean needsData(Context context) throws Exception {
         // Do never request input
         return false;
+    }
+
+    @Inject
+    public void setProjectsResource(ProjectsResource projectsResource) {
+        this.projectsResource = projectsResource;
+    }
+
+    @Inject
+    public void setIncludesResource(IncludesResource includesResource) {
+        this.includesResource = includesResource;
+    }
+
+    @Inject
+    public void setDynIncludesResource(DynIncludesResource dynIncludesResource) {
+        this.dynIncludesResource = dynIncludesResource;
     }
 
 }

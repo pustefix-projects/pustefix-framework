@@ -25,6 +25,7 @@ import java.util.Iterator;
 import java.util.Set;
 import java.util.TreeSet;
 
+import org.pustefixframework.container.annotations.Inject;
 import org.w3c.dom.Element;
 
 import de.schlund.pfixcore.editor2.core.dom.IncludeFile;
@@ -33,13 +34,19 @@ import de.schlund.pfixcore.editor2.core.dom.IncludePartThemeVariant;
 import de.schlund.pfixcore.editor2.core.dom.Page;
 import de.schlund.pfixcore.editor2.core.dom.Project;
 import de.schlund.pfixcore.editor2.core.dom.Theme;
-import de.schlund.pfixcore.editor2.frontend.util.SpringBeanLocator;
+import de.schlund.pfixcore.editor2.core.spring.SecurityManagerService;
 import de.schlund.pfixxml.ResultDocument;
 
 public class IncludesResource extends CommonIncludesResource {
+    private SecurityManagerService securitymanager;
+    
+    @Inject
+    public void setSecurityManagerService(SecurityManagerService securitymanager) {
+        this.securitymanager = securitymanager;
+    }
 
     protected boolean securityMayCreateIncludePartThemeVariant(IncludePart includePart, Theme theme) {
-        return SpringBeanLocator.getSecurityManagerService().mayCreateIncludePartThemeVariant(includePart, theme);
+        return securitymanager.mayCreateIncludePartThemeVariant(includePart, theme);
     }
 
     protected IncludePartThemeVariant internalSelectIncludePart(Project project, String path, String part, String theme) {
@@ -53,7 +60,7 @@ public class IncludesResource extends CommonIncludesResource {
             Theme theme = i.next();
             if (!selectedIncludePart.getIncludePart().hasThemeVariant(theme)) {
                 boolean canUseTheme = false;
-                if (!SpringBeanLocator.getSecurityManagerService().mayCreateIncludePartThemeVariant(selectedIncludePart.getIncludePart(), theme)) {
+                if (!securitymanager.mayCreateIncludePartThemeVariant(selectedIncludePart.getIncludePart(), theme)) {
                     // Omit current theme
                     continue;
                 }
@@ -89,7 +96,7 @@ public class IncludesResource extends CommonIncludesResource {
     }
 
     protected boolean securityMayEditIncludePartThemeVariant(IncludePartThemeVariant variant) {
-        return SpringBeanLocator.getSecurityManagerService().mayEditIncludePartThemeVariant(variant);
+        return securitymanager.mayEditIncludePartThemeVariant(variant);
     }
 
     protected void renderAllIncludes(ResultDocument resdoc, Element elem, Project project) {

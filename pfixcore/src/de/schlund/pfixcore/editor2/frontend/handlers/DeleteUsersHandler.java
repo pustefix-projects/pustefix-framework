@@ -19,10 +19,11 @@
 package de.schlund.pfixcore.editor2.frontend.handlers;
 
 import org.pustefixframework.CoreStatusCodes;
+import org.pustefixframework.container.annotations.Inject;
 
 import de.schlund.pfixcore.editor2.core.exception.EditorUserNotExistingException;
-import de.schlund.pfixcore.editor2.frontend.util.EditorResourceLocator;
-import de.schlund.pfixcore.editor2.frontend.util.SpringBeanLocator;
+import de.schlund.pfixcore.editor2.core.spring.SecurityManagerService;
+import de.schlund.pfixcore.editor2.frontend.resources.UsersResource;
 import de.schlund.pfixcore.editor2.frontend.wrappers.DeleteUsers;
 import de.schlund.pfixcore.generator.IHandler;
 import de.schlund.pfixcore.generator.IWrapper;
@@ -34,15 +35,18 @@ import de.schlund.pfixcore.workflow.Context;
  * @author Sebastian Marsching <sebastian.marsching@1und1.de>
  */
 public class DeleteUsersHandler implements IHandler {
-
+    
+    private SecurityManagerService securitymanager;
+    
+    private UsersResource usersResource;
+    
     public void handleSubmittedData(Context context, IWrapper wrapper)
             throws Exception {
         DeleteUsers input = (DeleteUsers) wrapper;
         if (input.getUsername() != null) {
             String[] usernames = input.getUsername();
             try {
-                EditorResourceLocator.getUsersResource(context).deleteUsers(
-                        usernames);
+                usersResource.deleteUsers(usernames);
             } catch (EditorUserNotExistingException e) {
                 input.addSCodeUsername(CoreStatusCodes.GEN_ERROR);
             }
@@ -56,7 +60,7 @@ public class DeleteUsersHandler implements IHandler {
 
     public boolean prerequisitesMet(Context context) throws Exception {
         // Only admins can delete users
-        return SpringBeanLocator.getSecurityManagerService().mayAdmin();
+        return securitymanager.mayAdmin();
     }
 
     public boolean isActive(Context context) throws Exception {
@@ -67,6 +71,16 @@ public class DeleteUsersHandler implements IHandler {
     public boolean needsData(Context context) throws Exception {
         // Always ask for selection
         return true;
+    }
+
+    @Inject
+    public void setSecurityManagerService(SecurityManagerService securitymanager) {
+        this.securitymanager = securitymanager;
+    }
+
+    @Inject
+    public void setUsersResource(UsersResource usersResource) {
+        this.usersResource = usersResource;
     }
 
 }

@@ -25,6 +25,12 @@
   
   <xsl:template mode="ports" match="p:http-port|p:https-port">
     <xsl:variable name="currentprj" select="ancestor::p:project-config"></xsl:variable>
+    <xsl:variable name="active">
+      <xsl:choose>
+        <xsl:when test="normalize-space($currentprj/enabled/text()) = 'false'">false</xsl:when>
+        <xsl:otherwise>true</xsl:otherwise> 
+      </xsl:choose>
+    </xsl:variable>
     <xsl:variable name="address-temp">
       <xsl:apply-templates select="p:address/node()"/>
     </xsl:variable>
@@ -41,6 +47,7 @@
         </xsl:otherwise>
       </xsl:choose>
     </xsl:variable>
+    <xsl:if test="$active = 'true'">
 &lt;VirtualHost <xsl:value-of select="$address"/>&gt;
 ServerName <xsl:apply-templates select="$currentprj/p:http-server/p:server-name/node()"/>
 <xsl:if test="count($currentprj/p:http-server/p:server-alias/node()) > 0">
@@ -145,7 +152,7 @@ CustomLog  <xsl:value-of select="$path"/>/access_log combined
 </xsl:if>
 
 &lt;/VirtualHost&gt;
-      
+    </xsl:if>
   </xsl:template>
   
   <xsl:template match="p:ssl-crt">

@@ -1,3 +1,31 @@
+2008-08-25  Sebastian Marsching  <sebastian.marsching@1und1.de>
+
+	* src/de/schlund/pfixcore/editor2/core/spring/ConfigurationServiceImpl.java: 
+	* src/de/schlund/pfixcore/editor2/core/spring/FileSystemService.java: 
+	* src/de/schlund/pfixcore/editor2/core/spring/FileSystemServiceImpl.java: 
+	* src/de/schlund/pfixcore/editor2/core/spring/ProjectFactoryServiceImpl.java: 
+	* src/de/schlund/pfixcore/editor2/core/spring/PustefixTargetUpdateServiceImpl.java: 
+	* src/de/schlund/pfixcore/editor2/core/spring/SecurityManagerServiceImpl.java: 
+	* src/de/schlund/pfixcore/editor2/frontend/handlers/*: 
+	* src/de/schlund/pfixcore/editor2/frontend/resources/*: 
+	* src/de/schlund/pfixcore/lucefix/ContextSearch.java: 
+	* src/de/schlund/pfixcore/lucefix/PfixReadjustment.java: 
+	* src/de/schlund/pfixcore/lucefix/SearchHandler.java: 
+	* projects/common/conf/factory.xml: 
+	* projects/common/conf/pustefix.xml: 
+	* projects/core/editor2/conf/edit.conf.xml: 
+	* projects/core/editor2/conf/project.xml: 
+	* projects/core/editor2/conf/spring.xml: 
+	Made editor compatible with new configuration file format and use 
+	dependency injection where possible.
+	
+	* projects/core/build/create_apacheconf.xsl: 
+	* projects/core/build/create_serverxml.xsl: 
+	Reintroduced support for activating / deactivating projects
+
+	* src/org/pustefixframework/container/spring/beans/AnnotationBeanDefinitionPostProcessor.java:  
+	Fixed scope handling of injection mechanism.
+
 2008-08-24  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
 	* projects/simpleform/conf/config.conf.xml: 

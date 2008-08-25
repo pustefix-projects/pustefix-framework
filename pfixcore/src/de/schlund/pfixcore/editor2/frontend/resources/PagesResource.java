@@ -21,6 +21,7 @@ package de.schlund.pfixcore.editor2.frontend.resources;
 import java.util.Iterator;
 import java.util.TreeSet;
 
+import org.pustefixframework.container.annotations.Inject;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -32,24 +33,22 @@ import de.schlund.pfixcore.editor2.core.dom.Page;
 import de.schlund.pfixcore.editor2.core.dom.Project;
 import de.schlund.pfixcore.editor2.core.dom.Target;
 import de.schlund.pfixcore.editor2.core.dom.TargetType;
-import de.schlund.pfixcore.editor2.frontend.util.EditorResourceLocator;
 import de.schlund.pfixcore.workflow.Context;
 import de.schlund.pfixxml.ResultDocument;
 
 public class PagesResource {
-    Page            selectedPage;
+    private ProjectsResource projectsResource;
 
-    private Context context;
+    private Page selectedPage;
 
     @InitResource
     public void init(Context context) throws Exception {
         this.selectedPage = null;
-        this.context = context;
     }
 
     @InsertStatus
     public void insertStatus(ResultDocument resdoc, Element elem) throws Exception {
-        Project project = EditorResourceLocator.getProjectsResource(this.context).getSelectedProject();
+        Project project = projectsResource.getSelectedProject();
         if (project != null) {
             // Make sure pages are in right order
             TreeSet<Page> pages = new TreeSet<Page>(project.getTopPages());
@@ -147,7 +146,7 @@ public class PagesResource {
     }
     
     public boolean selectPage(String pageName, String variantName) {
-        Project project = EditorResourceLocator.getProjectsResource(this.context).getSelectedProject();
+        Project project = projectsResource.getSelectedProject();
         if (project == null) {
             return false;
         }
@@ -204,6 +203,11 @@ public class PagesResource {
 
     public void unselectPage() {
         this.selectedPage = null;
+    }
+
+    @Inject
+    public void setProjectsResource(ProjectsResource projectsResource) {
+        this.projectsResource = projectsResource;
     }
 
 }

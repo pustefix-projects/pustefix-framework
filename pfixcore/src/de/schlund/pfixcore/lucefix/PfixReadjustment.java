@@ -30,11 +30,11 @@ import org.apache.log4j.Logger;
 import org.apache.lucene.document.DateField;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexReader;
+import org.pustefixframework.container.annotations.Inject;
 
 import de.schlund.pfixcore.editor2.core.dom.IncludePartThemeVariant;
 import de.schlund.pfixcore.editor2.core.dom.Project;
 import de.schlund.pfixcore.editor2.core.spring.ProjectFactoryService;
-import de.schlund.pfixcore.editor2.frontend.util.SpringBeanLocator;
 import de.schlund.pfixxml.XMLException;
 import de.schlund.pfixxml.config.GlobalConfig;
 
@@ -43,6 +43,7 @@ import de.schlund.pfixxml.config.GlobalConfig;
  * @date Jun 24, 2005
  */
 public class PfixReadjustment {
+    private ProjectFactoryService projectfactory;
     
     private static PfixReadjustment _instance = new PfixReadjustment();
     
@@ -191,7 +192,7 @@ public class PfixReadjustment {
     private Set<Tripel> getUsedTripels() {
         Set<Tripel> retval = new TreeSet<Tripel>();
         
-        ProjectFactoryService projectFactory = SpringBeanLocator.getProjectFactoryService();
+        ProjectFactoryService projectFactory = projectfactory;
         for (Iterator<Project> i = projectFactory.getProjects().iterator(); i.hasNext();) {
             Project currentproject = i.next();
             for (Iterator<IncludePartThemeVariant> i2 = currentproject.getAllIncludeParts().iterator(); i2.hasNext();) {
@@ -220,4 +221,8 @@ public class PfixReadjustment {
         return _instance;
     }
     
+    @Inject
+    public void setProjectFactoryService(ProjectFactoryService projectfactory) {
+        this.projectfactory = projectfactory;
+    }
 }

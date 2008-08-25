@@ -20,16 +20,17 @@ package de.schlund.pfixcore.editor2.frontend.resources;
 
 import java.security.Principal;
 
+import org.pustefixframework.container.annotations.Inject;
 import org.w3c.dom.Element;
 
 import de.schlund.pfixcore.beans.InitResource;
 import de.schlund.pfixcore.beans.InsertStatus;
 import de.schlund.pfixcore.editor2.core.exception.EditorSecurityException;
 import de.schlund.pfixcore.editor2.core.spring.SecurityManagerService;
+import de.schlund.pfixcore.editor2.core.spring.UserManagementService;
 import de.schlund.pfixcore.editor2.core.spring.UserPasswordAuthenticationService;
 import de.schlund.pfixcore.editor2.core.vo.EditorUser;
 import de.schlund.pfixcore.editor2.frontend.util.ContextStore;
-import de.schlund.pfixcore.editor2.frontend.util.SpringBeanLocator;
 import de.schlund.pfixcore.workflow.Context;
 import de.schlund.pfixxml.ResultDocument;
 
@@ -41,17 +42,14 @@ import de.schlund.pfixxml.ResultDocument;
 public class SessionResource {
 
     private UserPasswordAuthenticationService upas;
+    
+    private UserManagementService usermanagement;
 
     private SecurityManagerService            secman;
 
     private Context                           context;
 
     private boolean                           inIncludeEditView = false;
-
-    public SessionResource() {
-        this.upas = SpringBeanLocator.getUserPasswordAuthenticationService();
-        this.secman = SpringBeanLocator.getSecurityManagerService();
-    }
 
     public boolean login(String username, String password) {
         Principal user = this.upas.getPrincipalForUser(username, password);
@@ -105,9 +103,8 @@ public class SessionResource {
         }
         if (this.isLoggedIn()) {
             // Use security manager to render effective permissions
-            SecurityManagerService secman = SpringBeanLocator.getSecurityManagerService();
             Element user = resdoc.createSubNode(elem, "user");
-            EditorUser userinfo = SpringBeanLocator.getUserManagementService().getUser(this.secman.getPrincipal().getName());
+            EditorUser userinfo = usermanagement.getUser(this.secman.getPrincipal().getName());
             user.setAttribute("fullname", userinfo.getFullname());
             user.setAttribute("username", userinfo.getUsername());
             Element permissions = resdoc.createSubNode(user, "permissions");
@@ -139,6 +136,21 @@ public class SessionResource {
             return false;
         }
         return true;
+    }
+
+    @Inject
+    public void setUserPasswordAuthenticationService(UserPasswordAuthenticationService upas) {
+        this.upas = upas;
+    }
+
+    @Inject
+    public void setUserManagementService(UserManagementService usermanagement) {
+        this.usermanagement = usermanagement;
+    }
+
+    @Inject
+    public void setSecurityManagerService(SecurityManagerService secman) {
+        this.secman = secman;
     }
 
 }

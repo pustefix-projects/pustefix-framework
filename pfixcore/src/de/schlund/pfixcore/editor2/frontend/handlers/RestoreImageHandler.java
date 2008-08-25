@@ -18,9 +18,10 @@
 
 package de.schlund.pfixcore.editor2.frontend.handlers;
 
+import org.pustefixframework.container.annotations.Inject;
 import org.pustefixframework.editor.EditorStatusCodes;
 
-import de.schlund.pfixcore.editor2.frontend.util.EditorResourceLocator;
+import de.schlund.pfixcore.editor2.frontend.resources.ImagesResource;
 import de.schlund.pfixcore.editor2.frontend.wrappers.RestoreImage;
 import de.schlund.pfixcore.generator.IHandler;
 import de.schlund.pfixcore.generator.IWrapper;
@@ -33,17 +34,16 @@ import de.schlund.pfixcore.workflow.Context;
  */
 public class RestoreImageHandler implements IHandler {
 
+    private ImagesResource imagesResource;
+
     public void handleSubmittedData(Context context, IWrapper wrapper)
             throws Exception {
         RestoreImage input = (RestoreImage) wrapper;
-        int ret = EditorResourceLocator.getImagesResource(context)
-                .restoreBackup(input.getVersion(),
-                        input.getLastModTime().longValue());
+        int ret = imagesResource.restoreBackup(input.getVersion(), input.getLastModTime().longValue());
         if (ret == 1) {
             input.addSCodeVersion(EditorStatusCodes.IMAGES_IMAGE_UNDEF);
         } else if (ret == 2) {
-            input
-                    .addSCodeVersion(EditorStatusCodes.IMAGESUPLOAD_IMAGEUPL_HASCHANGED);
+            input.addSCodeVersion(EditorStatusCodes.IMAGESUPLOAD_IMAGEUPL_HASCHANGED);
         }
     }
 
@@ -59,13 +59,17 @@ public class RestoreImageHandler implements IHandler {
 
     public boolean isActive(Context context) throws Exception {
         // Handler is only active, if there is a selected image
-        return (EditorResourceLocator.getImagesResource(context)
-                .getSelectedImage() != null);
+        return (imagesResource.getSelectedImage() != null);
     }
 
     public boolean needsData(Context context) throws Exception {
         // Always ask for upload
         return true;
+    }
+
+    @Inject
+    public void setImagesResource(ImagesResource imagesResource) {
+        this.imagesResource = imagesResource;
     }
 
 }

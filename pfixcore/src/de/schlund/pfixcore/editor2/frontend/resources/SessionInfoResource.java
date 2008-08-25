@@ -27,21 +27,28 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
+import org.pustefixframework.container.annotations.Inject;
 import org.pustefixframework.http.AbstractPustefixRequestHandler;
 import org.w3c.dom.Element;
 
 import de.schlund.pfixcore.beans.InsertStatus;
 import de.schlund.pfixcore.editor2.core.dom.IncludePartThemeVariant;
+import de.schlund.pfixcore.editor2.core.spring.UserManagementService;
 import de.schlund.pfixcore.editor2.core.vo.EditorUser;
 import de.schlund.pfixcore.editor2.frontend.util.ContextStore;
 import de.schlund.pfixcore.editor2.frontend.util.EditorResourceLocator;
-import de.schlund.pfixcore.editor2.frontend.util.SpringBeanLocator;
 import de.schlund.pfixcore.workflow.Context;
 import de.schlund.pfixxml.ResultDocument;
 import de.schlund.pfixxml.serverutil.SessionAdmin;
 import de.schlund.pfixxml.serverutil.SessionInfoStruct;
 
 public class SessionInfoResource {
+    private UserManagementService usermanagement;
+    
+    @Inject
+    public void setUserManagementService(UserManagementService usermanagement) {
+        this.usermanagement = usermanagement;
+    }
 
     @InsertStatus
     public void insertStatus(ResultDocument resdoc, Element elem) throws Exception {
@@ -68,7 +75,7 @@ public class SessionInfoResource {
                         if (foreignctx.getVisitId().equals(visitId)) {
                             String username = contextmap.get(foreignctx);
                             sessionNode.setAttribute("username", username);
-                            EditorUser userinfo = SpringBeanLocator.getUserManagementService().getUser(username);
+                            EditorUser userinfo = usermanagement.getUser(username);
                             if (userinfo != null) {
                                 sessionNode.setAttribute("userphone", userinfo.getPhoneNumber());
                                 sessionNode.setAttribute("userfullname", userinfo.getFullname());

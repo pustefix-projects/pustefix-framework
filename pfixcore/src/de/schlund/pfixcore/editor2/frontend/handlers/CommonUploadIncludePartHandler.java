@@ -19,13 +19,14 @@
 package de.schlund.pfixcore.editor2.frontend.handlers;
 
 import org.apache.log4j.Logger;
+import org.pustefixframework.container.annotations.Inject;
 import org.pustefixframework.editor.EditorStatusCodes;
 import org.xml.sax.SAXException;
 
 import de.schlund.pfixcore.editor2.core.exception.EditorException;
 import de.schlund.pfixcore.editor2.core.exception.EditorIncludeHasChangedException;
 import de.schlund.pfixcore.editor2.frontend.resources.CommonIncludesResource;
-import de.schlund.pfixcore.editor2.frontend.util.EditorResourceLocator;
+import de.schlund.pfixcore.editor2.frontend.resources.SessionResource;
 import de.schlund.pfixcore.editor2.frontend.wrappers.CommonUploadIncludePart;
 import de.schlund.pfixcore.generator.IHandler;
 import de.schlund.pfixcore.generator.IWrapper;
@@ -40,14 +41,15 @@ public abstract class CommonUploadIncludePartHandler implements IHandler {
 
     protected abstract CommonIncludesResource getResource(Context context);
 
+    private SessionResource sessionResource;
+
     public void handleSubmittedData(Context context, IWrapper wrapper)
             throws Exception {
         CommonUploadIncludePart input = (CommonUploadIncludePart) wrapper;
         // System.out.println("In HSD");
         
         // Set flag indicating we are in edit mode
-        EditorResourceLocator.getSessionResource(context)
-                .setInIncludeEditView(true);
+       sessionResource.setInIncludeEditView(true);
         
         if (input.getDoUpload() != null && input.getDoUpload().booleanValue()
                 && input.getHash() != null) {
@@ -96,8 +98,7 @@ public abstract class CommonUploadIncludePartHandler implements IHandler {
             input.setPreserveFormat(!this.getResource(context).isContentIndented());
 
             // Set flag indicating we are in edit mode
-            EditorResourceLocator.getSessionResource(context)
-                    .setInIncludeEditView(true);
+            sessionResource.setInIncludeEditView(true);
         }
     }
 
@@ -114,6 +115,11 @@ public abstract class CommonUploadIncludePartHandler implements IHandler {
     public boolean needsData(Context context) throws Exception {
         // Always ask to upload include part
         return true;
+    }
+
+    @Inject
+    public void setSessionResource(SessionResource sessionResource) {
+        this.sessionResource = sessionResource;
     }
 
 }

@@ -12,27 +12,12 @@
     <prop name="factory.initialize.04">de.schlund.pfixxml.targets.cachestat.SPCacheStatistic</prop>
     <prop name="factory.initialize.05">de.schlund.pfixxml.perflogging.PerfLogging</prop>
     <prop name="factory.initialize.06">de.schlund.pfixxml.testrecording.TestRecording</prop>
-
-    <choose>
-      <when test="$mode = 'prod'">
-        <!-- Load all projects on startup when in production mode-->
-        <prop name="factory.initialize.07">de.schlund.pfixxml.ProjectInitFactory</prop>
-        <!-- Specify this property to load only certain projects
-             <prop name="projectinit.projectlist">sample1, webservice</prop>
-        -->
-      </when>
-      <otherwise>
-        <!-- Start the editor application when not in production mode instead -->
-        <prop name="factory.initialize.07">de.schlund.pfixcore.editor2.frontend.util.EditorApplicationContextFactory</prop>
-      </otherwise>
-    </choose>
- 
+    
     <prop name="factory.initialize.08">org.pustefixframework.admin.mbeans.AuthAdmin</prop>
- 
-    <!-- ApplicationContext factory for editor -->
-    <prop name="de.schlund.pfixcore.editor2.springconfig">common/conf/editor-spring.xml</prop>
+    
+    <!-- Enable update thread -->
     <prop name="de.schlund.pfixcore.editor2.updatetargets">true</prop>
-      
+    
     <!-- SPCacheFactory -->
     <prop name="targetcache.cacheclass">de.schlund.pfixxml.targets.LRUCache</prop>
     <prop name="targetcache.cachecapacity">50</prop>

@@ -19,11 +19,14 @@
 package org.pustefixframework.container.spring.beans;
 
 import java.lang.reflect.Method;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.pustefixframework.container.annotations.ImplementedBy;
 import org.pustefixframework.container.annotations.Inject;
 import org.pustefixframework.container.annotations.Scope;
 import org.springframework.aop.scope.ScopedProxyUtils;
+import org.springframework.beans.PropertyValue;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -41,6 +44,8 @@ import org.springframework.beans.factory.support.DefaultListableBeanFactory;
  * @author Sebastian Marsching <sebastian.marsching@1und1.de>
  */
 public class AnnotationBeanDefinitionPostProcessor {
+    private Map<String, String> scopedProxyMap = new HashMap<String, String>(); 
+    
     /**
      * Iterates over all {@link BeanDefinition}s in the <code>beanFactory</code>
      * and looks for setters with the {@link Inject} annotation. If such an
@@ -55,6 +60,7 @@ public class AnnotationBeanDefinitionPostProcessor {
      * @param beanFactory bean factory containing the bean definitions to check
      */
     public void postProcess(DefaultListableBeanFactory beanFactory) {
+        prepareScopedProxyMap(beanFactory);
         String[] beanNames = beanFactory.getBeanDefinitionNames();
         for (int i = 0; i < beanNames.length; i++) {
             String beanName = beanNames[i];
@@ -63,6 +69,19 @@ public class AnnotationBeanDefinitionPostProcessor {
         }
     }
     
+    private void prepareScopedProxyMap(DefaultListableBeanFactory beanFactory) {
+        this.scopedProxyMap.clear();
+        for (String beanName : beanFactory.getBeanDefinitionNames()) {
+            BeanDefinition beanDefinition = beanFactory.getBeanDefinition(beanName);
+            if (beanDefinition.getBeanClassName().equals("org.springframework.aop.scope.ScopedProxyFactoryBean")) {
+                PropertyValue value = beanDefinition.getPropertyValues().getPropertyValue("targetBeanName");
+                if (value != null) {
+                    scopedProxyMap.put((String) value.getValue(), beanName);
+                }
+            }
+        }
+    }
+
     /**
      * Processes a bean definition looking for {@link Inject} annotations
      * in the bean class.
@@ -175,6 +194,10 @@ public class AnnotationBeanDefinitionPostProcessor {
             if (wantedType.isAssignableFrom(beanClass)) {
                 if (matchingBeanName == null) {
                     matchingBeanName = beanName;
+                    // Look for an AOP proxy
+                    if (scopedProxyMap.containsKey(matchingBeanName)) {
+                        matchingBeanName = scopedProxyMap.get(matchingBeanName);
+                    }
                 } else {
                     // There is more than one matching definition,
                     // which is an error condition.

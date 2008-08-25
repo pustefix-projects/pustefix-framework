@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
-
-<beans>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd">
   
   <!-- WARNING: Do never change the order of UserManagementService and
                 ProjectFactoryService!
@@ -49,10 +50,6 @@
     </property>
     <property name="pustefixTargetUpdateService">
       <ref bean="pustefixtargetupdate"/>
-    </property>
-    <!-- Relative path to central projects configuration file -->
-    <property name="projectsFilePath">
-      <value>servletconf/projects.xml</value>
     </property>
   </bean>
 		  
@@ -190,14 +187,12 @@
       <ref bean="pathresolver"/>
     </property>
     <property name="projectsFilePath">
-      <value>servletconf/projects.xml</value>
-    </property>	  
+      <value>common/conf/projects.xml</value>
+    </property>
   </bean>
 
-  <bean id="securitymanager" class="de.schlund.pfixcore.editor2.core.spring.SecurityManagerServiceImpl">
-    <property name="sessionService">
-      <ref bean="session"/>
-    </property>
+  <bean id="securitymanager" scope="session" class="de.schlund.pfixcore.editor2.core.spring.SecurityManagerServiceImpl">
+    <aop:scoped-proxy/>
     <property name="userManagementService">
       <ref bean="usermanagement"/>
     </property>
@@ -212,9 +207,6 @@
     </property>
   </bean>
     
-  <bean id="session" class="de.schlund.pfixcore.editor2.core.spring.PustefixSessionServiceImpl">      
-  </bean>
-  
   <bean id="pustefixtargetupdate" class="de.schlund.pfixcore.editor2.core.spring.PustefixTargetUpdateServiceImpl" init-method="init">
     <!-- Delay (in milliseconds) to wait after startup, before
          regeneration of any target is started                 -->
@@ -255,5 +247,5 @@
       <value>1000</value>
     </property>	  
   </bean>
-					
+  
 </beans>

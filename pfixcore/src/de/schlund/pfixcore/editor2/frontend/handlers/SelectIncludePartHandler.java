@@ -18,8 +18,10 @@
 
 package de.schlund.pfixcore.editor2.frontend.handlers;
 
+import org.pustefixframework.container.annotations.Inject;
+
 import de.schlund.pfixcore.editor2.frontend.resources.CommonIncludesResource;
-import de.schlund.pfixcore.editor2.frontend.util.EditorResourceLocator;
+import de.schlund.pfixcore.editor2.frontend.resources.IncludesResource;
 import de.schlund.pfixcore.workflow.Context;
 
 /**
@@ -29,8 +31,15 @@ import de.schlund.pfixcore.workflow.Context;
  */
 public class SelectIncludePartHandler extends CommonSelectIncludePartHandler {
 
+    private IncludesResource includesResource;
+
     protected CommonIncludesResource getResource(Context context) {
-        return EditorResourceLocator.getIncludesResource(context);
+        return includesResource;
     }
-    
+
+    @Inject
+    public void setIncludesResource(IncludesResource includesResource) {
+        this.includesResource = includesResource;
+    }    
+
 }

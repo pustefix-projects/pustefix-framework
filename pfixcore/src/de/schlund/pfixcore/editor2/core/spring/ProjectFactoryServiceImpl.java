@@ -19,28 +19,26 @@
 package de.schlund.pfixcore.editor2.core.spring;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
 
 import javax.xml.parsers.FactoryConfigurationError;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 
 import org.apache.log4j.Logger;
+import org.pustefixframework.config.Constants;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
 import de.schlund.pfixcore.editor2.core.dom.Project;
 import de.schlund.pfixcore.editor2.core.exception.EditorInitializationException;
 import de.schlund.pfixcore.editor2.core.spring.internal.ProjectImpl;
 import de.schlund.pfixxml.targets.TargetGenerator;
-import de.schlund.pfixxml.util.XPath;
 
 /**
  * Implementation using the configured projects.xml file to retrieve a list fo
@@ -62,8 +60,6 @@ public class ProjectFactoryServiceImpl implements ProjectFactoryService {
     private FileSystemService filesystem;
 
     private ThemeFactoryService themefactory;
-
-    private String projectsFile;
 
     private boolean initialized;
 
@@ -114,10 +110,6 @@ public class ProjectFactoryServiceImpl implements ProjectFactoryService {
         this.updater = updater;
     }
 
-    public void setProjectsFilePath(String path) {
-        this.projectsFile = path;
-    }
-
     public ProjectFactoryServiceImpl() {
         this.projects = new HashMap<String, Project>();
         this.generatorToProjectNameMap = new HashMap<String, String>();
@@ -134,41 +126,58 @@ public class ProjectFactoryServiceImpl implements ProjectFactoryService {
          * File(pathresolver.resolve(projectsFile)));
          */
 
-        File prjFile = new File(pathresolver.resolve(projectsFile));
-        Document doc;
-        synchronized (filesystem.getLock(prjFile)) {
-            doc = filesystem.readXMLDocumentFromFile(new File(pathresolver
-                    .resolve(projectsFile)));
-        }
-        List<Node> projectNodes = XPath.select(doc.getDocumentElement(),
-                "project[servlet/@useineditor='true']");
-        for (Iterator<Node> i = projectNodes.iterator(); i.hasNext();) {
-            Element projectElement = (Element) i.next();
+        Collection<File> projectFiles = findProjectFiles();
+        for (File projectFile : projectFiles) {
+            Document doc;
+            synchronized (filesystem.getLock(projectFile)) {
+                doc = filesystem.readCustomizedXMLDocumentFromFile(projectFile, Constants.NS_PROJECT);
+            }
+            Element rootElement = doc.getDocumentElement();
+            Element projectElement = (Element) rootElement.getElementsByTagNameNS(Constants.NS_PROJECT, "project").item(0);
+            Element nameElement = null;
+            Element descriptionElement = null;
+            if (projectElement != null) {
+                nameElement = (Element) projectElement.getElementsByTagNameNS(Constants.NS_PROJECT, "name").item(0);
+                descriptionElement = (Element) projectElement.getElementsByTagNameNS(Constants.NS_PROJECT, "description").item(0);
+            }
+            Element editorElement = (Element) rootElement.getElementsByTagNameNS(Constants.NS_PROJECT, "editor").item(0);
+            Element editorEnabledElement = null;
+            if (editorElement != null) {
+                editorEnabledElement = (Element) editorElement.getElementsByTagNameNS(Constants.NS_PROJECT, "enabled").item(0);
+            }
+            Element generatorElement = (Element) rootElement.getElementsByTagNameNS(Constants.NS_PROJECT, "xml-generator").item(0);
+            Element generatorConfigElement = null;
+            if (generatorElement != null) {
+                generatorConfigElement = (Element) generatorElement.getElementsByTagNameNS(Constants.NS_PROJECT, "config-file").item(0);
+            }
             String projectName = "<unknown>";
             try {
-                if (!projectElement.hasAttribute("name")) {
-                    String err = "<project>-tag needs name attribute!";
+                if (nameElement == null) {
+                    String err = "<name>-tag missing in file " + projectFile + "";
                     Logger.getLogger(this.getClass()).error(err);
                     throw new EditorInitializationException(err);
                 }
-                projectName = projectElement.getAttribute("name");
-                Node tempNode;
-                tempNode = XPath.selectNode(projectElement, "comment/text()");
-                if (tempNode == null) {
+                projectName = nameElement.getTextContent().trim();
+                if (descriptionElement == null) {
                     String err = "Project " + projectName
-                            + " does not have mandatory <comment> element!";
+                            + " does not have mandatory <description> element!";
                     Logger.getLogger(this.getClass()).error(err);
                     throw new EditorInitializationException(err);
                 }
-                String projectComment = tempNode.getNodeValue();
-                tempNode = XPath.selectNode(projectElement, "depend/text()");
-                if (tempNode == null) {
+                String projectComment = descriptionElement.getTextContent().trim();
+                if (generatorConfigElement == null) {
                     String err = "Project " + projectName
-                        + " does not have mandatory <depend> element!";
+                        + " does not have mandatory <xml-generator>/<config-file> element!";
                     Logger.getLogger(this.getClass()).error(err);
                     throw new EditorInitializationException(err);
                 }
-                String projectDependFile = tempNode.getNodeValue();
+                if (editorEnabledElement != null) {
+                    if (editorEnabledElement.getTextContent().trim().equals("false")) {
+                        // Do not load this project
+                        continue;
+                    }
+                }
+                String projectDependFile = generatorConfigElement.getTextContent().trim();
                 
                 ProjectImpl project = new ProjectImpl(variantfactory, themefactory, pagefactory, includefactory, imagefactory, targetfactory, updater, projectName, projectComment, projectDependFile);
                 this.projects.put(projectName, project);
@@ -178,6 +187,37 @@ public class ProjectFactoryServiceImpl implements ProjectFactoryService {
             }
         }
         this.initialized = true;
+    }
+
+    private Collection<File> findProjectFiles() {
+        File docroot = new File(pathresolver.resolve(""));
+        return findProjectFiles(docroot);
+    }
+    
+    private Collection<File> findProjectFiles(File directory) {
+        HashSet<File> files = new HashSet<File>();
+        
+        FileFilter directoryFilter = new FileFilter() {
+
+            public boolean accept(File pathname) {
+                return pathname.isDirectory();
+            }
+            
+        };
+        
+        File[] directories = directory.listFiles(directoryFilter);
+        for (File subDirectory : directories) {
+            files.addAll(findProjectFiles(subDirectory));
+        }
+        
+        if (directory.getName().equals("conf")) {
+            File projectFile = new File(directory, "project.xml");
+            if (projectFile.exists()) {
+                files.add(projectFile);
+            }
+        }
+        
+        return files;
     }
 
     /*

@@ -18,9 +18,11 @@
 
 package de.schlund.pfixcore.editor2.frontend.handlers;
 
+import org.pustefixframework.container.annotations.Inject;
 import org.pustefixframework.editor.EditorStatusCodes;
 
-import de.schlund.pfixcore.editor2.frontend.util.EditorResourceLocator;
+import de.schlund.pfixcore.editor2.frontend.resources.ProjectsResource;
+import de.schlund.pfixcore.editor2.frontend.resources.TargetsResource;
 import de.schlund.pfixcore.editor2.frontend.wrappers.SelectTarget;
 import de.schlund.pfixcore.generator.IHandler;
 import de.schlund.pfixcore.generator.IWrapper;
@@ -33,11 +35,13 @@ import de.schlund.pfixcore.workflow.Context;
  */
 public class SelectTargetHandler implements IHandler {
 
+    private TargetsResource targetsResource;
+    private ProjectsResource projectsResource;
+
     public void handleSubmittedData(Context context, IWrapper wrapper)
             throws Exception {
         SelectTarget input = (SelectTarget) wrapper;
-        if (!EditorResourceLocator.getTargetsResource(context).selectTarget(
-                input.getTargetName())) {
+        if (!targetsResource.selectTarget(input.getTargetName())) {
             input.addSCodeTargetName(EditorStatusCodes.TARGETS_TARGET_UNDEF);
         }
     }
@@ -49,8 +53,7 @@ public class SelectTargetHandler implements IHandler {
 
     public boolean prerequisitesMet(Context context) throws Exception {
         // Allow only if project is selected
-        return (EditorResourceLocator.getProjectsResource(context)
-                .getSelectedProject() != null);
+        return (projectsResource.getSelectedProject() != null);
     }
 
     public boolean isActive(Context context) throws Exception {
@@ -61,6 +64,16 @@ public class SelectTargetHandler implements IHandler {
     public boolean needsData(Context context) throws Exception {
         // Always ask to select target
         return true;
+    }
+
+    @Inject
+    public void setTargetsResource(TargetsResource targetsResource) {
+        this.targetsResource = targetsResource;
+    }
+
+    @Inject
+    public void setProjectsResource(ProjectsResource projectsResource) {
+        this.projectsResource = projectsResource;
     }
 
 }

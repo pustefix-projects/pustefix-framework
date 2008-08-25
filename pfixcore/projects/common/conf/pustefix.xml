@@ -15,10 +15,10 @@
     <!-- URL for the Pustefix editor -->
     <choose>
       <when test="$__antprop_standalone.tomcat = 'true'">
-        <prop name="xmlserver.editor_url">http://cmscore.${fqdn}:8080</prop>
+        <prop name="xmlserver.editor_url">http://cms.${fqdn}:8080</prop>
       </when>
       <otherwise>
-        <prop name="xmlserver.editor_url">http://cmscore.${fqdn}</prop>
+        <prop name="xmlserver.editor_url">http://cms.${fqdn}</prop>
       </otherwise>
     </choose>
     

@@ -21,10 +21,11 @@ package de.schlund.pfixcore.editor2.frontend.handlers;
 import java.io.File;
 import java.io.FileInputStream;
 
+import org.pustefixframework.container.annotations.Inject;
 import org.pustefixframework.editor.EditorStatusCodes;
 
 import de.schlund.pfixcore.editor2.core.dom.Image;
-import de.schlund.pfixcore.editor2.frontend.util.EditorResourceLocator;
+import de.schlund.pfixcore.editor2.frontend.resources.ImagesResource;
 import de.schlund.pfixcore.editor2.frontend.wrappers.UploadImage;
 import de.schlund.pfixcore.generator.IHandler;
 import de.schlund.pfixcore.generator.IWrapper;
@@ -38,6 +39,8 @@ import de.schlund.pfixxml.ImageInfo;
  */
 public class UploadImageHandler implements IHandler {
 
+    private ImagesResource imagesResource;
+
     public void handleSubmittedData(Context context, IWrapper wrapper)
             throws Exception {
         UploadImage input = (UploadImage) wrapper;
@@ -49,8 +52,7 @@ public class UploadImageHandler implements IHandler {
             return;
         }
         String mimeType = info.getMimeType();
-        Image image = EditorResourceLocator.getImagesResource(context)
-                .getSelectedImage();
+        Image image = imagesResource.getSelectedImage();
         if (image == null) {
             input.addSCodeImageFile(EditorStatusCodes.IMAGESUPLOAD_IMAGEUPL_WRONGTYPE);
         }
@@ -98,13 +100,17 @@ public class UploadImageHandler implements IHandler {
 
     public boolean isActive(Context context) throws Exception {
         // Handler is only active, if there is a selected image
-        return (EditorResourceLocator.getImagesResource(context)
-                .getSelectedImage() != null);
+        return (imagesResource.getSelectedImage() != null);
     }
 
     public boolean needsData(Context context) throws Exception {
         // Always ask for upload
         return true;
+    }
+
+    @Inject
+    public void setImagesResource(ImagesResource imagesResource) {
+        this.imagesResource = imagesResource;
     }
 
 }

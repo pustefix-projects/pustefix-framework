@@ -55,11 +55,29 @@ public interface FileSystemService {
      * @throws SAXException
      * @throws ParserConfigurationException
      * @throws IOException
-     * @t
      * @throws ParserConfigurationException
-     *             hrows FileNotFoundExceptio, n
+     * @throws FileNotFoundException
      */
     public Document readXMLDocumentFromFile(File file)
+            throws FileNotFoundException, SAXException, IOException;
+    
+    /**
+     * Returns a DOM document which represents the XML content of the file.
+     * Processes customization tags within the file if they are in the 
+     * specified namespace.
+     * 
+     * @param file File to read
+     * @param namespace namespace URI of the namespace the customization
+     *  tags are using
+     * @return DOM Document with the content of the file
+     * @throws IOExceptionParserConfigurationException
+     * @throws SAXException
+     * @throws ParserConfigurationException
+     * @throws IOException
+     * @throws ParserConfigurationException
+     * @throws FileNotFoundException
+     */
+    public Document readCustomizedXMLDocumentFromFile(File file, String namespace)
             throws FileNotFoundException, SAXException, IOException;
 
     /**

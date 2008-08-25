@@ -20,17 +20,24 @@ package de.schlund.pfixcore.editor2.frontend.resources;
 
 import java.util.Map;
 
+import org.pustefixframework.container.annotations.Inject;
 import org.w3c.dom.Element;
 
 import de.schlund.pfixcore.beans.InsertStatus;
-import de.schlund.pfixcore.editor2.frontend.util.SpringBeanLocator;
+import de.schlund.pfixcore.editor2.core.spring.ConfigurationService;
 import de.schlund.pfixxml.ResultDocument;
 
 public class NamespaceInfoResource {
+    ConfigurationService configuration;
+    
+    @Inject
+    public void setConfigurationService(ConfigurationService configuration) {
+        this.configuration = configuration;
+    }
 
     @InsertStatus
     public void insertStatus(ResultDocument resdoc, Element root) throws Exception {
-        Map<String, String> namespaces = SpringBeanLocator.getConfigurationService().getPrefixToNamespaceMappings();
+        Map<String, String> namespaces = configuration.getPrefixToNamespaceMappings();
         for (String prefix : namespaces.keySet()) {
             String url = namespaces.get(prefix);
             Element e = resdoc.createSubNode(root, "namespace");

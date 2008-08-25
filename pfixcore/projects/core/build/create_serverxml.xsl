@@ -131,9 +131,13 @@
   </xsl:template>
 
   <xsl:template match="p:project-config">
-    <!-- TODO: Reintroduce active mechanism? -->
-    <xsl:variable name="active" select="'true'"/>
-    <xsl:if test="normalize-space($active) = 'true'">
+    <xsl:variable name="active">
+      <xsl:choose>
+        <xsl:when test="normalize-space(p:project/enabled/text()) = 'false'">false</xsl:when>
+        <xsl:otherwise>true</xsl:otherwise> 
+      </xsl:choose>
+    </xsl:variable>
+    <xsl:if test="$active = 'true'">
       <Host xmlValidation="false" unpackWARs="false" autoDeploy="false">
         <xsl:attribute name="debug"><xsl:value-of select="$debug"/></xsl:attribute>
         <xsl:attribute name="name">

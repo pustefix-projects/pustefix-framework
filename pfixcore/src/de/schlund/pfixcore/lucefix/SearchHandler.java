@@ -23,11 +23,11 @@ import java.io.IOException;
 
 import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.search.BooleanQuery;
+import org.pustefixframework.container.annotations.Inject;
 import org.pustefixframework.editor.EditorStatusCodes;
 
 import de.schlund.pfixcore.editor2.core.dom.Project;
 import de.schlund.pfixcore.editor2.frontend.resources.ProjectsResource;
-import de.schlund.pfixcore.editor2.frontend.util.EditorResourceLocator;
 import de.schlund.pfixcore.generator.IHandler;
 import de.schlund.pfixcore.generator.IWrapper;
 import de.schlund.pfixcore.lucefix.wrappers.Search;
@@ -36,6 +36,8 @@ import de.schlund.pfixcore.workflow.Context;
 public class SearchHandler implements IHandler {
 
     private static final String CSEARCH = "de.schlund.pfixcore.lucefix.ContextSearch";
+    
+    private ProjectsResource projectsResource;
 
     public void handleSubmittedData(Context context, IWrapper wrapper) throws ParseException {
 
@@ -86,7 +88,7 @@ public class SearchHandler implements IHandler {
     }
 
     public boolean isActive(Context context) throws Exception {
-        ProjectsResource pcon = EditorResourceLocator.getProjectsResource(context);
+        ProjectsResource pcon = projectsResource;
         if (pcon == null) return false;
         Project currentProject = pcon.getSelectedProject();
         return currentProject != null;
@@ -98,5 +100,10 @@ public class SearchHandler implements IHandler {
 
     public boolean prerequisitesMet(Context context) throws Exception {
         return true;
+    }
+
+    @Inject
+    public void setProjectsResource(ProjectsResource projectsResource) {
+        this.projectsResource = projectsResource;
     }
 }

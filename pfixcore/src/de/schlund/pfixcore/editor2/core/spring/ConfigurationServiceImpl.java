@@ -22,24 +22,21 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.TransformerException;
 
 import org.apache.log4j.Logger;
+import org.pustefixframework.config.Constants;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import de.schlund.pfixcore.editor2.core.exception.EditorInitializationException;
-import de.schlund.pfixxml.util.XPath;
 
 public class ConfigurationServiceImpl implements ConfigurationService {
-    private HashMap<String, String> map;
+    private HashMap<String, String> map = new HashMap<String, String>();
     private PathResolverService pathresolver;
     private FileSystemService filesystem;
     private String projectsFile;
@@ -57,19 +54,12 @@ public class ConfigurationServiceImpl implements ConfigurationService {
     }
     
     public void init() throws FileNotFoundException, SAXException, IOException, ParserConfigurationException, EditorInitializationException {
-        Document doc = filesystem.readXMLDocumentFromFile(new File(pathresolver.resolve(projectsFile)));
-        List<Node> nlist;
-        this.map = new HashMap<String, String>();
-        try {
-            nlist = XPath.select(doc.getDocumentElement(), "common/namespaces/namespace-declaration");
-        } catch (TransformerException e) {
-            // Should never happen
-            String err = "XPath error!";
-            Logger.getLogger(this.getClass()).error(err, e);
-            throw new RuntimeException(err, e);
-        }
-        for (Iterator<Node> i = nlist.iterator(); i.hasNext();) {
-            Element node = (Element) i.next();
+        Document doc = filesystem.readCustomizedXMLDocumentFromFile(new File(pathresolver.resolve(projectsFile)), Constants.NS_PROJECT);
+        Element rootElement = doc.getDocumentElement();
+        Element namespacesElement = (Element) rootElement.getElementsByTagNameNS(Constants.NS_PROJECT, "namespaces").item(0);
+        NodeList nlist = namespacesElement.getElementsByTagNameNS(Constants.NS_PROJECT, "namespace-declaration");
+        for (int i = 0; i < nlist.getLength(); i++) {
+            Element node = (Element) nlist.item(i);
             if (!node.hasAttribute("prefix")) {
                 String err = "Mandatory attribute prefix is missing for tag namespace-declaration!";
                 Logger.getLogger(this.getClass()).error(err);
