@@ -75,4 +75,42 @@
         <filename>projects/modules/&lt;module-name&gt;/</filename>.
       </para>
     </section>
+    <section xml:id="modulessupport.maven">
+      <title>Creating new modules using the Maven archetype</title>
+      <para>
+        Pustefix provides a Maven archetype, which can be used to create new modules. It sets up
+        a maven project with pre-configured POM, deployment descriptor and statusmessage support.
+      </para>
+      <screen>
+mvn archetype:create \
+-DarchetypeGroupId=org.pustefixframework.maven.archetypes \
+-DarchetypeArtifactId=module-archetype \
+-DarchetypeVersion=0.1 \
+-DgroupId=mytld.myorg.myapp.mysection \
+-DartifactId=mymodule \
+-Dversion=1.0  
+      </screen>
+      <para>
+        You have to supply your own values for the <option>groupId</option>, <option>artifactId</option>
+        and <option>version</option> parameters. The chosen <option>artifactId</option> will be used as 
+	default module and target folder name, the <option>groupId</option> as Java package name. Executing
+        the above command creates the following directory structure and artifacts: 
+      </para>
+      <screen>
+mymodule/
+mymodule/pom.xml
+mymodule/src
+mymodule/src/main
+mymodule/src/main/resources
+mymodule/src/main/resources/dyntxt
+mymodule/src/main/resources/dyntxt/statusmessages.xml
+mymodule/src/main/resources/dyntxt/statuscodeinfo.xml
+mymodule/src/main/resources/META-INF
+mymodule/src/main/resources/META-INF/pustefix-module.xml
+      </screen>
+      <para>
+        Building with <literal>mvn clean package</literal> creates a deployable Pustfix module. At the moment
+        the only addition to the Maven standard build is the generation of StatusCode constant classes.
+      </para>
+    </section>
 </chapter>
