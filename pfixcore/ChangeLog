@@ -1,5 +1,14 @@
 2008-08-25  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
+	* projects/core/editor2/conf/project.xml: 
+	Fixed typo in XPath expression.
+
+	* lib/flexiparse-0.1.1.jar: 
+	* lib/flexiparse-0.1.2.jar: 
+	Updated fleXiParse version because of bugfix.
+
+2008-08-25  Sebastian Marsching  <sebastian.marsching@1und1.de>
+
 	* src/de/schlund/pfixcore/editor2/core/spring/ConfigurationServiceImpl.java: 
 	* src/de/schlund/pfixcore/editor2/core/spring/FileSystemService.java: 
 	* src/de/schlund/pfixcore/editor2/core/spring/FileSystemServiceImpl.java: 

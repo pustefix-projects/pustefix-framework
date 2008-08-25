@@ -5,7 +5,7 @@
     <name>editor2</name>
     <description>Pustefix CMS</description>
     <choose>
-      <when test="$makemode = 'prod'">
+      <when test="$mode = 'prod'">
         <enabled>false</enabled>
       </when>
     </choose>
