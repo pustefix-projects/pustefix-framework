@@ -5,7 +5,7 @@
   <groupId>org.pustefixframework.maven</groupId>
   <artifactId>pustefix-maven</artifactId>
   <packaging>pom</packaging>
-  <version>1.0-SNAPSHOT</version>
+  <version>0.1</version>
 
   <name>Pustefix Maven Support</name>
   <description>Pustefix Maven Support</description>
@@ -15,5 +15,14 @@
     <module>plugins</module>
     <module>archetypes</module>
   </modules>
+
+  <distributionManagement>
+    <repository>
+      <id>pustefix-maven-repository</id>
+      <name>Pustefix-Framework Maven Repository</name>
+      <url>scpexe://pustefixhp.schlund.de/home/pustefix/repository/maven</url>
+      <uniqueVersion>false</uniqueVersion>
+    </repository>
+  </distributionManagement>
 
 </project>
