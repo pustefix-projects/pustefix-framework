@@ -22,7 +22,7 @@ import java.io.File;
 import java.io.FileInputStream;
 
 import org.pustefixframework.container.annotations.Inject;
-import org.pustefixframework.editor.EditorStatusCodes;
+import org.pustefixframework.editor.generated.EditorStatusCodes;
 
 import de.schlund.pfixcore.editor2.core.dom.Image;
 import de.schlund.pfixcore.editor2.frontend.resources.ImagesResource;

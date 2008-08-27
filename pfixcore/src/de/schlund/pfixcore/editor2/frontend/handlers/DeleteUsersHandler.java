@@ -18,7 +18,7 @@
 
 package de.schlund.pfixcore.editor2.frontend.handlers;
 
-import org.pustefixframework.CoreStatusCodes;
+import org.pustefixframework.generated.CoreStatusCodes;
 import org.pustefixframework.container.annotations.Inject;
 
 import de.schlund.pfixcore.editor2.core.exception.EditorUserNotExistingException;

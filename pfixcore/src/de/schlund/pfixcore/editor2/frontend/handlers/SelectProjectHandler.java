@@ -19,7 +19,7 @@
 package de.schlund.pfixcore.editor2.frontend.handlers;
 
 import org.pustefixframework.container.annotations.Inject;
-import org.pustefixframework.editor.EditorStatusCodes;
+import org.pustefixframework.editor.generated.EditorStatusCodes;
 
 import de.schlund.pfixcore.editor2.frontend.resources.ProjectsResource;
 import de.schlund.pfixcore.editor2.frontend.wrappers.SelectProject;

@@ -21,7 +21,7 @@ package de.schlund.pfixcore.generator.casters;
 import java.io.File;
 import java.util.ArrayList;
 
-import org.pustefixframework.CoreStatusCodes;
+import org.pustefixframework.generated.CoreStatusCodes;
 
 import de.schlund.pfixcore.generator.IWrapperParamCaster;
 import de.schlund.pfixcore.generator.SimpleCheck;

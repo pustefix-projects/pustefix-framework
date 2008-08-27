@@ -4,7 +4,7 @@ import java.lang.reflect.Method;
 
 public class StatusCodeHelper {
 
-    private final static String DEFAULT_STATUSCODE_CLASS = "org.pustefixframework.CoreStatusCodes";
+    private final static String DEFAULT_STATUSCODE_CLASS = "org.pustefixframework.generated.CoreStatusCodes";
     
     public static StatusCode getStatusCodeByName(String name) {
         return getStatusCodeByName(name, false);

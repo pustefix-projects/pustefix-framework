@@ -20,7 +20,7 @@ package de.schlund.pfixcore.editor2.frontend.handlers;
 
 import org.apache.log4j.Logger;
 import org.pustefixframework.container.annotations.Inject;
-import org.pustefixframework.editor.EditorStatusCodes;
+import org.pustefixframework.editor.generated.EditorStatusCodes;
 import org.xml.sax.SAXException;
 
 import de.schlund.pfixcore.editor2.core.exception.EditorException;

@@ -20,7 +20,7 @@
 package de.schlund.pfixcore.generator.postchecks;
 import java.util.StringTokenizer;
 
-import org.pustefixframework.CoreStatusCodes;
+import org.pustefixframework.generated.CoreStatusCodes;
 
 import de.schlund.pfixcore.generator.IWrapperParamPostCheck;
 import de.schlund.pfixcore.generator.SimpleCheck;

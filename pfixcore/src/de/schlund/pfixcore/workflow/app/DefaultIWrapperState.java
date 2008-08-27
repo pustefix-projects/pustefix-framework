@@ -21,7 +21,7 @@ package de.schlund.pfixcore.workflow.app;
 
 import java.util.Map;
 
-import org.pustefixframework.CoreStatusCodes;
+import org.pustefixframework.generated.CoreStatusCodes;
 import org.pustefixframework.config.contextxmlservice.IWrapperConfig;
 import org.pustefixframework.config.contextxmlservice.StateConfig;
 

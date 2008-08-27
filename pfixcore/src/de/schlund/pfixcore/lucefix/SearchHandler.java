@@ -24,7 +24,7 @@ import java.io.IOException;
 import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.search.BooleanQuery;
 import org.pustefixframework.container.annotations.Inject;
-import org.pustefixframework.editor.EditorStatusCodes;
+import org.pustefixframework.editor.generated.EditorStatusCodes;
 
 import de.schlund.pfixcore.editor2.core.dom.Project;
 import de.schlund.pfixcore.editor2.frontend.resources.ProjectsResource;

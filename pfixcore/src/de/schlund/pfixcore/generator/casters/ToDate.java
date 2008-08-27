@@ -24,7 +24,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import org.pustefixframework.CoreStatusCodes;
+import org.pustefixframework.generated.CoreStatusCodes;
 
 import de.schlund.pfixcore.generator.IWrapperParamCaster;
 import de.schlund.pfixcore.generator.IWrapperParamUncaster;

@@ -18,9 +18,9 @@
 
 package de.schlund.pfixcore.editor2.frontend.handlers;
 
-import org.pustefixframework.CoreStatusCodes;
+import org.pustefixframework.generated.CoreStatusCodes;
 import org.pustefixframework.container.annotations.Inject;
-import org.pustefixframework.editor.EditorStatusCodes;
+import org.pustefixframework.editor.generated.EditorStatusCodes;
 
 import de.schlund.pfixcore.editor2.core.dom.Project;
 import de.schlund.pfixcore.editor2.core.spring.ProjectFactoryService;

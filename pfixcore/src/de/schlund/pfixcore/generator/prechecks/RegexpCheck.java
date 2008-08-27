@@ -20,7 +20,7 @@
 package de.schlund.pfixcore.generator.prechecks;
 import org.apache.oro.text.PatternCacheLRU;
 import org.apache.oro.text.perl.Perl5Util;
-import org.pustefixframework.CoreStatusCodes;
+import org.pustefixframework.generated.CoreStatusCodes;
 
 import de.schlund.pfixcore.generator.IWrapperParamPreCheck;
 import de.schlund.pfixcore.generator.SimpleCheck;

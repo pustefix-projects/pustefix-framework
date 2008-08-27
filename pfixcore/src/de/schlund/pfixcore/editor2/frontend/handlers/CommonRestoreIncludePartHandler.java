@@ -18,7 +18,7 @@
 
 package de.schlund.pfixcore.editor2.frontend.handlers;
 
-import org.pustefixframework.editor.EditorStatusCodes;
+import org.pustefixframework.editor.generated.EditorStatusCodes;
 
 import de.schlund.pfixcore.editor2.frontend.resources.CommonIncludesResource;
 import de.schlund.pfixcore.editor2.frontend.wrappers.CommonRestoreIncludePart;
