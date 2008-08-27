@@ -1099,7 +1099,7 @@ If your error message should contain dynamic data, you can use placeholders, whi
 </part>
 ]]></programlisting>
 <para>
-StatusCodes can be also referenced from within IWrapper definitions. If you're using a built-in StatusCode (from org.pustefixframework.CoreStatusCodes), you can just use its name, if you're using a StatusCode from another module, you have to prefix the name with the class name of the generated class separated by a <literal>#</literal> sign:
+StatusCodes can be also referenced from within IWrapper definitions. If you're using a built-in StatusCode (from org.pustefixframework.generated.CoreStatusCodes), you can just use its name, if you're using a StatusCode from another module, you have to prefix the name with the class name of the generated class separated by a <literal>#</literal> sign:
 </para>
 <programlisting language="xml"><![CDATA[
 <interface xmlns="http://pustefix.sourceforge.net/interfacewrapper200401">
