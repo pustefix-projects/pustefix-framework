@@ -85,7 +85,8 @@ public class GenerateSCodesTask extends MatchingTask {
                     sb.append(filePath);
                     if(it.hasNext()) sb.append(" ");
                 }
-                getProject().setProperty(property, sb.toString());
+                String str = sb.toString().trim();
+                if(str.length()>0) getProject().setProperty(property, str);
             }
             
         } catch(Exception x) {
