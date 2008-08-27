@@ -1042,6 +1042,7 @@ Before the StatusCode files are recognized by the build process, they have to be
                 xsi:schemaLocation="http://pustefix-framework.org/statuscodeinfo ../../core/schema/statuscodeinfo.xsd">
   <statuscodes class="example.bank.BankStatusCodes">
     <file>statusmessages.xml</file>
+    <file>...</file>
   </statuscodes>
   ...
 </statuscodeinfo>
@@ -1097,5 +1098,25 @@ If your error message should contain dynamic data, you can use placeholders, whi
   <theme name="default">User <pfx:argref pos="1"/> is illegal.</theme>
 </part>
 ]]></programlisting>
+<para>
+StatusCodes can be also referenced from within IWrapper definitions. If you're using a built-in StatusCode (from org.pustefixframework.CoreStatusCodes), you can just use its name, if you're using a StatusCode from another module, you have to prefix the name with the class name of the generated class separated by a <literal>#</literal> sign:
+</para>
+<programlisting language="xml"><![CDATA[
+<interface xmlns="http://pustefix.sourceforge.net/interfacewrapper200401">
+
+  <ihandler class="..."/>
+  
+  <param name="Login" type="..." missingscode="example.bank.BankStatusCodes#MISSING_LOGIN_DATA">
+    ...
+  </param>
+
+</interface> 
+]]></programlisting>
+<para>
+The statusmessage files for statuscodes coming from the Pustefix core or arbitrary modules can be edited to customize the messages for your project's requirements. Therefor the original statusmessage files are initially copied or if a copy already exists, the files are merged (statusmessages for new statuscodes are added, statusmessages for omitted statuscodes are removed) by the build process. You should only customize these merged files, changes in the original files will be overwritten with the next module update.
+</para>
+<para>
+The built-in core and editor statuscodes are merged to <literal>projects/core-override/dyntxt/statusmessages-core-merged.xml</literal> and <literal>projects/core-override/dyntxt/statusmessages-editor-merged.xml</literal>. Pustefix module statuscodes are merged to <literal>projects/modules-override/MODULENAME/dyntxt/statusmessages-merged.xml</literal>.
+</para>
 </section>
 </chapter>
