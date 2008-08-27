@@ -620,7 +620,11 @@ or delete the DOCTYPE definition -->
      classpathref="cp.classpath"
      encoding="${javac.encoding}"
      >
-    </javac>    
+    </javac>
+    <antcall target="scgenerate-compile"/>
+  </target>
+
+  <target name="scgenerate-compile" if="scgenerate.classes">    
     <javac
      srcdir="${dir.gensrc}"
      destdir="${dir.build}"
