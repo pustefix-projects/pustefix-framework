@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
-            xmlns="http://pustefix.sourceforge.net/wsconfig200401"
-            targetNamespace="http://pustefix.sourceforge.net/wsconfig200401"
+            xmlns="http://www.pustefix-framework.org/2008/namespace/webservice-config"
+            targetNamespace="http://www.pustefix-framework.org/2008/namespace/webservice-config"
             elementFormDefault="qualified" attributeFormDefault="unqualified">
 
   <xsd:annotation>
