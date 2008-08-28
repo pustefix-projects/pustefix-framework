@@ -432,7 +432,11 @@ or delete the DOCTYPE definition -->
     />
   </target>
 
-  <target name="ant-tasks-webservice">
+  <target name="webservice-modules-check">
+    <available classname="org.pustefixframework.webservices.jaxws.generate.WebserviceTask" classpathref="cp.classpath" property="webservice.jaxws.available"/>
+  </target>
+  
+  <target name="ant-tasks-webservice" depends="webservice-modules-check" if="webservice.jaxws.available">
     <taskdef
       name="pfx-webservice"
       classname="org.pustefixframework.webservices.jaxws.generate.WebserviceTask"
@@ -943,7 +947,7 @@ or delete the DOCTYPE definition -->
     />
   </target>
 
-  <target name="webservice" depends="ant-tasks-webservice">
+  <target name="webservice" depends="ant-tasks-webservice" if="webservice.jaxws.available">
     <pfx-webservice
       tmpdir="${dir.projects}/.webservice"
       prjdir="${dir.projects}"
