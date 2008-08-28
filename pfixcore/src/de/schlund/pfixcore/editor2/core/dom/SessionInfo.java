@@ -16,30 +16,39 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-package de.schlund.pfixcore.editor2.frontend.handlers;
+package de.schlund.pfixcore.editor2.core.dom;
 
-import org.pustefixframework.container.annotations.Inject;
+import java.util.Date;
 
-import de.schlund.pfixcore.editor2.frontend.resources.CommonIncludesResource;
-import de.schlund.pfixcore.editor2.frontend.resources.DynIncludesResource;
-import de.schlund.pfixcore.workflow.Context;
+import de.schlund.pfixcore.editor2.core.vo.EditorUser;
 
 /**
- * Handles DynInclude upload
+ * Provides information about an editor user session.  
  * 
  * @author Sebastian Marsching <sebastian.marsching@1und1.de>
  */
-public class UploadDynIncludePartHandler extends CommonUploadIncludePartHandler {
-
-    private DynIncludesResource dynIncludesResource;
-
-    protected CommonIncludesResource getResource(Context context) {
-        return dynIncludesResource;
-    }
-
-    @Inject
-    public void setDynIncludesResource(DynIncludesResource dynIncludesResource) {
-        this.dynIncludesResource = dynIncludesResource;
-    }
-
+public interface SessionInfo {
+    
+    /**
+     * Returns the user that is logged in to this session or <code>null</code>
+     * if no user is logged in.
+     * 
+     * @return user logged in to this session
+     */
+    EditorUser getUser();
+    
+    /**
+     * Return the include part currently selected by the user or
+     * <code>null</code> if no include part is selected.
+     * 
+     * @return include part selected by the user
+     */
+    IncludePartThemeVariant getIncludePart();
+    
+    /**
+     * Returns the last time the session was used.
+     * 
+     * @return last time the session was used
+     */
+    Date getLastAccess();
 }

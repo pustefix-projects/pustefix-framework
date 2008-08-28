@@ -16,30 +16,16 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-package de.schlund.pfixcore.editor2.frontend.handlers;
+package de.schlund.pfixcore.editor2.frontend.util;
 
-import org.pustefixframework.container.annotations.Inject;
-
-import de.schlund.pfixcore.editor2.frontend.resources.CommonIncludesResource;
-import de.schlund.pfixcore.editor2.frontend.resources.DynIncludesResource;
 import de.schlund.pfixcore.workflow.Context;
+import de.schlund.pfixcore.workflow.ContextInterceptor;
+import de.schlund.pfixxml.PfixServletRequest;
 
-/**
- * Handles DynInclude upload
- * 
- * @author Sebastian Marsching <sebastian.marsching@1und1.de>
- */
-public class UploadDynIncludePartHandler extends CommonUploadIncludePartHandler {
+public class UpdateSessionInfoContextInterceptor implements ContextInterceptor {
 
-    private DynIncludesResource dynIncludesResource;
-
-    protected CommonIncludesResource getResource(Context context) {
-        return dynIncludesResource;
-    }
-
-    @Inject
-    public void setDynIncludesResource(DynIncludesResource dynIncludesResource) {
-        this.dynIncludesResource = dynIncludesResource;
+    public void process(Context context, PfixServletRequest preq) {
+        EditorResourceLocator.getSessionResource(context).updateSessionInfo();
     }
 
 }

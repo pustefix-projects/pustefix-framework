@@ -16,12 +16,13 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-package de.schlund.pfixcore.editor2.frontend.util;
+package de.schlund.pfixcore.editor2.core.spring;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.WeakHashMap;
 
+import de.schlund.pfixcore.editor2.core.dom.SessionInfo;
 import de.schlund.pfixcore.workflow.Context;
 
 /**
@@ -35,43 +36,31 @@ import de.schlund.pfixcore.workflow.Context;
  * 
  * @author Sebastian Marsching <sebastian.marsching@1und1.de>
  */
-public class ContextStore {
-    private static ContextStore instance = new ContextStore();
-
-    /**
-     * Returns single instance (singleton pattern)
+public class SessionInfoStore {
+    
+    private WeakHashMap<Context, SessionInfo> contextmap = new WeakHashMap<Context, SessionInfo>();
+    
+     /**
+     * Returns all session info objects that are currently stored within the map.
      * 
-     * @return instance of ContextStore
+     * @return collection of all session info objects
      */
-    public static ContextStore getInstance() {
-        return instance;
+    public synchronized Collection<SessionInfo> getSessionInfos() {
+        return new ArrayList<SessionInfo>(contextmap.values());
     }
-
-    private WeakHashMap<Context, String> contextmap = new WeakHashMap<Context, String>();
-
+    
     /**
-     * Returns a Map containing the known Context objects as keys and the
-     * name of the editor users using the corresponding Context as the value.
-     * This information can be used to construct a list of all active
-     * editor sessions.
-     * 
-     * @return Map containing Context objects of editor sessions and usernames
-     */    
-    public synchronized Map<Context, String> getContextMap() {
-        return new HashMap<Context, String>(contextmap);
-    }
-
-    /**
-     * Registers a Context with the specified username.
-     * This method should be triggered during user login.
+     * Registers a context with the specified session info.
+     * This method should be triggered during user login as 
+     * well as when the edited include part changes.
      * 
      * @param ctx editor's session context
-     * @param username name of the user this context is used by 
+     * @param sessionInfo information about the session associated with the context
      */
-    public synchronized void registerContext(Context ctx, String username) {
-        contextmap.put(ctx, username);
+    public synchronized void registerContext(Context ctx, SessionInfo sessionInfo) {
+        contextmap.put(ctx, sessionInfo);
     }
-
+    
     /**
      * Unregisters the specified context.
      * This method should be triggered on a logout action to make sure
@@ -82,4 +71,5 @@ public class ContextStore {
     public synchronized void unregisterContext(Context ctx) {
         contextmap.remove(ctx);
     }
+    
 }

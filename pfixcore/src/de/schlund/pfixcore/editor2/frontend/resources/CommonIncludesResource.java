@@ -34,7 +34,6 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
-import de.schlund.pfixcore.beans.InitResource;
 import de.schlund.pfixcore.beans.InsertStatus;
 import de.schlund.pfixcore.editor2.core.dom.Image;
 import de.schlund.pfixcore.editor2.core.dom.IncludeFile;
@@ -42,6 +41,7 @@ import de.schlund.pfixcore.editor2.core.dom.IncludePart;
 import de.schlund.pfixcore.editor2.core.dom.IncludePartThemeVariant;
 import de.schlund.pfixcore.editor2.core.dom.Page;
 import de.schlund.pfixcore.editor2.core.dom.Project;
+import de.schlund.pfixcore.editor2.core.dom.SessionInfo;
 import de.schlund.pfixcore.editor2.core.dom.Theme;
 import de.schlund.pfixcore.editor2.core.exception.EditorException;
 import de.schlund.pfixcore.editor2.core.exception.EditorIOException;
@@ -50,11 +50,9 @@ import de.schlund.pfixcore.editor2.core.exception.EditorParsingException;
 import de.schlund.pfixcore.editor2.core.exception.EditorSecurityException;
 import de.schlund.pfixcore.editor2.core.spring.BackupService;
 import de.schlund.pfixcore.editor2.core.spring.ConfigurationService;
-import de.schlund.pfixcore.editor2.frontend.util.ContextStore;
+import de.schlund.pfixcore.editor2.core.spring.SessionInfoStore;
 import de.schlund.pfixcore.editor2.frontend.util.DiffUtil;
-import de.schlund.pfixcore.editor2.frontend.util.EditorResourceLocator;
 import de.schlund.pfixcore.editor2.frontend.util.DiffUtil.ComparedLine;
-import de.schlund.pfixcore.workflow.Context;
 import de.schlund.pfixxml.ResultDocument;
 import de.schlund.pfixxml.util.Xml;
 
@@ -62,16 +60,12 @@ public abstract class CommonIncludesResource {
     
     private ConfigurationService configuration;
     
+    private SessionInfoStore sessionInfoStore;
+    
     private ProjectsResource projectsResource;
-    
-    private IncludesResource includesResource;
-    
-    private SessionResource sessionResource;
     
     private BackupService backup;
     
-    private Context                 context;
-
     private IncludePartThemeVariant selectedIncludePart;
 
     private Set<String>             openDirectories = Collections.synchronizedSet(new HashSet<String>());
@@ -95,11 +89,6 @@ public abstract class CommonIncludesResource {
     protected abstract Set<IncludeFile> getIncludeFilesInDirectory(String dirname, Project project);
 
     protected abstract Set<IncludePartThemeVariant> getIncludePartsInFile(String filename, Project project);
-
-    @InitResource
-    public void init(Context context) throws Exception {
-        this.context = context;
-    }
 
     @InsertStatus
     public void insertStatus(ResultDocument resdoc, Element elem) throws Exception {
@@ -215,15 +204,11 @@ public abstract class CommonIncludesResource {
 
             // Render other users editing this include part at the same time
             Element concurrentEditsNode = resdoc.createSubNode(currentInclude, "concurrentedits");
-            Map<Context, String> contextmap = ContextStore.getInstance().getContextMap();
-            for (Iterator<Context> i = contextmap.keySet().iterator(); i.hasNext();) {
-                Context foreignCtx = i.next();
-                if (foreignCtx != this.context && EditorResourceLocator.getSessionResource(foreignCtx).isInIncludeEditView()) {
-                    IncludePartThemeVariant otherSelectedInclude = EditorResourceLocator.getIncludesResource(foreignCtx).getSelectedIncludePart();
-                    if (otherSelectedInclude != null && otherSelectedInclude.equals(this.selectedIncludePart)) {
-                        Element usernameNode = resdoc.createSubNode(concurrentEditsNode, "user");
-                        usernameNode.setAttribute("username", contextmap.get(foreignCtx));
-                    }
+            for (SessionInfo info : sessionInfoStore.getSessionInfos()) {
+                IncludePartThemeVariant otherSelectedInclude = info.getIncludePart();
+                if (otherSelectedInclude != null && otherSelectedInclude.equals(this.selectedIncludePart)) {
+                    Element usernameNode = resdoc.createSubNode(concurrentEditsNode, "user");
+                    usernameNode.setAttribute("username", info.getUser().getUsername());
                 }
             }
         }
@@ -633,12 +618,7 @@ public abstract class CommonIncludesResource {
     }
 
     @Inject
-    public void setIncludesResource(IncludesResource includesResource) {
-        this.includesResource = includesResource;
-    }
-
-    @Inject
-    public void setSessionResource(SessionResource sessionResource) {
-        this.sessionResource = sessionResource;
+    public void setSessionInfoStore(SessionInfoStore sessionInfoStore) {
+        this.sessionInfoStore = sessionInfoStore;
     }
 }

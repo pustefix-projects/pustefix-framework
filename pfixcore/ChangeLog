@@ -1,3 +1,23 @@
+2008-08-28  Sebastian Marsching  <sebastian.marsching@1und1.de>
+
+	* src/de/schlund/pfixcore/editor2/core/dom/SessionInfo.java: 
+	* src/de/schlund/pfixcore/editor2/core/spring/PustefixTargetUpdateServiceImpl.java: 
+	* src/de/schlund/pfixcore/editor2/core/spring/SessionInfoStore.java: 
+	* src/de/schlund/pfixcore/editor2/frontend/handlers/CommonUploadIncludePartHandler.java: 
+	* src/de/schlund/pfixcore/editor2/frontend/handlers/UploadDynIncludePartHandler.java: 
+	* src/de/schlund/pfixcore/editor2/frontend/resources/CommonIncludesResource.java: 
+	* src/de/schlund/pfixcore/editor2/frontend/resources/SessionInfoResource.java: 
+	* src/de/schlund/pfixcore/editor2/frontend/resources/SessionResource.java: 
+	* src/de/schlund/pfixcore/editor2/frontend/util/UpdateSessionInfoContextInterceptor.java: 
+	* src/de/schlund/pfixcore/lucefix/PfixReadjustment.java: 
+	* src/de/schlund/pfixxml/config/CustomizationHandler.java: 
+	* src/org/pustefixframework/config/customization/PropertiesBasedCustomizationInfo.java: 
+	* projects/core/editor2/conf/edit.conf.xml: 
+	* projects/core/editor2/conf/project.xml: 
+	* projects/core/editor2/conf/spring.xml: 
+	* projects/core/editor2/txt/pages/main_sessionmanager.xml: 
+	Some more fixes for the editor / CMS.
+
 2008-08-25  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
 	* projects/core/editor2/conf/project.xml: 

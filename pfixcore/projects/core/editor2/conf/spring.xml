@@ -228,6 +228,10 @@
     <property name="completeRunDelay">
       <value>120000</value>
     </property>
+    <!-- Reference. Do not change! -->
+    <property name="pfixReadjustment">
+      <ref bean="pfixReadjustment"/>
+    </property>
   </bean>
   
   <bean id="backup" class="de.schlund.pfixcore.editor2.core.spring.BackupServiceImpl">
@@ -241,7 +245,16 @@
       <ref bean="securitymanager"/>
     </property>
   </bean>
-	
+  
+  <bean id="sessioninfo" class="de.schlund.pfixcore.editor2.core.spring.SessionInfoStore">
+  </bean>
+  
+  <bean id="pfixReadjustment" class="de.schlund.pfixcore.lucefix.PfixReadjustment" depends-on="lucefix">
+    <property name="projectFactoryService">
+      <ref bean="projectfactory"/>
+    </property>
+  </bean>
+  
   <bean id="lucefix" class="de.schlund.pfixcore.lucefix.PfixEngine" init-method="init">
     <property name="queueIdle">
       <value>1000</value>

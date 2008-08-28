@@ -22,7 +22,10 @@
     <start>
       <!-- Resets edit state flag -->
       <interceptor class="de.schlund.pfixcore.editor2.frontend.util.EditViewResetContextInterceptor" />
-    </start>    
+    </start>
+    <end>
+      <interceptor class="de.schlund.pfixcore.editor2.frontend.util.UpdateSessionInfoContextInterceptor"/>
+    </end>
   </interceptors>
 
   <scriptedflow name="selectinclude" file="core/editor2/conf/scriptedflows/selectinclude.xml" />

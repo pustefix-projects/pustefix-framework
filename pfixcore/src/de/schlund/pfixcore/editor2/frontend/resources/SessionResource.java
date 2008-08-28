@@ -19,18 +19,22 @@
 package de.schlund.pfixcore.editor2.frontend.resources;
 
 import java.security.Principal;
+import java.util.Date;
 
 import org.pustefixframework.container.annotations.Inject;
 import org.w3c.dom.Element;
 
 import de.schlund.pfixcore.beans.InitResource;
 import de.schlund.pfixcore.beans.InsertStatus;
+import de.schlund.pfixcore.editor2.core.dom.IncludePartThemeVariant;
+import de.schlund.pfixcore.editor2.core.dom.SessionInfo;
 import de.schlund.pfixcore.editor2.core.exception.EditorSecurityException;
+import de.schlund.pfixcore.editor2.core.exception.EditorUserNotExistingException;
 import de.schlund.pfixcore.editor2.core.spring.SecurityManagerService;
+import de.schlund.pfixcore.editor2.core.spring.SessionInfoStore;
 import de.schlund.pfixcore.editor2.core.spring.UserManagementService;
 import de.schlund.pfixcore.editor2.core.spring.UserPasswordAuthenticationService;
 import de.schlund.pfixcore.editor2.core.vo.EditorUser;
-import de.schlund.pfixcore.editor2.frontend.util.ContextStore;
 import de.schlund.pfixcore.workflow.Context;
 import de.schlund.pfixxml.ResultDocument;
 
@@ -44,12 +48,16 @@ public class SessionResource {
     private UserPasswordAuthenticationService upas;
     
     private UserManagementService usermanagement;
-
+    
+    private SessionInfoStore sessionInfoStore;
+    
     private SecurityManagerService            secman;
 
     private Context                           context;
 
     private boolean                           inIncludeEditView = false;
+
+    private IncludePartThemeVariant selectedIncludePart;
 
     public boolean login(String username, String password) {
         Principal user = this.upas.getPrincipalForUser(username, password);
@@ -59,7 +67,7 @@ public class SessionResource {
         this.secman.setPrincipal(user);
 
         // Register context with ContextStore
-        ContextStore.getInstance().registerContext(this.context, username);
+        this.updateSessionInfo();
 
         // Set AUTHENTICATED role on context
         context.getAuthentication().addRole("AUTHENTICATED");
@@ -71,7 +79,7 @@ public class SessionResource {
         secman.setPrincipal(null);
 
         // Unregister context
-        ContextStore.getInstance().unregisterContext(this.context);
+        this.updateSessionInfo();
 
         // Remove AUTHENTICATED role
         context.getAuthentication().revokeRole("AUTHENTICATED");
@@ -137,6 +145,44 @@ public class SessionResource {
         }
         return true;
     }
+    
+    public void updateSessionInfo() {
+        if (isLoggedIn()) {
+            final Date now = new Date();
+            final EditorUser user;
+            EditorUser tempUser;
+            try {
+                tempUser = usermanagement.getUser(secman.getPrincipal().getName());
+            } catch (EditorUserNotExistingException e) {
+                tempUser = null;
+            }
+            user = tempUser;
+            final IncludePartThemeVariant incPart;
+            if (isInIncludeEditView()) {
+                incPart = this.selectedIncludePart;
+            } else {
+                incPart = null;
+            }
+            SessionInfo info = new SessionInfo() {
+
+                public IncludePartThemeVariant getIncludePart() {
+                    return incPart;
+                }
+
+                public Date getLastAccess() {
+                    return now;
+                }
+
+                public EditorUser getUser() {
+                    return user;
+                }
+                
+            };
+            sessionInfoStore.registerContext(context, info);
+        } else {
+            sessionInfoStore.unregisterContext(context);
+        }
+    }
 
     @Inject
     public void setUserPasswordAuthenticationService(UserPasswordAuthenticationService upas) {
@@ -151,6 +197,15 @@ public class SessionResource {
     @Inject
     public void setSecurityManagerService(SecurityManagerService secman) {
         this.secman = secman;
+    }
+
+    @Inject
+    public void setSessionInfoStore(SessionInfoStore sessionInfoStore) {
+        this.sessionInfoStore = sessionInfoStore;
+    }
+
+    public void setSelectedIncludePart(IncludePartThemeVariant selectedIncludePart) {
+        this.selectedIncludePart = selectedIncludePart;
     }
 
 }

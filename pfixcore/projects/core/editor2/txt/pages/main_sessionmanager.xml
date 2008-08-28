@@ -31,19 +31,13 @@
         <table cellspacing="0" class="editor_box" style="padding:0px;" width="100%">
           <tr>
             <td class="editor_head">
-              <b>SessionId</b>
-            </td>
-            <td class="editor_head">
-              <b>Creation time</b>
+              <b>Editor user</b>
             </td>
             <td class="editor_head">
               <b>Last Access</b>
             </td>
             <td class="editor_head">
-              <b>No. of Req.</b>
-            </td>
-            <td class="editor_head">
-              <b>Editor user</b>
+              <b>Working on</b>
             </td>
           </tr>
           <ixsl:for-each select="/formresult/sessioninfo/session">
@@ -56,46 +50,23 @@
             <tr>
               <ixsl:attribute name="class"><ixsl:value-of select="$class"/></ixsl:attribute>
               <td nowrap="nowrap" style="padding:1px;">
-                <ixsl:value-of select="./@id"/>
-              </td>
-              <td nowrap="nowrap" style="padding:1px;">
-                <ixsl:value-of select="./@created"/>
+                <ixsl:value-of select="./@username"/>
+                (<ixsl:value-of select="./@userfullname"/>, Phone: <ixsl:value-of select="./@userphone"/>)
               </td>
               <td nowrap="nowrap" style="padding:1px;">
                 <ixsl:value-of select="./@lastAccess"/>
               </td>
               <td nowrap="nowrap" style="padding:1px;">
-                <ixsl:value-of select="./@requestCount"/>
-              </td>
-              <td nowrap="nowrap" style="padding:1px;">
                 <ixsl:choose>
-                  <ixsl:when test="./@username">
-                    <ixsl:value-of select="./@username"/>
-                    (<ixsl:value-of select="./@userfullname"/>, Phone: <ixsl:value-of select="./@userphone"/>)
+                  <ixsl:when test="./@incpart">
+                    <ixsl:value-of select="./@incpart"/>
                   </ixsl:when>
                   <ixsl:otherwise>
-                    <i>not logged in</i>
+                    <i>nothing</i>
                   </ixsl:otherwise>
                 </ixsl:choose>
               </td>
             </tr>
-            <tr style="padding:0px;">
-              <ixsl:attribute name="class"><ixsl:value-of select="$class"/></ixsl:attribute>
-              <td class="editor_small" colspan="6" style="padding:1px;">
-                <ixsl:for-each select="./step">
-                  <ixsl:if test="not(position() = 1)"> -&gt; </ixsl:if>
-                  <ixsl:value-of select="@stylesheet"/>
-                  <ixsl:if test="not(@counter = '1')">(<ixsl:value-of select="@counter"/>)</ixsl:if>
-                </ixsl:for-each>
-              </td>
-            </tr>
-            <ixsl:if test="./@incpart">
-              <tr>
-                <td colspan="5" style="padding-right:10px; color: #993333; text-align: right;">
-                  Currently working on: <ixsl:value-of select="./@incpart"/>
-                </td>
-              </tr>
-            </ixsl:if>
           </ixsl:for-each>
           <tr>
             <td colspan="5">

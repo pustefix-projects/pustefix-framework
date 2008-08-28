@@ -35,7 +35,6 @@ import org.pustefixframework.container.annotations.Inject;
 import de.schlund.pfixcore.editor2.core.dom.IncludePartThemeVariant;
 import de.schlund.pfixcore.editor2.core.dom.Project;
 import de.schlund.pfixcore.editor2.core.spring.ProjectFactoryService;
-import de.schlund.pfixxml.XMLException;
 import de.schlund.pfixxml.config.GlobalConfig;
 
 /**
@@ -45,18 +44,9 @@ import de.schlund.pfixxml.config.GlobalConfig;
 public class PfixReadjustment {
     private ProjectFactoryService projectfactory;
     
-    private static PfixReadjustment _instance = new PfixReadjustment();
-    
     private final static Logger LOG = Logger.getLogger(PfixReadjustment.class);
     
     public static final String LUCENE_DATA = PfixQueueManager.lucene_data_path;
-    
-    /**
-     * @param idletime
-     * @throws XMLException
-     */
-    private PfixReadjustment() {
-    }
     
     /**
      * Checks list of include parts for changes and updates search index.
@@ -205,20 +195,6 @@ public class PfixReadjustment {
         }
         
         return retval;
-    }
-    
-    /**
-     * Returns singleton which must have been initialized ealier.
-     * 
-     * @return Instance of PfixReadjustment
-     * @throws RuntimeException
-     *             if singleton has not been initialized yet
-     */
-    public static synchronized PfixReadjustment getInstance() {
-        if (_instance == null) {
-            throw new RuntimeException("PfixReadjustment has to be initialized first!");
-        }
-        return _instance;
     }
     
     @Inject

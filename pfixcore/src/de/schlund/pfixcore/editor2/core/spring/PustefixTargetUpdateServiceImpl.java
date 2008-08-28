@@ -49,7 +49,9 @@ import de.schlund.pfixxml.targets.TargetGenerator;
  */
 public class PustefixTargetUpdateServiceImpl implements
         PustefixTargetUpdateService, Runnable {
-
+    
+    private PfixReadjustment pfixReadjustment;
+    
     private ArrayList<Target> lowPriorityQueue;
 
     private ArrayList<Target> highPriorityQueue;
@@ -281,7 +283,7 @@ public class PustefixTargetUpdateServiceImpl implements
                         // All low priority targets (usually all targets)
                         // have been updated, so trigger regeneration of
                         // search index
-                        PfixReadjustment.getInstance().readjust();
+                        pfixReadjustment.readjust();
 
                         // Delay refill of low priority queue
                         // in order to keep down system load
@@ -324,5 +326,9 @@ public class PustefixTargetUpdateServiceImpl implements
                 }
             }
         }
+    }
+
+    public void setPfixReadjustment(PfixReadjustment pfixReadjustment) {
+        this.pfixReadjustment = pfixReadjustment;
     }
 }

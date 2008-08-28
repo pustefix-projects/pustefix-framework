@@ -50,6 +50,7 @@ public abstract class CommonUploadIncludePartHandler implements IHandler {
         
         // Set flag indicating we are in edit mode
        sessionResource.setInIncludeEditView(true);
+       sessionResource.setSelectedIncludePart(this.getResource(context).getSelectedIncludePart());
         
         if (input.getDoUpload() != null && input.getDoUpload().booleanValue()
                 && input.getHash() != null) {
@@ -99,6 +100,7 @@ public abstract class CommonUploadIncludePartHandler implements IHandler {
 
             // Set flag indicating we are in edit mode
             sessionResource.setInIncludeEditView(true);
+            sessionResource.setSelectedIncludePart(this.getResource(context).getSelectedIncludePart());
         }
     }
 

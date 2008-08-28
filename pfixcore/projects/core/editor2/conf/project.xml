@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<project-config xmlns="http://www.pustefix-framework.org/2008/namespace/project-config">
+<project-config
+  xmlns="http://www.pustefix-framework.org/2008/namespace/project-config"
+  xmlns:jee="http://java.sun.com/xml/ns/javaee"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
+>
   
   <project>
     <name>editor2</name>
@@ -68,6 +73,20 @@
     <static>
       <path>core/editor2/img</path>
     </static>
+    
+    <web-xml>
+      <jee:web-app>
+        <jee:filter>
+          <jee:filter-name>editor-session-cookie-filter</jee:filter-name>
+          <jee:filter-class>de.schlund.pfixcore.editor2.frontend.util.SessionCookieFilter</jee:filter-class>
+        </jee:filter>
+        
+        <jee:filter-mapping>
+          <jee:filter-name>editor-session-cookie-filter</jee:filter-name>
+          <jee:url-pattern>/xml/edit/*</jee:url-pattern>
+        </jee:filter-mapping>
+      </jee:web-app>
+    </web-xml>
     
   </application>
   

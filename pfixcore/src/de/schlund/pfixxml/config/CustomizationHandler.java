@@ -22,17 +22,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Properties;
 
-import javax.xml.namespace.QName;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
-import javax.xml.xpath.XPathFactory;
-import javax.xml.xpath.XPathVariableResolver;
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
+import org.pustefixframework.config.customization.PropertiesBasedCustomizationInfo;
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
 import org.xml.sax.Locator;
@@ -78,27 +70,11 @@ public class CustomizationHandler extends DefaultHandler {
         }
     }
 
-    private class PropertiesVariableResolver implements XPathVariableResolver {
-
-        private Properties props;
-
-        public PropertiesVariableResolver(Properties props) {
-            this.props = props;
-        }
-
-        public Object resolveVariable(QName variableName) {
-            return props.getProperty(variableName.getLocalPart());
-        }
-
-    }
+    private PropertiesBasedCustomizationInfo customizationInfo;
 
     private DefaultHandler targetHandler;
 
     private ArrayList<ParsingInfo> stack;
-
-    private Node dummyNode;
-
-    private XPathFactory xpfac;
 
     private String docroot;
 
@@ -196,26 +172,16 @@ public class CustomizationHandler extends DefaultHandler {
         this.namespace = namespace;
         this.namespaceContent = namespaceContent;
         this.targetHandler = targetHandler;
-        try {
-            Document doc = DocumentBuilderFactory.newInstance()
-                    .newDocumentBuilder().newDocument();
-            doc.appendChild(doc.createElement("dummyElement"));
-            this.dummyNode = doc.getDocumentElement();
-        } catch (ParserConfigurationException e) {
-            throw new RuntimeException(e);
-        }
         Properties props = new Properties(buildTimeProps);
         String docroot = GlobalConfig.getDocroot() + "/";
         if (docroot != null) {
             props.setProperty("docroot", docroot);
         }
-        this.xpfac = XPathFactory.newInstance();
-        this.xpfac.setXPathVariableResolver(new PropertiesVariableResolver(
-                props));
         this.docroot = docroot;
         this.fqdn = props.getProperty("fqdn");
         this.machine = props.getProperty("machine");
         this.uid = props.getProperty("uid");
+        this.customizationInfo = new PropertiesBasedCustomizationInfo(props);
     }
 
     private ParsingInfo peekParsingInfo() {
@@ -338,14 +304,10 @@ public class CustomizationHandler extends DefaultHandler {
     }
 
     private boolean evalXPathExpression(String testExp) throws SAXException {
-        XPath xpath = this.xpfac.newXPath();
         try {
-            Boolean ret = (Boolean) xpath.evaluate(testExp, this.dummyNode,
-                    XPathConstants.BOOLEAN);
-            return ret.booleanValue();
+            return customizationInfo.evaluateXPathExpression(testExp);
         } catch (XPathExpressionException e) {
-            throw new SAXException("Invalid XPath expression: \"" + testExp
-                    + "\"", e);
+            throw new SAXException("Error while evaluating XPath expression \"" + testExp + "\": " + e.getMessage(), e);
         }
     }
 
