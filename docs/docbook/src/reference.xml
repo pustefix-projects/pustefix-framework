@@ -9,4 +9,5 @@
   </info>
   <xi:include href="reference/configuration.xml"/>
   <xi:include href="reference/advancedtopics.xml"/>
+  <xi:include href="reference/modules.xml"/>
 </book>

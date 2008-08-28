@@ -1,0 +1,65 @@
+<?xml version="1.0"?>
+<chapter xml:id="modules" xmlns="http://docbook.org/ns/docbook" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://docbook.org/ns/docbook http://www.docbook.org/xml/5.0CR7/xsd/docbook.xsd">
+  <title>Modules</title>
+  
+  <section xml:id="firedebug">  
+    <title>FireDebug</title>
+    <para>
+      FireDebug is a JAVA implementation of FirePHP for Pustefix.
+      It enables you to send log messages to Firefox and display them via <link xlink:href="http://getfirebug.com/">FireBug</link>.
+      You can find more informations about FirePHP at <link xlink:href="http://www.firephp.org">http://www.firephp.org</link>.
+    </para>
+    
+    <section xml:id="firedebug.usage">
+        <title>Usage</title>
+        
+        <section xml:id="firedebug.usage.contextresource">
+            <title>Adding the ContextResource</title>
+            <para>      
+              FireDebug is implemented as a <literal>ContextResource</literal>, so you can call it from everywhere 
+              within Pustefix as long as you have access to the Context.
+            </para>
+            <para>
+              <programlisting language="xml"><![CDATA[
+<context defaultflow="DefaultFlow">
+  <resource class="org.pustefixframework.util.firedebug.FireDebugImpl">
+    <implements class="org.pustefixframework.util.firedebug.FireDebug" />
+  </resource>
+</context>]]></programlisting>
+            </para>
+        </section>
+        
+        <section xml:id="firedebug.usage.logmessages">
+            <title>Log messages</title>
+            <para>
+              To log messages just fetch the FireDebug ContextResource and call one of the different log methods.
+              <programlisting language="java"><![CDATA[
+FireDebug firePHP = (FireDebug) getContextResource(FireDebug.class);        
+firePHP.log(a * b, "Multipliziere a(" + a + ") * b(" + b + ")");]]></programlisting>
+            </para>
+        </section>
+        
+        <section xml:id="firedebug.usage.outputtheheaders">
+            <title>Return the HTTP response headers</title>    
+            <para>
+              To set the needed response headers you have to use either the <literal>FireDebugEnabledState</literal>
+              
+              <programlisting language="xml"><![CDATA[
+<pagerequest name="Calculator">
+  <state class="org.pustefixframework.util.firedebug.FireDebugEnabledState" />
+</pagerequest>]]></programlisting>
+
+              or the <literal>FireDebugServletFilter</literal> or you can use both.
+              
+              <programlisting language="xml"><![CDATA[
+<servlet name="webservice">
+  <active>true</active>
+  <class>de.schlund.pfixcore.webservice.WebServiceServlet</class>
+  <propfile>ajax-calculator/conf/webservice.conf.xml</propfile>
+  <use-filter>FirePHPServletFilter</use-filter>
+</servlet>]]></programlisting>
+            </para>
+        </section> 
+    </section>    
+  </section>
+</chapter>
