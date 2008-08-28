@@ -503,13 +503,31 @@ public class PremiumCustomerCondition implements Condition {
       additionally a service can work with both protocols at the same time.
     </para>
     <para>
-      A service consists of a Java interface, which defines all remotely available service methods, and the
+      Implementing a service can be done in two ways: Either you can export an arbitrary Spring bean as a
+      webservice or you have to create a special service class which derives from an abstract framework class.
+      The first way is recommended, because your service can be a POJO without any framework dependencies.
+    </para>
+    <itemizedlist>
+    <listitem>
+      A <emphasis>managed service</emphasis> can be an arbitrary POJO that's managed by the Spring container. 
+      Such a Spring bean can be exported as webservice within the Spring configuration file using a special namespace
+      (see Configuration section below). 
+    </listitem>
+    <listitem>
+      An <emphasis>unmanaged service</emphasis> consists of a Java interface, which defines all remotely available service methods, and the
       service implementation, implementing this interface and extending the abstract service base class
-      <literal>de.schlund.pfixcore.webservice.AbstractService</literal>. Thus the implementation class
+      <literal>org.pustefixframework.webservices.AbstractService</literal>. Thus the implementation class
       inherits the method <literal>getContextResourceManager()</literal>, which can be used to access
       <literal>ContextResources</literal>. The service has to be declared explicitly in the project's
       central webservice configuration file <filename>projectdir/conf/webservice.conf.xml</filename> (see Configuration section below).
-    </para>
+    </listitem>
+    </itemizedlist>
+    <note>
+      <para>
+        If you want to use SOAP as service protocol, you have to note that the SOAP runtime used by Pustefix (Sun's JAXWS implementation)
+        requires that service classes are annotated with the <literal>javax.jws.WebService</literal> annotation. 
+      </para>
+    </note>
     <para>
       The Pustefix build process automatically generates Javascript SOAP stubs for all declared services (if the
       SOAP protocol is enabled). It also generates the deployment descriptors needed by Axis, the SOAP/webservices
@@ -537,7 +555,46 @@ public class PremiumCustomerCondition implements Condition {
     <section xml:id="advanced.ajax.config">
       <title>Service configuration</title>
       <para>
-        The webservices are configured in the <filename>webservices.conf.xml</filename> file.
+        Spring-managed services are configured as part of the Spring configuration. You can export an arbitrary bean as webservice
+        using the <literal>webservice</literal> element (from the <literal>http://pustefixframework.org/schema/webservices</literal> 
+        namespace). Therefor you have to reference it using the <literal>ref</literal> attribute and set a unique 
+	<literal>servicename</literal>.
+      </para>
+      <programlisting language="xml"><![CDATA[
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:ws="http://pustefixframework.org/schema/webservices"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="
+            http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+            http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd
+            http://pustefixframework.org/schema/webservices http://pustefixframework.org/schema/webservices/pustefix-webservices.xsd">
+
+  <bean id="MyBeanId" class="mypackage.MyBean" scope="session">
+    <aop:scoped-proxy/>
+  </bean>
+  
+  <ws:webservie
+    id="Webservice_MyBean" 
+    servicename="MyBean" 
+    interface="MyBeanServiceInterface"
+    ref="MyBeanId" 
+    protocol="ANY"
+  />
+ 
+</beans>
+      ]]></programlisting>
+      <para>
+        You can optionally set an <literal>interface</literal> which defines the methods which should be exported (by default all
+        public methods are exported, if you're using SOAP/JAXWS you can also exclude methods using the <literal>@WebMethod(exclude=true)</literal>
+        annotation). Using the <literal>protocol</literal> attribute you can set the webservice protocol (default is <literal>JSONWS</literal>,
+        other options are <literal>SOAP</literal> or <literal>ANY</literal>).
+      </para>
+      <para>
+        The webservice configuration file <filename>PROJECTNAME/conf/webservices.conf.xml</filename> contains global settings
+	for the runtime system, default settings for webservices, and optionally webservice-specific settings.
+        If you're using Spring-managed services only, you can ignore the webservice-specific settings in this file as they're
+        done as part of the Spring configuration. The global and default settings are applied to the managed services too.
       </para>
       <programlisting language="xml"><![CDATA[<webservice-config schemaLocation="http://pustefix.sourceforge.net/wsconfig200401 ../../core/schema/wsconfig200401.xsd"
   xmlns="http://pustefix.sourceforge.net/wsconfig200401"
@@ -581,7 +638,7 @@ public class PremiumCustomerCondition implements Condition {
       protocols (ANY). If you choose to use JSONWS only, you should set the type to JSONWS to accelerate
       the build process, otherwise the SOAP stubs will be generated unnecessarily.
       
-      [Optional - Default: type="ANY"]
+      [Optional - Default: type="JSONWS"]
     -->
     <protocol type="ANY"/>
 
