@@ -6,7 +6,7 @@
            attributeFormDefault="unqualified">
   
   <xs:element name="properties" type="prop:propertiesType">
-    <xs:unique name="propName">
+    <xs:unique name="uniquePropName">
       <xs:selector xpath="prop:prop|prop:property"/>
       <xs:field xpath="@name"/>
     </xs:unique>
@@ -51,7 +51,7 @@
   </xs:element>
   
   <xs:element name="when" type="prop:whenType">
-    <xs:unique name="uniqueWhenProps">
+    <xs:unique name="uniqueWhenPropNames">
       <xs:selector xpath="prop:prop|prop:property"/>
       <xs:field xpath="@name"/>
     </xs:unique>
@@ -63,7 +63,7 @@
   </xs:complexType>
   
   <xs:element name="otherwise" type="prop:otherwiseType">
-    <xs:unique name="uniqueOtherwiseProps">
+    <xs:unique name="uniqueOtherwisePropNames">
       <xs:selector xpath="prop:prop|prop:property"/>
       <xs:field xpath="@name"/>
     </xs:unique>
