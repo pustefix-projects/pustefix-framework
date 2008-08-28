@@ -52,7 +52,7 @@ public class GlobalServiceConfig implements Serializable {
     private Boolean                stubGeneration   = Boolean.TRUE;
     private String                 stubRepo         = "/wsscript";
     private String                 jsNamespace      = Constants.STUBGEN_JSNAMESPACE_COMPAT;
-    private String                 protocolType     = Constants.PROTOCOL_TYPE_ANY;
+    private String                 protocolType     = Constants.PROTOCOL_TYPE_JSONWS;
     private String                 encStyle         = Constants.ENCODING_STYLE_RPC;
     private String                 encUse           = Constants.ENCODING_USE_ENCODED;
     private Boolean                jsonClassHinting = Boolean.FALSE;
