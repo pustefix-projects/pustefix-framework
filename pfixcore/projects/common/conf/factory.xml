@@ -1,11 +1,15 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<properties xmlns="http://www.pustefix-framework.org/2008/namespace/properties-config">  
+<properties xmlns="http://www.pustefix-framework.org/2008/namespace/properties-config" 
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xsi:schemaLocation="http://www.pustefix-framework.org/2008/namespace/properties-config ../../core/schema/properties-config.xsd">
+    
     
     <prop name="pustefix.log4j.config">common/conf/pfixlog.xml</prop>
     <!-- Set this property to use container logging when application
          is deployed as a WAR-archive, even if application is unpacked
          and can use its own logging mechanism                         -->
     <!--<prop name="pustefix.logging.prefercontainer">true</prop>-->
+    
     
     <!-- List of all factories to init -->
     <prop name="factory.initialize.02">de.schlund.pfixxml.targets.SPCacheFactory</prop>
@@ -29,7 +33,6 @@
     <prop name="cachestatistic.queueticks">60000</prop><!--1 minute-->
     <prop name="cachestatistic.productdata">servletconf/projects.xml</prop>
     
-    
     <!--PerfStat-->
     <!-- size of buffer for perfevents --> 
     <prop name="perflogging.buffersize">2000</prop>
@@ -41,6 +44,6 @@
     <prop name="perflogging.autostart">0</prop>
     <!-- max time a the put-thread will wait when putting perfevent into a full buffer -->
     <prop name="perflogging.offermaxwait">5</prop>
-    
+   
 </properties>
 
