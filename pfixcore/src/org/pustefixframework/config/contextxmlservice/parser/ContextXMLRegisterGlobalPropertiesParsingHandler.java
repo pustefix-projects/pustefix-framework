@@ -36,7 +36,7 @@ public class ContextXMLRegisterGlobalPropertiesParsingHandler extends Customizat
     @Override
     protected void handleNodeIfActive(HandlerContext context) throws ParserException {
         ContextXMLServletConfigImpl servletConfig = ParsingUtils.getFirstTopObject(ContextXMLServletConfigImpl.class, context, true);
-        ContextConfigImpl contextConfig = ParsingUtils.getFirstTopObject(ContextConfigImpl.class, context, true);
+        ContextConfigImpl contextConfig = servletConfig.getContextConfig();
         
         Properties servletProperties = servletConfig.getProperties();
         Properties contextProperties = contextConfig.getProperties();

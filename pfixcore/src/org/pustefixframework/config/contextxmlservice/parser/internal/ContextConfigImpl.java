@@ -61,7 +61,7 @@ public class ContextConfigImpl implements ContextConfig {
     private Class<? extends State> defaultStateClass = null;
     
     private String defaultPage = null;
-    
+    private String defaultFlow = null;
     private Map<String,ContextResourceConfigImpl> resourceMap = new HashMap<String,ContextResourceConfigImpl>();
     private LinkedHashMap<Class<?>, ContextResourceConfigImpl> resources = new LinkedHashMap<Class<?>, ContextResourceConfigImpl>();
     private List<ContextResourceConfigImpl> cacheResources = null; 
@@ -79,7 +79,6 @@ public class ContextConfigImpl implements ContextConfig {
     private AuthConstraint defaultAuthConstraint;
     private Map<String,Condition> conditions = new HashMap<String,Condition>();
     private RoleProvider roleProvider = new RoleProviderImpl();
-    private boolean doLoadTimeChecks = false;
     private boolean authConstraintRefsResolved = false;
     
     
@@ -89,6 +88,14 @@ public class ContextConfigImpl implements ContextConfig {
     
     public String getDefaultPage() {
         return this.defaultPage;
+    }
+    
+    public void setDefaultFlow(String defaultFlow) {
+        this.defaultFlow = defaultFlow;
+    }
+    
+    public String getDefaultFlow() {
+        return defaultFlow;
     }
     
     public void setDefaultState(Class<? extends State> clazz) {

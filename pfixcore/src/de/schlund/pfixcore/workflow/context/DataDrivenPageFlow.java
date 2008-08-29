@@ -114,7 +114,7 @@ public class DataDrivenPageFlow implements PageFlow {
                 LOG.debug("* Skipping step [" + stepname + "] in page flow (state is not accessible...)");
             } else {
                 LOG.debug("* Page flow is at step " + i + ": [" + stepname + "]");
-                if (stopatcurrentpage && currentpagename.equals(stepname)) {
+                if (stopatcurrentpage && stepname.equals(currentpagename)) {
                     LOG.debug("=> [" + stepname + "]: Request specified to not advance futher than the original target page.");
                     return stepname;
                 }
@@ -133,7 +133,7 @@ public class DataDrivenPageFlow implements PageFlow {
                     LOG.debug("=> [" + stepname + "]: going to next step in page flow.");
                 }
             }
-            if (currentpagename.equals(stepname)) {
+            if (stepname.equals(currentpagename)) {
                 after_current = true;
             }
         }

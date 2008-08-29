@@ -1,3 +1,19 @@
+2008-08-29  Martin Leidig  <mleidig@schlund.de>
+
+	Added again defaultflow configuration option. Now you can either define a
+	default page or a default pageflow.
+
+	* src/org/pustefixframework/config/contextxmlservice/ContextConfig.java
+	* src/org/pustefixframework/config/contextxmlservice/parser/ContextParsingHandler.java
+	* src/org/pustefixframework/config/contextxmlservice/parser/internal/ContextConfigImpl.java
+	* src/de/schlund/pfixcore/workflow/context/RequestContextImpl.java
+	* src/de/schlund/pfixcore/workflow/context/DataDrivenPageFlow.java
+	* projects/core/schema/context-xml-service-config.xsd
+	* projects/sample1/conf/config.conf.xml
+
+	* src/org/pustefixframework/config/contextxmlservice/parser/ContextXMLRegisterGlobalPropertiesParsingHandler.java:
+	fixed global property parsing
+
 2008-08-28  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
 	* src/de/schlund/pfixcore/editor2/core/dom/SessionInfo.java: 

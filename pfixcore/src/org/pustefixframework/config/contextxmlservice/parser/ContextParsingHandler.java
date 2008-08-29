@@ -1,5 +1,19 @@
 /*
- * Place license here
+ * This file is part of PFIXCORE.
+ *
+ * PFIXCORE is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * PFIXCORE is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with PFIXCORE; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
 package org.pustefixframework.config.contextxmlservice.parser;
@@ -24,7 +38,7 @@ public class ContextParsingHandler implements ParsingHandler {
     public void handleNode(HandlerContext context) throws ParserException {
         
         Element element = (Element)context.getNode();
-        ParsingUtils.checkAttributes(element, new String[] {"defaultpage"}, new String[] {"synchronized"});
+        ParsingUtils.checkAttributes(element, null, new String[] {"defaultpage", "defaultflow", "synchronized"});
         
         ContextXMLServletConfigImpl config = ParsingUtils.getSingleTopObject(ContextXMLServletConfigImpl.class, context);
         
@@ -32,7 +46,17 @@ public class ContextParsingHandler implements ParsingHandler {
         // Navigation is stored in depend.xml
         ctxConfig.setNavigationFile(config.getDependFile());
         ctxConfig.setDefaultState(config.getDefaultStaticState());
-        ctxConfig.setDefaultPage(element.getAttribute("defaultpage"));
+        
+        String defaultPage = element.getAttribute("defaultpage").trim();
+        if(defaultPage.length()>0) ctxConfig.setDefaultPage(defaultPage);
+        
+        String defaultFlow = element.getAttribute("defaultflow").trim();
+        if(defaultFlow.length()>0) {
+            if(defaultPage.length()>0) throw new ParserException("The 'defaultpage' and 'defaultflow' "+
+                "attributes are set at the 'context' element. It's only allowed to set one of them.");
+            ctxConfig.setDefaultFlow(defaultFlow);
+        }
+        
         String syncStr = element.getAttribute("synchronized");
         if (syncStr != null) {
             ctxConfig.setSynchronized(Boolean.parseBoolean(syncStr));

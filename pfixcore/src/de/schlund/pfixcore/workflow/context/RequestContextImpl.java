@@ -361,7 +361,13 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
         if (tmppagename != null) {
             currentpagerequest = createPageRequest(tmppagename);
         } else {
-            currentpagerequest = createPageRequest(parentcontext.getContextConfig().getDefaultPage());
+            if(parentcontext.getContextConfig().getDefaultPage() != null) {
+                currentpagerequest = createPageRequest(parentcontext.getContextConfig().getDefaultPage());
+            } else if(parentcontext.getContextConfig().getDefaultFlow() != null) {
+                currentpageflow = pageflowmanager.getPageFlowByName(parentcontext.getContextConfig().getDefaultFlow(), getVariant());
+                String pageName = currentpageflow.findNextPage(parentcontext, null, false, false);
+                currentpagerequest = createPageRequest(pageName);
+            } else throw new RuntimeException("Neither defaultpage nor defaultpageflow found!");
         }
 
         RequestParam reqParam = currentpservreq.getRequestParam(PARAM_ROLEAUTH);
