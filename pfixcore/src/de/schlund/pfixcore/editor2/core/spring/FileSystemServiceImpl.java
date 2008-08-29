@@ -34,6 +34,7 @@ import javax.xml.transform.sax.SAXTransformerFactory;
 import javax.xml.transform.sax.TransformerHandler;
 
 import org.w3c.dom.Document;
+import org.w3c.dom.Node;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
@@ -88,7 +89,11 @@ public class FileSystemServiceImpl implements FileSystemService {
         } catch (TransformerException e) {
             throw new SAXException(e);
         }
-        return result.getNode().getOwnerDocument();
+        if (result.getNode().getNodeType() == Node.DOCUMENT_NODE) {
+        	return (Document) result.getNode();
+        } else {
+        	return result.getNode().getOwnerDocument();
+        }
     }
 
     public void storeXMLDocumentToFile(File file, Document document)

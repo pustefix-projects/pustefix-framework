@@ -18,6 +18,8 @@
 
 package de.schlund.pfixcore.editor2.frontend.handlers;
 
+import org.pustefixframework.container.annotations.Inject;
+
 import de.schlund.pfixcore.editor2.frontend.resources.CommonIncludesResource;
 import de.schlund.pfixcore.editor2.frontend.resources.DynIncludesResource;
 import de.schlund.pfixcore.workflow.Context;
@@ -35,6 +37,7 @@ public class SelectDynIncludePartHandler extends CommonSelectIncludePartHandler 
         return dynIncludesResource;
     }
 
+    @Inject
     public void setDynIncludesResource(DynIncludesResource dynIncludesResource) {
         this.dynIncludesResource = dynIncludesResource;
     }

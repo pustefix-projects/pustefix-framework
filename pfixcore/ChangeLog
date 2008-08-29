@@ -1,3 +1,19 @@
+2008-08-29  Sebastian Marsching  <sebastian.marsching@1und1.de>
+
+	* src/de/schlund/pfixcore/editor2/core/spring/FileSystemServiceImpl.java: 
+	Use result.getNode() instead of result.getNode().getOwnerDocument() if node is 
+	already a document node.
+
+	* src/de/schlund/pfixcore/editor2/frontend/handlers/RestoreDynIncludePartHandler.java: 
+	* src/de/schlund/pfixcore/editor2/frontend/handlers/SelectDynIncludePartHandler.java: 
+	Added missing @Inject annotation.
+
+	* lib/saxon8.jar: 
+	* lib/saxon8-dom.jar: 
+	* lib/saxon8-xpath.jar: 
+	Updated Saxon 8.8 to 8.9.0.4 to fix a bug that caused an unexpected exception when 
+	using TransformerHandler.
+
 2008-08-29  Martin Leidig  <mleidig@schlund.de>
 
 	Added again defaultflow configuration option. Now you can either define a
