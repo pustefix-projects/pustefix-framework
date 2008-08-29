@@ -528,7 +528,7 @@
         <programlisting language="xml"><![CDATA[
     </servletinfo>
     
-    <context defaultflow="AFlowName" synchronized="true">
+    <context defaultpage="APageName" synchronized="true">
         ]]></programlisting>
         <informaltable rules="all" frame="box">
           <thead align="left">
@@ -539,9 +539,14 @@
           </thead>
           <tbody>
             <tr>
+              <td><literal>defaultpage</literal></td>
+              <td><emphasis>Either defaultpage or defaultflow must be set</emphasis>. Must reference
+              a valid <literal>pagerequest</literal>.</td>
+            </tr>
+            <tr>
               <td><literal>defaultflow</literal></td>
-              <td><emphasis>Mandatory</emphasis>. Must reference a 
-              valid <literal>pageflow</literal> (See below).</td>
+              <td><emphasis>Either defaultflow or defaultpage must be set</emphasis>. Must reference a 
+              valid <literal>pageflow</literal>.</td>
             </tr>
             <tr>
               <td><literal>synchronized</literal></td>
