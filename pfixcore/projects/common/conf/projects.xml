@@ -8,8 +8,6 @@
     <namespace-declaration prefix="ixsl" url="http://www.w3.org/1999/XSL/Transform"/>
   </namespaces>
   
-  <commonpropfile>common/conf/pustefix.xml</commonpropfile>
-  
   <http-server>
     <tomcat>
       <minprocessors>100</minprocessors>
@@ -21,7 +19,7 @@
       <!-- This is only for mod_jk A matching sample workers.prop file will be generated, but may need -->
       <!-- additional customization. Clustering will not work out of the box. -->
       <jkmount>router</jkmount>
-      <defaulthost>admcore.${fqdn}</defaulthost>
+      <defaulthost>sample1.${fqdn}</defaulthost>
       <jvmroute>foo</jvmroute>
     </tomcat>
     <apache>

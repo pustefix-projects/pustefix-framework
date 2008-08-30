@@ -1,5 +1,8 @@
 2008-08-30  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
+	* projects/common/conf/projects.xml: 
+	Changed default host to "sample1" and removed <commonpropfile> tag.
+	
 	* src/de/schlund/pfixxml/targets/TargetGenerator.java: 
 	* src/de/schlund/pfixxml/util/Xslt.java: 
 	* src/org/pustefixframework/http/AbstractPustefixXMLRequestHandler.java: 
