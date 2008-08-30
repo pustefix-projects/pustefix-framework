@@ -699,7 +699,7 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
                      ((spdoc != null) ? ("pagename=" +  spdoc.getPagename()) : "spdoc==null")); 
         }
         try {
-            Xslt.transform(spdoc.getDocument(), stylevalue, paramhash, new StreamResult(output));
+            Xslt.transform(spdoc.getDocument(), stylevalue, paramhash, new StreamResult(output), getServletEncoding());
         } catch (TransformerException e) {
             Throwable inner = e.getException();
             Throwable cause = null;

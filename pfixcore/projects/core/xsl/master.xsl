@@ -54,10 +54,10 @@
   <cus:custom_xsl/>
 
   <xsl:namespace-alias stylesheet-prefix="ixsl" result-prefix="xsl"/>
-  <xsl:output method="xml" encoding="ISO-8859-1" indent="yes"/>
+  <xsl:output method="xml" encoding="UTF-8" indent="yes"/>
 
   <xsl:param name="outputmethod">html</xsl:param>
-  <xsl:param name="outputencoding">iso-8859-1</xsl:param>
+  <xsl:param name="outputencoding">UTF-8</xsl:param>
   <xsl:param name="outputdoctype-public"/>
   <xsl:param name="outputdoctype-system"/>
   

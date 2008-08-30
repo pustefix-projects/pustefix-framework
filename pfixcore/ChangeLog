@@ -1,3 +1,16 @@
+2008-08-30  Sebastian Marsching  <sebastian.marsching@1und1.de>
+
+	* src/de/schlund/pfixxml/targets/TargetGenerator.java: 
+	* src/de/schlund/pfixxml/util/Xslt.java: 
+	* src/org/pustefixframework/http/AbstractPustefixXMLRequestHandler.java: 
+	* projects/core/build/create_depend.xsl: 
+	Moved encoding configuration to HTTP service: Intermediate transformations
+	use UTF-8, final transforamtion uses encoding specified for the HTTP service.
+	
+	* projects/core/xsl/customizemaster.xsl: 
+	Read exclude-result-prefixes from common/conf/projects.xml instead of 
+	servletconf/projects.xml.
+
 2008-08-29  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
 	* src/de/schlund/pfixcore/editor2/core/spring/FileSystemServiceImpl.java: 

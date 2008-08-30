@@ -2,30 +2,18 @@
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
                 exclude-result-prefixes="xsl">
 
-  <xsl:output method="xml" encoding="ISO-8859-1" indent="yes"/>
+  <xsl:output method="xml" encoding="UTF-8" indent="yes"/>
 
   <xsl:include href="create_lib.xsl"/>
   <xsl:param name="prohibitEdit"/>
   <xsl:param name="projectsFile"/>
-  
-  <xsl:variable name="defaultEncoding">UTF-8</xsl:variable>
   
   <!-- Saxon/Xalan incompatibility/bug workaround: while the condition [@name=/make/@project] works 
   for Xalan, Saxon needs [@name=current()/make/@project] to select an external document node based
   on a source node within a global variable. Using another variable instead of a xpath expression
   works for both transformers: [@name=$projectName] -->
   <xsl:variable name="projectName" select="/make/@project"/>
-  <xsl:variable name="projectEncoding" select="normalize-space(document($projectsFile)/projects/project[@name=$projectName]/encoding/text())"/>
-  <xsl:variable name="encoding">
-    <xsl:choose>
-      <xsl:when test="$projectEncoding and string-length($projectEncoding) &gt; 0">
-        <xsl:value-of select="$projectEncoding"/>
-      </xsl:when>
-      <xsl:otherwise>
-        <xsl:value-of select="$defaultEncoding"/>
-      </xsl:otherwise>
-    </xsl:choose>
-  </xsl:variable>
+  <xsl:variable name="encoding">UTF-8</xsl:variable>
   
   <xsl:template name="encoding">
     <xsl:if test="not(/make/global/param[@name='outputencoding'] or ./param[@name='outputencoding'])">

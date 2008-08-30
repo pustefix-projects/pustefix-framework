@@ -28,6 +28,7 @@ import java.util.Iterator;
 import java.util.Map;
 
 import javax.xml.transform.ErrorListener;
+import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Result;
 import javax.xml.transform.Source;
 import javax.xml.transform.Templates;
@@ -119,10 +120,13 @@ public class Xslt {
     }
     
     //-- apply transformation
-    
     public static void transform(Document xml, Templates templates, Map<String, Object> params, Result result) throws TransformerException {
+        transform(xml, templates, params, result, null);
+    }
+    
+    public static void transform(Document xml, Templates templates, Map<String, Object> params, Result result, String encoding) throws TransformerException {
         try {
-            doTransform(xml,templates,params,result,false);
+            doTransform(xml,templates,params,result,encoding,false);
         } catch(UnsupportedOperationException x) {
             if(result instanceof StreamResult) {
                 OutputStream out=((StreamResult)result).getOutputStream();
@@ -131,20 +135,23 @@ public class Xslt {
                     ByteArrayOutputStream baos=(ByteArrayOutputStream)out;
                     baos.reset();
                     try {
-                        doTransform(xml,templates,params,result,false);
+                        doTransform(xml,templates,params,result,encoding,false);
                     } catch(UnsupportedOperationException ex) {
                         LOG.error("Try to transform and trace after UnsupportedOperationException",ex);
                         baos.reset();
-                        doTransform(xml,templates,params,result,true);
+                        doTransform(xml,templates,params,result,encoding,true);
                     }
                 }
             }
         }
     }
     
-    private static void doTransform(Document xml, Templates templates, Map<String, Object> params, Result result, boolean trace) throws TransformerException {
+    private static void doTransform(Document xml, Templates templates, Map<String, Object> params, Result result, String encoding, boolean trace) throws TransformerException {
         XsltVersion xsltVersion=getXsltVersion(templates);
         Transformer trafo = templates.newTransformer();
+        if (encoding != null) {
+            trafo.setOutputProperty(OutputKeys.ENCODING, encoding);
+        }
         StringWriter traceWriter=null;
         if(trace) {
            traceWriter=new StringWriter();
