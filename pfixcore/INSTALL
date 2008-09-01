@@ -13,7 +13,7 @@ Prerequisites:
           is recommended. The environment variable JAVA_HOME must be 
           set to the root directory of your java installation.
           
-        * Apache Ant, the Java-based build tool in version 1.5.4 or higher.
+        * Apache Ant, the Java-based build tool in version 1.7.0 or higher.
           If you have really large projects consider increasing the memory
           for the java vm ant runs in: To do this set the ANT_OPTS
           environment variable to something like "-mx200m". This variable
