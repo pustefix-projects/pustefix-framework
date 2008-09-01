@@ -1,3 +1,22 @@
+2008-09-01  Martin Leidig  <mleidig@schlund.de>
+
+	Split propfiles target into buildtime-props target and optional
+	propfiles target for the xml property files, which isn't called
+	by default any more. 
+	Made stylesheets target optional and deprecated, so it isn't called by
+	default any more and calling it anyway will show a deprecation
+	warning.
+	Added check-ant-version target, which aborts the build if the used
+	ant version isn't 1.7.0 or higher.
+
+	* skel/build-skel.xml
+	* build.xml
+
+	Removed unused exceptionhandler artifacts:
+	
+	* projects/common/conf/exceptionhandler.xml
+	* skel/projects/common/conf/factory.xml
+
 2008-08-30  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
 	* projects/common/conf/projects.xml: 

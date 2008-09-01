@@ -98,7 +98,7 @@ or delete the DOCTYPE definition -->
     </javac>
   </target>
 
-  <target name="scgenerate" depends="scgenerate-dist, propfiles">
+  <target name="scgenerate" depends="scgenerate-dist, buildtime-props">
     <antcall target="skel.scgenerate"/>
   </target>
 
@@ -214,7 +214,7 @@ or delete the DOCTYPE definition -->
     </tar>
   </target>
 
-  <target name="data" depends="init, stylesheets, dist-properties, autotag">
+  <target name="data" depends="init, dist-properties, autotag">
     <echo message="Building ${name.pfixcore_data_tgz} in dist directory" />
     <copy file="${dir.metainf}/${name.svnrevision}" tofile="${dir.projects}/core/${name.svnrevision}"/>
     <tar destfile="${file.pfixcore_data_tgz}" compression="gzip">

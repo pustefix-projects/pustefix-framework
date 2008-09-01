@@ -45,6 +45,11 @@ or delete the DOCTYPE definition -->
   <property name="pat.pfixcore_data_tgz"    value="pfixcore-*data*.tar.gz"/>
   <fileset  id="id.fs.pfixcore_data_tgz"    dir="${dir.lib}" includes="${pat.pfixcore_data_tgz}"/>
 
+  <target name="check-ant-version" depends="ant-tasks-stage0">
+    <propertyregex property="unsupported.ant.version" input="${ant.version}" regexp="1\.[0-6](\.[0-9]+)?" select="\0"/>
+    <fail if="unsupported.ant.version" message="The currently used Ant version is too old, you are using ${unsupported.ant.version}, but 1.7.0 or higher is required!!!"/>
+  </target>
+
   <target name="properties">
     <!-- Ant properties are immutable, the order of definition is:
          - ant commandline via the '-Dparam=value' option
@@ -106,7 +111,7 @@ or delete the DOCTYPE definition -->
   	  <os name="Mac OS X"/>
   	</condition>
   </target>
-  
+
   <path id="cp.libs">
     <fileset dir="${basedir}" includes="${lib.includes}"/>
     <fileset dir="${dir.projects}/servletconf/tomcat/common" includes="lib/servlet-api.jar"/>
@@ -163,7 +168,7 @@ or delete the DOCTYPE definition -->
     <mkdir dir="${dir.gensrc}"/>
   </target>
 
-  <target name="init" depends="properties, init-data, check-buildskel, init-dirs">
+  <target name="init" depends="check-ant-version, properties, init-data, check-buildskel, init-dirs">
     <echo message="using machine=${machine} fqdn=${fqdn}" level="verbose"/>
    
     <!-- Create commons-logging configuration info -->
@@ -227,7 +232,7 @@ or delete the DOCTYPE definition -->
           />
 
   <target name="compile-xml"
-          depends="propfiles, scgenerate, web_xml, autodeploy, stylesheets, pfixlog_xml, apache_conf, jk_conf, ajp_conf, workers_prop, server_xml, webservice"
+          depends="buildtime-props, scgenerate, web_xml, autodeploy, pfixlog_xml, apache_conf, jk_conf, ajp_conf, workers_prop, server_xml, webservice"
           description="performs xslt transformations in dir.projects"
           />
 
@@ -313,8 +318,18 @@ or delete the DOCTYPE definition -->
     </apply>
   </target>
 
-  <target name="ant-tasks" depends="ant-tasks-stage1, ant-tasks-stage2"/>
-  
+  <target name="ant-tasks" depends="ant-tasks-stage0, ant-tasks-stage1, ant-tasks-stage2"/>
+ 
+  <target name="ant-tasks-stage0" description="declares the ant contrib tasks">
+     <taskdef
+     resource="net/sf/antcontrib/antlib.xml"
+     >
+        <classpath>
+            <fileset dir="${basedir}" includes="${lib.includes}"/>
+        </classpath>
+     </taskdef>
+  </target>
+ 
   <target name="ant-tasks-stage1" depends="init-dirs, tomcat.dir.opt" description="declares the ant task used for generating java source code. This target needs to be run prior to the actual compile.">
     <taskdef
      name="pfx-xslt"
@@ -337,11 +352,6 @@ or delete the DOCTYPE definition -->
          loaderref="pfx-loader"
          description="Creates standard Java property files from customizable XML property files"
          />
-    <taskdef
-     resource="net/sf/antcontrib/antlib.xml"
-     classpathref="cp.classpath"
-     loaderref="pfx-loader"   
-     />
   	<taskdef
   	 name="pfx-sclibgen"
   	 classname="de.schlund.pfixcore.util.GenerateSCodesTask"
@@ -609,7 +619,7 @@ or delete the DOCTYPE definition -->
     />
   </target>
 	
-  <target name="scgenerate" depends="propfiles">
+  <target name="scgenerate" depends="buildtime-props">
     <pfx-sclibgen
       gendir="${dir.gensrc}"
       docroot="${dir.projects}"
@@ -701,7 +711,7 @@ or delete the DOCTYPE definition -->
     <echo message="Output written to ${dir.projects}/CHECKOUTPUT.xml" level="info"/>
   </target>
 
-  <target name="propfiles" depends="ant-tasks-stage1" description="creates **/*.prop">
+  <target name="buildtime-props" depends="ant-tasks-stage1" description="creates build-time property file">
     <!-- Generate propfile with buildtime information -->
     <pfx-buildtime-props
      file="${dir.projects}/common/conf/buildtime.prop"
@@ -710,6 +720,9 @@ or delete the DOCTYPE definition -->
      machine="${machine}"
      fqdn="${fqdn}"
     />
+  </target>
+
+  <target name="propfiles" depends="ant-tasks-stage1, buildtime-props" description="create Java property files from Pustefix XML property files">
     <pfx-propfiles 
       basedir="${dir.projects}" 
       includes="**/*.prop.in" 
@@ -739,6 +752,7 @@ or delete the DOCTYPE definition -->
   </target>
 
   <target name="stylesheets" depends="ant-tasks, init" description="creates **/*.xsl from **/*.xsl.in with create_stylesheet.xsl">
+    <echo>WARNING: The 'stylesheets' target is deprecated. Instead you should adapt your '.xsl.in' files and either replace the 'cus:documentation' tags by comments or make them to top-level tags, which will be ignored by the XSLT processor.</echo>
     <pfx-xslt
      style="${dir.projects}/core/build/create_stylesheet.xsl"
      srcdir="${dir.projects}"

@@ -10,19 +10,6 @@
     <prop name="factory.initialize.04">de.schlund.pfixxml.targets.cachestat.SPCacheStatistic</prop>
     <prop name="factory.initialize.05">de.schlund.pfixxml.perflogging.PerfLogging</prop>
     <!--<prop name="factory.initialize.06">de.schlund.pfixxml.jmx.JmxServerFactory</prop>-->
-    <choose>
-      <when test="$mode = 'prod'">
-        <!-- Load all projects on startup when in production mode-->
-        <prop name="factory.initialize.07">de.schlund.pfixxml.ProjectInitFactory</prop>
-        <!-- Specify this property to load only certain projects
-        <prop name="projectinit.projectlist">sample1, webservice</prop>
-        -->
-      </when>
-      <otherwise>
-        <!-- Start the editor application when not in production mode instead -->
-        <prop name="factory.initialize.07">de.schlund.pfixcore.editor2.frontend.util.EditorApplicationContextFactory</prop>
-      </otherwise>
-    </choose>
     
     <!-- JmxServerFactory -->
     <prop name="de.schlund.pfixcore.jmx.keystore">common/conf/jmxserver.keystore</prop>
@@ -46,8 +33,7 @@
 
 
     
-    <!-- ApplicationContext factory for editor -->
-    <prop name="de.schlund.pfixcore.editor2.springconfig">common/conf/editor-spring.xml</prop>
+    <!-- Enable target update loop -->
     <prop name="de.schlund.pfixcore.editor2.updatetargets">true</prop>
     
     <!-- part index -->
@@ -64,12 +50,6 @@
     <prop name="cachestatistic.queuesize">60</prop>
     <prop name="cachestatistic.queueticks">60000</prop><!--1 minute-->
     <prop name="cachestatistic.productdata">servletconf/projects.xml</prop>    
-    
-    <!--ExceptionHandler-->
-    <prop name="exceptionhandler.propertyfile">common/conf/exceptionhandler.xml</prop>
-    
-    <!--AppLoader-->
-    <prop name="apploader.propertyfile">common/conf/apploader.xml</prop>
     
     <!--PerfStat-->
     <!-- size of buffer for perfevents --> 
