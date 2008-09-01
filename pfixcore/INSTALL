@@ -3,16 +3,15 @@ This file describes how to get the package up and running.
 
 Prerequisites:
 
-        * A unixoid OS.  Yes, java should be platform independent.
+        * A unixoid OS.  Yes, Java should be platform independent.
           Unfortunately portions of the build environment and code
-          are unix specific. Although these platform independant
-          portions mainly deal with file system path secifications -
-          they exist. There may be even more places where the thing
-          wouldn't work on win32.
+          require a unix-like shell. Running Pustefix on Windows might
+          work using Cygwin, but we haven not tried yet. If you succeed
+          in running Pustefix on Windows, we would like to hear.
 
-        * A Java installation.  Version 1.5 is recommended. 
-          The environment variable JAVA_HOME must be set to the 
-          root directory of your java installation.
+        * A Java installation.  Version 1.5 is required and version 1.6
+          is recommended. The environment variable JAVA_HOME must be 
+          set to the root directory of your java installation.
           
         * Apache Ant, the Java-based build tool in version 1.5.4 or higher.
           If you have really large projects consider increasing the memory
@@ -21,41 +20,34 @@ Prerequisites:
           is evaluated within the ant start script contained in the ant
           distribution.
 
-        * A working apache installation with a working mod_jk
-          (the apache connection module for tomcat). You need
-          to have this module loaded, but you need no further
-          configuration, the build process will take care of providing
-          you with a sample config file that should at least get you
-          started. Additionally the apache installation must provide mod_rewrite 
-          (This should be pretty standard nowadays).
-
+        * If you want to use Pustefix with the Apache HTTP daemon, either
+          mod_proxy_ajp or mod_jk have to be installed and loaded.
+          However, you can simply run Pustefix without Apache by setting
+          the standalone.tomcat property to true when running "ant".
+          Tomcat will listen for incoming HTTP connections on port 8080 
+          and for HTTPS connections on port 8443.
+          
+          If you are using Apache, name-based virtual servers have to be
+          enabled for the default address of your machine. 
+          
           Note that there have been problems with the order of
-          inclusion of mod_rewrite and mod_jk in the
-          httpd.conf. It seems that mod_jk needs to be loaded
+          inclusion of mod_rewrite and mod_jk in the Apache configuration
+          file. It seems that mod_jk needs to be loaded
           BEFORE mod_rewrite. If you experience problems, try changing
           the order of these two modules.  Other problems that have
           been experienced are related to a changed regexp syntax
           between different versions of mod_rewrite. You may have to
           customize the relevant regexps in the file core/build/create_apacheconf.xsl.
-        
-        * Your apache needs to have enabled name-based virtual servers
-          for the default hostname of your machine. Furthermore you
-          should have a "* entry" for your machine in DNS (This means that 
+          
+        * You should have a "* entry" for your machine in DNS (This means that 
           a lookup to NAME.HOSTNAME.DOMAIN should resolve to HOSTNAME.DOMAIN no
           matter what NAME is). If you don't have DNS configured like this you can 
-          still supply the names (if you use the skelelton distribution) 
-                 "cmsskel.HOSTNAME.DOMAIN" and "admskel.HOSTNAME.DOMAIN" 
-          or, in case you work with the cvs checkout
-                 "cmscore.HOSTNAME.DOMAIN" and "admcore.HOSTNAME.DOMAIN"
-          via your /etc/hosts file.
-
-          Note that you may be able to work around this last point by tweaking the
-          created apache.conf or by tweaking the producing stylesheet
-          core/build/create_apacheconf.xsl; this is not recommended, though.
-
-        * NOTE: you don't need a external installation of tomcat,
-          everything you need is contained in this package.  I suggest
-          that even if you have your own tomcat setup already,
+          still supply the names (e.g. "cms.HOSTNAME.DOMAIN" or 
+          "sample1.HOSTNAME.DOMAIN") via your /etc/hosts file.
+          
+        * NOTE: you don't need a external installation of Tomcat,
+          everything you need is contained in this package.  We suggest
+          that even if you have your own Tomcat setup already,
           start by using the supplied versions, and, if all goes
           well, you can try to move the configuration into your own
           installation.
@@ -76,31 +68,27 @@ Prerequisites:
         # NameVirtualHost HOSTNAME.DOMAIN:443
 
         # config for mod_jk
-        include <your path to this directory>/projects/servletconf/tomcat/jk.conf
+        Include <your path to this directory>/projects/servletconf/tomcat/jk.conf
 
-        # virtual hosts for tomcat:
-        include <your path to this directory>/projects/servletconf/tomcat/apache.conf
+        # virtual hosts:
+        Include <your path to this directory>/projects/servletconf/tomcat/apache.conf
 
-    into your httpd.conf. Don't forget to restart apache. Modern apache installations often have a
-    httpd.conf.d directory where to put links to config files that should be included automatically. 
-    In this case you can link the two files there instead of including them via your http.conf
+    into your Apache configuration. Don't forget to restart apache. 
+    Modern apache installations often have a httpd.conf.d directory where 
+    to put links to config files that should be included automatically. 
+    In this case you can link the two files there instead of including them 
+    via your http.conf
 
-4)  start Tomcat with the following command:
+4)  Start Tomcat with the following command:
 
         ./startTomcat.sh
 
     Note: For stopping Tomcat, just press Control-C to interrupt the script.
-
-    Note: There have been problems with restarting or
-    stopping/starting tomcat. Somtimes a restart of Apache is needed,
-    too, so mod_jk can catch up and reopen the connections to
-    Tomcat. (FIXME: Is this still the case? I have not experienced
-    these problems for quite some time now)
-    
+        
 5)  To see if everything works, you can try to open the editor
     application. Point your browser to
         
-        http://cmsskel.HOSTNAME.DOMAIN 
+        http://cms.HOSTNAME.DOMAIN 
 
 6)  You will find some basic applications in the example.tar.gz.
     Just unpack the file with "tar xvzf example.tar.gz" in your skel/projects 
@@ -124,7 +112,6 @@ Prerequisites:
 
 FINAL NOTE:
 
-You could now start building your own applications, but unfortunately
-there is still not much documentation about how to achieve this. Therefore
-I suggest you refer to the mailing list (see pustefix.sf.net).
+You can now start building your own applications. Some tutorials as well as the
+reference documentation can be found on http://www.pustefix-framework.org/.
 
