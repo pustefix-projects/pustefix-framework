@@ -112,4 +112,26 @@ public class XmlUtils {
         System.out.println("Changing Textnode has been successfull\n");
         return domDoc;
     }
+    
+    public static void replaceTextPlaceHolders(Element element, String placeHolder, String replacement) {
+        boolean hasSubElements = false;
+        if(element.hasChildNodes()) {
+            NodeList nodes = element.getChildNodes();
+            for(int i=0; i < nodes.getLength(); i++) {
+                Node node = nodes.item(i);
+                if(node.getNodeType() == Node.ELEMENT_NODE) {
+                    hasSubElements = true;
+                    replaceTextPlaceHolders((Element)node, placeHolder, replacement);
+                }
+            }
+        }
+        if(!hasSubElements) {
+            String text = element.getTextContent();
+            if(text.contains(placeHolder)) {
+                text = text.replace(placeHolder, replacement);
+                element.setTextContent(text);
+            }
+        }
+    }
+    
 }

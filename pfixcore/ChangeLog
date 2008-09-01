@@ -1,5 +1,37 @@
 2008-09-01  Martin Leidig  <mleidig@schlund.de>
 
+	Adapt skeleton project configurations and make newproject.sh
+	application work with the new pfixcore. Deliver build.properties
+	with tomcat standalone as default setting.
+
+	Modified:
+	* src/de/schlund/pfixcore/util/basicapp/helper/AppValues.java
+	* src/de/schlund/pfixcore/util/basicapp/helper/XmlUtils.java
+	* src/de/schlund/pfixcore/util/basicapp/basics/HandleXMLFiles.java
+	* src/de/schlund/pfixcore/util/basicapp/basics/CreateProjectSettings.java
+	* src/de/schlund/pfixcore/util/basicapp/basics/InitNewPfixProject.java
+	* src/de/schlund/pfixcore/util/basicapp/projectdom/DependXmlDom.java
+	* src/de/schlund/pfixcore/util/basicapp/projectdom/ConfigXmlDom.java
+	* src/de/schlund/pfixcore/util/basicapp/projectdom/ProjectXmlDom.java
+	* src/de/schlund/pfixcore/util/basicapp/projectdom/PageXmlDom.java
+	* src/de/schlund/pfixcore/util/basicapp/objects/Project.java
+	* projects/common/conf/pustefix.xml
+	* projects/core/prjtemplates/config.tmpl
+	* projects/core/prjtemplates/project.tmpl
+	* skel/projects/common/conf/factory.xml
+	* skel/projects/common/conf/pustefix.xml
+
+	Added:
+	* skel/projects/common/conf/projects.xml
+	* skel/build.properties
+
+	Removed:
+	* src/de/schlund/pfixcore/util/basicapp/objects/ServletObject.java
+	* skel/projects/common/conf/editor-spring.xml
+	* skel/projects/common/conf/exceptionhandler.xml
+
+2008-09-01  Martin Leidig  <mleidig@schlund.de>
+
 	Split propfiles target into buildtime-props target and optional
 	propfiles target for the xml property files, which isn't called
 	by default any more. 

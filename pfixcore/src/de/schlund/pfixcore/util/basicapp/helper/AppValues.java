@@ -34,8 +34,6 @@ public final class AppValues {
     public static final String BASICPATH       = System.getProperty("pustefix.docroot");
     /** A String array with basic items */
     public static final String[] ITEMS         = {"name", "language"};
-    /** A String array with basic servlet items */
-    public static final String[] SERVLETITEMS  = {"servletname", "servletpath"};
     /** An array containing the foldernames */
     public static final String[] FOLDERNAMES   = {"conf", "img", "xsl", "xml", 
             "txt", "htdocs"};
@@ -54,8 +52,6 @@ public final class AppValues {
     /** String for the frame.xml */
     public static final String FRAMEXML        = "frame.xml";
     /** String for procject.xml.in */
-    public static final String PROJECTXMLIN    = "project.xml.in";
-    /** String for procject.xml.in */
     public static final String PROJECTXML      = "project.xml";
     /** String for skin.xsl (the basic stylesheet) */
     public static final String SKINXSL         = "skin.xsl";
@@ -64,7 +60,7 @@ public final class AppValues {
     /** String for default language */
     public static final String DEFAULTLNG      = "en_GB";
     /** String for default servlet name */
-    public static final String DFSERVLETNAME   = "config";
+    public static final String DEFAULTSERVLETNAME   = "config";
     /** Suffix for the projects comment */
     public static final String PRJCOMMENTSUFF  = "comment";
     /** suffix for docroot tag */
@@ -104,12 +100,8 @@ public final class AppValues {
     /** A path to the pages folder */
     public static final String PATHTO_PAGES    = "/txt/pages/";
         
-    /** Strings for config.prop.in */
-    public static final String CONFIGTAG_SERVLETINFO  = "servletinfo";
-    public static final String CONFIGATT_DEPEND       = "depend";
+    /** Strings for config.conf.xml */
     public static final String CONFIGATT_NAME         = "name";
-    public static final String CONFIGATT_NAMEPREFIX   = "pfixcore_project:";
-    public static final String CONFIGATT_NAMEPOSTFIX  = "::servlet:";
     public static final String CONFIGTAG_FLOWSTEP     = "flowstep";
     public static final String CONFIGTAG_PAGEREQUEST  = "pagerequest";
     
@@ -132,20 +124,17 @@ public final class AppValues {
     /** Strings for the project.xml.in */
     public static final String PROJECTTAG_DOCUMENTROOT= "documentroot";
     public static final String PROJECTTAG_PROJECT     = "project";
-    public static final String PROJECTATT_NAME        = "name";
+    public static final String PROJECTTAG_NAME        = "name";
     public static final String PROJECTTAG_SERVERNAME  = "servername";
     public static final String PROJECTTAG_SERVERALIAS = "serveralias";
-    public static final String PROJECTTAG_DEPEND      = "depend";
     public static final String PROJECTTAG_PROPFILE    = "propfile";
     public static final String PROJECTTAG_PASSTHROUGH = "passthrough";
-    public static final String PROJECTTAG_COMMENT     = "comment";
+    public static final String PROJECTTAG_DESCRIPTION = "description";
     public static final String PROJECTTAG_DEFPATH     = "defpath";
-    public static final String PROJECTTAG_SERVLET     = "servlet";
     public static final String PROJECTTAG_ACTIVE      = "active";
     public static final String PROJECTTAG_CLASS       = "class";
     public static final String PROJECTTAG_DOCROOT     = "cus:docroot";
     public static final String PROJECTVALUE_TRUE      = "true";
-    public static final String PROJECTVALUE_CLASS     = "de.schlund.pfixxml.ContextXMLServlet";
     public static final String PROJECTPRRF_DOCROOT    = "cus"; 
     public static final String PROJECTATT_EDITOR      = "useineditor";
     

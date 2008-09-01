@@ -21,14 +21,12 @@ package de.schlund.pfixcore.util.basicapp.basics;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
 
 import org.apache.log4j.Logger;
 
 import de.schlund.pfixcore.util.basicapp.helper.AppValues;
 import de.schlund.pfixcore.util.basicapp.helper.StringUtils;
 import de.schlund.pfixcore.util.basicapp.objects.Project;
-import de.schlund.pfixcore.util.basicapp.objects.ServletObject;
 
 /**
  * The main settings for a new Project will be set here
@@ -45,14 +43,10 @@ public final class CreateProjectSettings {
     /** Informations given by the user */
     public BufferedReader projectIn = new BufferedReader(new InputStreamReader(
             System.in));
-    private ArrayList<ServletObject> servletList = null;
-    /** A counter for the servlet objects id */
-    private int servletCounter = 0;
 
     /** Constructor just prepares a new project */
     public CreateProjectSettings() {
         project = new Project();
-        servletList = project.getServletList();
     }
 
     /**
@@ -67,7 +61,6 @@ public final class CreateProjectSettings {
     /** init method for this class  */
     public void runGetSettings() {
         LOG.debug("Getting project settings starts now");
-        servletCounter = 0;
         System.out.println("\n\n\n");
         System.out
                 .println("**************************************************");
@@ -87,10 +80,7 @@ public final class CreateProjectSettings {
             // setting the basic items
             setProjectName();
             setProjectLanguage();
-            setProjectComment();
-            // setting servlets names
-            setServletName();
-            project.setServletList(servletList);
+            setProjectDescription();
         } catch (IOException e) {
             LOG.debug(e.getMessage(), e);
         }
@@ -159,87 +149,21 @@ public final class CreateProjectSettings {
     }
 
     /**
-     * Setting a comment for the Project
+     * Setting a description for the Project
      */
-    private void setProjectComment() throws IOException {
+    private void setProjectDescription() throws IOException {
         String input = null;
         
         System.out.println("\nPlease type in a comment for the Project");
-        System.out
-                .println("It will be \"projectname + comment\" if you leave it blank.");
         input = projectIn.readLine();
         
         if (StringUtils.checkString(input).equals("")) {
-            project.setComment(project.getProjectName()
-                    + AppValues.PRJCOMMENTSUFF);
+            project.setDescription("Description of project "+project.getProjectName());
             LOG.debug("Defaultcomment has been set");
         } else {
-            project.setComment(input);
+            project.setDescription(input);
             LOG.debug("Projectcomment has been set by user: " + input);
         }
-    }
-
-    /**
-     * Method for setting the defaults servlet name
-     * @throws IOException
-     */
-    private void setServletName() throws IOException {
-        String input = null;
-        ServletObject myServletObject = new ServletObject(servletCounter);
-        boolean goOn = true;
-        int counter = 0;
-        int myServCounter = servletCounter + 1;
-        
-        do {
-            System.out.println("\nPlease type in a name for the servlet "
-                    + myServCounter);
-            input = projectIn.readLine();
-            // checking for the right project setter
-            if (!StringUtils.checkString(input).equals("")) {
-                myServletObject.setServletName(StringUtils
-                        .giveCorrectString(input));
-                servletList.add(myServletObject);
-                // increasing the counter
-                servletCounter++;
-                System.out.println("Servlet " + myServCounter
-                        + " has been added!");
-                goOn = false;
-                storeMoreServlets();
-            } else {
-                counter += 1;
-                // nonsens has been typed in for three times. Check whether
-                // the user wants to abort
-                if (counter == 3) {
-                    checkExit(1);
-                    goOn = false;
-                }
-            }
-        } while (goOn);
-        
-    }
-
-    /**
-     * Ask the user if he wants to create some more
-     * servlets
-     * @throws IOException
-     */
-    private void storeMoreServlets() throws IOException {
-        String input = null;
-        boolean goOn = true;
-        
-        do {
-            System.out
-                    .println("\nWould you like to create another servlet? [yes] [no]");
-            input = projectIn.readLine().toLowerCase();
-            
-            if (input.equals("yes") || input.equals("y")) {
-                setServletName();
-                goOn = false;
-            } else if (input.equals("no") || input.equals("n")) {
-                goOn = false;
-            }
-            
-        } while (goOn);
     }
 
     /**
@@ -264,9 +188,6 @@ public final class CreateProjectSettings {
                 switch (method) {
                     case 0 :
                         setProjectName();
-                        break;
-                    case 1 :
-                        setServletName();
                         break;
                 }
             }
@@ -302,11 +223,4 @@ public final class CreateProjectSettings {
         } while (goOn);
     }
 
-    /** 
-     * Just a getter for the servlet counter
-     * @return the counter for the amount of servlets 
-     */
-    public int getServletCounter() {
-        return servletCounter;
-    }
 }

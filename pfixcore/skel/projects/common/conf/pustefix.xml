@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<standardprops xmlns="http://pustefix.sourceforge.net/properties200401" xmlns:cus="http://www.schlund.de/pustefix/customize" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://pustefix.sourceforge.net/properties200401 http://pustefix.sourceforge.net/properties200401.xsd" version="1.0">
-  
-  <properties>
+<properties xmlns="http://www.pustefix-framework.org/2008/namespace/properties-config" 
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xsi:schemaLocation="http://www.pustefix-framework.org/2008/namespace/properties-config ../../core/schema/properties-config.xsd">
     
     <!-- shared properties for the pustefix projects -->
 
     <!-- IMPORTANT! Set this property to some random value! -->
     <prop name="derefserver.signkey">987foobarbaz123</prop>
+    <prop name="derefserver.validtime">300</prop>
     
     <!-- dump of the whole session on Exception -->
     <prop name="servlet.sessiondumponerror">true</prop>
@@ -18,10 +19,10 @@
     <!-- URL for the Pustefix editor -->
     <choose>
       <when test="$__antprop_standalone.tomcat = 'true'">
-        <prop name="xmlserver.editor_url">http://cmsskel.<cus:fqdn/>:8080</prop>
+        <prop name="xmlserver.editor_url">http://cmsskel.${fqdn}:8080</prop>
       </when>
       <otherwise>
-        <prop name="xmlserver.editor_url">http://cmsskel.<cus:fqdn/></prop>
+        <prop name="xmlserver.editor_url">http://cmsskel.${fqdn}</prop>
       </otherwise>
     </choose>
         
@@ -59,6 +60,4 @@
     <prop name="pfixcore.ssl_redirect_port.for.8080">8443</prop>
     <prop name="pfixcore.ssl_redirect_port.for.9080">9443</prop>
 
-  </properties>
-
-</standardprops>
+</properties>

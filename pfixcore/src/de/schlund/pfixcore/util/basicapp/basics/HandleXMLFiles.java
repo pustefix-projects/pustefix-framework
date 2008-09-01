@@ -39,7 +39,6 @@ import org.xml.sax.SAXException;
 
 import de.schlund.pfixcore.util.basicapp.helper.AppValues;
 import de.schlund.pfixcore.util.basicapp.objects.Project;
-import de.schlund.pfixcore.util.basicapp.objects.ServletObject;
 import de.schlund.pfixcore.util.basicapp.projectdom.ConfigXmlDom;
 import de.schlund.pfixcore.util.basicapp.projectdom.DependXmlDom;
 import de.schlund.pfixcore.util.basicapp.projectdom.FrameXmlDom;
@@ -101,15 +100,11 @@ public class HandleXMLFiles {
             // the config,prop.in
             if (tmpDoc.equals(AppValues.CONFIG_TMPL)) {
             
-            // loop if there are more servlets defined
-            for (int j = 0; j < project.getServletList().size(); j++) {
-                String defServletName = ((ServletObject)(project.getServletList().
-                        get(j))).getServletName();
+                String defServletName = "config";
                 wrtDoc                   = defServletName + AppValues.CFGFILESUFF;
-                ConfigXmlDom configDom   = new ConfigXmlDom(project, domDoc, j + 1);
+                ConfigXmlDom configDom   = new ConfigXmlDom(domDoc);
                 domDoc                   = configDom.getDom();
                 writeXmlFile(domDoc, wrtDoc);
-            }
                 
             // the depend.xml    
             } else if (tmpDoc.equals(AppValues.DEPEND_TMPL)) {
@@ -117,9 +112,9 @@ public class HandleXMLFiles {
                 DependXmlDom dependDom   = new DependXmlDom(project, domDoc);
                 domDoc                   = dependDom.getDom();
                 
-            // changing the project.xml.in
+            // changing the project.xml
             } else if (tmpDoc.equals(AppValues.PROJECT_TMPL)) {
-                wrtDoc                   = AppValues.PROJECTXMLIN;
+                wrtDoc                   = AppValues.PROJECTXML;
                 ProjectXmlDom projectDom = new ProjectXmlDom(project, domDoc);
                 domDoc                   = projectDom.getDom();
                 
@@ -140,15 +135,12 @@ public class HandleXMLFiles {
             
             // the page will appear in myproject/txt/pages
             else if (tmpDoc.equals(AppValues.PAGE_TMPL)) {
-                for (int j = 0; j < project.getServletList().size(); j++) {
-                    int giveAway = j + 1;
                     wrtDoc              = AppValues.PAGEDEFPREFIX + 
-                                          AppValues.PAGEDEFAULT + giveAway +
+                                          AppValues.PAGEDEFAULT + 
                                           AppValues.PAGEDEFSUFFIX;
-                    PageXmlDom pageDom = new PageXmlDom(project, domDoc, giveAway);
+                    PageXmlDom pageDom = new PageXmlDom(project, domDoc);
                     domDoc             = pageDom.getDom();
                     writeXmlFile(domDoc, wrtDoc);
-                }
             }
             
             // writing the dom to a file
@@ -224,7 +216,7 @@ public class HandleXMLFiles {
             } else if (fileName.startsWith(AppValues.PAGEDEFPREFIX)) {
                 file = new File(pathToPages + fileName);
               // or maybe also the project.xml.in
-            } else if (fileName.equals(AppValues.PROJECTXMLIN)) {
+            } else if (fileName.equals(AppValues.PROJECTXML)) {
                 file = new File(pathToConf + fileName);
             
             // and last but not least the metatags.xsl

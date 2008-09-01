@@ -32,8 +32,6 @@
         <prop name="xmlserver.noeditmodeallowed">true</prop>
         <!-- Set the timeout for removing old SPDocuments. (in seconds) -->
         <prop name="sessioncleaner.timeout">20</prop>
-        <prop name="derefserver.validtime">fdfd</prop>
-           
       </when>
       <otherwise>
         <!-- Set this to true if you want to skip the check for changed stylesheets on every request -->

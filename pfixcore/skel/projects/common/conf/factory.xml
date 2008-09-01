@@ -1,44 +1,17 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<standardprops xmlns="http://pustefix.sourceforge.net/properties200401" xmlns:cus="http://www.schlund.de/pustefix/customize" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://pustefix.sourceforge.net/properties200401 http://pustefix.sourceforge.net/properties200401.xsd" version="1.0">
-  
-  <properties>
-        
+<properties xmlns="http://www.pustefix-framework.org/2008/namespace/properties-config" 
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xsi:schemaLocation="http://www.pustefix-framework.org/2008/namespace/properties-config ../../core/schema/properties-config.xsd">
+    
     <prop name="pustefix.log4j.config">common/conf/pfixlog.xml</prop>
     
     <!-- List of all factories to init -->
     <prop name="factory.initialize.02">de.schlund.pfixxml.targets.SPCacheFactory</prop>
     <prop name="factory.initialize.04">de.schlund.pfixxml.targets.cachestat.SPCacheStatistic</prop>
     <prop name="factory.initialize.05">de.schlund.pfixxml.perflogging.PerfLogging</prop>
-    <!--<prop name="factory.initialize.06">de.schlund.pfixxml.jmx.JmxServerFactory</prop>-->
-    
-    <!-- JmxServerFactory -->
-    <prop name="de.schlund.pfixcore.jmx.keystore">common/conf/jmxserver.keystore</prop>
-    <prop name="de.schlund.pfixcore.jmx.port.default">9334</prop>
-    <!--<example>
-    <prop name="de.schlund.pfixcore.jmx.port.00">5555</prop>
-    <prop name="de.schlund.pfixcore.jmx.regex.00">/.*[installation_a].*</prop>
-    <prop name="de.schlund.pfixcore.jmx.port.01">5556</prop>
-    <prop name="de.schlund.pfixcore.jmx.regex.01">/.*[installation_b].*/</prop>
-    <prop name="de.schlund.pfixcore.jmx.port.02">5557</prop>
-    <prop name="de.schlund.pfixcore.jmx.regex.02">/*[installation_c].*</prop>
-    </example>-->
-    <choose>
-      <when test="$mode = 'prod'">
-       <!-- leave this blank if your build host differs from the production machine. JmxServer will then be started on localhost-->
-      </when>
-      <otherwise>
-        <prop name="de.schlund.pfixcore.jmx.servername"><cus:fqdn/></prop>
-      </otherwise>
-    </choose>
-
-
     
     <!-- Enable target update loop -->
     <prop name="de.schlund.pfixcore.editor2.updatetargets">true</prop>
-    
-    <!-- part index -->
-    <prop name="partindex.scodefile.1">common/dyntxt/statusmessages-core-merged.xml</prop>
-    <prop name="partindex.scodefile.2">common/dyntxt/statusmessages.xml</prop>
     
     <!-- SPCacheFactory -->
     <prop name="targetcache.cacheclass">de.schlund.pfixxml.targets.LRUCache</prop>
@@ -63,5 +36,4 @@
     <!-- max time a the put-thread will wait when putting perfevent into a full buffer -->
     <prop name="perflogging.offermaxwait">5</prop>
     
-  </properties>
-</standardprops>
+</properties>

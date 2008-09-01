@@ -24,7 +24,6 @@ import org.w3c.dom.Document;
 import de.schlund.pfixcore.util.basicapp.helper.AppValues;
 import de.schlund.pfixcore.util.basicapp.helper.XmlUtils;
 import de.schlund.pfixcore.util.basicapp.objects.Project;
-import de.schlund.pfixcore.util.basicapp.objects.ServletObject;
 
 
 /**
@@ -36,14 +35,6 @@ import de.schlund.pfixcore.util.basicapp.objects.ServletObject;
 public final class ConfigXmlDom {
     /** The current dom */
     private Document domDoc    = null;
-    /** A String Buffer to get e.g. correctPaths */
-    private StringBuffer buffy = new StringBuffer();
-    /** The current Project */
-    private Project project            = null;
-    private String projectName = null;
-    /** defines the current pagename and is a suffix for home*/
-    private int homeCounter;
-    
       
     /**
      * Constructor initializes the Project Object
@@ -51,11 +42,8 @@ public final class ConfigXmlDom {
      * @param project The current project
      * @param domDoc the current Dom given by HandleXmlFiles
      */
-    public ConfigXmlDom(Project project, Document domDoc, int counter) {
+    public ConfigXmlDom(Document domDoc) {
         this.domDoc = domDoc;
-        projectName = project.getProjectName();
-        homeCounter = counter;
-        this.project     = project;
         prepareConfigProp();
     }
     
@@ -68,25 +56,7 @@ public final class ConfigXmlDom {
      * @return The new dom
      */
     private void prepareConfigProp() {
-        String curPageName = AppValues.PAGEDEFAULT + homeCounter;
-        // setting the current path
-        buffy.append(projectName);
-        buffy.append(AppValues.CONFFOLDER);
-        buffy.append(AppValues.DEPENDXML);
-        
-        // change attribute depend -> tag=servletinfo
-        domDoc = XmlUtils.changeAttributes(domDoc, AppValues.CONFIGTAG_SERVLETINFO, 
-                 AppValues.CONFIGATT_DEPEND, buffy.toString(), false);
-        buffy.setLength(0);
-        
-        // change attribute name
-        buffy.append(AppValues.CONFIGATT_NAMEPREFIX);
-        buffy.append(projectName);
-        buffy.append(AppValues.CONFIGATT_NAMEPOSTFIX);
-        buffy.append(((ServletObject)project.getServletList().get(homeCounter -1)).getServletName());
-        domDoc = XmlUtils.changeAttributes(domDoc, AppValues.CONFIGTAG_SERVLETINFO, 
-                 AppValues.CONFIGATT_NAME, buffy.toString(), false);
-        buffy.setLength(0);
+        String curPageName = AppValues.PAGEDEFAULT;
         
         // change attribute name -> tag is flowstep
         domDoc = XmlUtils.changeAttributes(domDoc, AppValues.CONFIGTAG_FLOWSTEP,

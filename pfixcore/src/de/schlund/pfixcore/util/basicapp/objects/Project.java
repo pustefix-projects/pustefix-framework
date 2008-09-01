@@ -39,16 +39,10 @@ public final class Project {
     private String projectName    = null;
     /** A String for the language */
     private String language       = null;
-    /** A String project comment */
-    private String comment        = null;
+    /** A String project description */
+    private String description    = null;
     /** A static field for the projectname */
     private static String PRJNAME = null;
-    
-    /** 
-     * An ArrayList containing the servlet properties.
-     * @see de.schlund.pfixcore.util.basicapp.objects.ServletObject
-     */
-    private ArrayList<ServletObject> servletList = new ArrayList<ServletObject>();
     
     //  --> Start getter and setter
     /**
@@ -88,28 +82,16 @@ public final class Project {
     }
     
     /**
-     * @return Returns the servletList.
+     * @return Returns the description.
      */
-    public ArrayList<ServletObject> getServletList() {
-        return servletList;
-    }
-    
-    /**
-     * @return Returns the comment.
-     */
-    public String getComment() {
-        return comment;
+    public String getDescription() {
+        return description;
     }
     /**
-     * @param comment The comment to set.
+     * @param description The description to set.
      */
-    public void setComment(String comment) {
-        this.comment = comment;
+    public void setDescription(String description) {
+        this.description = description;
     }
-    /**
-     * @param servletList The servletList to set.
-     */
-    public void setServletList(ArrayList<ServletObject> servletList) {
-        this.servletList = servletList;
-    } //<-- End getter and setter
+  
 }

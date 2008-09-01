@@ -19,8 +19,13 @@
 
 package de.schlund.pfixcore.util.basicapp.basics;
 
+import java.io.File;
+import java.util.Properties;
+
 import de.schlund.pfixcore.util.basicapp.helper.AppWorker;
 import de.schlund.pfixcore.util.basicapp.objects.Project;
+import de.schlund.pfixxml.config.BuildTimeProperties;
+import de.schlund.pfixxml.config.GlobalConfigurator;
 
 /**
  * Just a main for running the app
@@ -32,6 +37,7 @@ import de.schlund.pfixcore.util.basicapp.objects.Project;
 public final class InitNewPfixProject {
         
     public static void main(String[] args) {
+        GlobalConfigurator.setDocroot((new File("projects").getAbsolutePath()));
         // init log4j
         AppWorker.initLogging();
         // The main settings for a new Project
@@ -44,10 +50,16 @@ public final class InitNewPfixProject {
         HandleXMLFiles handleFiles = new HandleXMLFiles(settings.getCurrentProject());
         handleFiles.runHandleXMLFiles(); 
         
+        Properties props = BuildTimeProperties.getProperties();
+        String value = props.getProperty("__antprop_standalone.tomcat");
+        boolean standalone = false;
+        if(value!=null && Boolean.valueOf(value)) standalone = true;
+        String fqdn = props.getProperty("fqdn");
+       
         System.out.println("\nYour project has been successfully created.");
         System.out.println("To see how it works type in \"ant\".");
-        System.out.println("Afterwards restart Apache httpd and Tomcat.");
+        System.out.println("Afterwards restart Apache httpd and/or Tomcat.");
         System.out.println("Then type in \"http://" + Project.getStaticPrjName() + 
-                ".HOSTNAME.DOMAIN\"");
+                "." + fqdn + (standalone?":8080":"") +"\"");
     }
 }

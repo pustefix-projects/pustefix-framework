@@ -35,9 +35,6 @@ import de.schlund.pfixcore.util.basicapp.objects.Project;
 public final class PageXmlDom {
     /** The current dom */
     private Document domDoc    = null;
-    /** defines the current pagename and is a suffix for home*/
-    private int counter;
-    
       
     /**
      * Constructor initializes the Page Object
@@ -45,16 +42,15 @@ public final class PageXmlDom {
      * @param project The current project
      * @param domDoc the current Dom given by HandleXmlFiles
      */
-    public PageXmlDom(Project project, Document domDoc, int counter) {
+    public PageXmlDom(Project project, Document domDoc) {
         this.domDoc = domDoc;
-        this.counter = counter;
         preparePage();
     }
     
     
   
     private void preparePage() {
-        String pageName = AppValues.PAGEDEFAULT + counter;
+        String pageName = AppValues.PAGEDEFAULT;
         // setting the current path
         domDoc = XmlUtils.changeTextValues(domDoc, "theme", "Page: " + pageName, false);
     }
