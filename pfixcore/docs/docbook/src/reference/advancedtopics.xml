@@ -2081,7 +2081,7 @@ public @interface CustomerSerializer {}]]></programlisting>
  </filter>]]></programlisting>
       <para>
         The name of the filter has to be unique within the whole project and is used in mappings. The filter is only
-        considered active if the <litreal>&lt;active&gt;</litreal> tag contains the value <literal>true</literal>.
+        considered active if the <literal>&lt;active&gt;</literal> tag contains the value <literal>true</literal>.
         The <literal>&lt;class/&gt;</literal> tag contains the fully qualified class name of the filter class.
         The <literal>&lt;foreigncontext/&gt;</literal> tag takes a reference to a <literal>ContextXMLServlet</literal>.
         The context instance of this servlet (if present within the session) will be provided to the filter code.

@@ -14,1286 +14,510 @@
     <orderedlist>
       <listitem>
         <para>
-          The project definition file. This file is used to list all the information
-          that is needed to generate an apache config file and the servlet container's
-          config files for this project. Also the project info needed for the editor
-          application is given here.
-        </para>
-        <para>
-          There is a environment-wide portion of the configuration (located at
-          <literal>DOCROOT/servletconf/projects.xml.in</literal>) that handles properties
-          common to all projects. Additionally, there is, for each project, a file
-          called <literal>DOCROOT/MyProject/conf/project.xml.in</literal> that contains
-          the project specific information.
-        </para>
-        <para>
-          The build system builds the final <literal>DOCROOT/servletconf/projects.xml</literal>
-          file by merging the project specific and the environment-wide files.
+          Global configuration files: These files are all located in 
+          <literal>projects/common/conf</literal>. They define global options which 
+          apply to all projects in the environment.
         </para>
       </listitem>
       <listitem>
         <para>
-          The second type of configuration file is a property file for (almost) all
-          servlets that you have defined for your project in the associated project.xml
-          file. Again, there is also a common property file used for all servlets
-          (<literal>DOCROOT/common/conf/pustefix.xml.in</literal>) and a property files
-          for all factory classes (<literal>DOCROOT/common/conf/factory.xml.in</literal>)
-          that are started right at the beginning of the bootup process of the servlet
-          container (These factories offer services that are useful for all projects
-          running in the environment. Much of the framework itself is implemented in
-          these factories).
-        </para>
-        <para>
-          The name of the property file for each servlet can be choosen freely, but it
-          should match the name under which the servlet is accessible. E.g. if the servlet
-          is accessible via the URL http://some.host.com/xml/config then the name of
-          the servlet's property file should be config.prop (But note that you must never
-          edit the config.prop file itself, but a corresponding .prop.in file instead
-          that follows a special XML syntax. The build process takes care to transform
-          this file into the form needed by the framework). The file should be located in
-          the project's conf subdirectory.
+          Project specific configuration files: These files are located within the
+          <literal>conf</literal> directory of each project directory. They define
+          options which only apply to the corresponding project.
         </para>
       </listitem>
       <listitem>
         <para>
-          The third type is a XML file that defines the UI and page structure of the
-          project. This is also located in each project's conf subdirectory and is called
-          <literal>depend.xml</literal>.
+          <literal>build.properties</literal> file: This optional configuration file
+          may contain properties that are used by Ant as if they were specified
+          on the command line when calling Ant.
         </para>
       </listitem>
     </orderedlist>
   </section>
   
-  <section xml:id="configuration.format">
-    <title>Configuration File Format</title>
+  <section xml:id="configuration.customization">
+    <title>Customization tools</title>
     <para>
+      Virtually all configuration files used by Pustefix support a mechanism 
+      called "customization". You may use this customization support to use 
+      different portions of a configuration file depending on the environment
+      being used when building the project. For this task, the customization 
+      tools provide a <tag>choose</tag> tag which is similar to the 
+      <tag>choose</tag> tag provided by XSLT.
     </para>
-
-<!-- 
-    Java Property Files
- -->
+    <programlisting language="xml">
+<![CDATA[
+<choose>
+  <when test="XPathExpression">
+    <!-- Configuration code -->
+  </when>
+  <when test="XPathExpression">
+    <!-- Configuration code -->
+  </when>
+  <otherwise>
+    <!-- Configuration code -->
+  </otherwise>
+</choose>
+]]>
+    </programlisting>
+    <para>
+      At least one <tag>when</tag> tag has to be specified. Further 
+      <tag>when</tag> tags and the <tag>otherwise</tag> are optional.
+      However, if specified, the <tag>otherwise</tag> tag has to be
+      the last one.
+    </para>
+    <para>
+      The XPath expressions may contain references to the variables
+      <itemizedlist>
+        <listitem>
+          <para>
+            <literal>mode</literal>: Set to the property 
+            <literal>makemode</literal> specified when running Ant.
+            If no explicit <literal>makemode</literal> is specified
+            <literal>prod</literal> is used.
+          </para>
+        </listitem>
+        <listitem>
+          <para>
+            <literal>uid</literal>: The name of the user that 
+            executed Ant.
+          </para>
+        </listitem>
+        <listitem>
+          <para>
+            <literal>fqdn</literal>: The fully qualified domain name
+            of the machine the build process was run on.
+          </para>
+        </listitem>
+        <listitem>
+          <para>
+            <literal>machine</literal>: The host name of the machine
+            the build process was run on.
+          </para>
+        </listitem>
+        <listitem>
+          <para>
+            <literal>__antprop_*</literal>: All properties defined
+            within Ant's <literal>build.xml</literal> file are 
+            provided as variables with the prefix 
+            <literal>__antprop_</literal>.
+          </para>
+        </listitem>
+      </itemizedlist>
+      It is an error to reference a variable that is not defined. Therefore you
+      might use the special XPath function 
+      <literal>pfx:isSet('variableName')</literal> to check if a variable with 
+      a certain name is defined. 
+    </para>
+  </section>
+  
+  <section xml:id="configuration.globalfiles">
+    <title>Global configuration files</title>
+    <para>
+      All global configuration files are located in 
+      <literal>projects/common/conf</literal>. There are 
+      <itemizedlist>
+        <listitem>
+          <para>
+            <literal>buildtime.properties</literal>: This file is automatically 
+            generated each time Ant runs. It contains all properties defined 
+            in Ant's <literal>build.xml</literal> file as well as some special
+            properties (like the "makemode"). It is used by Pustefix's 
+            customization tools, which allow to check for the properties 
+            defined there. You cannot modify this file, as all changes will 
+            be overwritten the next time Ant is run. If you want to define your 
+            own properties for the customization process, use Ant properties 
+            as they will be automatically included. See 
+            <xref linkend="configuration.customization"/> for details.
+          </para>
+        </listitem>
+        <listitem>
+          <para>
+            <literal>factory.xml</literal>: Configuration for 
+            <link linkend="configuration.misc.factory">factory loader</link>.
+          </para>
+        </listitem>
+        <listitem>
+          <para>
+            <literal>pfixlog.xml</literal>: 
+            <link xlink:href="http://logging.apache.org/log4j/">log4j</link>
+            configuration file. This file uses the standard log4j syntax,
+            however the syntax is extended by the 
+            <link linkend="configuration.customization">customization tags</link>,
+            which for this configuration file are locate in the namespace
+            <literal>http://www.schlund.de/pustefix/customize</literal>.
+          </para>
+        </listitem>
+        <listitem>
+          <para>
+            <literal>projects.xml</literal>: 
+            <link linkend="configuration.format.globalprojects">Global project settings</link>
+            which are shared by all projects. 
+          </para>
+        </listitem>
+        <listitem>
+          <para>
+            <literal>pustefix.xml</literal>: 
+            Contains 
+            <link linkend="configuration.pustefixxml">global properties</link> using the 
+            <link linkend="configuration.format.props">XML properties syntax</link>. 
+          </para>
+        </listitem>
+        <listitem>
+          <para>
+            <literal>userdata.xml</literal>: 
+            Used by the Pustefix CMS to store user accounts. 
+          </para>
+        </listitem>
+      </itemizedlist>
+    </para>
     
     <section xml:id="configuration.format.props">
-      <title>Java Property Files</title>
-    <para>
-      Some parts of the Pustefix frameworks are configured using Java 
-      properties. To ease this configuration Pustefix provides you with 
-      a special XML format which is read instead of the usual Java 
-      property file format. This format provides some customization 
-      mechanism to allow configuration options to depend on settings 
-      like the makemode or the machine the application is being built on.
-    </para>
-    <para>
-      The structure of a standard .xml property file is very easy:
-      <programlisting language="xml"><![CDATA[
-<standardprops version="1.0"
-  xmlns="http://pustefix.sourceforge.net/2004/properties"
-  xmlns:cus="http://www.schlund.de/pustefix/customize"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://pustefix.sourceforge.net/2004/properties http://pustefix.sourceforge.net/2004/properties.xsd">
-  <properties>
+      <title>XML property files syntax</title>
+      <para>
+        Some parts of the Pustefix frameworks are configured using Java 
+        properties. To ease this configuration Pustefix provides you with 
+        a special XML format which is read instead of the usual Java 
+        property file format. This format provides some customization 
+        mechanism to allow configuration options to depend on settings 
+        like the makemode or the machine the application is being built on.
+      </para>
+      <para>
+        The structure of a standard .xml property file is very easy:
+        <programlisting language="xml">
+  <![CDATA[
+  <properties
+    xmlns="http://www.pustefix-framework.org/2008/namespace/properties-config"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.pustefix-framework.org/2008/namespace/properties-config http://www.pustefix-framework.org/2008/namespace/properties-config.xsd">
+    
     <prop name="statuscodefactory.messagefile">common/dyntxt/statusmessages.xml</prop>
   </properties>
-</standardprops>]]></programlisting>
-      The <tag class="namespace">cus</tag> namespace is needed to use 
-      the customization tags explained below.
-      The prop tag is the most primitive way to enter a single property. 
-      The example above would simply result in the java property
-      <literal>statuscodefactory.messagefile=common/dyntxt/statusmessages.xml</literal>.
-      Pustefix allows to customize the creation of the property files 
-      in certain ways. When the file is being read, the system uses 
-      settings defined in common/conf/buildtime.prop (which itself is 
-      automatically generated by the build system) to provide the 
-      parameters used in the customization tags:
-    </para>
-    <itemizedlist>
-      <listitem>
-        <para>
-          <literal>makemode</literal> The value of the ant property 
-          makemode, which can be passed on the ant commandline but will 
-          more commonly be specified in the environment variable 
-          MAKE_MODE. This can be used to easily switch preferences 
-          depending on the "mode" that is active when the application 
-          is built, e.g. "test" on development machines, and "prod" on 
-          the production servers. The value is supplied as the parameter 
-          mode. Note that the value of MAKE_MODE also determines if 
-          certain features are allowed like the possiblity to use the 
-          Pustefix editor or to get the XML result instead of the 
-          rendered page. These features are turned off for security 
-          reasons when the mode is "prod".
-        </para>
-      </listitem>
-      <listitem>
-        <para>
-          The user id (<literal>uid</literal>) of the user that starts 
-          the build process.
-        </para>
-      </listitem>
-      <listitem>
-        <para>
-          The full qualified domainname (as the parameter 
-          <literal>fqdn</literal>) of the machine you start the build 
-          process.
-        </para>
-      </listitem>
-      <listitem>
-        <para>
-          The name of the machine (<literal>machine</literal>) you 
-          start the build process on.
-        </para>
-      </listitem>
-      <listitem>
-        <para>
-          Any ant property (<literal>__antprop_*</literal>) defined 
-          within the build file.
-        </para>
-      </listitem>
-    </itemizedlist>
-    <para>
-      Certain customization tags work with these parameters:
-      <programlisting language="xml"><![CDATA[
-<properties
-  xmlns:cus="http://www.schlund.de/pustefix/customize">
-  <prop name="foo">
-    <cus:uid/>
-  </prop>
-      ]]></programlisting>
-      Use <tag>cus:uid</tag> to reference the user that started 
-      the build process. In the same way you can use 
-      <tag>cus:machine</tag> and <tag>cus:fqdn</tag> to insert 
-      the value of the supplied XSLT parameter
-      <programlisting language="xml"><![CDATA[
-  <choose>
-    <when test="$mode='test'">
-      
-    </when>
-    <when test="$uid='pfixuser'">
-      
-    </when>
-    <when test="$machine='server1'">
-      ]]></programlisting>
-      These <tag>choose</tag> and <tag>when</tag> elements are 
-      allowed only within properties elements. The three 
-      <tag class="attribute">test</tag> nodes above test for one 
-      of the supplied XSLT parameters...
-      <programlisting language="xml"><![CDATA[
-    </when>
-    <when test="$mode='prod' and $uid='pfixuser'">
-      
-    </when>
-    <when test="$mode='prod' or machine='server1'">
-      ]]></programlisting>
-      ...you can use boolean operators to combine tests
-      <programlisting language="xml"><![CDATA[
-    </when>
-    <otherwise>
-      ]]></programlisting>
-      The "default test" that will always pass.
-      <programlisting language="xml"><![CDATA[
-    </otherwise>
-  </choose>
-</properties>
-      ]]></programlisting>
-      If you think the customization system really looks like XSLT, 
-      you are almost right as in fact the test expressions are coded 
-      using XPath - the same standard XSLT is using, too.
-    </para>
-    <para>
-      This customization mechanism is not only available within the 
-      XML property files but also in most other Pustefix 
-      configuration files.
-    </para>
+  ]]>
+        </programlisting>
+        The prop tag is the most primitive way to enter a single property. 
+        The example above would simply result in the java property
+        <literal>statuscodefactory.messagefile=common/dyntxt/statusmessages.xml</literal>.
+        Pustefix allows to customize the creation of the property files 
+        using the mechanism described in <xref linkend="configuration.customization"/>.
+      </para>
+      <para>
+        You may reference customization variables in property values using
+        the syntax <literal>${variableName}</literal>. For example 
+        <literal>${fqdn}</literal> will be replaced by the fully qualified 
+        domain name of the machine.
+      </para>
     </section>
-    <section xml:id="configuration.format.fragments">
-      <title>Configuration Fragments</title>
-    <para>
-      Configuration fragments files contain aggregated configuration 
-      directives that are intended to be reused in different 
-      configuration files.
-    </para>
-    <para>
-      <programlisting language="xml"><![CDATA[
-<fr:config-fragments
-  xmlns:fr="http://pustefix.sourceforge.net/configfragments200609"
-  xmlns:pr="http://pustefix.sourceforge.net/properties200401"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://pustefix.sourceforge.net/configfragments200609 http://pustefix.sourceforge.net/configfragments200609.xsd">
+    
+    <section xml:id="configuration.misc.factory">
+      <title>Factory loader configuration (factory.xml)</title>
+      <para>
+        This property file is located in 
+        <filename>projects/common/conf/factory.xml</filename> and used 
+        by the <classname>de.schlund.pfixxml.FactoryInitServlet</classname> 
+        servlet (contained in the special admin project used in every 
+        Pustefix environment) whenever the servletcontainer starts up to 
+        initialize services that are used by all the other projects. The
+        syntax of this file is described in <xref linkend="configuration.format.props"/>.
+      </para>
+    </section>
+    
+    <section xml:id="configuration.pustefixxml">
+      <title>Global properties (pustefix.xml)</title>
+      <para>
+        The syntax of the 
+        <filename>common/conf/pustefix.xml</filename> file 
+        complies to the description in 
+        <xref linkend="configuration.format.props"/>. The properties
+        defined here are merged with the properties defined for a
+        specific servlet. However, there are some properties with a 
+        special meaning.
+      </para>
+      <para>
+        Exception processing is configured via <tag>prop</tag> elements 
+        whose names comply to following syntax:
+        <code>exception.TYPE.[page|forward|processor]</code>
+        For one single <literal>TYPE</literal>, there may be only one 
+        occurrence of <literal>page</literal>, <literal>forward</literal> 
+        and <literal>processor</literal>.
+      </para>
+      <para>
+        <literal>TYPE</literal> is a fully qualified class name of a 
+        valid exception class, for which the handling should be 
+        configured at this point. In this case it specifically means, 
+        that the specified class must be a descendant of 
+        <classname>java.lang.Throwable</classname>, as the 
+        <literal>catch</literal>-block that handles the exceptions which 
+        are specified here, catches <classname>Throwable</classname>.
+      </para>
+      <para>
+        If an exception occurs during exception processing, or during 
+        processing of the page the request got forwarded to, no further 
+        exception handling will take place. Therefore the code that 
+        processes exceptions and the code that drives pages to which 
+        requests get forwarded, in case of exceptions, should be robust. 
+        Otherwise the whole exception-handling thing would be quite 
+        useless, wouldn't it?
+      </para>
+      <table rules="all" frame="box">
+        <caption>Exception processor properties</caption>
+        <thead align="left">
+          <tr>
+            <th>Attribute</th>
+            <th>Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><literal>file</literal></td>
+            <td><emphasis>Mandatory</emphasis>. Path to the file that 
+            contains the tags to be included (relative to docroot). </td>
+          </tr>
+          <tr>
+            <td><literal>section</literal></td>
+            <td><emphasis>Optional</emphasis>. 
+            Type of the section that shall be included. If more than 
+            one section of the specified type exists in the file, the 
+            content of all this sections is included. For a 
+            <classname>DirectOutputServlet</classname> configuration
+            only <literal>directoutputpagerequests</literal> and 
+            <literal>properties</literal> are valid.</td>
+          </tr>
+          <tr>
+            <td><literal>refid</literal></td>
+            <td><emphasis>Optional</emphasis>. 
+            Include a section identified by the specified id. The 
+            refid specified here must match the id attribute of 
+            exactly one section in the specified file.</td>
+          </tr>
+          <tr>
+            <td><literal>xpath</literal></td>
+            <td><emphasis>Optional</emphasis>. 
+            A XPath expression specifying the node-set to be included. 
+            The prefixes to be used for XML namespaces are "fr" for 
+            the namespace of the fragments file tags and "pr" for the 
+            namespace of the <classname>DirectOutputServlet</classname> 
+            configuration tags.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+    
+    <section xml:id="configuration.format.globalprojects">
+      <title>Global projects configuration (projects.xml)</title>
+      <para>
+        The <literal>projects.xml</literal> file contains global settings for Apache HTTPd,
+        Tomcat and Pustefix itself.
+      </para>
+      <programlisting language="xml">
+<![CDATA[
+<global-config xmlns="http://www.pustefix-framework.org/2008/namespace/project-config">
   
-  <fr:navigation id="nav1">
-      ]]></programlisting>
-      All sections have an <emphasis>optional</emphasis> 
-      <tag class="attribute">id</tag> that can be used to identifiy 
-      the section when more than one section fo the same type is 
-      present in one file. The value of the 
-      <tag class="attribute">id</tag> attribute has to be unique
-      within the whole file.
-      <programlisting language="xml"><![CDATA[
-    <page name="MyPage" handler="/xml/myhandler"/>
-      ]]></programlisting>
-      The structure here is the same as within the navigation tag of the 
-      depend.xml file.
-      <!-- TODO Add link to depend.xml syntax -->
-      <programlisting language="xml"><![CDATA[
-  </fr:navigation>
-  <fr:targets>
-    <standardpage name="MyPage" xml="myproject/xml/mymaster.xml"/>
-      ]]></programlisting>
-      The tags allowed here are the same that are allowed for 
-      standardpage or target definitions in the depend.xml file.
-      <!-- TODO Add link to depend.xml syntax -->
-      <programlisting language="xml"><![CDATA[
-  </fr:targets>
-  <fr:resources>
-    <pr:resource class="com.example.MyResourceImpl">
-      <pr:implements class="com.example.MyResource"/>
-    </pr:resource>
-      ]]></programlisting>
-      The tags allowed here are the same that are allowed for the 
-      definition of context resources within the <tag>context</tag> 
-      tag of the <link linkend="configuration.servlet.contextxml">ContextXMLServlet configuration</link>.
-      <programlisting language="xml"><![CDATA[
-  </fr:resources>
-  <fr:interceptors>
-    <pr:interceptor class="com.example.MyInterceptor"/>
-      ]]></programlisting>
-      The tags allowed here are the same that are allowed within the 
-      <tag>startinterceptors</tag> and <tag>endinterceptors</tag> tags 
-      of the <link linkend="configuration.servlet.contextxml">ContextXMLServlet configuration</link>.
-      <programlisting language="xml"><![CDATA[
-  </fr:interceptors>
-  <fr:scriptedflows>
-    <pr:scriptedflow name="myscript" file="myproject/conf/scriptedflows/myscript.script.xml"/>
-      ]]></programlisting>
-      The tags allowed here are the same that are allowed within the 
-      <tag>scriptedflows</tag> tag of the 
-      <link linkend="configuration.servlet.contextxml">ContextXMLServlet configuration</link>.
-      <programlisting language="xml"><![CDATA[
-  </fr:scriptedflows>
-  <fr:roles>
-    <pr:role name="MY_ROLE">
-      <pr:pageaccess names="mypage*"/>
-    </pr:role>
-      ]]></programlisting>
-      The tags allowed here are the same that are used for role 
-      definition in the
-      <link linkend="configuration.servlet.contextxml">ContextXMLServlet configuration</link>.
-      <programlisting language="xml"><![CDATA[
-  </fr:roles>
-  <fr:pageflows>
-    <pr:pageflow name="MyFlow">
-      <pr:flowstep name="MyFirstPage"/>
-      <pr:flowstep name="MySecondPage"/>
-    </pr:pageflow>
-      ]]></programlisting>
-      The tags allowed here are the same that are used for the 
-      definition of pageflows in the
-      <link linkend="configuration.servlet.contextxml">ContextXMLServlet configuration</link>.
-      <programlisting language="xml"><![CDATA[
-  </fr:pageflows>
-  <fr:pagerequests>
-    <pr:pagerequest name="MyPage"/>
-      ]]></programlisting>
-      The tags allowed here are the same that are used for the 
-      definition of pagerequets in the
-      <link linkend="configuration.servlet.contextxml">ContextXMLServlet configuration</link>.
-      <programlisting language="xml"><![CDATA[
-  </fr:pagerequests>
-  <fr:properties>
-    <pr:prop name="myproperty">myvalue</pr:prop>
-      ]]></programlisting>
-      The tags allowed here are the same that are allowed within the 
-      <tag>properties</tag> tag of the 
-      <link linkend="configuration.servlet.contextxml">ContextXMLServlet configuration</link>.
-      <programlisting language="xml"><![CDATA[
-  </fr:properties>
-  <fr:directoutputpagerequests>
-    <pr:directoutputpagerequest name="foo">...</pr:directoutputpagerequest>
-      ]]></programlisting>
-      Direct output pagerequests can be defined here. See 
-      <xref linkend="configuration.servlet.directoutput"/> for details 
-      on this.
-      <programlisting language="xml"><![CDATA[
-  </fr:directoutputpagerequests>
-</fr:config-fragments>
-      ]]></programlisting>
-    </para>
+  <!-- prefix to namespace url mappings to be used in pages xml -->
+  <namespaces>
+    <namespace-declaration prefix="pfx" url="http://www.schlund.de/pustefix/core"/>
+    <namespace-declaration prefix="ixsl" url="http://www.w3.org/1999/XSL/Transform"/>
+  </namespaces>
+  
+  <http-server>
+    <tomcat>
+      <minprocessors>100</minprocessors>
+      <maxprocessors>500</maxprocessors>
+      <connector-port>8009</connector-port>
+      <debug>0</debug>
+      <loglevel>info</loglevel>
+      <jkhost>${fqdn}</jkhost>
+      <!-- This is only for mod_jk A matching sample workers.prop file will be generated, but may need -->
+      <!-- additional customization. Clustering will not work out of the box. -->
+      <jkmount>router</jkmount>
+      <defaulthost>sample1.${fqdn}</defaulthost>
+      <jvmroute>foo</jvmroute>
+    </tomcat>
+    <apache>
+      <logdir>pfixroot:/servletconf/log</logdir>
+    </apache>
+  </http-server>
+  
+  <application>
+    <static>
+      <path>common/img</path>
+      <path>core/img</path>
+      <path>core/script</path>
+    </static>
+  </application>
+  
+</global-config>
+]]>
+     </programlisting>
+     <para>
+       The <tag>namespaces</tag> section declares namespace prefixes, which are 
+       available when editing include parts in the Pustefix CMS. You can set the
+       <tag class="attribute">exclude-result-prefix</tag> to <literal>true</literal>
+       in order to exclude the namespace declaration from XHTML output sent to
+       the browser. 
+     </para>
+     <para>
+       The <tag>http-server</tag> section specifies various settings for Apache 
+       Tomcat and Apache HTTPd. Usually you do not have to change these settings. 
+     </para>
+     <para>
+       The <tag>application</tag> section is used to specify pathnames which 
+       contain static resources which should be made available to all projects.
+     </para>
     </section>
+    
   </section>
+  
+
 
   <section xml:id="configuration.project">
-    <title>Project configuration</title>
+    <title>Project configuration files</title>
     <para>
       For each project in your Pustefix environment you need to create a definition file
-      that contains all the information about your project that is needed to automatically
-      generate other configuration files for various subsystems.
+      that contains all the information about your project (including references to other
+      project-specific configuration files). This file has to be named 
+      <literal>project.xml</literal> and must be placed in the <literal>conf</literal>
+      subdirectory of the project. It can be accompanied by a Spring bean definition file
+      that must be called <literal>spring.xml</literal>. This file may contain arbitrary
+      definitions for beans that will be created within the Spring ApplicationContext 
+      automatically created for the web application.
     </para>
-    <itemizedlist>
-      <listitem>
-        <para>
-          The apache config file, containing the definition for each of the projects of your
-          environment: servletconf/tomcat/apache.conf
-        </para>
-      </listitem>
-      <listitem>
-        <para>
-          The config files for mod_jk: servletconf/tomcat/jk.conf and
-          servletconf/tomcat/workers.prop.
-        </para>
-      </listitem>
-      <listitem>
-        <para>
-          The config file for the tomcat servlet container: servletconf/tomcat/conf/server.xml
-        </para>
-      </listitem>
-      <listitem>
-        <para>
-          The config files for every webapp (each project is mapped to a webapp):
-          servletconf/tomcat/webapps/[project name]/WEB-INF/web.xml
-        </para>
-      </listitem>
-    </itemizedlist>
     <para>
-      This information is contained in a site wide file servletconf/projects.xml.in which
-      contains information every environment needs. Each project also needs to supply a file
-      to tell the system it's own configuration. These files are at
-      [project name]/conf/project.xml.in. All those files, together with the site wide file
-      are used as the source for creating the above mentioned config files.
+      All other configuration files can theoretically have arbitrary names, however 
+      we strongly recommend using the naming convention used in this reference 
+      documentation. 
     </para>
-    <section xml:id="configuration.project.file">
-      <title>The site wide configuration servletconf/projects.xml.in</title>
+    
+    <section xml:id="configuration.project.projectxml">
+      <title>Project descriptor (project.xml)</title>
       <para>
-        The site wide projects.xml.in file contains two "projects" that are needed for
-        Pustefix itself to work properly. The first of these is the editor project. The other
-        project is used to start a servlet automatically when the system starts. This
-        servlet itself is not able to act on any userinput, it's only purpose is to start
-        a bunch of factories that implement functionality shared by other, "real" projects.
+        The <literal>project.xml</literal> file contains references to all services
+        and resources used by this project.
       </para>
-      <para>
-        If you need other servlets for administrative purposes (e.g. to gather some sort of
-        statisitics about the system as a whole) you can add these servlets to this project.
-        The project specific configuration [project name]/conf/project.xml.in
-        <programlisting language="xml"><![CDATA[<project name="test"
-  xmlns:cus="http://www.schlund.de/pustefix/customize">
-  <active>true</active>
-  <!-- The content of this tag is used in the editor to list all defined projects. -->
-  <comment>Test Application</comment>
-  <depend>MyProject/conf/depend.xml</depend>
-
-  <!-- This section is for generating apache.conf in the servletconf/tomcat directory. -->
-  <virtualhost>SomeVirtualHostName</virtualhost>
-  <servername>SomeServerName</servername>
-  <serveralias>SomeServerAlias</serveralias>
-  <defpath>/xml/SomeDefinedServlet</defpath>
-
-  <!--
-    The defpath tag names a default servlet if the user didn't specify one explicitly in
-    the url (the "xml" part is the mount point of the ServletContext in which all servlets
-    are running)
-  -->
-  <documentroot>/Path/To/DocumentRoot</documentroot>
-
-  <!--
-    The apache DocumentRoot for static content, e.g. html pages or pdf files.
-    Required because otherwise apache uses its default DocumentRoot which may not be
-    desirable from a security point of view. If you don't have any static content to
-    server. you can use an empty directory
-    Specify directories which shall not be relative to the DocumentRoot here.
-    This is used for directories containing images, as they are served by apache directly.
-  -->
-  <passthrough>MyProject/img</passthrough>
-
-  <literalapache>
-    <-- Enter arbitrary additional stuff for the apache.conf file here. -->
-  </literalapache>
+      <programlisting language="xml">
+<![CDATA[
+<project-config xmlns="http://www.pustefix-framework.org/2008/namespace/project-config">
   
-  <ports>
-    <port number="80"/>
-    <!-- If you don't want to use SSL, you can remove the SSL section. -->
-    <port number="443" ssl="true">
-      <sslkey>/etc/httpd/conf/ssl.key/server.key</sslkey>
-      <sslcrt>/etc/httpd/conf/ssl.crt/server.crt</sslcrt>
-    </port>
-  </ports>
-
-  <!--
-    Specify at least one servlet here. Create a config file for every servlet you
-    define, as described here.
-  -->
-  <servlet name="myservlet" useineditor="true">
-    <active>true</active>
-    <class>de.schlund.pfixxml.ContextXMLServer</class>
-    <propfile>MyProject/conf/myservlet.prop</propfile>
-  </servlet>
-
-  <!--
-    The edit and deref servlets must always be present. The edit servlet is the
-    Pustefix CMS, and the deref servlet is used to create links to external websites
-    without transmitting Referer-headers which may contain the private session id.
-    You don't need to create config files for these.
-  -->
-  <servlet name="edit">
-    <active>true</active>
-    <class>de.schlund.pfixxml.ContextXMLServer</class>
-    <propfile>core/editor/conf/config.prop</propfile>
-  </servlet>
-  <servlet name="deref">
-    <active>true</active>
-    <class>de.schlund.pfixxml.DerefServer</class>
-  </servlet>
- </project>]]></programlisting>
-      </para>
-    </section>
-    <section xml:id="configuration.project.servletfilters">
-      <title>Servlet filter configuration</title>
-      <para>
-        See <xref linkend="advanced.servletfilters.configuration"/> for information on how to configure
-        servlet filters in a pustefix application. 
-      </para>
-    </section>
-  </section>
-
-  <section xml:id="configuration.servlet">
-    <title>Servlet configuration</title>
-    <para>
-      The processing of a request in Pustefix starts with a servlet that is derived from
-      <literal>de.schlund.pfixxml.ServletManager</literal>. The following section explains
-      how the different servlet types are configured.
-    </para>
+  <project>
+    <!-- Short project name, should equal the name 
+         of the project directory                  --> 
+    <name>projectname</name>
+    <!-- Description shown in Pustefix CMS -->
+    <description>Description for this project</description>
+    <!-- 
+      add
+    <enabled>false</enabled>
+      to make disregard this project when building the
+      server configuration 
+    -->
+  </project>
   
-    <section xml:id="configuration.servlet.contextxml">
-      <title>ContextXMLServlet configuration format</title>
-      <para>
-        Most projects use one or a (small) number of 
-        <classname>de.schlund.pfixxml.ContextXMLServlet</classname> 
-        servlets that drive the business logic of the application. 
-        All pages that are to be generated via XSLT from a data XML 
-        tree are handled by a servlet of this type.
-       </para>
-      <para>
-        This servlet uses a configuration file that has a special 
-        syntax. However properties and customization in this file 
-        work nearly the same way as explained for the standard 
-        property definitions.
-      </para>
-      <para>
-        <programlisting language="xml"><![CDATA[
-  <contextxmlserver version="1.0"
-    xmlns="http://pustefix.sourceforge.net/2004/properties"
-    xmlns:cus="http://www.schlund.de/pustefix/customize"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://pustefix.sourceforge.net/2004/properties http://pustefix.sourceforge.net/2004/properties.xsd">
-    <servletinfo depend="MyProject/conf/depend.xml" name="AUniqueNameForTheServlet">
-        ]]></programlisting>
-        The attributes <tag class="attribute">depend</tag> and 
-        <tag class="attribute">name</tag> are mandatory. If 
-        <tag class="attribute">depend</tag> starts with a '/' 
-        the value is used unchanged, otherwise (which is the 
-        usual case) it's interpreted as a path relative to 
-        the <literal>docroot</literal>.
-        <programlisting language="xml"><![CDATA[
-      <editmode allow="true|false"/>
-        ]]></programlisting>
-        <tag class="attribute">allow</tag> needs to be set to 
-        <literal>true</literal> if you want to be able to use 
-        the pustefix editor. You can wrap this tag within a 
-        customization element to allow edit mode only in 
-        certain modes (e.g. test mode). The whole node is 
-        optional.
-        <programlisting language="xml"><![CDATA[
-      <ssl force="true|false" modes="ListOfModes"/>
-        ]]></programlisting>
-        <tag class="attribute">force</tag> must be set to 
-        <literal>true</literal> if the servlet needs to run 
-        under SSL. You can wrap this tag within a 
-        customization element to force use of SSL only in 
-        certain modes (e.g. prod mode). The whole node is 
-        optional.
-        <programlisting language="xml"><![CDATA[
-      <defaultstate class="a.state.Class"/>
-      <defaultihandlerstate class="another.state.Class"/>
-        ]]></programlisting>
-        <tag>defaultstate</tag> and 
-        <tag>defaultihandlerstate</tag> are both optional. 
-        The <tag class="attribute">class</tag> attribute must 
-        be given. <classname>a.state.Class</classname> should 
-        de a descendant of 
-        <classname>de.schlund.pfixcore.workflow.app.StaticState</classname> 
-        and <classname>another.state.Class</classname> should 
-        be a descendant of 
-        <classname>de.schlund.pfixcore.workflow.app.DefaultIWrapperState</classname> 
-        (unless you really know what you are doing). They are 
-        used to set the defaults for the state tag used when 
-        processing the <tag>pagerequest</tag> tag 
-        (see there for more info).
-        <programlisting language="xml"><![CDATA[
-    </servletinfo>
+  <editor>
+    <!-- Set this to false to make the project disappear
+         in the Pustefix CMS                             -->
+    <enabled>true</enabled>
+    <!-- Location of the Pustefix CMS, does not need to
+         be changed usually                             -->
+    <location>http://cms.${fqdn}/</location>
+  </editor>
+  
+  <xml-generator>
+    <!-- Path to the configuration file of 
+         the TargetGenerator for this project -->
+    <config-file>pfixroot:/projectname/conf/depend.xml</config-file>
+  </xml-generator>
+  
+  <http-server>
     
-    <context defaultpage="APageName" synchronized="true">
-        ]]></programlisting>
-        <informaltable rules="all" frame="box">
-          <thead align="left">
-            <tr>
-              <th>Attribute</th>
-              <th>Description</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><literal>defaultpage</literal></td>
-              <td><emphasis>Either defaultpage or defaultflow must be set</emphasis>. Must reference
-              a valid <literal>pagerequest</literal>.</td>
-            </tr>
-            <tr>
-              <td><literal>defaultflow</literal></td>
-              <td><emphasis>Either defaultflow or defaultpage must be set</emphasis>. Must reference a 
-              valid <literal>pageflow</literal>.</td>
-            </tr>
-            <tr>
-              <td><literal>synchronized</literal></td>
-              <td>Optional. Defaults to <literal>true</literal>. If 
-              set to <literal>true</literal>, only one request per 
-              session is handled concurrently. If set to 
-              <literal>false</literal> all requests will be handled 
-              concurrently, requiring thread-safe business logic.</td>
-            </tr>
-          </tbody>
-        </informaltable>
-        <programlisting language="xml"><![CDATA[
-      <resource class="A_Resource">
-        ]]></programlisting>
-        <tag class="attribute">class</tag> is 
-        <emphasis>mandatory</emphasis>, can be any 
-        Java class, that can be created with a default constructor. 
-        Usually it's a bean like class with getters and setters. 
-        There may be multiple resource tags given.
-        <programlisting language="xml"><![CDATA[
-        <implements class="A_Interface">
-        ]]></programlisting>
-        The whole <tag>implements</tag> node is optional. 
-        <tag class="attribute">class</tag> is 
-        <emphasis>mandatory</emphasis>, must be a Java interface 
-        implemented by the resource. 
-        There may be more than one <tag>implements</tag> tag for a 
-        resource, but each interface 
-        must be unique in the whole context. In other words: it's 
-        possible for a resource to 
-        implement more than one interface, but not possible for one 
-        interface to be implemented by two 
-        resources used in the same 
-        <classname>Context</classname> definition.
-        <programlisting language="xml"><![CDATA[
-        </implements>
-        <properties>
-        ]]></programlisting>
-        The whole node is optional.
-        <programlisting language="xml"><![CDATA[
-          <prop name="A_Name">A_Value</prop>
-        ]]></programlisting>
-        <tag>prop</tag> is <emphasis>mandatory</emphasis> and can 
-        be used multiple times. It's similar to the use as a child 
-        of <tag>pagerequest</tag>/<tag>properties</tag>, but used 
-        here to create properties that are related to a context 
-        resource implementation. The resulting property looks like this:
-        <literal>context.resourceparameter.A_Resource.A_Name=A_Value</literal>
-        Customization tags may be used around a property to make it 
-        depend on a certain makemode or other parameters.
-        <programlisting language="xml"><![CDATA[
-        </properties>
-      </resource>
-    </context>
+    <!-- IP address and port Apache HTTPd (not Tomcat!) will
+         listen on for HTTP connections                      -->
+    <http-port>
+      <address>${fqdn}</address>
+    </http-port>
     
-    <scriptedflow name="AName" file="path/to/scriptfile.xml"/>
-        ]]></programlisting>
-        There may be an arbitrary number of <tag>scriptedflow</tag> 
-        tags, but each one must have a unique name. Scripted flows 
-        are a special method to control a session and do automatic 
-        requests based on initial user input.
-        <programlisting language="xml"><![CDATA[
-    <role name="A_ROLE"/>
-    <condition id="A_CONDITION"/>
-    <authconstraint id="AN_AUTHCONSTRAINT"/>
-        ]]></programlisting>
-         You can define an arbitrary number of roles, conditions and 
-         authconstraints here, for details see <xref linkend="advanced.rolebasedauth"/>.
-         <!-- TODO Add link here -->
-         <programlisting language="xml"><![CDATA[
-    <pageflow name="AName" final="APageName" stopnext="true|false">
-         ]]></programlisting>
-         There may be multiple pageflow tags defined, but you need at 
-         least one (which must be referenced by the defaultflow attribute 
-         above). We only describe the normal case without using variants. 
-         See here for more information on how to handle variants of 
-         pageflows.
-         <!-- TODO Add link here --> 
-         <informaltable rules="all" frame="box">
-          <thead align="left">
-            <tr>
-              <th>Attribute</th>
-              <th>Description</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><literal>name</literal></td>
-              <td><emphasis>Mandatory</emphasis>. Must be a unique name.</td>
-            </tr>
-            <tr>
-              <td><literal>final</literal></td>
-              <td> Optional, must reference a page with a valid 
-              <tag>pagerequest</tag> definition given in this property 
-              file. There may be many pageflows defined for a servlet. 
-              A page may well be used in more than one pageflow.</td>
-            </tr>
-            <tr>
-              <td><literal>stopnext</literal></td>
-              <td> Optional, defaults to false. If given and 
-              <literal>true</literal>, the pageflow will stop at the 
-              next accessible page after the current page even if this 
-              page would normally be skipped in the workflow because 
-              it doesn't need any input.</td>
-            </tr>
-          </tbody>
-        </informaltable>
-        <programlisting language="xml"><![CDATA[
-      <flowstep name="AnotherPageName" stophere="true|false">
-        ]]></programlisting>
-        <informaltable rules="all" frame="box">
-          <thead align="left">
-            <tr>
-              <th>Attribute</th>
-              <th>Description</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><literal>name</literal></td>
-              <td><emphasis>Mandatory</emphasis>. Must reference a 
-              valid <tag>pagerequest</tag>. Usually there are many 
-              flowsteps defined in a pageflow.</td>
-            </tr>
-            <tr>
-              <td><literal>stophere</literal></td>
-              <td>Optional, if true the pageflow will stop at this 
-              step unconditionally if the submit originated from a 
-              step that's before this one in the pageflow. See 
-              also the <tag class="attribute">stopnext</tag> 
-              attribute of the  tag which is quivalent to 
-              specifying <literal>stophere="true"</literal> for 
-              every single flowstep.</td>
-            </tr>
-          </tbody>
-        </informaltable>
-        <programlisting language="xml"><![CDATA[
-        <oncontinue applyall="true|false">
-        ]]></programlisting>
-        This tag (which is optional) starts a sequence of 
-        test/action pairs. The tests are XPath expressions which 
-        work on the DOM tree as produced by the flowstep's 
-        associated state (note that the navigation is not 
-        inserted into the DOM tree at this stage, and the 
-        <literal>/formresult/formvalues</literal> and 
-        <literal>/formresult/formerrors</literal> paths are also 
-        not present). The pageflow system calls the tests whenever 
-        a state returns a ResultDocument (before it continues with 
-        other stuff e.g. a pageflow run).
-        The <tag class="attribute">applyall</tag> attribute is 
-        optional. If given and <literal>true</literal>, all actions 
-        with matching conditions are executed, if not given or 
-        <literal>false</literal> (the default) only the first 
-        action with a matching condition is executed.
-        <programlisting language="xml"><![CDATA[
-          <when test="A_XPath_Expression">
-        ]]></programlisting>
-        The <tag>when</tag> tag contains the XPath expression to try 
-        in it's <tag class="attribute">test</tag> attribute. If this 
-        attribute is omitted, the whole condition is considered to 
-        be true.
-        <programlisting language="xml"><![CDATA[
-            <action type="jumpto" page="APage" pageflow="APageFlow">
-        ]]></programlisting>
-        The <tag>action</tag> tag denotes the 
-        <classname>FlowStepAction</classname> to execute. The 
-        <tag class="attribute">type</tag> attribute is mandatory and 
-        defines the special action to use. The string 
-        <literal>jumpto</literal> denotes the special 
-        <classname>FlowStepAction</classname> 
-        <classname>de.schlund.pfixcore.workflow.FlowStepJumpToAction</classname>  
-        which is used to set the jumptopage (defined via the 
-        <tag class="attribute">page</tag> attribute) and/or the 
-        jumptopageflow (defined via the 
-        <tag class="attribute">pageflow</tag> attribute).
-        <programlisting language="xml"><![CDATA[
-            </action>
+    <!-- IP address and port Apache HTTPd (not Tomcat!) will
+         listen on for HTTPS connections                     -->
+    <https-port>
+      <address>${fqdn}</address>
+      <ssl-key>pfixroot:/projectname/conf/server.key</ssl-key>
+      <ssl-crt>pfixroot:/projectname/conf/server.crt</ssl-crt>
+    </https-port>
+    
+    <!-- Name of the virtual host for this project -->
+    <server-name>projectname.${fqdn}</server-name>
+    <!-- Alias for the virtual host for this project -->
+    <server-alias>projectname.${machine}</server-alias>
+    
+    <apache>
+      <literal>
+        <!-- Stuff that is copied to the Apache configuration -->
+      </literal>
+    </apache>
+    
+    <tomcat>
+      <!-- Set this to true to enable extra context instances 
+           for the virtual host created for this project      -->
+      <enable-extra-webapps>false</enable-extra-webapps>
+    </tomcat>
+    
+  </http-server>
+  
+  <application>
+    
+    <!-- Path that static resources will be delivered from -->
+    <docroot-path>pfixroot:/sample1/htdocs</docroot-path>
+    
+    <!-- URI requests to / are redirected to -->
+    <default-path>/xml/config</default-path>
+    
+    <!-- Only one context-xml-service may be specified per project -->
+    <context-xml-service>
+      <!-- URI the service will be available at -->
+      <path>/xml/config</path>
+      <!-- Path to the configuration file for the service -->
+      <config-file>pfixroot:/projectname/conf/config.conf.xml</config-file>
+    </context-xml-service>
+    
+    <direct-output-service>
+      <!-- URI the service will be available at -->
+      <path>/xml/download</path>
+      <!-- Path to the configuration file for the service -->
+      <config-file>pfixroot:/projectname/conf/direct.conf.xml</config-file>
+    </direct-output-service>
+    
+    <!-- Extra paths for static resources -->
+    <static>
+      <path>sample1/img</path>
+    </static>
+    
+    <!--  Custom Deplyment descriptor code
+    <web-xml>
+      <jee:web-app xmlns:jee="http://java.sun.com/xml/ns/javaee">
+        <choose>
+          <when test="$mode='test'">
+            <jee:display-name>foo</jee:display-name>
           </when>
-          <when test="A_XPath_Expression">
-            <action type="A_FlowStepAction" somekey="somevalue">
-        ]]></programlisting>
-        If the <tag class="attribute">type</tag> attribute is not 
-        <literal>jumpto</literal>, the value is interpreted as a 
-        class of type 
-        <classname>de.schlund.pfixcore.workflow.FlowStepAction</classname>. 
-        There can be an arbitrary number of additional 
-        attributes (<literal>somekey</literal> in this example) which are 
-        supplied as named parameters to the special 
-        <classname>FlowStepAction</classname>.
-        <programlisting language="xml"><![CDATA[
-            </action>
-          </when>
-        </oncontinue>
-      </flowstep>
-    </pageflow>
+        </choose>
+      </jee:web-app>
+    </web-xml>
+    -->
     
-    <pagerequest name="APageName" copyfrom="APageName">
-        ]]></programlisting>
-        <informaltable rules="all" frame="box">
-          <thead align="left">
-            <tr>
-              <th>Attribute</th>
-              <th>Description</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><literal>name</literal></td>
-              <td><emphasis>Mandatory</emphasis>. It must be the name of 
-              a page defined in the corresponding depend.xml file.</td>
-            </tr>
-            <tr>
-              <td><literal>copyfrom</literal></td>
-              <td>Optional. If given, and set to the name of a valid 
-              <tag>pagerequest</tag>, all configuration from this 
-              referenced <tag>pagerequest</tag> are used for the current 
-              page, disregarding all configuration that is made in this 
-              <tag>pagerequest</tag>. It's a plain and simple copy, no 
-              extending, no restricting!</td>
-            </tr>
-          </tbody>
-        </informaltable>
-        <programlisting language="xml"><![CDATA[
-      <ssl force="true|false"/>
-        ]]></programlisting>
-        The node is optional. If given, and the attribute 
-        <tag class="attribute">force</tag> is set to 
-        <literal>true</literal>, the page will only run under SSL when 
-        jumped to via a link or a submit of form data. If the session 
-        currently does not run under SSL, the system will make sure to 
-        redirect to a secure session prior to handling the request. 
-        After a session is running under SSL, there is no way back 
-        (so all other pages will run securely regardless if they have 
-        a <tag>ssl</tag> node or not).
-        You can wrap this tag within a customization element to force 
-        use of SSL only in certain modes (e.g. <literal>prod</literal> 
-        mode).
-        <note>
-          <para>You can force the servlet as a whole to run only under 
-          SSL by specifying the ssl subnode of the servletinfo 
-          node.</para>
-        </note>
-        <programlisting language="xml"><![CDATA[
-  <state class="AClassName"/>
-        ]]></programlisting>
-        The whole node is optional. If given, the 
-        <tag class="attribute">class</tag> attribute must  be the name 
-        of a java class implementing the 
-        <classname>de.schlund.pfixcore.workflow.State</classname> 
-        interface. The used <classname>State</classname> is determined 
-        as follows:
-        <orderedlist>
-          <listitem>
-            <para>If state is given, use the value of it's 
-            <tag class="attribute">class</tag> attribute.</para>
-          </listitem>
-          <listitem>
-            <para>If the pagerequest has an <tag>input</tag> child, use 
-            the value of the <tag class="attribute">class</tag> 
-            attribute of the <tag>defaultihandlerstate</tag> tag 
-            explained above if it is given. If this is not given, just 
-            use <classname>de.schlund.pfixcore.workflow.app.DefaultIWrapperState</classname>.
-            Else:</para>
-          </listitem>
-          <listitem>
-            <para>use the value of the <tag class="attribute">class</tag> 
-            attribute of the <tag>defaultstate</tag> tag explained above 
-            if it is given. If this is not given, just use 
-            <classname>de.schlund.pfixcore.workflow.app.StaticState</classname>.</para>
-          </listitem>
-        </orderedlist>
-        You can use any BSF-supported scripting language for writing 
-        your State-implementation, too.
-        <!-- TODO Add link here -->
-        <programlisting language="xml"><![CDATA[
-      <finalizer class="AClassName"/>
-        ]]></programlisting>
-        The whole node is optional. It may only be given for a 
-        <classname>State</classname> that is either 
-        <classname>de.schlund.pfixcore.workflow.app.DefaultIWrapperState</classname> 
-        or a descendent of it.
-        The <tag class="attribute">class</tag> attribute is mandatory 
-        and denotes a class implementing 
-        <classname>de.schlund.pfixcore.workflow.app.ResdocFinalizer</classname>.
-        <caution>
-          <para>
-            The use of finalizers is not suggested most of the time! 
-            They can completely change the result document and the logic 
-            when to trigger the next step in the current page flow. Use 
-            them at your own risk. Or better: Don't use them at all.
-          </para>
-        </caution>
-        <programlisting language="xml"><![CDATA[
-      <input policy="ANY|ALL|NONE">
-        ]]></programlisting>
-        The whole node is optional. It may only be given for a 
-        <classname>State</classname> that is either 
-        <classname>de.schlund.pfixcore.workflow.app.DefaultIWrapperState</classname> 
-        or a descendent of it!
-        <tag class="attribute">policy</tag> is optional (default is 
-        <literal>ANY</literal>). The policy decides when a whole page is 
-        considered to be accessible:
-        <itemizedlist>
-          <listitem>
-            <para>ANY: just one of the associated handlers needs to be 
-            active for the page to be accessible.</para>
-          </listitem>
-          <listitem>
-            <para> ALL: all the associated handlers must be active for 
-            the page to be accessible.</para>
-          </listitem>
-          <listitem>
-            <para> NONE: none of the associated handlers needs to be 
-            active for the page to be accessible.</para>
-          </listitem>
-        </itemizedlist>
-        If one of the associated handlers returns 
-        <literal>false</literal> on calling 
-        <methodname>prerequisitesMet()</methodname>, the page is of 
-        course still inaccessible.
-        <programlisting language="xml"><![CDATA[
-        <wrapper prefix="AName" class="AClassName" activeignore="true|false"/>
-        ]]></programlisting>
-        <caution>
-          <para>
-              Note: The tag name <literal>wrapper</literal> can also be called <literal>interface</literal> with the same
-              allowed attributes for backwards compatibility reasons. This ambiguity may be removed in some future version.
-          </para>
-        </caution>
-        There can be many <tag>wrapper</tag> nodes for a page. Each 
-        one references an "atomic" functional entity consisting of an 
-        <classname>IWrapper</classname> java class (usually 
-        autogenerated from a <literal>.iwrp</literal> xml file that defines the type and names of the parameters passed 
-        between the UI and the functional entity and an associated 
-        <classname>IHandler</classname> java class that uses the 
-        <classname>IWrapper</classname> to retrieve the passed 
-        parameters via typed getter methods.
-        <!-- TODO Add link here -->
-        <informaltable rules="all" frame="box">
-          <thead align="left">
-            <tr>
-              <th>Attribute</th>
-              <th>Description</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><literal>prefix</literal></td>
-              <td><emphasis>Mandatory</emphasis>. The prefix defines a 
-              name for the <classname>IWrapper</classname> and in effect 
-              a namespace for the <classname>IWrapper</classname>'s 
-              parameters. If the prefix "<literal>bar</literal>" is 
-              defined for an <classname>IWrapper</classname> that 
-              contains a parameter called "<literal>Foo</literal>", the 
-              submitted HTTP parameter must be called 
-              <literal>bar.Foo</literal>.</td>
-            </tr>
-            <tr>
-              <td><literal>class</literal></td>
-              <td><emphasis>Mandatory</emphasis>. Must be the name of a 
-              java class implementing 
-              <classname>de.schlund.pfixcore.generator.IWrapper</classname>. 
-              This implicitly defines a 
-              <classname>de.schlund.pfixcore.generator.IHandler</classname>, 
-              as every <classname>IWrapper</classname> knows it's 
-              associated <classname>IHandler</classname> and can be 
-              queried for it.</td>
-            </tr>
-            <tr>
-              <td><literal>activeignore</literal></td>
-              <td>Optional, default is <literal>false</literal>. The 
-              <classname>IHandler</classname> method 
-              <methodname>isActive()</methodname> is 
-              <emphasis>NOT</emphasis> called on handlers with 
-              <tag class="attribute">activeignore</tag> set to 
-              <literal>true</literal>. In other words: the handler is 
-              ignored when the system tries to find out if the page is 
-              accessible or not. See also the comment for the 
-              <tag class="attribute">policy</tag> attribute above.</td>
-            </tr>
-          </tbody>
-        </informaltable>
-        <programlisting language="xml"><![CDATA[
-      </input>
-        ]]></programlisting>
-        <programlisting language="xml"><![CDATA[
-      <process>
-        ]]></programlisting>
-        The process node holds a list of actions, which can be referenced from
-        the UI when submitting forms or using GET requests to transmitt data.
-        These actions group IWrappers into two groups: those that should have
-        their handleSubmittedData() method called, and those that should have
-        their retrieveCurrentStatus() method called when a submit has been handled
-        sucessfully (and the same page is redisplayed).
-        
-        The idea beind the latter is, that sometimes you want to update
-        the submitted form data to some canonical form (e.g. adresses or similar), so you
-        don't want to see the exact same input in the form elements as you have submitted it,
-        but some changed values. In other cases, submitting data to one wrapper may change the
-        values of the form elements of another wrapper - in this case the second wrapper
-        needs to be listed under the <![CDATA[<retrieve>]]> node.
-        <programlisting language="xml"><![CDATA[
-        <action name="a_name">
-          <submit>
-            <wrapper ref="a_prefix_1"/>
-            <wrapper ref="a_prefix_2"/>
-            ...
-          </submit>
-          <retrieve>
-            <wrapper ref="a_prefix_1"/>
-            <wrapper ref="a_prefix_X"/>
-            ...
-          </retrieve>
-        </action>
-        <action name="another_name">
-        ...
-        </action>
-      </process>
-      
-      <output>
-        ]]></programlisting>
-        The whole node is optional. Every page using a 
-        <classname>State</classname> that is itself or a descendant of 
-        <classname>de.schlund.pfixcore.workflow.app.StaticState</classname> 
-        can use this.
-        You can have as many <tag>resource</tag> childnodes as you like.
-        <programlisting language="xml"><![CDATA[
-        <resource node="AName" class="AClassName"/>
-        ]]></programlisting>
-        <informaltable rules="all" frame="box">
-          <thead align="left">
-            <tr>
-              <th>Attribute</th>
-              <th>Description</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><literal>class</literal></td>
-              <td><emphasis>Mandatory</emphasis>. 
-              <tag class="attribute">class</tag> is one of the 
-              <classname>ContextResources</classname> defined via 
-              implements above.</td>
-            </tr>
-            <tr>
-              <td><literal>node</literal></td>
-              <td><emphasis>Mandatory</emphasis>. 
-              <tag class="attribute">node</tag> is the node in the 
-              output tree ("<literal>/formresult/AName</literal>") under 
-              which the <classname>ContextResource</classname> inserts 
-              it's data.</td>
-            </tr>
-          </tbody>
-        </informaltable>
-        <programlisting language="xml"><![CDATA[
-      </output>
-      
-      <properties>
-        ]]></programlisting>
-        The whole node is optional.
-        <programlisting language="xml"><![CDATA[
-        <prop name="APropertyKey">AValue</prop>
-        ]]></programlisting>
-        The node is mandatory and can be used multiple times. It will be 
-        transformed into a java property that is associated to the page.
-        There are some props that are already defined for 
-        <classname>de.schlund.pfixcore.workflow.app.StaticState</classname> 
-        and descendants. These are listed below
-        <informaltable rules="all" frame="box">
-          <thead align="left">
-            <tr>
-              <th>Property Name</th>
-              <th>Property Value</th>
-              <th>Description</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><literal>mimetype</literal></td>
-              <td>e.g. <literal>text/css</literal></td>
-              <td> If given, sets the mimetype of the HttpResponse 
-              object to something else than the default 
-              <literal>text/html</literal>. This is most often used for 
-              <literal>text/css</literal>.</td>
-            </tr>
-            <tr>
-              <td><literal>responseheader.A_HEADER</literal></td>
-              <td><literal>A_VALUE</literal></td>
-              <td>If given, set the header <literal>A_HEADER</literal> 
-              of the HttpResponse object to <literal>A_VALUE</literal>.
-              NOTE: the Pustefix system uses a set of default headers 
-              that are only used, when no user defined headers are 
-              given! The set of default headers is:
-              <code>Expires=Mon, 26 Jul 1997 05:00:00 GMT
-  Cache-Control=private</code>
-              If you want to use some of them in addition to your own 
-              headers, you must manually supply them, too. </td>
-            </tr>
-          </tbody>
-        </informaltable>
-        <programlisting language="xml"><![CDATA[
-      </properties>
-    </pagerequest>
-    
-    <config-include file="myproject/conf/myfile.xml" section="pagerequests"/>
-        ]]></programlisting>
-        Includes a part of a config fragments file at this location.
-        See <xref linkend="configuration.format.fragments"/> for details on how
-        to define config fragments.
-        <informaltable rules="all" frame="box">
-          <thead align="left">
-            <tr>
-              <th>Attribute</th>
-              <th>Description</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><literal>file</literal></td>
-              <td><emphasis>Mandatory</emphasis>. Path to the file that 
-              contains the tags to be included (relative to docroot). </td>
-            </tr>
-            <tr>
-              <td><literal>section</literal></td>
-              <td><emphasis>Optional</emphasis>. 
-              Type of the section that shall be included. If more than 
-              one section of the specified type exists in the file, the 
-              content of all this sections is included.</td>
-            </tr>
-            <tr>
-              <td><literal>refid</literal></td>
-              <td><emphasis>Optional</emphasis>. 
-              Include a section identified by the specified id. The 
-              refid specified here must match the id attribute of 
-              exactly one section in the specified file.</td>
-            </tr>
-            <tr>
-              <td><literal>xpath</literal></td>
-              <td><emphasis>Optional</emphasis>. 
-              A XPath expression specifying the node-set to be included. 
-              The prefixes to be used for XML namespaces are "fr" for 
-              the namespace of the 
-              <link linkend="configuration.format.fragments">fragments file</link> 
-              tags and "pr" for the namespace of the 
-              <classname>ContextXMLServlet</classname> configuration 
-              tags.</td>
-            </tr>
-          </tbody>
-        </informaltable>
-        <emphasis>One and only one</emphasis> of the section, refid or 
-        xpath attribute has to be specified for each config-include.
-        <programlisting language="xml"><![CDATA[
-    <properties>
-      <prop name="AProperty">AValue</prop>
-        ]]></programlisting>
-        <informaltable rules="all" frame="box">
-          <thead align="left">
-            <tr>
-              <th>Property Name</th>
-              <th>Property Value</th>
-              <th>Description</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><literal>mimetype</literal></td>
-              <td>e.g. <literal>text/css</literal></td>
-              <td> If given, sets the mimetype of the HttpResponse 
-              object to something else than the default 
-              <literal>text/html</literal>. This is most often used for 
-              <literal>text/css</literal>.</td>
-            </tr>
-            <tr>
-              <td><literal>responseheader.A_HEADER</literal></td>
-              <td><literal>A_VALUE</literal></td>
-              <td>If given, set the header <literal>A_HEADER</literal> 
-              of the HttpResponse object to <literal>A_VALUE</literal>.
-              Headers set here can be overwritten for specific pages.
-              NOTE: the Pustefix system uses a set of default headers 
-              that are only used, when no user defined headers are 
-              given! The set of default headers is:
-              <code>Expires=Mon, 26 Jul 1997 05:00:00 GMT
-  Cache-Control=private</code>
-              If you want to use some of them in addition to your own 
-              headers, you must manually supply them, too. </td>
-            </tr>
-          </tbody>
-        </informaltable>
-         You can also specify properties here that are understood by the 
-         ServletManager class.
-         <!-- TODO Add link to ServletManager description -->
-        <programlisting language="xml"><![CDATA[
-    </properties>
-  </contextxmlserver>
-        ]]></programlisting>
+  </application>
+  
+</project-config>
+
+]]>
+      </programlisting>
+      <para>
+        As you can see, the configuration file consists of different sections: One for 
+        information about the project, one for configuring the Pustefix CMS, one for 
+        the server configuration and one for the application itself. The application 
+        consists of services and static resources. Please note that only one 
+        context-xml-service is allowed per project. 
       </para>
     </section>
-    
-    <section xml:id="configuration.servlet.directoutput">
-      <title>DirectOutputServlet</title>
-      <para>
-        Occasionally you don't want to generate output with an XSLT 
-        Transformation, but e.g. deliver binary content directly to the 
-        output stream instead. In this case you need to provide another 
-        servlet of type 
-        <classname>de.schlund.pfixxml.DirectOutputServlet</classname>. 
-        This servlet doesn't have it's own <classname>Context</classname> 
-        object but instead "hijacks" the <classname>Context</classname> 
-        of a foreign 
-        <classname>de.schlund.pfixxml.ContextXMLServlet</classname>. The 
-        context isn't used for any pageflow handling, only as a means to 
-        get to the data (via its <classname>ContextResource</classname>s) 
-        of the "main" application.
-      </para>
-      <para>
-        The servlet knows about one or many 
-        <literal>directoutputpagerequests</literal>. For the XML/XSLT 
-        side of things, they look like normal pages (in fact, the value 
-        of the <literal>directoutputpagerequest</literal>'s name 
-        attribute must be a page defined in 
-        <filename>depened.xml</filename>. Of course, no target 
-        definition has to be given, only the page in the navigation 
-        structure must exist). But other than the usual 
-        <literal>pagerequest</literal>, a 
-        <literal>directoutputpagerequest</literal> has an associated 
-        <literal>directoutputstate</literal> whose class attribute is a 
-        java class implementing 
-        <classname>de.schlund.pfixcore.workflow.app.DirectOutputState</classname>.
-      </para>
-      <para>
-        <programlisting language="xml"><![CDATA[
-  <directoutputserver version="1.0"
-    xmlns="http://pustefix.sourceforge.net/2004/properties"
-    xmlns:cus="http://www.schlund.de/pustefix/customize"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://pustefix.sourceforge.net/2004/properties http://pustefix.sourceforge.net/2004/properties.xsd">
-    
-    <directoutputservletinfo depend="MyProject/conf/depend.xml" name="AUniqueNameForTheServlet">
-      <ssl force="true|false"/>
-      <editmode allow="true|false"/>
-        ]]></programlisting>
-         See the comment for the <tag>servletinfo</tag> node in
-         <xref linkend="configuration.servlet.contextxml"/>.
-         <programlisting language="xml"><![CDATA[
-    </directoutputservletinfo>
-    
-    <foreigncontext externalservletname="UniqueNameOfAnotherServlet" synchronized="true"/>
-         ]]></programlisting>
-         The <tag class="attribute">externalservletname</tag> must 
-         reference the name of a servlet of type 
-         <classname>de.schlund.pfixxml.ContextXMLServlet</classname>. 
-         The <classname>Context</classname> (or better: the 
-         <classname>ContextResourceManager</classname>) of this servlet 
-         is used for getting stored application data.
-         The <tag class="attribute">synchronized</tag> attribute is 
-         optional. It defaults to <literal>true</literal>. If set to 
-         <literal>true</literal>, only one request per session is 
-         handled concurrently. If set to <literal>false</literal> all 
-         requests will be handled concurrently, requiring thread-safe 
-         business logic.
-         <programlisting language="xml"><![CDATA[
-    <authconstraint ref="AN_AUTHCONSTRAINT"/>
-         ]]></programlisting>
-         You can reference an authconstraint from the context configuration, which
-         has to be fulfilled to access a page. This default authconstraint can be overridden
-	 for single pages. If no default authconstraint is set here, the context's
-         default authconstraint will be used. If no authconstraint is set at all, a
-         page requires no authentication.
-         <programlisting language="xml"><![CDATA[
-    <config-include file="myproject/conf/myfile.xml" section="directoutputpagerequests"/>
-         ]]></programlisting>
-        Includes a part of a config-fragments at this location.
-        See <xref linkend="configuration.format.fragments"/> for details on how
-        to define config fragments.
-        <informaltable rules="all" frame="box">
-          <thead align="left">
-            <tr>
-              <th>Attribute</th>
-              <th>Description</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><literal>file</literal></td>
-              <td><emphasis>Mandatory</emphasis>. Path to the file that 
-              contains the tags to be included (relative to docroot). </td>
-            </tr>
-            <tr>
-              <td><literal>section</literal></td>
-              <td><emphasis>Optional</emphasis>. 
-              Type of the section that shall be included. If more than 
-              one section of the specified type exists in the file, the 
-              content of all this sections is included. For a 
-              <classname>DirectOutputServlet</classname> configuration
-              only <literal>directoutputpagerequests</literal> and 
-              <literal>properties</literal> are valid.</td>
-            </tr>
-            <tr>
-              <td><literal>refid</literal></td>
-              <td><emphasis>Optional</emphasis>. 
-              Include a section identified by the specified id. The 
-              refid specified here must match the id attribute of 
-              exactly one section in the specified file.</td>
-            </tr>
-            <tr>
-              <td><literal>xpath</literal></td>
-              <td><emphasis>Optional</emphasis>. 
-              A XPath expression specifying the node-set to be included. 
-              The prefixes to be used for XML namespaces are "fr" for 
-              the namespace of the fragments file tags and "pr" for the 
-              namespace of the <classname>DirectOutputServlet</classname> 
-              configuration tags.</td>
-            </tr>
-          </tbody>
-        </informaltable>
-        <emphasis>One and only one</emphasis> of the section, refid or 
-        xpath attribute has to be specified for each config-include.
-        <programlisting language="xml"><![CDATA[
-    <directoutputpagerequest name="APageName">
-      <directoutputstate class="AClassName"/>
-        ]]></programlisting>
-        <programlisting language="xml"><![CDATA[
-      <authconstraint ref="AN_AUTHCONSTRAINT"/>
-        ]]></programlisting>
-        You can optionally reference an authconstraint from the context
-        configuration to override the default authconstraint.
-        <programlisting language="xml"><![CDATA[
-      <properties>
-        ]]></programlisting>
-        The whole <tag>properties</tag> node is optional.
-        <programlisting language="xml"><![CDATA[
-        <prop name="APropertyKey">AValue</prop>
-        ]]></programlisting>
-        The node is mandatory and can be used multiple times. It will be 
-        transformed into a java property that is associated to the page. 
-        The java property that is constructed will look like this: 
-        <literal>pagerequest.APpageName.APropertyKey=AValue</literal> 
-        where <literal>APageName</literal> is the value of the 
-        <tag class="attribute">name</tag> attribute.
-        <programlisting language="xml"><![CDATA[
-      </properties>
-    </directoutputpagerequest>
-  </directoutputserver>
-        ]]></programlisting>
-      </para>
-    </section>
-  </section>
+
 
   <section xml:id="configuration.depend">
     <title>Page Configuration (depend.xml)</title>
@@ -1449,11 +673,11 @@
       <para>
         The <literal>&lt;target&gt;</literal> tag is used to specify the XSL transformations in Pustefix. In most cases, you will not have
         to use the rather complex <literal>&lt;target&gt;</literal>, but use the convinience tags described in
-        <xref linkend="configuration.depend.standardpage"/>, <xref linkend="configuration.depend.standardmaster"/> and
-        <xref linkend="configuration.depend.standardmetatags"/>.
+        <xref linkend="configuration.depend.standardpage" />, <xref linkend="configuration.depend.standardmaster" /> and
+        <xref linkend="configuration.depend.standardmetatags" />.
       </para>
       <para>
-        <xref linkend="architecture.xsl.targets"/> provides more information on the concept of targets in Pustefix.
+        <xref linkend="architecture.xsl.targets" /> provides more information on the concept of targets in Pustefix.
       </para>
       <programlisting language="xml"><![CDATA[<target name="baz.xsl" type="xsl" page="foo" variant="bar" themes="Theme_A Theme_B ... default">
   <!--
@@ -1721,144 +945,960 @@
 </target>]]></programlisting>
     </section>
   </section>
-
-  <section xml:id="configuration.misc">
-    <title>Misc configuration</title>
-    <para>
-      Write introduction.
-    </para>
+    
+    <section xml:id="configuration.servlet.contextxml">
+      <title>ContextXMLService configuration file</title>
+      <para>
+        The ContextXMLService handles requests for all pages (where page means
+        some content generated by an XSL transformation). The name of the
+        configuration file is usually <literal>service.conf.xml</literal>
+        where "service" is replaced by the name from the URI of the service. 
+        For example the configuration of the service available at 
+        <literal>/xml/info</literal> should use a configuration file named
+        <literal>info.conf.xml</literal>.
+       </para>
+      <para>
+        This service uses a configuration file that has a special 
+        syntax. However properties and customization in this file 
+        work nearly the same way as explained for the standard 
+        property definitions.
+      </para>
+      <para>
+        <programlisting language="xml"><![CDATA[
+  <context-xml-service-config
+    xmlns="http://www.pustefix-framework.org/2008/namespace/context-xml-service-config"
+  >
+    <global-config>
+      <force-ssl>false</force-ssl>
+        ]]></programlisting>
+        <tag>force-ssl</tag> can be set to <literal>true</literal> in order 
+        to enforce a secure connection for all pages of this service. The 
+        whole node is optional and defaults to <literal>false</literal>.
+        <programlisting language="xml"><![CDATA[
+      <defaultstate class="a.state.Class"/>
+      <defaultihandlerstate class="another.state.Class"/>
+        ]]></programlisting>
+        <tag>defaultstate</tag> and 
+        <tag>defaultihandlerstate</tag> are both optional. 
+        The <tag class="attribute">class</tag> attribute must 
+        be given. <classname>a.state.Class</classname> should 
+        de a descendant of 
+        <classname>de.schlund.pfixcore.workflow.app.StaticState</classname> 
+        and <classname>another.state.Class</classname> should 
+        be a descendant of 
+        <classname>de.schlund.pfixcore.workflow.app.DefaultIWrapperState</classname> 
+        (unless you really know what you are doing). They are 
+        used to set the defaults for the state tag used when 
+        processing the <tag>pagerequest</tag> tag 
+        (see there for more info).
+        <programlisting language="xml"><![CDATA[
+    </global-config>
+    
+    <context defaultpage="APageName" synchronized="true">
+        ]]></programlisting>
+        <informaltable rules="all" frame="box">
+          <thead align="left">
+            <tr>
+              <th>Attribute</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><literal>defaultpage</literal></td>
+              <td><emphasis>Either defaultpage or defaultflow must be set</emphasis>. Must reference
+              a valid <literal>pagerequest</literal>.</td>
+            </tr>
+            <tr>
+              <td><literal>defaultflow</literal></td>
+              <td><emphasis>Either defaultflow or defaultpage must be set</emphasis>. Must reference a 
+              valid <literal>pageflow</literal>.</td>
+            </tr>
+            <tr>
+              <td><literal>synchronized</literal></td>
+              <td>Optional. Defaults to <literal>true</literal>. If 
+              set to <literal>true</literal>, only one request per 
+              session is handled concurrently. If set to 
+              <literal>false</literal> all requests will be handled 
+              concurrently, requiring thread-safe business logic.</td>
+            </tr>
+          </tbody>
+        </informaltable>
+        <programlisting language="xml"><![CDATA[
+      <resource class="A_Resource">
+        ]]></programlisting>
+        <tag class="attribute">class</tag> is 
+        <emphasis>mandatory</emphasis>, can be any 
+        Java class, that can be created with a default constructor.
+        The <tag class="attribute">scope</tag> attribute is optional
+        and defines the scope in which the Spring bean representing
+        the resource is instantiated.
+        The <tag class="attribute">bean-name</tag> attribute is 
+        optional and specifies the name of the Spring bean that
+        is created for this resource.
+        There may be multiple resource tags given.
+        <programlisting language="xml"><![CDATA[
+        <implements class="A_Interface">
+        ]]></programlisting>
+        The whole <tag>implements</tag> node is optional. 
+        <tag class="attribute">class</tag> is 
+        <emphasis>mandatory</emphasis>, must be a Java interface 
+        implemented by the resource. 
+        There may be more than one <tag>implements</tag> tag for a 
+        resource, but each interface 
+        must be unique in the whole context. In other words: it's 
+        possible for a resource to 
+        implement more than one interface, but not possible for one 
+        interface to be implemented by two 
+        resources used in the same 
+        <classname>Context</classname> definition.
+        <programlisting language="xml"><![CDATA[
+        </implements>
+        <properties>
+        ]]></programlisting>
+        The whole node is optional.
+        <programlisting language="xml"><![CDATA[
+          <prop name="A_Name">A_Value</prop>
+        ]]></programlisting>
+        <tag>prop</tag> is <emphasis>mandatory</emphasis> and can 
+        be used multiple times. It's similar to the use as a child 
+        of <tag>pagerequest</tag>/<tag>properties</tag>, but used 
+        here to create properties that are related to a context 
+        resource implementation. The resulting property looks like this:
+        <literal>context.resourceparameter.A_Resource.A_Name=A_Value</literal>
+        Customization tags may be used around a property to make it 
+        depend on a certain makemode or other parameters.
+        <programlisting language="xml"><![CDATA[
+        </properties>
+      </resource>
+    </context>
+    
+    <scriptedflow name="AName" file="path/to/scriptfile.xml"/>
+        ]]></programlisting>
+        There may be an arbitrary number of <tag>scriptedflow</tag> 
+        tags, but each one must have a unique name. Scripted flows 
+        are a special method to control a session and do automatic 
+        requests based on initial user input.
+        <programlisting language="xml"><![CDATA[
+    <role name="A_ROLE"/>
+    <condition id="A_CONDITION"/>
+    <authconstraint id="AN_AUTHCONSTRAINT"/>
+        ]]></programlisting>
+         You can define an arbitrary number of roles, conditions and 
+         authconstraints here, for details see <xref linkend="advanced.rolebasedauth"/>.
+         <!-- TODO Add link here -->
+         <programlisting language="xml"><![CDATA[
+    <pageflow name="AName" final="APageName" stopnext="true|false">
+         ]]></programlisting>
+         There may be multiple pageflow tags defined, but you need at 
+         least one (which must be referenced by the defaultflow attribute 
+         above). We only describe the normal case without using variants. 
+         See here for more information on how to handle variants of 
+         pageflows.
+         <!-- TODO Add link here --> 
+         <informaltable rules="all" frame="box">
+          <thead align="left">
+            <tr>
+              <th>Attribute</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><literal>name</literal></td>
+              <td><emphasis>Mandatory</emphasis>. Must be a unique name.</td>
+            </tr>
+            <tr>
+              <td><literal>final</literal></td>
+              <td> Optional, must reference a page with a valid 
+              <tag>pagerequest</tag> definition given in this property 
+              file. There may be many pageflows defined for a servlet. 
+              A page may well be used in more than one pageflow.</td>
+            </tr>
+            <tr>
+              <td><literal>stopnext</literal></td>
+              <td> Optional, defaults to false. If given and 
+              <literal>true</literal>, the pageflow will stop at the 
+              next accessible page after the current page even if this 
+              page would normally be skipped in the workflow because 
+              it doesn't need any input.</td>
+            </tr>
+          </tbody>
+        </informaltable>
+        <programlisting language="xml"><![CDATA[
+      <flowstep name="AnotherPageName" stophere="true|false">
+        ]]></programlisting>
+        <informaltable rules="all" frame="box">
+          <thead align="left">
+            <tr>
+              <th>Attribute</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><literal>name</literal></td>
+              <td><emphasis>Mandatory</emphasis>. Must reference a 
+              valid <tag>pagerequest</tag>. Usually there are many 
+              flowsteps defined in a pageflow.</td>
+            </tr>
+            <tr>
+              <td><literal>stophere</literal></td>
+              <td>Optional, if true the pageflow will stop at this 
+              step unconditionally if the submit originated from a 
+              step that's before this one in the pageflow. See 
+              also the <tag class="attribute">stopnext</tag> 
+              attribute of the  tag which is quivalent to 
+              specifying <literal>stophere="true"</literal> for 
+              every single flowstep.</td>
+            </tr>
+          </tbody>
+        </informaltable>
+        <programlisting language="xml"><![CDATA[
+        <oncontinue applyall="true|false">
+        ]]></programlisting>
+        This tag (which is optional) starts a sequence of 
+        test/action pairs. The tests are XPath expressions which 
+        work on the DOM tree as produced by the flowstep's 
+        associated state (note that the navigation is not 
+        inserted into the DOM tree at this stage, and the 
+        <literal>/formresult/formvalues</literal> and 
+        <literal>/formresult/formerrors</literal> paths are also 
+        not present). The pageflow system calls the tests whenever 
+        a state returns a ResultDocument (before it continues with 
+        other stuff e.g. a pageflow run).
+        The <tag class="attribute">applyall</tag> attribute is 
+        optional. If given and <literal>true</literal>, all actions 
+        with matching conditions are executed, if not given or 
+        <literal>false</literal> (the default) only the first 
+        action with a matching condition is executed.
+        <programlisting language="xml"><![CDATA[
+          <when test="A_XPath_Expression">
+        ]]></programlisting>
+        The <tag>when</tag> tag contains the XPath expression to try 
+        in it's <tag class="attribute">test</tag> attribute. If this 
+        attribute is omitted, the whole condition is considered to 
+        be true.
+        <programlisting language="xml"><![CDATA[
+            <action type="jumpto" page="APage" pageflow="APageFlow">
+        ]]></programlisting>
+        The <tag>action</tag> tag denotes the 
+        <classname>FlowStepAction</classname> to execute. The 
+        <tag class="attribute">type</tag> attribute is mandatory and 
+        defines the special action to use. The string 
+        <literal>jumpto</literal> denotes the special 
+        <classname>FlowStepAction</classname> 
+        <classname>de.schlund.pfixcore.workflow.FlowStepJumpToAction</classname>  
+        which is used to set the jumptopage (defined via the 
+        <tag class="attribute">page</tag> attribute) and/or the 
+        jumptopageflow (defined via the 
+        <tag class="attribute">pageflow</tag> attribute).
+        <programlisting language="xml"><![CDATA[
+            </action>
+          </when>
+          <when test="A_XPath_Expression">
+            <action type="A_FlowStepAction" somekey="somevalue">
+        ]]></programlisting>
+        If the <tag class="attribute">type</tag> attribute is not 
+        <literal>jumpto</literal>, the value is interpreted as a 
+        class of type 
+        <classname>de.schlund.pfixcore.workflow.FlowStepAction</classname>. 
+        There can be an arbitrary number of additional 
+        attributes (<literal>somekey</literal> in this example) which are 
+        supplied as named parameters to the special 
+        <classname>FlowStepAction</classname>.
+        <programlisting language="xml"><![CDATA[
+            </action>
+          </when>
+        </oncontinue>
+      </flowstep>
+    </pageflow>
+    
+    <pagerequest name="APageName" copyfrom="APageName">
+        ]]></programlisting>
+        <informaltable rules="all" frame="box">
+          <thead align="left">
+            <tr>
+              <th>Attribute</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><literal>name</literal></td>
+              <td><emphasis>Mandatory</emphasis>. It must be the name of 
+              a page defined in the corresponding depend.xml file.</td>
+            </tr>
+            <tr>
+              <td><literal>copyfrom</literal></td>
+              <td>Optional. If given, and set to the name of a valid 
+              <tag>pagerequest</tag>, all configuration from this 
+              referenced <tag>pagerequest</tag> are used for the current 
+              page, disregarding all configuration that is made in this 
+              <tag>pagerequest</tag>. It's a plain and simple copy, no 
+              extending, no restricting!</td>
+            </tr>
+          </tbody>
+        </informaltable>
+        <programlisting language="xml"><![CDATA[
+      <ssl force="true|false"/>
+        ]]></programlisting>
+        The node is optional. If given, and the attribute 
+        <tag class="attribute">force</tag> is set to 
+        <literal>true</literal>, the page will only run under SSL when 
+        jumped to via a link or a submit of form data. If the session 
+        currently does not run under SSL, the system will make sure to 
+        redirect to a secure session prior to handling the request. 
+        After a session is running under SSL, there is no way back 
+        (so all other pages will run securely regardless if they have 
+        a <tag>ssl</tag> node or not).
+        You can wrap this tag within a customization element to force 
+        use of SSL only in certain modes (e.g. <literal>prod</literal> 
+        mode).
+        <note>
+          <para>You can force the servlet as a whole to run only under 
+          SSL by specifying the ssl subnode of the servletinfo 
+          node.</para>
+        </note>
+        <programlisting language="xml"><![CDATA[
+  <state class="AClassName"/>
+        ]]></programlisting>
+        The whole node is optional. If given, the 
+        <tag class="attribute">class</tag> attribute must  be the name 
+        of a java class implementing the 
+        <classname>de.schlund.pfixcore.workflow.ConfigurableState</classname> 
+        interface. The used <classname>State</classname> is determined 
+        as follows:
+        <orderedlist>
+          <listitem>
+            <para>If state is given, use the value of it's 
+            <tag class="attribute">class</tag> attribute.</para>
+          </listitem>
+          <listitem>
+            <para>If the pagerequest has an <tag>input</tag> child, use 
+            the value of the <tag class="attribute">class</tag> 
+            attribute of the <tag>defaultihandlerstate</tag> tag 
+            explained above if it is given. If this is not given, just 
+            use <classname>de.schlund.pfixcore.workflow.app.DefaultIWrapperState</classname>.
+            Else:</para>
+          </listitem>
+          <listitem>
+            <para>use the value of the <tag class="attribute">class</tag> 
+            attribute of the <tag>defaultstate</tag> tag explained above 
+            if it is given. If this is not given, just use 
+            <classname>de.schlund.pfixcore.workflow.app.StaticState</classname>.</para>
+          </listitem>
+        </orderedlist>
+        You can use the <tag class="attribute">scope</tag> attribute to specify
+        the scope in which the Spring bean created for this page will be 
+        instantiated. You may specify the <tag class="attribute">bean-name</tag>
+        attribute to use a fixed name for the automatically created bean.
+        You can use any BSF-supported scripting language for writing 
+        your State-implementation, too. Use <literal>script:path/to/script</literal>
+        for the <tag class="attribute">class</tag> attribute.
+        Alternatively you can use an existing Spring bean that implements the 
+        <interfacename>de.schlund.workflow.State</interfacename> interface. Use
+        the <tag class="attribute">bean-ref</tag> attribute to specify the
+        name of the bean. However the <tag>pagerequest</tag> may not contain
+        any configuration if you are using a Spring bean.
+        <programlisting language="xml"><![CDATA[
+      <finalizer class="AClassName"/>
+        ]]></programlisting>
+        The whole node is optional. It may only be given for a 
+        <classname>State</classname> that is either 
+        <classname>de.schlund.pfixcore.workflow.app.DefaultIWrapperState</classname> 
+        or a descendent of it.
+        The <tag class="attribute">class</tag> attribute is mandatory 
+        and denotes a class implementing 
+        <classname>de.schlund.pfixcore.workflow.app.ResdocFinalizer</classname>.
+        <caution>
+          <para>
+            The use of finalizers is not suggested most of the time! 
+            They can completely change the result document and the logic 
+            when to trigger the next step in the current page flow. Use 
+            them at your own risk. Or better: Don't use them at all.
+          </para>
+        </caution>
+        <programlisting language="xml"><![CDATA[
+      <input policy="ANY|ALL|NONE">
+        ]]></programlisting>
+        The whole node is optional. It may only be given for a 
+        <classname>State</classname> that is either 
+        <classname>de.schlund.pfixcore.workflow.app.DefaultIWrapperState</classname> 
+        or a descendent of it!
+        <tag class="attribute">policy</tag> is optional (default is 
+        <literal>ANY</literal>). The policy decides when a whole page is 
+        considered to be accessible:
+        <itemizedlist>
+          <listitem>
+            <para>ANY: just one of the associated handlers needs to be 
+            active for the page to be accessible.</para>
+          </listitem>
+          <listitem>
+            <para> ALL: all the associated handlers must be active for 
+            the page to be accessible.</para>
+          </listitem>
+          <listitem>
+            <para> NONE: none of the associated handlers needs to be 
+            active for the page to be accessible.</para>
+          </listitem>
+        </itemizedlist>
+        If one of the associated handlers returns 
+        <literal>false</literal> on calling 
+        <methodname>prerequisitesMet()</methodname>, the page is of 
+        course still inaccessible.
+        <programlisting language="xml"><![CDATA[
+        <wrapper prefix="AName" class="AClassName" activeignore="true|false"/>
+        ]]></programlisting>
+        <caution>
+          <para>
+              Note: The tag name <literal>wrapper</literal> can also be called <literal>interface</literal> with the same
+              allowed attributes for backwards compatibility reasons. This ambiguity may be removed in some future version.
+          </para>
+        </caution>
+        There can be many <tag>wrapper</tag> nodes for a page. Each 
+        one references an "atomic" functional entity consisting of an 
+        <classname>IWrapper</classname> java class (usually 
+        autogenerated from a <literal>.iwrp</literal> xml file that defines the type and names of the parameters passed 
+        between the UI and the functional entity and an associated 
+        <classname>IHandler</classname> java class that uses the 
+        <classname>IWrapper</classname> to retrieve the passed 
+        parameters via typed getter methods.
+        There may be an optional <tag class="attribute">scope</tag>
+        attribute, which specifies the scope in which the handler
+        associated with the wrapper will be instantiated.
+        <!-- TODO Add link here -->
+        <informaltable rules="all" frame="box">
+          <thead align="left">
+            <tr>
+              <th>Attribute</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><literal>prefix</literal></td>
+              <td><emphasis>Mandatory</emphasis>. The prefix defines a 
+              name for the <classname>IWrapper</classname> and in effect 
+              a namespace for the <classname>IWrapper</classname>'s 
+              parameters. If the prefix "<literal>bar</literal>" is 
+              defined for an <classname>IWrapper</classname> that 
+              contains a parameter called "<literal>Foo</literal>", the 
+              submitted HTTP parameter must be called 
+              <literal>bar.Foo</literal>.</td>
+            </tr>
+            <tr>
+              <td><literal>class</literal></td>
+              <td><emphasis>Mandatory</emphasis>. Must be the name of a 
+              java class implementing 
+              <classname>de.schlund.pfixcore.generator.IWrapper</classname>. 
+              This implicitly defines a 
+              <classname>de.schlund.pfixcore.generator.IHandler</classname>, 
+              as every <classname>IWrapper</classname> knows it's 
+              associated <classname>IHandler</classname> and can be 
+              queried for it.</td>
+            </tr>
+            <tr>
+              <td><literal>activeignore</literal></td>
+              <td>Optional, default is <literal>false</literal>. The 
+              <classname>IHandler</classname> method 
+              <methodname>isActive()</methodname> is 
+              <emphasis>NOT</emphasis> called on handlers with 
+              <tag class="attribute">activeignore</tag> set to 
+              <literal>true</literal>. In other words: the handler is 
+              ignored when the system tries to find out if the page is 
+              accessible or not. See also the comment for the 
+              <tag class="attribute">policy</tag> attribute above.</td>
+            </tr>
+          </tbody>
+        </informaltable>
+        <programlisting language="xml"><![CDATA[
+      </input>
+        ]]></programlisting>
+        <programlisting language="xml"><![CDATA[
+      <process>
+        ]]></programlisting>
+        The process node holds a list of actions, which can be referenced from
+        the UI when submitting forms or using GET requests to transmitt data.
+        These actions group IWrappers into two groups: those that should have
+        their handleSubmittedData() method called, and those that should have
+        their retrieveCurrentStatus() method called when a submit has been handled
+        sucessfully (and the same page is redisplayed).
+        
+        The idea beind the latter is, that sometimes you want to update
+        the submitted form data to some canonical form (e.g. adresses or similar), so you
+        don't want to see the exact same input in the form elements as you have submitted it,
+        but some changed values. In other cases, submitting data to one wrapper may change the
+        values of the form elements of another wrapper - in this case the second wrapper
+        needs to be listed under the <![CDATA[<retrieve>]]> node.
+        <programlisting language="xml"><![CDATA[
+        <action name="a_name">
+          <submit>
+            <wrapper ref="a_prefix_1"/>
+            <wrapper ref="a_prefix_2"/>
+            ...
+          </submit>
+          <retrieve>
+            <wrapper ref="a_prefix_1"/>
+            <wrapper ref="a_prefix_X"/>
+            ...
+          </retrieve>
+        </action>
+        <action name="another_name">
+        ...
+        </action>
+      </process>
+      
+      <output>
+        ]]></programlisting>
+        The whole node is optional. Every page using a 
+        <classname>State</classname> that is itself or a descendant of 
+        <classname>de.schlund.pfixcore.workflow.app.StaticState</classname> 
+        can use this.
+        You can have as many <tag>resource</tag> childnodes as you like.
+        <programlisting language="xml"><![CDATA[
+        <resource node="AName" class="AClassName"/>
+        ]]></programlisting>
+        <informaltable rules="all" frame="box">
+          <thead align="left">
+            <tr>
+              <th>Attribute</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><literal>class</literal></td>
+              <td><emphasis>Mandatory (if <literal>bean-ref</literal> is not present)</emphasis>. 
+              <tag class="attribute">class</tag> is one of the 
+              <classname>ContextResources</classname> defined via 
+              implements above.</td>
+            </tr>
+            <tr>
+              <td><literal>bean-ref</literal></td>
+              <td><emphasis>Mandatory (if <literal>class</literal> is not present)</emphasis>. 
+              Specifies the bean name of the resource that should be
+              included in the output tree.</td>
+            </tr>
+            <tr>
+              <td><literal>node</literal></td>
+              <td><emphasis>Mandatory</emphasis>. 
+              <tag class="attribute">node</tag> is the node in the 
+              output tree ("<literal>/formresult/AName</literal>") under 
+              which the <classname>ContextResource</classname> inserts 
+              it's data.</td>
+            </tr>
+          </tbody>
+        </informaltable>
+        <programlisting language="xml"><![CDATA[
+      </output>
+      
+      <properties>
+        ]]></programlisting>
+        The whole node is optional.
+        <programlisting language="xml"><![CDATA[
+        <prop name="APropertyKey">AValue</prop>
+        ]]></programlisting>
+        The node is mandatory and can be used multiple times. It will be 
+        transformed into a java property that is associated to the page.
+        There are some props that are already defined for 
+        <classname>de.schlund.pfixcore.workflow.app.StaticState</classname> 
+        and descendants. These are listed below
+        <informaltable rules="all" frame="box">
+          <thead align="left">
+            <tr>
+              <th>Property Name</th>
+              <th>Property Value</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><literal>mimetype</literal></td>
+              <td>e.g. <literal>text/css</literal></td>
+              <td> If given, sets the mimetype of the HttpResponse 
+              object to something else than the default 
+              <literal>text/html</literal>. This is most often used for 
+              <literal>text/css</literal>.</td>
+            </tr>
+            <tr>
+              <td><literal>responseheader.A_HEADER</literal></td>
+              <td><literal>A_VALUE</literal></td>
+              <td>If given, set the header <literal>A_HEADER</literal> 
+              of the HttpResponse object to <literal>A_VALUE</literal>.
+              NOTE: the Pustefix system uses a set of default headers 
+              that are only used, when no user defined headers are 
+              given! The set of default headers is:
+              <code>Expires=Mon, 26 Jul 1997 05:00:00 GMT
+  Cache-Control=private</code>
+              If you want to use some of them in addition to your own 
+              headers, you must manually supply them, too. </td>
+            </tr>
+          </tbody>
+        </informaltable>
+        <programlisting language="xml"><![CDATA[
+      </properties>
+    </pagerequest>
+    
+    <config-include file="myproject/conf/myfile.xml" section="pagerequests"/>
+        ]]></programlisting>
+        Includes a part of a config fragments file at this location.
+        See <xref linkend="configuration.format.fragments"/> for details on how
+        to define config fragments.
+        <informaltable rules="all" frame="box">
+          <thead align="left">
+            <tr>
+              <th>Attribute</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><literal>file</literal></td>
+              <td><emphasis>Mandatory</emphasis>. Path to the file that 
+              contains the tags to be included (relative to docroot). </td>
+            </tr>
+            <tr>
+              <td><literal>section</literal></td>
+              <td><emphasis>Optional</emphasis>. 
+              Type of the section that shall be included. If more than 
+              one section of the specified type exists in the file, the 
+              content of all this sections is included.</td>
+            </tr>
+            <tr>
+              <td><literal>refid</literal></td>
+              <td><emphasis>Optional</emphasis>. 
+              Include a section identified by the specified id. The 
+              refid specified here must match the id attribute of 
+              exactly one section in the specified file.</td>
+            </tr>
+            <tr>
+              <td><literal>xpath</literal></td>
+              <td><emphasis>Optional</emphasis>. 
+              A XPath expression specifying the node-set to be included. 
+              The prefixes to be used for XML namespaces are "fr" for 
+              the namespace of the 
+              <link linkend="configuration.format.fragments">fragments file</link> 
+              tags and "pr" for the namespace of the 
+              <classname>ContextXMLServlet</classname> configuration 
+              tags.</td>
+            </tr>
+          </tbody>
+        </informaltable>
+        <emphasis>One and only one</emphasis> of the section, refid or 
+        xpath attribute has to be specified for each config-include.
+        <programlisting language="xml"><![CDATA[
+    <properties>
+      <prop name="AProperty">AValue</prop>
+        ]]></programlisting>
+        <informaltable rules="all" frame="box">
+          <thead align="left">
+            <tr>
+              <th>Property Name</th>
+              <th>Property Value</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><literal>mimetype</literal></td>
+              <td>e.g. <literal>text/css</literal></td>
+              <td> If given, sets the mimetype of the HttpResponse 
+              object to something else than the default 
+              <literal>text/html</literal>. This is most often used for 
+              <literal>text/css</literal>.</td>
+            </tr>
+            <tr>
+              <td><literal>responseheader.A_HEADER</literal></td>
+              <td><literal>A_VALUE</literal></td>
+              <td>If given, set the header <literal>A_HEADER</literal> 
+              of the HttpResponse object to <literal>A_VALUE</literal>.
+              Headers set here can be overwritten for specific pages.
+              NOTE: the Pustefix system uses a set of default headers 
+              that are only used, when no user defined headers are 
+              given! The set of default headers is:
+              <code>Expires=Mon, 26 Jul 1997 05:00:00 GMT
+  Cache-Control=private</code>
+              If you want to use some of them in addition to your own 
+              headers, you must manually supply them, too. </td>
+            </tr>
+          </tbody>
+        </informaltable>
+         You can also specify properties here that are understood by the 
+         <classname>AbstractPustefixRequestHandler</classname> and
+         <classname>AbstractPustefixXMLRequestHandler</classname> classes.
+        <programlisting language="xml"><![CDATA[
+    </properties>
+  </context-xml-service-config>
+        ]]></programlisting>
+      </para>
+    </section>
+    
+    <section xml:id="configuration.servlet.directoutput">
+      <title>DirectOutputService configuration file</title>
+      <para>
+        Occasionally you don't want to generate output with an XSLT 
+        Transformation, but e.g. deliver binary content directly to the 
+        output stream instead. In this case you can use the 
+        DirectOutputService. The name of the
+        configuration file is usually <literal>service.conf.xml</literal>
+        where "service" is replaced by the name from the URI of the service. 
+        For example the configuration of the service available at 
+        <literal>/xml/info</literal> should use a configuration file named
+        <literal>info.conf.xml</literal>.
+      </para>
+      <para>
+        The service knows about one or many 
+        <literal>directoutputpagerequests</literal>. For the XML/XSLT 
+        side of things, they look like normal pages (in fact, the value 
+        of the <literal>directoutputpagerequest</literal>'s name 
+        attribute must be a page defined in the <tag>navigation</tag>
+        section of <filename>depened.xml</filename>. Of course, no target 
+        definition has to be given, only the page in the navigation 
+        structure must exist). But other than the usual 
+        <literal>pagerequest</literal>, a 
+        <literal>directoutputpagerequest</literal> has an associated 
+        <literal>directoutputstate</literal> whose class attribute is a 
+        java class implementing 
+        <classname>de.schlund.pfixcore.workflow.app.DirectOutputState</classname>.
+      </para>
+      <para>
+        <programlisting language="xml"><![CDATA[
+  <direct-output-service-config
+    xmlns="http://pustefix.sourceforge.net/2004/properties"
+  >    
+    <global-config>
+      <force-ssl>false</force-ssl>
+        ]]></programlisting>
+         See the comment for the <tag>global-config</tag> node in
+         <xref linkend="configuration.servlet.contextxml"/>.
+         <programlisting language="xml"><![CDATA[
+    </global-config>
+    
+    <authconstraint ref="AN_AUTHCONSTRAINT"/>
+         ]]></programlisting>
+         You can reference an authconstraint from the context configuration, which
+         has to be fulfilled to access a page. This default authconstraint can be overridden
+	 for single pages. If no default authconstraint is set here, the context's
+         default authconstraint will be used. If no authconstraint is set at all, a
+         page requires no authentication.
+         <programlisting language="xml"><![CDATA[
+    <config-include file="myproject/conf/myfile.xml" section="directoutputpagerequests"/>
+         ]]></programlisting>
+        Includes a part of a config-fragments at this location.
+        See <xref linkend="configuration.format.fragments"/> for details on how
+        to define config fragments.
+        <informaltable rules="all" frame="box">
+          <thead align="left">
+            <tr>
+              <th>Attribute</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><literal>file</literal></td>
+              <td><emphasis>Mandatory</emphasis>. Path to the file that 
+              contains the tags to be included (relative to docroot). </td>
+            </tr>
+            <tr>
+              <td><literal>section</literal></td>
+              <td><emphasis>Optional</emphasis>. 
+              Type of the section that shall be included. If more than 
+              one section of the specified type exists in the file, the 
+              content of all this sections is included. For a 
+              <classname>DirectOutputServlet</classname> configuration
+              only <literal>directoutputpagerequests</literal> and 
+              <literal>properties</literal> are valid.</td>
+            </tr>
+            <tr>
+              <td><literal>refid</literal></td>
+              <td><emphasis>Optional</emphasis>. 
+              Include a section identified by the specified id. The 
+              refid specified here must match the id attribute of 
+              exactly one section in the specified file.</td>
+            </tr>
+            <tr>
+              <td><literal>xpath</literal></td>
+              <td><emphasis>Optional</emphasis>. 
+              A XPath expression specifying the node-set to be included. 
+              The prefixes to be used for XML namespaces are "fr" for 
+              the namespace of the fragments file tags and "d" for the 
+              namespace of the <classname>DirectOutputService</classname> 
+              configuration tags.</td>
+            </tr>
+          </tbody>
+        </informaltable>
+        <emphasis>One and only one</emphasis> of the section, refid or 
+        xpath attribute has to be specified for each config-include.
+        <programlisting language="xml"><![CDATA[
+    <directoutputpagerequest name="APageName">
+      <directoutputstate class="AClassName"/>
+        ]]></programlisting>
+        The class specified for the <tag>directoutputstate</tag> must
+        implement the 
+        <interfacename>de.schlund.pfixcore.workflow.DirectOutputState</interfacename>
+        interface. The tag may have an optional 
+        <tag class="attribute">scope</tag> attribute which specifies the 
+        scope in which the corresponding state should be instantiated.
+        There may also be an optional <tag class="attribute">bean-name</tag>
+        which, if present, will be used as the name of the Spring bean
+        created for this direct output state. Instead of the 
+        <tag class="attribute">class</tag> attribute, you may specify a
+        <tag class="attribute">bean-ref</tag> attribute which has to 
+        reference a Spring bean defined in the <filename>spring.xml</filename>
+        file for this project. In this case, no Spring bean will be 
+        created but the existing bean will be used instead.
+        <programlisting language="xml"><![CDATA[
+      <authconstraint ref="AN_AUTHCONSTRAINT"/>
+        ]]></programlisting>
+        You can optionally reference an authconstraint from the context
+        configuration to override the default authconstraint.
+        <programlisting language="xml"><![CDATA[
+      <properties>
+        ]]></programlisting>
+        The whole <tag>properties</tag> node is optional.
+        <programlisting language="xml"><![CDATA[
+        <prop name="APropertyKey">AValue</prop>
+        ]]></programlisting>
+        The node is mandatory and can be used multiple times. It will be 
+        transformed into a java property that is associated to the page. 
+        The java property that is constructed will look like this: 
+        <literal>pagerequest.APpageName.APropertyKey=AValue</literal> 
+        where <literal>APageName</literal> is the value of the 
+        <tag class="attribute">name</tag> attribute.
+        <programlisting language="xml"><![CDATA[
+      </properties>
+    </directoutputpagerequest>
+  </direct-output-service-config>
+        ]]></programlisting>
+      </para>
+    </section>
+    
+    <section xml:id="configuration.servlet.webservice">
+      <title>WebServices</title>
+      <para>
+        The configuration of AJAX / webservices is described in the
+        <link linkend="advanced.ajax">corresponding section</link>.
+      </para>
+    </section>
+    
+    <section xml:id="configuration.format.fragments">
+      <title>Configuration Fragments</title>
+      <para>
+        Configuration fragments files contain aggregated configuration 
+        directives that are intended to be reused in different 
+        configuration files.
+      </para>
+      <para>
+        <programlisting language="xml"><![CDATA[
+<fr:config-fragments
+  xmlns:fr="http://pustefix.sourceforge.net/configfragments200609"
+  xmlns:c="http://www.pustefix-framework.org/2008/namespace/context-xml-service-config"
+  xmlns:d="http://www.pustefix-framework.org/2008/namespace/direct-output-service-config"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://pustefix.sourceforge.net/configfragments200609 http://pustefix.sourceforge.net/configfragments200609.xsd">
   
-    <section xml:id="configuration.misc.factory">
-      <title>FactoryInitServlet (factory.xml)</title>
-      <para>
-        This property file is located in 
-        <filename>projects/common/conf/factory.xml</filename> and used 
-        by the <classname>de.schlund.pfixxml.FactoryInitServlet</classname> 
-        servlet (contained in the special admin project used in every 
-        Pustefix environment) whenever the servletcontainer starts up to 
-        initialize services that are used by all the other projects. The
-        syntax of this file is described in <xref linkend="configuration.format.props"/>.
+  <fr:navigation id="nav1">
+      ]]></programlisting>
+      All sections have an <emphasis>optional</emphasis> 
+      <tag class="attribute">id</tag> that can be used to identifiy 
+      the section when more than one section fo the same type is 
+      present in one file. The value of the 
+      <tag class="attribute">id</tag> attribute has to be unique
+      within the whole file.
+      <programlisting language="xml"><![CDATA[
+    <page name="MyPage" handler="/xml/myhandler"/>
+      ]]></programlisting>
+      The structure here is the same as within the navigation tag of the 
+      depend.xml file.
+      <!-- TODO Add link to depend.xml syntax -->
+      <programlisting language="xml"><![CDATA[
+  </fr:navigation>
+  <fr:targets>
+    <standardpage name="MyPage" xml="myproject/xml/mymaster.xml"/>
+      ]]></programlisting>
+      The tags allowed here are the same that are allowed for 
+      standardpage or target definitions in the depend.xml file.
+      <!-- TODO Add link to depend.xml syntax -->
+      <programlisting language="xml"><![CDATA[
+  </fr:targets>
+  <fr:resources>
+    <c:resource class="com.example.MyResourceImpl">
+      <pr:implements class="com.example.MyResource"/>
+    </c:resource>
+      ]]></programlisting>
+      The tags allowed here are the same that are allowed for the 
+      definition of context resources within the <tag>context</tag> 
+      tag of the <link linkend="configuration.servlet.contextxml">ContextXMLServlet configuration</link>.
+      <programlisting language="xml"><![CDATA[
+  </fr:resources>
+  <fr:interceptors>
+    <c:interceptor class="com.example.MyInterceptor"/>
+      ]]></programlisting>
+      The tags allowed here are the same that are allowed within the 
+      <tag>startinterceptors</tag> and <tag>endinterceptors</tag> tags 
+      of the <link linkend="configuration.servlet.contextxml">ContextXMLServlet configuration</link>.
+      <programlisting language="xml"><![CDATA[
+  </c:interceptors>
+  <fr:scriptedflows>
+    <c:scriptedflow name="myscript" file="myproject/conf/scriptedflows/myscript.script.xml"/>
+      ]]></programlisting>
+      The tags allowed here are the same that are allowed within the 
+      <tag>scriptedflows</tag> tag of the 
+      <link linkend="configuration.servlet.contextxml">ContextXMLServlet configuration</link>.
+      <programlisting language="xml"><![CDATA[
+  </fr:scriptedflows>
+  <fr:roles>
+    <c:role name="MY_ROLE">
+      <c:pageaccess names="mypage*"/>
+    </c:role>
+      ]]></programlisting>
+      The tags allowed here are the same that are used for role 
+      definition in the
+      <link linkend="configuration.servlet.contextxml">ContextXMLServlet configuration</link>.
+      <programlisting language="xml"><![CDATA[
+  </fr:roles>
+  <fr:pageflows>
+    <c:pageflow name="MyFlow">
+      <c:flowstep name="MyFirstPage"/>
+      <c:flowstep name="MySecondPage"/>
+    </c:pageflow>
+      ]]></programlisting>
+      The tags allowed here are the same that are used for the 
+      definition of pageflows in the
+      <link linkend="configuration.servlet.contextxml">ContextXMLServlet configuration</link>.
+      <programlisting language="xml"><![CDATA[
+  </fr:pageflows>
+  <fr:pagerequests>
+    <c:pagerequest name="MyPage"/>
+      ]]></programlisting>
+      The tags allowed here are the same that are used for the 
+      definition of pagerequets in the
+      <link linkend="configuration.servlet.contextxml">ContextXMLServlet configuration</link>.
+      <programlisting language="xml"><![CDATA[
+  </fr:pagerequests>
+  <fr:properties>
+    <pr:prop name="myproperty">myvalue</pr:prop>
+      ]]></programlisting>
+      The tags allowed here are the same that are allowed within the 
+      <tag>properties</tag> tag of the 
+      <link linkend="configuration.servlet.contextxml">ContextXMLServlet configuration</link>.
+      <programlisting language="xml"><![CDATA[
+  </fr:properties>
+  <fr:directoutputpagerequests>
+    <d:directoutputpagerequest name="foo">...</d:directoutputpagerequest>
+      ]]></programlisting>
+      Direct output pagerequests can be defined here. See 
+      <xref linkend="configuration.servlet.directoutput"/> for details 
+      on this.
+      <programlisting language="xml"><![CDATA[
+  </fr:directoutputpagerequests>
+</fr:config-fragments>
+        ]]></programlisting>
       </para>
     </section>
-  
-    <section xml:id="configuration.pustefixxml">
-      <title>Global properties (pustefix.xml)</title>
-      <para>
-        The syntax of the 
-        <filename>common/conf/pustefix.xml</filename> file 
-        complies to the description in 
-        <xref linkend="configuration.format.props"/>. The properties
-        defined here are merged with the properties defined for a
-        specific servlet. However, there are some properties with a 
-        special meaning.
-      </para>
-      <para>
-        Exception processing is configured via <tag>prop</tag> elements 
-        whose names comply to following syntax:
-        <code>exception.TYPE.[page|forward|processor]</code>
-        For one single <literal>TYPE</literal>, there may be only one 
-        occurrence of <literal>page</literal>, <literal>forward</literal> 
-        and <literal>processor</literal>.
-      </para>
-      <para>
-        <literal>TYPE</literal> is a fully qualified class name of a 
-        valid exception class, for which the handling should be 
-        configured at this point. In this case it specifically means, 
-        that the specified class must be a descendant of 
-        <classname>java.lang.Throwable</classname>, as the 
-        <literal>catch</literal>-block that handles the exceptions which 
-        are specified here, catches <classname>Throwable</classname>.
-      </para>
-      <para>
-        If an exception occurs during exception processing, or during 
-        processing of the page the request got forwarded to, no further 
-        exception handling will take place. Therefore the code that 
-        processes exceptions and the code that drives pages to which 
-        requests get forwarded, in case of exceptions, should be robust. 
-        Otherwise the whole exception-handling thing would be quite 
-        useless, wouldn't it?
-      </para>
-      <table rules="all" frame="box">
-        <caption>Exception processor properties</caption>
-        <thead align="left">
-          <tr>
-            <th>Attribute</th>
-            <th>Description</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td><literal>file</literal></td>
-            <td><emphasis>Mandatory</emphasis>. Path to the file that 
-            contains the tags to be included (relative to docroot). </td>
-          </tr>
-          <tr>
-            <td><literal>section</literal></td>
-            <td><emphasis>Optional</emphasis>. 
-            Type of the section that shall be included. If more than 
-            one section of the specified type exists in the file, the 
-            content of all this sections is included. For a 
-            <classname>DirectOutputServlet</classname> configuration
-            only <literal>directoutputpagerequests</literal> and 
-            <literal>properties</literal> are valid.</td>
-          </tr>
-          <tr>
-            <td><literal>refid</literal></td>
-            <td><emphasis>Optional</emphasis>. 
-            Include a section identified by the specified id. The 
-            refid specified here must match the id attribute of 
-            exactly one section in the specified file.</td>
-          </tr>
-          <tr>
-            <td><literal>xpath</literal></td>
-            <td><emphasis>Optional</emphasis>. 
-            A XPath expression specifying the node-set to be included. 
-            The prefixes to be used for XML namespaces are "fr" for 
-            the namespace of the fragments file tags and "pr" for the 
-            namespace of the <classname>DirectOutputServlet</classname> 
-            configuration tags.</td>
-          </tr>
-        </tbody>
-      </table>
-    </section>
-
-    <section xml:id="configuration.misc.webxml">
-      <title>web.xml</title>
-      <para>
-        Usually users of pustefix don't have to worry about such tedious tasks as supplying
-        a <filename>web.xml</filename> file, for their web application, as pustefix generates
-        this file (and many others) as needed. This will suffice in most cases, if you have no
-        special requirements to your web application.
-      </para>
-      <para>
-        If you need some non-pfix magic, like ServletContextListeners, Filters or non-pustefix
-        servlets, you have to provide the build process with a "base web.xml", that will then
-        be used to generate the final <filename>web.xml</filename> file.
-      </para>
-      <para>
-        Just create a file called <filename>web.xml</filename> in your projects conf directory,
-        follow some minor rules, and you will get a web.xml file of your dreams within no time.
-      </para>
-      <programlisting language="xml"><![CDATA[<web-app>
-  <filter>
-    <filter-name>LoggingFilter</filter-name>
-    <filter-class>de.schlund.foo.baz.LoggingFilter</filter-class>
-  </filter>
-  <filter-mapping>
-    <filter-name>LoggingFilter</filter-name>
-    <url-pattern>/*</url-pattern>
-  </filter-mapping>
-  <cus:servlet/>
-  <cus:servlet-mapping/>
-  <cus:session-config/>
-  <cus:error-page/>
-</web-app>]]></programlisting>
-      <warning>
-        <para>
-          Don't change the order, in which the above elements are defined. Tomcat validates
-          web.xml files against the respective DTD, which defines an order for all elements.
-        </para>
-      </warning>
-    </section>
+    
   </section>
+  
 </chapter>
