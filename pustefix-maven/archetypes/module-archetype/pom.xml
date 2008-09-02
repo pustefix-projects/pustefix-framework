@@ -4,13 +4,13 @@
   
   <parent>
     <groupId>org.pustefixframework.maven.archetypes</groupId>
-    <artifactId>maven-archetypes</artifactId>
+    <artifactId>pustefix-maven-archetypes</artifactId>
     <version>0.1</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
 
   <groupId>org.pustefixframework.maven.archetypes</groupId>
-  <artifactId>module-archetype</artifactId>
+  <artifactId>pustefix-module-archetype</artifactId>
   <version>0.1</version>
   <name>Pustefix Module Archetype</name>
   <url>http://pustefixframework.org</url>
