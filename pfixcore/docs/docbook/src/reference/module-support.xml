@@ -84,7 +84,7 @@
       <screen>
 mvn archetype:create \
 -DarchetypeGroupId=org.pustefixframework.maven.archetypes \
--DarchetypeArtifactId=module-archetype \
+-DarchetypeArtifactId=pustefix-module-archetype \
 -DarchetypeVersion=0.1 \
 -DgroupId=mytld.myorg.myapp.mysection \
 -DartifactId=mymodule \
