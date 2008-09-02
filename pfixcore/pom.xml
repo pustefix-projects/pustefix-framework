@@ -2,8 +2,8 @@
 <project>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.pustefixframework</groupId>
-  <artifactId>pfixcore</artifactId>
-  <name>pfixcore</name>
+  <artifactId>pustefix-core</artifactId>
+  <name>pustefix-core</name>
   <version>0.13.0</version>
   <dependencies>
     <dependency>
