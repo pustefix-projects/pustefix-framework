@@ -8,7 +8,13 @@
     <!-- <force-ssl>true</force-ssl> -->
   </global-config>
 
-  <context defaultflow="OrderFlow">
+  <context defaultpage="home">
+    <!-- 
+    <defaultpage> 
+      <variant name="foo:bar">test</variant>
+      <default>home</default>
+    </defaultpage>
+    -->
     <resource class="de.schlund.pfixcore.example.ContextCounter"/>
     <resource class="de.schlund.pfixcore.example.ContextAdultInfo"/>
     <resource class="de.schlund.pfixcore.example.ContextTogglePic"/>

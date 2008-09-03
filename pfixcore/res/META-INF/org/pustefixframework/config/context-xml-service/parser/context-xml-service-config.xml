@@ -36,6 +36,10 @@
     <match>/c:context-xml-service-config/c:context</match>
   </handler>
   
+  <handler class="org.pustefixframework.config.contextxmlservice.parser.ContextDefaultPageParsingHandler">
+    <match>/c:context-xml-service-config/c:context/c:defaultpage</match>
+  </handler>
+  
   <handler class="org.pustefixframework.config.contextxmlservice.parser.ContextResourceParsingHandler">
     <match>/c:context-xml-service-config/c:context/c:resource</match>
   </handler>

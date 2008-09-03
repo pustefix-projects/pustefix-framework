@@ -47,6 +47,7 @@ import de.schlund.pfixcore.auth.conditions.HasRole;
 import de.schlund.pfixcore.auth.conditions.Not;
 import de.schlund.pfixcore.workflow.ContextInterceptor;
 import de.schlund.pfixcore.workflow.State;
+import de.schlund.pfixxml.Variant;
 
 /**
  * Stores configuration for a Context
@@ -61,7 +62,7 @@ public class ContextConfigImpl implements ContextConfig {
     private Class<? extends State> defaultStateClass = null;
     
     private String defaultPage = null;
-    private String defaultFlow = null;
+    private Map<String,String> variantToDefaultPage = new HashMap<String,String>();
     private Map<String,ContextResourceConfigImpl> resourceMap = new HashMap<String,ContextResourceConfigImpl>();
     private LinkedHashMap<Class<?>, ContextResourceConfigImpl> resources = new LinkedHashMap<Class<?>, ContextResourceConfigImpl>();
     private List<ContextResourceConfigImpl> cacheResources = null; 
@@ -86,16 +87,21 @@ public class ContextConfigImpl implements ContextConfig {
         this.defaultPage = page;
     }
     
-    public String getDefaultPage() {
-        return this.defaultPage;
+    public void setDefaultPage(String variantName, String page) {
+        variantToDefaultPage.put(variantName, page);
     }
     
-    public void setDefaultFlow(String defaultFlow) {
-        this.defaultFlow = defaultFlow;
-    }
-    
-    public String getDefaultFlow() {
-        return defaultFlow;
+    public String getDefaultPage(Variant variant) {
+        String page = null;
+        if(variant != null) {
+            page = variantToDefaultPage.get(variant.getVariantId());
+            for(String variantId : variant.getVariantFallbackArray()) {
+              page = variantToDefaultPage.get(variantId);
+              if(page != null) break;
+            }
+        }
+        if(page == null) page = defaultPage;
+        return page;
     }
     
     public void setDefaultState(Class<? extends State> clazz) {

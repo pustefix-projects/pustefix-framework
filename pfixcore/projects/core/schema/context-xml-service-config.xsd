@@ -274,6 +274,20 @@
   </xs:element>
   <xs:complexType name="contextType">
     <xs:sequence>
+      <xs:element name="defaultpage" minOccurs="0">
+        <xs:complexType>
+          <xs:choice>
+            <xs:sequence>
+              <xs:element name="variant" type="prop:defaultPageVariantType" minOccurs="1" maxOccurs="unbounded"/>
+              <xs:element name="default" type="xs:string"/>
+            </xs:sequence>
+            <xs:sequence>
+              <xs:element name="default" type="xs:string"/>
+              <xs:element name="variant" type="prop:defaultPageVariantType" minOccurs="1" maxOccurs="unbounded"/>
+            </xs:sequence>
+          </xs:choice>
+        </xs:complexType>
+      </xs:element>
       <xs:choice minOccurs="0" maxOccurs="unbounded">
         <xs:element ref="prop:resource"/>
         <xs:element ref="prop:config-include"/>
@@ -281,8 +295,15 @@
     </xs:sequence>
     <xs:attribute name="class"/>
     <xs:attribute name="defaultpage"/>
-    <xs:attribute name="defaultflow"/>
     <xs:attribute name="synchronized" type="xs:boolean" default="true"/>
+  </xs:complexType>
+
+  <xs:complexType name="defaultPageVariantType">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute name="name" use="required" type="xs:string"/>
+      </xs:extension>
+    </xs:simpleContent>
   </xs:complexType>
 
   <xs:element name="resource" type="prop:resourceType"/>

@@ -1006,13 +1006,8 @@
           <tbody>
             <tr>
               <td><literal>defaultpage</literal></td>
-              <td><emphasis>Either defaultpage or defaultflow must be set</emphasis>. Must reference
+              <td><emphasis>Either defaultpage attribute or defaultpage element must be set</emphasis>. Must reference
               a valid <literal>pagerequest</literal>.</td>
-            </tr>
-            <tr>
-              <td><literal>defaultflow</literal></td>
-              <td><emphasis>Either defaultflow or defaultpage must be set</emphasis>. Must reference a 
-              valid <literal>pageflow</literal>.</td>
             </tr>
             <tr>
               <td><literal>synchronized</literal></td>
@@ -1024,6 +1019,16 @@
             </tr>
           </tbody>
         </informaltable>
+        <programlisting language="xml"><![CDATA[
+      <defaultpage>
+        <variant name="VARIANTNAME">PAGENAME</variant>
+        ...
+        <default>PAGENAME</default>
+      </defaultpage>
+        ]]></programlisting>
+        The <literal>defaultpage</literal> element can be used if you want
+        to define multiple defaultpages for different variants. 
+        <emphasis>[Since: 0.13.1]</emphasis>  
         <programlisting language="xml"><![CDATA[
       <resource class="A_Resource">
         ]]></programlisting>

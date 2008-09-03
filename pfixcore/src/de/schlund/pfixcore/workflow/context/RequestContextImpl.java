@@ -361,13 +361,10 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
         if (tmppagename != null) {
             currentpagerequest = createPageRequest(tmppagename);
         } else {
-            if(parentcontext.getContextConfig().getDefaultPage() != null) {
-                currentpagerequest = createPageRequest(parentcontext.getContextConfig().getDefaultPage());
-            } else if(parentcontext.getContextConfig().getDefaultFlow() != null) {
-                currentpageflow = pageflowmanager.getPageFlowByName(parentcontext.getContextConfig().getDefaultFlow(), getVariant());
-                String pageName = currentpageflow.findNextPage(parentcontext, null, false, false);
-                currentpagerequest = createPageRequest(pageName);
-            } else throw new RuntimeException("Neither defaultpage nor defaultpageflow found!");
+            String defaultPage = parentcontext.getContextConfig().getDefaultPage(variant);
+            if(defaultPage != null) {
+                currentpagerequest = createPageRequest(defaultPage);
+            } else throw new RuntimeException("No defaultpage found!");
         }
 
         RequestParam reqParam = currentpservreq.getRequestParam(PARAM_ROLEAUTH);
@@ -622,7 +619,7 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
                     currentpagerequest = createPageRequest(nextPage);
                     currentstatus = saved;
                 } else {
-                    String defpage = parentcontext.getContextConfig().getDefaultPage();
+                    String defpage = parentcontext.getContextConfig().getDefaultPage(variant);
                     LOG.warn("[" + currentpagerequest + "]: ...but trying to use the default page " + defpage); 
                     currentpagerequest = createPageRequest(defpage);
                     // currentpageflow = pageflowmanager.pageFlowToPageRequest(currentpageflow, currentpagerequest, variant);

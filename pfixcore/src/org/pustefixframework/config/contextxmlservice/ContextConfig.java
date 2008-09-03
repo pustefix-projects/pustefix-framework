@@ -29,6 +29,7 @@ import de.schlund.pfixcore.auth.Condition;
 import de.schlund.pfixcore.auth.RoleProvider;
 import de.schlund.pfixcore.workflow.ContextInterceptor;
 import de.schlund.pfixcore.workflow.State;
+import de.schlund.pfixxml.Variant;
 
 /**
  * Provides configuration for a context instance.
@@ -49,15 +50,7 @@ public interface ContextConfig {
      * 
      * @return name of default page
      */
-    String getDefaultPage();
-    
-    /**
-     * Returns name of the pageflow to use when the user enters the site without
-     * specifying a specific page.
-     * 
-     * @return name of default pageflow
-     */
-    String getDefaultFlow();
+    String getDefaultPage(Variant variant);
     
     /**
      * Returns a list of the configuration for all context resources that should

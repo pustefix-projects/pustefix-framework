@@ -1,3 +1,21 @@
+2008-09-03  Martin Leidig  <mleidig@schlund.de>
+
+	Remove defaultflow configuration option again and replace it
+	with variant-dependent defaultpage configuration option.
+
+	Modified:
+	* src/org/pustefixframework/config/contextxmlservice/ContextConfig.java
+	* src/org/pustefixframework/config/contextxmlservice/parser/ContextParsingHandler.java
+	* src/org/pustefixframework/config/contextxmlservice/parser/internal/ContextConfigImpl.java
+	* src/de/schlund/pfixcore/workflow/context/RequestContextImpl.java
+	* docs/docbook/src/reference/configuration.xml
+	* res/META-INF/org/pustefixframework/config/context-xml-service/parser/context-xml-service-config.xml
+	* projects/core/schema/context-xml-service-config.xsd
+	* projects/sample1/conf/config.conf.xml
+
+	Added:
+	* src/org/pustefixframework/config/contextxmlservice/parser/ContextDefaultPageParsingHandler.java
+
 2008-09-01  Martin Leidig  <mleidig@schlund.de>
 
 	Adapt skeleton project configurations and make newproject.sh

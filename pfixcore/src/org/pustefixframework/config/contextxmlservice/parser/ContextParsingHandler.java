@@ -38,7 +38,7 @@ public class ContextParsingHandler implements ParsingHandler {
     public void handleNode(HandlerContext context) throws ParserException {
         
         Element element = (Element)context.getNode();
-        ParsingUtils.checkAttributes(element, null, new String[] {"defaultpage", "defaultflow", "synchronized"});
+        ParsingUtils.checkAttributes(element, null, new String[] {"defaultpage", "synchronized"});
         
         ContextXMLServletConfigImpl config = ParsingUtils.getSingleTopObject(ContextXMLServletConfigImpl.class, context);
         
@@ -49,13 +49,6 @@ public class ContextParsingHandler implements ParsingHandler {
         
         String defaultPage = element.getAttribute("defaultpage").trim();
         if(defaultPage.length()>0) ctxConfig.setDefaultPage(defaultPage);
-        
-        String defaultFlow = element.getAttribute("defaultflow").trim();
-        if(defaultFlow.length()>0) {
-            if(defaultPage.length()>0) throw new ParserException("The 'defaultpage' and 'defaultflow' "+
-                "attributes are set at the 'context' element. It's only allowed to set one of them.");
-            ctxConfig.setDefaultFlow(defaultFlow);
-        }
         
         String syncStr = element.getAttribute("synchronized");
         if (syncStr != null) {
