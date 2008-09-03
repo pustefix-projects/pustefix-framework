@@ -334,7 +334,7 @@ public class UserManagementServiceImpl implements UserManagementService {
             }
             if (newuser == null) {
                 throw new EditorUserNotExistingException(
-                        "No user found for username " + newuser.getUsername()
+                        "No user found for username " + user.getUsername()
                                 + "!");
             }
             newuser.setCryptedPassword(user.getCryptedPassword());
