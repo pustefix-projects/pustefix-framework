@@ -38,9 +38,11 @@
     <page name="A"  handler="/xml/config"/>
     <page name="B"  handler="/xml/config"/>
     <page name="C"  handler="/xml/config"/>
-    
+
+    <page name="testchecks" handler="/xml/config"/>
+
     <config-include file="sample1/conf/fragments.xml" section="navigation"/>
-    
+
   </navigation>
 
   <standardmaster>
@@ -92,7 +94,9 @@
   <standardpage name="geninc"   xml="sample1/xml/one_frame.xml">
     <include stylesheet="generatedruntime.xsl"/>
   </standardpage>
-  
+
+  <standardpage name="testchecks" xml="sample1/xml/one_frame.xml"/> 
+
   <target name="generatedruntime.xsl" type="xml">
     <depxml name="sample1/xsl/generatedruntime.xsl"/>
     <depxsl name="metatags.xsl"/>

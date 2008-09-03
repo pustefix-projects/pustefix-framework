@@ -48,7 +48,7 @@ public class ToFile extends SimpleCheck implements IWrapperParamCaster {
         scode = CoreStatusCodes.CASTER_ERR_TO_FILE;
     }
 
-    public void put_scode_casterror(String fqscode) {
+    public void setScodeCastError(String fqscode) {
         scode = StatusCodeHelper.getStatusCodeByName(fqscode);
     }
 

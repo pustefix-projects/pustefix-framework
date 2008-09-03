@@ -1,3 +1,38 @@
+2008-09-03 Tobias Fehrenbach <tobias.fehrenbach@1und1.de>
+
+	Adjusted setter-methods of casters to bean standards.
+	Added test page for casters, pre- and postchecks.
+	Replaced SNAPSHOT webservice jars with 1.0 jars in .classpath.
+
+	Modified:
+	* src/de/schlund/pfixcore/lucefix/wrappers/Search.iwrp
+	* src/de/schlund/pfixcore/generator/casters/ToDate.java
+	* src/de/schlund/pfixcore/generator/casters/ToInteger.java
+	* src/de/schlund/pfixcore/generator/casters/ToBoolean.java
+	* src/de/schlund/pfixcore/generator/casters/ToFile.java
+	* src/de/schlund/pfixcore/generator/casters/ToLong.java
+	* src/de/schlund/pfixcore/generator/casters/ToByte.java
+	* src/de/schlund/pfixcore/generator/casters/ToUploadFile.java
+	* src/de/schlund/pfixcore/generator/casters/ToFloat.java
+	* src/de/schlund/pfixcore/generator/casters/ToPerl5Pattern.java
+	* src/de/schlund/pfixcore/generator/casters/ToDouble.java
+	* src/de/schlund/pfixcore/generator/postchecks/FloatRange.java
+	* src/de/schlund/pfixcore/generator/postchecks/StringLength.java
+	* src/de/schlund/pfixcore/generator/postchecks/IntegerRange.java
+	* src/de/schlund/pfixcore/generator/prechecks/RegexpCheck.java
+	* src/de/schlund/pfixcore/example/iwrapper/AdultInfo.iwrp
+	* projects/core/build/iwrapper.xsl
+	* projects/sample1/txt/pages/main_home.xml
+	* projects/sample1/conf/config.conf.xml
+	* projects/sample1/conf/depend.xml
+	* projects/sample1/dyntxt/statusmessages.xml
+	* .classpath
+
+	Added:
+	* src/de/schlund/pfixcore/example/iwrapper/TestChecks.iwrp
+	* src/de/schlund/pfixcore/example/TestChecksHandler.java
+	* projects/sample1/txt/pages/main_testchecks.xml
+
 2008-09-03  Martin Leidig  <mleidig@schlund.de>
 
 	Fixed Apache configuration error (due to configuration format change,

@@ -54,15 +54,15 @@ public class ToDate extends SimpleCheck implements IWrapperParamCaster, IWrapper
         scode = CoreStatusCodes.CASTER_ERR_TO_DATE;
     }
     
-    public void put_scode_casterror(String fqscode) {
+    public void setScodeCastError(String fqscode) {
         scode = StatusCodeHelper.getStatusCodeByName(fqscode);
     }
 
-    public void put_format(String fmtstr) {
+    public void setFormat(String fmtstr) {
         format = new SimpleDateFormat(fmtstr);
     }
 
-    public void put_param_format(String fmtstr) {
+    public void setParamFormat(String fmtstr) {
     	paramFormat = new SimpleDateFormat(fmtstr);
     }
     

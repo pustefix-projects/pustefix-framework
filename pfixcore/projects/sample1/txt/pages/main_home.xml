@@ -51,6 +51,9 @@
         <p>
           <h3><pfx:button page="scriptingstate">SCRIPTING State Test</pfx:button></h3>
         </p>
+        <p>
+          <h3><pfx:button page="testchecks">Pre- and postchecks Test</pfx:button></h3>
+        </p>
         <br/>
         <pfx:include part="buttons"/>
         <br/>

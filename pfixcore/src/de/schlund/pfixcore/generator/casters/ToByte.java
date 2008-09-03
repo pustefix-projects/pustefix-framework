@@ -47,7 +47,7 @@ public class ToByte extends SimpleCheck implements IWrapperParamCaster {
         scode = CoreStatusCodes.CASTER_ERR_TO_BYTE;
     }
     
-    public void put_scode_casterror(String fqscode) {
+    public void setScodeCastError(String fqscode) {
         scode = StatusCodeHelper.getStatusCodeByName(fqscode);
     }
 

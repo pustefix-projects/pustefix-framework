@@ -48,11 +48,11 @@ public class RegexpCheck  extends SimpleCheck implements IWrapperParamPreCheck {
         scode = CoreStatusCodes.PRECHECK_REGEXP_NO_MATCH;
     }
 
-    public void put_regexp(String regexp) {
+    public void setRegexp(String regexp) {
         this.regexp = regexp;
     }
 
-    public void put_scode_nomatch(String fqscode) {
+    public void setScodeNoMatch(String fqscode) {
         scode = StatusCodeHelper.getStatusCodeByName(fqscode);
     }
     

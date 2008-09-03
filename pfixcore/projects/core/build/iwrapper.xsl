@@ -283,9 +283,9 @@ public <xsl:if test="not(/iwrp:interface/iwrp:ihandler) and not(@extends)">abstr
     <xsl:param name="class"/>
     <xsl:param name="var"/>
     <xsl:for-each select="$node/iwrp:cparam">
-      <xsl:variable name="cpname" select="./@name"/>
+      <xsl:variable name="cpname" select="concat(translate(substring(./@name, 1, 1), 'abcdefghijklmnopqrstuvwxyz', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'), substring(./@name, 2))"/>
       <xsl:variable name="cpvalue" select="./@value"/>
-        ((<xsl:value-of select="$class"/>) <xsl:value-of select="$var"/>).put_<xsl:value-of select="$cpname"/>("<xsl:value-of select="$cpvalue"/>");
+        ((<xsl:value-of select="$class"/>) <xsl:value-of select="$var"/>).set<xsl:value-of select="$cpname"/>("<xsl:value-of select="$cpvalue"/>");
     </xsl:for-each> 
   </xsl:template>
   

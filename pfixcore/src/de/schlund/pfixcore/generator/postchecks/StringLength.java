@@ -40,19 +40,19 @@ public class StringLength extends SimpleCheck implements IWrapperParamPostCheck 
         scTooLong  = CoreStatusCodes.POSTCHECK_STRING_TOO_LONG;
     }
     
-    public void put_scode_too_long(String scode) {
+    public void setScodeTooLong(String scode) {
         scTooLong = StatusCodeHelper.getStatusCodeByName(scode);
     }
     
-    public void put_scode_too_short(String scode) {
+    public void setScodeTooShort(String scode) {
         scTooShort = StatusCodeHelper.getStatusCodeByName(scode);
     }
     
-    public void put_min_length(String minLength) {
+    public void setMinLength(String minLength) {
         this.minLength = Integer.parseInt(minLength);
     }
     
-    public void put_max_length(String maxLength) {
+    public void setMaxLength(String maxLength) {
         this.maxLength = Integer.parseInt(maxLength);
     }
 

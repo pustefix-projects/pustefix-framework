@@ -27,4 +27,55 @@
   <part name="tshirt.SCRIPTING_SUCCESS">
     <theme name="default">You're one lucky pal. The Scripting framework is working (for now) and you finally checked it out!</theme>
   </part>
+  <part name="checks.DATE_ERR">
+    <theme name="default">This is not a date value!</theme>
+  </part>
+  <part name="checks.INT_ERR">
+    <theme name="default">This is not an integer value!</theme>
+  </part>
+  <part name="checks.BOOL_ERR">
+    <theme name="default">This is not a boolean value!</theme>
+  </part>
+  <part name="checks.BYTE_ERR">
+    <theme name="default">This is not a byte value!</theme>
+  </part>
+  <part name="checks.LONG_ERR">
+    <theme name="default">This is not a long value!</theme>
+  </part>
+  <part name="checks.FLOAT_ERR">
+    <theme name="default">This is not a float value!</theme>
+  </part>
+  <part name="checks.DOUBLE_ERR">
+    <theme name="default">This is not a double value!</theme>
+  </part>
+  <part name="checks.PERL5_ERR">
+    <theme name="default">This is not a perl5 pattern!</theme>
+  </part>
+  <part name="checks.FLOAT_TOO_SMALL">
+    <theme name="default">This float value is too small!</theme>
+  </part>
+  <part name="checks.FLOAT_TOO_BIG">
+    <theme name="default">This float value is too big!</theme>
+  </part>
+  <part name="checks.INT_TOO_SMALL">
+    <theme name="default">This integer value is too small!</theme>
+  </part>
+  <part name="checks.INT_TOO_BIG">
+    <theme name="default">This integer value is too big!</theme>
+  </part>
+  <part name="checks.STRING_TOO_SHORT">
+    <theme name="default">This string value is too short!</theme>
+  </part>
+  <part name="checks.STRING_TOO_LONG">
+    <theme name="default">This string value is too long!</theme>
+  </part>
+  <part name="checks.REGEXP_NO_MATCH">
+    <theme name="default">This string does not match the regular expression!</theme>
+  </part>
+  <part name="checks.FILE_ERR">
+    <theme name="default">This is not a valid file!</theme>
+  </part>
+  <part name="checks.UPLOAD_FILE_ERR">
+    <theme name="default">This is not a valid upload file!</theme>
+  </part>
 </include_parts>

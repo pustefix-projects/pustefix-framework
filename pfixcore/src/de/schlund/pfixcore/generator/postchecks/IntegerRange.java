@@ -50,15 +50,15 @@ public class IntegerRange extends SimpleCheck implements IWrapperParamPostCheck 
         scode_big   = CoreStatusCodes.POSTCHECK_INTEGER_TOO_BIG;
     }
 
-    public void put_scode_too_small(String fqscode) {
+    public void setScodeTooSmall(String fqscode) {
         scode_small = StatusCodeHelper.getStatusCodeByName(fqscode);
     }
 
-    public void put_scode_too_big(String fqscode) {
+    public void setScodeTooBig(String fqscode) {
         scode_big = StatusCodeHelper.getStatusCodeByName(fqscode);
     }
 
-    public void put_range(String param) {
+    public void setRange(String param) {
         param = param.trim();
         
         StringTokenizer tok = new StringTokenizer(param, " :", false);
