@@ -1,5 +1,16 @@
 2008-09-03  Martin Leidig  <mleidig@schlund.de>
 
+	Fixed Apache configuration error (due to configuration format change,
+	ssl-key/ssl-crt were renamed and caused missing SSLCertificateFile/
+	SSLCertificateKeyFile directives).
+
+	* projects/webservice/conf/project.xml: renamed elements
+	Added dummy certs:
+	* projects/webservice/conf/server.key
+	* projects/webservice/conf/server.crt
+
+2008-09-03  Martin Leidig  <mleidig@schlund.de>
+
 	Remove defaultflow configuration option again and replace it
 	with variant-dependent defaultpage configuration option.
 

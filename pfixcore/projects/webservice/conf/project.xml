@@ -23,8 +23,8 @@
     
     <https-port>
       <address>${fqdn}</address>
-      <sslkey>pfixroot:/webservice/conf/server.key</sslkey>
-      <sslcrt>pfixroot:/webservice/conf/server.crt</sslcrt>
+      <ssl-key>pfixroot:/webservice/conf/server.key</ssl-key>
+      <ssl-crt>pfixroot:/webservice/conf/server.crt</ssl-crt>
     </https-port>
     
     <server-name>webservice.${fqdn}</server-name>
