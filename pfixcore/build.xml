@@ -169,11 +169,7 @@ or delete the DOCTYPE definition -->
     <mkdir dir="${dir.exampleform}/img"/>
 
     <!-- Deleting the old tar and also the configuration files -->
-    <delete file="${file.pfixcore_examples_tgz}">
-      <fileset dir="${dir.examplepage}/conf" excludes="**.in **.conf.xml depend.xml"/>
-      <fileset dir="${dir.examplelink}/conf" excludes="**.in **.conf.xml depend.xml"/>
-      <fileset dir="${dir.exampleform}/conf" excludes="**.in **.conf.xml depend.xml"/>
-    </delete>
+    <delete file="${file.pfixcore_examples_tgz}"/>
 
     <!-- Building the example tar with the main java and iwrp files -->
     <tar destfile="${file.pfixcore_examples_tgz}" compression="gzip">
