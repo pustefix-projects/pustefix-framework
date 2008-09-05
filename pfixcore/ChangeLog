@@ -1,3 +1,8 @@
+2008-09-05  Sebastian Marsching  <sebastian.marsching@1und1.de>
+
+	* src/org/pustefixframework/container/spring/http/PustefixHandlerMapping.java: 
+	Adding support for automatically detected HandlerInterceptors.
+
 2008-09-03 Tobias Fehrenbach <tobias.fehrenbach@1und1.de>
 
 	Adjusted setter-methods of casters to bean standards.

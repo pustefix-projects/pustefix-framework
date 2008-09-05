@@ -18,6 +18,11 @@
 
 package org.pustefixframework.container.spring.http;
 
+import java.util.List;
+
+import org.springframework.context.ApplicationContext;
+import org.springframework.web.context.request.WebRequestInterceptor;
+import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.handler.AbstractDetectingUrlHandlerMapping;
 
 public class PustefixHandlerMapping extends AbstractDetectingUrlHandlerMapping {
@@ -31,7 +36,7 @@ public class PustefixHandlerMapping extends AbstractDetectingUrlHandlerMapping {
     protected String[] determineUrlsForHandler(String beanName) {
         
         Class<?> beanClass = getApplicationContext().getType(beanName);
-        if(UriProvidingHttpRequestHandler.class.isAssignableFrom(beanClass)) {
+        if (UriProvidingHttpRequestHandler.class.isAssignableFrom(beanClass)) {
             Object bean = getApplicationContext().getBean(beanName);
             UriProvidingHttpRequestHandler handler = (UriProvidingHttpRequestHandler) bean;
             return handler.getRegisteredURIs();
@@ -39,4 +44,26 @@ public class PustefixHandlerMapping extends AbstractDetectingUrlHandlerMapping {
         return null;
     }
 
+    @Override
+    @SuppressWarnings("unchecked")
+    protected void extendInterceptors(List interceptors) {
+        // Find all interceptors in the ApplicationContext and add them
+        ApplicationContext applicationContext = getApplicationContext();
+        for (String beanName : applicationContext.getBeanDefinitionNames()) {
+            if (HandlerInterceptor.class.isAssignableFrom(applicationContext.getType(beanName))
+                    || WebRequestInterceptor.class.isAssignableFrom(applicationContext.getType(beanName))) {
+                // Ignore scoped beans - there should be a scoped proxy that
+                // will be used instead.
+                if (!applicationContext.isPrototype(beanName)
+                        && !applicationContext.isSingleton(beanName)) {
+                    continue;
+                }
+                Object bean = applicationContext.getBean(beanName);
+                if (!interceptors.contains(bean)) {
+                    interceptors.add(bean);
+                }
+            }
+        }
+    }
+    
 }
