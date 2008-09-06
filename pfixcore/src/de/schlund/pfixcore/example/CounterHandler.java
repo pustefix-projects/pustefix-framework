@@ -19,6 +19,8 @@
 
 package de.schlund.pfixcore.example;
 
+import org.pustefixframework.container.annotations.Inject;
+
 import de.schlund.pfixcore.example.iwrapper.Counter;
 import de.schlund.pfixcore.generator.IHandler;
 import de.schlund.pfixcore.generator.IWrapper;
@@ -27,32 +29,30 @@ import de.schlund.pfixcore.workflow.Context;
 /**
  * CounterHandler.java
  *
- *
  * Created: Wed Nov 21 18:44:20 2001
  *
  * @author <a href="mailto:jtl@schlund.de">Jens Lautenbacher</a>
- *
  *
  */
 
 public class CounterHandler implements IHandler {
     // private final static Logger LOG  = Logger.getLogger(CounterHandler.class);
 
+    private ContextCounter contextCounter;
+    
     public void handleSubmittedData(Context context, IWrapper wrapper) throws Exception {
-        Counter                counter = (Counter) wrapper;
-        ContextCounter         cc      = SampleRes.getContextCounter(context);
-
+        Counter counter     = (Counter) wrapper;
         Boolean showcounter = counter.getShowCounter();
         Integer count       = counter.getAdd();
 
         if (showcounter != null) {
-            cc.setShowCounter(showcounter);
+            contextCounter.setShowCounter(showcounter);
         }
 
-        if (cc.getShowCounter().booleanValue() && count != null) {
-            cc.addToCounter(count);
+        if (contextCounter.getShowCounter().booleanValue() && count != null) {
+            contextCounter.addToCounter(count);
             // demo of pageMessage feature
-            int c = cc.getCounter();
+            int c = contextCounter.getCounter();
             if (c > 9 ) {
                 context.addPageMessage(StatusCodeLib.COUNTER_WARN_GREATER_9, new String[] {"" + c}, "error");
                 context.prohibitContinue();
@@ -67,7 +67,7 @@ public class CounterHandler implements IHandler {
     }
 
     public void retrieveCurrentStatus(Context context, IWrapper wrapper) throws Exception {
-        // We do nothing here. There are no formelements that need prefilling.
+        // We do nothing here. There are no form elements that need pre-filling.
     }
 
     public boolean needsData(Context context) {
@@ -80,6 +80,11 @@ public class CounterHandler implements IHandler {
 
     public boolean prerequisitesMet(Context context) {
         return true;
+    }
+
+    @Inject
+    public void setContextCounter(ContextCounter contextCounter) {
+        this.contextCounter = contextCounter;
     }
 
 }// CounterHandler

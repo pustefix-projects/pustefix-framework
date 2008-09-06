@@ -22,11 +22,7 @@
     <resource class="de.schlund.pfixcore.example.ContextEncodingTest"/>
     <resource class="de.schlund.pfixcore.example.ContextSimpleData"/>
     <resource class="de.schlund.pfixcore.example.ContextTrouser"/>
-    
-    <resource class="de.schlund.pfixcore.example.ContextTShirtImpl">
-    <!-- you can separate the implementation from the interface and only request the interface type in the code -->
-    <!-- via <implements> - you can even use multiple implements if you want to have one instance serve multiple interfaces -->
-      <implements class="de.schlund.pfixcore.example.ContextTShirt" />
+    <resource class="de.schlund.pfixcore.example.ContextTShirt">
 <!--      <properties>-->
 <!--        <prop name="foo">bar</prop>-->
 <!--        <prop name="baz">snafu</prop>-->

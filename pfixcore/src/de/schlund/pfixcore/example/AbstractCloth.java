@@ -33,11 +33,11 @@ import org.apache.log4j.Logger;
  *
  */
 
-public class ContextTShirtImpl implements ContextTShirt {
-    private String     size     = null;
-    private Integer    color    = null;
-    private Integer[]  features = null;
-    private final Logger LOG = Logger.getLogger(this.getClass().getName());
+public abstract class AbstractCloth {
+    private String       size     = null;
+    private Integer      color    = null;
+    private Integer[]    features = null;
+    private final Logger LOG      = Logger.getLogger(this.getClass().getName());
 
     public Integer getColor() { return color; }
 
@@ -64,4 +64,10 @@ public class ContextTShirtImpl implements ContextTShirt {
         return "[Size: " + size + "][Color: " + color + "]";
     }
 
-}// ContextTShirt
+    public void reset() {
+        setSize(null);
+        setColor(null);
+        setFeature(null);
+    }
+
+}// AbstractCloth

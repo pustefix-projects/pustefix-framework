@@ -19,6 +19,8 @@
 
 package de.schlund.pfixcore.example;
 
+import org.pustefixframework.container.annotations.Inject;
+
 import de.schlund.pfixcore.example.iwrapper.TShirt;
 import de.schlund.pfixcore.generator.IHandler;
 import de.schlund.pfixcore.generator.IWrapper;
@@ -36,9 +38,11 @@ import de.schlund.pfixcore.workflow.Context;
  */
 
 public class TShirtHandler implements IHandler {
+
+    private ContextTShirt cts;
+    
     public void handleSubmittedData(Context context, IWrapper wrapper) throws Exception {
         TShirt        tshirt  = (TShirt) wrapper;
-        ContextTShirt ct      = SampleRes.getContextTShirt(context);
         Integer       color   = tshirt.getColor();
         String        size    = tshirt.getSize();
         Integer[]     feature = tshirt.getFeature();
@@ -50,12 +54,12 @@ public class TShirtHandler implements IHandler {
         }
 
         // Everything was ok, store it.
-        ct.setSize(size);
-        ct.setColor(color);
+        cts.setSize(size);
+        cts.setColor(color);
         if (feature != null) {
-            ct.setFeature(feature);
+            cts.setFeature(feature);
         } else {
-            ct.setFeature(new Integer[]{new Integer(-1)});
+            cts.setFeature(new Integer[]{new Integer(-1)});
             // This is needed so we produce some output at all on retrieveCurrentStatus when
             // the user decided to NOT check any checkbox in the UI (this makes defaults work)
         }
@@ -64,18 +68,16 @@ public class TShirtHandler implements IHandler {
     
     public void retrieveCurrentStatus(Context context, IWrapper wrapper) throws Exception {
         TShirt                 tshirt = (TShirt) wrapper;
-        ContextTShirt          ct     = SampleRes.getContextTShirt(context);
 
-        if (!ct.needsData()) {
-            tshirt.setColor(ct.getColor());
-            tshirt.setSize(ct.getSize());
-            tshirt.setFeature(ct.getFeature());
+        if (!cts.needsData()) {
+            tshirt.setColor(cts.getColor());
+            tshirt.setSize(cts.getSize());
+            tshirt.setFeature(cts.getFeature());
         }
     }
     
     public boolean needsData(Context context) throws Exception{
-        ContextTShirt          ct  = SampleRes.getContextTShirt(context);
-        return ct.needsData();
+        return cts.needsData();
     }
     
     public boolean prerequisitesMet(Context context) throws Exception{
@@ -86,4 +88,9 @@ public class TShirtHandler implements IHandler {
         return true;
     }
     
+    @Inject
+    public void setContextTShirt(ContextTShirt cts) {
+        this.cts = cts;
+    }
+
 }// TShirtHandler

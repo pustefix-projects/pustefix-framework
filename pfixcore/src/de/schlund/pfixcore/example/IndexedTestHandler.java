@@ -3,6 +3,8 @@ package de.schlund.pfixcore.example;
 import java.util.HashMap;
 import java.util.Iterator;
 
+import org.pustefixframework.container.annotations.Inject;
+
 import de.schlund.pfixcore.example.iwrapper.IndexedTest;
 import de.schlund.pfixcore.generator.IHandler;
 import de.schlund.pfixcore.generator.IWrapper;
@@ -18,12 +20,12 @@ import de.schlund.pfixcore.workflow.Context;
  * @version 1.0
  */
 public class IndexedTestHandler implements IHandler {
-
     // Implementation of de.schlund.pfixcore.generator.IHandler
 
+    private ContextAdultInfo cai;
+    
     public final void handleSubmittedData(final Context context, final IWrapper wrapper) throws Exception {
         IndexedTest      itest = (IndexedTest) wrapper;
-        ContextAdultInfo cai   = SampleRes.getContextAdultInfo(context);
         String[]         keys  = itest.getKeysValue();
 
         HashMap<String, String> inmap = new HashMap<String, String>();
@@ -34,9 +36,8 @@ public class IndexedTestHandler implements IHandler {
     }
 
     public final void retrieveCurrentStatus(final Context context, final IWrapper wrapper) throws Exception {
-        IndexedTest      itest  = (IndexedTest) wrapper;
-        ContextAdultInfo cai    = SampleRes.getContextAdultInfo(context);
-        HashMap<String, String>          outmap = cai.getIndexedTest();
+        IndexedTest             itest  = (IndexedTest) wrapper;
+        HashMap<String, String> outmap = cai.getIndexedTest();
         
         for (Iterator<String> i = outmap.keySet().iterator(); i.hasNext(); ) {
             String key = i.next();
@@ -59,6 +60,11 @@ public class IndexedTestHandler implements IHandler {
 
     public final boolean needsData(final Context context) throws Exception {
         return false;
+    }
+
+    @Inject
+    public void setContextAdultInfo(ContextAdultInfo cai) {
+        this.cai = cai;
     }
 
 }

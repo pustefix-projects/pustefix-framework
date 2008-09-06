@@ -27,15 +27,8 @@ package de.schlund.pfixcore.example;
  *
  * @author <a href="mailto:jtl@schlund.de">Jens Lautenbacher</a>
  *
- *
  */
 
-public interface ContextTShirt {
-    public Integer getColor();
-    public Integer[] getFeature();
-    public String getSize();
-    public void setColor(Integer color);
-    public void setSize(String size);
-    public void setFeature(Integer[] features);
-    public boolean needsData();
-}// ContextTShirt
+public class ContextTShirt extends AbstractCloth {
+    // nothing special...
+}

@@ -22,6 +22,8 @@ package de.schlund.pfixcore.example;
 import java.util.Arrays;
 import java.util.HashSet;
 
+import org.pustefixframework.container.annotations.Inject;
+
 import de.schlund.pfixcore.example.iwrapper.Trouser;
 import de.schlund.pfixcore.generator.IHandler;
 import de.schlund.pfixcore.generator.IWrapper;
@@ -35,13 +37,15 @@ import de.schlund.pfixcore.workflow.Context;
  *
  * @author <a href="mailto:jtl@schlund.de">Jens Lautenbacher</a>
  *
- *
  */
 
 public class TrouserHandler implements IHandler {
+
+    private ContextAdultInfo cai;
+    private ContextTrouser ct;
+    
     public void handleSubmittedData(Context context, IWrapper wrapper) throws Exception {
         Trouser        trouser = (Trouser) wrapper;
-        ContextTrouser ct      = SampleRes.getContextTrouser(context);
         Integer        color   = trouser.getColor();
         String         size    = trouser.getSize();
         Integer[]      feature = trouser.getFeature();
@@ -67,7 +71,6 @@ public class TrouserHandler implements IHandler {
     
     public void retrieveCurrentStatus(Context context, IWrapper wrapper) throws Exception {
         Trouser        trouser = (Trouser) wrapper;
-        ContextTrouser ct      = SampleRes.getContextTrouser(context);
 
         // we use the ct.needsData() call to look if the Context Ressource has meaningful content
         // to display. This may be handled differently depending on the case.
@@ -79,19 +82,15 @@ public class TrouserHandler implements IHandler {
     }
     
     public boolean needsData(Context context) throws Exception{
-        ContextTrouser ct  = SampleRes.getContextTrouser(context);
         return ct.needsData();
     }
     
     public boolean prerequisitesMet(Context context) throws Exception{
-        ContextAdultInfo cai = SampleRes.getContextAdultInfo(context);
         return !cai.needsData();
     }
     
     public boolean isActive(Context context) throws Exception{
-        ContextAdultInfo cai   = SampleRes.getContextAdultInfo(context);
-        ContextTrouser   ct    = SampleRes.getContextTrouser(context);
-        Boolean          adult = cai.getAdult();
+        Boolean adult = cai.getAdult();
         if (adult != null) {
             // Depending on the situation, this may or may not be the right thing to do:
             // The result of this code is that the current information in ct will be lost as
@@ -104,5 +103,15 @@ public class TrouserHandler implements IHandler {
             return false;
         }
     }
+    
+    @Inject
+    public void setContextTrouser(ContextTrouser ct) {
+        this.ct = ct;
+    }
+
+    @Inject
+    public void setContextAdultInfo(ContextAdultInfo cai) {
+        this.cai = cai;
+    }    
     
 }// TrouserHandler

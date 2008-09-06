@@ -19,6 +19,8 @@
 
 package de.schlund.pfixcore.example;
 
+import org.pustefixframework.container.annotations.Inject;
+
 import de.schlund.pfixcore.example.iwrapper.CounterInput;
 import de.schlund.pfixcore.generator.IHandler;
 import de.schlund.pfixcore.generator.IWrapper;
@@ -38,14 +40,14 @@ import de.schlund.pfixcore.workflow.Context;
 public class CounterSetHandler implements IHandler {
     // private static final Logger LOG = Logger.getLogger(CounterSetHandler.class);
 
+    private ContextCounter contextCounter;
+    
     public void handleSubmittedData(Context context, IWrapper wrapper) throws Exception {
-        CounterInput    counter = (CounterInput) wrapper;
-        ContextCounter  cc      = SampleRes.getContextCounter(context);
-
-        Integer count = counter.getSet();
+        CounterInput counter = (CounterInput) wrapper;
+        Integer      count = counter.getSet();
         if (count != null) {
             
-            cc.setCounter(count);
+            contextCounter.setCounter(count);
 
             if (count > 9 ) {
                 context.addPageMessage(StatusCodeLib.COUNTER_WARN_GREATER_9, new String[] {"" + count}, "error");
@@ -60,9 +62,8 @@ public class CounterSetHandler implements IHandler {
     }
     
     public void retrieveCurrentStatus(Context context, IWrapper wrapper) throws Exception {
-        CounterInput    counter = (CounterInput) wrapper;
-        ContextCounter  cc      = SampleRes.getContextCounter(context);
-        counter.setStringValSet("" + cc.getCounter());
+        CounterInput counter = (CounterInput) wrapper;
+        counter.setStringValSet("" + contextCounter.getCounter());
     }
     
     public boolean needsData(Context context) {
@@ -76,5 +77,10 @@ public class CounterSetHandler implements IHandler {
     public boolean prerequisitesMet(Context context) {
         return true;
     }
+
+    @Inject
+    public void setContextCounter(ContextCounter contextCounter) {
+        this.contextCounter = contextCounter;
+    }    
 
 }// CounterSetHandler

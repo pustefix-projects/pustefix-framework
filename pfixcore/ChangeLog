@@ -1,3 +1,21 @@
+2008-09-06  Jens Lautenbacher <jtl@schlund.de>
+
+	Modified to allow for Ressource injection:
+	* src/de/schlund/pfixcore/example/TrouserHandler.java
+	* src/de/schlund/pfixcore/example/TogglePicHandler.java
+	* src/de/schlund/pfixcore/example/IndexedTestHandler.java
+	* src/de/schlund/pfixcore/example/TShirtHandler.java
+	* src/de/schlund/pfixcore/example/CounterHandler.java
+	* src/de/schlund/pfixcore/example/AdultInfoHandler.java
+	* src/de/schlund/pfixcore/example/CounterSetHandler.java
+	* projects/sample1/conf/config.conf.xml
+
+	* src/de/schlund/pfixcore/example/SampleRes.java: removed
+
+	* src/de/schlund/pfixcore/example/ContextTShirtImpl.java -> renamed to AbstractCloth.java
+	* src/de/schlund/pfixcore/example/ContextTShirt.java
+	* src/de/schlund/pfixcore/example/ContextTrouser.java -> extend it
+
 2008-09-05  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
 	* src/org/pustefixframework/container/spring/http/PustefixHandlerMapping.java: 

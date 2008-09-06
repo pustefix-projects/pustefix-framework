@@ -27,18 +27,8 @@ package de.schlund.pfixcore.example;
  *
  * @author <a href="mailto:jtl@schlund.de">Jens Lautenbacher</a>
  *
- *
  */
 
-// Uuugh, you wouldn't want to do this in a normal Resource.
-// Inheritance from one Resource to another is asking for trouble.
-// But for this example it helps keeping the code small.
-public class ContextTrouser extends ContextTShirtImpl {
-    
-    public void reset() {
-        setSize(null);
-        setColor(null);
-        setFeature(null);
-    }
-
-}// ContextTrouser
+public class ContextTrouser extends AbstractCloth {
+    // nothing special
+}

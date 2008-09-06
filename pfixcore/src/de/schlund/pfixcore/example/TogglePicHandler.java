@@ -19,6 +19,8 @@
 
 package de.schlund.pfixcore.example;
 
+import org.pustefixframework.container.annotations.Inject;
+
 import de.schlund.pfixcore.example.iwrapper.TogglePic;
 import de.schlund.pfixcore.generator.IHandler;
 import de.schlund.pfixcore.generator.IWrapper;
@@ -39,12 +41,13 @@ import de.schlund.pfixcore.workflow.Context;
 public class TogglePicHandler implements IHandler {
 // implementation of de.schlund.pfixcore.generator.IHandler interface
 
+    private ContextTogglePic ctp;
+
     public void handleSubmittedData(Context context, IWrapper wrapper) throws Exception {
-        ContextTogglePic ct   = SampleRes.getContextTogglePic(context);
         TogglePic        tpic = (TogglePic) wrapper;
         Boolean          show = tpic.getToggle();
         if ((show != null) && show.equals(Boolean.TRUE)) {
-            ct.setShow(!ct.getShow());
+            ctp.setShow(!ctp.getShow());
         } else {
             // nothing.
         }
@@ -66,4 +69,9 @@ public class TogglePicHandler implements IHandler {
         return false;
     }
     
+    @Inject
+    public void setContextTogglePic(ContextTogglePic ctp) {
+        this.ctp = ctp;
+    }
+
 }// TogglePicHandler

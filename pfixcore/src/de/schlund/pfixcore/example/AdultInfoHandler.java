@@ -19,6 +19,8 @@
 
 package de.schlund.pfixcore.example;
 
+import org.pustefixframework.container.annotations.Inject;
+
 import de.schlund.pfixcore.example.iwrapper.AdultInfo;
 import de.schlund.pfixcore.generator.IHandler;
 import de.schlund.pfixcore.generator.IWrapper;
@@ -38,16 +40,16 @@ import de.schlund.pfixcore.workflow.Context;
 public class AdultInfoHandler implements IHandler {
     // private final static Logger LOG  = Logger.getLogger(AdultInfoHandler.class);
 
+    private ContextAdultInfo cai;
+    
     public void handleSubmittedData(Context context, IWrapper wrapper) throws Exception {
         AdultInfo              info    = (AdultInfo) wrapper;
-        ContextAdultInfo       cai     = SampleRes.getContextAdultInfo(context);
         cai.setAdult(info.getAdult());
         cai.setDate(info.getDate());
     }
     
     public void retrieveCurrentStatus(Context context, IWrapper wrapper) throws Exception {
         AdultInfo              info = (AdultInfo) wrapper;
-        ContextAdultInfo       cai  = SampleRes.getContextAdultInfo(context);
         if (!cai.needsData()) {
             info.setAdult(cai.getAdult());
         }
@@ -55,7 +57,6 @@ public class AdultInfoHandler implements IHandler {
     }
     
     public boolean needsData(Context context) throws Exception{
-        ContextAdultInfo       cai = SampleRes.getContextAdultInfo(context);
         return cai.needsData();
     }
     
@@ -65,6 +66,11 @@ public class AdultInfoHandler implements IHandler {
     
     public boolean prerequisitesMet(Context context) throws Exception{
         return true;
+    }
+
+    @Inject
+    public void setContextAdultInfo(ContextAdultInfo cai) {
+        this.cai = cai;
     }
 
 }// AdultInfoHandler
