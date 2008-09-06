@@ -38,7 +38,7 @@ import de.schlund.pfixcore.workflow.Context;
 public class CounterHandler implements IHandler {
     // private final static Logger LOG  = Logger.getLogger(CounterHandler.class);
 
-    private ContextCounter contextCounter;
+    private ContextCounter cc;
     
     public void handleSubmittedData(Context context, IWrapper wrapper) throws Exception {
         Counter counter     = (Counter) wrapper;
@@ -46,13 +46,13 @@ public class CounterHandler implements IHandler {
         Integer count       = counter.getAdd();
 
         if (showcounter != null) {
-            contextCounter.setShowCounter(showcounter);
+            cc.setShowCounter(showcounter);
         }
 
-        if (contextCounter.getShowCounter().booleanValue() && count != null) {
-            contextCounter.addToCounter(count);
+        if (cc.getShowCounter().booleanValue() && count != null) {
+            cc.addToCounter(count);
             // demo of pageMessage feature
-            int c = contextCounter.getCounter();
+            int c = cc.getCounter();
             if (c > 9 ) {
                 context.addPageMessage(StatusCodeLib.COUNTER_WARN_GREATER_9, new String[] {"" + c}, "error");
                 context.prohibitContinue();
@@ -83,8 +83,8 @@ public class CounterHandler implements IHandler {
     }
 
     @Inject
-    public void setContextCounter(ContextCounter contextCounter) {
-        this.contextCounter = contextCounter;
+    public void setContextCounter(ContextCounter cc) {
+        this.cc = cc;
     }
 
 }// CounterHandler
