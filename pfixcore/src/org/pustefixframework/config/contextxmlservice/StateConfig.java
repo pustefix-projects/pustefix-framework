@@ -28,7 +28,7 @@ public interface StateConfig {
 
     /**
      * Enum type for activity handling policy. The policy will not be applied
-     * on handlers with activeignore set to true.
+     * on handlers with checkactive set to true.
      */
     public enum Policy {
         /**

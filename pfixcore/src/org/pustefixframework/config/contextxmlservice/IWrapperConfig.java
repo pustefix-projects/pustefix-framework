@@ -51,7 +51,7 @@ public interface IWrapperConfig {
      * 
      * @return flag indicating handling of active state
      */
-    boolean isActiveIgnore();
+    boolean doCheckActive();
 
     /**
      * If <code>true</code> the IWrapper should enable logging.

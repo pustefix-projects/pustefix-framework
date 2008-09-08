@@ -33,42 +33,23 @@
 
 
 
-  <xsl:template match="/error[@type != 'xslt']">
+  <xsl:template match="/error">
+    
+    <xsl:if test="@type='xslt'">
+      <tr><td colspan="2">
+      <xsl:variable name="rootcause" select=".//exception[not(exception)]"/>
+      XML/XSLT error at <i><xsl:value-of select="$rootcause/xsltinfo/@systemId"/></i>
+      (line <i><xsl:value-of select="$rootcause/xsltinfo/@line"/>, column <xsl:value-of select="$rootcause/xsltinfo/@column"/></i>):<br/>
+      <b><xsl:value-of select="$rootcause/@type"/>: <xsl:value-of select="$rootcause/@msg"/></b>
+      </td></tr>
+    </xsl:if>
+  
     <xsl:apply-templates select="exception"/>
     <xsl:call-template name="sessioninfo"/>
     <xsl:call-template name="requestparams"/>
     <xsl:call-template name="laststeps"/>
     <xsl:call-template name="session_dump"/>
   </xsl:template>
-  
-  <xsl:template match="/error[@type = 'xslt']">
-    <xsl:call-template name="exceptions"/>
-  </xsl:template>
-
-
-  <xsl:template name="exceptions">
-    <xsl:for-each select="exception">
-      <tr>
-        <td bgcolor="#dd9999" colspan="2" align="center">
-          <b><xsl:value-of select="@type"/></b>
-        </td>
-      </tr>
-      <xsl:for-each select="info">
-        <tr>
-          <xsl:attribute name="bgcolor">
-            <xsl:choose>
-              <xsl:when test="count(preceding-sibling::info) mod 2 = 0">#aaaacc</xsl:when>
-              <xsl:otherwise>#ccccee</xsl:otherwise>
-            </xsl:choose>
-          </xsl:attribute>
-          <td><b><xsl:value-of select="@key"/>:</b></td>
-          <td><xsl:value-of select="@value"/></td>
-        </tr>
-      </xsl:for-each>
-    </xsl:for-each>
-  
-  </xsl:template>
-
   
   <xsl:template name="sessioninfo">
     <tr>
@@ -171,7 +152,22 @@
         </xsl:otherwise> 
       </xsl:choose>
     </tr>
+    <xsl:if test="xsltinfo">
     <tr bgcolor="#ccccee">
+      <td style="padding-left:{$indent}px">Location</td>
+      <td><xsl:value-of select="xsltinfo/@systemId"/><br/>
+          Line: <xsl:value-of select="xsltinfo/@line"/> Column: <xsl:value-of select="xsltinfo/@column"/> 
+          </td></tr>
+    </xsl:if>
+    <tr>
+      <xsl:choose>
+        <xsl:when test="xsltinfo">
+          <xsl:attribute name="bgcolor">#aaaacc</xsl:attribute>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:attribute name="bgcolor">#ccccee</xsl:attribute>
+        </xsl:otherwise>
+      </xsl:choose>
       <xsl:variable name="stackid">stack<xsl:value-of select="generate-id()"/></xsl:variable>
       <td valign="top" style="padding-left:{$indent}px">
         Stacktrace 

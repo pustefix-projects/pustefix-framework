@@ -47,7 +47,7 @@ import de.schlund.pfixxml.perflogging.PerfEventType;
 public class IHandlerContainerImpl implements IHandlerContainer {
     /** Store all created handlers here*/
     private HashSet<IHandler> handlers;
-    /** Store all handlers here which do not have a 'activeignore' attribute */
+    /** Store all handlers here which do not have a 'checkactive' attribute */
     private HashSet<IHandler> activeset;
     
     private String policy;
@@ -76,7 +76,7 @@ public class IHandlerContainerImpl implements IHandlerContainer {
         for (IWrapperConfig iConfig : config.getIWrappers().values()) {
             IHandler handler = iConfig.getHandler();
             handlers.add(handler);
-            if (!iConfig.isActiveIgnore()) {
+            if (iConfig.doCheckActive()) {
                 activeset.add(handler);
             }
         }

@@ -100,7 +100,7 @@ public class Xslt {
     private static Templates loadTemplates(XsltVersion xsltVersion, InputSource input, TargetImpl parent) throws TransformerConfigurationException {
         Source src = new SAXSource(Xml.createXMLReader(), input);
         TransformerFactory factory = XsltProvider.getXsltSupport(xsltVersion).getThreadTransformerFactory();
-        if(factory.getErrorListener()==null) factory.setErrorListener(new PFErrorListener());
+        factory.setErrorListener(new PFErrorListener());
         factory.setURIResolver(new FileResolver(parent,xsltVersion));
         try {
             Templates retval = factory.newTemplates(src);
@@ -176,7 +176,7 @@ public class Xslt {
             Throwable t=ExtensionFunctionUtils.getExtensionFunctionError();
             if(t!=null) {
                 ExtensionFunctionUtils.setExtensionFunctionError(null);
-                throw new TransformerException(x.getMessage(),x.getLocator(),t);
+                throw new XsltExtensionFunctionException(t);
             }
             throw x;
         } finally {
@@ -300,17 +300,17 @@ public class Xslt {
      */
     static class PFErrorListener implements ErrorListener {
         public void warning(TransformerException arg) throws TransformerException {
-            System.err.println("WARNING: "+arg.getMessage());
+            LOG.error("WARNING: "+arg.getMessage());
             throw arg;
         }
 
         public void error(TransformerException arg) throws TransformerException {
-            System.err.println("ERROR: "+arg.getMessage());
+            LOG.error("ERROR: "+arg.getMessage());
             throw arg;
         }
 
         public void fatalError(TransformerException arg) throws TransformerException {
-            System.err.println("FATAL ERROR: "+arg.getMessage());
+            LOG.error("FATAL ERROR: "+arg.getMessage());
             throw arg;
         }
     }

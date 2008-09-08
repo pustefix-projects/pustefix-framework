@@ -210,7 +210,7 @@ public class TransformerCallback {
                     Element elem = doc.createElement("iwrapper");
                     elem.setAttribute("prefix", prefix);
                     elem.setAttribute("class", iwrappers.get(prefix).getWrapperClass().getName());
-                    elem.setAttribute("activeignore", "" + iwrappers.get(prefix).isActiveIgnore());
+                    elem.setAttribute("checkactive", "" + iwrappers.get(prefix).doCheckActive());
                     root.appendChild(elem);
                 }
             }

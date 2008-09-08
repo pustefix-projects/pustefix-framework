@@ -1,3 +1,50 @@
+2008-09-08  Martin Leidig  <mleidig@schlund.de>
+
+	Improved XSLT error handling:
+	- Added error location information to exception stacktrace displayed
+	on error page
+	- XML/XSLT erros now are displayed with a speaking error message
+	on top (thus non-Java developers must not search inside the stack
+	hierarchy)
+	- Rendering exceptions caused by extension function calls now are
+	explicitly designated as Java errors
+	- Display line number and systemid for XML errors in include parts
+
+	Still to do: Display line number for XSLT errors of included
+	stylesheets (problem: doesn't work with DOMSource), display
+	originating file and line number of XSLT errors coming from
+	include parts on the last transformation level (problem: tracing
+	back over multiple transformation levels isn't possible without
+	big effort).
+
+	* src/de/schlund/pfixxml/IncludeDocumentExtension.java: catch and set
+	extension function error
+	* src/de/schlund/pfixxml/exceptionprocessor/UniversalExceptionProcessor.java:
+	remove XSLT/Java error switch (which wasn't working any more)
+	* src/de/schlund/pfixxml/exceptionprocessor/util/XMLCreatorVisitor.java:
+	add location information for XML/XSLT errors to tree
+	* src/de/schlund/pfixxml/util/XsltExtensionFunctionException.java: New
+	exception class which wraps errors occurred in extension functions and
+	can be used to differentiate real XSLT and Java errors
+	* src/de/schlund/pfixxml/util/Xslt.java: wrap extension function
+	errors in XsltExtensionFunctionException instead of TransformerException
+	* projects/core/xsl/errorrepresentation.xsl: display location
+	information, show XML/XSLT error description on top
+
+	Rename 'activeignore' attribute to the more concise 'checkactive':
+	* src/org/pustefixframework/config/contextxmlservice/StateConfig.java
+	* src/org/pustefixframework/config/contextxmlservice/parser/PageRequestInputWrapperParsingHandler.java
+	* src/org/pustefixframework/config/contextxmlservice/parser/internal/IWrapperConfigImpl.java
+	* src/org/pustefixframework/config/contextxmlservice/IWrapperConfig.java
+	* src/de/schlund/pfixcore/workflow/app/IHandlerContainerImpl.java
+	* src/de/schlund/pfixcore/util/TransformerCallback.java
+	* projects/core/schema/context-xml-service-config.xsd
+	* projects/core/xsl/xmlfontify.xsl
+
+	Removed old stuff:
+	* projects/core/build/create_propfiles.xsl
+	* projects/core/schema/properties200401.xsd
+
 2008-09-08  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
 	* src/de/schlund/pfixcore/editor2/frontend/util/EditViewResetContextInterceptor.java: 

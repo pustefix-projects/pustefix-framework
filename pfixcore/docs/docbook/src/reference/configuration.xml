@@ -1353,7 +1353,7 @@
         <methodname>prerequisitesMet()</methodname>, the page is of 
         course still inaccessible.
         <programlisting language="xml"><![CDATA[
-        <wrapper prefix="AName" class="AClassName" activeignore="true|false"/>
+        <wrapper prefix="AName" class="AClassName" checkactive="true|false"/>
         ]]></programlisting>
         <caution>
           <para>
@@ -1404,16 +1404,25 @@
               queried for it.</td>
             </tr>
             <tr>
-              <td><literal>activeignore</literal></td>
-              <td>Optional, default is <literal>false</literal>. The 
+              <td><literal>checkactive</literal></td>
+              <td>Optional, default is <literal>true</literal>. The 
               <classname>IHandler</classname> method 
               <methodname>isActive()</methodname> is 
               <emphasis>NOT</emphasis> called on handlers with 
-              <tag class="attribute">activeignore</tag> set to 
-              <literal>true</literal>. In other words: the handler is 
+              <tag class="attribute">checkactive</tag> set to 
+              <literal>false</literal>. In other words: the handler is 
               ignored when the system tries to find out if the page is 
               accessible or not. See also the comment for the 
-              <tag class="attribute">policy</tag> attribute above.</td>
+              <tag class="attribute">policy</tag> attribute above.
+              <caution>
+                <para>Replaces the <tag class="attribute">activeignore</tag> attribute since
+                version 0.13.1. You should be aware that setting <tag class="attribute">activeignore</tag>
+		to <literal>true</literal> now complies with setting <tag class="attribute">checkactive</tag>
+                to <literal>false</literal>. Support for the <tag class="attribute">activeignore</tag>
+                attribute will be removed in future versions.
+                </para>
+              </caution>
+              </td>
             </tr>
           </tbody>
         </informaltable>

@@ -37,6 +37,7 @@ import de.schlund.pfixxml.resources.ResourceUtil;
 import de.schlund.pfixxml.targets.TargetGenerator;
 import de.schlund.pfixxml.targets.TargetGeneratorFactory;
 import de.schlund.pfixxml.targets.VirtualTarget;
+import de.schlund.pfixxml.util.ExtensionFunctionUtils;
 import de.schlund.pfixxml.util.XPath;
 import de.schlund.pfixxml.util.Xml;
 import de.schlund.pfixxml.util.XsltContext;
@@ -83,7 +84,7 @@ public final class IncludeDocumentExtension {
     public static final Object get(XsltContext context, String path_str, String part,
                                    String targetgen, String targetkey,
                                    String parent_part_in, String parent_theme_in, String computed_inc) throws Exception {
-
+        
         String       parent_path_str = "";
         String       parent_part     = "";
         String       parent_theme    = "";
@@ -251,6 +252,7 @@ public final class IncludeDocumentExtension {
             String sb = MessageFormat.format("path={0}|part={1}|targetgen={2}|targetkey={3}|"+
                                              "parent_path={4}|parent_part={5}|parent_theme={6}", args);
             LOG.error("Caught exception in extension function! Params:\n"+ sb+"\n Stacktrace follows.");
+            ExtensionFunctionUtils.setExtensionFunctionError(e);
             throw e;
         }
     }

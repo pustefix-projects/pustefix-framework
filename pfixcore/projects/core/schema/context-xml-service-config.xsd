@@ -531,6 +531,7 @@
                   <xs:complexType>
                     <xs:attribute name="prefix" use="required"/>
                     <xs:attribute name="class" use="required"/>
+                    <xs:attribute name="checkactive" default="true" type="xs:boolean"/>
                     <xs:attribute name="activeignore" default="false" type="xs:boolean"/>
                     <xs:attribute name="logging" default="false" type="xs:boolean"/>
                   </xs:complexType>
@@ -541,6 +542,7 @@
                   <xs:complexType>
                     <xs:attribute name="prefix" use="required"/>
                     <xs:attribute name="class" use="required"/>
+                    <xs:attribute name="checkactive" default="true" type="xs:boolean"/>
                     <xs:attribute name="activeignore" default="false" type="xs:boolean"/>
                     <xs:attribute name="logging" default="false" type="xs:boolean"/>
                   </xs:complexType>

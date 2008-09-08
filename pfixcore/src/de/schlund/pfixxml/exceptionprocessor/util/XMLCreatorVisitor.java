@@ -24,10 +24,18 @@ import java.util.Iterator;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.SourceLocator;
+import javax.xml.transform.TransformerException;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Text;
+import org.xml.sax.SAXParseException;
+
+import de.schlund.pfixxml.RenderingException;
+import de.schlund.pfixxml.exceptionprocessor.UniversalExceptionProcessor;
+import de.schlund.pfixxml.targets.TargetGenerationException;
+import de.schlund.pfixxml.util.XsltExtensionFunctionException;
 
 
 /**
@@ -53,7 +61,8 @@ public class XMLCreatorVisitor implements ExceptionDataValueVisitor {
 			return;
 		}
 		Element e = doc.createElement("error");
-		e.setAttribute("type", data.getThrowable().getClass().getName());
+		boolean isXsltError = isXsltError(data.getThrowable());
+		e.setAttribute("type", isXsltError?"xslt":"java");
 		
 		Element sess_info = doc.createElement("sessioninfo");
 		Text sess_info_txt = doc.createTextNode(data.getSessionid());
@@ -106,6 +115,28 @@ public class XMLCreatorVisitor implements ExceptionDataValueVisitor {
 	        Element exElem = doc.createElement("exception");
 	        exElem.setAttribute("type", throwable.getClass().getName());
 	        exElem.setAttribute("msg", throwable.getMessage());
+	        
+	        if(throwable instanceof TransformerException) {
+	            TransformerException te = (TransformerException)throwable;
+	            SourceLocator locator = te.getLocator();
+	            if(locator!=null) {
+	                Element xsltInfo = doc.createElement("xsltinfo");
+	                exElem.appendChild(xsltInfo);
+	                xsltInfo.setAttribute("line", String.valueOf(locator.getLineNumber()));
+	                xsltInfo.setAttribute("column", String.valueOf(locator.getColumnNumber()));
+	                xsltInfo.setAttribute("publicId", locator.getPublicId());
+	                xsltInfo.setAttribute("systemId", locator.getSystemId());
+	            }
+	        } else if (throwable instanceof SAXParseException) {
+	            SAXParseException spe = (SAXParseException)throwable;
+	            Element xsltInfo = doc.createElement("xsltinfo");
+                exElem.appendChild(xsltInfo);
+                xsltInfo.setAttribute("line", String.valueOf(spe.getLineNumber()));
+                xsltInfo.setAttribute("column", String.valueOf(spe.getColumnNumber()));
+                xsltInfo.setAttribute("publicId", spe.getPublicId());
+                xsltInfo.setAttribute("systemId", spe.getSystemId());
+	        }
+	        
 	        Element stackElem = doc.createElement("stacktrace");
 	        StackTraceElement[] strace = throwable.getStackTrace();
 	        for(int i=0; i<strace.length; i++) {
@@ -119,5 +150,36 @@ public class XMLCreatorVisitor implements ExceptionDataValueVisitor {
 	        if(throwable.getCause()!=null) appendThrowable(exElem, throwable.getCause());
 	    }
 	}
+	
+	
+	private boolean isXsltError(Throwable throwable) {
+	    if(throwable instanceof RenderingException) {
+	        return hasXsltErrorCause(throwable);
+	    }
+	    return false;
+	}
+	
+	private boolean hasXsltErrorCause(Throwable throwable) {
+	    Throwable cause = throwable.getCause();
+	    if(cause != null) {
+	        if(cause instanceof TransformerException) {
+	            if(cause instanceof XsltExtensionFunctionException) {
+	                Throwable extCause = cause.getCause();
+	                if(extCause != null) {
+	                    if(extCause instanceof TransformerException || 
+	                            extCause instanceof SAXParseException) {
+	                        return true;
+	                    }
+	                }
+	                return false;
+	            }
+	            return true;
+	        } else {
+	            return hasXsltErrorCause(cause);
+	        }
+	    }
+	    return false;
+	}
+	
 	
 }

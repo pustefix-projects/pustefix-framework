@@ -33,7 +33,7 @@ public class IWrapperConfigImpl implements IWrapperConfig {
     
     private String prefix = null;
     private Class<? extends IWrapper> wrapperClass = null;
-    private boolean activeIgnore = false;
+    private boolean checkActive = false;
     private boolean dologging = false;
     private IHandler handler;
     private String scope = "singleton";
@@ -60,15 +60,15 @@ public class IWrapperConfigImpl implements IWrapperConfig {
         return this.wrapperClass;
     }
     
-    public void setActiveIgnore(boolean ignore) {
-        this.activeIgnore = ignore;
+    public void setCheckActive(boolean checkActive) {
+        this.checkActive = checkActive;
     }
     
     /* (non-Javadoc)
-     * @see de.schlund.pfixxml.config.IWrapperConfig#isActiveIgnore()
+     * @see de.schlund.pfixxml.config.IWrapperConfig#isCheckActive()
      */
-    public boolean isActiveIgnore() {
-        return this.activeIgnore;
+    public boolean doCheckActive() {
+        return this.checkActive;
     }
     
     public void setLogging(boolean dologging) {

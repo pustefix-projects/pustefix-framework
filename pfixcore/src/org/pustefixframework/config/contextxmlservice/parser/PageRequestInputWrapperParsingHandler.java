@@ -40,7 +40,7 @@ public class PageRequestInputWrapperParsingHandler implements ParsingHandler {
     public void handleNode(HandlerContext context) throws ParserException {
        
         Element element = (Element)context.getNode();
-        ParsingUtils.checkAttributes(element, new String[] {"class", "prefix"}, new String[] {"activeignore", "logging"});
+        ParsingUtils.checkAttributes(element, new String[] {"class", "prefix"}, new String[] {"checkactive", "activeignore", "logging"});
          
         StateConfigImpl stateConfig = ParsingUtils.getFirstTopObject(StateConfigImpl.class, context, true);
         PageRequestConfig pageConfig = ParsingUtils.getFirstTopObject(PageRequestConfig.class, context, true);
@@ -68,9 +68,16 @@ public class PageRequestInputWrapperParsingHandler implements ParsingHandler {
         
         String activeignore = element.getAttribute("activeignore").trim();
         if (activeignore.length()>0) {
-            wrapperConfig.setActiveIgnore(Boolean.parseBoolean(activeignore));
+            wrapperConfig.setCheckActive(!Boolean.parseBoolean(activeignore));
         } else {
-            wrapperConfig.setActiveIgnore(false);
+            wrapperConfig.setCheckActive(true);
+        }
+        
+        String checkactive = element.getAttribute("checkactive").trim();
+        if (checkactive.length()>0) {
+            wrapperConfig.setCheckActive(Boolean.parseBoolean(checkactive));
+        } else {
+            wrapperConfig.setCheckActive(true);
         }
         
         String dologging = element.getAttribute("logging").trim();

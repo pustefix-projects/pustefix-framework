@@ -128,7 +128,7 @@
           <th><b>Occurrence</b></th>
           <th><b>Frequency</b></th>
           <th><b>Type</b></th>
-          <th><b>activeignore?</b></th>
+          <th><b>checkactive?</b></th>
           <th><b>active?</b></th>               
         </tr>
         <xsl:for-each select="$iwrappers/iwrappers/iwrapper">
@@ -139,7 +139,7 @@
             <td colspan="4">&#160;<small><b>&#8227; <xsl:value-of select="$prefix"/></b> (<xsl:value-of select="$class"/>)</small></td>
             <td align="center" style="font-family: sans;">
               <xsl:choose>
-                <xsl:when test="@activeignore = 'true'">&#9745;</xsl:when>
+                <xsl:when test="@checkactive = 'false'">&#9745;</xsl:when>
                 <xsl:otherwise>&#9744;</xsl:otherwise>
               </xsl:choose>
             </td>
