@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="ISO-8859-1"?><include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
+<?xml version="1.0" encoding="UTF-8"?><include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
   
   <part name="content">
     <theme name="default">
@@ -104,7 +104,7 @@
 	                    <ixsl:attribute name="class">editor_sidebar_content_sel</ixsl:attribute>
 	                  </ixsl:if>
 	                  <ixsl:variable name="ind">
-	                    <ixsl:for-each select="ancestor::target">     </ixsl:for-each>
+	                    <ixsl:for-each select="ancestor::target">Â Â Â Â Â </ixsl:for-each>
 	                  </ixsl:variable>
 	                  <ixsl:copy-of select="$ind"/>
 	                  <pfx:button mode="force" page="targets">

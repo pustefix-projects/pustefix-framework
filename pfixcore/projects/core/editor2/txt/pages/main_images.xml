@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="ISO-8859-1"?><include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
+<?xml version="1.0" encoding="UTF-8"?><include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
   
   <part name="content">
     <theme name="default">
@@ -79,7 +79,7 @@
                 <a>
                   <ixsl:attribute name="name"><ixsl:value-of select="./@path"/></ixsl:attribute>
                 </a>
-                <ixsl:if test="@missing = 'true'"><span class="editor_missing_img">! </span></ixsl:if>
+                <ixsl:if test="@missing = 'true'"><span class="editor_missing_img">!Â </span></ixsl:if>
                 <pfx:button frame="_top" mode="force" page="images" target="_top">
                   <pfx:command name="SELWRP">selectimage</pfx:command>
                   <pfx:argument name="selectimage.Path"><ixsl:value-of select="./@path"/></pfx:argument>
@@ -200,7 +200,7 @@
                   <ixsl:value-of select="./text()"/>
                 </pfx:option>
               </ixsl:for-each>
-            </pfx:xinp> 
+            </pfx:xinp>Â 
             <pfx:xinp class="editor_submit" type="submit" value="Use Backup">
               <pfx:command name="SELWRP">restore</pfx:command>
             </pfx:xinp>

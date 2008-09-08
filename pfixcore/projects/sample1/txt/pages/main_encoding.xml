@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="ISO-8859-1"?><include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
+<?xml version="1.0" encoding="UTF-8"?><include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
 
   <part name="content">
     <theme name="default">
@@ -41,7 +41,7 @@
           <tr>
             <td align="left" valign="middle">
               <pfx:forminput method="get" target="_top">
-                <pfx:xinp default="abcdäöüß" id="text" name="text.Text" onchange="setDynHref(this.value)" type="text"/>
+                <pfx:xinp default="abcdÃ¤Ã¶Ã¼ÃŸ" id="text" name="text.Text" onchange="setDynHref(this.value)" type="text"/>
                 <ixsl:text> </ixsl:text>
                 <pfx:xinp type="submit" value="Send via GET-method">
                   <pfx:command name="SUBWRP">text</pfx:command>
@@ -52,7 +52,7 @@
           <tr>
             <td align="left" valign="middle">
               <pfx:forminput method="post" target="_top">
-                <pfx:xinp default="abcdäöüß" name="text.Text" onchange="setDynHref(this.value)" type="text"/>
+                <pfx:xinp default="abcdÃ¤Ã¶Ã¼ÃŸ" name="text.Text" onchange="setDynHref(this.value)" type="text"/>
                 <ixsl:text> </ixsl:text>
                 <pfx:xinp type="submit" value="Send via POST-method">
                   <pfx:command name="SUBWRP">text</pfx:command>
@@ -71,7 +71,7 @@
         <br/><br/>
         <h3>Send via GET-method with serverside special decoding:</h3>
         <pfx:forminput method="get" target="_top">
-          <pfx:xinp default="abcdäöüß" id="text" name="text.Text" onchange="setDynHref(this.value)" type="text"/>
+          <pfx:xinp default="abcdÃ¤Ã¶Ã¼ÃŸ" id="text" name="text.Text" onchange="setDynHref(this.value)" type="text"/>
           <ixsl:text> </ixsl:text>
           <pfx:xinp name="text.Encoding" type="select">
             <pfx:option value="UTF-8">Decode as UTF-8</pfx:option>

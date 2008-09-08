@@ -1022,7 +1022,7 @@ The framework predefines some common StatusCodes, e.g. <literal>MISSING_PARAM</l
 StatusCodes are defined as normal include parts. They're placed in their own files located under the <literal>dyntxt</literal> directory. Within such a statuscode file the part names uniquely identify the StatusCode, the content nested inside the part element represents the message. 
 </para>
 <programlisting language="xml"><![CDATA[
-<?xml version="1.0" encoding="ISO-8859-1"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
   <part name="ILLEGAL_LOGIN">
     <theme name="default">Illegal login data.</theme>

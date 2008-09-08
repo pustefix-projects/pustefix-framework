@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="ISO-8859-1"?><include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
+<?xml version="1.0" encoding="UTF-8"?><include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
 
   <part name="logoutbutton">
     <theme name="default">
@@ -10,7 +10,7 @@
     <theme name="default">
       <center>
         <div class="box" style="width:400px">
-          <h1>Welcome to the Pustefix CMS</h1>
+          <h1>Welcome to theÂ PustefixÂ CMS</h1>
           <pfx:forminput target="_top" type="auth">
             <span style="color: #ffffff; font-weight: bold;">Enter your userdata below:</span>
             <table width="350">

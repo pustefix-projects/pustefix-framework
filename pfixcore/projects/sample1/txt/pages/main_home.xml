@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="ISO-8859-1"?><include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
+<?xml version="1.0" encoding="UTF-8"?><include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
   
   <part name="content">
     <theme name="default">
@@ -109,14 +109,14 @@
       <br/>
       <pfx:elink href="http://www.gimp.org" target="_popup">
         <pfx:argument name="foo"><ixsl:value-of select="/formresult/@serial"/></pfx:argument>
-        Goto Gimp!</pfx:elink>  
-        <pfx:button page="ssltest">SSL TEST</pfx:button>  
-        <pfx:button page="install">Download README.1st (text/plain)</pfx:button>  
+        Goto Gimp!</pfx:elink>Â Â 
+        <pfx:button page="ssltest">SSL TEST</pfx:button>Â Â 
+        <pfx:button page="install">Download README.1st (text/plain)</pfx:button>Â Â 
         <pfx:elink href="ftp://ftp.rz.uni-karlsruhe.de" target="_popup">
         Goto FTP UniKa!</pfx:elink>
         <br/>
-        <pfx:button page="geninc">Test generated runtime stylesheet include</pfx:button>  
-        <pfx:button page="invalidate">Invalidate this session</pfx:button>  
+        <pfx:button page="geninc">Test generated runtime stylesheet include</pfx:button>Â Â 
+        <pfx:button page="invalidate">Invalidate this session</pfx:button>Â Â 
         <pfx:button page="frames">Goto frames test</pfx:button> 
         <br/>
         <pfx:button page="upload">Test upload mechanism</pfx:button>         

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="ISO-8859-1"?><include_parts>
+<?xml version="1.0" encoding="UTF-8"?><include_parts>
   <part name="content">
     <theme name="default">If the invalidation worked, this session should be invalidated in about 30 to 60 seconds.</theme>
   </part>

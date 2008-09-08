@@ -237,7 +237,7 @@ public class UserHandler implements IHandler {
         You need to create the file <filename>projects/common/dyntxt/statusmessages.xml</filename> and add an statuscode
         for an invalid url.
       </para>
-      <programlisting language="xml"><![CDATA[<?xml version="1.0" encoding="ISO-8859-1"?>
+      <programlisting language="xml"><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
 <include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
   <part name="caster.url.INVALID">
     <theme name="default">

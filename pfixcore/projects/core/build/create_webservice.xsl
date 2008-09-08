@@ -1,9 +1,9 @@
-<?xml version="1.0" encoding="iso-8859-1"?>
+<?xml version="1.0" encoding="utf-8"?>
 <xsl:stylesheet version="1.0"
                 xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 				xmlns:ws="http://pustefix.sourceforge.net/wsconfig200401">
 
-  <xsl:output method="text" encoding="ISO-8859-1" indent="no"/>
+  <xsl:output method="text" encoding="UTF-8" indent="no"/>
 
   <xsl:param name="docroot"/>
   <xsl:param name="uid"/>
