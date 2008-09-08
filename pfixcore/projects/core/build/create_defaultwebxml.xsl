@@ -1,9 +1,9 @@
-<?xml version="1.0" encoding="iso-8859-1"?>
+<?xml version="1.0" encoding="utf-8"?>
 <xsl:stylesheet version="1.1"
                 xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
                 xmlns:j2ee="http://java.sun.com/xml/ns/j2ee" xmlns="http://java.sun.com/xml/ns/j2ee">
 
-  <xsl:output method="xml" encoding="ISO-8859-1" />
+  <xsl:output method="xml" encoding="UTF-8" />
 
   <xsl:template match="/">
     <xsl:apply-templates/>

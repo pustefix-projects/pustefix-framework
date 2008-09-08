@@ -7,7 +7,7 @@
                 xmlns:runtime="xalan://de.schlund.pfixxml.DependencyTracker"
                 xmlns:geometry="xalan://de.schlund.pfixxml.ImageGeometry">
 
-  <xsl:output method="xml" encoding="ISO-8859-1" indent="no"/>
+  <xsl:output method="xml" encoding="UTF-8" indent="no"/>
 
   <xsl:param name="prohibitEdit"/>
   <xsl:param name="docroot"/>

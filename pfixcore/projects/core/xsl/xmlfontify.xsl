@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="ISO-8859-1"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0"
                 xmlns:callback="xalan://de.schlund.pfixcore.util.TransformerCallback">
 
@@ -277,7 +277,7 @@
   </xsl:template>
 
   <xsl:template match="*" mode="static_disp">
-    <xsl:param name="ind">  </xsl:param>
+    <xsl:param name="ind">Â Â </xsl:param>
     <xsl:param name="break">true</xsl:param>
     <xsl:param name="bold">true</xsl:param>
     <xsl:variable name="dim">
@@ -334,7 +334,7 @@
       </xsl:if>
     <xsl:value-of select="name()"/></span>
     <xsl:for-each select="@*">
-      <xsl:text> </xsl:text>
+      <xsl:text>Â </xsl:text>
       <span class="{$attrclass}"><xsl:value-of select="name()"/></span>
       <xsl:text>="</xsl:text><span class="{$valueclass}"><xsl:value-of select="."/></span>
       <xsl:text>"</xsl:text>
@@ -348,7 +348,7 @@
         </xsl:choose>
         </xsl:with-param>
         <xsl:with-param name="ind">
-        <xsl:value-of select="$ind"/>    </xsl:with-param>
+        <xsl:value-of select="$ind"/>Â Â Â Â </xsl:with-param>
       <xsl:with-param name="break">false</xsl:with-param>
     </xsl:apply-templates>
     <xsl:if test="not(count(./node()) = 0)">

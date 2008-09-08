@@ -1,3 +1,38 @@
+2008-09-08  Sebastian Marsching  <sebastian.marsching@1und1.de>
+
+	* src/de/schlund/pfixxml/util/Xml.java: 
+	* projects/core/build/unused.xsl: 
+	* projects/core/build/iwrapper.xsl: 
+	* projects/core/build/create_workersprop.xsl: 
+	* projects/core/build/create_webxml.xsl: 
+	* projects/core/build/create_stylesheet.xsl: 
+	* projects/core/build/create_serverxml.xsl: 
+	* projects/core/build/create_propfiles.xsl: 
+	* projects/core/build/create_log4j_config.xsl: 
+	* projects/core/build/create_lib.xsl: 
+	* projects/core/build/create_jkconf.xsl: 
+	* projects/core/build/create_defaultwebxml.xsl: 
+	* projects/core/build/create_apacheconf.xsl: 
+	* projects/core/build/create_ajpconf.xsl: 
+	* projects/core/build/cleanup.xsl: 
+	* projects/core/prjtemplates/config.tmpl: 
+	* projects/core/prjtemplates/depend.tmpl: 
+	* projects/core/prjtemplates/frame.tmpl: 
+	* projects/core/prjtemplates/metatags.tmpl: 
+	* projects/core/prjtemplates/page.tmpl: 
+	* skel/projects/common/conf/factory.xml: 
+	* skel/projects/common/conf/pfixlog.xml: 
+	* skel/projects/common/conf/projects.xml: 
+	* skel/projects/common/conf/pustefix.xml: 
+	* skel/projects/common/conf/userdata.xml: 
+	* skel/projects/common/dyntxt/statusmessages-core-merged.xml: 
+	* skel/projects/common/dyntxt/statusmessages.xml: 
+	* skel/projects/common/txt/general.xml: 
+	* skel/projects/common/txt/styles.xml: 
+	* skel/build-skel.xml: 
+	* skel/build.xml: 
+	Migration to UTF-8, first part.
+
 2008-09-06  Jens Lautenbacher <jtl@schlund.de>
 
 	Modified to allow for Ressource injection:

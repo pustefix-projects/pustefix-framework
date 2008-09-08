@@ -226,16 +226,21 @@ public class Xml {
     }
 
     //-- serialization
-
-    /**
-     * @param pp pretty print
-     */
+    
     public static String serialize(Node node, boolean pp, boolean decl) {
+        return serialize(node, pp, decl, null);
+    }
+    
+    /**
+     * @param pp pretty printservPfx2
+     * 
+     */
+    public static String serialize(Node node, boolean pp, boolean decl, String encoding) {
         StringWriter dest;
 
         dest = new StringWriter();
         try {
-            doSerialize(node, dest, pp, decl);
+            doSerialize(node, dest, pp, decl, encoding);
         } catch (IOException e) {
             throw new RuntimeException("unexpected IOException while writing to memory", e);
         }
@@ -259,10 +264,14 @@ public class Xml {
         serialize(node, file.getPath(), pp, decl);
     }
 
+    public static void serialize(Node node, String filename, boolean pp, boolean decl) throws IOException {
+        serialize(node, filename, pp, decl, null);
+    }
+    
     /**
      * @param pp pretty print
      */
-    public static void serialize(Node node, String filename, boolean pp, boolean decl) throws IOException {
+    public static void serialize(Node node, String filename, boolean pp, boolean decl, String encoding) throws IOException {
         FileOutputStream dest;
 
         if (node == null) {
@@ -278,7 +287,7 @@ public class Xml {
         File tmpfile   = new File(finalfile.getParentFile(), ".#" + finalfile.getName() + ".tmp");
         dest = new FileOutputStream(tmpfile);
 
-        doSerialize(node, dest, pp, true);
+        doSerialize(node, dest, pp, true, encoding);
 
         // We append a newline because most editors do so and we want to avoid cvs conflicts.
         // Note: trailing whitespace is removed when parsing a file, so
@@ -291,9 +300,13 @@ public class Xml {
                     tmpfile + "' to file '" + finalfile + "'!");
         }
     }
-
+    
     public static void serialize(Node node, OutputStream dest, boolean pp, boolean decl) throws IOException {
-        doSerialize(node, dest, pp, decl);
+        serialize(node, dest, pp, decl, null);
+    }
+    
+    public static void serialize(Node node, OutputStream dest, boolean pp, boolean decl, String encoding) throws IOException {
+        doSerialize(node, dest, pp, decl, encoding);
     }
 
 
@@ -332,12 +345,15 @@ public class Xml {
             }
         };
 
-    private static final String ENCODING = "ISO-8859-1";
+    private static final String ENCODING = "UTF-8";
 
     /**
      * @param pp pretty print
      */
-    private static void doSerialize(Node node, Object dest, boolean pp, boolean decl) throws IOException {
+    private static void doSerialize(Node node, Object dest, boolean pp, boolean decl, String encoding) throws IOException {
+        if (encoding == null || encoding.length() == 0) {
+            encoding = ENCODING;
+        }
         if (node == null) {
             throw new IllegalArgumentException("The parameter 'null' is not allowed here! "
                                                + "Can't serialize a null node!");

@@ -1,11 +1,11 @@
-<?xml version="1.0" encoding="ISO-8859-1"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <xsl:stylesheet version="1.1"
                 xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
                 xmlns:pfx="http://www.schlund.de/pustefix/core"
 		xmlns:ixsl="http://www.w3.org/1999/XSL/TransformOutputAlias">
   
   <xsl:namespace-alias stylesheet-prefix="ixsl" result-prefix="xsl"/>
-  <xsl:output method="xml" encoding="ISO-8859-1" indent="yes"/>
+  <xsl:output method="xml" encoding="UTF-8" indent="yes"/>
 
   <xsl:template match="pfx:checkactive">
     <xsl:variable name="prefix"><xsl:value-of select="@prefix"/></xsl:variable>

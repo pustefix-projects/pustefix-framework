@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="iso-8859-1"?>
+<?xml version="1.0" encoding="utf-8"?>
 <xsl:stylesheet version="1.1"
 		xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
         xmlns:p="http://www.pustefix-framework.org/2008/namespace/project-config"
@@ -14,7 +14,7 @@
     <xsl:apply-templates select="$common-temp" mode="customization"/>
   </xsl:variable>
   
-  <xsl:output method="text" encoding="ISO-8859-1" indent="no"/>
+  <xsl:output method="text" encoding="UTF-8" indent="no"/>
   
   <xsl:template match="/">
     <xsl:variable name="tree">

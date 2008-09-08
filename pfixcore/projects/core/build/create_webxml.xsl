@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="iso-8859-1"?>
+<?xml version="1.0" encoding="utf-8"?>
 <xsl:stylesheet version="1.1"
                 xmlns="http://java.sun.com/xml/ns/javaee"
                 xmlns:jee="http://java.sun.com/xml/ns/javaee"
@@ -25,7 +25,7 @@
     <xsl:apply-templates select="$common-temp" mode="customization"/>
   </xsl:variable>
   
-  <xsl:output method="xml" encoding="ISO-8859-1" indent="yes"/>
+  <xsl:output method="xml" encoding="UTF-8" indent="yes"/>
   
   <xsl:template match="/">
     <xsl:variable name="tree">

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="iso-8859-1"?>
+<?xml version="1.0" encoding="utf-8"?>
 <xsl:stylesheet version="1.1"
                 xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
                 xmlns:ci="java:org.pustefixframework.config.customization.PropertiesBasedCustomizationInfo"
@@ -13,7 +13,7 @@
   <xsl:param name="customizationinfo"/>
   
   <xsl:include href="create_lib.xsl"/>
-  <xsl:output method="xml" encoding="ISO-8859-1" indent="yes"/>
+  <xsl:output method="xml" encoding="UTF-8" indent="yes"/>
   
   <xsl:variable name="common-temp" select="document(concat('file://', $commonprojectsfile))" />
   <xsl:variable name="common">

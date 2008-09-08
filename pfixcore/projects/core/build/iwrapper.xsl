@@ -1,7 +1,7 @@
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
   xmlns:iwrp="http://pustefix.sourceforge.net/interfacewrapper200401"
   >
-  <xsl:output method="text" encoding="ISO-8859-1" indent="no"/>
+  <xsl:output method="text" encoding="UTF-8" indent="no"/>
 
   <xsl:param name="classname"/>
   <xsl:param name="package"/>

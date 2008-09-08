@@ -5,7 +5,7 @@
                 version="1.1">
   
   <xsl:include href="create_lib.xsl"/>
-  <xsl:output method="text" encoding="ISO-8859-1" indent="no"/>
+  <xsl:output method="text" encoding="UTF-8" indent="no"/>
   
   <xsl:param name="__customization_info"/>
   <xsl:param name="java_home"/>

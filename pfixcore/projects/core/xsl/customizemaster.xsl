@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="ISO-8859-1"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <xsl:stylesheet version="1.1"
                 exclude-result-prefixes="xsl cus" 
                 xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
@@ -6,7 +6,7 @@
                 xmlns:cus="http://www.schlund.de/pustefix/customize"
                 xmlns:ixsl="http://www.w3.org/1999/XSL/TransformOutputAlias">
   
-  <xsl:output method="xml" encoding="ISO-8859-1" indent="no"/>
+  <xsl:output method="xml" encoding="UTF-8" indent="no"/>
   
   <xsl:param name="product"/>
   <xsl:param name="lang"/>

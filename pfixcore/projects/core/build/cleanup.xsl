@@ -5,7 +5,7 @@
                 xmlns:cus="http://www.schlund.de/pustefix/customize"
                 xmlns:ixsl="http://www.w3.org/1999/XSL/TransformOutputAlias">
   
-  <xsl:output method="xml" encoding="ISO-8859-1" indent="yes"/>
+  <xsl:output method="xml" encoding="UTF-8" indent="yes"/>
 
   <xsl:param name="pwd"/>
 
