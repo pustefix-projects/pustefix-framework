@@ -1,5 +1,20 @@
 2008-09-08  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
+	* src/de/schlund/pfixcore/editor2/frontend/util/EditViewResetContextInterceptor.java: 
+	* src/de/schlund/pfixcore/editor2/frontend/util/UpdateSessionInfoContextInterceptor.java: 
+	Use injection in context interceptors.
+
+	* src/de/schlund/pfixcore/workflow/context/RequestContextImpl.java: 
+	* src/de/schlund/pfixcore/workflow/context/ServerContextImpl.java: 
+	* src/org/pustefixframework/config/contextxmlservice/parser/internal/ContextConfigImpl.java: 
+	* src/org/pustefixframework/config/contextxmlservice/parser/ContextInterceptorParsingHandler.java: 
+	* src/org/pustefixframework/config/contextxmlservice/parser/ContextXMLParsingHandler.java: 
+	* src/org/pustefixframework/config/contextxmlservice/ContextConfig.java: 
+	* src/org/pustefixframework/http/PustefixContextXMLRequestHandler.java: 
+	Manage context interceptors using Spring.
+
+2008-09-08  Sebastian Marsching  <sebastian.marsching@1und1.de>
+
 	* build.xml: 
 	* tests/junit/org/pustefixframework/config/generic/properties.xml: 
 	* stuff/migration-tool/xsl/depend.xsl: 

@@ -19,6 +19,7 @@
 package de.schlund.pfixcore.workflow.context;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -355,7 +356,7 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
             startwithflow = true;
         }
 
-        processIC(servercontext.getStartInterceptors());
+        processIC(parentcontext.getContextConfig().getStartInterceptors());
 
         String tmppagename = currentpservreq.getPageName();
         if (tmppagename != null) {
@@ -479,7 +480,7 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
 
         SPDocument spdoc = documentFromFlow(startwithflow, stopnextforcurrentrequest);
 
-        processIC(servercontext.getEndInterceptors());
+        processIC(parentcontext.getContextConfig().getEndInterceptors());
 
         if (spdoc != null) {
             if (spdoc.getPagename() == null) {
@@ -565,10 +566,10 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
         }
     }
 
-    private void processIC(ContextInterceptor[] icarr) {
-        if (icarr != null) {
-            for (int i = 0; i < icarr.length; i++) {
-                icarr[i].process(parentcontext, currentpservreq);
+    private void processIC(Collection<? extends ContextInterceptor> interceptors) {
+        if (interceptors != null) {
+            for (ContextInterceptor interceptor : interceptors) {
+                interceptor.process(parentcontext, currentpservreq);
             }
         }
     }

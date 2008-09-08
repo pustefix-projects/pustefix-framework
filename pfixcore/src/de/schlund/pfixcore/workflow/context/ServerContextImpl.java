@@ -18,14 +18,10 @@
 
 package de.schlund.pfixcore.workflow.context;
 
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.Properties;
 
 import org.pustefixframework.config.contextxmlservice.ContextConfig;
 
-import de.schlund.pfixcore.workflow.ContextInterceptor;
-import de.schlund.pfixcore.workflow.ContextInterceptorFactory;
 import de.schlund.pfixcore.workflow.PageMap;
 import de.schlund.pfixcore.workflow.VariantManager;
 import de.schlund.pfixxml.Variant;
@@ -45,9 +41,6 @@ public class ServerContextImpl {
     private VariantManager variantmanager;
     private PageMap pagemap;
     
-    private ContextInterceptor[] startInterceptors;
-    private ContextInterceptor[] endInterceptors;
-    
     public void init() throws Exception {
         if (config == null || pagemap == null) {
             throw new IllegalStateException("Properties have to be set before calling init().");
@@ -55,8 +48,6 @@ public class ServerContextImpl {
         
         variantmanager  = (VariantManager) new VariantManager(config);
         pageflowmanager = new PageFlowManager(config, variantmanager);
-        
-        createInterceptors();
     }
     
     public void setConfig(ContextConfig config) {
@@ -67,22 +58,6 @@ public class ServerContextImpl {
         this.pagemap = pageMap;
     }
     
-    private void createInterceptors() throws Exception {
-        ArrayList<ContextInterceptor> list = new ArrayList<ContextInterceptor>();
-        for (Iterator<Class<? extends ContextInterceptor>> i = config.getStartInterceptors().iterator(); i.hasNext();) {
-            String classname = i.next().getName();
-            list.add(ContextInterceptorFactory.getInstance().getInterceptor(classname));
-        }
-        startInterceptors = (ContextInterceptor[]) list.toArray(new ContextInterceptor[] {});
-
-        list.clear();
-        for (Iterator<Class<? extends ContextInterceptor>> i = config.getEndInterceptors().iterator(); i.hasNext();) {
-            String classname = i.next().getName();
-            list.add(ContextInterceptorFactory.getInstance().getInterceptor(classname));
-        }
-        endInterceptors = (ContextInterceptor[]) list.toArray(new ContextInterceptor[] {});
-    }
-
     public Properties getProperties() {
         return config.getProperties();
     }
@@ -105,14 +80,6 @@ public class ServerContextImpl {
     
     public PageMap getPageMap() {
         return pagemap;
-    }
-    
-    public ContextInterceptor[] getStartInterceptors() {
-        return startInterceptors;
-    }
-    
-    public ContextInterceptor[] getEndInterceptors() {
-        return endInterceptors;
     }
     
     public String getPageMatchingVariant(String pagename, Variant variant) {

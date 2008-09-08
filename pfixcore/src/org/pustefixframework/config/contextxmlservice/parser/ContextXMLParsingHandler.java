@@ -1,16 +1,31 @@
 /*
- * Place license here
+ * This file is part of PFIXCORE.
+ *
+ * PFIXCORE is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * PFIXCORE is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with PFIXCORE; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
 package org.pustefixframework.config.contextxmlservice.parser;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import org.pustefixframework.config.contextxmlservice.ContextConfig;
 import org.pustefixframework.config.contextxmlservice.PageRequestConfig;
+import org.pustefixframework.config.contextxmlservice.parser.internal.ContextConfigImpl;
 import org.pustefixframework.config.contextxmlservice.parser.internal.ContextXMLServletConfigImpl;
 import org.pustefixframework.config.generic.ParsingUtils;
 import org.pustefixframework.config.generic.PropertyFileReader;
@@ -21,6 +36,7 @@ import org.springframework.beans.factory.config.RuntimeBeanReference;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.DefaultBeanNameGenerator;
+import org.springframework.beans.factory.support.ManagedList;
 import org.springframework.beans.factory.support.ManagedMap;
 
 import com.marsching.flexiparse.configuration.RunOrder;
@@ -59,7 +75,7 @@ public class ContextXMLParsingHandler implements ParsingHandler {
             ctxConfig.setProperties(properties);
             
         } else {
-            ContextConfig contextConfig = ParsingUtils.getSingleSubObjectFromRoot(ContextConfig.class, context);
+            ContextConfigImpl contextConfig = ParsingUtils.getSingleSubObjectFromRoot(ContextConfigImpl.class, context);
             
             BeanDefinitionBuilder beanBuilder;
             BeanDefinition beanDefinition;
@@ -81,10 +97,36 @@ public class ContextXMLParsingHandler implements ParsingHandler {
             String pageMapBeanName = beanNameGenerator.generateBeanName(beanDefinition, beanRegistry);
             beanRegistry.registerBeanDefinition(pageMapBeanName, beanDefinition);
             
+            @SuppressWarnings("unchecked")
+            List<Object> startInterceptors = new ManagedList();
+            for (String interceptorBeanName : contextConfig.getStartInterceptorBeans()) {
+                startInterceptors.add(new RuntimeBeanReference(interceptorBeanName));
+            }
+            @SuppressWarnings("unchecked")
+            List<Object> endInterceptors = new ManagedList();
+            for (String interceptorBeanName : contextConfig.getEndInterceptorBeans()) {
+                endInterceptors.add(new RuntimeBeanReference(interceptorBeanName));
+            }
+            @SuppressWarnings("unchecked")
+            List<Object> postRenderInterceptors = new ManagedList();
+            for (String interceptorBeanName : contextConfig.getPostRenderInterceptorBeans()) {
+                postRenderInterceptors.add(new RuntimeBeanReference(interceptorBeanName));
+            }
+            
+            beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(ContextConfigImpl.class);
+            beanBuilder.setScope("singleton");
+            beanBuilder.addConstructorArgValue(contextConfig);
+            beanBuilder.addPropertyValue("startInterceptors", startInterceptors);
+            beanBuilder.addPropertyValue("endInterceptors", endInterceptors);
+            beanBuilder.addPropertyValue("postRenderInterceptors", postRenderInterceptors);
+            beanDefinition = beanBuilder.getBeanDefinition();
+            String contextConfigBeanName = beanNameGenerator.generateBeanName(beanDefinition, beanRegistry);
+            beanRegistry.registerBeanDefinition(contextConfigBeanName, beanDefinition);
+            
             beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(ServerContextImpl.class);
             beanBuilder.setScope("singleton");
             beanBuilder.setInitMethodName("init");
-            beanBuilder.addPropertyValue("config", contextConfig);
+            beanBuilder.addPropertyReference("config", contextConfigBeanName);
             beanBuilder.addPropertyReference("pageMap", pageMapBeanName);
             beanDefinition = beanBuilder.getBeanDefinition();
             beanHolder = new BeanDefinitionHolder(beanDefinition, ServerContextImpl.class.getName() );

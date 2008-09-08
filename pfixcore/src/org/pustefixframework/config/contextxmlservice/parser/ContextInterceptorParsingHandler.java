@@ -1,11 +1,31 @@
 /*
- * Place license here
+ * This file is part of PFIXCORE.
+ *
+ * PFIXCORE is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * PFIXCORE is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with PFIXCORE; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
 package org.pustefixframework.config.contextxmlservice.parser;
 
 import org.pustefixframework.config.contextxmlservice.parser.internal.ContextXMLServletConfigImpl;
 import org.pustefixframework.config.generic.ParsingUtils;
+import org.springframework.aop.scope.ScopedProxyUtils;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.beans.factory.config.BeanDefinitionHolder;
+import org.springframework.beans.factory.support.BeanDefinitionBuilder;
+import org.springframework.beans.factory.support.BeanDefinitionRegistry;
+import org.springframework.beans.factory.support.DefaultBeanNameGenerator;
 import org.w3c.dom.Element;
 
 import com.marsching.flexiparse.parser.HandlerContext;
@@ -34,15 +54,42 @@ public class ContextInterceptorParsingHandler implements ParsingHandler {
             throw new ParserException("Context interceptor " + clazz + " does not implement " + ContextInterceptor.class + " interface!");
         }
         
+        String scope = element.getAttribute("scope");
+        if (scope == null || scope.length() == 0) {
+            scope = "singleton";
+        }
+        
+        BeanDefinitionRegistry beanRegistry = ParsingUtils.getSingleTopObject(BeanDefinitionRegistry.class, context);
+        DefaultBeanNameGenerator beanNameGenerator = new DefaultBeanNameGenerator();
+        BeanDefinitionBuilder beanBuilder;
+        BeanDefinitionHolder beanHolder;
+        String beanName;
+        BeanDefinition beanDefinition;
+        
+        beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(clazz);
+        beanBuilder.setScope(scope);
+        beanDefinition = beanBuilder.getBeanDefinition();
+        beanName = beanNameGenerator.generateBeanName(beanDefinition, beanRegistry);
+        beanHolder = new BeanDefinitionHolder(beanDefinition, beanName);
+        if (!scope.equals("singleton") && !scope.equals("prototype")) {
+            beanHolder = ScopedProxyUtils.createScopedProxy(beanHolder, beanRegistry, true);
+        }
+        beanRegistry.registerBeanDefinition(beanHolder.getBeanName(), beanHolder.getBeanDefinition());
+        if (beanHolder.getAliases() != null) {
+            for (String alias : beanHolder.getAliases()) {
+                beanRegistry.registerAlias(beanHolder.getBeanName(), alias);
+            }
+        }
+        
         Element parent = (Element)element.getParentNode();
         if (parent.getNodeName().equals("start")) {
-            config.getContextConfig().addStartInterceptor(clazz.asSubclass(ContextInterceptor.class));
+            config.getContextConfig().addStartInterceptorBean(beanHolder.getBeanName());
         }
         if (parent.getNodeName().equals("end")) {
-            config.getContextConfig().addEndInterceptor(clazz.asSubclass(ContextInterceptor.class));
+            config.getContextConfig().addEndInterceptorBean(beanHolder.getBeanName());
         }
         if (parent.getNodeName().equals("postrender")) {
-            config.getContextConfig().addPostRenderInterceptor(clazz.asSubclass(ContextInterceptor.class));
+            config.getContextConfig().addPostRenderInterceptorBean(beanHolder.getBeanName());
         }
         
     }

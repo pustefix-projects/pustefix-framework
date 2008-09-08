@@ -18,6 +18,9 @@
 
 package de.schlund.pfixcore.editor2.frontend.util;
 
+import org.pustefixframework.container.annotations.Inject;
+
+import de.schlund.pfixcore.editor2.frontend.resources.SessionResource;
 import de.schlund.pfixcore.generator.IWrapper;
 import de.schlund.pfixcore.workflow.Context;
 import de.schlund.pfixcore.workflow.ContextInterceptor;
@@ -35,9 +38,16 @@ import de.schlund.pfixxml.PfixServletRequest;
  * @author Sebastian Marsching <sebastian.marsching@1und1.de>
  */
 public class EditViewResetContextInterceptor implements ContextInterceptor {
-
-    public void process(Context context, PfixServletRequest preq) {
-        EditorResourceLocator.getSessionResource(context).setInIncludeEditView(false);
+    
+    private SessionResource sessionResource;
+    
+    @Inject
+    public void setSessionResource(SessionResource sessionResource) {
+        this.sessionResource = sessionResource;
     }
-
+    
+    public void process(Context context, PfixServletRequest preq) {
+        sessionResource.setInIncludeEditView(false);
+    }
+    
 }

@@ -18,14 +18,24 @@
 
 package de.schlund.pfixcore.editor2.frontend.util;
 
+import org.pustefixframework.container.annotations.Inject;
+
+import de.schlund.pfixcore.editor2.frontend.resources.SessionResource;
 import de.schlund.pfixcore.workflow.Context;
 import de.schlund.pfixcore.workflow.ContextInterceptor;
 import de.schlund.pfixxml.PfixServletRequest;
 
 public class UpdateSessionInfoContextInterceptor implements ContextInterceptor {
-
-    public void process(Context context, PfixServletRequest preq) {
-        EditorResourceLocator.getSessionResource(context).updateSessionInfo();
+    
+    private SessionResource sessionResource;
+    
+    @Inject
+    public void setSessionResource(SessionResource sessionResource) {
+        this.sessionResource = sessionResource;
     }
-
+    
+    public void process(Context context, PfixServletRequest preq) {
+        sessionResource.updateSessionInfo();
+    }
+    
 }

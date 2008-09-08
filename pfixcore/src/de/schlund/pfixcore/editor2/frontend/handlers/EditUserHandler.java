@@ -18,9 +18,9 @@
 
 package de.schlund.pfixcore.editor2.frontend.handlers;
 
-import org.pustefixframework.generated.CoreStatusCodes;
 import org.pustefixframework.container.annotations.Inject;
 import org.pustefixframework.editor.generated.EditorStatusCodes;
+import org.pustefixframework.generated.CoreStatusCodes;
 
 import de.schlund.pfixcore.editor2.core.dom.Project;
 import de.schlund.pfixcore.editor2.core.spring.ProjectFactoryService;
@@ -28,7 +28,6 @@ import de.schlund.pfixcore.editor2.core.vo.EditorGlobalPermissions;
 import de.schlund.pfixcore.editor2.core.vo.EditorProjectPermissions;
 import de.schlund.pfixcore.editor2.core.vo.EditorUser;
 import de.schlund.pfixcore.editor2.frontend.resources.UsersResource;
-import de.schlund.pfixcore.editor2.frontend.util.EditorResourceLocator;
 import de.schlund.pfixcore.editor2.frontend.wrappers.EditUser;
 import de.schlund.pfixcore.generator.IHandler;
 import de.schlund.pfixcore.generator.IWrapper;
@@ -125,7 +124,7 @@ public class EditUserHandler implements IHandler {
                 user.setProjectPermissions(project, permissions);
             }
 
-            EditorResourceLocator.getUsersResource(context).updateSelectedUser();
+            usersResource.updateSelectedUser();
             context.addPageMessage(EditorStatusCodes.USERDATA_CHANGES_SAVED, null, null);
         }
 

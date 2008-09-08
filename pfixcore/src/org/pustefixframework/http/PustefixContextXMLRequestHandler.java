@@ -19,8 +19,6 @@
 
 package org.pustefixframework.http;
 
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.TreeMap;
 
 import javax.servlet.ServletException;
@@ -43,7 +41,6 @@ import de.schlund.pfixcore.scriptedflow.vm.ScriptVM;
 import de.schlund.pfixcore.scriptedflow.vm.VirtualHttpServletRequest;
 import de.schlund.pfixcore.workflow.ContextImpl;
 import de.schlund.pfixcore.workflow.ContextInterceptor;
-import de.schlund.pfixcore.workflow.ContextInterceptorFactory;
 import de.schlund.pfixcore.workflow.ExtendedContext;
 import de.schlund.pfixcore.workflow.context.RequestContextImpl;
 import de.schlund.pfixcore.workflow.context.ServerContextImpl;
@@ -73,8 +70,6 @@ public class PustefixContextXMLRequestHandler extends AbstractPustefixXMLRequest
     private ServerContextImpl servercontext = null;
     private ContextImpl context = null;
 
-    private ContextInterceptor[] postRenderInterceptors;
-    
     private String beanName;
     
     protected ContextXMLServletConfig getContextXMLServletConfig() {
@@ -268,7 +263,7 @@ public class PustefixContextXMLRequestHandler extends AbstractPustefixXMLRequest
     protected void hookAfterRender(PfixServletRequest preq, SPDocument spdoc, TreeMap<String, Object> paramhash, String stylesheet) {
         super.hookAfterRender(preq, spdoc, paramhash, stylesheet);
         RequestContextImpl rcontext = (RequestContextImpl) spdoc.getProperties().get(XSLPARAM_REQUESTCONTEXT);
-        for (ContextInterceptor interceptor : postRenderInterceptors) {
+        for (ContextInterceptor interceptor : getContextXMLServletConfig().getContextConfig().getPostRenderInterceptors()) {
             interceptor.process(rcontext.getParentContext(), preq);
         } 
         rcontext.getParentContext().setRequestContextForCurrentThread(null);
@@ -278,29 +273,11 @@ public class PustefixContextXMLRequestHandler extends AbstractPustefixXMLRequest
         this.beanName = name;
     }
     
-    private void createInterceptors() throws Exception {
-        ArrayList<ContextInterceptor> list = new ArrayList<ContextInterceptor>();
-        for (Iterator<Class<? extends ContextInterceptor>> i = config.getContextConfig().getPostRenderInterceptors().iterator(); i.hasNext();) {
-            String classname = i.next().getName();
-            list.add(ContextInterceptorFactory.getInstance().getInterceptor(classname));
-        }
-        postRenderInterceptors = (ContextInterceptor[]) list.toArray(new ContextInterceptor[] {});
-    } 
-    
     public void setServerContext(ServerContextImpl servercontext) {
         this.servercontext = servercontext;
     }
     
     public void setContext(ContextImpl context) {
         this.context = context;
-    }
-    
-    public void init() throws ServletException {
-        super.init();
-        try {
-            createInterceptors();
-        } catch (Exception e) {
-            throw new ServletException("Error while initializing " + this.getClass().getName(), e);
-        }
     }
 }

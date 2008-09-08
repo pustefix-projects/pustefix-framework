@@ -70,9 +70,9 @@ public class ContextConfigImpl implements ContextConfig {
     private List<PageFlowConfigImpl> cachePageflows = null;
     private HashMap<String, PageRequestConfigImpl> pagerequests = new HashMap<String, PageRequestConfigImpl>();
     private List<PageRequestConfigImpl> cachePagerequests = null;
-    private ArrayList<Class<? extends ContextInterceptor>> startinterceptors = new ArrayList<Class<? extends ContextInterceptor>>();
-    private ArrayList<Class<? extends ContextInterceptor>> endinterceptors = new ArrayList<Class<? extends ContextInterceptor>>();
-    private ArrayList<Class<? extends ContextInterceptor>> postRenderInterceptors = new ArrayList<Class<? extends ContextInterceptor>>();
+    private ArrayList<ContextInterceptor> startinterceptors = new ArrayList<ContextInterceptor>();
+    private ArrayList<ContextInterceptor> endinterceptors = new ArrayList<ContextInterceptor>();
+    private ArrayList<ContextInterceptor> postRenderInterceptors = new ArrayList<ContextInterceptor>();
     private String navigationFile = null;
     private Properties props = new Properties();
     private boolean synchronize = true;
@@ -81,7 +81,45 @@ public class ContextConfigImpl implements ContextConfig {
     private Map<String,Condition> conditions = new HashMap<String,Condition>();
     private RoleProvider roleProvider = new RoleProviderImpl();
     private boolean authConstraintRefsResolved = false;
+    private List<String> startInterceptorBeans = new ArrayList<String>();
+    private List<String> endInterceptorBeans = new ArrayList<String>();
+    private List<String> postRenderInterceptorBeans = new ArrayList<String>();
     
+    public ContextConfigImpl() {
+        // Default constructor
+    }
+    
+    /**
+     * Copy constructor. Does not perform deep copy!
+     * 
+     * @param ref reference to copy settings from
+     */
+    public ContextConfigImpl(ContextConfigImpl ref) {
+        this.authConstraintRefsResolved = ref.authConstraintRefsResolved;
+        this.authConstraints = ref.authConstraints;
+        this.cachePageflows = ref.cachePageflows;
+        this.cachePagerequests = ref.cachePagerequests;
+        this.cacheResources = ref.cacheResources;
+        this.conditions = ref.conditions;
+        this.defaultAuthConstraint = ref.defaultAuthConstraint;
+        this.defaultPage = ref.defaultPage;
+        this.defaultStateClass = ref.defaultStateClass;
+        this.endInterceptorBeans = ref.endInterceptorBeans;
+        this.endinterceptors = ref.endinterceptors;
+        this.navigationFile = ref.navigationFile;
+        this.pageflows = ref.pageflows;
+        this.pagerequests = ref.pagerequests;
+        this.postRenderInterceptorBeans = ref.postRenderInterceptorBeans;
+        this.postRenderInterceptors = ref.postRenderInterceptors;
+        this.props = ref.props;
+        this.resourceMap = ref.resourceMap;
+        this.resources = ref.resources;
+        this.roleProvider = ref.roleProvider;
+        this.startInterceptorBeans = ref.startInterceptorBeans;
+        this.startinterceptors = ref.startinterceptors;
+        this.synchronize = ref.synchronize;
+        this.variantToDefaultPage = ref.variantToDefaultPage;
+    }
     
     public void setDefaultPage(String page) {
         this.defaultPage = page;
@@ -193,39 +231,54 @@ public class ContextConfigImpl implements ContextConfig {
         return this.pagerequests.get(name);
     }
     
-    public void addStartInterceptor(Class<? extends ContextInterceptor> clazz) {
-        if (this.startinterceptors.contains(clazz)) {
-            LOG.warn("Context interceptor " + clazz.getName() + " not added - it is already present");
-        } else {
-            this.startinterceptors.add(clazz);
-        }
+    public void addStartInterceptorBean(String beanName) {
+        this.startInterceptorBeans.add(beanName);
     }
     
-    public List<Class<? extends ContextInterceptor>> getStartInterceptors() {
+    public List<String> getStartInterceptorBeans() {
+        return this.startInterceptorBeans;
+    }
+    
+    public void setStartInterceptors(List<? extends ContextInterceptor> interceptors) {
+        this.startinterceptors.clear();
+        this.startinterceptors.addAll(interceptors);
+    }
+    
+    public List<? extends ContextInterceptor> getStartInterceptors() {
         return Collections.unmodifiableList(startinterceptors);
     }
     
-    public List<Class<? extends ContextInterceptor>> getEndInterceptors() {
+    public void addEndInterceptorBean(String beanName) {
+        this.endInterceptorBeans.add(beanName);
+    }
+    
+    public List<String> getEndInterceptorBeans() {
+        return this.endInterceptorBeans;
+    }
+    
+    public void setEndInterceptors(List<? extends ContextInterceptor> interceptors) {
+        this.endinterceptors.clear();
+        this.endinterceptors.addAll(interceptors);
+    }
+    
+    public List<? extends ContextInterceptor> getEndInterceptors() {
         return Collections.unmodifiableList(endinterceptors);
     }
     
-    public void addEndInterceptor(Class<? extends ContextInterceptor> clazz) {
-        if (this.endinterceptors.contains(clazz)) {
-            LOG.warn("Context interceptor " + clazz.getName() + " not added - it is already present");
-        } else {
-            this.endinterceptors.add(clazz);
-        }       
+    public void addPostRenderInterceptorBean(String beanName) {
+        this.postRenderInterceptorBeans.add(beanName);
     }
     
-    public void addPostRenderInterceptor(Class<? extends ContextInterceptor> clazz) {
-        if (this.postRenderInterceptors.contains(clazz)) {
-            LOG.warn("Postrender interceptor " + clazz.getName() + " not added - it is already present");
-        } else {
-            this.postRenderInterceptors.add(clazz);
-        }
+    public List<String> getPostRenderInterceptorBeans() {
+        return this.postRenderInterceptorBeans;
     }
     
-    public List<Class<? extends ContextInterceptor>> getPostRenderInterceptors() {
+    public void setPostRenderInterceptors(List<? extends ContextInterceptor> interceptors) {
+        this.postRenderInterceptors.clear();
+        this.postRenderInterceptors.addAll(interceptors);
+    }
+    
+    public List<? extends ContextInterceptor> getPostRenderInterceptors() {
         return Collections.unmodifiableList(postRenderInterceptors);
     }
     
@@ -389,6 +442,7 @@ public class ContextConfigImpl implements ContextConfig {
         return condition;
     }
       
+    // TODO add call for this method
     private void checkAuthConstraints() throws SAXException {
         Set<String> authPages = new LinkedHashSet<String>();
         List<PageRequestConfigImpl> pages = getPageRequestConfigs();
