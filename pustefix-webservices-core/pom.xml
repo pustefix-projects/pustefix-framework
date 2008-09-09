@@ -28,7 +28,7 @@
       <version>[2.5.5,2.6)</version>
     </dependency>
     <dependency>
-      <groupId>com.marsching</groupId>
+      <groupId>com.marsching.flexiparse</groupId>
       <artifactId>flexiparse</artifactId>
       <version>[0.1.2,0.2)</version>
     </dependency>
