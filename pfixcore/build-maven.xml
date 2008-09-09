@@ -49,7 +49,7 @@
 
   <target name="mvn-deploy" depends="dist, mvn-initTaskDefs, dist-properties, mvn-initRemoteRepository"
           description="Deploy to remote maven repository">
-    <artifact:deploy file="${file.pfixcore_jar}" pomRefId="maven.project">
+    <artifact:deploy file="${file.pfixcore_jar}" pomRefId="maven.project" uniqueVersion="false">
       <artifact:remoteRepository refid="remote.repository">
         <artifact:authentication username="${remote.repository.user}" privateKey="${user.home}/.ssh/id_dsa"/>
       </artifact:remoteRepository>
@@ -61,7 +61,7 @@
   
   <target name="mvn-install" depends="dist, mvn-initTaskDefs, dist-properties, mvn-initLocalRepository"
           description="Install in local maven repository">
-    <artifact:install file="${file.pfixcore_jar}" pomRefId="maven.project">
+    <artifact:install file="${file.pfixcore_jar}" pomRefId="maven.project" uniqueVersion="false">
       <localRepository refid="local.repository"/>
       <attach file="${file.pfixcore_srcjar}" classifier="sources" type="jar"/>
       <attach file="${file.pfixcore_data_tgz}" classifier="data" type="tar.gz"/>
