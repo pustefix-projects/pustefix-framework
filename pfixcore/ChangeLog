@@ -1,5 +1,14 @@
 2008-09-08  Martin Leidig  <mleidig@schlund.de>
 
+	Improved XSLT error handling: Failed loading of Templates objects
+	due to errors in the included stylesheets now displays speaking
+	error message and line number for included leaf targets (e.g. metatags.xsl)
+
+	* src/de/schlund/pfixxml/util/Xslt.java: Use StreamSource for included
+	leaf targets if error occurred and repeat transformation.
+
+2008-09-08  Martin Leidig  <mleidig@schlund.de>
+
 	Improved XSLT error handling:
 	- Added error location information to exception stacktrace displayed
 	on error page

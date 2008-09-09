@@ -48,6 +48,7 @@ import org.xml.sax.InputSource;
 
 import de.schlund.pfixxml.resources.FileResource;
 import de.schlund.pfixxml.resources.ResourceUtil;
+import de.schlund.pfixxml.targets.LeafTarget;
 import de.schlund.pfixxml.targets.Target;
 import de.schlund.pfixxml.targets.TargetGenerationException;
 import de.schlund.pfixxml.targets.TargetImpl;
@@ -98,10 +99,18 @@ public class Xslt {
     }
     
     private static Templates loadTemplates(XsltVersion xsltVersion, InputSource input, TargetImpl parent) throws TransformerConfigurationException {
+        try {
+            return loadTemplates(xsltVersion, input, parent, false);
+        } catch (TransformerConfigurationException e) {
+            return loadTemplates(xsltVersion, input, parent, true);
+        }
+    }
+    
+    private static Templates loadTemplates(XsltVersion xsltVersion, InputSource input, TargetImpl parent, boolean debug) throws TransformerConfigurationException {
         Source src = new SAXSource(Xml.createXMLReader(), input);
         TransformerFactory factory = XsltProvider.getXsltSupport(xsltVersion).getThreadTransformerFactory();
         factory.setErrorListener(new PFErrorListener());
-        factory.setURIResolver(new FileResolver(parent,xsltVersion));
+        factory.setURIResolver(new FileResolver(parent,xsltVersion,debug));
         try {
             Templates retval = factory.newTemplates(src);
             return retval;
@@ -210,12 +219,15 @@ public class Xslt {
     
     
     static class FileResolver implements URIResolver {
+        
         private TargetImpl parent;
         private XsltVersion xsltVersion;
-
-        public FileResolver(TargetImpl parent, XsltVersion xsltVersion) {
+        private boolean debug;
+        
+        public FileResolver(TargetImpl parent, XsltVersion xsltVersion, boolean debug) {
             this.parent = parent;
             this.xsltVersion = xsltVersion;
+            this.debug = debug;
         }
 
         /**
@@ -227,6 +239,7 @@ public class Xslt {
             URI uri;
             String path;
             FileResource file;
+            
             //Rewrite include href to xslt version specific file, that's necessary cause
             //the XSLT1 and XSLT2 extension functions are incompatible and we want
             //to support using XSLT1 (Saxon 6.5.x) or XSLT2 (Saxon 8.x) without the
@@ -259,33 +272,38 @@ public class Xslt {
                     target = parent.getTargetGenerator().createXMLLeafTarget(path);
                 }
                 
-                Document dom;
-                try {
-                    dom = (Document) target.getDOM();
-                } catch (TargetGenerationException e) {
-                    throw new TransformerException("Could not retrieve target '"
+                if(! ( debug && target instanceof LeafTarget)) {
+                
+                    Document dom;
+                    try {
+                        dom = (Document) target.getDOM();
+                    } catch (TargetGenerationException e) {
+                        throw new TransformerException("Could not retrieve target '"
                                                    + target.getTargetKey() + "' included by stylesheet!", e);
+                    }
+                
+                    // If Document object is null, the file could not be found or read
+                    // so return null to tell the parser the URI could not be resolved
+                    if (dom == null) {
+                        return null;
+                    }
+                
+                    Source source = new DOMSource(dom);
+                
+                    // There is a bug in Saxon 6.5.3 which causes
+                    // a NullPointerException to be thrown, if systemId
+                    // is not set
+                    source.setSystemId(target.getTargetGenerator().getDisccachedir().toURI().toString() + "/" + path);
+                
+                    // Register included stylesheet with target
+                    parent.getAuxDependencyManager().addDependencyTarget(target.getTargetKey());
+                    return source;
                 }
-                
-                // If Document object is null, the file could not be found or read
-                // so return null to tell the parser the URI could not be resolved
-                if (dom == null) {
-                    return null;
-                }
-                
-                Source source = new DOMSource(dom);
-                
-                // There is a bug in Saxon 6.5.3 which causes
-                // a NullPointerException to be thrown, if systemId
-                // is not set
-                source.setSystemId(target.getTargetGenerator().getDisccachedir().toURI().toString() + "/" + path);
-                
-                // Register included stylesheet with target
-                parent.getAuxDependencyManager().addDependencyTarget(target.getTargetKey());
-                return source;
             }
             
             file = ResourceUtil.getFileResourceFromDocroot(path);
+            
+            
             try {
                 Source source = new StreamSource(file.toURL().toString());
                 return source;
