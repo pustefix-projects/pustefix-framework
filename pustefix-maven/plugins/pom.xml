@@ -19,7 +19,7 @@
   <url>http://pustefixframework.org</url>
 
   <modules>
-    <module>scgenerate-plugin</module>
+    <module>pustefix-scgenerate-plugin</module>
     <module>pustefix-iwrpgenerate-plugin</module>
   </modules>
 
