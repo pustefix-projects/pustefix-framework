@@ -1,7 +1,12 @@
 package org.pustefixframework.util.firedebug;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PrintStream;
 import java.util.Map.Entry;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -21,25 +26,68 @@ import de.schlund.pfixxml.AbstractContextServletFilter;
 
 public class FireDebugServletFilter extends AbstractContextServletFilter {
     
+    private static final int maxIncludeNotFoundMatches = 10;
+    
     @Override
     protected void doFilter(HttpServletRequest request, HttpServletResponse response,
             javax.servlet.FilterChain chain, Context context)
             throws IOException, ServletException {        
-        HttpServletResponse fireDebugResponse = new FireDebugServletResponseWrapper(response);
-        chain.doFilter(request, fireDebugResponse); 
+        FireDebugServletResponseWrapper responseWrapper = new FireDebugServletResponseWrapper(response);
         
-        if (context != null) {
-            FireDebug fireDebug = (FireDebug) context.getContextResourceManager().getResource(FireDebug.class);
-            
-            for (Entry<String, String> header : fireDebug.getHeaders().entrySet()) {
-                fireDebugResponse.setHeader(header.getKey(), header.getValue());
-            }
-            
+        ByteArrayOutputStream sysErrBuffer = new ByteArrayOutputStream();
+        PrintStream sysErr = System.err;
+        System.setErr(new PrintStream(sysErrBuffer));
+        chain.doFilter(request, responseWrapper);
+        
+        addFireDebugHeaders(response, getFireDebug(context), sysErrBuffer);
+        response.getOutputStream().write(responseWrapper.getData());
+        System.setErr(sysErr);
+        System.err.write(sysErrBuffer.toByteArray());
+    }
 
-            fireDebug.reset();
-        }  
+    private void addFireDebugHeaders(HttpServletResponse response, FireDebug fireDebug, OutputStream out) {
+        appendSysoutMessagesToFireDebug(fireDebug, out);
         
-        response = fireDebugResponse;
+        for (Entry<String, String> header : fireDebug.getHeaders().entrySet()) {
+            response.setHeader(header.getKey(), header.getValue());
+        }
+        
+        fireDebug.reset();
+    }
+
+    private void appendSysoutMessagesToFireDebug(FireDebug fireDebug, OutputStream out) {
+        String regex = "[***] Include not found:.*\n.*Document = (.*).*\n.*Part = (.*) [***]";
+        String input = out.toString();
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(input);
+        
+        int matches = 0;
+        while(matcher.find()) {
+            if (matches < maxIncludeNotFoundMatches) {
+                fireDebug.warn("Include not found: \n"
+                    + "\tDocument = " + matcher.group(1) + "\n"
+                    + "\tPart = " + matcher.group(2)
+                );
+            }
+            matches++;
+        }
+        
+        if (matches >= maxIncludeNotFoundMatches) {
+            fireDebug.log("Es werden nur " + maxIncludeNotFoundMatches + " fehlende Includes von insgesamt " + matches + " angezeigt.");
+        }
+    }
+
+    private FireDebug getFireDebug(Context context) {
+        FireDebug fireDebug;
+        
+        if (context == null) {
+            fireDebug = new FireDebugImpl();
+            ((FireDebugImpl)fireDebug).setJSONSerializer(new PustefixJSONSerializer());
+        } else {
+            fireDebug = (FireDebug) context.getContextResourceManager().getResource(FireDebug.class);
+        }
+        
+        return fireDebug;
     }
 
 }

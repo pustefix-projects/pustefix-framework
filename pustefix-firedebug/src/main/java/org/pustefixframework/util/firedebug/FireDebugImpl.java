@@ -73,6 +73,11 @@ public class FireDebugImpl implements FireDebug {
 
     public HashMap<String, String> getHeaders() {
         HashMap<String, String> headers = new HashMap<String, String>();
+        
+        if (dumpMessages.size() == 0 && consoleMessages.size() == 0) {
+            return headers;
+        }
+        
         headers.put("X-FirePHP-Data-100000000001", "{");
 
         if (dumpMessages.size() > 0) {
@@ -91,8 +96,7 @@ public class FireDebugImpl implements FireDebug {
         return headers;
     }
 
-    private void outputMessages(HashMap<String, String> headers,
-            ArrayList<Message> messages) {
+    private void outputMessages(HashMap<String, String> headers, ArrayList<Message> messages) {
         for (Message message : messages) {
             message.addToResponseHeaders(headers);
         }
@@ -107,8 +111,7 @@ public class FireDebugImpl implements FireDebug {
         setJSONSerializer(new PustefixJSONSerializer());
     }
 
-    public void insertStatus(ResultDocument resdoc, Element elem)
-            throws Exception {
+    public void insertStatus(ResultDocument resdoc, Element elem) throws Exception {
     }
 
 }

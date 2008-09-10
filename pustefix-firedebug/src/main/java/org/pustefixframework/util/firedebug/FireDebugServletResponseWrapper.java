@@ -1,5 +1,7 @@
 package org.pustefixframework.util.firedebug;
 
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
@@ -11,41 +13,50 @@ import javax.servlet.http.HttpServletResponseWrapper;
 /**
  * FireDebugServletResponseWrapper
  * 
- * FireDebugServletResponseWrapper is needed to wrap the HttpServletResponse
- * in order to set the response header after Pustefix has finished, because 
+ * FireDebugServletResponseWrapper is needed to wrap the HttpServletResponse in
+ * order to set the response header after Pustefix has finished, because
  * otherwise Pustefix already sends the response.
  * 
  * @author Holger Rüprich
  */
 
 public class FireDebugServletResponseWrapper extends HttpServletResponseWrapper {
-    
-    FireDebugServletOutputStream fireDebugOut;
-    
-    public FireDebugServletResponseWrapper(HttpServletResponse res) throws IOException {
-        super(res);
-        fireDebugOut = new FireDebugServletOutputStream(res.getOutputStream());
-    }
-    
-    public ServletOutputStream getOutputStream() throws IOException {
-        return fireDebugOut;
+    private ByteArrayOutputStream output;
+
+    public FireDebugServletResponseWrapper(HttpServletResponse response) {
+        super(response);
+        output = new ByteArrayOutputStream();
     }
 
-    public PrintWriter getWriter() throws IOException {
-        return new PrintWriter(fireDebugOut);
+    public byte[] getData() {
+        return output.toByteArray();
     }
-    
-    class FireDebugServletOutputStream extends ServletOutputStream {
-        
-        OutputStream out;
-        
-        public FireDebugServletOutputStream(OutputStream reqOut) {
-            out = reqOut;
+
+    public ServletOutputStream getOutputStream() {
+        return new FilterServletOutputStream(output);
+    }
+
+    public PrintWriter getWriter() {
+        return new PrintWriter(getOutputStream(), true);
+    }
+
+    class FilterServletOutputStream extends ServletOutputStream {
+        private DataOutputStream stream;
+
+        public FilterServletOutputStream(OutputStream output) {
+            stream = new DataOutputStream(output);
         }
-        
-        public void write(int b) throws IOException {   
-            out.write(b);
+
+        public void write(int b) throws IOException {
+            stream.write(b);
         }
-        
+
+        public void write(byte[] b) throws IOException {
+            stream.write(b);
+        }
+
+        public void write(byte[] b, int off, int len) throws IOException {
+            stream.write(b, off, len);
+        }
     }
 }
