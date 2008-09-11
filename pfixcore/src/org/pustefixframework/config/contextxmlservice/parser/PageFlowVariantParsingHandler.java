@@ -19,14 +19,21 @@
 package org.pustefixframework.config.contextxmlservice.parser;
 
 import org.pustefixframework.config.contextxmlservice.PageFlowConfig;
-import org.pustefixframework.config.contextxmlservice.parser.internal.ContextConfigImpl;
+import org.pustefixframework.config.contextxmlservice.PageFlowHolder;
 import org.pustefixframework.config.contextxmlservice.parser.internal.PageFlowConfigImpl;
+import org.pustefixframework.config.contextxmlservice.parser.internal.PageFlowHolderImpl;
 import org.pustefixframework.config.generic.ParsingUtils;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.beans.factory.support.BeanDefinitionBuilder;
+import org.springframework.beans.factory.support.BeanDefinitionRegistry;
+import org.springframework.beans.factory.support.DefaultBeanNameGenerator;
 import org.w3c.dom.Element;
 
 import com.marsching.flexiparse.parser.HandlerContext;
 import com.marsching.flexiparse.parser.ParsingHandler;
 import com.marsching.flexiparse.parser.exception.ParserException;
+
+import de.schlund.pfixcore.workflow.context.DataDrivenPageFlow;
 
 
 /**
@@ -38,18 +45,36 @@ public class PageFlowVariantParsingHandler implements ParsingHandler {
 
     public void handleNode(HandlerContext context) throws ParserException {
        
-        Element element = (Element)context.getNode();
-        ParsingUtils.checkAttributes(element, new String[] {"name"}, null);
-        
-        ContextConfigImpl ctxConfig = ParsingUtils.getSingleSubObjectFromRoot(ContextConfigImpl.class, context);
-        PageFlowConfig defaultConfig = ParsingUtils.getSingleTopObject(PageFlowConfig.class, context);
+        Element element = (Element) context.getNode();
+        PageFlowHolder defaultVariantHolder = ParsingUtils.getFirstTopObject(PageFlowHolder.class, context, true);
+        ParsingUtils.checkAttributes(element, new String[] {"name"}, new String[] {"bean-ref"});
         
         String variantName = element.getAttribute("name").trim();
-        PageFlowConfigImpl flowConfig = new PageFlowConfigImpl(defaultConfig.getFlowName() + "::" + variantName);
-        ctxConfig.addPageFlow(flowConfig);
-        flowConfig.setFinalPage(defaultConfig.getFinalPage());
-        flowConfig.setStopNext(defaultConfig.isStopNext());
-        context.getObjectTreeElement().addObject(flowConfig);
+        String beanRef = element.getAttribute("bean-ref").trim();
+        
+        if (beanRef.length() > 0) {
+            context.getObjectTreeElement().addObject(new PageFlowHolderImpl(defaultVariantHolder.getName() + "::" + variantName, beanRef));
+        } else {
+            PageFlowConfig defaultConfig = ParsingUtils.getSingleTopObject(PageFlowConfig.class, context);
+            
+            PageFlowConfigImpl flowConfig = new PageFlowConfigImpl(defaultConfig.getFlowName() + "::" + variantName);
+            flowConfig.setFinalPage(defaultConfig.getFinalPage());
+            flowConfig.setStopNext(defaultConfig.isStopNext());
+            context.getObjectTreeElement().addObject(flowConfig);
+            
+            BeanDefinitionRegistry beanRegistry = ParsingUtils.getSingleTopObject(BeanDefinitionRegistry.class, context);
+            DefaultBeanNameGenerator beanNameGenerator = new DefaultBeanNameGenerator();
+            String beanName;
+            BeanDefinition beanDefinition;
+            BeanDefinitionBuilder beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(DataDrivenPageFlow.class);
+            beanBuilder.setScope("singleton");
+            beanBuilder.addConstructorArgValue(flowConfig);
+            beanDefinition = beanBuilder.getBeanDefinition();
+            beanName = beanNameGenerator.generateBeanName(beanDefinition, beanRegistry);
+            beanRegistry.registerBeanDefinition(beanName, beanDefinition);
+            
+            context.getObjectTreeElement().addObject(new PageFlowHolderImpl(flowConfig.getFlowName(), beanName));
+        }
         
     }
 

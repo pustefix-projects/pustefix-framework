@@ -33,7 +33,6 @@ import java.util.Map.Entry;
 import org.apache.log4j.Logger;
 import org.pustefixframework.config.contextxmlservice.ContextConfig;
 import org.pustefixframework.config.contextxmlservice.ContextResourceConfig;
-import org.pustefixframework.config.contextxmlservice.PageFlowConfig;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
@@ -47,6 +46,7 @@ import de.schlund.pfixcore.auth.conditions.HasRole;
 import de.schlund.pfixcore.auth.conditions.Not;
 import de.schlund.pfixcore.workflow.ContextInterceptor;
 import de.schlund.pfixcore.workflow.State;
+import de.schlund.pfixcore.workflow.context.PageFlow;
 import de.schlund.pfixxml.Variant;
 
 /**
@@ -66,8 +66,7 @@ public class ContextConfigImpl implements ContextConfig {
     private Map<String,ContextResourceConfigImpl> resourceMap = new HashMap<String,ContextResourceConfigImpl>();
     private LinkedHashMap<Class<?>, ContextResourceConfigImpl> resources = new LinkedHashMap<Class<?>, ContextResourceConfigImpl>();
     private List<ContextResourceConfigImpl> cacheResources = null; 
-    private HashMap<String, PageFlowConfigImpl> pageflows = new HashMap<String, PageFlowConfigImpl>();
-    private List<PageFlowConfigImpl> cachePageflows = null;
+    private Map<String, PageFlow> pageflows = new HashMap<String, PageFlow>();
     private HashMap<String, PageRequestConfigImpl> pagerequests = new HashMap<String, PageRequestConfigImpl>();
     private List<PageRequestConfigImpl> cachePagerequests = null;
     private ArrayList<ContextInterceptor> startinterceptors = new ArrayList<ContextInterceptor>();
@@ -97,7 +96,6 @@ public class ContextConfigImpl implements ContextConfig {
     public ContextConfigImpl(ContextConfigImpl ref) {
         this.authConstraintRefsResolved = ref.authConstraintRefsResolved;
         this.authConstraints = ref.authConstraints;
-        this.cachePageflows = ref.cachePageflows;
         this.cachePagerequests = ref.cachePagerequests;
         this.cacheResources = ref.cacheResources;
         this.conditions = ref.conditions;
@@ -181,27 +179,15 @@ public class ContextConfigImpl implements ContextConfig {
         return resourceMap.get(name);
     }
     
-    public void addPageFlow(PageFlowConfigImpl config) {
-        if (this.pageflows.containsKey(config.getFlowName())) {
-            LOG.warn("Overwriting configuration for pageflow " + config.getFlowName());
-        }
-        this.pageflows.put(config.getFlowName(), config);
-        this.cachePageflows = null;
+    public List<PageFlow> getPageFlows() {
+        return new ArrayList<PageFlow>(this.pageflows.values());
     }
     
-    public List<PageFlowConfigImpl> getPageFlowConfigs() {
-        List<PageFlowConfigImpl> list = this.cachePageflows;
-        if (list == null) {
-            list = new ArrayList<PageFlowConfigImpl>();
-            for (Entry<String, PageFlowConfigImpl> entry : this.pageflows.entrySet()) {
-                list.add(entry.getValue());
-            }
-            this.cachePageflows = Collections.unmodifiableList(list);
-        }
-        return list;
+    public void setPageFlowMap(Map<String, PageFlow> map) {
+        this.pageflows = map;
     }
     
-    public PageFlowConfig getPageFlowConfig(String name) {
+    public PageFlow getPageFlow(String name) {
         return this.pageflows.get(name);
     }
     

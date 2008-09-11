@@ -18,14 +18,20 @@
 
 package org.pustefixframework.config.contextxmlservice.parser;
 
-import org.pustefixframework.config.contextxmlservice.parser.internal.ContextConfigImpl;
 import org.pustefixframework.config.contextxmlservice.parser.internal.PageFlowConfigImpl;
+import org.pustefixframework.config.contextxmlservice.parser.internal.PageFlowHolderImpl;
 import org.pustefixframework.config.generic.ParsingUtils;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.beans.factory.support.BeanDefinitionBuilder;
+import org.springframework.beans.factory.support.BeanDefinitionRegistry;
+import org.springframework.beans.factory.support.DefaultBeanNameGenerator;
 import org.w3c.dom.Element;
 
 import com.marsching.flexiparse.parser.HandlerContext;
 import com.marsching.flexiparse.parser.ParsingHandler;
 import com.marsching.flexiparse.parser.exception.ParserException;
+
+import de.schlund.pfixcore.workflow.context.DataDrivenPageFlow;
 
 
 /**
@@ -34,28 +40,49 @@ import com.marsching.flexiparse.parser.exception.ParserException;
  *
  */
 public class PageFlowParsingHandler implements ParsingHandler {
-
+    
     public void handleNode(HandlerContext context) throws ParserException {
        
         Element element = (Element)context.getNode();
-        ParsingUtils.checkAttributes(element, new String[] {"name"}, new String[] {"final", "stopnext"});
-        
-        ContextConfigImpl ctxConfig = ParsingUtils.getSingleSubObjectFromRoot(ContextConfigImpl.class, context);
+        ParsingUtils.checkAttributes(element, new String[] {"name"}, new String[] {"final", "stopnext", "bean-ref"});
         
         String flowName = element.getAttribute("name").trim();
-      
-        PageFlowConfigImpl flowConfig = new PageFlowConfigImpl(flowName);
-        ctxConfig.addPageFlow(flowConfig);
         String finalPage = element.getAttribute("final").trim();
-        if (finalPage.length()>0) {
-            flowConfig.setFinalPage(finalPage);
-        }
         String stopnext = element.getAttribute("stopnext").trim();
-        if (stopnext.length()>0) {
-            flowConfig.setStopNext(Boolean.parseBoolean(stopnext));
-        }
-        context.getObjectTreeElement().addObject(flowConfig);
+        String beanRef = element.getAttribute("bean-ref").trim();
         
+        if ((finalPage.length() != 0 || stopnext.length() != 0) 
+                && beanRef.length() != 0) {
+            throw new ParserException("Attribute bean-ref may not be used combinded with attribute final or stopnext on <pageflow> tag.");
+        }
+        
+        if (beanRef.length() > 0) {
+            context.getObjectTreeElement().addObject(new PageFlowHolderImpl(flowName, beanRef));
+        } else {           
+            PageFlowConfigImpl flowConfig = new PageFlowConfigImpl(flowName);
+            
+            if (finalPage.length()>0) {
+                flowConfig.setFinalPage(finalPage);
+            }
+            
+            if (stopnext.length()>0) {
+                flowConfig.setStopNext(Boolean.parseBoolean(stopnext));
+            }
+            context.getObjectTreeElement().addObject(flowConfig);
+            
+            BeanDefinitionRegistry beanRegistry = ParsingUtils.getSingleTopObject(BeanDefinitionRegistry.class, context);
+            DefaultBeanNameGenerator beanNameGenerator = new DefaultBeanNameGenerator();
+            String beanName;
+            BeanDefinition beanDefinition;
+            BeanDefinitionBuilder beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(DataDrivenPageFlow.class);
+            beanBuilder.setScope("singleton");
+            beanBuilder.addConstructorArgValue(flowConfig);
+            beanDefinition = beanBuilder.getBeanDefinition();
+            beanName = beanNameGenerator.generateBeanName(beanDefinition, beanRegistry);
+            beanRegistry.registerBeanDefinition(beanName, beanDefinition);
+            
+            context.getObjectTreeElement().addObject(new PageFlowHolderImpl(flowConfig.getFlowName(), beanName));
+        }
     }
 
 }

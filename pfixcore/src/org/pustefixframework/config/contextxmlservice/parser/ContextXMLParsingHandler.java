@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import org.pustefixframework.config.contextxmlservice.PageFlowHolder;
 import org.pustefixframework.config.contextxmlservice.PageRequestConfig;
 import org.pustefixframework.config.contextxmlservice.parser.internal.ContextConfigImpl;
 import org.pustefixframework.config.contextxmlservice.parser.internal.ContextXMLServletConfigImpl;
@@ -113,12 +114,19 @@ public class ContextXMLParsingHandler implements ParsingHandler {
                 postRenderInterceptors.add(new RuntimeBeanReference(interceptorBeanName));
             }
             
+            @SuppressWarnings("unchecked")
+            Map<String, Object> pageFlowMap = new ManagedMap();
+            for (PageFlowHolder pageFlowHolder : context.getObjectTreeElement().getObjectsOfTypeFromSubTree(PageFlowHolder.class)) {
+                pageFlowMap.put(pageFlowHolder.getName(), pageFlowHolder.getPageFlowObject());
+            }
+            
             beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(ContextConfigImpl.class);
             beanBuilder.setScope("singleton");
             beanBuilder.addConstructorArgValue(contextConfig);
             beanBuilder.addPropertyValue("startInterceptors", startInterceptors);
             beanBuilder.addPropertyValue("endInterceptors", endInterceptors);
             beanBuilder.addPropertyValue("postRenderInterceptors", postRenderInterceptors);
+            beanBuilder.addPropertyValue("pageFlowMap", pageFlowMap);
             beanDefinition = beanBuilder.getBeanDefinition();
             String contextConfigBeanName = beanNameGenerator.generateBeanName(beanDefinition, beanRegistry);
             beanRegistry.registerBeanDefinition(contextConfigBeanName, beanDefinition);

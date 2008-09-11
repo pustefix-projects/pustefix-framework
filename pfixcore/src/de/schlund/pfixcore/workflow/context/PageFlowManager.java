@@ -27,8 +27,7 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.pustefixframework.config.contextxmlservice.ContextConfig;
-import org.pustefixframework.config.contextxmlservice.PageFlowConfig;
-import org.pustefixframework.config.contextxmlservice.PageFlowStepConfig;
+import org.pustefixframework.config.contextxmlservice.PageRequestConfig;
 
 import de.schlund.pfixcore.workflow.PageRequest;
 import de.schlund.pfixcore.workflow.VariantManager;
@@ -57,22 +56,31 @@ public class PageFlowManager {
         // Initialize map mapping each page name to a list of
         // flows which contain this page in at least one variant
         // and create PageFlow object for each flow
-        for (PageFlowConfig pageflowConfig : config.getPageFlowConfigs()) {
-            PageFlow flow = new DataDrivenPageFlow(pageflowConfig);
+        for (PageFlow flow : config.getPageFlows()) {
             flowmap.put(flow.getName(), flow);
             
             String rootname = flow.getRootName();
-            for (PageFlowStepConfig stepConfig : pageflowConfig.getFlowSteps()) {
-                String pagename = stepConfig.getPage();
-                Set<String> names = pagetoflowmap.get(pagename);
-                if (names == null) {
-                    names = new HashSet<String>();
-                    pagetoflowmap.put(pagename, names);
-                }
-                if (!names.contains(rootname)) {
-                    names.add(rootname);
+            for (PageRequestConfig pageConfig : config.getPageRequestConfigs()) {
+                String pageName = getRootName(pageConfig.getPageName());
+                if (flow.containsPage(pageName)) {
+                    Set<String> names = pagetoflowmap.get(pageName);
+                    if (names == null) {
+                        names = new HashSet<String>();
+                        pagetoflowmap.put(pageName, names);
+                    }
+                    if (!names.contains(rootname)) {
+                        names.add(rootname);
+                    }
                 }
             }
+        }
+    }
+    
+    private String getRootName(String genericName) {
+        if (!genericName.contains("::")) {
+            return genericName;
+        } else {
+            return genericName.substring(0, genericName.indexOf("::"));
         }
     }
 

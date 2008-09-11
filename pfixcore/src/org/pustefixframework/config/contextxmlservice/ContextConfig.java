@@ -29,6 +29,7 @@ import de.schlund.pfixcore.auth.Condition;
 import de.schlund.pfixcore.auth.RoleProvider;
 import de.schlund.pfixcore.workflow.ContextInterceptor;
 import de.schlund.pfixcore.workflow.State;
+import de.schlund.pfixcore.workflow.context.PageFlow;
 import de.schlund.pfixxml.Variant;
 
 /**
@@ -70,19 +71,19 @@ public interface ContextConfig {
     ContextResourceConfig getContextResourceConfig(String name);
 
     /**
-     * Returns a list of configurations for all pageflows.
+     * Returns a list of all pageflows.
      * 
-     * @return list of pageflow configurations
+     * @return list of pageflows
      */
-    List<? extends PageFlowConfig> getPageFlowConfigs();
+    List<? extends PageFlow> getPageFlows();
 
     /**
-     * Returns the configuration for the pageflow specified by <code>name</code>.
+     * Returns the pageflow specified by <code>name</code>.
      * 
      * @param name name of the pageflow
-     * @return pageflow configuration
+     * @return pageflow instance
      */
-    PageFlowConfig getPageFlowConfig(String name);
+    PageFlow getPageFlow(String name);
 
     /**
      * Returns a list of configurations for all pagerequests.

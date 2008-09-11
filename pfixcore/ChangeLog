@@ -1,5 +1,18 @@
 2008-09-11  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
+	* src/de/schlund/pfixcore/workflow/context/PageFlowManager.java: 
+	* src/de/schlund/pfixcore/workflow/VariantManager.java: 
+	* src/org/pustefixframework/config/contextxmlservice/parser/internal/ContextConfigImpl.java: 
+	* src/org/pustefixframework/config/contextxmlservice/parser/internal/PageFlowHolderImpl.java: 
+	* src/org/pustefixframework/config/contextxmlservice/parser/ContextXMLParsingHandler.java: 
+	* src/org/pustefixframework/config/contextxmlservice/parser/PageFlowParsingHandler.java: 
+	* src/org/pustefixframework/config/contextxmlservice/parser/PageFlowVariantParsingHandler.java: 
+	* src/org/pustefixframework/config/contextxmlservice/ContextConfig.java: 
+	* src/org/pustefixframework/config/contextxmlservice/PageFlowHolder.java: 
+	Added support for application specific page flow implementations.
+
+2008-09-11  Sebastian Marsching  <sebastian.marsching@1und1.de>
+
 	* lib/saxon8.jar: 
 	* lib/saxon8-dom.jar: 
 	* lib/saxon8-xpath.jar: 
