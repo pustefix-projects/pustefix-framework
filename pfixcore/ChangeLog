@@ -1,3 +1,15 @@
+2008-09-11  Sebastian Marsching  <sebastian.marsching@1und1.de>
+
+	* lib/saxon8.jar: 
+	* lib/saxon8-dom.jar: 
+	* lib/saxon8-xpath.jar: 
+	Removed Saxon 8.
+
+	* lib/saxon9.jar: 
+	* lib/saxon9-dom.jar: 
+	* lib/saxon9-xpath.jar: 
+	Added Saxon 9.1.0.2.
+
 2008-09-08  Martin Leidig  <mleidig@schlund.de>
 
 	Improved XSLT error handling: Failed loading of Templates objects
