@@ -20,54 +20,60 @@ public class WebServiceBeanConfigReader {
     
     public static List<ServiceConfig> read(FileResource res) throws Exception {
         
+        ClassLoader oldClassLoader = Thread.currentThread().getContextClassLoader();
         Thread.currentThread().setContextClassLoader(WebServiceBeanConfigReader.class.getClassLoader());
         
-        SimpleBeanDefinitionRegistry beanReg = new SimpleBeanDefinitionRegistry();
-        XmlBeanDefinitionReader xmlReader = new XmlBeanDefinitionReader(beanReg);
-        File file = new File(res.toURL().toURI());
-        FileSystemResource fileRes = new FileSystemResource(file);
-        xmlReader.loadBeanDefinitions(fileRes);
+        try {
         
-        List<ServiceConfig> serviceList = new ArrayList<ServiceConfig>();
-        String[] names = beanReg.getBeanDefinitionNames();
-        for(String name:names) {
+            SimpleBeanDefinitionRegistry beanReg = new SimpleBeanDefinitionRegistry();
+            XmlBeanDefinitionReader xmlReader = new XmlBeanDefinitionReader(beanReg);
+            File file = new File(res.toURL().toURI());
+            FileSystemResource fileRes = new FileSystemResource(file);
+            xmlReader.loadBeanDefinitions(fileRes);
             
-            BeanDefinition beanDef = beanReg.getBeanDefinition(name);
-            if(beanDef.getBeanClassName().equals(WebServiceRegistration.class.getName())) {
-                MutablePropertyValues props = beanDef.getPropertyValues();
-           
-                String serviceName = getStringValue(props,"serviceName",true);
-                String protocol = getStringValue(props,"protocol",false);
-                String interfaceName = getStringValue(props,"interface",false);
-                String targetBeanName = getStringValue(props,"targetBeanName",false);
-                String implName = null;
-                if(targetBeanName == null) {
-                    PropertyValue prop = props.getPropertyValue("target");
-                    if(prop==null) throw new IllegalArgumentException("Either 'target' or 'targetBeanName' property must be set.");
-                    Object target = prop.getValue();
-                    if(target instanceof BeanDefinitionHolder) {
-                        BeanDefinitionHolder holder = (BeanDefinitionHolder)target;
-                        BeanDefinition holderDef = holder.getBeanDefinition();
-                        implName = getImplementation(holderDef);
-                    } else throw new IllegalArgumentException("Object of type '"+BeanDefinitionHolder.class.getName()+"' "+
-                            "expected as value of property 'target'!");
-                } else {
-                    BeanDefinition targetBeanDef = beanReg.getBeanDefinition(targetBeanName);
-                    implName = getImplementation(targetBeanDef);
+            List<ServiceConfig> serviceList = new ArrayList<ServiceConfig>();
+            String[] names = beanReg.getBeanDefinitionNames();
+            for(String name:names) {
+                
+                BeanDefinition beanDef = beanReg.getBeanDefinition(name);
+                if(beanDef.getBeanClassName().equals(WebServiceRegistration.class.getName())) {
+                    MutablePropertyValues props = beanDef.getPropertyValues();
+               
+                    String serviceName = getStringValue(props,"serviceName",true);
+                    String protocol = getStringValue(props,"protocol",false);
+                    String interfaceName = getStringValue(props,"interface",false);
+                    String targetBeanName = getStringValue(props,"targetBeanName",false);
+                    String implName = null;
+                    if(targetBeanName == null) {
+                        PropertyValue prop = props.getPropertyValue("target");
+                        if(prop==null) throw new IllegalArgumentException("Either 'target' or 'targetBeanName' property must be set.");
+                        Object target = prop.getValue();
+                        if(target instanceof BeanDefinitionHolder) {
+                            BeanDefinitionHolder holder = (BeanDefinitionHolder)target;
+                            BeanDefinition holderDef = holder.getBeanDefinition();
+                            implName = getImplementation(holderDef);
+                        } else throw new IllegalArgumentException("Object of type '"+BeanDefinitionHolder.class.getName()+"' "+
+                                "expected as value of property 'target'!");
+                    } else {
+                        BeanDefinition targetBeanDef = beanReg.getBeanDefinition(targetBeanName);
+                        implName = getImplementation(targetBeanDef);
+                    }
+                 
+                    ServiceConfig serviceConfig = new ServiceConfig(null);
+                    serviceConfig.setName(serviceName);
+                    serviceConfig.setScopeType(Constants.SERVICE_SCOPE_APPLICATION);
+                    serviceConfig.setInterfaceName(interfaceName);
+                    serviceConfig.setImplementationName(implName);
+                    serviceConfig.setProtocolType(protocol);
+                    serviceList.add(serviceConfig);
                 }
-             
-                ServiceConfig serviceConfig = new ServiceConfig(null);
-                serviceConfig.setName(serviceName);
-                serviceConfig.setScopeType(Constants.SERVICE_SCOPE_APPLICATION);
-                serviceConfig.setInterfaceName(interfaceName);
-                serviceConfig.setImplementationName(implName);
-                serviceConfig.setProtocolType(protocol);
-                serviceList.add(serviceConfig);
+                
             }
-            
-        }
-        return serviceList;
+            return serviceList;
         
+        } finally {
+            Thread.currentThread().setContextClassLoader(oldClassLoader);
+        } 
     }
     
     private static String getImplementation(BeanDefinition beanDef) {
