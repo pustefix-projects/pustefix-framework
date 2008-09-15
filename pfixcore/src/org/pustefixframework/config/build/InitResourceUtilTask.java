@@ -36,7 +36,12 @@ public class InitResourceUtilTask extends Task {
 
     @Override
     public void execute() throws BuildException {
-        GlobalConfigurator.setDocroot(docroot);
+        try {
+            GlobalConfigurator.setDocroot(docroot);
+        } catch(IllegalStateException x) {
+            //ignore if docroot is already set (which can happen if
+            //ant is called with multiple targets)
+        }
     }
     
     public void setDocroot(String docroot) {

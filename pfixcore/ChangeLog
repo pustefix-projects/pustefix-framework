@@ -1,3 +1,10 @@
+2008-09-15  Martin Leidig  <mleidig@schlund.de>
+
+	* src/org/pustefixframework/config/build/InitResourceUtilTask.java:
+	catch IllegalStateException (ignore if docroot is already set, which
+	can happen if ant is called with multiple targets, e.g. "ant realclean
+	all generate"
+
 2008-09-11  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
 	* src/de/schlund/pfixcore/workflow/context/PageFlowManager.java: 
