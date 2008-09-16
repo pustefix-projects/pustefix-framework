@@ -35,7 +35,7 @@ public class ContextSimpleData {
 
     }
 
-    public final void reset() {
+    public void reset() {
         data.clear();
     }
 
@@ -47,7 +47,7 @@ public class ContextSimpleData {
      * @param string a <code>String</code> value
      * @return a <code>String</code> value
      */
-    public final String getValue(final String string) {
+    public String getValue(final String string) {
         return data.get(string);
     }
 
@@ -57,7 +57,7 @@ public class ContextSimpleData {
      * @param string a <code>String</code> value
      * @param string1 a <code>String</code> value
      */
-    public final void setValue(final String key, final String value) {
+    public void setValue(final String key, final String value) {
         data.put(key, value);
     }
 

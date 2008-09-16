@@ -1,3 +1,13 @@
+2008-09-16  Martin Leidig  <mleidig@schlund.de>
+
+	AOP-proxied beans, like session-scoped ContextResource beans, shouldn't 
+	contain final methods, which can't be proxied (they're called at the proxy 
+	itself instead of the proxied objects and work on the proxy's uninitialized 
+	state).
+
+	* de/schlund/pfixcore/example/ContextSimpleData.java: removed 'final'
+	modifiers from methods
+
 2008-09-15  Martin Leidig  <mleidig@schlund.de>
 
 	* src/org/pustefixframework/config/build/InitResourceUtilTask.java:
