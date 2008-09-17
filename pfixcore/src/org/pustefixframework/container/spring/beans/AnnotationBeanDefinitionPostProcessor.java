@@ -115,9 +115,10 @@ public class AnnotationBeanDefinitionPostProcessor {
                     if (methodName.length() == 3) {
                         propertyName = "";
                     } else {
-                        propertyName = methodName.substring(3, 4).toLowerCase();
-                        if (methodName.length() > 3) {
-                            propertyName += methodName.substring(4);
+                        propertyName = methodName.substring(3);
+                        if (! (propertyName.length() > 1 && Character.isUpperCase(propertyName.charAt(0)) 
+                                && Character.isUpperCase(propertyName.charAt(1)))) { 
+                            propertyName = Character.toLowerCase(propertyName.charAt(0)) + propertyName.substring(1);
                         }
                     }
                 } else {
