@@ -19,6 +19,11 @@
     <match>/p:project-config/p:application</match>
   </handler>
   
+  <!-- Creates PerfLogging bean -->
+  <handler class="org.pustefixframework.config.project.parser.PerfLoggingParsingHandler">
+    <match>/p:project-config/p:perflogging</match>
+  </handler>
+  
   <!-- Reads path to depend.xml file -->
   <handler class="org.pustefixframework.config.project.parser.XMLGeneratorInfoParsingHandler">
     <match>/p:project-config/p:xml-generator//p:config-file</match>

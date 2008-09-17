@@ -16,23 +16,21 @@ import java.util.Map;
  *
  */
 public class PerfStatistic {
+    
+    private PerfLogging perfLogging;
+    
     private Map<String,Map<String, int[]>> category_map = 
         new HashMap<String, Map<String, int[]>>(); 
-    
-    
-    private static PerfStatistic instance = new PerfStatistic();
-    
-    
-    static PerfStatistic getInstance() {
-        return instance;
-    }
-    
     
     private int[] createCount(int size) {
         int[] count = new int[size];
         return count;
     }
         
+    public PerfStatistic(PerfLogging perfLogging) {
+        this.perfLogging = perfLogging;
+    }
+    
    synchronized void reset() {
        category_map = new HashMap<String, Map<String, int[]>>();
    }
@@ -64,7 +62,7 @@ public class PerfStatistic {
         StringBuffer sb = new StringBuffer(1024);
         if(category_map.isEmpty()) return "";
         
-        Formatter v = new XMLFormatter();
+        Formatter v = new XMLFormatter(perfLogging);
         format(sb, v);
         
         return sb.toString();
@@ -246,13 +244,19 @@ class StringFormatter implements Formatter {
 
 class XMLFormatter implements Formatter {
 
+    private PerfLogging perfLogging;
+    
+    public XMLFormatter(PerfLogging perfLogging) {
+        this.perfLogging = perfLogging;
+    }
+    
     public void printHeader(StringBuffer sb) {
         sb.append("<?xml version=\"1.0\" encoding=\"utf-8\"?>");
         sb.append("<perf>").append("\n");
         sb.append("<status>").append("\n");
-        sb.append("<enabled>").append(PerfLogging.getInstance().isPerfLogggingEnabled()).
+        sb.append("<enabled>").append(perfLogging.isPerfLogggingEnabled()).
         append("</enabled>").append("\n");
-        sb.append("<active>").append(PerfLogging.getInstance().isPerfLoggingActive()).
+        sb.append("<active>").append(perfLogging.isPerfLoggingActive()).
         append("</active>").append("\n");
         
         sb.append("</status>").append("\n");

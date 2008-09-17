@@ -6,7 +6,6 @@ package de.schlund.pfixxml.perflogging;
 
 import java.lang.management.ManagementFactory;
 import java.util.Map;
-import java.util.Properties;
 
 import javax.management.MBeanServer;
 import javax.management.Notification;
@@ -14,84 +13,72 @@ import javax.management.NotificationBroadcasterSupport;
 import javax.management.ObjectName;
 
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.InitializingBean;
 
 
 /**
  * @author jh
  *
  */
-public class PerfLogging extends NotificationBroadcasterSupport implements PerfLoggingMBean {
+public class PerfLogging extends NotificationBroadcasterSupport implements PerfLoggingMBean, InitializingBean {
     
-    private static PerfLogging instance = new PerfLogging();
     private final static Logger LOG = Logger.getLogger(PerfLogging.class);
-    private String PROP_BUFFER_SIZE = "perflogging.buffersize";
-    private String PROP_ENABLED = "perflogging.enabled";
-    private String PROP_AUTOSTART = "perflogging.autostart";
-    private String PROP_OFFER_MAX_WAIT = "perflogging.offermaxwait";
     
-    private String OFF = "0";
-    private String ON = "1";
+    private static ThreadLocal<PerfLogging> instance = new ThreadLocal<PerfLogging>();
+    
     private int DEFAULT_BUFFER_SIZE = 1000;
     private int DEFAULT_OFFER_MAX_WAIT = 5;
-    private boolean perfLoggingEnabled = false;
+    private boolean enabled = false;
+    private int bufferSize = DEFAULT_BUFFER_SIZE;
+    private int offerMaxWait = DEFAULT_OFFER_MAX_WAIT;
+    private boolean autoStart;
     private boolean perfActive = false;
+    private String projectName;
     private BoundedBufferWrapper boundedBuffer;
     private PerfEventTakeThread perfEventTakeThread;
     private long seqNo;
     
-    private PerfLogging() {}
+    private PerfStatistic perfStatistic;
     
-    public static PerfLogging getInstance() {
-        return instance;
+    public static PerfLogging getInstanceForThread() {
+        return instance.get();
     }
     
-    public void init(Properties props) {
-        
+    public static void setInstanceForThread(PerfLogging perfLogging) {
+        System.out.println("+++ SET PERFLOGGING +++");
+        instance.set(perfLogging);
+    }
+    
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+        System.out.println("setEnabled "+enabled);
+    }
+    
+    public void setBufferSize(int bufferSize) {
+        this.bufferSize = bufferSize;
+    }
+    
+    public void setOfferMaxWait(int offerMaxWait) {
+        this.offerMaxWait = offerMaxWait;
+    }
+    
+    public void setAutoStart(boolean autoStart) {
+        this.autoStart = autoStart;
+    }
+    
+    public void setProjectName(String projectName) {
+        this.projectName = projectName;
+    }
+    
+    
+    public void afterPropertiesSet() throws Exception {
         LOG.info("Perflogging init");
         
-        String prop_enabled = props.getProperty(PROP_ENABLED, OFF);
-        if(prop_enabled.equals(ON)) {
-            perfLoggingEnabled = true;
-        } else {
-            perfLoggingEnabled = false;
-        }
-        LOG.info("Perflogging enabled: "+perfLoggingEnabled);
-        if(!perfLoggingEnabled) return;
+        boundedBuffer = new BoundedBufferWrapper(bufferSize, offerMaxWait);
         
+        perfStatistic = new PerfStatistic(this);
         
-        String prop_buffs = props.getProperty(PROP_BUFFER_SIZE);
-        int size = 0;
-        if(prop_buffs == null || prop_buffs.length() < 1 ) {
-            LOG.warn("Property "+PROP_BUFFER_SIZE+" not found. Using default: "+DEFAULT_BUFFER_SIZE);
-            size = DEFAULT_BUFFER_SIZE;
-        } else {
-            size = Integer.parseInt(prop_buffs);
-        }
-        
-        String prop_offerwait = props.getProperty(PROP_OFFER_MAX_WAIT);
-        int wait = 0;
-        if(prop_offerwait == null || prop_offerwait.length() < 1 ) {
-            LOG.warn("Property "+PROP_OFFER_MAX_WAIT+" not found. Using default: "+DEFAULT_OFFER_MAX_WAIT);
-            wait = DEFAULT_OFFER_MAX_WAIT;
-        } else {
-            wait = Integer.parseInt(prop_offerwait);
-        }
-        boundedBuffer = new BoundedBufferWrapper(size, wait);
-        
-        String prop_autostart = props.getProperty(PROP_AUTOSTART, OFF);
-        
-        if(LOG.isInfoEnabled()) {
-            StringBuffer sb = new StringBuffer();
-            sb.append("After init: \n").
-                append("Enabled: "+perfLoggingEnabled+"\n").
-                append("Active: "+perfActive+"\n").
-                append("Buffersize: "+size+"\n").
-                append("Bufferwait: "+wait+"\n");
-            LOG.info(sb.toString());
-               
-        }
-        
-        if(prop_autostart.equals(ON)) {
+        if(autoStart) {
             activatePerflogging();
         } else {
             perfActive = false;
@@ -99,16 +86,27 @@ public class PerfLogging extends NotificationBroadcasterSupport implements PerfL
         
         try {
             MBeanServer mbeanServer = ManagementFactory.getPlatformMBeanServer(); 
-            ObjectName objectName = new ObjectName("Pustefix:type=PerfLogging"); 
+            ObjectName objectName = new ObjectName("Pustefix:type=PerfLogging,project="+projectName); 
             mbeanServer.registerMBean(this, objectName);
         } catch(Exception x) {
             LOG.error("Can't register PerfLogging MBean!",x);
         } 
         
+        if(LOG.isInfoEnabled()) {
+            StringBuffer sb = new StringBuffer();
+            sb.append("After init: \n").
+                append("Enabled: "+enabled+"\n").
+                append("Active: "+perfActive+"\n").
+                append("Buffersize: "+bufferSize+"\n").
+                append("Bufferwait: "+offerMaxWait+"\n");
+            LOG.info(sb.toString());
+               
+        }
+        
     }
     
     public boolean isPerfLogggingEnabled() {
-        return perfLoggingEnabled;
+        return enabled;
     }
     
     public boolean isPerfLoggingActive() {
@@ -116,7 +114,7 @@ public class PerfLogging extends NotificationBroadcasterSupport implements PerfL
     }
     
     public synchronized void activatePerflogging() {
-        if(!perfLoggingEnabled) {
+        if(!enabled) {
             LOG.warn("Perflogging is disabled");
             return;
         }
@@ -133,15 +131,15 @@ public class PerfLogging extends NotificationBroadcasterSupport implements PerfL
     }
     
     public synchronized String inactivatePerflogging() {
-        if(!perfLoggingEnabled) {
+        if(!enabled) {
             LOG.warn("Perflogging is disabled");
             return null;
         }
         if(perfActive) {
             LOG.info("Inactivating perflogging");
             perfActive = false;
-            String xml = PerfStatistic.getInstance().toXML();
-            PerfStatistic.getInstance().reset();
+            String xml = perfStatistic.toXML();
+            perfStatistic.reset();
             stopPerfEventTakeThread();
             boundedBuffer.reset();
             return xml;
@@ -152,15 +150,15 @@ public class PerfLogging extends NotificationBroadcasterSupport implements PerfL
     }
     
     public synchronized Map<String, Map<String, int[]>> inactivatePerfloggingMap() {
-        if(!perfLoggingEnabled) {
+        if(!enabled) {
             LOG.warn("Perflogging is disabled");
             return null;
         }
         if(perfActive) {
             LOG.info("Inactivating perflogging");
             perfActive = false;
-            Map<String, Map<String, int[]>> map = PerfStatistic.getInstance().toMap();
-            PerfStatistic.getInstance().reset();
+            Map<String, Map<String, int[]>> map = perfStatistic.toMap();
+            perfStatistic.reset();
             stopPerfEventTakeThread();
             boundedBuffer.reset();
             return map;
@@ -172,7 +170,7 @@ public class PerfLogging extends NotificationBroadcasterSupport implements PerfL
     
     private void startPerfEventTakeThread() {
         LOG.info("Starting new Take-Thread for Buffer");
-        perfEventTakeThread = new PerfEventTakeThread(boundedBuffer);
+        perfEventTakeThread = new PerfEventTakeThread(boundedBuffer, perfStatistic);
         perfEventTakeThread.start();
     }
     

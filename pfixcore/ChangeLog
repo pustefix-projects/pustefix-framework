@@ -1,5 +1,59 @@
 2008-09-17  Martin Leidig  <mleidig@schlund.de>
 
+	Perflogging now is made per application, i.e. now it's done with
+	application scope, all singleton stuff was removed, the Perflogging
+	beans are registered under the application name, the configuration
+	is done per project in project.xml (no factory configuration any
+	more).
+
+	Modified:
+	* src/org/pustefixframework/container/spring/beans/PustefixProjectBeanDefinitionReader.java:
+	Pass project information to parser (needed to register JMX beans under
+	a name)
+	* src/org/pustefixframework/config/contextxmlservice/parser/ContextXMLParsingHandler.java:
+	inject PerfLogging instance
+	* src/de/schlund/pfixcore/workflow/ContextImpl.java: set Perflogging
+	threadlocal in prepare and cleanup request phase
+	
+	Added:
+	* src/org/pustefixframework/config/project/ProjectInfo.java: New class
+	which holds project information (needed by JMX beans to get
+	application name)
+	* src/org/pustefixframework/config/project/parser/PerfLoggingParsingHandler.java:
+	Reads perflogging configuration from project.xml
+
+	Made classes non-static, major refactoring:
+	* src/de/schlund/pfixxml/perflogging/PerfLogging.java
+	* src/de/schlund/pfixxml/perflogging/PerfStatistic.java
+	* src/de/schlund/pfixxml/perflogging/PerfEventTakeThread.java
+	* src/de/schlund/pfixxml/perflogging/PerfEvent.java
+	* src/de/schlund/pfixxml/perflogging/PerfEventTakeThread.java
+	* src/de/schlund/pfixxml/perflogging/PerfEvent.java
+
+	Removed:
+	* src/de/schlund/pfixxml/perflogging/LogFileWriterThread.java
+
+	Modified:
+	* res/META-INF/org/pustefixframework/config/project/parser/project-config.xml:
+	added ParsingHandler for perflogging
+	* projects/common/conf/factory.xml: removed perflogging configuration
+	* projects/sample1/conf/project.xml: added perflogging sample configuration
+
+	Updated webservice libraries:
+	* .classpath
+
+	Added:
+	* lib/pustefix-webservices-jaxws-0.1.2.jar
+	* lib/pustefix-webservices-core-0.1.2.jar
+	* lib/pustefix-webservices-jsonws-0.1.2.jar
+
+	Removed:
+	* lib/pustefix-webservices-jsonws-0.1.jar
+	* lib/pustefix-webservices-core-0.1.1.jar
+	* lib/pustefix-webservices-jaxws-0.1.jar
+
+2008-09-17  Martin Leidig  <mleidig@schlund.de>
+
 	* src/org/pustefixframework/container/spring/beans/AnnotationBeanDefinitionPostProcessor.java:
 	Fixed problem with extracting property names from method names: multiple uppercase
 	characters at the beginning, like in "setXTerm()" resulted in property

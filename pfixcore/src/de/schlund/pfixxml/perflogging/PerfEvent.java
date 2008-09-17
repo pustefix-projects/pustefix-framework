@@ -79,12 +79,15 @@ public class PerfEvent {
      }
      
      private boolean isActive() {
-         PerfLogging perf = PerfLogging.getInstance();
-         boolean ret1 = perf.isPerfLogggingEnabled();
-         boolean ret2 = perf.isPerfLoggingActive();
-         if(LOG.isDebugEnabled())
-             LOG.debug("Enabled: "+ret1+"  Active: "+ret2);
-         return ret1 && ret2;
+         PerfLogging perf = PerfLogging.getInstanceForThread();
+         if(perf != null) {
+             boolean ret1 = perf.isPerfLogggingEnabled();
+             boolean ret2 = perf.isPerfLoggingActive();
+             if(LOG.isDebugEnabled())
+                 LOG.debug("Enabled: "+ret1+"  Active: "+ret2);
+             return ret1 && ret2;
+         }
+         return false;
      }
      
 }

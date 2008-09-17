@@ -11,6 +11,13 @@
     <location>http://cms.${fqdn}/</location>
   </editor>
   
+  <!-- Performance logging options:
+         enabled: allow performance logging (default: true)
+         buffersize: size of buffer for perfevents (default: 1000)
+         autostart: start perflogging automatically (default: false)
+         offermaxwait: max time a the put-thread will wait when putting perfevent into a full buffer (default: 5)-->
+  <perflogging enabled="true" buffersize="200" autostart="true" offermaxwait="5"/>
+  
   <xml-generator>
     <config-file>pfixroot:/sample1/conf/depend.xml</config-file>
   </xml-generator>
