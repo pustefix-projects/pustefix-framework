@@ -1,3 +1,10 @@
+2008-09-17  Martin Leidig  <mleidig@schlund.de>
+
+	* src/org/pustefixframework/config/contextxmlservice/parser/ContextXMLRegisterGlobalPropertiesParsingHandler.java:
+	Add global properties to context properties for backwards
+	compatibility. We should check if it's more appropriate to define
+	global properties in projects.xml too.
+
 2008-09-16  Martin Leidig  <mleidig@schlund.de>
 
 	AOP-proxied beans, like session-scoped ContextResource beans, shouldn't 

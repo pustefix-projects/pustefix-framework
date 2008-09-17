@@ -52,6 +52,17 @@ public class ContextXMLRegisterGlobalPropertiesParsingHandler extends Customizat
             }
         }
         servletConfig.setProperties(servletProperties);
+        
+        //Add global properties to context properties for backwards compatibility
+        //TODO: check if it's more appropriate to define global properties in projects.xml instead of pustefix.xml
+        Enumeration<?> en = servletProperties.propertyNames();
+        while (en.hasMoreElements()) {
+            String propName = (String) en.nextElement();
+            if(!contextProperties.containsKey(propName)) {
+                String propValue = servletProperties.getProperty(propName);
+                contextProperties.setProperty(propName, propValue);
+            }
+        }
         contextConfig.setProperties(contextProperties);
     }
 
