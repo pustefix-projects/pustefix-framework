@@ -42,7 +42,7 @@ public class JSONWSStubGenerator implements ServiceStubGenerator {
 
     public void generateStub(ServiceConfig service,OutputStream out) throws ServiceException,IOException {
         ServiceDescriptor desc=new ServiceDescriptor(service);
-        JsParam[] constParams=new JsParam[] {new JsParam("context")};
+        JsParam[] constParams=new JsParam[] {new JsParam("context"),new JsParam("scope")};
        
         String jsClassName=null;
         if(service.getStubJSNamespace().equals(Constants.STUBGEN_JSNAMESPACE_COMPAT)) {
@@ -58,7 +58,7 @@ public class JSONWSStubGenerator implements ServiceStubGenerator {
         }
         JsClass jsClass=new JsClass(jsClassName,"pfx.ws.json.BaseStub",constParams);
         JsBlock block=jsClass.getConstructorBody();
-        block.addStatement(new JsStatement("pfx.ws.json.BaseStub.call(this,\""+service.getName()+"\",context)"));
+        block.addStatement(new JsStatement("pfx.ws.json.BaseStub.call(this,\""+service.getName()+"\",context,scope)"));
         for(String methName:desc.getMethods()) {
             List<Method> meths=desc.getMethods(methName);
             for(Method meth:meths) {
