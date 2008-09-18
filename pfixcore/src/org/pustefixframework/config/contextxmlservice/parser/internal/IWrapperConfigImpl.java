@@ -33,10 +33,11 @@ public class IWrapperConfigImpl implements IWrapperConfig {
     
     private String prefix = null;
     private Class<? extends IWrapper> wrapperClass = null;
-    private boolean checkActive = false;
+    private boolean checkActive = true;
     private boolean dologging = false;
     private IHandler handler;
     private String scope = "singleton";
+    
     
     /* (non-Javadoc)
      * @see de.schlund.pfixxml.config.IWrapperConfig#getPrefix()

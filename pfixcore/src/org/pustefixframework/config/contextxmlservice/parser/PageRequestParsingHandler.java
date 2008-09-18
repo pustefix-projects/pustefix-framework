@@ -189,6 +189,7 @@ public class PageRequestParsingHandler implements ParsingHandler {
                     beanBuilder.addPropertyValue("logging", wrapperConfig.getLogging());
                     beanBuilder.addPropertyReference("handler", handlerBeanName);
                     beanBuilder.addPropertyValue("scope", wrapperConfig.getScope());
+                    beanBuilder.addPropertyValue("checkActive", wrapperConfig.doCheckActive());
                     beanDefinition = beanBuilder.getBeanDefinition();
                     String wrapperConfigBeanName = nameGenerator.generateBeanName(beanDefinition, beanRegistry);
                     beanRegistry.registerBeanDefinition(wrapperConfigBeanName, beanDefinition);

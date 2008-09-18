@@ -1,5 +1,16 @@
 2008-09-17  Martin Leidig  <mleidig@schlund.de>
 
+	Fixed IWrapper configuration parsing bug. The checkActive property
+	wasn't recognized when creating a Spring-managed IWrapperConfigImpl
+	instance from an unmanaged one:
+	* src/org/pustefixframework/config/contextxmlservice/parser/PageRequestParsingHandler.java
+
+	Initialize checkActive with 'true' (only for clarification as its set
+	to 'true' by the ParsingHandler if not configured):
+	* src/org/pustefixframework/config/contextxmlservice/parser/internal/IWrapperConfigImpl.java
+
+2008-09-17  Martin Leidig  <mleidig@schlund.de>
+
 	Check if BeanDefinition for PerfLogging is found in registry before
 	trying to add according property.
 	* org/pustefixframework/config/contextxmlservice/parser/ContextXMLParsingHandler.java
