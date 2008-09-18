@@ -16,8 +16,6 @@
     <prop name="factory.initialize.04">de.schlund.pfixxml.targets.cachestat.SPCacheStatistic</prop>
     <prop name="factory.initialize.06">de.schlund.pfixxml.testrecording.TestRecording</prop>
     
-    <prop name="factory.initialize.08">org.pustefixframework.admin.mbeans.AuthAdmin</prop>
-    
     <!-- Enable update thread -->
     <prop name="de.schlund.pfixcore.editor2.updatetargets">true</prop>
     

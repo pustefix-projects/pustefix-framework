@@ -1,5 +1,57 @@
 2008-09-17  Martin Leidig  <mleidig@schlund.de>
 
+	Summary of main changes: 
+	- AuthAdmin isn't a singleton any more and the MBean is registered under the 
+	  project name, it's enabled inserting <authadmin/> in the project's
+	  configuration
+	- Perflogging now is enabled when the perflogging tag is present in
+	  the configuration ,the enabled option was removed
+	- The JSON webservice callback mechanism now supports an optional scope
+	  parameter, which can be passed to the webservice constructor as second
+	  argument together with the callback object. The scope is used as 
+	  "this" context argument instead of the object itself  when the
+	  object's callback method is called.
+
+	* src/org/pustefixframework/config/contextxmlservice/parser/ContextXMLParsingHandler.java:
+	trigger authconstraint check
+	* src/org/pustefixframework/config/contextxmlservice/parser/internal/ContextConfigImpl.java:
+	activate circular authpage dependency check, allow self-dependency 
+	* src/org/pustefixframework/config/project/parser/PerfLoggingParsingHandler.java:
+	remove enabled option (automatically enabled if in configuration)
+	* src/org/pustefixframework/config/project/parser/AuthAdminParsingHandler.java:
+	new parsing handler which registers AuthAdmin as Spring bean
+	* src/org/pustefixframework/admin/mbeans/AuthAdmin.java: 
+	register MBean under application name, get Context from Session
+	attribute
+	* src/de/schlund/pfixcore/workflow/app/IHandlerContainerImpl.java:
+	update comment
+	* src/de/schlund/pfixxml/perflogging/PerfLogging.java:
+	removed enabled check (if disabled no instance exists)
+	* src/de/schlund/pfixxml/perflogging/PerfStatistic.java:
+	removed enabled state output
+	* src/de/schlund/pfixxml/perflogging/PerfLoggingMBean.java:
+	removed enabled query
+	* src/de/schlund/pfixxml/perflogging/PerfEvent.java:
+	check existence instead of enabled property
+	* docs/docbook/src/reference/advancedtopics.xml:
+	updated JSON callback mechanism documentation
+	* res/META-INF/org/pustefixframework/config/project/parser/project-config.xml:
+	added ParsingHandler for AuthAdmin
+	* projects/common/conf/factory.xml:
+	removed AuthAdmin factory
+	* projects/core/script/webservice_json.js:
+	added optional scope parameter for object callback
+	* projects/sample1/conf/project.xml:
+	removed perflogging/@enabled, added commented authadmin element
+	* projects/samplebank/conf/project.xml: 
+	added authadmin configuration element
+	* lib/pustefix-webservices-jsonws-0.1.3.jar:
+	added new jsonws library supporting generation of stubs with optional
+	scope constructor argument
+	* lib/pustefix-webservices-jsonws-0.1.2.jar: removed
+
+2008-09-17  Martin Leidig  <mleidig@schlund.de>
+
 	Fixed IWrapper configuration parsing bug. The checkActive property
 	wasn't recognized when creating a Spring-managed IWrapperConfigImpl
 	instance from an unmanaged one:

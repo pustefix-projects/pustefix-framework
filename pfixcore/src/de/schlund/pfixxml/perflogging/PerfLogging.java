@@ -28,7 +28,6 @@ public class PerfLogging extends NotificationBroadcasterSupport implements PerfL
     
     private int DEFAULT_BUFFER_SIZE = 1000;
     private int DEFAULT_OFFER_MAX_WAIT = 5;
-    private boolean enabled = false;
     private int bufferSize = DEFAULT_BUFFER_SIZE;
     private int offerMaxWait = DEFAULT_OFFER_MAX_WAIT;
     private boolean autoStart;
@@ -46,11 +45,6 @@ public class PerfLogging extends NotificationBroadcasterSupport implements PerfL
     
     public static void setInstanceForThread(PerfLogging perfLogging) {
         instance.set(perfLogging);
-    }
-    
-    public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
-        System.out.println("setEnabled "+enabled);
     }
     
     public void setBufferSize(int bufferSize) {
@@ -94,7 +88,6 @@ public class PerfLogging extends NotificationBroadcasterSupport implements PerfL
         if(LOG.isInfoEnabled()) {
             StringBuffer sb = new StringBuffer();
             sb.append("After init: \n").
-                append("Enabled: "+enabled+"\n").
                 append("Active: "+perfActive+"\n").
                 append("Buffersize: "+bufferSize+"\n").
                 append("Bufferwait: "+offerMaxWait+"\n");
@@ -104,19 +97,11 @@ public class PerfLogging extends NotificationBroadcasterSupport implements PerfL
         
     }
     
-    public boolean isPerfLogggingEnabled() {
-        return enabled;
-    }
-    
     public boolean isPerfLoggingActive() {
         return perfActive;
     }
     
     public synchronized void activatePerflogging() {
-        if(!enabled) {
-            LOG.warn("Perflogging is disabled");
-            return;
-        }
         if(!perfActive) {
             LOG.info("Activating perflogging");
             boundedBuffer.init();
@@ -130,10 +115,6 @@ public class PerfLogging extends NotificationBroadcasterSupport implements PerfL
     }
     
     public synchronized String inactivatePerflogging() {
-        if(!enabled) {
-            LOG.warn("Perflogging is disabled");
-            return null;
-        }
         if(perfActive) {
             LOG.info("Inactivating perflogging");
             perfActive = false;
@@ -149,10 +130,6 @@ public class PerfLogging extends NotificationBroadcasterSupport implements PerfL
     }
     
     public synchronized Map<String, Map<String, int[]>> inactivatePerfloggingMap() {
-        if(!enabled) {
-            LOG.warn("Perflogging is disabled");
-            return null;
-        }
         if(perfActive) {
             LOG.info("Inactivating perflogging");
             perfActive = false;
@@ -180,10 +157,6 @@ public class PerfLogging extends NotificationBroadcasterSupport implements PerfL
     
   
     //accessible via JMX:
-    
-    public synchronized boolean isPerfLoggingEnabled() {
-        return isPerfLogggingEnabled();
-    }
     
     public synchronized boolean isPerfLoggingRunning() {
         return isPerfLoggingActive();

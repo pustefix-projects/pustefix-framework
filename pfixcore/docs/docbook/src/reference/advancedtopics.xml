@@ -862,10 +862,19 @@ service.serviceMethod(arg0, arg1, ... , callback, requestid); //asynchronous wit
       }
    }
 };
-var service=new WS_Service(object); //instantiate service with callback object
+var service=new WS_Service(object); //instantiate service with callback object 
+//optionally you can pass the scope object within 
 var requestid="...";
 service.serviceMethod(arg0, arg1, ...); //asynchronous
 service.serviceMethod(arg0, arg1, ... , requestid); //asynchronous with requestid
+]]></programlisting>
+      <para>
+         If you're using JSON stubs, you can optionally pass a scope object as second constructor argument.
+         Thus this scope is used as the "this" context argument instead of the object 
+	 itself when the object's callback method is called. <emphasis>[Since: 0.13.1]</emphasis>
+      </para>
+      <programlisting><![CDATA[
+        var service = new WS_Service(object, scope);
 ]]></programlisting>
       </section>
     </section>

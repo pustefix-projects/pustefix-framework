@@ -25,7 +25,6 @@ import java.util.Map;
  */
 public interface PerfLoggingMBean {
     
-    public boolean isPerfLoggingEnabled();
     public boolean isPerfLoggingRunning();
     public void startPerfLogging();
     public String stopPerfLogging();

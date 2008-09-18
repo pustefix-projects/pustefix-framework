@@ -47,7 +47,7 @@ import de.schlund.pfixxml.perflogging.PerfEventType;
 public class IHandlerContainerImpl implements IHandlerContainer {
     /** Store all created handlers here*/
     private HashSet<IHandler> handlers;
-    /** Store all handlers here which do not have a 'checkactive' attribute */
+    /** Store all handlers here which do not have a 'checkactive' attribute set to 'false' */
     private HashSet<IHandler> activeset;
     
     private String policy;
@@ -128,10 +128,11 @@ public class IHandlerContainerImpl implements IHandlerContainer {
      * @see de.schlund.pfixcore.workflow.app.IHandlerContainer#areHandlerActive(Context)
      */
     private boolean areHandlerActive(Context context) throws Exception  {
+        
         if (activeset.isEmpty() || policy.equals("NONE")) {
             return true; // border case
         }
-
+        
         boolean retval = true;
 
         if (policy.equals("ALL")) {
@@ -155,6 +156,7 @@ public class IHandlerContainerImpl implements IHandlerContainer {
                     retval = true;
                     break;
                 }
+               
             }
         } else {
             throw new RuntimeException("ERROR: property policy must be 'ALL', 'ANY'(default) or 'NONE'");

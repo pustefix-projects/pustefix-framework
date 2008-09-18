@@ -4,7 +4,6 @@
  */
 package de.schlund.pfixxml.perflogging;
 
-import org.apache.log4j.Logger;
 
 
 /**
@@ -12,7 +11,7 @@ import org.apache.log4j.Logger;
  *
  */
 public class PerfEvent {
-    private static Logger LOG = Logger.getLogger(PerfEvent.class);
+    
     private String category;
     private String identifier;
     private long duration;
@@ -81,11 +80,7 @@ public class PerfEvent {
      private boolean isActive() {
          PerfLogging perf = PerfLogging.getInstanceForThread();
          if(perf != null) {
-             boolean ret1 = perf.isPerfLogggingEnabled();
-             boolean ret2 = perf.isPerfLoggingActive();
-             if(LOG.isDebugEnabled())
-                 LOG.debug("Enabled: "+ret1+"  Active: "+ret2);
-             return ret1 && ret2;
+             return perf.isPerfLoggingActive();
          }
          return false;
      }

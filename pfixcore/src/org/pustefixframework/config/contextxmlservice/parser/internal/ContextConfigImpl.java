@@ -35,7 +35,6 @@ import org.pustefixframework.config.contextxmlservice.ContextConfig;
 import org.pustefixframework.config.contextxmlservice.ContextResourceConfig;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.xml.sax.SAXException;
 
 import de.schlund.pfixcore.auth.AuthConstraint;
 import de.schlund.pfixcore.auth.Condition;
@@ -428,8 +427,7 @@ public class ContextConfigImpl implements ContextConfig {
         return condition;
     }
       
-    // TODO add call for this method
-    private void checkAuthConstraints() throws SAXException {
+    public void checkAuthConstraints() throws Exception {
         Set<String> authPages = new LinkedHashSet<String>();
         List<PageRequestConfigImpl> pages = getPageRequestConfigs();
         for (PageRequestConfigImpl page : pages) {
@@ -438,20 +436,20 @@ public class ContextConfigImpl implements ContextConfig {
             if (authConstraint != null) {
                 authPages.clear();
                 authPages.add(page.getPageName());
-                checkAuthConstraint(authConstraint, authPages);
+                checkAuthConstraint(authConstraint, authPages, page.getPageName());
             }
         }
     }
     
-    private void checkAuthConstraint(AuthConstraint authConstraint, Set<String> authPages) throws SAXException {
+    private void checkAuthConstraint(AuthConstraint authConstraint, Set<String> authPages, String lastAuthPage) throws Exception {
         String authPage = authConstraint.getAuthPage();
-        if (authPage != null) {
+        if (authPage != null && !authPage.equals(lastAuthPage)) {
             if (authPages.contains(authPage)) {
                 StringBuilder sb = new StringBuilder();
                 for (String s : authPages)
                     sb.append(s + " -> ");
                 sb.append(authPage);
-                throw new SAXException("Circular authconstraint@authpage reference: " + sb.toString());
+                throw new Exception("Circular authconstraint@authpage reference: " + sb.toString());
             }
             PageRequestConfigImpl cfg = getPageRequestConfig(authPage);
             if (cfg != null) {
@@ -459,9 +457,9 @@ public class ContextConfigImpl implements ContextConfig {
                 if (ac == null) ac = getDefaultAuthConstraint();
                 if (ac != null) {
                     authPages.add(authPage);
-                    checkAuthConstraint(ac, authPages);
+                    checkAuthConstraint(ac, authPages, authPage);
                 }
-            } else throw new SAXException("Authpage not configured: " + authPage);
+            } else throw new Exception("Authpage not configured: " + authPage);
         }
     }
     

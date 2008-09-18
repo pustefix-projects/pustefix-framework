@@ -254,8 +254,6 @@ class XMLFormatter implements Formatter {
         sb.append("<?xml version=\"1.0\" encoding=\"utf-8\"?>");
         sb.append("<perf>").append("\n");
         sb.append("<status>").append("\n");
-        sb.append("<enabled>").append(perfLogging.isPerfLogggingEnabled()).
-        append("</enabled>").append("\n");
         sb.append("<active>").append(perfLogging.isPerfLoggingActive()).
         append("</active>").append("\n");
         

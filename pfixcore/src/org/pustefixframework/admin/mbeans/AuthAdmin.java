@@ -17,69 +17,62 @@
  */
 package org.pustefixframework.admin.mbeans;
 
+import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Properties;
 
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
+import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.InitializingBean;
 
 import de.schlund.pfixcore.auth.Role;
 import de.schlund.pfixcore.auth.RoleNotFoundException;
 import de.schlund.pfixcore.workflow.Context;
+import de.schlund.pfixcore.workflow.ContextImpl;
+import de.schlund.pfixxml.serverutil.SessionAdmin;
 
 /**
  * 
  * @author mleidig@schlund.de
  * 
  */
-public class AuthAdmin implements AuthAdminMBean {
+public class AuthAdmin implements AuthAdminMBean, InitializingBean {
 
     public final static Logger LOG = Logger.getLogger(AuthAdmin.class);
 
-    private static AuthAdmin instance = new AuthAdmin();
-
-    public static AuthAdmin getInstance() {
-        return instance;
-    }
-
-    public void init(Properties props) {
+    private String projectName;
+   
+    public void afterPropertiesSet() throws Exception {
         try {
             MBeanServer mbeanServer = ManagementFactory.getPlatformMBeanServer();
-            ObjectName objectName = new ObjectName("Pustefix:type=AuthAdmin");
+            ObjectName objectName = new ObjectName("Pustefix:type=AuthAdmin,project="+projectName);
             mbeanServer.registerMBean(this, objectName);
         } catch (Exception x) {
             LOG.error("Can't register AuthAdmin MBean!", x);
         }
     }
 
-    // FIXME: Create a new implementation or dump this class
-    /*
+    public void setProjectName(String projectName) {
+        this.projectName = projectName;
+    }
+    
     private Context getContext(String sessionId) {
         SessionAdmin sessionAdmin = SessionAdmin.getInstance();
         try {
             HttpSession session = sessionAdmin.getSession(sessionId);
             if (session != null) {
-                SessionContextStore store = SessionContextStore.getInstance(session);
-                Set<String> servlets = store.getServletNames();
-                if (servlets.size() > 0) {
-                    String servlet = servlets.iterator().next();
-                    ContextImpl context = store.getContext(servlet);
-                    if (context != null) return context;
-                    else throw new RuntimeException("No context found!");
-                } else throw new RuntimeException("No context servlet found!");
+                ContextImpl context = (ContextImpl)session.getAttribute("scopedTarget."+ContextImpl.class.getName());
+                if (context != null) return context;
+                else throw new RuntimeException("No context found!");
             } else throw new RuntimeException("No HttpSession found!");
         } catch (IOException x) {
             throw new RuntimeException("Can't get context!", x);
         }
-    }
-    */
-    private Context getContext(String sessionId) {
-        throw new UnsupportedOperationException("This method has to be fixed.");
     }
     
     public String[] listAvailableRoles(String sessionId) {

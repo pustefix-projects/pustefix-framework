@@ -77,9 +77,10 @@ pfx.ws.json.escapeJSONString=function(str) {
 // BaseStub
 //
 
-pfx.ws.json.BaseStub=function(service,context) {
+pfx.ws.json.BaseStub=function(service,context,scope) {
    this._service=service;
    this._context=context;
+   this._scope=scope;
    this._requestPath="/xml/webservice";
    this._protocol="jsonws";
    this._uri=null;
@@ -112,7 +113,7 @@ pfx.ws.json.BaseStub.prototype.getURI=function() {
 }
 
 pfx.ws.json.BaseStub.prototype.callMethod=function(method,args,expLen) {
-   var wsCall=new pfx.ws.json.Call(this.getURI(),this._context,this._debug);
+   var wsCall=new pfx.ws.json.Call(this.getURI(),this._context,this._scope,this._debug);
    return wsCall.invoke(method,args,expLen);
 }
 
@@ -162,9 +163,10 @@ pfx.ws.json.DynamicProxy.prototype._callMethod=function(method,args) {
 // Call
 //
 
-pfx.ws.json.Call=function(uri,context,debug) {
+pfx.ws.json.Call=function(uri,context,scope,debug) {
    this._uri=uri;
    this._context=context;
+   this._scope=scope;
    this._debug=debug;
    this._opName=null;
    this._userCallback=null;
@@ -226,11 +228,11 @@ pfx.ws.json.Call.prototype.callback=function(text) {
      error.name=res.error.name;
      error.message=res.error.message;
      if(this._userCallback) this._userCallback(null,res.id,error);
-     else if(this._context) this._context[this._opName].call(this._context,null,res.id,error);
+     else if(this._context) this._context[this._opName].call(this._scope?this._scope:this._context,null,res.id,error);
      else throw error;
    } else {
      if(this._userCallback) this._userCallback(res.result,res.id,null);
-     else if(this._context) this._context[this._opName].call(this._context,res.result,res.id,null);
+     else if(this._context) this._context[this._opName].call(this._scope?this._scope:this._context,res.result,res.id,null);
      else return res.result;
    }
 }

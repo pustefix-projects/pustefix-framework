@@ -18,48 +18,36 @@
 
 package org.pustefixframework.config.project.parser;
 
+import org.pustefixframework.admin.mbeans.AuthAdmin;
 import org.pustefixframework.config.customization.CustomizationAwareParsingHandler;
 import org.pustefixframework.config.generic.ParsingUtils;
 import org.pustefixframework.config.project.ProjectInfo;
 import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.beans.factory.config.BeanDefinitionHolder;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
-import org.springframework.beans.factory.support.BeanDefinitionRegistry;
-import org.w3c.dom.Element;
 
 import com.marsching.flexiparse.parser.HandlerContext;
 import com.marsching.flexiparse.parser.exception.ParserException;
-
-import de.schlund.pfixxml.perflogging.PerfLogging;
 
 /**
  * 
  * @author mleidig@schlund.de
  *
  */
-public class PerfLoggingParsingHandler extends CustomizationAwareParsingHandler {
+public class AuthAdminParsingHandler extends CustomizationAwareParsingHandler {
 
     public void handleNodeIfActive(HandlerContext context) throws ParserException {
-        
-        Element element = (Element)context.getNode();
-        ParsingUtils.checkAttributes(element, null, new String[] {"buffersize", "autostart", "offermaxwait"});
-        
-        BeanDefinitionBuilder beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(PerfLogging.class);
        
-        String value = element.getAttribute("buffersize");
-        if(value.length() > 0) beanBuilder.addPropertyValue("bufferSize", Integer.parseInt(value));
-        value = element.getAttribute("autostart");
-        if(value.length() > 0) beanBuilder.addPropertyValue("autoStart", Boolean.parseBoolean(value));
-        value = element.getAttribute("offermaxwait");
-        if(value.length() > 0) beanBuilder.addPropertyValue("offerMaxWait", Integer.parseInt(value));
+        BeanDefinitionBuilder beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(AuthAdmin.class);
         
         ProjectInfo projectInfo = ParsingUtils.getSingleTopObject(ProjectInfo.class, context);
         beanBuilder.addPropertyValue("projectName", projectInfo.getProjectName());
         
-        String beanName = PerfLogging.class.getName();
+        String beanName = AuthAdmin.class.getName();
         BeanDefinition beanDefinition = beanBuilder.getBeanDefinition();
-        BeanDefinitionRegistry beanRegistry = ParsingUtils.getSingleTopObject(BeanDefinitionRegistry.class, context);
-        beanRegistry.registerBeanDefinition(beanName, beanDefinition);
-        
+        BeanDefinitionHolder beanHolder = new BeanDefinitionHolder(beanDefinition, beanName);
+        context.getObjectTreeElement().addObject(beanHolder);
+       
     }
 
 }

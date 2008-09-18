@@ -79,6 +79,12 @@ public class ContextXMLParsingHandler implements ParsingHandler {
         } else {
             ContextConfigImpl contextConfig = ParsingUtils.getSingleSubObjectFromRoot(ContextConfigImpl.class, context);
             
+            try {
+                contextConfig.checkAuthConstraints();
+            } catch(Exception x) {
+                throw new ParserException("Authconstraints are invalid", x);
+            }
+            
             BeanDefinitionBuilder beanBuilder;
             BeanDefinition beanDefinition;
             BeanDefinitionHolder beanHolder;

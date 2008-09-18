@@ -11,6 +11,8 @@
     <location>http://cms.${fqdn}/</location>
   </editor>
   
+  <authadmin/>
+  
   <xml-generator>
     <config-file>pfixroot:/samplebank/conf/depend.xml</config-file>
   </xml-generator>
