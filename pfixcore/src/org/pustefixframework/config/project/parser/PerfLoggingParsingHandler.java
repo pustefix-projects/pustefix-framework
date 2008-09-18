@@ -22,8 +22,8 @@ import org.pustefixframework.config.customization.CustomizationAwareParsingHandl
 import org.pustefixframework.config.generic.ParsingUtils;
 import org.pustefixframework.config.project.ProjectInfo;
 import org.springframework.beans.factory.config.BeanDefinition;
-import org.springframework.beans.factory.config.BeanDefinitionHolder;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
+import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.w3c.dom.Element;
 
 import com.marsching.flexiparse.parser.HandlerContext;
@@ -59,9 +59,9 @@ public class PerfLoggingParsingHandler extends CustomizationAwareParsingHandler 
         
         String beanName = PerfLogging.class.getName();
         BeanDefinition beanDefinition = beanBuilder.getBeanDefinition();
-        BeanDefinitionHolder beanHolder = new BeanDefinitionHolder(beanDefinition, beanName);
-        context.getObjectTreeElement().addObject(beanHolder);
-       
+        BeanDefinitionRegistry beanRegistry = ParsingUtils.getSingleTopObject(BeanDefinitionRegistry.class, context);
+        beanRegistry.registerBeanDefinition(beanName, beanDefinition);
+        
     }
 
 }

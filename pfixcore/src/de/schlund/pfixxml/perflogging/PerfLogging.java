@@ -45,7 +45,6 @@ public class PerfLogging extends NotificationBroadcasterSupport implements PerfL
     }
     
     public static void setInstanceForThread(PerfLogging perfLogging) {
-        System.out.println("+++ SET PERFLOGGING +++");
         instance.set(perfLogging);
     }
     

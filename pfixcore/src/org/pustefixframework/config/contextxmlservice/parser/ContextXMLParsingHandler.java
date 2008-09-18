@@ -154,7 +154,11 @@ public class ContextXMLParsingHandler implements ParsingHandler {
             beanBuilder.setScope("session");
             beanBuilder.addPropertyReference("serverContext", ServerContextImpl.class.getName());
             beanBuilder.addPropertyReference("contextResourceManager", ContextResourceManagerImpl.class.getName());
-            beanBuilder.addPropertyReference("perfLogging", PerfLogging.class.getName());
+            
+            if(beanReg.isBeanNameInUse(PerfLogging.class.getName())) {
+                beanBuilder.addPropertyReference("perfLogging", PerfLogging.class.getName());
+            }
+            
             beanDefinition = beanBuilder.getBeanDefinition();
             beanHolder = new BeanDefinitionHolder(beanDefinition, ContextImpl.class.getName());
             beanHolder = ScopedProxyUtils.createScopedProxy(beanHolder, beanReg, true);
