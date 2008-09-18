@@ -22,7 +22,6 @@ import java.util.HashSet;
 import java.util.Properties;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
 import org.pustefixframework.config.contextxmlservice.ContextResourceConfig;
 
 
@@ -32,7 +31,6 @@ import org.pustefixframework.config.contextxmlservice.ContextResourceConfig;
  * @author Sebastian Marsching <sebastian.marsching@1und1.de>
  */
 public class ContextResourceConfigImpl implements ContextResourceConfig {
-    private final static Logger LOG = Logger.getLogger(ContextResourceConfigImpl.class);
     
     private Class<?> resourceClass = null;
     private HashSet<Class<?>> interfaces = new HashSet<Class<?>>();

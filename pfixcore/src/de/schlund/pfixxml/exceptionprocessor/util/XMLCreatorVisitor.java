@@ -33,8 +33,6 @@ import org.w3c.dom.Text;
 import org.xml.sax.SAXParseException;
 
 import de.schlund.pfixxml.RenderingException;
-import de.schlund.pfixxml.exceptionprocessor.UniversalExceptionProcessor;
-import de.schlund.pfixxml.targets.TargetGenerationException;
 import de.schlund.pfixxml.util.XsltExtensionFunctionException;
 
 

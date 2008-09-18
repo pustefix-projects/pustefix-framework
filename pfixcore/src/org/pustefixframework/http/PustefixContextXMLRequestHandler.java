@@ -24,7 +24,6 @@ import java.util.TreeMap;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpSession;
 
-import org.apache.log4j.Logger;
 import org.pustefixframework.config.contextxmlservice.AbstractXMLServletConfig;
 import org.pustefixframework.config.contextxmlservice.ContextXMLServletConfig;
 import org.pustefixframework.config.contextxmlservice.PageRequestConfig;
@@ -55,8 +54,7 @@ import de.schlund.pfixxml.SPDocument;
  */
 
 public class PustefixContextXMLRequestHandler extends AbstractPustefixXMLRequestHandler implements BeanNameAware {
-    private Logger LOG = Logger.getLogger(PustefixContextXMLRequestHandler.class);
-
+   
     // private final static String ALREADY_SSL = "__CONTEXT_ALREADY_SSL__";
 
     private final static String PARAM_SCRIPTEDFLOW = "__scriptedflow";

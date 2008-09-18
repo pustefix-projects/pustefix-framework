@@ -19,8 +19,6 @@
 
 package de.schlund.pfixcore.util.basicapp.objects;
 
-import java.util.ArrayList;
-
 import org.apache.log4j.Logger;
 
 
