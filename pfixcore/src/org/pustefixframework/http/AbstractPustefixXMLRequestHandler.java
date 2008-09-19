@@ -563,7 +563,7 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
         if (! doreuse) {
             // we only want to update the Session hit when we are not handling a "reuse" request
             if (session != null) {
-                SessionAdmin.getInstance().touchSession(servletname, stylesheet, session);
+                getSessionAdmin().touchSession(servletname, stylesheet, session);
             }
             // Only process cookies if we don't reuse
             setCookies(spdoc,res);
@@ -807,7 +807,7 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
         paramhash.put(TargetGenerator.XSLPARAM_TKEY, VALUE_NONE);
         paramhash.put(TargetGenerator.XSLPARAM_NAVITREE, NavigationFactory.getInstance().getNavigation(targetconf,generator.getXsltVersion()).getNavigationXMLElement());
 
-        String session_to_link_from_external = SessionAdmin.getInstance().getExternalSessionId(session);
+        String session_to_link_from_external = getSessionAdmin().getExternalSessionId(session);
         paramhash.put("__external_session_ref", session_to_link_from_external);
         paramhash.put("__spdoc__", spdoc);
         paramhash.put("__register_frame_helper__", new RegisterFrameHelper(getLRU(session), spdoc));

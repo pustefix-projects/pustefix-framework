@@ -28,6 +28,8 @@ import java.util.LinkedList;
 import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
+import org.pustefixframework.container.spring.beans.PustefixWebApplicationContext;
+import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 
 import de.schlund.pfixxml.PfixServletRequest;
 import de.schlund.pfixxml.serverutil.SessionAdmin;
@@ -74,20 +76,21 @@ public class ExceptionDataValueHelper {
 		exdata.setRequestParams(keysnvalues);
 		
 		 
-		SessionAdmin sessadmin = SessionAdmin.getInstance();
-		SessionInfoStruct info = sessadmin.getInfo(id);
-		ArrayList<String> steps = new ArrayList<String>();
-	    if(info != null) {
-	    	LinkedList<SessionInfoStruct.TrailElement> trail = info.getTraillog();
-	    	if (trail != null && trail.size() > 0) {
-	    		for (Iterator<SessionInfoStruct.TrailElement> j = trail.listIterator(); j.hasNext();) {
-	    			SessionInfoStruct.TrailElement step = j.next();
-	        		steps.add("[" + step.getCounter() + "] " + step.getStylesheetname() + " [" + step.getServletname() + "]");
-	        	}
-	        }
-	    }
-	    exdata.setLastSteps(steps);
-	    
+		SessionAdmin sessionAdmin = getSessionAdmin(pfixReq);
+		if(sessionAdmin!=null) {
+    		SessionInfoStruct info = sessionAdmin.getInfo(id);
+    		ArrayList<String> steps = new ArrayList<String>();
+    	    if(info != null) {
+    	    	LinkedList<SessionInfoStruct.TrailElement> trail = info.getTraillog();
+    	    	if (trail != null && trail.size() > 0) {
+    	    		for (Iterator<SessionInfoStruct.TrailElement> j = trail.listIterator(); j.hasNext();) {
+    	    			SessionInfoStruct.TrailElement step = j.next();
+    	        		steps.add("[" + step.getCounter() + "] " + step.getStylesheetname() + " [" + step.getServletname() + "]");
+    	        	}
+    	        }
+    	    }
+    	    exdata.setLastSteps(steps);
+		}
 	    
 	    HashMap<String,String> sessdata = new HashMap<String, String>();
         Enumeration<?> enm = session.getAttributeNames();
@@ -110,5 +113,26 @@ public class ExceptionDataValueHelper {
 		return exdata;
 	}
 
+	private static SessionAdmin getSessionAdmin(PfixServletRequest pfixReq) {
+	    //TODO: get SessionAdmin in a smarter way
+	    HttpSession session = pfixReq.getSession(false);
+	    if(session != null) {
+	        Enumeration<?> e = session.getServletContext().getAttributeNames();
+	        while(e.hasMoreElements()) {
+	            String name = (String)e.nextElement();
+	            Object value = session.getServletContext().getAttribute(name);
+	            if(value instanceof PustefixWebApplicationContext) {
+	                PustefixWebApplicationContext appContext = (PustefixWebApplicationContext)value;
+	                try {
+	                    SessionAdmin sessionAdmin = (SessionAdmin)appContext.getBean(SessionAdmin.class.getName());
+	                    return sessionAdmin;
+	                } catch(NoSuchBeanDefinitionException x) {
+	                    LOG.error("Can't get SessionAdmin bean from ApplicationContext");
+	                }
+	            }
+	        }
+	    } 
+	    return null;
+	}
 
 }

@@ -18,13 +18,10 @@
 
 package org.pustefixframework.config.project.parser;
 
-import org.pustefixframework.admin.mbeans.AuthAdmin;
 import org.pustefixframework.config.customization.CustomizationAwareParsingHandler;
 import org.pustefixframework.config.generic.ParsingUtils;
 import org.pustefixframework.config.project.ProjectInfo;
-import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinitionHolder;
-import org.springframework.beans.factory.config.RuntimeBeanReference;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 
 import com.marsching.flexiparse.parser.HandlerContext;
@@ -37,19 +34,15 @@ import de.schlund.pfixxml.serverutil.SessionAdmin;
  * @author mleidig@schlund.de
  *
  */
-public class AuthAdminParsingHandler extends CustomizationAwareParsingHandler {
+public class SessionAdminParsingHandler extends CustomizationAwareParsingHandler {
 
     public void handleNodeIfActive(HandlerContext context) throws ParserException {
        
-        BeanDefinitionBuilder beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(AuthAdmin.class);
-        
+        BeanDefinitionBuilder beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(SessionAdmin.class);
         ProjectInfo projectInfo = ParsingUtils.getSingleTopObject(ProjectInfo.class, context);
         beanBuilder.addPropertyValue("projectName", projectInfo.getProjectName());
-        beanBuilder.addPropertyValue("sessionAdmin", new RuntimeBeanReference(SessionAdmin.class.getName()));
-        
-        String beanName = AuthAdmin.class.getName();
-        BeanDefinition beanDefinition = beanBuilder.getBeanDefinition();
-        BeanDefinitionHolder beanHolder = new BeanDefinitionHolder(beanDefinition, beanName);
+        beanBuilder.setScope("singleton");
+        BeanDefinitionHolder beanHolder = new BeanDefinitionHolder(beanBuilder.getBeanDefinition(), SessionAdmin.class.getName());
         context.getObjectTreeElement().addObject(beanHolder);
        
     }

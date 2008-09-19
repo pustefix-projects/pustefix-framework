@@ -101,6 +101,7 @@ public abstract class AbstractPustefixRequestHandler implements UriProvidingHttp
     private String                       servletEncoding;
     private ServletContext servletContext;
     private String handlerURI;
+    private SessionAdmin sessionAdmin;
 
     protected abstract ServletManagerConfig getServletManagerConfig();
 
@@ -151,7 +152,7 @@ public abstract class AbstractPustefixRequestHandler implements UriProvidingHttp
             LOG.debug("====> URI:   " + req.getRequestURI());
             LOG.debug("====> Query: " + req.getQueryString());
             LOG.debug("----> needsSession=" + needsSession() + " allowSessionCreate=" + allowSessionCreate());
-            LOG.debug("====> Sessions: " + SessionAdmin.getInstance().toString());
+            LOG.debug("====> Sessions: " + sessionAdmin.toString());
             LOG.debug("\n");
 
             Enumeration<?> headers = req.getHeaderNames();
@@ -314,9 +315,9 @@ public abstract class AbstractPustefixRequestHandler implements UriProvidingHttp
             // of the browser, the user may have come back to a (non-ssl) page (in his browser history) that contains
             // links with the old "parent" session id embedded. We need to check for this and create a
             // new session but reuse the visit id of the currently running SSL session.
-            if (!runningUnderSSL(req) && SessionAdmin.getInstance().idWasParentSession(req.getRequestedSessionId())) {
+            if (!runningUnderSSL(req) && sessionAdmin.idWasParentSession(req.getRequestedSessionId())) {
                 LOG.debug("    ... but this session was the parent of a currently running secure session.");
-                HttpSession secure_session = SessionAdmin.getInstance().getChildSessionForParentId(req.getRequestedSessionId());
+                HttpSession secure_session = sessionAdmin.getChildSessionForParentId(req.getRequestedSessionId());
                 if (secure_session != null) {
                     does_cookies = doCookieTest(req, res, secure_session);
                 }
@@ -433,7 +434,7 @@ public abstract class AbstractPustefixRequestHandler implements UriProvidingHttp
         String parentid = (String) session.getAttribute(CHECK_FOR_RUNNING_SSL_SESSION);
         if (parentid != null && !parentid.equals("")) {
             LOG.debug("*** The current insecure SSL session says to check for a already running SSL session for reuse");
-            HttpSession secure_session = SessionAdmin.getInstance().getChildSessionForParentId(parentid);
+            HttpSession secure_session = sessionAdmin.getChildSessionForParentId(parentid);
             if (secure_session != null) {
                 String secure_id = secure_session.getId();
                 String sec_testid = (String) secure_session.getAttribute(SECURE_SESS_COOKIE + MD5Utils.hex_md5(secure_id));
@@ -468,11 +469,11 @@ public abstract class AbstractPustefixRequestHandler implements UriProvidingHttp
         HashMap<String, Object> map = new HashMap<String, Object>();
         SessionHelper.saveSessionData(map, session);
         // Before we invalidate the current session we save the traillog
-        SessionInfoStruct infostruct = SessionAdmin.getInstance().getInfo(session);
+        SessionInfoStruct infostruct = sessionAdmin.getInfo(session);
         LinkedList<TrailElement> traillog = new LinkedList<TrailElement>();
         String old_id = session.getId();
         if (infostruct != null) {
-            traillog = SessionAdmin.getInstance().getInfo(session).getTraillog();
+            traillog = sessionAdmin.getInfo(session).getTraillog();
         } else {
             LOG.warn("*** Infostruct == NULL ***");
         }
@@ -486,7 +487,7 @@ public abstract class AbstractPustefixRequestHandler implements UriProvidingHttp
         if (visit_id != null) {
             // Don't call this.registerSession(...) here. We don't want to log this as a different visit.
             // Now we register the new session with saved traillog
-            SessionAdmin.getInstance().registerSession(session, traillog, infostruct.getData().getServerName(), infostruct.getData().getRemoteAddr());
+            sessionAdmin.registerSession(session, traillog, infostruct.getData().getServerName(), infostruct.getData().getRemoteAddr());
         } else {
             // Register a new session now.
             registerSession(req, session);
@@ -545,7 +546,7 @@ public abstract class AbstractPustefixRequestHandler implements UriProvidingHttp
                 session.setAttribute(VISIT_ID, msanc);
                 LOG.debug("*** Setting REFUSE COOKIES flag in session (Id: " + session.getId() + ")");
                 session.setAttribute(REFUSE_COOKIES, Boolean.TRUE);
-                SessionAdmin.getInstance().registerSession(session, getServerName(req), req.getRemoteAddr());
+                sessionAdmin.registerSession(session, getServerName(req), req.getRemoteAddr());
             }
         }
 
@@ -575,7 +576,7 @@ public abstract class AbstractPustefixRequestHandler implements UriProvidingHttp
         session.setAttribute(SessionAdmin.SESSION_IS_SECURE, Boolean.FALSE);
         session.setAttribute(STORED_REQUEST, preq);
 
-        HttpSession child = SessionAdmin.getInstance().getChildSessionForParentId(parentid);
+        HttpSession child = sessionAdmin.getChildSessionForParentId(parentid);
         String testrand = (String) child.getAttribute(RAND_SESS_COOKIE_VALUE);
         if (testrand == null || testrand.equals("")) {
             // Make sure a test cookie is created
@@ -595,7 +596,7 @@ public abstract class AbstractPustefixRequestHandler implements UriProvidingHttp
         // from the legitimate user. The only thing we can do is to copy the VISIT_ID, which helps to keep the
         // statistic clean :-)
         String parentid = req.getRequestedSessionId();
-        HttpSession child = SessionAdmin.getInstance().getChildSessionForParentId(parentid);
+        HttpSession child = sessionAdmin.getChildSessionForParentId(parentid);
         String curr_visit_id = (String) child.getAttribute(VISIT_ID);
         HttpSession session = req.getSession(true);
 
@@ -607,10 +608,10 @@ public abstract class AbstractPustefixRequestHandler implements UriProvidingHttp
             session.setAttribute(RAND_SESS_COOKIE_VALUE, testrand);
         }
 
-        LinkedList<TrailElement> traillog = SessionAdmin.getInstance().getInfo(child).getTraillog();
+        LinkedList<TrailElement> traillog = sessionAdmin.getInfo(child).getTraillog();
         session.setAttribute(SessionHelper.SESSION_ID_URL, SessionHelper.getURLSessionId(req));
         session.setAttribute(VISIT_ID, curr_visit_id);
-        SessionAdmin.getInstance().registerSession(session, traillog, getServerName(req), req.getRemoteAddr());
+        sessionAdmin.registerSession(session, traillog, getServerName(req), req.getRemoteAddr());
         LOG.debug("===> Redirecting with session (Id: " + session.getId() + ") using OLD VISIT_ID: " + curr_visit_id);
         session.setAttribute(STORED_REQUEST, preq);
         String redirect_uri = SessionHelper.encodeURL(req.getScheme(), getServerName(req), req, getServletManagerConfig().getProperties());
@@ -627,7 +628,7 @@ public abstract class AbstractPustefixRequestHandler implements UriProvidingHttp
             session.setAttribute(VISIT_ID, msanc);
             LOG.debug("*** Setting REFUSE COOKIES flag in session (Id: " + session.getId() + ")");
             session.setAttribute(REFUSE_COOKIES, Boolean.TRUE);
-            SessionAdmin.getInstance().registerSession(session, getServerName(req), req.getRemoteAddr());
+            sessionAdmin.registerSession(session, getServerName(req), req.getRemoteAddr());
         }
 
         LOG.debug("===> Redirecting to URL with session (Id: " + session.getId() + ")");
@@ -771,7 +772,7 @@ public abstract class AbstractPustefixRequestHandler implements UriProvidingHttp
                 logbuff.append(req.getHeader("accept-language"));
             }
             LOGGER_VISIT.warn(logbuff.toString());
-            SessionAdmin.getInstance().registerSession(session, getServerName(req), req.getRemoteAddr());
+            sessionAdmin.registerSession(session, getServerName(req), req.getRemoteAddr());
         }
     }
 
@@ -1116,4 +1117,13 @@ public abstract class AbstractPustefixRequestHandler implements UriProvidingHttp
     public ServletContext getServletContext() {
         return this.servletContext;
     }
+    
+    public void setSessionAdmin(SessionAdmin sessionAdmin) {
+        this.sessionAdmin = sessionAdmin;
+    }
+    
+    public SessionAdmin getSessionAdmin() {
+        return sessionAdmin;
+    }
+    
 }

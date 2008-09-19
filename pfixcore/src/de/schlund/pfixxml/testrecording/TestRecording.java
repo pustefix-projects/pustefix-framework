@@ -32,6 +32,8 @@ public class TestRecording implements TestRecordingMBean {
       return instance;
    }
    
+   private SessionAdmin sessionAdmin;
+   
    public void init(Properties props) { 
       LOG.info("TestRecording init");
       try {
@@ -48,6 +50,11 @@ public class TestRecording implements TestRecordingMBean {
    
    public TestRecording() {
     
+   }
+   
+   //FIXME: inject SessionAdmin
+   public void setSessionAdmin(SessionAdmin sessionAdmin) {
+       this.sessionAdmin = sessionAdmin;
    }
    
    // TODO: who's responsible for unregister?
@@ -88,11 +95,10 @@ public class TestRecording implements TestRecordingMBean {
       SessionInfoStruct info;
       
       lst = new ArrayList<SessionData>();
-      admin = SessionAdmin.getInstance();
-      iter = admin.getAllSessionIds().iterator();
+      iter = sessionAdmin.getAllSessionIds().iterator();
       while (iter.hasNext()) {
           id = (String) iter.next();
-          info = admin.getInfo(id);
+          info = sessionAdmin.getInfo(id);
           if (serverName.equals(info.getData().getServerName()) && remoteAddr.equals(info.getData().getRemoteAddr())) {
               lst.add(info.getData());
           }
@@ -116,10 +122,10 @@ public class TestRecording implements TestRecordingMBean {
       knownClients.remove(remoteAddr);
   }
    
-   public static HttpSession getSession(String id) throws IOException {
+   public HttpSession getSession(String id) throws IOException {
       SessionInfoStruct info;
       
-      info = SessionAdmin.getInstance().getInfo(id);
+      info = sessionAdmin.getInfo(id);
       if (info == null) {
           throw new IOException("session not found: " + id);
       }

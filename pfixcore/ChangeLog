@@ -1,3 +1,29 @@
+2008-09-18  Martin Leidig  <mleidig@schlund.de>
+
+	* src/org/pustefixframework/http/AbstractPustefixRequestHandler.java:
+	make SessionAdmin available using DI instead of singleton access
+	* src/org/pustefixframework/http/AbstractPustefixXMLRequestHandler.java:
+	use injected SessionAdmin
+	* src/org/pustefixframework/config/project/parser/PustefixContextDirectOutputRequestHandlerParsingHandler.java:
+	inject SessionAdmin
+	* src/org/pustefixframework/config/project/parser/PustefixContextXMLRequestHandlerParsingHandler.java:
+	inject SessionAdmin
+	* src/org/pustefixframework/config/project/parser/AuthAdminParsingHandler.java:
+	inject SessionAdmin
+	* src/org/pustefixframework/config/project/parser/SessionAdminParsingHandler.java:
+	new class which registers SessionAdmin as Spring bean
+	* src/org/pustefixframework/admin/mbeans/AuthAdmin.java:
+	get SessionAdmin via DI
+	* src/de/schlund/pfixxml/serverutil/SessionAdmin.java:
+	make singleton to normal instance, register SessionAdmin as MBean
+	using the injected project name
+	* src/de/schlund/pfixxml/testrecording/TestRecording.java:
+	prepare for injecting SessionAdmin 
+	* src/de/schlund/pfixxml/exceptionprocessor/util/ExceptionDataValueHelper.java:
+	get SessionAdmin from ApplicationContext 
+	* res/META-INF/org/pustefixframework/config/project/parser/project-config.xml:
+	added SessionAdminParsingHandler configuration
+
 2008-09-17  Martin Leidig  <mleidig@schlund.de>
 
 	Summary of main changes: 

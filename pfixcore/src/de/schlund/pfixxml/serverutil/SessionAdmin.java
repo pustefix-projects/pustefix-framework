@@ -35,33 +35,38 @@ import javax.servlet.http.HttpSessionBindingEvent;
 import javax.servlet.http.HttpSessionBindingListener;
 
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.InitializingBean;
 
 /**
  *
  *
  */
 
-public class SessionAdmin implements HttpSessionBindingListener, SessionAdminMBean {
+public class SessionAdmin implements HttpSessionBindingListener, SessionAdminMBean, InitializingBean {
     
     public  static String       LISTENER       = "__SESSION_LISTENER__"; 
     public  static String       PARENT_SESS_ID = "__PARENT_SESSION_ID__";
     public  static final String SESSION_IS_SECURE             = "__SESSION_IS_SECURE__";
-    private static SessionAdmin instance       = new SessionAdmin();
     private static final Logger LOG            = Logger.getLogger(SessionAdmin.class);
     /** Maps session to it's id. */
     private        HashMap<HttpSession, String> sessionid = new HashMap<HttpSession, String>();
     private        HashMap<String, SessionInfoStruct> sessioninfo = new HashMap<String, SessionInfoStruct>();
     private        HashMap<String,HttpSession>      parentinfo     = new HashMap<String,HttpSession>();
     private        HashMap<String,String>      parentinfo_rev = new HashMap<String,String>();
+    private String projectName;
     
-    private SessionAdmin() {
+    public void afterPropertiesSet() throws Exception {
         try {
             MBeanServer mbeanServer = ManagementFactory.getPlatformMBeanServer(); 
-            ObjectName objectName = new ObjectName("Pustefix:type=SessionAdmin"); 
+            ObjectName objectName = new ObjectName("Pustefix:type=SessionAdmin,project="+projectName); 
             mbeanServer.registerMBean(this, objectName);
         } catch(Exception x) {
             LOG.error("Can't register SessionAdmin MBean!",x);
         } 
+    }
+    
+    public void setProjectName(String projectName) {
+        this.projectName = projectName;
     }
 
     public String toString() {
@@ -172,10 +177,6 @@ public class SessionAdmin implements HttpSessionBindingListener, SessionAdminMBe
         }
     }
 
-    public static SessionAdmin getInstance() {
-        return instance;
-    }
-
     public String getExternalSessionId(HttpSession session) {
         String result = "NOSUCHSESSION";
         if (session != null) { 
@@ -193,18 +194,16 @@ public class SessionAdmin implements HttpSessionBindingListener, SessionAdminMBe
     //accessible via JMX:
     
     public List<SessionData> getSessions(String serverName, String remoteAddr) {
-        SessionAdmin admin;
         Iterator<String> iter;
         String id;
         List<SessionData> lst;
         SessionInfoStruct info;
         
         lst = new ArrayList<SessionData>();
-        admin = SessionAdmin.getInstance();
-        iter = admin.getAllSessionIds().iterator();
+        iter = getAllSessionIds().iterator();
         while (iter.hasNext()) {
             id = (String) iter.next();
-            info = admin.getInfo(id);
+            info = getInfo(id);
             if (serverName.equals(info.getData().getServerName()) && remoteAddr.equals(info.getData().getRemoteAddr())) {
                 lst.add(info.getData());
             }

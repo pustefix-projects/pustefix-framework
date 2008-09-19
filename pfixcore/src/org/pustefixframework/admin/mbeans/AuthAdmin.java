@@ -46,6 +46,7 @@ public class AuthAdmin implements AuthAdminMBean, InitializingBean {
     public final static Logger LOG = Logger.getLogger(AuthAdmin.class);
 
     private String projectName;
+    private SessionAdmin sessionAdmin;
    
     public void afterPropertiesSet() throws Exception {
         try {
@@ -61,8 +62,11 @@ public class AuthAdmin implements AuthAdminMBean, InitializingBean {
         this.projectName = projectName;
     }
     
+    public void setSessionAdmin(SessionAdmin sessionAdmin) {
+        this.sessionAdmin = sessionAdmin;
+    }
+    
     private Context getContext(String sessionId) {
-        SessionAdmin sessionAdmin = SessionAdmin.getInstance();
         try {
             HttpSession session = sessionAdmin.getSession(sessionId);
             if (session != null) {
