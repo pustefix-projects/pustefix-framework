@@ -105,11 +105,6 @@ or delete the DOCTYPE definition -->
     <condition property="fqdn"     value="${machine}">
       <not><isset property="dnsdomainname"/></not>
     </condition>
-
-    <exec outputproperty="trusted.tomcat" executable="hostname" os="Linux"><arg value="-i"/></exec>
-  	<condition property="trusted.tomcat" value="127.0.0.1">
-  	  <os name="Mac OS X"/>
-  	</condition>
   </target>
 
   <path id="cp.libs">
@@ -376,13 +371,6 @@ or delete the DOCTYPE definition -->
      classpathref="cp.classpath"
      loaderref="pfx-loader"
      description="Generates .java files out of .iwrp (Interface Wrapper) files"
-     />
-    <taskdef
-     name="pfx-webxml-deprecated"
-     classname="de.schlund.pfixcore.util.XsltWebXmlTask"
-     classpathref="cp.classpath"
-     loaderref="pfx-loader"
-     description="Creates WEB-INF/web.xml config files for each project"
      />
   	<taskdef
   	 name="pfx-webxml"
@@ -849,7 +837,6 @@ or delete the DOCTYPE definition -->
       docroot="${dir.docroot}"
       stylesheet="${dir.projects}/core/build/create_serverxml.xsl"
     >
-      <param name="trusted"   expression="${trusted.tomcat}"/>
       <param name="standalone" expression="${standalone.tomcat}"/>
       <param name="portbase"   expression="${portbase.tomcat}"/>
     </pfx-server-config>
@@ -996,7 +983,6 @@ or delete the DOCTYPE definition -->
   </target>    
 
   <target name="webapp.dir" depends="webapp.init, webservice, generate">
-    <!-- FIXME: Fix webapp generation -->
     <delete dir="${webapp.dir}"/>
     <mkdir dir="${webapp.dir}"/> 
     <mkdir dir="${webapp.pfixroot}"/>
@@ -1030,50 +1016,31 @@ or delete the DOCTYPE definition -->
         </fileset>
     </copy>
 
-    <xslt style="${dir.projects}/core/build/create_webapp_projectsxml.xsl" in="${dir.projects}/servletconf/projects.xml"
-     out="${webapp.pfixroot}/servletconf/projects.xml">
-        <param name="projectname"  expression="${webapp.name}"/>    
-        <param name="docroot"  expression="${webapp.dir}"/>    
-    </xslt>
-    
-    <pfx-passthroughcopy 
-      srcdir="${dir.projects}"
-      destdir="${webapp.dir}"
-      projectsxml="${webapp.pfixroot}/servletconf/projects.xml"
-      projectname="${webapp.name}"
-    />
-     
     <copy todir="${webapp.pfixroot}">
         <fileset dir="${dir.projects}">
             <include name="core/**"/>
             <include name="common/**"/>
             <include name="${webapp.name}/**"/>
             <include name=".cache/${webapp.name}/**"/>
-        </fileset>    
+        </fileset>
     </copy>
-   
-    <pfx-webxml-deprecated
-      style="${dir.projects}/core/build/create_webxml_deprecated.xsl"
-      srcdir="${webapp.pfixroot}"
-      destdir="dist"
-      extension=".xml"
-      projects="servletconf/projects.xml"
-      corewebxml="core/conf/web.xml"
-     >
-      <param name="docroot" expression="${dir.docroot}"/>
-      <param name="fqdn"    expression="${fqdn}"/>
-      <param name="uid"     expression="${uid}"/>
-      <param name="machine" expression="${machine}"/>
-      <param name="mode"    expression="${makemode}"/>
-      <param name="warmode" expression="true"/>   
-    </pfx-webxml-deprecated>
-   
-    <antcall target="-webapp.context">
-      <param name="file" value="${host.dir}/context-main.xml"/>   
-      <param name="path" value="/xml"/>
-      <param name="docbase" value="."/>
-    </antcall>
-   
+    
+    <pfx-passthroughcopy 
+      srcdir="${dir.projects}"
+      destdir="${webapp.dir}"
+      projectsxml="${webapp.pfixroot}/common/conf/projects.xml"
+      projectxml="${webapp.pfixroot}/${webapp.name}/conf/project.xml"
+      projectname="${webapp.name}"
+    />
+    
+    <pfx-webxml 
+  		basedir="${webapp.pfixroot}" 
+  		webappsdir="${engine.dir}"
+  		includes="${webapp.name}/conf/project.xml"
+  		commonconfig="${webapp.pfixroot}/common/conf/projects.xml"
+  		stylesheet="${dir.projects}/core/build/create_webxml.xsl"
+  	/>
+    
     <!-- Create context.xml for Tomcat to disable use of session cookies -->
     <mkdir dir="${webapp.dir}/META-INF"/>
     <echo file="${webapp.dir}/META-INF/context.xml">
@@ -1084,10 +1051,7 @@ or delete the DOCTYPE definition -->
         <fileset dir="${webapp.dir}"/>
     </war>
   </target>
- 
-  <target name="-webapp.context">
-  </target>
-    
+  
   <target name="webapp.tomcat.opt" depends="webapp.init" >
     <available file="${webapp.tomcat.dir}/bin/catalina.sh" type="file" property="webapp.tomcat.exists" />
     <antcall target="webapp.tomcat.missing"/>
@@ -1097,7 +1061,6 @@ or delete the DOCTYPE definition -->
   </target>
 
   <target name="webapp.tomcat" depends="webapp.init">
-    <!-- FIXME: Fix webapp generation for new project.xml -->
     <antcall target="tomcat.dir">
       <param name="dir.tomcat" value="${webapp.tomcat.dir}"/>
     </antcall> 
@@ -1106,22 +1069,22 @@ or delete the DOCTYPE definition -->
     </antcall> 
     <antcall target="jk_conf">
       <param name="dir.tomcat" value="${webapp.tomcat.dir}"/>
-    </antcall> 
-    <pfx-xslt
-     infile="${webapp.pfixroot}/servletconf/projects.xml"
-     outfile="${webapp.tomcat.dir}/conf/server.xml"
-     style="${dir.projects}/core/build/create_webapp_serverxml.xsl"
-     >
-      <param name="docroot"   expression="${engine.dir}"/>
-      <param name="fqdn"      expression="${fqdn}"/>
-      <param name="uid"       expression="${uid}"/>
-      <param name="machine"   expression="${machine}"/>
-      <param name="mode"      expression="${makemode}"/>
-      <param name="trusted"   expression="${trusted.tomcat}"/>
+    </antcall>
+    
+    <pfx-server-config
+      basedir="${webapp.pfixroot}"
+      outfile="${webapp.tomcat.dir}/conf/server.xml"
+      includes="${webapp.name}/conf/project.xml"
+      commonconfig="${webapp.pfixroot}/common/conf/projects.xml"
+      docroot="${webapp.pfixroot}"
+      stylesheet="${dir.projects}/core/build/create_serverxml.xsl"
+    >
       <param name="standalone" expression="${standalone.tomcat}"/>
       <param name="portbase"   expression="${portbase.tomcat}"/>
-    </pfx-xslt>
-   
+      <param name="warmode"    expression="true"/>
+      <param name="webappbase" expression="${engine.dir}"/>
+    </pfx-server-config>
+    
     <apply executable="chmod" os="Linux, Mac OS X">
       <arg line="a+x"/>
       <fileset dir="${webapp.tomcat.dir}" includes="**/*.sh"/>

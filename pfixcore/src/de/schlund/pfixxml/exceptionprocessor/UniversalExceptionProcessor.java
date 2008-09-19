@@ -90,7 +90,9 @@ public class UniversalExceptionProcessor implements ExceptionProcessor {
         } catch (TransformerConfigurationException e) {
             throw new ServletException(e);
         }
-            
+        
+        res.setContentType("text/html");
+        
         try {
             Xslt.transform(doc, stvalue, null, new StreamResult(res.getOutputStream()));
         } catch (TransformerException e) {

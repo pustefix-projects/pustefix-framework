@@ -20,17 +20,36 @@ package de.schlund.pfixcore.util;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMResult;
+import javax.xml.transform.sax.SAXTransformerFactory;
+import javax.xml.transform.sax.TransformerHandler;
+
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Task;
+import org.pustefixframework.config.Constants;
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+import org.xml.sax.XMLReader;
+import org.xml.sax.helpers.DefaultHandler;
+import org.xml.sax.helpers.XMLReaderFactory;
 
+import de.schlund.pfixxml.config.CustomizationHandler;
+import de.schlund.pfixxml.config.GlobalConfig;
+import de.schlund.pfixxml.util.TransformerHandlerAdapter;
 import de.schlund.pfixxml.util.XPath;
 import de.schlund.pfixxml.util.Xml;
 
@@ -46,8 +65,14 @@ public class WebappCopyPassthroughHtdocsTask extends Task {
     private File destdir;
 
     private File projectsxml;
+    
+    private File projectxml;
 
     private String projectname;
+
+    private Document projectsDoc;
+
+    private Document projectDoc;
 
     public void setSrcdir(File srcdir) {
         this.srcdir = srcdir;
@@ -60,6 +85,10 @@ public class WebappCopyPassthroughHtdocsTask extends Task {
     public void setProjectsxml(File projectsxml) {
         this.projectsxml = projectsxml;
     }
+    
+    public void setProjectxml(File projectxml) {
+        this.projectxml = projectxml;
+    }
 
     public void setProjectname(String projectname) {
         this.projectname = projectname;
@@ -67,6 +96,7 @@ public class WebappCopyPassthroughHtdocsTask extends Task {
 
     public void execute() throws BuildException {
         checkParameters();
+        readFiles();
 
         String htdocspath = getHtdocs();
         File htdocs = new File(htdocspath);
@@ -94,7 +124,12 @@ public class WebappCopyPassthroughHtdocsTask extends Task {
             }
         }
     }
-
+    
+    private void readFiles() throws BuildException {
+        this.projectsDoc = readCustomizedDocument(projectsxml);
+        this.projectDoc = readCustomizedDocument(projectxml);
+    }
+    
     private void checkParameters() throws BuildException {
         if (projectsxml == null) {
             throw new BuildException(
@@ -102,6 +137,13 @@ public class WebappCopyPassthroughHtdocsTask extends Task {
         }
         if (!projectsxml.exists() || !projectsxml.isFile()) {
             throw new BuildException("File " + projectsxml + " does not exist!");
+        }
+        if (projectxml == null) {
+            throw new BuildException(
+                    "Mandatory attribute \"projectxml\" is not set!");
+        }
+        if (!projectxml.exists() || !projectxml.isFile()) {
+            throw new BuildException("File " + projectxml + " does not exist!");
         }
         if (srcdir == null) {
             throw new BuildException(
@@ -122,45 +164,129 @@ public class WebappCopyPassthroughHtdocsTask extends Task {
             throw new BuildException("Attribute \"projectname\" has to be set!");
         }
     }
+    
+    private Document readCustomizedDocument(File file) throws BuildException {
+        XMLReader xreader;
+        DOMResult result = new DOMResult();
+        try {
+            xreader = XMLReaderFactory.createXMLReader();
+        } catch (SAXException e) {
+            throw new RuntimeException("Could not create XMLReader", e);
+        }
+        TransformerFactory tf = TransformerFactory.newInstance();
+        if (tf.getFeature(SAXTransformerFactory.FEATURE)) {
+            SAXTransformerFactory stf = (SAXTransformerFactory) tf;
+            TransformerHandler th;
+            try {
+                th = stf.newTransformerHandler();
+            } catch (TransformerConfigurationException e) {
+                throw new RuntimeException("Failed to configure TransformerFactory!", e);
+            }
 
+            th.setResult(result);
+            DefaultHandler dh = new TransformerHandlerAdapter(th);
+            DefaultHandler cushandler = new CustomizationHandler(dh, Constants.NS_PROJECT);
+            xreader.setContentHandler(cushandler);
+            xreader.setDTDHandler(cushandler);
+            xreader.setErrorHandler(cushandler);
+            xreader.setEntityResolver(cushandler);
+
+            try {
+                xreader.parse(new InputSource(new FileInputStream(file)));
+            } catch (FileNotFoundException e) {
+                throw new BuildException(e);
+            } catch (IOException e) {
+                throw new BuildException(e);
+            } catch (SAXException e) {
+                throw new BuildException(e);
+            }
+        } else {
+            throw new BuildException("Could not get instance of SAXTransformerFactory!");
+        }
+        Node node = result.getNode();
+        if (node.getNodeType() == Node.DOCUMENT_NODE) {
+            return (Document) node;
+        } else {
+            return node.getOwnerDocument();
+        }
+    }
+    
     private Set<String> getPassthroughPaths() throws BuildException {
         HashSet<String> paths = new HashSet<String>();
-
-        try {
-            Document doc = Xml.parseMutable(projectsxml);
-            List<Node> nodes = XPath
-                    .select(
-                            doc,
-                            "/projects/project/passthrough/text()|/projects/common/apache/passthrough/text()");
-            for (Node node : nodes) {
-                if (node.getNodeValue().length() > 0)
-                    paths.add(node.getNodeValue());
+        paths.addAll(getPassthroughPathsFromDocument(projectsDoc));
+        paths.addAll(getPassthroughPathsFromDocument(projectDoc));
+        return paths;
+    }
+    
+    private Set<String> getPassthroughPathsFromDocument(Document doc) throws BuildException {
+        HashSet<String> paths = new HashSet<String>();
+        
+        NodeList nlist;
+        Element root;
+        Element application;
+        Element eStatic;
+        
+        doc = projectsDoc;
+        root = doc.getDocumentElement();
+        nlist = root.getElementsByTagNameNS(Constants.NS_PROJECT, "application");
+        if (nlist.getLength() != 1) {
+            throw new BuildException("There is not exactly one <application> tag");
+        }
+        application = (Element) nlist.item(0);
+        nlist = application.getElementsByTagNameNS(Constants.NS_PROJECT, "static");
+        if (nlist.getLength() > 1) {
+            throw new BuildException("There is not exactly one <application> tag");
+        } else if (nlist.getLength() == 0) {
+            return paths;
+        }
+        eStatic = (Element) nlist.item(0);
+        nlist = eStatic.getElementsByTagNameNS(Constants.NS_PROJECT, "path");
+        
+        for (int i = 0; i < nlist.getLength(); i++) {
+            Element path = (Element) nlist.item(i);
+            String text = path.getTextContent().trim();
+            if (text.length() > 0) {
+                paths.add(text);
             }
-        } catch (Exception e) {
-            throw new BuildException("Cannot parse " + projectsxml, e);
         }
 
         return paths;
     }
 
     private String getHtdocs() throws BuildException {
-        try {
-            Document doc = Xml.parseMutable(projectsxml);
-            Node node = XPath.selectNode(doc, "/projects/project[@name='"
-                    + projectname + "']/documentroot/text()");
-            if (node != null) {
-                String val = node.getNodeValue();
-                if (val != null && val.length() > 0) {
-                    return val;
-                } else {
-                    return null;
-                }
-            }
-            return null;
-
-        } catch (Exception e) {
-            throw new BuildException("Cannot parse " + projectsxml, e);
+        NodeList nlist;
+        Element root;
+        Element application;
+        Element docrootPath;
+        
+        Document doc = projectDoc;
+        root = doc.getDocumentElement();
+        nlist = root.getElementsByTagNameNS(Constants.NS_PROJECT, "application");
+        if (nlist.getLength() != 1) {
+            throw new BuildException("There is not exactly one <application> tag");
         }
+        application = (Element) nlist.item(0);
+        nlist = application.getElementsByTagNameNS(Constants.NS_PROJECT, "docroot-path");
+        if (nlist.getLength() > 1) {
+            throw new BuildException("There is not exactly one <docroot-path> tag");
+        } else if (nlist.getLength() == 0) {
+            return null;
+        }
+        docrootPath = (Element) nlist.item(0);
+        String text = docrootPath.getTextContent().trim();
+        if (text.length() == 0) {
+            return null;
+        } else {
+            if (text.startsWith("pfixroot:")) {
+                text = text.substring("pfixroot:".length());
+                return GlobalConfig.getDocroot() + text;
+            } else if (text.startsWith("file:")) {
+                return text.substring("file:".length());
+            } else {
+                return text;
+            }
+        }
+        
     }
 
     private void copyFile(String path) {

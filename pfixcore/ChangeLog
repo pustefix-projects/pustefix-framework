@@ -1,3 +1,13 @@
+2008-09-19  Sebastian Marsching  <sebastian.marsching@1und1.de>
+
+	* src/de/schlund/pfixxml/exceptionprocessor/UniversalExceptionProcessor.java: 
+	Set "text/html" content type on HTTP response.
+
+	* src/de/schlund/pfixcore/util/WebappCopyPassthroughHtdocsTask.java: 
+	* skel/build-skel.xml: 
+	* projects/core/build/create_serverxml.xsl: 
+	Fixed WAR deployment.
+
 2008-09-18  Martin Leidig  <mleidig@schlund.de>
 
 	* src/org/pustefixframework/http/AbstractPustefixRequestHandler.java:

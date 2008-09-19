@@ -8,7 +8,8 @@
 
   <xsl:param name="standalone">true</xsl:param>
   <xsl:param name="portbase"/>
-  <xsl:param name="trusted"/>
+  <xsl:param name="warmode">false</xsl:param>
+  <xsl:param name="webappbase"/>
   <xsl:param name="commonprojectsfile"/>
   <xsl:param name="customizationinfo"/>
   
@@ -171,7 +172,16 @@
     <xsl:call-template name="create_context">
       <xsl:with-param name="cookies">false</xsl:with-param>
       <xsl:with-param name="path"><xsl:value-of select="$defpath"/></xsl:with-param>
-      <xsl:with-param name="docBase">webapps/<xsl:apply-templates select="p:project/p:name/text()"/></xsl:with-param>
+      <xsl:with-param name="docBase">
+        <xsl:choose>
+          <xsl:when test="$warmode = 'true'">
+            <xsl:value-of select="$webappbase"/>/<xsl:apply-templates select="p:project/p:name/text()"/>
+          </xsl:when>
+          <xsl:otherwise>
+            <xsl:text>webapps/</xsl:text><xsl:apply-templates select="p:project/p:name/text()"/>
+          </xsl:otherwise>
+        </xsl:choose>
+      </xsl:with-param>
       <xsl:with-param name="staticDocBase">
         <xsl:if test="$standalone = 'true'">
           <xsl:if test="p:application/p:docroot-path/text()">
