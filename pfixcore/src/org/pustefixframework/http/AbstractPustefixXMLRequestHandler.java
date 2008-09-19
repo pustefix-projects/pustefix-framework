@@ -180,6 +180,8 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
     
     private AdditionalTrailInfo addtrailinfo = null;
     
+    private TestRecording testRecording;
+    
     //~ Methods ....................................................................................
     /**
      * Init method of all servlets inheriting from AbstractXMLServlets.
@@ -771,7 +773,7 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
         } else {
             throw new IllegalArgumentException("invalid value for " + PARAM_XMLONLY + ": " + value);
         }
-        if (editmodeAllowed || TestRecording.getInstance().isKnownClient(pfreq.getRemoteAddr())) {
+        if (editmodeAllowed || testRecording.isKnownClient(pfreq.getRemoteAddr())) {
             return rendering;
         } else {
             return RENDERMODE.RENDER_NORMAL;
@@ -981,4 +983,9 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
     public void setDependFile(String path) {
         targetconf = ResourceUtil.getFileResource(path);
     }
+    
+    public void setTestRecording(TestRecording testRecording) {
+        this.testRecording = testRecording;
+    }
+    
 }

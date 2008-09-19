@@ -5,13 +5,13 @@ import java.lang.management.ManagementFactory;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Properties;
 
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
 import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.InitializingBean;
 
 import de.schlund.pfixxml.resources.FileResource;
 import de.schlund.pfixxml.resources.ResourceUtil;
@@ -20,39 +20,31 @@ import de.schlund.pfixxml.serverutil.SessionData;
 import de.schlund.pfixxml.serverutil.SessionInfoStruct;
 import de.schlund.pfixxml.util.Xml;
 
-public class TestRecording implements TestRecordingMBean {
+public class TestRecording implements TestRecordingMBean, InitializingBean {
 
    private final static Logger LOG=Logger.getLogger(TestRecording.class);
    
-   private static TestRecording instance=new TestRecording();
-   
    private final List<String> knownClients=new ArrayList<String>();
    
-   public static TestRecording getInstance() {
-      return instance;
-   }
-   
    private SessionAdmin sessionAdmin;
+   private String projectName;
    
-   public void init(Properties props) { 
+   
+   public void afterPropertiesSet() throws Exception {
       LOG.info("TestRecording init");
       try {
          MBeanServer mbeanServer = ManagementFactory.getPlatformMBeanServer(); 
-         ObjectName objectName = new ObjectName("Pustefix:type=TestRecording"); 
+         ObjectName objectName = new ObjectName("Pustefix:type=TestRecording,project="+projectName); 
          mbeanServer.registerMBean(this, objectName);
-      // otherwise, clients cannot instaniate TrailLogger objects:
-         ObjectName createName = new ObjectName("Pustefix:type=TestRecording,name=loader");
-         mbeanServer.registerMBean(this.getClass().getClassLoader(),createName);
      } catch(Exception x) {
          throw new RuntimeException("Can't register TestRecording MBean.",x);
      } 
    }
    
-   public TestRecording() {
-    
+   public void setProjectName(String projectName) {
+       this.projectName = projectName;
    }
    
-   //FIXME: inject SessionAdmin
    public void setSessionAdmin(SessionAdmin sessionAdmin) {
        this.sessionAdmin = sessionAdmin;
    }
@@ -65,7 +57,7 @@ public class TestRecording implements TestRecordingMBean {
      logger = new TrailLogger(TrailLogger.getVisit(getSession(sessionId)));
      
      try {
-      name = new ObjectName("Pustefix:type=TestRecording,name=TrailLogger,session="+sessionId);
+      name = new ObjectName("Pustefix:type=TestRecording,name=TrailLogger,project="+projectName+",session="+sessionId);
       MBeanServer mbeanServer = ManagementFactory.getPlatformMBeanServer(); 
       mbeanServer.registerMBean(logger, name);
       return name;

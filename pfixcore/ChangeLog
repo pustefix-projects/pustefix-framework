@@ -1,3 +1,22 @@
+2008-09-19  Martin Leidig  <mleidig@schlund.de>
+
+	Changed TestRecording from singleton to project scope. Register
+	TestRecording instances as Spring beans and export them as MBeans
+	under the project name. Activating testrecording now is done
+	adding the <testrecording/> to the project configuration file
+	project.xml.
+
+	Modified:
+	* src/org/pustefixframework/http/AbstractPustefixXMLRequestHandler.java:
+	* src/org/pustefixframework/config/project/parser/PustefixContextXMLRequestHandlerParsingHandler.java
+	* src/de/schlund/pfixxml/testrecording/TestRecording.java
+	* projects/common/conf/factory.xml
+	* projects/sample1/conf/project.xml
+	* res/META-INF/org/pustefixframework/config/project/parser/project-config.xml
+
+	Added:
+	* src/org/pustefixframework/config/project/parser/TestRecordingParsingHandler.java
+
 2008-09-19  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
 	* src/de/schlund/pfixxml/exceptionprocessor/UniversalExceptionProcessor.java: 

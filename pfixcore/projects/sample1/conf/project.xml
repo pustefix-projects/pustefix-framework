@@ -22,6 +22,9 @@
   <authadmin/>
   -->
   
+  <!-- Testrecording via JMX -->
+  <testrecording/>
+  
   <xml-generator>
     <config-file>pfixroot:/sample1/conf/depend.xml</config-file>
   </xml-generator>

@@ -14,7 +14,6 @@
     <!-- List of all factories to init -->
     <prop name="factory.initialize.02">de.schlund.pfixxml.targets.SPCacheFactory</prop>
     <prop name="factory.initialize.04">de.schlund.pfixxml.targets.cachestat.SPCacheStatistic</prop>
-    <prop name="factory.initialize.06">de.schlund.pfixxml.testrecording.TestRecording</prop>
     
     <!-- Enable update thread -->
     <prop name="de.schlund.pfixcore.editor2.updatetargets">true</prop>
