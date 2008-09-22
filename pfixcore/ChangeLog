@@ -2,6 +2,12 @@
 
 	* build.xml: 
 	* pom.xml: 
+	Setting version to 0.13.2-pre (new development version).
+
+2008-09-22  Sebastian Marsching  <sebastian.marsching@1und1.de>
+
+	* build.xml: 
+	* pom.xml: 
 	Setting version to 0.13.1 (release).
 
 2008-09-19  Martin Leidig  <mleidig@schlund.de>
