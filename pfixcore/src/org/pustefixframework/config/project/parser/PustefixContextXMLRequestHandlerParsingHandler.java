@@ -53,7 +53,6 @@ import com.marsching.flexiparse.parser.exception.ParserException;
 import de.schlund.pfixcore.workflow.ContextImpl;
 import de.schlund.pfixcore.workflow.context.ServerContextImpl;
 import de.schlund.pfixxml.config.BuildTimeProperties;
-import de.schlund.pfixxml.perflogging.PerfLogging;
 import de.schlund.pfixxml.resources.FileResource;
 import de.schlund.pfixxml.resources.ResourceUtil;
 import de.schlund.pfixxml.serverutil.SessionAdmin;

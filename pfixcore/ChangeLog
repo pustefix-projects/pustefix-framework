@@ -1,3 +1,18 @@
+2008-09-23  Martin Leidig  <mleidig@schlund.de>
+
+	* projects/core/build/create_apacheconf.xsl: fixed problem with
+	generated JKMount directive for additional servlets: added missing
+	space between URL path and worker name; create additional JKMount directive
+	only for servlet mappings with url-patterns not starting with "/xml/"
+
+	Cleanup (removed unused imports and fields):
+	* src/org/pustefixframework/http/AbstractPustefixXMLRequestHandler.java
+	* src/org/pustefixframework/http/PustefixContextXMLRequestHandler.java
+	* src/org/pustefixframework/http/internal/FactoryInitWorker.java
+	* src/org/pustefixframework/config/project/parser/PustefixContextXMLRequestHandlerParsingHandler.java
+	* src/de/schlund/pfixcore/util/WebappCopyPassthroughHtdocsTask.java
+	* src/de/schlund/pfixxml/testrecording/TestRecording.java
+
 2008-09-23  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
 	* .classpath: 

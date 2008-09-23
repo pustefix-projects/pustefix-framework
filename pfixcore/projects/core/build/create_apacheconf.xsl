@@ -70,14 +70,14 @@ RewriteEngine on
 
 &lt;IfDefine PFX_USE_JK&gt;
 JkMount /xml/* <xsl:value-of select="$common/p:global-config/p:http-server/p:tomcat/p:jkmount/text()"/>
-<xsl:for-each select="$currentprj/p:application/p:web-xml/jee:web-app/jee:servlet-mapping/jee:url-pattern">
-JkMount <xsl:value-of select="text()"/> <xsl:value-of select="$common/p:global-config/p:http-server/p:tomcat/p:jkmount/text()"/>
+<xsl:for-each select="$currentprj/p:application/p:web-xml/jee:web-app/jee:servlet-mapping/jee:url-pattern[not(starts-with(.,'/xml/'))]">
+JkMount <xsl:value-of select="text()"/><xsl:text> </xsl:text><xsl:value-of select="$common/p:global-config/p:http-server/p:tomcat/p:jkmount/text()"/>
 </xsl:for-each>
 &lt;/IfDefine&gt;
 
 &lt;IfDefine PFX_USE_PROXY_AJP&gt;
 ProxyPass /xml/ balancer://<xsl:value-of select="$common/p:global-config/p:http-server/p:tomcat/p:jkmount/text()"/>/xml/ nofailover=On stickysession=jsessionid
-<xsl:for-each select="$currentprj/p:application/p:web-xml/jee:web-app/jee:servlet-mapping/jee:url-pattern">
+<xsl:for-each select="$currentprj/p:application/p:web-xml/jee:web-app/jee:servlet-mapping/jee:url-pattern[not(starts-with(.,'/xml/'))]">
 <xsl:variable name="proxypath">
   <xsl:choose>
     <xsl:when test="substring-before(text(), '*') = ''">
@@ -97,7 +97,7 @@ Include <xsl:value-of select="$docroot"/>/servletconf/tomcat/ajp.conf
 &lt;IfDefine !PFX_USE_JK&gt;
 &lt;IfModule proxy_ajp_module&gt;
 ProxyPass /xml/ balancer://<xsl:value-of select="$common/p:global-config/p:http-server/p:tomcat/p:jkmount/text()"/>/xml/ nofailover=On stickysession=jsessionid
-<xsl:for-each select="$currentprj/p:application/p:web-xml/jee:web-app/jee:servlet-mapping/jee:url-pattern">
+<xsl:for-each select="$currentprj/p:application/p:web-xml/jee:web-app/jee:servlet-mapping/jee:url-pattern[not(starts-with(.,'/xml/'))]">
 <xsl:variable name="proxypath">
   <xsl:choose>
     <xsl:when test="substring-before(text(), '*') = ''">
@@ -114,8 +114,8 @@ Include <xsl:value-of select="$docroot"/>/servletconf/tomcat/ajp.conf
 &lt;/IfModule&gt;
 &lt;IfModule !proxy_ajp_module&gt;
 JkMount /xml/* <xsl:value-of select="$common/p:global-config/p:http-server/p:tomcat/p:jkmount/text()"/>
-<xsl:for-each select="$currentprj/p:application/p:web-xml/jee:web-app/jee:servlet-mapping/jee:url-pattern">
-JkMount <xsl:value-of select="text()"/> <xsl:value-of select="$common/p:global-config/p:http-server/p:tomcat/p:jkmount/text()"/>
+<xsl:for-each select="$currentprj/p:application/p:web-xml/jee:web-app/jee:servlet-mapping/jee:url-pattern[not(starts-with(.,'/xml/'))]">
+JkMount <xsl:value-of select="text()"/><xsl:text> </xsl:text><xsl:value-of select="$common/p:global-config/p:http-server/p:tomcat/p:jkmount/text()"/>
 </xsl:for-each>
 &lt;/IfModule&gt;
 &lt;/IfDefine&gt;

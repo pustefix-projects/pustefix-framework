@@ -27,7 +27,6 @@ import javax.servlet.http.HttpSession;
 import org.pustefixframework.config.contextxmlservice.AbstractXMLServletConfig;
 import org.pustefixframework.config.contextxmlservice.ContextXMLServletConfig;
 import org.pustefixframework.config.contextxmlservice.PageRequestConfig;
-import org.springframework.beans.factory.BeanNameAware;
 
 import de.schlund.pfixcore.exception.PustefixApplicationException;
 import de.schlund.pfixcore.exception.PustefixCoreException;
@@ -53,7 +52,7 @@ import de.schlund.pfixxml.SPDocument;
  *
  */
 
-public class PustefixContextXMLRequestHandler extends AbstractPustefixXMLRequestHandler implements BeanNameAware {
+public class PustefixContextXMLRequestHandler extends AbstractPustefixXMLRequestHandler {
    
     // private final static String ALREADY_SSL = "__CONTEXT_ALREADY_SSL__";
 
@@ -67,8 +66,6 @@ public class PustefixContextXMLRequestHandler extends AbstractPustefixXMLRequest
 
     private ServerContextImpl servercontext = null;
     private ContextImpl context = null;
-
-    private String beanName;
     
     protected ContextXMLServletConfig getContextXMLServletConfig() {
         return this.config;
@@ -267,10 +264,6 @@ public class PustefixContextXMLRequestHandler extends AbstractPustefixXMLRequest
         rcontext.getParentContext().setRequestContextForCurrentThread(null);
     }
 
-    public void setBeanName(String name) {
-        this.beanName = name;
-    }
-    
     public void setServerContext(ServerContextImpl servercontext) {
         this.servercontext = servercontext;
     }

@@ -57,7 +57,6 @@ import com.marsching.flexiparse.parser.exception.ParserException;
 
 import de.schlund.pfixxml.FactoryInitException;
 import de.schlund.pfixxml.FactoryInitUtil;
-import de.schlund.pfixxml.PathFactory;
 import de.schlund.pfixxml.config.CustomizationHandler;
 import de.schlund.pfixxml.config.GlobalConfigurator;
 import de.schlund.pfixxml.resources.FileResource;
@@ -174,7 +173,7 @@ public class FactoryInitWorker {
             
             if (docrootstr != null) {
                 // For compatibility with old apps, initialize PathFactory
-                PathFactory.getInstance().init(docrootstr);
+                de.schlund.pfixxml.PathFactory.getInstance().init(docrootstr);
             }
     
             String confname = "common/conf/factory.xml";

@@ -80,7 +80,6 @@ public class TestRecording implements TestRecordingMBean, InitializingBean {
   }
    
    public List<SessionData> getSessions(String serverName, String remoteAddr) {
-      SessionAdmin admin;
       Iterator<String> iter;
       String id;
       List<SessionData> lst;

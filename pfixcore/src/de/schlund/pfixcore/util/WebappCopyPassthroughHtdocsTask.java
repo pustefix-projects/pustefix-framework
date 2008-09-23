@@ -24,11 +24,9 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import javax.xml.transform.TransformerConfigurationException;
-import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.sax.SAXTransformerFactory;
@@ -50,8 +48,6 @@ import org.xml.sax.helpers.XMLReaderFactory;
 import de.schlund.pfixxml.config.CustomizationHandler;
 import de.schlund.pfixxml.config.GlobalConfig;
 import de.schlund.pfixxml.util.TransformerHandlerAdapter;
-import de.schlund.pfixxml.util.XPath;
-import de.schlund.pfixxml.util.Xml;
 
 /**
  * Ant task copying the paths specified using the passthrough option
