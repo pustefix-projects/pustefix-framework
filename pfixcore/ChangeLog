@@ -1,3 +1,9 @@
+2008-09-23  Sebastian Marsching  <sebastian.marsching@1und1.de>
+
+	* .classpath: 
+	Adding "res" directory to project classpath so that Eclipse automatically
+	copies changes to the "build" directory.
+
 2008-09-22  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
 	* build.xml: 
