@@ -19,6 +19,8 @@
 package de.schlund.pfixxml;
 
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Properties;
@@ -28,7 +30,6 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.spi.ThrowableInformation;
 
 import de.schlund.pfixcore.util.PropertiesUtils;
-import de.schlund.pfixxml.util.Misc;
 
 public class FactoryInitUtil {
     private final static Logger LOG = Logger.getLogger(FactoryInitUtil.class);
@@ -57,7 +58,10 @@ public class FactoryInitUtil {
                     long start = 0;
                     long stop = 0;
                     Class<?> clazz = Class.forName(factoryClassName);
-                    Object factory = clazz.getMethod("getInstance", Misc.NO_CLASSES).invoke(null, Misc.NO_OBJECTS);
+                    Method meth = clazz.getMethod("getInstance");
+                    if(!Modifier.isStatic(meth.getModifiers())) throw new Exception("Method 'getInstance()' of "+
+                            "class '"+clazz.getName()+"' isn't static.");
+                    Object factory = meth.invoke(null, (Object[])null );
                     LOG.debug("     Object ID: " + factory);
                     start = System.currentTimeMillis();
                     clazz.getMethod("init", new Class[] { Properties.class }).invoke(factory, new Object[] { properties });

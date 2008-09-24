@@ -25,8 +25,6 @@ import java.lang.reflect.InvocationTargetException;
 
 import org.apache.log4j.Logger;
 
-import de.schlund.pfixxml.util.Misc;
-
 /**
  * @author: jtl
  *
@@ -55,8 +53,8 @@ public class FlowStepActionFactory {
             act = new FlowStepForceStopAction();
         } else {
             try {
-                Constructor<? extends FlowStepAction> constr = Class.forName(action).asSubclass(FlowStepAction.class).getConstructor(Misc.NO_CLASSES);
-                act = constr.newInstance(Misc.NO_OBJECTS);
+                Constructor<? extends FlowStepAction> constr = Class.forName(action).asSubclass(FlowStepAction.class).getConstructor();
+                act = constr.newInstance((Object[])null);
             } catch (InstantiationException e) {
                 LOG.error("unable to instantiate class [" + action + "]", e);
             } catch (IllegalAccessException e) {

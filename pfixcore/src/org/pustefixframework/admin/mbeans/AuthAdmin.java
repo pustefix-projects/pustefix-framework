@@ -52,6 +52,7 @@ public class AuthAdmin implements AuthAdminMBean, InitializingBean {
         try {
             MBeanServer mbeanServer = ManagementFactory.getPlatformMBeanServer();
             ObjectName objectName = new ObjectName("Pustefix:type=AuthAdmin,project="+projectName);
+            if(mbeanServer.isRegistered(objectName)) mbeanServer.unregisterMBean(objectName);
             mbeanServer.registerMBean(this, objectName);
         } catch (Exception x) {
             LOG.error("Can't register AuthAdmin MBean!", x);

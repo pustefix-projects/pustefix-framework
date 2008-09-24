@@ -206,6 +206,7 @@ public class FactoryInitWorker {
             FactoryInitUtil.initialize(properties);
             
         } catch (FactoryInitException e) {
+            initException = e;
             throw new ServletException(e.getCause().toString());
         } catch (ServletException e) {
             initException = new FactoryInitException("<init>", (e.getRootCause()==null?e:e.getRootCause()));

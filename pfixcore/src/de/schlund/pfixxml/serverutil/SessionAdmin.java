@@ -58,7 +58,8 @@ public class SessionAdmin implements HttpSessionBindingListener, SessionAdminMBe
     public void afterPropertiesSet() throws Exception {
         try {
             MBeanServer mbeanServer = ManagementFactory.getPlatformMBeanServer(); 
-            ObjectName objectName = new ObjectName("Pustefix:type=SessionAdmin,project="+projectName); 
+            ObjectName objectName = new ObjectName("Pustefix:type=SessionAdmin,project="+projectName);
+            if(mbeanServer.isRegistered(objectName)) mbeanServer.unregisterMBean(objectName);
             mbeanServer.registerMBean(this, objectName);
         } catch(Exception x) {
             LOG.error("Can't register SessionAdmin MBean!",x);

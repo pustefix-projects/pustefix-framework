@@ -34,7 +34,8 @@ public class TestRecording implements TestRecordingMBean, InitializingBean {
       LOG.info("TestRecording init");
       try {
          MBeanServer mbeanServer = ManagementFactory.getPlatformMBeanServer(); 
-         ObjectName objectName = new ObjectName("Pustefix:type=TestRecording,project="+projectName); 
+         ObjectName objectName = new ObjectName("Pustefix:type=TestRecording,project="+projectName);
+         if(mbeanServer.isRegistered(objectName)) mbeanServer.unregisterMBean(objectName);
          mbeanServer.registerMBean(this, objectName);
      } catch(Exception x) {
          throw new RuntimeException("Can't register TestRecording MBean.",x);
@@ -59,6 +60,7 @@ public class TestRecording implements TestRecordingMBean, InitializingBean {
      try {
       name = new ObjectName("Pustefix:type=TestRecording,name=TrailLogger,project="+projectName+",session="+sessionId);
       MBeanServer mbeanServer = ManagementFactory.getPlatformMBeanServer(); 
+      if(mbeanServer.isRegistered(name)) mbeanServer.unregisterMBean(name);
       mbeanServer.registerMBean(logger, name);
       return name;
      } catch(Exception x) {

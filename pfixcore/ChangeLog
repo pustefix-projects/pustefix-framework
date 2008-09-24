@@ -1,3 +1,21 @@
+2008-09-24  Martin Leidig  <mleidig@schlund.de>
+
+	* src/org/pustefixframework/http/internal/FactoryInitWorker.java:
+	remember causing FactoryInitException if startup fails
+
+	* src/de/schlund/pfixxml/util/Misc.java: removed obsolete helper class
+	* src/de/schlund/pfixcore/workflow/FlowStepActionFactory.java:
+	replaced usage of Misc class
+	* src/de/schlund/pfixxml/FactoryInitUtil.java: replaced usage of Misc
+	class
+
+	Ensure that MBeans with same object names are unregistered
+	before re-registering (required for webapp reload):
+	* src/org/pustefixframework/admin/mbeans/AuthAdmin.java
+	* src/de/schlund/pfixxml/serverutil/SessionAdmin.java
+	* src/de/schlund/pfixxml/testrecording/TestRecording.java
+	* src/de/schlund/pfixxml/perflogging/PerfLogging.java
+
 2008-09-23  Martin Leidig  <mleidig@schlund.de>
 
 	* projects/core/build/create_apacheconf.xsl: fixed problem with

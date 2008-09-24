@@ -80,6 +80,7 @@ public class PerfLogging extends NotificationBroadcasterSupport implements PerfL
         try {
             MBeanServer mbeanServer = ManagementFactory.getPlatformMBeanServer(); 
             ObjectName objectName = new ObjectName("Pustefix:type=PerfLogging,project="+projectName); 
+            if(mbeanServer.isRegistered(objectName)) mbeanServer.unregisterMBean(objectName);
             mbeanServer.registerMBean(this, objectName);
         } catch(Exception x) {
             LOG.error("Can't register PerfLogging MBean!",x);
