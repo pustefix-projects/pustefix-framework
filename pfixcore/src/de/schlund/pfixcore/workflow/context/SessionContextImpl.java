@@ -64,9 +64,8 @@ public class SessionContextImpl {
         }
     }
 
-    public void init(Context context, HttpSession session) throws PustefixApplicationException, PustefixCoreException {
+    public void init(Context context) throws PustefixApplicationException, PustefixCoreException {
         
-        //TODO: rework session stuff
         synchronized(this) {
             if(authentication == null) {
        
@@ -100,7 +99,7 @@ public class SessionContextImpl {
     
     public void setSession(HttpSession session) {
         this.session = session;
-        initSession(session);
+        if(session != null) initSession(session);
     }
 
     public ContextResourceManager getContextResourceManager() {

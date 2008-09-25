@@ -36,7 +36,6 @@ import de.schlund.pfixcore.workflow.ContextImpl;
 import de.schlund.pfixcore.workflow.ContextResourceManager;
 import de.schlund.pfixcore.workflow.DirectOutputState;
 import de.schlund.pfixcore.workflow.PageRequest;
-import de.schlund.pfixcore.workflow.context.ServerContextImpl;
 import de.schlund.pfixxml.PfixServletRequest;
 import de.schlund.pfixxml.resources.FileResource;
 
@@ -71,7 +70,6 @@ public class PustefixContextDirectOutputRequestHandler extends AbstractPustefixR
     private DirectOutputServiceConfig config;
     private Map<String, DirectOutputState> stateMap;
     
-    private ServerContextImpl serverContext;
     private ContextImpl context;
     
     /**
@@ -124,22 +122,21 @@ public class PustefixContextDirectOutputRequestHandler extends AbstractPustefixR
          }
          
          // Make sure the context is initialized and deinitialized this thread
-         context.setServerContext(serverContext);
          context.prepareForRequest();
          try {
              if (config.isSynchronized()) {
                  synchronized (context) {
-                     doProcess(preq, res, serverContext, context);
+                     doProcess(preq, res, context);
                  }
              } else {
-                 doProcess(preq, res, serverContext, context);
+                 doProcess(preq, res, context);
              }
          } finally {
              context.cleanupAfterRequest();
          }
     }
     
-    protected void doProcess(PfixServletRequest preq, HttpServletResponse res, ServerContextImpl servercontext, ContextImpl context) throws Exception {
+    protected void doProcess(PfixServletRequest preq, HttpServletResponse res, ContextImpl context) throws Exception {
          ContextResourceManager crm = context.getContextResourceManager();
          
          String pagename = preq.getPageName();
@@ -201,10 +198,6 @@ public class PustefixContextDirectOutputRequestHandler extends AbstractPustefixR
 
     protected void reloadServletConfig(FileResource configFile, Properties globalProperties) throws ServletException {
         // Do nothing, configuration is injected
-    }
-    
-    public void setServerContext(ServerContextImpl serverContext) {
-        this.serverContext = serverContext;
     }
     
     public void setContext(ContextImpl context) {

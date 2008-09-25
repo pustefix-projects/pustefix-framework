@@ -41,7 +41,6 @@ import de.schlund.pfixcore.workflow.ContextImpl;
 import de.schlund.pfixcore.workflow.ContextInterceptor;
 import de.schlund.pfixcore.workflow.ExtendedContext;
 import de.schlund.pfixcore.workflow.context.RequestContextImpl;
-import de.schlund.pfixcore.workflow.context.ServerContextImpl;
 import de.schlund.pfixxml.PfixServletRequest;
 import de.schlund.pfixxml.PfixServletRequestImpl;
 import de.schlund.pfixxml.RequestParam;
@@ -64,7 +63,6 @@ public class PustefixContextXMLRequestHandler extends AbstractPustefixXMLRequest
 
     private ContextXMLServletConfig config = null;
 
-    private ServerContextImpl servercontext = null;
     private ContextImpl context = null;
     
     protected ContextXMLServletConfig getContextXMLServletConfig() {
@@ -232,13 +230,6 @@ public class PustefixContextXMLRequestHandler extends AbstractPustefixXMLRequest
             // The ServletManager class handles session creation
             throw new PustefixRuntimeException("No valid session found! Aborting...");
         }
-
-        //TODO: remove
-        synchronized (session) {
-                context.setServerContext(servercontext);
-                context.setSession(session);
-        }
-        
         return context;
     }
 
@@ -264,10 +255,6 @@ public class PustefixContextXMLRequestHandler extends AbstractPustefixXMLRequest
         rcontext.getParentContext().setRequestContextForCurrentThread(null);
     }
 
-    public void setServerContext(ServerContextImpl servercontext) {
-        this.servercontext = servercontext;
-    }
-    
     public void setContext(ContextImpl context) {
         this.context = context;
     }

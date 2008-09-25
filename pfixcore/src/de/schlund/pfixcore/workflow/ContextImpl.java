@@ -21,7 +21,6 @@ package de.schlund.pfixcore.workflow;
 import java.util.Properties;
 
 import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpSessionBindingEvent;
 import javax.servlet.http.HttpSessionBindingListener;
 
@@ -53,9 +52,8 @@ public class ContextImpl implements AccessibilityChecker, ExtendedContext, Token
         this.sessioncontext = new SessionContextImpl();
     }
     
-    //TODO: rework
-    public void setSession(HttpSession session) throws PustefixApplicationException, PustefixCoreException {
-        sessioncontext.init(this, session);
+    public void init() throws PustefixCoreException, PustefixApplicationException{
+        sessioncontext.init(this);
     }
     
     public void setContextResourceManager(ContextResourceManager crm) {
@@ -313,11 +311,10 @@ public class ContextImpl implements AccessibilityChecker, ExtendedContext, Token
 
     // Notification on session binding / unbinding
 
-    //TODO: remove
     public void valueBound(HttpSessionBindingEvent ev) {
         this.sessioncontext.setSession(ev.getSession());
     }
-    //TODO: remove
+
     public void valueUnbound(HttpSessionBindingEvent ev) {
         if (ev.getSession() == this.sessioncontext.getSession()) {
             this.sessioncontext.setSession(null);

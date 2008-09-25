@@ -1,3 +1,21 @@
+2008-09-25  Martin Leidig  <mleidig@schlund.de>
+
+	Removed unnecessary injection of ServerContextImpl:
+	* src/org/pustefixframework/http/PustefixContextDirectOutputRequestHandler.java:
+	* src/org/pustefixframework/http/PustefixContextXMLRequestHandler.java
+	* src/org/pustefixframework/config/project/parser/PustefixContextDirectOutputRequestHandlerParsingHandler.java
+	* src/org/pustefixframework/config/project/parser/PustefixContextXMLRequestHandlerParsingHandler.java
+
+	* src/org/pustefixframework/config/contextxmlservice/parser/ContextXMLParsingHandler.java:
+	add init method to bean definition
+	* src/de/schlund/pfixcore/workflow/context/SessionContextImpl.java:
+	fixed NullPointerException occurring on session timeout
+	* src/de/schlund/pfixcore/workflow/ContextImpl.java:
+	call SessionContextImpl.init from init method called by Spring
+	* src/de/schlund/pfixcore/util/DummyContextFactory.java:
+	removed, unit tests now should be done by Spring means (setting up a
+	PustefixWebApplicationContext)
+
 2008-09-24  Martin Leidig  <mleidig@schlund.de>
 
 	* src/org/pustefixframework/http/internal/FactoryInitWorker.java:

@@ -158,6 +158,7 @@ public class ContextXMLParsingHandler implements ParsingHandler {
             
             beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(ContextImpl.class);
             beanBuilder.setScope("session");
+            beanBuilder.setInitMethodName("init");
             beanBuilder.addPropertyReference("serverContext", ServerContextImpl.class.getName());
             beanBuilder.addPropertyReference("contextResourceManager", ContextResourceManagerImpl.class.getName());
             
