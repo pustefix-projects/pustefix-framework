@@ -1,5 +1,20 @@
 2008-09-25  Martin Leidig  <mleidig@schlund.de>
 
+	Fixed warnings caused by usage of internal Xerces XML/XPath/DOM
+	classes. Implemented fallback mechanism if internal classes can't be
+	found, e.g. when running on a JDK which doesn't include Xerces or
+	includes it under a changed package name.
+	* src/de/schlund/pfixcore/util/PfixXmlCatalogEntityResolver.java
+	* src/de/schlund/pfixcore/util/XsltTransformer.java
+	* src/de/schlund/pfixxml/util/Xml.java
+	* src/de/schlund/pfixxml/util/XPathDefault.java
+
+	Use Pustefix Base64Utils instead of internal JDK classes (fixes
+	build warnings):
+	* src/de/schlund/pfixcore/example/bank/AuthTokenManager.java
+
+2008-09-25  Martin Leidig  <mleidig@schlund.de>
+
 	Removed unnecessary injection of ServerContextImpl:
 	* src/org/pustefixframework/http/PustefixContextDirectOutputRequestHandler.java:
 	* src/org/pustefixframework/http/PustefixContextXMLRequestHandler.java

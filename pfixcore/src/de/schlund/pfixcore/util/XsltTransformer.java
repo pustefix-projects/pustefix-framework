@@ -42,9 +42,9 @@ import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
 
 import com.icl.saxon.TransformerFactoryImpl;
-import com.sun.org.apache.xerces.internal.parsers.SAXParser;
 
 import de.schlund.pfixxml.config.BuildTimeProperties;
+import de.schlund.pfixxml.util.Xml;
 
 /**
  * @author adam
@@ -231,7 +231,7 @@ public class XsltTransformer {
         }
         if (isValidParser == false) {
             // force Xerces (org.apache.xerces.parsers.SAXParser) because xml schema validation features
-            this.xmlReader = new SAXParser();
+            this.xmlReader = Xml.createXMLReader();
             try {
                 this.xmlReader.setFeature(VALIDATION_FEATURE_ID         , isValidate());
                 this.xmlReader.setFeature(SCHEMA_VALIDATION_FEATURE_ID  , isValidate());

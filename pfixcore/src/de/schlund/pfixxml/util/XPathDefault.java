@@ -31,14 +31,29 @@ import javax.xml.xpath.XPathFactoryConfigurationException;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import com.sun.org.apache.xpath.internal.jaxp.XPathFactoryImpl;
-
 /**
  * @author mleidig@schlund.de
  */
 public class XPathDefault implements XPathSupport {
 
-    XPathFactory xpathFactory=new XPathFactoryImpl();
+    private static String DEFAULT_XPATHFACTORY = "com.sun.org.apache.xpath.internal.jaxp.XPathFactoryImpl";
+    
+    XPathFactory xpathFactory;
+    
+    public XPathDefault() {
+        try {
+            ClassLoader cl = Thread.currentThread().getContextClassLoader();
+            if(cl == null) cl = getClass().getClassLoader();
+            Class<?> clazz = Class.forName(DEFAULT_XPATHFACTORY,true,cl);
+            xpathFactory = (XPathFactory)clazz.newInstance();
+        } catch (Exception x) {
+            x.printStackTrace();
+            //ignore and try to get XPathFactory via factory finder in next step
+        }
+        if(xpathFactory == null) {
+            xpathFactory = XPathFactory.newInstance();
+        }
+    }
     
     public boolean isModelSupported(Node node) {
         return true;

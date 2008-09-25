@@ -6,8 +6,7 @@ import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
 
-import sun.misc.BASE64Decoder;
-import sun.misc.BASE64Encoder;
+import de.schlund.pfixxml.util.Base64Utils;
 import de.schlund.pfixxml.util.MD5Utils;
 
 public class AuthTokenManager {
@@ -62,8 +61,7 @@ public class AuthTokenManager {
             desCipher.init(Cipher.ENCRYPT_MODE, key);
             byte[] cleartext = str.getBytes("UTF-8");
             byte[] ciphertext = desCipher.doFinal(cleartext);
-            BASE64Encoder enc = new BASE64Encoder();
-            return enc.encode(ciphertext);
+            return Base64Utils.encode(ciphertext,false);
         } catch (Exception x) {
             throw new RuntimeException("Encrypting token failed.", x);
         }
@@ -72,8 +70,7 @@ public class AuthTokenManager {
     private static String decrypt(String base64Str) {
         try {
             SecretKey key = getSecretKey();
-            BASE64Decoder dec = new BASE64Decoder();
-            byte[] ciphertext = dec.decodeBuffer(base64Str);
+            byte[] ciphertext = Base64Utils.decode(base64Str);
             Cipher desCipher = Cipher.getInstance("DES/ECB/PKCS5Padding");
             desCipher.init(Cipher.DECRYPT_MODE, key);
             byte[] cleartext = desCipher.doFinal(ciphertext);

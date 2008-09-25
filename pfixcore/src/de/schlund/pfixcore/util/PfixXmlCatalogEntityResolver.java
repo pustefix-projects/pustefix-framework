@@ -21,6 +21,7 @@ package de.schlund.pfixcore.util;
 import java.io.IOException;
 import java.net.MalformedURLException;
 
+import javax.xml.parsers.FactoryConfigurationError;
 import javax.xml.parsers.SAXParserFactory;
 
 import org.apache.xml.resolver.Catalog;
@@ -31,13 +32,13 @@ import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
-import com.sun.org.apache.xerces.internal.jaxp.SAXParserFactoryImpl;
-
 
 /**
  * @author adam
  */
 public class PfixXmlCatalogEntityResolver implements EntityResolver {
+    
+    private static String DEFAULT_SAXPARSERFACTORY = "com.sun.org.apache.xerces.internal.jaxp.SAXParserFactoryImpl";
     
     Catalog catalog = new Catalog();
     
@@ -45,7 +46,23 @@ public class PfixXmlCatalogEntityResolver implements EntityResolver {
         // get rid of ugly message during build (" [pfx-iwrp] Cannot find CatalogManager.properties")
         CatalogManager.getStaticManager().setIgnoreMissingProperties(true);
         // see org.apache.xerces.util.XMLCatalogResolver.attachReaderToCatalog(Catalog)
-        SAXParserFactory spf = new SAXParserFactoryImpl();
+        SAXParserFactory spf = null;
+        try {
+            ClassLoader cl = Thread.currentThread().getContextClassLoader();
+            if(cl == null) cl = getClass().getClassLoader();
+            Class<?> clazz = Class.forName(DEFAULT_SAXPARSERFACTORY, true, cl);
+            spf = (SAXParserFactory)clazz.newInstance();
+        } catch(Exception x) {
+            x.printStackTrace();
+            //ignore and try to get SAXParserFactory via factory finder in next step
+        }
+        if(spf == null) {
+            try {
+                spf = SAXParserFactory.newInstance();
+            } catch(FactoryConfigurationError x) {
+                throw new RuntimeException("Can't get SAXParserFactory",x);
+            }
+        }
         spf.setNamespaceAware(true);
         spf.setValidating(false);
         SAXCatalogReader saxReader = new SAXCatalogReader(spf);
@@ -73,4 +90,5 @@ public class PfixXmlCatalogEntityResolver implements EntityResolver {
         //System.out.println("PfixXmlCatalogEntityResolver.resolveEntity(publicId="+publicId+", systemId="+systemId+")="+resolvedId);
         return null;
     }
+    
 }

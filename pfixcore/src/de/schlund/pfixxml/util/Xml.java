@@ -33,6 +33,7 @@ import java.util.Map;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.FactoryConfigurationError;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Result;
@@ -54,9 +55,7 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 import org.xml.sax.XMLReader;
-
-import com.sun.org.apache.xerces.internal.jaxp.DocumentBuilderFactoryImpl;
-import com.sun.org.apache.xerces.internal.parsers.SAXParser;
+import org.xml.sax.helpers.XMLReaderFactory;
 
 import de.schlund.pfixxml.SPDocument;
 import de.schlund.pfixxml.resources.FileResource;
@@ -64,13 +63,29 @@ import de.schlund.pfixxml.resources.FileResource;
 public class Xml {
     
     static final Logger               CAT     = Logger.getLogger(Xml.class);
-    private static final DocumentBuilderFactory factory = createDocumentBuilderFactory();
     
+    private static String DEFAULT_XMLREADER = "com.sun.org.apache.xerces.internal.parsers.SAXParser";
+    private static String DEFAULT_DOCUMENTBUILDERFACTORY = "com.sun.org.apache.xerces.internal.jaxp.DocumentBuilderFactoryImpl";
+    
+    private static final DocumentBuilderFactory factory = createDocumentBuilderFactory();
+   
     //-- this is where you configure the xml parser:
 
     public static XMLReader createXMLReader() {
-        XMLReader reader;
-        reader = new SAXParser();
+        XMLReader reader = null;
+        try {
+            reader = XMLReaderFactory.createXMLReader(DEFAULT_XMLREADER);
+        } catch(SAXException x) {
+            x.printStackTrace();
+            //ignore and try to get XMLReader via factory finder in next step
+        }
+        if(reader == null) {
+            try {
+                reader = XMLReaderFactory.createXMLReader();
+            } catch(SAXException x)  {
+                throw new RuntimeException("Can't get XMLReader",x);
+            }
+        }
         reader.setErrorHandler(ERROR_HANDLER);
         return reader;
     }
@@ -314,7 +329,23 @@ public class Xml {
     // PRIVATE
 
     private static DocumentBuilderFactory createDocumentBuilderFactory() {
-        DocumentBuilderFactory fact = new DocumentBuilderFactoryImpl();
+        DocumentBuilderFactory fact = null;
+        try {
+            ClassLoader cl = Thread.currentThread().getContextClassLoader();
+            if(cl == null) cl = Xml.class.getClassLoader();
+            Class<?> clazz = Class.forName(DEFAULT_DOCUMENTBUILDERFACTORY, true, cl);
+            fact = (DocumentBuilderFactory)clazz.newInstance();
+        } catch(Exception x) {
+            x.printStackTrace();
+            //ignore and try to get DocumentBuilderFactory via factory finder in next step
+        }
+        if(fact == null) {
+            try {
+                fact = DocumentBuilderFactory.newInstance();
+            } catch(FactoryConfigurationError x) {
+                throw new RuntimeException("Can't get DocumentBuilderFactory",x);
+            }
+        }
         if (!fact.isNamespaceAware()) {
             fact.setNamespaceAware(true);
         }
