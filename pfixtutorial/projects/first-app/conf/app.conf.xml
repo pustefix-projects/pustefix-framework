@@ -1,10 +1,7 @@
-<?xml version="1.0" encoding="utf-8"?>
-<contextxmlserver xmlns="http://pustefix.sourceforge.net/properties200401" xmlns:cus="http://www.schlund.de/pustefix/customize" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.0" xsi:schemaLocation="http://pustefix.sourceforge.net/properties200401 http://pustefix.sourceforge.net/properties200401.xsd">
+<?xml version="1.0" encoding="utf-8"?><context-xml-service-config xmlns="http://www.pustefix-framework.org/2008/namespace/context-xml-service-config" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.0" xsi:schemaLocation="http://www.pustefix-framework.org/2008/namespace/context-xml-service-config ../../core/schema/context-xml-service-config.xsd">
   
-  <servletinfo depend="first-app/conf/depend.xml" name="pfixcore_project:first-app::servlet:app">
-    <editmode allow="true"/>
-  </servletinfo>
-  
+  <global-config />
+
   <context defaultpage="EnterData">
     <resource class="org.pustefixframework.tutorial.firstapp.contextresources.ContextUserImpl">
       <implements class="org.pustefixframework.tutorial.firstapp.contextresources.ContextUser"/>
@@ -18,13 +15,13 @@
 
   <pagerequest name="EnterData">
     <input>
-      <interface prefix="user" class="org.pustefixframework.tutorial.firstapp.wrapper.EnterUserDataWrapper" />
+      <wrapper prefix="user" class="org.pustefixframework.tutorial.firstapp.wrapper.EnterUserDataWrapper" />
     </input>
   </pagerequest>
   
   <pagerequest name="ReviewData">
     <input>
-      <interface prefix="user" class="org.pustefixframework.tutorial.firstapp.wrapper.SaveUserDataWrapper" />
+      <wrapper prefix="user" class="org.pustefixframework.tutorial.firstapp.wrapper.SaveUserDataWrapper" />
     </input>
     <output>
       <resource node="user" class="org.pustefixframework.tutorial.firstapp.contextresources.ContextUser"/>
@@ -33,11 +30,11 @@
 
   <pagerequest name="ConfirmData">
     <input>
-      <interface prefix="user" class="org.pustefixframework.tutorial.firstapp.wrapper.SaveUserDataWrapper" />
+      <wrapper prefix="user" class="org.pustefixframework.tutorial.firstapp.wrapper.SaveUserDataWrapper" />
     </input>
     <output>
       <resource node="user" class="org.pustefixframework.tutorial.firstapp.contextresources.ContextUser"/>
     </output>
   </pagerequest>
 
-</contextxmlserver>
+</context-xml-service-config>

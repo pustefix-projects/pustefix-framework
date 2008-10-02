@@ -1,15 +1,6 @@
-<?xml version="1.0" encoding="utf-8"?><contextxmlserver xmlns="http://pustefix.sourceforge.net/properties200401" xmlns:cus="http://www.schlund.de/pustefix/customize" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.0" xsi:schemaLocation="http://pustefix.sourceforge.net/properties200401 http://pustefix.sourceforge.net/properties200401.xsd">
-  
-  <!--
-    A file configuring the java related topics. 
-    More Informations here: 
-    
-    http://pustefix.sourceforge.net/prop.html
-  -->
-  
-  <servletinfo depend="usermanagement/conf/depend.xml" name="pfixcore_project:usermanagement::servlet:user">
-    <editmode allow="true"/>
-  </servletinfo>
+<?xml version="1.0" encoding="utf-8"?><context-xml-service-config xmlns="http://www.pustefix-framework.org/2008/namespace/context-xml-service-config" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.0" xsi:schemaLocation="http://www.pustefix-framework.org/2008/namespace/context-xml-service-config ../../core/schema/context-xml-service-config.xsd">
+
+  <global-config />
   
   <context defaultpage="overview">
     <resource class="org.pustefixframework.tutorial.usermanagement.UserList" />
@@ -23,18 +14,18 @@
   
   <pagerequest name="userform">
     <input>
-      <interface prefix="user" class="org.pustefixframework.tutorial.usermanagement.UserWrapper" />
+      <wrapper prefix="user" class="org.pustefixframework.tutorial.usermanagement.UserWrapper" />
     </input>
   </pagerequest>
   
   <pagerequest name="overview">
     <input>
-      <interface prefix="delete" class="org.pustefixframework.tutorial.usermanagement.DeleteUserWrapper" />
-      <interface prefix="edit" class="org.pustefixframework.tutorial.usermanagement.EditUserWrapper" />
+      <wrapper prefix="delete" class="org.pustefixframework.tutorial.usermanagement.DeleteUserWrapper" />
+      <wrapper prefix="edit" class="org.pustefixframework.tutorial.usermanagement.EditUserWrapper" />
     </input>
     <output>
       <resource node="users" class="org.pustefixframework.tutorial.usermanagement.UserList" />
     </output>
   </pagerequest>
 
-</contextxmlserver>
+</context-xml-service-config>
