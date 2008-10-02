@@ -679,7 +679,7 @@ Total time: 3 seconds]]></screen>
 
   <pagerequest name="EnterData">
     <input>
-      <interface prefix="user" class="org.pustefixframework.tutorial.firstapp.wrapper.EnterUserDataWrapper" />
+      <wrapper prefix="user" class="org.pustefixframework.tutorial.firstapp.wrapper.EnterUserDataWrapper" />
     </input>
   </pagerequest>
   
@@ -1394,7 +1394,7 @@ public class SaveUserDataHandler implements IHandler {
   
   <pagerequest name="ReviewData">
     <input>
-      <interface prefix="user" class="org.pustefixframework.tutorial.firstapp.wrapper.SaveUserDataWrapper" />
+      <wrapper prefix="user" class="org.pustefixframework.tutorial.firstapp.wrapper.SaveUserDataWrapper" />
     </input>
     <output>
       <resource node="user" class="org.pustefixframework.tutorial.firstapp.contextresources.ContextUser"/>

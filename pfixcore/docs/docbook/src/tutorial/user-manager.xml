@@ -550,7 +550,7 @@ userList.addUser(user);</programlisting>
         </para>
         <programlisting language="xml"><![CDATA[<pagerequest name="userform">
   <input>
-    <interface prefix="user" class="org.pustefixframework.tutorial.usermanagement.UserWrapper" />
+    <wrapper prefix="user" class="org.pustefixframework.tutorial.usermanagement.UserWrapper" />
   </input>
 </pagerequest>]]></programlisting>
 
@@ -823,7 +823,7 @@ public int getId() {</programlisting>
         Add the input element to the existing <literal>pagerequest</literal> of the overview page.
       </para>
       <programlisting language="xml"><![CDATA[<input>
-  <interface prefix="delete" class="org.pustefixframework.tutorial.usermanagement.DeleteUserWrapper" />
+  <wrapper prefix="delete" class="org.pustefixframework.tutorial.usermanagement.DeleteUserWrapper" />
 </input>]]></programlisting>
     </section>
   </section>
@@ -977,7 +977,7 @@ public int getId() {</programlisting>
         Add the following <literal>interface</literal> element into the <literal>input</literal> element of the 
         <literal>pagerequest</literal> of the overview page.
       </para>
-      <programlisting language="xml"><![CDATA[<interface prefix="edit" class="org.pustefixframework.tutorial.usermanagement.EditUserWrapper" />]]></programlisting>
+      <programlisting language="xml"><![CDATA[<wrapper prefix="edit" class="org.pustefixframework.tutorial.usermanagement.EditUserWrapper" />]]></programlisting>
     </section>
     
     <section xml:id="um.edituser.userhandler">
