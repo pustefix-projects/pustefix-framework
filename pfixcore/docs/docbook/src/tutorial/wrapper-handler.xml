@@ -276,7 +276,7 @@ Then type in "http://first-app.HOSTNAME.DOMAIN"]]></screen>
         <itemizedlist>
           <listitem>
             <para>
-              <filename>project.xml.in</filename> contains the information the project, like the domain name where
+              <filename>project.xml</filename> contains the information the project, like the domain name where
               the project can be accessed, the servlets available in the project and some Apache configuration options.
             </para>
           </listitem>
@@ -406,20 +406,18 @@ Then type in "http://first-app.HOSTNAME.DOMAIN"]]></screen>
       This can be changed in the servlet configuration in <filename>conf/app.conf.xml</filename>:
     </para>
     <programlisting language="xml"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
-<contextxmlserver xmlns="http://pustefix.sourceforge.net/properties200401"
-                  xmlns:cus="http://www.schlund.de/pustefix/customize"
-                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.0"
-                  xsi:schemaLocation="http://pustefix.sourceforge.net/properties200401 http://pustefix.sourceforge.net/properties200401.xsd">
+<context-xml-service-config xmlns="http://www.pustefix-framework.org/2008/namespace/context-xml-service-config" 
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.0" 
+      xsi:schemaLocation="http://www.pustefix-framework.org/2008/namespace/context-xml-service-config 
+      ../../core/schema/context-xml-service-config.xsd">
   
-  <servletinfo depend="first-app/conf/depend.xml" name="pfixcore_project:first-app::servlet:app">
-    <editmode allow="true"/>
-  </servletinfo>
-  
-  <context defaultpage="EnterData"/>
+  <global-config />
+
+  <context defaultpage="EnterData" />
 
   <pagerequest name="home1"/>
 
-</contextxmlserver>]]></programlisting>
+</context-xml-service-config>]]></programlisting>
     <para>
       The entry page is specified using the <literal>defaultpage</literal> attribute of the
       <literal>&lt;context/&gt;</literal> tag. After you set this attribute to <literal>EnterData</literal>
@@ -552,9 +550,10 @@ Then type in "http://first-app.HOSTNAME.DOMAIN"]]></screen>
         which will then contain the new wrapper. After the package has been created, create a new <filename>EnterUserDataWrapper.iwrp</filename> file for the wrapper
         and paste the following content into this new file:
       </para>
-      <programlisting language="xml"><![CDATA[<interface xsi:schemaLocation="http://pustefix.sourceforge.net/interfacewrapper200401 http://pustefix.sourceforge.net/interfacewrapper200401.xsd"
-  xmlns="http://pustefix.sourceforge.net/interfacewrapper200401"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <programlisting language="xml"><![CDATA[<interface xsi:schemaLocation="http://pustefix.sourceforge.net/interfacewrapper200401 
+      http://pustefix.sourceforge.net/interfacewrapper200401.xsd"
+      xmlns="http://pustefix.sourceforge.net/interfacewrapper200401"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   
   <!-- This handler will process the data -->
   <ihandler class="org.pustefixframework.tutorial.firstapp.handler.EnterUserDataHandler"/>
@@ -671,10 +670,11 @@ Total time: 3 seconds]]></screen>
           To add your new wrapper to the <literal>EnterData</literal> page, add these lines to the configuration:
         </para>
         <programlisting language="xml"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
-<contextxmlserver xmlns="http://pustefix.sourceforge.net/properties200401"
-                  xmlns:cus="http://www.schlund.de/pustefix/customize"
-                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.0"
-                  xsi:schemaLocation="http://pustefix.sourceforge.net/properties200401 http://pustefix.sourceforge.net/properties200401.xsd">
+  <context-xml-service-config xmlns="http://www.pustefix-framework.org/2008/namespace/context-xml-service-config" 
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.0" 
+        xsi:schemaLocation="http://www.pustefix-framework.org/2008/namespace/context-xml-service-config 
+        ../../core/schema/context-xml-service-config.xsd">
+  
   <!-- ... -->
 
   <pagerequest name="EnterData">
@@ -682,13 +682,14 @@ Total time: 3 seconds]]></screen>
       <wrapper prefix="user" class="org.pustefixframework.tutorial.firstapp.wrapper.EnterUserDataWrapper" />
     </input>
   </pagerequest>
-  
-</contextxmlserver>]]></programlisting>
+
+</context-xml-service-config>]]></programlisting>
         <para>
           If you now try to open the page again, Pustefix will respond with an <literal>IllegalStateException</literal>
           and the following message:
         </para>
-        <screen>unable to find class [org.pustefixframework.tutorial.firstapp.handler.EnterUserDataHandler] :org.pustefixframework.tutorial.firstapp.handler.EnterUserDataHandler</screen>
+        <screen>unable to find class [org.pustefixframework.tutorial.firstapp.handler.EnterUserDataHandler] 
+          :org.pustefixframework.tutorial.firstapp.handler.EnterUserDataHandler</screen>
         <para>
           This already tells you, that implementing the handler must be your next step. But before you can go on and
           implement the handler, there is a small task left. Up to now, you do not have a Java type that is able to
@@ -1004,7 +1005,10 @@ public class ContextUserImpl implements ContextUser {
         file <filename>app.conf.xml</filename>: 
       </para>
       <programlisting language="xml"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
-<contextxmlserver xmlns="http://pustefix.sourceforge.net/properties200401" xmlns:cus="http://www.schlund.de/pustefix/customize" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.0" xsi:schemaLocation="http://pustefix.sourceforge.net/properties200401 http://pustefix.sourceforge.net/properties200401.xsd">
+<context-xml-service-config xmlns="http://www.pustefix-framework.org/2008/namespace/context-xml-service-config" 
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+      version="1.0" xsi:schemaLocation="http://www.pustefix-framework.org/2008/namespace/context-xml-service-config 
+      ../../core/schema/context-xml-service-config.xsd">
 
   <!-- Rest of configuration -->  
 
@@ -1016,12 +1020,12 @@ public class ContextUserImpl implements ContextUser {
 
   <!-- Rest of configuration -->  
 
-</contextxmlserver>]]></programlisting>
+</context-xml-service-config>]]></programlisting>
     </section>
     <section xml:id="wrapper-handler.business-logic.contextresourcemanager">
       <title>Accessing a ContextResource</title>
       <para>
-        Now, that you have created a new context resource, you will learn, how you can access it from your applciation.
+        Now, that you have created a new context resource, you will learn, how you can access it from your application.
         All context resources can be accessed via the <classname>ContextResourceManager</classname>, which provides a
         <function>getResource</function> method.
       </para>
@@ -1094,7 +1098,10 @@ public class EnterUserDataHandler implements IHandler {
       in the servlet configuration file:
     </para>
     <programlisting language="xml"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
-<contextxmlserver xmlns="http://pustefix.sourceforge.net/properties200401" xmlns:cus="http://www.schlund.de/pustefix/customize" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.0" xsi:schemaLocation="http://pustefix.sourceforge.net/properties200401 http://pustefix.sourceforge.net/properties200401.xsd">
+<context-xml-service-config xmlns="http://www.pustefix-framework.org/2008/namespace/context-xml-service-config" 
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+      version="1.0" xsi:schemaLocation="http://www.pustefix-framework.org/2008/namespace/context-xml-service-config 
+      ../../core/schema/context-xml-service-config.xsd">
 
   <!-- Rest of configuration -->  
 
@@ -1105,7 +1112,7 @@ public class EnterUserDataHandler implements IHandler {
 
   <!-- Rest of configuration -->  
 
-</contextxmlserver>]]></programlisting>
+</context-xml-service-config>]]></programlisting>
     <para>
       The workflow starts with the <literal>EnterData</literal> page, which is followed by the <literal>ReviewData</literal> page. After the page flow
       is finished, the final page <literal>Confirm</literal> will be displayed. Open the <literal>EnterData</literal> page again, after you made the changes,
@@ -1240,7 +1247,10 @@ public class ContextUserImpl implements ContextUser {
       context resource, that should be rendered on this page.
     </para>
     <programlisting language="xml"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
-<contextxmlserver xmlns="http://pustefix.sourceforge.net/properties200401" xmlns:cus="http://www.schlund.de/pustefix/customize" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.0" xsi:schemaLocation="http://pustefix.sourceforge.net/properties200401 http://pustefix.sourceforge.net/properties200401.xsd">
+<context-xml-service-config xmlns="http://www.pustefix-framework.org/2008/namespace/context-xml-service-config" 
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.0" 
+       xsi:schemaLocation="http://www.pustefix-framework.org/2008/namespace/context-xml-service-config 
+       ../../core/schema/context-xml-service-config.xsd">
 
   <!-- other configuration options -->
   
@@ -1250,7 +1260,7 @@ public class ContextUserImpl implements ContextUser {
     </output>
   </pagerequest>
 
-</contextxmlserver>]]></programlisting>
+</context-xml-service-config>]]></programlisting>
     <para>
       The <literal>class</literal> attribute references the interface implemented by the context resource and the <literal>node</literal>
       attribute defines the name of the element in which it will be rendered.
@@ -1335,9 +1345,10 @@ public class ContextUserImpl implements ContextUser {
       To achieve this, you will have to implement a new pair of wrapper and handler. As the <literal>ReviewData</literal> page does not
       contain any input fields, the new wrapper does not need any parameters:
     </para>
-    <programlisting language="xml"><![CDATA[<interface xsi:schemaLocation="http://pustefix.sourceforge.net/interfacewrapper200401 http://pustefix.sourceforge.net/interfacewrapper200401.xsd"
-  xmlns="http://pustefix.sourceforge.net/interfacewrapper200401"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <programlisting language="xml"><![CDATA[<interface xsi:schemaLocation="http://pustefix.sourceforge.net/interfacewrapper200401 
+      http://pustefix.sourceforge.net/interfacewrapper200401.xsd"
+      xmlns="http://pustefix.sourceforge.net/interfacewrapper200401"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   
   <!-- This handler will process the data -->
   <ihandler class="org.pustefixframework.tutorial.firstapp.handler.SaveUserDataHandler"/>
@@ -1387,10 +1398,10 @@ public class SaveUserDataHandler implements IHandler {
       <literal>&lt;pagerequest/&gt;</literal> tag in the servlet configuration:
     </para>
     <programlisting language="xml"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
-<contextxmlserver xmlns="http://pustefix.sourceforge.net/properties200401"
-  xmlns:cus="http://www.schlund.de/pustefix/customize"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.0"
-  xsi:schemaLocation="http://pustefix.sourceforge.net/properties200401 http://pustefix.sourceforge.net/properties200401.xsd">
+<context-xml-service-config xmlns="http://www.pustefix-framework.org/2008/namespace/context-xml-service-config" 
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.0" 
+      xsi:schemaLocation="http://www.pustefix-framework.org/2008/namespace/context-xml-service-config 
+      ../../core/schema/context-xml-service-config.xsd">
   
   <pagerequest name="ReviewData">
     <input>
@@ -1401,7 +1412,7 @@ public class SaveUserDataHandler implements IHandler {
     </output>
   </pagerequest>
 
-</contextxmlserver>]]></programlisting>
+</context-xml-service-config>]]></programlisting>
     <para>
       All that is left your you now, is to add a possibility to submit the <literal>ReviewData</literal> page. But as there is no
       input form needed, you will learn a new way, how data can be submitted using Pustefix. The <literal>&lt;pfx:button/&gt;</literal>

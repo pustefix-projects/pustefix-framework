@@ -77,51 +77,78 @@
     <para>
       In AJAX applications, you will need a servlet, that is able to process the AJAX requests sent by the client.
       Pustefix provides a ready-to-use servlet, that is able to expose any Java class as a webservice and process
-      requests made by the client. To use this servlet, open the <filename>project.xml.in</filename> configuration
-      file and add a new servlet <literal>webservice</literal> at the end of the file.     
+      requests made by the client. To use this servlet, open the <filename>project.xml</filename> configuration
+      file and add the the webservice element at the end of the file.     
     </para>
     <programlisting language="xml"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
-<project xmlns:cus="http://www.schlund.de/pustefix/customize" name="ajax-calculator">
+<project-config xmlns="http://www.pustefix-framework.org/2008/namespace/project-config">
 
-  <!-- These lines have been generated -->
-  <active>true</active>
-  <comment>AJAX calculator tutorial</comment>
-  <depend>ajax-calculator/conf/depend.xml</depend>
-  <virtualhost><cus:fqdn/></virtualhost>
-  <servername>ajax-calculator.<cus:fqdn/></servername>
-  <serveralias>ajax-calculator.<cus:machine/></serveralias>
-  
-  <defpath>/xml/calc</defpath>
-  <passthrough>ajax-calculator/img</passthrough>
-  
-  <documentroot><cus:docroot/>ajax-calculator/htdocs</documentroot>
-  
-  <literalapache>
-    # Add something here...
-  </literalapache>
-  <ports>
-    <port number="80"/>
-  </ports>
-  
-  <servlet name="calc" useineditor="true">
-    <active>true</active>
-    <class>de.schlund.pfixxml.ContextXMLServlet</class>
-    <propfile>ajax-calculator/conf/calc.conf.xml</propfile>
-  </servlet>
-  
-  <servlet name="deref">
-    <active>true</active>
-    <class>de.schlund.pfixxml.DerefServlet</class>
-  </servlet>
+<!-- These lines have been generated -->
+<project>
+  <name>ajax-calculator</name>
+  <description>AJAX calculator tutorial</description>
+  </project>
 
-  <!-- Add these lines manually -->
-  <servlet name="webservice">
-    <active>true</active>
-    <class>org.pustefixframework.webservices.WebServiceServlet</class>
-    <propfile>ajax-calculator/conf/webservice.conf.xml</propfile>
-  </servlet>
+  <editor>
+    <enabled>true</enabled>
+    <location>http://cms.${fqdn}/</location>
+  </editor>
 
-</project>]]></programlisting>
+  <xml-generator>
+    <config-file>pfixroot:/ajax-calculator/conf/depend.xml</config-file>
+  </xml-generator>
+
+  <http-server>
+
+    <http-port>
+      <address>${fqdn}</address>
+    </http-port>
+
+    <!-- we do not use SSL here
+    <https-port>-->
+      <address>${fqdn}</address>
+      <ssl-key>pfixroot:/ajax-calculator/conf/server.key</ssl-key>
+      <ssl-crt>pfixroot:/ajax-calculator/conf/server.crt</ssl-crt>
+    </https-port>
+    -->
+
+    <server-name>ajax-calculator.${fqdn}</server-name>
+    <server-alias>ajax-calculator.${machine}</server-alias>
+
+    <apache>
+      <literal>
+        <!-- Stuff that is copied to the Apache configuration -->
+      </literal>
+    </apache>
+
+    <tomcat>
+      <enable-extra-webapps>false</enable-extra-webapps>
+    </tomcat>
+
+  </http-server>
+
+  <application>
+
+    <docroot-path>pfixroot:/ajax-calculator/htdocs</docroot-path>
+    <default-path>/xml/calc</default-path>
+
+    <context-xml-service>
+      <path>/xml/calc</path>
+      <config-file>pfixroot:/ajax-calculator/conf/calc.conf.xml</config-file>
+    </context-xml-service>
+
+    <static>
+      <path>ajax-calculator/img</path>
+    </static>
+
+    <!-- Add these lines manually -->
+    <webservice-service>
+      <path>/xml/webservice</path>
+      <config-file>pfixroot:/ajax-calculator/conf/webservice.conf.xml</config-file>
+    </webservice-service>
+
+  </application>
+</project-config>]]></programlisting>
     <para>
       Instead of using the <classname>ContextXMLServlet</classname> for the servlet, you need to use the
       <classname>org.pustefixframework.webservices.WebServiceServlet</classname> instead (In version 0.12.2 you need to use <classname>de.schlund.pfixcore.webservice.WebServiceServlet</classname>.). To configure the webservice servlet
@@ -131,9 +158,10 @@
       This <filename>webservice.conf.xml</filename> file makes use of the XML syntax like all the previous configuration files
       you encountered in Pustefix. Add the following content to the file:
     </para>
-    <programlisting language="xml"><![CDATA[<webservice-config xmlns="http://pustefix.sourceforge.net/wsconfig200401"
+    <programlisting language="xml"><![CDATA[<webservice-config
+  xmlns="http://www.pustefix-framework.org/2008/namespace/webservice-config"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://pustefix.sourceforge.net/wsconfig200401 ../../core/schema/wsconfig200401.xsd">
+  xsi:schemaLocation="http://www.pustefix-framework.org/2008/namespace/webservice-config ../../core/schema/webservice-config.xsd">
   
   <webservice-global>
     <requestpath>/xml/webservice</requestpath>
@@ -145,10 +173,8 @@
     <admin enabled="true"/>
     <monitoring enabled="true" scope="session" historysize="10"/>
     <logging enabled="true"/>
-    <faulthandler class="de.schlund.pfixcore.webservice.fault.LoggingHandler"/>
-  </webservice-global>
-  
-</webservice-config>]]></programlisting>
+    <faulthandler class="org.pustefixframework.webservices.fault.LoggingHandler"/>
+  </webservice-global>]]></programlisting>
     <para>
       <xref linkend="ajax-calculator.servlet.config"/> lists all used configuration options and describes
       their usage in this example. 
@@ -304,13 +330,14 @@ public class CalculatorServiceImpl extends AbstractService implements Calculator
       you created earler (in <xref linkend="ajax-calculator.servlet"/>). For each webservice you want to expose, you
       have to add one <literal>&lt;webservice/&gt;</literal> tag in this configuration file:
     </para>
-    <programlisting language="xml"><![CDATA[<webservice-config xmlns="http://pustefix.sourceforge.net/wsconfig200401"
+    <programlisting language="xml"><![CDATA[<webservice-config
+  xmlns="http://www.pustefix-framework.org/2008/namespace/webservice-config"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://pustefix.sourceforge.net/wsconfig200401 ../../core/schema/wsconfig200401.xsd">
-
-  <!-- global config -->  
+  xsi:schemaLocation="http://www.pustefix-framework.org/2008/namespace/webservice-config ../../core/schema/webservice-config.xsd">
   
-  <webservice name="CalculatorService">
+  <!-- global config -->
+  
+  <webservice name="Calculator">
     <interface name="org.pustefixframework.tutorial.calculator.CalculatorService"/>
     <implementation name="org.pustefixframework.tutorial.calculator.CalculatorServiceImpl"/>
   </webservice>
@@ -511,17 +538,17 @@ var calcProxy = new WS_Calculator();
 function add() {
   var a = parseInt(document.getElementById('a').value);
   var b = parseInt(document.getElementById('b').value);
-  alert(calcProxy.add(a,b));
+  alert(calcProxy.add(parseInt(a),parseInt(b)));
 }
 function subtract() {
   var a = parseInt(document.getElementById('a').value);
   var b = parseInt(document.getElementById('b').value);
-  alert(calcProxy.subtract(a,b));
+  alert(calcProxy.subtract(parseInt(a),parseInt(b)));
 }
 function multiply() {
   var a = parseInt(document.getElementById('a').value);
   var b = parseInt(document.getElementById('b').value);
-  alert(calcProxy.multiply(a,b));
+  alert(calcProxy.multiply(parseInt(a),parseInt(b)));
 }
       </pfx:script>
     </theme>
