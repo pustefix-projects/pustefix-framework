@@ -1109,7 +1109,7 @@ or delete the DOCTYPE definition -->
       </classpath>
       <batchtest todir="${dir.test.report}">
         <fileset dir="${dir.test.src}">
-          <include name="**/PropertyFileReaderTest.java"/>
+          <include name="**/*Test.java"/>
         </fileset>
       </batchtest>
     </junit>

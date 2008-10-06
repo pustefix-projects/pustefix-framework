@@ -1,3 +1,9 @@
+2008-10-06  Tobias Fehrenbach <tobias.fehrenbach@1und1.de>
+
+	Fixed test target in build-skel. All tests ending on Test will 
+	be executed, not only PropertyFileReaderTest.java.
+	* skel/build-skel.xml
+
 2008-09-25  Martin Leidig  <mleidig@schlund.de>
 
 	Fixed warnings caused by usage of internal Xerces XML/XPath/DOM
