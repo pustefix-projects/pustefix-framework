@@ -4,6 +4,17 @@
        xmlns:aop="http://www.springframework.org/schema/aop"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd">
 
+  <bean id="testdata" class="de.schlund.pfixcore.example.TestData" scope="session">
+    <property name="text" value="foo"/>
+    <aop:scoped-proxy/>
+    <property name="data" ref="global_testdata"/>
+  </bean>
+  
+  <bean id="global_testdata" class="de.schlund.pfixcore.example.TestData">
+    <property name="text" value="bar"/>
+    <!-- <property name="foo" value="xxx"/>-->
+  </bean>
+
 <!--   
   <bean class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
     <property name="alwaysUseFullPath" value="true"/>

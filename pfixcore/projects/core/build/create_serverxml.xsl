@@ -12,6 +12,8 @@
   <xsl:param name="webappbase"/>
   <xsl:param name="commonprojectsfile"/>
   <xsl:param name="customizationinfo"/>
+  <xsl:param name="webappmode">false</xsl:param>
+  <xsl:param name="webapps"/>
   
   <xsl:include href="create_lib.xsl"/>
   <xsl:output method="xml" encoding="UTF-8" indent="yes"/>
@@ -138,8 +140,9 @@
         <xsl:otherwise>true</xsl:otherwise> 
       </xsl:choose>
     </xsl:variable>
-    <xsl:if test="$active = 'true'">
-      <Host xmlValidation="false" unpackWARs="false" autoDeploy="false">
+    <xsl:variable name="applist" select="concat(' ',translate($webapps,',',' '),' ')"/>
+    <xsl:if test="$active = 'true' and ( $webapps = '' or contains($applist,p:project/p:name/text()) )">
+      <Host xmlValidation="false" unpackWARs="false" deployOnStartup="false" autoDeploy="false">
         <xsl:attribute name="debug"><xsl:value-of select="$debug"/></xsl:attribute>
         <xsl:attribute name="name">
           <!-- <xsl:apply-templates select="p:http-server/server-name/node()"/> -->
@@ -225,8 +228,18 @@
       <xsl:attribute name="path"><xsl:value-of select="$path"/></xsl:attribute>
       <xsl:attribute name="docBase"><xsl:if test="$hostbased='true'">../</xsl:if><xsl:value-of select="$docBase"/></xsl:attribute>
       <xsl:attribute name="debug"><xsl:value-of select="$debug"/></xsl:attribute>
+      <xsl:if test="$webappmode='true'">
+        <xsl:attribute name="allowLinking">true</xsl:attribute>
+      </xsl:if>
       <!-- switch off session serialization -->
-      <Manager  pathname=""/>
+      <xsl:choose>
+        <xsl:when test="$webappmode='true'">
+          <Manager/>
+        </xsl:when>
+        <xsl:otherwise>
+          <Manager  pathname=""/>
+        </xsl:otherwise>
+      </xsl:choose>
       <xsl:if test="$staticDocBase and not($staticDocBase = '')">
         <Parameter name="staticDocBase" value="{$staticDocBase}"/>
       </xsl:if>

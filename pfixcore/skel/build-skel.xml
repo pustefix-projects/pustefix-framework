@@ -39,6 +39,8 @@ or delete the DOCTYPE definition -->
   <property name="dir.webapps"              location="${dir.tomcat}/webapps"/>
   <property name="standalone.tomcat"        value="false"/>
   <property name="portbase.tomcat"          value="8000"/>
+  <property name="webappmode"               value="false"/>
+  <property name="webapps"                  value=""/> 
 
   <property name="pat.pfixcore_jar"         value="pfixcore-*.jar"/>
   <fileset  id="id.fs.pfixcore_jar"         dir="${dir.lib}" includes="pfixcore-*.jar"/>
@@ -104,6 +106,9 @@ or delete the DOCTYPE definition -->
     </condition>
     <condition property="fqdn"     value="${machine}">
       <not><isset property="dnsdomainname"/></not>
+    </condition>
+    <condition property="in.webapp.mode">
+      <equals arg1="${webappmode}" arg2="true"/>
     </condition>
   </target>
 
@@ -227,7 +232,7 @@ or delete the DOCTYPE definition -->
           />
 
   <target name="compile-xml"
-          depends="buildtime-props, scgenerate, web_xml, autodeploy, pfixlog_xml, apache_conf, jk_conf, ajp_conf, workers_prop, server_xml, webservice"
+          depends="buildtime-props, scgenerate, web_xml, webapp-setup, autodeploy, pfixlog_xml, apache_conf, jk_conf, ajp_conf, workers_prop, server_xml, webservice"
           description="performs xslt transformations in dir.projects"
           />
 
@@ -288,23 +293,39 @@ or delete the DOCTYPE definition -->
   </target>
 
   <target name="installjars" depends="tomcat.dir.opt">
+    <condition property="shared_lib_dirname" value="webapp-lib" else="lib">
+	<isset property="in.webapp.mode"/>
+    </condition>
+    <condition property="shared_classes_dirname" value="webapp-classes" else="classes">
+        <isset property="in.webapp.mode"/>
+    </condition>
+    <condition property="old_shared_lib_dirname" value="lib" else="webapp-lib">
+        <isset property="in.webapp.mode"/>
+    </condition>
+    <condition property="old_shared_classes_dirname" value="classes" else="webapp-classes">
+        <isset property="in.webapp.mode"/>
+    </condition>
+    <exec executable="sh">
+      <arg line="-c &quot;[ -L ${dir.tomcat}/shared/${old_shared_classes_dirname} ] &amp;&amp; rm -rf ${dir.tomcat}/shared/${old_shared_classes_dirname}; [ -e ${dir.tomcat}/shared/${old_shared_lib_dirname} ] &amp;&amp; rm -rf ${dir.tomcat}/shared/${old_shared_lib_dirname}&quot;"/>
+    </exec>
     <!-- Setting absolute links instead of relative to avoid extra property for dir.build
          as ${dir.build} is specified as location it always resolves to an absolute path;
          does not work for filenames containing spaces -->
-    <echo level="verbose" message="Setting symlink to ${dir.build} as ${dir.projects}/servletconf/tomcat/shared/classes"/>
+    <echo level="verbose" message="Setting symlink to ${dir.build} as ${dir.projects}/servletconf/tomcat/shared/${shared_classes_dirname}"/>
     <exec executable="sh">
-      <arg line="-c &quot;[ -e ${dir.projects}/servletconf/tomcat/shared/classes ] &amp;&amp; rm -fr ${dir.projects}/servletconf/tomcat/shared/classes ; ln -s  ${dir.build} ${dir.projects}/servletconf/tomcat/shared/classes&quot;"/>
+      <arg line="-c &quot;[ -e ${dir.projects}/servletconf/tomcat/shared/${shared_classes_dirname} ] &amp;&amp; rm -fr ${dir.projects}/servletconf/tomcat/shared/${shared_classes_dirname} ; ln -s  ${dir.build} ${dir.projects}/servletconf/tomcat/shared/${shared_classes_dirname}&quot;"/>
     </exec>
     <!-- As task delete does not delete symbolic links, deleting symlinks using native tools. -->
     <!-- Deleting symlinks pointing to non existent files, assuming jar files -->
     <!-- replaced by new versions (with new filenames) do not exist anymore -->
+    <mkdir dir="${dir.projects}/servletconf/tomcat/shared/${shared_lib_dirname}"/>
     <exec executable="find" os="Linux, Mac OS X">
-      <arg file="${dir.projects}/servletconf/tomcat/shared/lib"/>
+      <arg file="${dir.projects}/servletconf/tomcat/shared/${shared_lib_dirname}"/>
       <arg line="-iname *.jar -a -type l -exec rm -v {} ;"/>
     </exec>
     <echo level="verbose">Creating symlinks in tomcat's lib directory</echo>
     <pathconvert property="cp.property" refid="cp.libs" pathsep=","/>
-    <apply executable="ln" dir="${dir.projects}/servletconf/tomcat/shared/lib" failonerror="true" verbose="true"
+    <apply executable="ln" dir="${dir.projects}/servletconf/tomcat/shared/${shared_lib_dirname}" failonerror="true" verbose="true"
       type="file">  <!-- type file: to make sure that directories that might be added to cp.libs by accident are not passed to ln -->
       <arg value="-s"/>
       <srcfile/>
@@ -537,7 +558,21 @@ or delete the DOCTYPE definition -->
     </foreach> 
     <antcall target="scmerge-modules"/>
   </target>
- 
+
+  <target name="webapp-setup" depends="webapp-removelinks, webapp-createlinks"/>
+
+  <target name="webapp-createlinks" depends="ant-tasks" if="in.webapp.mode">
+    <exec executable="sh">
+      <arg line="-c &quot;for f in `find ${dir.projects}/servletconf/tomcat/webapps -maxdepth 2 -type d -name 'WEB-INF'`; do [ ! -e $f/classes ] &amp;&amp; ln -s ${dir.projects}/servletconf/tomcat/shared/webapp-classes $f/classes; [ ! -e $f/lib ] &amp;&amp; ln -s ${dir.projects}/servletconf/tomcat/shared/webapp-lib $f/lib; done&quot;"/>
+    </exec>
+  </target>
+
+  <target name="webapp-removelinks" depends="ant-tasks" unless="in.webapp.mode">
+    <exec executable="sh">
+      <arg line="-c &quot;for f in `find ${dir.projects}/servletconf/tomcat/webapps -maxdepth 2 -type d -name 'WEB-INF'`; do [ -L $f/classes ] &amp;&amp; rm $f/classes; [ -L $f/lib ] &amp;&amp; rm $f/lib; done&quot;"/>
+    </exec>
+  </target>
+
   <target name="-extract-jar-modules" depends="ant-tasks" description="Extracts resource data from JAR libraries">
     <!-- This target should only be called by extract-modules -->  
     <pfx-unpack-jar-module srcdir="${basedir}" extracttodir="${dir.extract.modules}" includes="${lib.includes}" />
@@ -828,7 +863,21 @@ or delete the DOCTYPE definition -->
     </pfx-xslt>
   </target>
 
-  <target name="server_xml" depends="ant-tasks" description="creates servletconf/tomcat/conf/server.xml from servletconf/projects.xml with core/build/create_serverxml.xsl">
+  <target name="server_xml-check">
+    <condition property="server_xml.outdated">
+      <and>
+        <available file="build.properties"/>
+        <available file="${dir.tomcat}/conf/server.xml"/>
+        <uptodate targetfile="build.properties" srcfile="${dir.tomcat}/conf/server.xml"/>
+      </and>
+    </condition>
+  </target>
+
+  <target name="server_xml-force" if="server_xml.outdated">
+    <delete file="${dir.tomcat}/conf/server.xml"/>
+  </target>
+
+  <target name="server_xml" depends="ant-tasks,server_xml-check,server_xml-force" description="creates servletconf/tomcat/conf/server.xml from servletconf/projects.xml with core/build/create_serverxml.xsl">
     <pfx-server-config
       basedir="${dir.projects}"
       outfile="${dir.tomcat}/conf/server.xml"
@@ -839,6 +888,8 @@ or delete the DOCTYPE definition -->
     >
       <param name="standalone" expression="${standalone.tomcat}"/>
       <param name="portbase"   expression="${portbase.tomcat}"/>
+      <param name="webappmode" expression="${webappmode}"/>
+      <param name="webapps"    expression="${webapps}"/>
     </pfx-server-config>
   </target>
 

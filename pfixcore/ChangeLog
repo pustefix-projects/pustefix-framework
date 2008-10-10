@@ -1,3 +1,72 @@
+2008-10-08  Martin Leidig <mleidig@schlund.de>
+
+	Added support for Webapp reloading and Spring application context
+	refreshing. Reloading/refreshing can be done via JMX. You can either
+	use a JMX client of your choice, like jconsole, or you can use the
+	reload.sh and refresh.sh scripts. 
+
+	Added new build mode, which doesn't configure the classes and libraries 
+	to be loaded with Tomcat's shared classloader, but with the respective
+	WebappClassLoader. This is simply done by making symbolic links from the 
+	WEB-INF directories. Building in this mode also activates Tomcat's session
+	serialization mechanism, i.e. if data stored in the session (like
+	ContextResources or session beans) is serializable, you can reload
+	your application without losing state (limited by the known boundaries
+	of the Java serialization mechanism). This build mode can be enabled by 
+	adding 'webappmode=true' to the build.properties file.
+
+	Added support for configuring Tomcat at startup time. Thus you can
+	determine which projects/hosts should be started without having to
+	call ant. Therefor you have to create the property file
+	"startup.properties" in the Pustefix root directory and add the 
+	property "projects". The property expects a space-separated list of 
+	projectnames as value. 
+
+	Added:
+	* src/org/pustefixframework/admin/mbeans/WebappAdmin.java: implements
+	webapp reloading using Tomcat's WebModule JMX bean and Spring-
+	ApplicationContext reloading using the injected PustefixWebApplicationContext
+	* src/org/pustefixframework/admin/mbeans/WebappAdminMBean.java:
+	exposes reload and refresh method for JMX usage
+	* src/org/pustefixframework/config/project/parser/WebappAdminParsingHandler.java:
+	register WebappAdmin bean
+	* src/org/pustefixframework/admin/WebappAdminClient.java: commandline
+	client for reloading/refreshing, which uses local JMX
+	* src/org/pustefixframework/tools/TomcatStartupConfigurator.java:
+	creates server-runtime.xml from server.xml and removes inactive hosts
+	* reload.sh: script that triggers webapp reloading
+	* skel/reload.sh
+	* refresh.sh: script that triggers ApplicationContext refreshing
+	* skel/refresh.sh
+	* startup.properties: example TomcatStartupConfigurator properties
+	file
+	* skel/startup.properties
+	* src/de/schlund/pfixcore/example/TestData.java: added bean for
+	testing DI and reloading/refreshing in the sample application
+
+	Modified:
+	* src/org/pustefixframework/http/AbstractPustefixRequestHandler.java:
+	add property for injected WebappAdmin bean and call ApplicationContext refreshing
+	* src/org/pustefixframework/config/project/parser/PustefixContextXMLRequestHandlerParsingHandler.java:
+	inject WebappAdmin bean into PustefixContextXmlRequestHandler
+	* src/de/schlund/pfixcore/example/ContextAdultInfo.java: made class
+	Serializable to test webapp reloading
+	* res/META-INF/org/pustefixframework/config/project/parser/project-config.xml:
+	added ParsingHandler for WebappAdmin, added customization support for
+	further elements
+	* projects/core/build/create_serverxml.xsl: added webappmode and
+	webapps parameters. If webapps is set, only Hosts for these webapps
+	are created. If webappmode is true, session management and symbolic
+	linking support is enabled.
+	* projects/core/schema/context-xml-service-config.xsd: added
+	definition for optional bean-ref attribute (at output resources)
+	* skel/build-skel.xml: create links to shared classes/lib in webapp
+	mode to webapp-classes/webapp-lib instead of classes/lib and link
+	from WEB-INF/classes WEB-INF/lib of every webapp
+	* projects/sample1/conf/spring.xml: added test beans
+	* projects/sample1/conf/config.conf.xml: added test bean to output
+	* startTomcat.sh: increase -mx and MaxPermSize
+
 2008-10-06  Tobias Fehrenbach <tobias.fehrenbach@1und1.de>
 
 	Fixed test target in build-skel. All tests ending on Test will 

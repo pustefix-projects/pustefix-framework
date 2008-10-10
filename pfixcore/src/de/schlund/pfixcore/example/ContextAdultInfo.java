@@ -19,6 +19,7 @@
 
 package de.schlund.pfixcore.example;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.HashMap;
 
@@ -37,11 +38,15 @@ import de.schlund.pfixcore.beans.Exclude;
  *
  */
 
-public class ContextAdultInfo {
+public class ContextAdultInfo implements Serializable {
+    
+    private static final long serialVersionUID = -7113285838799932518L;
+    
+    private transient Logger LOG = Logger.getLogger(ContextAdultInfo.class);
+    
     private Boolean adult = null;
     private Date date = null;
     private HashMap<String, String> test  = new HashMap<String, String>();
-    private final static Logger LOG = Logger.getLogger(ContextAdultInfo.class);
     
     public void setIndexedTest(HashMap<String, String> inmap) {
         test = inmap;

@@ -615,8 +615,9 @@
               <xs:sequence>
                 <xs:element name="resource" minOccurs="0" maxOccurs="unbounded">
                   <xs:complexType>
-                    <xs:attribute name="class" use="required"/>
+                    <xs:attribute name="class" use="optional"/>
                     <xs:attribute name="node" use="required"/>
+                    <xs:attribute name="bean-ref" use="optional"/>
                   </xs:complexType>
                 </xs:element>
               </xs:sequence>

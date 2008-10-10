@@ -24,6 +24,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Properties;
 
+import org.pustefixframework.admin.mbeans.WebappAdmin;
 import org.pustefixframework.config.Constants;
 import org.pustefixframework.config.contextxmlservice.ContextXMLServletConfig;
 import org.pustefixframework.config.customization.CustomizationAwareParsingHandler;
@@ -125,6 +126,7 @@ public class PustefixContextXMLRequestHandlerParsingHandler extends Customizatio
         if(beanReg.isBeanNameInUse(TestRecording.class.getName())) {
             beanBuilder.addPropertyValue("testRecording", new RuntimeBeanReference(TestRecording.class.getName()));
         }
+        beanBuilder.addPropertyValue("webappAdmin", new RuntimeBeanReference(WebappAdmin.class.getName()));
         BeanDefinition beanDefinition = beanBuilder.getBeanDefinition();
         BeanDefinitionHolder beanHolder = new BeanDefinitionHolder(beanDefinition, PustefixContextXMLRequestHandler.class.getName() + "#" + path);
         context.getObjectTreeElement().addObject(beanHolder);
