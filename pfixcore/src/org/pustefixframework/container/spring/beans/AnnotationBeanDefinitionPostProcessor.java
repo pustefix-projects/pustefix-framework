@@ -20,7 +20,9 @@ package org.pustefixframework.container.spring.beans;
 
 import java.lang.reflect.Method;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import org.pustefixframework.container.annotations.ImplementedBy;
 import org.pustefixframework.container.annotations.Inject;
@@ -45,6 +47,9 @@ import org.springframework.beans.factory.support.DefaultListableBeanFactory;
  */
 public class AnnotationBeanDefinitionPostProcessor {
     private Map<String, String> scopedProxyMap = new HashMap<String, String>(); 
+    
+    private Set<Class<?>> notAnnotatedClasses = new HashSet<Class<?>>();
+    private Map<Class<?>,RuntimeBeanReference> beanRefCache = new HashMap<Class<?>,RuntimeBeanReference>();
     
     /**
      * Iterates over all {@link BeanDefinition}s in the <code>beanFactory</code>
@@ -101,14 +106,16 @@ public class AnnotationBeanDefinitionPostProcessor {
         } catch (ClassNotFoundException e) {
             throw new BeanDefinitionValidationException("Class \"" + beanDefinition.getBeanClassName() + "\" specified for bean \"" + beanName + "\" could not be loaded.");
         }
+        if(notAnnotatedClasses.contains(beanClass)) return;
         
         Method[] methods = beanClass.getMethods();
-        
+        boolean hasInject = false;
         for (int i = 0; i < methods.length; i++) {
             Method method = methods[i];
             String methodName = method.getName();
             Inject annotation = method.getAnnotation(Inject.class);
             if (annotation != null) {
+            	hasInject = true;
                 String propertyName = null;
                 
                 if (methodName.startsWith("set") && method.getParameterTypes().length == 1) {
@@ -135,6 +142,9 @@ public class AnnotationBeanDefinitionPostProcessor {
                 }
 
             }
+        }
+        if(!hasInject) {
+        	notAnnotatedClasses.add(beanClass);
         }
     }
     
@@ -175,8 +185,11 @@ public class AnnotationBeanDefinitionPostProcessor {
      * could be found or created
      */
     private RuntimeBeanReference findOrCreateBeanDefinition(Class<?> wantedType, DefaultListableBeanFactory beanFactory) {
-        String matchingBeanName = null;
         
+    	RuntimeBeanReference beanRef = beanRefCache.get(wantedType);
+        if(beanRef != null) return beanRef;
+        
+    	String matchingBeanName = null;
         ClassLoader beanClassLoader = getClassLoader(beanFactory);
         
         for (String beanName : beanFactory.getBeanDefinitionNames()) {
@@ -230,7 +243,9 @@ public class AnnotationBeanDefinitionPostProcessor {
             }
         }
         
-        return new RuntimeBeanReference(matchingBeanName);
+        beanRef = new RuntimeBeanReference(matchingBeanName);
+        beanRefCache.put(wantedType, beanRef);
+        return beanRef;
     }
     
     /**

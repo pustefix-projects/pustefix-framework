@@ -17,6 +17,8 @@ echo "---------------------------"
 
 if [ -e startup.properties ]; then
   java -cp build:`find lib -name "*pfixcore*.jar" -printf "%p:"` org.pustefixframework.tools.TomcatStartupConfigurator startup.properties projects/servletconf/tomcat/conf/server.xml projects/servletconf/tomcat/conf/server-runtime.xml
+else
+  [ -e projects/servletconf/tomcat/conf/server-runtime.xml ] && rm projects/servletconf/tomcat/conf/server-runtime.xml
 fi
 if [ -e projects/servletconf/tomcat/conf/server-runtime.xml ]; then
   echo "Use configuration created at startup from 'projects/servletconf/tomcat/conf/server-runtime.xml'"

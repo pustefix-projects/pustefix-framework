@@ -1,3 +1,13 @@
+2008-10-11  Martin Leidig <mleidig@schlund.de>
+
+	Improved performance by caching bean references of already
+	processed classes and remembering un-annotated classes.
+	* src/org/pustefixframework/container/spring/beans/AnnotationBeanDefinitionPostProcessor.java
+
+	Remove server-runtime.xml if startup.properties doesn't exist.
+	* startTomcat.sh
+	* skel/startTomcat.sh
+
 2008-10-08  Martin Leidig <mleidig@schlund.de>
 
 	Added support for Webapp reloading and Spring application context
