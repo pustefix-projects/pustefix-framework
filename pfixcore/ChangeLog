@@ -1,3 +1,7 @@
+2008-10-14  Martin Leidig <mleidig@schlund.de>
+
+	Released Pfixcore 0.13.2 
+
 2008-10-11  Martin Leidig <mleidig@schlund.de>
 
 	Improved performance by caching bean references of already
