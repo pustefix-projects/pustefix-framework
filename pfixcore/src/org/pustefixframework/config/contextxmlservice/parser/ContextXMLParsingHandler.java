@@ -167,7 +167,7 @@ public class ContextXMLParsingHandler implements ParsingHandler {
             }
             
             beanDefinition = beanBuilder.getBeanDefinition();
-            beanHolder = new BeanDefinitionHolder(beanDefinition, ContextImpl.class.getName());
+            beanHolder = new BeanDefinitionHolder(beanDefinition, ContextImpl.class.getName(), new String[] {"pustefixContext"});
             beanHolder = ScopedProxyUtils.createScopedProxy(beanHolder, beanReg, true);
             context.getObjectTreeElement().addObject(beanHolder); 
             

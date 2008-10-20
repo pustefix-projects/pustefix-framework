@@ -1,3 +1,12 @@
+2008-10-20  Martin Leidig <mleidig@schlund.de>
+
+	Added alias "pustefixContext" for the ContextImpl bean (as we require a
+	speaking name for Spring-XML-based injection of the Context):
+	* src/org/pustefixframework/config/contextxmlservice/parser/ContextXMLParsingHandler.java
+
+	* pom.xml: set version to 0.13.3-SNAPSHOT
+	* build.xml: set version to 0.13.3-pre
+
 2008-10-14  Martin Leidig <mleidig@schlund.de>
 
 	Released Pfixcore 0.13.2 
