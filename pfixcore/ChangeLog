@@ -1,3 +1,15 @@
+2008-10-20  Martin Leidig  <mleidig@schlund.de>
+
+	Let generate target fail with BuildException if TargetGeneratorReport
+	contains errors.
+
+	* src/de/schlund/pfixcore/util/TargetGeneratorTask.java: throw
+	BuildException if TargetGenerator reported errors
+	* src/de/schlund/pfixxml/targets/TargetGenerator.java: added
+	method to check if TargetGenerator errors occurred
+	* src/de/schlund/pfixxml/targets/TargetGenerationReport.java: added
+	method to check if TargetGenerator errors were reported
+
 2008-10-20  Martin Leidig <mleidig@schlund.de>
 
 	Added alias "pustefixContext" for the ContextImpl bean (as we require a
