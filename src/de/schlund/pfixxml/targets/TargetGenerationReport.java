@@ -23,8 +23,10 @@ import java.util.HashMap;
 import java.util.Iterator;
 
 public class TargetGenerationReport {
+    
     private final HashMap<String, ArrayList<Exception>> hash;
-
+    private boolean hasError;
+    
     public TargetGenerationReport() {
         this.hash = new HashMap<String, ArrayList<Exception>>();
     }
@@ -34,9 +36,14 @@ public class TargetGenerationReport {
             ArrayList<Exception> list = new ArrayList<Exception>();
             list.add(e);
             hash.put(project, list);
+            hasError = true;
         } else {
             hash.get(project).add(e);
         }
+    }
+    
+    public boolean hasError() {
+        return hasError;
     }
  
     public String toString() {

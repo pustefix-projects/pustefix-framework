@@ -91,6 +91,7 @@ public class TargetGeneratorTask extends MatchingTask {
                 }
             } finally {
                 log(TargetGenerator.getReportAsString(), Project.MSG_INFO);
+                if(TargetGenerator.errorsReported()) throw new BuildException("TargetGenerator reported errors.");
             }
         } else {
             log("Need configfile to work on", Project.MSG_WARN);

@@ -851,6 +851,10 @@ public class TargetGenerator implements Comparable<TargetGenerator> {
     public static String getReportAsString() {
         return report.toString();
     }
+    
+    public static boolean errorsReported() {
+        return report.hasError();
+    }
 
     public static void resetGenerationReport() {
         report = new TargetGenerationReport();
