@@ -17,7 +17,7 @@
       <table width="100%"><tr>
        <td align="center" valign="top" width="100" style="background:#EEEEEE">
         <ixsl:value-of select="/formresult/text/alphabet/@description"/>:<br/><br/>
-        <ixsl:for-each select="/formresult/text/alphabet/characters/item">
+        <ixsl:for-each select="/formresult/text/alphabet/characters/string">
           <span style="font-size:140%"><ixsl:value-of select="."/></span><br/>
         </ixsl:for-each>
        </td>

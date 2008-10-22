@@ -1,3 +1,12 @@
+2008-10-22  Martin Leidig  <mleidig@schlund.de>
+
+	* src/org/pustefixframework/config/contextxmlservice/parser/ContextInterceptorParsingHandler.java:
+	Added support for configuring ContextInterceptors as Spring beans in
+	spring.xml and referencing them in the configuration using the
+	"bean-ref" attribute at the "interceptor" element (instead of "class").
+	* projects/core/schema/context-xml-service-config.xsd: added
+	'bean-ref' attribute
+
 2008-10-20  Martin Leidig  <mleidig@schlund.de>
 
 	Let generate target fail with BuildException if TargetGeneratorReport

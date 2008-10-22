@@ -39,57 +39,70 @@ public class ContextInterceptorParsingHandler implements ParsingHandler {
     public void handleNode(HandlerContext context) throws ParserException {
        
         Element element = (Element)context.getNode();
-        ParsingUtils.checkAttributes(element, new String[] {"class"}, null);
+        ParsingUtils.checkAttributes(element, null, new String[] {"class","bean-ref"});
         
         ContextXMLServletConfigImpl config = ParsingUtils.getSingleTopObject(ContextXMLServletConfigImpl.class, context);     
         
-        String className = element.getAttribute("class").trim();
-        Class<?> clazz;
-        try {
-            clazz = Class.forName(className);
-        } catch (ClassNotFoundException e) {
-            throw new ParserException("Could not load interceptor class " + className, e);
-        }
-        if (!ContextInterceptor.class.isAssignableFrom(clazz)) {
-            throw new ParserException("Context interceptor " + clazz + " does not implement " + ContextInterceptor.class + " interface!");
-        }
-        
-        String scope = element.getAttribute("scope");
-        if (scope == null || scope.length() == 0) {
-            scope = "singleton";
-        }
-        
-        BeanDefinitionRegistry beanRegistry = ParsingUtils.getSingleTopObject(BeanDefinitionRegistry.class, context);
-        DefaultBeanNameGenerator beanNameGenerator = new DefaultBeanNameGenerator();
-        BeanDefinitionBuilder beanBuilder;
-        BeanDefinitionHolder beanHolder;
         String beanName;
-        BeanDefinition beanDefinition;
         
-        beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(clazz);
-        beanBuilder.setScope(scope);
-        beanDefinition = beanBuilder.getBeanDefinition();
-        beanName = beanNameGenerator.generateBeanName(beanDefinition, beanRegistry);
-        beanHolder = new BeanDefinitionHolder(beanDefinition, beanName);
-        if (!scope.equals("singleton") && !scope.equals("prototype")) {
-            beanHolder = ScopedProxyUtils.createScopedProxy(beanHolder, beanRegistry, true);
-        }
-        beanRegistry.registerBeanDefinition(beanHolder.getBeanName(), beanHolder.getBeanDefinition());
-        if (beanHolder.getAliases() != null) {
-            for (String alias : beanHolder.getAliases()) {
-                beanRegistry.registerAlias(beanHolder.getBeanName(), alias);
+        String className = element.getAttribute("class").trim();
+        String beanRef = element.getAttribute("bean-ref").trim();
+        if(className.length()>0) {
+            
+            Class<?> clazz;
+            try {
+                clazz = Class.forName(className);
+            } catch (ClassNotFoundException e) {
+                throw new ParserException("Could not load interceptor class " + className, e);
             }
+            if (!ContextInterceptor.class.isAssignableFrom(clazz)) {
+                throw new ParserException("Context interceptor " + clazz + " does not implement " + ContextInterceptor.class + " interface!");
+            }
+            
+            String scope = element.getAttribute("scope");
+            if (scope == null || scope.length() == 0) {
+                scope = "singleton";
+            }
+            
+            BeanDefinitionRegistry beanRegistry = ParsingUtils.getSingleTopObject(BeanDefinitionRegistry.class, context);
+            DefaultBeanNameGenerator beanNameGenerator = new DefaultBeanNameGenerator();
+            BeanDefinitionBuilder beanBuilder;
+            BeanDefinitionHolder beanHolder;
+            BeanDefinition beanDefinition;
+            
+            beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(clazz);
+            beanBuilder.setScope(scope);
+            beanDefinition = beanBuilder.getBeanDefinition();
+            beanName = beanNameGenerator.generateBeanName(beanDefinition, beanRegistry);
+            beanHolder = new BeanDefinitionHolder(beanDefinition, beanName);
+            if (!scope.equals("singleton") && !scope.equals("prototype")) {
+                beanHolder = ScopedProxyUtils.createScopedProxy(beanHolder, beanRegistry, true);
+            }
+            beanRegistry.registerBeanDefinition(beanHolder.getBeanName(), beanHolder.getBeanDefinition());
+            if (beanHolder.getAliases() != null) {
+                for (String alias : beanHolder.getAliases()) {
+                    beanRegistry.registerAlias(beanHolder.getBeanName(), alias);
+                }
+            }
+            if(beanRef.length()>0) {
+                throw new ParserException("Setting 'class' and 'bean-ref' attribute at 'interceptor' element isn't allowed.");
+            }
+        } else if(beanRef.length()>0) {
+            beanName = beanRef;
+        } else {
+            throw new ParserException("No 'class' or 'bean-ref' attribute set at 'interceptor' element.");
         }
+       
         
         Element parent = (Element)element.getParentNode();
         if (parent.getNodeName().equals("start")) {
-            config.getContextConfig().addStartInterceptorBean(beanHolder.getBeanName());
+            config.getContextConfig().addStartInterceptorBean(beanName);
         }
         if (parent.getNodeName().equals("end")) {
-            config.getContextConfig().addEndInterceptorBean(beanHolder.getBeanName());
+            config.getContextConfig().addEndInterceptorBean(beanName);
         }
         if (parent.getNodeName().equals("postrender")) {
-            config.getContextConfig().addPostRenderInterceptorBean(beanHolder.getBeanName());
+            config.getContextConfig().addPostRenderInterceptorBean(beanName);
         }
         
     }
