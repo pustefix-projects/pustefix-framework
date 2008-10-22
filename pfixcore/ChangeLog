@@ -1,5 +1,16 @@
 2008-10-22  Martin Leidig  <mleidig@schlund.de>
 
+	Added 'docroot' buildtime property, which can be used in XML property
+	files to create absolute paths (necessary if the properties are read
+	by APIs which can't handle the 'pfixroot:' scheme and can't use the 
+	ResourceUtil class. Example: <prop name="foo">${docroot}/bar</prop>
+
+	* src/de/schlund/pfixxml/config/BuildTimePropTask.java: added
+	'docroot' property
+	* skel/build-skel.xml: added 'docroot' attribute to task
+
+2008-10-22  Martin Leidig  <mleidig@schlund.de>
+
 	* src/org/pustefixframework/config/contextxmlservice/parser/ContextInterceptorParsingHandler.java:
 	Added support for configuring ContextInterceptors as Spring beans in
 	spring.xml and referencing them in the configuration using the

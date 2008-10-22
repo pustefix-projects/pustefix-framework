@@ -38,6 +38,8 @@ public class BuildTimePropTask extends Task {
     private String fqdn;
 
     private String uid;
+    
+    private String docroot;
 
     public void setFile(File file) {
         this.file = file;
@@ -59,6 +61,10 @@ public class BuildTimePropTask extends Task {
         this.uid = uid;
     }
 
+    public void setDocroot(String docroot) {
+        this.docroot = docroot;
+    }
+    
     /*
      * (non-Javadoc)
      * 
@@ -78,6 +84,7 @@ public class BuildTimePropTask extends Task {
             props.setProperty("machine", machine);
             props.setProperty("fqdn", fqdn);
             props.setProperty("uid", uid);
+            props.setProperty("docroot", docroot);
             
             Hashtable<String, String> antProps = this.getProject().getProperties();
             for (String key : antProps.keySet()) {

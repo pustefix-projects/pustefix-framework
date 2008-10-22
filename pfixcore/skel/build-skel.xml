@@ -742,6 +742,7 @@ or delete the DOCTYPE definition -->
      uid="${uid}"
      machine="${machine}"
      fqdn="${fqdn}"
+     docroot="${dir.projects}"
     />
   </target>
 
