@@ -1,5 +1,20 @@
 2008-10-22  Martin Leidig  <mleidig@schlund.de>
 
+	Added support for referencing IHandler beans in *.iwrp files. Now you
+	can use the 'bean-ref' attribute at 'ihandler' elements instead of the
+	the 'class' attribute to reference already defined IHandlers from your
+	Spring configuration.
+
+	Modified:
+	* src/org/pustefixframework/config/contextxmlservice/parser/PageRequestParsingHandler.java:
+	* projects/core/build/iwrapper.xsl
+	* projects/core/schema/interfacewrapper200401.xsd
+
+	Added:
+	* src/de/schlund/pfixcore/generator/UseHandlerBeanRef.java
+
+2008-10-22  Martin Leidig  <mleidig@schlund.de>
+
 	Added 'docroot' buildtime property, which can be used in XML property
 	files to create absolute paths (necessary if the properties are read
 	by APIs which can't handle the 'pfixroot:' scheme and can't use the 

@@ -59,6 +59,9 @@ import de.schlund.pfixcore.generator.annotation.*;
 
 <xsl:if test="/iwrp:interface/iwrp:ihandler">
   <xsl:choose>
+    <xsl:when test="/iwrp:interface/iwrp:ihandler/@bean-ref">
+<xsl:text>@UseHandlerBeanRef("</xsl:text><xsl:value-of select="/iwrp:interface/iwrp:ihandler/@bean-ref"/><xsl:text>")</xsl:text>
+    </xsl:when>
     <xsl:when test="starts-with($ihandlerClassStr, 'script:')">
 <xsl:text>@UseHandlerScript("</xsl:text><xsl:value-of select="substring-after($ihandlerClassStr, 'script:')" /><xsl:text>")</xsl:text>
     </xsl:when>

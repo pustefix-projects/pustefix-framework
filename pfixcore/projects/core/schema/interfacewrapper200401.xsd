@@ -28,11 +28,12 @@
       <xs:sequence>
         <xs:element name="ihandler" minOccurs="0" maxOccurs="1">
           <xs:complexType>
-            <xs:attribute name="class" use="required">
+            <xs:attribute name="class" use="optional">
               <xs:annotation>
                 <xs:documentation xml:lang="en">a class implementing de.schlund.pfixcore.generator.IWrapperParamCheck</xs:documentation>
               </xs:annotation>
             </xs:attribute>
+            <xs:attribute name="bean-ref" use="optional"/>
           </xs:complexType>
         </xs:element>
         <xs:element name="param" minOccurs="0" maxOccurs="unbounded">

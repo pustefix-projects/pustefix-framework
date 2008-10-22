@@ -47,6 +47,7 @@ import com.marsching.flexiparse.parser.exception.ParserException;
 
 import de.schlund.pfixcore.generator.IHandler;
 import de.schlund.pfixcore.generator.IWrapper;
+import de.schlund.pfixcore.generator.UseHandlerBeanRef;
 import de.schlund.pfixcore.generator.UseHandlerClass;
 import de.schlund.pfixcore.generator.UseHandlerScript;
 import de.schlund.pfixcore.scripting.ScriptingIHandler;
@@ -155,31 +156,40 @@ public class PageRequestParsingHandler implements ParsingHandler {
                     String handlerScriptPath = null;
                     UseHandlerClass handlerClassAnnotation = wrapperClass.getAnnotation(UseHandlerClass.class);
                     UseHandlerScript handlerScriptAnnotation = wrapperClass.getAnnotation(UseHandlerScript.class);
-                    if (handlerClassAnnotation != null) {
-                        handlerClass = handlerClassAnnotation.value();
-                    } else if (handlerScriptAnnotation != null) {
-                        handlerClass = ScriptingIHandler.class;
-                        handlerScriptPath = handlerScriptAnnotation.value();
-                    } else {
-                        throw new ParserException("Wrapper class " + wrapperClass.getName() + " has no handler annotation.");
-                    }
+                    UseHandlerBeanRef handlerBeanRefAnnotation = wrapperClass.getAnnotation(UseHandlerBeanRef.class);
                     
-                    beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(handlerClass);
-                    beanBuilder.setScope(wrapperConfig.getScope());
-                    if (handlerScriptPath != null) {
-                        beanBuilder.addPropertyValue("scriptPath", handlerScriptPath);
-                    }
-                    beanDefinition = beanBuilder.getBeanDefinition();
-                    String handlerBeanName = nameGenerator.generateBeanName(beanDefinition, beanRegistry);
-                    BeanDefinitionHolder beanHolder = new BeanDefinitionHolder(beanDefinition, handlerBeanName);
-                    if (!beanDefinition.getScope().equals("singleton") && !beanDefinition.getScope().equals("prototype")) {
-                        beanHolder = ScopedProxyUtils.createScopedProxy(beanHolder, beanRegistry, true);
-                    }
-                    beanRegistry.registerBeanDefinition(beanHolder.getBeanName(), beanHolder.getBeanDefinition());
-                    if (beanHolder.getAliases() != null) {
-                        for (String alias : beanHolder.getAliases()) {
-                            beanRegistry.registerAlias(beanHolder.getBeanName(), alias);
+                    String handlerBeanName = null;
+                    if(handlerBeanRefAnnotation != null) {
+                        handlerBeanName = handlerBeanRefAnnotation.value();
+                    } else {
+                        
+                        if (handlerClassAnnotation != null) {
+                            handlerClass = handlerClassAnnotation.value();
+                        } else if (handlerScriptAnnotation != null) {
+                            handlerClass = ScriptingIHandler.class;
+                            handlerScriptPath = handlerScriptAnnotation.value();
+                        } else {
+                            throw new ParserException("Wrapper class " + wrapperClass.getName() + " has no handler annotation.");
                         }
+                        
+                        beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(handlerClass);
+                        beanBuilder.setScope(wrapperConfig.getScope());
+                        if (handlerScriptPath != null) {
+                            beanBuilder.addPropertyValue("scriptPath", handlerScriptPath);
+                        }
+                        beanDefinition = beanBuilder.getBeanDefinition();
+                        handlerBeanName = nameGenerator.generateBeanName(beanDefinition, beanRegistry);
+                        BeanDefinitionHolder beanHolder = new BeanDefinitionHolder(beanDefinition, handlerBeanName);
+                        if (!beanDefinition.getScope().equals("singleton") && !beanDefinition.getScope().equals("prototype")) {
+                            beanHolder = ScopedProxyUtils.createScopedProxy(beanHolder, beanRegistry, true);
+                        }
+                        beanRegistry.registerBeanDefinition(beanHolder.getBeanName(), beanHolder.getBeanDefinition());
+                        if (beanHolder.getAliases() != null) {
+                            for (String alias : beanHolder.getAliases()) {
+                                beanRegistry.registerAlias(beanHolder.getBeanName(), alias);
+                            }
+                        }
+                        
                     }
                     
                     beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(IWrapperConfigImpl.class);
