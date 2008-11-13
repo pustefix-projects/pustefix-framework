@@ -98,8 +98,9 @@ public class AnnotationBeanDefinitionPostProcessor {
      * invalid method
      */
     private void processBeanDefinition(String beanName, BeanDefinition beanDefinition, DefaultListableBeanFactory beanFactory) {
-        ClassLoader beanClassLoader = getClassLoader(beanFactory);     
-        
+        ClassLoader beanClassLoader = getClassLoader(beanFactory);
+        //TODO: remove quickfix
+        if (beanDefinition.getBeanClassName().contains("${")) return;
         Class<?> beanClass;
         try {
             beanClass = beanClassLoader.loadClass(beanDefinition.getBeanClassName());
@@ -199,6 +200,8 @@ public class AnnotationBeanDefinitionPostProcessor {
                 continue;
             }
             BeanDefinition beanDefinition = beanFactory.getBeanDefinition(beanName);
+            //TODO: remove quickfix
+            if (beanDefinition.getBeanClassName().contains("${")) continue;
             Class<?> beanClass;
             try {
                 beanClass = beanClassLoader.loadClass(beanDefinition.getBeanClassName());
