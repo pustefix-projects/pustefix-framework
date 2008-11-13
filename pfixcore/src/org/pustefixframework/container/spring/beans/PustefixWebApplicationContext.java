@@ -24,7 +24,15 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.pustefixframework.container.spring.util.PustefixPropertiesPersister;
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.beans.factory.config.PropertyOverrideConfigurer;
+import org.springframework.beans.factory.config.PropertyPlaceholderConfigurer;
+import org.springframework.beans.factory.config.PropertyResourceConfigurer;
+import org.springframework.beans.factory.support.BeanDefinitionBuilder;
+import org.springframework.beans.factory.support.BeanDefinitionRegistry;
+import org.springframework.beans.factory.support.DefaultBeanNameGenerator;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.beans.factory.xml.ResourceEntityResolver;
 import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
@@ -72,6 +80,7 @@ public class PustefixWebApplicationContext extends AbstractRefreshableWebApplica
             if (doc.getDocumentElement().getNamespaceURI() != null && doc.getDocumentElement().getNamespaceURI().equals("http://www.pustefix-framework.org/2008/namespace/project-config")) {
                 pustefixReader.loadBeanDefinitions(configResource);
             } else {
+                tryAddPropertyConfigurer(configLocation, beanFactory);
                 springReader.loadBeanDefinitions(configResource);
             }
 
@@ -79,6 +88,35 @@ public class PustefixWebApplicationContext extends AbstractRefreshableWebApplica
         
         AnnotationBeanDefinitionPostProcessor annotationPostProcessor = new AnnotationBeanDefinitionPostProcessor();
         annotationPostProcessor.postProcess(beanFactory);
+    }
+    
+    private void tryAddPropertyConfigurer(String configLocation, BeanDefinitionRegistry registry) {
+        int ind = configLocation.lastIndexOf(".");
+        if(ind > -1) {
+            String propConfigLocation = configLocation.substring(0,ind) + "-properties" +
+                configLocation.substring(ind);
+            Resource propConfigResource = getResource(propConfigLocation);
+            if(propConfigResource.exists()) {
+                addPropertyConfigurer(PropertyPlaceholderConfigurer.class, propConfigResource, registry);
+            }
+            propConfigLocation = configLocation.substring(0,ind) + "-properties-override" +
+                configLocation.substring(ind);
+            propConfigResource = getResource(propConfigLocation);
+            if(propConfigResource.exists()) {
+                addPropertyConfigurer(PropertyOverrideConfigurer.class, propConfigResource, registry);
+            }
+        }
+    }
+    
+    private void addPropertyConfigurer(Class<? extends PropertyResourceConfigurer> clazz, Resource location, BeanDefinitionRegistry registry) {
+        BeanDefinitionBuilder beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(clazz);
+        beanBuilder.setScope("singleton");
+        beanBuilder.addPropertyValue("location", location);
+        beanBuilder.addPropertyValue("propertiesPersister", new PustefixPropertiesPersister());
+        BeanDefinition definition = beanBuilder.getBeanDefinition();
+        DefaultBeanNameGenerator beanNameGenerator = new DefaultBeanNameGenerator();
+        String name = beanNameGenerator.generateBeanName(definition, registry);
+        registry.registerBeanDefinition(name, definition);
     }
     
 }
