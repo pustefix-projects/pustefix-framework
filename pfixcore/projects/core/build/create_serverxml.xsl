@@ -85,13 +85,13 @@
 
   <xsl:template name="create-connector">
     <xsl:variable name="jkport">
-      <xsl:apply-templates select="/projects/common/tomcat/connectorport/node()"/>
+      <xsl:apply-templates select="$common/p:global-config/p:http-server/p:tomcat/p:connectorport/node()"/>
     </xsl:variable>
     <xsl:variable name="minprocessors">
-      <xsl:apply-templates select="/projects/common/tomcat/minprocessors/node()"/>
+      <xsl:apply-templates select="$common/p:global-config/p:http-server/p:tomcat/p:minprocessors/node()"/>
     </xsl:variable>
     <xsl:variable name="maxprocessors">
-      <xsl:apply-templates select="/projects/common/tomcat/maxprocessors/node()"/>
+      <xsl:apply-templates select="$common/p:global-config/p:http-server/p:tomcat/p:maxprocessors/node()"/>
     </xsl:variable>
 
     <Connector enableLookups="false" acceptCount="100" maxThreads="150" minSpareThreads="25" maxSpareThreads="75" useBodyEncodingForURI="true" protocol="AJP/1.3">		
