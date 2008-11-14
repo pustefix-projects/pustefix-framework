@@ -1,3 +1,36 @@
+2008-11-14  Martin Leidig  <mleidig@schlund.de>
+
+	* src/org/pustefixframework/container/spring/beans/AnnotationBeanDefinitionPostProcessor.java:
+	implement BeanFactoryPostProcessor, throw BeanFactoryImplNotSupportedException 
+	if given BeanFactory doesn't implement BeanDefinitionRegistry and new
+	bean has to be registered
+	* src/org/pustefixframework/container/spring/beans/BeanFactoryImplNotSupportedException.java:
+	add new BeansException type
+	* src/org/pustefixframework/container/spring/beans/PustefixWebApplicationContext.java:
+	register AnnotationBeanDefinitionPostProcessor as BeanFactoryPostProcessor instead 
+	of calling it directly, thus other post processors can be executed
+	before or after it. Thus PropertyPlaceholderConfigurer can be executed
+	before it and @Inject annotations now also work with class name
+	substituted classes.
+
+2008-11-13  Martin Leidig  <mleidig@schlund.de>
+
+	Added PropertyPlaceholderConfigurer/PropertyOverrideConfigurer
+	support for the customizable Pustefix-XML-Property format by
+	implementing a custom PropertyPersister.
+
+	* src/org/pustefixframework/container/spring/beans/PustefixWebApplicationContext.java:
+	automatically set up PropertyConfigurers if spring-properties.xml or
+	spring-properties-override.xml are existing
+	* src/org/pustefixframework/container/spring/util/PustefixPropertiesPersister.java:
+	added PropertyPersister which can read the Pustefix-XML-Property
+	format
+
+	Use PropertyConfigurers in sample application:
+	* projects/sample1/conf/spring.xml
+	* projects/sample1/conf/spring-properties.xml
+	* projects/sample1/conf/spring-properties-override.xml
+
 2008-10-22  Martin Leidig  <mleidig@schlund.de>
 
 	Added support for referencing IHandler beans in *.iwrp files. Now you
