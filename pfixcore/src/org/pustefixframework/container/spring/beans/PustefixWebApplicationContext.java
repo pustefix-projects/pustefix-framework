@@ -85,9 +85,17 @@ public class PustefixWebApplicationContext extends AbstractRefreshableWebApplica
             }
 
         }
-        
-        AnnotationBeanDefinitionPostProcessor annotationPostProcessor = new AnnotationBeanDefinitionPostProcessor();
-        annotationPostProcessor.postProcess(beanFactory);
+   
+        addAnnotationBeanDefinitionPostProcessor(beanFactory);
+    }
+    
+    private void addAnnotationBeanDefinitionPostProcessor(BeanDefinitionRegistry registry) {
+        BeanDefinitionBuilder beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(AnnotationBeanDefinitionPostProcessor.class);
+        beanBuilder.setScope("singleton");
+        BeanDefinition definition = beanBuilder.getBeanDefinition();
+        DefaultBeanNameGenerator beanNameGenerator = new DefaultBeanNameGenerator();
+        String name = beanNameGenerator.generateBeanName(definition, registry);
+        registry.registerBeanDefinition(name, definition);
     }
     
     private void tryAddPropertyConfigurer(String configLocation, BeanDefinitionRegistry registry) {

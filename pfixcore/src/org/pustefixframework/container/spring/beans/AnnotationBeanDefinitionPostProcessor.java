@@ -33,8 +33,11 @@ import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinitionHolder;
+import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.config.RuntimeBeanReference;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
+import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanDefinitionValidationException;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 
@@ -45,7 +48,8 @@ import org.springframework.beans.factory.support.DefaultListableBeanFactory;
  * 
  * @author Sebastian Marsching <sebastian.marsching@1und1.de>
  */
-public class AnnotationBeanDefinitionPostProcessor {
+public class AnnotationBeanDefinitionPostProcessor implements BeanFactoryPostProcessor {
+    
     private Map<String, String> scopedProxyMap = new HashMap<String, String>(); 
     
     private Set<Class<?>> notAnnotatedClasses = new HashSet<Class<?>>();
@@ -61,10 +65,13 @@ public class AnnotationBeanDefinitionPostProcessor {
      * for the requested type is created (if possible). If the requested type
      * is an interface the {@link ImplementedBy} annotation on this interface
      * is used to determine the type of the bean.
+     * Automatically creating new beans can only work if the passed BeanFactory
+     * implements the {@link BeanDefinitionRegistry} interface, otherwise this
+     * method will throw a {@link BeanFactoryImplNotSupportedException}.
      * 
      * @param beanFactory bean factory containing the bean definitions to check
      */
-    public void postProcess(DefaultListableBeanFactory beanFactory) {
+    public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) {
         prepareScopedProxyMap(beanFactory);
         String[] beanNames = beanFactory.getBeanDefinitionNames();
         for (int i = 0; i < beanNames.length; i++) {
@@ -74,7 +81,7 @@ public class AnnotationBeanDefinitionPostProcessor {
         }
     }
     
-    private void prepareScopedProxyMap(DefaultListableBeanFactory beanFactory) {
+    private void prepareScopedProxyMap(ConfigurableListableBeanFactory beanFactory) {
         this.scopedProxyMap.clear();
         for (String beanName : beanFactory.getBeanDefinitionNames()) {
             BeanDefinition beanDefinition = beanFactory.getBeanDefinition(beanName);
@@ -97,10 +104,8 @@ public class AnnotationBeanDefinitionPostProcessor {
      * @throws BeanInitializationException if annotation is used on an 
      * invalid method
      */
-    private void processBeanDefinition(String beanName, BeanDefinition beanDefinition, DefaultListableBeanFactory beanFactory) {
+    private void processBeanDefinition(String beanName, BeanDefinition beanDefinition, ConfigurableListableBeanFactory beanFactory) {
         ClassLoader beanClassLoader = getClassLoader(beanFactory);
-        //TODO: remove quickfix
-        if (beanDefinition.getBeanClassName().contains("${")) return;
         Class<?> beanClass;
         try {
             beanClass = beanClassLoader.loadClass(beanDefinition.getBeanClassName());
@@ -185,7 +190,7 @@ public class AnnotationBeanDefinitionPostProcessor {
      * @throws BeanInitializationException if no matching and unambiguous bean
      * could be found or created
      */
-    private RuntimeBeanReference findOrCreateBeanDefinition(Class<?> wantedType, DefaultListableBeanFactory beanFactory) {
+    private RuntimeBeanReference findOrCreateBeanDefinition(Class<?> wantedType, ConfigurableListableBeanFactory beanFactory) {
         
     	RuntimeBeanReference beanRef = beanRefCache.get(wantedType);
         if(beanRef != null) return beanRef;
@@ -200,8 +205,6 @@ public class AnnotationBeanDefinitionPostProcessor {
                 continue;
             }
             BeanDefinition beanDefinition = beanFactory.getBeanDefinition(beanName);
-            //TODO: remove quickfix
-            if (beanDefinition.getBeanClassName().contains("${")) continue;
             Class<?> beanClass;
             try {
                 beanClass = beanClassLoader.loadClass(beanDefinition.getBeanClassName());
@@ -229,6 +232,12 @@ public class AnnotationBeanDefinitionPostProcessor {
             try {
                 beanFactory.getBeanDefinition(matchingBeanName);
             } catch (NoSuchBeanDefinitionException e) {
+                if(!(beanFactory instanceof BeanDefinitionRegistry)) {
+                    throw new BeanFactoryImplNotSupportedException("Automatically creating bean definitions for " +
+                    		"beans injected using the @Inject annotation requires a BeanFactory which implements " +
+                    		"the BeanDefinitionRegistry interface.");
+                }
+                BeanDefinitionRegistry beanRegistry = (BeanDefinitionRegistry)beanFactory;
                 Scope annotation = beanClass.getAnnotation(Scope.class);
                 BeanDefinitionBuilder builder = BeanDefinitionBuilder.rootBeanDefinition(beanClass);
                 String scopeName = null;
@@ -240,9 +249,9 @@ public class AnnotationBeanDefinitionPostProcessor {
                 processBeanDefinition(matchingBeanName, beanDefinition, beanFactory);
                 BeanDefinitionHolder beanHolder = new BeanDefinitionHolder(beanDefinition, matchingBeanName);
                 if (scopeName != null && !(scopeName.equals("singleton") || scopeName.equals("prototype"))) {
-                    beanHolder = ScopedProxyUtils.createScopedProxy(beanHolder, beanFactory, true);
+                    beanHolder = ScopedProxyUtils.createScopedProxy(beanHolder, beanRegistry, true);
                 }
-                beanFactory.registerBeanDefinition(beanHolder.getBeanName(), beanHolder.getBeanDefinition());
+                beanRegistry.registerBeanDefinition(beanHolder.getBeanName(), beanHolder.getBeanDefinition());
             }
         }
         
@@ -292,7 +301,7 @@ public class AnnotationBeanDefinitionPostProcessor {
      * @param beanFactory bean factory to get class loader from
      * @return class loader to load bean classes with
      */
-    private ClassLoader getClassLoader(DefaultListableBeanFactory beanFactory) {
+    private ClassLoader getClassLoader(ConfigurableListableBeanFactory beanFactory) {
         ClassLoader loader = beanFactory.getBeanClassLoader();
         if (loader == null) {
             loader = Thread.currentThread().getContextClassLoader();
