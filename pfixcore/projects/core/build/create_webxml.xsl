@@ -39,7 +39,9 @@
             <xsl:apply-templates select="jee:icon|jee:display-name|jee:description|jee:distributable|jee:context-param|jee:filter|jee:filter-mapping"/>
             <xsl:call-template name="create-listeners"/>
             <xsl:apply-templates select="jee:listener"/>
-            <xsl:call-template name="create-servlet-definitions"/>
+            <xsl:if test="$tree/p:project-config/p:application/p:context-xml-service">
+              <xsl:call-template name="create-servlet-definitions"/>
+            </xsl:if>
             <xsl:apply-templates select="jee:servlet"/>
             <xsl:call-template name="create-servlet-mappings">
               <xsl:with-param name="tree" select="$tree"/>
@@ -79,9 +81,7 @@
   </xsl:template>
   
   <xsl:template name="create-servlet-definitions">
-    <xsl:if test="$tree/p:project-config/p:application/p:context-xml-service">
-      <xsl:call-template name="create-dispatcher-servlet"/>
-    </xsl:if>
+    <xsl:call-template name="create-dispatcher-servlet"/>
   </xsl:template>
   
   <xsl:template name="create-listeners">
