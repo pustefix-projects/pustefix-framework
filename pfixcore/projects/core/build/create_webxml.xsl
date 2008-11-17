@@ -79,7 +79,9 @@
   </xsl:template>
   
   <xsl:template name="create-servlet-definitions">
-    <xsl:call-template name="create-dispatcher-servlet"/>
+    <xsl:if test="/$tree/p:project-config/p:application/p:context-xml-service">
+      <xsl:call-template name="create-dispatcher-servlet"/>
+    </xsl:if>
   </xsl:template>
   
   <xsl:template name="create-listeners">
