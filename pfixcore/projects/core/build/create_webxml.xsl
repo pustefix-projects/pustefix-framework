@@ -79,7 +79,7 @@
   </xsl:template>
   
   <xsl:template name="create-servlet-definitions">
-    <xsl:if test="/$tree/p:project-config/p:application/p:context-xml-service">
+    <xsl:if test="$tree/p:project-config/p:application/p:context-xml-service">
       <xsl:call-template name="create-dispatcher-servlet"/>
     </xsl:if>
   </xsl:template>
