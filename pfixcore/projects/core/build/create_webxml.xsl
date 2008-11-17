@@ -37,15 +37,19 @@
           <web-app>
             <xsl:copy-of select="@*"/>
             <xsl:apply-templates select="jee:icon|jee:display-name|jee:description|jee:distributable|jee:context-param|jee:filter|jee:filter-mapping"/>
-            <xsl:call-template name="create-listeners"/>
+            <xsl:if test="$tree/p:project-config/p:application/p:context-xml-service">
+              <xsl:call-template name="create-listeners"/>
+            </xsl:if>
             <xsl:apply-templates select="jee:listener"/>
             <xsl:if test="$tree/p:project-config/p:application/p:context-xml-service">
               <xsl:call-template name="create-servlet-definitions"/>
             </xsl:if>
             <xsl:apply-templates select="jee:servlet"/>
-            <xsl:call-template name="create-servlet-mappings">
-              <xsl:with-param name="tree" select="$tree"/>
-            </xsl:call-template>
+            <xsl:if test="$tree/p:project-config/p:application/p:context-xml-service">
+              <xsl:call-template name="create-servlet-mappings">
+                <xsl:with-param name="tree" select="$tree"/>
+              </xsl:call-template>
+            </xsl:if>
             <xsl:apply-templates select="jee:servlet-mapping"/>
             <xsl:choose>
               <xsl:when test="jee:session-config">
@@ -66,11 +70,13 @@
       </xsl:when>
       <xsl:otherwise>
         <web-app>
-          <xsl:call-template name="create-listeners"/>
-          <xsl:call-template name="create-servlet-definitions"/>
-          <xsl:call-template name="create-servlet-mappings">
-            <xsl:with-param name="tree" select="$tree"/>
-          </xsl:call-template>
+          <xsl:if test="$tree/p:project-config/p:application/p:context-xml-service">
+            <xsl:call-template name="create-listeners"/>
+            <xsl:call-template name="create-servlet-definitions"/>
+            <xsl:call-template name="create-servlet-mappings">
+              <xsl:with-param name="tree" select="$tree"/>
+            </xsl:call-template>
+          </xsl:if>
           <xsl:call-template name="create-session-config"/>
           <xsl:call-template name="create-error-pages">
             <xsl:with-param name="tree" select="$tree"/>
