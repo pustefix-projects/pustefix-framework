@@ -166,7 +166,7 @@ or delete the DOCTYPE definition -->
     <mkdir dir="${dir.build}"/>
     <mkdir dir="${dir.src}"/>
     <mkdir dir="${dir.gensrc}"/>
-    <mkdir dir="${dir.log"/>
+    <mkdir dir="${dir.log}"/>
   </target>
 
   <target name="init" depends="check-ant-version, properties, init-data, check-buildskel, init-dirs">
