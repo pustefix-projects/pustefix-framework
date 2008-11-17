@@ -32,7 +32,7 @@ or delete the DOCTYPE definition -->
   <property name="catalogfile"              location="${dir.projects}/core/schema/catalog.xml"/>
   <property name="genlog"                   value="quiet"                                                description="which log4j config to use for the generate task; currently one of quiet, full, tree; defaults to quiet; see ${dir.projects}/core/conf/generator_*.xml"/>
   <property name="file.log4jconfig"         location="${dir.projects}/core/conf/generator_${genlog}.xml"/>
-
+  <property name="dir.log"                  location="${dir.projects}/servletconf/log"/>
   <!-- TODO: use dir.tomcat whereever possible -->
   <!-- TODO: point into subdirectory of build.dir -->
   <property name="dir.tomcat"               location="${dir.projects}/servletconf/tomcat"/>
@@ -166,6 +166,7 @@ or delete the DOCTYPE definition -->
     <mkdir dir="${dir.build}"/>
     <mkdir dir="${dir.src}"/>
     <mkdir dir="${dir.gensrc}"/>
+    <mkdir dir="${dir.log"/>
   </target>
 
   <target name="init" depends="check-ant-version, properties, init-data, check-buildskel, init-dirs">
