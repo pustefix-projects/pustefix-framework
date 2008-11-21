@@ -24,6 +24,10 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Properties;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+
 import org.pustefixframework.admin.mbeans.WebappAdmin;
 import org.pustefixframework.config.Constants;
 import org.pustefixframework.config.contextxmlservice.ContextXMLServletConfig;
@@ -42,7 +46,9 @@ import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
+import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.xml.sax.SAXException;
 
 import com.marsching.flexiparse.objectree.ObjectTreeElement;
 import com.marsching.flexiparse.objectree.SubObjectTree;
@@ -53,6 +59,7 @@ import com.marsching.flexiparse.parser.exception.ParserException;
 
 import de.schlund.pfixcore.workflow.ContextImpl;
 import de.schlund.pfixxml.config.BuildTimeProperties;
+import de.schlund.pfixxml.config.includes.IncludesResolver;
 import de.schlund.pfixxml.resources.FileResource;
 import de.schlund.pfixxml.resources.ResourceUtil;
 import de.schlund.pfixxml.serverutil.SessionAdmin;
@@ -100,13 +107,27 @@ public class PustefixContextXMLRequestHandlerParsingHandler extends Customizatio
         try {
             GlobalConfigurationHolder globalConfig = (new GlobalConfigurationReader()).readGlobalConfiguration();
             Parser contextXmlConfigParser = new ClasspathConfiguredParser("META-INF/org/pustefixframework/config/context-xml-service/parser/context-xml-service-config.xml");
-            final ObjectTreeElement contextXmlConfigTree = contextXmlConfigParser.parse(res.getInputStream(), cusInfo, globalConfig, beanReg);
+            
+            //Resolve config-includes
+            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+            dbf.setNamespaceAware(true);
+            dbf.setXIncludeAware(true);
+            DocumentBuilder db = dbf.newDocumentBuilder();
+            Document doc = db.parse(ResourceUtil.getFileResource(configurationFile).getInputStream()); 
+            IncludesResolver resolver = new IncludesResolver("http://www.pustefix-framework.org/2008/namespace/context-xml-service-config", "config-include");
+            resolver.resolveIncludes(doc);
+            
+            final ObjectTreeElement contextXmlConfigTree = contextXmlConfigParser.parse(doc, cusInfo, globalConfig, beanReg);
             SubObjectTree subTree = new SubObjectTree() {
               public ObjectTreeElement getRoot() {
                     return contextXmlConfigTree;
                 }  
             };
             context.getObjectTreeElement().addObject(subTree);
+        } catch (ParserConfigurationException e) {
+            throw new RuntimeException("Could not initialize XML parser: " + e.getMessage(), e);
+        } catch (SAXException e) {
+            throw new ParserException("Error while parsing referenced file: " + e.getMessage(), e);
         } catch (ParserException e) {
             throw new BeanDefinitionStoreException("Error while parsing " + res + ": " + e.getMessage(), e);
         } catch (IOException e) {

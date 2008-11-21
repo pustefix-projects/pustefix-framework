@@ -1,3 +1,8 @@
+2008-11-21  Martin Leidig  <mleidig@schlund.de>
+
+	* src/org/pustefixframework/config/project/parser/PustefixContextXMLRequestHandlerParsingHandler.java:
+	Added resolving of config-includes.
+
 2008-11-14  Martin Leidig  <mleidig@schlund.de>
 
 	* src/org/pustefixframework/container/spring/beans/AnnotationBeanDefinitionPostProcessor.java:
