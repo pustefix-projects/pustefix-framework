@@ -15,7 +15,7 @@
 	   <property name="data" ref="testdata"/>
 	</bean>
 
-	and reference ths definition in your configuration:
+	and reference this definition in your configuration:
 
 	<defaultstate class="test.DefaultStaticState" parent-bean-ref="default_state"/>
 
