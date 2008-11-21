@@ -8,9 +8,8 @@
 
   <context:annotation-config/>
 
-  <bean id="testdata" class="de.schlund.pfixcore.example.TestData" scope="session">
+  <bean id="testdata" class="de.schlund.pfixcore.example.TestData" scope="session" parent="testdata_base">
     <aop:scoped-proxy/>
-    <property name="text" value="${testdata.defaulttext}"/>
     <property name="data" ref="${ref.testdata}"/>
   </bean>
   
@@ -20,6 +19,10 @@
   
   <bean id="global_testdata_prod" class="de.schlund.pfixcore.example.TestData">
     <property name="text" value="baz"/>
+  </bean>
+
+  <bean id="testdata_base" abstract="true">
+    <property name="text" value="${testdata.defaulttext}"/>
   </bean>
 
 <!--   

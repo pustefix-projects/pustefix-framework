@@ -50,17 +50,20 @@ public class PustefixHandlerMapping extends AbstractDetectingUrlHandlerMapping {
         // Find all interceptors in the ApplicationContext and add them
         ApplicationContext applicationContext = getApplicationContext();
         for (String beanName : applicationContext.getBeanDefinitionNames()) {
-            if (HandlerInterceptor.class.isAssignableFrom(applicationContext.getType(beanName))
-                    || WebRequestInterceptor.class.isAssignableFrom(applicationContext.getType(beanName))) {
-                // Ignore scoped beans - there should be a scoped proxy that
-                // will be used instead.
-                if (!applicationContext.isPrototype(beanName)
-                        && !applicationContext.isSingleton(beanName)) {
-                    continue;
-                }
-                Object bean = applicationContext.getBean(beanName);
-                if (!interceptors.contains(bean)) {
-                    interceptors.add(bean);
+            Class clazz = applicationContext.getType(beanName);
+            if(clazz != null) {
+                if (HandlerInterceptor.class.isAssignableFrom(clazz)
+                        || WebRequestInterceptor.class.isAssignableFrom(clazz)) {
+                    // Ignore scoped beans - there should be a scoped proxy that
+                    // will be used instead.
+                    if (!applicationContext.isPrototype(beanName)
+                            && !applicationContext.isSingleton(beanName)) {
+                        continue;
+                    }
+                    Object bean = applicationContext.getBean(beanName);
+                    if (!interceptors.contains(bean)) {
+                        interceptors.add(bean);
+                    }
                 }
             }
         }
