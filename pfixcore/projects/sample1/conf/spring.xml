@@ -21,6 +21,10 @@
     <property name="text" value="baz"/>
   </bean>
 
+  <bean id="default_state" abstract="true">
+     <property name="data" ref="global_testdata"/>
+  </bean>
+
   <bean id="testdata_base" abstract="true">
     <property name="text" value="${testdata.defaulttext}"/>
   </bean>

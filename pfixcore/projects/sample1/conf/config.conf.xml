@@ -5,6 +5,7 @@
                     version="1.0">
 
   <global-config>
+    <!-- <defaultstate class="de.schlund.pfixcore.example.DefaultStaticState" parent-bean-ref="default_state"/> -->
     <!-- <force-ssl>true</force-ssl> -->
   </global-config>
 

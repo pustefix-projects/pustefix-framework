@@ -39,8 +39,10 @@ public class ContextXMLServletConfigImpl extends AbstractXMLServletConfigImpl im
     private final static Class<de.schlund.pfixcore.workflow.app.StaticState> DEFAULT_STATIC_STATE = de.schlund.pfixcore.workflow.app.StaticState.class;
 
     private Class<? extends ConfigurableState> defaultStateClass = DEFAULT_STATIC_STATE;
-
+    private String defaultStaticStateParentBeanName;
+    
     private Class<? extends ConfigurableState> defaultIHandlerStateClass = DEFAULT_IHANDLER_STATE;
+    private String defaultIHandlerStateParentBeanName;
 
     private ContextConfigImpl contextConfig;
 
@@ -58,12 +60,28 @@ public class ContextXMLServletConfigImpl extends AbstractXMLServletConfigImpl im
         return this.defaultStateClass;
     }
 
+    public void setDefaultStaticStateParentBeanName(String parentBeanName) {
+        defaultStaticStateParentBeanName = parentBeanName;
+    }
+    
+    public String getDefaultStaticStateParentBeanName() {
+        return defaultStaticStateParentBeanName;
+    }
+    
     public void setDefaultIHandlerState(Class<? extends ConfigurableState> clazz) {
         this.defaultIHandlerStateClass = clazz;
     }
 
     public Class<? extends ConfigurableState> getDefaultIHandlerState() {
         return this.defaultIHandlerStateClass;
+    }
+    
+    public void setDefaultIHandlerStateParentBeanName(String parentBeanName) {
+        defaultIHandlerStateParentBeanName = parentBeanName;
+    }
+    
+    public String getDefaultIHandlerStateParentBeanName() {
+        return defaultIHandlerStateParentBeanName;
     }
 
     public void setContextConfig(ContextConfigImpl config) {

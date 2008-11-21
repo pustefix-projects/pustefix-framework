@@ -126,7 +126,7 @@
     
     
   <handler class="org.pustefixframework.config.contextxmlservice.parser.PageRequestParsingHandler" run-order="both">
-    <match>/c:context-xml-service-config/c:pagerequest[not(child::variant) and not (child::default)]</match>
+    <match>/c:context-xml-service-config/c:pagerequest[not(child::c:variant) and not (child::c:default)]</match>
     <match>/c:context-xml-service-config/c:pagerequest/c:default</match>
     <match>/c:context-xml-service-config/c:pagerequest/c:variant</match>
   </handler>

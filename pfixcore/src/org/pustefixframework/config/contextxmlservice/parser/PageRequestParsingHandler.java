@@ -120,7 +120,9 @@ public class PageRequestParsingHandler implements ParsingHandler {
             if (!isCopyPage) {
                 StateConfigImpl stateConfig = new StateConfigImpl();
                 stateConfig.setDefaultStaticState(config.getDefaultStaticState());
+                stateConfig.setDefaultStaticStateParentBeanName(config.getDefaultStaticStateParentBeanName());
                 stateConfig.setDefaultIHandlerState(config.getDefaultIHandlerState());
+                stateConfig.setDefaultIHandlerStateParentBeanName(config.getDefaultIHandlerStateParentBeanName());
                 ctxConfig.addPageRequest(pageConfig);
                 
                 context.getObjectTreeElement().addObject(pageConfig);
@@ -224,6 +226,9 @@ public class PageRequestParsingHandler implements ParsingHandler {
                 
                 Collection<ScriptingStatePathInfo> scriptPathInfoCollection = context.getObjectTreeElement().getObjectsOfTypeFromSubTree(ScriptingStatePathInfo.class);
                 beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(stateConfig.getState());
+                if(stateConfig.getParentBeanName()!=null) {
+                    beanBuilder.setParentName(stateConfig.getParentBeanName());
+                }
                 beanBuilder.setScope(stateConfig.getScope());
                 beanBuilder.addPropertyReference("config", configBeanName);
                 if (scriptPathInfoCollection.iterator().hasNext()) {

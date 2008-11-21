@@ -40,7 +40,9 @@ public class StateConfigImpl implements Cloneable, StateConfig {
     
     private Class<? extends ConfigurableState> stateClass = null;
     private Class<? extends ConfigurableState> defaultStaticStateClass = null;
+    private String defaultStaticStateParentBeanName = null;
     private Class<? extends ConfigurableState> defaultIWrapperStateClass = null;
+    private String defaultIWrapperStateParentBeanName = null;
     private Class<? extends ResdocFinalizer> finalizer = null;
     private Map<String, IWrapperConfig> iwrappers = new LinkedHashMap<String, IWrapperConfig>();
     private Map<String, Object> resources = new LinkedHashMap<String, Object>();
@@ -67,12 +69,39 @@ public class StateConfigImpl implements Cloneable, StateConfig {
         }
     }
     
+    public String getParentBeanName() {
+        if(stateClass == null) {
+            if(this.iwrappers.size() > 0) {
+                return defaultIWrapperStateParentBeanName;
+            } else {
+                return defaultStaticStateParentBeanName;
+            }
+        }
+        return null;
+    }
+    
     public void setDefaultStaticState(Class<? extends ConfigurableState> clazz) {
         this.defaultStaticStateClass = clazz;
     }
     
+    public void setDefaultStaticStateParentBeanName(String parentBeanName) {
+        defaultStaticStateParentBeanName = parentBeanName;
+    }
+    
+    public String getDefaultStaticStateParentBeanName() {
+        return defaultStaticStateParentBeanName;
+    }
+    
     public void setDefaultIHandlerState(Class<? extends ConfigurableState> clazz) {
         this.defaultIWrapperStateClass = clazz;
+    }
+    
+    public void setDefaultIHandlerStateParentBeanName(String parentBeanName) {
+        defaultIWrapperStateParentBeanName = parentBeanName;
+    }
+    
+    public String getDefaultIHandlerStateParentBeanName() {
+        return defaultIWrapperStateParentBeanName;
     }
     
     public void setIWrapperPolicy(StateConfig.Policy policy) {

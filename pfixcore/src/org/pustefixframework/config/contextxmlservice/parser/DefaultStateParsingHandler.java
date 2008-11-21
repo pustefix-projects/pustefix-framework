@@ -24,7 +24,7 @@ public class DefaultStateParsingHandler implements ParsingHandler {
     public void handleNode(HandlerContext context) throws ParserException {
         
         Element element = (Element)context.getNode();
-        ParsingUtils.checkAttributes(element, new String[] {"class"}, null);
+        ParsingUtils.checkAttributes(element, new String[] {"class"}, new String[] {"parent-bean-ref"});
    
         ContextXMLServletConfigImpl config = ParsingUtils.getSingleTopObject(ContextXMLServletConfigImpl.class, context);     
         
@@ -39,6 +39,11 @@ public class DefaultStateParsingHandler implements ParsingHandler {
             throw new ParserException("Default state class " + clazz + " does not implement " + ConfigurableState.class + " interface!");
         }
         config.setDefaultStaticState(clazz.asSubclass(ConfigurableState.class));
+        
+        String parentRef = element.getAttribute("parent-bean-ref").trim();
+        if(parentRef.length() > 0) {
+            config.setDefaultStaticStateParentBeanName(parentRef);
+        }
         
     }
 

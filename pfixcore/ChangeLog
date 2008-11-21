@@ -1,5 +1,48 @@
 2008-11-21  Martin Leidig  <mleidig@schlund.de>
 
+	Added support for referencing parent bean definitions from the
+	defaultstate and defaultihandlerstate elements (parent-bean-ref
+	attribute). Thus it's possible to indirectly inject dependencies 
+	into the concrete instances by injecting them into the parent bean 
+	definition. So, despite the fact, that the beans are automatically 
+	created by Pustefix, you're able to inject dependencies using
+	the Spring XML configuration.
+	
+	The following example configures a custom default state, which has a
+	data property. You can define an according abstract bean definition
+
+	<bean id="default_state" abstract="true">
+	   <property name="data" ref="testdata"/>
+	</bean>
+
+	and reference ths definition in your configuration:
+
+	<defaultstate class="test.DefaultStaticState" parent-bean-ref="default_state"/>
+
+	* src/org/pustefixframework/config/contextxmlservice/parser/DefaultStateParsingHandler.java:
+	added parent-bean-ref support
+	* src/org/pustefixframework/config/contextxmlservice/parser/DefaultIHandlerStateParsingHandler.java:
+	added parent-bean-ref support
+	* src/org/pustefixframework/config/contextxmlservice/parser/PageRequestParsingHandler.java: 
+	set parent bean name at bean definition
+	* src/org/pustefixframework/config/contextxmlservice/parser/internal/ContextXMLServletConfigImpl.java:
+	store parent bean names
+	* src/org/pustefixframework/config/contextxmlservice/parser/internal/StateConfigImpl.java:
+	store parent bean names
+	* src/de/schlund/pfixcore/example/DefaultStaticState.java: added test
+	state for parent-bean-ref testing
+	* res/META-INF/org/pustefixframework/config/context-xml-service/parser/context-xml-service-config.xml:
+	fixed wrong namespace for default/variant rule
+	* projects/core/schema/context-xml-service-config.xsd: added
+	parent-bean-ref attribute definitions to defaultstate and
+	defaultihandlerstate
+	* projects/sample1/conf/spring.xml: added abstract state bean
+	definition
+	* projects/sample1/conf/config.conf.xml: added test state for
+	parent-bean-ref testing
+
+2008-11-21  Martin Leidig  <mleidig@schlund.de>
+
 	Fixed issues with abstract bean definitions containing no class
 	declaration and leading to NPEs.
 

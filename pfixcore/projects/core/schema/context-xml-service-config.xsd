@@ -253,11 +253,13 @@
   <xs:element name="defaultstate" type="prop:defaultstateType"/>
   <xs:complexType name="defaultstateType">
     <xs:attribute name="class" use="required"/>
+    <xs:attribute name="parent-bean-ref" use="optional"/>
   </xs:complexType>
 
   <xs:element name="defaultihandlerstate" type="prop:defaultihandlerstateType"/>
   <xs:complexType name="defaultihandlerstateType">
     <xs:attribute name="class" use="required"/>
+    <xs:attribute name="parent-bean-ref" use="optional"/>
   </xs:complexType>
   
   
@@ -514,7 +516,10 @@
         
         <xs:element name="state" minOccurs="0">
           <xs:complexType>
-            <xs:attribute name="class" use="required"/>
+            <xs:attribute name="class" use="optional"/>
+            <xs:attribute name="bean-ref" use="optional"/>
+            <xs:attribute name="bean-name" use="optional"/>
+            <xs:attribute name="scope" use="optional"/>
           </xs:complexType>
         </xs:element>
 
