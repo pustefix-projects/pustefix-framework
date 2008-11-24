@@ -1,3 +1,8 @@
+2008-11-24  Martin Leidig  <mleidig@schlund.de>
+
+	Fixed config-include bug for resources (namespace unawareness problem)
+	* src/org/pustefixframework/config/contextxmlservice/parser/ContextResourceParsingHandler.java
+
 2008-11-21  Martin Leidig  <mleidig@schlund.de>
 
 	Added support for referencing parent bean definitions from the
