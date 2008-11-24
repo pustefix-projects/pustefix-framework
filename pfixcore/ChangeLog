@@ -1,5 +1,14 @@
 2008-11-24  Martin Leidig  <mleidig@schlund.de>
 
+	Re-added getRequestCookies() to Context because there are use cases
+	for accessing cookies in Handlers and you don't want to write an own
+	state or interceptor only for storing cookie information.
+	* src/de/schlund/pfixcore/workflow/Context.java
+	* src/de/schlund/pfixcore/workflow/ContextImpl.java
+	* src/de/schlund/pfixcore/workflow/context/RequestContextImpl.java
+
+2008-11-24  Martin Leidig  <mleidig@schlund.de>
+
 	Fixed config-include bug for resources (namespace unawareness problem)
 	* src/org/pustefixframework/config/contextxmlservice/parser/ContextResourceParsingHandler.java
 

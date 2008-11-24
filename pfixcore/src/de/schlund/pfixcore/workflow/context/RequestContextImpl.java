@@ -895,6 +895,13 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
         cookielist.add(cookie);
     }
 
+    public Cookie[] getRequestCookies() {
+        if (currentpservreq == null) {
+            throw new IllegalStateException("Cookies are only available witihin request handling");
+        }
+        return currentpservreq.getCookies();
+    }
+    
     public Throwable getLastException() {
         if (currentpservreq == null) {
             throw new IllegalStateException("This method is only available during request processing");

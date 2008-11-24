@@ -66,6 +66,7 @@ public interface Context extends PageFlowContext {
     String getLanguage();
 
     void addCookie(Cookie cookie);
+    Cookie[] getRequestCookies();
 
     Throwable getLastException();
     String getVisitId();
