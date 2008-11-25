@@ -1,3 +1,19 @@
+2008-11-25  Martin Leidig  <mleidig@schlund.de>
+
+	Updated Spring to 2.5.6.
+
+	* src/org/pustefixframework/config/contextxmlservice/parser/internal/StateConfigImpl.java:
+	make map modifiable to fix issue with Spring 2.5.6
+	PropertyPlaceholderConfigurer 
+
+	Added:
+	* lib/spring-2.5.6.jar
+	* lib/spring-webmvc-2.5.6.jar
+
+	Removed:
+	* lib/spring-2.5.3.jar
+	* lib/spring-webmvc-2.5.3.jar
+
 2008-11-24  Martin Leidig  <mleidig@schlund.de>
 
 	Re-added getRequestCookies() to Context because there are use cases
