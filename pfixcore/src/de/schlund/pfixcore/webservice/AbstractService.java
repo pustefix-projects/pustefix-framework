@@ -47,7 +47,7 @@ public abstract class AbstractService {
 
     protected ContextResource getContextResource(String name) {
         ContextResourceManager crm=getContextResourceManager();
-        if(crm!=null) return crm.getResource(name);
+        if(crm!=null) return (ContextResource)crm.getResource(name);
         return null;
     }
 

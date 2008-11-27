@@ -43,7 +43,7 @@ import de.schlund.pfixxml.config.ContextConfig;
 
 public class ContextResourceManagerImpl implements ContextResourceManager {
     private final static Logger LOG = Logger.getLogger(ContextResourceManagerImpl.class);
-    private HashMap<String, ContextResource>  resources = new HashMap<String, ContextResource>();
+    private HashMap<String, Object>  resources = new HashMap<String, Object>();
     
     /**
      * Instanciates the objects and registers the interfaces which
@@ -130,15 +130,15 @@ public class ContextResourceManagerImpl implements ContextResourceManager {
     /* (non-Javadoc)
      * @see de.schlund.pfixcore.workflow.ContextResourceManager#getResource(java.lang.String)
      */
-    public ContextResource getResource(String name) {
-        return  (ContextResource) resources.get(name);
+    public Object getResource(String name) {
+        return resources.get(name);
     }
 
     /* (non-Javadoc)
      * @see de.schlund.pfixcore.workflow.ContextResourceManager#getResource(java.lang.Class)
      */
     @SuppressWarnings("unchecked")
-    public <T extends ContextResource> T getResource(Class<T> clazz) {
+    public <T> T getResource(Class<T> clazz) {
         return (T) resources.get(clazz.getName());
     }
     
@@ -181,7 +181,7 @@ public class ContextResourceManagerImpl implements ContextResourceManager {
     /* (non-Javadoc)
      * @see de.schlund.pfixcore.workflow.ContextResourceManager#getResourceIterator()
      */
-    public Iterator<ContextResource> getResourceIterator() {
+    public Iterator<Object> getResourceIterator() {
         return  resources.values().iterator();
     }
     

@@ -32,7 +32,7 @@ public interface ContextResourceManager {
      * @return an object of a class implementing the requested interface, which
                extends <code>ContextResource</code>
      */
-    public ContextResource getResource(String name);
+    public Object getResource(String name);
 
     /**
      * Returns the ContextResource object which implements the interface
@@ -41,14 +41,14 @@ public interface ContextResourceManager {
      * @param clazz the interface class
      * @return instance of the class implementing the interface
      */
-    @SuppressWarnings("unchecked")
-    public <T extends ContextResource> T getResource(Class<T> clazz);
+    //@SuppressWarnings("unchecked")
+    public <T> T getResource(Class<T> clazz);
 
     /**
      * Returns an iterator for all stored objects.
      *
      * @return the <code>Iterator</code>
      */
-    public Iterator<ContextResource> getResourceIterator();
+    public Iterator<Object> getResourceIterator();
 
 }

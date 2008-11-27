@@ -76,7 +76,7 @@ public class StateUtil {
             if (LOG.isDebugEnabled()) {
                 LOG.debug("*** Auto appending status for " + classname + " at node " + nodename);
             }
-            ContextResource cr = crm.getResource(classname);
+            ContextResource cr = (ContextResource) crm.getResource(classname);
             if (cr == null) {
                 throw new XMLException("ContextResource not found: " + classname);
             }

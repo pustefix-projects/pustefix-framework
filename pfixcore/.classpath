@@ -4,6 +4,7 @@
 	<classpathentry kind="src" path="tests/junit"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="var" path="PFX_ANT_LIB" sourcepath="PFX_ANT_SRC"/>
+        <classpathentry kind="var" path="PFX_TOOLS_LIB"/>
 	<classpathentry kind="lib" path="lib/activation-1.0.2.jar"/>
 	<classpathentry kind="lib" path="lib/commons-discovery-0.2.jar"/>
 	<classpathentry kind="lib" path="lib/commons-logging-1.0.4.jar"/>

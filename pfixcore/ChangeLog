@@ -1,5 +1,24 @@
 2008-11-27  Martin Leidig  <mleidig@schlund.de>
 
+	Made ContextResource interface compatible to 0.13 by changing return
+	types to java.lang.Object:
+	* src/de/schlund/pfixcore/workflow/ContextResourceManagerImpl.java
+	* src/de/schlund/pfixcore/workflow/ContextResourceManager.java
+
+	Cast objects returned from ContextResourceManager to required
+	ContextResource interface:
+	* src/de/schlund/pfixcore/util/StateUtil.java
+	* src/de/schlund/pfixcore/webservice/AbstractService.java
+
+	* .classpath: Added PFX_TOOLS_LIB classpath variable (used since 0.12)
+	
+	"Added classpath variable PFX_TOOLS_LIB, which has to be set to the tools.jar 
+	from the JDK installation. If the tools.jar has already bean added as system 
+	library to the current JRE in Eclipse it has to be removed (as your project 
+	won't build with the same library added twice to the build path)."
+
+2008-11-27  Martin Leidig  <mleidig@schlund.de>
+
 	Branched from trunk revision 3289.
 
 2007-10-30  Martin Leidig  <mleidig@schlund.de>
