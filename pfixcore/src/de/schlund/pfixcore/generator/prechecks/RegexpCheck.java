@@ -47,9 +47,17 @@ public class RegexpCheck  extends SimpleCheck implements IWrapperParamPreCheck {
     public void put_regexp(String regexp) {
         this.regexp = regexp;
     }
+    
+    public void setRegexp(String regexp) {
+        put_regexp(regexp);
+    }
 
     public void put_scode_nomatch(String fqscode) {
         scode = StatusCodeLib.getStatusCodeByName(fqscode);
+    }
+    
+    public void setScodeNoMatch(String fqscode) {
+        put_scode_nomatch(fqscode);
     }
     
     public void check(RequestParam[] value) {
