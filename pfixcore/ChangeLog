@@ -1,3 +1,7 @@
+2008-11-27  Martin Leidig  <mleidig@schlund.de>
+
+	Branched from trunk revision 3289.
+
 2007-10-30  Martin Leidig  <mleidig@schlund.de>
 
 	Added new file upload parameter type, which provides more information than the 
