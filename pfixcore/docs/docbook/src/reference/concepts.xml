@@ -6,13 +6,20 @@
   <title>Important Concepts</title>
 
   <section xml:id="concepts.servlets">
-    <title>Servlets</title>
-    <para>     
-      The processing of a request in Pustefix starts with a servlet that is derived from
-      <literal>de.schlund.pfixxml.ServletManager</literal>. This class implements session creation,redirecting into
-      sessions, handling of SSL and other services for it's descendants.
+    <title>HTTP request handling</title>
+    <para>
+      In a typical Pustefix application the <classname>DispatcherServlet</classname>
+      provided by Spring is usually the only servlet. This servlet instantiates a 
+      Spring <interfacename>ApplicationContext</interfacename> on startup and delegates
+      all requests to the <interfacename>HttpRequestHandler</interfacename>
+      found by using the <interfacename>HandlerMapping</interfacename>.
+      If you want to do request processing for a certain path without using the
+      <interfacename>HttpRequestHandler</interfacename>s provided by Pustefix, you can
+      add your own instance of an <interfacename>UriProvidingHttpRequestHandler</interfacename>
+      to the Spring configuration file.
     </para>
     <para>
+      All request handlers used by Pustefix are based on <classname>AbstractPustefixRequestHandler</classname>.
       The main feature of it's session handling is that it's mostly transparent to the user. You can submit data
       to a URL, and the system will take care to store the supplied data (this is done in the form of a
       <literal>PfixServletRequest</literal>, which can be seen as basically the same as a
@@ -21,12 +28,12 @@
       logic and the data submitted with the original request afterwards.
     </para>
     <para>
-      Even SSL is handled transparently. A descending servlet must implement the method <literal>+ needsSession(): boolean</literal>
+      Even SSL is handled transparently. A descending request handler must implement the method <literal>+ needsSession(): boolean</literal>
       to decide if the the current request should result into the session to be "secure". You don't have to make sure that
       the webpages use "https://" in all needed links, the target itself tells the system that it want's to run under SSL.
     </para>
     <para>
-      If the servlet decides that it want's to run under SSL from now on, a complex redirect sequence happens that makes sure
+      If the request handler decides that it want's to run under SSL from now on, a complex redirect sequence happens that makes sure
       that all data is copied from the previous insecure session into a new, secure session (a session is secure if it's
       session id was never transmitted over an insecure channel). After a session has once transformed into a secure one, there's
       no way back: Every time you try to use the session with "http://" it will create a new, secure session dropping the old
@@ -35,14 +42,15 @@
       that has still the old session id embedded in every link) to the new, currently running secure session and silenty and
       securely redirects to this session.
     </para>
-    <section xml:id="concepts.servlets.core">
-      <title>Servlets provided by the core framework</title>
+    <section xml:id="concepts.httprequesthandlers.core">
+      <title>HttpRequestHandlers provided by the core framework</title>
       <para>
-        <xref linkend="concepts.servlets.core.figure"/> shows the servlets that are already provided by the core framework
+        <xref linkend="concepts.servlets.core.figure"/> shows some of the <interfacename>HttpRequestHandler</interfacename>s 
+        that are already provided by the core framework
         and should be sufficient for most of your needs when building a web application with Pustefix.
       </para>
       <figure xml:id="concepts.servlets.core.figure">
-        <title>Pustefix servlets</title>
+        <title>Pustefix HTTP request handlers</title>
         <mediaobject>
           <imageobject>
             <imagedata fileref="images/reference/concepts-servlets.png" format="PNG"/>
@@ -50,9 +58,9 @@
         </mediaobject>
       </figure>
       <section>
-        <title>DerefServlet</title>
+        <title>DerefRequestHandler</title>
         <para>
-          This is a small servlet that should be used whenever a link to a URL outside the own site is made. All such
+          This is a small request handler that should be used whenever a link to a URL outside the own site is made. All such
           external links must be of the form <uri>/xml/deref?link=http://some.other.domain/foo/bar</uri>. This is important
           because for any link that goes directly to a foreign destination (e.g. <literal>&lt;a href="http://some.other.domain/foo/bar"&gt;</literal>)
           the session id visible in the logfile of the foreign site's webserver (via the Referer header). This is of course
@@ -61,42 +69,45 @@
         </para>
       </section>
       <section>
-        <title>AbstractXMLServlet</title>
+        <title>AbstractPustefixXMLRequestHandler</title>
         <para>
-          This servlet, while still abstract, implements most of the output handling needed for servlets that want use XSLT/XML to produce
-          the final html sent to the browser.
+          This HTTP request handler, while still abstract, implements most of the output handling needed for request handlers
+          that want use XSLT/XML to produce the final html sent to the browser.
         </para>
         <para>
-          The only thing a descendant needs to implement is the abstract method <literal>+ getDom(PfixServletRequest) : SPDocument</literal>,
+          The only thing a descendant needs to implement is the abstract method <literal>getDom(PfixServletRequest)</literal>,
           whose return value can be thought of as a small container around a <literal>org.w3c.Document</literal>. The additional data stored in
           a <literal>SPDocument</literal> is among other things a map of XSLT transformation parameters that should be set and the "page name"
           which the system uses to choose the correct target stylesheet to transform the DOM with.
         </para>
       </section>
       <section>
-        <title>DirectOutputServlet</title>
+        <title>PustefixContextDirectOutputRequestHandler</title>
         <para>
-          In contrast to AbstractXMLServlet and descendants, this servlet does not produce it's output by transforming XML with a XSLT
-          stylesheet into HTML. There are situations where you need to stream some other format like pdf or images like PNG or GIF instead.
-          The <literal>DirectOutputServlet</literal> is used for exactly this purpose, because it delegates request processing to
+          In contrast to <classname>AbstractPustefixXMLRequestHandler</classname> and descendants, this request handler
+          does not produce it's output by transforming XML with a XSLT
+          stylesheet into HTML. There are situations where you need to stream some other format like pdf or images like
+          PNG or GIF instead.
+          The <classname>PustefixContextDirectOutputRequestHandler</classname> is used for exactly this purpose, because 
+          it delegates request processing to
           <literal>DirectOutputState</literal> objects which are allowed to write directly to the <literal>HttpServletResponse</literal>'s
           <literal>OutputStream</literal>.
         </para>
       </section>
       <section>
-        <title>ContextXMLServlet</title>
+        <title>PustefixContextXMLRequestHandler</title>
         <para>
-          This is the main servlet that handles almost all pages in a typical Pustefix application - everything that produces HTML to be
+          This is the main request handler that handles almost all pages in a typical Pustefix application - everything
+          that produces HTML to be
           precise. The servlet doesn't do much on it's own, it delegates the request processing to a
-          <literal>de.schlund.pfixcore.workflow.Context</literal> object. This Context is created by the <literal>ContextXMLServlet</literal>
+          <literal>de.schlund.pfixcore.workflow.Context</literal> object. This Context is created by the 
+          <classname>PustefixContextXMLRequestHandler</classname>
           once for every session, stored into the <literal>HttpSession</literal> and reused for all later requests.
         </para>
         <para>
-          A Pustefix application usually consists of one <literal>ContextXMLServlet</literal> servlet. It's possible to use more than one
-          <literal>ContextXMLServlet</literal>, but most often it's better to only use one, because exchanging data between the different
-          associated <literal>Context</literal> objects is cumbersome. Using one or many additional <literal>DirectOutputServlets</literal>
-          is no problem, because <literal>DirectOutputServlets</literal> don't have a <literal>Context</literal> of their own, but use the
-          data of the Context of a "foreign" ContextXMLServlet.
+          A Pustefix application has exactly one <classname>PustefixContextXMLRequestHandler</classname>. 
+          Although more than one additional <classname>>PustefixContextDirectOutputRequestHandler</classname>
+          could be used, there is usually no need for such a configuration.
         </para>
       </section>
     </section>
@@ -105,13 +116,14 @@
   <section xml:id="concepts.request_processing">
     <title>Processing of Requests</title>
     <para>
-      Every request that arrives at a pustefix application is processed in a specific way, depending on the servlet that is being
-      selected by the servlet container to handle it. In this chapter we will take a deeper look at the most important case of a
-      <code>ContextXMLServer</code>
-      being the servlet to handle the request.
+      Every request that arrives at a pustefix application is processed in a specific way, depending
+      on the HTTP request handler that is being
+      selected by the <classname>PustefixHandlerMapping</classname>.
+      In this chapter we will show how <classname>PustefixContextXMLRequestHandler</classname> handles
+      requests.
     </para>
     <para>
-      The special processing of requests by this servlet is called the
+      The special processing of requests by this HTTP request handler is called the
       <emphasis>Pustefix Request Cycle</emphasis>. It is important to understand how this cycle works, and how to configure it in such a way to achieve the desired result
       for each request.
     </para>
@@ -133,8 +145,8 @@
     <section xml:id="concepts.request_processing.context">
       <title>The Context</title>
       <para>
-        The <literal>de.schlund.pfixxml.ContextXMLServer</literal> does most of the request handling in an object called the
-        <literal>"context"</literal>. The interface <literal>de.schlund.pfixcore.workflow.Context</literal> provides the applications
+        The <classname>PustefixContextXMLRequestHandler</classname> does most of the request handling in an object called the
+        <literal>"context"</literal>. The interface <interfacename>Context</interfacename> provides the applications
         view on this object. From the applications view the context mainly is:
       </para>
       <itemizedlist>

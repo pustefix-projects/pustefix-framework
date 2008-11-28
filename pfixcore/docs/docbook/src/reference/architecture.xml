@@ -40,19 +40,24 @@
       <title>The Pustefix backend system</title>
       <para>
         <xref linkend="architecture.backend.figure"/> shows, how the different interfaces and classes
-        in Pustefix are connected.
+        in Pustefix are connected (not including web services and direct output support).
       </para>
       <figure xml:id="architecture.backend.figure">
         <title>The Pustefix backend system</title>
         <mediaobject>
           <imageobject>
-            <imagedata fileref="images/reference/architecture-backend.gif" format="GIF"/>
+            <imagedata fileref="images/reference/architecture-backend.png" format="PNG"/>
           </imageobject>
         </mediaobject>
         <para>
-          Please note that this graph is somehow out-dated as <literal>de.schlund.pfixcore.workflow.Context</literal>
-          is no longer a class but only a interface providing the application's view on the functions provided by the
-          "real" context implementation used by the servlet.
+          The Pustefix application runs within a Spring <interfacename>ApplicationContext</interfacename>
+          that is created by the <classname>DispatcherServlet</classname>. The servlet dispatches
+          all requests to <interfacename>HttpRequestHandler</interfacename>s that are managed as
+          beans in the application context. <classname>PustefixContextXMLHttpRequestHandler</classname>
+          handles the requests to Pustefix pages and takes care of session, cookie and SSL management.
+          The actual request processing (workflow handling, dispatching to the right 
+          <interfacename>State</interfacename>) is performed by <interfacename>Context</interfacename>
+          (or more precisely <classname>ContextImpl</classname>). 
         </para>
       </figure>
     </section>
