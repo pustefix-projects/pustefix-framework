@@ -1,5 +1,14 @@
 2008-12-02  Martin Leidig <mleidig@schlund.de>
 
+	Fixed issue with Tomcat port element naming.
+
+	* docs/docbook/src/reference/configuration.xml
+	* projects/core/build/create_ajpconf.xsl
+	* projects/common/conf/projects.xml
+	* skel/projects/common/conf/projects.xml
+
+2008-12-02  Martin Leidig <mleidig@schlund.de>
+
 	* src/org/pustefixframework/config/contextxmlservice/parser/ContextDefaultPageParsingHandler.java:
 	get default and variant elements from DOM using namespace
 

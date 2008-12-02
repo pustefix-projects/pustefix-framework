@@ -23,7 +23,7 @@
 #
     <xsl:variable name="jvmroute"><xsl:apply-templates select="$tree/p:global-config/p:http-server/p:tomcat/p:jvmroute/node()"/></xsl:variable>
     <xsl:variable name="jkmount"><xsl:apply-templates select="$tree/p:global-config/p:http-server/p:tomcat/p:jkmount/node()"/></xsl:variable>
-    <xsl:variable name="port"><xsl:apply-templates select="$tree/p:global-config/p:http-server/p:tomcat/p:connector-port/node()"/></xsl:variable>
+    <xsl:variable name="port"><xsl:apply-templates select="$tree/p:global-config/p:http-server/p:tomcat/p:connectorport/node()"/></xsl:variable>
 
 &lt;Proxy balancer://<xsl:value-of select="$jkmount"/>&gt;
   # In a clustered environment add a BalancerMember entry for every host participating in the cluster

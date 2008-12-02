@@ -12,7 +12,7 @@
     <tomcat>
       <minprocessors>100</minprocessors>
       <maxprocessors>500</maxprocessors>
-      <connector-port>8009</connector-port>
+      <connectorport>8009</connectorport>
       <debug>0</debug>
       <loglevel>info</loglevel>
       <jkhost>${fqdn}</jkhost>
