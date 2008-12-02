@@ -28,7 +28,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+import javax.management.JMException;
 import javax.management.MBeanServer;
+import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
 import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpSessionBindingEvent;
@@ -224,4 +226,29 @@ public class SessionAdmin implements HttpSessionBindingListener, SessionAdminMBe
         return info.getSession();
     }
 
+    /**
+     * Returns the total number of sessions from all JMX-registered SessionAdmin instances
+     */
+    public static int getTotalSessionNumber() {
+        int sessionNo = 0;
+        MBeanServer mbeanServer = ManagementFactory.getPlatformMBeanServer();
+        ObjectName queryName;
+        try {
+            queryName = new ObjectName("Pustefix:type=SessionAdmin,project=" + "*");
+        } catch (MalformedObjectNameException e) {
+            throw new RuntimeException("Illegal JMX object query name", e);
+        }
+        Set<ObjectName> objectNames = mbeanServer.queryNames(queryName, null);
+        for(ObjectName objectName:objectNames) {
+            try {
+                if(mbeanServer.isRegistered(objectName)) {
+                    sessionNo += (Integer)mbeanServer.getAttribute(objectName, "SessionNumber");
+                }
+            } catch (JMException e) {
+                LOG.error("Can't get session number from '" + objectName + "'.", e);
+            } 
+        }
+        return sessionNo;
+    }
+    
 }
