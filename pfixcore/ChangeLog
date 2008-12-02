@@ -1,3 +1,8 @@
+2008-12-02  Martin Leidig <mleidig@schlund.de>
+
+	* src/org/pustefixframework/config/contextxmlservice/parser/ContextDefaultPageParsingHandler.java:
+	get default and variant elements from DOM using namespace
+
 2008-11-25  Martin Leidig <mleidig@schlund.de>
 
 	Released Pfixcore 0.13.3

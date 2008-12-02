@@ -18,6 +18,7 @@
 
 package org.pustefixframework.config.contextxmlservice.parser;
 
+import org.pustefixframework.config.Constants;
 import org.pustefixframework.config.contextxmlservice.parser.internal.ContextConfigImpl;
 import org.pustefixframework.config.generic.ParsingUtils;
 import org.w3c.dom.Element;
@@ -41,7 +42,7 @@ public class ContextDefaultPageParsingHandler implements ParsingHandler {
       
         ContextConfigImpl config = ParsingUtils.getSingleTopObject(ContextConfigImpl.class, context);
         
-        NodeList nodes = element.getElementsByTagName("variant");
+        NodeList nodes = element.getElementsByTagNameNS(Constants.NS_CONTEXT_XML_SERVICE,"variant");
         for(int i=0; i<nodes.getLength(); i++) {
             Element variantElement = (Element)nodes.item(i);
             String variantName = variantElement.getAttribute("name").trim();
@@ -51,7 +52,7 @@ public class ContextDefaultPageParsingHandler implements ParsingHandler {
             config.setDefaultPage(variantName, pageName);
         }
         
-        nodes = element.getElementsByTagName("default");
+        nodes = element.getElementsByTagNameNS(Constants.NS_CONTEXT_XML_SERVICE,"default");
         if(nodes.getLength()==0) throw new ParserException("Element 'defaultpage' requires 'default' child element.");
         if(nodes.getLength()>1) throw new ParserException("Element 'defaultpage' doesn't allow multiple 'default' child elements.");
         Element defaultElement = (Element)nodes.item(0);
