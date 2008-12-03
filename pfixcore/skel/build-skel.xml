@@ -612,13 +612,6 @@ or delete the DOCTYPE definition -->
   <target name="scmerge-core" depends="ant-tasks-stage2">
     <pfx-scmerge 
       srcdir="${dir.projects}/core" 
-      destdir="${dir.projects}/common" 
-      includes="dyntxt/statusmessages.xml"
-      suffix="-core-merged"
-      selection="/include_parts/part/theme[@name='default']"
-    />
-    <pfx-scmerge 
-      srcdir="${dir.projects}/core" 
       destdir="${dir.projects}/core-override" 
       includes="dyntxt/statusmessages-core.xml"
       suffix="-merged"
