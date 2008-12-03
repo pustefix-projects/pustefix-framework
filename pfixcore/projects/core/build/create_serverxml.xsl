@@ -136,7 +136,7 @@
   <xsl:template match="p:project-config">
     <xsl:variable name="active">
       <xsl:choose>
-        <xsl:when test="normalize-space(p:project/enabled/text()) = 'false'">false</xsl:when>
+        <xsl:when test="normalize-space(p:project/p:enabled/text()) = 'false'">false</xsl:when>
         <xsl:otherwise>true</xsl:otherwise> 
       </xsl:choose>
     </xsl:variable>
