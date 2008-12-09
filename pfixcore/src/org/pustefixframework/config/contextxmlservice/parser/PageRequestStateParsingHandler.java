@@ -41,6 +41,7 @@ public class PageRequestStateParsingHandler extends CustomizationAwareParsingHan
         Element stateElement = (Element) context.getNode();
         String stateClassName = stateElement.getAttribute("class");
         String beanRef = stateElement.getAttribute("bean-ref");
+        String parentBeanRef = stateElement.getAttribute("parent-bean-ref");
         String beanName = stateElement.getAttribute("bean-name");
         String scope = stateElement.getAttribute("scope");
         
@@ -50,6 +51,10 @@ public class PageRequestStateParsingHandler extends CustomizationAwareParsingHan
         
         if (stateClassName.length() > 0 && beanRef.length() > 0) {
             throw new ParserException("Only one of the \"class\" or \"bean-ref\" attributes may be specified for the <state> tag.");
+        }
+        
+        if (beanRef.length() > 0 && parentBeanRef.length() > 0) {
+            throw new ParserException("Only one of the \"bean-ref\" or \"parent-bean-ref\" attributes may be specified for the <state> tag.");
         }
         
         if (beanName.length() > 0 && stateClassName.length() == 0) {
@@ -63,6 +68,10 @@ public class PageRequestStateParsingHandler extends CustomizationAwareParsingHan
         if (beanRef.length() > 0) {
             stateConfig.setExternalBean(true);
             pageConfig.setBeanName(beanRef);
+        }
+        
+        if (parentBeanRef.length() > 0) {
+            stateConfig.setParentBeanName(parentBeanRef);
         }
         
         if (stateClassName.length() > 0) {

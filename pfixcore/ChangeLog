@@ -1,7 +1,19 @@
 2008-12-09  Martin Leidig <mleidig@schlund.de>
 
-	 * projects/core/build/create_apacheconf.xsl: fixed xpath error
-	 which prevented project disabling from working
+	Added support for referencing parent bean definitions from 
+	state elements using the parent-bean-ref attribute.
+
+	* src/org/pustefixframework/config/contextxmlservice/parser/internal/StateConfigImpl.java:
+	added setter for parent bean reference
+	* src/org/pustefixframework/config/contextxmlservice/parser/PageRequestStateParsingHandler.java:
+	added reading/setting of parent-bean-ref attribute for states
+	* projects/core/schema/context-xml-service-config.xsd: added optional
+	parent-bean-ref definition to state element
+
+2008-12-09  Martin Leidig <mleidig@schlund.de>
+
+	* projects/core/build/create_apacheconf.xsl: fixed xpath error
+	which prevented project disabling from working
 
 2008-12-09  Martin Leidig <mleidig@schlund.de>
 

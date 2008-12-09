@@ -50,6 +50,7 @@ public class StateConfigImpl implements Cloneable, StateConfig {
     private StateConfig.Policy policy = StateConfig.Policy.ANY;
     private boolean requiresToken = false;
     private boolean externalBean = false;
+    private String parentBeanName = null;
     private String scope = "singleton";
     private Map<String, ProcessActionStateConfig> actions = new LinkedHashMap<String, ProcessActionStateConfig>();
     
@@ -70,6 +71,7 @@ public class StateConfigImpl implements Cloneable, StateConfig {
     }
     
     public String getParentBeanName() {
+        if(parentBeanName != null) return parentBeanName;
         if(stateClass == null) {
             if(this.iwrappers.size() > 0) {
                 return defaultIWrapperStateParentBeanName;
@@ -78,6 +80,10 @@ public class StateConfigImpl implements Cloneable, StateConfig {
             }
         }
         return null;
+    }
+    
+    public void setParentBeanName(String parentBeanName) {
+        this.parentBeanName = parentBeanName;
     }
     
     public void setDefaultStaticState(Class<? extends ConfigurableState> clazz) {

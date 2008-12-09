@@ -519,6 +519,7 @@
             <xs:attribute name="class" use="optional"/>
             <xs:attribute name="bean-ref" use="optional"/>
             <xs:attribute name="bean-name" use="optional"/>
+            <xs:attribute name="parent-bean-ref" use="optional"/>
             <xs:attribute name="scope" use="optional"/>
           </xs:complexType>
         </xs:element>
