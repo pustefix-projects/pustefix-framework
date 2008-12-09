@@ -27,7 +27,7 @@
     <xsl:variable name="currentprj" select="ancestor::p:project-config"></xsl:variable>
     <xsl:variable name="active">
       <xsl:choose>
-        <xsl:when test="normalize-space($currentprj/enabled/text()) = 'false'">false</xsl:when>
+        <xsl:when test="normalize-space($currentprj/p:project/p:enabled/text()) = 'false'">false</xsl:when>
         <xsl:otherwise>true</xsl:otherwise> 
       </xsl:choose>
     </xsl:variable>

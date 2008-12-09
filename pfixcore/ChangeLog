@@ -1,5 +1,10 @@
 2008-12-09  Martin Leidig <mleidig@schlund.de>
 
+	 * projects/core/build/create_apacheconf.xsl: fixed xpath error
+	 which prevented project disabling from working
+
+2008-12-09  Martin Leidig <mleidig@schlund.de>
+
 	Fixed requirestoken/policy issue (these input element attributes
 	didn't work any more, because they have been forgotten to be parsed).
 
