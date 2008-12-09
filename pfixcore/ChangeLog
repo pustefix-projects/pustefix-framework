@@ -1,3 +1,15 @@
+2008-12-09  Martin Leidig <mleidig@schlund.de>
+
+	Fixed requirestoken/policy issue (these input element attributes
+	didn't work any more, because they have been forgotten to be parsed).
+
+	* src/org/pustefixframework/config/contextxmlservice/parser/PageRequestInputParsingHandler.java:
+	Added ParsingHandler for the input element and the requirestoken/policy attributes.
+	* src/org/pustefixframework/config/contextxmlservice/parser/PageRequestParsingHandler.java:
+	Set forgotten requiresToken bean property.
+	* res/META-INF/org/pustefixframework/config/context-xml-service/parser/context-xml-service-config.xml:
+	Added PageRequestInputParsingHandler definition.
+
 2008-12-03  Andreas Kurth <andreas.kurth@1und1.de>
 
 	Removed obsolete statusmessages file.

@@ -135,6 +135,10 @@
     <match>/c:context-xml-service-config/c:pagerequest//c:state</match>
   </handler>
   
+  <handler class="org.pustefixframework.config.contextxmlservice.parser.PageRequestInputParsingHandler">
+    <match>/c:context-xml-service-config/c:pagerequest//c:input</match>
+  </handler>
+  
   <handler class="org.pustefixframework.config.contextxmlservice.parser.PageRequestInputWrapperParsingHandler">
     <match>/c:context-xml-service-config/c:pagerequest//c:input/c:wrapper</match>
   </handler>
