@@ -23,6 +23,8 @@ ServerAlias <xsl:apply-templates select="$currentprj/serveralias/node()"/>
 
 RewriteEngine on
 
+<xsl:apply-templates select="$currentprj/literalstart/node()"/>
+
 <xsl:if test="$currentprj/defpath/node()">
   RewriteRule ^/$ <xsl:choose>
     <xsl:when test="@ssl = 'true'">https</xsl:when><xsl:otherwise>http</xsl:otherwise>
