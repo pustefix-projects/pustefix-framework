@@ -1,3 +1,7 @@
+2008-12-10  Holger Rueprich <h.rueprich@1und1.de>
+
+    * projects/core/build/create_apacheconf.xsl: added literalstart section.
+
 2008-10-20  Martin Leidig  <mleidig@schlund.de>
 
 	Let generate target fail with BuildException if TargetGeneratorReport
