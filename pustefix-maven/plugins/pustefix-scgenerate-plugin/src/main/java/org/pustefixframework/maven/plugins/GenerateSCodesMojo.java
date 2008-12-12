@@ -20,6 +20,8 @@ package org.pustefixframework.maven.plugins;
 
 
 import java.io.File;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,10 +32,8 @@ import org.codehaus.plexus.util.DirectoryScanner;
 
 import de.schlund.pfixcore.util.GenerateSCodes;
 import de.schlund.pfixcore.util.GenerateSCodes.Result;
-import de.schlund.pfixxml.config.GlobalConfig;
-import de.schlund.pfixxml.config.GlobalConfigurator;
 import de.schlund.pfixxml.resources.DocrootResource;
-import de.schlund.pfixxml.resources.ResourceUtil;
+import de.schlund.pfixxml.resources.internal.DocrootResourceOnFileSystemProvider;
 
 /**
  * Generate StatusCode constant classes from statusmessage files.
@@ -81,7 +81,10 @@ public class GenerateSCodesMojo extends AbstractMojo {
     
     public void execute() throws MojoExecutionException {
         
-        if(GlobalConfig.getDocroot()==null) GlobalConfigurator.setDocroot(docRoot.getAbsolutePath());
+        // FIXME We should not access an internal package from another component.
+        // However, we have no choice here, as GlobalConfigurator will not work
+        // when building a Maven multi-module module.
+        DocrootResourceOnFileSystemProvider provider = new DocrootResourceOnFileSystemProvider(docRoot.getAbsolutePath());
         
         DirectoryScanner ds = new DirectoryScanner();
         if(includes!=null) ds.setIncludes(includes);
@@ -93,8 +96,17 @@ public class GenerateSCodesMojo extends AbstractMojo {
 
         List<DocrootResource> resList = new ArrayList<DocrootResource>();        
         for (int i = 0; i < files.length; i++) {
-          DocrootResource res = ResourceUtil.getFileResourceFromDocroot(files[i]);
-          resList.add(res);
+            String file = files[i];
+            if (!file.startsWith("/")) {
+                file = "/" + file;
+            }
+            DocrootResource res;
+            try {
+                res = provider.getDocrootResource(new URI("pfixroot", null, file, null, null));
+            } catch (URISyntaxException e) {
+                throw new MojoExecutionException("Could not build URI for file " + file, e);
+            }
+            resList.add(res);
         }
         
         try {
