@@ -94,19 +94,10 @@ public class GenerateSCodesMojo extends AbstractMojo {
         ds.scan();
         String[] files = ds.getIncludedFiles();
 
-        List<DocrootResource> resList = new ArrayList<DocrootResource>();        
+        List<String> resList = new ArrayList<String>();        
         for (int i = 0; i < files.length; i++) {
             String file = files[i];
-            if (!file.startsWith("/")) {
-                file = "/" + file;
-            }
-            DocrootResource res;
-            try {
-                res = provider.getDocrootResource(new URI("pfixroot", null, file, null, null));
-            } catch (URISyntaxException e) {
-                throw new MojoExecutionException("Could not build URI for file " + file, e);
-            }
-            resList.add(res);
+            resList.add(file);
         }
         
         try {
