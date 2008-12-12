@@ -1,3 +1,11 @@
+2008-12-12  Sebastian Marsching  <sebastian.marsching@1und1.de>
+
+	* src/de/schlund/pfixcore/util/GenerateSCodes.java: 
+	* src/de/schlund/pfixcore/util/GenerateSCodesTask.java: 
+	Changed GenerateSCodes to use relative paths instead of DocrootResources.
+	This was needed in order to build Maven modules which themselves contain
+	Maven modules. 
+
 2008-12-09  Martin Leidig <mleidig@schlund.de>
 
 	Added support for referencing parent bean definitions from 

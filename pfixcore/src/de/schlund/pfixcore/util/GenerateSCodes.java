@@ -69,44 +69,48 @@ public class GenerateSCodes {
         
     }
     
-    public static Result generateFromInfo(List<DocrootResource> infoFiles, String docRoot, File genDir, String module) throws Exception {
+    public static Result generateFromInfo(List<String> infoFiles, String docRoot, File genDir, String module) throws Exception {
         Result totalResult = new Result();
-        for(DocrootResource infoFile:infoFiles) {
+        for(String infoFile:infoFiles) {
             Result result = generate(infoFile, docRoot, genDir, module);
             totalResult.addResult(result);
         }
         return totalResult;
     }
     
-    public static Result generate(DocrootResource infoFile, String docRoot, File genDir, String module) throws Exception {
+    public static Result generate(String infoFile, String docRoot, File genDir, String module) throws Exception {
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         DocumentBuilder db = dbf.newDocumentBuilder();
-        Document doc = db.parse(infoFile.getInputStream());
+        File file = new File(docRoot, infoFile);
+        Document doc = db.parse(file);
         NodeList scElems = doc.getDocumentElement().getElementsByTagName("statuscodes");
         List<String> genClasses = new ArrayList<String>();
         List<String> allClasses = new ArrayList<String>();
         for(int i=0; i<scElems.getLength(); i++) {
             Element scElem = (Element)scElems.item(i);
             String className = scElem.getAttribute("class");
-            List<DocrootResource> scXmlFiles = new ArrayList<DocrootResource>();
+            List<String> scXmlFiles = new ArrayList<String>();
             NodeList fileElems = scElem.getElementsByTagName("file");
             for(int j=0; j<fileElems.getLength(); j++) {
                 Element fileElem = (Element)fileElems.item(j);
                 String filePath = fileElem.getTextContent();
-                DocrootResource res = null;
+                String res = null;
                 if(!filePath.startsWith("/")) {
                     // try to get resource relative to info file
-                    String path = infoFile.getRelativePath();
+                    String path = infoFile;
                     path=path.substring(0,path.lastIndexOf('/'))+"/"+filePath;
-                    DocrootResource tmp = ResourceUtil.getFileResourceFromDocroot(path);
-                    if(tmp.exists()) res = tmp;
+                    File tmp = new File(docRoot, path);
+                    if(tmp.exists()) res = path;
                 }
                 if(res==null) {
                     // try to get resource relative to docroot
-                    DocrootResource tmp = ResourceUtil.getFileResourceFromDocroot(filePath);
-                    if(tmp.exists()) res = tmp;
+                    File tmp = new File(docRoot, filePath);
+                    if(tmp.exists()) res = filePath;
                 }
                 if(res==null) throw new RuntimeException("Statusmessage file not found: "+filePath);
+                if (res.startsWith("/")) {
+                    res = res.substring(1);
+                }
                 scXmlFiles.add(res);
             }
             boolean generated = generate(scXmlFiles, docRoot, genDir, className, module);
@@ -173,9 +177,10 @@ public class GenerateSCodes {
             
     }
     
-    public static boolean generate(List<DocrootResource> scXmlFiles, String docroot, File genDir, String className, String module) throws IOException, SAXException {
+    public static boolean generate(List<String> scXmlFiles, String docroot, File genDir, String className, String module) throws IOException, SAXException {
         
-        if(GlobalConfig.getDocroot()==null) GlobalConfigurator.setDocroot(docroot);
+        // FIXME Removed for testing
+        // if(GlobalConfig.getDocroot()==null) GlobalConfigurator.setDocroot(docroot);
         
         String scLibPath = className.replace('.','/')+".java";
         File scLibFile = new File(genDir, scLibPath);
@@ -187,7 +192,7 @@ public class GenerateSCodes {
                 DocrootResource[] resArr = (DocrootResource[])field.get(null);
                 if(resArr.length == scXmlFiles.size()) {
                     for(DocrootResource res:resArr) {
-                        if(!scXmlFiles.contains(res)) {
+                        if(!scXmlFiles.contains(res.getRelativePath())) {
                             differentFiles = true;
                             break;
                         }
@@ -195,12 +200,15 @@ public class GenerateSCodes {
                 } else differentFiles = true;
             } catch(ClassNotFoundException x) {
                 //statuscode class not available -> can't check if built from same files -> continue   
+            } catch (ExceptionInInitializerError e) {
+                // handle like class not found -> ignore
             } catch(Exception x) {
                 throw new RuntimeException("Can't detect from which files statuscode class was built.",x);
             }
             if(!differentFiles) {
                 boolean newer = false;
-                for (FileResource path: scXmlFiles) {
+                for (String pathStr: scXmlFiles) {
+                    File path = new File(docroot, pathStr);
                     if (path.exists() && path.lastModified() > scLibFile.lastModified()) {
                         newer = true;
                         break;
@@ -217,15 +225,15 @@ public class GenerateSCodes {
         Writer writer = new OutputStreamWriter(new FileOutputStream(scLibFile), "ascii");
         createHeader(writer, className);
         List<String> docRelPaths = new ArrayList<String>();
-        for (DocrootResource input: scXmlFiles) {
-            String path = getModulePath(input.getRelativePath(),module);
+        for (String input: scXmlFiles) {
+            String path = getModulePath(input,module);
             docRelPaths.add(path);
         }
         createResources(writer, docRelPaths);
         
-        for (DocrootResource input: scXmlFiles) {
-            Document doc = Xml.parseMutable(input);
-            createStatusCodes(writer, doc, docRelPaths.indexOf(getModulePath(input.getRelativePath(),module)));
+        for (String input: scXmlFiles) {
+            Document doc = Xml.parseMutable(new File(docroot, input));
+            createStatusCodes(writer, doc, docRelPaths.indexOf(getModulePath(input,module)));
         }
             
         writer.write("}\n");
