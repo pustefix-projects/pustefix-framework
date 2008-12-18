@@ -1,3 +1,18 @@
+2008-12-18  Dunja Fehrenbach <dunja.fehrenbach@1und1.de>
+
+    Add support for java.util.Set in OXM serializer
+	
+	* src/de/schlund/pfixcore/oxm/impl/serializers/SetSerializer.java:
+	Added serializer for java.util.Set
+	* src/de/schlund/pfixcore/oxm/impl/annotation/SetSerializer.java:
+	Added annotation for SetSerializer
+	* src/de/schlund/pfixcore/oxm/impl/SerializerRegistry.java:
+	Added SetSerializer to registry
+	* tests/junit/de/schlund/pfixcore/oxm/bean/SetTestBean.java:
+	* tests/junit/de/schlund/pfixcore/oxm/SetTest.java:
+	Added unit test for java.util.Set support in OXM serializer
+
+
 2008-12-12  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
 	* src/de/schlund/pfixcore/util/GenerateSCodes.java: 

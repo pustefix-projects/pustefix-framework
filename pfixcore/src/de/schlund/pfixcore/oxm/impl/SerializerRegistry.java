@@ -28,6 +28,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 
 import de.schlund.pfixcore.beans.BeanDescriptor;
 import de.schlund.pfixcore.beans.BeanDescriptorFactory;
@@ -40,6 +41,7 @@ import de.schlund.pfixcore.oxm.impl.serializers.DateSerializer;
 import de.schlund.pfixcore.oxm.impl.serializers.MapSerializer;
 import de.schlund.pfixcore.oxm.impl.serializers.ObjectToStringSerializer;
 import de.schlund.pfixcore.oxm.impl.serializers.PropertiesSerializer;
+import de.schlund.pfixcore.oxm.impl.serializers.SetSerializer;
 import de.schlund.pfixcore.oxm.impl.serializers.SimpleEnumSerializer;
 
 /**
@@ -57,6 +59,7 @@ public class SerializerRegistry {
     BeanSerializer beanSerializer;
     CollectionSerializer collSerializer;
     MapSerializer mapSerializer;
+    SetSerializer setSerializer;
     SimpleEnumSerializer simpleEnumSerializer;
     ComplexEnumSerializer complexEnumSerializer;
 
@@ -72,6 +75,7 @@ public class SerializerRegistry {
         beanSerializer = new BeanSerializer(beanDescFactory);
         collSerializer = new CollectionSerializer();
         mapSerializer = new MapSerializer();
+        setSerializer = new SetSerializer();
         simpleEnumSerializer = new SimpleEnumSerializer();
         complexEnumSerializer = new ComplexEnumSerializer(beanDescFactory);
 
@@ -106,6 +110,7 @@ public class SerializerRegistry {
             if (clazz.isArray()) serializer = arraySerializer;
             else if (List.class.isAssignableFrom(clazz)) serializer = collSerializer;
             else if (Map.class.isAssignableFrom(clazz)) serializer = mapSerializer;
+            else if (Set.class.isAssignableFrom(clazz)) serializer = setSerializer;
             else if (Enum.class.isAssignableFrom(clazz)) serializer = complexEnumSerializer;
             else serializer = beanSerializer;
         }
