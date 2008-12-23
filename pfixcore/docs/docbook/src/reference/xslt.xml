@@ -6,7 +6,7 @@
   <title>Core Pustefix tag library</title>
   <para>
     Pustefix includes a small library of tags defined as XSLT templates which implement low level functionality common to all
-    Pustefix application. These templates are mostly concerned with creating links to Pustefix pages or external URLs, sending
+    Pustefix applications. These templates are mostly concerned with creating links to Pustefix pages or external URLs, sending
     data via HTML forms (including the necessary error handling) and including XML ressources (<emphasis>Include Parts</emphasis>).
   </para>
   <para>
@@ -17,7 +17,7 @@
   </para>
 
   <para>
-    The following table lists these tags together with a very short explanation what they do. Refer to the relevant subsections
+    The following table lists these tags together with a very short explanation of what they do. Refer to the relevant subsections
     below to find a detailed explanation on their relevant attributes, subnodes and how to use them.
   </para>
 
@@ -118,7 +118,7 @@
       The explanation keeps an eye on the expected usage patterns of these documents.
     </para>
     <para>
-      There are basically two kind of "pages" you deliver with Pustefix.
+      There are basically two kinds of "pages" you deliver with Pustefix.
     </para>
     <itemizedlist>
       <listitem>
@@ -146,7 +146,7 @@
   </html>
 </pfx:document>]]></programlisting>
       <para>
-        If you don't want to deliver html, just ommit the &lt;html&gt; tag. The following
+        If you don't want to deliver html, just omit the &lt;html&gt; tag. The following
         could be used to implement a CSS stylesheet.
       </para>
       <programlisting language="xml"><![CDATA[<pfx:document>.foo { color: #ffff00; font-family: Helvetica; }</pfx:document>]]></programlisting>
@@ -1586,7 +1586,8 @@
       </para>
       <para>
         Those consoles can be included in your pages using the <literal>&lt;pfx:editconsole&gt;</literal> and
-        <literal>&lt;pfx:webserviceconsole&gt;</literal> tags.
+        <literal>&lt;pfx:webserviceconsole&gt;</literal> tags. The webservice-console may also be included within the
+        editconsole using the following form: <literal>&lt;pfx:editconsole webserviceconsole="true"&gt;</literal>.
       </para>
     </section>
   </section>
