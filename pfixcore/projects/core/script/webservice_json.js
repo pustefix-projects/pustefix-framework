@@ -106,8 +106,14 @@ pfx.ws.json.BaseStub.prototype.setDebug=function(debug) {
 
 pfx.ws.json.BaseStub.prototype.getURI=function() {
    if(this._uri==null) {
-      var session=window.location.href.match(/;jsessionid=[A-Z0-9]+\.[a-zA-Z0-9]+/);
-      this._uri=window.location.protocol+"//"+window.location.host+this._requestPath+"/"+this._service+session;
+      var session=window.location.href.match(/;jsessionid=[A-Z0-9]+(\.[a-zA-Z0-9]+)?/)[0];
+      var reqpath=window.location.pathname;
+      var pcs=reqpath.split('/');
+      pcs=pcs.slice(1,pcs.length-3);
+      reqpath="";
+      for (var i=0;i<pcs.length;i++) reqpath+="/"+pcs[i];
+      reqpath=reqpath+this._requestPath+"/"+this._service;
+      this._uri=window.location.protocol+"//"+window.location.host+reqpath+session;
    }
    return this._uri;
 }

@@ -1,5 +1,11 @@
 2009-01-07  Martin Leidig  <mleidig@schlund.de>
 
+	* projects/core/script/webservice_json.js: 
+	Reworked request URL parsing/creation: now arbitrary context paths
+	and session ids without a jvmroute part are supported.
+
+2009-01-07  Martin Leidig  <mleidig@schlund.de>
+
 	* src/de/schlund/pfixcore/workflow/context/RequestContextImpl.java:
 	Fixed NPE occurring when trying to get authconstraint for page
 	which has no configuration.
