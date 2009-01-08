@@ -27,6 +27,7 @@ import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
+import org.pustefixframework.test.XmlAssert;
 import org.w3c.dom.Document;
 
 import de.schlund.pfixcore.beans.BeanDescriptorFactory;
@@ -34,7 +35,6 @@ import de.schlund.pfixcore.oxm.bean.BooleanPropertyBean;
 import de.schlund.pfixcore.oxm.helper.OxmTestHelper;
 import de.schlund.pfixcore.oxm.impl.MarshallerImpl;
 import de.schlund.pfixcore.oxm.impl.SerializerRegistry;
-import de.schlund.pfixxml.util.XMLUtils;
 
 /**
  * @author  Stephan Schmidt <schst@stubbles.net>
@@ -63,6 +63,6 @@ public class BooleanBeanTest extends TestCase {
         m.marshal(bean, res);
         String expected = "<result admin=\"true\" deleted=\"false\"></result>";
         Document expDoc = OxmTestHelper.createDocument(expected);
-        XMLUtils.assertEquals(expDoc, doc);        
+        XmlAssert.assertEquals(expDoc, doc);        
     }
 }

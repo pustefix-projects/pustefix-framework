@@ -125,7 +125,7 @@ public class XmlTest extends TestCase {
     }
     
     public void testSerializeDecl() throws Exception {
-        assertEquals("<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?><a/>", serialize("<a/>", false, true));
+        assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\"?><a/>", serialize("<a/>", false, true));
     }
 
     public void testSerializeElement() throws Exception {
@@ -159,7 +159,7 @@ public class XmlTest extends TestCase {
         
         dest= new ByteArrayOutputStream();
         Xml.serialize(parse(STR), dest, false, true);
-        checkEquals(("<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>" + STR).getBytes("ISO-8859-1"), dest.toByteArray());
+        checkEquals(("<?xml version=\"1.0\" encoding=\"UTF-8\"?>" + STR).getBytes("UTF-8"), dest.toByteArray());
     }
 
     private void checkEquals(byte[] expected, byte[] got) {

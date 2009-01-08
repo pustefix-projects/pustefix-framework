@@ -18,16 +18,26 @@
  */
 package de.schlund.pfixxml.util;
 
+import java.io.InputStream;
+import java.io.StringReader;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.Text;
+import org.xml.sax.InputSource;
 
 /**
  * This class contains some utility methods for working with w3c DOMs: 
@@ -87,92 +97,6 @@ public class XMLUtils {
     }
     
     /**
-     * Compare expected and actual node in-depth and throw AssertionError if a
-     * difference is found.
-     */
-    public static void assertEquals(Node expected, Node actual) throws AssertionError {
-        if (expected == null && actual == null) return;
-
-        int expNodeType = expected.getNodeType();
-        int actNodeType = actual.getNodeType();
-        if (expNodeType != actNodeType) fail("Different node type.", getXPath(expected), getXPath(actual));
-        if (expNodeType == actNodeType) {
-            if (expNodeType == Node.ATTRIBUTE_NODE) {
-                String expNodeName = expected.getNodeName();
-                String actNodeName = actual.getNodeName();
-                if (!expNodeName.equals(actNodeName)) fail("Different attribute node name.", expected, actual);
-            } else if (expNodeType == Node.ELEMENT_NODE) {
-                Element expElem = (Element) expected;
-                Element actElem = (Element) actual;
-                String expNodeName = expected.getNodeName();
-                String actNodeName = actual.getNodeName();
-                if (!expNodeName.equals(actNodeName)) fail("Different element node name.", expected, actual);
-                NamedNodeMap expAttrMap = expElem.getAttributes();
-                NamedNodeMap actAttrMap = actElem.getAttributes();
-                for (int i = 0; i < expAttrMap.getLength(); i++) {
-                    Attr expAttr = (Attr) expAttrMap.item(i);
-                    Attr actAttr = (Attr) actAttrMap.getNamedItem(expAttr.getName());
-                    if (actAttr == null) fail("Missing attribute.", getXPath(expAttr), null);
-                    String expVal = expAttr.getValue();
-                    String actVal = actAttr.getValue();
-                    if (!expVal.equals(actVal))
-                        fail("Different attribute values", getXPath(expAttr) + "='" + expVal + "'", getXPath(actAttr) + "='" + actVal + "'");
-                }
-                for (int i = 0; i < actAttrMap.getLength(); i++) {
-                    Attr actAttr = (Attr) actAttrMap.item(i);
-                    Attr expAttr = (Attr) expAttrMap.getNamedItem(actAttr.getName());
-                    if (expAttr == null) fail("Additional attribute.", null, getXPath(actAttr));
-                }
-                NodeList expChildren = expected.getChildNodes();
-                NodeList actChildren = actual.getChildNodes();
-                if (expChildren.getLength() != actChildren.getLength())
-                    fail("Different number of children.", "count(" + getXPath(expected) + "/child::node())=" + expected.getChildNodes().getLength(),
-                            "count(" + getXPath(actual) + "/child::node())=" + actual.getChildNodes().getLength());
-                for (int i = 0; i < expChildren.getLength(); i++) {
-                    assertEquals(expChildren.item(i), actChildren.item(i));
-                }
-            } else if (expNodeType == Node.TEXT_NODE) {
-                Text expTextNode = (Text) expected;
-                Text actTextNode = (Text) actual;
-                String expText = expTextNode.getTextContent();
-                String actText = actTextNode.getTextContent();
-                if (!expText.equals(actText))
-                    fail("Different text content.", getXPath(expected) + "='" + getTextContent(expTextNode, 20) + "'", getXPath(actual) + "='"
-                            + getTextContent(actTextNode, 20) + "'");
-            } else if (expNodeType == Node.DOCUMENT_NODE) {
-                Document expDoc = (Document) expected;
-                Document actDoc = (Document) actual;
-                Element expElem = expDoc.getDocumentElement();
-                Element actElem = actDoc.getDocumentElement();
-                assertEquals(expElem, actElem);
-            }
-        }
-    }
-
-    private static String getTextContent(Text text, int maxLen) {
-        String str = text.getTextContent();
-        str = str.replaceAll("\n", "\\\\n");
-        str = str.replaceAll("\r", "\\\\r");
-        if (str.length() > maxLen) str = str.substring(0, maxLen - 3) + "...";
-        return str;
-    }
-
-    private static void fail(String message, Node expected, Node actual) throws AssertionError {
-        fail(message, getXPath(expected), getXPath(actual));
-    }
-
-    private static void fail(String message, String expected, String actual) throws AssertionError {
-        StringBuilder sb = new StringBuilder();
-        sb.append(message);
-        sb.append(" Expected: \"");
-        sb.append(expected);
-        sb.append("\" but was: \"");
-        sb.append(actual);
-        sb.append("\"");
-        throw new AssertionError(sb.toString());
-    }
-    
-    /**
      * Strips whitespace (empty text nodes) from DOM
      */
     public static void stripWhitespace(Node node) {
@@ -192,5 +116,42 @@ public class XMLUtils {
             stripWhitespace(node.getFirstChild());
         }
     }
+    
+    public static Document parse(String xml) throws RuntimeException {
+        try {
+            DocumentBuilder db = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+            return db.parse(new InputSource(new StringReader(xml)));
+        } catch(Exception x) {
+            throw new RuntimeException("Error parsing XML string.", x);
+        }
+    }
+    
+    public static Document parse(InputStream in) throws RuntimeException {
+        try {
+            DocumentBuilder db = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+            return db.parse(in);
+        } catch(Exception x) {
+            throw new RuntimeException("Error parsing XML string.", x);
+        }
+    }
+    
+    public static void serialize(Document doc) throws Exception {
+        TransformerFactory tf=TransformerFactory.newInstance();
+        Transformer t=tf.newTransformer();
+        DOMSource src=new DOMSource(doc);
+        StreamResult res=new StreamResult(System.out);
+        t.transform(src,res); 
+    }
+
+    public static String serializeToString(Document doc) throws Exception {
+        StringWriter sw=new StringWriter();
+        TransformerFactory tf=TransformerFactory.newInstance();
+        Transformer t=tf.newTransformer();
+        DOMSource src=new DOMSource(doc);
+        StreamResult res=new StreamResult(sw);
+        t.transform(src,res); 
+        return sw.toString();
+    }
+
 
 }

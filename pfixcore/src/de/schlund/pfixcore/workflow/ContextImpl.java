@@ -42,7 +42,7 @@ import de.schlund.pfixxml.perflogging.PerfLogging;
 import de.schlund.util.statuscodes.StatusCode;
 
 public class ContextImpl implements AccessibilityChecker, ExtendedContext, TokenManager, HttpSessionBindingListener {
-
+    
     private SessionContextImpl              sessioncontext;
     private ServerContextImpl               servercontext;
     private ThreadLocal<RequestContextImpl> requestcontextstore = new ThreadLocal<RequestContextImpl>();
@@ -230,7 +230,11 @@ public class ContextImpl implements AccessibilityChecker, ExtendedContext, Token
         requestcontextstore.set(new RequestContextImpl(servercontext, this));
         if(perfLogging != null) PerfLogging.setInstanceForThread(perfLogging);
     }
-
+    
+    public void setPfixServletRequest(PfixServletRequest pfixReq) {
+        getRequestContextForCurrentThreadWithError().setPfixServletRequest(pfixReq);
+    }
+    
     public SPDocument handleRequest(PfixServletRequest preq) throws PustefixApplicationException, PustefixCoreException {
         if (getContextConfig().isSynchronized()) {
             synchronized (this) {

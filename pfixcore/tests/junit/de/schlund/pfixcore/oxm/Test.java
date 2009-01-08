@@ -38,6 +38,7 @@ import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
+import org.pustefixframework.test.XmlAssert;
 import org.w3c.dom.Document;
 
 import de.schlund.pfixcore.beans.BeanDescriptorFactory;
@@ -79,7 +80,7 @@ public class Test extends TestCase {
         m.marshal(bean, res);
         String expected = "<result prio=\"HIGH\" text=\"abc\"><day name=\"FRIDAY\" workingHours=\"6\"/></result>";
         Document expDoc = OxmTestHelper.createDocument(expected);
-        XMLUtils.assertEquals(expDoc, doc);
+        XmlAssert.assertEquals(expDoc, doc);
 
         // List with enums
 
@@ -92,7 +93,7 @@ public class Test extends TestCase {
         m.marshal(elist, res);
         expected = "<result><weekDay workingHours=\"8\" name=\"MONDAY\"/><priority>LOW</priority></result>";
         expDoc = OxmTestHelper.createDocument(expected);
-        XMLUtils.assertEquals(expDoc, doc);
+        XmlAssert.assertEquals(expDoc, doc);
     }
 
     public void testComplex() throws Exception {
@@ -144,7 +145,7 @@ public class Test extends TestCase {
         Document doc = OxmTestHelper.createResultDocument();
         Result res = new DOMResult(doc);
         m.marshal(bean, res);
-        XMLUtils.assertEquals(expDoc, doc);
+        XmlAssert.assertEqualsUnordered(expDoc, doc);
     }
 
     public void testFragment() throws Exception {
@@ -159,7 +160,7 @@ public class Test extends TestCase {
         Document doc = OxmTestHelper.createResultDocument();
         Result res = new DOMResult(doc);
         m.marshal(fBean, res);
-        XMLUtils.assertEquals(expDoc, doc);
+        XmlAssert.assertEquals(expDoc, doc);
     }
 
     public void testForceElement() throws Exception {
@@ -176,7 +177,7 @@ public class Test extends TestCase {
         String expected = "<result><foo>foo</foo><baz>bar</baz><openingDate>2008-03-02 18:43:12</openingDate></result>";
         Document expDoc = OxmTestHelper.createDocument(expected);
         
-        XMLUtils.assertEquals(expDoc, doc);
+        XmlAssert.assertEqualsUnordered(expDoc, doc);
     }
     
     private InputStream getInputStream(String fileName) {

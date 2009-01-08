@@ -144,7 +144,10 @@ public abstract class IWrapperImpl implements IWrapper {
     }
     
     public final void loadFromStringValues() throws Exception {
-    	for(IWrapperParam pinfo:params.values()) pinfo.initFromStringValue();
+    	for(IWrapperParam pinfo:params.values()) {
+    	    pinfo.initFromStringValue();
+    	    if(pinfo.errorHappened()) errors.put(pinfo.getName(), pinfo);
+    	}
     	for(IWrapperIndexedParam pindex:idxprms.values()) pindex.initFromStringValue();
     }
 

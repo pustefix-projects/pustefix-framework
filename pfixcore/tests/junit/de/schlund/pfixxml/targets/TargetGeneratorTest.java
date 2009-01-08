@@ -14,6 +14,7 @@ import junit.framework.TestCase;
 import org.w3c.dom.Document;
 
 import de.schlund.pfixxml.XMLException;
+import de.schlund.pfixxml.config.GlobalConfig;
 import de.schlund.pfixxml.config.GlobalConfigurator;
 import de.schlund.pfixxml.resources.FileResource;
 import de.schlund.pfixxml.resources.ResourceUtil;
@@ -24,9 +25,14 @@ public class TargetGeneratorTest extends TestCase {
     private static final File DOCROOT = new File("projects").getAbsoluteFile();
 
     static {
-        GlobalConfigurator.setDocroot(DOCROOT.getAbsolutePath());
+        if(GlobalConfig.getDocroot()==null) GlobalConfigurator.setDocroot(DOCROOT.getAbsolutePath());
     }
 
+    @Override
+    protected void tearDown() throws Exception {
+        TargetGeneratorFactory.getInstance().reset();
+    }
+    
     public void testEmpty() throws Exception {
 
         TargetGenerator gen;

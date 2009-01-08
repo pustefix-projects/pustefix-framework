@@ -181,7 +181,8 @@ public class PageRequestParsingHandler implements ParsingHandler {
                         }
                         beanDefinition = beanBuilder.getBeanDefinition();
                         handlerBeanName = nameGenerator.generateBeanName(beanDefinition, beanRegistry);
-                        BeanDefinitionHolder beanHolder = new BeanDefinitionHolder(beanDefinition, handlerBeanName);
+                        String handlerBeanAlias = handlerClass.getName()+"#"+pageConfig.getPageName()+"#"+prefix;
+                        BeanDefinitionHolder beanHolder = new BeanDefinitionHolder(beanDefinition, handlerBeanName, new String[] {handlerBeanAlias});
                         if (!beanDefinition.getScope().equals("singleton") && !beanDefinition.getScope().equals("prototype")) {
                             beanHolder = ScopedProxyUtils.createScopedProxy(beanHolder, beanRegistry, true);
                         }

@@ -27,6 +27,7 @@ import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
+import org.pustefixframework.test.XmlAssert;
 import org.w3c.dom.Document;
 
 import de.schlund.pfixcore.beans.BeanDescriptorFactory;
@@ -34,7 +35,6 @@ import de.schlund.pfixcore.oxm.bean.SetTestBean;
 import de.schlund.pfixcore.oxm.helper.OxmTestHelper;
 import de.schlund.pfixcore.oxm.impl.MarshallerImpl;
 import de.schlund.pfixcore.oxm.impl.SerializerRegistry;
-import de.schlund.pfixxml.util.XMLUtils;
 
 /**
  * @author Dunja Fehrenbach <dunja.fehrenbach@1und1.de>
@@ -65,6 +65,6 @@ public class SetTest extends TestCase {
         m.marshal(bean, res);
         String expected = "<result><mySet><entry><string>foo</string></entry><entry><string>bar</string></entry></mySet><annoSet><element><string>foo</string></element><element><string>bar</string></element></annoSet></result>";
         Document expDoc = OxmTestHelper.createDocument(expected);
-        XMLUtils.assertEquals(expDoc, doc);
+        XmlAssert.assertEquals(expDoc, doc);
     }
 }

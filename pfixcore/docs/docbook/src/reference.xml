@@ -47,6 +47,7 @@
   <xi:include href="reference/concepts.xml" />
   <xi:include href="reference/advancedtopics.xml" />
   <xi:include href="reference/module-support.xml" />
+  <xi:include href="reference/testing.xml" />
   <xi:include href="reference/glossary.xml" />
 
 </book>

@@ -53,6 +53,7 @@ public class GlobalConfig {
     }
     
     static void setDocroot(String path) {
+        if(docroot != null && docroot.equals(path)) return;
         if (docroot != null || servletContext != null) {
             throw new IllegalStateException("Docroot or servlet context may only be set once!");
         }
