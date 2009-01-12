@@ -1,5 +1,9 @@
 2009-01-12  Martin Leidig  <mleidig@schlund.de>
 
+	Released Pfixcore 0.13.4
+
+2009-01-12  Martin Leidig  <mleidig@schlund.de>
+
 	Implement perflogging using AspectJ. Thus the core framework is
 	independent of the perflogging stuff. Applications which want to do
 	perflogging are recommended to use AOP too. They can use the
