@@ -30,8 +30,6 @@ import de.schlund.pfixcore.generator.IHandler;
 import de.schlund.pfixcore.workflow.Context;
 import de.schlund.pfixxml.PfixServletRequest;
 import de.schlund.pfixxml.ResultDocument;
-import de.schlund.pfixxml.perflogging.PerfEvent;
-import de.schlund.pfixxml.perflogging.PerfEventType;
 
 /**
  * This class is a default implementation of the <code>IHandlerContainer</code> interface.
@@ -101,10 +99,7 @@ public class IHandlerContainerImpl implements IHandlerContainer {
         
         for (Iterator<IHandler> iter = handlers.iterator(); iter.hasNext(); ) {
             IHandler handler = iter.next();
-            PerfEvent pe = new PerfEvent(PerfEventType.IHANDLER_PREREQUISITESMET, handler.getClass().getName());
-            pe.start();
             boolean  test = handler.prerequisitesMet(context);
-            pe.save();
             
             if (!test) {
                 return false;
@@ -175,10 +170,7 @@ public class IHandlerContainerImpl implements IHandlerContainer {
      * @throws Exception
      */
     private boolean doIsActive(IHandler handler, Context ctx) throws Exception{
-        PerfEvent pe = new PerfEvent(PerfEventType.IHANDLER_ISACTIVE, handler.getClass().getName());
-        pe.start();
         boolean  test = handler.isActive(ctx);
-        pe.save();
         return test;
     }
     
@@ -192,10 +184,7 @@ public class IHandlerContainerImpl implements IHandlerContainer {
      * @throws Exception
      */
     private boolean doNeedsData(IHandler handler, Context ctx) throws Exception{
-        PerfEvent pe = new PerfEvent(PerfEventType.IHANDLER_NEEDSDATA, handler.getClass().getName());
-        pe.start();
         boolean  test = handler.needsData(ctx);
-        pe.save();
         return test;
     }
     

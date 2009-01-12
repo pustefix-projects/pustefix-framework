@@ -46,8 +46,6 @@ import de.schlund.pfixxml.PfixServletRequest;
 import de.schlund.pfixxml.RequestParam;
 import de.schlund.pfixxml.ResultDocument;
 import de.schlund.pfixxml.XMLException;
-import de.schlund.pfixxml.perflogging.PerfEvent;
-import de.schlund.pfixxml.perflogging.PerfEventType;
 import de.schlund.pfixxml.resources.FileResource;
 import de.schlund.pfixxml.resources.ResourceUtil;
 
@@ -65,7 +63,7 @@ public class IWrapperContainerImpl implements IWrapperContainer {
     private Set<IWrapper>             allwrappers      = new TreeSet<IWrapper>();
     private Set<IWrapper>             allsubmit        = new TreeSet<IWrapper>();
     private Set<IWrapper>             allretrieve      = new TreeSet<IWrapper>();
-    private Context                   context          = null;
+    public Context                   context          = null;
     private ResultDocument            resdoc           = null;
     private RequestData               reqdata          = null;
     private boolean                   is_loaded        = false;
@@ -234,10 +232,7 @@ public class IWrapperContainerImpl implements IWrapperContainer {
                 if (allsubmit.contains(wrapper)) {
                     wrapper.tryParamLogging();
                     if (!wrapper.errorHappened()) {
-                        PerfEvent pe = new PerfEvent(PerfEventType.IHANDLER_HANDLESUBMITTEDDATA, handler.getClass().getName());
-                        pe.start();
                         handler.handleSubmittedData(context, wrapper);
-                        pe.save();
                     }
                 }
             }

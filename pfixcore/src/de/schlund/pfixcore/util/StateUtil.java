@@ -40,8 +40,6 @@ import de.schlund.pfixxml.PfixServletRequest;
 import de.schlund.pfixxml.RequestParam;
 import de.schlund.pfixxml.ResultDocument;
 import de.schlund.pfixxml.SPDocument;
-import de.schlund.pfixxml.perflogging.PerfEvent;
-import de.schlund.pfixxml.perflogging.PerfEventType;
 
 
 /**
@@ -64,56 +62,57 @@ public class StateUtil {
     }
     
     
-    @SuppressWarnings("deprecation")
     public static void renderContextResources(Context context, ResultDocument resdoc, StateConfig config) throws Exception {
         Map<String, ?> contextResources = config.getContextResources();
         
         for (String nodename : contextResources.keySet()) {
             Object cr = contextResources.get(nodename);
-            String classname = cr.getClass().getName();
-            Class<?> clazz = cr.getClass();
-            if(Enhancer.isEnhanced(clazz)) {
-                clazz = clazz.getSuperclass();
-                classname = clazz.getName();
-            }
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("*** Auto appending status for " + classname + " at node " + nodename);
-            }
-            PerfEvent pe = new PerfEvent(PerfEventType.CONTEXTRESOURCE_INSERTSTATUS, classname);
-            pe.start();
-            if (cr instanceof de.schlund.pfixcore.workflow.ContextResource) {
-                LOG.debug("***** Resource implements ContextResource => calling insertStatus(...) of " + clazz.getName());
-                ((de.schlund.pfixcore.workflow.ContextResource) cr).insertStatus(resdoc, resdoc.createNode(nodename));
-            } else {
-                boolean found_annotation = false;
-                for (Method m : clazz.getMethods()) {
-                    if (m.isAnnotationPresent(InsertStatus.class)) {
-                        Class<?>[] params = m.getParameterTypes();
-                        Class<?>  rettype = m.getReturnType();
-                        if (params.length == 0 && rettype != null) {
-                            LOG.debug("***** Found @InsertStatus for Object:" + m.getName() + "() of " + clazz.getName());
-                            ResultDocument.addObject(resdoc.createNode(nodename), m.invoke(cr, new Object[] {}));
-                        } else if (params.length == 1 && params[0].isAssignableFrom(Element.class)) {
-                            LOG.debug("***** Found @InsertStatus for " + m.getName() + "(Element) of " + clazz.getName());
-                            m.invoke(cr, resdoc.createNode(nodename));
-                        } else if (params.length == 2 && params[0].isAssignableFrom(ResultDocument.class) && params[1].isAssignableFrom(Element.class)) {
-                            LOG.debug("***** Found @InsertStatus for " + m.getName() + "(ResultDocument, Element) of " + clazz.getName());
-                            m.invoke(cr, resdoc, resdoc.createNode(nodename));
-                        } else {
-                            throw new PustefixApplicationException("Exception when trying to call annotated method '@InsertStatus' " +
-                                    "of " + clazz.getName() + ": Need either a signature of either " + 
-                            "method(Element) or method(ResultDocument, Element)");
-                        }
-                        found_annotation = true;
-                        break;
+            renderContextResource(cr, resdoc, nodename);
+        }
+    }
+    
+    @SuppressWarnings("deprecation")
+    private static void renderContextResource(Object cr, ResultDocument resdoc, String nodename) throws Exception {
+        String classname = cr.getClass().getName();
+        Class<?> clazz = cr.getClass();
+        if(Enhancer.isEnhanced(clazz)) {
+            clazz = clazz.getSuperclass();
+            classname = clazz.getName();
+        }
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("*** Auto appending status for " + classname + " at node " + nodename);
+        }
+        if (cr instanceof de.schlund.pfixcore.workflow.ContextResource) {
+            LOG.debug("***** Resource implements ContextResource => calling insertStatus(...) of " + clazz.getName());
+            ((de.schlund.pfixcore.workflow.ContextResource) cr).insertStatus(resdoc, resdoc.createNode(nodename));
+        } else {
+            boolean found_annotation = false;
+            for (Method m : clazz.getMethods()) {
+                if (m.isAnnotationPresent(InsertStatus.class)) {
+                    Class<?>[] params = m.getParameterTypes();
+                    Class<?>  rettype = m.getReturnType();
+                    if (params.length == 0 && rettype != null) {
+                        LOG.debug("***** Found @InsertStatus for Object:" + m.getName() + "() of " + clazz.getName());
+                        ResultDocument.addObject(resdoc.createNode(nodename), m.invoke(cr, new Object[] {}));
+                    } else if (params.length == 1 && params[0].isAssignableFrom(Element.class)) {
+                        LOG.debug("***** Found @InsertStatus for " + m.getName() + "(Element) of " + clazz.getName());
+                        m.invoke(cr, resdoc.createNode(nodename));
+                    } else if (params.length == 2 && params[0].isAssignableFrom(ResultDocument.class) && params[1].isAssignableFrom(Element.class)) {
+                        LOG.debug("***** Found @InsertStatus for " + m.getName() + "(ResultDocument, Element) of " + clazz.getName());
+                        m.invoke(cr, resdoc, resdoc.createNode(nodename));
+                    } else {
+                        throw new PustefixApplicationException("Exception when trying to call annotated method '@InsertStatus' " +
+                                "of " + clazz.getName() + ": Need either a signature of either " + 
+                        "method(Element) or method(ResultDocument, Element)");
                     }
-                }
-                if (!found_annotation) {
-                    LOG.debug("***** Serializing the complete resource " + clazz.getName());
-                    ResultDocument.addObject(resdoc.createNode(nodename), cr);
+                    found_annotation = true;
+                    break;
                 }
             }
-            pe.save();
+            if (!found_annotation) {
+                LOG.debug("***** Serializing the complete resource " + clazz.getName());
+                ResultDocument.addObject(resdoc.createNode(nodename), cr);
+            }
         }
     }
 

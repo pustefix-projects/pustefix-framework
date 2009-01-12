@@ -38,8 +38,6 @@ import org.pustefixframework.http.AbstractPustefixXMLRequestHandler;
 
 import de.schlund.pfixxml.multipart.MultipartHandler;
 import de.schlund.pfixxml.multipart.PartData;
-import de.schlund.pfixxml.perflogging.PerfEvent;
-import de.schlund.pfixxml.perflogging.PerfEventType;
 import de.schlund.pfixxml.serverutil.SessionHelper;
 import de.schlund.pfixxml.util.CookieUtils;
 
@@ -99,9 +97,7 @@ public class PfixServletRequestImpl implements PfixServletRequest {
      * @param cUtil
      */
     public PfixServletRequestImpl(HttpServletRequest req, Properties properties) {
-        PerfEvent pe = new PerfEvent(PerfEventType.PFIXSERVLETREQUEST_INIT);
-        pe.start();
-        
+    
         starttime   = System.currentTimeMillis();
         getRequestParams(req, properties);
         servername  = req.getServerName();
@@ -112,8 +108,6 @@ public class PfixServletRequestImpl implements PfixServletRequest {
         request     = req;
         session     = req.getSession(false);
 
-        pe.setIdentfier(uri);
-        pe.save();
     }
 
     //~ Methods ....................................................................................

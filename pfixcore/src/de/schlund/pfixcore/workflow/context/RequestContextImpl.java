@@ -66,8 +66,6 @@ import de.schlund.pfixxml.RequestParam;
 import de.schlund.pfixxml.ResultDocument;
 import de.schlund.pfixxml.SPDocument;
 import de.schlund.pfixxml.Variant;
-import de.schlund.pfixxml.perflogging.PerfEvent;
-import de.schlund.pfixxml.perflogging.PerfEventType;
 import de.schlund.util.statuscodes.StatusCode;
 
 /**
@@ -841,15 +839,12 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
         currentpagerequest = page;
         State state = getStateForPageRequest(page);
 
-        PerfEvent pe = new PerfEvent(PerfEventType.PAGE_NEEDSDATA, page.getName());
-        pe.start();
         boolean retval;
         try {
             retval = state.needsData(parentcontext, currentpservreq);
         } catch (Exception e) {
             throw new PustefixApplicationException("Exception while running needsData() for page " + page.getName(), e);
         }
-        pe.save();
 
         currentpagerequest = saved;
         return retval;
@@ -864,15 +859,12 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
             
             State state = getStateForPageRequest(page);
 
-            PerfEvent pe = new PerfEvent(PerfEventType.PAGE_ISACCESSIBLE, page.getName());
-            pe.start();
             boolean retval;
             try {
                 retval = state.isAccessible(parentcontext, currentpservreq);
             } catch (Exception e) {
                 throw new PustefixApplicationException("Got exception from state for page " + page.getName() + " while calling isAccessible()", e);
             }
-            pe.save();
 
             return retval;
         } finally {

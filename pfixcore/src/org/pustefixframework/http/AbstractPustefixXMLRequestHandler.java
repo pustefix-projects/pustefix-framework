@@ -62,8 +62,6 @@ import de.schlund.pfixxml.SessionCleaner;
 import de.schlund.pfixxml.Variant;
 import de.schlund.pfixxml.perflogging.AdditionalTrailInfo;
 import de.schlund.pfixxml.perflogging.AdditionalTrailInfoFactory;
-import de.schlund.pfixxml.perflogging.PerfEvent;
-import de.schlund.pfixxml.perflogging.PerfEventType;
 import de.schlund.pfixxml.resources.FileResource;
 import de.schlund.pfixxml.resources.ResourceUtil;
 import de.schlund.pfixxml.serverutil.SessionHelper;
@@ -388,9 +386,6 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
         
         if (spdoc == null) {
             
-            // Performace tracking
-            PerfEvent pe = new PerfEvent(PerfEventType.XMLSERVER_GETDOM);
-            pe.start();
             currtime        = System.currentTimeMillis();
             
             // Now get the document
@@ -406,10 +401,6 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
                     throw e;
                 }
             }
-            
-            //Performance tracking
-            pe.setIdentfier(spdoc.getPagename());
-            pe.save();
 	    
             
             TrailLogger.log(preq, spdoc, session);
@@ -540,10 +531,6 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
                                    spdoc.getPagename() + "' ... bailing out.");
         }
         
-        //Performance tracking
-        PerfEvent pe = new PerfEvent(PerfEventType.XMLSERVER_HANDLEDOCUMENT, spdoc.getPagename());
-        pe.start();
-        
         if (spdoc.docIsUpdateable()) {
             if (stylesheet.indexOf("::") > 0) {
                 spdoc.getDocument().getDocumentElement().setAttribute("used-pv", stylesheet);
@@ -570,38 +557,7 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
             setCookies(spdoc,res);
         }
         
-        boolean modified_or_no_etag = true;
-        String etag_incoming = preq.getRequest().getHeader("If-None-Match");
-        ByteArrayOutputStream output = new ByteArrayOutputStream(4096);
-        
-        try {
-            hookBeforeRender(preq, spdoc, paramhash, stylesheet);
-            render(spdoc, getRendering(preq), res, paramhash, stylesheet, output);
-        } finally {
-            hookAfterRender(preq, spdoc, paramhash, stylesheet);
-        }
-        
-        PerfEvent pe_etag = new PerfEvent(PerfEventType.XMLSERVER_CREATEETAG, spdoc.getPagename());
-        pe_etag.start();
-        String etag_outgoing = MD5Utils.hex_md5(output.toString());
-        pe_etag.save();
-        res.setHeader("ETag", etag_outgoing);
-
-        if (getRendering(preq) == RENDERMODE.RENDER_NORMAL && etag_incoming != null && etag_incoming.equals(etag_outgoing)) {
-            //it's important to reset the content type, because old Apache versions in conjunction
-            //with mod_ssl and mod_deflate (here enabled for text/html) gzip 304 responses and thus
-            //cause non-empty response bodies which confuses the browsers
-            res.setContentType(null);
-            res.setStatus(HttpServletResponse.SC_NOT_MODIFIED);
-            LOGGER.info("*** Reusing UI: " + spdoc.getPagename());
-            modified_or_no_etag = false;
-        } else {
-            try {
-                output.writeTo(res.getOutputStream());
-            } catch (IOException e) {
-                throw new PustefixCoreException(e);
-            }
-        }
+        boolean modified_or_no_etag = doHandleDocument(spdoc, stylesheet, paramhash, preq, res, session);
 
         long handletime = System.currentTimeMillis() - currtime;
         preq.getRequest().setAttribute(TRAFOTIME, handletime);
@@ -629,8 +585,6 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
             LOGGER_TRAIL.warn(logbuff.toString());
             spdoc.setTrailLogged();
         }
-
-        pe.save();
         
         if (LOGGER.isInfoEnabled()) {
             LOGGER.info(">>> Complete handleDocument(...) took " + handletime + "ms" + 
@@ -655,6 +609,46 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
         }
     }
 
+    private boolean doHandleDocument(SPDocument spdoc, String stylesheet, TreeMap<String, Object> paramhash, 
+            PfixServletRequest preq, HttpServletResponse res, HttpSession session) throws PustefixCoreException {
+        
+        boolean modified_or_no_etag = true;
+        String etag_incoming = preq.getRequest().getHeader("If-None-Match");
+        ByteArrayOutputStream output = new ByteArrayOutputStream(4096);
+        
+        try {
+            hookBeforeRender(preq, spdoc, paramhash, stylesheet);
+            render(spdoc, getRendering(preq), res, paramhash, stylesheet, output);
+        } finally {
+            hookAfterRender(preq, spdoc, paramhash, stylesheet);
+        }
+        
+        String etag_outgoing = createETag(output.toString(), spdoc);
+        res.setHeader("ETag", etag_outgoing);
+        
+        if (getRendering(preq) == RENDERMODE.RENDER_NORMAL && etag_incoming != null && etag_incoming.equals(etag_outgoing)) {
+            //it's important to reset the content type, because old Apache versions in conjunction
+            //with mod_ssl and mod_deflate (here enabled for text/html) gzip 304 responses and thus
+            //cause non-empty response bodies which confuses the browsers
+            res.setContentType(null);
+            res.setStatus(HttpServletResponse.SC_NOT_MODIFIED);
+            LOGGER.info("*** Reusing UI: " + spdoc.getPagename());
+            modified_or_no_etag = false;
+        } else {
+            try {
+                output.writeTo(res.getOutputStream());
+            } catch (IOException e) {
+                throw new PustefixCoreException(e);
+            }
+        }
+        
+        return modified_or_no_etag;
+    }
+    
+    private String createETag(String output, SPDocument spdoc) {
+        String etag_outgoing = MD5Utils.hex_md5(output.toString());
+        return etag_outgoing;
+    }
     
     private void render(SPDocument spdoc, RENDERMODE rendering, HttpServletResponse res, TreeMap<String, Object> paramhash, String stylesheet, OutputStream output) throws RenderingException {
         try {

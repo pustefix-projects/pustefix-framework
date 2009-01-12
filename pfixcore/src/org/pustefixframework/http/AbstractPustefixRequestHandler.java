@@ -53,8 +53,6 @@ import de.schlund.pfixxml.PfixServletRequest;
 import de.schlund.pfixxml.PfixServletRequestImpl;
 import de.schlund.pfixxml.exceptionprocessor.ExceptionConfig;
 import de.schlund.pfixxml.exceptionprocessor.ExceptionProcessor;
-import de.schlund.pfixxml.perflogging.PerfEvent;
-import de.schlund.pfixxml.perflogging.PerfEventType;
 import de.schlund.pfixxml.serverutil.SessionAdmin;
 import de.schlund.pfixxml.serverutil.SessionHelper;
 import de.schlund.pfixxml.serverutil.SessionInfoStruct;
@@ -415,10 +413,7 @@ public abstract class AbstractPustefixRequestHandler implements UriProvidingHttp
 
         LOG.debug("*** >>> End of redirection management, handling request now.... <<< ***\n");
 
-        PerfEvent pe = new PerfEvent(PerfEventType.XMLSERVER_CALLPROCESS, req.getRequestURI());
-        pe.start();
         callProcess(preq, req, res);
-        pe.save();
     }
 
     private void redirectToClearedRequest(HttpServletRequest req, HttpServletResponse res) {

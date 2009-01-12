@@ -21,9 +21,9 @@ package de.schlund.pfixcore.workflow.app;
 
 import java.util.Map;
 
-import org.pustefixframework.generated.CoreStatusCodes;
 import org.pustefixframework.config.contextxmlservice.IWrapperConfig;
 import org.pustefixframework.config.contextxmlservice.StateConfig;
+import org.pustefixframework.generated.CoreStatusCodes;
 
 import de.schlund.pfixcore.util.TokenManager;
 import de.schlund.pfixcore.workflow.Context;
@@ -35,8 +35,6 @@ import de.schlund.pfixxml.PropertyObjectManager;
 import de.schlund.pfixxml.RequestParam;
 import de.schlund.pfixxml.ResultDocument;
 import de.schlund.pfixxml.XMLException;
-import de.schlund.pfixxml.perflogging.PerfEvent;
-import de.schlund.pfixxml.perflogging.PerfEventType;
 
 /**
  * DefaultIWrapperState.java
@@ -88,11 +86,8 @@ public class DefaultIWrapperState extends StateImpl implements IWrapperState, Re
         
         ResdocFinalizer rfinal = getResdocFinalizer(context);
         ResultDocument  resdoc = new ResultDocument();
-        PerfEvent       pe     = new PerfEvent(PerfEventType.PAGE_INITIWRAPPERS, context.getCurrentPageRequest().toString());
-
-        pe.start();
+      
         IWrapperContainer wrp_container =  getIHandlerContainer(context).createIWrapperContainerInstance(context, preq, resdoc);
-        pe.save();
 
         if (isSubmitTrigger(context, preq)) {
             CAT.debug(">>> In SubmitHandling...");
@@ -112,10 +107,7 @@ public class DefaultIWrapperState extends StateImpl implements IWrapperState, Re
                     } else {
                         context.addPageMessage(CoreStatusCodes.FORM_TOKEN_INVALID, null, null);
                         if (errorPage.equals("")) {
-                            pe = new PerfEvent(PerfEventType.PAGE_RETRIEVECURRENTSTATUS, context.getCurrentPageRequest().toString());
-                            pe.start();
                             wrp_container.retrieveCurrentStatus(false);
-                            pe.save();
                             rfinal.onWorkError(wrp_container);
                             context.prohibitContinue();
                         } else {
@@ -130,10 +122,7 @@ public class DefaultIWrapperState extends StateImpl implements IWrapperState, Re
                 StateConfig stateConf = getConfig();
                 if (stateConf != null && stateConf.requiresToken()) {
                     context.addPageMessage(CoreStatusCodes.FORM_TOKEN_MISSING, null, null);
-                    pe = new PerfEvent(PerfEventType.PAGE_RETRIEVECURRENTSTATUS, context.getCurrentPageRequest().toString());
-                    pe.start();
                     wrp_container.retrieveCurrentStatus(false);
-                    pe.save();
                     rfinal.onWorkError(wrp_container);
                     context.prohibitContinue();
                     valid = false;
@@ -141,10 +130,7 @@ public class DefaultIWrapperState extends StateImpl implements IWrapperState, Re
             }
 
             if (valid) {
-                pe = new PerfEvent(PerfEventType.PAGE_HANDLESUBMITTEDDATA, context.getCurrentPageRequest().toString());
-                pe.start();
                 wrp_container.handleSubmittedData();
-                pe.save();
 
                 if (wrp_container.errorHappened()) {
                     CAT.debug("    => Can't continue, as errors happened during load/work.");
@@ -153,10 +139,7 @@ public class DefaultIWrapperState extends StateImpl implements IWrapperState, Re
                 } else {
                     CAT.debug("    => No error happened during work... end of submit reached successfully.");
                     CAT.debug("    => retrieving current status.");
-                    pe = new PerfEvent(PerfEventType.PAGE_RETRIEVECURRENTSTATUS, context.getCurrentPageRequest().toString());
-                    pe.start();
                     wrp_container.retrieveCurrentStatus(false);
-                    pe.save();
 
                     rfinal.onSuccess(wrp_container);
                 }
@@ -164,10 +147,7 @@ public class DefaultIWrapperState extends StateImpl implements IWrapperState, Re
         } else if (isDirectTrigger(context, preq) || isPageFlowRunning(context)) {
             CAT.debug(">>> Retrieving current status...");
 
-            pe = new PerfEvent(PerfEventType.PAGE_RETRIEVECURRENTSTATUS, context.getCurrentPageRequest().toString());
-            pe.start();
             wrp_container.retrieveCurrentStatus(true);
-            pe.save();
             if (CAT.isDebugEnabled()) {
                 if (isDirectTrigger(context, preq)) {
                     CAT.debug("    => REASON: DirectTrigger");

@@ -1,3 +1,34 @@
+2009-01-12  Martin Leidig  <mleidig@schlund.de>
+
+	Implement perflogging using AspectJ. Thus the core framework is
+	independent of the perflogging stuff. Applications which want to do
+	perflogging are recommended to use AOP too. They can use the
+	CorePerfLoggingAspect to log the core performance data and add their
+	own aspects based on the perflogging API.
+	The aspect isn't added at compile time because the perflogging
+	function should be fully optional. So you're recommended to use
+	load-time weaving via a javaagent or a specialized classloader.
+
+	Removed perflogging code from:
+	* src/org/pustefixframework/http/AbstractPustefixRequestHandler.java
+	* src/org/pustefixframework/http/AbstractPustefixXMLRequestHandler.java
+	* src/de/schlund/pfixcore/workflow/app/DefaultIWrapperState.java
+	* src/de/schlund/pfixcore/workflow/app/IHandlerContainerImpl.java
+	* src/de/schlund/pfixcore/workflow/app/IWrapperContainerImpl.java
+	* src/de/schlund/pfixcore/workflow/context/RequestContextImpl.java
+	* src/de/schlund/pfixcore/util/StateUtil.java
+	* src/de/schlund/pfixxml/PfixServletRequestImpl.java
+
+	Added files:
+	* src/de/schlund/pfixxml/perflogging/CorePerfLoggingAspect.java:
+	externalized perflogging in this aspect class using AspectJ
+	annotations
+	* res/META-INF/aop_perflogging.xml: sample aspectj configuration which
+	configures the CorePerfLoggingAspect
+	* lib/aspectjweaver-1.6.2.jar: added aspectj library for loadtime
+	weaving
+	* .classpath: adapted classpath
+
 2009-01-08  Martin Leidig  <mleidig@schlund.de>
 
 	Improved and documented unit and integration testing support.

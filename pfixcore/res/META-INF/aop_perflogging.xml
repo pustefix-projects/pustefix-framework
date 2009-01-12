@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<aspectj>
+  <aspects>
+    <aspect name="de.schlund.pfixxml.perflogging.CorePerfLoggingAspect"/>
+  </aspects>
+</aspectj>
