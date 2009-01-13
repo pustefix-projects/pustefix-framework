@@ -20,6 +20,7 @@ import de.schlund.pfixcore.workflow.ContextResourceManager;
 import de.schlund.pfixcore.workflow.PageRequest;
 import de.schlund.pfixcore.workflow.PageRequestStatus;
 import de.schlund.pfixcore.workflow.SessionStatusListener;
+import de.schlund.pfixcore.workflow.context.PageFlow;
 import de.schlund.pfixxml.PfixServletRequest;
 import de.schlund.pfixxml.Variant;
 import de.schlund.util.statuscodes.StatusCode;
@@ -99,6 +100,10 @@ public class MockContext implements Context {
         this.pageRequest = pageRequest;
     }
 
+    public PageFlow getCurrentPageFlow() {
+        throw new UnsupportedOperationException("Method isn't supported any more");
+    }
+    
     public PageRequestStatus getCurrentStatus() {
         return pageRequestStatus;
     }

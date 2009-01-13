@@ -32,6 +32,7 @@ import de.schlund.pfixcore.exception.PustefixApplicationException;
 import de.schlund.pfixcore.exception.PustefixCoreException;
 import de.schlund.pfixcore.util.TokenManager;
 import de.schlund.pfixcore.workflow.context.AccessibilityChecker;
+import de.schlund.pfixcore.workflow.context.PageFlow;
 import de.schlund.pfixcore.workflow.context.RequestContextImpl;
 import de.schlund.pfixcore.workflow.context.ServerContextImpl;
 import de.schlund.pfixcore.workflow.context.SessionContextImpl;
@@ -96,9 +97,9 @@ public class ContextImpl implements AccessibilityChecker, ExtendedContext, Token
         return sessioncontext.getContextResourceManager();
     }
 
-    // public PageFlow getCurrentPageFlow() {
-    // return getRequestContextForCurrentThreadWithError().getCurrentPageFlow();
-    // }
+    public PageFlow getCurrentPageFlow() {
+        return getRequestContextForCurrentThreadWithError().getCurrentPageFlow();
+    }
 
     public PageRequest getCurrentPageRequest() {
         return getRequestContextForCurrentThreadWithError().getCurrentPageRequest();

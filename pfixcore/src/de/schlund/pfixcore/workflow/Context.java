@@ -26,6 +26,7 @@ import org.pustefixframework.config.contextxmlservice.ContextConfig;
 
 import de.schlund.pfixcore.auth.Authentication;
 import de.schlund.pfixcore.exception.PustefixApplicationException;
+import de.schlund.pfixcore.workflow.context.PageFlow;
 import de.schlund.pfixxml.Variant;
 import de.schlund.util.statuscodes.StatusCode;
 
@@ -41,6 +42,14 @@ public interface Context extends PageFlowContext {
     ContextConfig getContextConfig();
     PageRequest createPageRequest(String name);
     PageRequest getCurrentPageRequest();
+    /**
+     * Only available for backwards compatibility/easier migration.
+     * Method will be removed in future releases. 
+     * Also be aware that since Pustefix 0.13 you're not always guaranteed
+     * to get a current pageflow (if current page isn't in a pageflow).
+     */
+    @Deprecated
+    PageFlow getCurrentPageFlow();
     PageRequestStatus getCurrentStatus();
 
     boolean checkIsAccessible(PageRequest page) throws PustefixApplicationException;

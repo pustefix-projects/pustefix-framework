@@ -1,3 +1,14 @@
+2009-01-13  Martin Leidig  <mleidig@schlund.de>
+
+	Re-added getCurrentPageFlow() method for backwards compatibility and
+	easier migration. But marked it as deprecated and added warning
+	pointing out changed behaviour.
+
+	* src/org/pustefixframework/test/MockContext.java
+	* src/de/schlund/pfixcore/workflow/context/RequestContextImpl.java
+	* src/de/schlund/pfixcore/workflow/ContextImpl.java
+	* src/de/schlund/pfixcore/workflow/Context.java
+
 2009-01-12  Martin Leidig  <mleidig@schlund.de>
 
 	Released Pfixcore 0.13.4
