@@ -37,17 +37,14 @@ import javax.servlet.http.HttpSessionBindingEvent;
 import javax.servlet.http.HttpSessionBindingListener;
 
 import org.apache.log4j.Logger;
-import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
 
 /**
  *
  *
  */
 
-public class SessionAdmin implements HttpSessionBindingListener, SessionAdminMBean, InitializingBean, ApplicationContextAware {
+public class SessionAdmin implements HttpSessionBindingListener, SessionAdminMBean, InitializingBean {
     
     public  static String       LISTENER       = "__SESSION_LISTENER__"; 
     public  static String       PARENT_SESS_ID = "__PARENT_SESSION_ID__";
@@ -60,21 +57,6 @@ public class SessionAdmin implements HttpSessionBindingListener, SessionAdminMBe
     private        HashMap<String,String>      parentinfo_rev = new HashMap<String,String>();
     private String projectName;
     
-    private static ApplicationContext applicationContext;
-    
-    /**
-     * Method's only present for backwards-compatibility to make migration easier.
-     * It will be removed in future releases.
-     * Warning: Do not use this method if pfixcore classes are loaded with the shared classloader!!!
-     */
-    @Deprecated
-    public static SessionAdmin getInstance() {
-        return (SessionAdmin)applicationContext.getBean(SessionAdmin.class.getName());
-    }
-    
-    public void setApplicationContext(ApplicationContext appContext) throws BeansException {
-       applicationContext = appContext;
-    }
     
     public void afterPropertiesSet() throws Exception {
         try {
@@ -200,6 +182,10 @@ public class SessionAdmin implements HttpSessionBindingListener, SessionAdminMBe
     }
 
     public String getExternalSessionId(HttpSession session) {
+        return retrieveExternalSessionId(session);
+    }
+    
+    public static String retrieveExternalSessionId(HttpSession session) {
         String result = "NOSUCHSESSION";
         if (session != null) { 
             Boolean secure   = (Boolean) session.getAttribute(SESSION_IS_SECURE);

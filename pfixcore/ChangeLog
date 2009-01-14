@@ -1,5 +1,10 @@
 2009-01-14  Martin Leidig  <mleidig@schlund.de>
 
+	* src/de/schlund/pfixxml/serverutil/SessionAdmin.java: added static
+	method retrieveExternalSessionId() and removed getInstance()
+
+2009-01-14  Martin Leidig  <mleidig@schlund.de>
+
 	Replaced maven-ant-tasks to version which supports uniqueVersion for
 	snapshots. Don't use the newest version 2.0.9 because of problem with
 	deployment using scpexe.
