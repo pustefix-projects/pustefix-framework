@@ -1,3 +1,12 @@
+2009-01-20  Martin Leidig  <mleidig@schlund.de>
+
+	* src/org/pustefixframework/config/contextxmlservice/parser/internal/ContextConfigImpl.java:
+	check if class is AOP enhanced and use superclass to retrieve Context
+	properties (fixes ContextResource properties bug)
+	* res/META-INF/org/pustefixframework/config/context-xml-service/parser/context-xml-service-config.xml:
+	added customization support for pagerequest, resource and general
+	properties by adding according matching rules
+
 2009-01-14  Martin Leidig  <mleidig@schlund.de>
 
 	* src/de/schlund/pfixxml/serverutil/SessionAdmin.java: added static

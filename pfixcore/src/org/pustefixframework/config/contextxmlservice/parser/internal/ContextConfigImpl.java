@@ -30,6 +30,8 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.Map.Entry;
 
+import net.sf.cglib.proxy.Enhancer;
+
 import org.apache.log4j.Logger;
 import org.pustefixframework.config.contextxmlservice.ContextConfig;
 import org.pustefixframework.config.contextxmlservice.ContextResourceConfig;
@@ -171,6 +173,9 @@ public class ContextConfigImpl implements ContextConfig {
     }
     
     public ContextResourceConfig getContextResourceConfig(Class<?> clazz) {
+        if(Enhancer.isEnhanced(clazz)) {
+            clazz = clazz.getSuperclass();
+        }
         return getContextResourceConfig(clazz.getName());
     }
     
