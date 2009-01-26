@@ -1,3 +1,12 @@
+2009-01-26  Martin Leidig  <mleidig@schlund.de>
+
+	Added again getAssociatedContext() method because it's still needed to
+	access the context within ResdocFinalizer implementations. But marked
+	this method as deprecated.
+
+	* src/de/schlund/pfixcore/workflow/app/IWrapperContainer.java
+	* src/de/schlund/pfixcore/workflow/app/IWrapperContainerImpl.java
+
 2009-01-20  Martin Leidig  <mleidig@schlund.de>
 
 	* src/org/pustefixframework/config/contextxmlservice/parser/internal/ContextConfigImpl.java:

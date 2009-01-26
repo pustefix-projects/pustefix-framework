@@ -423,5 +423,10 @@ public class IWrapperContainerImpl implements IWrapperContainer {
             
         }
     }
+    
+    @Deprecated
+    public Context getAssociatedContext() {
+        return context;
+    }
 
 }// IWrapperSimpleContainer

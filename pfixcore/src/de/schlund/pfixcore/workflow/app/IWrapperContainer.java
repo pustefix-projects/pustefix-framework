@@ -39,4 +39,6 @@ public interface IWrapperContainer {
     void    addStringValues() throws Exception;
     void    addIWrapperStatus() throws Exception;
     boolean errorHappened() throws Exception;
+    @Deprecated
+    Context getAssociatedContext();
 }
