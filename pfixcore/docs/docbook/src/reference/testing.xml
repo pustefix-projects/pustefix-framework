@@ -114,12 +114,25 @@
                 Assert.assertSame(param.getStatusCodeInfos()[0].getStatusCode(), CoreStatusCodes.PRECHECK_REGEXP_NO_MATCH);
             }
         }
+
+        tshirt.init("shirt");
+        tshirt.setStringValSize("XL");
+        tshirt.setStringValColor("1");
+        tshirt.loadFromStringValues();
+        Assert.assertFalse(tshirt.errorHappened());
+        Assert.assertEquals(1, tshirt.getColor());
+
     }
 
 }]]></programlisting>
     <para>
       First we instantiate and populate the IWrapper. After calling <literal>loadFromStringValues</literal> an assertion is made
       to check if an error occurred. Then we iterate over all parameters and assert the expected statuscodes.
+    </para>
+    <para>
+      After that we're initializing the wrapper again, this time with valid values. Now we can check if the wrapper returns the
+      correct values (after they have been checked and casted calling the <literal>loadFromStringValues</literal> method).
+      If an error happened during casting or checking, the value won't be set and the according getter method will return <literal>null</literal>.
     </para>
 
     </section>
