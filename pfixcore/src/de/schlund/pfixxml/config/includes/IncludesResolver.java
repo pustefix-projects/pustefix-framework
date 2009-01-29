@@ -179,7 +179,7 @@ public class IncludesResolver {
         if (section.equals("targets") || section.equals("navigation") || section.equals("pageflows") || 
             section.equals("pagerequests") || section.equals("properties") || section.equals("interceptors") || 
             section.equals("scriptedflows") || section.equals("roles") || section.equals("authconstraints") || 
-            section.equals("conditions") || section.equals("resources")) {
+            section.equals("conditions") || section.equals("resources") || section.equals("directoutputpagerequests")) {
             return true;
         } else {
             return false;
