@@ -21,7 +21,7 @@
   </handler>
   
   <handler class="org.pustefixframework.config.directoutputservice.parser.DirectOutputRegisterGlobalPropertiesParsingHandler" run-order="end">
-    <preceding-module>org.pustefixframework.config.generic.PropertiesParsingHandler</preceding-module>
+    <preceding-handler>org.pustefixframework.config.generic.PropertiesParsingHandler</preceding-handler>
     <match>/c:direct-output-service-config/c:properties</match>
   </handler>
   

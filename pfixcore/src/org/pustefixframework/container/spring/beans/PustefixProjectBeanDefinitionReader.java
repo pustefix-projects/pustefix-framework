@@ -33,7 +33,7 @@ import org.springframework.beans.factory.support.AbstractBeanDefinitionReader;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.core.io.Resource;
 
-import com.marsching.flexiparse.objectree.ObjectTreeElement;
+import com.marsching.flexiparse.objecttree.ObjectTreeElement;
 import com.marsching.flexiparse.parser.ClasspathConfiguredParser;
 import com.marsching.flexiparse.parser.Parser;
 import com.marsching.flexiparse.parser.exception.ParserException;

@@ -22,7 +22,7 @@ import java.util.Collection;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 
-import com.marsching.flexiparse.objectree.ObjectTreeElement;
+import com.marsching.flexiparse.objecttree.ObjectTreeElement;
 import com.marsching.flexiparse.parser.HandlerContext;
 import com.marsching.flexiparse.parser.exception.ParserException;
 

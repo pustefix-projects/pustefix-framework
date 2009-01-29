@@ -18,7 +18,7 @@
 
 package org.pustefixframework.config.global;
 
-import com.marsching.flexiparse.objectree.ObjectTreeElement;
+import com.marsching.flexiparse.objecttree.ObjectTreeElement;
 
 public class GlobalConfigurationHolder {
     private ObjectTreeElement root;
