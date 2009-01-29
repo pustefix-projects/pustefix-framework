@@ -74,7 +74,7 @@ public <xsl:if test="not(/iwrp:interface/iwrp:ihandler) and not(@extends)">abstr
 
     @Override
     protected synchronized void registerParams() {
-        super.registerParams();
+        
         @SuppressWarnings("unused")
         IWrapperParam          pinfo;
         @SuppressWarnings("unused") 
@@ -114,6 +114,7 @@ public <xsl:if test="not(/iwrp:interface/iwrp:ihandler) and not(@extends)">abstr
       <xsl:choose>
         <xsl:when test="$occurrence = 'indexed'">
         // <xsl:value-of select="$pname"/>
+        if(!idxprms.containsKey("<xsl:value-of select="$pname"/>")) {
         pindx  = new IWrapperIndexedParam("<xsl:value-of select="$pname"/>", <xsl:value-of select="$freqparam"/>, "<xsl:value-of select="$ptype"/>", <xsl:value-of select="$trim"/>);
         idxprms.put("<xsl:value-of select="$pname"/>", pindx);
           <xsl:if test="./iwrp:caster">
@@ -134,10 +135,11 @@ public <xsl:if test="not(/iwrp:interface/iwrp:ihandler) and not(@extends)">abstr
               <xsl:with-param name="var">pindx</xsl:with-param>
             </xsl:call-template>
           </xsl:for-each>
+        }
         </xsl:when>
-
         <xsl:otherwise>
         // <xsl:value-of select="$pname"/>
+        if(!params.containsKey("<xsl:value-of select="$pname"/>")) {
         pinfo  = new IWrapperParam("<xsl:value-of select="$pname"/>", <xsl:value-of select="$freqparam"/>, <xsl:value-of select="$occurrence"/><xsl:text>, </xsl:text>
           <xsl:choose>
             <xsl:when test="./iwrp:default">
@@ -174,10 +176,12 @@ public <xsl:if test="not(/iwrp:interface/iwrp:ihandler) and not(@extends)">abstr
               <xsl:with-param name="var">pinfo</xsl:with-param>
             </xsl:call-template>
           </xsl:for-each>
+        }  
         </xsl:otherwise>
       </xsl:choose><xsl:text>
       </xsl:text>
     </xsl:for-each>
+        super.registerParams();
     }
     <xsl:for-each select="/iwrp:interface/iwrp:param">
       <xsl:variable name="occurrence">

@@ -15,6 +15,16 @@
 
 2009-01-29  Martin Leidig  <mleidig@schlund.de>
 
+	* projects/core/build/iwrapper.xsl: Changed parameter registration
+	behaviour: now the params of the derived class are registered before
+	calling parameter registration of the base class. But parameters are
+	only registered if no parameter is already registered under the same
+	name. Thus the registration code of overridden parameters isn't
+	executed, which avoids runtime errors when unnecessarily trying to set 
+	non-existing statuscodes for checks of overridden parameters.
+
+2009-01-29  Martin Leidig  <mleidig@schlund.de>
+
 	* src/de/schlund/pfixxml/config/includes/IncludesResolver.java: added
 	missing support for referencing directoutputpagerequest fragments by
 	the section name.
