@@ -12,6 +12,7 @@ import org.pustefixframework.config.generic.PropertyFileReader;
 import org.pustefixframework.http.dereferer.DerefRequestHandler;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinitionHolder;
+import org.springframework.beans.factory.config.RuntimeBeanReference;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 
 import com.marsching.flexiparse.parser.HandlerContext;
@@ -19,6 +20,7 @@ import com.marsching.flexiparse.parser.ParsingHandler;
 import com.marsching.flexiparse.parser.exception.ParserException;
 
 import de.schlund.pfixxml.resources.ResourceUtil;
+import de.schlund.pfixxml.serverutil.SessionAdmin;
 
 public class DerefRequestHandlerParsingHandler implements ParsingHandler {
     
@@ -51,6 +53,7 @@ public class DerefRequestHandlerParsingHandler implements ParsingHandler {
         beanBuilder.setInitMethodName("init");
         beanBuilder.addPropertyValue("handlerURI", "/xml/deref/**");
         beanBuilder.addPropertyValue("configuration", config);
+        beanBuilder.addPropertyValue("sessionAdmin", new RuntimeBeanReference(SessionAdmin.class.getName()));
         BeanDefinition beanDefinition = beanBuilder.getBeanDefinition();
         BeanDefinitionHolder beanHolder = new BeanDefinitionHolder(beanDefinition, DerefRequestHandler.class.getName());
         context.getObjectTreeElement().addObject(beanHolder);

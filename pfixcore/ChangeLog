@@ -1,3 +1,9 @@
+2009-01-30  Martin Leidig  <mleidig@schlund.de>
+
+	* src/org/pustefixframework/config/project/parser/DerefRequestHandlerParsingHandler.java:
+	fixed NPE by adding missing injection of SessionAdmin required by base
+	class AbstractPustefixRequestHandler with debug log level
+
 2009-01-29  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
 	* res/META-INF/org/pustefixframework/config/direct-output-service/parser/direct-output-service-config.xml: 
