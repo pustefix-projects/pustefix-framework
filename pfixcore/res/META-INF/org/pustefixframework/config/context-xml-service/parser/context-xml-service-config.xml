@@ -24,7 +24,7 @@
   </handler>
   
   <handler class="org.pustefixframework.config.contextxmlservice.parser.ContextXMLRegisterGlobalPropertiesParsingHandler" run-order="end">
-    <preceding-handler>org.pustefixframework.config.generic.PropertiesParsingHandler</preceding-handler
+    <preceding-handler>org.pustefixframework.config.generic.PropertiesParsingHandler</preceding-handler>
     <match>/c:context-xml-service-config/c:properties</match>
     <match>/c:context-xml-service-config/c:choose/c:when/c:properties</match>
     <match>/c:context-xml-service-config/c:choose/c:otherwise/c:properties</match>
