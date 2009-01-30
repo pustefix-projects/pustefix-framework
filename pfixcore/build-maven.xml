@@ -71,8 +71,8 @@
 
   <target name="mvn-test-getdeps" depends="mvn-initTaskDefs">
     <artifact:dependencies filesetId="dependency.fileset" useScope="runtime">
-      <dependency groupId="de.schlund.pfixcore" artifactId="pfixcore" version="0.11.1"/>
-      <dependency groupId="de.schlund.pfixcore" artifactId="pfixcore" version="0.11.1" classifier="data" type="tar.gz"/>
+      <dependency groupId="org.pustefixframework" artifactId="pfixcore" version="0.13.5-SNAPSHOT"/>
+      <dependency groupId="org.pustefixframework" artifactId="pfixcore" version="0.13.5-SNAPSHOT" classifier="data" type="tar.gz"/>
     </artifact:dependencies>
     <delete dir="testdeps"/>
     <mkdir dir="testdeps"/>
