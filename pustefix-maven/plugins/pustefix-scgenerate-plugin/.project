@@ -1,5 +1,5 @@
 <projectDescription>
-  <name>scgenerate-plugin</name>
+  <name>pustefix-scgenerate-plugin</name>
   <comment>Pustefix Maven Plugins</comment>
   <projects/>
   <buildSpec>

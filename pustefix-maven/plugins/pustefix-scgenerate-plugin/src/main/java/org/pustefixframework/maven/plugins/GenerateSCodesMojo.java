@@ -20,8 +20,6 @@ package org.pustefixframework.maven.plugins;
 
 
 import java.io.File;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,11 +27,7 @@ import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.project.MavenProject;
 import org.codehaus.plexus.util.DirectoryScanner;
-
-import de.schlund.pfixcore.util.GenerateSCodes;
-import de.schlund.pfixcore.util.GenerateSCodes.Result;
-import de.schlund.pfixxml.resources.DocrootResource;
-import de.schlund.pfixxml.resources.internal.DocrootResourceOnFileSystemProvider;
+import org.pustefixframework.maven.plugins.GenerateSCodes.Result;
 
 /**
  * Generate StatusCode constant classes from statusmessage files.
@@ -64,6 +58,11 @@ public class GenerateSCodesMojo extends AbstractMojo {
     
     /**
      * @parameter
+     */
+    private String targetPath;
+    
+    /**
+     * @parameter
      * @required
      */
     private String[] includes;
@@ -80,12 +79,7 @@ public class GenerateSCodesMojo extends AbstractMojo {
     private MavenProject project;
     
     public void execute() throws MojoExecutionException {
-        
-        // FIXME We should not access an internal package from another component.
-        // However, we have no choice here, as GlobalConfigurator will not work
-        // when building a Maven multi-module module.
-        DocrootResourceOnFileSystemProvider provider = new DocrootResourceOnFileSystemProvider(docRoot.getAbsolutePath());
-        
+          
         DirectoryScanner ds = new DirectoryScanner();
         if(includes!=null) ds.setIncludes(includes);
         if(excludes!=null) ds.setExcludes(excludes);
@@ -101,7 +95,7 @@ public class GenerateSCodesMojo extends AbstractMojo {
         }
         
         try {
-            Result result = GenerateSCodes.generateFromInfo(resList, docRoot.getAbsolutePath(), genDir, module);
+            Result result = GenerateSCodes.generateFromInfo(resList, docRoot.getAbsolutePath(), genDir, module, targetPath);
             if(result.generatedClasses.size()>0) {
                 getLog().info("Generated "+result.generatedClasses.size()+" statuscode class"+
                         (result.generatedClasses.size()>1?"es":""));
