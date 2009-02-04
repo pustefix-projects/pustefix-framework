@@ -1,3 +1,7 @@
+2009-02-04  Andreas Kurth <andreas.kurth@1und1.de>
+
+    * src/de/schlund/util/statuscodes/StatusCode.java: public constructor
+
 2008-12-10  Holger Rueprich <h.rueprich@1und1.de>
 
     * projects/core/build/create_apacheconf.xsl: added literalstart section.
