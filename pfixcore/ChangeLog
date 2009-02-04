@@ -1,3 +1,10 @@
+2008-03-10  Martin Leidig  <mleidig@schlund.de>
+
+	Released Pfixcore 0.12.3.
+
+	* build.xml: changed version
+	* pom.xml: changed version
+
 2009-02-04  Andreas Kurth <andreas.kurth@1und1.de>
 
     * src/de/schlund/util/statuscodes/StatusCode.java: public constructor
