@@ -25,7 +25,7 @@ public class StatusCode {
     private final String part;
     private final DocrootResource path;
     
-    protected StatusCode(String part, DocrootResource path) { 
+    public StatusCode(String part, DocrootResource path) { 
         this.part = part;
         this.path = path;
     }
