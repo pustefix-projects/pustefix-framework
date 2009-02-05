@@ -13,6 +13,7 @@ or delete the DOCTYPE definition -->
   <property name="build.compiler"           value="modern"/>
   <property name="build.compiler.emacs"     value="true"/>
   <property name="javac.source"             value="1.5"/>
+  <property name="javac.target"             value="1.5"/>
   <property name="javac.encoding"           value="iso8859-1"/>
   <property name="debugopts"                value="-Xdebug -Xnoagent -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5000"/>
   <property name="gen"                      value="**/depend.xml"/>
@@ -273,6 +274,7 @@ or delete the DOCTYPE definition -->
      debuglevel="${debuglevel}"
      classpathref="cp.classpath"
      source="${javac.source}"
+     target="${javac.target}"
      nowarn="${javac.nowarn}"
      encoding="${javac.encoding}"
      excludes="${excludes.src}, ${exclude.examples}"
@@ -649,6 +651,8 @@ or delete the DOCTYPE definition -->
      includes="de/schlund/util/statuscodes/*.java, de/schlund/pfixxml/resources/ResourceUtil.java"
      debug="${debug}"
      classpathref="cp.classpath"
+     source="${javac.source}"
+     target="${javac.target}"
      encoding="${javac.encoding}"
      >
     </javac>
@@ -662,6 +666,8 @@ or delete the DOCTYPE definition -->
      includes="${scgenerate.classes}"
      debug="${debug}"
      classpathref="cp.classpath"
+     source="${javac.source}"
+     target="${javac.target}"
      encoding="${javac.encoding}"
      >
     </javac>
@@ -1169,6 +1175,7 @@ or delete the DOCTYPE definition -->
      debuglevel="${debuglevel}"
      classpathref="cp.classpath"
      source="${javac.source}"
+     target="${javac.target}"
      nowarn="${javac.nowarn}"
      encoding="${javac.encoding}"
      >

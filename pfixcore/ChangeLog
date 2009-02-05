@@ -1,3 +1,16 @@
+2009-02-05  Martin Leidig  <mleidig@schlund.de>
+
+	Added javac.target property to set java class file target version. Set
+	it by default to 1.5 and use it in all javac tasks.
+	This finally solves our problems with building releases with classes
+	having the wrong class version (because -source 1.5 in ant isn't the
+	same as with javac on the commandline, where -source 1.5 without
+	setting target results in 1.5, whereas in ant the version of the JVM,
+	which is running ant, is used.
+
+	* build.xml
+	* skel/build-skel.xml
+
 2009-01-30  Martin Leidig  <mleidig@schlund.de>
 
 	* src/org/pustefixframework/config/project/parser/DerefRequestHandlerParsingHandler.java:

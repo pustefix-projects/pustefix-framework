@@ -80,6 +80,8 @@ or delete the DOCTYPE definition -->
      debug="${debug}"
      classpathref="cp.classpath"
      sourcepath="${dir.src}"
+     source="${javac.source}"
+     target="${javac.target}"
      encoding="${javac.encoding}"
      >
     </javac>
@@ -93,6 +95,8 @@ or delete the DOCTYPE definition -->
      debug="${debug}"
      classpathref="cp.classpath"
      sourcepath="${dir.src}"
+     source="${javac.source}"
+     target="${javac.target}"
      encoding="${javac.encoding}"
      >
     </javac>
@@ -118,6 +122,8 @@ or delete the DOCTYPE definition -->
       includes="de/schlund/pfixcore/util/CommonAnnotationProcessorFactory.java, de/schlund/pfixcore/generator/iwrpgen/IWrapperAnnotationProcessor.java, de/schlund/pfixcore/generator/iwrpgen/IWrapperAnnotationProcessorFactory.java"
       classpathref="cp.classpath"
       sourcepath="${dir.src}"
+      source="${javac.source}"
+      target="${javac.target}"
       encoding="${javac.encoding}"/>
   </target>
 
