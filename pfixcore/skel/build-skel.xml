@@ -385,6 +385,13 @@ or delete the DOCTYPE definition -->
   	 loaderref="pfx-loader"
   	 description="Initialize ResourceUtil use by other tasks"
   	/>
+  	<taskdef
+  	  name="pfx-classversioncheck"
+  	  classname="org.pustefixframework.tools.ClassVersionCheckerTask"
+  	  classpathref="cp.classpath"
+  	  loaderref="pfx-loader"
+  	  description="Check version compatibility of class files"
+  	/>
   	<pfx-init-resource-util docroot="${dir.docroot}"/>
   </target>
   

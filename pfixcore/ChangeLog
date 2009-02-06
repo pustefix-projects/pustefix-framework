@@ -1,3 +1,18 @@
+2009-02-06  Martin Leidig  <mleidig@schlund.de>
+
+	Added classversioncheck target, which checks if classes in the build
+	folder and from jar files in the lib folder are compatible to the
+	version specified as javac.target property. The check is only
+	automatically executed as dependency of the jar target.
+
+	Added:
+	* src/org/pustefixframework/tools/ClassVersionChecker.java
+	* src/org/pustefixframework/tools/ClassVersionCheckerTask.java
+	
+	Modified:
+	* build.xml
+	* skel/build-skel.xml
+
 2009-02-05  Martin Leidig  <mleidig@schlund.de>
 
 	Added javac.target property to set java class file target version. Set
