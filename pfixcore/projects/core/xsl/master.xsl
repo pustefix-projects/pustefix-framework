@@ -204,7 +204,7 @@
             <ixsl:with-param name="ts" select="$ts"/>
           </ixsl:call-template>
         </ixsl:variable>
-        <ixsl:text>/xml/deref?link=</ixsl:text>
+        <ixsl:value-of select="$__contextpath"/><ixsl:text>/xml/deref?link=</ixsl:text>
         <ixsl:value-of select="$enclink"/>&amp;__sign=<ixsl:value-of select="$sign"/>&amp;__ts=<ixsl:value-of select="$ts"/>
       </ixsl:template>
 

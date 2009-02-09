@@ -750,7 +750,8 @@
   </xsl:template>
   
   <xsl:template match="pfx:externalform">
-  <form method="post" action="/xml/deref">
+  <form method="post">
+    <ixsl:attribute name="action"><ixsl:value-of select="$__contextpath"/>/xml/deref</ixsl:attribute>
     <xsl:variable name="link">addallparams:<xsl:value-of select="@href"/></xsl:variable>
     <input type="hidden" name="link">
       <ixsl:attribute name="value"><xsl:value-of select="$link"/></ixsl:attribute>  

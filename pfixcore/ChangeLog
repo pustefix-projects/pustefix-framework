@@ -1,3 +1,9 @@
+2009-02-09  Martin Leidig  <mleidig@schlund.de>
+
+	Added $__contextpath to deref URLs
+	* projects/core/xsl/master.xsl
+	* projects/core/xsl/forminput.xsl
+
 2009-02-06  Martin Leidig  <mleidig@schlund.de>
 
 	Added classversioncheck target, which checks if classes in the build
