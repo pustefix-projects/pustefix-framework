@@ -1,3 +1,10 @@
+2009-02-13  Martin Leidig  <mleidig@schlund.de>
+
+	* projects/core/build/iwrapper.xsl: removed @SuppressWarnings at local
+	variable definitions and only create definition if variable is used
+	later (checked by XPath expression). Thus we get rid of the
+	'Unnecessary @SuppressWarnings("unused")' warnings in the IDE.
+
 2009-02-09  Martin Leidig  <mleidig@schlund.de>
 
 	Added $__contextpath to deref URLs
