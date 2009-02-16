@@ -11,8 +11,7 @@ import javax.xml.xpath.XPathExpressionException;
 
 import org.w3c.dom.Element;
 
-import com.marsching.flexiparse.objecttree.DisableParsingFlag;
-import com.marsching.flexiparse.objecttree.ObjectTreeElement;
+import com.marsching.flexiparse.objectree.ObjectTreeElement;
 import com.marsching.flexiparse.parser.HandlerContext;
 import com.marsching.flexiparse.parser.exception.ParserException;
 
@@ -25,6 +24,8 @@ import com.marsching.flexiparse.parser.exception.ParserException;
  */
 public class CustomizationWhenParsingHandler extends CustomizationAwareParsingHandler {
     
+    private final static CustomizationIgnoreBranchFlag FLAG = new CustomizationIgnoreBranchFlag() {};
+    
     @Override
     protected void handleNodeIfActive(HandlerContext context) throws ParserException {
         ObjectTreeElement current = context.getObjectTreeElement();
@@ -35,8 +36,8 @@ public class CustomizationWhenParsingHandler extends CustomizationAwareParsingHa
             if (child.equals(current)) {
                 break;
             }
-            if (child.getObjectsOfType(DisableParsingFlag.class).isEmpty()) {
-                current.addObject(new DisableParsingFlag());
+            if (child.getObjectsOfType(CustomizationIgnoreBranchFlag.class).isEmpty()) {
+                current.addObject(FLAG);
                 return;
             }
         }
@@ -61,7 +62,7 @@ public class CustomizationWhenParsingHandler extends CustomizationAwareParsingHa
         } 
         
         if (!test) {
-            current.addObject(new DisableParsingFlag());
+            current.addObject(FLAG);
         }
     }
 

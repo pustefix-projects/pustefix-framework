@@ -134,21 +134,6 @@
 	fixed NPE by adding missing injection of SessionAdmin required by base
 	class AbstractPustefixRequestHandler with debug log level
 
-2009-01-29  Sebastian Marsching  <sebastian.marsching@1und1.de>
-
-	* res/META-INF/org/pustefixframework/config/direct-output-service/parser/direct-output-service-config.xml: 
-	* res/META-INF/org/pustefixframework/config/context-xml-service/parser/context-xml-service-config.xml: 
-	* src/org/pustefixframework/config/customization/CustomizationAwareParsingHandler.java: 
-	* src/org/pustefixframework/config/customization/CustomizationIgnoreBranchFlag.java: 
-	* src/org/pustefixframework/config/customization/CustomizationOtherwiseParsingHandler.java: 
-	* src/org/pustefixframework/config/customization/CustomizationWhenParsingHandler.java: 
-	* src/org/pustefixframework/config/generic/ParsingUtils.java: 
-	* src/org/pustefixframework/config/global/GlobalConfigurationHolder.java: 
-	* src/org/pustefixframework/config/project/parser/PustefixContextDirectOutputRequestHandlerParsingHandler.java: 
-	* src/org/pustefixframework/config/project/parser/PustefixContextXMLRequestHandlerParsingHandler.java: 
-	* src/org/pustefixframework/container/spring/beans/PustefixProjectBeanDefinitionReader.java: 
-	Upgraded from fleXiParse 0.1.2 to fleXiParse 0.2.0.
-
 2009-01-29  Martin Leidig  <mleidig@schlund.de>
 
 	* projects/core/build/iwrapper.xsl: Changed parameter registration

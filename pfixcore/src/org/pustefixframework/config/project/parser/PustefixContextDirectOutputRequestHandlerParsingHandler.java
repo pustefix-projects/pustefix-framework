@@ -47,8 +47,8 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 
-import com.marsching.flexiparse.objecttree.ObjectTreeElement;
-import com.marsching.flexiparse.objecttree.SubObjectTree;
+import com.marsching.flexiparse.objectree.ObjectTreeElement;
+import com.marsching.flexiparse.objectree.SubObjectTree;
 import com.marsching.flexiparse.parser.ClasspathConfiguredParser;
 import com.marsching.flexiparse.parser.HandlerContext;
 import com.marsching.flexiparse.parser.exception.ParserException;

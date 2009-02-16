@@ -18,8 +18,7 @@
 
 package org.pustefixframework.config.customization;
 
-import com.marsching.flexiparse.objecttree.DisableParsingFlag;
-import com.marsching.flexiparse.objecttree.ObjectTreeElement;
+import com.marsching.flexiparse.objectree.ObjectTreeElement;
 import com.marsching.flexiparse.parser.HandlerContext;
 import com.marsching.flexiparse.parser.exception.ParserException;
 
@@ -32,6 +31,8 @@ import com.marsching.flexiparse.parser.exception.ParserException;
  */
 public class CustomizationOtherwiseParsingHandler extends CustomizationAwareParsingHandler {
     
+    private final static CustomizationIgnoreBranchFlag FLAG = new CustomizationIgnoreBranchFlag() {};
+    
     @Override
     protected void handleNodeIfActive(HandlerContext context) throws ParserException {
         ObjectTreeElement current = context.getObjectTreeElement();
@@ -41,8 +42,8 @@ public class CustomizationOtherwiseParsingHandler extends CustomizationAwarePars
             if (child.equals(current)) {
                 break;
             }
-            if (child.getObjectsOfType(DisableParsingFlag.class).isEmpty()) {
-                current.addObject(new DisableParsingFlag());
+            if (child.getObjectsOfType(CustomizationIgnoreBranchFlag.class).isEmpty()) {
+                current.addObject(FLAG);
                 return;
             }
         }
