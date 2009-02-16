@@ -5,6 +5,88 @@
 	different locations (can be set using the build.properties
 	remote.repository.url.releases and remote.repository.url.snapshots)
 
+2009-02-16  Martin Leidig  <mleidig@schlund.de>
+
+	Added support for including XML, XSL and images from modules by
+	extending the resource resolution mechanism.
+
+	Added:
+	* src/de/schlund/pfixcore/util/ModuleInfo.java
+	* src/de/schlund/pfixcore/util/ModuleDescriptor.java
+	* src/de/schlund/pfixxml/resources/ResourceProvider.java
+	* src/de/schlund/pfixxml/resources/DynamicResourceProvider.java
+	* src/de/schlund/pfixxml/resources/ModuleResourceProvider.java
+	* src/de/schlund/pfixxml/resources/ResourceProviderException.java
+	* src/de/schlund/pfixxml/resources/Resource.java
+	* src/de/schlund/pfixxml/resources/ResourceProviderRegistry.java
+	* src/de/schlund/pfixxml/resources/ModuleResource.java
+
+	Modified:
+	* src/org/pustefixframework/http/internal/FactoryInitWorker.java
+	* src/org/pustefixframework/config/global/parser/GlobalConfigurationReader.java
+	* src/org/pustefixframework/config/generic/PropertyFileReader.java
+	* src/de/schlund/pfixcore/lucefix/IncludeFileHandler.java
+	* src/de/schlund/pfixcore/lucefix/DocumentCache.java
+	* src/de/schlund/pfixcore/editor2/core/spring/PathResolverServiceImpl.java
+	* src/de/schlund/pfixcore/editor2/core/spring/internal/TargetPfixImpl.java
+	* src/de/schlund/pfixcore/editor2/core/spring/internal/ImageImpl.java
+	* src/de/schlund/pfixcore/editor2/core/spring/internal/IncludePartThemeVariantImpl.java
+	* src/de/schlund/pfixcore/editor2/core/spring/internal/TargetAuxDepImpl.java
+	* src/de/schlund/pfixcore/editor2/core/spring/internal/ProjectImpl.java
+	* src/de/schlund/pfixcore/editor2/core/spring/internal/IncludePartImpl.java
+	* src/de/schlund/pfixcore/editor2/core/spring/IncludeFactoryServiceImpl.java
+	* src/de/schlund/pfixcore/editor2/core/spring/PustefixTargetUpdateServiceImpl.java
+	* src/de/schlund/pfixcore/util/DumpText.java
+	* src/de/schlund/pfixcore/util/CheckIncludes.java
+	* src/de/schlund/pfixxml/IncludeDocumentExtensionSaxon2.java
+	* src/de/schlund/pfixxml/IncludeDocumentFactory.java
+	* src/de/schlund/pfixxml/ImageThemedSrcSaxon1.java
+	* src/de/schlund/pfixxml/IncludeDocumentExtension.java
+	* src/de/schlund/pfixxml/DependencyTrackerSaxon2.java
+	* src/de/schlund/pfixxml/DependencyTracker.java
+	* src/de/schlund/pfixxml/IncludeDocumentExtensionSaxon1.java
+	* src/de/schlund/pfixxml/ImageThemedSrcSaxon2.java
+	* src/de/schlund/pfixxml/ResultDocument.java
+	* src/de/schlund/pfixxml/ImageThemedSrc.java
+	* src/de/schlund/pfixxml/IncludeDocument.java
+	* src/de/schlund/pfixxml/DependencyTrackerSaxon1.java
+	* src/de/schlund/pfixxml/config/GlobalConfigurator.java
+	* src/de/schlund/pfixxml/config/includes/SimpleNamespaceContext.java
+	* src/de/schlund/pfixxml/config/GlobalConfig.java
+	* src/de/schlund/pfixxml/targets/XMLLeafTarget.java
+	* src/de/schlund/pfixxml/targets/LeafTarget.java
+	* src/de/schlund/pfixxml/targets/AuxDependencyFactory.java
+	* src/de/schlund/pfixxml/targets/SharedLeafFactory.java
+	* src/de/schlund/pfixxml/targets/AuxDependencyManager.java
+	* src/de/schlund/pfixxml/targets/TargetGenerator.java
+	* src/de/schlund/pfixxml/targets/AuxDependencyImage.java
+	* src/de/schlund/pfixxml/targets/AuxDependencyInclude.java
+	* src/de/schlund/pfixxml/targets/AuxDependencyTarget.java
+	* src/de/schlund/pfixxml/targets/TargetImpl.java
+	* src/de/schlund/pfixxml/targets/AuxDependencyFile.java
+	* src/de/schlund/pfixxml/targets/SharedLeaf.java
+	* src/de/schlund/pfixxml/resources/FileSystemResourceImpl.java
+	* src/de/schlund/pfixxml/resources/ResourceUtil.java
+	* src/de/schlund/pfixxml/resources/AbstractDocrootResourceImpl.java
+	* src/de/schlund/pfixxml/resources/FileResource.java
+	* src/de/schlund/pfixxml/resources/internal/DocrootResourceByServletContextProvider.java
+	* src/de/schlund/pfixxml/resources/internal/DocrootResourceOnFileSystemImpl.java
+	* src/de/schlund/pfixxml/resources/internal/DocrootResourceByServletContextImpl.java
+	* src/de/schlund/pfixxml/resources/internal/DocrootResourceOnFileSystemProvider.java
+	* src/de/schlund/pfixxml/resources/DocrootResourceProvider.java
+	* src/de/schlund/pfixxml/util/Xml.java
+	* src/de/schlund/pfixxml/util/URIParameters.java
+	* src/de/schlund/pfixxml/util/Xslt.java
+	* projects/core/build/create_depend.xsl
+	* projects/core/build/iwrapper.xsl
+	* projects/core/xsl/utils.xsl
+	* projects/core/xsl/forminput.xsl
+	* projects/core/xsl/include.xsl
+	* pom.xml
+	* build.xml
+	* tests/junit/de/schlund/pfixcore/oxm/helper/OxmTestHelper.java
+	* build-maven.xml
+
 2009-02-13  Martin Leidig  <mleidig@schlund.de>
 
 	* projects/core/build/iwrapper.xsl: removed @SuppressWarnings at local

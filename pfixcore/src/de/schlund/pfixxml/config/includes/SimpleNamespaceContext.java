@@ -28,16 +28,17 @@ import java.util.Set;
 import javax.xml.XMLConstants;
 import javax.xml.namespace.NamespaceContext;
 
-class SimpleNamespaceContext implements NamespaceContext {
+public class SimpleNamespaceContext implements NamespaceContext {
+    
     private Map<String, String> prefixToURI = new HashMap<String, String>();
     
-    protected SimpleNamespaceContext() {
+    public SimpleNamespaceContext() {
         prefixToURI.put(XMLConstants.DEFAULT_NS_PREFIX, XMLConstants.NULL_NS_URI);
         prefixToURI.put(XMLConstants.XML_NS_PREFIX, XMLConstants.XML_NS_URI);
         prefixToURI.put(XMLConstants.XMLNS_ATTRIBUTE, XMLConstants.XMLNS_ATTRIBUTE_NS_URI);
     }
     
-    protected void addNamespace(String prefix, String uri) {
+    public void addNamespace(String prefix, String uri) {
         if (prefix == null) {
             throw new IllegalArgumentException("Prefix must not be null!");
         }

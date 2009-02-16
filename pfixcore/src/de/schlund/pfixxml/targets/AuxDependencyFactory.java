@@ -22,7 +22,7 @@ import java.util.Iterator;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
-import de.schlund.pfixxml.resources.DocrootResource;
+import de.schlund.pfixxml.resources.Resource;
 
 /**
  * AuxDependencyFactory.java
@@ -66,7 +66,7 @@ public class AuxDependencyFactory {
         return root;
     }
     
-    public synchronized AuxDependencyInclude getAuxDependencyInclude(DocrootResource path, String part, String theme) {
+    public synchronized AuxDependencyInclude getAuxDependencyInclude(Resource path, String part, String theme) {
         String key = DependencyType.TEXT.getTag() + "@" + path.toString() + "@" + part + "@" + theme;
         AuxDependencyInclude ret = includeparts.get(key);
         if (ret == null) {
@@ -76,7 +76,7 @@ public class AuxDependencyFactory {
         return ret;
     }
     
-    public synchronized AuxDependencyImage getAuxDependencyImage(DocrootResource path) {
+    public synchronized AuxDependencyImage getAuxDependencyImage(Resource path) {
         String key = path.toString();
         AuxDependencyImage ret = (AuxDependencyImage) images.get(key);
         if (ret == null) {
@@ -86,7 +86,7 @@ public class AuxDependencyFactory {
         return ret;
     }
     
-    public synchronized AuxDependencyFile getAuxDependencyFile(DocrootResource path) {
+    public synchronized AuxDependencyFile getAuxDependencyFile(Resource path) {
         String key = path.toString();
         AuxDependencyFile ret = (AuxDependencyFile) files.get(key);
         if (ret == null) {

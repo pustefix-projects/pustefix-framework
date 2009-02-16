@@ -76,7 +76,7 @@ public class ImageImpl extends AbstractImage {
         this.filesystem = filesystem;
         this.backup = backup;
         this.path = path;
-        this.auxdep = AuxDependencyFactory.getInstance().getAuxDependencyImage(ResourceUtil.getFileResourceFromDocroot(path));
+        this.auxdep = AuxDependencyFactory.getInstance().getAuxDependencyImage(ResourceUtil.getResource(path));
     }
 
     public String getPath() {

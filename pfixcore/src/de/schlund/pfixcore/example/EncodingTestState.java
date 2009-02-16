@@ -31,7 +31,7 @@ public class EncodingTestState extends DefaultIWrapperState {
         ctxEnc.setEncoding(enc);
         String encoding=srvReq.getParameter("text.Encoding");
         if(encoding!=null && encoding.trim().length()>0 && !encoding.equals("none")) {
-        	    URIParameters params=new URIParameters(srvReq,encoding);
+        	    URIParameters params=new URIParameters(srvReq.getQueryString(),encoding);
         	    String val=params.getParameter("text.Text");
         	    ctxEnc.setText(val);
         }
