@@ -92,7 +92,6 @@
       </artifact:remoteRepository>
       <attach file="${file.pfixcore_srcjar}" classifier="sources" type="jar"/>
       <attach file="${file.pfixcore_data_tgz}" classifier="data" type="tar.gz"/>
-      <attach file="${file.pfixcore_data_tgz}" classifier="data" type="targz"/>
       <attach file="${file.pfixcore_skel_tgz}" classifier="skel" type="tar.gz"/>
     </artifact:deploy>
   </target>
