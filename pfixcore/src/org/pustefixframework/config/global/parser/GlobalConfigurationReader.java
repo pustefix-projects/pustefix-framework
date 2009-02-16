@@ -18,7 +18,7 @@
 
 package org.pustefixframework.config.global.parser;
 
-import java.io.FileNotFoundException;
+import java.io.IOException;
 
 import org.pustefixframework.config.customization.PropertiesBasedCustomizationInfo;
 import org.pustefixframework.config.global.GlobalConfigurationHolder;
@@ -39,7 +39,7 @@ public class GlobalConfigurationReader {
         ClasspathConfiguredParser parser = new ClasspathConfiguredParser("META-INF/org/pustefixframework/config/global/parser/global-projects-config.xml");
         try {
             return new GlobalConfigurationHolder(parser.parse(resource.getInputStream(), customizationInfo));
-        } catch (FileNotFoundException e) {
+        } catch (IOException e) {
             throw new ParserException("Could not read file " + resource.toString());
         }
     }

@@ -96,7 +96,7 @@ public class IncludePartImpl extends CommonIncludePartImpl {
     public IncludePartThemeVariant createThemeVariant(Theme theme) throws EditorIOException, EditorParsingException, EditorSecurityException, DOMException {
         // Make sure that returned instance is in auxdep map
         AuxDependency aux = AuxDependencyFactory.getInstance().getAuxDependencyInclude(
-                ResourceUtil.getFileResourceFromDocroot(this.getIncludeFile().getPath()),
+                ResourceUtil.getResource(this.getIncludeFile().getPath()),
                 this.getName(), theme.getName());
         
         return includefactory.getIncludePartThemeVariant(aux);

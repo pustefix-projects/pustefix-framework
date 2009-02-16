@@ -18,7 +18,7 @@
 
 package de.schlund.pfixcore.editor2.core.spring;
 
-import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -95,7 +95,7 @@ public class PustefixTargetUpdateServiceImpl implements
         Properties properties = new Properties();
         try {
             PropertyFileReader.read(ResourceUtil.getFileResourceFromDocroot("common/conf/factory.xml"), properties);
-        } catch (FileNotFoundException e) {
+        } catch (IOException e) {
             throw new RuntimeException("Error while reading common/conf/factory.xml", e);
         } catch (ParserException e) {
             throw new RuntimeException("Error while reading common/conf/factory.xml", e);

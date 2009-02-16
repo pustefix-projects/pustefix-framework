@@ -25,7 +25,7 @@ import javax.xml.transform.TransformerException;
 
 import org.xml.sax.SAXException;
 
-import de.schlund.pfixxml.resources.FileResource;
+import de.schlund.pfixxml.resources.Resource;
 import de.schlund.pfixxml.targets.SPCache;
 import de.schlund.pfixxml.targets.SPCacheFactory;
 import de.schlund.pfixxml.util.XsltVersion;
@@ -39,7 +39,7 @@ import de.schlund.pfixxml.util.XsltVersion;
  * @author <a href="mailto:haecker@schlund.de">Joerg Haecker</a>
  * 
  * 
- * This class realizes the factory and the singleton pattern. It is responsible to 
+ * This class realises the factory and the singleton pattern. It is responsible to 
  * create and store objects of type {@link IncludeDocument}  in a {@link SPCache} 
  * cache created by  {@link SPCacheFactory}. If a requested IncludeDocument is found 
  * in the cache it will be returned, otherwise it will be created and stored in the cache. 
@@ -59,13 +59,12 @@ public class IncludeDocumentFactory {
     }
     
     // FIXME! Don't do the whole method synchronized!!
-    public synchronized IncludeDocument getIncludeDocument(XsltVersion xsltVersion, FileResource path, boolean mutable) throws SAXException, IOException, TransformerException {
-        // TODO: change method signature (create multiple methods) to reflect
-        // mutable vs. immutable document creation
-        if (xsltVersion == null && !mutable) throw new IllegalArgumentException("XsltVersion has to be specified to create a immutable document.");
+    public synchronized IncludeDocument getIncludeDocument(XsltVersion xsltVersion, Resource path, boolean mutable) throws SAXException, IOException, TransformerException  {
+        //TODO: change method signature (create multiple methods) to reflect mutable vs. immutable document creation
+        if(xsltVersion==null&&!mutable) throw new IllegalArgumentException("XsltVersion has to be specified to create a immutable document.");
         IncludeDocument includeDocument = null;
-        String key = getKey(xsltVersion, path, mutable);
-
+        String          key             = getKey(xsltVersion, path, mutable);
+        
         if (!isDocumentInCache(key) || isDocumentInCacheObsolete(path, key)) {
             includeDocument = new IncludeDocument();
             includeDocument.createDocument(xsltVersion, path, mutable);
@@ -80,11 +79,11 @@ public class IncludeDocumentFactory {
         return cache.getValue(key) != null ? true : false;
     }
     
-    private String getKey(XsltVersion xsltVersion, FileResource path, boolean mutable) {
+    private String getKey(XsltVersion xsltVersion, Resource path, boolean mutable) {
         return mutable ? path.toURI().toString() + "_mutable" : path.toURI().toString() + "_imutable"+"_"+xsltVersion;
     }
 
-    private boolean isDocumentInCacheObsolete(FileResource path, String newkey) {
+    private boolean isDocumentInCacheObsolete(Resource path, String newkey) {
         long savedTime = ((IncludeDocument) cache.getValue(newkey)).getModTime();
         return path.lastModified() > savedTime ? true : false;
     }

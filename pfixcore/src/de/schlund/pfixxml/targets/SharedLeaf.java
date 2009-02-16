@@ -20,7 +20,7 @@
 package de.schlund.pfixxml.targets;
 import java.util.TreeSet;
 
-import de.schlund.pfixxml.resources.FileResource;
+import de.schlund.pfixxml.resources.Resource;
 
 /**
  * SharedLeaf.java
@@ -35,15 +35,15 @@ import de.schlund.pfixxml.resources.FileResource;
 
 public class SharedLeaf implements Comparable<SharedLeaf> {
     
-    private FileResource path;
+    private Resource path;
     private TreeSet<PageInfo> pageinfos = new TreeSet<PageInfo>();
     private long    modtime   = 0;
     
-    protected SharedLeaf(FileResource path) {
+    protected SharedLeaf(Resource path) {
         this.path = path;
     }
 
-    public FileResource getPath() { return path; }
+    public Resource getPath() { return path; }
     
     public void addPageInfo(PageInfo info) {
         synchronized (pageinfos) {

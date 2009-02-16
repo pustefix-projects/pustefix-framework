@@ -59,6 +59,7 @@ import org.xml.sax.helpers.XMLReaderFactory;
 
 import de.schlund.pfixxml.SPDocument;
 import de.schlund.pfixxml.resources.FileResource;
+import de.schlund.pfixxml.resources.Resource;
 
 public class Xml {
     
@@ -144,6 +145,18 @@ public class Xml {
         }
         return parse(xsltVersion,src);
     }
+    
+    public static Document parse(XsltVersion xsltVersion, Resource res) throws TransformerException {
+        InputSource is = new InputSource();
+        is.setSystemId(res.toURI().toString());
+        try {
+            is.setByteStream(res.getInputStream());
+            SAXSource src = new SAXSource(createXMLReader(), is);
+            return parse(xsltVersion,src);
+        } catch(IOException x) {
+            throw new TransformerException("Can't read XML resource: " + res.toURI().toString(), x);
+        }
+    }
 
     /**
      * Create a document from a sourcefile in the filesystem.
@@ -193,6 +206,10 @@ public class Xml {
             throw new IOException("expected file, got directory: " + file);
         }
         return parseMutable(new InputSource(file.toURL().toString()));
+    }
+    
+    public static Document parseMutable(Resource res) throws IOException, SAXException {
+        return parseMutable(new InputSource(res.toURI().toString()));
     }
     
     public static Document parseMutable(File file) throws IOException, SAXException {

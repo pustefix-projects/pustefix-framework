@@ -439,7 +439,7 @@ public class ProjectImpl extends AbstractProject {
         }
         for (Iterator<AuxDependency> i = deps.iterator(); i.hasNext();) {
             AuxDependencyImage auxdep = (AuxDependencyImage) i.next();
-            images.add(this.imagefactory.getImage(auxdep.getPath().getRelativePath()));
+            images.add(this.imagefactory.getImage(auxdep.getPath().toURI().toString()));
         }
         return images;
     }
@@ -449,7 +449,7 @@ public class ProjectImpl extends AbstractProject {
         AuxDependency auxdep = AuxDependencyFactory
                 .getInstance()
                 .getAuxDependencyInclude(
-                        ResourceUtil.getFileResourceFromDocroot(file), part, theme);
+                        ResourceUtil.getResource(file), part, theme);
 
         TreeSet<AuxDependency> deps = TargetDependencyRelation.getInstance()
                 .getProjectDependencies(tgen);
@@ -475,7 +475,7 @@ public class ProjectImpl extends AbstractProject {
         AuxDependency aux = AuxDependencyFactory
                 .getInstance()
                 .getAuxDependencyInclude(
-                        ResourceUtil.getFileResourceFromDocroot(file), part, theme);
+                        ResourceUtil.getResource(file), part, theme);
         TreeSet<TargetGenerator> generators = TargetDependencyRelation.getInstance()
                 .getAffectedTargetGenerators(aux);
         if (generators == null) {

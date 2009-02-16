@@ -181,7 +181,7 @@ public class FactoryInitWorker {
                 FileResource confFile = ResourceUtil.getFileResourceFromDocroot(confname);
                 try {
                     PropertyFileReader.read(confFile, properties);
-                } catch (FileNotFoundException e) {
+                } catch (IOException e) {
                     throw new ServletException("*** [" + confname + "] Not found: "
                             + e.toString(), e);
                 } catch (ParserException e) {

@@ -67,7 +67,7 @@ import de.schlund.pfixxml.event.ConfigurationChangeEvent;
 import de.schlund.pfixxml.event.ConfigurationChangeListener;
 import de.schlund.pfixxml.resources.DocrootResource;
 import de.schlund.pfixxml.resources.FileResource;
-import de.schlund.pfixxml.resources.FileSystemResource;
+import de.schlund.pfixxml.resources.Resource;
 import de.schlund.pfixxml.resources.ResourceUtil;
 import de.schlund.pfixxml.targets.cachestat.SPCacheStatistic;
 import de.schlund.pfixxml.util.TransformerHandlerAdapter;
@@ -251,14 +251,7 @@ public class TargetGenerator implements Comparable<TargetGenerator> {
 
     private void loadConfig(FileResource configFile) throws XMLException, IOException, SAXException {
         config_mtime = System.currentTimeMillis();
-        String path;
-        if (configFile instanceof DocrootResource) {
-            path = ((DocrootResource) configFile).getRelativePath();
-        } else if (configFile instanceof FileSystemResource) {
-            path = ((FileSystemResource) configFile).getPathOnFileSystem();
-        } else {
-            path = configFile.toURI().toString();
-        }
+        String path = configFile.toURI().toString();
         LOG.warn("\n***** CAUTION! ***** loading config " + path + "...");
 
         Document config;
@@ -404,7 +397,7 @@ public class TargetGenerator implements Comparable<TargetGenerator> {
             String pagename = node.getAttribute("page");
             TargetStruct struct = new TargetStruct(nameattr, type, themes, variant, pagename);
             HashMap<String, String> params = new HashMap<String, String>();
-            HashSet<DocrootResource> depaux = new HashSet<DocrootResource>();
+            HashSet<Resource> depaux = new HashSet<Resource>();
             Element xmlsub = (Element) node.getElementsByTagName("depxml").item(0);
             Element xslsub = (Element) node.getElementsByTagName("depxsl").item(0);
             NodeList allaux = node.getElementsByTagName("depaux");
@@ -412,6 +405,8 @@ public class TargetGenerator implements Comparable<TargetGenerator> {
 
             if (xmlsub != null) {
                 String xmldep = xmlsub.getAttribute("name");
+                String module = xmlsub.getAttribute("module");
+                if(module.length()>0) xmldep = "module://"+module+"/"+xmldep;
                 if (xmldep != null) {
                     struct.setXMLDep(xmldep);
                     depxmls.add(xmldep);
@@ -434,7 +429,7 @@ public class TargetGenerator implements Comparable<TargetGenerator> {
             }
             for (int j = 0; j < allaux.getLength(); j++) {
                 Element aux = (Element) allaux.item(j);
-                DocrootResource auxname = ResourceUtil.getFileResourceFromDocroot(aux.getAttribute("name"));
+                Resource auxname = ResourceUtil.getResource(aux.getAttribute("name"));
                 depaux.add(auxname);
             }
             struct.setDepaux(depaux);
@@ -520,9 +515,9 @@ public class TargetGenerator implements Comparable<TargetGenerator> {
             virtual.setXSLSource(xslsource);
 
             AuxDependencyManager manager = virtual.getAuxDependencyManager();
-            HashSet<DocrootResource> auxdeps = struct.getDepaux();
-            for (Iterator<DocrootResource> i = auxdeps.iterator(); i.hasNext();) {
-                DocrootResource path = i.next();
+            HashSet<Resource> auxdeps = struct.getDepaux();
+            for (Iterator<Resource> i = auxdeps.iterator(); i.hasNext();) {
+                Resource path = i.next();
                 manager.addDependencyFile(path);
             }
 
@@ -584,7 +579,7 @@ public class TargetGenerator implements Comparable<TargetGenerator> {
 
     private class TargetStruct {
 
-        HashSet<DocrootResource> depaux;
+        HashSet<Resource> depaux;
 
         HashMap<String, String> params;
 
@@ -644,11 +639,11 @@ public class TargetGenerator implements Comparable<TargetGenerator> {
             this.xsldep = in;
         }
 
-        public HashSet<DocrootResource> getDepaux() {
+        public HashSet<Resource> getDepaux() {
             return depaux;
         }
 
-        public void setDepaux(HashSet<DocrootResource> in) {
+        public void setDepaux(HashSet<Resource> in) {
             this.depaux = in;
         }
 
@@ -743,14 +738,7 @@ public class TargetGenerator implements Comparable<TargetGenerator> {
 
     public void generateTarget(Target target) throws Exception {
         if (target.getType() != TargetType.XML_LEAF && target.getType() != TargetType.XSL_LEAF) {
-            String path;
-            if (getDisccachedir() instanceof DocrootResource) {
-                path = ((DocrootResource) getDisccachedir()).getRelativePath();
-            } else if (getDisccachedir() instanceof FileSystemResource) {
-                path = ((FileSystemResource) getDisccachedir()).getPathOnFileSystem();
-            } else {
-                path = getDisccachedir().toURI().toString();
-            }
+            String path = getDisccachedir().toURI().toString();
             System.out.println(">>>>> Generating " + path + File.separator + target.getTargetKey() + " from " + target.getXMLSource().getTargetKey() + " and " + target.getXSLSource().getTargetKey());
 
             boolean needs_update = false;

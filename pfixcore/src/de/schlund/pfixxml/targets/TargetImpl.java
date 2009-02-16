@@ -263,8 +263,13 @@ public abstract class TargetImpl implements TargetRW, Comparable<Target> {
     
     public boolean isDiskCacheNewerThenMemCache() {
         long target_mod_time = getModTime();
-        FileResource thefile = ResourceUtil.getFileResource(getTargetGenerator().getDisccachedir(), getTargetKey());
-        long disk_mod_time = thefile.lastModified();
+        long disk_mod_time;
+        //TODO: rework
+        if(getTargetKey().startsWith("module:")) disk_mod_time = 0;
+        else {
+            FileResource thefile = ResourceUtil.getFileResource(getTargetGenerator().getDisccachedir(), getTargetKey());
+            disk_mod_time = thefile.lastModified();
+        }
         if (LOG.isDebugEnabled()) {
             LOG.debug("File in DiskCache "+ getTargetGenerator().getDisccachedir() + File.separator
                     + getTargetKey() + " (" + disk_mod_time + ") is "

@@ -55,7 +55,6 @@ public class OxmTestHelper {
         }
     }
 
-    @SuppressWarnings("unused")
     public static void printDocument(Document doc) {
         try {
             Transformer t = TransformerFactory.newInstance().newTransformer();

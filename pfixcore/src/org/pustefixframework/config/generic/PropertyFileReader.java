@@ -21,6 +21,7 @@ package org.pustefixframework.config.generic;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
@@ -45,7 +46,7 @@ public class PropertyFileReader {
         read(new FileInputStream(file), properties);
     }
     
-    public static void read(FileResource resource, Properties properties) throws ParserException, FileNotFoundException {
+    public static void read(FileResource resource, Properties properties) throws ParserException, IOException {
         read(resource.getInputStream(), properties);
     }
     

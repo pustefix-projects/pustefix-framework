@@ -74,17 +74,21 @@ public <xsl:if test="not(/iwrp:interface/iwrp:ihandler) and not(@extends)">abstr
 
     @Override
     protected synchronized void registerParams() {
-        
-        @SuppressWarnings("unused")
+        <xsl:if test="/iwrp:interface/iwrp:param[not(@occurance='indexed' or @occurence='indexed' or @occurrence ='indexed')]">
         IWrapperParam          pinfo;
-        @SuppressWarnings("unused") 
+        </xsl:if>
+        <xsl:if test="/iwrp:interface/iwrp:param[@occurance='indexed' or @occurence='indexed' or @occurrence='indexed']">
         IWrapperIndexedParam   pindx;
-        @SuppressWarnings("unused") 
+        </xsl:if>
+        <xsl:if test="/iwrp:interface/iwrp:param/iwrp:caster">
         IWrapperParamCaster    caster;
-        @SuppressWarnings("unused") 
+        </xsl:if>
+        <xsl:if test="/iwrp:interface/iwrp:param/iwrp:precheck"> 
         IWrapperParamPreCheck  pre;
-        @SuppressWarnings("unused") 
+        </xsl:if>
+        <xsl:if test="/iwrp:interface/iwrp:param/iwrp:postcheck"> 
         IWrapperParamPostCheck post;
+        </xsl:if>
     <xsl:for-each select="/iwrp:interface/iwrp:param">
       <xsl:variable name="ptype" select="@type"/>
       <xsl:variable name="freqparam">
