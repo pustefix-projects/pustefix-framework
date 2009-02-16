@@ -15,6 +15,7 @@
     <artifact:localRepository id="local.repository" path="${local.repo.location}" layout="default"/>
   </target>
 
+<!--
   <target name="mvn-initRemoteRepository" depends="mvn-initTaskDefs, mvn-installSshProvider">
     <condition property="remote.repo.available" value="true">
       <and>
@@ -26,11 +27,47 @@
     <fail unless="remote.repo.available">No remote maven repository configured</fail>
     <artifact:remoteRepository id="remote.repository" url="scpexe://${remote.repository.host}/${remote.repository.path}" layout="default"/>
   </target>
+-->
 
+  <target name="mvn-initRemoteRepository" depends="mvn-initTaskDefs, mvn-installWebDavProvider">
+    <condition property="remote.repository.url" value="${remote.repository.url.snapshots}">
+      <and>
+        <not>
+          <isset property="remote.repository.url"/>
+        </not>
+        <contains string="${pom.xml.project.version}" substring="SNAPSHOT"/>
+        <isset property="remote.repository.url.snapshots"/>
+      </and>
+    </condition>
+    <condition property="remote.repository.url" value="${remote.repository.url.releases}">
+      <and>
+        <not>
+          <isset property="remote.repository.url"/>
+        </not>
+        <not>
+          <contains string="${pom.xml.project.version}" substring="SNAPSHOT"/>
+        </not>
+        <isset property="remote.repository.url.releases"/>
+      </and>
+    </condition>
+    <fail unless="remote.repository.url">No remote maven repository configured</fail>
+    <artifact:remoteRepository id="remote.repository" url="${remote.repository.url}" layout="default"/>
+  </target>
+
+  <!--
   <target name="mvn-installSshProvider" depends="mvn-initTaskDefs">
     <artifact:install-provider artifactId="wagon-ssh-external" version="1.0-beta-2"/>
   </target>
-  
+  -->
+
+  <target name="mvn-installWebDavProvider" depends="mvn-initTaskDefs">
+    <artifact:install-provider artifactId="wagon-webdav" version="1.0-beta-2"/>
+  </target>
+
+  <target name="mvn-installHttpProvider" depends="mvn-initTaskDefs">
+    <artifact:install-provider artifactId="wagon-http" version="1.0-beta-2"/>
+  </target>
+
   <target name="mvn-info" depends="mvn-initTaskDefs"
           description="Print setup information">
     <echo>POM:</echo>
@@ -51,10 +88,11 @@
           description="Deploy to remote maven repository">
     <artifact:deploy file="${file.pfixcore_jar}" pomRefId="maven.project">
       <artifact:remoteRepository refid="remote.repository">
-        <artifact:authentication username="${remote.repository.user}" privateKey="${user.home}/.ssh/id_dsa"/>
+        <!--<artifact:authentication username="${remote.repository.user}" privateKey="${user.home}/.ssh/id_dsa"/>-->
       </artifact:remoteRepository>
       <attach file="${file.pfixcore_srcjar}" classifier="sources" type="jar"/>
       <attach file="${file.pfixcore_data_tgz}" classifier="data" type="tar.gz"/>
+      <attach file="${file.pfixcore_data_tgz}" classifier="data" type="targz"/>
       <attach file="${file.pfixcore_skel_tgz}" classifier="skel" type="tar.gz"/>
     </artifact:deploy>
   </target>

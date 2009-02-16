@@ -1,3 +1,10 @@
+2009-02-16  Martin Leidig  <mleidig@schlund.de>
+
+	* build-maven.xml: added support for deployment via WebDAV and use it
+	as default, added support for deploying releases and snapshots to
+	different locations (can be set using the build.properties
+	remote.repository.url.releases and remote.repository.url.snapshots)
+
 2009-02-13  Martin Leidig  <mleidig@schlund.de>
 
 	* projects/core/build/iwrapper.xsl: removed @SuppressWarnings at local
