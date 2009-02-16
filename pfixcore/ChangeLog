@@ -1,3 +1,13 @@
+2009-02-16  Martin Leidig  <mleidig@schlund.de>
+
+	* build-maven.xml: added support for deployment via WebDAV and use it
+	as default, added support for deploying releases and snapshots to
+	different locations (can be set using the build.properties
+	remote.repository.url.releases and remote.repository.url.snapshots)
+	
+	* pom.xml: set version to 0.12.4-SNAPSHOT
+	* build.xml: set version to 0.12.4-pre build
+
 2009-02-05  Martin Leidig  <mleidig@schlund.de>
 
 	Added javac.target property to set java class file target version. Set
