@@ -115,14 +115,15 @@ public final class IncludeDocumentExtension {
         String       parent_theme    = "";
         FileResource tgen_path       = ResourceUtil.getFileResource(targetgen);
         
+        String parentSystemId = getSystemId(context);
+        URI parentURI = new URI(parentSystemId);
         
         if (computed_inc.equals("false") && isIncludeDocument(context)) {
-            parent_uri_str = getSystemId(context);
+            parent_uri_str = parentSystemId;
             parent_part     = parent_part_in;
             parent_theme  = parent_theme_in;
         }
         
-        URI parentURI = new URI(parent_uri_str);
         String uriStr = path_str;
         
         TargetGenerator tgen = TargetGeneratorFactory.getInstance().createGenerator(tgen_path);
