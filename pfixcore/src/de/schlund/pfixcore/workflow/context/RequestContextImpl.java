@@ -369,23 +369,21 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
         roleAuth = (reqParam != null && reqParam.isTrue());
         if (roleAuth) {
             roleAuthTarget = currentpagerequest.getName();
+            AuthConstraint authConst = null;
             PageRequestConfig targetPageConf = servercontext.getContextConfig().getPageRequestConfig(roleAuthTarget);
-            if (targetPageConf != null) {
-                AuthConstraint authConst = targetPageConf.getAuthConstraint();
-                if (authConst == null)
-                    authConst = getParentContext().getContextConfig().getDefaultAuthConstraint();
-                if (authConst != null) {
-                    String authPageName = authConst.getAuthPage();
-                    if (authPageName != null) {
-                        currentpagerequest = createPageRequest(authPageName);
-                        if (!roleAuthTarget.equals(authPageName))
-                            setJumpToPage(roleAuthTarget);
-                    } else
-                        throw new RuntimeException("No authpage defined for authconstraint " + "of page: " + roleAuthTarget);
+            if (targetPageConf != null) authConst = targetPageConf.getAuthConstraint();
+            if (authConst == null)
+                authConst = getParentContext().getContextConfig().getDefaultAuthConstraint();
+            if (authConst != null) {
+                String authPageName = authConst.getAuthPage();
+                if (authPageName != null) {
+                    currentpagerequest = createPageRequest(authPageName);
+                    if (!roleAuthTarget.equals(authPageName))
+                        setJumpToPage(roleAuthTarget);
                 } else
-                    throw new RuntimeException("No authconstraint defined for page: " + roleAuthTarget);
+                    throw new RuntimeException("No authpage defined for authconstraint " + "of page: " + roleAuthTarget);
             } else
-                throw new RuntimeException("Target page not configured: " + roleAuthTarget);
+                throw new RuntimeException("No authconstraint defined for page: " + roleAuthTarget);
         }
 
         // action lookup
@@ -759,7 +757,8 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
             roleAuthDeps.add(authEx.getTarget());
             PageRequest localAuthPage = null;
             PageRequestConfig pageConfig = this.getConfigForCurrentPageRequest();
-            AuthConstraint authConstraint = pageConfig.getAuthConstraint();
+            AuthConstraint authConstraint = null;
+            if(pageConfig != null) authConstraint = pageConfig.getAuthConstraint();
             if (authConstraint == null)
                 authConstraint = parentcontext.getContextConfig().getDefaultAuthConstraint();
             if (authConstraint != null) {
