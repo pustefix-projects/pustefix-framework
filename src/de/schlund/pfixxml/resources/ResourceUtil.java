@@ -25,8 +25,6 @@ import java.io.OutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-import de.schlund.pfixxml.config.GlobalConfig;
-
 /**
  * Provides access to resources on the filesystem.
  * For most of the functionality, {@link de.schlund.pfixxml.config.GlobalConfig}
@@ -36,6 +34,38 @@ import de.schlund.pfixxml.config.GlobalConfig;
  * @author Sebastian Marsching <sebastian.marsching@1und1.de>
  */
 public class ResourceUtil {
+    
+    public static Resource getResource(URI uri) {
+        String scheme = uri.getScheme();
+        if(scheme != null && !scheme.equals("")) {
+            ResourceProvider resourceProvider = ResourceProviderRegistry.getResourceProvider(scheme);
+            if(resourceProvider != null) {
+                try {
+                    return resourceProvider.getResource(uri);
+                } catch(ResourceProviderException x) {
+                    throw new RuntimeException("Can't get resource: " + uri, x);
+                }
+            }
+            return getFileResource(uri);
+        } else {
+            return getFileResourceFromDocroot(uri.toString());
+        }
+    }
+    
+    public static Resource getResource(String uriStr) {
+        // Replace spaces in URI with %20
+        // URIs must not contain spaces, however
+        // there is plenty of code that doesn't check for
+        // spaces when calling this method
+        uriStr = fixURI(uriStr);
+        try {
+            URI uri = new URI(uriStr);
+            return getResource(uri);
+        } catch (URISyntaxException e) {
+            throw new IllegalArgumentException("URI \"" + uriStr + "\" is not well-formed", e);
+        }
+    }
+    
     /**
      * Creates a resource object using the given uri.
      * At the moment only absolute URIs with the "file" or
@@ -53,14 +83,13 @@ public class ResourceUtil {
         if (scheme == null || scheme.equals("")) {
             throw new IllegalArgumentException("Cannot handle URIs without a scheme");
         }
-        
         String path = uri.getPath();
         if (path == null || path.equals("")) {
-            throw new IllegalArgumentException("Cannot handle URIs without a path");
+            throw new IllegalArgumentException("Cannot handle URIs without a path: "+uri);
         }
         
         if (scheme.equals("pfixroot")) {
-            return GlobalConfig.getDocrootResourceProvider().getDocrootResource(uri);
+            return (FileResource)getResource(uri);
         } else if (scheme.equals("file")) {
             return new FileSystemResourceImpl(uri);
         } else {

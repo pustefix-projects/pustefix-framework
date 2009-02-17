@@ -151,7 +151,7 @@ public class IncludeFactoryServiceImpl implements IncludeFactoryService {
                 if (variant != null) {
                     return variant;
                 }
-                variant = getIncludePartThemeVariant(this.themefactory.getTheme(aux.getTheme()), this.includefactory.getIncludeFile(aux.getPath().getRelativePath()).createPart(aux.getPart()));
+                variant = getIncludePartThemeVariant(this.themefactory.getTheme(aux.getTheme()), this.includefactory.getIncludeFile(aux.getPath().toURI().toString()).createPart(aux.getPart()));
                 this.auxdepMap.put(aux, variant);
                 return variant;
             }

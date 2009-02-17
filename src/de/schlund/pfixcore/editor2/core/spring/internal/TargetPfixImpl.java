@@ -335,7 +335,7 @@ public class TargetPfixImpl extends AbstractTarget {
                     for (Iterator<AuxDependency> i = alldeps.iterator(); i.hasNext();) {
                         AuxDependency auxdep = i.next();
                         if (auxdep.getType() == DependencyType.IMAGE) {
-                            Image img = this.imagefactory.getImage(((AuxDependencyImage) auxdep).getPath().getRelativePath());
+                            Image img = this.imagefactory.getImage(((AuxDependencyImage) auxdep).getPath().toURI().toString());
                             deps.add(img);
                         }
                     }
@@ -363,7 +363,7 @@ public class TargetPfixImpl extends AbstractTarget {
                         .hasNext();) {
                     AuxDependency auxdep = i.next();
                     if (auxdep.getType() == DependencyType.IMAGE) {
-                        Image img = this.imagefactory.getImage(((AuxDependencyImage) auxdep).getPath().getRelativePath());
+                        Image img = this.imagefactory.getImage(((AuxDependencyImage) auxdep).getPath().toURI().toString());
                         deps.add(img);
                     }
                 }

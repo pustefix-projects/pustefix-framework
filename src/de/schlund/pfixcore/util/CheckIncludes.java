@@ -169,7 +169,7 @@ public class CheckIncludes {
                     Element elem = result.createElement("MISSING");
                     prj_elem.appendChild(elem);
                     elem.setAttribute("type", aux.getType().toString());
-                    String path = ((AuxDependencyFile) aux).getPath().getRelativePath();
+                    String path = ((AuxDependencyFile) aux).getPath().toURI().toString();
                     if (aux.getType().equals(DependencyType.TEXT)) {
                         AuxDependencyInclude a = (AuxDependencyInclude) aux;
                         elem.setAttribute("path", path);
@@ -177,7 +177,7 @@ public class CheckIncludes {
                         elem.setAttribute("theme", a.getTheme());
                     } else if (aux.getType().equals(DependencyType.IMAGE)) {
                         AuxDependencyImage a = (AuxDependencyImage) aux;
-                        elem.setAttribute("path", a.getPath().getRelativePath());
+                        elem.setAttribute("path", a.getPath().toURI().toString());
                     }
                 }
             }

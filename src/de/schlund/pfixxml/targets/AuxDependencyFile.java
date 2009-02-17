@@ -21,7 +21,8 @@ package de.schlund.pfixxml.targets;
 import java.util.Iterator;
 import java.util.TreeSet;
 
-import de.schlund.pfixxml.resources.DocrootResource;
+import de.schlund.pfixxml.resources.Resource;
+import de.schlund.pfixxml.resources.ResourceUtil;
 
 /**
  * Dependency referencing a static file on the filesystem
@@ -29,13 +30,13 @@ import de.schlund.pfixxml.resources.DocrootResource;
  * @author Sebastian Marsching <sebastian.marsching@1und1.de>
  */
 public class AuxDependencyFile extends AbstractAuxDependency {
-    private DocrootResource path;
+    private Resource path;
 
     private long last_lastModTime = -1;
     
     protected int hashCode;
     
-    public AuxDependencyFile(DocrootResource path) {
+    public AuxDependencyFile(Resource path) {
         this.type = DependencyType.FILE;
         this.path = path;
         this.hashCode = (type.getTag() + ":" + path.toString()).hashCode();
@@ -46,11 +47,23 @@ public class AuxDependencyFile extends AbstractAuxDependency {
      * 
      * @return path to the include file
      */
-    public DocrootResource getPath() {
+    public Resource getPath() {
         return path;
     }
     
     public long getModTime() {
+        if("dynamic".equals(path.getOriginatingURI().getScheme())) {
+            Resource res = ResourceUtil.getResource(path.getOriginatingURI());
+            if(!res.toURI().equals(path.toURI())) {
+                TreeSet<Target> targets = TargetDependencyRelation.getInstance()
+                .getAffectedTargets(this);
+                for (Iterator<Target> i = targets.iterator(); i.hasNext();) {
+                    VirtualTarget target = (VirtualTarget) i.next();
+                    target.setForceUpdate();
+                }
+            }
+        }
+        
         if (path.exists() && path.canRead() && path.isFile()) {
             if (last_lastModTime == 0) {
                 // We change from the file being checked once to not exist to "it exists now".
@@ -105,7 +118,7 @@ public class AuxDependencyFile extends AbstractAuxDependency {
     }
 
     public String toString() {
-        return "[AUX/" + getType() + " " + getPath().getRelativePath() + "]";
+        return "[AUX/" + getType() + " " + getPath().toURI().toString() + "]";
     }
 
 }

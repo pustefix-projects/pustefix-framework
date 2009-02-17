@@ -21,7 +21,7 @@ package de.schlund.pfixxml;
 
 import com.icl.saxon.Context;
 
-import de.schlund.pfixxml.resources.DocrootResource;
+import de.schlund.pfixxml.resources.Resource;
 import de.schlund.pfixxml.targets.VirtualTarget;
 import de.schlund.pfixxml.util.XsltContext;
 import de.schlund.pfixxml.util.xsltimpl.XsltContextSaxon1;
@@ -37,8 +37,8 @@ public class DependencyTrackerSaxon1 {
         return DependencyTracker.logImage(xsltContext,path,parent_part_in,parent_theme_in,targetGen,targetKey,type);
     }
     
-    public static void logTyped(String type,DocrootResource path,String part,String theme,
-            DocrootResource parent_path,String parent_part,String parent_theme,VirtualTarget target) {
+    public static void logTyped(String type,Resource path,String part,String theme,
+            Resource parent_path,String parent_part,String parent_theme,VirtualTarget target) {
         DependencyTracker.logTyped(type,path,part,theme,parent_path,parent_part,parent_theme,target);
     }
         

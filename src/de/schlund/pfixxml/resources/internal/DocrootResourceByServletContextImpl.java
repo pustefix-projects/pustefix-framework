@@ -45,14 +45,18 @@ class DocrootResourceByServletContextImpl extends AbstractDocrootResourceImpl {
     
     private ServletContext servletContext;
     
-    DocrootResourceByServletContextImpl(URI uri, ServletContext servletContext) {
-        super(uri);
+    DocrootResourceByServletContextImpl(URI uri, URI originatingUri, ServletContext servletContext) {
+        super(uri, originatingUri);
         
         this.servletContext = servletContext;
 
         if (this.trailingSlash && this.exists() && !this.isDirectory()) {
             throw new IllegalArgumentException("URI \"" + uri.toString() + "\" points to a non-existent directory");
         }
+    }
+    
+    DocrootResourceByServletContextImpl(URI uri, ServletContext servletContext) {
+        this(uri, uri, servletContext);
     }
     
     public boolean canRead() {

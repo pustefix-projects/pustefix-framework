@@ -30,25 +30,29 @@ import de.schlund.pfixxml.util.xsltimpl.XsltContextSaxon1;
 public class IncludeDocumentExtensionSaxon1 {
     
     public static Object get(Context context,String path_str,String part,String targetgen,String targetkey,
-            String parent_part_in,String parent_theme_in,String computed_inc) throws Exception {    
+            String parent_part_in,String parent_theme_in,String computed_inc,String module,String search) throws Exception {    
         XsltContext xsltContext=new XsltContextSaxon1(context);
         return IncludeDocumentExtension.get(xsltContext,path_str,part,targetgen,targetkey,
-                parent_part_in,parent_theme_in,computed_inc);
+                parent_part_in,parent_theme_in,computed_inc,module,search);
     }
     
-    public static String makeSystemIdRelative(Context context) {
+    public static String getSystemId(Context context) {
         XsltContext xsltContext=new XsltContextSaxon1(context);
-        return IncludeDocumentExtension.makeSystemIdRelative(xsltContext,"dummy");
+        return IncludeDocumentExtension.getSystemId(xsltContext);
     }
     
-    public static String makeSystemIdRelative(Context context,String dummy) {
+    public static final String getRelativePathFromSystemId(Context context) {
         XsltContext xsltContext=new XsltContextSaxon1(context);
-        return IncludeDocumentExtension.makeSystemIdRelative(xsltContext,dummy);
+        return IncludeDocumentExtension.getRelativePathFromSystemId(xsltContext);
     }
     
     public static boolean isIncludeDocument(Context context) {
         XsltContext xsltContext=new XsltContextSaxon1(context);
         return IncludeDocumentExtension.isIncludeDocument(xsltContext);
+    }
+    
+    public static String getResolvedURI() {
+        return IncludeDocumentExtension.getResolvedURI();
     }
 
 }

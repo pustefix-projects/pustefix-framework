@@ -95,7 +95,7 @@ public class IncludePartThemeVariantImpl extends
 
     private AuxDependency getAuxDependency() {
         return AuxDependencyFactory.getInstance().getAuxDependencyInclude(
-                ResourceUtil.getFileResourceFromDocroot(
+                ResourceUtil.getResource(
                         this.getIncludePart().getIncludeFile().getPath()),
                 this.getIncludePart().getName(), this.getTheme().getName());
     }
@@ -143,7 +143,7 @@ public class IncludePartThemeVariantImpl extends
         for (Iterator<AuxDependency> i = childs.iterator(); i.hasNext();) {
             AuxDependency child = i.next();
             if (child.getType() == DependencyType.IMAGE) {
-                Image image = this.imagefactory.getImage(((AuxDependencyImage) child).getPath().getRelativePath());
+                Image image = this.imagefactory.getImage(((AuxDependencyImage) child).getPath().toURI().toString());
                 images.add(image);
             } else if ((child.getType() == DependencyType.TEXT) && recursive) {
                 AuxDependencyInclude aux = (AuxDependencyInclude) child;
@@ -223,7 +223,7 @@ public class IncludePartThemeVariantImpl extends
         for (Iterator<AuxDependency> i = childs.iterator(); i.hasNext();) {
             AuxDependency child = i.next();
             if (child.getType() == DependencyType.IMAGE) {
-                Image image = this.imagefactory.getImage(((AuxDependencyImage) child).getPath().getRelativePath());
+                Image image = this.imagefactory.getImage(((AuxDependencyImage) child).getPath().toURI().toString());
                 images.add(image);
             } else if ((child.getType() == DependencyType.TEXT) && recursive) {
                 AuxDependencyInclude aux = (AuxDependencyInclude) child;

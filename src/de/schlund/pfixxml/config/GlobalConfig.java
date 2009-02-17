@@ -23,7 +23,7 @@ import java.net.URL;
 
 import javax.servlet.ServletContext;
 
-import de.schlund.pfixxml.resources.DocrootResourceProvider;
+import de.schlund.pfixxml.resources.ResourceProviderRegistry;
 import de.schlund.pfixxml.resources.internal.DocrootResourceByServletContextProvider;
 import de.schlund.pfixxml.resources.internal.DocrootResourceOnFileSystemProvider;
 
@@ -35,10 +35,10 @@ import de.schlund.pfixxml.resources.internal.DocrootResourceOnFileSystemProvider
  * @author Sebastian Marsching <sebastian.marsching@1und1.de>
  */
 public class GlobalConfig {
+    
     private static String docroot = null;
     private static URL docrootURL = null;
     private static ServletContext servletContext = null;
-    private static DocrootResourceProvider docrootResourceProvider = null;
     
     private final static String WAR_DOCROOT = "/WEB-INF/pfixroot";
     
@@ -57,7 +57,7 @@ public class GlobalConfig {
             throw new IllegalStateException("Docroot or servlet context may only be set once!");
         }
         docroot = path;
-        setDocrootResourceProvider(new DocrootResourceOnFileSystemProvider(docroot));
+        ResourceProviderRegistry.register(new DocrootResourceOnFileSystemProvider(docroot));
         try {
             docrootURL =  new URL("file", null, -1, docroot);
         } catch (MalformedURLException e) {
@@ -96,28 +96,12 @@ public class GlobalConfig {
             throw new IllegalStateException("Docroot or servlet context may only be set once!");
         }
         servletContext = context;
-        setDocrootResourceProvider(new DocrootResourceByServletContextProvider(servletContext));
+        ResourceProviderRegistry.register(new DocrootResourceByServletContextProvider(servletContext));
         try {
             docrootURL = servletContext.getResource(WAR_DOCROOT);
         } catch (MalformedURLException e) {
             throw new RuntimeException("Unexpected error while creating URL for docroot!", e);            }
         
-    }
-    
-    /**
-     * Returns a provider that is used to get DocrootResources.
-     * 
-     * @return Provider for DocrootResource
-     */
-    public static DocrootResourceProvider getDocrootResourceProvider() {
-        return docrootResourceProvider;
-    }
-    
-    static void setDocrootResourceProvider(DocrootResourceProvider provider) {
-        if (docrootResourceProvider != null) {
-            throw new IllegalStateException("The provider can only be set once!");
-        }
-        docrootResourceProvider = provider;
     }
     
 }

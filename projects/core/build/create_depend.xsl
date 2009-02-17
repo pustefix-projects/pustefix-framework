@@ -125,7 +125,7 @@
         <param name="stylesheets_to_include">
           <xsl:attribute name="value">
             <xsl:for-each select="include">
-              <xsl:value-of select="@stylesheet"/><xsl:text> </xsl:text>
+              <xsl:if test="@module">module://<xsl:value-of select="@module"/>/</xsl:if><xsl:value-of select="@stylesheet"/><xsl:text> </xsl:text>
             </xsl:for-each>
             <xsl:for-each select="/make/global/include">
               <xsl:value-of select="@stylesheet"/><xsl:text> </xsl:text>
@@ -153,7 +153,9 @@
         <xsl:with-param name="variant" select="@variant"/>
         <xsl:with-param name="local_themes" select="@themes"/>
       </xsl:call-template>
-      <depxml name="{@xml}"/>
+      <depxml name="{@xml}">
+        <xsl:if test="@module"><xsl:attribute name="module"><xsl:value-of select="@module"/></xsl:attribute></xsl:if>
+      </depxml>
       <depxsl>
         <xsl:attribute name="name"><xsl:value-of select="$metatagsname"/></xsl:attribute>
       </depxsl>

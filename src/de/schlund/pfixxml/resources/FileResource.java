@@ -20,10 +20,8 @@ package de.schlund.pfixxml.resources;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.MalformedURLException;
-import java.net.URI;
 import java.net.URL;
 
 /**
@@ -42,16 +40,7 @@ import java.net.URL;
  * @see de.schlund.pfixxml.resources.ResourceUtil
  * @author Sebastian Marsching <sebastian.marsching@1und1.de>
  */
-public interface FileResource extends Comparable<FileResource> {
-    /**
-     * Tests whether the application can read the resource denoted by this
-     * object.
-     *
-     * @return  <code>true</code> if and only if the resource specified by this
-     *          object exists <em>and</em> can be read by the application; 
-     *          <code>false</code> otherwise
-     */
-    boolean canRead();
+public interface FileResource extends Resource {
     
     /**
      * Tests whether the application can modify the resource denoted by this
@@ -95,14 +84,6 @@ public interface FileResource extends Comparable<FileResource> {
     boolean delete();
     
     /**
-     * Tests whether the file or directory denoted by this file resource exists.
-     *
-     * @return  <code>true</code> if and only if the file or directory denoted
-     *          by this file resource exists; <code>false</code> otherwise
-     */
-    boolean exists();
-    
-    /**
      * Returns the name of the file or directory denoted by this file resource.
      * This is just the last name in the pathname's name sequence.  If the 
      * pathname's name sequence is empty, then the empty string is returned.
@@ -142,18 +123,6 @@ public interface FileResource extends Comparable<FileResource> {
     boolean isDirectory();
     
     /**
-     * Tests whether the file denoted by this object is a normal
-     * file.  A file is <em>normal</em> if it is not a directory and, in
-     * addition, satisfies other system-dependent criteria.  Any non-directory
-     * file created by a Java application is guaranteed to be a normal file.
-     *
-     * @return  <code>true</code> if and only if the file denoted by this
-     *          file resource exists <em>and</em> is a normal file;
-     *          <code>false</code> otherwise
-     */
-    boolean isFile();
-    
-    /**
      * Tests whether the file named by this file resource is a hidden
      * file.  The exact definition of <em>hidden</em> is system-dependent.  On
      * UNIX systems, a file is considered to be hidden if its name begins with
@@ -165,18 +134,6 @@ public interface FileResource extends Comparable<FileResource> {
      *          underlying platform
      */
     boolean isHidden();
-    
-    /**
-     * Returns the time that the file denoted by this resource was
-     * last modified. Might return "-1" if the last modified time is
-     * not available.
-     *
-     * @return  A <code>long</code> value representing the time the file was
-     *          last modified, measured in milliseconds since the epoch
-     *          (00:00:00 GMT, January 1, 1970), or <code>0L</code> if the
-     *          file does not exist or if an I/O error occurs
-     */
-    long lastModified();
     
     /**
      * Returns an array of strings naming the files and directories in the
@@ -244,14 +201,6 @@ public interface FileResource extends Comparable<FileResource> {
     boolean mkdirs();
     
     /**
-     * Returns a normalized version of the URI which was used
-     * in order to create this FileResource 
-     * 
-     * @return URI representing this object
-     */
-    URI toURI();
-    
-    /**
      * Returns an URL which can be used in order to access the
      * file donoted by this object.
      * 
@@ -259,15 +208,6 @@ public interface FileResource extends Comparable<FileResource> {
      * @throws MalformedURLException if this object does not contain a valid path
      */
     URL toURL() throws MalformedURLException;
-    
-    /**
-     * Returns a stream which can be used for reading the content of
-     * the resource denoted by this object.
-     * 
-     * @return stream for reading the resource
-     * @throws FileNotFoundException if resource cannot be found or read
-     */
-    InputStream getInputStream() throws FileNotFoundException;
     
     /**
      * Returns a which can be used for writing to the resource

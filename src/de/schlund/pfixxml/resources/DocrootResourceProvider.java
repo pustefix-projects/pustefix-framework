@@ -18,7 +18,7 @@
 
 package de.schlund.pfixxml.resources;
 
-import java.net.URI;
+
 
 /**
  * Creates docroot resources using environment dependend methods.
@@ -29,17 +29,13 @@ import java.net.URI;
  * 
  * @author Sebastian Marsching <sebastian.marsching@1und1.de>
  */
-public interface DocrootResourceProvider {
-    /**
-     * Returns an instance of {@link DocrootResource} that represents
-     * the resource specified by the given URI. A resource is always 
-     * returned unless the URI provided is invalid or does not use the
-     * pfixroot URI scheme. A DocrootResource object is returned even if
-     * the specified resource does not exist.
-     * 
-     * @param uri URI using the pfixroot scheme
-     * @return A DocrootResource that can be used to access the resource
-     *  specified by the URI.  
-     */
-    DocrootResource getDocrootResource(URI uri);
+public abstract class DocrootResourceProvider implements ResourceProvider {
+    
+    private static String PFIXROOT_SCHEME = "pfixroot";
+    private static String[] supportedSchemes = {PFIXROOT_SCHEME};
+    
+    public String[] getSupportedSchemes() {
+        return supportedSchemes;
+    }
+    
 }

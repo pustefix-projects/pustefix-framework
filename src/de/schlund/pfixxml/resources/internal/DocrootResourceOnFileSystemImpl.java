@@ -42,14 +42,18 @@ import de.schlund.pfixxml.resources.DocrootResource;
 class DocrootResourceOnFileSystemImpl extends AbstractDocrootResourceImpl {
     private File file;
     
-    DocrootResourceOnFileSystemImpl(URI uri, String docroot) {
-        super(uri);
+    DocrootResourceOnFileSystemImpl(URI uri, URI origUri, String docroot) {
+        super(uri, origUri);
         
         this.file = new File(docroot, path.substring(1));
         
         if (this.trailingSlash && this.exists() && !this.isDirectory()) {
             throw new IllegalArgumentException("URI \"" + uri.toString() + "\" points to a non-existent directory");
         }
+    }
+    
+    DocrootResourceOnFileSystemImpl(URI uri, String docroot) {
+        this(uri, uri, docroot);
     }
     
     public boolean canRead() {

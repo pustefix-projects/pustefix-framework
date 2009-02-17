@@ -338,12 +338,16 @@
     <xsl:param name="themed-img"  select="@themed-img"/>
     <xsl:param name="alt" select="@alt"/>
     <xsl:param name="exclude-attributes"/>
-    <xsl:variable name="always-exclude-attributes" select="'src|themed-path|themed-img|alt|width|height|type|name|jumptopage|jumptopageflow|forcestop|pageflow'"/>
+    <xsl:param name="module" select="@module"/>
+    <xsl:param name="search" select="@search"/>
+    <xsl:variable name="always-exclude-attributes" select="'src|themed-path|themed-img|alt|width|height|type|name|jumptopage|jumptopageflow|forcestop|pageflow|module|search'"/>
     <xsl:variable name="realsrc">
       <xsl:call-template name="pfx:image_register_src">
         <xsl:with-param name="src" select="$src"/>
         <xsl:with-param name="themed-path" select="$themed-path"/>
         <xsl:with-param name="themed-img" select="$themed-img"/>
+        <xsl:with-param name="module" select="$module"/>
+        <xsl:with-param name="search" select="$search"/>
       </xsl:call-template>
     </xsl:variable>
     <ixsl:variable><xsl:attribute name="name">genname_<xsl:value-of select="generate-id(.)"/></xsl:attribute><xsl:value-of select="generate-id(.)"/><ixsl:value-of select="generate-id(.)"/></ixsl:variable>

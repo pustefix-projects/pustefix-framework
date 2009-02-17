@@ -44,6 +44,8 @@ public abstract class AbstractDocrootResourceImpl implements DocrootResource {
      */
     protected URI uri;
     
+    protected URI origUri;
+    
     /**
      * Is set to true, if the URI used to create the resource had a trailing
      * slash ("/").
@@ -90,6 +92,11 @@ public abstract class AbstractDocrootResourceImpl implements DocrootResource {
             throw new RuntimeException(e);
         }
         this.path = this.uri.getPath();
+    }
+    
+    protected AbstractDocrootResourceImpl(URI uri, URI origUri) {
+        this(uri);
+        this.origUri = origUri;
     }
     
     public abstract boolean canRead();
@@ -141,12 +148,21 @@ public abstract class AbstractDocrootResourceImpl implements DocrootResource {
         return uri;
     }
     
+    public URI getOriginatingURI() {
+        if(origUri == null) return toURI();
+        return origUri;
+    }
+    
+    public void setOriginatingURI(URI origUri) {
+        this.origUri = origUri;
+    }
+    
     public abstract URL toURL() throws MalformedURLException;
     public abstract InputStream getInputStream() throws FileNotFoundException;
     public abstract OutputStream getOutputStream() throws FileNotFoundException;
     public abstract OutputStream getOutputStream(boolean append) throws FileNotFoundException;
 
-    public int compareTo(FileResource o) {
+    public int compareTo(Resource o) {
         return uri.compareTo(o.toURI());
     }
 

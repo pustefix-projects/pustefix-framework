@@ -60,6 +60,7 @@ import com.sun.org.apache.xerces.internal.parsers.SAXParser;
 
 import de.schlund.pfixxml.SPDocument;
 import de.schlund.pfixxml.resources.FileResource;
+import de.schlund.pfixxml.resources.Resource;
 
 public class Xml {
     
@@ -129,6 +130,18 @@ public class Xml {
         }
         return parse(xsltVersion,src);
     }
+    
+    public static Document parse(XsltVersion xsltVersion, Resource res) throws TransformerException {
+        InputSource is = new InputSource();
+        is.setSystemId(res.toURI().toString());
+        try {
+            is.setByteStream(res.getInputStream());
+            SAXSource src = new SAXSource(createXMLReader(), is);
+            return parse(xsltVersion,src);
+        } catch(IOException x) {
+            throw new TransformerException("Can't read XML resource: " + res.toURI().toString(), x);
+        }
+    }
 
     /**
      * Create a document from a sourcefile in the filesystem.
@@ -170,6 +183,10 @@ public class Xml {
         } catch (IOException e) {
             throw new RuntimeException("unexpected ioexception while reading from memory", e);
         }
+    }
+    
+    public static Document parseMutable(Resource res) throws IOException, SAXException {
+        return parseMutable(new InputSource(res.toURI().toString()));
     }
     
     public static Document parseMutable(FileResource file) throws IOException, SAXException {
