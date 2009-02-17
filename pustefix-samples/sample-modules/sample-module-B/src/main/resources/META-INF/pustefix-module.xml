@@ -1,0 +1,9 @@
+<module-descriptor xsi:schemaLocation="http://pustefix.sourceforge.net/moduledescriptor200702 http://pustefix.sourceforge.net/moduledescriptor200702.xsd" xmlns="http://pustefix.sourceforge.net/moduledescriptor200702" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+
+  <module-name>sample-module-B</module-name>
+
+  <resources>
+    <resource-mapping srcpath="PUSTEFIX-INF/resources/dyntxt" targetpath="dyntxt"/>
+  </resources>
+
+</module-descriptor>
