@@ -40,6 +40,7 @@ public class ModuleResource implements Resource {
         if(url == null) return false;
         try {
             JarURLConnection con = (JarURLConnection)url.openConnection();
+            con.setUseCaches(false);
             con.getJarEntry();
             return true;
         } catch(FileNotFoundException x) {
@@ -63,6 +64,7 @@ public class ModuleResource implements Resource {
     public long lastModified() {
         try {
             JarURLConnection con = (JarURLConnection)url.openConnection();
+            con.setUseCaches(false);
             return con.getLastModified();
         } catch(IOException x) {
             throw new RuntimeException("Error checking modification time", x);
