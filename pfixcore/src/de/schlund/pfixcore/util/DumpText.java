@@ -17,7 +17,7 @@ import org.w3c.dom.NodeList;
 
 import de.schlund.pfixxml.IncludeDocumentFactory;
 import de.schlund.pfixxml.config.GlobalConfigurator;
-import de.schlund.pfixxml.resources.DocrootResource;
+import de.schlund.pfixxml.resources.Resource;
 import de.schlund.pfixxml.resources.ResourceUtil;
 import de.schlund.pfixxml.targets.AuxDependency;
 import de.schlund.pfixxml.targets.AuxDependencyInclude;
@@ -91,7 +91,7 @@ public class DumpText implements IDumpText {
         for (Iterator<AuxDependency> i = incs.iterator(); i.hasNext();) {
             AuxDependencyInclude aux  = (AuxDependencyInclude) i.next();
             if (includePartOK(aux)) {
-                DocrootResource file = aux.getPath();
+                Resource file = aux.getPath();
                 if (file.exists()) {
                     System.out.print(".");
                     handleInclude(root, aux);
@@ -142,7 +142,7 @@ public class DumpText implements IDumpText {
     }
     
     private void handleInclude(Element root, AuxDependencyInclude aux) throws Exception {
-        DocrootResource path = aux.getPath();
+        Resource path = aux.getPath();
         String part          = aux.getPart();
         String theme         = aux.getTheme();
         Document doc         = root.getOwnerDocument();
@@ -155,7 +155,7 @@ public class DumpText implements IDumpText {
 
             Element partelem = doc.createElement("USEDINCLUDE");
             partelem.setAttribute("PART", part);
-            partelem.setAttribute("PATH", path.getRelativePath());
+            partelem.setAttribute("PATH", path.toURI().toString());
 
             root.appendChild(doc.createTextNode("\n"));
             root.appendChild(doc.createTextNode("  "));
@@ -186,7 +186,7 @@ public class DumpText implements IDumpText {
                     partelem.appendChild(node);
                 }
             } else {
-                System.out.print("\nDidn't find matching theme in part " + part + "@" + path.getRelativePath() + " for theme " + theme + "!");
+                System.out.print("\nDidn't find matching theme in part " + part + "@" + path.toURI().toString() + " for theme " + theme + "!");
             }
         }
     }

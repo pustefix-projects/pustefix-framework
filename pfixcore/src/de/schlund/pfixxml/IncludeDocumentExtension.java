@@ -19,6 +19,8 @@
 package de.schlund.pfixxml;
 
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.text.MessageFormat;
 import java.util.List;
 
@@ -30,13 +32,13 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
-import de.schlund.pfixxml.config.GlobalConfig;
-import de.schlund.pfixxml.resources.DocrootResource;
 import de.schlund.pfixxml.resources.FileResource;
+import de.schlund.pfixxml.resources.Resource;
 import de.schlund.pfixxml.resources.ResourceUtil;
 import de.schlund.pfixxml.targets.TargetGenerator;
 import de.schlund.pfixxml.targets.TargetGeneratorFactory;
 import de.schlund.pfixxml.targets.VirtualTarget;
+import de.schlund.pfixxml.util.ExtensionFunctionUtils;
 import de.schlund.pfixxml.util.XPath;
 import de.schlund.pfixxml.util.Xml;
 import de.schlund.pfixxml.util.XsltContext;
@@ -60,6 +62,8 @@ public final class IncludeDocumentExtension {
     private static final String XTHEMENAME = "/theme[@name = '";
     private static final String XPNAMEEND  = "']";
     
+    private static ThreadLocal<String> resolvedUri = new ThreadLocal<String>();
+    
     //~ Methods
     // ....................................................................................
     /**
@@ -82,34 +86,82 @@ public final class IncludeDocumentExtension {
      */
     public static final Object get(XsltContext context, String path_str, String part,
                                    String targetgen, String targetkey,
-                                   String parent_part_in, String parent_theme_in, String computed_inc) throws Exception {
-
-        String       parent_path_str = "";
+                                   String parent_part_in, String parent_theme_in, String computed_inc,
+                                   String module, String search) throws Exception {
+       
+        if(path_str.startsWith("pfixroot:")) path_str = path_str.substring(9);
+        
+        boolean dynamic = false;
+        if(search!=null && !search.trim().equals("")) {
+            if(search.equals("dynamic")) dynamic = true;
+            else throw new XMLException("Unsupported include search argument: " + search);
+        }
+        
+        if(module!=null) {
+            module = module.trim();
+            if(module.equals("")) module = null;
+        }
+        
+        if (path_str == null || path_str.equals("")) {
+            throw new XMLException("Need href attribute for pfx:include or path of parent part must be deducible");
+        }
+        if (path_str.matches("^\\w+:.*")) {
+            throw new XMLException("Attribute href must not contain URI: " + path_str);
+        }
+        if (path_str.startsWith("/")) path_str = path_str.substring(1);
+        
+        String       parent_uri_str  = "";
         String       parent_part     = "";
         String       parent_theme    = "";
         FileResource tgen_path       = ResourceUtil.getFileResource(targetgen);
         
+        
         if (computed_inc.equals("false") && isIncludeDocument(context)) {
-            parent_path_str = makeSystemIdRelative(context);
+            parent_uri_str = getSystemId(context);
             parent_part     = parent_part_in;
             parent_theme  = parent_theme_in;
         }
-
-        if (path_str == null || path_str.equals("")) {
-            throw new XMLException("Need href attribute for pfx:include or path of parent part must be deducible");
+        
+        URI parentURI = new URI(parent_uri_str);
+        String uriStr = path_str;
+        
+        TargetGenerator tgen = TargetGeneratorFactory.getInstance().createGenerator(tgen_path);
+        
+        if(dynamic) {
+            if(!"module".equals(parentURI.getScheme()) && parentURI.getPath().equals("/"+path_str)) {
+                int ind = path_str.indexOf('/');
+                path_str = path_str.substring(ind+1);
+            }
+            uriStr = "dynamic:/" + path_str + "?part=" + part + "&parent=" + parent_uri_str;
+            if(module != null) uriStr += "&module="+module;
+            else if("module".equals(parentURI.getScheme())) {
+                uriStr += "&module="+parentURI.getAuthority();
+            }
+            uriStr += "&project=" + tgen.getName();
+        } else {
+            if(module != null) {
+                if(!"module".equals(parentURI.getScheme()) && parentURI.getPath().equals("/"+path_str)) {
+                    int ind = path_str.indexOf('/');
+                    path_str = path_str.substring(ind+1);
+                }
+                uriStr = "module://" + module + "/" + path_str;
+            } else if("module".equals(parentURI.getScheme())) {
+                uriStr = "module://" + parentURI.getAuthority() + "/" + path_str;
+            }
         }
-
+        
         // EEEEK! this code is in need of some serious beautifying....
         
         try {
-            DocrootResource    path        = ResourceUtil.getFileResourceFromDocroot(path_str);
-            DocrootResource    parent_path = "".equals(parent_path_str) ? null : ResourceUtil.getFileResourceFromDocroot(parent_path_str);
+            
+            Resource    path        = ResourceUtil.getResource(uriStr);
+            resolvedUri.set(path.toURI().toString());
+            Resource    parent_path = "".equals(parent_uri_str) ? null : ResourceUtil.getResource(parent_uri_str);
             boolean            dolog       = !targetkey.equals(NOTARGET);
             int                length      = 0;
             IncludeDocument    iDoc        = null;
             Document           doc;
 
-            TargetGenerator tgen = TargetGeneratorFactory.getInstance().createGenerator(tgen_path);
             VirtualTarget target = (VirtualTarget) tgen.getTarget(targetkey);
 
             String[] themes = tgen.getGlobalThemes().getThemesArr();
@@ -129,7 +181,7 @@ public final class IncludeDocumentExtension {
             
             String DEF_THEME = tgen.getDefaultTheme();
 
-            if (!path.exists()) {
+            if (path == null || !path.exists()) {
                 if (dolog) {
                     DependencyTracker.logTyped("text", path, part, DEF_THEME,
                                                parent_path, parent_part, parent_theme, target);
@@ -247,13 +299,18 @@ public final class IncludeDocumentExtension {
             //return new EmptyNodeSet();
             
         } catch (Exception e) {
-            Object[] args = {path_str, part, targetgen, targetkey, 
-                             parent_path_str, parent_part, parent_theme};
+            Object[] args = {uriStr, part, targetgen, targetkey, 
+                             parent_uri_str, parent_part, parent_theme};
             String sb = MessageFormat.format("path={0}|part={1}|targetgen={2}|targetkey={3}|"+
                                              "parent_path={4}|parent_part={5}|parent_theme={6}", args);
             LOG.error("Caught exception in extension function! Params:\n"+ sb+"\n Stacktrace follows.");
+            ExtensionFunctionUtils.setExtensionFunctionError(e);
             throw e;
         }
+    }
+    
+    public static String getResolvedURI() {
+        return resolvedUri.get();
     }
 
     private static final Node errorNode(XsltContext context,String prodname) {
@@ -264,26 +321,19 @@ public final class IncludeDocumentExtension {
         retdoc = Xml.parse(context.getXsltVersion(),retdoc);
         return retdoc.getDocumentElement();  
     }
-    
-    
-    public static final String makeSystemIdRelative(XsltContext context) {
-        return makeSystemIdRelative(context, "dummy");
-    }
 
-    public static final String makeSystemIdRelative(XsltContext context, String dummy) {
-        String   sysid   = context.getSystemId();
-       
-        if (sysid.startsWith("pfixroot://")) {
-            sysid = sysid.substring(("pfixroot://").length());
+    public static final String getSystemId(XsltContext context) {
+        return context.getSystemId();
+    }
+    
+    public static final String getRelativePathFromSystemId(XsltContext context) {
+        String sysid = context.getSystemId();
+        try {
+            URI uri = new URI(sysid);
+            return uri.getPath();
+        } catch(URISyntaxException x) {
+            throw new IllegalArgumentException("Illegal system id: " + sysid, x);
         }
-        String docroot_url = GlobalConfig.getDocrootAsURL().toString() + "/";
-        if (sysid.startsWith(docroot_url)) {
-            sysid = sysid.substring(docroot_url.length());
-        }
-        if (sysid.startsWith("/")) {
-            sysid = sysid.substring(1);
-        }
-        return sysid;
     }
 
     public static boolean isIncludeDocument(XsltContext context) {

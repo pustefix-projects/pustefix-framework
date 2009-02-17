@@ -18,8 +18,6 @@
 
 package de.schlund.pfixxml.targets;
 
-import de.schlund.pfixxml.resources.DocrootResource;
-import de.schlund.pfixxml.resources.FileSystemResource;
 
 /**
  * Dependency referencing a target that is supplied by a target generator.
@@ -92,14 +90,7 @@ public class AuxDependencyTarget extends AbstractAuxDependency {
     }
 
     public String toString() {
-        String path;
-        if (tgen.getConfigPath() instanceof DocrootResource) {
-            path = ((DocrootResource) tgen.getConfigPath()).getRelativePath();
-        } else if (tgen.getConfigPath() instanceof FileSystemResource) {
-            path = ((FileSystemResource) tgen.getConfigPath()).getPathOnFileSystem();
-        } else {
-            path = tgen.getConfigPath().toURI().toString();
-        }
+        String path = tgen.getConfigPath().toURI().toString();
         return "[AUX/" + getType() + " " + path + ": " + targetkey + "]";
     }
 

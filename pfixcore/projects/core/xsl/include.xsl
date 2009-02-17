@@ -177,7 +177,8 @@
   <xsl:template name="pfx:missinc">
     <xsl:param name="part"/>
     <xsl:param name="href"/>
-    <xsl:variable name="thetext">Missing include: '<xsl:value-of select="$part"/>' in file '<xsl:value-of select="$href"/>'</xsl:variable>
+    <xsl:param name="module"/>
+    <xsl:variable name="thetext">Missing include: '<xsl:value-of select="$part"/>' in resource '<xsl:value-of select="$href"/>'</xsl:variable>
     <img src="{{$__contextpath}}/core/img/warning.gif">
       <xsl:if test="$__target_key = '__NONE__'">
         <xsl:attribute name="src"><xsl:value-of select="$__contextpath"/>/core/img/warning.gif</xsl:attribute>
@@ -186,7 +187,7 @@
       <xsl:attribute name="title"><xsl:value-of select="$thetext"/></xsl:attribute>
     </img>
     <xsl:message>*** Include not found:
-      Document = <xsl:value-of select="$href"/>
+      Resource = <xsl:value-of select="$href"/>
       Part = <xsl:value-of select="$part"/> ***</xsl:message>
   </xsl:template>
 
@@ -199,6 +200,8 @@
     <xsl:param name="noedit"><xsl:value-of select="@noedit"/></xsl:param>
     <xsl:param name="part"><xsl:value-of select="@part"/></xsl:param>
     <xsl:param name="href"><xsl:value-of select="@href"/></xsl:param>
+    <xsl:param name="module"><xsl:value-of select="@module"/></xsl:param>
+    <xsl:param name="search"><xsl:value-of select="@search"/></xsl:param>
     <xsl:variable name="href_int">
       <xsl:if test="$href">
         <xsl:choose>
@@ -211,14 +214,13 @@
         </xsl:choose>
       </xsl:if>
     </xsl:variable>
-
     <xsl:variable name="realpath">
       <xsl:choose>
         <xsl:when test="not(string($href_int) = '')">
           <xsl:value-of select="string($href_int)"/>
         </xsl:when>
         <xsl:otherwise>
-          <xsl:value-of select="include:makeSystemIdRelative()"/>
+          <xsl:value-of select="include:getRelativePathFromSystemId()"/>
         </xsl:otherwise>
       </xsl:choose>
     </xsl:variable>
@@ -230,7 +232,7 @@
         <xsl:variable name="incnodes"
                       select="include:get(string($realpath), string($part),
                               string($__target_gen), string($__target_key),
-                              string($parent_part), string($parent_theme), $computed_inc)"/>
+                              string($parent_part), string($parent_theme), $computed_inc, $module, $search)"/>
         <!-- Start image of edited region -->
         <xsl:choose>
           <xsl:when test="$noedit = 'true'"/> <!-- Do NOTHING! -->
@@ -264,7 +266,8 @@
           </xsl:when>
           <xsl:when test="not($noerror = 'true')">
             <xsl:call-template name="pfx:missinc">
-              <xsl:with-param name="href" select="$realpath"/>
+              <xsl:with-param name="href" select="include:getResolvedURI()"/>
+              <xsl:with-param name="module" select="$module"/>
               <xsl:with-param name="part" select="$part"/>
             </xsl:call-template>
           </xsl:when>
@@ -274,11 +277,19 @@
           <xsl:when test="$noedit = 'true'"/> <!-- Do NOTHING! -->
           <xsl:when test="not($__target_key = '__NONE__') and $prohibitEdit = 'no'">
             <ixsl:if test="$__editmode = 'admin'">
+              <xsl:variable name="__resolveduri"><xsl:value-of select="include:getResolvedURI()"/></xsl:variable>
               <a href="#">
-                <ixsl:attribute name="onclick">window.open('/xml/edit;<ixsl:value-of select="$__sessid"/>?__scriptedflow=selectinclude&amp;theme=<xsl:value-of select="string($used_theme)"/>&amp;path=<xsl:value-of select="string($realpath)"/>&amp;part=<xsl:value-of select="$part"/>&amp;tgen=<xsl:value-of select="$product"/>&amp;type=include&amp;__anchor=left_navi|<xsl:value-of select="$realpath"/>','PustefixEditor','menubar=yes,status=yes,resizable=yes');return(false);</ixsl:attribute>
+                <xsl:choose>
+                  <xsl:when test="not(starts-with($__resolveduri,'module:'))">
+                    <ixsl:attribute name="onclick">window.open('/xml/edit;<ixsl:value-of select="$__sessid"/>?__scriptedflow=selectinclude&amp;theme=<xsl:value-of select="string($used_theme)"/>&amp;path=<xsl:value-of select="substring-after($__resolveduri,'/')"/>&amp;part=<xsl:value-of select="$part"/>&amp;tgen=<xsl:value-of select="$product"/>&amp;type=include&amp;__anchor=left_navi|<xsl:value-of select="$realpath"/>','PustefixEditor','menubar=yes,status=yes,resizable=yes');return(false);</ixsl:attribute>
+                  </xsl:when>
+                  <xsl:otherwise>
+                    <ixsl:attribute name="onclick">alert("Editing <xsl:value-of select="$__resolveduri"/> not yet supported!")</ixsl:attribute>
+                  </xsl:otherwise>
+                </xsl:choose>
                 <img border="0" src="{{$__contextpath}}/core/img/edit.gif"
-                     alt="] Edit include: '{$part}' in file '{$realpath}'"
-                     title="Edit include: '{$part}' in file '{$realpath}'"/>
+                     alt="] Edit include: '{$part}' in resource '{$__resolveduri}'"
+                     title="Edit include: '{$part}' in resource '{$__resolveduri}'"/>
               </a>
             </ixsl:if>
           </xsl:when>
@@ -298,6 +309,8 @@
     <xsl:param name="src"/>
     <xsl:param name="themed-path"/>
     <xsl:param name="themed-img"/>
+    <xsl:param name="module"/>
+    <xsl:param name="search"/>
     <xsl:choose>
       <xsl:when test="($src and not($src = '') and (not($themed-path) or $themed-path = '') and (not($themed-img) or $themed-img = '')) or
                       ((not($src) or $src = '') and $themed-path and not($themed-path = '') and $themed-img and not($themed-img = ''))">
@@ -305,7 +318,7 @@
         <xsl:variable name="parent_theme"><xsl:value-of select="ancestor::theme[position() = 1]/@name"/></xsl:variable>
         <xsl:value-of select="image:getSrc(string($src),string($themed-path),string($themed-img),
                               string($parent_part),string($parent_theme),
-                              string($__target_gen),string($__target_key))"/>          
+                              string($__target_gen),string($__target_key),string($module),string($search))"/>          
       </xsl:when>
       <xsl:otherwise>
         <xsl:message terminate="no">
@@ -321,12 +334,16 @@
     <xsl:param name="themed-path" select="@themed-path"/> 
     <xsl:param name="themed-img"  select="@themed-img"/>
     <xsl:param name="exclude-attributes"/>
-    <xsl:variable name="always-exclude-attributes" select="'src|alt|themed-path|themed-img'"/>
+    <xsl:param name="module" select="@module"/>
+    <xsl:param name="search" select="@search"/>
+    <xsl:variable name="always-exclude-attributes" select="'src|alt|themed-path|themed-img|module|search'"/>
     <xsl:variable name="real_src">
       <xsl:call-template name="pfx:image_register_src">
         <xsl:with-param name="src" select="$src"/>
         <xsl:with-param name="themed-path" select="$themed-path"/>
         <xsl:with-param name="themed-img" select="$themed-img"/>
+        <xsl:with-param name="module" select="$module"/>
+        <xsl:with-param name="search" select="$search"/>
       </xsl:call-template>
     </xsl:variable>
     <img src="{{$__contextpath}}/{$real_src}" alt="{$alt}">
@@ -425,7 +442,7 @@
   </xsl:template>
   
   <func:function name="pfx:getIncludePath">
-    <func:result select="include:makeSystemIdRelative()"/>
+    <func:result select="include:getRelativePathFromSystemId()"/>
   </func:function>
 
 </xsl:stylesheet>

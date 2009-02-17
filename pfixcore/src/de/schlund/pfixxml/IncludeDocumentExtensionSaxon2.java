@@ -32,25 +32,29 @@ import de.schlund.pfixxml.util.xsltimpl.XsltContextSaxon2;
 public class IncludeDocumentExtensionSaxon2 {
 
     public static Node get(XPathContext context,String path_str,String part,String targetgen,String targetkey,
-            String parent_part_in,String parent_theme_in,String computed_inc) throws Exception {    
+            String parent_part_in,String parent_theme_in,String computed_inc,String module,String search) throws Exception {    
         XsltContext xsltContext=new XsltContextSaxon2(context);
         return (Node)IncludeDocumentExtension.get(xsltContext,path_str,part,targetgen,targetkey,
-                parent_part_in,parent_theme_in,computed_inc);
+                parent_part_in,parent_theme_in,computed_inc,module,search);
     }
     
-    public static String makeSystemIdRelative(XPathContext context) {
+    public static String getSystemId(XPathContext context) {
         XsltContext xsltContext=new XsltContextSaxon2(context);
-        return IncludeDocumentExtension.makeSystemIdRelative(xsltContext,"dummy");
+        return IncludeDocumentExtension.getSystemId(xsltContext);
     }
     
-    public static String makeSystemIdRelative(XPathContext context,String dummy) {
+    public static String getRelativePathFromSystemId(XPathContext context) {
         XsltContext xsltContext=new XsltContextSaxon2(context);
-        return IncludeDocumentExtension.makeSystemIdRelative(xsltContext,dummy);
+        return IncludeDocumentExtension.getRelativePathFromSystemId(xsltContext);
     }
     
     public static boolean isIncludeDocument(XPathContext context) {
         XsltContext xsltContext=new XsltContextSaxon2(context);
         return IncludeDocumentExtension.isIncludeDocument(xsltContext);
+    }
+    
+    public static String getResolvedURI() {
+        return IncludeDocumentExtension.getResolvedURI();
     }
     
 }

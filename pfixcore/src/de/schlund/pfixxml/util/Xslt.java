@@ -19,6 +19,7 @@
 package de.schlund.pfixxml.util;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.io.StringWriter;
 import java.net.MalformedURLException;
@@ -46,6 +47,7 @@ import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 
 import de.schlund.pfixxml.resources.FileResource;
+import de.schlund.pfixxml.resources.Resource;
 import de.schlund.pfixxml.resources.ResourceUtil;
 import de.schlund.pfixxml.targets.Target;
 import de.schlund.pfixxml.targets.TargetGenerationException;
@@ -235,6 +237,15 @@ public class Xslt {
             } catch (URISyntaxException e) {
                 return new StreamSource(href);
             }
+            if ("module".equals(uri.getScheme())) {
+                Resource res = ResourceUtil.getResource(uri);
+                try {
+                    return new StreamSource(res.getInputStream(), uri.toString());
+                } catch(IOException x) {
+                    throw new TransformerException("Can't read module resource: " + uri.toString(), x);
+                }
+            }
+            
             if (uri.getScheme() != null && !uri.getScheme().equals("pfixroot")) {
                 // we don't handle uris with an explicit scheme
                 return new StreamSource(href);

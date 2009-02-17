@@ -22,8 +22,8 @@ import java.net.URI;
 
 import javax.servlet.ServletContext;
 
-import de.schlund.pfixxml.resources.DocrootResource;
 import de.schlund.pfixxml.resources.DocrootResourceProvider;
+import de.schlund.pfixxml.resources.Resource;
 
 /**
  * Provider using the resources provided by an instance of {@link ServletContext}
@@ -31,14 +31,15 @@ import de.schlund.pfixxml.resources.DocrootResourceProvider;
  * 
  * @author Sebastian Marsching <sebastian.marsching@1und1.de>
  */
-public class DocrootResourceByServletContextProvider implements DocrootResourceProvider {
+public class DocrootResourceByServletContextProvider extends DocrootResourceProvider {
+    
     private ServletContext context;
     
     public DocrootResourceByServletContextProvider(javax.servlet.ServletContext servletContext) {
         this.context = servletContext;
     }
     
-    public DocrootResource getDocrootResource(URI uri) {
+    public Resource getResource(URI uri) {
         return new DocrootResourceByServletContextImpl(uri, context);
     }
 
