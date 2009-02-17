@@ -1,3 +1,11 @@
+2009-02-17  Martin Leidig  <mleidig@schlund.de>
+
+	* src/de/schlund/pfixxml/IncludeDocumentExtension.java: set module
+	from parent if none is specified for dynamic includes from within
+	modules
+	* src/de/schlund/pfixxml/resources/ModuleResource.java: disable
+	caching on all JarURLConnections
+
 2009-02-16  Martin Leidig  <mleidig@schlund.de>
 
 	* build-maven.xml: added support for deployment via WebDAV and use it
