@@ -40,6 +40,7 @@ import java.util.ArrayList;
  */
 class FileSystemResourceImpl implements FileSystemResource {
     URI uri;
+    URI origUri;
     File file;
     
     FileSystemResourceImpl(URI uri) {
@@ -161,6 +162,15 @@ class FileSystemResourceImpl implements FileSystemResource {
         return uri;
     }
     
+    public URI getOriginatingURI() {
+        if(origUri == null) return toURI();
+        return origUri;
+    }
+    
+    public void setOriginatingURI(URI origUri) {
+        this.origUri = origUri;
+    }
+    
     public URL toURL() throws MalformedURLException {
         return file.toURI().toURL();
     }
@@ -177,7 +187,7 @@ class FileSystemResourceImpl implements FileSystemResource {
         return new FileOutputStream(file,append);
     }
 
-    public int compareTo(FileResource o) {
+    public int compareTo(Resource o) {
         return uri.compareTo(o.toURI());
     }
     

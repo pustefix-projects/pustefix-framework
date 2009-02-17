@@ -22,8 +22,8 @@ package de.schlund.pfixxml;
 
 import org.apache.log4j.Logger;
 
-import de.schlund.pfixxml.resources.DocrootResource;
 import de.schlund.pfixxml.resources.FileResource;
+import de.schlund.pfixxml.resources.Resource;
 import de.schlund.pfixxml.resources.ResourceUtil;
 import de.schlund.pfixxml.targets.DependencyType;
 import de.schlund.pfixxml.targets.TargetGenerator;
@@ -52,7 +52,7 @@ public class DependencyTracker {
         String parent_theme = "";
 
         if (IncludeDocumentExtension.isIncludeDocument(context)) {
-            parent_path  = IncludeDocumentExtension.makeSystemIdRelative(context);
+            parent_path  = IncludeDocumentExtension.getSystemId(context);
             parent_part  = parent_part_in;
             parent_theme = parent_theme_in;
         }
@@ -65,8 +65,8 @@ public class DependencyTracker {
             LOG.error("Error adding Dependency: empty path"); 
             return "1"; 
         }
-        DocrootResource relativePath   = ResourceUtil.getFileResourceFromDocroot(path);
-        DocrootResource relativeParent = parent_path.equals("") ? null : ResourceUtil.getFileResourceFromDocroot(parent_path);
+        Resource relativePath   = ResourceUtil.getResource(path);
+        Resource relativeParent = parent_path.equals("") ? null : ResourceUtil.getResource(parent_path);
         try {
             logTyped(type, relativePath, "", "", relativeParent, parent_part, parent_theme, target);
             return "0";
@@ -76,17 +76,17 @@ public class DependencyTracker {
         }
     }
     
-    public static void logTyped(String type, DocrootResource path, String part, String theme,
-                                DocrootResource parent_path, String parent_part, String parent_theme,
+    public static void logTyped(String type, Resource path, String part, String theme,
+                                Resource parent_path, String parent_part, String parent_theme,
                                 VirtualTarget target) {
         if (LOG.isDebugEnabled()) {
             String project = target.getTargetGenerator().getName();
             LOG.debug("Adding dependency to AuxdependencyManager :+\n"+
                       "Type       = " + type + "\n" +
-                      "Path       = " + path.getRelativePath() + "\n" +
+                      "Path       = " + path.toURI().toString() + "\n" +
                       "Part       = " + part + "\n" +
                       "Theme      = " + theme + "\n" +
-                      "ParentPath = " + ((parent_path == null)? "null" : parent_path.getRelativePath()) + "\n" +
+                      "ParentPath = " + ((parent_path == null)? "null" : parent_path.toURI().toString()) + "\n" +
                       "ParentPart = " + parent_part + "\n" +
                       "ParentProd = " + parent_theme + "\n" +
                       "Project    = " + project + "\n");

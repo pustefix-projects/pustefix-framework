@@ -34,7 +34,7 @@ import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.XMLReaderFactory;
 
 import de.schlund.pfixcore.lucefix.Tripel.Type;
-import de.schlund.pfixxml.resources.FileResource;
+import de.schlund.pfixxml.resources.Resource;
 import de.schlund.pfixxml.resources.ResourceUtil;
 
 /**
@@ -64,8 +64,9 @@ public class DocumentCache {
             String filename = stripAddition(path);
             // file was not scanned
             flush(); 
-            Collection<Document> newest = DocumentCache.getDocumentsFromFileAsCollection(ResourceUtil.getFileResourceFromDocroot(
+            Collection<Document> newest = DocumentCache.getDocumentsFromFileAsCollection(ResourceUtil.getResource(
                     filename));
+           
             for (Iterator<Document> iter = newest.iterator(); iter.hasNext();) {
                 Document element = iter.next();
                 if (type != Type.EDITORUPDATE){
@@ -111,7 +112,7 @@ public class DocumentCache {
         cache.clear();
     }
 
-    private static Collection<Document> getDocumentsFromFileAsCollection(FileResource f) throws FileNotFoundException, IOException,
+    private static Collection<Document> getDocumentsFromFileAsCollection(Resource f) throws FileNotFoundException, IOException,
             SAXException {
         XMLReader xmlreader = XMLReaderFactory.createXMLReader();
         IncludeFileHandler handler = new IncludeFileHandler(f);

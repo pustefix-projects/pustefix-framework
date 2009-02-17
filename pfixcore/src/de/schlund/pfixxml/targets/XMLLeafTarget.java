@@ -24,7 +24,7 @@ import javax.xml.transform.TransformerException;
 
 import org.w3c.dom.Document;
 
-import de.schlund.pfixxml.resources.FileResource;
+import de.schlund.pfixxml.resources.Resource;
 import de.schlund.pfixxml.resources.ResourceUtil;
 import de.schlund.pfixxml.util.Xml;
 
@@ -46,7 +46,7 @@ public class XMLLeafTarget extends LeafTarget {
         this.generator = gen;
         this.targetkey = key;
         this.themes    = themes;
-        FileResource targetpath = ResourceUtil.getFileResourceFromDocroot(key);
+        Resource targetpath = ResourceUtil.getResource(key);
         this.sharedleaf = SharedLeafFactory.getInstance().getSharedLeaf(generator.getXsltVersion(),targetpath);
         // Create empty manager to avoid null pointer exceptions
         this.auxdepmanager = new AuxDependencyManager(this);
@@ -56,7 +56,7 @@ public class XMLLeafTarget extends LeafTarget {
      * @see de.schlund.pfixxml.targets.TargetImpl#getValueFromDiscCache()
      */
     protected Object getValueFromDiscCache() throws TransformerException {
-        FileResource thefile = ResourceUtil.getFileResourceFromDocroot(getTargetKey());
+        Resource thefile = ResourceUtil.getResource(getTargetKey());
         if (thefile.exists() && thefile.isFile()) {
             return Xml.parse(generator.getXsltVersion(), thefile);
         } else {

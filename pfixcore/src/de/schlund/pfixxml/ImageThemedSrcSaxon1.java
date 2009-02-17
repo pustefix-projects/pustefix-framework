@@ -30,10 +30,10 @@ import de.schlund.pfixxml.util.xsltimpl.XsltContextSaxon1;
 public class ImageThemedSrcSaxon1 {
 
     public static String getSrc(Context context,String src,String themed_path,String themed_img,
-            String parent_part_in,String parent_product_in,String targetGen,String targetKey) throws Exception {
+            String parent_part_in,String parent_product_in,String targetGen,String targetKey,String module,String search) throws Exception {
         XsltContext xsltContext=new XsltContextSaxon1(context);
         return ImageThemedSrc.getSrc(xsltContext,src,themed_path,themed_img,parent_part_in,
-                parent_product_in,targetGen,targetKey);
+                parent_product_in,targetGen,targetKey,module,search);
     }
 
 }

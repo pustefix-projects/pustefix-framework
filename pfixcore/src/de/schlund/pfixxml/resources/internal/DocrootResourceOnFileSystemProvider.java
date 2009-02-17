@@ -20,22 +20,23 @@ package de.schlund.pfixxml.resources.internal;
 
 import java.net.URI;
 
-import de.schlund.pfixxml.resources.DocrootResource;
 import de.schlund.pfixxml.resources.DocrootResourceProvider;
+import de.schlund.pfixxml.resources.Resource;
 
 /**
  * Provider using a path on the local file system to resolve docroot resources.  
  * 
  * @author Sebastian Marsching <sebastian.marsching@1und1.de>
  */
-public class DocrootResourceOnFileSystemProvider implements DocrootResourceProvider {
+public class DocrootResourceOnFileSystemProvider extends DocrootResourceProvider {
+    
     private String docroot;
     
     public DocrootResourceOnFileSystemProvider(String docroot) {
         this.docroot = docroot;
     }
     
-    public DocrootResource getDocrootResource(URI uri) {
+    public Resource getResource(URI uri) {
         return new DocrootResourceOnFileSystemImpl(uri, docroot);
     }
 
