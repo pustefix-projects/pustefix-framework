@@ -202,6 +202,8 @@ public class ResourceUtil {
      */
     private static String fixURI(String uri) {
     	uri = uri.replace(" ", "%20");
+    	uri = uri.replace("{", "%7B");
+    	uri = uri.replace("}", "%7D");
     	return uri;
     }
 }
