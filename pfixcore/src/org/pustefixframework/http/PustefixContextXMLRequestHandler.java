@@ -197,6 +197,10 @@ public class PustefixContextXMLRequestHandler extends AbstractPustefixXMLRequest
                 if (rp != null) {
                     redirectURL += "&__frame=" + rp.getValue();
                 }
+                rp = preq.getRequestParam("__lf");
+                if (rp != null) {
+                	redirectURL += "&__lf=" + rp.getValue();
+                }
                 spdoc.setRedirect(redirectURL);
 
             }
