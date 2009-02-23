@@ -31,6 +31,7 @@ public class WebServiceRegistration {
     private String interfaceName;
     private String protocol;
     private String sessionType;
+    private String authConstraint;
     
     public String getTargetBeanName() {
         return targetBeanName;
@@ -78,6 +79,14 @@ public class WebServiceRegistration {
     
     public void setSessionType(String sessionType) {
         this.sessionType = sessionType;
+    }
+
+    public String getAuthConstraint() {
+        return authConstraint;
+    }
+
+    public void setAuthConstraint(String authConstraint) {
+        this.authConstraint = authConstraint;
     }
     
 }
