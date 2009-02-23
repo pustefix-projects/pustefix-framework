@@ -58,13 +58,15 @@ public class WebServiceBeanConfigReader {
                         BeanDefinition targetBeanDef = beanReg.getBeanDefinition(targetBeanName);
                         implName = getImplementation(targetBeanDef);
                     }
-                 
+                    String authConstraintRef = getStringValue(props,"authconstraint",false);
+                    
                     ServiceConfig serviceConfig = new ServiceConfig(null);
                     serviceConfig.setName(serviceName);
                     serviceConfig.setScopeType(Constants.SERVICE_SCOPE_APPLICATION);
                     serviceConfig.setInterfaceName(interfaceName);
                     serviceConfig.setImplementationName(implName);
                     serviceConfig.setProtocolType(protocol);
+                    serviceConfig.setAuthConstraintRef(authConstraintRef);
                     serviceList.add(serviceConfig);
                 }
                 
