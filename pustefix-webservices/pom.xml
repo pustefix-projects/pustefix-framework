@@ -48,20 +48,5 @@
     <module>pustefix-webservices-jsonws</module>
   </modules>
 
-  <distributionManagement>
-  <!--
-    <repository>
-      <id>pustefix-maven-repository</id>
-      <name>Pustefix-Framework Maven Repository</name>
-      <url>scpexe://pustefixhp.schlund.de/home/pustefix/repository/maven</url>
-      <uniqueVersion>false</uniqueVersion>
-    </repository>
-  -->
-    <repository>
-      <id>billy</id>
-      <url>scpexe://devel.schlund.de/home/billy/public_html/repository</url>
-    </repository>
-  </distributionManagement>
-
 </project>
 
