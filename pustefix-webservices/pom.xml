@@ -4,14 +4,14 @@
   <groupId>org.pustefixframework.webservices</groupId>
   <artifactId>pustefix-webservices</artifactId>
   <packaging>pom</packaging>
-  <version>0.2.0</version>
+  <version>0.2.1</version>
   <name>Pustefix Webservices</name>
   <url>http://pustefixframework.org</url>
   <dependencies>
     <dependency>
       <groupId>org.pustefixframework</groupId>
       <artifactId>pfixcore</artifactId>
-      <version>[0.13.4,0.14)</version>
+      <version>[0.13.3,0.14)</version>
     </dependency>
     <dependency>
       <groupId>log4j</groupId>

@@ -12,6 +12,8 @@ import java.util.Iterator;
 
 public abstract class FaultHandler implements Serializable {
 	
+    private static final long serialVersionUID = -7813108540195779294L;
+    
     HashMap<String,String> params=new HashMap<String,String>();
     
 	protected FaultHandler() {

@@ -53,6 +53,9 @@ public class WebServiceBeanConfigReaderTest extends BaseTestCase {
             String impl = services.get(service.getName());
             assertNotNull(impl);
             assertEquals(impl, service.getImplementationName());
+            if(service.getName().equals("TestNested")) {
+                assertEquals("MY_AUTHCONSTRAINT", service.getAuthConstraintRef());
+            }
         }
    
     }

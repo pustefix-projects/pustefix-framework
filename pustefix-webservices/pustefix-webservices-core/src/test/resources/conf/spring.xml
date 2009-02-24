@@ -50,6 +50,7 @@
         id="service_test_nested" 
         servicename="TestNested" 
         interface="org.pustefixframework.webservices.example.Test"
+        authconstraint="MY_AUTHCONSTRAINT"
         protocol="TEST" >
     <bean class="org.pustefixframework.webservices.example.TestImpl"/>
   </ws:webservice>
