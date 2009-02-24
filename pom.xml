@@ -41,7 +41,16 @@
       </plugin>
     </plugins>
   </build>
-
+  <distributionManagement>
+    <repository>
+      <id>${repo.id.releases}</id>
+      <url>${repo.url.releases}</url>
+    </repository>
+    <snapshotRepository>
+      <id>${repo.id.snapshots}</id>
+      <url>${repo.url.snapshots}</url>
+    </snapshotRepository>
+  </distributionManagement>
   <modules>
     <module>pustefix-webservices-core</module>
     <module>pustefix-webservices-jaxws</module>
