@@ -80,7 +80,7 @@ public class GenerateSCodesMojo extends AbstractMojo {
     
     public void execute() throws MojoExecutionException {
         
-	if(!docroot.exists()) return;
+	if(!docRoot.exists()) return;
   
         DirectoryScanner ds = new DirectoryScanner();
         if(includes!=null) ds.setIncludes(includes);
