@@ -741,6 +741,7 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
         try {
             Xslt.transform(spdoc.getDocument(), stylevalue, paramhash, new StreamResult(res.getOutputStream()));
         } catch (TransformerException e) {
+            LOGGER.error("Exception when trying to render XML tree", e);
             LOGGER.warn("*** Ignored exception when trying to render XML tree ***");
         }
         
