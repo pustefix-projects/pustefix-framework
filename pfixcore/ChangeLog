@@ -1,3 +1,12 @@
+2009-02-25  Martin Leidig  <mleidig@schlund.de>
+
+	* src/org/pustefixframework/http/AbstractPustefixXMLRequestHandler.java:
+	don't catch TransformerExceptions in renderFontify, because errors in
+	callback functions (page status isAccessible(), etc.) can cause that
+	the page is only partly rendered/displayed. It's an error if such
+	exceptions are occurring and the regular error page should be
+	displayed.
+
 2009-02-20  Martin Leidig  <mleidig@schlund.de>
 
 	Fixed browser reload problem: reloading a page used in multiple flows

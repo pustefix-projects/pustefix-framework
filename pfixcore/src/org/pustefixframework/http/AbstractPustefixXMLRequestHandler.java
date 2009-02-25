@@ -736,15 +736,9 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
                                                                     new StreamResult(res.getOutputStream()));
     }
 
-    private void renderFontify(SPDocument spdoc, HttpServletResponse res, TreeMap<String, Object> paramhash) throws TargetGenerationException, IOException {
+    private void renderFontify(SPDocument spdoc, HttpServletResponse res, TreeMap<String, Object> paramhash) throws TargetGenerationException, TransformerException, IOException {
         Templates stylevalue = (Templates) generator.createXSLLeafTarget(FONTIFY_SSHEET).getValue();
-        try {
-            Xslt.transform(spdoc.getDocument(), stylevalue, paramhash, new StreamResult(res.getOutputStream()));
-        } catch (TransformerException e) {
-            LOGGER.error("Exception when trying to render XML tree", e);
-            LOGGER.warn("*** Ignored exception when trying to render XML tree ***");
-        }
-        
+        Xslt.transform(spdoc.getDocument(), stylevalue, paramhash, new StreamResult(res.getOutputStream()));
     }
 
     private RENDERMODE getRendering(PfixServletRequest pfreq) {
