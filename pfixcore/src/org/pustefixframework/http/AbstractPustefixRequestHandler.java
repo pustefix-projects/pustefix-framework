@@ -850,7 +850,13 @@ public abstract class AbstractPustefixRequestHandler implements UriProvidingHttp
         ExceptionConfig exConf=null;
         if(clazz!=null) {
             exConf=exceptionConfigs.get(clazz);
-            if(exConf==null) exConf=getExceptionConfigForThrowable(clazz.getSuperclass().asSubclass(Throwable.class));
+            if(exConf==null) {
+                if(clazz.getSuperclass() == Object.class) {
+                    LOG.warn("No exception processor, page or forward configured for " + clazz.getName()); 
+                } else {
+                    exConf=getExceptionConfigForThrowable(clazz.getSuperclass().asSubclass(Throwable.class));
+                }
+            }
         }
         return exConf;
     }
