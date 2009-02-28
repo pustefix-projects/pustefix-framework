@@ -65,6 +65,7 @@ public class Navigation {
     
     public Navigation(FileResource navifile,XsltVersion xsltVersion) throws IOException, SAXException, TransformerException, TransformerConfigurationException {
         loadTime = System.currentTimeMillis();
+        if(navifile.lastModified() > loadTime) loadTime = navifile.lastModified();
         Document navitree = Xml.parseMutable(navifile);
         
         IncludesResolver iresolver = new IncludesResolver(null, "config-include");
