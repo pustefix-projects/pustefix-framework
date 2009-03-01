@@ -46,6 +46,12 @@ public class GenerateMojo extends AbstractMojo {
      */
     private File docroot;
     
+    /**
+     * @parameter
+     * @required
+     */
+    private String[] includes;
+    
     
     public void execute() throws MojoExecutionException {
 
@@ -57,7 +63,7 @@ public class GenerateMojo extends AbstractMojo {
         }
             
         DirectoryScanner scanner = new DirectoryScanner();
-        scanner.setIncludes(new String[] {"**/depend.xml"});
+        scanner.setIncludes(includes);
         scanner.setBasedir(docroot);
         scanner.setCaseSensitive(true);
         scanner.scan();
