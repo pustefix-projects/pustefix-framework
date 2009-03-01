@@ -5,6 +5,12 @@
 	depend.xml file or one of its included fragments is newer than the
 	current system time.
 
+2009-02-27  Martin Leidig  <mleidig@schlund.de>
+
+	* src/org/pustefixframework/http/AbstractPustefixRequestHandler.java:
+	Log warning if no processor, page or forward is defined for throwable
+	and avoid ClassCastException.
+
 2009-02-25  Martin Leidig  <mleidig@schlund.de>
 
 	* src/org/pustefixframework/http/AbstractPustefixXMLRequestHandler.java:
