@@ -76,6 +76,8 @@ public class Navigation {
 
             public void fileIncluded(FileIncludeEvent event) {
                 fileDependencies.add(event.getIncludedFile());
+                long depLastMod = event.getIncludedFile().lastModified();
+                if(depLastMod > loadTime) loadTime = depLastMod;
             }
 
         };
