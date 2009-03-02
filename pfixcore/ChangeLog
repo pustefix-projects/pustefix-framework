@@ -1,3 +1,9 @@
+2009-03-02  Martin Leidig  <mleidig@schlund.de>
+
+	* src/de/schlund/pfixxml/targets/TargetGenerator.java: Make reloading
+	modtime check more robust, so that modification times newer than the
+	current system time are supported.
+
 2009-02-28  Martin Leidig  <mleidig@schlund.de>
 
 	* src/de/schlund/pfixcore/workflow/Navigation.java: Avoid that the

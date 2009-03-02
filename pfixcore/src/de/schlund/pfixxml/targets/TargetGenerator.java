@@ -251,6 +251,7 @@ public class TargetGenerator implements Comparable<TargetGenerator> {
 
     private void loadConfig(FileResource configFile) throws XMLException, IOException, SAXException {
         config_mtime = System.currentTimeMillis();
+        if(configFile.lastModified() > config_mtime) config_mtime = configFile.lastModified();
         String path;
         if (configFile instanceof DocrootResource) {
             path = ((DocrootResource) configFile).getRelativePath();
@@ -275,6 +276,8 @@ public class TargetGenerator implements Comparable<TargetGenerator> {
 
             public void fileIncluded(FileIncludeEvent event) {
                 configFileDependencies.add(event.getIncludedFile());
+                long depModTime = event.getIncludedFile().lastModified();
+                if(depModTime > config_mtime) config_mtime = depModTime;
             }
 
         };
