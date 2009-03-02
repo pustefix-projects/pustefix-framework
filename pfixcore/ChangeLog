@@ -1,3 +1,10 @@
+2009-03-02  Martin Leidig  <mleidig@schlund.de>
+
+	Fixed force-ssl configuration.
+
+	* src/org/pustefixframework/config/contextxmlservice/parser/SSLParsingHandler.java
+	* res/META-INF/org/pustefixframework/config/context-xml-service/parser/context-xml-service-config.xml
+
 2009-02-27  Martin Leidig  <mleidig@schlund.de>
 
 	* src/org/pustefixframework/http/AbstractPustefixRequestHandler.java:
