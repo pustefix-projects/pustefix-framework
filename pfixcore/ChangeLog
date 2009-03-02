@@ -1,5 +1,14 @@
 2009-03-02  Martin Leidig  <mleidig@schlund.de>
 
+	Fixed null value for SPDocument creation time if redirect is done
+	before the page is delivered (by remembering the creation time in the
+	SPDocument).
+
+	* src/org/pustefixframework/http/AbstractPustefixXMLRequestHandler.java
+	* src/de/schlund/pfixxml/SPDocument.java
+
+2009-03-02  Martin Leidig  <mleidig@schlund.de>
+
 	* src/de/schlund/pfixxml/targets/TargetGenerator.java: Make reloading
 	modtime check more robust, so that modification times newer than the
 	current system time are supported.
