@@ -1,12 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.pustefixframework</groupId>
+    <artifactId>pustefixframework</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+  </parent>
+
   <groupId>org.pustefixframework.webservices</groupId>
   <artifactId>pustefix-webservices</artifactId>
   <packaging>pom</packaging>
   <version>0.2.1</version>
   <name>Pustefix Webservices</name>
-  <url>http://pustefixframework.org</url>
+
   <dependencies>
     <dependency>
       <groupId>org.pustefixframework</groupId>
@@ -30,27 +37,7 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
-  <build>
-    <plugins>
-      <plugin>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <configuration>
-          <source>1.5</source>
-          <target>1.5</target>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
-  <distributionManagement>
-    <repository>
-      <id>${repo.id.releases}</id>
-      <url>${repo.url.releases}</url>
-    </repository>
-    <snapshotRepository>
-      <id>${repo.id.snapshots}</id>
-      <url>${repo.url.snapshots}</url>
-    </snapshotRepository>
-  </distributionManagement>
+
   <modules>
     <module>pustefix-webservices-core</module>
     <module>pustefix-webservices-jaxws</module>
