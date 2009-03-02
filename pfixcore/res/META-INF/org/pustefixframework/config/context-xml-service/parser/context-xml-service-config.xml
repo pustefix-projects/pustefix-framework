@@ -180,6 +180,7 @@
   
   <handler id="org.pustefixframework.config.customization.WhenParsingHandler" class="org.pustefixframework.config.customization.CustomizationWhenParsingHandler">
     <match>/c:context-xml-service-config/c:servletinfo/c:choose/c:when</match>
+    <match>/c:context-xml-service-config/c:global-config/c:choose/c:when</match>
     <match>/c:context-xml-service-config/c:pagerequest//c:properties/c:choose/c:when</match>
     <match>/c:context-xml-service-config/c:pagerequest/c:choose/c:when</match>
     <match>/c:context-xml-service-config/c:properties/c:choose/c:when</match>
@@ -188,6 +189,7 @@
   
   <handler id="org.pustefixframework.config.customization.OtherwiseParsingHandler" class="org.pustefixframework.config.customization.CustomizationOtherwiseParsingHandler">
     <match>/c:context-xml-service-config/c:servletinfo/c:choose/c:otherwise</match>
+    <match>/c:context-xml-service-config/c:global-config/c:choose/c:otherwise</match>
     <match>/c:context-xml-service-config/c:pagerequest//c:properties/c:choose/c:otherwise</match>
     <match>/c:context-xml-service-config/c:pagerequest/c:choose/c:otherwise</match>
     <match>/c:context-xml-service-config/c:properties/c:choose/c:otherwise</match>
