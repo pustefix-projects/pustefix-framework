@@ -39,7 +39,7 @@ public class SSLParsingHandler extends CustomizationAwareParsingHandler {
         
         Element element = (Element)context.getNode();
        
-        SSLOption sslOption = ParsingUtils.getSingleTopObject(SSLOption.class, context);     
+        SSLOption sslOption = ParsingUtils.getFirstTopObject(SSLOption.class, context, true);
         sslOption.setSSL(Boolean.parseBoolean(element.getTextContent()));
 
     }
