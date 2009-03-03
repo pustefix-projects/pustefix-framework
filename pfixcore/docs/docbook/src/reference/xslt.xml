@@ -222,7 +222,7 @@
   <!--
     Control the submit commands
   -->
-  <pfx:command page="APage" name="SELWRP">prefix</pfx:command>
+  <pfx:command page="APage" name="SUBWRP">prefix</pfx:command>
   <pfx:argument name="AName">AValue</pfx:argument>
   <pfx:anchor frame="AFrame">AnAnchor</pfx:anchor>
 
@@ -757,7 +757,7 @@
   <!--
     Attach additional information to the controls
   -->
-  <pfx:command page="APage" name="SELWRP">prefix</pfx:command>
+  <pfx:command page="APage" name="SUBWRP">prefix</pfx:command>
   <pfx:argument name="AName">AValue</pfx:argument>
   <pfx:anchor frame="AFrame">AnAnchor</pfx:anchor>
 </pfx:xinp>]]></programlisting>
@@ -905,15 +905,22 @@
       <section xml:id="xslt.pfx.command">
         <title>Commands</title>
         <para>
-          The <literal>&lt;pfx:command&gt;</literal> tag is used to explicitly select the wrappers to submit on a page.
+          The <literal>&lt;pfx:command&gt;</literal> tag can be used to explicitly select the wrappers on a page, which should be used
+          for handling the submitted data or retrieving the updated data after a successful submit.
         </para>
-        <programlisting language="xml"><![CDATA[ <pfx:command page="APage" name="SELWRP">prefix</pfx:command>]]></programlisting>
+        <programlisting language="xml"><![CDATA[ <pfx:command page="APage" name="SUBWRP|RETWRP">prefix</pfx:command>]]></programlisting>
         <para>
           The content gives the prefix of the wrapper to select as defined on the target page.
         </para>
         <note>
           <para>
-            Note: If you don't give and selected wrappers, all wrappers defined on the target page become selected. 
+            If you don't give any selected wrappers for submit handling (<literal>SUBWRP</literal>), all wrappers defined on the target page become selected for submit handling.
+          </para>
+          <para>
+            If you don't give any selected wrappers for retrieving data after successful submits (<literal>RETWRP</literal>), no wrappers are selected for retrieving data.
+          </para>
+          <para>
+            It's recommended to use actions instead of commands. Actions let you define the selected wrappers within the configuration, which is a much cleaner approach.
           </para>
         </note>
         <para>
@@ -932,14 +939,25 @@
                 <td>mandatory</td>
                 <td>
                   <para>
-                    The name of the command. Currently, the only non-deprecated command is the <literal>SELWRP</literal> command.
-                    This is used to select a wrapper with the matching prefix on the page that is designated by the page attribute
-                    (or the current page, when empty) as a wrapper that should be used for handling the data that is submitted.
-                    You can use more than one pfx:command to select as many wrappers as you want.
+                    The name of the command. Currently, the supported commands are <literal>SUBWRP</literal>, <literal>RETWRP</literal> and
+                    the deprecated <literal>SELWRP</literal>, which is an equivalent of <literal>SUBWRP</literal> and only supported for backwards compatibility.
                   </para>
                   <para>
-                    Note: As this is the only command left, it is possible that the whole pfx:command stuff will go away, being
-                    replaced by e.g. an attribute of the submit control that holds all selected wrappers. 
+                    All commands select a wrapper with the matching prefix on the page that is designated by the page attribute
+                    (or the current page, when empty).
+                  </para>
+                  <para>
+                    <literal>SUBWRP</literal> selects a wrapper that should be used for handling the data that is submitted.
+                  </para>
+                  <para>
+                    <literal>RETWRP</literal> selects a wrapper whose data should be retrieved/updated after a successfull submit.
+                  </para>
+                  <para>
+                   You can use more than one pfx:command to select as many wrappers as you want.
+                  </para>
+                  <para>
+                    Note: As the recommended way to select wrappers for submitting/retrieving data is the action mechanism, it is possible that the 
+                    whole pfx:command stuff will go away in future releases.
                   </para>
                 </td>
               </tr>
