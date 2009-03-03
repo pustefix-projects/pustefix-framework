@@ -148,7 +148,33 @@
       <plugin>
         <groupId>org.pustefixframework.maven.plugins</groupId>
         <artifactId>pustefix-scgenerate-plugin</artifactId>
-        <version>0.2.0</version>
+        <version>0.2.1</version>
+        <executions>
+          <execution>
+            <configuration>
+              <docRoot>${basedir}/projects</docRoot>
+              <includes>
+                <include>core/dyntxt/statuscodeinfo.xml</include>
+              </includes>
+            </configuration>
+            <id>statuscodes</id>
+            <goals>
+              <goal>scgenerate</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.pustefixframework.maven.plugins</groupId>
+        <artifactId>pustefix-iwrpgenerate-plugin</artifactId>
+        <version>0.1.1</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>iwrpgenerate</goal>
+            </goals>
+          </execution>
+        </executions>
       </plugin>
     </plugins>                
   </build>
