@@ -1,3 +1,11 @@
+2009-03-03  Martin Leidig  <mleidig@schlund.de>
+
+	Return 404 instead of Exception if there's no pagerequest configuration 
+	and no target for page name.
+
+	* src/org/pustefixframework/http/AbstractPustefixXMLRequestHandler.java
+	* src/org/pustefixframework/http/PustefixContextXMLRequestHandler.java
+
 2009-03-02  Martin Leidig  <mleidig@schlund.de>
 
 	Fixed force-ssl configuration.
