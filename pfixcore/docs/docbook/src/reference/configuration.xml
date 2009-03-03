@@ -1246,10 +1246,9 @@
           </tbody>
         </informaltable>
         <programlisting language="xml"><![CDATA[
-      <ssl force="true|false"/>
+      <force-ssl>true|false</force-ssl>
         ]]></programlisting>
-        The node is optional. If given, and the attribute 
-        <tag class="attribute">force</tag> is set to 
+        The node is optional. If given, and the content is set to
         <literal>true</literal>, the page will only run under SSL when 
         jumped to via a link or a submit of form data. If the session 
         currently does not run under SSL, the system will make sure to 
