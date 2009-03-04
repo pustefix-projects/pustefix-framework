@@ -51,6 +51,7 @@ public class ModuleResource implements Resource {
     }
 
     public InputStream getInputStream() throws IOException {
+        if(url == null) throw new IOException("Resource doesn't exist");
         JarURLConnection con = (JarURLConnection)url.openConnection();
         con.setUseCaches(false);
         return con.getInputStream();
