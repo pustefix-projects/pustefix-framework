@@ -19,7 +19,6 @@
 package de.schlund.pfixxml.util;
 
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.OutputStream;
 import java.io.StringWriter;
 import java.net.MalformedURLException;
@@ -102,7 +101,7 @@ public class Xslt {
         Source src = new SAXSource(Xml.createXMLReader(), input);
         TransformerFactory factory = XsltProvider.getXsltSupport(xsltVersion).getThreadTransformerFactory();
         if(factory.getErrorListener()==null) factory.setErrorListener(new PFErrorListener());
-        factory.setURIResolver(new FileResolver(parent,xsltVersion));
+        factory.setURIResolver(new ResourceResolver(parent,xsltVersion));
         try {
             Templates retval = factory.newTemplates(src);
             return retval;
@@ -204,11 +203,11 @@ public class Xslt {
     }
     
     
-    static class FileResolver implements URIResolver {
+    static class ResourceResolver implements URIResolver {
         private TargetImpl parent;
         private XsltVersion xsltVersion;
 
-        public FileResolver(TargetImpl parent, XsltVersion xsltVersion) {
+        public ResourceResolver(TargetImpl parent, XsltVersion xsltVersion) {
             this.parent = parent;
             this.xsltVersion = xsltVersion;
         }
@@ -221,7 +220,7 @@ public class Xslt {
         public Source resolve(String href, String base) throws TransformerException {
             URI uri;
             String path;
-            FileResource file;
+            Resource resource;
             //Rewrite include href to xslt version specific file, that's necessary cause
             //the XSLT1 and XSLT2 extension functions are incompatible and we want
             //to support using XSLT1 (Saxon 6.5.x) or XSLT2 (Saxon 8.x) without the
@@ -237,16 +236,8 @@ public class Xslt {
             } catch (URISyntaxException e) {
                 return new StreamSource(href);
             }
-            if ("module".equals(uri.getScheme())) {
-                Resource res = ResourceUtil.getResource(uri);
-                try {
-                    return new StreamSource(res.getInputStream(), uri.toString());
-                } catch(IOException x) {
-                    throw new TransformerException("Can't read module resource: " + uri.toString(), x);
-                }
-            }
-            
-            if (uri.getScheme() != null && !uri.getScheme().equals("pfixroot")) {
+
+            if (uri.getScheme() != null && !uri.getScheme().equals("pfixroot") && !uri.getScheme().equals("module")) {
                 // we don't handle uris with an explicit scheme
                 return new StreamSource(href);
             }
@@ -255,6 +246,9 @@ public class Xslt {
                 if (path.startsWith("/")) {
                     path = path.substring(1);
                 }
+            }
+            if("module".equals(uri.getScheme())) {
+                path = uri.toString();
             }
             
             if (parent != null) {
@@ -274,7 +268,7 @@ public class Xslt {
                 // If Document object is null, the file could not be found or read
                 // so return null to tell the parser the URI could not be resolved
                 if (dom == null) {
-                    return null;
+                    throw new TransformerException("Resource can't be found: " + uri.toString());
                 }
                 
                 Source source = new DOMSource(dom);
@@ -289,13 +283,10 @@ public class Xslt {
                 return source;
             }
             
-            file = ResourceUtil.getFileResourceFromDocroot(path);
-            try {
-                Source source = new StreamSource(file.toURL().toString());
-                return source;
-            } catch (MalformedURLException e) {
-                return null;
-            }
+            resource = ResourceUtil.getResource(path);
+            if(!resource.exists()) throw new TransformerException("Resource can't be found: " + uri.toString());
+            Source source = new StreamSource(path);
+            return source;
         }
     }
 
