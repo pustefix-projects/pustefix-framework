@@ -211,6 +211,24 @@
               <goal>run</goal>
             </goals>
           </execution>
+          <execution>
+            <id>svnrevision</id>
+            <phase>generate-resources</phase>
+            <configuration>
+              <tasks>
+                <echo>svn info</echo>
+                <mkdir dir="${basedir}/target/classes/META-INF"/>
+                <property name="svnrevision" location="${basedir}/target/classes/META-INF/SVN_REVISION"/>
+                <delete file="${svnrevision}"/>
+                <exec executable="svn" output="${svnrevision}">
+                  <arg line="info"/>
+                </exec>
+              </tasks>
+            </configuration>
+            <goals>
+              <goal>run</goal>
+            </goals>
+          </execution>
         </executions>
       </plugin>
 
