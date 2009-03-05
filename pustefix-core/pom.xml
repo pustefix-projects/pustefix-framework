@@ -283,9 +283,9 @@ __antprop_standalone.tomcat=${standalone.tomcat}
              <artifactId>pfixcore</artifactId>
              <version>0.13.5-SNAPSHOT</version>
              <exclusions>
-               <exclusion><!--  avoid pulling ant 1.5 -->
+               <exclusion><!--  avoid pulling ant 1.5 (which causes linking exceptions) -->
                  <groupId>ant</groupId>
-                 <artifactId>ant</artifactId>
+                  <artifactId>ant</artifactId>
                </exclusion>
              </exclusions>
            </dependency>
