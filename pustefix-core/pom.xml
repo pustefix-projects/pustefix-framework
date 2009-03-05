@@ -233,12 +233,13 @@
             <phase>package</phase>
             <configuration>
               <tasks>
-                <copy file="${basedir}/target/classes/META-INF/SVN_REVISION" tofile="${basedir}/projects/core/SVN_REVISION"/>
                 <tar destfile="target/${project.artifactId}-data-${project.version}.tgz" compression="gzip">
                   <tarfileset dir="${basedir}/projects/core" prefix="core">
                     <exclude name="dyntxt/statuscodeinfo.xml"/>
                   </tarfileset>
-                  <tarfileset file="${basedir}/skel/build-skel.xml" prefix="core/build"/>
+                  <tarfileset dir="${basedir}/target/classes/META-INF" prefix="core">
+                    <include name="SVN_REVISION"/>
+                  </tarfileset>
                 </tar>
               </tasks>
             </configuration>
