@@ -44,6 +44,7 @@
   <modules>
     <module>pustefix-webservices</module>
     <module>pustefix-maven</module>
+    <module>pustefix-core</module>
   </modules>
 
 </project>
