@@ -186,6 +186,35 @@
   <build>
     <plugins> 
       <plugin>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>apt</id>
+            <phase>generate-sources</phase>
+            <configuration>
+              <tasks>
+                <taskdef name="pfx-apt"
+                  classname="de.schlund.pfixcore.generator.iwrpgen.AptTask"
+                  classpathref="maven.compile.classpath"
+                  description="Pustefix APT task" />
+                <pfx-apt
+                  classpathref="maven.compile.classpath"
+                  srcdir="${basedir}/src"
+                  destdir="${basedir}/target/classes"
+                  preprocessdir="${project.build.directory}/generated-sources/apt"
+                  encoding="${project.build.sourceEncoding}"
+                  factory="de.schlund.pfixcore.util.CommonAnnotationProcessorFactory" />
+              </tasks>
+              <sourceRoot>${project.build.directory}/generated-sources/apt</sourceRoot>
+            </configuration>
+            <goals>
+              <goal>run</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
         <groupId>org.pustefixframework.maven.plugins</groupId>
         <artifactId>pustefix-scgenerate-plugin</artifactId>
         <version>0.2.1</version>
