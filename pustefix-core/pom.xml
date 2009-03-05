@@ -199,7 +199,7 @@
                   description="Pustefix APT task" />
                 <pfx-apt
                   classpathref="maven.compile.classpath"
-                  srcdir="${basedir}/src"
+                  srcdir="${basedir}/src/main/java"
                   destdir="${basedir}/target/classes"
                   preprocessdir="${project.build.directory}/generated-sources/apt"
                   encoding="${project.build.sourceEncoding}"
