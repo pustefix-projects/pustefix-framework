@@ -27,11 +27,6 @@
       <version>[1.1,1.3)</version>
     </dependency>
     <dependency>
-      <groupId>ant-contrib</groupId>
-      <artifactId>ant-contrib</artifactId>
-      <version>1.0b2</version>
-    </dependency>
-    <dependency>
       <groupId>commons-collections</groupId>
       <artifactId>commons-collections</artifactId>
       <version>[3.1,3.3)</version>
@@ -170,6 +165,10 @@
           <groupId>com.marsching.flexiparse</groupId>
           <artifactId>flexiparse</artifactId>
         </exclusion>
+        <exclusion>
+          <groupId>org.pustefixframework</groupId>
+          <artifactId>pfixcore</artifactId>
+        </exclusion>
       </exclusions>
     </dependency>
 
@@ -191,6 +190,13 @@
   <build>
     <plugins> 
       <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <forkMode>always</forkMode>
+        </configuration>
+      </plugin>
+      <plugin>
         <artifactId>maven-antrun-plugin</artifactId>
         <executions>
           <execution>
@@ -200,10 +206,10 @@
               <tasks>
                 <taskdef name="pfx-apt"
                   classname="de.schlund.pfixcore.generator.iwrpgen.AptTask"
-                  classpathref="maven.compile.classpath"
+                  classpathref="maven.plugin.classpath"
                   description="Pustefix APT task" />
                 <pfx-apt
-                  classpathref="maven.compile.classpath"
+                  classpathref="maven.plugin.classpath"
                   srcdir="${basedir}/src/main/java"
                   destdir="${basedir}/target/classes"
                   preprocessdir="${project.build.directory}/generated-sources/apt"
@@ -225,7 +231,7 @@
                 <taskdef
                   name="pfx-buildtime-props"
                   classname="de.schlund.pfixxml.config.BuildTimePropTask"
-                  classpathref="maven.compile.classpath"
+                  classpathref="maven.plugin.classpath"
                 />
                 <pfx-buildtime-props
                   file="${basedir}/projects/common/conf/buildtime.prop"
@@ -270,6 +276,20 @@ __antprop_standalone.tomcat=${standalone.tomcat}
             </goals>
           </execution>
         </executions>
+        <dependencies>
+           <!--  TODO -->
+           <dependency>
+             <groupId>org.pustefixframework</groupId>
+             <artifactId>pfixcore</artifactId>
+             <version>0.13.5-SNAPSHOT</version>
+             <exclusions>
+               <exclusion><!--  avoid pulling ant 1.5 -->
+                 <groupId>ant</groupId>
+                 <artifactId>ant</artifactId>
+               </exclusion>
+             </exclusions>
+           </dependency>
+        </dependencies>
       </plugin>
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
@@ -332,5 +352,3 @@ __antprop_standalone.tomcat=${standalone.tomcat}
     </plugins>                
   </build>
 </project>
-
-
