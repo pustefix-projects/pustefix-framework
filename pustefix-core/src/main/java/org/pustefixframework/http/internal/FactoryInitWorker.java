@@ -58,6 +58,7 @@ import com.marsching.flexiparse.parser.exception.ParserException;
 import de.schlund.pfixxml.FactoryInitException;
 import de.schlund.pfixxml.FactoryInitUtil;
 import de.schlund.pfixxml.config.CustomizationHandler;
+import de.schlund.pfixxml.config.GlobalConfig;
 import de.schlund.pfixxml.config.GlobalConfigurator;
 import de.schlund.pfixxml.resources.FileResource;
 import de.schlund.pfixxml.resources.ResourceUtil;
@@ -165,7 +166,9 @@ public class FactoryInitWorker {
     
             // Setup global configuration before doing anything else
             if (docrootstr != null) {
-                GlobalConfigurator.setDocroot(docrootstr);
+                if (!docrootstr.equals(GlobalConfig.getDocroot())) {
+                    GlobalConfigurator.setDocroot(docrootstr);
+                }
             }
             if (warMode) {
                 GlobalConfigurator.setServletContext(servletContext);
