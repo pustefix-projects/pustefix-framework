@@ -73,7 +73,7 @@ public class XsltTest extends TestCase {
     }
 
     private void transform(String name, Result result) throws Exception {
-        final String PREFIX = "tests/junit/de/schlund/pfixxml/util/"; // TODO: windows
+        final String PREFIX = "src/test/java/de/schlund/pfixxml/util/"; // TODO: windows
         final String xml = name + ".xml";
         final String xsl = name + ".xsl";
         Document doc;

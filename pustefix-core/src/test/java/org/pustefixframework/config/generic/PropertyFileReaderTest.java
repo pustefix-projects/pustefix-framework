@@ -40,7 +40,7 @@ public class PropertyFileReaderTest {
     @Test
     public void test() throws Exception {
         InputStream in = getClass().getResourceAsStream("properties.xml");
-        if(in==null) in = new FileInputStream(new File("tests/junit/org/pustefixframework/config/generic/properties.xml"));
+        if(in==null) in = new FileInputStream(new File("src/test/java/org/pustefixframework/config/generic/properties.xml"));
         Properties props = new Properties();
         PropertyFileReader.read(in, props);
         Properties refProps = new Properties();

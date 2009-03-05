@@ -15,6 +15,11 @@
 
   <name>Pustefix Framework Core</name>
 
+  <properties>
+    <makemode>test</makemode>
+    <standalone.tomcat>true</standalone.tomcat>
+  </properties>
+ 
   <dependencies>
     <dependency>
       <groupId>xml-resolver</groupId>
@@ -212,11 +217,28 @@
             </goals>
           </execution>
           <execution>
-            <id>svnrevision</id>
+            <id>svnrevision_buildtimeprops</id>
             <phase>generate-resources</phase>
             <configuration>
               <tasks>
                 <mkdir dir="${basedir}/target/classes/META-INF"/>
+                <taskdef
+                  name="pfx-buildtime-props"
+                  classname="de.schlund.pfixxml.config.BuildTimePropTask"
+                  classpathref="maven.compile.classpath"
+                />
+                <pfx-buildtime-props
+                  file="${basedir}/projects/common/conf/buildtime.prop"
+                  mode="${makemode}"
+                  uid="uid"
+                  machine="machine"
+                  fqdn="fqdn"
+                  docroot="docroot"
+                 />
+                <echo append="true" file="${basedir}/projects/common/conf/buildtime.prop">
+__antprop_makemode=${makemode}
+__antprop_standalone.tomcat=${standalone.tomcat}
+                </echo>
                 <property name="svnrevision" location="${basedir}/target/classes/META-INF/SVN_REVISION"/>
                 <delete file="${svnrevision}"/>
                 <exec executable="svn" output="${svnrevision}">

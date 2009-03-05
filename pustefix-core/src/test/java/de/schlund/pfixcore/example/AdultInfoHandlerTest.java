@@ -8,6 +8,7 @@ import org.junit.Test;
 import org.pustefixframework.test.MockContext;
 
 import de.schlund.pfixcore.example.iwrapper.AdultInfo;
+import de.schlund.pfixxml.config.GlobalConfig;
 import de.schlund.pfixxml.config.GlobalConfigurator;
 
 /**
@@ -20,7 +21,9 @@ public class AdultInfoHandlerTest {
 
     @Before
     public void setUp() throws Exception {
-        GlobalConfigurator.setDocroot((new File("projects").getAbsolutePath()));
+        if (GlobalConfig.getDocroot() == null) {
+            GlobalConfigurator.setDocroot((new File("projects").getAbsolutePath()));
+        }
     }
     
     @Test

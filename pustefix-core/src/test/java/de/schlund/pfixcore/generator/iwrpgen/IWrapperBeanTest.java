@@ -26,6 +26,7 @@ import junit.framework.TestCase;
 import de.schlund.pfixcore.example.test.Bean;
 import de.schlund.pfixcore.example.test.BeanWrapper;
 import de.schlund.pfixcore.example.test.Data;
+import de.schlund.pfixxml.config.GlobalConfig;
 import de.schlund.pfixxml.config.GlobalConfigurator;
 
 /**
@@ -35,7 +36,9 @@ public class IWrapperBeanTest extends TestCase {
 
     @Override
     protected void setUp() throws Exception {
-        GlobalConfigurator.setDocroot((new File("projects").getAbsolutePath()));
+        if (GlobalConfig.getDocroot() == null) {
+            GlobalConfigurator.setDocroot((new File("projects").getAbsolutePath()));
+        }
     }
 
     public void testWrapperToBean() throws Exception {

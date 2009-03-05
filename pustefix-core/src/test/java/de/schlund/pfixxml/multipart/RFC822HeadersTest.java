@@ -111,7 +111,7 @@ public class RFC822HeadersTest extends TestCase {
         InputStream in=getClass().getClassLoader().getResourceAsStream("de/schlund/pfixxml/multipart/"+fileName);
         if(in==null) {
             try {
-                in=new FileInputStream("tests/junit/de/schlund/pfixxml/multipart/"+fileName);
+                in=new FileInputStream("src/test/java/de/schlund/pfixxml/multipart/"+fileName);
             } catch(FileNotFoundException x) {
                 throw new RuntimeException(x);
             }

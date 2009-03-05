@@ -49,7 +49,7 @@ public class ApplicationListTest extends TestCase {
         ApplicationList lst;
         Application app;
 
-        lst = ApplicationList.load(Xml.parseMutable(new File("tests/junit/de/schlund/pfixxml/jmx/projects.xml")), true, "foo");
+        lst = ApplicationList.load(Xml.parseMutable(new File("src/test/java/de/schlund/pfixxml/jmx/projects.xml")), true, "foo");
        
         assertEquals(6, lst.size());
         app = (Application) lst.getApplications().get(0);
