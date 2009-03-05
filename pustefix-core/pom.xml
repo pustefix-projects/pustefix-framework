@@ -216,7 +216,6 @@
             <phase>generate-resources</phase>
             <configuration>
               <tasks>
-                <echo>svn info</echo>
                 <mkdir dir="${basedir}/target/classes/META-INF"/>
                 <property name="svnrevision" location="${basedir}/target/classes/META-INF/SVN_REVISION"/>
                 <delete file="${svnrevision}"/>
@@ -228,6 +227,47 @@
             <goals>
               <goal>run</goal>
             </goals>
+          </execution>
+          <execution>
+            <id>data</id>
+            <phase>package</phase>
+            <configuration>
+              <tasks>
+                <copy file="${basedir}/target/classes/META-INF/SVN_REVISION" tofile="${basedir}/projects/core/SVN_REVISION"/>
+                <tar destfile="target/${project.artifactId}-data-${project.version}.tgz" compression="gzip">
+                  <tarfileset dir="${basedir}/projects/core" prefix="core">
+                    <exclude name="dyntxt/statuscodeinfo.xml"/>
+                  </tarfileset>
+                  <tarfileset file="${basedir}/skel/build-skel.xml" prefix="core/build"/>
+                </tar>
+              </tasks>
+            </configuration>
+            <goals>
+              <goal>run</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>build-helper-maven-plugin</artifactId>
+        <version>1.1</version>
+        <executions>
+          <execution>
+            <id>attach-artifacts</id>
+            <phase>package</phase>
+            <goals>
+              <goal>attach-artifact</goal>
+            </goals>
+            <configuration>
+              <artifacts>
+                <artifact>
+                  <file>${basedir}/target/${project.artifactId}-data-${version}.tgz</file>
+                  <type>tgz</type>
+                  <classifier>data</classifier>
+                </artifact>
+              </artifacts>
+            </configuration>
           </execution>
         </executions>
       </plugin>
