@@ -233,11 +233,11 @@ public class FactoryInitWorker {
             try {
                 configureLog4j(l4jfile);
             } catch (FileNotFoundException e) {
-                throw new ServletException("File for log4j configuration not found!", e);
+                throw new ServletException(l4jfile + ": file for log4j configuration not found!", e);
             } catch (SAXException e) {
-                throw new ServletException("Error on parsing log4j configuration file!", e);
+                throw new ServletException(l4jfile + ": error on parsing log4j configuration file", e);
             } catch (IOException e) {
-                throw new ServletException("Error on reading log4j configuration file!", e);
+                throw new ServletException(l4jfile + ": error on reading log4j configuration file!", e);
             }
 
         }
