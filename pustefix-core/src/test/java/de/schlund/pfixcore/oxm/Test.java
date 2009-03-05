@@ -184,7 +184,7 @@ public class Test extends TestCase {
         InputStream in = getClass().getClassLoader().getResourceAsStream("de/schlund/pfixcore/oxm/" + fileName);
         if (in == null) {
             try {
-                in = new FileInputStream("tests/junit/de/schlund/pfixcore/oxm/" + fileName);
+                in = new FileInputStream("src/test/java/de/schlund/pfixcore/oxm/" + fileName);
             } catch (FileNotFoundException x) {
                 throw new RuntimeException(x);
             }
