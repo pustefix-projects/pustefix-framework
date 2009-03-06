@@ -77,24 +77,18 @@
     </dependency>
     <dependency>
       <groupId>org.springframework</groupId>
-      <artifactId>spring-core</artifactId>
+      <artifactId>spring</artifactId>
       <version>2.5.6</version>
-      <scope>system</scope>
-      <systemPath>/home/mhm/Projects/pfixcore/pustefix-core/lib/spring-2.5.6.jar</systemPath>
     </dependency>
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-webmvc</artifactId>
       <version>2.5.6</version>
-      <scope>system</scope>
-      <systemPath>/home/mhm/Projects/pfixcore/pustefix-core/lib/spring-webmvc-2.5.6.jar</systemPath>
     </dependency>
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-test</artifactId>
       <version>2.5.6</version>
-      <scope>system</scope>
-      <systemPath>/home/mhm/Projects/pfixcore/pustefix-core/lib/spring-test-2.5.6.jar</systemPath>
     </dependency>
     <dependency>
       <groupId>javax.management</groupId>
