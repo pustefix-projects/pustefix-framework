@@ -178,6 +178,8 @@ __antprop_standalone.tomcat=${standalone.tomcat}
               <docRoot>${basedir}/projects</docRoot>
               <includes>
                 <include>sample1/dyntxt/statuscodeinfo.xml</include>
+                <include>samplebank/dyntxt/statuscodeinfo.xml</include>
+                <include>testsuite/dyntxt/statuscodeinfo.xml</include>
               </includes>
             </configuration>
             <id>statuscodes</id>
