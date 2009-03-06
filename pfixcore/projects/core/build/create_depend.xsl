@@ -116,7 +116,7 @@
               <xsl:if test="@module">module://<xsl:value-of select="@module"/>/</xsl:if><xsl:value-of select="@stylesheet"/><xsl:text> </xsl:text>
             </xsl:for-each>
             <xsl:for-each select="/make/global/include">
-              <xsl:value-of select="@stylesheet"/><xsl:text> </xsl:text>
+              <xsl:if test="@module">module://<xsl:value-of select="@module"/>/</xsl:if><xsl:value-of select="@stylesheet"/><xsl:text> </xsl:text>
             </xsl:for-each>
           </xsl:attribute>
         </param>
@@ -208,7 +208,7 @@
       <param name="stylesheets_to_include">
         <xsl:attribute name="value">
           <xsl:for-each select="include">
-            <xsl:value-of select="@stylesheet"/><xsl:text> </xsl:text>
+            <xsl:if test="@module">module://<xsl:value-of select="@module"/>/</xsl:if><xsl:value-of select="@stylesheet"/><xsl:text> </xsl:text>
           </xsl:for-each>
         </xsl:attribute>
       </param>
