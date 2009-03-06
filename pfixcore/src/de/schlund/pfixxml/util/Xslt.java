@@ -101,22 +101,15 @@ public class Xslt {
     
     private static Templates loadTemplates(XsltVersion xsltVersion, InputSource input, TargetImpl parent) throws TransformerConfigurationException {
         try {
-            try {
-                return loadTemplates(xsltVersion, input, parent, false);
-            } catch (XsltResourceNotFoundException e) {
-                throw e;
-            } catch (TransformerException e) {
-                return loadTemplates(xsltVersion, input, parent, true);
-            }
-        } catch(TransformerException x) {
-            //just to keep public API stable
-            //TODO: let methods throw TransformerException
-            if(x instanceof TransformerConfigurationException) throw (TransformerConfigurationException)x;
-            throw new TransformerConfigurationException("Error loading XSL stylesheet", x);
+            return loadTemplates(xsltVersion, input, parent, false);
+        } catch (XsltResourceNotFoundException e) {
+            throw e;
+        } catch (TransformerConfigurationException e) {
+            return loadTemplates(xsltVersion, input, parent, true);
         }
     }
     
-    private static Templates loadTemplates(XsltVersion xsltVersion, InputSource input, TargetImpl parent, boolean debug) throws TransformerException {
+    private static Templates loadTemplates(XsltVersion xsltVersion, InputSource input, TargetImpl parent, boolean debug) throws TransformerConfigurationException {
         Source src = new SAXSource(Xml.createXMLReader(), input);
         TransformerFactory factory = XsltProvider.getXsltSupport(xsltVersion).getThreadTransformerFactory();
         factory.setErrorListener(new PFErrorListener());
