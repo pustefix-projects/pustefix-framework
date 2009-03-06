@@ -34,7 +34,6 @@ import org.apache.log4j.PatternLayout;
 import de.schlund.pfixcore.beans.metadata.Bean;
 import de.schlund.pfixcore.beans.metadata.Beans;
 import de.schlund.pfixcore.beans.metadata.Property;
-import de.schlund.pfixcore.example.webservices.DataBean;
 
 /**
  * Bean property descriptor for bean classes. Introspects a class to find all
@@ -267,21 +266,5 @@ public class BeanDescriptor {
             sb.append("\t" + propName + "\n");
         }
         return sb.toString();
-    }
-
-    public static void main(String[] args) {
-        ConsoleAppender appender = new ConsoleAppender(new PatternLayout("%p: %m\n"));
-        Logger logger = Logger.getRootLogger();
-        logger.setLevel((Level) Level.DEBUG);
-        logger.removeAllAppenders();
-        logger.addAppender(appender);
-
-        Beans beans = new Beans();
-        Bean bean = new Bean(DataBean.class.getName());
-        bean.excludeByDefault();
-        bean.includeProperty("boolVal");
-        beans.setBean(bean);
-        BeanDescriptor desc = new BeanDescriptor(DataBean.class, null);
-        System.out.println(desc);
     }
 }
