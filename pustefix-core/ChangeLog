@@ -1,3 +1,11 @@
+2009-03-04  Martin Leidig  <mleidig@schlund.de>
+
+	Fixed resolving of XSLT includes from modules.
+
+	* src/de/schlund/pfixxml/util/Xslt.java
+	* src/de/schlund/pfixxml/resources/ModuleResource.java
+	* projects/core/build/create_depend.xsl
+
 2009-03-03  Martin Leidig  <mleidig@schlund.de>
 
 	Fixed null value for SPDocument creation time if redirect is done
@@ -17,10 +25,10 @@
 
 2009-03-02  Martin Leidig  <mleidig@schlund.de>
 
-        Fixed force-ssl configuration.
+	Fixed force-ssl configuration.
 
-        * src/org/pustefixframework/config/contextxmlservice/parser/SSLParsingHandler.java
-        * res/META-INF/org/pustefixframework/config/context-xml-service/parser/context-xml-service-config.xml
+	* src/org/pustefixframework/config/contextxmlservice/parser/SSLParsingHandler.java
+	* res/META-INF/org/pustefixframework/config/context-xml-service/parser/context-xml-service-config.xml
 
 2009-02-27  Martin Leidig  <mleidig@schlund.de>
 
