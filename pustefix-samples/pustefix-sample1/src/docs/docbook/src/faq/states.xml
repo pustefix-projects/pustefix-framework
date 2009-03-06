@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+<chapter xml:id="states" xmlns="http://docbook.org/ns/docbook" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://docbook.org/ns/docbook http://www.docbook.org/xml/5.0CR7/xsd/docbook.xsd">
+  <title>States</title>
+
+  <qandaset>
+    <qandaentry xml:id="states.document">
+      <question>
+        <para>
+          When I implement the getDocument() method of a State descending from StaticState, what is the difference between new Document() and super.getDocument(context, preq)?
+        </para>
+      </question>
+      <answer>
+        <para>
+          If you use a new document, the pageflow will usually continue without displaying the page while if you use
+          <function>super.getDocument</function>, the pageflow will stop on this page and on all the
+          <classname>ContextResources</classname> that are declared in this pagerequest will be called <function>insertStatus()</function>.
+        </para>
+        <para>
+          Basically, when using a new document, descending from <classname>StaticState</classname> doesn't really make sense, as you don't
+          use anything interesting from this class - descending from <classname>StateImpl</classname> directly would be just as good.
+        </para>
+      </answer>
+    </qandaentry>
+    <qandaentry xml:id="states.impl">
+      <question>
+        <para>
+          What is the difference between StaticState and StateImpl?
+        </para>
+      </question>
+      <answer>
+        <para>
+          <classname>StateImpl</classname> is abstract and does not implement the <function>getDocument()</function> method.
+          <classname>StaticState</classname> implements the <function>getDocument()</function> method, calls
+          <function>insertStatus</function> of all the <classname>ContextResources</classname> defined for this pagerequest and
+          stops the pageflow.
+        </para>
+      </answer>
+    </qandaentry>
+  </qandaset>
+
+</chapter>

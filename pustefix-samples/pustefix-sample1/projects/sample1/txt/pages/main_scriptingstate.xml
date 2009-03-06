@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?><include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
+  
+  <part name="content">
+    <theme name="default">
+        <center>
+          <h3>Scripting State Demo</h3>
+          <pagemsgs/>
+          
+        </center>
+      </theme>
+  </part>
+  
+</include_parts>

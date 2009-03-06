@@ -1,0 +1,368 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.pustefixframework</groupId>
+    <artifactId>pustefixframework</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+  </parent>
+
+  <groupId>org.pustefixframework</groupId>
+  <artifactId>pustefix-core</artifactId>
+  <version>1.0.0-SNAPSHOT</version>
+  <packaging>jar</packaging>
+
+  <name>Pustefix Framework Core</name>
+
+  <properties>
+    <makemode>test</makemode>
+    <standalone.tomcat>true</standalone.tomcat>
+  </properties>
+ 
+  <dependencies>
+    <dependency>
+      <groupId>xml-resolver</groupId>
+      <artifactId>xml-resolver</artifactId>
+      <version>[1.1,1.3)</version>
+    </dependency>
+    <dependency>
+      <groupId>commons-collections</groupId>
+      <artifactId>commons-collections</artifactId>
+      <version>[3.1,3.3)</version>
+    </dependency>
+ 
+    <dependency>
+      <groupId>oro</groupId>
+      <artifactId>oro</artifactId>
+      <version>2.0.7</version>
+    </dependency>
+    <dependency>
+      <groupId>log4j</groupId>
+      <artifactId>log4j</artifactId>
+      <version>1.2.13</version>
+    </dependency>
+    <dependency>
+      <groupId>commons-logging</groupId>
+      <artifactId>commons-logging</artifactId>
+      <version>1.0.4</version>
+    </dependency>
+    <dependency>
+      <groupId>com.marsching.flexiparse</groupId>
+      <artifactId>flexiparse</artifactId>
+      <version>0.2.0</version>
+    </dependency>
+    <dependency>
+      <groupId>cglib</groupId>
+      <artifactId>cglib-nodep</artifactId>
+      <version>2.1_3</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.ant</groupId>
+      <artifactId>ant</artifactId>
+      <version>1.7.1</version>
+    </dependency>
+    <dependency>
+      <groupId>lucene</groupId>
+      <artifactId>lucene</artifactId>
+      <version>1.4.3</version>
+    </dependency>
+
+    <dependency>
+      <groupId>com.sun</groupId>
+      <artifactId>tools</artifactId>
+      <version>1.5.0</version>
+      <scope>system</scope>
+      <systemPath>${java.home}/../lib/tools.jar</systemPath>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-core</artifactId>
+      <version>2.5.6</version>
+      <scope>system</scope>
+      <systemPath>${basedir}/lib/spring-2.5.6.jar</systemPath>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-webmvc</artifactId>
+      <version>2.5.6</version>
+      <scope>system</scope>
+      <systemPath>${basedir}/lib/spring-webmvc-2.5.6.jar</systemPath>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-test</artifactId>
+      <version>2.5.6</version>
+      <scope>system</scope>
+      <systemPath>${basedir}/lib/spring-test-2.5.6.jar</systemPath>
+    </dependency>
+    <dependency>
+      <groupId>javax.management</groupId>
+      <artifactId>remote-optional</artifactId>
+      <version>1.0.1_03</version>
+      <scope>system</scope>
+      <systemPath>${basedir}/lib/jmxremote_optional-1.0.1_03.jar</systemPath>
+    </dependency>
+    <dependency>
+      <groupId>urbanophile</groupId>
+      <artifactId>java-getopt</artifactId>
+      <version>1.0.9</version>
+    </dependency>
+    <dependency>
+      <groupId>concurrent</groupId>
+      <artifactId>concurrent</artifactId>
+      <version>1</version>
+      <scope>system</scope>
+      <systemPath>${basedir}/lib/concurrent.jar</systemPath>
+    </dependency>
+
+    <dependency>
+      <groupId>javax.mail</groupId>
+      <artifactId>mail</artifactId>
+      <version>1.3.3</version>
+    </dependency>
+    <dependency>
+      <groupId>org.aspectj</groupId>
+      <artifactId>aspectjweaver</artifactId>
+      <version>1.6.2</version>
+      <scope>system</scope>
+      <systemPath>${basedir}/lib/aspectjweaver-1.6.2.jar</systemPath>
+    </dependency>
+    
+
+    <!-- TODO: not on Maven Central -->
+    <dependency>
+      <groupId>com.icl.saxon</groupId>
+      <artifactId>saxon</artifactId>
+      <version>6.5.5</version>
+    </dependency>
+
+    <!-- we need both to compile the our extensions -->
+    <!-- TODO: 9.0 -->
+    <dependency>
+      <groupId>net.sf.saxon</groupId>
+      <artifactId>saxon-dom</artifactId>
+      <version>8.7</version>
+    </dependency>
+    <dependency>
+      <groupId>net.sf.saxon</groupId>
+      <artifactId>saxon-xpath</artifactId>
+      <version>8.7</version>
+    </dependency>
+    
+    <dependency>
+      <groupId>bsf</groupId>
+      <artifactId>bsf</artifactId>
+      <version>2.3.0</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.pustefixframework.webservices</groupId>
+      <artifactId>pustefix-webservices-core</artifactId>
+      <version>0.1.2</version>      
+      <exclusions>
+        <exclusion>
+          <!--  TODO i get 0.1.2 otherwise ... -->
+          <groupId>com.marsching.flexiparse</groupId>
+          <artifactId>flexiparse</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.pustefixframework</groupId>
+          <artifactId>pfixcore</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>servlet-api</artifactId>
+      <version>2.4</version>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.5</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>rhino</groupId>
+      <artifactId>js</artifactId>
+      <version>1.5R3</version>
+      <scope>test</scope><!-- homepage test -->
+    </dependency>
+    <dependency>
+      <groupId>bsh</groupId>
+      <artifactId>bsh</artifactId>
+      <version>2.0b4</version>
+      <scope>test</scope>
+    </dependency>
+
+  </dependencies>
+ 
+  <build>
+    <plugins> 
+      <!-- plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <forkMode>never</forkMode>
+        </configuration>
+      </plugin-->
+      <plugin>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>apt</id>
+            <phase>generate-sources</phase>
+            <configuration>
+              <tasks>
+                <taskdef name="pfx-apt"
+                  classname="de.schlund.pfixcore.generator.iwrpgen.AptTask"
+                  classpathref="maven.plugin.classpath"
+                  description="Pustefix APT task" />
+                <pfx-apt
+                  classpathref="maven.plugin.classpath"
+                  srcdir="${basedir}/src/main/java"
+                  destdir="${basedir}/target/classes"
+                  preprocessdir="${project.build.directory}/generated-sources/apt"
+                  encoding="${project.build.sourceEncoding}"
+                  factory="de.schlund.pfixcore.util.CommonAnnotationProcessorFactory" />
+              </tasks>
+              <sourceRoot>${project.build.directory}/generated-sources/apt</sourceRoot>
+            </configuration>
+            <goals>
+              <goal>run</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>svnrevision_buildtimeprops</id>
+            <phase>generate-resources</phase>
+            <configuration>
+              <tasks>
+                <mkdir dir="${basedir}/target/classes/META-INF"/>
+                <taskdef
+                  name="pfx-buildtime-props"
+                  classname="de.schlund.pfixxml.config.BuildTimePropTask"
+                  classpathref="maven.plugin.classpath"
+                />
+                <pfx-buildtime-props
+                  file="${basedir}/projects/common/conf/buildtime.prop"
+                  mode="${makemode}"
+                  uid="uid"
+                  machine="machine"
+                  fqdn="fqdn"
+                  docroot="docroot"
+                 />
+                <echo append="true" file="${basedir}/projects/common/conf/buildtime.prop">
+__antprop_makemode=${makemode}
+__antprop_standalone.tomcat=${standalone.tomcat}
+                </echo>
+                <property name="svnrevision" location="${basedir}/target/classes/META-INF/SVN_REVISION"/>
+                <delete file="${svnrevision}"/>
+                <exec executable="svn" output="${svnrevision}">
+                  <arg line="info"/>
+                </exec>
+              </tasks>
+            </configuration>
+            <goals>
+              <goal>run</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>data</id>
+            <phase>package</phase>
+            <configuration>
+              <tasks>
+                <tar destfile="target/${project.artifactId}-data-${project.version}.tgz" compression="gzip">
+                  <tarfileset dir="${basedir}/projects/core" prefix="core">
+                    <exclude name="dyntxt/statuscodeinfo.xml"/>
+                  </tarfileset>
+                  <tarfileset dir="${basedir}/target/classes/META-INF" prefix="core">
+                    <include name="SVN_REVISION"/>
+                  </tarfileset>
+                </tar>
+              </tasks>
+            </configuration>
+            <goals>
+              <goal>run</goal>
+            </goals>
+          </execution>
+        </executions>
+        <dependencies>
+           <!--  TODO -->
+           <dependency>
+             <groupId>org.pustefixframework</groupId>
+             <artifactId>pfixcore</artifactId>
+             <version>0.13.5-SNAPSHOT</version>
+             <exclusions>
+               <exclusion><!--  avoid pulling ant 1.5 (which causes linking exceptions) -->
+                 <groupId>ant</groupId>
+                  <artifactId>ant</artifactId>
+               </exclusion>
+             </exclusions>
+           </dependency>
+        </dependencies>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>build-helper-maven-plugin</artifactId>
+        <version>1.1</version>
+        <executions>
+          <execution>
+            <id>attach-artifacts</id>
+            <phase>package</phase>
+            <goals>
+              <goal>attach-artifact</goal>
+            </goals>
+            <configuration>
+              <artifacts>
+                <artifact>
+                  <file>${basedir}/target/${project.artifactId}-data-${version}.tgz</file>
+                  <type>tgz</type>
+                  <classifier>data</classifier>
+                </artifact>
+              </artifacts>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>org.pustefixframework.maven.plugins</groupId>
+        <artifactId>pustefix-scgenerate-plugin</artifactId>
+        <version>0.2.1</version>
+        <executions>
+          <execution>
+            <configuration>
+              <docRoot>${basedir}/projects</docRoot>
+              <includes>
+                <include>core/dyntxt/statuscodeinfo.xml</include>
+                <include>sample1/dyntxt/statuscodeinfo.xml</include>
+                <include>samplebank/dyntxt/statuscodeinfo.xml</include>
+                <include>testsuite/dyntxt/statuscodeinfo.xml</include>
+              </includes>
+            </configuration>
+            <id>statuscodes</id>
+            <goals>
+              <goal>scgenerate</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.pustefixframework.maven.plugins</groupId>
+        <artifactId>pustefix-iwrpgenerate-plugin</artifactId>
+        <version>0.1.1</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>iwrpgenerate</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>                
+  </build>
+</project>

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scriptedflow version="1.0" xmlns="http://pustefix.sourceforge.net/scriptedflow200602" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://pustefix.sourceforge.net/scriptedflow200602 http://pustefix.sourceforge.net/scriptedflow200602.xsd" name="OrderShirtScript">
+  
+  <virtual-request page="start"/>
+  
+  <while test="$__pagename = 'login'">
+    <interactive-request/>
+  </while>
+  
+  <virtual-request page="start">
+    <param name="__sendingdata">1</param>
+    <param name="__CMD[start]:SELWRP">jump</param>
+    <param name="jump.Type"><value-of select="$__param_type"/></param>
+    <param name="jump.TargetGenerator"><value-of select="$__param_tgen"/></param>
+    <param name="jump.Path"><value-of select="$__param_path"/></param>
+    <param name="jump.Part"><value-of select="$__param_part"/></param>
+    <param name="jump.Theme"><value-of select="$__param_theme"/></param>
+  </virtual-request>
+
+  <choose>
+    <when test="$__param_type = 'include'">
+      <virtual-request page="includes"></virtual-request>
+    </when>
+    <otherwise>
+      <virtual-request page="dynincludes"></virtual-request>
+    </otherwise>
+  </choose>
+  
+</scriptedflow>

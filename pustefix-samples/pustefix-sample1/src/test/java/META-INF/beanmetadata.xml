@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<bean-metadata
+  xmlns="http://pustefix.sourceforge.net/bean-metadata"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://pustefix.sourceforge.net/bean-metadata http://pustefix.sourceforge.net/beanmetadata.xsd">
+
+  <bean class="de.schlund.pfixcore.beans.BeanA">
+    <property name="bar" exclude="true"/>
+    <property name="test" alias="mytest"/>
+  </bean>
+  <bean class="de.schlund.pfixcore.beans.BeanD" exclude-by-default="true">
+    <property name="foo"/>
+    <property name="baz"/>
+    <property name="test" alias="mytest"/>
+  </bean>
+  <bean class="de.schlund.pfixcore.beans.BeanB" exclude-by-default="true">
+    <property name="my" include="true"/>
+  </bean>
+  <bean class="de.schlund.pfixcore.beans.BeanE">
+    <property name="hey" exclude="true"/>
+    <property name="ho" exclude="true"/>
+  </bean>
+  <bean class="de.schlund.pfixcore.beans.BeanC">
+    <property name="foo" exclude="true"/>
+    <property name="bar" alias="mybar"/>
+  </bean>
+  <bean class="de.schlund.pfixcore.beans.BeanF" exclude-by-default="true">
+    <property name="bar" include="true" alias="mybar"/>
+    <property name="hey" include="true"/>
+  </bean>
+  
+</bean-metadata>

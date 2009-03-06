@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+<chapter xml:id="handler" xmlns="http://docbook.org/ns/docbook" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://docbook.org/ns/docbook http://www.docbook.org/xml/5.0CR7/xsd/docbook.xsd">
+  <title>Handler and wrapper</title>
+
+  <qandaset>
+    <qandaentry xml:id="handler.prerequisites">
+      <question>
+        <para>
+          What is the prerequisitesMet(...) method used for and when is it called?
+        </para>
+      </question>
+      <answer>
+        <para>
+          The <function>prerequisitesMet()</function> method from the <classname>IHandler</classname> interface is
+          used by pustefix to determine which HTML links should be active or not. This method is called once per
+          each request, on all IHandlers, from all pageflows. Thus, this method should be very fast or else the whole
+          system would be slowed down.
+        </para>
+      </answer>
+    </qandaentry>
+    <qandaentry xml:id="handler.iwrp.extend">
+      <question>
+        <para>
+          Can I reuse my existing iwrp interfaces?
+        </para>
+      </question>
+      <answer>
+        <para>
+          Yes, you can extend an interface and add some more parameters to it or override older definitions, instead of writing
+          a new one from scratch. You can also assign a new handler. Use the <literal>extends</literal> attribute of the
+          <literal>&lt;interface/&gt;</literal> tag.
+        </para>
+      </answer>
+    </qandaentry>
+  </qandaset>
+
+</chapter>

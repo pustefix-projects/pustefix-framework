@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<book version="5.0" xmlns="http://docbook.org/ns/docbook" xmlns:xlink="http://www.w3.org/1999/xlink"
+  xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://docbook.org/ns/docbook http://www.docbook.org/xml/5.0CR7/xsd/docbook.xsd"
+>
+  <info>
+    <title>Pustefix Tutorial</title>
+    <copyright>
+      <year>2007</year>
+      <year>2008</year>
+      <holder>1&amp;1 Internet AG</holder>
+    </copyright>
+    <authorgroup>
+      <author>
+        <personname>
+          <firstname>Tobias</firstname>
+          <surname>Fehrenbach</surname>
+        </personname>
+      </author>
+      <author>
+        <personname>
+          <firstname>Stephan</firstname>
+          <surname>Schmidt</surname>
+        </personname>
+      </author>
+    </authorgroup>
+  </info>
+  
+  <xi:include href="tutorial/preface.xml" />
+  <xi:include href="tutorial/getting-started.xml" />
+  <xi:include href="tutorial/wrapper-handler.xml" />
+  <xi:include href="tutorial/user-manager.xml" />
+  <xi:include href="tutorial/ajax-calculator.xml" />
+</book>

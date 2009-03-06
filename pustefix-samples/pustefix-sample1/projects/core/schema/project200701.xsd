@@ -1,0 +1,25 @@
+<xs:schema
+  elementFormDefault="qualified"
+  xmlns:xs="http://www.w3.org/2001/XMLSchema"
+>
+  <xs:element name="project">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="active">
+          <xs:simpleType>
+            <xs:restriction>
+              <xs:enumeration value="true"></xs:enumeration>
+              <xs:enumeration value="false"></xs:enumeration>
+            </xs:restriction>
+          </xs:simpleType>
+        </xs:element>
+        <xs:element name="comment">
+          <xs:simpleType/>
+        </xs:element>
+        <xs:element name="depend">
+          <xs:simpleType/>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

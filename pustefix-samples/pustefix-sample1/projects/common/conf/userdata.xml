@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<userinfo>
+  <user id="admin" name="CMS Administrator" phone="00000" pwd="g3IlJR0qEHivY" sect="Entwicklung">
+    <permissions>
+      <global admin="true" editDynIncludes="true"/>
+    </permissions>
+  </user>
+  <user id="user" name="CMS User" phone="570" pwd="lFZssX2PwJKHI" sect="Entwicklung">
+    <permissions>
+      <global admin="false" editDynIncludes="false"/>
+      <project editImages="true" editIncludes="true" name="sample1"/>
+    </permissions>
+  </user>
+</userinfo>

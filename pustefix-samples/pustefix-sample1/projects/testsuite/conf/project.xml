@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project-config xmlns="http://www.pustefix-framework.org/2008/namespace/project-config">
+  
+  <project>
+    <name>testsuite</name>
+    <description>Test suite for pfixcore</description>
+  </project>
+  
+  <editor>
+    <enabled>true</enabled> <!-- Do we really need this? -->
+    <location>http://cms.${fqdn}/</location>
+  </editor>
+  
+  <xml-generator>
+    <config-file>pfixroot:/testsuite/conf/depend.xml</config-file>
+  </xml-generator>
+  
+  <http-server>
+    
+    <http-port>
+      <address>${fqdn}</address>
+    </http-port>
+    
+    <server-name>testsuite.${fqdn}</server-name>
+    <server-alias>testsuite.${machine}</server-alias>
+    
+  </http-server>
+  
+  <application>
+    
+    <docroot-path>pfixroot:/testsuite/htdocs</docroot-path>
+    <default-path>/xml/main</default-path>
+    
+    <context-xml-service>
+      <path>/xml/main</path>
+      <config-file>pfixroot:/testsuite/conf/main.conf.xml</config-file>
+    </context-xml-service>
+    
+  </application>
+  
+</project-config>

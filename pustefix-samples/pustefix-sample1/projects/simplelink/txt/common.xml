@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
+  <!-- Our navigation for the example is the same for every page. -->
+  <!-- Therefore there is a common.xml in order to include it -->
+  <!-- in both of our pages -->
+  <part name="topnavi">
+    <theme name="default">
+      <table cellpadding="5">
+        <tr>
+          <td>
+            <pfx:button page="page_one">Page 1</pfx:button>
+          </td>
+          <td>
+            <pfx:button page="page_two">Page 2</pfx:button>
+          </td>
+        </tr>
+      </table>
+    </theme>
+  </part>
+</include_parts>

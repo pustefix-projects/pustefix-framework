@@ -1,0 +1,53 @@
+<?xml version="1.0"?>
+<book version="5.0" xmlns="http://docbook.org/ns/docbook" xmlns:xlink="http://www.w3.org/1999/xlink"
+  xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://docbook.org/ns/docbook http://www.docbook.org/xml/5.0CR7/xsd/docbook.xsd"
+>
+  <info>
+    <title>Pustefix Reference Documentation</title>
+    <copyright>
+      <year>2007</year>
+      <year>2008</year>
+      <holder>1&amp;1 Internet AG</holder>
+    </copyright>
+    <authorgroup>
+      <author>
+        <personname>
+          <firstname>Jens</firstname>
+          <surname>Lautenbacher</surname>
+          <othername role='mi'>T.</othername>
+        </personname>
+      </author>
+      <author>
+        <personname>
+          <firstname>Martin</firstname>
+          <surname>Leidig</surname>
+        </personname>
+      </author>
+      <author>
+        <personname>
+          <firstname>Sebastian</firstname>
+          <surname>Marsching</surname>
+        </personname>
+      </author>
+      <author>
+        <personname>
+          <firstname>Stephan</firstname>
+          <surname>Schmidt</surname>
+        </personname>
+      </author>
+    </authorgroup>
+  </info>
+  
+  <xi:include href="reference/preface.xml" />
+  <xi:include href="reference/installation.xml" />
+  <xi:include href="reference/architecture.xml" />
+  <xi:include href="reference/configuration.xml" />
+  <xi:include href="reference/xslt.xml" />
+  <xi:include href="reference/concepts.xml" />
+  <xi:include href="reference/advancedtopics.xml" />
+  <xi:include href="reference/module-support.xml" />
+  <xi:include href="reference/testing.xml" />
+  <xi:include href="reference/glossary.xml" />
+
+</book>

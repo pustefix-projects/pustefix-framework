@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<book version="5.0" xmlns="http://docbook.org/ns/docbook" xmlns:xlink="http://www.w3.org/1999/xlink"
+  xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://docbook.org/ns/docbook http://www.docbook.org/xml/5.0CR7/xsd/docbook.xsd"
+>
+  <info>
+    <title>Pustefix Frequently Asked Questions</title>
+    <copyright>
+      <year>2007</year>
+      <year>2008</year>
+      <holder>1&amp;1 Internet AG</holder>
+    </copyright>
+  </info>
+  
+  <xi:include href="faq/installation.xml" />
+  <xi:include href="faq/configuration.xml" />
+  <xi:include href="faq/xmlandxsl.xml" />
+  <xi:include href="faq/pageflows.xml" />
+  <xi:include href="faq/states.xml" />
+  <xi:include href="faq/handler.xml" />
+  <xi:include href="faq/ajax.xml" />
+</book>

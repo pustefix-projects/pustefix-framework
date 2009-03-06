@@ -1,0 +1,50 @@
+
+/bin/zsh is needed to run this script.
+
+propconv.sh is for converting .prop.in files from the old format to the new one which is validated by XML Schema.
+
+usage: propconv.sh [options]
+  -h, --help
+  -c, --copy          copies all .prop.in to non-existing .prop.in.orig (see --remove)
+  -C, --convert       converts all .prop.in.orig to .prop.in (overwriting existing)
+  -d, --docroot=DDIR
+  -D, --dump          show all files that would be processed
+      --diff          diffs all .prop.orig to .prop files
+      --diffsort      sorts and diffs all .prop.orig.sorted to .prop.sorted files
+      --pattern=PAT   egreps PAT against filenames of docroot relative .prop.in filenames
+                      which are "./" prefixed. E.g.: ./someapp/conf/help.prop.in
+                      Performs operations only on matching filenames
+      --project=VER   modifies DOCROOT/**/project.xml.in by replacing
+                      <class>de.schlund.pfixxml.DirectOutputServ[^<]*</class> with
+                      VER=old: <class>de.schlund.pfixxml.DirectOutputServlet</class>
+                      VER=new: <class>de.schlund.pfixxml.DirectOutputServer</class>
+  -p, --propconv=PDIR
+  -r, --remove        removes all .prop(.in).orig, .prop(.in).orig.sorted
+  -R, --restore       copies all .prop.in.orig to .prop.in (overwriting existing)
+  -s, --suffix=SUFFIX the suffix to use for copies, diffs and so on, default ".orig"
+  -t, --todo          greps all .prop.in for stuff to convert manually (// TODO_PROPCONV)
+
+A common usage example:
+
+Selectively convert one project.
+
+propconv dir
+/home/user/workspace/pfixcore/stuff/propconv200401
+
+the pustefix project in which to convert files
+/home/user/workspace/project
+
+the docroot dir of the pustefix project
+/home/user/workspace/project/projects
+
+the project to convert
+/home/user/workspace/project/projects/project1
+
+/home/user/workspace/pfixcore/stuff/propconv200401/propconv.sh --propconv=/home/user/workspace/pfixcore/stuff/propconv200401 --docroot=/home/user/workspace/project/projects --copy
+/home/user/workspace/pfixcore/stuff/propconv200401/propconv.sh --propconv=/home/user/workspace/pfixcore/stuff/propconv200401 --docroot=/home/user/workspace/project/projects --pattern='project1/conf/.*' --convert
+If propconv says, that not everything could be converted automatically, find and correct manually with:
+/home/user/workspace/pfixcore/stuff/propconv200401/propconv.sh --propconv=/home/user/workspace/pfixcore/stuff/propconv200401 --docroot=/home/user/workspace/project/projects --pattern='project1/conf/.*' --todo
+/home/user/workspace/pfixcore/stuff/propconv200401/propconv.sh --propconv=/home/user/workspace/pfixcore/stuff/propconv200401 --docroot=/home/user/workspace/project/projects --remove
+
+Note: if your project is not built (e.g. .prop files are non existent) some errors may occur during script execution. These can be ignored.
+

@@ -1,0 +1,319 @@
+<?xml version="1.0" encoding="ISO-8859-1"?><projects>
+
+  <project name="sample1">
+  
+  
+  <active>true</active>
+  <comment>Sample1 Application For Pfixcore</comment>
+  <depend>sample1/conf/depend.xml</depend>
+  
+  <virtualhost>horst.ue.schlund.de</virtualhost>
+  <servername>sample1.horst.ue.schlund.de</servername>
+  <serveralias>sample1.horst</serveralias>
+  
+  
+  <defpath>/xml/config</defpath>
+  <passthrough>sample1/img</passthrough>
+  
+  <documentroot>/usr/home/mhm/src/projects/core-RED/example/htdocs</documentroot>
+  
+  <literalapache>
+    # Add something here...
+  </literalapache>
+  <ports>
+    <port number="80"/>
+    
+    <port number="443" ssl="true">
+      <sslkey>/usr/home/mhm/src/projects/core-RED/example/sample1/conf/server.key</sslkey>
+      <sslcrt>/usr/home/mhm/src/projects/core-RED/example/sample1/conf/server.crt</sslcrt>
+    </port>
+  </ports>
+  
+  
+  
+  <servlet name="config" useineditor="true">
+    <active>true</active>
+    <class>de.schlund.pfixxml.ContextXMLServlet</class>
+    <propfile>sample1/conf/config.prop</propfile>
+  </servlet>
+  <servlet name="secure" useineditor="true">
+    <active>true</active>
+    <class>de.schlund.pfixxml.ContextXMLServlet</class>
+    <propfile>sample1/conf/secure.prop</propfile>
+  </servlet>
+  <servlet name="edit">
+    <active>true</active>
+    <class>de.schlund.pfixxml.ContextXMLServlet</class>
+    <propfile>core/editor/conf/config.prop</propfile>
+  </servlet>
+  <servlet name="deref">
+    <active>true</active>
+    <class>de.schlund.pfixxml.DerefServlet</class>
+  </servlet>
+  <servlet name="download">
+    <active>true</active>
+    <class>de.schlund.pfixxml.DirectOutputServlet</class>
+    <propfile>sample1/conf/direct.prop</propfile>
+  </servlet>
+</project><project name="simpleform">
+  
+  
+  <active>true</active>
+  <comment>How a form request will be handled by pustefix</comment>
+  <depend>simplepage/conf/depend.xml</depend>
+  <virtualhost>horst.ue.schlund.de</virtualhost>
+  <servername>simpleform.horst.ue.schlund.de</servername>
+  <serveralias>simpleform.horst</serveralias>
+  
+  
+  
+  <defpath>/xml/config</defpath>
+  
+  
+  
+  <documentroot>/usr/home/mhm/src/projects/core-RED/example/simpleform/htdocs</documentroot>
+  
+  
+  <literalapache>
+    # Add something here...
+  </literalapache>
+  <ports>
+    <port number="80"/>
+  </ports>
+  
+  
+  
+  
+  <servlet name="config" useineditor="true">
+    <active>true</active>
+    <class>de.schlund.pfixxml.ContextXMLServlet</class>
+    <propfile>simpleform/conf/config.prop</propfile>
+  </servlet>
+  <servlet name="edit">
+    <active>true</active>
+    <class>de.schlund.pfixxml.ContextXMLServlet</class>
+    <propfile>core/editor/conf/config.prop</propfile>
+  </servlet>
+  <servlet name="deref">
+    <active>true</active>
+    <class>de.schlund.pfixxml.DerefServlet</class>
+  </servlet>
+</project><project name="simplelink">
+  
+  
+  <active>true</active>
+  <comment>Just two links</comment>
+  <depend>simplelink/conf/depend.xml</depend>
+  <virtualhost>horst.ue.schlund.de</virtualhost>
+  <servername>simplelink.horst.ue.schlund.de</servername>
+  <serveralias>simplelink.horst</serveralias>
+  
+  
+  
+  <defpath>/xml/config</defpath>
+  
+  
+  
+  <documentroot>/usr/home/mhm/src/projects/core-RED/example/simplelink/htdocs</documentroot>
+  
+  
+  <literalapache>
+    # Add something here...
+  </literalapache>
+  <ports>
+    <port number="80"/>
+  </ports>
+  
+  
+  
+  
+  <servlet name="config" useineditor="true">
+    <active>true</active>
+    <class>de.schlund.pfixxml.ContextXMLServlet</class>
+    <propfile>simplelink/conf/config.prop</propfile>
+  </servlet>
+  <servlet name="edit">
+    <active>true</active>
+    <class>de.schlund.pfixxml.ContextXMLServlet</class>
+    <propfile>core/editor/conf/config.prop</propfile>
+  </servlet>
+  <servlet name="deref">
+    <active>true</active>
+    <class>de.schlund.pfixxml.DerefServlet</class>
+  </servlet>
+</project><project name="simplepage">
+  
+  
+  <active>true</active>
+  <comment>Just one page in order to make a real simple pustefix example available</comment>
+  <depend>simplepage/conf/depend.xml</depend>
+  <virtualhost>horst.ue.schlund.de</virtualhost>
+  <servername>simplepage.horst.ue.schlund.de</servername>
+  <serveralias>simplepage.horst</serveralias>
+  
+  
+  
+  <defpath>/xml/config</defpath>
+  
+  
+  
+  <documentroot>/usr/home/mhm/src/projects/core-RED/example/simplepage/htdocs</documentroot>
+  
+  
+  <literalapache>
+    # Add something here...
+  </literalapache>
+  <ports>
+    <port number="80"/>
+  </ports>
+  
+  
+  
+  
+  <servlet name="config" useineditor="true">
+    <active>true</active>
+    <class>de.schlund.pfixxml.ContextXMLServlet</class>
+    <propfile>simplepage/conf/config.prop</propfile>
+  </servlet>
+  <servlet name="edit">
+    <active>true</active>
+    <class>de.schlund.pfixxml.ContextXMLServlet</class>
+    <propfile>core/editor/conf/config.prop</propfile>
+  </servlet>
+  <servlet name="deref">
+    <active>true</active>
+    <class>de.schlund.pfixxml.DerefServlet</class>
+  </servlet>
+</project><project name="webservice">
+  
+  
+  <active>true</active>
+  <comment>webservice Application For Pfixcore</comment>
+  <depend>webservice/conf/depend.xml</depend>
+  <virtualhost>horst.ue.schlund.de</virtualhost>
+  <servername>webservice.horst.ue.schlund.de</servername>
+  <serveralias>webservice.horst</serveralias>
+  
+  
+  <defpath>/xml/config</defpath>
+  
+  <documentroot>/usr/home/mhm/src/projects/core-RED/example/webservice/htdocs</documentroot>
+  
+  <literalapache>
+    # Add something here...
+  </literalapache>
+  <ports>
+    <port number="80"/>
+  </ports>
+  
+  
+  
+  <servlet name="config" useineditor="true">
+    <active>true</active>
+    <class>de.schlund.pfixxml.ContextXMLServlet</class>
+    <propfile>webservice/conf/config.prop</propfile>
+  </servlet>
+  <servlet name="edit">
+    <active>true</active>
+    <class>de.schlund.pfixxml.ContextXMLServlet</class>
+    <propfile>core/editor/conf/config.prop</propfile>
+  </servlet>
+  <servlet name="deref">
+    <active>true</active>
+    <class>de.schlund.pfixxml.DerefServlet</class>
+  </servlet>
+  <servlet name="webservice">
+    <active>true</active>
+    <class>org.pustefixframework.webservices.WebServiceServlet</class>
+    <propfile>webservice/conf/webservice.conf</propfile>
+  </servlet>
+</project>
+  
+  
+
+  
+  
+  
+  <project name="cmscore">
+    <active>true</active>
+    <comment>CMS for Pfixcore</comment>
+    <depend>core/editor/conf/depend.xml</depend>
+    <virtualhost>horst.ue.schlund.de</virtualhost>
+    <servername>cmscore.horst.ue.schlund.de</servername>
+    <serveralias>cmscore.horst</serveralias>
+    <defpath>/xml/edit</defpath>
+    <passthrough>core/editor/img</passthrough>
+    <ports>
+      <port number="80"/>
+    </ports>
+    <servlet name="edit" useineditor="true">
+      <active>true</active>
+      <class>de.schlund.pfixxml.ContextXMLServlet</class>
+      <propfile>core/editor/conf/config.prop</propfile>
+    </servlet>
+    <servlet name="deref">
+      <active>true</active>
+      <class>de.schlund.pfixxml.DerefServlet</class>
+    </servlet>
+  </project>
+
+  
+
+  <project name="admcore">
+    <active>true</active>
+    <comment>Adminzone For Pfixcore</comment>
+    <virtualhost>horst.ue.schlund.de</virtualhost>
+    <servername>admcore.horst.ue.schlund.de</servername>
+    <serveralias>admcore.horst</serveralias>
+    <ports>
+      <port number="80"/>
+    </ports>
+    
+    <servlet name="init" autostartup="true">
+      <active>true</active>
+      <class>de.schlund.pfixxml.FactoryInitServlet</class>
+      <propfile>common/conf/factory.prop</propfile>
+      <init-param>
+        <param-name>pustefix.docroot</param-name>
+        <param-value>/usr/home/mhm/src/projects/core-RED/example/</param-value>
+      </init-param>
+    </servlet>
+
+    <servlet name="cachestat">
+      <active>true</active>
+      <class>de.schlund.pfixxml.CacheStatisticServlet</class> 
+    </servlet>
+  </project>
+
+  
+  
+  <common>
+    <commonpropfile>common/conf/pustefix.prop</commonpropfile>
+    <documentation>
+      <doc_file>core/xsl/navigation.xsl.in</doc_file>
+      <doc_file>core/xsl/utils.xsl.in</doc_file>
+      <doc_file>core/xsl/forminput.xsl.in</doc_file>
+      <doc_file>core/xsl/master.xsl.in</doc_file>
+      <doc_file>core/xsl/include.xsl.in</doc_file>
+    </documentation>  
+    <tomcat>
+      <minprocessors>100</minprocessors>
+      <maxprocessors>500</maxprocessors>
+      <connectorport>8009</connectorport>
+      <debug>0</debug>
+      <loglevel>info</loglevel>
+      <jkhost>horst.ue.schlund.de</jkhost>
+      
+      
+      <jkmount>router</jkmount>
+      <defaulthost>admcore.horst.ue.schlund.de</defaulthost>
+      <jvmroute>foo</jvmroute>
+    </tomcat>
+    <apache>
+      <apachelogdir>/usr/home/mhm/src/projects/core-RED/example/servletconf/log</apachelogdir>
+      <passthrough>common/img</passthrough>
+      <passthrough>core/img</passthrough>
+      <passthrough>core/script</passthrough>
+    </apache>
+  </common>
+</projects>

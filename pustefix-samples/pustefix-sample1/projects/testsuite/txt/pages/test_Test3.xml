@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
+  <part name="title">
+    <theme name="default">
+      Test3: Pageflow variants
+    </theme>
+  </part>
+  <part name="content">
+    <theme name="default">
+      <p>
+        This test will check that the right pageflow is triggered depending
+        on the variant that is set. On the next page, you will be able to
+        select a variant and will then see the page matching the selected
+        variant being displayed. If a page matching another variant is
+        displayed, the test failed.
+      </p>
+      <p>
+        <pfx:button page="Test3SetVariant">Go!</pfx:button>
+      </p>
+    </theme>
+  </part>
+</include_parts>

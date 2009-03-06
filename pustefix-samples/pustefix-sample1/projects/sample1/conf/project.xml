@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project-config xmlns="http://www.pustefix-framework.org/2008/namespace/project-config">
+  
+  <project>
+    <name>sample1</name>
+    <description>Sample1 Application</description>
+  </project>
+  
+  <editor>
+    <enabled>true</enabled> <!-- Do we really need this? -->
+    <location>http://cms.${fqdn}/</location>
+  </editor>
+  
+  <!-- Performance logging options:
+         buffersize: size of buffer for perfevents (default: 1000)
+         autostart: start perflogging automatically (default: false)
+         offermaxwait: max time a the put-thread will wait when putting perfevent into a full buffer (default: 5)-->
+  <perflogging buffersize="200" autostart="true" offermaxwait="5"/>
+  
+  <!-- JMX remote authentication administration -->
+  <!--
+  <authadmin/>
+  -->
+  
+  <!-- Testrecording via JMX -->
+  <testrecording/>
+  
+  <xml-generator>
+    <config-file>pfixroot:/sample1/conf/depend.xml</config-file>
+  </xml-generator>
+  
+  <http-server>
+    
+    <http-port>
+      <address>${fqdn}</address>
+    </http-port>
+    
+    <https-port>
+      <address>${fqdn}</address>
+      <ssl-key>pfixroot:/sample1/conf/server.key</ssl-key>
+      <ssl-crt>pfixroot:/sample1/conf/server.crt</ssl-crt>
+    </https-port>
+    
+    <server-name>sample1.${fqdn}</server-name>
+    <server-alias>sample1.${machine}</server-alias>
+    
+    <apache>
+      <literal>
+        <!-- Stuff that is copied to the Apache configuration -->
+      </literal>
+    </apache>
+    
+    <tomcat>
+      <enable-extra-webapps>false</enable-extra-webapps>
+    </tomcat>
+    
+  </http-server>
+  
+  <application>
+    
+    <docroot-path>pfixroot:/sample1/htdocs</docroot-path>
+    <default-path>/xml/config</default-path>
+    
+    <context-xml-service>
+      <path>/xml/config</path>
+      <config-file>pfixroot:/sample1/conf/config.conf.xml</config-file>
+    </context-xml-service>
+    
+    <direct-output-service>
+      <path>/xml/download</path>
+      <config-file>pfixroot:/sample1/conf/direct.conf.xml</config-file>
+    </direct-output-service>
+    
+    <static>
+      <path>sample1/img</path>
+    </static>
+    
+    <!--  Custom Deplyment descriptor code
+    <web-xml>
+      <jee:web-app xmlns:jee="http://java.sun.com/xml/ns/javaee">
+        <choose>
+          <when test="$mode='test'">
+            <jee:display-name>foo</jee:display-name>
+          </when>
+        </choose>
+      </jee:web-app>
+    </web-xml>
+    -->
+    
+  </application>
+  
+</project-config>

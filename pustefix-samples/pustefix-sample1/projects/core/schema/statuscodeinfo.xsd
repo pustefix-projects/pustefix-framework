@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+            xmlns="http://pustefix-framework.org/statuscodeinfo"
+            targetNamespace="http://pustefix-framework.org/statuscodeinfo"
+            elementFormDefault="qualified" attributeFormDefault="unqualified">
+
+  <xsd:annotation>
+    <xsd:documentation>
+      XML Schema for StatusCode meta information
+    </xsd:documentation>
+  </xsd:annotation>
+
+  <xsd:element name="statuscodeinfo">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element ref="statuscodes" maxOccurs="unbounded"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="statuscodes">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="file" type="xsd:string" minOccurs="0" maxOccurs="unbounded"/>
+      </xsd:sequence>
+      <xsd:attribute name="class" type="ClassType" use="required"/>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:simpleType name="ClassType">
+    <xsd:restriction base="xsd:string">
+      <xsd:pattern value="[a-zA-Z][a-zA-Z0-9_]*(\.[a-zA-Z][a-zA-Z0-9_]*)*"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+</xsd:schema>

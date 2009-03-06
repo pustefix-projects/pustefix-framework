@@ -1,0 +1,4 @@
+# TomcatStartupConfigurator properties   
+
+#specify which projects should be started:
+projects = sample1 webservice

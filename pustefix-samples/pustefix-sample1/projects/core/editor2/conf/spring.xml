@@ -1,0 +1,264 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd">
+  
+  <!-- WARNING: Do never change the order of UserManagementService and
+                ProjectFactoryService!
+                UserManagementService depends on ProjectFactoryService
+                during initialization and will stop working!           -->
+  <bean id="usermanagement" class="de.schlund.pfixcore.editor2.core.spring.UserManagementServiceImpl" init-method="init">
+    <property name="fileSystemService">
+      <ref bean="filesystem"/>
+    </property>
+    <property name="pathResolverService">
+      <ref bean="pathresolver"/>
+    </property>
+    <property name="projectFactoryService">
+      <ref bean="projectfactory"/>
+    </property>
+    <property name="securityManagerService">
+      <ref bean="securitymanager"/>
+    </property>
+  </bean>
+  
+  <bean id="projectfactory" class="de.schlund.pfixcore.editor2.core.spring.ProjectFactoryServiceImpl" init-method="init">
+    <property name="pathResolverService">
+      <ref bean="pathresolver"/>
+    </property>  
+    <property name="variantFactoryService">
+      <ref bean="variantfactory"/>
+    </property>  
+    <property name="themeFactoryService">
+      <ref bean="themefactory"/>
+    </property>
+    <property name="pageFactoryService">
+      <ref bean="pagefactory"/>
+    </property>
+    <property name="fileSystemService">
+      <ref bean="filesystem"/>
+    </property>
+    <property name="includeFactoryService">
+      <ref bean="includefactory"/>
+    </property>
+    <property name="imageFactoryService">
+      <ref bean="imagefactory"/>
+    </property>
+    <property name="targetFactoryService">
+      <ref bean="targetfactory"/>
+    </property>
+    <property name="pustefixTargetUpdateService">
+      <ref bean="pustefixtargetupdate"/>
+    </property>
+  </bean>
+		  
+  <bean id="pathresolver" class="de.schlund.pfixcore.editor2.core.spring.PathResolverServiceImpl">
+  </bean>
+		  
+  <bean id="variantfactory" class="de.schlund.pfixcore.editor2.core.spring.VariantFactoryServiceImpl">
+  </bean>
+
+  <bean id="themefactory" class="de.schlund.pfixcore.editor2.core.spring.ThemeFactoryServiceImpl">
+  </bean>	
+  
+  <bean id="targetfactory" class="de.schlund.pfixcore.editor2.core.spring.TargetFactoryServiceImpl">
+    <property name="projectFactoryService">
+      <ref bean="projectfactory"/>
+    </property>  
+    <property name="variantFactoryService">
+      <ref bean="variantfactory"/>
+    </property>  
+    <property name="targetFactoryService">
+      <ref bean="targetfactory"/>
+    </property>
+    <property name="themeFactoryService">
+      <ref bean="themefactory"/>
+    </property>
+    <property name="includeFactoryService">
+      <ref bean="includefactory"/>
+    </property>
+    <property name="imageFactoryService">
+      <ref bean="imagefactory"/>
+    </property>
+    <property name="pathResolverService">
+      <ref bean="pathresolver"/>
+    </property>
+    <property name="fileSystemService">
+      <ref bean="filesystem"/>
+    </property>
+  </bean>
+	
+  <bean id="pagefactory" class="de.schlund.pfixcore.editor2.core.spring.PageFactoryServiceImpl">
+    <property name="targetFactoryService">
+      <ref bean="targetfactory"/>
+    </property>
+    <property name="pustefixTargetUpdateService">
+      <ref bean="pustefixtargetupdate"/>
+    </property>
+    <property name="themeFactoryService">
+      <ref bean="themefactory"/>
+    </property>
+  </bean>
+	
+  <bean id="includefactory" class="de.schlund.pfixcore.editor2.core.spring.IncludeFactoryServiceImpl">
+    <property name="projectFactoryService">
+      <ref bean="projectfactory"/>
+    </property>  
+    <property name="themeFactoryService">
+      <ref bean="themefactory"/>
+    </property>
+    <property name="variantFactoryService">
+      <ref bean="variantfactory"/>
+    </property>  
+    <property name="includeFactoryService">
+      <ref bean="includefactory"/>
+    </property>
+    <property name="pathResolverService">
+      <ref bean="pathresolver"/>
+    </property>  
+    <property name="fileSystemService">
+      <ref bean="filesystem"/>
+    </property>
+    <property name="configurationService">
+      <ref bean="configuration"/>
+    </property>  
+    <property name="securityManagerService">
+      <ref bean="securitymanager"/>
+    </property>
+    <property name="imageFactoryService">
+      <ref bean="imagefactory"/>
+    </property>
+    <property name="backupService">
+      <ref bean="backup"/>
+    </property>
+  </bean>
+  
+  <bean id="dynincludefactory" class="de.schlund.pfixcore.editor2.core.spring.DynIncludeFactoryServiceImpl" init-method="init">
+    <property name="themeFactoryService">
+      <ref bean="themefactory"/>
+    </property>
+    <property name="pathResolverService">
+      <ref bean="pathresolver"/>
+    </property>  
+    <property name="fileSystemService">
+      <ref bean="filesystem"/>
+    </property>
+    <property name="configurationService">
+      <ref bean="configuration"/>
+    </property>  
+    <property name="securityManagerService">
+      <ref bean="securitymanager"/>
+    </property>
+    <property name="backupService">
+      <ref bean="backup"/>
+    </property>
+  </bean>
+
+  <bean id="imagefactory" class="de.schlund.pfixcore.editor2.core.spring.ImageFactoryServiceImpl">
+    <property name="variantFactoryService">
+      <ref bean="variantfactory"/>
+    </property>
+    <property name="projectFactoryService">
+      <ref bean="projectfactory"/>
+    </property>
+    <property name="fileSystemService">
+      <ref bean="filesystem"/>
+    </property>
+    <property name="pathResolverService">
+      <ref bean="pathresolver"/>
+    </property>
+    <property name="securityManagerService">
+      <ref bean="securitymanager"/>
+    </property>
+    <property name="backupService">
+      <ref bean="backup"/>
+    </property>
+  </bean>
+    
+  <bean id="filesystem" class="de.schlund.pfixcore.editor2.core.spring.FileSystemServiceImpl">
+  </bean>
+
+  <bean id="configuration" class="de.schlund.pfixcore.editor2.core.spring.ConfigurationServiceImpl" init-method="init">
+    <property name="fileSystemService">
+      <ref bean="filesystem"/>
+    </property>
+    <property name="pathResolverService">
+      <ref bean="pathresolver"/>
+    </property>
+    <property name="projectsFilePath">
+      <value>common/conf/projects.xml</value>
+    </property>
+  </bean>
+
+  <bean id="securitymanager" scope="session" class="de.schlund.pfixcore.editor2.core.spring.SecurityManagerServiceImpl">
+    <aop:scoped-proxy/>
+    <property name="userManagementService">
+      <ref bean="usermanagement"/>
+    </property>
+  </bean>
+
+  <bean id="userpasswordauthentication" class="de.schlund.pfixcore.editor2.core.spring.UserPasswordAuthenticationServiceImpl">
+    <property name="userManagementService">
+      <ref bean="usermanagement"/>
+    </property>
+    <property name="securityManagerService">
+      <ref bean="securitymanager"/>
+    </property>
+  </bean>
+    
+  <bean id="pustefixtargetupdate" class="de.schlund.pfixcore.editor2.core.spring.PustefixTargetUpdateServiceImpl" init-method="init">
+    <!-- Delay (in milliseconds) to wait after startup, before
+         regeneration of any target is started                 -->
+    <property name="startupDelay">
+      <value>10000</value>
+    </property>
+    <!-- Delay (in milliseconds) to wait after each generation step,
+         only applied to low priority targets during the first run   -->
+    <property name="firstRunDelay">
+      <value>250</value>
+    </property>
+    <!-- Delay (in milliseconds) to wait after each generation step,
+         only applied to low priority targets after the first run   -->
+    <property name="nthRunDelay">
+      <value>1000</value>
+    </property>
+    <!-- Delay (in milliseconds) to wait after each completed generation cycle,
+         only applied to low priority targets -->
+    <property name="completeRunDelay">
+      <value>120000</value>
+    </property>
+    <!-- Reference. Do not change! -->
+    <property name="pfixReadjustment">
+      <ref bean="pfixReadjustment"/>
+    </property>
+  </bean>
+  
+  <bean id="backup" class="de.schlund.pfixcore.editor2.core.spring.BackupServiceImpl">
+    <property name="fileSystemService">
+      <ref bean="filesystem"/>
+    </property>
+    <property name="pathResolverService">
+      <ref bean="pathresolver"/>
+    </property>
+    <property name="securityManagerService">
+      <ref bean="securitymanager"/>
+    </property>
+  </bean>
+  
+  <bean id="sessioninfo" class="de.schlund.pfixcore.editor2.core.spring.SessionInfoStore">
+  </bean>
+  
+  <bean id="pfixReadjustment" class="de.schlund.pfixcore.lucefix.PfixReadjustment" depends-on="lucefix">
+    <property name="projectFactoryService">
+      <ref bean="projectfactory"/>
+    </property>
+  </bean>
+  
+  <bean id="lucefix" class="de.schlund.pfixcore.lucefix.PfixEngine" init-method="init">
+    <property name="queueIdle">
+      <value>1000</value>
+    </property>	  
+  </bean>
+  
+</beans>

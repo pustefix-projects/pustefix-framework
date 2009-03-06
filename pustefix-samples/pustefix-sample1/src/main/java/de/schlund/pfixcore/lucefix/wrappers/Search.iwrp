@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface xmlns="http://pustefix.sourceforge.net/interfacewrapper200401" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://pustefix.sourceforge.net/interfacewrapper200401 http://pustefix.sourceforge.net/interfacewrapper200401.xsd">
+  <ihandler class="de.schlund.pfixcore.lucefix.SearchHandler"/>
+  <param name="Contents" type="java.lang.String" occurance="optional">
+    <precheck class="de.schlund.pfixcore.generator.prechecks.RegexpCheck">
+      <cparam name="regexp" value="/^[^*?]/"/>
+      <cparam name="scodeNoMatch" value="PFIXCORE_LUCEFIX_PREFIX_WILDCARD_FORBIDDEN"/>
+    </precheck>    
+  </param>
+  <param name="Comments" type="java.lang.String" occurance="optional">
+     <precheck class="de.schlund.pfixcore.generator.prechecks.RegexpCheck">
+       <cparam name="regexp" value="/^[^*?]/"/>
+       <cparam name="scodeNoMatch" value="PFIXCORE_LUCEFIX_PREFIX_WILDCARD_FORBIDDEN"/>
+     </precheck> 
+  </param>
+  <param name="Tags" type="java.lang.String" occurance="optional">
+    <precheck class="de.schlund.pfixcore.generator.prechecks.RegexpCheck">
+      <cparam name="regexp" value="/^[^*?]/"/>
+      <cparam name="scodeNoMatch" value="PFIXCORE_LUCEFIX_PREFIX_WILDCARD_FORBIDDEN"/>
+    </precheck> 
+  </param>
+
+  <param name="Attribkeys" type="java.lang.String" occurance="optional">
+    <precheck class="de.schlund.pfixcore.generator.prechecks.RegexpCheck">
+      <cparam name="regexp" value="/^[^*?]/"/>
+      <cparam name="scodeNoMatch" value="PFIXCORE_LUCEFIX_PREFIX_WILDCARD_FORBIDDEN"/>
+    </precheck> 
+  </param>
+
+  <param name="Attribvalues" type="java.lang.String" occurance="optional">   
+    <precheck class="de.schlund.pfixcore.generator.prechecks.RegexpCheck">
+      <cparam name="regexp" value="/^[^*?]/"/>
+      <cparam name="scodeNoMatch" value="PFIXCORE_LUCEFIX_PREFIX_WILDCARD_FORBIDDEN"/>
+    </precheck>   
+  </param>
+  
+  <param name="Doit" type="java.lang.Boolean" occurance="optional">
+    <caster class="de.schlund.pfixcore.generator.casters.ToBoolean"/>
+  </param>
+       <!--
+  <param type="java.lang.Boolean" name="Expert">
+   <caster class="de.schlund.pfixcore.generator.casters.ToBoolean"/>
+  </param>
+	-->
+  <param type="java.lang.String" name="Query" occurance="optional"/>
+	
+</interface>
