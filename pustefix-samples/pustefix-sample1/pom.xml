@@ -22,19 +22,6 @@
       <version>1.0.0-SNAPSHOT</version>
     </dependency>
     <dependency>
-      <groupId>com.sun</groupId>
-      <artifactId>tools</artifactId>
-      <version>1.5.0</version>
-      <scope>system</scope>
-      <systemPath>${java.home}/../lib/tools.jar</systemPath>
-    </dependency>
-    <dependency>
-      <groupId>javax.servlet</groupId>
-      <artifactId>servlet-api</artifactId>
-      <version>2.4</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
       <version>4.5</version>
@@ -44,7 +31,7 @@
       <groupId>rhino</groupId>
       <artifactId>js</artifactId>
       <version>1.5R3</version>
-      <scope>test</scope><!-- homepage test -->
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>bsh</groupId>
