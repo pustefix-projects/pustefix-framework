@@ -56,6 +56,7 @@ public class SPDocument {
     private ArrayList<Cookie> cookies = new ArrayList<Cookie>();
     private String    redirectURL    = null;
     private boolean trailLogged;
+    private long creationTime;
 
     //~ Methods ....................................................................................
 
@@ -234,6 +235,14 @@ public class SPDocument {
     
     public void setTrailLogged() {
         trailLogged=true;
+    }
+    
+    public void setCreationTime(long creationTime) {
+        this.creationTime = creationTime;
+    }
+    
+    public long getCreationTime() {
+        return creationTime;
     }
 
     /**

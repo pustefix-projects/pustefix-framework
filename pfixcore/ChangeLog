@@ -1,5 +1,14 @@
 2009-03-02  Martin Leidig  <mleidig@schlund.de>
 
+	Fixed null value for SPDocument creation time if redirect is done
+	before the page is delivered (by remembering the creation time in the
+	SPDocument).
+
+	* src/org/pustefixframework/http/AbstractPustefixXMLRequestHandler.java
+	* src/de/schlund/pfixxml/SPDocument.java
+
+2009-03-02  Martin Leidig  <mleidig@schlund.de>
+
 	Fixed force-ssl configuration.
 
 	* src/org/pustefixframework/config/contextxmlservice/parser/SSLParsingHandler.java

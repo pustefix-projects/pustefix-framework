@@ -421,8 +421,9 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
             // this will remain at -1 when we don't have to enter the businesslogic codepath
             // (whenever there is a stored spdoc already)
             getdomtime = System.currentTimeMillis() - currtime;
-            preq.getRequest().setAttribute(GETDOMTIME, getdomtime);
+            spdoc.setCreationTime(getdomtime);
         }
+        preq.getRequest().setAttribute(GETDOMTIME, spdoc.getCreationTime());
         params.put(XSLPARAM_REUSE, "" + spdoc.getTimestamp());
         if (session != null && session.getAttribute(SESS_LANG) != null) {
             params.put(XSLPARAM_LANG, session.getAttribute(SESS_LANG));
