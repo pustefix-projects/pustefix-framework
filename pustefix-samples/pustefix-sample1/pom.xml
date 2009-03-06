@@ -29,25 +29,11 @@
       <systemPath>${java.home}/../lib/tools.jar</systemPath>
     </dependency>
     <dependency>
-      <groupId>javax.management</groupId>
-      <artifactId>remote-optional</artifactId>
-      <version>1.0.1_03</version>
-      <scope>system</scope>
-      <systemPath>${basedir}/lib/jmxremote_optional-1.0.1_03.jar</systemPath>
-    </dependency>
-    <dependency>
       <groupId>concurrent</groupId>
       <artifactId>concurrent</artifactId>
       <version>1</version>
       <scope>system</scope>
       <systemPath>${basedir}/lib/concurrent.jar</systemPath>
-    </dependency>
-    <dependency>
-      <groupId>org.aspectj</groupId>
-      <artifactId>aspectjweaver</artifactId>
-      <version>1.6.2</version>
-      <scope>system</scope>
-      <systemPath>${basedir}/lib/aspectjweaver-1.6.2.jar</systemPath>
     </dependency>
     <dependency>
       <groupId>javax.servlet</groupId>
