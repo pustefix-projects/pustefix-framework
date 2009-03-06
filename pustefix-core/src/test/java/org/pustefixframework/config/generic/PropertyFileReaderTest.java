@@ -39,6 +39,10 @@ public class PropertyFileReaderTest {
     
     @Test
     public void test() throws Exception {
+        Properties btp = new Properties();
+        btp.put("mode", "test");
+        btp.put("fqdn", "fqdn");
+        BuildTimeProperties.setProperties(btp);
         InputStream in = getClass().getResourceAsStream("properties.xml");
         if(in==null) in = new FileInputStream(new File("src/test/java/org/pustefixframework/config/generic/properties.xml"));
         Properties props = new Properties();
@@ -53,7 +57,5 @@ public class PropertyFileReaderTest {
         refProps.setProperty("fqdn", fqdn);
         
         assertEquals(props, refProps);
-        
     }
-  
 }

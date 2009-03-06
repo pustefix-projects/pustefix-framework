@@ -47,4 +47,8 @@ public class BuildTimeProperties {
         }
         return BuildTimeProperties.props;
     }
+
+    public static void setProperties(Properties p) {
+        props = p; 
+    }
 }

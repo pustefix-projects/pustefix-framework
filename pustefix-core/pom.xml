@@ -184,28 +184,11 @@
         <artifactId>maven-antrun-plugin</artifactId>
         <executions>
           <execution>
-            <id>svnrevision_buildtimeprops</id>
+            <id>svnrevision</id>
             <phase>generate-resources</phase>
             <configuration>
               <tasks>
                 <mkdir dir="${basedir}/target/classes/META-INF"/>
-                <taskdef
-                  name="pfx-buildtime-props"
-                  classname="de.schlund.pfixxml.config.BuildTimePropTask"
-                  classpathref="maven.plugin.classpath"
-                />
-                <pfx-buildtime-props
-                  file="${basedir}/projects/common/conf/buildtime.prop"
-                  mode="${makemode}"
-                  uid="uid"
-                  machine="machine"
-                  fqdn="fqdn"
-                  docroot="docroot"
-                 />
-                <echo append="true" file="${basedir}/projects/common/conf/buildtime.prop">
-__antprop_makemode=${makemode}
-__antprop_standalone.tomcat=${standalone.tomcat}
-                </echo>
                 <property name="svnrevision" location="${basedir}/target/classes/META-INF/SVN_REVISION"/>
                 <delete file="${svnrevision}"/>
                 <exec executable="svn" output="${svnrevision}">
@@ -237,20 +220,6 @@ __antprop_standalone.tomcat=${standalone.tomcat}
             </goals>
           </execution>
         </executions>
-        <dependencies>
-           <!--  TODO -->
-           <dependency>
-             <groupId>org.pustefixframework</groupId>
-             <artifactId>pfixcore</artifactId>
-             <version>0.13.5-SNAPSHOT</version>
-             <exclusions>
-               <exclusion><!--  avoid pulling ant 1.5 (which causes linking exceptions) -->
-                 <groupId>ant</groupId>
-                  <artifactId>ant</artifactId>
-               </exclusion>
-             </exclusions>
-           </dependency>
-        </dependencies>
       </plugin>
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
