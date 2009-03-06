@@ -105,9 +105,7 @@
     <dependency>
       <groupId>concurrent</groupId>
       <artifactId>concurrent</artifactId>
-      <version>1</version>
-      <scope>system</scope>
-      <systemPath>/home/mhm/Projects/pfixcore/pustefix-core/lib/concurrent.jar</systemPath>
+      <version>1.3.4</version>
     </dependency>
 
     <dependency>
