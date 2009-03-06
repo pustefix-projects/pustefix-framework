@@ -63,6 +63,7 @@ public class ModuleResource implements Resource {
     }
 
     public long lastModified() {
+        if(url == null) return 0;
         try {
             JarURLConnection con = (JarURLConnection)url.openConnection();
             con.setUseCaches(false);

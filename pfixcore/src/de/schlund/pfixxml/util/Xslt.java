@@ -101,13 +101,22 @@ public class Xslt {
     
     private static Templates loadTemplates(XsltVersion xsltVersion, InputSource input, TargetImpl parent) throws TransformerConfigurationException {
         try {
-            return loadTemplates(xsltVersion, input, parent, false);
-        } catch (TransformerConfigurationException e) {
-            return loadTemplates(xsltVersion, input, parent, true);
+            try {
+                return loadTemplates(xsltVersion, input, parent, false);
+            } catch (XsltResourceNotFoundException e) {
+                throw e;
+            } catch (TransformerException e) {
+                return loadTemplates(xsltVersion, input, parent, true);
+            }
+        } catch(TransformerException x) {
+            //just to keep public API stable
+            //TODO: let methods throw TransformerException
+            if(x instanceof TransformerConfigurationException) throw (TransformerConfigurationException)x;
+            throw new TransformerConfigurationException("Error loading XSL stylesheet", x);
         }
     }
     
-    private static Templates loadTemplates(XsltVersion xsltVersion, InputSource input, TargetImpl parent, boolean debug) throws TransformerConfigurationException {
+    private static Templates loadTemplates(XsltVersion xsltVersion, InputSource input, TargetImpl parent, boolean debug) throws TransformerException {
         Source src = new SAXSource(Xml.createXMLReader(), input);
         TransformerFactory factory = XsltProvider.getXsltSupport(xsltVersion).getThreadTransformerFactory();
         factory.setErrorListener(new PFErrorListener());
@@ -290,7 +299,7 @@ public class Xslt {
                     // If Document object is null, the file could not be found or read
                     // so return null to tell the parser the URI could not be resolved
                     if (dom == null) {
-                        throw new TransformerException("Resource can't be found: " + uri.toString());
+                        throw new XsltResourceNotFoundException("Resource can't be resolved: " + uri.toString());
                     }
                 
                     Source source = new DOMSource(dom);
@@ -305,9 +314,10 @@ public class Xslt {
                     return source;
                 }
             }
-            
             resource = ResourceUtil.getResource(path);
-            if(!resource.exists()) throw new TransformerException("Resource can't be found: " + uri.toString());
+            if(!resource.exists()) {
+                throw new XsltResourceNotFoundException("Resource can't be found: " + uri.toString());
+            }
             Source source = new StreamSource(path);
             return source;
         }
