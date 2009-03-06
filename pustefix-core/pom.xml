@@ -206,7 +206,7 @@
             <configuration>
               <tasks>
                 <tar destfile="target/${project.artifactId}-data-${project.version}.tgz" compression="gzip">
-                  <tarfileset dir="${basedir}/src/main/core" prefix="core">
+                  <tarfileset dir="${basedir}/src/data">
                     <exclude name="dyntxt/statuscodeinfo.xml"/>
                   </tarfileset>
                   <tarfileset dir="${basedir}/target/classes/META-INF" prefix="core">
@@ -252,7 +252,7 @@
         <executions>
           <execution>
             <configuration>
-              <docRoot>${basedir}/src/main</docRoot>
+              <docRoot>${basedir}/src/data</docRoot>
               <includes>
                 <include>core/dyntxt/statuscodeinfo.xml</include>
               </includes>
