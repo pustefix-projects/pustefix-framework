@@ -66,10 +66,10 @@
               <tasks>
                 <taskdef name="pfx-apt"
                   classname="de.schlund.pfixcore.generator.iwrpgen.AptTask"
-                  classpathref="maven.plugin.classpath"
+                  classpathref="maven.compile.classpath"
                   description="Pustefix APT task" />
                 <pfx-apt
-                  classpathref="maven.plugin.classpath"
+                  classpathref="maven.compile.classpath"
                   srcdir="${basedir}/src/main/java"
                   destdir="${basedir}/target/classes"
                   preprocessdir="${project.build.directory}/generated-sources/apt"
@@ -91,7 +91,7 @@
                 <taskdef
                   name="pfx-buildtime-props"
                   classname="de.schlund.pfixxml.config.BuildTimePropTask"
-                  classpathref="maven.plugin.classpath"
+                  classpathref="maven.compile.classpath"
                 />
                 <pfx-buildtime-props
                   file="${basedir}/projects/common/conf/buildtime.prop"
@@ -117,14 +117,6 @@ __antprop_standalone.tomcat=${standalone.tomcat}
             </goals>
           </execution>
         </executions>
-        <dependencies>
-           <!--  TODO -->
-           <dependency>
-             <groupId>org.pustefixframework</groupId>
-             <artifactId>pustefix-core</artifactId>
-             <version>1.0.0-SNAPSHOT</version>
-           </dependency>
-        </dependencies>
       </plugin>
       <plugin>
         <groupId>org.pustefixframework.maven.plugins</groupId>

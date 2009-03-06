@@ -184,29 +184,6 @@
         <artifactId>maven-antrun-plugin</artifactId>
         <executions>
           <execution>
-            <id>apt</id>
-            <phase>generate-sources</phase>
-            <configuration>
-              <tasks>
-                <taskdef name="pfx-apt"
-                  classname="de.schlund.pfixcore.generator.iwrpgen.AptTask"
-                  classpathref="maven.plugin.classpath"
-                  description="Pustefix APT task" />
-                <pfx-apt
-                  classpathref="maven.plugin.classpath"
-                  srcdir="${basedir}/src/main/java"
-                  destdir="${basedir}/target/classes"
-                  preprocessdir="${project.build.directory}/generated-sources/apt"
-                  encoding="${project.build.sourceEncoding}"
-                  factory="de.schlund.pfixcore.util.CommonAnnotationProcessorFactory" />
-              </tasks>
-              <sourceRoot>${project.build.directory}/generated-sources/apt</sourceRoot>
-            </configuration>
-            <goals>
-              <goal>run</goal>
-            </goals>
-          </execution>
-          <execution>
             <id>svnrevision_buildtimeprops</id>
             <phase>generate-resources</phase>
             <configuration>
