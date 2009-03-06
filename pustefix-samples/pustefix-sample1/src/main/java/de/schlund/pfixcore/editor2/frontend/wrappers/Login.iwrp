@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<interface xmlns="http://pustefix.sourceforge.net/interfacewrapper200401" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://pustefix.sourceforge.net/interfacewrapper200401 http://pustefix.sourceforge.net/interfacewrapper200401.xsd">
-  <ihandler class="de.schlund.pfixcore.editor2.frontend.handlers.LoginHandler"/>
-  <param type="java.lang.String" name="User" occurance="mandatory"/>
-  <param type="java.lang.String" name="Pass" occurance="mandatory"/>
-</interface>
