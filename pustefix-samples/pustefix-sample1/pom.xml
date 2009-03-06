@@ -1,5 +1,5 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<?xml version="1.0" encoding="UTF-8"?> <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
@@ -70,7 +70,7 @@
             </goals>
           </execution>
           <execution>
-            <id>svnrevision_buildtimeprops</id>
+            <id>buildtimeprops</id>
             <phase>generate-resources</phase>
             <configuration>
               <tasks>
@@ -92,11 +92,6 @@
 __antprop_makemode=${makemode}
 __antprop_standalone.tomcat=${standalone.tomcat}
                 </echo>
-                <property name="svnrevision" location="${basedir}/target/classes/META-INF/SVN_REVISION"/>
-                <delete file="${svnrevision}"/>
-                <exec executable="svn" output="${svnrevision}">
-                  <arg line="info"/>
-                </exec>
               </tasks>
             </configuration>
             <goals>
