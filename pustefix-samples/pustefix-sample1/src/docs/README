@@ -1,5 +1,0 @@
-Run "ant" in the "docbook" directory to build the documentation.
-
-The source (Docbook and images) files can be found in the 
-"docbook/src" directory, the built documentation (HTML and PDF)
-can be found in the "docbook/build" directory.
