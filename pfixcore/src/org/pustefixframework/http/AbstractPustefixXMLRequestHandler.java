@@ -471,6 +471,10 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
         }
     }
 
+    protected boolean isPageDefined(String name) {
+    	return true;
+    }
+   
     protected void handleDocument(PfixServletRequest preq, HttpServletResponse res,
                                   SPDocument spdoc, Properties params, boolean doreuse) throws PustefixCoreException {
         long currtime = System.currentTimeMillis();
@@ -507,20 +511,9 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
         }
         
         // if the document contains a error code, do errorhandling here and no further processing.
-        int    err;
-        String errtxt;
-        try {
-            if ((err = spdoc.getResponseError()) != 0) {
-                setCookies(spdoc,res);
-                if ((errtxt = spdoc.getResponseErrorText()) != null) {
-                    res.sendError(err, errtxt);
-                } else {
-                    res.sendError(err);
-                }
-                return;
-            }
-        } catch (IOException e) {
-            throw new PustefixCoreException("IOException while trying to send an error code", e);
+        if(spdoc.getResponseError() != 0) {
+        	sendError(spdoc, res);
+        	return;
         }
 
         // So no error happened, let's go on with normal processing.
@@ -528,8 +521,15 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
         TreeMap<String, Object> paramhash  = constructParameters(spdoc, params, session);
         String        stylesheet = extractStylesheetFromSPDoc(spdoc);
         if (stylesheet == null) {
-            throw new PustefixCoreException("Wasn't able to extract any stylesheet specification from page '" +
+        	if(spdoc.getPagename()!=null && !isPageDefined(spdoc.getPagename())) {
+        		spdoc.setResponseError(HttpServletResponse.SC_NOT_FOUND);
+        		spdoc.setResponseErrorText(null);
+        		sendError(spdoc, res);
+        		return;
+        	} else {
+        		throw new PustefixCoreException("Wasn't able to extract any stylesheet specification from page '" +
                                    spdoc.getPagename() + "' ... bailing out.");
+        	}
         }
         
         if (spdoc.docIsUpdateable()) {
@@ -610,6 +610,22 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
         }
     }
 
+    private void sendError(SPDocument spdoc, HttpServletResponse res) throws PustefixCoreException {
+    	 int    err;
+         String errtxt;
+         try {
+        	 err = spdoc.getResponseError();
+        	 setCookies(spdoc,res);
+        	 if ((errtxt = spdoc.getResponseErrorText()) != null) {
+        		 res.sendError(err, errtxt);
+        	 } else {
+        		 res.sendError(err);
+        	 }
+         } catch (IOException e) {
+             throw new PustefixCoreException("IOException while trying to send an error code", e);
+         }
+    }
+    
     private boolean doHandleDocument(SPDocument spdoc, String stylesheet, TreeMap<String, Object> paramhash, 
             PfixServletRequest preq, HttpServletResponse res, HttpSession session) throws PustefixCoreException {
         

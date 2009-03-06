@@ -210,6 +210,11 @@ public class PustefixContextXMLRequestHandler extends AbstractPustefixXMLRequest
             ((ContextImpl) context).cleanupAfterRequest();
         }
     }
+    
+    @Override
+    protected boolean isPageDefined(String name) {
+    	return config.getContextConfig().getPageRequestConfig(name) != null;
+    }
 
     private Script getScriptedFlowByName(String scriptedFlowName) throws CompilerException {
         ScriptedFlowConfig config = getContextXMLServletConfig().getScriptedFlowConfig();
