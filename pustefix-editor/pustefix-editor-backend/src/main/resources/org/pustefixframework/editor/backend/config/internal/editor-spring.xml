@@ -1,0 +1,277 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd">
+  
+  <bean class="org.pustefixframework.editor.backend.remote.RemoteServiceExporter">
+    <property name="registeredURIs" value="/xml/org.pustefixframework.editor.common.remote.service.RemoteDynIncludeService"/>
+    <property name="serviceInterface" value="org.pustefixframework.editor.common.remote.service.RemoteDynIncludeService"/>
+    <property name="service">
+      <bean class="org.pustefixframework.editor.backend.remote.RemoteDynIncludeServiceImpl">
+      </bean>
+    </property>
+  </bean>
+  
+  <bean class="org.pustefixframework.editor.backend.remote.RemoteServiceExporter">
+    <property name="registeredURIs" value="/xml/org.pustefixframework.editor.common.remote.service.RemoteImageService"/>
+    <property name="serviceInterface" value="org.pustefixframework.editor.common.remote.service.RemoteImageService"/>
+    <property name="service">
+      <bean class="org.pustefixframework.editor.backend.remote.RemoteImageServiceImpl">
+      </bean>
+    </property>
+  </bean>
+  
+  <bean class="org.pustefixframework.editor.backend.remote.RemoteServiceExporter">
+    <property name="registeredURIs" value="/xml/org.pustefixframework.editor.common.remote.service.RemoteIncludeService"/>
+    <property name="serviceInterface" value="org.pustefixframework.editor.common.remote.service.RemoteIncludeService"/>
+    <property name="service">
+      <bean class="org.pustefixframework.editor.backend.remote.RemoteIncludeServiceImpl">
+      </bean>
+    </property>
+  </bean>
+  
+  <bean class="org.pustefixframework.editor.backend.remote.RemoteServiceExporter">
+    <property name="registeredURIs" value="/xml/org.pustefixframework.editor.common.remote.service.RemotePageService"/>
+    <property name="serviceInterface" value="org.pustefixframework.editor.common.remote.service.RemotePageService"/>
+    <property name="service">
+      <bean class="org.pustefixframework.editor.backend.remote.RemotePageServiceImpl">
+      </bean>
+    </property>
+  </bean>
+  
+  <bean class="org.pustefixframework.editor.backend.remote.RemoteServiceExporter">
+    <property name="registeredURIs" value="/xml/org.pustefixframework.editor.common.remote.service.RemoteProjectService"/>
+    <property name="serviceInterface" value="org.pustefixframework.editor.common.remote.service.RemoteProjectService"/>
+    <property name="service">
+      <bean class="org.pustefixframework.editor.backend.remote.RemoteProjectServiceImpl">
+      </bean>
+    </property>
+  </bean>
+  
+  <bean class="org.pustefixframework.editor.backend.remote.RemoteServiceExporter">
+    <property name="registeredURIs" value="/xml/org.pustefixframework.editor.common.remote.service.RemoteTargetService"/>
+    <property name="serviceInterface" value="org.pustefixframework.editor.common.remote.service.RemoteTargetService"/>
+    <property name="service">
+      <bean class="org.pustefixframework.editor.backend.remote.RemoteTargetServiceImpl">
+      </bean>
+    </property>
+  </bean>
+  
+  <bean class="org.pustefixframework.editor.backend.remote.RemoteServiceExporter">
+    <property name="registeredURIs" value="/xml/org.pustefixframework.editor.common.remote.service.RemoteSearchService"/>
+    <property name="serviceInterface" value="org.pustefixframework.editor.common.remote.service.RemoteSearchService"/>
+    <property name="service">
+      <bean class="org.pustefixframework.editor.backend.remote.RemoteSearchServiceImpl">
+      </bean>
+    </property>
+  </bean>
+  
+  <bean id="de.schlund.pfixcore.editor2.core.spring.beannames.projectfactory" class="de.schlund.pfixcore.editor2.core.spring.ProjectFactoryServiceImpl" init-method="init">
+    <property name="variantFactoryService">
+      <ref bean="de.schlund.pfixcore.editor2.core.spring.beannames.variantfactory"/>
+    </property>  
+    <property name="themeFactoryService">
+      <ref bean="de.schlund.pfixcore.editor2.core.spring.beannames.themefactory"/>
+    </property>
+    <property name="pageFactoryService">
+      <ref bean="de.schlund.pfixcore.editor2.core.spring.beannames.pagefactory"/>
+    </property>
+    <property name="includeFactoryService">
+      <ref bean="de.schlund.pfixcore.editor2.core.spring.beannames.includefactory"/>
+    </property>
+    <property name="dynIncludeFactoryService">
+      <ref bean="de.schlund.pfixcore.editor2.core.spring.beannames.dynincludefactory"/>
+    </property>
+    <property name="imageFactoryService">
+      <ref bean="de.schlund.pfixcore.editor2.core.spring.beannames.imagefactory"/>
+    </property>
+    <property name="targetFactoryService">
+      <ref bean="de.schlund.pfixcore.editor2.core.spring.beannames.targetfactory"/>
+    </property>
+    <property name="pustefixTargetUpdateService">
+      <ref bean="de.schlund.pfixcore.editor2.core.spring.beannames.pustefixtargetupdate"/>
+    </property>
+    <property name="configurationService">
+      <ref bean="de.schlund.pfixcore.editor2.core.spring.beannames.configuration"/>
+    </property>  
+  </bean>
+		  
+  <bean id="de.schlund.pfixcore.editor2.core.spring.beannames.pathresolver" class="de.schlund.pfixcore.editor2.core.spring.PathResolverServiceImpl">
+  </bean>
+		  
+  <bean id="de.schlund.pfixcore.editor2.core.spring.beannames.variantfactory" class="de.schlund.pfixcore.editor2.core.spring.VariantFactoryServiceImpl">
+  </bean>
+
+  <bean id="de.schlund.pfixcore.editor2.core.spring.beannames.themefactory" class="de.schlund.pfixcore.editor2.core.spring.ThemeFactoryServiceImpl">
+  </bean>	
+  
+  <bean id="de.schlund.pfixcore.editor2.core.spring.beannames.targetfactory" class="de.schlund.pfixcore.editor2.core.spring.TargetFactoryServiceImpl">
+    <property name="projectFactoryService">
+      <ref bean="de.schlund.pfixcore.editor2.core.spring.beannames.projectfactory"/>
+    </property>  
+    <property name="variantFactoryService">
+      <ref bean="de.schlund.pfixcore.editor2.core.spring.beannames.variantfactory"/>
+    </property>  
+    <property name="targetFactoryService">
+      <ref bean="de.schlund.pfixcore.editor2.core.spring.beannames.targetfactory"/>
+    </property>
+    <property name="themeFactoryService">
+      <ref bean="de.schlund.pfixcore.editor2.core.spring.beannames.themefactory"/>
+    </property>
+    <property name="includeFactoryService">
+      <ref bean="de.schlund.pfixcore.editor2.core.spring.beannames.includefactory"/>
+    </property>
+    <property name="imageFactoryService">
+      <ref bean="de.schlund.pfixcore.editor2.core.spring.beannames.imagefactory"/>
+    </property>
+    <property name="pathResolverService">
+      <ref bean="de.schlund.pfixcore.editor2.core.spring.beannames.pathresolver"/>
+    </property>
+    <property name="fileSystemService">
+      <ref bean="de.schlund.pfixcore.editor2.core.spring.beannames.filesystem"/>
+    </property>
+  </bean>
+	
+  <bean id="de.schlund.pfixcore.editor2.core.spring.beannames.pagefactory" class="de.schlund.pfixcore.editor2.core.spring.PageFactoryServiceImpl">
+    <property name="targetFactoryService">
+      <ref bean="de.schlund.pfixcore.editor2.core.spring.beannames.targetfactory"/>
+    </property>
+    <property name="pustefixTargetUpdateService">
+      <ref bean="de.schlund.pfixcore.editor2.core.spring.beannames.pustefixtargetupdate"/>
+    </property>
+    <property name="themeFactoryService">
+      <ref bean="de.schlund.pfixcore.editor2.core.spring.beannames.themefactory"/>
+    </property>
+  </bean>
+	
+  <bean id="de.schlund.pfixcore.editor2.core.spring.beannames.includefactory" class="de.schlund.pfixcore.editor2.core.spring.IncludeFactoryServiceImpl">
+    <property name="projectFactoryService">
+      <ref bean="de.schlund.pfixcore.editor2.core.spring.beannames.projectfactory"/>
+    </property>  
+    <property name="themeFactoryService">
+      <ref bean="de.schlund.pfixcore.editor2.core.spring.beannames.themefactory"/>
+    </property>
+    <property name="variantFactoryService">
+      <ref bean="de.schlund.pfixcore.editor2.core.spring.beannames.variantfactory"/>
+    </property>  
+    <property name="includeFactoryService">
+      <ref bean="de.schlund.pfixcore.editor2.core.spring.beannames.includefactory"/>
+    </property>
+    <property name="pathResolverService">
+      <ref bean="de.schlund.pfixcore.editor2.core.spring.beannames.pathresolver"/>
+    </property>  
+    <property name="fileSystemService">
+      <ref bean="de.schlund.pfixcore.editor2.core.spring.beannames.filesystem"/>
+    </property>
+    <property name="configurationService">
+      <ref bean="de.schlund.pfixcore.editor2.core.spring.beannames.configuration"/>
+    </property>  
+    <property name="imageFactoryService">
+      <ref bean="de.schlund.pfixcore.editor2.core.spring.beannames.imagefactory"/>
+    </property>
+    <property name="backupService">
+      <ref bean="de.schlund.pfixcore.editor2.core.spring.beannames.backup"/>
+    </property>
+  </bean>
+  
+  <bean id="de.schlund.pfixcore.editor2.core.spring.beannames.dynincludefactory" class="de.schlund.pfixcore.editor2.core.spring.DynIncludeFactoryServiceImpl" init-method="init">
+    <property name="themeFactoryService">
+      <ref bean="de.schlund.pfixcore.editor2.core.spring.beannames.themefactory"/>
+    </property>
+    <property name="pathResolverService">
+      <ref bean="de.schlund.pfixcore.editor2.core.spring.beannames.pathresolver"/>
+    </property>  
+    <property name="fileSystemService">
+      <ref bean="de.schlund.pfixcore.editor2.core.spring.beannames.filesystem"/>
+    </property>
+    <property name="configurationService">
+      <ref bean="de.schlund.pfixcore.editor2.core.spring.beannames.configuration"/>
+    </property>  
+    <property name="backupService">
+      <ref bean="de.schlund.pfixcore.editor2.core.spring.beannames.backup"/>
+    </property>
+  </bean>
+
+  <bean id="de.schlund.pfixcore.editor2.core.spring.beannames.imagefactory" class="de.schlund.pfixcore.editor2.core.spring.ImageFactoryServiceImpl">
+    <property name="variantFactoryService">
+      <ref bean="de.schlund.pfixcore.editor2.core.spring.beannames.variantfactory"/>
+    </property>
+    <property name="projectFactoryService">
+      <ref bean="de.schlund.pfixcore.editor2.core.spring.beannames.projectfactory"/>
+    </property>
+    <property name="fileSystemService">
+      <ref bean="de.schlund.pfixcore.editor2.core.spring.beannames.filesystem"/>
+    </property>
+    <property name="pathResolverService">
+      <ref bean="de.schlund.pfixcore.editor2.core.spring.beannames.pathresolver"/>
+    </property>
+    <property name="backupService">
+      <ref bean="de.schlund.pfixcore.editor2.core.spring.beannames.backup"/>
+    </property>
+  </bean>
+    
+  <bean id="de.schlund.pfixcore.editor2.core.spring.beannames.filesystem" class="de.schlund.pfixcore.editor2.core.spring.FileSystemServiceImpl">
+  </bean>
+
+  <bean id="de.schlund.pfixcore.editor2.core.spring.beannames.configuration" class="de.schlund.pfixcore.editor2.core.spring.ConfigurationServiceImpl" init-method="init">
+    <property name="fileSystemService">
+      <ref bean="de.schlund.pfixcore.editor2.core.spring.beannames.filesystem"/>
+    </property>
+    <property name="pathResolverService">
+      <ref bean="de.schlund.pfixcore.editor2.core.spring.beannames.pathresolver"/>
+    </property>
+    <property name="projectsFilePath">
+      <value>common/conf/projects.xml</value>
+    </property>
+  </bean>
+
+  <bean id="de.schlund.pfixcore.editor2.core.spring.beannames.pustefixtargetupdate" class="de.schlund.pfixcore.editor2.core.spring.PustefixTargetUpdateServiceImpl" init-method="init">
+    <!-- Delay (in milliseconds) to wait after startup, before
+         regeneration of any target is started                 -->
+    <property name="startupDelay">
+      <value>10000</value>
+    </property>
+    <!-- Delay (in milliseconds) to wait after each generation step,
+         only applied to low priority targets during the first run   -->
+    <property name="firstRunDelay">
+      <value>250</value>
+    </property>
+    <!-- Delay (in milliseconds) to wait after each generation step,
+         only applied to low priority targets after the first run   -->
+    <property name="nthRunDelay">
+      <value>1000</value>
+    </property>
+    <!-- Delay (in milliseconds) to wait after each completed generation cycle,
+         only applied to low priority targets -->
+    <property name="completeRunDelay">
+      <value>120000</value>
+    </property>
+    <!-- Reference. Do not change! -->
+    <property name="pfixReadjustment">
+      <ref bean="de.schlund.pfixcore.editor2.core.spring.beannames.pfixReadjustment"/>
+    </property>
+  </bean>
+  
+  <bean id="de.schlund.pfixcore.editor2.core.spring.beannames.backup" class="de.schlund.pfixcore.editor2.core.spring.BackupServiceImpl">
+    <property name="fileSystemService">
+      <ref bean="de.schlund.pfixcore.editor2.core.spring.beannames.filesystem"/>
+    </property>
+    <property name="pathResolverService">
+      <ref bean="de.schlund.pfixcore.editor2.core.spring.beannames.pathresolver"/>
+    </property>
+  </bean>
+  
+  <bean id="de.schlund.pfixcore.editor2.core.spring.beannames.pfixReadjustment" class="de.schlund.pfixcore.lucefix.PfixReadjustment" depends-on="de.schlund.pfixcore.editor2.core.spring.beannames.lucefix">
+    <property name="projectFactoryService">
+      <ref bean="de.schlund.pfixcore.editor2.core.spring.beannames.projectfactory"/>
+    </property>
+  </bean>
+  
+  <bean id="de.schlund.pfixcore.editor2.core.spring.beannames.lucefix" class="de.schlund.pfixcore.lucefix.PfixEngine" init-method="init">
+    <property name="queueIdle">
+      <value>1000</value>
+    </property>	  
+  </bean>
+  
+</beans>

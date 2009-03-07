@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pfx:document xmlns:pfx="http://www.schlund.de/pustefix/core">
+  <head>
+    <title>Pustefix Content Management System</title>
+  </head>
+  <pfx:frameset rows="40,*">
+    <pfx:frame name="top_navi" scrolling="no">
+      <html>
+        <head>
+          <style type="text/css">
+            <pfx:include href="core/txt/styles.xml" part="standard"/>
+            <pfx:include href="core/editor2/txt/styles.xml" part="standard"/>
+          </style>
+        </head>
+        <body class="navi">
+          <pfx:include href="core/editor2/txt/navigation.xml" part="top"/>
+        </body>
+      </html>
+    </pfx:frame>
+    <pfx:frame name="bottom">
+      <html>
+	<head>
+          <style type="text/css">
+            <pfx:include href="core/txt/styles.xml" part="standard"/>
+            <pfx:include href="core/editor2/txt/styles.xml" part="standard"/>
+          </style>
+        </head>
+	<body>
+	  <pfx:maincontent path="core/editor2/txt/pages" prefix="main_" part="content"/>
+	</body>
+      </html>
+    </pfx:frame>
+  </pfx:frameset>
+</pfx:document>

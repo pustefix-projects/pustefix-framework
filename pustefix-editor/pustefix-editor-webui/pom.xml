@@ -1,0 +1,46 @@
+<?xml version="1.0"?>
+<project>
+  
+  <parent>
+    <artifactId>pustefix-editor</artifactId>
+    <groupId>org.pustefixframework.editor</groupId>
+    <version>0.0.1</version>
+  </parent>
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.pustefixframework.editor</groupId>
+  <artifactId>pustefix-editor-webui</artifactId>
+  <name>Pustefix Editor Web-Based User Interface</name>
+  <version>0.0.1</version>
+  <url>http://pustefixframework.org</url>
+  
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.pustefixframework.maven.plugins</groupId>
+        <artifactId>pustefix-iwrpgenerate-plugin</artifactId>
+        <executions>
+          <execution>
+            <goals>
+              <goal>iwrpgenerate</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+  
+  <dependencies>
+    <dependency>
+      <groupId>org.pustefixframework.editor</groupId>
+      <artifactId>pustefix-editor-common</artifactId>
+      <version>0.0.1</version>
+    </dependency>
+    <dependency>
+      <groupId>com.caucho</groupId>
+      <artifactId>hessian</artifactId>
+      <version>3.1.5</version>
+    </dependency>
+  </dependencies>
+  
+</project>
+

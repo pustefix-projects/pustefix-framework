@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?><include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
+  <part name="top">
+    
+  <theme name="default">
+      <ul class="navi">
+        <li>
+          <pfx:button activeclass="active" normalclass="normal" page="home" target="_top">Home</pfx:button>
+        </li>
+        <li>
+          <pfx:button activeclass="active" normalclass="normal" page="pages" target="_top">Pages</pfx:button>
+        </li>
+        <li>
+          <pfx:button activeclass="active" normalclass="normal" page="targets" target="_top">Targets</pfx:button>
+        </li>
+        <li>
+          <pfx:button activeclass="active" normalclass="normal" page="images" target="_top">Images</pfx:button>
+        </li>
+        <li>
+          <pfx:button activeclass="active" normalclass="normal" page="includes" target="_top">Includes</pfx:button>
+        </li>
+        <li>
+          <pfx:button activeclass="active" normalclass="normal" page="dynincludes" target="_top">DynIncludes</pfx:button>
+        </li>
+        <li>
+          <pfx:button activeclass="active" normalclass="normal" page="search" target="_top">Search</pfx:button>
+        </li>
+      </ul>
+      <div class="topbar">
+        <pfx:button mode="force" page="start" target="_top">
+          Leave <em><ixsl:value-of select="/formresult/projects/project[@selected='true']/@comment"/></em>
+        </pfx:button>
+      </div>
+    </theme></part>
+</include_parts><!--
+Local Variables:
+mode: xml
+End:
+-->

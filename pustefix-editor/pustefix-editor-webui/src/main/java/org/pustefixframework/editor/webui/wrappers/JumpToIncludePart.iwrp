@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface xmlns="http://pustefix.sourceforge.net/interfacewrapper200401" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://pustefix.sourceforge.net/interfacewrapper200401 http://pustefix.sourceforge.net/interfacewrapper200401.xsd">
+  <ihandler class="org.pustefixframework.editor.webui.handlers.JumpToIncludePartHandler"/>
+  <param type="java.lang.String" name="ProjectId" occurence="optional"/>
+  <param type="java.lang.String" name="Type" occurence="optional"/>
+  <param type="java.lang.String" name="Path" occurence="optional"/>
+  <param type="java.lang.String" name="Part" occurence="optional"/>
+  <param type="java.lang.String" name="Theme" occurence="optional"/>
+</interface>

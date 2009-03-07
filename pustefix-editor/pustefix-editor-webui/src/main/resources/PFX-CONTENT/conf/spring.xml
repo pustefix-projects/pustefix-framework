@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd">
+  
+  <!-- WARNING: Do never change the order of UserManagementService and
+                ProjectFactoryService!
+                UserManagementService depends on ProjectFactoryService
+                during initialization and will stop working!           -->
+  <bean id="usermanagement" class="de.schlund.pfixcore.editor2.core.spring.UserManagementServiceImpl" init-method="init">
+    <property name="securityManagerService">
+      <ref bean="securitymanager"/>
+    </property>
+  </bean>
+  
+  <bean id="securitymanager" scope="session" class="de.schlund.pfixcore.editor2.core.spring.SecurityManagerServiceImpl">
+    <aop:scoped-proxy/>
+    <property name="userManagementService">
+      <ref bean="usermanagement"/>
+    </property>
+  </bean>
+
+  <bean id="userpasswordauthentication" class="de.schlund.pfixcore.editor2.core.spring.UserPasswordAuthenticationServiceImpl">
+    <property name="userManagementService">
+      <ref bean="usermanagement"/>
+    </property>
+    <property name="securityManagerService">
+      <ref bean="securitymanager"/>
+    </property>
+  </bean>
+    
+  <bean id="sessioninfo" class="org.pustefixframework.editor.webui.resources.util.SessionInfoStore">
+  </bean>
+  
+</beans>

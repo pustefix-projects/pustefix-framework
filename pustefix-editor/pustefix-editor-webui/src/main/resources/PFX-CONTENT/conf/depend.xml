@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<make project="editor2" lang="en">
+  <navigation>
+    <page name="login" handler="/xml/edit"/>
+    <page name="start" handler="/xml/edit"/>
+    <page name="home" handler="/xml/edit"/>
+    <page name="pages" handler="/xml/edit"/>
+    <page name="targets" handler="/xml/edit"/>
+    <page name="images" handler="/xml/edit"/>
+    <page name="includes" handler="/xml/edit"/>
+    <page name="dynincludes" handler="/xml/edit"/>
+    <page name="search" handler="/xml/edit"/>
+    <page name="logout" handler="/xml/edit"/>
+    <page name="jumptopage" handler="/xml/edit"/>
+    <page name="sessionmanager" handler="/xml/edit"/>
+    <page name="useradmin" handler="/xml/edit"/>
+    <page name="useredit" handler="/xml/edit"/>
+  </navigation>
+  
+  <global>
+    <param name="outputdoctype-public" value="-//W3C//DTD HTML 4.01//EN"/>
+    <param name="outputdoctype-system" value="http://www.w3.org/TR/html40/strict.dtd"/>    
+  </global>
+    
+  <standardmaster/>
+  
+  <standardmetatags>
+    <include stylesheet="modules/editor2/xsl/metatags.xsl"/>
+  </standardmetatags>
+  
+  <standardpage name="login" xml="modules/editor2/xml/two_frames_inactive.xml"/>
+  <standardpage name="start" xml="modules/editor2/xml/two_frames_inactive.xml"/>
+  <standardpage name="home" xml="modules/editor2/xml/two_frames.xml"/>
+  <standardpage name="pages" xml="modules/editor2/xml/three_frames.xml"/>
+  <standardpage name="targets" xml="modules/editor2/xml/three_frames.xml">
+    <include stylesheet="modules/editor2/xsl/runtime.xsl"/>
+  </standardpage>
+  <standardpage name="images" xml="modules/editor2/xml/three_frames.xml"/>
+  <standardpage name="includes" xml="modules/editor2/xml/three_frames.xml">
+    <include stylesheet="modules/editor2/xsl/runtime.xsl"/>
+  </standardpage>
+  <standardpage name="dynincludes" xml="modules/editor2/xml/three_frames.xml">
+    <include stylesheet="modules/editor2/xsl/runtime.xsl"/>
+  </standardpage>
+  <standardpage name="search" xml="modules/editor2/xml/two_frames.xml"/>
+  <standardpage name="sessionmanager" xml="modules/editor2/xml/two_frames_inactive.xml"/>
+  <standardpage name="useradmin" xml="modules/editor2/xml/two_frames_inactive.xml"/>
+  <standardpage name="useredit" xml="modules/editor2/xml/two_frames_inactive.xml"/>
+  
+  <standardpage name="ws_includes" xml="modules/editor2/xml/webservice.xml">
+    <param name="outputmethod" value="xml"/>
+    <include stylesheet="core/xsl/default_copy.xsl"/>
+  </standardpage>
+  <standardpage name="ws_dynincludes" xml="modules/editor2/xml/webservice.xml">
+    <param name="outputmethod" value="xml"/>
+    <include stylesheet="core/xsl/default_copy.xsl"/>
+  </standardpage>
+</make>

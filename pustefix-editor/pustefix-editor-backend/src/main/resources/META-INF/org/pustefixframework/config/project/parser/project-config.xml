@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+<configuration
+  xmlns="http://www.marsching.com/2008/flexiparse/configurationNS"
+  xmlns:xo="http://www.marsching.com/2008/flexiparse/xml2objectNS"
+  xmlns:xsi="http://http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="
+    http://www.marsching.com/2008/flexiparse/configurationNS 
+    http://www.marsching.com/2008/flexiparse/flexiparse-configuration.xsd
+    http://www.marsching.com/2008/flexiparse/xml2objectNS
+    http://www.marsching.com/2008/flexiparse/flexiparse-xml2object.xsd
+  "
+  xmlns:p="http://www.pustefix-framework.org/2008/namespace/project-config"
+>
+  
+  <handler class="org.pustefixframework.editor.backend.config.internal.EditorParsingHandler" run-order="end">
+    <match>/p:project-config</match>
+  </handler>
+  
+  <xo:element name="p:editor" deep-search="true" target-type="org.pustefixframework.editor.backend.config.internal.EditorConfig">
+    <xo:element name="p:enabled" target-attribute="enabled" target-type="boolean">
+      <xo:text target-attribute="!parent" target-type="boolean"/>
+    </xo:element>
+    <xo:element name="p:location" target-attribute="location">
+      <xo:text target-attribute="!parent"/>
+    </xo:element>
+    <xo:element name="p:secret" target-attribute="secret">
+      <xo:text target-attribute="!parent"/>
+    </xo:element>
+  </xo:element>
+  
+  <xo:element name="p:project" target-type="org.pustefixframework.editor.backend.config.EditorProjectInfo">
+    <xo:element name="p:name" target-attribute="name">
+      <xo:text target-attribute="!parent"/>
+    </xo:element>
+    <xo:element name="p:description" target-attribute="description">
+      <xo:text target-attribute="!parent"/>
+    </xo:element>
+  </xo:element>
+  
+</configuration>
