@@ -62,8 +62,6 @@ import de.schlund.pfixxml.SessionCleaner;
 import de.schlund.pfixxml.Variant;
 import de.schlund.pfixxml.perflogging.AdditionalTrailInfo;
 import de.schlund.pfixxml.perflogging.AdditionalTrailInfoFactory;
-import de.schlund.pfixxml.resources.FileResource;
-import de.schlund.pfixxml.resources.ResourceUtil;
 import de.schlund.pfixxml.serverutil.SessionHelper;
 import de.schlund.pfixxml.targets.PageInfo;
 import de.schlund.pfixxml.targets.PageInfoFactory;
@@ -71,7 +69,6 @@ import de.schlund.pfixxml.targets.PageTargetTree;
 import de.schlund.pfixxml.targets.Target;
 import de.schlund.pfixxml.targets.TargetGenerationException;
 import de.schlund.pfixxml.targets.TargetGenerator;
-import de.schlund.pfixxml.targets.TargetGeneratorFactory;
 import de.schlund.pfixxml.testrecording.TestRecording;
 import de.schlund.pfixxml.testrecording.TrailLogger;
 import de.schlund.pfixxml.util.CacheValueLRU;
@@ -163,10 +160,6 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
     
     protected abstract AbstractXMLServletConfig getAbstractXMLServletConfig();
     
-    /**
-     * The configuration file for the TargetGeneratorFacory.
-     */
-    private FileResource targetconf                 = null;
     private boolean      render_external            = false;
     private boolean      editmodeAllowed            = false;
     private boolean      skip_getmodtimemaybeupdate = false;
@@ -202,11 +195,9 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
     private void initValues() throws ServletException {
         servletname = this.getAbstractXMLServletConfig().getServletName();
 
-        try {
-            generator = TargetGeneratorFactory.getInstance().createGenerator(targetconf);
-        } catch (Exception e) {
-            LOGGER.error("Error: ", e);
-            throw new ServletException("Couldn't get TargetGenerator", e);
+        if (generator == null) {
+            LOGGER.error("Error: TargetGenerator has not been set.");
+            throw new ServletException("TargetGenerator is not set");
         }
         
         editmodeAllowed = this.getAbstractXMLServletConfig().isEditMode();
@@ -242,7 +233,7 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
         if (LOGGER.isInfoEnabled()) {
             StringBuffer sb = new StringBuffer(255);
             sb.append("\n").append("AbstractXMLServlet properties after initValues(): \n");
-            sb.append("                targetconf = ").append(targetconf).append("\n");
+            sb.append("                targetconf = ").append(generator.getConfigPath()).append("\n");
             sb.append("               servletname = ").append(servletname).append("\n");
             sb.append("           editModeAllowed = ").append(editmodeAllowed).append("\n");
             sb.append("             maxStoredDoms = ").append(maxStoredDoms).append("\n");
@@ -810,9 +801,9 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
                 }
             }
         }
-        paramhash.put(TargetGenerator.XSLPARAM_TG, targetconf.toURI().toString());
+        paramhash.put(TargetGenerator.XSLPARAM_TG, generator.getConfigPath().toURI().toString());
         paramhash.put(TargetGenerator.XSLPARAM_TKEY, VALUE_NONE);
-        paramhash.put(TargetGenerator.XSLPARAM_NAVITREE, NavigationFactory.getInstance().getNavigation(targetconf,generator.getXsltVersion()).getNavigationXMLElement());
+        paramhash.put(TargetGenerator.XSLPARAM_NAVITREE, NavigationFactory.getInstance().getNavigation(generator.getConfigPath(), generator.getXsltVersion()).getNavigationXMLElement());
 
         String session_to_link_from_external = getSessionAdmin().getExternalSessionId(session);
         paramhash.put("__external_session_ref", session_to_link_from_external);
@@ -985,8 +976,8 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
         }
     }
     
-    public void setDependFile(String path) {
-        targetconf = ResourceUtil.getFileResource(path);
+    public void setTargetGenerator(TargetGenerator tgen) {
+        this.generator = tgen;
     }
     
     public void setTestRecording(TestRecording testRecording) {

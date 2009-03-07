@@ -1,3 +1,13 @@
+2009-03-07  Sebastian Marsching  <sebastian.marsching@1und1.de>
+
+	* src/main/java/de/schlund/pfixxml/targets/TargetGeneratorFactoryBean.java: 
+	* src/main/java/org/pustefixframework/config/project/parser/PustefixContextXMLRequestHandlerParsingHandler.java: 
+	* src/main/java/org/pustefixframework/config/project/parser/XMLGeneratorInfoParsingHandler.java: 
+	* src/main/java/org/pustefixframework/config/project/XMLGeneratorInfo.java: 
+	* src/main/java/org/pustefixframework/http/AbstractPustefixXMLRequestHandler.java: 
+	* src/data/core/editor2: 
+	Removed editor code and made TargetGenerator available as a Spring bean.
+
 2009-03-04  Martin Leidig  <mleidig@schlund.de>
 
 	Fixed resolving of XSLT includes from modules.

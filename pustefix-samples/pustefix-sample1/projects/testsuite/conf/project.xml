@@ -9,6 +9,7 @@
   <editor>
     <enabled>true</enabled> <!-- Do we really need this? -->
     <location>http://cms.${fqdn}/</location>
+    <secret>foobar</secret>
   </editor>
   
   <xml-generator>

@@ -4,6 +4,7 @@
   <project>
     <name>samplebank</name>
     <description>Sample Bank Application</description>
+    <secret>foobar</secret>
   </project>
   
   <editor>

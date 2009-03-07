@@ -85,7 +85,6 @@ public class PustefixContextXMLRequestHandlerParsingHandler extends Customizatio
             throw new ParserException("Found " + infoCollection.size() + " instances of XMLGeneratorInfo but expected exactly one");
         }
         XMLGeneratorInfo info = infoCollection.iterator().next();
-        String dependFile = info.getConfigurationFile();
        
         FileResource fileRes = ResourceUtil.getFileResource(configurationFile);
         Resource res = null;
@@ -117,7 +116,7 @@ public class PustefixContextXMLRequestHandlerParsingHandler extends Customizatio
             IncludesResolver resolver = new IncludesResolver("http://www.pustefix-framework.org/2008/namespace/context-xml-service-config", "config-include");
             resolver.resolveIncludes(doc);
             
-            final ObjectTreeElement contextXmlConfigTree = contextXmlConfigParser.parse(doc, cusInfo, globalConfig, beanReg);
+            final ObjectTreeElement contextXmlConfigTree = contextXmlConfigParser.parse(doc, cusInfo, globalConfig, beanReg, info);
             SubObjectTree subTree = new SubObjectTree() {
               public ObjectTreeElement getRoot() {
                     return contextXmlConfigTree;
@@ -139,7 +138,7 @@ public class PustefixContextXMLRequestHandlerParsingHandler extends Customizatio
         BeanDefinitionBuilder beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(PustefixContextXMLRequestHandler.class);
         beanBuilder.setScope("singleton");
         beanBuilder.setInitMethodName("init");
-        beanBuilder.addPropertyValue("dependFile", dependFile);
+        beanBuilder.addPropertyValue("targetGenerator", new RuntimeBeanReference(info.getTargetGeneratorBeanName()));
         beanBuilder.addPropertyValue("handlerURI", path + "/**");
         beanBuilder.addPropertyValue("context", new RuntimeBeanReference(ContextImpl.class.getName()));
         beanBuilder.addPropertyValue("configuration", config);

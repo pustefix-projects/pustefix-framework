@@ -36,15 +36,6 @@ public interface AbstractXMLServletConfig extends ServletManagerConfig {
     String getServletName();
 
     /**
-     * Returns the path to the configuration file for the {@link de.schlund.pfixxml.targets.TargetGenerator} 
-     * used by the {@link de.schlund.pfixxml.AbstractXMLServlet}. The path has to be specified relative
-     * to the Pustefix docroot.
-     * 
-     * @return path to target generator configuration file
-     */
-    String getDependFile();
-
-    /**
      * If true the {@link de.schlund.pfixxml.AbstractXMLServlet} or its children allow the user to
      * switch to "editmode" which provides extra debugging information.
      * 

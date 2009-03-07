@@ -24,8 +24,6 @@ public class AbstractXMLServletConfigImpl extends ServletManagerConfigImpl imple
 
     private String servletName;
 
-    private String dependFile;
-
     private boolean editMode;
 
     private boolean editModeSet = false;
@@ -39,17 +37,6 @@ public class AbstractXMLServletConfigImpl extends ServletManagerConfigImpl imple
      */
     public String getServletName() {
         return this.servletName;
-    }
-
-    public void setDependFile(String value) {
-        this.dependFile = value;
-    }
-
-    /* (non-Javadoc)
-     * @see de.schlund.pfixxml.config.IAbstractXMLServletConfig#getDependFile()
-     */
-    public String getDependFile() {
-        return this.dependFile;
     }
 
     public void setEditMode(boolean b) {
