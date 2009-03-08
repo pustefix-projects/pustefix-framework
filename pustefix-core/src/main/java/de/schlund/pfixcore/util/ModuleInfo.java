@@ -8,10 +8,14 @@ import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
+import org.apache.log4j.Logger;
+
 import de.schlund.pfixcore.exception.PustefixRuntimeException;
 
 public class ModuleInfo {
     
+	private static Logger LOG = Logger.getLogger(ModuleInfo.class);
+	
     private static String MODULE_DESCRIPTOR_LOCATION = "META-INF/pustefix-module.xml";
     
     private static ModuleInfo instance = new ModuleInfo();
@@ -25,6 +29,7 @@ public class ModuleInfo {
     public ModuleInfo() {
         try {
             read();
+            LOG.info(toString());
         } catch(Exception x) {
             throw new PustefixRuntimeException(x);
         }
@@ -33,6 +38,7 @@ public class ModuleInfo {
     public ModuleInfo(List<URL> urls){
         try {
             read(urls);
+            LOG.info(toString());
         } catch(Exception x) {
             throw new PustefixRuntimeException(x);
         }
@@ -85,6 +91,19 @@ public class ModuleInfo {
                 }
             }
         }
+    }
+    
+    public String toString() {
+    	StringBuilder sb = new StringBuilder();
+    	sb.append("Module information - ");
+    	int no = moduleDescMap.values().size();
+    	sb.append("Detected " + no + " module" + (no==1?"":"s") + " [");
+    	for(ModuleDescriptor moduleDesc:moduleDescMap.values()) {
+    		sb.append(moduleDesc.getName() + " ");
+    	}
+    	if(no>0) sb.deleteCharAt(sb.length()-1);
+    	sb.append("]");
+    	return sb.toString();
     }
 
 }
