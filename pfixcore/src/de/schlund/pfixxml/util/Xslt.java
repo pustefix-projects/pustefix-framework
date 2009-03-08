@@ -19,6 +19,7 @@
 package de.schlund.pfixxml.util;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.io.StringWriter;
 import java.net.MalformedURLException;
@@ -268,7 +269,7 @@ public class Xslt {
                 // If Document object is null, the file could not be found or read
                 // so return null to tell the parser the URI could not be resolved
                 if (dom == null) {
-                    throw new TransformerException("Resource can't be found: " + uri.toString());
+                    return null;
                 }
                 
                 Source source = new DOMSource(dom);
@@ -282,11 +283,16 @@ public class Xslt {
                 parent.getAuxDependencyManager().addDependencyTarget(target.getTargetKey());
                 return source;
             }
-            
             resource = ResourceUtil.getResource(path);
-            if(!resource.exists()) throw new TransformerException("Resource can't be found: " + uri.toString());
-            Source source = new StreamSource(path);
-            return source;
+            if(!resource.exists()) {
+                throw new TransformerException("Resource can't be found: " + uri.toString());
+            }
+            try {
+            	Source source = new StreamSource(resource.getInputStream(), path);
+            	return source;
+            } catch(IOException x) {
+            	throw new TransformerException("Can't read resource: " + path);
+            }
         }
     }
 
