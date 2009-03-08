@@ -1,3 +1,19 @@
+2009-03-08  Martin Leidig  <mleidig@schlund.de>
+
+	Fixed include error handling. Log detected modules.
+
+	* src/de/schlund/pfixcore/util/ModuleInfo.java
+	* src/de/schlund/pfixxml/util/Xslt.java
+	* src/de/schlund/pfixxml/util/XsltResourceNotFoundException.java
+
+2009-03-06  Martin Leidig  <mleidig@schlund.de>
+
+	Improved error handling when included resource can't be found.
+
+	* src/de/schlund/pfixxml/resources/ModuleResource.java
+	* src/de/schlund/pfixxml/util/Xslt.java
+	* src/de/schlund/pfixxml/util/XsltResourceNotFoundException.java
+
 2009-03-04  Martin Leidig  <mleidig@schlund.de>
 
 	Fixed resolving of XSLT includes from modules.
