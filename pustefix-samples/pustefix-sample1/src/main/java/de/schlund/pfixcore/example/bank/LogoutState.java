@@ -9,6 +9,7 @@ import de.schlund.pfixxml.ResultDocument;
 
 public class LogoutState extends StateImpl {
 
+    @Override
     public ResultDocument getDocument(Context context, PfixServletRequest req) throws Exception {;
         Authentication auth=context.getAuthentication();
         auth.revokeRole("ACCOUNT");

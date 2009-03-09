@@ -20,10 +20,12 @@ import de.schlund.pfixxml.util.URIParameters;
  */
 public class EncodingTestState extends DefaultIWrapperState {
     
+    @Override
     public boolean isAccessible(Context context,PfixServletRequest preq) throws Exception {
         return true;
     }
 
+    @Override
     public ResultDocument getDocument(Context context,PfixServletRequest req) throws Exception {
         HttpServletRequest srvReq=req.getRequest();
         String enc=srvReq.getCharacterEncoding();

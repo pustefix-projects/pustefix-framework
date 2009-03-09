@@ -37,6 +37,7 @@ import de.schlund.pfixxml.PfixServletRequest;
 
 public class OverviewState extends StaticState {
 
+    @Override
     public boolean isAccessible(Context context, PfixServletRequest preq) throws Exception {
         ContextResourceManager crm = context.getContextResourceManager();
         ContextTrouser         ct  = (ContextTrouser) crm.getResource("de.schlund.pfixcore.example.ContextTrouser");

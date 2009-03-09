@@ -16,6 +16,7 @@ import de.schlund.pfixxml.ResultDocument;
  */
 public class TestState extends StateImpl {
 
+    @Override
     public final ResultDocument getDocument(final Context context, final PfixServletRequest preq) throws Exception {
         ContextSimpleData csd = (ContextSimpleData) context.getContextResourceManager().
             getResource("de.schlund.pfixcore.example.ContextSimpleData");

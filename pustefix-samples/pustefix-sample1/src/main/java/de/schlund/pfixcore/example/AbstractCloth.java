@@ -59,6 +59,7 @@ public abstract class AbstractCloth {
         }
     }
 
+    @Override
     public String toString() {
         LOG.debug("Doing " + this.getClass().getName() + "...");
         return "[Size: " + size + "][Color: " + color + "]";

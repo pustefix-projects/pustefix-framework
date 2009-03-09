@@ -25,6 +25,7 @@ import de.schlund.pfixxml.ResultDocument;
 
 public class InvalidateSessionState extends StaticState {
 
+    @Override
     public ResultDocument getDocument(Context context, PfixServletRequest preq) throws Exception {
         context.markSessionForCleanup();
         return super.getDocument(context, preq);
