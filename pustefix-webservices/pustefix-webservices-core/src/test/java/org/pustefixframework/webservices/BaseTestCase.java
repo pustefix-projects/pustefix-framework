@@ -24,20 +24,20 @@ import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
+import org.junit.Before;
 
 import de.schlund.pfixxml.config.GlobalConfig;
 import de.schlund.pfixxml.config.GlobalConfigurator;
-import junit.framework.TestCase;
 
 /**
  * 
  * @author mleidig
  *
  */
-public abstract class BaseTestCase extends TestCase {
+public abstract class BaseTestCase {
 
-    @Override
-    protected void setUp() throws Exception {
+    @Before
+    public void setUp() {
 
         ConsoleAppender appender = new ConsoleAppender(new PatternLayout("%p: %m\n"));
         Logger logger=Logger.getRootLogger();

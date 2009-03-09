@@ -18,10 +18,14 @@
  */
 package org.pustefixframework.webservices.spring;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.junit.Test;
 import org.pustefixframework.webservices.BaseTestCase;
 import org.pustefixframework.webservices.config.ServiceConfig;
 import org.pustefixframework.webservices.example.CalculatorImpl;
@@ -37,7 +41,8 @@ import de.schlund.pfixxml.resources.ResourceUtil;
  */
 public class WebServiceBeanConfigReaderTest extends BaseTestCase {
 
-    public void testReading() throws Exception {
+    @Test
+    public void reading() throws Exception {
     
         Map<String,String> services = new HashMap<String,String>();
         services.put("Calculator", CalculatorImpl.class.getName());

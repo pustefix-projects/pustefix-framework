@@ -19,6 +19,10 @@
 
 package org.pustefixframework.webservices.spring;
 
+import static org.junit.Assert.assertEquals;
+
+import org.junit.Before;
+import org.junit.Test;
 import org.pustefixframework.webservices.BaseTestCase;
 import org.pustefixframework.webservices.TestServiceProcessor;
 import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
@@ -38,8 +42,9 @@ public class WebServiceHttpRequestHandlerTest extends BaseTestCase {
     
     private WebServiceHttpRequestHandler handler;
     
+    @Before 
     @Override
-    protected void setUp() throws Exception {
+    public void setUp() {
         super.setUp();        
         GenericWebApplicationContext ctx=new GenericWebApplicationContext();
         MockServletContext servletContext = new MockServletContext();
@@ -54,7 +59,8 @@ public class WebServiceHttpRequestHandlerTest extends BaseTestCase {
         handler.getServiceRuntime().addServiceProcessor("TEST", proc);
     }
 
-    public void testWithoutSession() throws Exception {
+    @Test
+    public void withoutSession() throws Exception {
         
         MockHttpServletRequest req = new MockHttpServletRequest();
         req.setContentType("text/plain");
@@ -68,8 +74,9 @@ public class WebServiceHttpRequestHandlerTest extends BaseTestCase {
         
         assertEquals(content,res.getContentAsString());
     }
-    
-    public void testWithSession() throws Exception {
+
+    @Test
+    public void withSession() throws Exception {
         
         MockHttpServletRequest req = new MockHttpServletRequest();
         req.setContentType("text/plain");

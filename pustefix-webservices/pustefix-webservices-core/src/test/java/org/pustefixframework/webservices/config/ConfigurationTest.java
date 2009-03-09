@@ -21,10 +21,12 @@ package org.pustefixframework.webservices.config;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 
+import org.junit.Test;
 import org.pustefixframework.webservices.BaseTestCase;
 
 import de.schlund.pfixxml.resources.FileResource;
 import de.schlund.pfixxml.resources.ResourceUtil;
+import static org.junit.Assert.*;
 
 /**
  * 
@@ -32,8 +34,8 @@ import de.schlund.pfixxml.resources.ResourceUtil;
  *
  */
 public class ConfigurationTest extends BaseTestCase {
-    
-    public void testSerialization() throws Exception {
+    @Test
+    public void serialization() throws Exception {
         FileResource file=ResourceUtil.getFileResourceFromDocroot("conf"+"/"+"webservice.conf.xml");
         Configuration conf=ConfigurationReader.read(file);
         ByteArrayOutputStream out=new ByteArrayOutputStream();
