@@ -149,7 +149,7 @@
     <dependency>
       <groupId>org.pustefixframework.webservices</groupId>
       <artifactId>pustefix-webservices-core</artifactId>
-      <version>0.1.2</version>      
+      <version>0.2.2</version>      
       <exclusions>
         <exclusion>
           <!--  TODO i get 0.1.2 otherwise ... -->
