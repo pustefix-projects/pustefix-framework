@@ -262,18 +262,6 @@
           </execution>
         </executions>
       </plugin>
-      <plugin>
-        <groupId>org.pustefixframework.maven.plugins</groupId>
-        <artifactId>pustefix-iwrpgenerate-plugin</artifactId>
-        <version>0.1.1</version>
-        <executions>
-          <execution>
-            <goals>
-              <goal>iwrpgenerate</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
     </plugins>                
   </build>
 </project>
