@@ -14,8 +14,6 @@ import org.springframework.test.context.junit38.AbstractJUnit38SpringContextTest
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
-import de.schlund.pfixxml.config.GlobalConfig;
-import de.schlund.pfixxml.config.GlobalConfigurator;
 import de.schlund.pfixxml.serverutil.SessionHelper;
 
 @ContextConfiguration(loader=PustefixWebApplicationContextLoader.class,locations={"file:projects/sample1/conf/project.xml","file:projects/sample1/conf/spring.xml"})
