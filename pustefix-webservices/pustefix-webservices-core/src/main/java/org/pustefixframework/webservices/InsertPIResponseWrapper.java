@@ -44,10 +44,12 @@ public class InsertPIResponseWrapper extends HttpServletResponseWrapper {
         myOut=new MyServletOutputStream(res.getOutputStream());
     }
     
+    @Override
     public ServletOutputStream getOutputStream() throws IOException {
         return myOut;
     }
 
+    @Override
     public PrintWriter getWriter() throws IOException {
         return new PrintWriter(myOut);
     }
@@ -69,6 +71,7 @@ public class InsertPIResponseWrapper extends HttpServletResponseWrapper {
             out=new ByteArrayOutputStream();
         }
         
+        @Override
         public void write(int b) throws IOException {
             if(!inserted) {
                 if(b=='<') opened++;

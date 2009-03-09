@@ -78,6 +78,7 @@ public class WebServiceServlet extends HttpServlet {
         }
     }
     
+    @Override
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
         synchronized (initLock) {
@@ -130,6 +131,7 @@ public class WebServiceServlet extends HttpServlet {
         }
     }
 
+    @Override
     public void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
         try {
             runtime.process(req, res);
@@ -139,6 +141,7 @@ public class WebServiceServlet extends HttpServlet {
         }
     }
 
+    @Override
     public void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
         adminWebapp.doGet(req, res);
     }

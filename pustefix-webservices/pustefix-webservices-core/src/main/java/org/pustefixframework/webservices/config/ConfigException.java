@@ -63,6 +63,7 @@ public class ConfigException extends SAXException {
     	this.cause=cause;
     }
     
+    @Override
     public String getMessage() {
     	String msg="";
         if(type==MISSING_ATTRIBUTE) {

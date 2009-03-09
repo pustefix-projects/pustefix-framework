@@ -62,6 +62,7 @@ public class EmailNotifier extends Thread {
 	
 	class NotifierThread extends Thread {
 	
+	    @Override
 		public void run() {
 			while(!isInterrupted()) {
 				Email email=null;

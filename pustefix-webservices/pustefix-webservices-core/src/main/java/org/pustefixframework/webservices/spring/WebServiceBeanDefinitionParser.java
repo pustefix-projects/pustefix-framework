@@ -33,10 +33,12 @@ import org.w3c.dom.NodeList;
  */
 public class WebServiceBeanDefinitionParser extends AbstractSingleBeanDefinitionParser { 
 
+   @Override
    protected Class<?> getBeanClass(Element element) {
        return WebServiceRegistration.class;
    }
 
+   @Override
    protected void doParse(Element element, ParserContext parserContext, BeanDefinitionBuilder beanDefBuilder) {
     
        String serviceName = element.getAttribute("servicename");

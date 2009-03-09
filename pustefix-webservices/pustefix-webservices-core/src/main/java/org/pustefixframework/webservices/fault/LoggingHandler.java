@@ -14,10 +14,12 @@ public class LoggingHandler extends FaultHandler {
     
     private Logger LOG=Logger.getLogger(getClass().getName());
 	
+    @Override
     public void init() {
         
     }
     
+	@Override
 	public void handleFault(Fault fault) {
         LOG.error("Service name: "+fault.getServiceName());
         LOG.error("Exception name: "+fault.getName());

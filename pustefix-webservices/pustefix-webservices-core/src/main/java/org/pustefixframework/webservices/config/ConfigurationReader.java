@@ -98,6 +98,7 @@ public class ConfigurationReader extends DefaultHandler {
 		else context=contextStack.peek();
 	}
 	
+	@Override
 	public void startElement(String uri, String localName, String qName, Attributes atts) throws SAXException {
 		content.reset();
 		if(context==null) {
@@ -235,6 +236,7 @@ public class ConfigurationReader extends DefaultHandler {
 		}
 	}
 	
+	@Override
 	public void endElement(String uri, String localName, String qName) throws SAXException {
 		if(context instanceof Configuration) {
 			if(localName.equals("webservice-config")) {
@@ -284,6 +286,7 @@ public class ConfigurationReader extends DefaultHandler {
         }
     }
 	
+    @Override
 	public void characters(char[] ch, int start, int length) throws SAXException {
 		content.write(ch,start,length);
 	}

@@ -51,15 +51,18 @@ public class SOAPActionRequestWrapper extends HttpServletRequestWrapper {
         }
     }
     
+    @Override
     public String getHeader(String name) {
         if(name.equals("SOAPAction")) return soapAction;
         return super.getHeader(name);
     }
     
+    @Override
     public ServletInputStream getInputStream() throws IOException {
         return myIn;
     }
-     
+
+    @Override
     public BufferedReader getReader() throws IOException {
         return new BufferedReader(new InputStreamReader(myIn));
     }
@@ -72,6 +75,7 @@ public class SOAPActionRequestWrapper extends HttpServletRequestWrapper {
             in=new ByteArrayInputStream(soapMsg.getBytes());
         }
         
+        @Override
         public int read() throws IOException {
             return in.read();
         }

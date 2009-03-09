@@ -37,6 +37,7 @@ public class FileCache {
         map = new LinkedHashMap<String, FileCacheData>(maxSize, 0.75f, true) {
             private static final long serialVersionUID = 6172037110210448800L;
 
+            @Override
             protected boolean removeEldestEntry(Map.Entry<String, FileCacheData> eldest) {
                 boolean exceeded = size() > maxSize;
                 if (exceeded) LOG.warn("Cache maximum size exceeded. Eldest entry to be removed.");

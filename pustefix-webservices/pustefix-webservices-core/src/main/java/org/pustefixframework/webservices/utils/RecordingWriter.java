@@ -40,49 +40,59 @@ public class RecordingWriter extends Writer {
 		return chars.toCharArray();
 	}
 	
+	@Override
 	public Writer append(char c) throws IOException {
 		chars.append(c);
 		return writer.append(c);
 	}
 
+	@Override
 	public Writer append(CharSequence csq, int start, int end) throws IOException {
 		chars.append(csq,start,end);
 		return writer.append(csq, start, end);
 	}
 
+	@Override
 	public Writer append(CharSequence csq) throws IOException {
 		chars.append(csq);
 		return writer.append(csq);
 	}
 
+	@Override
 	public void close() throws IOException {
 		writer.close();
 	}
 
+	@Override
 	public void flush() throws IOException {
 		writer.flush();
 	}
 
+	@Override
 	public void write(char[] cbuf, int off, int len) throws IOException {
 		chars.write(cbuf,off,len);
 		writer.write(cbuf, off, len);
 	}
 
+	@Override
 	public void write(char[] cbuf) throws IOException {
 		chars.write(cbuf);
 		writer.write(cbuf);
 	}
 
+	@Override
 	public void write(int c) throws IOException {
 		chars.write(c);
 		writer.write(c);
 	}
 
+	@Override
 	public void write(String str, int off, int len) throws IOException {
 		chars.write(str,off,len);
 		writer.write(str, off, len);
 	}
 
+	@Override
 	public void write(String str) throws IOException {
 		chars.write(str);
 		writer.write(str);

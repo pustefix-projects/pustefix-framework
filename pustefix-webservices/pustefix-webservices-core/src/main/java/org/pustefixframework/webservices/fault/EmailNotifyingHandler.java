@@ -32,6 +32,7 @@ public class EmailNotifyingHandler extends FaultHandler {
     private String sender;
     private String[] recipients;
     
+    @Override
     public void init() {
         smtpHost=getParam(PARAM_SMTPHOST);
         if(smtpHost==null) throw new IllegalArgumentException("Parameter '"+PARAM_SMTPHOST+"' is missing.");
@@ -50,6 +51,7 @@ public class EmailNotifyingHandler extends FaultHandler {
         al.toArray(recipients);
     }
 	
+	@Override
 	public void handleFault(Fault fault) {
         if(isNotificationError(fault)) sendMail(fault);
         if(isInternalServerError(fault)) fault.setThrowable(new InternalServerError());

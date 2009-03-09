@@ -41,34 +41,41 @@ public class RecordingReader extends Reader {
 		return chars.toCharArray();
 	}
 	
+	@Override
 	public void close() throws IOException {
 		reader.close();
 	}
 
+	@Override
 	public void mark(int readAheadLimit) throws IOException {
 		//Not supported
 	}
 
+	@Override
 	public boolean markSupported() {
 		return false;
 	}
 
+	@Override
 	public int read() throws IOException {
 		int ch=reader.read();
 		if(ch!=-1) chars.write(ch);
 		return ch;
 	}
 
+	@Override
 	public int read(char[] cbuf, int off, int len) throws IOException {
 		return reader.read(cbuf, off, len);
 	}
 
+	@Override
 	public int read(char[] cbuf) throws IOException {
 		int no=reader.read(cbuf);
 		if(no!=-1) chars.write(cbuf,0,no);
 		return no;
 	}
 
+	@Override
 	public int read(CharBuffer target) throws IOException {
 		int oldPos=target.position();
 		int no=reader.read(target);
@@ -83,14 +90,17 @@ public class RecordingReader extends Reader {
 		return no;
 	}
 
+	@Override
 	public boolean ready() throws IOException {
 		return reader.ready();
 	}
 
+	@Override
 	public void reset() throws IOException {
 		reader.reset();
 	}
 
+	@Override
 	public long skip(long n) throws IOException {
 		return reader.skip(n);
 	}

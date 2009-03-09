@@ -46,6 +46,7 @@ public class Monitor {
         if(scope==Scope.IP) {
 	        ipToHistory=new HashMap<String,MonitorHistory>();
 	        cleanupThread=new Thread() {
+	        	@Override
 	        	public void run() {
 	                while(!isInterrupted()) {
 	                	synchronized(ipToHistory) {
