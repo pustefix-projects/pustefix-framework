@@ -46,6 +46,7 @@ public class BeanSerializer extends Serializer {
         this.beanDescFactory = beanDescFactory;
     }
 
+    @Override
     public Object serialize(SerializationContext ctx, Object obj) throws SerializationException {
         JSONObject jsonObj = new JSONObject();
         if (ctx.doClassHinting()) {
@@ -82,6 +83,7 @@ public class BeanSerializer extends Serializer {
         return jsonObj;
     }
 
+    @Override
     public void serialize(SerializationContext ctx, Object obj, Writer writer) throws SerializationException, IOException {
         writer.write("{");
         if (ctx.doClassHinting()) {

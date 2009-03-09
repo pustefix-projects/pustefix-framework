@@ -18,37 +18,40 @@
  */
 package org.pustefixframework.webservices.jsonws;
 
+import static org.junit.Assert.assertEquals;
+
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-//import java.util.SortedMap;
-//import java.util.TreeMap;
 
-import junit.framework.TestCase;
-import de.schlund.pfixcore.beans.BeanDescriptorFactory;
+import org.junit.Before;
+import org.junit.Test;
 import org.pustefixframework.webservices.json.JSONObject;
 import org.pustefixframework.webservices.json.parser.JSONParser;
+
+import de.schlund.pfixcore.beans.BeanDescriptorFactory;
 
 /**
  * @author mleidig@schlund.de
  */
-public class JSONSerializerTest extends TestCase {
+public class JSONSerializerTest {
 
     BeanDescriptorFactory beanDescFactory;
     SerializerRegistry serializerRegistry;
     DeserializerRegistry deserializerRegistry;
      
-    @Override
-    protected void setUp() throws Exception {
+    @Before
+    public void setUp() throws Exception {
         beanDescFactory=new BeanDescriptorFactory();
         serializerRegistry=new SerializerRegistry(beanDescFactory);
         deserializerRegistry=new DeserializerRegistry(beanDescFactory);
     }
-    
-    public void testSerialization() throws Exception {
+
+    @Test
+    public void serialization() throws Exception {
         JSONSerializer serializer=new JSONSerializer(serializerRegistry);
         JSONDeserializer deserializer=new JSONDeserializer(deserializerRegistry);
         StringWriter writer=new StringWriter();

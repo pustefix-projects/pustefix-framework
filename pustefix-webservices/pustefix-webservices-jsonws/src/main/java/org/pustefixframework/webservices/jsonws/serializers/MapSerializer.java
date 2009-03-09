@@ -39,6 +39,7 @@ public class MapSerializer extends Serializer {
 
     public MapSerializer() {}
 
+    @Override
     public Object serialize(SerializationContext ctx, Object obj) throws SerializationException {
         JSONObject jsonObj = new JSONObject();
         if (obj instanceof Map) {
@@ -64,6 +65,7 @@ public class MapSerializer extends Serializer {
         return jsonObj;
     }
 
+    @Override
     public void serialize(SerializationContext ctx, Object obj, Writer writer) throws SerializationException, IOException {
         writer.write("{");
         if (obj instanceof Map) {

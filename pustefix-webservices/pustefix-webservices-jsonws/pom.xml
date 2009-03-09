@@ -9,7 +9,6 @@
   <artifactId>pustefix-webservices-jsonws</artifactId>
   <name>pustefix-webservices-jsonws</name>
   <version>0.2.1</version>
-  <url>http://maven.apache.org</url>
   <dependencies>
     <dependency>
       <groupId>org.pustefixframework.webservices</groupId>
