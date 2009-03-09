@@ -5,12 +5,12 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
   <parent>
     <groupId>org.pustefixframework</groupId>
     <artifactId>pustefix-samples</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>0.14.0-SNAPSHOT</version>
   </parent>
 
   <groupId>org.pustefixframework</groupId>
   <artifactId>pustefix-sample1</artifactId>
-  <version>1.0.0-SNAPSHOT</version>
+  <version>0.14.0-SNAPSHOT</version>
   <packaging>jar</packaging>
 
   <name>Pustefix Sample 1</name>
@@ -19,7 +19,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
     <dependency>
       <groupId>org.pustefixframework</groupId>
       <artifactId>pustefix-core</artifactId>
-      <version>1.0.0-SNAPSHOT</version>
+      <version>0.14.0-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>junit</groupId>
