@@ -57,6 +57,7 @@ public abstract class VirtualTarget extends TargetImpl {
     /**
      * @see de.schlund.pfixxml.targets.TargetRW#addPageInfo(de.schlund.pfixxml.targets.PageInfo)
      */
+    @Override
     public void addPageInfo(PageInfo info) {
         synchronized (pageinfos) {
             pageinfos.add(info);
@@ -66,6 +67,7 @@ public abstract class VirtualTarget extends TargetImpl {
     /**
      * @see de.schlund.pfixxml.targets.Target#getPageInfos()
      */
+    @Override
     public TreeSet<PageInfo> getPageInfos() {
         synchronized (pageinfos) {
             return new TreeSet<PageInfo>(pageinfos);
@@ -75,6 +77,7 @@ public abstract class VirtualTarget extends TargetImpl {
     /**
      * @see de.schlund.pfixxml.targets.TargetRW#setXMLSource(de.schlund.pfixxml.targets.Target)
      */
+    @Override
     public void setXMLSource(Target source) {
         xmlsource = source;
     }
@@ -82,6 +85,7 @@ public abstract class VirtualTarget extends TargetImpl {
     /**
      * @see de.schlund.pfixxml.targets.TargetRW#setXSLSource(de.schlund.pfixxml.targets.Target)
      */
+    @Override
     public void setXSLSource(Target source) {
         xslsource = source;
     }
@@ -89,6 +93,7 @@ public abstract class VirtualTarget extends TargetImpl {
     /**
      * @see de.schlund.pfixxml.targets.TargetRW#addParam(java.lang.String, java.lang.String)
      */
+    @Override
     public void addParam(String key, Object val) {
         synchronized (params) {
             params.put(key, val);
@@ -98,6 +103,7 @@ public abstract class VirtualTarget extends TargetImpl {
     /**
      * @see de.schlund.pfixxml.targets.Target#getModTime()
      */
+    @Override
     public long getModTime() {
         if (modtime == 0) {
             synchronized (this) {
@@ -115,6 +121,7 @@ public abstract class VirtualTarget extends TargetImpl {
     /**
      * @see de.schlund.pfixxml.targets.Target#needsUpdate()
      */
+    @Override
     public boolean needsUpdate() throws Exception {
         long mymodtime = getModTime();
         long xmlmod;
@@ -158,11 +165,13 @@ public abstract class VirtualTarget extends TargetImpl {
     /**
      * @see de.schlund.pfixxml.targets.TargetRW#storeValue(java.lang.Object)
      */
+    @Override
     public void storeValue(Object obj) {
         SPCache<Object, Object> cache = SPCacheFactory.getInstance().getCache();
         cache.setValue(this, obj);
     }
 
+    @Override
     public String toString() {
         if (getXMLSource() != null && getXSLSource() != null) {
             return "[TARGET: " + getType() + " " + getTargetKey() + "@"
@@ -181,6 +190,7 @@ public abstract class VirtualTarget extends TargetImpl {
      */
     // still to implement from TargetImpl:
     //protected abstract Object  getValueFromDiscCache() throws Exception;
+    @Override
     protected void setModTime(long mtime) {
         modtime = mtime;
     }
@@ -188,6 +198,7 @@ public abstract class VirtualTarget extends TargetImpl {
     /**
      * @see de.schlund.pfixxml.targets.TargetImpl#getValueFromSPCache()
      */
+    @Override
     protected Object getValueFromSPCache() {
         SPCache<Object, Object> cache = SPCacheFactory.getInstance().getCache();
         return cache.getValue(this);
@@ -196,6 +207,7 @@ public abstract class VirtualTarget extends TargetImpl {
     /**
      * @see de.schlund.pfixxml.targets.TargetImpl#getModTimeMaybeUpdate()
      */
+    @Override
     protected long getModTimeMaybeUpdate() throws TargetGenerationException,
             XMLException, IOException {
         // long currmodtime = getModTime();

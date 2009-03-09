@@ -93,6 +93,7 @@ public class ModuleInfo {
         }
     }
     
+    @Override
     public String toString() {
     	StringBuilder sb = new StringBuilder();
     	sb.append("Module information - ");

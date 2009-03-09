@@ -31,6 +31,7 @@ public class And extends ConditionGroup {
         super(conditions);
     }
 
+    @Override
     public boolean evaluate(Context context) {
         for (Condition condition : conditions) {
             if (!condition.evaluate(context))

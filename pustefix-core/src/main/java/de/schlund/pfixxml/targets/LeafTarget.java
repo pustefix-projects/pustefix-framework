@@ -44,32 +44,39 @@ public abstract class LeafTarget extends TargetImpl {
     // Set this in the Constructor of derived classes!
     protected SharedLeaf sharedleaf;
 
+    @Override
     public void setXMLSource(Target source) {
         throw new RuntimeException("Can't add a XMLSource to a leaf");
     }
 
+    @Override
     public void setXSLSource(Target source) {
         throw new RuntimeException("Can't add a XSLSource to a leaf");
     }
 
+    @Override
     public void addParam(String key, Object val) {
         throw new RuntimeException("Can't add a stylesheet parameter to a leaf");
     }
 
+    @Override
     public TreeSet<PageInfo> getPageInfos() {
         return sharedleaf.getPageInfos();
     }
 
+    @Override
     public void addPageInfo(PageInfo info) {
         sharedleaf.addPageInfo(info);
     }
 
+    @Override
     public long getModTime() {
         synchronized (sharedleaf) {
             return sharedleaf.getModTime();
         }
     }
 
+    @Override
     public boolean needsUpdate() throws Exception {
         synchronized (sharedleaf) {
             long mymodtime = sharedleaf.getModTime();
@@ -96,6 +103,7 @@ public abstract class LeafTarget extends TargetImpl {
         }
     }
 
+    @Override
     public void storeValue(Object obj) {
         synchronized (sharedleaf) {
             SPCache<Object, Object> cache = SPCacheFactory.getInstance().getCache();
@@ -103,23 +111,27 @@ public abstract class LeafTarget extends TargetImpl {
         }
     }
 
+    @Override
     public String toString() {
         return "[TARGET: " + getType() + " " + getTargetKey() + "@"
                 + getTargetGenerator().getName() + "]";
     }
 
+    @Override
     protected void setModTime(long mtime) {
         synchronized (sharedleaf) {
             sharedleaf.setModTime(mtime);
         }
     }
 
+    @Override
     protected Object getValueFromSPCache() {
         synchronized (sharedleaf) {
             return SPCacheFactory.getInstance().getCache().getValue(sharedleaf);
         }
     }
 
+    @Override
     protected long getModTimeMaybeUpdate() throws TargetGenerationException,
             XMLException, IOException {
         long mymodtime = getModTime();

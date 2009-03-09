@@ -39,6 +39,7 @@ import de.schlund.pfixxml.serverutil.SessionAdmin;
  */
 public class AuthAdminParsingHandler extends CustomizationAwareParsingHandler {
 
+    @Override
     public void handleNodeIfActive(HandlerContext context) throws ParserException {
        
         BeanDefinitionBuilder beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(AuthAdmin.class);

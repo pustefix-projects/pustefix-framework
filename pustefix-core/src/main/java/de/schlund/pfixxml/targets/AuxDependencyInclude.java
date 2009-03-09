@@ -60,6 +60,7 @@ public class AuxDependencyInclude extends AuxDependencyFile {
         return theme;
     }
 
+    @Override
     public int compareTo(AuxDependency o) {
         int comp;
 
@@ -78,6 +79,7 @@ public class AuxDependencyInclude extends AuxDependencyFile {
         return theme.compareTo(a.theme);
     }
 
+    @Override
     public boolean equals(Object obj) {
         if (obj instanceof AuxDependencyInclude) {
             AuxDependencyInclude a = (AuxDependencyInclude) obj;
@@ -87,10 +89,12 @@ public class AuxDependencyInclude extends AuxDependencyFile {
         }
     }
 
+    @Override
     public int hashCode() {
         return hashCode;
     }
 
+    @Override
     public String toString() {
         return "[AUX/" + getType() + " " + getPath().toURI().toString() + "@"
                 + getPart() + "@" + getTheme() + "]";

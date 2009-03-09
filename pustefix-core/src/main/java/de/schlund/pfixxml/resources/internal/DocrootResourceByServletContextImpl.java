@@ -59,31 +59,38 @@ class DocrootResourceByServletContextImpl extends AbstractDocrootResourceImpl {
         this(uri, uri, servletContext);
     }
     
+    @Override
     public boolean canRead() {
         return exists();
     }
 
+    @Override
     public boolean canWrite() {
         return false;
     }
 
+    @Override
     public boolean createNewFile() throws IOException {
         throw new IOException("Cannot create file in WAR-archive");
     }
 
+    @Override
     public boolean delete() {
         return false;
     }
 
+    @Override
     public boolean exists() {
         return isFile() || isDirectory();
     }
 
+    @Override
     public boolean isDirectory() {
         Set<?> temp = this.servletContext.getResourcePaths(ROOT_PREFIX + path + "/");
         return (temp != null && temp.size() > 0);
     }
 
+    @Override
     public boolean isFile() {
         try {
             return (servletContext.getResource(ROOT_PREFIX + path) != null);
@@ -92,14 +99,17 @@ class DocrootResourceByServletContextImpl extends AbstractDocrootResourceImpl {
         }
     }
 
+    @Override
     public boolean isHidden() {
         return getName().startsWith(".");
     }
 
+    @Override
     public long lastModified() {
         return -1;
     }
 
+    @Override
     public String[] list() {
         if (!isDirectory()) {
             return null;
@@ -116,22 +126,27 @@ class DocrootResourceByServletContextImpl extends AbstractDocrootResourceImpl {
         return rpaths.toArray(new String[rpaths.size()]);
     }
 
+    @Override
     public boolean mkdir() {
         return false;
     }
 
+    @Override
     public boolean mkdirs() {
         return false;
     }
 
+    @Override
     public URI toURI() {
         return uri;
     }
     
+    @Override
     public URL toURL() throws MalformedURLException {
         return servletContext.getResource(ROOT_PREFIX + path);
     }
 
+    @Override
     public InputStream getInputStream() throws FileNotFoundException {
         if (isFile()) {
             return servletContext.getResourceAsStream(ROOT_PREFIX + path);
@@ -140,10 +155,12 @@ class DocrootResourceByServletContextImpl extends AbstractDocrootResourceImpl {
         }
     }
 
+    @Override
     public OutputStream getOutputStream() throws FileNotFoundException {
         throw new FileNotFoundException("Cannot write to file in WAR archive");
     }
     
+    @Override
     public OutputStream getOutputStream(boolean append) throws FileNotFoundException {
         throw new FileNotFoundException("Cannot write to file in WAR archive");
     }

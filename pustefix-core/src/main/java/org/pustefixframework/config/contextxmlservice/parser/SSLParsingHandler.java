@@ -35,6 +35,7 @@ import com.marsching.flexiparse.parser.exception.ParserException;
  */
 public class SSLParsingHandler extends CustomizationAwareParsingHandler {
 
+    @Override
     public void handleNodeIfActive(HandlerContext context) throws ParserException {
         
         Element element = (Element)context.getNode();

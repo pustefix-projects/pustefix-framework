@@ -250,6 +250,7 @@ public class SPDocument {
      *
      * @return a <code>String</code> value
      */
+    @Override
     public String toString() {
         Document tmp = document;
         StringBuffer sw = new StringBuffer();

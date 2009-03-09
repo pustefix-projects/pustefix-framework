@@ -904,6 +904,7 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
         return currentpservreq.getLastException();
     }
 
+    @Override
     public String toString() {
         StringBuffer contextbuf = new StringBuffer("\n");
 
@@ -921,6 +922,7 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
         return contextbuf.toString();
     }
 
+    @Override
     public Object clone() throws CloneNotSupportedException {
         RequestContextImpl copy = (RequestContextImpl) super.clone();
         if (currentpagerequest != null) {

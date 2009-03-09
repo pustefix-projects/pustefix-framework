@@ -204,6 +204,7 @@ public abstract class TargetImpl implements TargetRW, Comparable<Target> {
 
     public abstract long getModTime();
 
+    @Override
     public abstract String toString();
 
     /**

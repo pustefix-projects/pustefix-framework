@@ -25,6 +25,7 @@ public class PerfEventTakeThread extends Thread {
     /* (non-Javadoc)
      * @see java.lang.Runnable#run()
      */
+    @Override
     public void run() {
         int bufsize = 0;
         while(true) {

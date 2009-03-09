@@ -171,6 +171,7 @@ public class StateConfigImpl implements Cloneable, StateConfig {
         this.requiresToken = requiresToken;
     }
 
+    @Override
     protected Object clone() throws CloneNotSupportedException {
         return super.clone();
     }

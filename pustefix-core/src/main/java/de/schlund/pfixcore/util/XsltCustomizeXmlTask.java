@@ -63,6 +63,7 @@ public class XsltCustomizeXmlTask extends XsltGenericTask {
     
     private Set<XsltParam> params = new HashSet<XsltParam>();
 
+    @Override
     protected void executeSetup() {
         super.executeSetup();
         
@@ -86,10 +87,12 @@ public class XsltCustomizeXmlTask extends XsltGenericTask {
         this.docroot = value;
     }
 
+    @Override
     public void addConfiguredParam(XsltParam param) {
         this.params.add(param);
     }
 
+    @Override
     protected void doTransformation() throws BuildException {
         URIResolver customizationResolver = new CustomizationResolver();
         try {

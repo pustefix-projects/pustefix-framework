@@ -46,6 +46,7 @@ public class TargetGeneratorTask extends MatchingTask {
     /** holds the file containing the log4j configuration */
     private File log4jconfig;
 
+    @Override
     public void execute() throws BuildException {
         
         TargetGenerator gen = null;

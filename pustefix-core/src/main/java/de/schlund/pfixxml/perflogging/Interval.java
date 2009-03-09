@@ -43,6 +43,7 @@ public class Interval {
         return until;
     }
     
+    @Override
     public String toString() {
         return "["+from+"-"+until+"]";
     }

@@ -73,6 +73,7 @@ public class PageInfo implements Comparable<PageInfo> {
         }
     }
 
+    @Override
     public String toString() {
         return "[PAGE: " + name + " " + generator.getName() + "/" + getVariant() + "]";
     }

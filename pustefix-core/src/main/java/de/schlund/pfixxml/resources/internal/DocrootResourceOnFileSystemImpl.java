@@ -56,66 +56,82 @@ class DocrootResourceOnFileSystemImpl extends AbstractDocrootResourceImpl {
         this(uri, uri, docroot);
     }
     
+    @Override
     public boolean canRead() {
         return file.canRead();
     }
 
+    @Override
     public boolean canWrite() {
         return file.canWrite();
     }
 
+    @Override
     public boolean createNewFile() throws IOException {
         return file.createNewFile();
     }
 
+    @Override
     public boolean delete() {
         return file.delete();
     }
 
+    @Override
     public boolean exists() {
         return file.exists();
     }
 
+    @Override
     public boolean isDirectory() {
         return file.isDirectory();
     }
 
+    @Override
     public boolean isFile() {
         return file.isFile();
     }
 
+    @Override
     public boolean isHidden() {
         return file.isHidden();
     }
 
+    @Override
     public long lastModified() {
         return file.lastModified();
     }
 
+    @Override
     public String[] list() {
         return file.list();
     }
     
+    @Override
     public boolean mkdir() {
         return file.mkdir();
     }
 
+    @Override
     public boolean mkdirs() {
         return file.mkdirs();
     }
 
+    @Override
     public URL toURL() throws MalformedURLException {
         return file.toURI().toURL();
     }
 
+    @Override
     public InputStream getInputStream() throws FileNotFoundException {
         return new FileInputStream(file);
     }
 
+    @Override
     public OutputStream getOutputStream() throws FileNotFoundException {
         return new FileOutputStream(file);
     }
     
+    @Override
     public OutputStream getOutputStream(boolean append) throws FileNotFoundException {
         return new FileOutputStream(file, append);
     }

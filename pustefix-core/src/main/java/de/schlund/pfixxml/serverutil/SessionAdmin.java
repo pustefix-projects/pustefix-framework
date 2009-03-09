@@ -73,6 +73,7 @@ public class SessionAdmin implements HttpSessionBindingListener, SessionAdminMBe
         this.projectName = projectName;
     }
 
+    @Override
     public String toString() {
         return "[Number of active Sessions: " + sessioninfo.keySet().size() + "]";
     }

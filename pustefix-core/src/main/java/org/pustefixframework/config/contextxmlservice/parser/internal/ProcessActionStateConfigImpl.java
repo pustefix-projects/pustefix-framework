@@ -81,6 +81,7 @@ public class ProcessActionStateConfigImpl implements ProcessActionStateConfig {
         }
     }
     
+    @Override
     public String toString() {
         StringBuffer buf = new StringBuffer();
         buf.append("[" + name + " submit:<");

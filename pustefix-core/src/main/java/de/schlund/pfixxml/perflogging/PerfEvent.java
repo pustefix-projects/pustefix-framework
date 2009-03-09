@@ -69,6 +69,7 @@ public class PerfEvent {
      }
      
    
+     @Override
      public String toString() {
          return category+"|"+identifier+":"+duration;
      }

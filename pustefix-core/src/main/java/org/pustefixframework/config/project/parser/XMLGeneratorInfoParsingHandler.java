@@ -34,6 +34,7 @@ import de.schlund.pfixxml.targets.TargetGeneratorFactoryBean;
 
 public class XMLGeneratorInfoParsingHandler extends CustomizationAwareParsingHandler {
 
+    @Override
     public void handleNodeIfActive(HandlerContext context) throws ParserException {
         String uri = context.getNode().getTextContent().trim();
         

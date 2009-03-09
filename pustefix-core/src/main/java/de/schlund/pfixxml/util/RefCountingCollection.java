@@ -124,6 +124,7 @@ public class RefCountingCollection<E> implements Collection<E> {
         return retval;
     }
 
+    @Override
     public final String toString() {
         StringBuffer buff = new StringBuffer("[");
         for (Iterator<E> i = iterator(); i.hasNext();) {
@@ -186,10 +187,12 @@ public class RefCountingCollection<E> implements Collection<E> {
         return new RefCountingCollectionIterator<E>(this, map);
     }
 
+    @Override
     public final int hashCode() {
         return map.hashCode();
     }
 
+    @Override
     public final boolean equals(final Object object) {
         RefCountingCollection<?> incoll;
         try {

@@ -33,6 +33,7 @@ import org.apache.commons.logging.impl.LogFactoryImpl;
 public class ProxyLogFactory extends LogFactoryImpl {
 
     @SuppressWarnings("unchecked")
+    @Override
     protected Constructor getLogConstructor() throws LogConfigurationException {
         try {
             if (ProxyLogUtil.getInstance().isConfiguredForCl()) {

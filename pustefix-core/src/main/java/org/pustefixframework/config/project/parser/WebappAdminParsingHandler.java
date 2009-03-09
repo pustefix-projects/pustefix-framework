@@ -35,6 +35,7 @@ import com.marsching.flexiparse.parser.exception.ParserException;
  */
 public class WebappAdminParsingHandler extends CustomizationAwareParsingHandler {
 
+    @Override
     public void handleNodeIfActive(HandlerContext context) throws ParserException {
         
         BeanDefinitionBuilder beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(WebappAdmin.class);

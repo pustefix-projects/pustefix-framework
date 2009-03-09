@@ -51,6 +51,7 @@ public final class DependencyType {
         return isDynamic;
     }
 
+    @Override
     public String toString() {
         return "[" + getTag() + "]";
     }

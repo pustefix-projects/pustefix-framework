@@ -154,6 +154,7 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
      */
     protected String servletname = null;
     
+    @Override
     protected ServletManagerConfig getServletManagerConfig() {
         return this.getAbstractXMLServletConfig();
     }
@@ -180,6 +181,7 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
      * @return void
      * @exception ServletException thrown when the initialisation goes havoc somehow
      */
+    @Override
     public void init() throws ServletException {
         super.init();
         if (LOGGER.isDebugEnabled()) {
@@ -282,6 +284,7 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
      * @param HttpServletResponse res
      * @exception Exception
      */
+    @Override
     protected void process(PfixServletRequest preq, HttpServletResponse res) throws Exception {
         Properties  params     = new Properties();
         HttpSession session    = preq.getSession(false);

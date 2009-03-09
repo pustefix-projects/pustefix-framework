@@ -95,6 +95,7 @@ public class HeaderStruct {
         return params.get(nameP);
     }
 
+    @Override
     public String toString() {
         StringBuffer buf = new StringBuffer();
         buf.append("name:   ").append(name).append('\n');

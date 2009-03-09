@@ -246,6 +246,7 @@ public class VirtualHttpServletRequest implements HttpServletRequest {
     public ServletInputStream getInputStream() throws IOException {
         // Return empty stream
         return new ServletInputStream() {
+            @Override
             public int read() throws IOException {
                 return -1;
             }

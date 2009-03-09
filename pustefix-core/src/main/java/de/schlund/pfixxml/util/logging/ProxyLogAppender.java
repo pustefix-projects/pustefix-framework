@@ -34,6 +34,7 @@ import org.apache.log4j.spi.LoggingEvent;
 public class ProxyLogAppender extends AppenderSkeleton {
     private ProxyLogUtil util = ProxyLogUtil.getInstance();
 
+    @Override
     protected void append(LoggingEvent event) {
         String name = event.getLoggerName();
         Level lvl = event.getLevel();
@@ -76,10 +77,12 @@ public class ProxyLogAppender extends AppenderSkeleton {
         }
     }
 
+    @Override
     public boolean requiresLayout() {
         return false;
     }
 
+    @Override
     public void close() {
         // Intentionally left blank
     }

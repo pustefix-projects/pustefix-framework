@@ -52,6 +52,7 @@ public class TempFile extends File {
         super(uri);
     }
     
+    @Override
     protected void finalize() throws Throwable {
         delete();
     }

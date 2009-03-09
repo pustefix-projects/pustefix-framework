@@ -48,6 +48,7 @@ public class FileData extends PartData implements UploadFile {
         setType(RequestParamType.FILEDATA);
     }
 
+    @Override
     public boolean isTrue() {
         return false;
     }
@@ -152,10 +153,12 @@ public class FileData extends PartData implements UploadFile {
         this.readDate = readDate;
     }
     
+    @Override
     public void setValue(String val) {
         localFilename = val;
     }
     
+    @Override
     public String getValue() {
         return localFilename;
     }

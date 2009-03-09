@@ -73,10 +73,12 @@ public class PustefixContextXMLRequestHandler extends AbstractPustefixXMLRequest
         this.config = config;
     }
     
+    @Override
     protected AbstractXMLServletConfig getAbstractXMLServletConfig() {
         return this.config;
     }
     
+    @Override
     protected boolean needsSSL(PfixServletRequest preq) throws ServletException {
         if (super.needsSSL(preq)) {
             return true;
@@ -92,14 +94,17 @@ public class PustefixContextXMLRequestHandler extends AbstractPustefixXMLRequest
         return false;
     }
 
+    @Override
     protected boolean needsSession() {
         return true;
     }
 
+    @Override
     protected boolean allowSessionCreate() {
         return true;
     }
 
+    @Override
     public SPDocument getDom(PfixServletRequest preq) throws PustefixApplicationException, PustefixCoreException {
         ExtendedContext context = getContext(preq);
         // Prepare context for current thread
@@ -242,6 +247,7 @@ public class PustefixContextXMLRequestHandler extends AbstractPustefixXMLRequest
         return context;
     }
 
+    @Override
     protected void hookBeforeRender(PfixServletRequest preq, SPDocument spdoc, TreeMap<String, Object> paramhash, String stylesheet) {
         super.hookBeforeRender(preq, spdoc, paramhash, stylesheet);
         RequestContextImpl oldRequestContext = (RequestContextImpl) spdoc.getProperties().get(XSLPARAM_REQUESTCONTEXT);
@@ -255,6 +261,7 @@ public class PustefixContextXMLRequestHandler extends AbstractPustefixXMLRequest
         newRequestContext.getParentContext().setRequestContextForCurrentThread(newRequestContext);
     }
     
+    @Override
     protected void hookAfterRender(PfixServletRequest preq, SPDocument spdoc, TreeMap<String, Object> paramhash, String stylesheet) {
         super.hookAfterRender(preq, spdoc, paramhash, stylesheet);
         RequestContextImpl rcontext = (RequestContextImpl) spdoc.getProperties().get(XSLPARAM_REQUESTCONTEXT);

@@ -39,6 +39,7 @@ public class StatusCodeInfo {
         return level;
     }
 
+    @Override
     public boolean equals(Object in) {
         if (!(in instanceof StatusCodeInfo)) {
             return false;
@@ -46,6 +47,7 @@ public class StatusCodeInfo {
         return this.hashCode() == ((StatusCodeInfo) in).hashCode();
     }
 
+    @Override
     public String toString() {
         StringBuffer tmp = new StringBuffer();
         tmp.append(scode.getStatusCodeId() + "|");
@@ -61,6 +63,7 @@ public class StatusCodeInfo {
         return tmp.toString();
     }
     
+    @Override
     public int hashCode() {
         return toString().hashCode();
     }

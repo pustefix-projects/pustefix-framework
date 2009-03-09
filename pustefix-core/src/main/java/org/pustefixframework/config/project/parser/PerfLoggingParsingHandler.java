@@ -38,6 +38,7 @@ import de.schlund.pfixxml.perflogging.PerfLogging;
  */
 public class PerfLoggingParsingHandler extends CustomizationAwareParsingHandler {
 
+    @Override
     public void handleNodeIfActive(HandlerContext context) throws ParserException {
         
         Element element = (Element)context.getNode();

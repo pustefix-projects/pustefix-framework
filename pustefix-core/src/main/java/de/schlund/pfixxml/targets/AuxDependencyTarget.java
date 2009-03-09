@@ -59,6 +59,7 @@ public class AuxDependencyTarget extends AbstractAuxDependency {
         return this.getTarget().getModTime();
     }
 
+    @Override
     public int compareTo(AuxDependency o) {
         int comp;
 
@@ -77,6 +78,7 @@ public class AuxDependencyTarget extends AbstractAuxDependency {
         return targetkey.compareTo(a.targetkey);
     }
 
+    @Override
     public boolean equals(Object obj) {
         if (obj instanceof AuxDependencyTarget) {
             return this.compareTo((AuxDependency) obj) == 0;
@@ -85,10 +87,12 @@ public class AuxDependencyTarget extends AbstractAuxDependency {
         }
     }
 
+    @Override
     public int hashCode() {
         return this.hashCode;
     }
 
+    @Override
     public String toString() {
         String path = tgen.getConfigPath().toURI().toString();
         return "[AUX/" + getType() + " " + path + ": " + targetkey + "]";

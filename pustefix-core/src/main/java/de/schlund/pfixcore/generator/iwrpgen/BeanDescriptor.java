@@ -165,6 +165,7 @@ public class BeanDescriptor {
         return types.get(propName);
     }
 	
+    @Override
 	public String toString() {
 		StringBuffer sb=new StringBuffer();
 		sb.append("Class:\n");

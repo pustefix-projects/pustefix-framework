@@ -100,6 +100,7 @@ public class CacheValueLRU<K,V> implements Map<K, V> {
         return keytovalue.remove(key);
     }
     
+    @Override
     public String toString() {
         return valuestack.toString();
     }
@@ -132,6 +133,7 @@ public class CacheValueLRU<K,V> implements Map<K, V> {
             return false;
         }
         
+        @Override
         public String toString() {
             StringBuffer buf = new StringBuffer();
             

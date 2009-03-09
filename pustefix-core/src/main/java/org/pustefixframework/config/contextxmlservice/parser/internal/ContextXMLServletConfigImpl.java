@@ -102,6 +102,7 @@ public class ContextXMLServletConfigImpl extends AbstractXMLServletConfigImpl im
     /* (non-Javadoc)
      * @see de.schlund.pfixxml.config.ContextXMLServletConfig#needsReload()
      */
+    @Override
     public boolean needsReload() {
         for (FileResource file : fileDependencies) {
             if (file.lastModified() > loadTime) {

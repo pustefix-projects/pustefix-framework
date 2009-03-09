@@ -67,6 +67,7 @@ import de.schlund.pfixxml.testrecording.TestRecording;
 
 public class PustefixContextXMLRequestHandlerParsingHandler extends CustomizationAwareParsingHandler {
 
+    @Override
     public void handleNodeIfActive(HandlerContext context) throws ParserException {
         Element serviceElement = (Element) context.getNode();
         Element pathElement = (Element) serviceElement.getElementsByTagNameNS(Constants.NS_PROJECT, "path").item(0);

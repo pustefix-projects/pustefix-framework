@@ -31,6 +31,7 @@ public class SimpleCacheLRU<K,V> extends LinkedHashMap<K,V> {
         }
     }
 
+    @Override
     protected boolean removeEldestEntry(Entry<K,V> eldest) {
         return size() > maxsize;
     }

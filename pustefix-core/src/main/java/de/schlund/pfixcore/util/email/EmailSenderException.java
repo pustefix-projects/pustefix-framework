@@ -44,6 +44,7 @@ public class EmailSenderException extends Exception {
         this.message_=message;
     }
     
+    @Override
     public String getMessage() {
         return message_;
     }

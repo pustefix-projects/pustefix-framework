@@ -115,6 +115,7 @@ public class Path implements Comparable<Path> {
     //--
     
     /** TODO: does not consider base */
+    @Override
     public boolean equals(Object obj) {
         if (obj instanceof Path) {
             return ((Path) obj).relative.equals(relative);
@@ -129,6 +130,7 @@ public class Path implements Comparable<Path> {
         return relative.compareTo(obj.relative);
     }
     
+    @Override
     public int hashCode() {
         return relative.hashCode();
     }
@@ -139,6 +141,7 @@ public class Path implements Comparable<Path> {
      * 
      * Use {@link #getBase()} and {@link #getRelative()} to get the path without additional text.
      */
+    @Override
     public String toString() {
         return getClass().getName()+"[base=\""+getBase()+"\"; relative=\""+getRelative()+"\"]";
     }

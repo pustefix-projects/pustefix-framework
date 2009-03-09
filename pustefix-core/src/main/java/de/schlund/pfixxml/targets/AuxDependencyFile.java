@@ -92,6 +92,7 @@ public class AuxDependencyFile extends AbstractAuxDependency {
         }
     }
 
+    @Override
     public boolean equals(Object obj) {
         if (obj instanceof AuxDependencyFile) {
             return (this.compareTo((AuxDependency) obj) == 0);
@@ -100,6 +101,7 @@ public class AuxDependencyFile extends AbstractAuxDependency {
         }
     }
 
+    @Override
     public int compareTo(AuxDependency o) {
         int comp;
         
@@ -112,10 +114,12 @@ public class AuxDependencyFile extends AbstractAuxDependency {
         return path.compareTo(a.path);
     }
 
+    @Override
     public int hashCode() {
         return this.hashCode;
     }
 
+    @Override
     public String toString() {
         return "[AUX/" + getType() + " " + getPath().toURI().toString() + "]";
     }

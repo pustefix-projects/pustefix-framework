@@ -184,6 +184,7 @@ public class IWrapperAnnotationProcessor implements AnnotationProcessor {
             builtinTypes.add(String.class.getName());
         }
 
+        @Override
         public void visitClassDeclaration(ClassDeclaration classDecl) {
 
             AnnotationMirror iwrpMirror = MirrorApiUtils.getAnnotationMirror(classDecl, iwrpType);
@@ -262,6 +263,7 @@ public class IWrapperAnnotationProcessor implements AnnotationProcessor {
             }
         }
 
+        @Override
         public void visitFieldDeclaration(FieldDeclaration fieldDecl) {
             if (MirrorApiUtils.isPublicNonStaticNonFinal(fieldDecl)) {
                 String propName = fieldDecl.getSimpleName();
@@ -302,6 +304,7 @@ public class IWrapperAnnotationProcessor implements AnnotationProcessor {
             }
         }
 
+        @Override
         public void visitMethodDeclaration(MethodDeclaration methDecl) {
             String getterName = methDecl.getSimpleName();
             if (MirrorApiUtils.isPublicNonStatic(methDecl) && 

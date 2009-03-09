@@ -140,6 +140,7 @@ public class DirectOutputServiceConfigImpl extends ServletManagerConfigImpl impl
         return this.pages.get(page);
     }
     
+    @Override
     public boolean needsReload() {
         for (FileResource file : fileDependencies) {
             if (file.lastModified() > loadTime) {

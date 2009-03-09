@@ -56,10 +56,12 @@ public class DerefRequestHandler extends AbstractPustefixRequestHandler {
     private final static long DEFAULT_VALIDTIME = 1000 * 60 * 60;
     private ServletManagerConfig config;
     
+    @Override
     protected boolean allowSessionCreate() {
         return (false);
     }
 
+    @Override
     protected boolean needsSession() {
         return (false);
     }
@@ -78,6 +80,7 @@ public class DerefRequestHandler extends AbstractPustefixRequestHandler {
         return MD5Utils.hex_md5(input+timeStamp+key, "utf8").equals(sign);
     }
     
+    @Override
     protected void process(PfixServletRequest preq, HttpServletResponse res) throws Exception {
         RequestParam linkparam    = preq.getRequestParam("link");
         RequestParam enclinkparam = preq.getRequestParam("__enclink");
@@ -239,6 +242,7 @@ public class DerefRequestHandler extends AbstractPustefixRequestHandler {
         }
     }
     
+    @Override
     protected ServletManagerConfig getServletManagerConfig() {
         return this.config;
     }

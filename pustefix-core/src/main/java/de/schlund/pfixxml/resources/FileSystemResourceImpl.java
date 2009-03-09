@@ -191,10 +191,12 @@ class FileSystemResourceImpl implements FileSystemResource {
         return uri.compareTo(o.toURI());
     }
     
+    @Override
     public String toString() {
         return uri.toString();
     }
-    
+
+    @Override
     public boolean equals(Object o) {
         FileSystemResourceImpl res;
         try {
@@ -204,7 +206,8 @@ class FileSystemResourceImpl implements FileSystemResource {
         }
         return uri.equals(res.uri);
     }
-    
+
+    @Override
     public int hashCode() {
         return uri.hashCode();
     }

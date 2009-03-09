@@ -400,6 +400,7 @@ public class XsltTransformer {
         this.project = project;
     }
 
+    @Override
     public String toString() {
         return shortClassname(getClass().getName())+"[transformer="+transformer+"; isValidate="+isValidate+" isValidateDynamic="+isValidateDynamic+"; isNamespaceAware="+isNamespaceAware+"; params="+params+"]";
     }

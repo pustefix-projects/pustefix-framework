@@ -105,6 +105,7 @@ public class ApplicationList implements Serializable {
         return apps;
     }
     
+    @Override
     public String toString() {
         return "applications(" + apps.toString() + ")";
     }

@@ -60,6 +60,7 @@ public class XSLLeafTarget extends LeafTarget {
     /**
      * @see de.schlund.pfixxml.targets.TargetImpl#getValueFromDiscCache()
      */
+    @Override
     protected Object getValueFromDiscCache() throws TransformerException {
         FileResource thefile = ResourceUtil.getFileResourceFromDocroot(getTargetKey());
         if (thefile.exists() && thefile.isFile()) {

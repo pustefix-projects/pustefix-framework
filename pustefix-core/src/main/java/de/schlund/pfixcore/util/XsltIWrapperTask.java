@@ -33,6 +33,7 @@ public class XsltIWrapperTask extends XsltGenericTask {
     protected String packagename;
     protected String classname;
 
+    @Override
     protected void doTransformation() throws BuildException {
         try {
             int sepPos = infilenameNoExt.lastIndexOf(File.separatorChar);

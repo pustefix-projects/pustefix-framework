@@ -204,6 +204,7 @@ public class MultipartStream extends InputStream {
     /**
      * @see InputStream#read()
      */
+    @Override
     public int read() throws IOException {
         int rc = -1;
         if (isEndOfPart() || isEndOfMultipart()) return rc;
@@ -299,6 +300,7 @@ public class MultipartStream extends InputStream {
     /**
      * @see InputStream#available()
      */
+    @Override
     public int available() throws IOException {
         return in.available();
     }
@@ -306,6 +308,7 @@ public class MultipartStream extends InputStream {
     /**
      * @see InputStream#close()
      */
+    @Override
     public void close() throws IOException {
         in.close();
     }

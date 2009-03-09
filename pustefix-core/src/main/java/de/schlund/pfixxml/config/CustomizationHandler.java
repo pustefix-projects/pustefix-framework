@@ -61,6 +61,7 @@ public class CustomizationHandler extends DefaultHandler {
 
         private boolean triggerEndElement = false;
 
+        @Override
         public Object clone() {
             try {
                 return super.clone();
@@ -197,10 +198,12 @@ public class CustomizationHandler extends DefaultHandler {
         this.peekParsingInfo().triggerEndElement = false;
     }
 
+    @Override
     public void setDocumentLocator(Locator locator) {
         this.targetHandler.setDocumentLocator(locator);
     }
 
+    @Override
     public void startDocument() throws SAXException {
         // Do initialization
         this.stack = new ArrayList<ParsingInfo>();
@@ -209,10 +212,12 @@ public class CustomizationHandler extends DefaultHandler {
         this.targetHandler.startDocument();
     }
 
+    @Override
     public void endDocument() throws SAXException {
         this.targetHandler.endDocument();
     }
 
+    @Override
     public void startPrefixMapping(String prefix, String uri)
             throws SAXException {
         if (this.peekParsingInfo().parsingActive) {
@@ -220,12 +225,14 @@ public class CustomizationHandler extends DefaultHandler {
         }
     }
 
+    @Override
     public void endPrefixMapping(String prefix) throws SAXException {
         if (this.peekParsingInfo().parsingActive) {
             this.targetHandler.endPrefixMapping(prefix);
         }
     }
 
+    @Override
     public void startElement(String uri, String localName, String qName,
             Attributes atts) throws SAXException {
         // Always push stack for new element
@@ -323,6 +330,7 @@ public class CustomizationHandler extends DefaultHandler {
         return false;
     }
 
+    @Override
     public void endElement(String uri, String localName, String qName)
             throws SAXException {
         if (this.peekParsingInfo().triggerEndElement) {
@@ -334,6 +342,7 @@ public class CustomizationHandler extends DefaultHandler {
         this.popParsingInfo();
     }
 
+    @Override
     public void characters(char[] ch, int start, int length)
             throws SAXException {
         if (this.peekParsingInfo().parsingActive
@@ -342,6 +351,7 @@ public class CustomizationHandler extends DefaultHandler {
         }
     }
 
+    @Override
     public void ignorableWhitespace(char[] ch, int start, int length)
             throws SAXException {
         if (this.peekParsingInfo().parsingActive) {
@@ -349,6 +359,7 @@ public class CustomizationHandler extends DefaultHandler {
         }
     }
 
+    @Override
     public void processingInstruction(String target, String data)
             throws SAXException {
         if (this.peekParsingInfo().parsingActive) {
@@ -356,6 +367,7 @@ public class CustomizationHandler extends DefaultHandler {
         }
     }
 
+    @Override
     public void skippedEntity(String name) throws SAXException {
         if (this.peekParsingInfo().parsingActive) {
             this.targetHandler.skippedEntity(name);
@@ -367,6 +379,7 @@ public class CustomizationHandler extends DefaultHandler {
      * 
      * @see org.xml.sax.helpers.DefaultHandler#error(org.xml.sax.SAXParseException)
      */
+    @Override
     public void error(SAXParseException e) throws SAXException {
         if (this.peekParsingInfo().parsingActive) {
             this.targetHandler.error(e);
@@ -380,6 +393,7 @@ public class CustomizationHandler extends DefaultHandler {
      * 
      * @see org.xml.sax.helpers.DefaultHandler#fatalError(org.xml.sax.SAXParseException)
      */
+    @Override
     public void fatalError(SAXParseException e) throws SAXException {
         if (this.peekParsingInfo().parsingActive) {
             this.targetHandler.fatalError(e);
@@ -394,6 +408,7 @@ public class CustomizationHandler extends DefaultHandler {
      * @see org.xml.sax.helpers.DefaultHandler#notationDecl(java.lang.String,
      *      java.lang.String, java.lang.String)
      */
+    @Override
     public void notationDecl(String name, String publicId, String systemId)
             throws SAXException {
         if (this.peekParsingInfo().parsingActive) {
@@ -409,6 +424,7 @@ public class CustomizationHandler extends DefaultHandler {
      * @see org.xml.sax.helpers.DefaultHandler#resolveEntity(java.lang.String,
      *      java.lang.String)
      */
+    @Override
     public InputSource resolveEntity(String publicId, String systemId)
             throws IOException, SAXException {
         if (this.peekParsingInfo().parsingActive) {
@@ -424,6 +440,7 @@ public class CustomizationHandler extends DefaultHandler {
      * @see org.xml.sax.helpers.DefaultHandler#unparsedEntityDecl(java.lang.String,
      *      java.lang.String, java.lang.String, java.lang.String)
      */
+    @Override
     public void unparsedEntityDecl(String name, String publicId,
             String systemId, String notationName) throws SAXException {
         if (this.peekParsingInfo().parsingActive) {
@@ -439,6 +456,7 @@ public class CustomizationHandler extends DefaultHandler {
      * 
      * @see org.xml.sax.helpers.DefaultHandler#warning(org.xml.sax.SAXParseException)
      */
+    @Override
     public void warning(SAXParseException e) throws SAXException {
         if (this.peekParsingInfo().parsingActive) {
             this.targetHandler.warning(e);

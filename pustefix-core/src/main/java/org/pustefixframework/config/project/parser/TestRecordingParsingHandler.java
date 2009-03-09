@@ -39,6 +39,7 @@ import de.schlund.pfixxml.testrecording.TestRecording;
  */
 public class TestRecordingParsingHandler extends CustomizationAwareParsingHandler {
 
+    @Override
     public void handleNodeIfActive(HandlerContext context) throws ParserException {
         
         BeanDefinitionBuilder beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(TestRecording.class);

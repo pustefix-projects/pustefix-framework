@@ -44,10 +44,12 @@ public class AuxDependencyFactory {
     
     private AuxDependency root = new AbstractAuxDependency() {
         
+        @Override
         public DependencyType getType() {
             return DependencyType.ROOT;
         }
         
+        @Override
         public String toString() {
             return "[AUX/" + getType() + "]";
         }

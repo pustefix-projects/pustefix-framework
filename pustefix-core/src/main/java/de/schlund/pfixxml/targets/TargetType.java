@@ -51,6 +51,7 @@ public final class TargetType {
         }
     }
 
+    @Override
     public String toString() {
         return "[" + getTag() + "]";
     }

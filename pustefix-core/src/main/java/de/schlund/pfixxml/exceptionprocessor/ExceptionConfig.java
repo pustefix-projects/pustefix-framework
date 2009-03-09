@@ -125,6 +125,7 @@ public class ExceptionConfig {
 		this.forward = forward;
 	}
 
+    @Override
     public String toString() {
         StringBuffer sb = new StringBuffer(this.getClass().getName());
         sb.append("\n type: [").append(type);

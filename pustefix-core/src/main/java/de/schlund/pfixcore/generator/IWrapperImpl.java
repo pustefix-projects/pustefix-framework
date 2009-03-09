@@ -287,6 +287,7 @@ public abstract class IWrapperImpl implements IWrapper {
         }
     }
     
+    @Override
     public String toString() {
         StringBuffer sb = new StringBuffer(255);
         String name = getClass().getName();

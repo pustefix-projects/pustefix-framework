@@ -85,6 +85,7 @@ public class PageRequestConfigImpl implements Cloneable, PageRequestConfig, SSLO
     /* (non-Javadoc)
      * @see java.lang.Object#clone()
      */
+    @Override
     public Object clone() throws CloneNotSupportedException {
         return super.clone();
     }

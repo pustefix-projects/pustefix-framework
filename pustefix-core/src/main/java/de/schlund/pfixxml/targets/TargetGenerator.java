@@ -201,6 +201,7 @@ public class TargetGenerator implements Comparable<TargetGenerator> {
         configurationListeners.remove(listener);
     }
 
+    @Override
     public String toString() {
         return "[TG: " + getName() + "; " + alltargets.size() + " targets defined.]";
     }

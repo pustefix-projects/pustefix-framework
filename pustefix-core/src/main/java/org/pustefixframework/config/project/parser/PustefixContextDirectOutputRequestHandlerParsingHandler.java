@@ -60,6 +60,7 @@ import de.schlund.pfixxml.serverutil.SessionAdmin;
 
 public class PustefixContextDirectOutputRequestHandlerParsingHandler extends CustomizationAwareParsingHandler {
 
+    @Override
     public void handleNodeIfActive(HandlerContext context) throws ParserException {
         Element serviceElement = (Element) context.getNode();
         Element pathElement = (Element) serviceElement.getElementsByTagNameNS(Constants.NS_PROJECT, "path").item(0);

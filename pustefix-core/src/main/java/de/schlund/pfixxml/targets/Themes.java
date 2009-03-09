@@ -83,6 +83,7 @@ public class Themes {
         return (String[]) themes.toArray(new String[]{});
     }
 
+    @Override
     public boolean equals(Object input) {
         if (!(input instanceof Themes)) {
             return false;
@@ -91,6 +92,7 @@ public class Themes {
         }
     }
 
+    @Override
     public int hashCode() {
         return id.hashCode();
     }
