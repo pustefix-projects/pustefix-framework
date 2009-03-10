@@ -1,3 +1,21 @@
+2009-03-10  Martin Leidig  <mleidig@schlund.de>
+
+	Added Live-Jars support.
+
+	Modified:
+	* src/de/schlund/pfixxml/resources/ModuleResourceProvider.java: Use
+	ModuleSourceLocator for looking up source or unpacked module directory
+
+	Added:
+	* src/de/schlund/pfixcore/util/LiveJarInfo.java: Reads information
+	about configured live jars
+	* src/de/schlund/pfixxml/resources/ModuleSourceResource.java:
+	ModuleResource implemtation for file system
+	* src/de/schlund/pfixxml/resources/ModuleSourceLocatorRegistry.java:
+	registry for ModuleResourceLocators
+	* src/de/schlund/pfixxml/resources/ModuleSourceLocator.java: interface
+	for locators providing source file access for modules
+
 2009-03-08  Martin Leidig  <mleidig@schlund.de>
 
 	Fixed include error handling. Log detected modules.
