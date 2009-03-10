@@ -49,22 +49,28 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
   <build>
     <plugins> 
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-war-plugin</artifactId>
-        <configuration>
-          <webResources>
-            <webResource>
-              <directory>${basedir}/src/main/webapp/WEB-INF</directory>
-              <targetPath>WEB-INF</targetPath>
-              <filtering>true</filtering>
-            </webResource>
-            <webResource>
-              <directory>${basedir}/projects</directory>
-              <targetPath>WEB-INF/pfixroot</targetPath>
-              <filtering>false</filtering>
-            </webResource>
-          </webResources>
-        </configuration>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>unpack-core</id>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>unpack</goal>
+            </goals>
+            <configuration>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>org.pustefixframework</groupId>
+                  <artifactId>pustefix-core</artifactId>
+                  <classifier>data</classifier>
+                  <type>tgz</type>
+                  <overWrite>true</overWrite>
+                  <outputDirectory>projects</outputDirectory>
+                </artifactItem>
+              </artifactItems>
+            </configuration>
+          </execution>
+        </executions>
       </plugin>
       <plugin>
         <artifactId>maven-antrun-plugin</artifactId>
@@ -157,30 +163,6 @@ __antprop_standalone.tomcat=${standalone.tomcat}
         </executions>
       </plugin>
       <plugin>
-        <artifactId>maven-dependency-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>unpack-core</id>
-            <phase>generate-sources</phase>
-            <goals>
-              <goal>unpack</goal>
-            </goals>
-            <configuration>
-              <artifactItems>
-                <artifactItem>
-                  <groupId>org.pustefixframework</groupId>
-                  <artifactId>pustefix-core</artifactId>
-                  <classifier>data</classifier>
-                  <type>tgz</type>
-                  <overWrite>true</overWrite>
-                  <outputDirectory>target/core</outputDirectory>
-                </artifactItem>
-              </artifactItems>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
         <groupId>org.pustefixframework.maven.plugins</groupId>
         <artifactId>pustefix-scgenerate-plugin</artifactId>
         <configuration>
@@ -196,19 +178,29 @@ __antprop_standalone.tomcat=${standalone.tomcat}
             </goals>
           </execution>
         </executions>
-        <dependencies>
-          <dependency>
-            <groupId>log4j</groupId>
-            <artifactId>log4j</artifactId>
-            <version>1.2.13</version>
-          </dependency>
-        </dependencies>
-        </plugin>
-      </plugins>
-    </build>
-    
-    <properties>
-      <work.dir>${local.work.dir}</work.dir>
-      <cargo.deployment.url>http://localhost:8080/manager</cargo.deployment.url>
-    </properties>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-war-plugin</artifactId>
+        <configuration>
+          <webResources>
+            <webResource>
+              <directory>${basedir}/src/main/webapp/WEB-INF</directory>
+              <targetPath>WEB-INF</targetPath>
+              <filtering>true</filtering>
+            </webResource>
+            <webResource>
+              <directory>${basedir}/projects</directory>
+              <targetPath>WEB-INF/pfixroot</targetPath>
+              <filtering>false</filtering>
+            </webResource>
+          </webResources>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.mortbay.jetty</groupId>
+        <artifactId>maven-jetty-plugin</artifactId>
+      </plugin>
+    </plugins>
+  </build>
 </project>
