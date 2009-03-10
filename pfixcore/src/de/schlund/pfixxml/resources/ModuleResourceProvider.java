@@ -1,12 +1,17 @@
 package de.schlund.pfixxml.resources;
 
+import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
+import java.util.List;
+
+import org.apache.log4j.Logger;
 
 import de.schlund.pfixcore.exception.PustefixRuntimeException;
 import de.schlund.pfixcore.util.ModuleDescriptor;
 import de.schlund.pfixcore.util.ModuleInfo;
+import de.schlund.pfixxml.config.BuildTimeProperties;
 
 /**
  * 
@@ -15,6 +20,8 @@ import de.schlund.pfixcore.util.ModuleInfo;
  */
 public class ModuleResourceProvider implements ResourceProvider {
 
+    private static Logger LOG = Logger.getLogger(ModuleResourceProvider.class);
+    
     private static String MODULE_SCHEME = "module";
     
     private String[] supportedSchemes = {MODULE_SCHEME};
@@ -34,6 +41,21 @@ public class ModuleResourceProvider implements ResourceProvider {
         ModuleDescriptor desc = ModuleInfo.getInstance().getModuleDescriptor(module);
         if(desc != null) {
             URL url = getJarURL(desc.getURL());
+            //Ensure module resources are read from classpath in production environment
+            if(!BuildTimeProperties.getProperties().getProperty("mode").equals("prod")) {
+                List<ModuleSourceLocator> locators = ModuleSourceLocatorRegistry.getInstance().getLocators();
+                for(ModuleSourceLocator locator:locators) {
+                    File location = locator.getLocation(url);
+                    if(location!=null) {
+                        if(location.exists()) {
+                            ModuleResource res = new ModuleSourceResource(uri, location);
+                            return res;
+                        } else {
+                            LOG.warn("Module source location doesn't exist: " + location.getAbsolutePath());
+                        }
+                    }
+                }
+            }
             return new ModuleResource(uri, url);
         }
         return new ModuleResource(uri);
