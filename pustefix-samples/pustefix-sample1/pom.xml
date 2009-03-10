@@ -76,7 +76,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
         <artifactId>maven-antrun-plugin</artifactId>
         <executions>
           <execution>
-            <id>apt</id>
+            <id>apt and web.xml</id>
             <phase>generate-sources</phase>
             <configuration>
               <tasks>
@@ -91,6 +91,13 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
                   preprocessdir="${project.build.directory}/generated-sources/apt"
                   encoding="${project.build.sourceEncoding}"
                   factory="de.schlund.pfixcore.util.CommonAnnotationProcessorFactory" />
+
+                 <copy file="projects/core/build/web.xml" 
+                     toFile="${basedir}/target/${project.artifactId}-${project.version}/WEB-INF/web.xml">
+                     <filterset>
+                       <filter token="BASEDIR" value="${basedir}"/>
+                     </filterset>
+                 </copy>
               </tasks>
               <sourceRoot>${project.build.directory}/generated-sources/apt</sourceRoot>
             </configuration>

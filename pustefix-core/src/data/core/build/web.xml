@@ -12,7 +12,7 @@
       </init-param>
       <init-param>
          <param-name>contextConfigLocation</param-name>
-         <param-value>file:${basedir}/projects/sample1/conf/project.xml file:${basedir}/projects/sample1/conf/spring.xml</param-value>
+         <param-value>file:@BASEDIR@/projects/sample1/conf/project.xml file:@BASEDIR@/projects/sample1/conf/spring.xml</param-value>
       </init-param>
       <load-on-startup>1</load-on-startup>
    </servlet>
