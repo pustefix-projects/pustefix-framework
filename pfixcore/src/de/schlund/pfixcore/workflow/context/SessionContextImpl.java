@@ -13,6 +13,7 @@ import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpSessionBindingEvent;
 import javax.servlet.http.HttpSessionBindingListener;
 
+import org.apache.log4j.Logger;
 import org.pustefixframework.http.AbstractPustefixRequestHandler;
 import org.pustefixframework.http.AbstractPustefixXMLRequestHandler;
 
@@ -38,6 +39,8 @@ import de.schlund.pfixxml.Variant;
  */
 public class SessionContextImpl {
 
+    private static Logger LOG = Logger.getLogger(SessionContextImpl.class);
+    
     private HttpSession                session;
     private Variant                    variant      = null;
     private String                     visitId      = null;
@@ -56,10 +59,16 @@ public class SessionContextImpl {
 
         public void valueUnbound(HttpSessionBindingEvent ev) {
             // Send event to registered listeners
-            synchronized (this) {
-                for (SessionStatusListener l : sessionListeners) {
-                    l.sessionStatusChanged(new SessionStatusEvent(SessionStatusEvent.Type.SESSION_DESTROYED));
+            try {
+                synchronized (this) {
+                    for (SessionStatusListener l : sessionListeners) {
+                        l.sessionStatusChanged(new SessionStatusEvent(SessionStatusEvent.Type.SESSION_DESTROYED));
+                    }
                 }
+            } catch(Throwable t) {
+                //if we're not catching all exceptions here, valueUnbound for the SessionAdmin
+                //won't be called and the session is never removed
+                LOG.error("Error calling SessionStatusListener at end of session", t);
             }
         }
     }
