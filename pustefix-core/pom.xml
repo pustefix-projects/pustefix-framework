@@ -238,8 +238,8 @@
 
       <plugin>
         <groupId>org.pustefixframework.maven.plugins</groupId>
-        <artifactId>pustefix-scgenerate-plugin</artifactId>
-        <version>0.2.1</version>
+        <artifactId>pustefix-statuscode-plugin</artifactId>
+        <version>0.2.2</version>
         <executions>
           <execution>
             <configuration>
@@ -250,7 +250,7 @@
             </configuration>
             <id>statuscodes</id>
             <goals>
-              <goal>scgenerate</goal>
+              <goal>generate</goal>
             </goals>
           </execution>
         </executions>

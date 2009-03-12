@@ -34,17 +34,20 @@ import java.util.regex.Pattern;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.FactoryConfigurationError;
+import javax.xml.parsers.ParserConfigurationException;
 
+import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
+import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXException;
-
-import de.schlund.pfixxml.util.Xml;
-import de.schlund.util.statuscodes.StatusCode;
+import org.xml.sax.SAXParseException;
 
 
 public class GenerateSCodes {
+    private static final Logger LOG = Logger.getLogger(GenerateSCodes.class);
     
     public static Result generateFromInfo(List<String> infoFiles, String docRoot, File genDir, String module, String targetPath) throws Exception {
         Result totalResult = new Result();
@@ -140,7 +143,7 @@ public class GenerateSCodes {
         createResources(writer, docRelPaths);
         
         for (String input: scXmlFiles) {
-            Document doc = Xml.parseMutable(new File(docroot, input));
+            Document doc = parseMutable(new File(docroot, input));
             createStatusCodes(writer, doc, docRelPaths.indexOf(getModulePath(input,module,targetPath)));
         }
             
@@ -188,7 +191,7 @@ public class GenerateSCodes {
         docRelPaths.add(docRelPath);
         createResources(writer, docRelPaths);
         
-        Document doc = Xml.parseMutable(scXmlFile);
+        Document doc = parseMutable(scXmlFile);
         createStatusCodes(writer, doc, 0);
                     
         writer.write("\n}\n");
@@ -213,7 +216,7 @@ public class GenerateSCodes {
         for (int i = 0; i < list.getLength() ; i++) {
             Element node      = (Element) list.item(i);
             String  name      = node.getAttribute("name");
-            String  classname = StatusCode.convertToFieldName(name);
+            String  classname = convertToFieldName(name);
             writer.write("    public static final StatusCode " + classname +
                     " = new StatusCode(\"" + name + "\", __RES["+resIndex+"]);\n");
         }
@@ -314,5 +317,101 @@ public class GenerateSCodes {
         }
     
     }
+
+    //-- copied from core to avoid cyclic dependency:
+
+    public static String convertToFieldName(String part) {
+        return part.replace('.', '_').replace(':', '_').toUpperCase();
+    }
     
+    public static Document parseMutable(File file) throws IOException, SAXException {
+        try {
+            return createDocumentBuilder().parse(file);
+        } catch (SAXParseException e) {
+            StringBuffer buf = new StringBuffer(100);
+            buf.append("Caught SAXParseException!\n");
+            buf.append("  Message  : ").append(e.getMessage()).append("\n");
+            buf.append("  SystemID : ").append(e.getSystemId()).append("\n");
+            buf.append("  Line     : ").append(e.getLineNumber()).append("\n");
+            buf.append("  Column   : ").append(e.getColumnNumber()).append("\n");
+            LOG.error(buf.toString(), e);
+            throw e;
+        } catch (SAXException e) {
+            StringBuffer buf = new StringBuffer(100);
+            buf.append("Caught SAXException!\n");
+            buf.append("  Message  : ").append(e.getMessage()).append("\n");
+            buf.append("  SystemID : ").append(file.getPath()).append("\n");
+            LOG.error(buf.toString(), e);
+            throw e;
+        } catch (IOException e) {
+            StringBuffer buf = new StringBuffer(100);
+            buf.append("Caught IOException!\n");
+            buf.append("  Message  : ").append(e.getMessage()).append("\n");
+            buf.append("  SystemID : ").append(file.getPath()).append("\n");
+            LOG.error(buf.toString(), e);
+            throw e;
+        }
+    }
+
+    private static final DocumentBuilderFactory factory = createDocumentBuilderFactory();
+    private static String DEFAULT_DOCUMENTBUILDERFACTORY = "com.sun.org.apache.xerces.internal.jaxp.DocumentBuilderFactoryImpl";
+    
+    private static DocumentBuilderFactory createDocumentBuilderFactory() {
+        DocumentBuilderFactory fact = null;
+        try {
+            ClassLoader cl = Thread.currentThread().getContextClassLoader();
+            if (cl == null) cl = GenerateSCodes.class.getClassLoader();
+            Class<?> clazz = Class.forName(DEFAULT_DOCUMENTBUILDERFACTORY, true, cl);
+            fact = (DocumentBuilderFactory)clazz.newInstance();
+        } catch(Exception x) {
+            LOG.info(x);
+            //ignore and try to get DocumentBuilderFactory via factory finder in next step
+        }
+        if(fact == null) {
+            try {
+                fact = DocumentBuilderFactory.newInstance();
+            } catch(FactoryConfigurationError x) {
+                throw new RuntimeException("Can't get DocumentBuilderFactory",x);
+            }
+        }
+        if (!fact.isNamespaceAware()) {
+            fact.setNamespaceAware(true);
+        }
+        if (fact.isValidating()) {
+            fact.setValidating(false);
+        }
+        return fact;
+    }
+
+    public static DocumentBuilder createDocumentBuilder() {
+        DocumentBuilder result;
+        try {
+            result = factory.newDocumentBuilder();
+        } catch (ParserConfigurationException e) {
+            throw new RuntimeException("createDocumentBuilder failed", e);
+        }
+        result.setErrorHandler(ERROR_HANDLER);
+        return result;
+    }
+
+    // make sure that output is not polluted by prinlns:
+    private static final ErrorHandler ERROR_HANDLER = new ErrorHandler() {
+            public void error(SAXParseException exception) throws SAXException {
+                report(exception);
+            }
+
+            public void fatalError(SAXParseException exception) throws SAXException {
+                report(exception);
+            }
+
+            public void warning(SAXParseException exception) throws SAXException {
+                report(exception);
+            }
+
+            private void report(SAXParseException exception) throws SAXException {
+                LOG.error(exception.getSystemId() + ":" + exception.getLineNumber() + ":"
+                          + exception.getColumnNumber() + ":" + exception.getMessage());
+                throw exception;
+            }
+        };
 }

@@ -34,10 +34,10 @@ import org.pustefixframework.maven.plugins.GenerateSCodes.Result;
  *
  * @author mleidig@schlund.de
  *
- * @goal scgenerate
+ * @goal generate
  * @phase generate-sources
  */
-public class GenerateSCodesMojo extends AbstractMojo {
+public class PustefixStatuscodeMojo extends AbstractMojo {
     
     /**
      * @parameter default-value="target/generated-sources/statuscodes"
