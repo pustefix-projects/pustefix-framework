@@ -364,10 +364,10 @@ public class GenerateSCodes {
             Class<?> clazz = Class.forName(DEFAULT_DOCUMENTBUILDERFACTORY, true, cl);
             fact = (DocumentBuilderFactory)clazz.newInstance();
         } catch(Exception x) {
-            LOG.info(x);
             //ignore and try to get DocumentBuilderFactory via factory finder in next step
+            LOG.info(x);
         }
-        if(fact == null) {
+        if (fact == null) {
             try {
                 fact = DocumentBuilderFactory.newInstance();
             } catch(FactoryConfigurationError x) {
