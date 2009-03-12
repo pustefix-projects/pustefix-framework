@@ -192,11 +192,6 @@ __antprop_standalone.tomcat=${standalone.tomcat}
         <configuration>
           <webResources>
             <webResource>
-              <directory>${basedir}/src/main/webapp/WEB-INF</directory>
-              <targetPath>WEB-INF</targetPath>
-              <filtering>true</filtering>
-            </webResource>
-            <webResource>
               <directory>${basedir}/projects</directory>
               <targetPath>WEB-INF/pfixroot</targetPath>
               <filtering>false</filtering>
