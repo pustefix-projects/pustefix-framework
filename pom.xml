@@ -81,7 +81,8 @@
 
   <modules>
     <module>pustefix-webservices</module>
-    <module>pustefix-maven</module>
+    <module>pustefix-plugins</module>
+    <module>pustefix-archetypes</module>
     <module>pustefix-editor</module>
     <module>pustefix-core</module>
     <module>pustefix-samples</module>
