@@ -17,11 +17,11 @@
     <plugins>
       <plugin>
         <groupId>org.pustefixframework.maven.plugins</groupId>
-        <artifactId>pustefix-iwrpgenerate-plugin</artifactId>
+        <artifactId>pustefix-iwrapper-plugin</artifactId>
         <executions>
           <execution>
             <goals>
-              <goal>iwrpgenerate</goal>
+              <goal>generate</goal>
             </goals>
           </execution>
         </executions>
