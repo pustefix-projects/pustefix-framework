@@ -1,17 +1,18 @@
 <?xml version="1.0"?>
 <project>
+  <modelVersion>4.0.0</modelVersion>
   
   <parent>
     <artifactId>pustefix-editor</artifactId>
     <groupId>org.pustefixframework.editor</groupId>
-    <version>0.0.1</version>
+    <version>0.14.0-SNAPSHOT</version>
   </parent>
-  <modelVersion>4.0.0</modelVersion>
+
+  <name>Pustefix Editor Web-Based User Interface</name>
+
   <groupId>org.pustefixframework.editor</groupId>
   <artifactId>pustefix-editor-webui</artifactId>
-  <name>Pustefix Editor Web-Based User Interface</name>
-  <version>0.0.1</version>
-  <url>http://pustefixframework.org</url>
+  <version>0.14.0-SNAPSHOT</version>
   
   <build>
     <plugins>
@@ -33,7 +34,7 @@
     <dependency>
       <groupId>org.pustefixframework.editor</groupId>
       <artifactId>pustefix-editor-common</artifactId>
-      <version>0.0.1</version>
+      <version>0.14.0-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>com.caucho</groupId>
