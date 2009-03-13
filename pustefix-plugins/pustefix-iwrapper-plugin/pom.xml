@@ -10,12 +10,11 @@
     <relativePath>../pom.xml</relativePath>
   </parent>
 
-  <groupId>org.pustefixframework.maven.plugins</groupId>
-  <artifactId>pustefix-iwrpgenerate-plugin</artifactId>
-  <packaging>maven-plugin</packaging>
   <name>Pustefix IWrapper class generation plugin</name>
-  <version>0.1.1</version>
-  <url>http://pustefixframework.org</url>
+  <groupId>org.pustefixframework.maven.plugins</groupId>
+  <artifactId>pustefix-iwrapper-plugin</artifactId>
+  <packaging>maven-plugin</packaging>
+  <version>0.14.0-SNAPSHOT</version>
   <dependencies>
     <dependency>
       <groupId>org.apache.maven</groupId>

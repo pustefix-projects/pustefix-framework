@@ -54,7 +54,7 @@ import org.codehaus.plexus.util.DirectoryScanner;
  *
  * @author mleidig@schlund.de
  *
- * @goal iwrpgenerate
+ * @goal generate
  * @phase generate-sources
  */
 public class GenerateIWrappersMojo extends AbstractMojo {
