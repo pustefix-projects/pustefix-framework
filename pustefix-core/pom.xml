@@ -147,23 +147,6 @@
     </dependency>
 
     <dependency>
-      <groupId>org.pustefixframework.webservices</groupId>
-      <artifactId>pustefix-webservices-core</artifactId>
-      <version>0.2.2</version>      
-      <exclusions>
-        <exclusion>
-          <!--  TODO i get 0.1.2 otherwise ... -->
-          <groupId>com.marsching.flexiparse</groupId>
-          <artifactId>flexiparse</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.pustefixframework</groupId>
-          <artifactId>pfixcore</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-
-    <dependency>
       <groupId>javax.servlet</groupId>
       <artifactId>servlet-api</artifactId>
       <version>2.4</version>
