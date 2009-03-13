@@ -96,11 +96,11 @@
       <version>1.0.9</version>
     </dependency>
 
-    <dependency>
+    <!-- dependency>
       <groupId>javax.management</groupId>
       <artifactId>jmxremote_optional</artifactId>
       <version>1.0.1_03</version>
-    </dependency>
+    </dependency-->
 
     <dependency>
       <groupId>concurrent</groupId>
@@ -116,18 +116,16 @@
     <dependency>
       <groupId>javax.mail</groupId>
       <artifactId>mail</artifactId>
-      <version>1.3.3</version>
+      <version>1.4.1</version>
     </dependency>
     
 
-    <!-- TODO: not on Maven Central -->
+    <!-- we need both to compile the our extensions -->
     <dependency>
       <groupId>com.icl.saxon</groupId>
       <artifactId>saxon</artifactId>
       <version>6.5.5</version>
     </dependency>
-
-    <!-- we need both to compile the our extensions -->
     <!-- TODO: 9.0 -->
     <dependency>
       <groupId>net.sf.saxon</groupId>

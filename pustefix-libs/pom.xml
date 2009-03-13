@@ -1,0 +1,47 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>org.pustefixframework</groupId>
+  <artifactId>libs</artifactId>
+  <version>0.14.0-SNAPSHOT</version>
+  <packaging>pom</packaging>
+  <name>External Libraries</name>
+ 
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-install-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>saxon</id>
+            <phase>install</phase>
+            <goals><goal>install-file</goal></goals>
+            <configuration>
+              <file>${basedir}/saxon-6.5.5.jar</file>
+              <groupId>com.icl.saxon</groupId>
+              <artifactId>saxon</artifactId>
+              <version>6.5.5</version>
+              <generatePom>true</generatePom>
+              <packaging>jar</packaging>
+            </configuration>
+          </execution>
+          <execution>
+            <id>flexiparse</id>
+            <phase>install</phase>
+            <goals><goal>install-file</goal></goals>
+            <configuration>
+              <file>${basedir}/flexiparse-0.2.1.jar</file>
+              <groupId>com.marsching.flexiparse</groupId>
+              <artifactId>flexiparse</artifactId>
+              <version>0.2.1</version>
+              <generatePom>true</generatePom>
+              <packaging>jar</packaging>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+</project>
+
