@@ -99,7 +99,7 @@ public class GenerateIWrappersMojo extends AbstractMojo {
         if(!srcDir.exists()) return;
         
         String groupId = "org.pustefixframework";
-        String artifactId = "pfixcore";
+        String artifactId = "pustefix-core";
         String classifier = "data";
         String type = "tar.gz";
         
@@ -198,7 +198,7 @@ public class GenerateIWrappersMojo extends AbstractMojo {
     private String getPustefixVersion() {
         for(Artifact artifact:pluginArtifacts) {
             if(artifact.getGroupId().equals("org.pustefixframework") &&
-                    artifact.getArtifactId().equals("pfixcore") &&
+                    artifact.getArtifactId().equals("pustefix-core") &&
                     artifact.getType().equals("jar")) {
                 return artifact.getVersion();
             }

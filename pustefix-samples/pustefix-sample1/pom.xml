@@ -26,7 +26,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
       <artifactId>pustefix-core</artifactId>
       <classifier>data</classifier>
       <version>0.14.0-SNAPSHOT</version>
-      <type>tgz</type>
+      <type>tar.gz</type>
     </dependency>
     <dependency>
       <groupId>org.pustefixframework.webservices</groupId>
@@ -70,7 +70,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
                   <groupId>org.pustefixframework</groupId>
                   <artifactId>pustefix-core</artifactId>
                   <classifier>data</classifier>
-                  <type>tgz</type>
+                  <type>tar.gz</type>
                   <overWrite>true</overWrite>
                   <outputDirectory>projects</outputDirectory>
                 </artifactItem>

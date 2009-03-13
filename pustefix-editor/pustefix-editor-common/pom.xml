@@ -1,6 +1,5 @@
 <?xml version="1.0"?>
-<project>
-  
+<project>  
   <parent>
     <artifactId>pustefix-editor</artifactId>
     <groupId>org.pustefixframework.editor</groupId>

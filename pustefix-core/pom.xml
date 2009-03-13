@@ -181,7 +181,7 @@
             <phase>package</phase>
             <configuration>
               <tasks>
-                <tar destfile="target/${project.artifactId}-data-${project.version}.tgz" compression="gzip">
+                <tar destfile="target/${project.artifactId}-data-${project.version}.tar.gz" compression="gzip">
                   <tarfileset dir="${basedir}/src/data"/>
                   <tarfileset dir="${basedir}/target/classes/META-INF" prefix="core">
                     <include name="SVN_REVISION"/>
@@ -209,8 +209,8 @@
             <configuration>
               <artifacts>
                 <artifact>
-                  <file>${basedir}/target/${project.artifactId}-data-${version}.tgz</file>
-                  <type>tgz</type>
+                  <file>${basedir}/target/${project.artifactId}-data-${version}.tar.gz</file>
+                  <type>tar.gz</type>
                   <classifier>data</classifier>
                 </artifact>
               </artifacts>
