@@ -19,7 +19,8 @@
 
   <modules>
     <module>pustefix-statuscode-plugin</module>
-    <module>pustefix-iwrpgenerate-plugin</module>
+    <module>pustefix-iwrapper-plugin</module>
+    <module>pustefix-generate-plugin</module>
   </modules>
 
   <build>
