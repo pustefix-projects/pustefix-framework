@@ -29,7 +29,6 @@
   
   <application>
     <static>
-      <path>common/img</path>
       <path>core/img</path>
       <path>core/script</path>
     </static>

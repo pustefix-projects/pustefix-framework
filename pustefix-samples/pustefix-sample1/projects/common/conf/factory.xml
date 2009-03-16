@@ -15,9 +15,6 @@
     <prop name="factory.initialize.02">de.schlund.pfixxml.targets.SPCacheFactory</prop>
     <prop name="factory.initialize.04">de.schlund.pfixxml.targets.cachestat.SPCacheStatistic</prop>
     
-    <!-- Enable update thread -->
-    <prop name="de.schlund.pfixcore.editor2.updatetargets">true</prop>
-    
     <!-- SPCacheFactory -->
     <prop name="targetcache.cacheclass">de.schlund.pfixxml.targets.LRUCache</prop>
     <prop name="targetcache.cachecapacity">50</prop>
