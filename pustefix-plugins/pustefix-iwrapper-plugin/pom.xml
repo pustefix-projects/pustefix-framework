@@ -10,7 +10,7 @@
     <relativePath>../pom.xml</relativePath>
   </parent>
 
-  <name>Pustefix IWrapper class generation plugin</name>
+  <name>Pustefix IWrapper Class Generation Plugin</name>
   <groupId>org.pustefixframework.maven.plugins</groupId>
   <artifactId>pustefix-iwrapper-plugin</artifactId>
   <packaging>maven-plugin</packaging>
