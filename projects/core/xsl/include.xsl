@@ -304,6 +304,45 @@
     </xsl:choose>
   </xsl:template>
 
+  <xsl:template match="pfx:include[@level='runtime']">
+    <ixsl:call-template name="pfx:include">
+      <xsl:if test="@noerror">
+        <ixsl:with-param name="noerror"><xsl:value-of select="@noerror"/></ixsl:with-param>
+      </xsl:if>
+      <xsl:if test="@noedit">
+        <ixsl:with-param name="noedit"><xsl:value-of select="@noedit"/></ixsl:with-param>
+      </xsl:if>
+      <ixsl:with-param name="part">
+        <xsl:choose>
+          <xsl:when test="pfx:part">
+            <xsl:apply-templates select="pfx:part/node()"/>
+          </xsl:when>
+          <xsl:otherwise>
+            <xsl:value-of select="@part"/>
+          </xsl:otherwise>
+        </xsl:choose>
+      </ixsl:with-param>
+      <ixsl:with-param name="href">
+        <xsl:choose>
+          <xsl:when test="pfx:href">
+            <xsl:apply-templates select="pfx:href/node()"/>
+          </xsl:when>
+          <xsl:when test="@href">
+            <xsl:value-of select="@href"/>
+          </xsl:when>
+          <xsl:otherwise>
+            <xsl:value-of select="include:getRelativePathFromSystemId()"/>
+          </xsl:otherwise>
+        </xsl:choose>
+      </ixsl:with-param>
+      <xsl:if test="@module">
+        <ixsl:with-param name="module"><xsl:value-of select="@module"/></ixsl:with-param>
+      </xsl:if>
+      <xsl:if test="@search">
+        <ixsl:with-param name="search"><xsl:value-of select="@search"/></ixsl:with-param>
+      </xsl:if>
+    </ixsl:call-template>
+  </xsl:template>
 
   <xsl:template name="pfx:image_register_src">
     <xsl:param name="src"/>
