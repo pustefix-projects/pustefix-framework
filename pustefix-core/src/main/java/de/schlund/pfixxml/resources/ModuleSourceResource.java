@@ -20,24 +20,29 @@ public class ModuleSourceResource extends ModuleResource {
         file = new File(moduleDir, "PUSTEFIX-INF"+uri.getPath());
     }
     
+    @Override
     public boolean canRead() {
         return file.canRead();
     }
 
+    @Override
     public boolean exists() {
         return file.exists();
     }
 
+    @Override
     public InputStream getInputStream() throws IOException {
         return new FileInputStream(file);
     }
 
+    @Override
     public boolean isFile() {
         return file.isFile();
     }
 
+    @Override
     public long lastModified() {
         return file.lastModified();
     }
-    
+
 }
