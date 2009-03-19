@@ -98,8 +98,6 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
                   preprocessdir="${project.build.directory}/generated-sources/apt"
                   encoding="${project.build.sourceEncoding}"
                   factory="de.schlund.pfixcore.util.CommonAnnotationProcessorFactory" />
-
-                 <echo>copy</echo>
                  <copy toDir="${basedir}/target/${project.artifactId}-${project.version}/WEB-INF" flatten="true">
                      <resources>
                        <javaresource name="build/web.xml" classpathref="maven.compile.classpath"/>
@@ -108,7 +106,6 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
                        <filter token="BASEDIR" value="${basedir}"/>
                      </filterset>
                  </copy>
-                 <echo>copy done</echo>
               </tasks>
               <sourceRoot>${project.build.directory}/generated-sources/apt</sourceRoot>
             </configuration>
@@ -154,11 +151,11 @@ __antprop_standalone.tomcat=${standalone.tomcat}
         <executions>
           <execution>
             <configuration>
-              <docRoot>${basedir}/projects</docRoot>
+              <docRoot>${basedir}</docRoot>
               <includes>
-                <include>sample1/dyntxt/statuscodeinfo.xml</include>
-                <include>samplebank/dyntxt/statuscodeinfo.xml</include>
-                <include>testsuite/dyntxt/statuscodeinfo.xml</include>
+                <include>src/main/pustefix/dyntxt/statuscodeinfo.xml</include>
+                <include>projects/samplebank/dyntxt/statuscodeinfo.xml</include>
+                <include>projects/testsuite/dyntxt/statuscodeinfo.xml</include>
               </includes>
             </configuration>
             <id>statuscodes</id>
@@ -203,8 +200,18 @@ __antprop_standalone.tomcat=${standalone.tomcat}
         <configuration>
           <webResources>
             <webResource>
-              <directory>${basedir}/projects</directory>
-              <targetPath>WEB-INF/pfixroot</targetPath>
+              <directory>${basedir}/projects/core</directory>
+              <targetPath>WEB-INF/pfixroot/core</targetPath>
+              <filtering>false</filtering>
+            </webResource>
+            <webResource>
+              <directory>${basedir}/src/main/pustefix</directory>
+              <targetPath>WEB-INF/pfixroot/${project.artifactId}</targetPath>
+              <filtering>false</filtering>
+            </webResource>
+            <webResource>
+              <directory>${basedir}/src/main/pustefix</directory>
+              <targetPath>WEB-INF/pfixroot/common</targetPath>
               <filtering>false</filtering>
             </webResource>
           </webResources>
