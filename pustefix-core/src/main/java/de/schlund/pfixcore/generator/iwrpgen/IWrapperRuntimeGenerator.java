@@ -236,9 +236,8 @@ public class IWrapperRuntimeGenerator {
             Transformer t = tf.newTransformer();
             t.transform(new DOMSource(doc), new StreamResult(System.out));
 
-            t = tf.newTransformer(new StreamSource(new FileInputStream(new File("projects/core/build/iwrapper.xsl"))));
+            t = tf.newTransformer(new StreamSource(IWrapperRuntimeGenerator.class.getResourceAsStream("/build/iwrapper.xsl")));
             t.transform(new DOMSource(doc), new StreamResult(new FileOutputStream(destFile)));
-
         } catch (Exception x) {
             x.printStackTrace();
         }

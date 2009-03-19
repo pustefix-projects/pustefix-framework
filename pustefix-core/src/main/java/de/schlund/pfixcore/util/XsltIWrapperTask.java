@@ -52,7 +52,7 @@ public class XsltIWrapperTask extends XsltGenericTask {
             throw new BuildException("Input filename \""+inname+"\" is of unexpected form",ioobe);
         }
         
-        // For parameter names see example/core/build/iwrapper.xsl 
+        // For parameter names see src/main/resources/build/iwrapper.xsl 
         // <xsl:param name="classname"/>
         // <xsl:param name="package"/>
         getTransformer().setParameter(new XsltParam("classname", classname));

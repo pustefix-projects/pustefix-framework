@@ -99,12 +99,16 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
                   encoding="${project.build.sourceEncoding}"
                   factory="de.schlund.pfixcore.util.CommonAnnotationProcessorFactory" />
 
-                 <copy file="projects/core/build/web.xml" 
-                     toFile="${basedir}/target/${project.artifactId}-${project.version}/WEB-INF/web.xml">
+                 <echo>copy</echo>
+                 <copy toDir="${basedir}/target/${project.artifactId}-${project.version}/WEB-INF" flatten="true">
+                     <resources>
+                       <javaresource name="build/web.xml" classpathref="maven.compile.classpath"/>
+                     </resources>
                      <filterset>
                        <filter token="BASEDIR" value="${basedir}"/>
                      </filterset>
                  </copy>
+                 <echo>copy done</echo>
               </tasks>
               <sourceRoot>${project.build.directory}/generated-sources/apt</sourceRoot>
             </configuration>

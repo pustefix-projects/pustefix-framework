@@ -297,7 +297,7 @@ public class TargetGenerator implements Comparable<TargetGenerator> {
             xreader.setEntityResolver(cushandler);
             xreader.parse(new InputSource(new StringReader(fullXml)));
             try {
-                Transformer trans = tf.newTransformer(new StreamSource(ResourceUtil.getFileResourceFromDocroot("core/build/create_depend.xsl").toURL().toString()));
+                Transformer trans = tf.newTransformer(new StreamSource(getClass().getResource("/build/create_depend.xsl").toString()));
                 if (BuildTimeProperties.getProperties().getProperty("mode").equals("prod")) {
                     trans.setParameter("prohibitEdit", "yes");
                 } else {

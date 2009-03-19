@@ -270,11 +270,9 @@ public class FactoryInitWorker {
             xreader.parse(new InputSource(configFile.getInputStream()));
             ByteArrayOutputStream bufferStream = new ByteArrayOutputStream();
             try {
-                tf
-                        .newTransformer(
+                tf.newTransformer(
                                 new StreamSource(
-                                        ResourceUtil.getFileResourceFromDocroot("core/build/create_log4j_config.xsl").toURL()
-                                        .toString())).transform(
+                                        FactoryInitWorker.class.getResource("/build/create_log4j_config.xsl").toString())).transform(
                                 new DOMSource(dr.getNode()), new StreamResult(bufferStream));
             } catch (TransformerException e) {
                 throw new SAXException(e);

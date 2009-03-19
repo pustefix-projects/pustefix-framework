@@ -19,16 +19,12 @@
 package org.pustefixframework.maven.plugins;
 
 import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
-import java.util.zip.GZIPInputStream;
 
 import javax.xml.transform.Templates;
 import javax.xml.transform.Transformer;
@@ -39,14 +35,9 @@ import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
 import org.apache.maven.artifact.Artifact;
-import org.apache.maven.artifact.repository.ArtifactRepository;
-import org.apache.maven.artifact.resolver.ArtifactNotFoundException;
-import org.apache.maven.artifact.resolver.ArtifactResolutionException;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.project.MavenProject;
-import org.apache.tools.tar.TarEntry;
-import org.apache.tools.tar.TarInputStream;
 import org.codehaus.plexus.util.DirectoryScanner;
 
 /**
@@ -77,19 +68,6 @@ public class GenerateIWrappersMojo extends AbstractMojo {
      */
     private MavenProject project;
     
-    
-    /** @component */
-    private org.apache.maven.artifact.factory.ArtifactFactory artifactFactory;
-    
-    /** @component */
-    private org.apache.maven.artifact.resolver.ArtifactResolver resolver;
-
-    /**@parameter expression="${localRepository}" */
-    private org.apache.maven.artifact.repository.ArtifactRepository localRepository;
-
-    /** @parameter expression="${project.remoteArtifactRepositories}" */
-    private java.util.List<ArtifactRepository> remoteRepositories;
-    
     /** @parameter expression="${plugin.artifacts}" */
     private java.util.List<Artifact> pluginArtifacts;
 
@@ -97,11 +75,6 @@ public class GenerateIWrappersMojo extends AbstractMojo {
     public void execute() throws MojoExecutionException {
         
         if(!srcDir.exists()) return;
-        
-        String groupId = "org.pustefixframework";
-        String artifactId = "pustefix-core";
-        String classifier = "data";
-        String type = "tar.gz";
         
         String version = getPustefixVersion();
         if(version == null) throw new MojoExecutionException("Can't get Pustefix version from dependencies!");
@@ -118,19 +91,7 @@ public class GenerateIWrappersMojo extends AbstractMojo {
         
         boolean pustefixVersionChanged = !version.equals(lastBuildVersion);
         
-        StreamSource xsl = null;
-        Artifact artifact = artifactFactory.createArtifactWithClassifier(groupId, artifactId, version, type, classifier);
-        try {
-            resolver.resolve( artifact, remoteRepositories, localRepository );
-            File artifactFile = artifact.getFile();
-            xsl = extractStylesheet(artifactFile.getAbsoluteFile());
-        } catch(ArtifactResolutionException x) {
-            throw new MojoExecutionException("Can't resolve Pustefix data archive.",x);
-        } catch (ArtifactNotFoundException x) {
-            throw new MojoExecutionException("Can't find Pustefix data archive.",x);
-        } catch(IOException x) {
-            throw new MojoExecutionException("Error reading Pustefix data archive.",x);
-        }
+        StreamSource xsl = new StreamSource(getClass().getResourceAsStream("/build/iwrapper.xsl"));
         
         DirectoryScanner ds = new DirectoryScanner();
         ds.setIncludes(new String[] {"**/*.iwrp"});
@@ -203,32 +164,6 @@ public class GenerateIWrappersMojo extends AbstractMojo {
                 return artifact.getVersion();
             }
         }
-        return null;
-    }
-
-    private StreamSource extractStylesheet(File tarFile) throws IOException {
-        final InputStream in;
-        if (tarFile.getName().endsWith(".gz")) {
-            in = new GZIPInputStream(new FileInputStream(tarFile));
-        } else {
-            in = new FileInputStream(tarFile);
-        }
-
-        
-        final TarInputStream tin = new TarInputStream(in);
-        TarEntry tarEntry = tin.getNextEntry();
-        while (tarEntry != null) {
-            if(tarEntry.getName().equals("core/build/iwrapper.xsl")) {
-                ByteArrayOutputStream out = new ByteArrayOutputStream();
-                tin.copyEntryContents(out);
-                out.close();
-                tin.close();
-                ByteArrayInputStream bin = new ByteArrayInputStream(out.toByteArray());
-                return new StreamSource(bin);
-            }
-            tarEntry = tin.getNextEntry();
-        }
-        tin.close();
         return null;
     }
 
