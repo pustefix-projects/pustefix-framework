@@ -206,11 +206,16 @@ __antprop_standalone.tomcat=${standalone.tomcat}
             </webResource>
             <webResource>
               <directory>${basedir}/src/main/pustefix</directory>
-              <targetPath>WEB-INF/pfixroot/${project.artifactId}</targetPath>
+              <targetPath>WEB-INF/pfixroot/sample1</targetPath>
               <filtering>false</filtering>
             </webResource>
             <webResource>
               <directory>${basedir}/src/main/pustefix</directory>
+              <targetPath>WEB-INF/pfixroot/common</targetPath>
+              <filtering>false</filtering>
+            </webResource>
+            <webResource>
+              <directory>${basedir}/projects/common</directory>
               <targetPath>WEB-INF/pfixroot/common</targetPath>
               <filtering>false</filtering>
             </webResource>
