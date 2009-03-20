@@ -43,13 +43,23 @@ public class ProjectImpl extends AbstractProject {
     private String name;
     private String comment;
     private Map<String, String> prefixToNamespaceMappings;
+    private Object initLock = new Object();
+    private boolean initialized = false;
 
     public ProjectImpl(RemoteServiceUtil remoteServiceUtil) {
         this.remoteServiceUtil = remoteServiceUtil;
-        ProjectTO  projectTO = getProjectTO();
-        this.name = projectTO.name;
-        this.comment = projectTO.comment;
-        this.prefixToNamespaceMappings = projectTO.prefixToNamespaceMappings;
+    }
+    
+    private void init() {
+        synchronized (initLock) {
+            if (initialized) {
+                return;
+            }
+            ProjectTO  projectTO = getProjectTO();
+            this.name = projectTO.name;
+            this.comment = projectTO.comment;
+            this.prefixToNamespaceMappings = projectTO.prefixToNamespaceMappings;            
+        }
     }
     
     public IncludePartThemeVariant findIncludePartThemeVariant(String file, String part, String theme) {
@@ -89,7 +99,7 @@ public class ProjectImpl extends AbstractProject {
     }
     
     public String getComment() {
-        // Do not update, this property should not change during runtime
+        init();
         return comment;
     }
     
@@ -109,6 +119,7 @@ public class ProjectImpl extends AbstractProject {
     }
     
     public String getName() {
+        init();
         return name;
     }
     
@@ -132,6 +143,7 @@ public class ProjectImpl extends AbstractProject {
     }
     
     public Map<String, String> getPrefixToNamespaceMappings() {
+        init();
         return prefixToNamespaceMappings;
     }
     
@@ -165,6 +177,23 @@ public class ProjectImpl extends AbstractProject {
         // as each thread has to call this method in order to be sure
         // that it is using the newest data available on the server.
         return remoteServiceUtil.getRemoteProjectService().getProject();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (!(obj instanceof ProjectImpl)) {
+            return false;
+        }
+        ProjectImpl p = (ProjectImpl) obj;
+        return remoteServiceUtil.equals(p.remoteServiceUtil);
+    }
+
+    @Override
+    public int hashCode() {
+        return remoteServiceUtil.hashCode();
     }
     
 }

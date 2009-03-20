@@ -56,9 +56,20 @@ public class ProjectsResource {
     public void insertStatus(ResultDocument resdoc, Element elem) throws Exception {
         for (Iterator<Project> i = projectPool.getProjects().iterator(); i.hasNext();) {
             Project project = i.next();
+            String projectName;
+            String projectComment;
+            try {
+                projectName = project.getName();
+                projectComment = project.getComment();
+            } catch (Exception e) {
+                // Remote service might be temporarily unavailable,
+                // thus ignore exception and simply exclude project
+                // from list
+                continue;
+            }
             Element projectElement = resdoc.createSubNode(elem, "project");
-            projectElement.setAttribute("name", project.getName());
-            projectElement.setAttribute("comment", project.getComment());
+            projectElement.setAttribute("name", projectName);
+            projectElement.setAttribute("comment", projectComment);
             if (this.selectedProject != null && project.equals(this.selectedProject)) {
                 projectElement.setAttribute("selected", "true");
             }
