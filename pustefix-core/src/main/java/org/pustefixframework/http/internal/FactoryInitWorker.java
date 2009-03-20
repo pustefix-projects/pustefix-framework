@@ -30,6 +30,7 @@ import javax.servlet.ServletException;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
@@ -38,7 +39,6 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.sax.SAXTransformerFactory;
 import javax.xml.transform.sax.TransformerHandler;
 import javax.xml.transform.stream.StreamResult;
-import javax.xml.transform.stream.StreamSource;
 
 import org.apache.log4j.Logger;
 import org.apache.log4j.xml.DOMConfigurator;
@@ -270,10 +270,8 @@ public class FactoryInitWorker {
             xreader.parse(new InputSource(configFile.getInputStream()));
             ByteArrayOutputStream bufferStream = new ByteArrayOutputStream();
             try {
-                tf.newTransformer(
-                                new StreamSource(
-                                        FactoryInitWorker.class.getResource("/build/create_log4j_config.xsl").toString())).transform(
-                                new DOMSource(dr.getNode()), new StreamResult(bufferStream));
+                Transformer t = SimpleResolver.configure(tf, "/build/create_log4j_config.xsl");
+                t.transform(new DOMSource(dr.getNode()), new StreamResult(bufferStream));
             } catch (TransformerException e) {
                 throw new SAXException(e);
             }

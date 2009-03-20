@@ -38,10 +38,10 @@ import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.sax.SAXTransformerFactory;
 import javax.xml.transform.sax.TransformerHandler;
-import javax.xml.transform.stream.StreamSource;
 
 import org.apache.log4j.Logger;
 import org.apache.log4j.xml.DOMConfigurator;
+import org.pustefixframework.http.internal.SimpleResolver;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -297,7 +297,7 @@ public class TargetGenerator implements Comparable<TargetGenerator> {
             xreader.setEntityResolver(cushandler);
             xreader.parse(new InputSource(new StringReader(fullXml)));
             try {
-                Transformer trans = tf.newTransformer(new StreamSource(getClass().getResource("/build/create_depend.xsl").toString()));
+                Transformer trans = SimpleResolver.configure(tf, "/build/create_depend.xsl");
                 if (BuildTimeProperties.getProperties().getProperty("mode").equals("prod")) {
                     trans.setParameter("prohibitEdit", "yes");
                 } else {
