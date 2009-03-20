@@ -19,7 +19,7 @@
       <!-- This is only for mod_jk A matching sample workers.prop file will be generated, but may need -->
       <!-- additional customization. Clustering will not work out of the box. -->
       <jkmount>router</jkmount>
-      <defaulthost>sample1.${fqdn}</defaulthost>
+      <defaulthost>testsuite.${fqdn}</defaulthost>
       <jvmroute>foo</jvmroute>
     </tomcat>
     <apache>
