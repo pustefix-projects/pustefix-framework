@@ -17,7 +17,7 @@ public class TShirtWrapperTest extends TestCase {
     protected void setUp() throws Exception {
         // TODO: becore class
         if (GlobalConfig.getDocroot() == null) {
-            GlobalConfigurator.setDocroot((new File("src/main/pustefix").getAbsolutePath()));
+            GlobalConfigurator.setDocroot(GlobalConfig.guessPfixroot().getAbsolutePath());
         }
     }
     

@@ -37,7 +37,7 @@ public class IWrapperBeanTest extends TestCase {
     @Override
     protected void setUp() throws Exception {
         if (GlobalConfig.getDocroot() == null) {
-            GlobalConfigurator.setDocroot((new File("src/main/pustefix").getAbsolutePath()));
+            GlobalConfigurator.setDocroot(GlobalConfig.guessPfixroot().getAbsolutePath());
         }
     }
 

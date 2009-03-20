@@ -12,6 +12,7 @@ import org.springframework.mock.web.MockServletContext;
 import org.springframework.test.context.ContextLoader;
 import org.springframework.web.context.WebApplicationContext;
 
+import de.schlund.pfixxml.config.GlobalConfig;
 import de.schlund.pfixxml.resources.FileResource;
 import de.schlund.pfixxml.resources.ResourceUtil;
 
@@ -25,7 +26,7 @@ import de.schlund.pfixxml.resources.ResourceUtil;
  */
 public class PustefixWebApplicationContextLoader implements ContextLoader {
     
-    private static File DEFAULT_DOCROOT = new File("projects");
+    private static File DEFAULT_DOCROOT = GlobalConfig.guessPfixroot();
     
     private File docroot;
     

@@ -12,7 +12,7 @@
       </init-param>
       <init-param>
          <param-name>contextConfigLocation</param-name>
-         <param-value>file:@BASEDIR@/src/main/pustefix/conf/project.xml file:@BASEDIR@/src/main/pustefix/conf/spring.xml</param-value>
+         <param-value>file:@PFIXROOT@/conf/project.xml file:@PFIXROOT@/conf/spring.xml</param-value>
       </init-param>
       <load-on-startup>1</load-on-startup>
    </servlet>

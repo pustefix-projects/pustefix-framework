@@ -18,6 +18,7 @@
 
 package de.schlund.pfixxml.config;
 
+import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 
@@ -65,7 +66,25 @@ public class GlobalConfig {
         }
 
     }
+
+    public static File guessPfixroot() {
+        File target = new File("target");
+        File root;
+        
+        if (target.isDirectory()) {
+            for (File dir : target.listFiles()) {
+                if (dir.isDirectory()) {
+                    root = new File(dir, "WEB-INF/pfixroot");
+                    if (root.exists()) {
+                        return root;
+                    }
+                }
+            }
+        }
+        throw new IllegalStateException("cannot guess pfixroot");
+    }
     
+
     /**
      * Returns an URL that points to the Pustefix docroot.
      * This can be used to retrieve elements relative to the

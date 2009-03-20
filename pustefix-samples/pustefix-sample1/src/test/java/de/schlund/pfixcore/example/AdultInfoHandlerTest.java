@@ -1,7 +1,5 @@
 package de.schlund.pfixcore.example;
 
-import java.io.File;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -22,7 +20,7 @@ public class AdultInfoHandlerTest {
     @Before
     public void setUp() throws Exception {
         if (GlobalConfig.getDocroot() == null) {
-            GlobalConfigurator.setDocroot((new File("src/main/pustefix").getAbsolutePath()));
+            GlobalConfigurator.setDocroot(GlobalConfig.guessPfixroot().getAbsolutePath());
         }
     }
     
