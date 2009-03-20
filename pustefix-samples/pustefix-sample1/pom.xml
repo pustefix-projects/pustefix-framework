@@ -84,6 +84,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
         </executions>
       </plugin>
       <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-antrun-plugin</artifactId>
         <version>1.3</version>
         <executions>
@@ -104,7 +105,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
                   srcdir="${basedir}/src/main/java"
                   destdir="${basedir}/target/classes"
                   preprocessdir="${project.build.directory}/generated-sources/apt"
-                  encoding="${project.build.sourceEncoding}"
+                  encoding="UTF-8"
                   factory="de.schlund.pfixcore.util.CommonAnnotationProcessorFactory" />
                   
                  <!--  web.xml -->
