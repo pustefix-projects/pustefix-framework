@@ -6,14 +6,14 @@
       <link href="{$__contextpath}/style.css" media="all" rel="stylesheet" type="text/css"/>
     </head>
     <body>
-      <pfx:include href="samplebank/txt/common.xml" part="header"/>
-      <pfx:include href="samplebank/txt/common.xml" part="navigation"/>
+      <pfx:include href="txt/common.xml" part="header"/>
+      <pfx:include href="txt/common.xml" part="navigation"/>
       <div class="content">
-        <pfx:maincontent path="samplebank/txt/pages" prefix="main_" part="content"/>
+        <pfx:maincontent path="txt/pages" prefix="main_" part="content"/>
         <hr/>
-        <pfx:include href="samplebank/txt/common.xml" part="roles"/><br/>
+        <pfx:include href="txt/common.xml" part="roles"/><br/>
         <ixsl:if test="$page='home'">
-          <pfx:include href="samplebank/txt/common.xml" part="authtokens"/><br/>
+          <pfx:include href="txt/common.xml" part="authtokens"/><br/>
         </ixsl:if>
       </div>
       <pfx:editconsole/>
