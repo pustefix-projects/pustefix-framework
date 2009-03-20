@@ -1,0 +1,242 @@
+<?xml version="1.0" encoding="UTF-8"?> <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.pustefixframework</groupId>
+    <artifactId>pustefix-samples</artifactId>
+    <version>0.14.0-SNAPSHOT</version>
+  </parent>
+
+  <properties>
+    <pfixroot>${basedir}/target/${project.artifactId}-${project.version}/WEB-INF/pfixroot</pfixroot>
+  </properties>
+  
+  <groupId>org.pustefixframework</groupId>
+  <artifactId>pustefix-sample1</artifactId>
+  <version>0.14.0-SNAPSHOT</version>
+  <packaging>war</packaging>
+
+  <name>Pustefix Sample 1</name>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.pustefixframework</groupId>
+      <artifactId>pustefix-core</artifactId>
+      <version>0.14.0-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>org.pustefixframework</groupId>
+      <artifactId>pustefix-core</artifactId>
+      <classifier>data</classifier>
+      <version>0.14.0-SNAPSHOT</version>
+      <type>tar.gz</type>
+    </dependency>
+    <dependency>
+      <groupId>org.pustefixframework.webservices</groupId>
+      <artifactId>pustefix-webservices-core</artifactId>
+      <version>0.14.0-SNAPSHOT</version>      
+    </dependency>
+
+
+    <dependency>
+      <groupId>rhino</groupId>
+      <artifactId>js</artifactId>
+      <version>1.5R3</version>
+    </dependency>
+    <dependency>
+      <groupId>bsh</groupId>
+      <artifactId>bsh</artifactId>
+      <version>2.0b4</version>
+    </dependency>
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>servlet-api</artifactId>
+      <version>2.4</version>
+      <scope>provided</scope>
+    </dependency>
+  </dependencies>
+ 
+  <build>
+    <plugins> 
+      <plugin>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>unpack-core</id>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>unpack</goal>
+            </goals>
+            <configuration>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>org.pustefixframework</groupId>
+                  <artifactId>pustefix-core</artifactId>
+                  <classifier>data</classifier>
+                  <type>tar.gz</type>
+                  <overWrite>true</overWrite>
+                  <outputDirectory>${pfixroot}</outputDirectory>
+                </artifactItem>
+              </artifactItems>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <version>1.3</version>
+        <executions>
+          <execution>
+            <id>apt and web.xml and modules</id>
+            <phase>generate-sources</phase>
+            <configuration>
+              <tasks>
+                <taskdef name="pfx-apt"
+                  classname="de.schlund.pfixcore.generator.iwrpgen.AptTask"
+                  classpathref="maven.compile.classpath"
+                  description="Pustefix APT task" />
+                  
+                <!--  apt  -->
+                
+                <pfx-apt
+                  classpathref="maven.compile.classpath"
+                  srcdir="${basedir}/src/main/java"
+                  destdir="${basedir}/target/classes"
+                  preprocessdir="${project.build.directory}/generated-sources/apt"
+                  encoding="UTF-8"
+                  factory="de.schlund.pfixcore.util.CommonAnnotationProcessorFactory" />
+                  
+                 <!--  web.xml -->
+                 
+                 <copy toDir="${basedir}/target/${project.artifactId}-${project.version}/WEB-INF" flatten="true">
+                     <resources>
+                       <javaresource name="build/web.xml" classpathref="maven.compile.classpath"/>
+                     </resources>
+                     <filterset>
+                       <filter token="PFIXROOT" value="${pfixroot}"/>
+                     </filterset>
+                 </copy>
+
+                 <!--  pfixroot -->
+     
+                 <copy toDir="${pfixroot}">
+                     <fileset dir="${basedir}/src/main/pustefix"/>
+                 </copy>
+                 
+                 <!--  modules -->
+                 
+                 <taskdef
+                    name="pfx-unpack-jar-module"
+                    classname="de.schlund.pfixcore.util.UnpackModuleTask"
+                    classpathref="maven.compile.classpath"
+                    loaderref="pfx-loader"
+                    description="Checks JARs for a Pustefix module deployment descriptor and unpacks the resources" />
+                 <property name="dir.extract.modules" location="${pfixroot}/modules"/>
+                 <mkdir dir="${dir.extract.modules}"/>
+                 <!--  TODO: basedir: wo kommen die modules her -->
+                 <pfx-unpack-jar-module srcdir="${basedir}" extracttodir="${dir.extract.modules}" includes="${basedir}" />
+                 <touch file="${dir.extract.modules}/TIMESTAMP"/>
+                 <!--  TODO:
+                 <foreach param="tmp.modules.buildxml" target="extract-modules-call-ant" inheritall="true" inheritrefs="true">
+                   <fileset dir="${dir.extract.modules}">
+                     <include name="*/build.xml"/>
+                   </fileset>
+                 </foreach>
+                 <antcall target="scmerge-modules"/>
+                  -->
+              </tasks>
+              <sourceRoot>${project.build.directory}/generated-sources/apt</sourceRoot>
+            </configuration>
+            <goals>
+              <goal>run</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>buildtimeprops</id>
+            <phase>generate-resources</phase>
+            <configuration>
+              <tasks>
+                <taskdef
+                  name="pfx-buildtime-props"
+                  classname="de.schlund.pfixxml.config.BuildTimePropTask"
+                  classpathref="maven.compile.classpath"
+                />
+                <mkdir dir="${basedir}/target/classes"/>
+                <pfx-buildtime-props
+                  file="${basedir}/target/classes/buildtime.prop"
+                  mode="${makemode}"
+                  uid="uid"
+                  machine="machine"
+                  fqdn="fqdn"
+                  docroot="docroot"
+                 />
+                <echo append="true" file="${basedir}/target/classes/buildtime.prop">
+__antprop_makemode=${makemode}
+__antprop_standalone.tomcat=${standalone.tomcat}
+                </echo>
+              </tasks>
+            </configuration>
+            <goals>
+              <goal>run</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.pustefixframework.maven.plugins</groupId>
+        <artifactId>pustefix-statuscode-plugin</artifactId>
+        <version>0.14.0-SNAPSHOT</version>
+        <executions>
+          <execution>
+            <configuration>
+              <docRoot>${basedir}</docRoot>
+              <includes>
+                <include>src/main/pustefix/dyntxt/statuscodeinfo.xml</include>
+                <include>projects/testsuite/dyntxt/statuscodeinfo.xml</include>
+              </includes>
+            </configuration>
+            <id>statuscodes</id>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.pustefixframework.maven.plugins</groupId>
+        <artifactId>pustefix-iwrapper-plugin</artifactId>
+        <version>0.14.0-SNAPSHOT</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.pustefixframework.maven.plugins</groupId>
+        <artifactId>pustefix-statuscode-plugin</artifactId>
+        <configuration>
+          <targetPath>dyntxt</targetPath>
+          <includes>
+            <include>statuscodes/statuscodeinfo.xml</include>
+          </includes>
+        </configuration>
+        <executions>
+          <execution>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.mortbay.jetty</groupId>
+        <artifactId>maven-jetty-plugin</artifactId>
+      </plugin>
+    </plugins>
+  </build>
+</project>

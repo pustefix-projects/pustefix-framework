@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd
+                           http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd">
+
+  <context:annotation-config/>
+
+  <bean id="testdata" class="de.schlund.pfixcore.example.TestData" scope="session" parent="testdata_base">
+    <aop:scoped-proxy/>
+    <property name="data" ref="${ref.testdata}"/>
+  </bean>
+  
+  <bean id="global_testdata" class="de.schlund.pfixcore.example.TestData">
+    <property name="text" value="TO_BE_OVERRIDDEN"/>
+  </bean>
+  
+  <bean id="global_testdata_prod" class="de.schlund.pfixcore.example.TestData">
+    <property name="text" value="baz"/>
+  </bean>
+
+  <bean id="default_state" abstract="true">
+     <property name="data" ref="global_testdata"/>
+  </bean>
+
+  <bean id="testdata_base" abstract="true">
+    <property name="text" value="${testdata.defaulttext}"/>
+  </bean>
+
+<!--   
+  <bean class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+    <property name="alwaysUseFullPath" value="true"/>
+    <property name="mappings">
+      <value>
+        /xml/config/**=__pfx_contexthandler
+        /xml/download/**=__pfx_directhandler
+        /xml/deref/**=__pfx_derefhandler
+      </value>
+    </property>
+  </bean>
+  
+  <bean id="__pfx_contexthandler" class="org.pustefixframework.http.PustefixContextXMLRequestHandler">
+    <property name="commonPropFile">
+      <value>pfixroot:/conf/pustefix.xml</value>
+    </property>
+    <property name="propFile">
+      <value>pfixroot:/conf/config.conf.xml</value>
+    </property>
+    <property name="dependFile">
+      <value>pfixroot:/conf/depend.xml</value>
+    </property>
+    <property name="handlerURI">
+      <value>/xml/config/**</value>
+    </property>
+  </bean>
+  
+  
+  
+  <bean id="__pfx_directhandler" class="org.pustefixframework.http.PustefixContextDirectOutputRequestHandler">
+    <property name="commonPropFile">
+      <value>pfixroot:/conf/pustefix.xml</value>
+    </property>
+    <property name="propFile">
+      <value>pfixroot:/conf/direct.conf.xml</value>
+    </property>
+    <property name="handlerURI">
+      <value>/xml/download/**</value>
+    </property>
+  </bean>
+  
+  <bean id="__pfx_derefhandler" class="org.pustefixframework.http.dereferer.DerefRequestHandler">
+    <property name="commonPropFile">
+      <value>pfixroot:/conf/pustefix.xml</value>
+    </property>
+    <property name="handlerURI">
+      <value>/xml/deref/**</value>
+    </property>
+  </bean>
+
+ -->  
+  
+</beans>

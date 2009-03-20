@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+	This file describes the class related to our form. 
+	In this case it is just one textfield containing a String. 
+	The "precheck" tag is a validation tag containing a regular
+	expression which will perform a check on the given String.
+	The .java will be generated during the ant build.
+	The DemoTextHandler class consists among others of the
+	method handleSubmittedData. The forms request will be treadet
+	by this class and its method.
+-->
+<interface xmlns="http://pustefix.sourceforge.net/interfacewrapper200401" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://pustefix.sourceforge.net/interfacewrapper200401 http://pustefix.sourceforge.net/interfacewrapper200401.xsd">
+  <ihandler class="de.skelexamples.DemoTextHandler"/>
+  <param name="DemoText" type="java.lang.String">
+    <precheck class="de.schlund.pfixcore.generator.prechecks.RegexpCheck">
+      <cparam name="regexp" value="/^[A-Z a-z].+$/"/>
+    </precheck>
+  </param>
+
+<!--
+	Below you'll see an example using an Integer
+	
+  <param name="Zahl" type="java.lang.Integer" occurence="optional" frequency="multiple">
+    <caster class="de.schlund.pfixcore.generator.casters.ToInteger"/>
+    <postcheck class="de.schlund.pfixcore.generator.postchecks.IntegerRange">
+      <cparam name="range" value="0:10"/>
+    </postcheck>
+  </param>
+ -->
+
+</interface>

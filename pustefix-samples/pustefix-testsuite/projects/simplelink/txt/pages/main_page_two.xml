@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
+  <!-- The content of page one (remember: the navigation is included in the common.xml) -->
+  <part name="content">
+    <theme name="default">
+      <br/>
+      You're on the second page and should pay a little attention to the links above!.
+      <br/>
+      They're enabled and disabled depending on the page you are.
+    </theme>
+  </part>
+</include_parts>
