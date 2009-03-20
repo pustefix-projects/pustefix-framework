@@ -36,6 +36,7 @@ import org.pustefixframework.config.customization.CustomizationInfo;
 import org.pustefixframework.config.customization.PropertiesBasedCustomizationInfo;
 import org.pustefixframework.config.global.GlobalConfigurationHolder;
 import org.pustefixframework.config.global.parser.GlobalConfigurationReader;
+import org.pustefixframework.config.project.EditorLocation;
 import org.pustefixframework.config.project.XMLGeneratorInfo;
 import org.pustefixframework.http.PustefixContextXMLRequestHandler;
 import org.springframework.beans.factory.BeanDefinitionStoreException;
@@ -86,6 +87,14 @@ public class PustefixContextXMLRequestHandlerParsingHandler extends Customizatio
             throw new ParserException("Found " + infoCollection.size() + " instances of XMLGeneratorInfo but expected exactly one");
         }
         XMLGeneratorInfo info = infoCollection.iterator().next();
+        
+        Collection<EditorLocation> editorLocationCollection = context.getObjectTreeElement().getRoot().getObjectsOfTypeFromSubTree(EditorLocation.class);
+        EditorLocation editorLocation;
+        if (editorLocationCollection.size() > 0) {
+            editorLocation = editorLocationCollection.iterator().next();
+        } else {
+            editorLocation = new EditorLocation(null);
+        }
        
         FileResource fileRes = ResourceUtil.getFileResource(configurationFile);
         Resource res = null;
@@ -148,6 +157,7 @@ public class PustefixContextXMLRequestHandlerParsingHandler extends Customizatio
             beanBuilder.addPropertyValue("testRecording", new RuntimeBeanReference(TestRecording.class.getName()));
         }
         beanBuilder.addPropertyValue("webappAdmin", new RuntimeBeanReference(WebappAdmin.class.getName()));
+        beanBuilder.addPropertyValue("editorLocation", editorLocation.getLocation());
         BeanDefinition beanDefinition = beanBuilder.getBeanDefinition();
         BeanDefinitionHolder beanHolder = new BeanDefinitionHolder(beanDefinition, PustefixContextXMLRequestHandler.class.getName() + "#" + path);
         context.getObjectTreeElement().addObject(beanHolder);

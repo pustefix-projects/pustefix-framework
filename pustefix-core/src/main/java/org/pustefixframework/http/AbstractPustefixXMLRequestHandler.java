@@ -131,7 +131,6 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
     protected static final String PROP_SKIP_GETMODTIME_MU = "targetgenerator.skip_getmodtimemaybeupdate";
     protected static final String PROP_PROHIBITDEBUG      = "xmlserver.prohibitdebug";
     protected static final String PROP_PROHIBITINFO       = "xmlserver.prohibitinfo";
-    protected static final String PROP_EDITOR_URL         = "xmlserver.editor_url";
 
     public static final String PREPROCTIME = "__PREPROCTIME__";
     public static final String GETDOMTIME  = "__GETDOMTIME__";
@@ -153,6 +152,8 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
      * the HttpSession Session.
      */
     protected String servletname = null;
+    
+    protected String editorLocation;
     
     @Override
     protected ServletManagerConfig getServletManagerConfig() {
@@ -341,8 +342,10 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
             params.put(XSLPARAM_QUERYSTRING, preq.getQueryString());
 
         params.put(XSLPARAM_DEREFKEY, this.getAbstractXMLServletConfig().getProperties().getProperty(DerefRequestHandler.PROP_DEREFKEY));
-        params.put(XSLPARAM_EDITOR_URL, this.getAbstractXMLServletConfig().getProperties().getProperty(PROP_EDITOR_URL));
-
+        if (editorLocation != null) {
+            params.put(XSLPARAM_EDITOR_URL, editorLocation);
+        }
+        
         if (session != null) {
             params.put(XSLPARAM_SESSID, session.getAttribute(SessionHelper.SESSION_ID_URL));
             if (doreuse) {
@@ -987,4 +990,7 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
         this.testRecording = testRecording;
     }
     
+    public void setEditorLocation(String editorLocation) {
+        this.editorLocation = editorLocation;
+    }
 }

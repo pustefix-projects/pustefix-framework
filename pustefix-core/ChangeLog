@@ -1,3 +1,12 @@
+2009-03-20  Sebastian Marsching  <sebastian.marsching@1und1.de>
+
+	* src/main/java/org/pustefixframework/config/project/parser/EditorLocationParsingHandler.java: 
+	* src/main/java/org/pustefixframework/config/project/EditorLocation.java: 
+	* src/main/java/org/pustefixframework/config/project/parser/PustefixContextXMLRequestHandlerParsingHandler.java: 
+	* src/main/java/org/pustefixframework/http/AbstractPustefixXMLRequestHandler.java: 
+	* src/main/resources/META-INF/org/pustefixframework/config/project/parser/project-config.xml: 
+	Read editor location from project.xml instead of global property.
+
 2009-03-16  Martin Leidig  <mleidig@schlund.de>
 
 	* projects/core/xsl/include.xsl: Added support for deferring includes

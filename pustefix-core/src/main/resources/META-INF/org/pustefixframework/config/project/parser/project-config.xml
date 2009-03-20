@@ -58,6 +58,11 @@
   <handler class="org.pustefixframework.config.project.parser.PustefixContextDirectOutputRequestHandlerParsingHandler">
     <match>/p:project-config/p:application//p:direct-output-service</match>
   </handler>
+  
+  <!-- Saves path with editor location -->
+  <handler class="org.pustefixframework.config.project.parser.EditorLocationParsingHandler">
+    <match>//p:project-config/p:application/p:editor//p:location</match>
+  </handler>
 
   
   <handler id="org.pustefixframework.config.customization.WhenParsingHandler" class="org.pustefixframework.config.customization.CustomizationWhenParsingHandler">
