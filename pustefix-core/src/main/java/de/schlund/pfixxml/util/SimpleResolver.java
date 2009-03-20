@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
-package org.pustefixframework.http.internal;
+package de.schlund.pfixxml.util;
 
 import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
@@ -44,11 +44,19 @@ public class SimpleResolver implements URIResolver {
     }
 
     public Source resolve(String href, String base) throws TransformerException {
+        int idx;
+        String ref;
+        
         if (href.contains(":")) {
-            return defaultResolver.resolve(href, base);
+            ref = href;
         } else {
-            System.out.println("href: " + href + ", base: " + base);
-            return defaultResolver.resolve("jar:file:/home/mhm/Projects/pustefixframework/pustefix-samples/pustefix-sample1/target/pustefix-sample1-0.14.0-SNAPSHOT/WEB-INF/lib/pustefix-core-0.14.0-SNAPSHOT.jar!/build/" + href, base);
+            idx = base.lastIndexOf('/');
+            if (idx == -1) {
+                ref = href;
+            } else {
+                ref = base.substring(0, idx) + "/" + href;
+            }
         }
+        return defaultResolver.resolve(ref, base);
     }
 }

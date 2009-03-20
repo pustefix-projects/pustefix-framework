@@ -41,7 +41,6 @@ import javax.xml.transform.sax.TransformerHandler;
 
 import org.apache.log4j.Logger;
 import org.apache.log4j.xml.DOMConfigurator;
-import org.pustefixframework.http.internal.SimpleResolver;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -70,6 +69,7 @@ import de.schlund.pfixxml.resources.FileResource;
 import de.schlund.pfixxml.resources.Resource;
 import de.schlund.pfixxml.resources.ResourceUtil;
 import de.schlund.pfixxml.targets.cachestat.SPCacheStatistic;
+import de.schlund.pfixxml.util.SimpleResolver;
 import de.schlund.pfixxml.util.TransformerHandlerAdapter;
 import de.schlund.pfixxml.util.Xml;
 import de.schlund.pfixxml.util.XsltVersion;
