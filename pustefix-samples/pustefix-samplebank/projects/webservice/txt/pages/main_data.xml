@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?><include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
+
+  <part name="content">
+    <theme name="default">
+    
+      <div class="service_caption">Data service</div>
+         
+        <pfx:include href="webservice/txt/common.xml" part="protocol_select"/>
+        <pfx:include href="webservice/txt/common.xml" part="service_time"/>
+        <pfx:include href="webservice/txt/common.xml" part="service_error"/>
+        <pfx:include href="webservice/txt/common.xml" part="service_result"/>
+         
+        <div class="service_content"> 
+          <form action="" name="service_form">
+	
+			   <table class="service_formtable">
+				  <tr>
+					<td>Data:</td>
+					<td><textarea cols="40" id="data_result" readonly="readonly" rows="5" wrap="soft"/></td>
+					<td>
+						<input onclick="serviceCall('exchangeData',document.service_form.reqStrSize.value,document.service_form.resStrSize.value);" type="button" value="exchange string"/>
+						request string size:<input name="reqStrSize" size="6" type="text" value="10"/>
+						response string size:<input name="resStrSize" size="6" type="text" value="10"/>
+						<br/><br/>
+						<input onclick="serviceCall('exchangeDataArray',document.service_form.arrReqArrSize.value,document.service_form.arrReqStrSize.value,document.service_form.arrResArrSize.value,document.service_form.arrResStrSize.value);" type="button" value="exchange string array"/>
+						request array size:<input name="arrReqArrSize" size="6" type="text" value="10"/>
+						request string size:<input name="arrReqStrSize" size="6" type="text" value="10"/>
+						response array size:<input name="arrResArrSize" size="6" type="text" value="10"/>
+						response string size:<input name="arrResStrSize" size="6" type="text" value="10"/>
+					</td>
+				</tr>
+			</table>	
+		</form>
+		</div>
+		
+	
+      </theme>
+  </part>
+  
+</include_parts>
