@@ -180,7 +180,7 @@ public class FactoryInitWorker {
                 de.schlund.pfixxml.PathFactory.getInstance().init(docrootstr);
             }
     
-            String confname = "common/conf/factory.xml";
+            String confname = "conf/factory.xml";
             if (confname != null) {
                 FileResource confFile = ResourceUtil.getFileResourceFromDocroot(confname);
                 try {

@@ -22,7 +22,7 @@ import de.schlund.pfixxml.util.Xml;
 
 public class TargetGeneratorTest extends TestCase {
 
-    private static final File DOCROOT = new File("projects").getAbsoluteFile();
+    private static final File DOCROOT = new File("src/main/pustefix").getAbsoluteFile();
 
     static {
         if(GlobalConfig.getDocroot()==null) GlobalConfigurator.setDocroot(DOCROOT.getAbsolutePath());
@@ -102,7 +102,7 @@ public class TargetGeneratorTest extends TestCase {
         File tmpCacheDir = new File("projects/.cache_tmp");
         if (cacheDir.exists()) cacheDir.renameTo(tmpCacheDir);
         try {
-            FileResource res = ResourceUtil.getFileResource(new File("projects/sample1/conf/depend.xml").toURI());
+            FileResource res = ResourceUtil.getFileResource(new File("src/main/pustefix/conf/depend.xml").toURI());
             TargetGenerator generator = new TargetGenerator(res);
             generator.setIsGetModTimeMaybeUpdateSkipped(true);
             TreeSet<Target> topTargets = generator.getPageTargetTree().getToplevelTargets();

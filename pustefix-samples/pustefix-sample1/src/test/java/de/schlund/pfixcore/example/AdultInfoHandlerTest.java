@@ -22,7 +22,7 @@ public class AdultInfoHandlerTest {
     @Before
     public void setUp() throws Exception {
         if (GlobalConfig.getDocroot() == null) {
-            GlobalConfigurator.setDocroot((new File("projects").getAbsolutePath()));
+            GlobalConfigurator.setDocroot((new File("src/main/pustefix").getAbsolutePath()));
         }
     }
     

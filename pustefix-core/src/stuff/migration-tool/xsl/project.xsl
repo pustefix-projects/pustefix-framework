@@ -54,7 +54,7 @@
   <xsl:template match="/projects/project/servlet[@name='init']/propfile" priority="2">
     <xsl:choose>
       <xsl:when test="text() = 'common/conf/factory.prop'">
-        <propfile>common/conf/factory.xml</propfile>
+        <propfile>conf/factory.xml</propfile>
       </xsl:when>
       <xsl:otherwise>
         <xsl:message>

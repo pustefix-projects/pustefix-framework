@@ -272,7 +272,7 @@
     <servlet name="init" autostartup="true">
       <active>true</active>
       <class>de.schlund.pfixxml.FactoryInitServlet</class>
-      <propfile>common/conf/factory.prop</propfile>
+      <propfile>conf/factory.prop</propfile>
       <init-param>
         <param-name>pustefix.docroot</param-name>
         <param-value>/usr/home/mhm/src/projects/core-RED/example/</param-value>
@@ -288,7 +288,7 @@
   
   
   <common>
-    <commonpropfile>common/conf/pustefix.prop</commonpropfile>
+    <commonpropfile>conf/pustefix.prop</commonpropfile>
     <documentation>
       <doc_file>core/xsl/navigation.xsl.in</doc_file>
       <doc_file>core/xsl/utils.xsl.in</doc_file>
@@ -311,9 +311,7 @@
     </tomcat>
     <apache>
       <apachelogdir>/usr/home/mhm/src/projects/core-RED/example/servletconf/log</apachelogdir>
-      <passthrough>common/img</passthrough>
-      <passthrough>core/img</passthrough>
-      <passthrough>core/script</passthrough>
+      <passthrough>img</passthrough>
     </apache>
   </common>
 </projects>

@@ -60,7 +60,7 @@ public class Cleanup{
                     String part = clean.getAttribute("part");
                     String theme = clean.getAttribute("theme");
                     
-                    if (!(path.indexOf("projects/common/txt") > 0) && !(path.indexOf("projects/core/txt") > 0)) {
+                    if (!(path.indexOf("projects/core/txt") > 0)) {
                         Document doc = (Document) changed.get(path);
                         if (doc == null && (type.equals("part") || type.equals("theme"))) {
                             IncludeDocument incdoc = IncludeDocumentFactory.getInstance().

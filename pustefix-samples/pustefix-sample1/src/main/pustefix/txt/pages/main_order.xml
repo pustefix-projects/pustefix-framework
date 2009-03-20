@@ -29,7 +29,7 @@
               </tr>
             </table>
           </pfx:forminput>
-          <br/>[<pfx:image themed-img="test.gif" themed-path="sample1/img"/>]
+          <br/>[<pfx:image themed-img="test.gif" themed-path="img"/>]
         </center>
       </theme>
   </part>
@@ -71,11 +71,11 @@
             <pfx:checkfield name="shirt.Feature"><td class="{$pfx_class}">Features:</td></pfx:checkfield>
             <td>
               <pfx:xinp default="true" name="shirt.Feature" type="check" value="0"/>
-              <pfx:include part="tshirt_feature_0" href="sample1/dyntxt/order_features.xml"/><br/>
+              <pfx:include part="tshirt_feature_0" href="dyntxt/order_features.xml"/><br/>
               <pfx:xinp default="true" name="shirt.Feature" type="check" value="1"/>
-              <pfx:include part="tshirt_feature_1" href="sample1/dyntxt/order_features.xml"/><br/>
+              <pfx:include part="tshirt_feature_1" href="dyntxt/order_features.xml"/><br/>
               <pfx:xinp default="true" name="shirt.Feature" type="check" value="2"/>
-              <pfx:include part="tshirt_feature_2" href="sample1/dyntxt/order_features.xml"/><br/>
+              <pfx:include part="tshirt_feature_2" href="dyntxt/order_features.xml"/><br/>
               <pfx:xinp name="shirt.Feature" type="check" value="3"/>[=&gt; Error]
             </td>
           </tr>
@@ -152,7 +152,7 @@
         <ixsl:if test="/formresult/togglepic[@show = 'true']">
           <tr>
             <td>
-              <pfx:image src="/sample1/img/test.gif"/>
+              <pfx:image src="/img/test.gif"/>
             </td>
           </tr>
         </ixsl:if>
@@ -195,11 +195,11 @@
             <pfx:checkfield name="trouser.Feature"><td class="{$pfx_class}">Features:</td></pfx:checkfield>
             <td>
               <pfx:xinp name="trouser.Feature" type="check" value="0"/>
-              <pfx:include part="trouser_feature_0" href="sample1/dyntxt/order_features.xml"/><br/>
+              <pfx:include part="trouser_feature_0" href="dyntxt/order_features.xml"/><br/>
               <pfx:xinp name="trouser.Feature" type="check" value="1"/>
-              <pfx:include part="trouser_feature_1" href="sample1/dyntxt/order_features.xml"/><br/>
+              <pfx:include part="trouser_feature_1" href="dyntxt/order_features.xml"/><br/>
               <pfx:xinp name="trouser.Feature" type="check" value="2"/>
-              <pfx:include part="trouser_feature_2" href="sample1/dyntxt/order_features.xml"/><br/>
+              <pfx:include part="trouser_feature_2" href="dyntxt/order_features.xml"/><br/>
             </td>
           </tr>
           <errormsg name="trouser.Feature"/>

@@ -10,7 +10,7 @@
     <page name="IncludeConfPage" handler="/xml/config" />
   </fr:navigation>
   <fr:targets>
-    <standardpage name="IncludeConfPage" xml="sample1/xml/one_frame_navi.xml" />
+    <standardpage name="IncludeConfPage" xml="xml/one_frame_navi.xml" />
   </fr:targets>
   <fr:pagerequests>
     <pr:pagerequest name="IncludeConfPage" />

@@ -43,13 +43,13 @@
   
   <bean id="__pfx_contexthandler" class="org.pustefixframework.http.PustefixContextXMLRequestHandler">
     <property name="commonPropFile">
-      <value>pfixroot:/common/conf/pustefix.xml</value>
+      <value>pfixroot:/conf/pustefix.xml</value>
     </property>
     <property name="propFile">
-      <value>pfixroot:/sample1/conf/config.conf.xml</value>
+      <value>pfixroot:/conf/config.conf.xml</value>
     </property>
     <property name="dependFile">
-      <value>pfixroot:/sample1/conf/depend.xml</value>
+      <value>pfixroot:/conf/depend.xml</value>
     </property>
     <property name="handlerURI">
       <value>/xml/config/**</value>
@@ -60,10 +60,10 @@
   
   <bean id="__pfx_directhandler" class="org.pustefixframework.http.PustefixContextDirectOutputRequestHandler">
     <property name="commonPropFile">
-      <value>pfixroot:/common/conf/pustefix.xml</value>
+      <value>pfixroot:/conf/pustefix.xml</value>
     </property>
     <property name="propFile">
-      <value>pfixroot:/sample1/conf/direct.conf.xml</value>
+      <value>pfixroot:/conf/direct.conf.xml</value>
     </property>
     <property name="handlerURI">
       <value>/xml/download/**</value>
@@ -72,7 +72,7 @@
   
   <bean id="__pfx_derefhandler" class="org.pustefixframework.http.dereferer.DerefRequestHandler">
     <property name="commonPropFile">
-      <value>pfixroot:/common/conf/pustefix.xml</value>
+      <value>pfixroot:/conf/pustefix.xml</value>
     </property>
     <property name="handlerURI">
       <value>/xml/deref/**</value>

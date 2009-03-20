@@ -12,7 +12,7 @@
             <link href="{$__contextpath}/style.css" media="all" rel="stylesheet" type="text/css"/>
           </head>
           <body>
-            <pfx:include href="sample1/txt/navigation.xml" part="top"/>
+            <pfx:include href="txt/navigation.xml" part="top"/>
           </body>
         </html>
       </pfx:frame>
@@ -22,7 +22,7 @@
             <link href="{$__contextpath}/style.css" media="all" rel="stylesheet" type="text/css"/>
           </head>
           <body>
-            <pfx:maincontent path="sample1/txt/pages" prefix="main_" part="content"/>
+            <pfx:maincontent path="txt/pages" prefix="main_" part="content"/>
             <pfx:editconsole/>
           </body>
         </html>

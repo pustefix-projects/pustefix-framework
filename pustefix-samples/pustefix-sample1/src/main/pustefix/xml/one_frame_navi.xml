@@ -7,10 +7,10 @@
     </head>
     <body>
       <div style="border-bottom: 1px solid black;">
-        <pfx:include href="sample1/txt/navigation.xml" part="top"/>
+        <pfx:include href="txt/navigation.xml" part="top"/>
       </div>
       <br/>
-      <pfx:maincontent part="content" path="sample1/txt/pages" prefix="main_"/>
+      <pfx:maincontent part="content" path="txt/pages" prefix="main_"/>
       <pfx:editconsole/>
     </body>
   </html>

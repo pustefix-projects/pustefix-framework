@@ -3,6 +3,7 @@ package de.schlund.pfixcore.example;
 import javax.servlet.ServletContext;
 
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.pustefixframework.http.PustefixContextXMLRequestHandler;
 import org.pustefixframework.test.PustefixWebApplicationContextLoader;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +17,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 
 import de.schlund.pfixxml.serverutil.SessionHelper;
 
-@ContextConfiguration(loader=PustefixWebApplicationContextLoader.class,locations={"file:projects/sample1/conf/project.xml","file:projects/sample1/conf/spring.xml"})
+@ContextConfiguration(loader=PustefixWebApplicationContextLoader.class,locations={"file:src/main/pustefix/conf/project.xml","file:src/main/pustefix/conf/spring.xml"})
 public class HomePageTest extends AbstractJUnit38SpringContextTests {
     
     @Autowired

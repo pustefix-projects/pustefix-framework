@@ -26,7 +26,7 @@
         </pfx:button>
       </center>
       <hr/>
-      <pfx:include href="sample1/txt/pages/main_home.xml" part="env_info"/>
+      <pfx:include href="txt/pages/main_home.xml" part="env_info"/>
     </theme>
   </part>
 

@@ -40,8 +40,8 @@
     <!-- </end> -->
   </interceptors>
 
-  <scriptedflow name="forceadult" file="sample1/conf/scriptedflow/forceadult.script.xml" />
-  <scriptedflow name="ordershirt" file="sample1/conf/scriptedflow/ordershirt.script.xml" />
+  <scriptedflow name="forceadult" file="conf/scriptedflow/forceadult.script.xml" />
+  <scriptedflow name="ordershirt" file="conf/scriptedflow/ordershirt.script.xml" />
 
   <!-- <pageflow name="OrderFlow" stopnext="true"> -->
   <pageflow name="OrderFlow" final="home">
@@ -216,7 +216,7 @@
   </pagerequest>
 
   <pagerequest name="scriptingstate">
-    <state class="script:sample1/script/ScriptingState.bsh" />
+    <state class="script:script/ScriptingState.bsh" />
     <output>
       <resource node="tshirt" class="de.schlund.pfixcore.example.ContextTShirt" />
     </output>
@@ -242,11 +242,11 @@
   </pagerequest>
   
 
-  <config-include file="sample1/conf/fragments.xml" section="pagerequests" />
+  <config-include file="conf/fragments.xml" section="pagerequests" />
 
   <!-- <properties> -->
     <!-- *** some additional properties needed for this application *** -->
-    <!-- <prop name="interfacelogging">sample1/log</prop> -->
+    <!-- <prop name="interfacelogging">log</prop> -->
   <!-- </properties> -->
 
 </context-xml-service-config>

@@ -27,11 +27,11 @@ public class DerefRequestHandlerParsingHandler implements ParsingHandler {
     public void handleNode(HandlerContext context) throws ParserException {
         final Properties properties = new Properties(System.getProperties());
         try {
-            PropertyFileReader.read(ResourceUtil.getFileResourceFromDocroot("common/conf/pustefix.xml"), properties);
+            PropertyFileReader.read(ResourceUtil.getFileResourceFromDocroot("conf/pustefix.xml"), properties);
         } catch (ParserException e) {
-            throw new ParserException("Error while reading common/conf/pustefix.xml", e);
+            throw new ParserException("Error while reading conf/pustefix.xml", e);
         } catch (IOException e) {
-            throw new ParserException("Error while reading common/conf/pustefix.xml", e);
+            throw new ParserException("Error while reading conf/pustefix.xml", e);
         }
         ServletManagerConfig config = new ServletManagerConfig() {
 

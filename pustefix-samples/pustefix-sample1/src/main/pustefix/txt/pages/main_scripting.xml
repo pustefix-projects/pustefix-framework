@@ -6,7 +6,7 @@
           <h3>Scripting Version of T-Shirt Ordering</h3>
           <pagemsgs/>
           <pfx:forminput>
-            <pfx:include href="sample1/txt/pages/main_order.xml" part="shirt"/>
+            <pfx:include href="txt/pages/main_order.xml" part="shirt"/>
             <pfx:xinp type="submit" value="Submit"/>
           </pfx:forminput>
         </center>

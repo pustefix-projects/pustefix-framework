@@ -3,7 +3,7 @@
            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
            xsi:schemaLocation="http://pustefix.sourceforge.net/interfacewrapper200401 http://pustefix.sourceforge.net/interfacewrapper200401.xsd">
            
-  <ihandler class="script:sample1/script/ScriptingTShirt.js"/>
+  <ihandler class="script:script/ScriptingTShirt.js"/>
   
   <param name="Size" type="java.lang.String">
     <precheck class="de.schlund.pfixcore.generator.prechecks.RegexpCheck">

@@ -9,7 +9,7 @@
     The information shown below is included via &lt;pfx:include&gt;
     during the generation of the included <b>stylesheet</b>:<br/>
     <hr/>
-    <pfx:include href="sample1/txt/navigation.xml" part="test"/>
+    <pfx:include href="txt/navigation.xml" part="test"/>
     <hr/>
   </xsl:template>
   

@@ -9,7 +9,7 @@
     <!-- <force-serial-requests>true</force-serial-requests> -->
   </global-config>
   
-  <config-include file="sample1/conf/fragments.xml" refid="directtest" />
+  <config-include file="conf/fragments.xml" refid="directtest" />
   
   <directoutputpagerequest name="install">
     <directoutputstate class="de.schlund.pfixcore.workflow.app.FileDownloadDOState" />
