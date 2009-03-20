@@ -16,5 +16,6 @@
   <name>Pustefix Samples</name>
   <modules>
     <module>pustefix-sample1</module>
+    <module>pustefix-samplebank</module>
   </modules>  
 </project>
