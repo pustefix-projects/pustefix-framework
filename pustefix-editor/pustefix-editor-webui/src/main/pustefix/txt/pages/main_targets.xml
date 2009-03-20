@@ -29,14 +29,14 @@
               <pfx:include part="displayauxfiles_of_target"/>
             </ixsl:if>
             <ixsl:for-each select="/formresult/targets/currenttarget/pages">
-              <pfx:include href="core/editor2/txt/util.xml" part="displayaffectedpages"/>
+              <pfx:include href="txt/util.xml" part="displayaffectedpages"/>
             </ixsl:for-each>
             <displayauxfiles_of_target/>
             <ixsl:for-each select="/formresult/targets/currenttarget/includes">
-              <pfx:include href="core/editor2/txt/util.xml" part="displayincludes"/>
+              <pfx:include href="txt/util.xml" part="displayincludes"/>
             </ixsl:for-each>
             <ixsl:for-each select="/formresult/targets/currenttarget/images">
-              <pfx:include href="core/editor2/txt/util.xml" part="displayimages"/>
+              <pfx:include href="txt/util.xml" part="displayimages"/>
             </ixsl:for-each>
             <div> 
               <table><tr><td class="editor_main_emph">Content:</td></tr></table>

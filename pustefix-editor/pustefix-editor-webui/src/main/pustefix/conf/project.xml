@@ -22,7 +22,7 @@
   </editor>
   
   <xml-generator>
-    <config-file>pfixroot:/modules/editor2/conf/depend.xml</config-file>
+    <config-file>pfixroot:/conf/depend.xml</config-file>
   </xml-generator>
   
   <http-server>
@@ -62,16 +62,16 @@
   
   <application>
     
-    <docroot-path>pfixroot:/modules/editor2/docroot</docroot-path>
+    <docroot-path>pfixroot:/docroot</docroot-path>
     <default-path>/xml/edit</default-path>
     
     <context-xml-service>
       <path>/xml/edit</path>
-      <config-file>pfixroot:/modules/editor2/conf/edit.conf.xml</config-file>
+      <config-file>pfixroot:/conf/edit.conf.xml</config-file>
     </context-xml-service>
     
     <static>
-      <path>modules/editor2/img</path>
+      <path>img</path>
     </static>
     
     <web-xml>

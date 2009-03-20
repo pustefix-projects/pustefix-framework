@@ -55,7 +55,7 @@
         <ixsl:when test="/formresult/dynincludes/currentinclude">
           <pfx:include part="displaycurrentinclude"/>
           <ixsl:for-each select="/formresult/dynincludes">
-            <pfx:include href="core/editor2/txt/util_includes.xml" part="displayincludedetails"/>
+            <pfx:include href="txt/util_includes.xml" part="displayincludedetails"/>
           </ixsl:for-each>
           <div>
             <table><tr><td class="editor_main_emph">Content of whole part:</td></tr></table>
@@ -87,7 +87,7 @@
         var pfx_editor_pagename = "dynincludes";
       </pfx:script>
       <ixsl:for-each select="/formresult/dynincludes">
-        <pfx:include href="core/editor2/txt/util_includes.xml" part="displayallincludes"/>
+        <pfx:include href="txt/util_includes.xml" part="displayallincludes"/>
       </ixsl:for-each>
     </theme>
   </part>

@@ -90,7 +90,7 @@
         <table class="editor_error" width="100%">
           <tr>
             <td>
-              <pfx:image src="/core/editor2/img/error.png"/>
+              <pfx:image src="img/error.png"/>
             </td>
             <td>
               Include files residing directly in the root directory
@@ -109,7 +109,7 @@
           <pfx:include part="uploadinclude"/>
         </ixsl:when>
         <ixsl:otherwise>
-          <pfx:include href="core/editor2/txt/util.xml" part="perm_denied_usedby_other_prods"/>
+          <pfx:include href="txt/util.xml" part="perm_denied_usedby_other_prods"/>
         </ixsl:otherwise>
       </ixsl:choose>
       <pfx:include part="handlethemebranches"/>

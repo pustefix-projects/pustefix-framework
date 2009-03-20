@@ -33,4 +33,8 @@
   <bean id="sessioninfo" class="org.pustefixframework.editor.webui.resources.util.SessionInfoStore">
   </bean>
   
+  <bean id="projectPool" class="de.schlund.pfixcore.editor2.core.spring.ProjectPoolImpl">
+  
+  </bean>
+  
 </beans>

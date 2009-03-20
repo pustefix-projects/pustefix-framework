@@ -40,7 +40,7 @@
           <pfx:include part="displaycurrentimage"/>
           <pfx:include part="displayimagedetails"/>
           <ixsl:for-each select="/formresult/images/currentimage/pages">
-            <pfx:include href="core/editor2/txt/util.xml" part="displayaffectedpages"/>
+            <pfx:include href="txt/util.xml" part="displayaffectedpages"/>
           </ixsl:for-each>
         </ixsl:when>
         <ixsl:otherwise>
@@ -124,7 +124,7 @@
           <table class="editor_error" width="100%">
             <tr>
               <td>
-                <pfx:image src="/core/editor2/img/error.png"/>
+                <pfx:image src="/img/error.png"/>
               </td>
               <td>
                 Images residing directly in the root directory
@@ -135,7 +135,7 @@
         </ixsl:if>
         <ixsl:choose>
           <ixsl:when test="/formresult/images/currentimage/@mayEdit = 'true'">
-            <table background="/core/editor2/img/alpha.gif" cellspacing="0" class="editor_box_alpha" width="100%">
+            <table background="/img/alpha.gif" cellspacing="0" class="editor_box_alpha" width="100%">
               <tr>
                 <td align="center" colspan="3" style="padding-top: 10px; padding-bottom: 10px;">
                   <ixsl:choose>
@@ -154,7 +154,7 @@
             </table>
           </ixsl:when>
           <ixsl:otherwise>
-            <pfx:include href="core/editor2/txt/util.xml" part="perm_denied_usedby_other_prods"/>
+            <pfx:include href="txt/util.xml" part="perm_denied_usedby_other_prods"/>
           </ixsl:otherwise>
         </ixsl:choose>
       </pfx:forminput>

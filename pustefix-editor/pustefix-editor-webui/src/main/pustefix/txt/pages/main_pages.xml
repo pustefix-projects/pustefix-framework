@@ -24,10 +24,10 @@
             <pfx:include part="displaycurrentpage"/>
             <pfx:include part="displaytargets"/>
             <ixsl:for-each select="/formresult/pages/currentpage/includes">
-              <pfx:include href="core/editor2/txt/util.xml" part="displayincludes"/>
+              <pfx:include href="txt/util.xml" part="displayincludes"/>
             </ixsl:for-each>
             <ixsl:for-each select="/formresult/pages/currentpage/images">
-              <pfx:include href="core/editor2/txt/util.xml" part="displayimages"/>
+              <pfx:include href="txt/util.xml" part="displayimages"/>
             </ixsl:for-each>
           </ixsl:when>
           <ixsl:otherwise>

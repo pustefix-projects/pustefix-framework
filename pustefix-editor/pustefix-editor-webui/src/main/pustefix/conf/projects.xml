@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<global-config xmlns="http://www.pustefix-framework.org/2008/namespace/project-config">
+
+  <application>
+    <static>
+      <path>core/img</path>
+      <path>core/script</path>
+    </static>
+  </application>
+  
+</global-config>

@@ -16,16 +16,16 @@
         <ixsl:when test="/formresult/includes/currentinclude">
           <pfx:include part="displaycurrentinclude"/>
           <ixsl:for-each select="/formresult/includes">
-            <pfx:include href="core/editor2/txt/util_includes.xml" part="displayincludedetails"/>
+            <pfx:include href="txt/util_includes.xml" part="displayincludedetails"/>
           </ixsl:for-each>
           <ixsl:for-each select="/formresult/includes/currentinclude/pages">
-            <pfx:include href="core/editor2/txt/util.xml" part="displayaffectedpages"/>
+            <pfx:include href="txt/util.xml" part="displayaffectedpages"/>
           </ixsl:for-each>
           <ixsl:for-each select="/formresult/includes/currentinclude/includes">
-            <pfx:include href="core/editor2/txt/util.xml" part="displayincludes"/>
+            <pfx:include href="txt/util.xml" part="displayincludes"/>
           </ixsl:for-each>
           <ixsl:for-each select="/formresult/includes/currentinclude/images">
-            <pfx:include href="core/editor2/txt/util.xml" part="displayimages"/>
+            <pfx:include href="txt/util.xml" part="displayimages"/>
           </ixsl:for-each>
           <div>
             <table><tr><td class="editor_main_emph">Content of whole part:</td></tr></table>
@@ -75,7 +75,7 @@
         var pfx_editor_pagename = "includes";
       </pfx:script>
       <ixsl:for-each select="/formresult/includes">
-        <pfx:include href="core/editor2/txt/util_includes.xml" part="displayallincludes"/>
+        <pfx:include href="txt/util_includes.xml" part="displayallincludes"/>
       </ixsl:for-each>
     </theme>
   </part>

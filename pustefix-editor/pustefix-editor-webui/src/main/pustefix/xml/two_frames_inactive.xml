@@ -9,12 +9,12 @@
 	<head>
           <style type="text/css">
             <pfx:include href="core/txt/styles.xml" part="standard"/>
-            <pfx:include href="core/editor2/txt/styles.xml" part="standard"/>
+            <pfx:include href="txt/styles.xml" part="standard"/>
 	  </style>
         </head>
 	  <body class="navi">
     <div class="topbar">
-      <pfx:maincontent path="core/editor2/txt/pages" prefix="main_" part="logoutbutton"/>
+      <pfx:maincontent path="txt/pages" prefix="main_" part="logoutbutton"/>
     </div>
 	</body>
       </html>
@@ -24,7 +24,7 @@
 	<head>
           <style type="text/css">
             <pfx:include href="core/txt/styles.xml" part="standard"/>
-            <pfx:include href="core/editor2/txt/styles.xml" part="standard"/>
+            <pfx:include href="txt/styles.xml" part="standard"/>
           </style>
           <pfx:script>
             function check_frameset() {
@@ -38,7 +38,7 @@
           </pfx:script>
         </head>
 	<body onload="check_frameset()">
-	  <pfx:maincontent path="core/editor2/txt/pages" prefix="main_" part="content"/>
+	  <pfx:maincontent path="txt/pages" prefix="main_" part="content"/>
 	</body>
       </html>
     </pfx:frame>
