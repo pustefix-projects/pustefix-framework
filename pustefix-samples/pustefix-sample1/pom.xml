@@ -194,7 +194,6 @@ __antprop_standalone.tomcat=${standalone.tomcat}
               <docRoot>${basedir}</docRoot>
               <includes>
                 <include>src/main/pustefix/dyntxt/statuscodeinfo.xml</include>
-                <include>projects/samplebank/dyntxt/statuscodeinfo.xml</include>
                 <include>projects/testsuite/dyntxt/statuscodeinfo.xml</include>
               </includes>
             </configuration>
