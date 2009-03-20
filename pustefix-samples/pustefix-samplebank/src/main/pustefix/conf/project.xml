@@ -15,7 +15,7 @@
   <authadmin/>
   
   <xml-generator>
-    <config-file>pfixroot:/samplebank/conf/depend.xml</config-file>
+    <config-file>pfixroot:/conf/depend.xml</config-file>
   </xml-generator>
   
   <http-server>
@@ -31,16 +31,16 @@
   
   <application>
     
-    <docroot-path>pfixroot:/samplebank/htdocs</docroot-path>
+    <docroot-path>pfixroot:/htdocs</docroot-path>
     <default-path>/xml/config</default-path>
     
     <context-xml-service>
       <path>/xml/config</path>
-      <config-file>pfixroot:/samplebank/conf/config.conf.xml</config-file>
+      <config-file>pfixroot:/conf/config.conf.xml</config-file>
     </context-xml-service>
     
     <static>
-      <path>samplebank/img</path>
+      <path>img</path>
     </static>
     
   </application>

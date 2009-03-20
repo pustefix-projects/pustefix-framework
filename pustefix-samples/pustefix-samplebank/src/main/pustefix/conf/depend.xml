@@ -19,13 +19,13 @@
   <standardmaster/>
 
   <standardmetatags>
-    <include stylesheet="samplebank/xsl/metatags.xsl"/>
+    <include stylesheet="xsl/metatags.xsl"/>
   </standardmetatags>
   
-  <standardpage name="home" xml="samplebank/xml/one_frame.xml"/>
-  <standardpage name="login" xml="samplebank/xml/one_frame.xml"/>
-  <standardpage name="accountoverview" xml="samplebank/xml/one_frame.xml"/>
-  <standardpage name="accountdetails" xml="samplebank/xml/one_frame.xml"/>
-  <standardpage name="test" xml="samplebank/xml/one_frame.xml"/>
+  <standardpage name="home" xml="xml/one_frame.xml"/>
+  <standardpage name="login" xml="xml/one_frame.xml"/>
+  <standardpage name="accountoverview" xml="xml/one_frame.xml"/>
+  <standardpage name="accountdetails" xml="xml/one_frame.xml"/>
+  <standardpage name="test" xml="xml/one_frame.xml"/>
 
 </make>
