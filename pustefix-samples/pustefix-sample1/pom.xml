@@ -118,21 +118,21 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
             <phase>generate-resources</phase>
             <configuration>
               <tasks>
-                <mkdir dir="${basedir}/target/classes/META-INF"/>
                 <taskdef
                   name="pfx-buildtime-props"
                   classname="de.schlund.pfixxml.config.BuildTimePropTask"
                   classpathref="maven.compile.classpath"
                 />
+                <mkdir dir="${basedir}/target/classes"/>
                 <pfx-buildtime-props
-                  file="${basedir}/projects/common/conf/buildtime.prop"
+                  file="${basedir}/target/classes/buildtime.prop"
                   mode="${makemode}"
                   uid="uid"
                   machine="machine"
                   fqdn="fqdn"
                   docroot="docroot"
                  />
-                <echo append="true" file="${basedir}/projects/common/conf/buildtime.prop">
+                <echo append="true" file="${basedir}/target/classes/buildtime.prop">
 __antprop_makemode=${makemode}
 __antprop_standalone.tomcat=${standalone.tomcat}
                 </echo>
@@ -211,11 +211,6 @@ __antprop_standalone.tomcat=${standalone.tomcat}
             </webResource>
             <webResource>
               <directory>${basedir}/src/main/pustefix</directory>
-              <targetPath>WEB-INF/pfixroot/common</targetPath>
-              <filtering>false</filtering>
-            </webResource>
-            <webResource>
-              <directory>${basedir}/projects/common</directory>
               <targetPath>WEB-INF/pfixroot/common</targetPath>
               <filtering>false</filtering>
             </webResource>
