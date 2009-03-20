@@ -27,24 +27,24 @@
   <standardmaster/>
   <standardmetatags/>
   
-  <standardpage name="Start" xml="testsuite/xml/main.xml"/>
+  <standardpage name="Start" xml="xml/main.xml"/>
   
-  <standardpage name="Test1" xml="testsuite/xml/test.xml"/>
+  <standardpage name="Test1" xml="xml/test.xml"/>
   
-  <standardpage name="Test2" xml="testsuite/xml/test.xml"/>
-  <standardpage name="Test2Failed" xml="testsuite/xml/test.xml"/>
-  <standardpage name="Test2Succeeded" xml="testsuite/xml/test.xml"/>
+  <standardpage name="Test2" xml="xml/test.xml"/>
+  <standardpage name="Test2Failed" xml="xml/test.xml"/>
+  <standardpage name="Test2Succeeded" xml="xml/test.xml"/>
   
-  <standardpage name="Test3" xml="testsuite/xml/test.xml"/>
-  <standardpage name="Test3SetVariant" xml="testsuite/xml/test.xml"/>
-  <standardpage name="Test3Default" xml="testsuite/xml/test.xml"/>
-  <standardpage name="Test3VariantA" xml="testsuite/xml/test.xml"/>
+  <standardpage name="Test3" xml="xml/test.xml"/>
+  <standardpage name="Test3SetVariant" xml="xml/test.xml"/>
+  <standardpage name="Test3Default" xml="xml/test.xml"/>
+  <standardpage name="Test3VariantA" xml="xml/test.xml"/>
   
-  <standardpage name="Test4" xml="testsuite/xml/test.xml"/>
-  <standardpage name="Test4Failed" xml="testsuite/xml/test.xml"/>
-  <standardpage name="Test4Succeeded" xml="testsuite/xml/test.xml"/>
+  <standardpage name="Test4" xml="xml/test.xml"/>
+  <standardpage name="Test4Failed" xml="xml/test.xml"/>
+  <standardpage name="Test4Succeeded" xml="xml/test.xml"/>
   
-  <standardpage name="Test5" xml="testsuite/xml/test.xml"/>
-  <standardpage name="Test5Form" xml="testsuite/xml/test.xml"/>
-  <standardpage name="Test5Failed" xml="testsuite/xml/test.xml"/>
+  <standardpage name="Test5" xml="xml/test.xml"/>
+  <standardpage name="Test5Form" xml="test.xml"/>
+  <standardpage name="Test5Failed" xml="xml/test.xml"/>
 </make>

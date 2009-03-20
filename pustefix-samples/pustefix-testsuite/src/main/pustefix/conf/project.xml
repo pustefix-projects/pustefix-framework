@@ -13,7 +13,7 @@
   </editor>
   
   <xml-generator>
-    <config-file>pfixroot:/testsuite/conf/depend.xml</config-file>
+    <config-file>pfixroot:/conf/depend.xml</config-file>
   </xml-generator>
   
   <http-server>
@@ -29,12 +29,12 @@
   
   <application>
     
-    <docroot-path>pfixroot:/testsuite/htdocs</docroot-path>
+    <docroot-path>pfixroot:/htdocs</docroot-path>
     <default-path>/xml/main</default-path>
     
     <context-xml-service>
       <path>/xml/main</path>
-      <config-file>pfixroot:/testsuite/conf/main.conf.xml</config-file>
+      <config-file>pfixroot:/conf/main.conf.xml</config-file>
     </context-xml-service>
     
   </application>
