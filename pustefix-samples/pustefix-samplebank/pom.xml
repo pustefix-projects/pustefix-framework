@@ -13,11 +13,11 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
   </properties>
   
   <groupId>org.pustefixframework</groupId>
-  <artifactId>pustefix-sample1</artifactId>
+  <artifactId>pustefix-samplebank</artifactId>
   <version>0.14.0-SNAPSHOT</version>
   <packaging>war</packaging>
 
-  <name>Pustefix Sample 1</name>
+  <name>Pustefix Sample Bank</name>
 
   <dependencies>
     <dependency>
@@ -194,8 +194,6 @@ __antprop_standalone.tomcat=${standalone.tomcat}
               <docRoot>${basedir}</docRoot>
               <includes>
                 <include>src/main/pustefix/dyntxt/statuscodeinfo.xml</include>
-                <include>projects/samplebank/dyntxt/statuscodeinfo.xml</include>
-                <include>projects/testsuite/dyntxt/statuscodeinfo.xml</include>
               </includes>
             </configuration>
             <id>statuscodes</id>
