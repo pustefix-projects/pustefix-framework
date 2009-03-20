@@ -136,7 +136,6 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
                  <mkdir dir="${dir.extract.modules}"/>
                  <!--  TODO: basedir: wo kommen die modules her -->
                  <pfx-unpack-jar-module srcdir="${basedir}" extracttodir="${dir.extract.modules}" includes="${basedir}" />
-                 <chmod perm="444"><fileset dir="${dir.extract.modules}" includes="**/*"/></chmod>
                  <touch file="${dir.extract.modules}/TIMESTAMP"/>
                  <!--  TODO:
                  <foreach param="tmp.modules.buildxml" target="extract-modules-call-ant" inheritall="true" inheritrefs="true">
