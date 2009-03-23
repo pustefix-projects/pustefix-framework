@@ -1,5 +1,5 @@
 <project>
-  <target name="generate" depends="apt, pfixroot, webxml, modules" />
+  <target name="generate" depends="apt, pfixroot, webxml, modules, buildtimeprops" />
 
   <target name="apt">
   	<echo>cp: ${maven.plugin.classpath}"</echo>
@@ -65,5 +65,26 @@
     </foreach>
     <antcall target="scmerge-modules"/>
      -->
+  </target>
+  <target name="buildtimeprops">
+    <taskdef
+      name="pfx-buildtime-props"
+      classname="de.schlund.pfixxml.config.BuildTimePropTask"
+      classpathref="maven.plugin.classpath"
+    />
+    <mkdir dir="${basedir}/target/classes"/>
+    <pfx-buildtime-props
+      file="${basedir}/target/classes/buildtime.prop"
+      mode="${makemode}"
+      uid="uid"
+      machine="machine"
+      fqdn="fqdn"
+      docroot="docroot"
+     />
+    <echo append="true" file="${basedir}/target/classes/buildtime.prop">
+__antprop_makemode=${makemode}
+__antprop_standalone.tomcat=${standalone.tomcat}
+    </echo>
+
   </target>
 </project>

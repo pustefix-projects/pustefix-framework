@@ -20,6 +20,24 @@
         </parameter>
 
         <parameter>
+          <name>standalone.tomcat</name> 
+          <property>standalone.tomcat</property>
+          <required>true</required>
+          <readonly>true</readonly>
+          <type>java.lang.String</type>
+          <defaultValue>standalone.tomcat</defaultValue>
+        </parameter>
+        
+        <parameter>
+          <name>makemode</name> 
+          <property>makemode</property>
+          <required>true</required>
+          <readonly>true</readonly>
+          <type>java.lang.String</type>
+          <defaultValue>${makemode}</defaultValue>
+        </parameter>
+
+        <parameter>
           <name>pfixroot</name> 
           <property>pfixroot</property>
           <required>true</required>

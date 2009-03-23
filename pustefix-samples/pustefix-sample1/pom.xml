@@ -102,42 +102,13 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
         <version>1.3</version>
         <executions>
           <execution>
-            <id>apt and web.xml and modules</id>
+            <id>todo</id>
             <phase>generate-sources</phase>
             <configuration>
               <tasks>
                 <echo>ok</echo>
               </tasks>
               <sourceRoot>${project.build.directory}/generated-sources/apt</sourceRoot>
-            </configuration>
-            <goals>
-              <goal>run</goal>
-            </goals>
-          </execution>
-          <execution>
-            <id>buildtimeprops</id>
-            <phase>generate-resources</phase>
-            <configuration>
-              <tasks>
-                <taskdef
-                  name="pfx-buildtime-props"
-                  classname="de.schlund.pfixxml.config.BuildTimePropTask"
-                  classpathref="maven.compile.classpath"
-                />
-                <mkdir dir="${basedir}/target/classes"/>
-                <pfx-buildtime-props
-                  file="${basedir}/target/classes/buildtime.prop"
-                  mode="${makemode}"
-                  uid="uid"
-                  machine="machine"
-                  fqdn="fqdn"
-                  docroot="docroot"
-                 />
-                <echo append="true" file="${basedir}/target/classes/buildtime.prop">
-__antprop_makemode=${makemode}
-__antprop_standalone.tomcat=${standalone.tomcat}
-                </echo>
-              </tasks>
             </configuration>
             <goals>
               <goal>run</goal>
