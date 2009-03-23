@@ -90,7 +90,7 @@ public class TargetGeneratorTest extends TestCase {
         File file;
 
         Document doc = Xml.parseStringMutable(str);
-        file = File.createTempFile("depend", ".xml", new File("projects"));
+        file = File.createTempFile("depend", ".xml", new File("target"));
         file.deleteOnExit();
         Xml.serialize(doc, file, true, true);
         gen = new TargetGenerator(ResourceUtil.getFileResource(file.toURI()));
@@ -98,8 +98,8 @@ public class TargetGeneratorTest extends TestCase {
     }
 
     public void testConcurrency() throws Exception {
-        File cacheDir = new File("projects/.cache");
-        File tmpCacheDir = new File("projects/.cache_tmp");
+        File cacheDir = new File("target/.cache");
+        File tmpCacheDir = new File("target/.cache_tmp");
         if (cacheDir.exists()) cacheDir.renameTo(tmpCacheDir);
         try {
             FileResource res = ResourceUtil.getFileResource(new File(GlobalConfig.guessPfixroot(), "conf/depend.xml").toURI());
