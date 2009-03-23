@@ -1,5 +1,5 @@
 <project>
-  <target name="generate" depends="apt, pfixroot" />
+  <target name="generate" depends="apt, pfixroot, webxml" />
 
   <target name="apt">
   	<echo>cp: ${maven.plugin.classpath}"</echo>
@@ -25,6 +25,18 @@
       
   </target>
 	
+  <target name="webxml">
+  	<property name="webinf" location="${pfixroot}/.."/>
+    <copy toDir="${webinf}" flatten="true">
+      <resources>
+        <javaresource name="build/web.xml" classpathref="maven.plugin.classpath"/>
+      </resources>
+      <filterset>
+        <filter token="PFIXROOT" value="${pfixroot}"/>
+      </filterset>
+    </copy>
+  </target>
+
   <target name="pfixroot">
     <copy toDir="${pfixroot}">
         <fileset dir="${basedir}/src/main/pustefix"/>

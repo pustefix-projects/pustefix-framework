@@ -106,17 +106,6 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
             <phase>generate-sources</phase>
             <configuration>
               <tasks>
-                 <!--  web.xml -->
-                 
-                 <copy toDir="${basedir}/target/${project.artifactId}-${project.version}/WEB-INF" flatten="true">
-                     <resources>
-                       <javaresource name="build/web.xml" classpathref="maven.compile.classpath"/>
-                     </resources>
-                     <filterset>
-                       <filter token="PFIXROOT" value="${pfixroot}"/>
-                     </filterset>
-                 </copy>
-
                  <!--  modules -->
                  
                  <taskdef
