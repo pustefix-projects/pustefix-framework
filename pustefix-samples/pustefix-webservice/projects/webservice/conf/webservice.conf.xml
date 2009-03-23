@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<webservice-config
+  xmlns="http://www.pustefix-framework.org/2008/namespace/webservice-config"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.pustefix-framework.org/2008/namespace/webservice-config ../../core/schema/webservice-config.xsd">
+
+  <import href="webservice/conf/webservice-import.xml"/>
+
+  <webservice-global>
+  
+    <stubgeneration jsnamespace="COMPAT_UNIQUE"/>
+    <protocol type="ANY"/>
+    
+    <choose>
+      <when test="$mode = 'prod'">
+        <!--
+        <faulthandler class="org.pustefixframework.webservices.fault.EmailNotifyingHandler">
+          <param name="recipients" value="errors@domain.de"/>
+        	 <param name="sender" value="pfxerror@domain.de"/>
+        	 <param name="smtphost" value="localhost"/>
+        </faulthandler>
+        -->
+      </when>
+      <otherwise>
+        <admin enabled="true"/>
+        <monitoring enabled="true"/>
+        <logging enabled="true"/>
+      </otherwise>
+    </choose>
+  </webservice-global>
+ 
+  <webservice name="Chat">
+    <interface name="de.schlund.pfixcore.example.webservices.chat.Chat"/>
+    <implementation name="de.schlund.pfixcore.example.webservices.chat.ChatImpl"/>
+  </webservice>
+
+  <webservice name="Data">
+    <interface name="de.schlund.pfixcore.example.webservices.Data"/>
+    <implementation name="de.schlund.pfixcore.example.webservices.DataImpl"/>
+  </webservice>
+
+  <webservice name="TypeTest">
+    <interface name="de.schlund.pfixcore.example.webservices.TypeTest"/>
+    <implementation name="de.schlund.pfixcore.example.webservices.TypeTestImpl"/>
+  </webservice>
+  
+  <webservice name="CallTest">
+    <interface name="de.schlund.pfixcore.example.webservices.CallTest"/>
+    <implementation name="de.schlund.pfixcore.example.webservices.CallTestImpl"/>
+  </webservice>
+  
+  <webservice name="BeanTest">
+    <interface name="de.schlund.pfixcore.example.webservices.BeanTest"/>
+    <implementation name="de.schlund.pfixcore.example.webservices.BeanTestImpl"/>
+  </webservice>
+
+</webservice-config>

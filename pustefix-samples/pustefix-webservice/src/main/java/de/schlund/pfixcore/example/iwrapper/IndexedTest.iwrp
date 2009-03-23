@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<interface xmlns="http://pustefix.sourceforge.net/interfacewrapper200401"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://pustefix.sourceforge.net/interfacewrapper200401 http://pustefix.sourceforge.net/interfacewrapper200401.xsd">
+  <ihandler class="de.schlund.pfixcore.example.IndexedTestHandler"/>
+  
+  <param name="Value" type="java.lang.String" occurance="indexed">
+    <precheck class="de.schlund.pfixcore.generator.prechecks.RegexpCheck">
+      <cparam name="regexp" value="/^[a-zA-Z]*$/"/>
+    </precheck>
+  </param>
+
+</interface> 
