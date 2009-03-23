@@ -72,7 +72,7 @@
           </ixsl:choose>  
         </head>
         <body style="padding-left:10pt;">
-          <pfx:maincontent part="content" path="webservice/txt/pages" prefix="main_"/> 
+          <pfx:maincontent part="content" path="txt/pages" prefix="main_"/> 
           <pfx:editconsole webserviceconsole="true"/>
         </body>
       </html>

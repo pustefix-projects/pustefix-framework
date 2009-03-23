@@ -5,10 +5,10 @@
 
       <div class="service_caption">TypeTest service</div>
       
-      <pfx:include href="webservice/txt/common.xml" part="protocol_select"/>
-      <pfx:include href="webservice/txt/common.xml" part="service_time"/>
-      <pfx:include href="webservice/txt/common.xml" part="service_error"/>
-      <pfx:include href="webservice/txt/common.xml" part="service_result"/>
+      <pfx:include href="txt/common.xml" part="protocol_select"/>
+      <pfx:include href="txt/common.xml" part="service_time"/>
+      <pfx:include href="txt/common.xml" part="service_error"/>
+      <pfx:include href="txt/common.xml" part="service_result"/>
 		
 	   <div>
 			<form action="" name="service_form">

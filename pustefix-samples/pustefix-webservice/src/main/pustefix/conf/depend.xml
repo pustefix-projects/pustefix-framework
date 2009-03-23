@@ -1,10 +1,10 @@
 <make cachedir=".cache/webservice"
-      record_dir="webservice/recorded"
+      record_dir="recorded"
       project="webservice"
       lang="en">
 
   <global>
-    <!-- <include stylesheet="webservice/xsl/runtime.xsl"/> -->
+    <!-- <include stylesheet="xsl/runtime.xsl"/> -->
     <param   name="outputmethod"         value="html"/>
     <param   name="outputdoctype-public" value="-//W3C//DTD HTML 4.01//EN"/>
     <param   name="outputdoctype-system" value="http://www.w3.org/TR/html40/strict.dtd"/>
@@ -21,19 +21,19 @@
   </navigation>
 
   <standardmaster>
-    <!-- <include stylesheet="webservice/xsl/skin.xsl"/> -->
+    <!-- <include stylesheet="xsl/skin.xsl"/> -->
   </standardmaster>
   
   <standardmetatags>
-    <include stylesheet="webservice/xsl/metatags.xsl"/>
+    <include stylesheet="xsl/metatags.xsl"/>
   </standardmetatags>
   
-  <standardpage name="calculator" xml="webservice/xml/two_frames.xml"/>
-  <standardpage name="chat" xml="webservice/xml/two_frames.xml"/>
-  <standardpage name="counter" xml="webservice/xml/two_frames.xml"/>
-  <standardpage name="data" xml="webservice/xml/two_frames.xml"/>
-  <standardpage name="typetest" xml="webservice/xml/two_frames.xml"/>
-  <standardpage name="calltest" xml="webservice/xml/two_frames.xml"/>
-  <standardpage name="beantest" xml="webservice/xml/two_frames.xml"/>
+  <standardpage name="calculator" xml="xml/two_frames.xml"/>
+  <standardpage name="chat" xml="xml/two_frames.xml"/>
+  <standardpage name="counter" xml="xml/two_frames.xml"/>
+  <standardpage name="data" xml="xml/two_frames.xml"/>
+  <standardpage name="typetest" xml="xml/two_frames.xml"/>
+  <standardpage name="calltest" xml="xml/two_frames.xml"/>
+  <standardpage name="beantest" xml="xml/two_frames.xml"/>
 
 </make>
