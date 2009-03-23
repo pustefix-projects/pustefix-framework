@@ -1,5 +1,5 @@
 <project>
-  <target name="generate" depends="apt, pfixroot, webxml" />
+  <target name="generate" depends="apt, pfixroot, webxml, modules" />
 
   <target name="apt">
   	<echo>cp: ${maven.plugin.classpath}"</echo>
@@ -41,5 +41,29 @@
     <copy toDir="${pfixroot}">
         <fileset dir="${basedir}/src/main/pustefix"/>
     </copy>
+  </target>
+	
+  <target name="modules">
+    <!--  modules -->
+    
+    <taskdef
+       name="pfx-unpack-jar-module"
+       classname="de.schlund.pfixcore.util.UnpackModuleTask"
+       classpathref="maven.plugin.classpath"
+       description="Checks JARs for a Pustefix module deployment descriptor and unpacks the resources" />
+
+  	<property name="dir.extract.modules" location="${pfixroot}/modules"/>
+    <mkdir dir="${dir.extract.modules}"/>
+    <!--  TODO: basedir: wo kommen die modules her -->
+    <pfx-unpack-jar-module srcdir="${basedir}" extracttodir="${dir.extract.modules}" includes="${basedir}" />
+    <touch file="${dir.extract.modules}/TIMESTAMP"/>
+    <!--  TODO:
+    <foreach param="tmp.modules.buildxml" target="extract-modules-call-ant" inheritall="true" inheritrefs="true">
+      <fileset dir="${dir.extract.modules}">
+        <include name="*/build.xml"/>
+      </fileset>
+    </foreach>
+    <antcall target="scmerge-modules"/>
+     -->
   </target>
 </project>

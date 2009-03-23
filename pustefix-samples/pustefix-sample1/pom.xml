@@ -106,27 +106,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
             <phase>generate-sources</phase>
             <configuration>
               <tasks>
-                 <!--  modules -->
-                 
-                 <taskdef
-                    name="pfx-unpack-jar-module"
-                    classname="de.schlund.pfixcore.util.UnpackModuleTask"
-                    classpathref="maven.compile.classpath"
-                    loaderref="pfx-loader"
-                    description="Checks JARs for a Pustefix module deployment descriptor and unpacks the resources" />
-                 <property name="dir.extract.modules" location="${pfixroot}/modules"/>
-                 <mkdir dir="${dir.extract.modules}"/>
-                 <!--  TODO: basedir: wo kommen die modules her -->
-                 <pfx-unpack-jar-module srcdir="${basedir}" extracttodir="${dir.extract.modules}" includes="${basedir}" />
-                 <touch file="${dir.extract.modules}/TIMESTAMP"/>
-                 <!--  TODO:
-                 <foreach param="tmp.modules.buildxml" target="extract-modules-call-ant" inheritall="true" inheritrefs="true">
-                   <fileset dir="${dir.extract.modules}">
-                     <include name="*/build.xml"/>
-                   </fileset>
-                 </foreach>
-                 <antcall target="scmerge-modules"/>
-                  -->
+                <echo>ok</echo>
               </tasks>
               <sourceRoot>${project.build.directory}/generated-sources/apt</sourceRoot>
             </configuration>
