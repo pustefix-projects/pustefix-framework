@@ -1,0 +1,33 @@
+<project>
+  <target name="generate" depends="apt, pfixroot" />
+
+  <target name="apt">
+  	<echo>cp: ${maven.plugin.classpath}"</echo>
+  		
+    <path id="maven.plugin.classpath">
+      <pathelement path="${maven.plugin.classpath}"/>
+  	</path>
+
+    <taskdef name="pfx-apt"
+      classpathref="maven.plugin.classpath"
+      classname="de.schlund.pfixcore.generator.iwrpgen.AptTask"
+      description="Pustefix APT task" />
+      
+    <!--  apt  -->
+    
+    <pfx-apt
+      classpathref="maven.plugin.classpath"
+      srcdir="${basedir}/src/main/java"
+      destdir="${basedir}/target/classes"
+      preprocessdir="${aptdir}"
+      encoding="UTF-8"
+      factory="de.schlund.pfixcore.util.CommonAnnotationProcessorFactory" />
+      
+  </target>
+	
+  <target name="pfixroot">
+    <copy toDir="${pfixroot}">
+        <fileset dir="${basedir}/src/main/pustefix"/>
+    </copy>
+  </target>
+</project>

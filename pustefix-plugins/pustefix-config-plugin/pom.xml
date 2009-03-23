@@ -1,38 +1,42 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  
+
   <parent>
     <groupId>org.pustefixframework</groupId>
     <artifactId>pustefixframework</artifactId>
     <version>0.14.0-SNAPSHOT</version>
   </parent>
-
+    
+  <name>Pustefix Config Plugin</name>
+  
   <groupId>org.pustefixframework.maven.plugins</groupId>
-  <artifactId>pustefix-maven-plugins</artifactId>
-  <packaging>pom</packaging>
+  <artifactId>pustefix-config-plugin</artifactId>
   <version>0.14.0-SNAPSHOT</version>
+    
+  <packaging>maven-plugin</packaging>
 
-  <name>Pustefix Maven Plugins</name>
-  <description>Pustefix Maven Plugins</description>
-  <url>http://pustefixframework.org</url>
-
-  <modules>
-    <module>pustefix-statuscode-plugin</module>
-    <module>pustefix-iwrapper-plugin</module>
-    <module>pustefix-generate-plugin</module>
-    <module>pustefix-config-plugin</module>
-  </modules>
+  <dependencies>
+    <dependency>
+      <groupId>org.apache.maven</groupId>
+      <artifactId>maven-script-ant</artifactId>
+      <version>2.0.10</version>
+    </dependency>
+  </dependencies>
 
   <build>
     <plugins>
       <plugin>
         <artifactId>maven-plugin-plugin</artifactId>
-        <configuration>
-          <goalPrefix>pustefix</goalPrefix>
-        </configuration>
+        <version>2.4</version>
+        <dependencies>
+          <dependency>
+            <groupId>org.apache.maven.plugin-tools</groupId>
+            <artifactId>maven-plugin-tools-ant</artifactId>
+            <version>2.4</version>
+          </dependency>
+        </dependencies>
       </plugin>
     </plugins>
   </build>
-
 </project>

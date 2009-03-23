@@ -60,6 +60,19 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
   <build>
     <plugins> 
       <plugin>
+        <groupId>org.pustefixframework.maven.plugins</groupId>
+        <artifactId>pustefix-config-plugin</artifactId>
+        <version>0.14.0-SNAPSHOT</version>
+        <executions>
+          <execution>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
         <artifactId>maven-dependency-plugin</artifactId>
         <executions>
           <execution>
@@ -93,21 +106,6 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
             <phase>generate-sources</phase>
             <configuration>
               <tasks>
-                <taskdef name="pfx-apt"
-                  classname="de.schlund.pfixcore.generator.iwrpgen.AptTask"
-                  classpathref="maven.compile.classpath"
-                  description="Pustefix APT task" />
-                  
-                <!--  apt  -->
-                
-                <pfx-apt
-                  classpathref="maven.compile.classpath"
-                  srcdir="${basedir}/src/main/java"
-                  destdir="${basedir}/target/classes"
-                  preprocessdir="${project.build.directory}/generated-sources/apt"
-                  encoding="UTF-8"
-                  factory="de.schlund.pfixcore.util.CommonAnnotationProcessorFactory" />
-                  
                  <!--  web.xml -->
                  
                  <copy toDir="${basedir}/target/${project.artifactId}-${project.version}/WEB-INF" flatten="true">
@@ -119,12 +117,6 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
                      </filterset>
                  </copy>
 
-                 <!--  pfixroot -->
-     
-                 <copy toDir="${pfixroot}">
-                     <fileset dir="${basedir}/src/main/pustefix"/>
-                 </copy>
-                 
                  <!--  modules -->
                  
                  <taskdef
