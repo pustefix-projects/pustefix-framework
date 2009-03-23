@@ -22,6 +22,19 @@
       <artifactId>maven-script-ant</artifactId>
       <version>2.0.10</version>
     </dependency>
+
+    <dependency>
+      <groupId>org.pustefixframework</groupId>
+      <artifactId>pustefix-core</artifactId>
+      <version>0.14.0-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>org.pustefixframework</groupId>
+      <artifactId>pustefix-core</artifactId>
+      <version>0.14.0-SNAPSHOT</version>
+      <classifier>data</classifier>
+      <type>tar.gz</type>
+    </dependency>
   </dependencies>
 
   <build>
