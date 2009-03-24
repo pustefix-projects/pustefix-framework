@@ -43,7 +43,7 @@ import org.codehaus.plexus.util.StringUtils;
  * @phase generate-sources
  * @requiresDependencyResolution compile
  */
-public class PustefixConfigPlugin extends AbstractMojo {
+public class PustefixConfigMojo extends AbstractMojo {
     /**
      * Docroot of the application
      * 
