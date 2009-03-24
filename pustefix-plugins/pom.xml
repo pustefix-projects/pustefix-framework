@@ -21,7 +21,7 @@
     <module>pustefix-statuscode-plugin</module>
     <module>pustefix-iwrapper-plugin</module>
     <module>pustefix-generate-plugin</module>
-    <module>pustefix-config-plugin</module>
+    <module>pustefix-webapp-plugin</module>
   </modules>
 
   <build>
