@@ -20,6 +20,10 @@
 package org.pustefixframework.maven.plugins;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -59,6 +63,11 @@ public class PustefixWebappMojo extends AbstractMojo {
     private String aptdir;
 
     /**
+     * @parameter default-value="${project.build.directory}/webapp-build.xml"
+     */
+    private File buildFile;
+
+    /**
      * @parameter default-value="test"
      */
     private String makemode;
@@ -90,12 +99,18 @@ public class PustefixWebappMojo extends AbstractMojo {
      */
     public void execute() throws MojoExecutionException {
         try {
+            buildFile();
+        } catch (IOException e) {
+            throw new MojoExecutionException("io execption", e);
+        }
+        try {
             Project ant;
             DefaultLogger logger;
             
             ant = new Project();
             ant.init();
-            ProjectHelper.configureProject(ant, new File("/home/mhm/Projects/pustefixframework/pustefix-plugins/pustefix-webapp-plugin/src/main/resources/build.xml"));
+
+            ProjectHelper.configureProject(ant, buildFile);
             logger = new DefaultLogger();
             logger.setOutputPrintStream(System.out);
             logger.setErrorPrintStream(System.err);
@@ -115,11 +130,34 @@ public class PustefixWebappMojo extends AbstractMojo {
             ant.addReference("maven.plugin.classpath", path(ant, pathStrings(pluginClasspath)));
             ant.executeTarget("generate");
         } catch (BuildException e) {
-            throw new MojoExecutionException("Ant failure: " + e.getMessage(), e);
+            throw new MojoExecutionException("build exception: " + e.getMessage(), e);
         }
         project.addCompileSourceRoot(aptdir);
     }
 
+    private void buildFile() throws IOException {
+        InputStream src;
+        OutputStream dest;
+        int c;
+        
+        if (buildFile.isFile()) {
+            return;
+        }
+        buildFile.getParentFile().mkdirs();
+        // TODO: expensice
+        src = getClass().getResourceAsStream("/build.xml");
+        dest = new FileOutputStream(buildFile);
+        while (true) {
+            c = src.read();
+            if (c == -1) {
+                break;
+            }
+            dest.write((char) c);
+        }
+        src.close();
+        dest.close();
+    }
+    
     private String getDataTarGz() {
         for (Artifact artifact : pluginClasspath) {
             if ("data".equals(artifact.getClassifier()) && "pustefix-core".equals(artifact.getArtifactId()) 
