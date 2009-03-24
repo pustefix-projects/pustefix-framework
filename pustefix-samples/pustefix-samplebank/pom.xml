@@ -103,23 +103,6 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
         </executions>
       </plugin>
       <plugin>
-        <groupId>org.pustefixframework.maven.plugins</groupId>
-        <artifactId>pustefix-statuscode-plugin</artifactId>
-        <configuration>
-          <targetPath>dyntxt</targetPath>
-          <includes>
-            <include>statuscodes/statuscodeinfo.xml</include>
-          </includes>
-        </configuration>
-        <executions>
-          <execution>
-            <goals>
-              <goal>generate</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
         <groupId>org.mortbay.jetty</groupId>
         <artifactId>maven-jetty-plugin</artifactId>
       </plugin>

@@ -93,7 +93,6 @@ public class PustefixConfigMojo extends AbstractMojo {
             Project ant;
             DefaultLogger logger;
             
-            getLog().info("init");
             ant = new Project();
             ant.init();
             ProjectHelper.configureProject(ant, new File("/home/mhm/Projects/pustefixframework/pustefix-plugins/pustefix-config-plugin/src/main/resources/build.xml"));
