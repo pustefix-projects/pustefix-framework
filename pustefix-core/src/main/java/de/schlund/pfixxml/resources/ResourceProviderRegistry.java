@@ -22,6 +22,11 @@ public class ResourceProviderRegistry {
         register(new DynamicResourceProvider());
     }
     
+    public static void reset() {
+        resourceProviders.clear();
+        registerDefaultResourceProviders();
+    }
+    
     public static void register(ResourceProvider resourceProvider) {
         String[] schemes = resourceProvider.getSupportedSchemes();
         for(String scheme : schemes) {

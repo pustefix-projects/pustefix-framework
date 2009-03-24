@@ -52,7 +52,13 @@ public class GlobalConfig {
     public static String getDocroot() {
         return docroot;
     }
-    
+
+    public static void reset() {
+        docroot = null;
+        docrootURL = null;
+        ResourceProviderRegistry.reset();
+    }
+
     static void setDocroot(String path) {
         if (docroot != null || servletContext != null) {
             throw new IllegalStateException("Docroot or servlet context may only be set once!");

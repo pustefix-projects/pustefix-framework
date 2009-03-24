@@ -27,9 +27,7 @@ import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
 import org.apache.tools.ant.BuildException;
-import org.apache.tools.ant.DirectoryScanner;
-import org.apache.tools.ant.Project;
-import org.apache.tools.ant.taskdefs.MatchingTask;
+import org.apache.tools.ant.Task;
 import org.pustefixframework.config.customization.CustomizationInfo;
 import org.pustefixframework.config.customization.PropertiesBasedCustomizationInfo;
 
@@ -40,73 +38,43 @@ import de.schlund.pfixxml.config.BuildTimeProperties;
 /**
  * @author mleidig
  */
-public class CreateWebXmlTask extends MatchingTask {
-
-    private File baseDir;
-    private File webappsDir;
+public class CreateWebXmlTask extends Task {
     private File styleSheet;
     private File commonConfig;
+    private File projectConfig;
+    private File webappsDir;
     
     @Override
     public void execute() throws BuildException {
         
         Properties buildTimeProperties = BuildTimeProperties.getProperties();
         CustomizationInfo info = new PropertiesBasedCustomizationInfo(buildTimeProperties);
-        if(!baseDir.exists()) throw new BuildException("Base directory doesn't exist: "+baseDir.getPath());
-      
-        int totalCnt=0;
-        int genCnt=0;
-        
-        DirectoryScanner scanner = getDirectoryScanner(baseDir);
-        String[] files = scanner.getIncludedFiles();
-        for (String file : files) {
-            totalCnt++;
-            File srcFile = new File(baseDir, file);
-            File confDir = srcFile.getParentFile();
-            String projectName = confDir.getParentFile().getName();
+
+        File srcFile = projectConfig;
+        File confDir = srcFile.getParentFile();
+        String projectName = confDir.getParentFile().getName();
                 
-            File destFile = new File(webappsDir, projectName+"/"+"WEB-INF/web.xml");
+        File destFile = new File(webappsDir, "web.xml");
             
-            long refModTime = destFile.lastModified();
+        String configFiles = srcFile.toURI().toString();
+        File springConfigFile = new File(confDir,"spring.xml");
+        if(springConfigFile.exists()) configFiles+=" "+springConfigFile.toURI().toString();
                 
-            //TODO: Modification check doesn't honour creation/removal of
-            //spring.xml or project specific web.xml template
-            if(srcFile.lastModified()>refModTime || commonConfig.lastModified()>refModTime ||
-                   styleSheet.lastModified()>refModTime) {
-         
-                String configFiles = srcFile.toURI().toString();
-                File springConfigFile = new File(confDir,"spring.xml");
-                if(springConfigFile.exists()) configFiles+=" "+springConfigFile.toURI().toString();
-                
-                TransformerFactory tf = new TransformerFactoryImpl();
-                try {
-                    StreamSource xsl = new StreamSource(styleSheet);
-                    StreamSource xml = new StreamSource(srcFile);
-                    StreamResult out = new StreamResult(destFile);
-                    Transformer t = tf.newTransformer(xsl);
-                    t.setParameter("projectname", projectName);
-                    t.setParameter("projectfile", srcFile.getPath());
-                    t.setParameter("commonprojectsfile", commonConfig.getPath());
-                    t.setParameter("configfiles", configFiles);
-                    t.setParameter("customizationinfo", info);
-                    t.transform(xml, out);
-                } catch(Exception x) {
-                    throw new BuildException(x);
-                }
-                genCnt++;
-            }
+        TransformerFactory tf = new TransformerFactoryImpl();
+        try {
+            StreamSource xsl = new StreamSource(styleSheet);
+            StreamSource xml = new StreamSource(srcFile);
+            StreamResult out = new StreamResult(destFile);
+            Transformer t = tf.newTransformer(xsl);
+            t.setParameter("projectname", projectName);
+            t.setParameter("projectfile", srcFile.getPath());
+            t.setParameter("commonprojectsfile", commonConfig.getPath());
+            t.setParameter("configfiles", configFiles);
+            t.setParameter("customizationinfo", info);
+            t.transform(xml, out);
+        } catch(Exception x) {
+            throw new BuildException(x);
         }
-        if(genCnt > 0) {
-            log("Created "+genCnt+" (of "+totalCnt+") web.xml files.",Project.MSG_INFO);
-        }
-    }
-    
-    public void setBaseDir(File baseDir) {
-        this.baseDir = baseDir;
-    }
-        
-    public void setWebappsDir(File webappsDir) {
-        this.webappsDir = webappsDir;
     }
     
     public void setStyleSheet(File styleSheet) {
@@ -117,4 +85,11 @@ public class CreateWebXmlTask extends MatchingTask {
         this.commonConfig = commonConfig;
     }
     
+    public void setProjectConfig(File projectConfig) {
+        this.projectConfig = projectConfig;
+    }
+        
+    public void setWebappsDir(File webappsDir) {
+        this.webappsDir = webappsDir;
+    }
 }

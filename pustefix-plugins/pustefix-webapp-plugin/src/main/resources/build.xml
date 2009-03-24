@@ -1,5 +1,5 @@
 <project>
-  <target name="generate" depends="data, apt, pfixroot, webxml, buildtimeprops"/>
+  <target name="generate" depends="data, apt, pfixroot, buildtimeprops, webxml"/>
 
   <target name="data">
     <delete dir="${pfixroot}/core"/>
@@ -21,15 +21,38 @@
   </target>
 	
   <target name="webxml">
+  	<taskdef name="pfx-xslt"
+     classname="de.schlund.pfixcore.util.XsltGenericTask"
+     classpathref="plugin.classpath" />
+    <taskdef name="pfx-webxml"
+     classname="org.pustefixframework.config.build.CreateWebXmlTask"
+     classpathref="plugin.classpath"
+     description="Creates WEB-INF/web.xml config files for each project" />
+
   	<property name="webinf" location="${pfixroot}/.."/>
     <copy toDir="${webinf}" flatten="true">
       <resources>
         <javaresource name="build/web.xml" classpathref="plugin.classpath"/>
+      	
+      	<!-- TODO: temporary solution because pfx-xslt cannot read styles from resources: -->
+        <javaresource name="build/create_defaultwebxml.xsl" classpathref="plugin.classpath"/>
+        <javaresource name="build/create_webxml.xsl" classpathref="plugin.classpath"/>
       </resources>
-      <filterset>
-        <filter token="PFIXROOT" value="${pfixroot}"/>
-      </filterset>
     </copy>
+  	<move file="${webinf}/web.xml" tofile="${webinf}/web.xml.tmp"/>
+    <pfx-xslt
+       style="${webinf}/create_defaultwebxml.xsl"
+       srcdir="${webinf}"
+       destdir="${webinf}"
+       includes="web.xml.tmp"
+       extension=""
+       validate="false"
+     />
+    <pfx-webxml
+         stylesheet="${webinf}/create_webxml.xsl" 
+         webappsdir="${webinf}"
+         commonconfig="${basedir}/src/main/pustefix/conf/projects.xml"
+         projectconfig="${basedir}/src/main/pustefix/conf/project.xml"/>
   </target>
 
   <target name="pfixroot">
