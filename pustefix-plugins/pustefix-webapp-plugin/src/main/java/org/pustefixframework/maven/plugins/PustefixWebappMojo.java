@@ -26,7 +26,14 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Enumeration;
 import java.util.List;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
+import java.util.zip.ZipEntry;
+
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.stream.StreamSource;
 
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.DependencyResolutionRequiredException;
@@ -39,6 +46,13 @@ import org.apache.tools.ant.Project;
 import org.apache.tools.ant.ProjectHelper;
 import org.apache.tools.ant.types.Path;
 import org.codehaus.plexus.util.StringUtils;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+
+import de.schlund.pfixxml.util.Xml;
+import de.schlund.pfixxml.util.XsltVersion;
 
 /**
  * Generates everything still on ant.
@@ -54,6 +68,13 @@ public class PustefixWebappMojo extends AbstractMojo {
      * @parameter default-value="${project.build.directory}/${project.artifactId}-${project.version}/WEB-INF/pfixroot"
      */
     private String pfixroot;
+
+    /**
+     * Where to unpack modules
+     * 
+     * @parameter default-value="${project.build.directory}/${project.artifactId}-${project.version}/WEB-INF/pfixroot/modules"
+     */
+    private String modulesdir;
     
     /**
      * Where to place apt-generated classes.
@@ -98,6 +119,8 @@ public class PustefixWebappMojo extends AbstractMojo {
      * @see org.apache.maven.plugin.Mojo#execute()
      */
     public void execute() throws MojoExecutionException {
+        getLog().info("unpacked " + unpackModules() + " module(s)");
+
         try {
             buildFile();
         } catch (IOException e) {
@@ -123,11 +146,11 @@ public class PustefixWebappMojo extends AbstractMojo {
             ant.setProperty("makemode", makemode);
             ant.setProperty("data.tar.gz", getDataTarGz());
             try {
-                ant.addReference("maven.compile.classpath", path(ant, project.getCompileClasspathElements()));
+                ant.addReference("compile.classpath", path(ant, project.getCompileClasspathElements()));
             } catch (DependencyResolutionRequiredException e) {
                 throw new IllegalStateException(e);
             }
-            ant.addReference("maven.plugin.classpath", path(ant, pathStrings(pluginClasspath)));
+            ant.addReference("plugin.classpath", path(ant, pathStrings(pluginClasspath)));
             ant.executeTarget("generate");
         } catch (BuildException e) {
             throw new MojoExecutionException("build exception: " + e.getMessage(), e);
@@ -188,5 +211,178 @@ public class PustefixWebappMojo extends AbstractMojo {
         }
 
         return list;
+    }
+    
+    //--
+    
+    public int unpackModules() throws BuildException {
+        List<Artifact> artifacts;
+        int count;
+        
+        if (modulesdir == null) {
+            throw new BuildException("Mandatory attribute extractdir is not set!");
+        }
+        artifacts = project.getCompileArtifacts();
+        count = 0;
+        for (Artifact artifact : artifacts) {
+            if ("jar".equals(artifact.getType())) {
+                if (processJar(artifact.getFile())) {
+                    count++;
+                }
+            }
+        }
+        return count;
+    }
+    
+    private boolean processJar(File jarFile) throws BuildException {
+        JarFile jar;
+        
+        try {
+            jar = new JarFile(jarFile);
+        } catch (IOException e) {
+            throw new BuildException("Error while reading JAR file " + jarFile, e);
+        }
+        ZipEntry dde = jar.getEntry("META-INF/pustefix-module.xml");
+        if (dde == null) {
+            return false;
+        }
+        InputStream dds;
+        try {
+            dds = jar.getInputStream(dde);
+        } catch (IOException e) {
+            throw new BuildException("Error while reading deployment descriptor from module " + jarFile, e);
+        }
+        DeploymentDescriptor dd;
+        try {
+            dd = new DeploymentDescriptor(dds);
+        } catch (TransformerException e) {
+            throw new BuildException("Error while parsing deployment descriptor from module " + jarFile, e);
+        }
+        String moduleName = dd.getModuleName();
+        for (DeploymentDescriptor.ResourceMapping rm : dd.getResourceMappings()) {
+            String srcpath = rm.sourcePath;
+            String targetpath = rm.targetPath;
+            String searchpath = srcpath + "/";
+            Enumeration<JarEntry> entries = jar.entries();
+            while (entries.hasMoreElements()) {
+                JarEntry entry = entries.nextElement();
+                if (entry.getName().startsWith(searchpath)) {
+                    String shortpath = entry.getName().substring(searchpath.length());
+                    File targetfile;
+                    if (targetpath.length() == 0) {
+                        targetfile = new File(modulesdir, moduleName + "/" + shortpath);                        
+                    } else {
+                        targetfile = new File(modulesdir, moduleName + "/" + targetpath + "/" + shortpath);
+                    }
+                    if (entry.isDirectory()) {
+                        targetfile.mkdirs();
+                    } else {
+                        try {
+                            createFileFromStream(jar.getInputStream(entry), targetfile);
+                        } catch (IOException e) {
+                            throw new BuildException("Could not unpack file from JAR module to " + targetfile, e);
+                        }
+                    }
+                }
+            }
+        }
+        return true;
+    }
+    
+    private void createFileFromStream(InputStream inputStream, File targetfile) throws IOException {
+        FileOutputStream fos = new FileOutputStream(targetfile);
+        int bytesread = 0;
+        byte[] buf = new byte[1024];
+        do {
+            bytesread = inputStream.read(buf);
+            if (bytesread > 0) {
+                fos.write(buf, 0, bytesread);
+            }
+        } while (bytesread != -1);
+        fos.close();
+        inputStream.close();
+    }
+
+    private class DeploymentDescriptor {
+        public class ResourceMapping {
+            public String sourcePath;
+            public String targetPath;
+        }
+        
+        public final static String NS_MODULE = "http://pustefix.sourceforge.net/moduledescriptor200702";
+        
+        private String moduleName = "";
+
+        private List<ResourceMapping> mappings;
+        
+        public DeploymentDescriptor(InputStream xmlStream) throws TransformerException {
+            Document doc;
+            doc = Xml.parse(XsltVersion.XSLT1, new StreamSource(xmlStream));
+            Element root = doc.getDocumentElement();
+            if (!root.getNamespaceURI().equals(NS_MODULE) || !root.getNodeName().equals("module-descriptor")) {
+                throw new TransformerException("Descriptor has invalid format");
+            }
+            
+            NodeList temp = root.getElementsByTagNameNS(NS_MODULE, "module-name");
+            if (temp.getLength() != 1) {
+                throw new TransformerException("Module name not set!");
+            }
+            Element nameElement = (Element) temp.item(0);
+            temp = nameElement.getChildNodes();
+            for (int i=0; i < temp.getLength(); i++) {
+                if (temp.item(i).getNodeType() != Node.TEXT_NODE) {
+                    throw new TransformerException("Found malformed module-name element!");
+                }
+                moduleName += temp.item(i).getNodeValue();
+            }
+            moduleName = moduleName.trim();
+            
+            temp = root.getElementsByTagNameNS(NS_MODULE, "resources");
+            if (temp.getLength() > 1) {
+                throw new TransformerException("Found more than one resources element!");
+            }
+            if (temp.getLength() == 0) {
+                this.mappings = new ArrayList<ResourceMapping>();
+                return;
+            }
+            temp = ((Element)temp.item(0)).getElementsByTagNameNS(NS_MODULE, "resource-mapping");
+            ArrayList<ResourceMapping> mappings = new ArrayList<ResourceMapping>();
+            for (int i=0; i<temp.getLength(); i++) {
+                Element el = (Element) temp.item(i);
+                String srcpath = el.getAttribute("srcpath");
+                if (srcpath == null) {
+                    throw new TransformerException("Mandatory attribute srcpath not set on resource-mapping attribute");
+                }
+                if (srcpath.startsWith("/")) {
+                    srcpath = srcpath.substring(1);
+                }
+                if (srcpath.endsWith("/")) {
+                    srcpath = srcpath.substring(0, srcpath.length()-1);
+                }
+                String targetpath = el.getAttribute("targetpath");
+                if (targetpath == null) {
+                    targetpath = "";
+                }
+                if (targetpath.startsWith("/")) {
+                    targetpath = targetpath.substring(1);
+                }
+                if (targetpath.endsWith("/")) {
+                    targetpath = targetpath.substring(0, targetpath.length()-1);
+                }
+                ResourceMapping rm = new ResourceMapping();
+                rm.sourcePath = srcpath;
+                rm.targetPath = targetpath;
+                mappings.add(rm);
+            }
+            this.mappings = mappings;
+        }
+        
+        public List<ResourceMapping> getResourceMappings() {
+            return this.mappings;
+        }
+        
+        public String getModuleName() {
+            return this.moduleName;
+        }
     }
 }

@@ -1,5 +1,5 @@
 <project>
-  <target name="generate" depends="data, apt, pfixroot, webxml, modules, buildtimeprops">
+  <target name="generate" depends="data, apt, pfixroot, webxml, buildtimeprops">
   	<echo>generate</echo>
   </target>
 
@@ -7,32 +7,26 @@
     <delete dir="${pfixroot}/core"/>
     <untar dest="${pfixroot}" compression="gzip" overwrite="true" src="${data.tar.gz}"/>
   </target>
-
-
   	
   <target name="apt">
     <taskdef name="pfx-apt"
-      classpathref="maven.plugin.classpath"
+      classpathref="plugin.classpath"
       classname="de.schlund.pfixcore.generator.iwrpgen.AptTask"
       description="Pustefix APT task" />
-      
-    <!--  apt  -->
-    
     <pfx-apt
-      classpathref="maven.plugin.classpath"
+      classpathref="plugin.classpath"
       srcdir="${basedir}/src/main/java"
       destdir="${basedir}/target/classes"
       preprocessdir="${aptdir}"
       encoding="UTF-8"
       factory="de.schlund.pfixcore.util.CommonAnnotationProcessorFactory" />
-      
   </target>
 	
   <target name="webxml">
   	<property name="webinf" location="${pfixroot}/.."/>
     <copy toDir="${webinf}" flatten="true">
       <resources>
-        <javaresource name="build/web.xml" classpathref="maven.plugin.classpath"/>
+        <javaresource name="build/web.xml" classpathref="plugin.classpath"/>
       </resources>
       <filterset>
         <filter token="PFIXROOT" value="${pfixroot}"/>
@@ -46,34 +40,11 @@
     </copy>
   </target>
 	
-  <target name="modules">
-    <!--  modules -->
-    
-    <taskdef
-       name="pfx-unpack-jar-module"
-       classname="de.schlund.pfixcore.util.UnpackModuleTask"
-       classpathref="maven.plugin.classpath"
-       description="Checks JARs for a Pustefix module deployment descriptor and unpacks the resources" />
-
-  	<property name="dir.extract.modules" location="${pfixroot}/modules"/>
-    <mkdir dir="${dir.extract.modules}"/>
-    <!--  TODO: basedir: wo kommen die modules her -->
-    <pfx-unpack-jar-module srcdir="${basedir}" extracttodir="${dir.extract.modules}" includes="${basedir}" />
-    <touch file="${dir.extract.modules}/TIMESTAMP"/>
-    <!--  TODO:
-    <foreach param="tmp.modules.buildxml" target="extract-modules-call-ant" inheritall="true" inheritrefs="true">
-      <fileset dir="${dir.extract.modules}">
-        <include name="*/build.xml"/>
-      </fileset>
-    </foreach>
-    <antcall target="scmerge-modules"/>
-     -->
-  </target>
   <target name="buildtimeprops">
     <taskdef
       name="pfx-buildtime-props"
       classname="de.schlund.pfixxml.config.BuildTimePropTask"
-      classpathref="maven.plugin.classpath"
+      classpathref="plugin.classpath"
     />
     <mkdir dir="${basedir}/target/classes"/>
     <pfx-buildtime-props
