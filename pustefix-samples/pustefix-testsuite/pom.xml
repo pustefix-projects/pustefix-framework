@@ -8,10 +8,6 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
     <version>0.14.0-SNAPSHOT</version>
   </parent>
 
-  <properties>
-    <pfixroot>${basedir}/target/${project.artifactId}-${project.version}/WEB-INF/pfixroot</pfixroot>
-  </properties>
-  
   <groupId>org.pustefixframework</groupId>
   <artifactId>pustefix-testsuite</artifactId>
   <version>0.14.0-SNAPSHOT</version>

@@ -39,13 +39,13 @@ import org.pustefixframework.maven.plugins.GenerateSCodes.Result;
  */
 public class PustefixStatuscodeMojo extends AbstractMojo {
     /**
-     * @parameter default-value="target/generated-sources/statuscodes"
+     * @parameter default-value="${project.build.directory}/generated-sources/statuscodes"
      * @required
      */
     private File genDir;
     
     /**
-     * @parameter default-value="src/main/resources"
+     * @parameter default-value="${basedir}/src/main/pustefix"
      * @required
      */
     private File docRoot;
@@ -61,8 +61,9 @@ public class PustefixStatuscodeMojo extends AbstractMojo {
     private String targetPath;
     
     /**
+     * If not specified, dyntxt/statuscodeinfo.xml is used.
+     * 
      * @parameter
-     * @required
      */
     private String[] includes;
     
@@ -82,7 +83,11 @@ public class PustefixStatuscodeMojo extends AbstractMojo {
 	if(!docRoot.exists()) return;
   
         DirectoryScanner ds = new DirectoryScanner();
-        if(includes!=null) ds.setIncludes(includes);
+        if(includes!=null) {
+            ds.setIncludes(includes);
+        } else {
+            ds.setIncludes(new String[] { "dyntxt/statuscodeinfo.xml" });
+        }
         if(excludes!=null) ds.setExcludes(excludes);
         ds.setBasedir(docRoot);
         ds.setCaseSensitive(true);
