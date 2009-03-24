@@ -24,6 +24,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
@@ -51,6 +53,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import de.schlund.pfixxml.config.BuildTimeProperties;
 import de.schlund.pfixxml.config.GlobalConfig;
 import de.schlund.pfixxml.config.GlobalConfigurator;
 import de.schlund.pfixxml.util.Xml;
@@ -86,6 +89,16 @@ public class PustefixWebappMojo extends AbstractMojo {
      */
     private String aptdir;
 
+    /**
+     * @parameter
+     */
+    private String machine;
+
+    /**
+     * @parameter
+     */
+    private String fqdn;
+    
     /**
      * @parameter default-value="${project.build.directory}/webapp-build.xml"
      */
@@ -126,10 +139,12 @@ public class PustefixWebappMojo extends AbstractMojo {
         GlobalConfig.reset();
         
         GlobalConfigurator.setDocroot(pfixroot);
+        new File(pfixroot).mkdirs();
 
         getLog().info("unpacked " + unpackModules() + " module(s)");
         try {
             buildFile();
+            buildtimeProps();
         } catch (IOException e) {
             throw new MojoExecutionException("io execption", e);
         }
@@ -174,7 +189,7 @@ public class PustefixWebappMojo extends AbstractMojo {
             return;
         }
         buildFile.getParentFile().mkdirs();
-        // TODO: expensice
+        // TODO: expensive
         src = getClass().getResourceAsStream("/build.xml");
         dest = new FileOutputStream(buildFile);
         while (true) {
@@ -186,6 +201,29 @@ public class PustefixWebappMojo extends AbstractMojo {
         }
         src.close();
         dest.close();
+    }
+    
+    private void buildtimeProps() throws IOException {
+        BuildTimeProperties.generate(makemode, getMachine(), getFqdn(), System.getProperty("user.name"), pfixroot, standaloneTomcat);
+    }
+
+    private String getMachine() throws UnknownHostException {
+        String str;
+        int idx;
+        
+        if (machine != null) {
+            return machine;
+        }
+        str = getFqdn();
+        idx = str.indexOf('.');
+        return idx == -1 ? str : str.substring(0, idx);
+    }
+
+    private String getFqdn() throws UnknownHostException {
+        if (fqdn != null) {
+            return fqdn;
+        }
+        return InetAddress.getLocalHost().getCanonicalHostName();
     }
     
     private String getDataTarGz() {

@@ -1,5 +1,5 @@
 <project>
-  <target name="generate" depends="data, apt, pfixroot, buildtimeprops, webxml"/>
+  <target name="generate" depends="data, apt, pfixroot, webxml"/>
 
   <target name="data">
     <delete dir="${pfixroot}/core"/>
@@ -61,25 +61,4 @@
     </copy>
   </target>
 	
-  <target name="buildtimeprops">
-    <taskdef
-      name="pfx-buildtime-props"
-      classname="de.schlund.pfixxml.config.BuildTimePropTask"
-      classpathref="plugin.classpath"
-    />
-    <mkdir dir="${pfixroot}"/>
-    <pfx-buildtime-props
-      file="${pfixroot}/buildtime.prop"
-      mode="${makemode}"
-      uid="uid"
-      machine="machine"
-      fqdn="fqdn"
-      docroot="docroot"
-     />
-    <echo append="true" file="${pfixroot}/buildtime.prop">
-__antprop_makemode=${makemode}
-__antprop_standalone.tomcat=${standalone.tomcat}
-    </echo>
-
-  </target>
 </project>
