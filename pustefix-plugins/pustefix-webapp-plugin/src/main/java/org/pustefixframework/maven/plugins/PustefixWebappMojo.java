@@ -102,7 +102,7 @@ public class PustefixWebappMojo extends AbstractMojo {
     /**
      * @parameter default-value="${project.build.directory}/webapp-build.xml"
      */
-    private File buildFile;
+    private File webappBuildXml;
 
     /**
      * @parameter default-value="test"
@@ -148,14 +148,19 @@ public class PustefixWebappMojo extends AbstractMojo {
         } catch (IOException e) {
             throw new MojoExecutionException("io execption", e);
         }
+        ant(webappBuildXml, "generate");
+        project.addCompileSourceRoot(aptdir);
+    }
+    
+    private void ant(File buildXml, String target) throws MojoExecutionException {
+        Project ant;
+        DefaultLogger logger;
+        
         try {
-            Project ant;
-            DefaultLogger logger;
-            
             ant = new Project();
             ant.init();
 
-            ProjectHelper.configureProject(ant, buildFile);
+            ProjectHelper.configureProject(ant, buildXml);
             logger = new DefaultLogger();
             logger.setOutputPrintStream(System.out);
             logger.setErrorPrintStream(System.err);
@@ -173,7 +178,13 @@ public class PustefixWebappMojo extends AbstractMojo {
                 throw new IllegalStateException(e);
             }
             ant.addReference("plugin.classpath", path(ant, pathStrings(pluginClasspath)));
-            ant.executeTarget("generate");
+            if (target == null) {
+                target = ant.getDefaultTarget();
+                if (target == null) {
+                    throw new MojoExecutionException(buildXml + ": missing default target");
+                }
+            }
+            ant.executeTarget(target);
         } catch (BuildException e) {
             throw new MojoExecutionException("build exception: " + e.getMessage(), e);
         }
@@ -185,13 +196,13 @@ public class PustefixWebappMojo extends AbstractMojo {
         OutputStream dest;
         int c;
         
-        if (buildFile.isFile()) {
+        if (webappBuildXml.isFile()) {
             return;
         }
-        buildFile.getParentFile().mkdirs();
+        webappBuildXml.getParentFile().mkdirs();
         // TODO: expensive
         src = getClass().getResourceAsStream("/build.xml");
-        dest = new FileOutputStream(buildFile);
+        dest = new FileOutputStream(webappBuildXml);
         while (true) {
             c = src.read();
             if (c == -1) {
@@ -246,23 +257,25 @@ public class PustefixWebappMojo extends AbstractMojo {
     }
     
     private static List<String> pathStrings(Collection<Artifact> artifacts) {
-        List<String> list;
+        List<String> lst;
         
-        list = new ArrayList<String>();
+        lst = new ArrayList<String>();
         if (artifacts != null) {
             for (Artifact a : artifacts) {
-                list.add(a.getFile().getPath());
+                lst.add(a.getFile().getPath());
             }
         }
 
-        return list;
+        return lst;
     }
     
     //--
     
-    public int unpackModules() throws BuildException {
+    public int unpackModules() throws MojoExecutionException {
         List<Artifact> artifacts;
         int count;
+        File dir;
+        File buildXml;
         
         if (modulesdir == null) {
             throw new BuildException("Mandatory attribute extractdir is not set!");
@@ -271,15 +284,21 @@ public class PustefixWebappMojo extends AbstractMojo {
         count = 0;
         for (Artifact artifact : artifacts) {
             if ("jar".equals(artifact.getType())) {
-                if (processJar(artifact.getFile())) {
+                dir = processJar(artifact.getFile());
+                if (dir != null) {
                     count++;
+                    buildXml = new File(dir, "build.xml");
+                    if (buildXml.exists()) {
+                        ant(buildXml, null);
+                    }
                 }
             }
         }
         return count;
     }
     
-    private boolean processJar(File jarFile) throws BuildException {
+    /** @return unpacked directory */
+    private File processJar(File jarFile) throws BuildException {
         JarFile jar;
         
         try {
@@ -289,7 +308,7 @@ public class PustefixWebappMojo extends AbstractMojo {
         }
         ZipEntry dde = jar.getEntry("META-INF/pustefix-module.xml");
         if (dde == null) {
-            return false;
+            return null;
         }
         InputStream dds;
         try {
@@ -331,7 +350,7 @@ public class PustefixWebappMojo extends AbstractMojo {
                 }
             }
         }
-        return true;
+        return new File(modulesdir, moduleName);
     }
     
     private void createFileFromStream(InputStream inputStream, File targetfile) throws IOException {
