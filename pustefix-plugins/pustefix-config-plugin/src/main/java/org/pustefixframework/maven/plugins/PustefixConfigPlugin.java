@@ -33,7 +33,6 @@ import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.DefaultLogger;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.ProjectHelper;
-import org.apache.tools.ant.Target;
 import org.apache.tools.ant.types.Path;
 import org.codehaus.plexus.util.StringUtils;
 
@@ -41,6 +40,7 @@ import org.codehaus.plexus.util.StringUtils;
  * Generates everything still on ant.
  *
  * @goal generate
+ * @phase generate-sources
  * @requiresDependencyResolution compile
  */
 public class PustefixConfigPlugin extends AbstractMojo {
@@ -107,6 +107,7 @@ public class PustefixConfigPlugin extends AbstractMojo {
             ant.setProperty("aptdir", aptdir);
             ant.setProperty("standalone.tomcat", Boolean.toString(standaloneTomcat));
             ant.setProperty("makemode", makemode);
+            ant.setProperty("data.tar.gz", getDataTarGz());
             try {
                 ant.addReference("maven.compile.classpath", path(ant, project.getCompileClasspathElements()));
             } catch (DependencyResolutionRequiredException e) {
@@ -114,12 +115,21 @@ public class PustefixConfigPlugin extends AbstractMojo {
             }
             ant.addReference("maven.plugin.classpath", path(ant, pathStrings(pluginClasspath)));
             ant.executeTarget("generate");
-            // project.addCompileSourceRoot(sourceRoot.toString());
         } catch (BuildException e) {
             throw new MojoExecutionException("Ant failure: " + e.getMessage(), e);
         }
+        project.addCompileSourceRoot(aptdir);
     }
 
+    private String getDataTarGz() {
+        for (Artifact artifact : pluginClasspath) {
+            if ("data".equals(artifact.getClassifier()) && "pustefix-core".equals(artifact.getArtifactId()) 
+                    && "org.pustefixframework".equals(artifact.getGroupId())) {
+                return artifact.getFile().getAbsolutePath();
+            }
+        }
+        throw new IllegalStateException(pluginClasspath.toString());
+    }
     
     private Path path(Project antProject, List<String> items) {
         Path result;

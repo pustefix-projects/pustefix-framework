@@ -5,19 +5,12 @@
 
   <target name="data">
     <delete dir="${pfixroot}/core"/>
-    <untar dest="${pfixroot}" compression="gzip" overwrite="true" 
-           src="${user.home}/.m2/repository/org/pustefixframework/pustefix-core/0.14.0-SNAPSHOT/pustefix-core-0.14.0-SNAPSHOT-data.tar.gz"/>
+    <untar dest="${pfixroot}" compression="gzip" overwrite="true" src="${data.tar.gz}"/>
   </target>
 
 
   	
   <target name="apt">
-  	<echo>cp: ${maven.plugin.classpath}"</echo>
-  		
-    <path id="maven.plugin.classpath">
-      <pathelement path="${maven.plugin.classpath}"/>
-  	</path>
-
     <taskdef name="pfx-apt"
       classpathref="maven.plugin.classpath"
       classname="de.schlund.pfixcore.generator.iwrpgen.AptTask"
