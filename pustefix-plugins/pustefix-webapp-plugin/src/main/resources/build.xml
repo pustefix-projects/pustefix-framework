@@ -44,16 +44,16 @@
       classname="de.schlund.pfixxml.config.BuildTimePropTask"
       classpathref="plugin.classpath"
     />
-    <mkdir dir="${basedir}/target/classes"/>
+    <mkdir dir="${pfixroot}"/>
     <pfx-buildtime-props
-      file="${basedir}/target/classes/buildtime.prop"
+      file="${pfixroot}/buildtime.prop"
       mode="${makemode}"
       uid="uid"
       machine="machine"
       fqdn="fqdn"
       docroot="docroot"
      />
-    <echo append="true" file="${basedir}/target/classes/buildtime.prop">
+    <echo append="true" file="${pfixroot}/buildtime.prop">
 __antprop_makemode=${makemode}
 __antprop_standalone.tomcat=${standalone.tomcat}
     </echo>
