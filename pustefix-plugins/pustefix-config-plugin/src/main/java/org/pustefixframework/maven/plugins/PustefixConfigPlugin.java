@@ -25,6 +25,7 @@ import java.util.Collection;
 import java.util.List;
 
 import org.apache.maven.artifact.Artifact;
+import org.apache.maven.artifact.DependencyResolutionRequiredException;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.project.MavenProject;
@@ -43,53 +44,32 @@ import org.codehaus.plexus.util.StringUtils;
  * @requiresDependencyResolution compile
  */
 public class PustefixConfigPlugin extends AbstractMojo {
-    protected void executeTasks() throws MojoExecutionException {
-        try {
-            Project antProject;
-            DefaultLogger antLogger;
-            
-            antProject = new Project();
-            ProjectHelper.configureProject(antProject, new File("/home/mhm/Projects/pustefixframework/pustefix-plugins/pustefix-config-plugin/src/main/resources/build.xml"));
-            antLogger = new DefaultLogger();
-            antLogger.setOutputPrintStream(System.out);
-            antLogger.setErrorPrintStream(System.err);
-            antLogger.setMessageOutputLevel(getLog().isDebugEnabled() ? Project.MSG_DEBUG : Project.MSG_INFO );
-            antProject.addBuildListener(antLogger);
-            antProject.setBaseDir(project.getBasedir());
-            antProject.addReference("maven.compile.classpath", path(antProject, project.getCompileClasspathElements()));
-            antProject.addReference("maven.plugin.classpath", path(antProject, getPath(pluginClasspath)));
-            ((Target) antProject.getTargets().get("all")).execute();
-        } catch (BuildException e) {
-            throw new MojoExecutionException("An Ant BuildException has occured: " + e.getMessage(), e);
-        } catch (Exception e) {
-            throw new MojoExecutionException("Error executing ant tasks: " + e.getMessage(), e);
-        }
-    }
-
-    public Path path(Project antProject, List<String> items) {
-        Path result;
-        
-        result = new Path(antProject);
-        result.setPath(StringUtils.join(items.iterator(), File.pathSeparator));
-        return result;
-    	
-    }
-    public static List<String> getPath(Collection<Artifact> artifacts) {
-        List<String> list;
-        
-        list = new ArrayList<String>();
-        if (artifacts != null) {
-        	for (Artifact a : artifacts) {
-        		list.add(a.getFile().getPath());
-        	}
-        }
-
-        return list;
-    }
+    /**
+     * Docroot of the application
+     * 
+     * @parameter default-value="${project.build.directory}/${project.artifactId}-${project.version}/WEB-INF/pfixroot"
+     */
+    private String pfixroot;
+    
+    /**
+     * Where to place apt-generated classes.
+     * 
+     * @parameter default-value="${project.build.directory}/generated-sources/apt"
+     */
+    private String aptdir;
 
     /**
-     * The Maven project object
-     *
+     * @parameter default-value="test"
+     */
+    private String makemode;
+
+    /**
+     * @parameter default-value="true"
+     */
+    private boolean standaloneTomcat;
+    
+    
+    /**
      * @parameter expression="${project}"
      * @required
      * @readonly
@@ -97,33 +77,69 @@ public class PustefixConfigPlugin extends AbstractMojo {
     private MavenProject project;
 
     /**
-     * The plugin dependencies.
-     *
      * @parameter expression="${plugin.artifacts}"
      * @required
      * @readonly
      */
-    private List pluginClasspath;
+    private List<Artifact> pluginClasspath;
 
-    /**
-     * This folder is added to the list of those folders
-     * containing source to be compiled. Use this if your
-     * ant script generates source code.
-     *
-     * @parameter expression="${sourceRoot}"
-     */
-    private File sourceRoot;
-
+    
+    
     /**
      * @see org.apache.maven.plugin.Mojo#execute()
      */
     public void execute() throws MojoExecutionException {
-    	executeTasks();
+        try {
+            Project ant;
+            DefaultLogger logger;
+            
+            getLog().info("init");
+            ant = new Project();
+            ant.init();
+            ProjectHelper.configureProject(ant, new File("/home/mhm/Projects/pustefixframework/pustefix-plugins/pustefix-config-plugin/src/main/resources/build.xml"));
+            logger = new DefaultLogger();
+            logger.setOutputPrintStream(System.out);
+            logger.setErrorPrintStream(System.err);
+            logger.setMessageOutputLevel(getLog().isDebugEnabled() ? Project.MSG_DEBUG : Project.MSG_INFO);
+            ant.addBuildListener(logger);
+            ant.setBaseDir(project.getBasedir());
+            ant.setProperty("pfixroot", pfixroot);
+            ant.setProperty("aptdir", aptdir);
+            ant.setProperty("standalone.tomcat", Boolean.toString(standaloneTomcat));
+            ant.setProperty("makemode", makemode);
+            try {
+                ant.addReference("maven.compile.classpath", path(ant, project.getCompileClasspathElements()));
+            } catch (DependencyResolutionRequiredException e) {
+                throw new IllegalStateException(e);
+            }
+            ant.addReference("maven.plugin.classpath", path(ant, pathStrings(pluginClasspath)));
+            ant.executeTarget("generate");
+            // project.addCompileSourceRoot(sourceRoot.toString());
+        } catch (BuildException e) {
+            throw new MojoExecutionException("Ant failure: " + e.getMessage(), e);
+        }
+    }
 
-        if (sourceRoot != null) {
-            getLog().info( "Registering compile source root " + sourceRoot );
-            project.addCompileSourceRoot( sourceRoot.toString() );
+    
+    private Path path(Project antProject, List<String> items) {
+        Path result;
+        
+        result = new Path(antProject);
+        result.setPath(StringUtils.join(items.iterator(), File.pathSeparator));
+        return result;
+        
+    }
+    
+    private static List<String> pathStrings(Collection<Artifact> artifacts) {
+        List<String> list;
+        
+        list = new ArrayList<String>();
+        if (artifacts != null) {
+            for (Artifact a : artifacts) {
+                list.add(a.getFile().getPath());
+            }
         }
 
+        return list;
     }
 }

@@ -1,5 +1,7 @@
 <project>
-  <target name="generate" depends="data, apt, pfixroot, webxml, modules, buildtimeprops" />
+  <target name="generate" depends="data, apt, pfixroot, webxml, modules, buildtimeprops">
+  	<echo>generate</echo>
+  </target>
 
   <target name="data">
     <delete dir="${pfixroot}/core"/>
