@@ -11,7 +11,7 @@
   <name>Pustefix Config Plugin</name>
   
   <groupId>org.pustefixframework.maven.plugins</groupId>
-  <artifactId>pustefix-config-plugin</artifactId>
+  <artifactId>pustefix-webapp-plugin</artifactId>
   <version>0.14.0-SNAPSHOT</version>
     
   <packaging>maven-plugin</packaging>

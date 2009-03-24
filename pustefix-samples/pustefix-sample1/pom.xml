@@ -26,13 +26,6 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
       <version>0.14.0-SNAPSHOT</version>
     </dependency>
     <dependency>
-      <groupId>org.pustefixframework</groupId>
-      <artifactId>pustefix-core</artifactId>
-      <classifier>data</classifier>
-      <version>0.14.0-SNAPSHOT</version>
-      <type>tar.gz</type>
-    </dependency>
-    <dependency>
       <groupId>org.pustefixframework.webservices</groupId>
       <artifactId>pustefix-webservices-core</artifactId>
       <version>0.14.0-SNAPSHOT</version>      
@@ -61,7 +54,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
     <plugins> 
       <plugin>
         <groupId>org.pustefixframework.maven.plugins</groupId>
-        <artifactId>pustefix-config-plugin</artifactId>
+        <artifactId>pustefix-webapp-plugin</artifactId>
         <version>0.14.0-SNAPSHOT</version>
         <executions>
           <execution>

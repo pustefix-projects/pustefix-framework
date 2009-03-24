@@ -43,7 +43,7 @@ import org.codehaus.plexus.util.StringUtils;
  * @phase generate-sources
  * @requiresDependencyResolution compile
  */
-public class PustefixConfigMojo extends AbstractMojo {
+public class PustefixWebappMojo extends AbstractMojo {
     /**
      * Docroot of the application
      * 
@@ -95,7 +95,7 @@ public class PustefixConfigMojo extends AbstractMojo {
             
             ant = new Project();
             ant.init();
-            ProjectHelper.configureProject(ant, new File("/home/mhm/Projects/pustefixframework/pustefix-plugins/pustefix-config-plugin/src/main/resources/build.xml"));
+            ProjectHelper.configureProject(ant, new File("/home/mhm/Projects/pustefixframework/pustefix-plugins/pustefix-webapp-plugin/src/main/resources/build.xml"));
             logger = new DefaultLogger();
             logger.setOutputPrintStream(System.out);
             logger.setErrorPrintStream(System.err);
