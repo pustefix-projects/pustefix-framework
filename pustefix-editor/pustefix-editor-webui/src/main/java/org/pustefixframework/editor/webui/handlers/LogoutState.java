@@ -23,6 +23,7 @@ public class LogoutState extends StateImpl {
     SessionResource sessionResource;
     ProjectsResource projectsResource;
 
+    @Override
     public ResultDocument getDocument(Context context, PfixServletRequest req) throws Exception {;
         
         if (!isDirectTrigger(context, req) || isSubmitAuthTrigger(context, req)) {

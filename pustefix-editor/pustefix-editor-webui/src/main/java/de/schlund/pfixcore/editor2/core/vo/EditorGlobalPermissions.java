@@ -56,6 +56,7 @@ public class EditorGlobalPermissions implements Cloneable {
         this.admin = flag;
     }
     
+    @Override
     public Object clone() {
         EditorGlobalPermissions obj = new EditorGlobalPermissions();
         obj.setAdmin(this.isAdmin());

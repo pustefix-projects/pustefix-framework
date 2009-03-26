@@ -37,6 +37,7 @@ public class BranchDynIncludePartHandler extends CommonBranchIncludePartHandler 
         this.dynIncludeResource = dynIncludeResource;
     }
 
+    @Override
     protected CommonIncludesResource getResource(Context context) {
         return dynIncludeResource;
     }

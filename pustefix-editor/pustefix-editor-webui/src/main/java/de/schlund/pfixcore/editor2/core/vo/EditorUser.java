@@ -226,6 +226,7 @@ public class EditorUser implements Cloneable, Comparable<EditorUser> {
      * 
      * @see java.lang.Object#clone()
      */
+    @Override
     public Object clone() {
         EditorUser obj = new EditorUser(this.getUsername());
         obj.setCryptedPassword(this.getCryptedPassword());

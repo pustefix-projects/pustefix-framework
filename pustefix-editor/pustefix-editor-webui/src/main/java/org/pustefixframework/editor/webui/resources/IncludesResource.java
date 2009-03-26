@@ -35,11 +35,13 @@ import org.w3c.dom.Element;
 import de.schlund.pfixxml.ResultDocument;
 
 public class IncludesResource extends CommonIncludesResource {
+    @Override
     protected IncludePartThemeVariant internalSelectIncludePart(Project project, String path, String part, String theme) {
         IncludePartThemeVariant variant = project.findIncludePartThemeVariant(path, part, theme);
         return variant;
     }
 
+    @Override
     protected Collection<Theme> getPossibleThemes(IncludePartThemeVariant selectedIncludePart, Project project, Collection<Page> pages) {
         TreeSet<Theme> themes = new TreeSet<Theme>();
         for (Iterator<Theme> i = selectedIncludePart.getIncludePart().getPossibleThemes().iterator(); i.hasNext();) {
@@ -77,6 +79,7 @@ public class IncludesResource extends CommonIncludesResource {
         return themes;
     }
 
+    @Override
     protected void renderAllIncludes(ResultDocument resdoc, Element elem, Project project) {
         TreeSet<IncludePartThemeVariant> includes = new TreeSet<IncludePartThemeVariant>(project.getAllIncludeParts());
         HashMap<String, Element> directoryNodes = new HashMap<String, Element>();
@@ -120,6 +123,7 @@ public class IncludesResource extends CommonIncludesResource {
         }
     }
 
+    @Override
     protected Set<IncludeFile> getIncludeFilesInDirectory(String dirname, Project project) {
         Collection<IncludePartThemeVariant> parts = project.getAllIncludeParts();
         TreeSet<IncludeFile> files = new TreeSet<IncludeFile>();
@@ -139,6 +143,7 @@ public class IncludesResource extends CommonIncludesResource {
         return files;
     }
 
+    @Override
     protected Set<IncludePartThemeVariant> getIncludePartsInFile(String filename, Project project) {
         Collection<IncludePartThemeVariant> allparts = project.getAllIncludeParts();
         TreeSet<IncludePartThemeVariant> parts = new TreeSet<IncludePartThemeVariant>();

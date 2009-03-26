@@ -25,6 +25,7 @@ import de.schlund.pfixcore.workflow.ContextResourceManager;
 
 public class StaticIncludesState extends CommonIncludeState {
 
+    @Override
     protected CommonIncludesResource getResource(ContextResourceManager crm) {
         return (CommonIncludesResource) crm.getResource(IncludesResource.class.getName());
     }

@@ -37,6 +37,7 @@ import org.w3c.dom.Element;
 import de.schlund.pfixxml.ResultDocument;
 
 public class DynIncludesResource extends CommonIncludesResource {
+    @Override
     protected IncludePartThemeVariant internalSelectIncludePart(Project project, String path, String part, String theme) {
         IncludeFile incFile = project.getDynIncludeFile(path);
         if (incFile == null) {
@@ -55,6 +56,7 @@ public class DynIncludesResource extends CommonIncludesResource {
         return null;
     }
 
+    @Override
     protected Collection<Theme> getPossibleThemes(IncludePartThemeVariant selectedIncludePart, Project project, Collection<Page> dummy) {
         if (!securitymanager.mayEditIncludes(project)) {
             // Do not present alternative themes to users who may not
@@ -76,6 +78,7 @@ public class DynIncludesResource extends CommonIncludesResource {
         return themes;
     }
 
+    @Override
     protected void renderAllIncludes(ResultDocument resdoc, Element elem, Project project) {
         TreeSet<IncludeFile> incFiles = new TreeSet<IncludeFile>(project.getDynIncludeFiles());
         Map<String, Element> directoryNodes = new HashMap<String, Element>();
@@ -121,6 +124,7 @@ public class DynIncludesResource extends CommonIncludesResource {
         }
     }
 
+    @Override
     protected Set<IncludeFile> getIncludeFilesInDirectory(String dirname, Project project) {
         TreeSet<IncludeFile> files = new TreeSet<IncludeFile>();
         for (Iterator<IncludeFile> i = project.getDynIncludeFiles().iterator(); i.hasNext();) {
@@ -138,6 +142,7 @@ public class DynIncludesResource extends CommonIncludesResource {
         return files;
     }
 
+    @Override
     protected Set<IncludePartThemeVariant> getIncludePartsInFile(String filename, Project project) {
         TreeSet<IncludePartThemeVariant> parts = new TreeSet<IncludePartThemeVariant>();
         IncludeFile incFile = project.getDynIncludeFile(filename);

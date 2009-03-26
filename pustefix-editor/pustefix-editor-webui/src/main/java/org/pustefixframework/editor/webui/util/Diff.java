@@ -23,6 +23,7 @@ public class Diff {
             posB = b;
         }
         
+        @Override
         public boolean equals(Object o) {
             if (o instanceof Match) {
                 Match m = (Match) o;

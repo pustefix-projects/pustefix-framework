@@ -42,6 +42,7 @@ import de.schlund.pfixxml.ResultDocument;
  */
 public abstract class CommonIncludeState extends StaticState {
 
+    @Override
     public ResultDocument getDocument(Context context, PfixServletRequest preq)
             throws Exception {
         ResultDocument doc = super.getDocument(context, preq);

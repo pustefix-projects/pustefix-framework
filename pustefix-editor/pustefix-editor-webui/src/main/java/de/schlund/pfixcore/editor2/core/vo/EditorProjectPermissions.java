@@ -83,6 +83,7 @@ public class EditorProjectPermissions implements Cloneable {
     /* (non-Javadoc)
      * @see java.lang.Object#clone()
      */
+    @Override
     public Object clone() {
         EditorProjectPermissions obj = new EditorProjectPermissions();
         obj.setEditImages(this.isEditImages());

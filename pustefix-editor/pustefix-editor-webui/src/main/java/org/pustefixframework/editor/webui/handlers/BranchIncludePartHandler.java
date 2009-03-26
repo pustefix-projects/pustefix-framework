@@ -37,6 +37,7 @@ public class BranchIncludePartHandler extends CommonBranchIncludePartHandler {
         this.includesResource = includesResource;
     }
 
+    @Override
     protected CommonIncludesResource getResource(Context context) {
         return includesResource;
     }
