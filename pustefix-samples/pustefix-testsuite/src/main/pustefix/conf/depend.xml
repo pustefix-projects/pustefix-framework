@@ -45,6 +45,6 @@
   <standardpage name="Test4Succeeded" xml="xml/test.xml"/>
   
   <standardpage name="Test5" xml="xml/test.xml"/>
-  <standardpage name="Test5Form" xml="test.xml"/>
+  <standardpage name="Test5Form" xml="xml/test.xml"/>
   <standardpage name="Test5Failed" xml="xml/test.xml"/>
 </make>
