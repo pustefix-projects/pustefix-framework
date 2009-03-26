@@ -34,6 +34,7 @@ import org.pustefixframework.config.customization.PropertiesBasedCustomizationIn
 import com.icl.saxon.TransformerFactoryImpl;
 
 import de.schlund.pfixxml.config.BuildTimeProperties;
+import de.schlund.pfixxml.config.GlobalConfig;
 
 /**
  * @author mleidig
@@ -46,28 +47,26 @@ public class CreateWebXmlTask extends Task {
     
     @Override
     public void execute() throws BuildException {
-        
         Properties buildTimeProperties = BuildTimeProperties.getProperties();
         CustomizationInfo info = new PropertiesBasedCustomizationInfo(buildTimeProperties);
 
-        File srcFile = projectConfig;
-        File confDir = srcFile.getParentFile();
+        File confDir = projectConfig.getParentFile();
         String projectName = confDir.getParentFile().getName();
                 
         File destFile = new File(webappsDir, "web.xml");
             
-        String configFiles = srcFile.toURI().toString();
-        File springConfigFile = new File(confDir,"spring.xml");
-        if(springConfigFile.exists()) configFiles+=" "+springConfigFile.toURI().toString();
+        String configFiles = toPfixrootUri(projectConfig);
+        File springConfigFile = new File(confDir, "spring.xml");
+        if (springConfigFile.exists()) configFiles+=" "+toPfixrootUri(springConfigFile);
                 
         TransformerFactory tf = new TransformerFactoryImpl();
         try {
             StreamSource xsl = new StreamSource(styleSheet);
-            StreamSource xml = new StreamSource(srcFile);
+            StreamSource xml = new StreamSource(projectConfig);
             StreamResult out = new StreamResult(destFile);
             Transformer t = tf.newTransformer(xsl);
             t.setParameter("projectname", projectName);
-            t.setParameter("projectfile", srcFile.getPath());
+            t.setParameter("projectfile", projectConfig.getPath());
             t.setParameter("commonprojectsfile", commonConfig.getPath());
             t.setParameter("configfiles", configFiles);
             t.setParameter("customizationinfo", info);
@@ -75,6 +74,10 @@ public class CreateWebXmlTask extends Task {
         } catch(Exception x) {
             throw new BuildException(x);
         }
+    }
+    
+    private String toPfixrootUri(File file) {
+        return "WEB-INF/pfixroot/" + file.getParentFile().getName() + "/" + file.getName();  
     }
     
     public void setStyleSheet(File styleSheet) {
