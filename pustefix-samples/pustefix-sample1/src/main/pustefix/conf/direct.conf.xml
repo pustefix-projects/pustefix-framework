@@ -14,7 +14,7 @@
   <directoutputpagerequest name="install">
     <directoutputstate class="de.schlund.pfixcore.workflow.app.FileDownloadDOState" />
     <properties>
-      <prop name="downloadfile">README.1st</prop>
+      <prop name="downloadfile">htdocs/style.css</prop>
       <prop name="downloadmimetype">text/plain</prop>
     </properties>
   </directoutputpagerequest>
