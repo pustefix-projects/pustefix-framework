@@ -58,7 +58,8 @@ public class ProjectImpl extends AbstractProject {
             ProjectTO  projectTO = getProjectTO();
             this.name = projectTO.name;
             this.comment = projectTO.comment;
-            this.prefixToNamespaceMappings = projectTO.prefixToNamespaceMappings;            
+            this.prefixToNamespaceMappings = projectTO.prefixToNamespaceMappings;
+            initialized = true;
         }
     }
     
