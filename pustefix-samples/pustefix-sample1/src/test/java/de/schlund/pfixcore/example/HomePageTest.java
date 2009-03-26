@@ -17,8 +17,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import de.schlund.pfixxml.serverutil.SessionHelper;
 
 @ContextConfiguration(loader=PustefixWebApplicationContextLoader.class,locations={
-    "file:target/pustefix-sample1-0.14.0-SNAPSHOT/WEB-INF/pfixroot/conf/project.xml",
-    "file:target/pustefix-sample1-0.14.0-SNAPSHOT/WEB-INF/pfixroot/conf/spring.xml"})
+    "pfixroot:/conf/project.xml", "pfixroot:/conf/spring.xml"})
 public class HomePageTest extends AbstractJUnit38SpringContextTests {
     
     @Autowired
