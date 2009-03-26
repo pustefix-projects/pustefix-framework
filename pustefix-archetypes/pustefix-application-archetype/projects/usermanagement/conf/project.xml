@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project-config xmlns="http://www.pustefix-framework.org/2008/namespace/project-config">
+
+<project>
+  <name>usermanagement</name>
+  <description>usermanagementcomment</description>
+  </project>
+
+  <editor>
+    <enabled>true</enabled>
+    <location>http://cms.${fqdn}/</location>
+  </editor>
+
+  <xml-generator>
+    <config-file>pfixroot:/usermanagement/conf/depend.xml</config-file>
+  </xml-generator>
+
+  <http-server>
+
+    <http-port>
+      <address>${fqdn}</address>
+    </http-port>
+
+    <!-- we do not use SSL here 
+    <https-port>
+      <address>${fqdn}</address>
+      <ssl-key>pfixroot:/usermanagement/conf/server.key</ssl-key>
+      <ssl-crt>pfixroot:/usermanagement/conf/server.crt</ssl-crt>
+    </https-port>
+    -->
+
+    <server-name>usermanagement.${fqdn}</server-name>
+    <server-alias>usermanagement.${machine}</server-alias>
+
+    <apache>
+      <literal>
+        <!-- Stuff that is copied to the Apache configuration -->
+      </literal>
+    </apache>
+
+    <tomcat>
+      <enable-extra-webapps>false</enable-extra-webapps>
+    </tomcat>
+
+  </http-server>
+
+  <application>
+
+    <docroot-path>pfixroot:/usermanagement/htdocs</docroot-path>
+    <default-path>/xml/user</default-path>
+
+    <context-xml-service>
+      <path>/xml/user</path>
+      <config-file>pfixroot:/usermanagement/conf/user.conf.xml</config-file>
+    </context-xml-service>
+
+    <static>
+      <path>usermanagement/img</path>
+    </static>
+
+  </application>
+</project-config>
