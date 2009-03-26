@@ -97,7 +97,7 @@ public class XMLSerializer {
         DocumentBuilder db = createDocumentBuilder();
         Document doc;
         try {
-            doc = db.parse(new ByteArrayInputStream(xml.getBytes(Charset.forName("UTF-8"))));
+            doc = db.parse(new ByteArrayInputStream(xml.getBytes("UTF-8")));
         } catch (SAXException e) {
             throw new IllegalArgumentException("Error while parsing string representation of node", e);
         } catch (IOException e) {

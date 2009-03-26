@@ -66,6 +66,15 @@ public class ImageImpl extends AbstractImage {
         return path;
     }
     
+    // dump if we have Java 5
+    private static byte[] copy(byte[] orig, int len) {
+        byte[] copy;
+        
+        copy = new byte[len];
+        System.arraycopy(orig, 0, copy, 0, Math.min(orig.length, len));
+        return copy;
+    }
+
     public void replaceFile(File newFile) throws EditorIOException, EditorSecurityException {
         try {
             byte[] buffer = new byte[4096];
@@ -75,10 +84,10 @@ public class ImageImpl extends AbstractImage {
             while ((bytesRead = s.read(buffer, totalBytesRead, buffer.length - totalBytesRead)) != -1) {
                 totalBytesRead += bytesRead;
                 if (buffer.length <= totalBytesRead) {
-                    buffer = Arrays.copyOf(buffer, buffer.length * 2);
+                    buffer = copy(buffer, buffer.length * 2);
                 }
             }
-            buffer = Arrays.copyOf(buffer, totalBytesRead);
+            buffer = copy(buffer, totalBytesRead);
             remoteServiceUtil.getRemoteImageService().replaceFile(getPath(), buffer);
         } catch (IOException e) {
             throw new EditorIOException("Error while reading file " + newFile.getAbsolutePath(), e);
