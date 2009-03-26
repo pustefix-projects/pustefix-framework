@@ -94,11 +94,11 @@ public class PustefixTargetUpdateServiceImpl implements
     private void checkAutoUpdating() {
         Properties properties = new Properties();
         try {
-            PropertyFileReader.read(ResourceUtil.getFileResourceFromDocroot("common/conf/factory.xml"), properties);
+            PropertyFileReader.read(ResourceUtil.getFileResourceFromDocroot("conf/factory.xml"), properties);
         } catch (IOException e) {
-            throw new RuntimeException("Error while reading common/conf/factory.xml", e);
+            throw new RuntimeException("Error while reading conf/factory.xml", e);
         } catch (ParserException e) {
-            throw new RuntimeException("Error while reading common/conf/factory.xml", e);
+            throw new RuntimeException("Error while reading conf/factory.xml", e);
         }
         String generatorProp = properties.getProperty("de.schlund.pfixcore.editor2.updatetargets");
         boolean generatorFlag = false;
