@@ -3,14 +3,11 @@
             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
             xsi:schemaLocation="http://www.pustefix-framework.org/2008/namespace/properties-config ../../core/schema/properties-config.xsd">
     
-    <prop name="pustefix.log4j.config">common/conf/pfixlog.xml</prop>
+    <prop name="pustefix.log4j.config">conf/pfixlog.xml</prop>
     
     <!-- List of all factories to init -->
     <prop name="factory.initialize.02">de.schlund.pfixxml.targets.SPCacheFactory</prop>
     <prop name="factory.initialize.04">de.schlund.pfixxml.targets.cachestat.SPCacheStatistic</prop>
-    
-    <!-- Enable target update loop -->
-    <prop name="de.schlund.pfixcore.editor2.updatetargets">true</prop>
     
     <!-- SPCacheFactory -->
     <prop name="targetcache.cacheclass">de.schlund.pfixxml.targets.LRUCache</prop>
