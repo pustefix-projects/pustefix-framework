@@ -38,6 +38,7 @@ public abstract class AbstractTheme implements Theme {
     /* (non-Javadoc)
      * @see java.lang.Object#equals(java.lang.Object)
      */
+    @Override
     public boolean equals(Object obj) {
         if (obj instanceof Theme) {
             Theme theme = (Theme) obj;
@@ -50,6 +51,7 @@ public abstract class AbstractTheme implements Theme {
     /* (non-Javadoc)
      * @see java.lang.Object#hashCode()
      */
+    @Override
     public int hashCode() {
         return ("THEME: " + this.toString()).hashCode();
     }
@@ -57,6 +59,7 @@ public abstract class AbstractTheme implements Theme {
     /* (non-Javadoc)
      * @see java.lang.Object#toString()
      */
+    @Override
     public String toString() {
         return this.getName();
     }

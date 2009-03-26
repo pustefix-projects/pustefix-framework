@@ -28,6 +28,7 @@ public abstract class AbstractProject implements Project {
     /* (non-Javadoc)
      * @see java.lang.Object#equals(java.lang.Object)
      */
+    @Override
     public boolean equals(Object obj) {
         if (obj instanceof Project) {
             return this.getName().equals(((Project) obj).getName());
@@ -39,6 +40,7 @@ public abstract class AbstractProject implements Project {
     /* (non-Javadoc)
      * @see java.lang.Object#hashCode()
      */
+    @Override
     public int hashCode() {
         return ("PROJECT: " + this.toString()).hashCode();
     }
@@ -46,6 +48,7 @@ public abstract class AbstractProject implements Project {
     /* (non-Javadoc)
      * @see java.lang.Object#toString()
      */
+    @Override
     public String toString() {
         return this.getName();
     }

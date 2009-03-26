@@ -38,6 +38,7 @@ public abstract class AbstractTarget implements Target {
     /* (non-Javadoc)
      * @see java.lang.Object#equals(java.lang.Object)
      */
+    @Override
     public boolean equals(Object obj) {
         if (obj instanceof Target) {
             Target target = (Target) obj;
@@ -49,12 +50,14 @@ public abstract class AbstractTarget implements Target {
     /* (non-Javadoc)
      * @see java.lang.Object#hashCode()
      */
+    @Override
     public int hashCode() {
         return ("TARGET: " + this.toString()).hashCode();
     }
     /* (non-Javadoc)
      * @see java.lang.Object#toString()
      */
+    @Override
     public String toString() {
         return (this.getProject() == null) ? "<null>" : this.getProject().getName() + "/" + this.getName();
     }

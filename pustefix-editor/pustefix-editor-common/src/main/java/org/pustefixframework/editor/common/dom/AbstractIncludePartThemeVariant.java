@@ -49,6 +49,7 @@ public abstract class AbstractIncludePartThemeVariant implements
      * 
      * @see java.lang.Object#equals(java.lang.Object)
      */
+    @Override
     public boolean equals(Object obj) {
         if (!(obj instanceof IncludePartThemeVariant)) {
             return false;
@@ -63,6 +64,7 @@ public abstract class AbstractIncludePartThemeVariant implements
      * 
      * @see java.lang.Object#hashCode()
      */
+    @Override
     public int hashCode() {
         return ("INCLUDEPARTTHEMEVARIANT: " + this.toString()).hashCode();
     }
@@ -72,6 +74,7 @@ public abstract class AbstractIncludePartThemeVariant implements
      * 
      * @see java.lang.Object#toString()
      */
+    @Override
     public String toString() {
         return this.getIncludePart().toString() + " ("
                 + this.getTheme().getName() + ")";

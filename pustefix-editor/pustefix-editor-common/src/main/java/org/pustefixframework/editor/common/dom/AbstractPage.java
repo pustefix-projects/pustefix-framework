@@ -53,6 +53,7 @@ public abstract class AbstractPage implements Page {
      * 
      * @see java.lang.Object#equals(java.lang.Object)
      */
+    @Override
     public boolean equals(Object obj) {
         if (!(obj instanceof Page)) {
             return false;
@@ -67,6 +68,7 @@ public abstract class AbstractPage implements Page {
      * 
      * @see java.lang.Object#hashCode()
      */
+    @Override
     public int hashCode() {
         return ("PAGE: " + this.toString()).hashCode();
     }
@@ -76,6 +78,7 @@ public abstract class AbstractPage implements Page {
      * 
      * @see java.lang.Object#toString()
      */
+    @Override
     public String toString() {
         return this.getProject().getName() + "/" + this.getFullName();
     }

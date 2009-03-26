@@ -67,6 +67,7 @@ public abstract class AbstractVariant implements Variant {
      * 
      * @see java.lang.Object#equals(java.lang.Object)
      */
+    @Override
     public boolean equals(Object obj) {
         if (obj instanceof Variant) {
             Variant variant = (Variant) obj;
@@ -81,6 +82,7 @@ public abstract class AbstractVariant implements Variant {
      * 
      * @see java.lang.Object#hashCode()
      */
+    @Override
     public int hashCode() {
         return ("VARIANT: " + this.toString()).hashCode();
     }
@@ -90,6 +92,7 @@ public abstract class AbstractVariant implements Variant {
      * 
      * @see java.lang.Object#toString()
      */
+    @Override
     public String toString() {
         return this.getName();
     }

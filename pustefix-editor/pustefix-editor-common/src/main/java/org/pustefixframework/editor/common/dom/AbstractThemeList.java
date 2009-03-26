@@ -31,6 +31,7 @@ public abstract class AbstractThemeList implements ThemeList {
         return this.getThemes().contains(theme);
     }
 
+    @Override
     public boolean equals(Object obj) {
         if (!(obj instanceof ThemeList)) {
             return false;
@@ -51,10 +52,12 @@ public abstract class AbstractThemeList implements ThemeList {
         return !i2.hasNext();
     }
 
+    @Override
     public int hashCode() {
         return ("THEMELIST: " + this.toString()).hashCode();
     }
 
+    @Override
     public String toString() {
         StringBuffer buf = new StringBuffer();
         for (Iterator<Theme> i = this.getThemes().iterator(); i.hasNext();) {
