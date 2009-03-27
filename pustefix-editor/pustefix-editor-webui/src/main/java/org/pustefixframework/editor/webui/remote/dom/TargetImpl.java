@@ -46,12 +46,21 @@ public class TargetImpl extends AbstractTarget {
     
     private RemoteServiceUtil remoteServiceUtil;
     private String name;
+    private boolean auxDepTarget;
 
     public TargetImpl(RemoteServiceUtil remoteServiceUtil, String name) {
-        this.remoteServiceUtil = remoteServiceUtil;
-        this.name = name;
+        this(remoteServiceUtil, name, false);
     }
     
+    public TargetImpl(RemoteServiceUtil remoteServiceUtil, String name, boolean auxDepTarget) {
+        this.remoteServiceUtil = remoteServiceUtil;
+        if (name == null) {
+            throw new IllegalArgumentException("name must not be null");
+        }
+        this.name = name;
+        this.auxDepTarget = auxDepTarget;
+    }
+
     public Collection<Page> getAffectedPages() {
         TargetTO targetTO = getTargetTO();
         LinkedList<Page> pages = new LinkedList<Page>();
@@ -65,13 +74,23 @@ public class TargetImpl extends AbstractTarget {
         TargetTO targetTO = getTargetTO();
         LinkedList<Target> targets = new LinkedList<Target>();
         for (String targetName : targetTO.auxDependencies) {
-            targets.add(new TargetImpl(remoteServiceUtil, targetName));
+            if (targetName.startsWith("::aux:")) {
+                targetName = targetName.substring(6);
+                targets.add(new TargetImpl(remoteServiceUtil, targetName, true));
+            } else {
+                targets.add(new TargetImpl(remoteServiceUtil, targetName));
+            }
         }
         return targets;
     }
     
     public Document getContentXML() throws EditorIOException, EditorParsingException {
-        return (Document) (new XMLSerializer()).deserializeNode(remoteServiceUtil.getRemoteTargetService().getTargetXML(name));
+        String xml = remoteServiceUtil.getRemoteTargetService().getTargetXML(name);
+        if (xml == null) {
+            return null;
+        } else {
+            return (Document) (new XMLSerializer()).deserializeNode(xml);
+        }
     }
     
     public Collection<Image> getImageDependencies(boolean recursive) throws EditorParsingException {
@@ -102,11 +121,17 @@ public class TargetImpl extends AbstractTarget {
     
     public Target getParentXML() {
         TargetTO targetTO = getTargetTO();
+        if (targetTO.parentXML == null) {
+            return null;
+        }
         return new TargetImpl(remoteServiceUtil, targetTO.parentXML);
     }
     
     public Target getParentXSL() {
         TargetTO targetTO = getTargetTO();
+        if (targetTO.parentXSL == null) {
+            return null;
+        }
         return new TargetImpl(remoteServiceUtil, targetTO.parentXSL);
     }
     
@@ -129,6 +154,24 @@ public class TargetImpl extends AbstractTarget {
     }
     
     private TargetTO getTargetTO() {
-        return remoteServiceUtil.getRemoteTargetService().getTarget(getName());
+        return remoteServiceUtil.getRemoteTargetService().getTarget(getName(), auxDepTarget);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (!super.equals(obj)) {
+            return false;
+        }
+        if (obj instanceof TargetImpl) {
+            TargetImpl t = (TargetImpl) obj;
+            return this.remoteServiceUtil.equals(t.remoteServiceUtil);
+        } else {
+            return false;
+        }
+    }
+
+    @Override
+    public int hashCode() {
+        return ("TARGET: " + super.hashCode() + remoteServiceUtil.hashCode()).hashCode();
     }
 }

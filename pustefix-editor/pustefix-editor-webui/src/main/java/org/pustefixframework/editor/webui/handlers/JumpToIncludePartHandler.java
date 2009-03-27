@@ -42,17 +42,24 @@ public class JumpToIncludePartHandler implements IHandler {
     public void handleSubmittedData(Context context, IWrapper wrapper)
             throws Exception {
         JumpToIncludePart input = (JumpToIncludePart) wrapper;
-        if (input.getProjectId() == null || input.getPath() == null
+        if (input.getProjectURI() == null || input.getPath() == null
                 || input.getPart() == null || input.getTheme() == null
                 || input.getType() == null) {
             return;
         }
+        String path = input.getPath();
+        if (!path.startsWith("pfixroot:") && !path.startsWith("module:")) {
+            if (!path.startsWith("/")) {
+                path = "/" + path;
+            }
+            path = "pfixroot:" + path;
+        }
         if (input.getType().equals("include")) {
-            projectsResource.selectProject(input.getProjectId());
-            includesResource.selectIncludePart(input.getPath(), input.getPart(), input.getTheme());
+            projectsResource.selectProject(input.getProjectURI());
+            includesResource.selectIncludePart(path, input.getPart(), input.getTheme());
         } else if (input.getType().equals("dyninclude")) {
-            projectsResource.selectProject(input.getProjectId());
-            dynIncludesResource.selectIncludePart(input.getPath(), input.getPart(), input.getTheme());
+            projectsResource.selectProject(input.getProjectURI());
+            dynIncludesResource.selectIncludePart(path, input.getPart(), input.getTheme());
         }
     }
 

@@ -24,8 +24,9 @@
               <li>
                 <pfx:button jumptopage="home" mode="force" normalclass="editor_submit">
                   <pfx:command name="SUBWRP">selectproject</pfx:command>
-                  <pfx:argument name="selectproject.ProjectName"><ixsl:value-of select="./@name"/></pfx:argument>
+                  <pfx:argument name="selectproject.ProjectURI"><ixsl:value-of select="./@uri"/></pfx:argument>
                   <ixsl:value-of select="./@comment"/>
+                  (<ixsl:value-of select="./@uri"/>)
                 </pfx:button>
               </li>
             </ixsl:for-each>

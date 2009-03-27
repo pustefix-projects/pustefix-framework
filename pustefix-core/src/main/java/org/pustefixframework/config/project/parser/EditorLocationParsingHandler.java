@@ -19,6 +19,8 @@
 package org.pustefixframework.config.project.parser;
 
 import org.pustefixframework.config.customization.CustomizationAwareParsingHandler;
+import org.pustefixframework.config.customization.CustomizationInfo;
+import org.pustefixframework.config.generic.ParsingUtils;
 import org.pustefixframework.config.project.EditorLocation;
 import org.w3c.dom.Element;
 
@@ -30,8 +32,10 @@ public class EditorLocationParsingHandler extends CustomizationAwareParsingHandl
     
     @Override
     protected void handleNodeIfActive(HandlerContext context) throws ParserException {
+        CustomizationInfo cusInfo = ParsingUtils.getSingleTopObject(CustomizationInfo.class, context);
         Element locationElement = (Element) context.getNode();
         String location = locationElement.getTextContent();
+        location = cusInfo.replaceVariables(location);
         context.getObjectTreeElement().addObject(new EditorLocation(location));
     }
     

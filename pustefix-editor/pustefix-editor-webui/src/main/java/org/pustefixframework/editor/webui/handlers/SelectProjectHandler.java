@@ -38,8 +38,8 @@ public class SelectProjectHandler implements IHandler {
     
     public void handleSubmittedData(Context context, IWrapper wrapper) throws Exception {
         SelectProject input = (SelectProject) wrapper;
-        if (!projectsResource.selectProject(input.getProjectId())) {
-            input.addSCodeProjectId(EditorStatusCodes.PRODUCTSELECT_UNKNOWN_PRODUCT);
+        if (!projectsResource.selectProject(input.getProjectURI())) {
+            input.addSCodeProjectURI(EditorStatusCodes.PRODUCTSELECT_UNKNOWN_PRODUCT);
         }
     }
 

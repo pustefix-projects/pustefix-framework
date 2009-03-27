@@ -18,7 +18,6 @@
 
 package org.pustefixframework.editor.backend.remote;
 
-import org.pustefixframework.container.annotations.Inject;
 import org.pustefixframework.editor.common.dom.Image;
 import org.pustefixframework.editor.common.dom.IncludeFile;
 import org.pustefixframework.editor.common.dom.IncludePartThemeVariant;
@@ -35,7 +34,6 @@ public class RemoteProjectServiceImpl implements RemoteProjectService {
     
     private ProjectFactoryService projectFactoryService;
     
-    @Inject
     public void setProjectFactoryService(ProjectFactoryService projectFactoryService) {
         this.projectFactoryService = projectFactoryService;
     }

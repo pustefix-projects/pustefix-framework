@@ -22,6 +22,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 import org.pustefixframework.editor.common.dom.AbstractIncludeFile;
+import org.pustefixframework.editor.common.dom.IncludeFile;
 import org.pustefixframework.editor.common.dom.IncludePart;
 import org.pustefixframework.editor.common.remote.service.RemoteCommonIncludeService;
 import org.pustefixframework.editor.common.remote.transferobjects.IncludeFileTO;
@@ -46,7 +47,12 @@ public abstract class CommonIncludeFileImpl extends AbstractIncludeFile {
     }
     
     public Document getContentXML(boolean forceUpdate) {
-        return (Document) (new XMLSerializer()).deserializeNode(getRemoteService().getIncludeFileXML(path, forceUpdate));
+        String xml = getRemoteService().getIncludeFileXML(path, forceUpdate);
+        if (xml != null) {
+            return (Document) (new XMLSerializer()).deserializeNode(xml);
+        } else {
+            return null;
+        }
     }
     
     public String getPath() {
@@ -84,6 +90,38 @@ public abstract class CommonIncludeFileImpl extends AbstractIncludeFile {
         return getRemoteService().getIncludeFile(path);
     }
     
+    @Override
+    public int compareTo(IncludeFile file) {
+        if (file instanceof CommonIncludeFileImpl) {
+            CommonIncludeFileImpl f = (CommonIncludeFileImpl) file;
+            if (this.remoteServiceUtil.equals(f.remoteServiceUtil)) {
+                return super.compareTo(file);
+            } else {
+                return -1;
+            }
+        } else {
+            return -1;
+        }
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (!super.equals(obj)) {
+            return false;
+        }
+        if (obj instanceof CommonIncludeFileImpl) {
+            CommonIncludeFileImpl f = (CommonIncludeFileImpl) obj;
+            return this.remoteServiceUtil.equals(f.remoteServiceUtil);
+        } else {
+            return false;
+        }
+    }
+
+    @Override
+    public int hashCode() {
+        return ("INCLUDEFILE: " + super.hashCode() + remoteServiceUtil.hashCode()).hashCode();
+    }
+
     protected abstract RemoteCommonIncludeService getRemoteService();
     
     protected abstract IncludePart newIncludePartInstance(String name);

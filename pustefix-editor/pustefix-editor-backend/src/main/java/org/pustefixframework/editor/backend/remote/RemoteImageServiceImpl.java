@@ -24,7 +24,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Collection;
 
-import org.pustefixframework.container.annotations.Inject;
 import org.pustefixframework.editor.common.dom.Image;
 import org.pustefixframework.editor.common.dom.Page;
 import org.pustefixframework.editor.common.exception.EditorIOException;
@@ -39,7 +38,6 @@ public class RemoteImageServiceImpl implements RemoteImageService {
     
     private ImageFactoryService imageFactoryService;
     
-    @Inject
     public void setImageFactoryService(ImageFactoryService imageFactoryService) {
         this.imageFactoryService = imageFactoryService;
     }

@@ -18,7 +18,6 @@
 
 package org.pustefixframework.editor.webui.resources;
 
-import java.io.File;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -32,9 +31,9 @@ import org.pustefixframework.editor.common.exception.EditorSecurityException;
 import org.w3c.dom.Element;
 
 import de.schlund.pfixcore.beans.InsertStatus;
+import de.schlund.pfixcore.editor2.core.spring.ProjectPool;
 import de.schlund.pfixcore.editor2.core.spring.SecurityManagerService;
 import de.schlund.pfixxml.ResultDocument;
-import de.schlund.pfixxml.config.GlobalConfig;
 
 /**
  * Implementation of ImagesResource
@@ -44,6 +43,7 @@ import de.schlund.pfixxml.config.GlobalConfig;
 public class ImagesResource {
     private SecurityManagerService securitymanager;
     private ProjectsResource projectsResource;
+    private ProjectPool projectPool;
 
     private Image   selectedImage;
 
@@ -115,6 +115,15 @@ public class ImagesResource {
             if (this.selectedImage != null) {
                 Element currentImage = resdoc.createSubNode(elem, "currentimage");
                 String path = this.selectedImage.getPath();
+                String url;
+                if (path.startsWith("pfixroot:/")) {
+                    url = projectPool.getURIForProject(projectsResource.getSelectedProject())
+                        + path.substring(10);
+                } else {
+                    url = projectPool.getURIForProject(projectsResource.getSelectedProject())
+                    + path;
+                }
+                currentImage.setAttribute("url", url);
                 currentImage.setAttribute("path", path);
                 String filename;
                 if (path.lastIndexOf("/") > 0 && path.lastIndexOf("/") < path.length()) {
@@ -123,9 +132,7 @@ public class ImagesResource {
                     filename = path;
                 }
                 currentImage.setAttribute("filename", filename);
-                File imageFile = new File(GlobalConfig.getDocroot(), path);
-                long modtime = imageFile.lastModified();
-                currentImage.setAttribute("modtime", Long.toString(modtime));
+                currentImage.setAttribute("modtime", Long.toString(this.selectedImage.getLastModTime()));
                 if (securitymanager.mayEditImages(projectsResource.getSelectedProject())) {
                     currentImage.setAttribute("mayEdit", "true");
                 } else {
@@ -199,6 +206,11 @@ public class ImagesResource {
     @Inject
     public void setProjectsResource(ProjectsResource projectsResource) {
         this.projectsResource = projectsResource;
+    }
+    
+    @Inject
+    public void setProjectPool(ProjectPool projectPool) {
+        this.projectPool = projectPool;
     }
 
 }

@@ -27,9 +27,9 @@ import org.pustefixframework.editor.webui.remote.dom.util.RemoteServiceUtil;
 public interface ProjectPool {
     public Collection<Project> getProjects();
 
-    public Project getProjectById(String projectId);
+    public Project getProjectForURI(String uri);
     
-    public Project getProjectByURI(String uri);
+    public String getURIForProject(Project project);
     
     public RemoteServiceUtil getRemoteServiceUtil(Project project);
 }

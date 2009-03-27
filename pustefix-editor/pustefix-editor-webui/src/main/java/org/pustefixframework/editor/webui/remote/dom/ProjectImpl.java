@@ -149,7 +149,7 @@ public class ProjectImpl extends AbstractProject {
     }
     
     public Target getTarget(String name) {
-        TargetTO targetTO = remoteServiceUtil.getRemoteTargetService().getTarget(name);
+        TargetTO targetTO = remoteServiceUtil.getRemoteTargetService().getTarget(name, false);
         if (targetTO != null) {
             return new TargetImpl(remoteServiceUtil, name);
         }

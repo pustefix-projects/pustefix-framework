@@ -119,6 +119,7 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
     private static final String   XSLPARAM_FRAME          = "__frame";
     private static final String   XSLPARAM_REUSE          = "__reusestamp";
     private static final String   XSLPARAM_EDITOR_URL     = "__editor_url";
+    private static final String   XSL_PARAM_APP_URL       = "__application_url";
     private static final String   VALUE_NONE              = "__NONE__";
     private static final String   SUFFIX_SAVEDDOM         = "_SAVED_DOM";
     private static final String   ATTR_SHOWXMLDOC         = "__ATTR_SHOWXMLDOC__";
@@ -345,6 +346,7 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
         if (editorLocation != null) {
             params.put(XSLPARAM_EDITOR_URL, editorLocation);
         }
+        params.put(XSL_PARAM_APP_URL, getApplicationURL(preq));
         
         if (session != null) {
             params.put(XSLPARAM_SESSID, session.getAttribute(SessionHelper.SESSION_ID_URL));
@@ -466,6 +468,22 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
                 }
             }
         }
+    }
+
+    private String getApplicationURL(PfixServletRequest preq) {
+        HttpServletRequest req = preq.getRequest();
+        StringBuffer sb = new StringBuffer();
+        
+        sb.append(req.getScheme());
+        sb.append("://");
+        sb.append(req.getServerName());
+        if ((req.getScheme().equals("http") && req.getLocalPort() != 80)
+                || (req.getScheme().equals("https") && req.getLocalPort() != 443)) {
+            sb.append(':');
+            sb.append(req.getLocalPort());
+        }
+        sb.append(req.getContextPath());
+        return sb.toString();
     }
 
     protected boolean isPageDefined(String name) {
@@ -991,6 +1009,9 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
     }
     
     public void setEditorLocation(String editorLocation) {
+        if (editorLocation.endsWith("/")) {
+            editorLocation = editorLocation.substring(0, editorLocation.length() - 1);
+        }
         this.editorLocation = editorLocation;
     }
 }

@@ -28,7 +28,7 @@ import org.pustefixframework.editor.common.remote.transferobjects.TargetTO;
 
 
 public interface RemoteTargetService {
-    TargetTO getTarget(String name);
+    TargetTO getTarget(String name, boolean auxDepTarget);
     String getTargetXML(String name) throws EditorIOException, EditorParsingException;
     Collection<String> getImageDependencies(String targetName, boolean recursive) throws EditorParsingException;
     Collection<IncludePartThemeVariantReferenceTO> getIncludeDependencies(String targetName, boolean recursive) throws EditorParsingException;

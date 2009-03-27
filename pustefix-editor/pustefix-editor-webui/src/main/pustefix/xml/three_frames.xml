@@ -27,8 +27,8 @@
                 <pfx:include href="core/txt/styles.xml" part="standard"/>
                 <pfx:include href="txt/styles.xml" part="standard"/>
               </style>
-              <script type="text/javascript" src="/core/script/baselib.js"></script>
-              <script type="text/javascript" src="/core/script/editor.js"></script>
+              <script type="text/javascript" src="{$__contextpath}/core/script/baselib.js"></script>
+              <script type="text/javascript" src="{$__contextpath}/script/editor.js"></script>
             </head>
             <body class="editor_body_sidebar">
               <pfx:maincontent path="txt/pages" prefix="main_" part="sidebar"/>
@@ -42,14 +42,14 @@
                 <pfx:include href="core/txt/styles.xml" part="standard"/>
                 <pfx:include href="txt/styles.xml" part="standard"/>
               </style>
-              <script type="text/javascript" src="/core/script/wfx.js"></script>
-              <script type="text/javascript" src="/core/script/wfxToolbar.js"></script>
-              <script type="text/javascript" src="/core/script/wfxEditor.js"></script>
-              <script type="text/javascript" src="/core/script/wfxhere.js"></script>
+              <script type="text/javascript" src="{$__contextpath}/script/wfx.js"></script>
+              <script type="text/javascript" src="{$__contextpath}/script/wfxToolbar.js"></script>
+              <script type="text/javascript" src="{$__contextpath}/script/wfxEditor.js"></script>
+              <script type="text/javascript" src="{$__contextpath}/script/wfxhere.js"></script>
             </head>
             <body onLoad="wfxinit()">
              <div style="padding-left: 10px; padding-right: 10px;">
-               <pfx:maincontent path="core/editor2/txt/pages" prefix="main_" part="content"/>
+               <pfx:maincontent path="txt/pages" prefix="main_" part="content"/>
              </div>
             </body>
           </html>

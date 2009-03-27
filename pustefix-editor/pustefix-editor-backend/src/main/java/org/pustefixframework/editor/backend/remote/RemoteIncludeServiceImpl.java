@@ -21,7 +21,6 @@ package org.pustefixframework.editor.backend.remote;
 import java.util.Collection;
 import java.util.LinkedList;
 
-import org.pustefixframework.container.annotations.Inject;
 import org.pustefixframework.editor.common.dom.Image;
 import org.pustefixframework.editor.common.dom.IncludeFile;
 import org.pustefixframework.editor.common.dom.IncludePart;
@@ -41,65 +40,47 @@ public class RemoteIncludeServiceImpl extends RemoteCommonIncludeServiceImpl imp
     private IncludeFactoryService includeFactoryService;
     private ProjectFactoryService projectFactoryService;
     
-    @Inject
     public void setIncludeFactoryService(IncludeFactoryService includeFactoryService) {
         this.includeFactoryService = includeFactoryService;
     }
     
-    @Inject
     public void setProjectFactoryService(ProjectFactoryService projectFactoryService) {
         this.projectFactoryService = projectFactoryService;
     }
     
-    public Collection<String> getImageDependencies(IncludePartThemeVariantReferenceTO reference, boolean recursive) throws EditorParsingException {
+    public Collection<String> getImageDependencies(IncludePartThemeVariantReferenceTO reference, String targetName, boolean recursive) throws EditorParsingException {
         IncludePartThemeVariant v = getIncludePartThemeVariantDOM(reference.path, reference.part, reference.theme);
         if (v == null) {
             return null;
         }
+        Collection<Image> imageDeps;
+        if (targetName != null) {
+            Target target = projectFactoryService.getProject().getTarget(targetName);
+            imageDeps = v.getImageDependencies(target, recursive);
+        } else {
+            imageDeps = v.getImageDependencies(recursive);
+        }
         LinkedList<String> images = new LinkedList<String>();
-        for (Image image : v.getImageDependencies(recursive)) {
+        for (Image image : imageDeps) {
             images.add(image.getPath());
         }
         return images;
     }
     
-    public Collection<String> getImageDependencies(IncludePartThemeVariantReferenceTO reference, String target, boolean recursive) throws EditorParsingException {
-        IncludePartThemeVariant v = getIncludePartThemeVariantDOM(reference.path, reference.part, reference.theme);
-        Target targetO = projectFactoryService.getProject().getTarget(target);
-        if (v == null) {
-            return null;
-        }
-        LinkedList<String> images = new LinkedList<String>();
-        for (Image image : v.getImageDependencies(targetO, recursive)) {
-            images.add(image.getPath());
-        }
-        return images;
-    }
-    
-    public Collection<IncludePartThemeVariantReferenceTO> getIncludeDependencies(IncludePartThemeVariantReferenceTO reference, boolean recursive) throws EditorParsingException {
+    public Collection<IncludePartThemeVariantReferenceTO> getIncludeDependencies(IncludePartThemeVariantReferenceTO reference, String targetName, boolean recursive) throws EditorParsingException {
         IncludePartThemeVariant v = getIncludePartThemeVariantDOM(reference.path, reference.part, reference.theme);
         if (v == null) {
             return null;
+        }
+        Collection<IncludePartThemeVariant> includeDeps;
+        if (targetName != null) {
+            Target target = projectFactoryService.getProject().getTarget(targetName);
+            includeDeps = v.getIncludeDependencies(target, recursive);
+        } else {
+            includeDeps = v.getIncludeDependencies(recursive);
         }
         LinkedList<IncludePartThemeVariantReferenceTO> includes = new LinkedList<IncludePartThemeVariantReferenceTO>();
-        for (IncludePartThemeVariant iptv : v.getIncludeDependencies(recursive)) {
-            IncludePartThemeVariantReferenceTO ref = new IncludePartThemeVariantReferenceTO();
-            ref.path = iptv.getIncludePart().getIncludeFile().getPath();
-            ref.part = iptv.getIncludePart().getName();
-            ref.theme = iptv.getTheme().getName();
-            includes.add(ref);
-        }
-        return includes;
-    }
-    
-    public Collection<IncludePartThemeVariantReferenceTO> getIncludeDependencies(IncludePartThemeVariantReferenceTO reference, String target, boolean recursive) throws EditorParsingException {
-        IncludePartThemeVariant v = getIncludePartThemeVariantDOM(reference.path, reference.part, reference.theme);
-        Target targetO = projectFactoryService.getProject().getTarget(target);
-        if (v == null) {
-            return null;
-        }
-        LinkedList<IncludePartThemeVariantReferenceTO> includes = new LinkedList<IncludePartThemeVariantReferenceTO>();
-        for (IncludePartThemeVariant iptv : v.getIncludeDependencies(targetO, recursive)) {
+        for (IncludePartThemeVariant iptv : includeDeps) {
             IncludePartThemeVariantReferenceTO ref = new IncludePartThemeVariantReferenceTO();
             ref.path = iptv.getIncludePart().getIncludeFile().getPath();
             ref.part = iptv.getIncludePart().getName();

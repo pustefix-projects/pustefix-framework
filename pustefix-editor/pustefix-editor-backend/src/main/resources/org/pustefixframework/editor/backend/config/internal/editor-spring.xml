@@ -9,6 +9,15 @@
     <property name="serviceInterface" value="org.pustefixframework.editor.common.remote.service.RemoteDynIncludeService"/>
     <property name="service">
       <bean class="org.pustefixframework.editor.backend.remote.RemoteDynIncludeServiceImpl">
+        <property name="backupService">
+          <ref bean="de.schlund.pfixcore.editor2.core.spring.beannames.backup"/>
+        </property>
+        <property name="themeFactoryService">
+          <ref bean="de.schlund.pfixcore.editor2.core.spring.beannames.themefactory"/>
+        </property>
+        <property name="dynIncludeFactoryService">
+          <ref bean="de.schlund.pfixcore.editor2.core.spring.beannames.dynincludefactory"/>
+        </property>
       </bean>
     </property>
   </bean>
@@ -18,6 +27,9 @@
     <property name="serviceInterface" value="org.pustefixframework.editor.common.remote.service.RemoteImageService"/>
     <property name="service">
       <bean class="org.pustefixframework.editor.backend.remote.RemoteImageServiceImpl">
+        <property name="imageFactoryService">
+          <ref bean="de.schlund.pfixcore.editor2.core.spring.beannames.imagefactory"/>
+        </property>
       </bean>
     </property>
   </bean>
@@ -27,6 +39,18 @@
     <property name="serviceInterface" value="org.pustefixframework.editor.common.remote.service.RemoteIncludeService"/>
     <property name="service">
       <bean class="org.pustefixframework.editor.backend.remote.RemoteIncludeServiceImpl">
+        <property name="backupService">
+          <ref bean="de.schlund.pfixcore.editor2.core.spring.beannames.backup"/>
+        </property>
+        <property name="themeFactoryService">
+          <ref bean="de.schlund.pfixcore.editor2.core.spring.beannames.themefactory"/>
+        </property>
+        <property name="includeFactoryService">
+          <ref bean="de.schlund.pfixcore.editor2.core.spring.beannames.includefactory"/>
+        </property>
+        <property name="projectFactoryService">
+          <ref bean="de.schlund.pfixcore.editor2.core.spring.beannames.projectfactory"/>
+        </property>
       </bean>
     </property>
   </bean>
@@ -36,6 +60,12 @@
     <property name="serviceInterface" value="org.pustefixframework.editor.common.remote.service.RemotePageService"/>
     <property name="service">
       <bean class="org.pustefixframework.editor.backend.remote.RemotePageServiceImpl">
+        <property name="projectFactoryService">
+          <ref bean="de.schlund.pfixcore.editor2.core.spring.beannames.projectfactory"/>
+        </property>
+        <property name="variantFactoryService">
+          <ref bean="de.schlund.pfixcore.editor2.core.spring.beannames.variantfactory"/>
+        </property>
       </bean>
     </property>
   </bean>
@@ -45,6 +75,9 @@
     <property name="serviceInterface" value="org.pustefixframework.editor.common.remote.service.RemoteProjectService"/>
     <property name="service">
       <bean class="org.pustefixframework.editor.backend.remote.RemoteProjectServiceImpl">
+        <property name="projectFactoryService">
+          <ref bean="de.schlund.pfixcore.editor2.core.spring.beannames.projectfactory"/>
+        </property>
       </bean>
     </property>
   </bean>
@@ -54,6 +87,12 @@
     <property name="serviceInterface" value="org.pustefixframework.editor.common.remote.service.RemoteTargetService"/>
     <property name="service">
       <bean class="org.pustefixframework.editor.backend.remote.RemoteTargetServiceImpl">
+        <property name="projectFactoryService">
+          <ref bean="de.schlund.pfixcore.editor2.core.spring.beannames.projectfactory"/>
+        </property>
+        <property name="targetFactoryService">
+          <ref bean="de.schlund.pfixcore.editor2.core.spring.beannames.targetfactory"/>
+        </property>
       </bean>
     </property>
   </bean>
@@ -63,6 +102,9 @@
     <property name="serviceInterface" value="org.pustefixframework.editor.common.remote.service.RemoteSearchService"/>
     <property name="service">
       <bean class="org.pustefixframework.editor.backend.remote.RemoteSearchServiceImpl">
+        <property name="projectFactoryService">
+          <ref bean="de.schlund.pfixcore.editor2.core.spring.beannames.projectfactory"/>
+        </property>
       </bean>
     </property>
   </bean>

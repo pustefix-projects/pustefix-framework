@@ -30,7 +30,6 @@ import org.apache.lucene.queryParser.QueryParser;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.Hits;
 import org.apache.lucene.search.IndexSearcher;
-import org.pustefixframework.container.annotations.Inject;
 import org.pustefixframework.editor.common.exception.EditorSearchIndexException;
 import org.pustefixframework.editor.common.exception.EditorSearchQueryException;
 import org.pustefixframework.editor.common.remote.service.RemoteSearchService;
@@ -48,7 +47,6 @@ public class RemoteSearchServiceImpl implements RemoteSearchService {
     
     private final static PerFieldAnalyzerWrapper analyzer = PreDoc.ANALYZER;
     
-    @Inject
     public void setProjectFactoryService(ProjectFactoryService projectFactoryService) {
         this.projectFactoryService = projectFactoryService;
     }

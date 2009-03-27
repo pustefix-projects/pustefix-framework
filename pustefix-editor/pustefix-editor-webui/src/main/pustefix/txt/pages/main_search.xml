@@ -75,7 +75,7 @@
                         <pfx:command name="SELWRP">selectinclude</pfx:command>
                         <pfx:command name="SELWRP">upload</pfx:command>
                     </pfx:button></td><td class="{$class}">
-                      <pfx:image height="10" src="/core/editor2/img/score.png">
+                      <pfx:image height="10" src="/img/score.png">
                         <ixsl:attribute name="alt"><ixsl:value-of select="@score"/></ixsl:attribute>
                         <ixsl:attribute name="title"><ixsl:value-of select="@score"/></ixsl:attribute>
                         <ixsl:attribute name="width"><ixsl:value-of select="round(number(@score) * 100)"/></ixsl:attribute>
@@ -96,7 +96,7 @@
           </ixsl:choose>
         </pfx:forminput>
         <br/>
-        <pfx:elink href="http://lucene.apache.org/" target="_blank"><pfx:image border="0" src="/core/editor2/img/lucene.png"/></pfx:elink>
+        <pfx:elink href="http://lucene.apache.org/" target="_blank"><pfx:image border="0" src="/img/lucene.png"/></pfx:elink>
       </center>
     </theme>
   </part>

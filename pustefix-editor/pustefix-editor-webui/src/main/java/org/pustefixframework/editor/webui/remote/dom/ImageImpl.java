@@ -21,11 +21,11 @@ package org.pustefixframework.editor.webui.remote.dom;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
 
 import org.pustefixframework.editor.common.dom.AbstractImage;
+import org.pustefixframework.editor.common.dom.Image;
 import org.pustefixframework.editor.common.dom.Page;
 import org.pustefixframework.editor.common.exception.EditorIOException;
 import org.pustefixframework.editor.common.exception.EditorSecurityException;
@@ -100,5 +100,37 @@ public class ImageImpl extends AbstractImage {
     
     private ImageTO getImageTO() {
         return remoteServiceUtil.getRemoteImageService().getImage(getPath());
+    }
+
+    @Override
+    public int compareTo(Image image) {
+        if (image instanceof ImageImpl) {
+            ImageImpl i = (ImageImpl) image;
+            if (this.remoteServiceUtil.equals(i.remoteServiceUtil)) {
+                return super.compareTo(image);
+            } else {
+                return -1;
+            }
+        } else {
+            return -1;
+        }
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (!super.equals(obj)) {
+            return false;
+        }
+        if (obj instanceof ImageImpl) {
+            ImageImpl i = (ImageImpl) obj;
+            return this.remoteServiceUtil.equals(i.remoteServiceUtil);
+        } else {
+            return false;
+        }
+    }
+
+    @Override
+    public int hashCode() {
+        return ("IMAGE: " + super.hashCode() + remoteServiceUtil.hashCode()).hashCode();
     }
 }

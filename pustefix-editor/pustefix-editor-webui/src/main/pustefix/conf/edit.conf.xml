@@ -184,7 +184,6 @@
 
   <pagerequest name="jumptopage">
     <input>
-      <wrapper class="org.pustefixframework.editor.webui.wrappers.SelectProject" prefix="selectproject" />
       <wrapper class="org.pustefixframework.editor.webui.wrappers.SelectPage" prefix="selectpage" />
     </input>
   </pagerequest>

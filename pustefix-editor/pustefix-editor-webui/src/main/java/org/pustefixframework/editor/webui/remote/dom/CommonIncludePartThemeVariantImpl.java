@@ -63,7 +63,7 @@ public abstract class CommonIncludePartThemeVariantImpl extends AbstractIncludeP
     }
     
     public Collection<Image> getImageDependencies(boolean recursive) throws EditorParsingException {
-        Collection<String> imagePaths = getRemoteService().getImageDependencies(getReference(), recursive);
+        Collection<String> imagePaths = getRemoteService().getImageDependencies(getReference(), null, recursive);
         LinkedList<Image> images = new LinkedList<Image>();
         for (String imagePath : imagePaths) {
             images.add(new ImageImpl(remoteServiceUtil, imagePath));
@@ -81,7 +81,7 @@ public abstract class CommonIncludePartThemeVariantImpl extends AbstractIncludeP
     }
     
     public Collection<IncludePartThemeVariant> getIncludeDependencies(boolean recursive) throws EditorParsingException {
-        Collection<IncludePartThemeVariantReferenceTO> references = getRemoteService().getIncludeDependencies(getReference(), recursive);
+        Collection<IncludePartThemeVariantReferenceTO> references = getRemoteService().getIncludeDependencies(getReference(), null, recursive);
         LinkedList<IncludePartThemeVariant> includes = new LinkedList<IncludePartThemeVariant>();
         for (IncludePartThemeVariantReferenceTO reference : references) {
             includes.add(newInstance(reference));
@@ -107,7 +107,12 @@ public abstract class CommonIncludePartThemeVariantImpl extends AbstractIncludeP
     }
     
     public Node getXML() {
-        return (new XMLSerializer()).deserializeNode(getRemoteService().getIncludePartThemeVariantXML(path, part, theme.getName()));
+        String xml = getRemoteService().getIncludePartThemeVariantXML(path, part, theme.getName());
+        if (xml != null) {
+            return (new XMLSerializer()).deserializeNode(xml);
+        } else {
+            return null;
+        }
     }
     
     public void setXML(Node xml) throws EditorIOException, EditorParsingException, EditorSecurityException {
@@ -139,6 +144,38 @@ public abstract class CommonIncludePartThemeVariantImpl extends AbstractIncludeP
         return getRemoteService().getIncludePartThemeVariantTO(getReference());
     }
     
+    @Override
+    public int compareTo(IncludePartThemeVariant variant) {
+        if (variant instanceof CommonIncludePartThemeVariantImpl) {
+            CommonIncludePartThemeVariantImpl v = (CommonIncludePartThemeVariantImpl) variant;
+            if (this.remoteServiceUtil.equals(v.remoteServiceUtil)) {
+                return super.compareTo(variant);
+            } else {
+                return -1;
+            }
+        } else {
+            return -1;
+        }
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (!super.equals(obj)) {
+            return false;
+        }
+        if (obj instanceof CommonIncludePartThemeVariantImpl) {
+            CommonIncludePartThemeVariantImpl v = (CommonIncludePartThemeVariantImpl) obj;
+            return this.remoteServiceUtil.equals(v.remoteServiceUtil);
+        } else {
+            return false;
+        }
+    }
+
+    @Override
+    public int hashCode() {
+        return ("INCLUDEPARTTHEMEVARIANT: " + super.hashCode() + remoteServiceUtil.hashCode()).hashCode();
+    }
+
     protected abstract IncludePartThemeVariant newInstance(IncludePartThemeVariantReferenceTO reference);
     
     protected abstract RemoteCommonIncludeService getRemoteService();

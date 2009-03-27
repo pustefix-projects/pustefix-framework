@@ -135,7 +135,7 @@
         </ixsl:if>
         <ixsl:choose>
           <ixsl:when test="/formresult/images/currentimage/@mayEdit = 'true'">
-            <table background="/img/alpha.gif" cellspacing="0" class="editor_box_alpha" width="100%">
+            <table background="{$__contextpath}/img/alpha.gif" cellspacing="0" class="editor_box_alpha" width="100%">
               <tr>
                 <td align="center" colspan="3" style="padding-top: 10px; padding-bottom: 10px;">
                   <ixsl:choose>
@@ -144,7 +144,7 @@
                     </ixsl:when>
                     <ixsl:otherwise>
                       <img border="0">
-                        <ixsl:attribute name="src">/<ixsl:value-of select="/formresult/images/currentimage/@path"/>?<ixsl:value-of select="/formresult/images/currentimage/@modtime"/></ixsl:attribute>
+                        <ixsl:attribute name="src"><ixsl:value-of select="/formresult/images/currentimage/@url"/>?<ixsl:value-of select="/formresult/images/currentimage/@modtime"/></ixsl:attribute>
                       </img>
                     </ixsl:otherwise>
                   </ixsl:choose>

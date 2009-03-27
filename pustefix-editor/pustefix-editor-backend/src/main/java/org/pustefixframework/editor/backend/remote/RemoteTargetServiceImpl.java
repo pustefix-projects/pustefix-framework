@@ -22,7 +22,6 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Map;
 
-import org.pustefixframework.container.annotations.Inject;
 import org.pustefixframework.editor.common.dom.Image;
 import org.pustefixframework.editor.common.dom.IncludePartThemeVariant;
 import org.pustefixframework.editor.common.dom.Page;
@@ -37,29 +36,48 @@ import org.pustefixframework.editor.common.util.XMLSerializer;
 import org.w3c.dom.Node;
 
 import de.schlund.pfixcore.editor2.core.spring.ProjectFactoryService;
+import de.schlund.pfixcore.editor2.core.spring.TargetFactoryService;
+import de.schlund.pfixcore.editor2.core.spring.internal.TargetAuxDepImpl;
+import de.schlund.pfixxml.resources.ResourceUtil;
+import de.schlund.pfixxml.targets.AuxDependencyFile;
 
 
 public class RemoteTargetServiceImpl implements RemoteTargetService {
     
     private ProjectFactoryService projectFactoryService;
+    private TargetFactoryService targetFactoryService;
     
-    @Inject
     public void setProjectFactoryService(ProjectFactoryService projectFactoryService) {
         this.projectFactoryService = projectFactoryService;
     }
     
-    public TargetTO getTarget(String name) {
-        Target target = projectFactoryService.getProject().getTarget(name);
+    public void setTargetFactoryService(TargetFactoryService targetFactoryService) {
+        this.targetFactoryService = targetFactoryService;
+    }
+    
+    public TargetTO getTarget(String name, boolean auxDepTarget) {
+        Target target;
+        if (auxDepTarget) {
+            target = targetFactoryService.getLeafTargetFromPustefixAuxDependency(new AuxDependencyFile(ResourceUtil.getResource(name)));
+        } else {
+            target = projectFactoryService.getProject().getTarget(name);
+        }
         if (target == null) {
             return null;
         }
         TargetTO to = new TargetTO();
         to.name = name;
-        to.parentXML = target.getParentXML().getName();
-        to.parentXSL = target.getParentXSL().getName();
+        if (!target.isLeafTarget()) {
+            to.parentXML = target.getParentXML().getName();
+            to.parentXSL = target.getParentXSL().getName();
+        }
         to.type = target.getType();
         for (Target t : target.getAuxDependencies()) {
-            to.auxDependencies.add(t.getName());
+            if (t instanceof TargetAuxDepImpl) {
+                to.auxDependencies.add("::aux:" + t.getName());
+            } else {
+                to.auxDependencies.add(t.getName());
+            }
         }
         for (Page p : target.getAffectedPages()) {
             to.pages.add(p.getFullName());
@@ -81,7 +99,11 @@ public class RemoteTargetServiceImpl implements RemoteTargetService {
             return null;
         }
         Node node = target.getContentXML();
-        return (new XMLSerializer()).serializeNode(node);
+        if (node != null) {
+            return (new XMLSerializer()).serializeNode(node);
+        } else {
+            return null;
+        }
     }
 
     public Collection<String> getImageDependencies(String targetName, boolean recursive) throws EditorParsingException {

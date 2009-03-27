@@ -70,6 +70,7 @@ public class ProjectsResource {
             Element projectElement = resdoc.createSubNode(elem, "project");
             projectElement.setAttribute("name", projectName);
             projectElement.setAttribute("comment", projectComment);
+            projectElement.setAttribute("uri", projectPool.getURIForProject(project));
             if (this.selectedProject != null && project.equals(this.selectedProject)) {
                 projectElement.setAttribute("selected", "true");
             }
@@ -80,8 +81,8 @@ public class ProjectsResource {
         this.selectedProject = null;
     }
 
-    public boolean selectProject(String projectId) {
-        Project project = projectPool.getProjectById(projectId);
+    public boolean selectProject(String projectURI) {
+        Project project = projectPool.getProjectForURI(projectURI);
         if (project == null) {
             return false;
         } else {

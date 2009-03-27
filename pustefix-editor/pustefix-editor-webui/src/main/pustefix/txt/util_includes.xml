@@ -13,6 +13,7 @@
         -->
         <script language="javascript"><ixsl:text disable-output-escaping="yes">&lt;!--</ixsl:text>
         var pfx_editor_sessid = "<ixsl:value-of select="$__sessid"/>";
+        var pfx_editor_contextpath = "<ixsl:value-of select="$__contextpath"/>";
         var pfx_editor_inc_root = new pfx_editor_TreeRoot(document.getElementById("editor_includes_sidebar_content"));
         var pfx_editor_inc_dir = false;
         var pfx_editor_inc_file = false;

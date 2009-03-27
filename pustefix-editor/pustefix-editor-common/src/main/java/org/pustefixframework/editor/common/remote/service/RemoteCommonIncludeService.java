@@ -32,11 +32,7 @@ import org.pustefixframework.editor.common.remote.transferobjects.IncludePartThe
 
 public interface RemoteCommonIncludeService {
     
-    Collection<String> getImageDependencies(IncludePartThemeVariantReferenceTO reference, boolean recursive) throws EditorParsingException;
-
     Collection<String> getImageDependencies(IncludePartThemeVariantReferenceTO reference, String target, boolean recursive) throws EditorParsingException;
-
-    Collection<IncludePartThemeVariantReferenceTO> getIncludeDependencies(IncludePartThemeVariantReferenceTO reference, boolean recursive) throws EditorParsingException;
 
     Collection<IncludePartThemeVariantReferenceTO> getIncludeDependencies(IncludePartThemeVariantReferenceTO reference, String name, boolean recursive) throws EditorParsingException;
 

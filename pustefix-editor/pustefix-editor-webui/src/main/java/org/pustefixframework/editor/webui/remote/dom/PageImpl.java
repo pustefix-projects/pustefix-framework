@@ -41,6 +41,7 @@ public class PageImpl extends AbstractPage {
     private volatile PageTO pageTO;
 
     public PageImpl(RemoteServiceUtil remoteServiceUtil, String name) {
+        this.remoteServiceUtil = remoteServiceUtil;
         int colonsPos = name.indexOf("::");
         if (colonsPos == -1) {
             this.name = name;
@@ -68,6 +69,9 @@ public class PageImpl extends AbstractPage {
     
     public Target getPageTarget() {
         initPageTO();
+        if (pageTO.target == null) {
+            return null;
+        }
         return new TargetImpl(remoteServiceUtil, pageTO.target);
     }
     
@@ -109,6 +113,38 @@ public class PageImpl extends AbstractPage {
         if (pageTO == null) {
             pageTO = remoteServiceUtil.getRemotePageService().getPage(name);
         }
+    }
+
+    @Override
+    public int compareTo(Page page) {
+        if (page instanceof PageImpl) {
+            PageImpl p = (PageImpl) page;
+            if (this.remoteServiceUtil.equals(p.remoteServiceUtil)) {
+                return super.compareTo(page);
+            } else {
+                return -1;
+            }
+        } else {
+            return -1;
+        }
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (!super.equals(obj)) {
+            return false;
+        }
+        if (obj instanceof PageImpl) {
+            PageImpl p = (PageImpl) obj;
+            return this.remoteServiceUtil.equals(p.remoteServiceUtil);
+        } else {
+            return false;
+        }
+    }
+
+    @Override
+    public int hashCode() {
+        return ("PAGE: " + super.hashCode() + remoteServiceUtil.hashCode()).hashCode();
     }
     
 }

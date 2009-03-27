@@ -11,7 +11,7 @@
     <param name="__sendingdata">1</param>
     <param name="__CMD[start]:SELWRP">jump</param>
     <param name="jump.Type"><value-of select="$__param_type"/></param>
-    <param name="jump.TargetGenerator"><value-of select="$__param_tgen"/></param>
+    <param name="jump.ProjectURI"><value-of select="$__param_uri"/></param>
     <param name="jump.Path"><value-of select="$__param_path"/></param>
     <param name="jump.Part"><value-of select="$__param_part"/></param>
     <param name="jump.Theme"><value-of select="$__param_theme"/></param>

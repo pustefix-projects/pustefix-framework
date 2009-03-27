@@ -21,7 +21,6 @@ package org.pustefixframework.editor.backend.remote;
 import java.util.Collection;
 import java.util.Collections;
 
-import org.pustefixframework.container.annotations.Inject;
 import org.pustefixframework.editor.common.dom.IncludeFile;
 import org.pustefixframework.editor.common.dom.IncludePart;
 import org.pustefixframework.editor.common.dom.IncludePartThemeVariant;
@@ -35,7 +34,6 @@ public class RemoteDynIncludeServiceImpl extends RemoteCommonIncludeServiceImpl 
     
     private DynIncludeFactoryService dynIncludeFactoryService;
     
-    @Inject
     public void setDynIncludeFactoryService(DynIncludeFactoryService dynIncludeFactoryService) {
         this.dynIncludeFactoryService = dynIncludeFactoryService;
     }

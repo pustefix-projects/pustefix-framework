@@ -90,4 +90,18 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
       </plugin>
     </plugins>
   </build>
+  
+  <profiles>
+    <profile>
+      <id>activatePustefixEditor</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.pustefixframework.editor</groupId>
+          <artifactId>pustefix-editor-backend</artifactId>
+          <version>0.14.0-SNAPSHOT</version>
+        </dependency>
+      </dependencies>
+    </profile>
+  </profiles>
+  
 </project>

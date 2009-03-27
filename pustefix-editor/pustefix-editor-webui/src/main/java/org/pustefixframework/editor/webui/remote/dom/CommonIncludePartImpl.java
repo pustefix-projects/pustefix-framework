@@ -22,6 +22,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 import org.pustefixframework.editor.common.dom.AbstractIncludePart;
+import org.pustefixframework.editor.common.dom.IncludePart;
 import org.pustefixframework.editor.common.dom.IncludePartThemeVariant;
 import org.pustefixframework.editor.common.dom.Theme;
 import org.pustefixframework.editor.common.exception.EditorIOException;
@@ -48,7 +49,12 @@ public abstract class CommonIncludePartImpl extends AbstractIncludePart {
     }
     
     public Node getContentXML() {
-        return (new XMLSerializer()).deserializeNode(getRemoteService().getIncludePartXML(path, part));
+        String xml = getRemoteService().getIncludePartXML(path, part);
+        if (xml != null) {
+            return (new XMLSerializer()).deserializeNode(xml);
+        } else {
+            return null;
+        }
     }
     
     public String getName() {
@@ -86,6 +92,38 @@ public abstract class CommonIncludePartImpl extends AbstractIncludePart {
         return getRemoteService().getIncludePart(path, part);
     }
     
+    @Override
+    public int compareTo(IncludePart part) {
+        if (part instanceof CommonIncludePartImpl) {
+            CommonIncludePartImpl p = (CommonIncludePartImpl) part;
+            if (this.remoteServiceUtil.equals(p.remoteServiceUtil)) {
+                return super.compareTo(part);
+            } else {
+                return -1;
+            }
+        } else {
+            return -1;
+        }
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (!super.equals(obj)) {
+            return false;
+        }
+        if (obj instanceof CommonIncludePartImpl) {
+            CommonIncludePartImpl p = (CommonIncludePartImpl) obj;
+            return this.remoteServiceUtil.equals(p.remoteServiceUtil);
+        } else {
+            return false;
+        }
+    }
+
+    @Override
+    public int hashCode() {
+        return ("INCLUDEPART: " + super.hashCode() + remoteServiceUtil.hashCode()).hashCode();
+    }
+
     protected abstract RemoteCommonIncludeService getRemoteService();
     
     protected abstract IncludePartThemeVariant newThemeVariantInstance(String theme);

@@ -46,11 +46,7 @@ public class SessionCookieFilter implements Filter, java.util.logging.Filter {
                 if (requestedId != null) {
                     if (httpReq.isRequestedSessionIdValid()) {
                         Cookie cookie = new Cookie(COOKIE_NAME, requestedId);
-                        // String path = httpReq.getContextPath() + httpReq.getServletPath();
                         String path = (httpReq.getContextPath().length() > 0) ? httpReq.getContextPath() : "/";
-                        if (!path.equals("/")) {
-                            System.err.println(path);
-                        }
                         cookie.setPath(path);
                         cookie.setMaxAge(-1);
                         httpRes.addCookie(cookie);

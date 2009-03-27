@@ -72,13 +72,14 @@
     
     <static>
       <path>img</path>
+      <path>script</path>
     </static>
     
     <web-xml>
       <jee:web-app>
         <jee:filter>
           <jee:filter-name>editor-session-cookie-filter</jee:filter-name>
-          <jee:filter-class>de.schlund.pfixcore.editor2.frontend.util.SessionCookieFilter</jee:filter-class>
+          <jee:filter-class>org.pustefixframework.editor.webui.util.SessionCookieFilter</jee:filter-class>
         </jee:filter>
         
         <jee:filter-mapping>

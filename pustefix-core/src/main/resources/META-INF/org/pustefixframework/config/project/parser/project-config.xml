@@ -61,7 +61,7 @@
   
   <!-- Saves path with editor location -->
   <handler class="org.pustefixframework.config.project.parser.EditorLocationParsingHandler">
-    <match>//p:project-config/p:application/p:editor//p:location</match>
+    <match>//p:project-config/p:editor//p:location</match>
   </handler>
 
   

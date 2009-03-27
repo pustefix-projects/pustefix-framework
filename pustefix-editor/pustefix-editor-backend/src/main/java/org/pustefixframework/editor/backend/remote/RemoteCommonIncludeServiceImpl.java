@@ -21,7 +21,6 @@ package org.pustefixframework.editor.backend.remote;
 import java.util.Collection;
 import java.util.Collections;
 
-import org.pustefixframework.container.annotations.Inject;
 import org.pustefixframework.editor.common.dom.IncludeFile;
 import org.pustefixframework.editor.common.dom.IncludePart;
 import org.pustefixframework.editor.common.dom.IncludePartThemeVariant;
@@ -46,12 +45,10 @@ public abstract class RemoteCommonIncludeServiceImpl implements RemoteCommonIncl
     protected BackupService backupService;
     protected ThemeFactoryService themeFactoryService;
     
-    @Inject
     public void setBackupService(BackupService backupService) {
         this.backupService = backupService;
     }
     
-    @Inject
     public void setThemeFactoryService(ThemeFactoryService themeFactoryService) {
         this.themeFactoryService = themeFactoryService;
     }
@@ -67,15 +64,7 @@ public abstract class RemoteCommonIncludeServiceImpl implements RemoteCommonIncl
         }
     }
     
-    public Collection<String> getImageDependencies(IncludePartThemeVariantReferenceTO reference, boolean recursive) throws EditorParsingException {
-        return Collections.emptyList();
-    }
-    
     public Collection<String> getImageDependencies(IncludePartThemeVariantReferenceTO reference, String target, boolean recursive) throws EditorParsingException {
-        return Collections.emptyList();
-    }
-    
-    public Collection<IncludePartThemeVariantReferenceTO> getIncludeDependencies(IncludePartThemeVariantReferenceTO reference, boolean recursive) throws EditorParsingException {
         return Collections.emptyList();
     }
     
@@ -103,7 +92,11 @@ public abstract class RemoteCommonIncludeServiceImpl implements RemoteCommonIncl
             return null;
         }
         Node node = file.getContentXML(forceUpdate);
-        return (new XMLSerializer()).serializeNode(node);
+        if (node != null) {
+            return (new XMLSerializer()).serializeNode(node);
+        } else {
+            return null;
+        }
     }
     
     public IncludePartTO getIncludePart(String path, String part) {
@@ -150,7 +143,11 @@ public abstract class RemoteCommonIncludeServiceImpl implements RemoteCommonIncl
             return null;
         }
         Node node = includePartThemeVariant.getXML();
-        return (new XMLSerializer()).serializeNode(node);
+        if (node != null) {
+            return (new XMLSerializer()).serializeNode(node);
+        } else {
+            return null;
+        }
     }
     
     public String getIncludePartXML(String path, String part) {
@@ -159,7 +156,11 @@ public abstract class RemoteCommonIncludeServiceImpl implements RemoteCommonIncl
             return null;
         }
         Node node = includePart.getContentXML();
-        return (new XMLSerializer()).serializeNode(node);
+        if (node != null) {
+            return (new XMLSerializer()).serializeNode(node);
+        } else {
+            return null;
+        }
     }
     
     public boolean restoreIncludePartThemeVariant(String path, String part, String theme, String version) throws EditorSecurityException {
@@ -172,7 +173,12 @@ public abstract class RemoteCommonIncludeServiceImpl implements RemoteCommonIncl
     
     public void setIncludePartThemeVariantXML(String path, String part, String theme, String xml, boolean indent) throws EditorIOException, EditorParsingException, EditorSecurityException {
         IncludePartThemeVariant includePartThemeVariant = getIncludePartThemeVariantDOM(path, part, theme);
-        Node node = (new XMLSerializer()).deserializeNode(xml);
+        Node node;
+        if (xml == null) {
+            node = null;
+        } else {
+            node = (new XMLSerializer()).deserializeNode(xml);
+        }
         includePartThemeVariant.setXML(node, indent);
     }
     

@@ -207,7 +207,8 @@ function pfx_editor_Part(pFile, pPart, pTheme, isSelected) {
   }
   this._element.appendChild(document.createTextNode(String.fromCharCode(160, 160, 160, 160)));
   var link = document.createElement("a");
-  var url = "/xml/edit/" + pfx_editor_pagename + ";" + pfx_editor_sessid 
+  var url = pfx_editor_contextpath + "/xml/edit/" + pfx_editor_pagename + ";"
+    + pfx_editor_sessid 
     + "?__frame=_top&__sendingdata=1&selectinclude.Path=" + this._file
     + "&selectinclude.Part=" + this._part
     + "&selectinclude.Theme=" + this._theme
@@ -311,7 +312,7 @@ function pfx_editor_XMLHttpRequest() {
 }
 
 pfx_editor_XMLHttpRequest.prototype._sendRequest = function(action, params) {
-  this._req.open("GET", "/xml/edit/ws_" + pfx_editor_pagename + ";" + pfx_editor_sessid + "?action=" + action + "&" + params, true);
+  this._req.open("GET", pfx_editor_contextpath + "/xml/edit/ws_" + pfx_editor_pagename + ";" + pfx_editor_sessid + "?action=" + action + "&" + params, true);
   this._req.send("");
   pfx_editor_actionCounter.increase();
 }

@@ -34,7 +34,7 @@ public class DynIncludePartThemeVariantImpl extends CommonIncludePartThemeVarian
 
     @Override
     protected RemoteCommonIncludeService getRemoteService() {
-        return remoteServiceUtil.getRemoteIncludeService();
+        return remoteServiceUtil.getRemoteDynIncludeService();
     }
     
     @Override
@@ -43,7 +43,7 @@ public class DynIncludePartThemeVariantImpl extends CommonIncludePartThemeVarian
     }
     
     public IncludePart getIncludePart() {
-        return new IncludePartImpl(remoteServiceUtil, path, part);
+        return new DynIncludePartImpl(remoteServiceUtil, path, part);
     }
     
 }

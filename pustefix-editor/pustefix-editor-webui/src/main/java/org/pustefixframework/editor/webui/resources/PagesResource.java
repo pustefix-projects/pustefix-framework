@@ -33,11 +33,13 @@ import org.w3c.dom.Element;
 
 import de.schlund.pfixcore.beans.InitResource;
 import de.schlund.pfixcore.beans.InsertStatus;
+import de.schlund.pfixcore.editor2.core.spring.ProjectPool;
 import de.schlund.pfixcore.workflow.Context;
 import de.schlund.pfixxml.ResultDocument;
 
 public class PagesResource {
     private ProjectsResource projectsResource;
+    private ProjectPool projectPool;
 
     private Page selectedPage;
 
@@ -91,7 +93,17 @@ public class PagesResource {
                     for (Iterator<Image> i = images.iterator(); i.hasNext();) {
                         Image image = i.next();
                         Element imageElement = resdoc.createSubNode(imagesElement, "image");
-                        imageElement.setAttribute("path", image.getPath());
+                        String path = image.getPath();
+                        String url;
+                        if (path.startsWith("pfixroot:/")) {
+                            url = projectPool.getURIForProject(projectsResource.getSelectedProject())
+                                + path.substring(10);
+                        } else {
+                            url = projectPool.getURIForProject(projectsResource.getSelectedProject())
+                            + path;
+                        }
+                        imageElement.setAttribute("url", url);
+                        imageElement.setAttribute("path", path);
                         imageElement.setAttribute("modtime", Long.toString(image.getLastModTime()));
                     }
                 }
@@ -208,6 +220,11 @@ public class PagesResource {
     @Inject
     public void setProjectsResource(ProjectsResource projectsResource) {
         this.projectsResource = projectsResource;
+    }
+    
+    @Inject
+    public void setProjectPool(ProjectPool projectPool) {
+        this.projectPool = projectPool;
     }
 
 }

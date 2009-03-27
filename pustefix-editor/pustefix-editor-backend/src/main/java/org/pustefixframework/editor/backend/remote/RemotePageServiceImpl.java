@@ -21,7 +21,6 @@ package org.pustefixframework.editor.backend.remote;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.pustefixframework.container.annotations.Inject;
 import org.pustefixframework.editor.common.dom.Page;
 import org.pustefixframework.editor.common.dom.Theme;
 import org.pustefixframework.editor.common.dom.Variant;
@@ -37,12 +36,10 @@ public class RemotePageServiceImpl implements RemotePageService {
     private ProjectFactoryService projectFactoryService;
     private VariantFactoryService variantFactoryService;
     
-    @Inject
     public void setProjectFactoryService(ProjectFactoryService projectFactoryService) {
         this.projectFactoryService = projectFactoryService;
     }
     
-    @Inject
     public void setVariantFactoryService(VariantFactoryService variantFactoryService) {
         this.variantFactoryService = variantFactoryService;
     }
@@ -72,7 +69,9 @@ public class RemotePageServiceImpl implements RemotePageService {
         to.name = page.getName();
         to.variant = (page.getVariant() == null) ? null : page.getVariant().getName();
         to.handlerPath = page.getHandlerPath();
-        to.target = page.getPageTarget().getName();
+        if (page.getPageTarget() != null) {
+            to.target = page.getPageTarget().getName();
+        }
         for (Page p : page.getSubPages()) {
             to.subPages.add(convertToTransferObject(p));
         }

@@ -334,8 +334,8 @@ wfxToolbar.Config = function () {
 			];
 
 	this.btnList = {
-	  undo: [ "Undo", "/core/img/editor/ed_undo.gif", false, function(e) {e.execCommand("undo");} ],
-	  redo: [ "Redo", "/core/img/editor/ed_redo.gif", false, function(e) {e.execCommand("redo");} ]
+	  undo: [ "Undo", "../../img/wfx/ed_undo.gif", false, function(e) {e.execCommand("undo");} ],
+	  redo: [ "Redo", "../../img/wfx/ed_redo.gif", false, function(e) {e.execCommand("redo");} ]
 	};
 	//	  syntaxrehighlighting: [ "syntaxrehighlighting", "checkbox", false, function(e) {alert("syntaxrehighlighting");} ],
 };

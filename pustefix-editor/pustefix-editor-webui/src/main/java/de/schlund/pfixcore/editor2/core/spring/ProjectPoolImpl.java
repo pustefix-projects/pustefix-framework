@@ -33,14 +33,12 @@ import org.xml.sax.SAXException;
 
 import de.schlund.pfixxml.resources.FileResource;
 import de.schlund.pfixxml.resources.ResourceUtil;
-import de.schlund.pfixxml.util.MD5Utils;
 import de.schlund.pfixxml.util.Xml;
 
 
 public class ProjectPoolImpl implements ProjectPool {
     private LinkedHashMap<String, Project> locationToProject = new LinkedHashMap<String, Project>();
-    private LinkedHashMap<String, Project> idToProject = new LinkedHashMap<String, Project>();
-    private LinkedHashMap<Project, String> projectToId = new LinkedHashMap<Project, String>();
+    private LinkedHashMap<Project, String> projectToLocation = new LinkedHashMap<Project, String>();
     private LinkedHashMap<Project, RemoteServiceUtil> projectToRemoteServiceUtil = new LinkedHashMap<Project, RemoteServiceUtil>();
     private Object mapsLock = new Object();
     
@@ -48,13 +46,7 @@ public class ProjectPoolImpl implements ProjectPool {
         loadFromFile();
     }
     
-    public Project getProjectById(String projectId) {
-        synchronized (mapsLock) {
-            return idToProject.get(projectId);
-        }
-    }
-    
-    public Project getProjectByURI(String uri) {
+    public Project getProjectForURI(String uri) {
         if (!uri.endsWith("/")) {
             uri = uri + "/";
         }
@@ -63,9 +55,15 @@ public class ProjectPoolImpl implements ProjectPool {
         }
     }
     
+    public String getURIForProject(Project project) {
+        synchronized (mapsLock) {
+            return projectToLocation.get(project);
+        }
+    }
+    
     public Collection<Project> getProjects() {
         synchronized (mapsLock) {
-            return new LinkedList<Project>(projectToId.keySet());
+            return new LinkedList<Project>(projectToLocation.keySet());
         }
     }
     
@@ -78,8 +76,7 @@ public class ProjectPoolImpl implements ProjectPool {
     public void reloadConfiguration() {
         synchronized (mapsLock) {
             locationToProject.clear();
-            idToProject.clear();
-            projectToId.clear();
+            projectToLocation.clear();
             projectToRemoteServiceUtil.clear();
             loadFromFile();
         }
@@ -125,21 +122,13 @@ public class ProjectPoolImpl implements ProjectPool {
             location = location + "/";
         }
         RemoteServiceUtil remoteServiceUtil = new RemoteServiceUtil(location, password);
-        String id = generateId(location);
         Project project = new ProjectImpl(remoteServiceUtil);
         locationToProject.put(location, project);
         for (String aliasLocation : aliasLocations) {
             locationToProject.put(aliasLocation, project);
         }
-        idToProject.put(id, project);
-        projectToId.put(project, id);
+        projectToLocation.put(project, location);
         projectToRemoteServiceUtil.put(project, remoteServiceUtil);
     }
-    
-    private String generateId(String location) {
-        return MD5Utils.hex_md5(location);
-    }
-
-
     
 }

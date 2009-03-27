@@ -20,7 +20,6 @@ package org.pustefixframework.editor.common.util;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.nio.charset.Charset;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -44,7 +43,8 @@ import de.schlund.pfixxml.util.Xml;
 public class XMLSerializer {
     
     private final static String WRAP_NS = "http://pustefixframework.org/2009/org.pustefixframework.editor.util.XMLSerializer/special-namespace-only-used-for-wrapping-serialized-nodes";
-    private final static String WRAP_ELEMENT_NAME = "document";
+    private final static String WRAP_ELEMENT_QNAME = "wrapns:document";
+    private final static String WRAP_ELEMENT_LOCALNAME = "document";
     
     /**
      * Creates a string representation of a XML Node. At the moment, only
@@ -80,7 +80,7 @@ public class XMLSerializer {
             throw new RuntimeException("Unexpected error while creating new DocumentBuilder", e);
         }
         Document doc = db.newDocument();
-        Element rootElement = doc.createElementNS(WRAP_NS, WRAP_ELEMENT_NAME);
+        Element rootElement = doc.createElementNS(WRAP_NS, WRAP_ELEMENT_QNAME);
         doc.appendChild(rootElement);
         rootElement.appendChild(doc.importNode(element, true));
         return doc;
@@ -104,8 +104,8 @@ public class XMLSerializer {
             throw new RuntimeException("Unexpected IOException while reading from a ByteArrayInputStream", e);
         }
         Element rootElement = doc.getDocumentElement();
-        if (rootElement.getNamespaceURI().equals(WRAP_NS)
-                && rootElement.getLocalName().equals(WRAP_ELEMENT_NAME)) {
+        if (rootElement.getNamespaceURI() != null && rootElement.getNamespaceURI().equals(WRAP_NS)
+                && rootElement.getLocalName().equals(WRAP_ELEMENT_LOCALNAME)) {
             NodeList nl = rootElement.getChildNodes();
             if (nl.getLength() != 1) {
                 throw new IllegalArgumentException("String is not a valid serialized node representation");

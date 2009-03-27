@@ -40,7 +40,7 @@
   <part name="displayimages">
     <theme name="default">
         <table><tr><td class="editor_main_emph">Used images:</td></tr></table>
-        <table background="/core/editor2/img/alpha.gif" cellpadding="0" cellspacing="0" class="editor_box_alpha" width="100%">
+        <table background="{$__contextpath}/img/alpha.gif" cellpadding="0" cellspacing="0" class="editor_box_alpha" width="100%">
           <ixsl:for-each select="./image">
             <ixsl:variable name="class">
               <ixsl:choose>
@@ -65,7 +65,7 @@
                   </ixsl:when>
                   <ixsl:otherwise>
                     <img border="0">
-                      <ixsl:attribute name="src">/<ixsl:value-of select="@path"/>?<ixsl:value-of select="@modtime"/></ixsl:attribute>
+                      <ixsl:attribute name="src"><ixsl:value-of select="@url"/>?<ixsl:value-of select="@modtime"/></ixsl:attribute>
                     </img>
                   </ixsl:otherwise>
                 </ixsl:choose>
@@ -107,7 +107,6 @@
                             </ixsl:when>
                             <ixsl:otherwise>
                               <pfx:button frame="_top" page="jumptopage" target="_top">
-                                <pfx:argument name="selectproject.ProjectName"><ixsl:value-of select="$theproduct"/></pfx:argument>
                                 <pfx:argument name="selectpage.PageName"><ixsl:value-of select="@name"/></pfx:argument>
                                 <pfx:argument name="selectpage.VariantName"><ixsl:value-of select="@variant"/></pfx:argument>
                                 <pfx:anchor frame="left_navi"><ixsl:value-of select="@name"/></pfx:anchor>

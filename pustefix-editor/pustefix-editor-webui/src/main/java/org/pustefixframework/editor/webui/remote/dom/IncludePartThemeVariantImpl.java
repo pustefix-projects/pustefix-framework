@@ -34,16 +34,16 @@ public class IncludePartThemeVariantImpl extends CommonIncludePartThemeVariantIm
 
     @Override
     protected RemoteCommonIncludeService getRemoteService() {
-        return remoteServiceUtil.getRemoteDynIncludeService();
+        return remoteServiceUtil.getRemoteIncludeService();
     }
     
     @Override
     protected IncludePartThemeVariant newInstance(IncludePartThemeVariantReferenceTO reference) {
-        return new DynIncludePartThemeVariantImpl(remoteServiceUtil, reference.path, reference.part, reference.theme);
+        return new IncludePartThemeVariantImpl(remoteServiceUtil, reference.path, reference.part, reference.theme);
     }
     
     public IncludePart getIncludePart() {
-        return new DynIncludePartImpl(remoteServiceUtil, path, part);
+        return new IncludePartImpl(remoteServiceUtil, path, part);
     }
     
 }
