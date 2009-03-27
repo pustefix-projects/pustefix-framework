@@ -39,6 +39,9 @@
             <td class="editor_head">
               <b>Working on</b>
             </td>
+            <td class="editor_head">
+              <b>Project</b>
+            </td>
           </tr>
           <ixsl:for-each select="/formresult/sessioninfo/session">
             <ixsl:variable name="class">
@@ -66,10 +69,20 @@
                   </ixsl:otherwise>
                 </ixsl:choose>
               </td>
+              <td>
+                <ixsl:choose>
+                  <ixsl:when test="./@projecturl">
+                    <ixsl:value-of select="./@projecturl"/>
+                  </ixsl:when>
+                  <ixsl:otherwise>
+                    <i>none</i>
+                  </ixsl:otherwise>
+                </ixsl:choose>
+              </td>
             </tr>
           </ixsl:for-each>
           <tr>
-            <td colspan="5">
+            <td colspan="4">
               <hr/>
             </td>
           </tr>

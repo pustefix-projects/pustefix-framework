@@ -18,6 +18,7 @@
 
 package org.pustefixframework.editor.webui.resources;
 
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.TreeSet;
 
@@ -67,6 +68,11 @@ public class UsersResource {
             Element currentuser = resdoc.createSubNode(elem, "currentuser");
             currentuser.setAttribute("id", this.selectedUser.getUsername());
         }
+        Element knownprojects = resdoc.createSubNode(elem, "knownprojects");
+        for (String projectName : usermanagement.getKnownProjects()) {
+            Element project = resdoc.createSubNode(knownprojects, "project");
+            project.setAttribute("name", projectName);
+        }
     }
 
     public void reset() throws Exception {
@@ -115,5 +121,9 @@ public class UsersResource {
     public boolean existsSelectedUser() {
         UserManagementService ums = usermanagement;
         return ums.hasUser(this.selectedUser.getUsername());
+    }
+    
+    public Collection<String> getProjectNames() {
+        return usermanagement.getKnownProjects();
     }
 }

@@ -23,6 +23,7 @@ import java.util.Date;
 
 import org.pustefixframework.container.annotations.Inject;
 import org.pustefixframework.editor.common.dom.IncludePartThemeVariant;
+import org.pustefixframework.editor.common.dom.Project;
 import org.pustefixframework.editor.common.exception.EditorSecurityException;
 import org.pustefixframework.editor.common.exception.EditorUserNotExistingException;
 import org.pustefixframework.editor.webui.resources.util.SessionInfoStore;
@@ -50,6 +51,8 @@ public class SessionResource {
     private UserManagementService usermanagement;
     
     private SessionInfoStore sessionInfoStore;
+    
+    private ProjectsResource projectsResource;
     
     private SecurityManagerService            secman;
 
@@ -158,6 +161,7 @@ public class SessionResource {
             } else {
                 incPart = null;
             }
+            final Project project = projectsResource.getSelectedProject();
             SessionInfo info = new SessionInfo() {
 
                 public IncludePartThemeVariant getIncludePart() {
@@ -170,6 +174,10 @@ public class SessionResource {
 
                 public EditorUser getUser() {
                     return user;
+                }
+
+                public Project getProject() {
+                    return project;
                 }
                 
             };
@@ -197,6 +205,11 @@ public class SessionResource {
     @Inject
     public void setSessionInfoStore(SessionInfoStore sessionInfoStore) {
         this.sessionInfoStore = sessionInfoStore;
+    }
+    
+    @Inject
+    public void setProjectsResource(ProjectsResource projectsResource) {
+        this.projectsResource = projectsResource;
     }
 
     public void setSelectedIncludePart(IncludePartThemeVariant selectedIncludePart) {

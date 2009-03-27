@@ -24,11 +24,13 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.Map;
 
 import javax.xml.transform.TransformerException;
 
 import org.apache.log4j.Logger;
+import org.pustefixframework.editor.common.dom.Project;
 import org.pustefixframework.editor.common.exception.EditorDuplicateUsernameException;
 import org.pustefixframework.editor.common.exception.EditorIOException;
 import org.pustefixframework.editor.common.exception.EditorParsingException;
@@ -56,6 +58,8 @@ public class UserManagementServiceImpl implements UserManagementService {
     private static final String CONFIG_FILE = "conf/userdata.xml";
 
     private SecurityManagerService securitymanager;
+    
+    private ProjectPool projectPool;
 
     private Map<String, EditorUser> users;
 
@@ -68,6 +72,10 @@ public class UserManagementServiceImpl implements UserManagementService {
         this.initialized = false;
     }
 
+    public void setProjectPool(ProjectPool projectPool) {
+        this.projectPool = projectPool;
+    }
+    
     public void setSecurityManagerService(SecurityManagerService securitymanager) {
         this.securitymanager = securitymanager;
     }
@@ -361,6 +369,23 @@ public class UserManagementServiceImpl implements UserManagementService {
         synchronized (this.users) {
             return this.users.containsKey(username);
         }
+    }
+
+    public Collection<String> getKnownProjects() {
+        LinkedHashSet<String> projectNames = new LinkedHashSet<String>();
+        synchronized (this.users) {
+            for (EditorUser user: users.values()) {
+                projectNames.addAll(user.getProjectsWithPermissions());
+            }
+        }
+        for (Project project : projectPool.getProjects()) {
+            try {
+                projectNames.add(project.getName());
+            } catch (Exception e) {
+                // Ignore exception and proceed with next project
+            }
+        }
+        return projectNames;
     }
 
 }

@@ -12,6 +12,9 @@
     <property name="securityManagerService">
       <ref bean="securitymanager"/>
     </property>
+    <property name="projectPool">
+      <ref bean="projectPool"/>
+    </property>
   </bean>
   
   <bean id="securitymanager" scope="session" class="de.schlund.pfixcore.editor2.core.spring.SecurityManagerServiceImpl">

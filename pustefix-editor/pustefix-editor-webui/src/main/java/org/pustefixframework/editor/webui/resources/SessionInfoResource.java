@@ -23,16 +23,20 @@ import java.text.SimpleDateFormat;
 
 import org.pustefixframework.container.annotations.Inject;
 import org.pustefixframework.editor.common.dom.IncludePartThemeVariant;
+import org.pustefixframework.editor.common.dom.Project;
 import org.pustefixframework.editor.webui.resources.util.SessionInfoStore;
 import org.w3c.dom.Element;
 
 import de.schlund.pfixcore.beans.InsertStatus;
 import de.schlund.pfixcore.editor2.core.dom.SessionInfo;
+import de.schlund.pfixcore.editor2.core.spring.ProjectPool;
 import de.schlund.pfixcore.editor2.core.vo.EditorUser;
 import de.schlund.pfixxml.ResultDocument;
 
 public class SessionInfoResource {
     private SessionInfoStore sessionInfoStore;
+    
+    private ProjectPool projectPool;
     
     @InsertStatus
     public void insertStatus(ResultDocument resdoc, Element elem) throws Exception {
@@ -49,6 +53,10 @@ public class SessionInfoResource {
                 if (incPart != null) {
                     sessionNode.setAttribute("incpart", incPart.toString());
                 }
+                Project project = info.getProject();
+                if (project != null) {
+                    sessionNode.setAttribute("projecturl", projectPool.getURIForProject(project));
+                }
                 sessionNode.setAttribute("lastAccess", dateformat.format(info.getLastAccess()));
             }
         }
@@ -57,6 +65,11 @@ public class SessionInfoResource {
     @Inject
     public void setSessionInfoStore(SessionInfoStore sessionInfoStore) {
         this.sessionInfoStore = sessionInfoStore;
+    }
+    
+    @Inject
+    public void setProjectPool(ProjectPool projectPool) {
+        this.projectPool = projectPool;
     }
     
 }

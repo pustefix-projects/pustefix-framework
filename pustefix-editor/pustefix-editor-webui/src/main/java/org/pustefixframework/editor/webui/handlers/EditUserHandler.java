@@ -18,16 +18,12 @@
 
 package org.pustefixframework.editor.webui.handlers;
 
-import java.util.LinkedHashSet;
-
 import org.pustefixframework.container.annotations.Inject;
-import org.pustefixframework.editor.common.dom.Project;
 import org.pustefixframework.editor.generated.EditorStatusCodes;
 import org.pustefixframework.editor.webui.resources.UsersResource;
 import org.pustefixframework.editor.webui.wrappers.EditUser;
 import org.pustefixframework.generated.CoreStatusCodes;
 
-import de.schlund.pfixcore.editor2.core.spring.ProjectPool;
 import de.schlund.pfixcore.editor2.core.vo.EditorGlobalPermissions;
 import de.schlund.pfixcore.editor2.core.vo.EditorProjectPermissions;
 import de.schlund.pfixcore.editor2.core.vo.EditorUser;
@@ -42,8 +38,6 @@ import de.schlund.pfixcore.workflow.Context;
  * @author Sebastian Marsching <sebastian.marsching@1und1.de>
  */
 public class EditUserHandler implements IHandler {
-    private ProjectPool projectPool;
-    
     private UsersResource usersResource;
 
     public void handleSubmittedData(Context context, IWrapper wrapper)
@@ -101,7 +95,7 @@ public class EditUserHandler implements IHandler {
             gPermissions.setAdmin(isAdmin);
             user.setGlobalPermissions(gPermissions);
             
-            for (String projectName : getProjectNames(user)) {
+            for (String projectName : usersResource.getProjectNames()) {
                 boolean isEditImages = false;
                 if (input.getEditImagesPrivilege(projectName) != null
                         && input.getEditImagesPrivilege(projectName)
@@ -138,7 +132,7 @@ public class EditUserHandler implements IHandler {
         } else {
             input.setAdminPrivilege(new Boolean(false));
         }
-        for (String projectName : getProjectNames(user)) {
+        for (String projectName : usersResource.getProjectNames()) {
             EditorProjectPermissions permissions = user
                     .getProjectPermissions(projectName);
             if (permissions.isEditImages()) {
@@ -169,20 +163,6 @@ public class EditUserHandler implements IHandler {
         return true;
     }
     
-    private LinkedHashSet<String> getProjectNames(EditorUser user) {
-        LinkedHashSet<String> projectNames = new LinkedHashSet<String>();
-        projectNames.addAll(user.getProjectsWithPermissions());
-        for (Project project : projectPool.getProjects()) {
-            projectNames.add(project.getName());
-        }
-        return projectNames;
-    }
-
-    @Inject
-    public void setProjectPool(ProjectPool projectPool) {
-        this.projectPool = projectPool;
-    }
-
     @Inject
     public void setUsersResource(UsersResource usersResource) {
         this.usersResource = usersResource;

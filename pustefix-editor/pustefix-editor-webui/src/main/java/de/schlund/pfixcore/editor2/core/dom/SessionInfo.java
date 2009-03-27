@@ -21,6 +21,7 @@ package de.schlund.pfixcore.editor2.core.dom;
 import java.util.Date;
 
 import org.pustefixframework.editor.common.dom.IncludePartThemeVariant;
+import org.pustefixframework.editor.common.dom.Project;
 
 import de.schlund.pfixcore.editor2.core.vo.EditorUser;
 
@@ -46,6 +47,13 @@ public interface SessionInfo {
      * @return include part selected by the user
      */
     IncludePartThemeVariant getIncludePart();
+    
+    /**
+     * Returns the project the user is working on.
+     * 
+     * @return selected project
+     */
+    Project getProject();
     
     /**
      * Returns the last time the session was used.

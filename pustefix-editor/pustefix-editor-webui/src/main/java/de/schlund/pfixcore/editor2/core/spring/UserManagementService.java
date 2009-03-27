@@ -100,4 +100,11 @@ public interface UserManagementService {
      * @return List of all users
      */
     Collection<EditorUser> getUsers();
+    
+    /**
+     * Returns a list of all known project names.
+     * 
+     * @return list of project names
+     */
+    Collection<String> getKnownProjects();
 }
