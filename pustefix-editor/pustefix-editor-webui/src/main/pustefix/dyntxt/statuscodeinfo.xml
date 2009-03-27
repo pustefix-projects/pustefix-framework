@@ -2,8 +2,8 @@
 <statuscodeinfo xmlns="http://pustefix-framework.org/statuscodeinfo" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://pustefix-framework.org/statuscodeinfo ../../core/schema/statuscodeinfo.xsd">
 
-  <statuscodes class="org.pustefixframework.generated.CoreStatusCodes">
-    <file>main/dyntxt/statusmessages-core.xml</file>
+  <statuscodes class="org.pustefixframework.editor.generated.EditorStatusCodes">
+    <file>statusmessages.xml</file>
   </statuscodes>
   
 </statuscodeinfo>
