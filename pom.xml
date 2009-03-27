@@ -64,8 +64,8 @@
 
   <distributionManagement>
     <repository>
-      <id>pustefix-maven-repository</id>
-      <name>Pustefix-Framework Maven Repository</name>
+      <id>pustefix</id>
+      <name>Pustefix Maven Repository</name>
       <url>scpexe://pustefixhp.schlund.de/home/pustefix/repository/maven</url>
       <uniqueVersion>false</uniqueVersion>
     </repository>
