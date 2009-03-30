@@ -33,13 +33,16 @@
   </fileSets>
   <requiredProperties>
     <requiredProperty key="groupId">
-      <defaultValue>com.foo</defaultValue>
+      <defaultValue>com.mycompany</defaultValue>
     </requiredProperty>
     <requiredProperty key="artifactId">
-      <defaultValue>com.foo</defaultValue>
+      <defaultValue>firstapp</defaultValue>
+    </requiredProperty>
+    <requiredProperty key="version">
+      <defaultValue>1.0-SNAPSHOT</defaultValue>
     </requiredProperty>
     <requiredProperty key="package">
-      <defaultValue>com.foo.bar</defaultValue>
+      <defaultValue>com.mycompany.firstapp</defaultValue>
     </requiredProperty>
   </requiredProperties>
 </archetype-descriptor>

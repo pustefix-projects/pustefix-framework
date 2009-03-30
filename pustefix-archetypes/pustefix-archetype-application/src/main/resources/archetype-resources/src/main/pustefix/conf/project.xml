@@ -6,7 +6,7 @@
 
 <project>
   <name>${artifactId}</name>
-  <description>Pustefix ${artifactId} application</description>
+  <description>${artifactId} pustefix application</description>
   </project>
 
   <editor>
