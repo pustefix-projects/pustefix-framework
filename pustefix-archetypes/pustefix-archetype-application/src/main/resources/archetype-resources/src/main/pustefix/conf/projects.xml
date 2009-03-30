@@ -32,9 +32,8 @@
   
   <application>
     <static>
-      <path>common/img</path>
-      <path>core/img</path>
-      <path>core/script</path>
+      <path>img</path>
+      <path>script</path>
     </static>
   </application>
   
