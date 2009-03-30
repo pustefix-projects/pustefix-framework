@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?><archetype>
+  <id>pustefix-sample-firstapp</id>
+  <sources>
+    <source>src/main/java/wrapper/EnterUserDataWrapper.iwrp</source>
+    <source>src/main/java/wrapper/SaveUserDataWrapper.iwrp</source>
+    <source>src/main/java/handler/SaveUserDataHandler.java</source>
+    <source>src/main/java/handler/EnterUserDataHandler.java</source>
+    <source>src/main/java/contextresources/ContextUser.java</source>
+    <source>src/main/java/contextresources/ContextUserImpl.java</source>
+    <source>src/main/java/User.java</source>
+  </sources>
+  <resources>
+    <resource>src/main/pustefix/dyntxt/statuscodeinfo.xml</resource>
+    <resource>src/main/pustefix/dyntxt/statusmessages.xml</resource>
+    <resource>src/main/pustefix/dyntxt/statusmessages-core-merged.xml</resource>
+    <resource>src/main/pustefix/xml/frame.xml</resource>
+    <resource>src/main/pustefix/conf/project.xml</resource>
+    <resource>src/main/pustefix/conf/factory.xml</resource>
+    <resource>src/main/pustefix/conf/pustefix.xml</resource>
+    <resource>src/main/pustefix/conf/projects.xml</resource>
+    <resource>src/main/pustefix/conf/depend.xml</resource>
+    <resource>src/main/pustefix/conf/pfixlog.xml</resource>
+    <resource>src/main/pustefix/conf/app.conf.xml</resource>
+    <resource>src/main/pustefix/txt/pages/main_Confirm.xml</resource>
+    <resource>src/main/pustefix/txt/pages/main_ReviewData.xml</resource>
+    <resource>src/main/pustefix/txt/pages/main_EnterData.xml</resource>
+    <resource>src/main/pustefix/xsl/metatags.xsl</resource>
+    <resource>src/main/pustefix/xsl/skin.xsl</resource>
+    <resource>.project</resource>
+    <resource>.classpath</resource>
+    <resource>.settings/org.eclipse.jdt.core.prefs</resource>
+  </resources>
+</archetype>

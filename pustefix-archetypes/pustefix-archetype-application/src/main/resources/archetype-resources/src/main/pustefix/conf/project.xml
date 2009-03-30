@@ -1,0 +1,65 @@
+#set( $symbol_pound = '#' )
+#set( $symbol_dollar = '$' )
+#set( $symbol_escape = '\' )
+<?xml version="1.0" encoding="utf-8"?>
+<project-config xmlns="http://www.pustefix-framework.org/2008/namespace/project-config">
+
+<project>
+  <name>firstapp</name>
+  <description>My first Pustefix application</description>
+  </project>
+
+  <editor>
+    <enabled>true</enabled>
+    <location>http://cms.${symbol_dollar}{fqdn}/</location>
+  </editor>
+
+  <xml-generator>
+    <config-file>pfixroot:/conf/depend.xml</config-file>
+  </xml-generator>
+
+  <http-server>
+
+    <http-port>
+      <address>${symbol_dollar}{fqdn}</address>
+    </http-port>
+
+    <!-- we do not use SSL here
+    <https-port>
+      <address>${symbol_dollar}{fqdn}</address>
+      <ssl-key>pfixroot:/conf/server.key</ssl-key>
+      <ssl-crt>pfixroot:/conf/server.crt</ssl-crt>
+    </https-port>
+    -->
+
+    <server-name>firstapp.${symbol_dollar}{fqdn}</server-name>
+    <server-alias>firstapp.${symbol_dollar}{machine}</server-alias>
+
+    <apache>
+      <literal>
+        <!-- Stuff that is copied to the Apache configuration -->
+      </literal>
+    </apache>
+
+    <tomcat>
+      <enable-extra-webapps>false</enable-extra-webapps>
+    </tomcat>
+
+  </http-server>
+
+  <application>
+
+    <docroot-path>pfixroot:/htdocs</docroot-path>
+    <default-path>/xml/app</default-path>
+
+    <context-xml-service>
+      <path>/xml/app</path>
+      <config-file>pfixroot:/conf/app.conf.xml</config-file>
+    </context-xml-service>
+
+    <static>
+      <path>img</path>
+    </static>
+
+  </application>
+</project-config>
