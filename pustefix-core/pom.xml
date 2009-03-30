@@ -134,17 +134,19 @@
     </dependency>
     
 
-    <!-- we need both to compile the our extensions -->
+    <!-- We need both to compile the our extensions. Our default is saxon 6 (that's why saxon 8 is optional) because
+         only some xsl files have been adjusted, and we want to avoid "the xsl 1 sheet ond xsl 2 processor" warning -->
     <dependency>
       <groupId>com.icl.saxon</groupId>
       <artifactId>saxon</artifactId>
       <version>6.5.5</version>
     </dependency>
-    <!-- TODO: 9.0 -->
     <dependency>
       <groupId>net.sf.saxon</groupId>
       <artifactId>saxon-dom</artifactId>
       <version>8.7</version>
+      <!-- TOOD: doesnt work because we have a runtime dependency in util.xsltimpl.XmlSaxon2
+      <optional>true</optional> -->
     </dependency>
     <dependency>
       <groupId>net.sf.saxon</groupId>
