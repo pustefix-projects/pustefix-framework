@@ -21,7 +21,7 @@
     
     <!-- URL for the Pustefix editor -->
     <choose>
-      <when test="${symbol_dollar}__antprop_standalone.tomcat = 'true'">
+      <when test="${symbol_dollar}standalone.tomcat = 'true'">
         <prop name="xmlserver.editor_url">http://cmsskel.${symbol_dollar}{fqdn}:8080</prop>
       </when>
       <otherwise>
