@@ -1,4 +1,4 @@
-package org.pustefixframework.tutorial.firstapp;
+package org.pustefixframework.firstapp;
 
 
 public class User {

@@ -1,6 +1,6 @@
-package org.pustefixframework.tutorial.firstapp.contextresources;
+package org.pustefixframework.firstapp.contextresources;
 
-import org.pustefixframework.tutorial.firstapp.User;
+import org.pustefixframework.firstapp.User;
 
 import de.schlund.pfixcore.workflow.ContextResource;
 

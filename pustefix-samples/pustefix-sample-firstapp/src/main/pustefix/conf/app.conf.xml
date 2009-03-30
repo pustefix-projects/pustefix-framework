@@ -3,8 +3,8 @@
   <global-config />
 
   <context defaultpage="EnterData">
-    <resource class="org.pustefixframework.tutorial.firstapp.contextresources.ContextUserImpl">
-      <implements class="org.pustefixframework.tutorial.firstapp.contextresources.ContextUser"/>
+    <resource class="org.pustefixframework.firstapp.contextresources.ContextUserImpl">
+      <implements class="org.pustefixframework.firstapp.contextresources.ContextUser"/>
     </resource>
   </context>
 
@@ -15,25 +15,25 @@
 
   <pagerequest name="EnterData">
     <input>
-      <wrapper prefix="user" class="org.pustefixframework.tutorial.firstapp.wrapper.EnterUserDataWrapper" />
+      <wrapper prefix="user" class="org.pustefixframework.firstapp.wrapper.EnterUserDataWrapper" />
     </input>
   </pagerequest>
   
   <pagerequest name="ReviewData">
     <input>
-      <wrapper prefix="user" class="org.pustefixframework.tutorial.firstapp.wrapper.SaveUserDataWrapper" />
+      <wrapper prefix="user" class="org.pustefixframework.firstapp.wrapper.SaveUserDataWrapper" />
     </input>
     <output>
-      <resource node="user" class="org.pustefixframework.tutorial.firstapp.contextresources.ContextUser"/>
+      <resource node="user" class="org.pustefixframework.firstapp.contextresources.ContextUser"/>
     </output>
   </pagerequest>
 
   <pagerequest name="ConfirmData">
     <input>
-      <wrapper prefix="user" class="org.pustefixframework.tutorial.firstapp.wrapper.SaveUserDataWrapper" />
+      <wrapper prefix="user" class="org.pustefixframework.firstapp.wrapper.SaveUserDataWrapper" />
     </input>
     <output>
-      <resource node="user" class="org.pustefixframework.tutorial.firstapp.contextresources.ContextUser"/>
+      <resource node="user" class="org.pustefixframework.firstapp.contextresources.ContextUser"/>
     </output>
   </pagerequest>
 

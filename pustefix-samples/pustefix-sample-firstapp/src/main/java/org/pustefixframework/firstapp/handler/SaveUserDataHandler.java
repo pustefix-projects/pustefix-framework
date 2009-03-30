@@ -1,6 +1,6 @@
-package org.pustefixframework.tutorial.firstapp.handler;
+package org.pustefixframework.firstapp.handler;
 
-import org.pustefixframework.tutorial.firstapp.contextresources.ContextUser;
+import org.pustefixframework.firstapp.contextresources.ContextUser;
 
 import de.schlund.pfixcore.generator.IHandler;
 import de.schlund.pfixcore.generator.IWrapper;
