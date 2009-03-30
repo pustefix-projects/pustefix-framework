@@ -32,8 +32,8 @@
     </https-port>
     -->
 
-    <server-name>firstapp.${symbol_dollar}{fqdn}</server-name>
-    <server-alias>firstapp.${symbol_dollar}{machine}</server-alias>
+    <server-name>${artifactId}.${symbol_dollar}{fqdn}</server-name>
+    <server-alias>${artifactId}.${symbol_dollar}{machine}</server-alias>
 
     <apache>
       <literal>
