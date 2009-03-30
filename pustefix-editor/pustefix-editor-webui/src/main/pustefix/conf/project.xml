@@ -28,9 +28,9 @@
   <http-server>
     
     <choose>
-      <when test="pfx:isSet('__antprop_pustefix.editor.address')">
+      <when test="pfx:isSet('pustefix.editor.address')">
         <http-port>
-          <address>${__antprop_pustefix.editor.address}</address>
+          <address>${pustefix.editor.address}</address>
         </http-port>
       </when>
       <otherwise>
@@ -41,8 +41,8 @@
     </choose>
     
     <choose>
-      <when test="pfx:isSet('__antprop_pustefix.editor.servername')">
-        <server-name>${__antprop_pustefix.editor.servername}</server-name>
+      <when test="pfx:isSet('pustefix.editor.servername')">
+        <server-name>${pustefix.editor.servername}</server-name>
       </when>
       <otherwise>
         <server-name>cms.${fqdn}</server-name>
@@ -50,8 +50,8 @@
     </choose>
     
     <choose>
-      <when test="pfx:isSet('__antprop_pustefix.editor.serveralias')">
-        <server-alias>${__antprop_pustefix.editor.serveralias}</server-alias>
+      <when test="pfx:isSet('pustefix.editor.serveralias')">
+        <server-alias>${pustefix.editor.serveralias}</server-alias>
       </when>
       <otherwise>
         <server-alias>cms.${machine}</server-alias>

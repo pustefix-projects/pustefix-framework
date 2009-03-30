@@ -30,6 +30,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.Map;
+import java.util.Properties;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.zip.ZipEntry;
@@ -215,7 +217,22 @@ public class PustefixWebappMojo extends AbstractMojo {
     }
     
     private void buildtimeProps() throws IOException {
-        BuildTimeProperties.generate(makemode, getMachine(), getFqdn(), System.getProperty("user.name"), pfixroot, standaloneTomcat);
+        BuildTimeProperties.generate(getProperties(), makemode, getMachine(), getFqdn(), System.getProperty("user.name"), pfixroot, standaloneTomcat);
+    }
+    private Properties getProperties() {
+    	Properties orig;
+    	Properties result;
+    	String key;
+    	
+    	result = new Properties();
+    	orig = project.getProperties();
+        for (Map.Entry<Object, Object> entry: orig.entrySet()) {
+        	key = (String) entry.getKey();
+        	if (key.startsWith("pustefix.")) {
+        		result.setProperty(key, (String) entry.getValue());
+        	}
+        }
+    	return result;
     }
 
     private String getMachine() throws UnknownHostException {
