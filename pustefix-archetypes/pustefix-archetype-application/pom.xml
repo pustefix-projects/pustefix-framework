@@ -1,12 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+
   <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.pustefixframework</groupId>
+    <artifactId>pustefix-samples</artifactId>
+    <version>0.14.0-SNAPSHOT</version>
+  </parent>
+
   <groupId>org.pustefixframework</groupId>
-  <artifactId>pustefix-sample-firstapp-archetype</artifactId>
+  <artifactId>pustefix-archetype-application</artifactId>
   <version>0.14.0-SNAPSHOT</version>
   <packaging>maven-archetype</packaging>
-  <name>pustefix-sample-firstapp-archetype</name>
+
+  <name>Pustefix Archetype Application</name>
+
   <build>
     <extensions>
       <extension>
@@ -23,12 +33,4 @@
       </plugin>
     </plugins>
   </build>
-  <distributionManagement>
-    <repository>
-      <uniqueVersion>false</uniqueVersion>
-      <id>pustefix</id>
-      <name>Pustefix Maven Repository</name>
-      <url>scpexe://pustefixhp.schlund.de/home/pustefix/repository/maven</url>
-    </repository>
-  </distributionManagement>
 </project>

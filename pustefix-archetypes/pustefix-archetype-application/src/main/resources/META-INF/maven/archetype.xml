@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?><archetype>
-  <id>pustefix-sample-firstapp</id>
+  <id>pustefix-archetype-application</id>
   <sources>
     <source>src/main/java/wrapper/EnterUserDataWrapper.iwrp</source>
     <source>src/main/java/wrapper/SaveUserDataWrapper.iwrp</source>
@@ -26,8 +26,5 @@
     <resource>src/main/pustefix/txt/pages/main_EnterData.xml</resource>
     <resource>src/main/pustefix/xsl/metatags.xsl</resource>
     <resource>src/main/pustefix/xsl/skin.xsl</resource>
-    <resource>.project</resource>
-    <resource>.classpath</resource>
-    <resource>.settings/org.eclipse.jdt.core.prefs</resource>
   </resources>
 </archetype>

@@ -3,7 +3,7 @@
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   
   <!-- This handler will process the data -->
-  <ihandler class="org.pustefixframework.firstapp.handler.EnterUserDataHandler"/>
+  <ihandler class="${package}.handler.EnterUserDataHandler"/>
   
   <!-- Parameters that have to be extracted from the request -->
   <param name="sex" type="java.lang.String" occurrence="mandatory"/>

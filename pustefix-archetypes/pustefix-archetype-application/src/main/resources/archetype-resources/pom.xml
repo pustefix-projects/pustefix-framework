@@ -13,7 +13,7 @@
   <version>${version}</version>
   <packaging>war</packaging>
 
-  <name>Pustefix Sample Firstapp</name>
+  <name>Pustefix ${artifactId} Application </name>
 
   <dependencies>
     <dependency>

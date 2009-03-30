@@ -3,5 +3,5 @@
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   
   <!-- This handler will process the data -->
-  <ihandler class="org.pustefixframework.firstapp.handler.SaveUserDataHandler"/>
+  <ihandler class="${package}.handler.SaveUserDataHandler"/>
 </interface>
