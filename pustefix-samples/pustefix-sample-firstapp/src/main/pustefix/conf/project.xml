@@ -2,7 +2,7 @@
 <project-config xmlns="http://www.pustefix-framework.org/2008/namespace/project-config">
 
 <project>
-  <name>first-app</name>
+  <name>firstapp</name>
   <description>My first Pustefix application</description>
   </project>
 
@@ -29,8 +29,8 @@
     </https-port>
     -->
 
-    <server-name>first-app.${fqdn}</server-name>
-    <server-alias>first-app.${machine}</server-alias>
+    <server-name>firstapp.${fqdn}</server-name>
+    <server-alias>firstapp.${machine}</server-alias>
 
     <apache>
       <literal>

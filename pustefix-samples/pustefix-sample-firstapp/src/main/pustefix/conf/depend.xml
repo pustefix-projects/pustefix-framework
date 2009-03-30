@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<make lang="en_GB" project="first-app">
+<make lang="en_GB" project="firstapp">
 
   <navigation>
     <page handler="/xml/app" name="EnterData"/>
