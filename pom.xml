@@ -69,14 +69,6 @@
       <url>scpexe://pustefixhp.schlund.de/home/pustefix/repository/maven</url>
       <uniqueVersion>false</uniqueVersion>
     </repository>
-    <!-- <repository>
-      <id>${repo.id.releases}</id>
-      <url>${repo.url.releases}</url>
-    </repository>
-    <snapshotRepository>
-      <id>${repo.id.snapshots}</id>
-      <url>${repo.url.snapshots}</url>
-    </snapshotRepository -->
   </distributionManagement>
 
   <modules>
