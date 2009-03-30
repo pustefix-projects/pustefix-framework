@@ -253,10 +253,8 @@
         <executions>
           <execution>
             <configuration>
-              <docRoot>${basedir}/src</docRoot>
-              <includes>
-                <include>main/dyntxt/statuscodeinfo.xml</include>
-              </includes>
+              <docRoot>${basedir}/src/data</docRoot>
+              <includes><include>core/dyntxt/statuscodeinfo.xml</include></includes>
             </configuration>
             <id>statuscodes</id>
             <goals>
