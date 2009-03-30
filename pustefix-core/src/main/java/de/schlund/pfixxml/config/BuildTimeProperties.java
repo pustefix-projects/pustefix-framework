@@ -60,8 +60,7 @@ public class BuildTimeProperties {
         props.setProperty("fqdn", fqdn);
         props.setProperty("uid", uid);
         props.setProperty("docroot", docroot);
-        props.setProperty("__antprop_makemode", mode);
-        props.setProperty("__antprop_standalone.tomcat", Boolean.toString(standaloneTomcat));
+        props.setProperty("standalone.tomcat", Boolean.toString(standaloneTomcat));
 
         props.store(ResourceUtil.getFileResourceFromDocroot("buildtime.prop").getOutputStream(), "Properties used at buildtime");
     }

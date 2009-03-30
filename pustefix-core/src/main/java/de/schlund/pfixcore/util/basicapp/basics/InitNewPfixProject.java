@@ -51,7 +51,7 @@ public final class InitNewPfixProject {
         handleFiles.runHandleXMLFiles(); 
         
         Properties props = BuildTimeProperties.getProperties();
-        String value = props.getProperty("__antprop_standalone.tomcat");
+        String value = props.getProperty("standalone.tomcat");
         boolean standalone = false;
         if(value!=null && Boolean.valueOf(value)) standalone = true;
         String fqdn = props.getProperty("fqdn");
