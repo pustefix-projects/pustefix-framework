@@ -14,7 +14,7 @@
           <xsl:value-of select="@path"/>
         </xsl:when>
         <xsl:when test="string($maincontentpath) != ''"><xsl:value-of select="$maincontentpath"/></xsl:when>
-        <xsl:otherwise><xsl:value-of select="$product"/>/txt/pages</xsl:otherwise>
+        <xsl:otherwise>txt/pages</xsl:otherwise>
       </xsl:choose>
     </xsl:variable>
     <xsl:variable name="prefix">
