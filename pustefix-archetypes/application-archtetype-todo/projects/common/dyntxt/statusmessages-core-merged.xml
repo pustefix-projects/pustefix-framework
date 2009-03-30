@@ -1,4 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
-  <!-- Don't add new StatusCodes here, only new product branches! -->
-</include_parts>
