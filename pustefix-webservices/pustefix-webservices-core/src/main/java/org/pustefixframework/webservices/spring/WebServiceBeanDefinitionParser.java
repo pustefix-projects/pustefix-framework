@@ -48,13 +48,13 @@ public class WebServiceBeanDefinitionParser extends AbstractSingleBeanDefinition
        if(interfaceName.length()>0) beanDefBuilder.addPropertyValue("interface", interfaceName);
        
        String protocol = element.getAttribute("protocol");
-       if(protocol!=null) beanDefBuilder.addPropertyValue("protocol", protocol);
+       if(protocol.length()>0) beanDefBuilder.addPropertyValue("protocol", protocol);
        
        String sessionType = element.getAttribute("session");
-       if(sessionType!=null) beanDefBuilder.addPropertyValue("sessionType", sessionType);
+       if(sessionType.length()>0) beanDefBuilder.addPropertyValue("sessionType", sessionType);
 
        String authConstraint = element.getAttribute("authconstraint");
-       if(authConstraint!=null) beanDefBuilder.addPropertyValue("authConstraint", authConstraint);
+       if(authConstraint.length()>0) beanDefBuilder.addPropertyValue("authConstraint", authConstraint);
        
        Object target = null;
        if (element.hasAttribute("ref")) { 
