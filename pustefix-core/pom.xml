@@ -110,12 +110,6 @@
       <version>1.0.9</version>
     </dependency>
 
-    <!-- dependency>
-      <groupId>javax.management</groupId>
-      <artifactId>jmxremote_optional</artifactId>
-      <version>1.0.1_03</version>
-    </dependency-->
-
     <dependency>
       <groupId>concurrent</groupId>
       <artifactId>concurrent</artifactId>
@@ -145,13 +139,13 @@
       <groupId>net.sf.saxon</groupId>
       <artifactId>saxon-dom</artifactId>
       <version>8.7</version>
-      <!-- TOOD: doesnt work because we have a runtime dependency in util.xsltimpl.XmlSaxon2
-      <optional>true</optional> -->
+      <optional>true</optional>
     </dependency>
     <dependency>
       <groupId>net.sf.saxon</groupId>
       <artifactId>saxon-xpath</artifactId>
       <version>8.7</version>
+      <optional>true</optional>
     </dependency>
     
     <dependency>
