@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?><archetype-descriptor name="pustefix-sample-firstapp">
+<?xml version="1.0" encoding="UTF-8"?><archetype-descriptor name="pustefix-archetype-application">
   <fileSets>
     <fileSet filtered="true" packaged="true" encoding="UTF-8">
       <directory>src/main/java</directory>

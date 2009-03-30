@@ -2,7 +2,7 @@
 #set( $symbol_dollar = '$' )
 #set( $symbol_escape = '\' )
 <?xml version="1.0" encoding="utf-8"?>
-<make lang="en_GB" project="firstapp">
+<make lang="en_GB" project="${artifactId}">
 
   <navigation>
     <page handler="/xml/app" name="EnterData"/>

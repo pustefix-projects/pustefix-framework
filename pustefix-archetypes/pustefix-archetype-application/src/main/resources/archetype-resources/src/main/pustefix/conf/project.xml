@@ -5,8 +5,8 @@
 <project-config xmlns="http://www.pustefix-framework.org/2008/namespace/project-config">
 
 <project>
-  <name>firstapp</name>
-  <description>My first Pustefix application</description>
+  <name>${artifactId}</name>
+  <description>Pustefix ${artifactId} application</description>
   </project>
 
   <editor>
