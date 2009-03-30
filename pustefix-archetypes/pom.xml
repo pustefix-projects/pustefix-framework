@@ -18,7 +18,7 @@
   <url>http://pustefixframework.org</url>
 
   <modules>
-    <module>pustefix-application-archetype</module>
+    <module>pustefix-archetype-application</module>
   </modules>
 
 </project>
