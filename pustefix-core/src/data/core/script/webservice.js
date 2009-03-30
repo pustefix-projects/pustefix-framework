@@ -1304,7 +1304,7 @@ function SOAP_Stub() {
 
 SOAP_Stub.prototype._createCall=function() {
   var call=new SOAP_Call();
-  call.setTargetEndpointAddress(this._url);
+  call.setTargetEndpointAddress(this.getURI());
   if(this._cbObj!=null) call.setUserObject(this._cbObj);
   return call;
 }
@@ -1321,7 +1321,23 @@ SOAP_Stub.prototype._extractCallback=function(call,args,expLen) {
 }
 
 SOAP_Stub.prototype._setURL=function(url) {
-  this._url=url.replace(/(https?:\/\/)([^\/]+)(.*)/,window.location.protocol+"//"+window.location.host+"$3");
-  var session=window.location.href.match(/;jsessionid=[A-Z0-9]+\.[a-zA-Z0-9]+/);
-  this._url+=session;
+  this._url=url;
+}
+
+SOAP_Stub.prototype.getURI=function() {
+   if(this._uri==null) {
+      var session=window.location.href.match(/;jsessionid=[A-Z0-9]+(\.[a-zA-Z0-9]+)?/)[0];
+      var reqpath=window.location.pathname;
+      var pcs=reqpath.split('/');
+      pcs=pcs.slice(1,pcs.length-3);
+      reqpath="";
+      for (var i=0;i<pcs.length;i++) reqpath+="/"+pcs[i];
+      pcs=this._url.split('/');
+      pcs=pcs.slice(pcs.length-3,pcs.length);
+      lastpath="";
+      for (var i=0;i<pcs.length;i++) lastpath+="/"+pcs[i];
+      reqpath=reqpath+lastpath;
+      this._uri=window.location.protocol+"//"+window.location.host+reqpath+session;
+   }
+   return this._uri;
 }
