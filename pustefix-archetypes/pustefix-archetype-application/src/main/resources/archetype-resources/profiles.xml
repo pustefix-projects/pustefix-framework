@@ -1,4 +1,3 @@
-<!-- rename this file to "profiles.xml" if you need to adjust the properties below -->
 <profiles>
   <profile>
     <id>pustefix.properties</id>

@@ -25,9 +25,9 @@
       </includes>
     </fileSet>
     <fileSet encoding="UTF-8">
-      <directory>.settings</directory>
+      <directory></directory>
       <includes>
-        <include>**/*.prefs</include>
+        <include>profiles.xml</include>
       </includes>
     </fileSet>
   </fileSets>
