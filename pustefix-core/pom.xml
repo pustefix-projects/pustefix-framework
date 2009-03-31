@@ -5,12 +5,12 @@
   <parent>
     <groupId>org.pustefixframework</groupId>
     <artifactId>pustefixframework</artifactId>
-    <version>0.14.0-SNAPSHOT</version>
+    <version>0.14.0</version>
   </parent>
 
   <groupId>org.pustefixframework</groupId>
   <artifactId>pustefix-core</artifactId>
-  <version>0.14.0-SNAPSHOT</version>
+  <version>0.14.0</version>
   <packaging>jar</packaging>
 
   <name>Pustefix Framework Core</name>
@@ -180,11 +180,11 @@
             <phase>generate-resources</phase>
             <configuration>
               <tasks>
-                <mkdir dir="${basedir}/target/classes/META-INF"/>
-                <property name="svnrevision" location="${basedir}/target/classes/META-INF/SVN_REVISION"/>
-                <delete file="${svnrevision}"/>
+                <mkdir dir="${basedir}/target/classes/META-INF" />
+                <property name="svnrevision" location="${basedir}/target/classes/META-INF/SVN_REVISION" />
+                <delete file="${svnrevision}" />
                 <exec executable="svn" output="${svnrevision}">
-                  <arg line="info"/>
+                  <arg line="info" />
                 </exec>
               </tasks>
             </configuration>
@@ -198,9 +198,9 @@
             <configuration>
               <tasks>
                 <tar destfile="target/${project.artifactId}-data-${project.version}.tar.gz" compression="gzip">
-                  <tarfileset dir="${basedir}/src/data"/>
+                  <tarfileset dir="${basedir}/src/data" />
                   <tarfileset dir="${basedir}/target/classes/META-INF" prefix="core">
-                    <include name="SVN_REVISION"/>
+                    <include name="SVN_REVISION" />
                   </tarfileset>
                 </tar>
               </tasks>
@@ -238,7 +238,7 @@
       <plugin>
         <groupId>org.pustefixframework.maven.plugins</groupId>
         <artifactId>pustefix-statuscode-plugin</artifactId>
-        <version>0.14.0-SNAPSHOT</version>
+        <version>0.14.0</version>
         <executions>
           <execution>
             <configuration>

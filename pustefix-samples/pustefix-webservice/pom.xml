@@ -1,16 +1,15 @@
-<?xml version="1.0" encoding="UTF-8"?> <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<?xml version="1.0" encoding="UTF-8"?> <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
     <groupId>org.pustefixframework</groupId>
     <artifactId>pustefix-samples</artifactId>
-    <version>0.14.0-SNAPSHOT</version>
+    <version>0.14.0</version>
   </parent>
 
   <groupId>org.pustefixframework</groupId>
   <artifactId>pustefix-webservice</artifactId>
-  <version>0.14.0-SNAPSHOT</version>
+  <version>0.14.0</version>
   <packaging>war</packaging>
 
   <name>Pustefix Webservice</name>
@@ -19,22 +18,22 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
     <dependency>
       <groupId>org.pustefixframework</groupId>
       <artifactId>pustefix-core</artifactId>
-      <version>0.14.0-SNAPSHOT</version>
+      <version>0.14.0</version>
     </dependency>
     <dependency>
       <groupId>org.pustefixframework.webservices</groupId>
       <artifactId>pustefix-webservices-core</artifactId>
-      <version>0.14.0-SNAPSHOT</version>      
+      <version>0.14.0</version>      
     </dependency>
     <dependency>
       <groupId>org.pustefixframework.webservices</groupId>
       <artifactId>pustefix-webservices-jaxws</artifactId>
-      <version>0.14.0-SNAPSHOT</version>      
+      <version>0.14.0</version>      
     </dependency>
     <dependency>
       <groupId>org.pustefixframework.webservices</groupId>
       <artifactId>pustefix-webservices-jsonws</artifactId>
-      <version>0.14.0-SNAPSHOT</version>
+      <version>0.14.0</version>
     </dependency>
 
     <dependency>
@@ -54,7 +53,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
       <plugin>
         <groupId>org.pustefixframework.maven.plugins</groupId>
         <artifactId>pustefix-webapp-plugin</artifactId>
-        <version>0.14.0-SNAPSHOT</version>
+        <version>0.14.0</version>
         <executions>
           <execution>
             <goals>
@@ -66,7 +65,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
       <plugin>
         <groupId>org.pustefixframework.maven.plugins</groupId>
         <artifactId>pustefix-statuscode-plugin</artifactId>
-        <version>0.14.0-SNAPSHOT</version>
+        <version>0.14.0</version>
         <executions>
           <execution>
             <configuration>
@@ -85,7 +84,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
       <plugin>
         <groupId>org.pustefixframework.maven.plugins</groupId>
         <artifactId>pustefix-iwrapper-plugin</artifactId>
-        <version>0.14.0-SNAPSHOT</version>
+        <version>0.14.0</version>
         <executions>
           <execution>
             <goals>
@@ -102,21 +101,8 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
             <phase>process-classes</phase>
             <configuration>
               <tasks>
-                <taskdef 
-                   name="pfx-webservice" 
-                   classname="org.pustefixframework.webservices.jaxws.generate.WebserviceTask" 
-                   classpathref="maven.compile.classpath" 
-                   description="Generates/deploys WSDL, WSDD and JS stubs from web service interfaces/configuration"/>
-                <pfx-webservice 
-                    tmpdir="target/webservice" 
-                    prjdir="src/main/pustefix" 
-                    builddir="target/classes" 
-                    gendir="target/generated-sources" 
-                    webappdir="target/${artifactId}-${version}/" 
-                    classpathref="maven.compile.classpath" 
-                    standalone="${standalone.tomcat}" 
-                    portbase="80" 
-                    includes="**/conf/project.xml"/>
+                <taskdef name="pfx-webservice" classname="org.pustefixframework.webservices.jaxws.generate.WebserviceTask" classpathref="maven.compile.classpath" description="Generates/deploys WSDL, WSDD and JS stubs from web service interfaces/configuration" />
+                <pfx-webservice tmpdir="target/webservice" prjdir="src/main/pustefix" builddir="target/classes" gendir="target/generated-sources" webappdir="target/${artifactId}-${version}/" classpathref="maven.compile.classpath" standalone="${standalone.tomcat}" portbase="80" includes="**/conf/project.xml" />
               </tasks>
             </configuration>
             <goals>
