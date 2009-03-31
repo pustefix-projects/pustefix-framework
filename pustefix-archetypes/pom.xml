@@ -5,13 +5,13 @@
   <parent>
     <groupId>org.pustefixframework</groupId>
     <artifactId>pustefixframework</artifactId>
-    <version>0.14.0</version>
+    <version>0.14.1-SNAPSHOT</version>
   </parent>
 
   <groupId>org.pustefixframework.maven.archetypes</groupId>
   <artifactId>pustefix-maven-archetypes</artifactId>
   <packaging>pom</packaging>
-  <version>0.14.0</version>
+  <version>0.14.1-SNAPSHOT</version>
 
   <name>Pustefix Maven Archetypes</name>
   <description>Pustefix Maven Archetypes</description>
