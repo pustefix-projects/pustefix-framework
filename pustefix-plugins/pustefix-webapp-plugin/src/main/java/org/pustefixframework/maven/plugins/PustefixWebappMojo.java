@@ -217,7 +217,7 @@ public class PustefixWebappMojo extends AbstractMojo {
     }
     
     private void buildtimeProps() throws IOException {
-        BuildTimeProperties.generate(getProperties(), makemode, getMachine(), getFqdn(), System.getProperty("user.name"), pfixroot, standaloneTomcat);
+        BuildTimeProperties.generate(getProperties(), makemode, getMachine(), getFqdn(), System.getProperty("user.name"), standaloneTomcat);
     }
     private Properties getProperties() {
     	Properties orig;
