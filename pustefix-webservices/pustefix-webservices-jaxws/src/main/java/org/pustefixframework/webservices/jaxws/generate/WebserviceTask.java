@@ -61,7 +61,8 @@ public class WebserviceTask extends MatchingTask {
     private File prjdir;
     private File builddir;
     private File tmpdir;
-    private File webappsdir;
+    private File webappdir;
+    private File gendir;
     private Path classPath;
     private boolean standalone;
     private int portbase;
@@ -138,13 +139,12 @@ public class WebserviceTask extends MatchingTask {
                             }
                         }
                         // Setup WSDL repository
-                        File appDir = new File(webappsdir, projectName);
-                        if (!appDir.exists()) throw new BuildException("Web application directory of project '" + projectName + "' doesn't exist");
+                        if (!webappdir.exists()) throw new BuildException("Web application directory of project '" + projectName + "' doesn't exist: " + webappdir.getAbsolutePath());
                         File wsdlDir = tmpDir;
                         if (globConf.getWSDLSupportEnabled()) {
                             String wsdlRepo = globConf.getWSDLRepository();
                             if (wsdlRepo.startsWith("/")) wsdlRepo.substring(1);
-                            wsdlDir = new File(appDir, wsdlRepo);
+                            wsdlDir = new File(webappdir, wsdlRepo);
                             if (!wsdlDir.exists()) {
                                 boolean ok = wsdlDir.mkdir();
                                 if (!ok) throw new BuildException("Can't create WSDL directory " + wsdlDir.getAbsolutePath());
@@ -155,14 +155,14 @@ public class WebserviceTask extends MatchingTask {
                         if (globConf.getStubGenerationEnabled()) {
                             String stubRepo = globConf.getStubRepository();
                             if (stubRepo.startsWith("/")) stubRepo.substring(1);
-                            stubDir = new File(appDir, stubRepo);
+                            stubDir = new File(webappdir, stubRepo);
                             if (!stubDir.exists()) {
                                 boolean ok = stubDir.mkdir();
                                 if (!ok) throw new BuildException("Can't create webservice stub directory " + stubDir.getAbsolutePath());
                             }
                         }
                         // Check if WEB-INF exists
-                        File webInfDir = new File(appDir, "WEB-INF");
+                        File webInfDir = new File(webappdir, "WEB-INF");
                         if (!webInfDir.exists())
                             throw new BuildException("Web application WEB-INF subdirectory of project '" + projectName + "' doesn't exist");
                         
@@ -184,20 +184,28 @@ public class WebserviceTask extends MatchingTask {
                                     }
                                     // Generate WSDL
                                     File wsgenDir=new File(tmpdir,"wsdl/"+conf.getName()+"/"+conf.getImplementationName());
+                                    
                                     if(!wsgenDirs.contains(wsgenDir)) {
+                                    
                                         if(!wsgenDir.exists()) wsgenDir.mkdirs();
                                         WsGen wsgen = new WsGen();
                                         wsgen.setProject(getProject());
                                         wsgen.setDynamicAttribute("keep", "true");
-                                        wsgen.setDynamicAttribute("sourcedestdir", "gensrc");
+                                        if(!gendir.exists()) gendir.mkdirs();
+                                        wsgen.setDynamicAttribute("sourcedestdir", gendir.getAbsolutePath());
                                         wsgen.setDynamicAttribute("genwsdl", "true");
-                                        wsgen.setDynamicAttribute("destdir", "build");
+                                        wsgen.setDynamicAttribute("destdir", builddir.getAbsolutePath());
                                         wsgen.setDynamicAttribute("resourcedestdir", wsgenDir.getAbsolutePath());
                                         wsgen.setDynamicAttribute("classpath", classPath.toString());
                                         wsgen.setDynamicAttribute("sei", conf.getImplementationName());
                                         String serviceName = "{" + TaskUtils.getTargetNamespace(implClass) + "}" + conf.getName();
                                         wsgen.setDynamicAttribute("servicename", serviceName);
-                                        wsgen.execute();
+                                        try {
+                                            wsgen.execute();
+                                        } catch(Exception x) {
+                                            x.printStackTrace();
+                                            throw x;
+                                        }
                                         wsgenDirs.add(wsgenDir);
                                     } 
                                     FileUtils.copyFiles(wsgenDir, wsdlDir, ".*wsdl", ".*xsd");
@@ -290,6 +298,10 @@ public class WebserviceTask extends MatchingTask {
     public void setBuildDir(File builddir) {
         this.builddir = builddir;
     }
+    
+    public void setGenDir(File gendir) {
+        this.gendir = gendir;
+    }
 
     /**
      * Set directory for temporary/webservice build artifacts.
@@ -301,8 +313,8 @@ public class WebserviceTask extends MatchingTask {
     /**
      * Set webapp deployment directory.
      */
-    public void setWebappsdir(File webappsdir) {
-        this.webappsdir = webappsdir;
+    public void setWebappdir(File webappdir) {
+        this.webappdir = webappdir;
     }
 
     /**
