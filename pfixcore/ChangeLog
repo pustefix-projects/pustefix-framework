@@ -1,3 +1,8 @@
+2009-03-31  Andreas Kurth
+
+	* skel/build-skel.xml: extractModules#chmod can cope with very long
+	argument lists now.
+
 2009-03-16  Martin Leidig  <mleidig@schlund.de>
 
 	* projects/core/xsl/include.xsl: Added support for deferring includes

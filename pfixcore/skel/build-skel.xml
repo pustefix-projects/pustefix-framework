@@ -558,14 +558,14 @@ or delete the DOCTYPE definition -->
     <unjar dest="${dir.extract.modules}">
       <fileset dir="${dir.src.modules}" includes="*.jar" />
     </unjar>
-    <antcall target="-extract-jar-modules"></antcall> 
-    <chmod perm="444"><fileset dir="${dir.extract.modules}" includes="**/*"/></chmod>
+    <antcall target="-extract-jar-modules"></antcall>
+    <chmod perm="444" parallel="false"><fileset dir="${dir.extract.modules}" includes="**/*"/></chmod>
     <touch file="${dir.extract.modules}/TIMESTAMP"/>
     <foreach param="tmp.modules.buildxml" target="extract-modules-call-ant" inheritall="true" inheritrefs="true">
       <fileset dir="${dir.extract.modules}">
         <include name="*/build.xml"/>
-      </fileset>   
-    </foreach> 
+      </fileset>
+    </foreach>
     <antcall target="scmerge-modules"/>
   </target>
 
