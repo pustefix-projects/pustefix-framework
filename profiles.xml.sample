@@ -1,13 +1,15 @@
 <!-- rename this file to "profiles.xml" if you need to adjust the properties below -->
-<profiles>
-  <profile>
-    <id>pustefix.properties</id>
-    <activation>
-      <activeByDefault>true</activeByDefault>
-    </activation>
-    <properties>
-      <makemode>test</makemode>
-      <standalone.tomcat>true</standalone.tomcat>
-    </properties>
-  </profile>
-</profiles>
+<profilesXml>
+  <profiles>
+    <profile>
+      <id>pustefix.properties</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <properties>
+        <makemode>test</makemode>
+        <standalone.tomcat>true</standalone.tomcat>
+      </properties>
+    </profile>
+  </profiles>
+</profilesXml>

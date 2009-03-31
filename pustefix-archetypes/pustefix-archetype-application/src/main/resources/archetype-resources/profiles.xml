@@ -1,12 +1,14 @@
-<profiles>
-  <profile>
-    <id>pustefix.properties</id>
-    <activation>
-      <activeByDefault>true</activeByDefault>
-    </activation>
-    <properties>
-      <makemode>test</makemode>
-      <standalone.tomcat>true</standalone.tomcat>
-    </properties>
-  </profile>
-</profiles>
+<profilesXml>
+  <profiles>
+    <profile>
+      <id>pustefix.properties</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <properties>
+        <makemode>test</makemode>
+        <standalone.tomcat>true</standalone.tomcat>
+      </properties>
+    </profile>
+  </profiles>
+</profilesXml>
