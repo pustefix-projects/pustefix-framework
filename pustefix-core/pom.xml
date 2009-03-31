@@ -15,11 +15,6 @@
 
   <name>Pustefix Framework Core</name>
 
-  <properties>
-    <makemode>test</makemode>
-    <standalone.tomcat>true</standalone.tomcat>
-  </properties>
-
   <profiles>
     <profile><!-- see http://maven.apache.org/general.html#tools-jar-dependency -->
       <id>default-tools.jar</id>
