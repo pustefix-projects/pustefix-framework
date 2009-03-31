@@ -99,16 +99,24 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
         <executions>
           <execution>
             <id>webservices</id>
-            <phase>package</phase>
+            <phase>process-classes</phase>
             <configuration>
               <tasks>
-                <property name="dir.projects" location="src/main/pustefix"/>
-                <property name="dir.build" location="target/classes"/>
-                <property name="dir.webapp" location="target/pustefix-webservice-0.14.0-SNAPSHOT/"/>
-                <property name="dir.gen" location="target/generated-sources"/>
-                <property name="portbase.tomcat" value="80"/>
-                <taskdef name="pfx-webservice" classname="org.pustefixframework.webservices.jaxws.generate.WebserviceTask" classpathref="maven.compile.classpath" description="Generates/deploys WSDL, WSDD and JS stubs from web service interfaces/configuration"/>
-                 <pfx-webservice tmpdir="${dir.projects}/.webservice" prjdir="${dir.projects}" builddir="${dir.build}" gendir="${dir.gen}" webappdir="${dir.webapp}" classpathref="maven.compile.classpath" standalone="${standalone.tomcat}" portbase="${portbase.tomcat}" includes="**/conf/project.xml"/>
+                <taskdef 
+                   name="pfx-webservice" 
+                   classname="org.pustefixframework.webservices.jaxws.generate.WebserviceTask" 
+                   classpathref="maven.compile.classpath" 
+                   description="Generates/deploys WSDL, WSDD and JS stubs from web service interfaces/configuration"/>
+                <pfx-webservice 
+                    tmpdir="target/webservice" 
+                    prjdir="src/main/pustefix" 
+                    builddir="target/classes" 
+                    gendir="target/generated-sources" 
+                    webappdir="target/${artifactId}-${version}/" 
+                    classpathref="maven.compile.classpath" 
+                    standalone="${standalone.tomcat}" 
+                    portbase="80" 
+                    includes="**/conf/project.xml"/>
               </tasks>
             </configuration>
             <goals>
