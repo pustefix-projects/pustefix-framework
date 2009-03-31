@@ -5,6 +5,10 @@
 >
   <info>
     <title>Pustefix Tutorial</title>
+    <subtitle>Version 0.13.x</subtitle>
+    <releaseinfo>This tutorial relates to Pustefix 0.13.x.
+    While most parts still apply to Pustefix 0.14, some parts may be out-dated due
+    to the changes made in conjunction with the migration of the build system from ant to maven with 0.14.</releaseinfo>
     <copyright>
       <year>2007</year>
       <year>2008</year>
