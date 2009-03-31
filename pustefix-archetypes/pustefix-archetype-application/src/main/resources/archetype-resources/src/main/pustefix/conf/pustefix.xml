@@ -8,8 +8,7 @@
     
     <!-- shared properties for the pustefix projects -->
 
-    <!-- IMPORTANT! Set this property to some random value! -->
-    <prop name="derefserver.signkey">987foobarbaz123</prop>
+    <prop name="derefserver.signkey">someRandomValue${groupId}${artifactId}${version}</prop>
     <prop name="derefserver.validtime">300</prop>
     
     <!-- dump of the whole session on Exception -->
