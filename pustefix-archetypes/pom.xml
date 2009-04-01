@@ -19,6 +19,7 @@
 
   <modules>
     <module>pustefix-archetype-application</module>
+    <module>pustefix-archetype-module</module>
   </modules>
 
 </project>
