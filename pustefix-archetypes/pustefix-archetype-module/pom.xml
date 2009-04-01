@@ -5,13 +5,31 @@
   <parent>
     <groupId>org.pustefixframework.maven.archetypes</groupId>
     <artifactId>pustefix-maven-archetypes</artifactId>
-    <version>0.14.0</version>
+    <version>0.14.1-SNAPSHOT</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
 
-  <groupId>org.pustefixframework.maven.archetypes</groupId>
-  <artifactId>pustefix-module-archetype</artifactId>
-  <version>0.14.0</version>
-  <name>Pustefix Module Archetype</name>
+  <name>Pustefix Archetype Module</name>
 
+  <groupId>org.pustefixframework.maven.archetypes</groupId>
+  <artifactId>pustefix-archetype-module</artifactId>
+  <version>0.14.1-SNAPSHOT</version>
+  <packaging>maven-archetype</packaging>
+
+  <build>
+    <extensions>
+      <extension>
+        <groupId>org.apache.maven.archetype</groupId>
+        <artifactId>archetype-packaging</artifactId>
+        <version>2.0-alpha-4</version>
+      </extension>
+    </extensions>
+    <plugins>
+      <plugin>
+        <artifactId>maven-archetype-plugin</artifactId>
+        <version>2.0-alpha-4</version>
+        <extensions>true</extensions>
+      </plugin>
+    </plugins>
+  </build>
 </project>
