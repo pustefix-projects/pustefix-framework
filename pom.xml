@@ -87,6 +87,7 @@
     <module>pustefix-core</module>
     <module>pustefix-samples</module>
     <module>pustefix-editor</module>
+    <module>pustefix-docbook</module>
   </modules>
 
 </project>
