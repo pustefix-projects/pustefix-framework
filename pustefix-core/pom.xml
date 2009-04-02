@@ -13,7 +13,7 @@
   <version>0.14.1-SNAPSHOT</version>
   <packaging>jar</packaging>
 
-  <name>Pustefix Framework Core</name>
+  <name>Pustefix Core</name>
 
   <profiles>
     <profile><!-- see http://maven.apache.org/general.html#tools-jar-dependency -->
