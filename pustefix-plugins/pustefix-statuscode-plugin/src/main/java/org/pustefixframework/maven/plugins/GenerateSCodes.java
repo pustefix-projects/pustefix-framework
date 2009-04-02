@@ -37,7 +37,6 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.FactoryConfigurationError;
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -47,8 +46,6 @@ import org.xml.sax.SAXParseException;
 
 
 public class GenerateSCodes {
-    private static final Logger LOG = Logger.getLogger(GenerateSCodes.class);
-    
     public static Result generateFromInfo(List<String> infoFiles, String docRoot, File genDir, String module, String targetPath) throws Exception {
         Result totalResult = new Result();
         for(String infoFile:infoFiles) {
@@ -334,25 +331,28 @@ public class GenerateSCodes {
             buf.append("  SystemID : ").append(e.getSystemId()).append("\n");
             buf.append("  Line     : ").append(e.getLineNumber()).append("\n");
             buf.append("  Column   : ").append(e.getColumnNumber()).append("\n");
-            LOG.error(buf.toString(), e);
-            throw e;
+            throw exception(buf, e);
         } catch (SAXException e) {
             StringBuffer buf = new StringBuffer(100);
             buf.append("Caught SAXException!\n");
             buf.append("  Message  : ").append(e.getMessage()).append("\n");
             buf.append("  SystemID : ").append(file.getPath()).append("\n");
-            LOG.error(buf.toString(), e);
-            throw e;
+            throw exception(buf, e);
         } catch (IOException e) {
             StringBuffer buf = new StringBuffer(100);
             buf.append("Caught IOException!\n");
             buf.append("  Message  : ").append(e.getMessage()).append("\n");
             buf.append("  SystemID : ").append(file.getPath()).append("\n");
-            LOG.error(buf.toString(), e);
-            throw e;
+            throw exception(buf, e);
         }
     }
 
+    private static IOException exception(StringBuffer buf, Throwable cause) {
+        IOException result = new IOException(buf.toString());
+        result.initCause(cause);
+        return result;
+    }
+    
     private static final DocumentBuilderFactory factory = createDocumentBuilderFactory();
     private static String DEFAULT_DOCUMENTBUILDERFACTORY = "com.sun.org.apache.xerces.internal.jaxp.DocumentBuilderFactoryImpl";
     
@@ -365,7 +365,6 @@ public class GenerateSCodes {
             fact = (DocumentBuilderFactory)clazz.newInstance();
         } catch(Exception x) {
             //ignore and try to get DocumentBuilderFactory via factory finder in next step
-            LOG.info(x);
         }
         if (fact == null) {
             try {
@@ -409,8 +408,6 @@ public class GenerateSCodes {
             }
 
             private void report(SAXParseException exception) throws SAXException {
-                LOG.error(exception.getSystemId() + ":" + exception.getLineNumber() + ":"
-                          + exception.getColumnNumber() + ":" + exception.getMessage());
                 throw exception;
             }
         };
