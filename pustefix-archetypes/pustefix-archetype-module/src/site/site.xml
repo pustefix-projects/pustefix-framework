@@ -5,14 +5,15 @@
     <src>http://dev.pustefix-framework.org/static/pustefix_logo.gif</src>
     <href>http://www.pustefixframework.org/</href>
   </bannerLeft>
+
   <body>
-    <links>
-      <item name="Pustefix" href="http://org.pustefixframework.org/" />
-    </links>
     <menu name="Documents">
-      <item name="Tutorial" href="docbook/html/tutorial.html"/>
-      <item name="Reference" href="docbook/html/reference.html"/>
-      <item name="FAQ" href="docbook/html/faq.html"/>
+      <item name="Home" href="index.html"/>
     </menu>
+
+    ${reports}
+
+    ${modules}
+
   </body>
 </project>
