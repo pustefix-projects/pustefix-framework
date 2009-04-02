@@ -9,11 +9,15 @@
 
   <name>${artifactId} Pustefix Application </name>
 
+  <properties>
+    <pustefix.version>0.14.1-SNAPSHOT</pustefix.version>
+  </properties>
+  
   <dependencies>
     <dependency>
       <groupId>org.pustefixframework</groupId>
       <artifactId>pustefix-core</artifactId>
-      <version>0.14.0</version>
+      <version>${pustefix.version}</version>
     </dependency>
   </dependencies>
  
@@ -30,7 +34,7 @@
       <plugin>
         <groupId>org.pustefixframework.maven.plugins</groupId>
         <artifactId>pustefix-webapp-plugin</artifactId>
-        <version>0.14.0</version>
+        <version>${pustefix.version}</version>
         <executions>
           <execution>
             <goals>
@@ -42,7 +46,7 @@
       <plugin>
         <groupId>org.pustefixframework.maven.plugins</groupId>
         <artifactId>pustefix-statuscode-plugin</artifactId>
-        <version>0.14.0</version>
+        <version>${pustefix.version}</version>
         <executions>
           <execution>
             <goals>
@@ -54,7 +58,7 @@
       <plugin>
         <groupId>org.pustefixframework.maven.plugins</groupId>
         <artifactId>pustefix-iwrapper-plugin</artifactId>
-        <version>0.14.0</version>
+        <version>${pustefix.version}</version>
         <executions>
           <execution>
             <goals>
