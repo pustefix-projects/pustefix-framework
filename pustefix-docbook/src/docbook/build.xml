@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="pfixcore-docs" default="build">
+  <echo>basedir: ${basedir}</echo>
   <property name="docbook" location="${basedir}" />
-  <property name="build" location="${basedir}/../../../target/site/docbook" />
+  <property name="build" location="${basedir}/../../target/site/docbook" />
 	
   <path id="xslt.classpath">
     <fileset dir="${docbook}/../tools/saxon" includes="**.jar"/>
@@ -17,7 +18,7 @@
   
   <taskdef resource="net/sf/antcontrib/antcontrib.properties">
     <classpath>
-      <fileset dir="${docbook}/../tools/ant-contrib" includes="**.jar"/>
+      <fileset dir="${docbook}/../tools/ant-contrib" includes="*.jar"/>
     </classpath>
   </taskdef>
   

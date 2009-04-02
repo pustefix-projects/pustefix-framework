@@ -14,13 +14,31 @@
   <artifactId>pustefix-docbook</artifactId>
   <version>0.14.1-SNAPSHOT</version>
 
+  <!-- 
+    (March 2009)
+    We generate docbook the our old ant scripts because:
+    * Doxia supports simplified docbook, but the rendering is poor and we have full docbook
+    * There's a Docbook Plugin at http://mojo.codehaus.org/docbook-maven-plugin/introduction.html, 
+      but it look out-dated and unmaintained  
+    -->
   <build>
     <plugins>
       <plugin>
-        <artifactId>maven-site-plugin</artifactId>
-        <configuration>
-          <locales>en,fr</locales>
-        </configuration>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <executions>
+          <execution>
+            <phase>pre-site</phase>
+            <configuration>
+              <tasks>
+                <!--  TODO: i cannot use the ant task - the propertyRegex task doesnt work ... -->
+                <exec executable="ant" dir="${basedir}/src/docbook"/>
+              </tasks>
+            </configuration>
+            <goals>
+              <goal>run</goal>
+            </goals>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
   </build>
