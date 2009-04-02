@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="pfixcore-docs" default="build">
   <property name="docbook" location="${basedir}" />
-  <property name="build" location="build" />
+  <property name="build" location="${basedir}/../../../target/site/docbook" />
 	
   <path id="xslt.classpath">
     <fileset dir="${docbook}/../tools/saxon" includes="**.jar"/>
@@ -116,7 +116,7 @@
     <copy todir="${build}/fo/images">
       <fileset dir="${build}/images" includes="**/**"></fileset>
     </copy>
-    <xi-xslt basedir="src" includes="**.xml" style="../tools/docbook-xsl-ns/fo/docbook.xsl" validate="false" classpathref="fop.classpath" destdir="${build}/fo" extension=".fo">
+    <xi-xslt basedir="src" includes="**.xml" style="${docbook}/../tools/docbook-xsl-ns/fo/docbook.xsl" validate="false" classpathref="fop.classpath" destdir="${build}/fo" extension=".fo">
       <param name="section.autolabel" expression="1"/>
       <param name="section.label.includes.component.label" expression="1"/>
       <param name="section.autolabel.max.depth" expression="1"/>
