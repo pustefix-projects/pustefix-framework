@@ -147,7 +147,7 @@
     </repository>
     <site>
       <id>pustefix</id>
-      <url>scpexe://pustefix@pustefixhp.schlund.de/var/www/pustefix-docs/trunk/url>
+      <url>scpexe://pustefix@pustefixhp.schlund.de/var/www/pustefix-docs/trunk</url>
     </site>
   </distributionManagement>
 
