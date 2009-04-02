@@ -145,6 +145,10 @@
       <url>scpexe://pustefix@pustefixhp.schlund.de/home/pustefix/repository/maven</url>
       <uniqueVersion>false</uniqueVersion>
     </repository>
+    <site>
+      <id>pustefix</id>
+      <url>scpexe://pustefix@pustefixhp.schlund.de/var/www/pustefix-docs/trunk/url>
+    </site>
   </distributionManagement>
 
   <modules>
