@@ -19,6 +19,18 @@
     (March 2009)
     We generate docbook the our old ant scripts because:
     * Doxia supports simplified docbook, but the rendering is poor and we have full docbook
+      (you need 
+        <plugin>
+          <artifactId>maven-site-plugin</artifactId>
+            <dependencies>
+             <dependency>
+              <groupId>org.apache.maven.doxia</groupId>
+              <artifactId>doxia-module-docbook-simple</artifactId>
+              <version>1.0</version>
+             </dependency>
+           </dependencies>
+        </plugin> 
+      and only a few faq files to make it work)
     * There's a Docbook Plugin at http://mojo.codehaus.org/docbook-maven-plugin/introduction.html, 
       but it look out-dated and unmaintained  
     -->
