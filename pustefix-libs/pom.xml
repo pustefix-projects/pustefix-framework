@@ -10,7 +10,7 @@
   <name>Pustefix External Libraries</name>
 
   <groupId>org.pustefixframework</groupId>
-  <artifactId>libs</artifactId>
+  <artifactId>pustefix-libs</artifactId>
   <version>0.14.1-SNAPSHOT</version>
   <packaging>pom</packaging>
  

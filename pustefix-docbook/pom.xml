@@ -13,6 +13,7 @@
   <groupId>org.pustefixframework</groupId>
   <artifactId>pustefix-docbook</artifactId>
   <version>0.14.1-SNAPSHOT</version>
+  <packaging>pom</packaging>
 
   <!-- 
     (March 2009)

@@ -3,8 +3,8 @@
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <artifactId>pustefix-maven-plugins</artifactId>
     <groupId>org.pustefixframework.maven.plugins</groupId>
+    <artifactId>pustefix-plugins</artifactId>
     <version>0.14.1-SNAPSHOT</version>
     <relativePath>../pom.xml</relativePath>
   </parent>

@@ -35,6 +35,50 @@
     </dependency>
   </dependencies>
 
+  <developers>
+    <developer>
+      <name>Jens Lautenbacher</name>
+      <id>jenstl</id>
+      <email>jenstl@users.sourceforge.net</email>
+      <organization>United Internet</organization>
+      <roles>
+        <role>Java Development</role>
+      </roles>
+      <timezone>+1</timezone>
+    </developer>
+    <developer>
+      <name>Martin Leidig</name>
+      <id>mtld</id>
+      <email>mtld@users.sourceforge.net</email>
+      <organization>United Internet</organization>
+      <roles>
+        <role>Java Development</role>
+      </roles>
+      <timezone>+1</timezone>
+    </developer>
+    <developer>
+      <name>Sebastian Marsching</name>
+      <id>smarsching</id>
+      <email>smarsching@users.sourceforge.net</email>
+      <organization>United Internet</organization>
+      <roles>
+        <role>Java Development</role>
+      </roles>
+      <timezone>+1</timezone>
+    </developer>
+  </developers>
+  <contributors>
+    <contributor>
+      <name>Michael Hartmeier</name>
+      <email>mlhartme@users.sourceforge.net</email>
+      <organization>United Internet</organization>
+      <roles>
+        <role>Java Development</role>
+      </roles>
+      <timezone>+1</timezone>
+    </contributor>
+  </contributors>
+
   <build>
     <plugins>
       <plugin>
@@ -60,6 +104,32 @@
       </plugin> 
     </plugins>
   </build>
+
+  <reporting>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-project-info-reports-plugin</artifactId>
+        <version>2.1</version>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <version>2.5</version>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-changelog-plugin</artifactId>
+        <version>2.1</version>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jxr-plugin</artifactId>
+        <version>2.1</version>
+      </plugin>
+    </plugins>
+  </reporting> 
+
 
   <repositories>
     <!-- for spring! -->
