@@ -1,21 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="pfixcore-docs" default="build">
-  
+  <property name="docbook" location="${basedir}" />
+  <property name="build" location="build" />
+	
   <path id="xslt.classpath">
-    <fileset dir="../tools/saxon" includes="**.jar"/>
-    <fileset dir="../tools/xslthl" includes="**.jar"/>
-    <fileset dir="../tools/docbook-xsl-ns/extensions" includes="saxon65.jar"/>
-    <fileset dir="../tools/xixslt" includes="**.jar"/>
+    <fileset dir="${docbook}/../tools/saxon" includes="**.jar"/>
+    <fileset dir="${docbook}/../tools/xslthl" includes="**.jar"/>
+    <fileset dir="${docbook}/../tools/docbook-xsl-ns/extensions" includes="saxon65.jar"/>
+    <fileset dir="${docbook}/../tools/xixslt" includes="**.jar"/>
   </path>
   
   <path id="fop.classpath">
-    <fileset dir="../tools/fop" includes="**.jar"/>
-    <fileset dir="../tools/docbook-xsl-ns/extensions" includes="xalan27.jar"/> 
+    <fileset dir="${docbook}/../tools/fop" includes="**.jar"/>
+    <fileset dir="${docbook}/../tools/docbook-xsl-ns/extensions" includes="xalan27.jar"/> 
   </path>
   
   <taskdef resource="net/sf/antcontrib/antcontrib.properties">
     <classpath>
-      <fileset dir="../tools/ant-contrib" includes="**.jar"/>
+      <fileset dir="${docbook}/../tools/ant-contrib" includes="**.jar"/>
     </classpath>
   </taskdef>
   
@@ -34,12 +36,12 @@
   <target name="copyimages">
     <!-- Copy images to one directory, so that each builder can fetch
          them from there                                              -->
-    <mkdir dir="build/images/docbook"/>
-    <copy todir="build/images/docbook">
-      <fileset dir="../tools/docbook-xsl-ns/images" includes="**/**"></fileset>
+    <mkdir dir="${build}/images/docbook"/>
+    <copy todir="${build}/images/docbook">
+      <fileset dir="${docbook}/../tools/docbook-xsl-ns/images" includes="**/**"></fileset>
     </copy>
-    <copy todir="build/images">
-      <fileset dir="src/images" includes="**/**"></fileset>
+    <copy todir="${build}/images">
+      <fileset dir="${docbook}/src/images" includes="**/**"></fileset>
     </copy>
   </target>
   
@@ -49,35 +51,35 @@
   
   <target name="chunked" depends="prepare">
     <echo level="info" message="Creating chunked pages..."/>
-    <mkdir dir="build/chunked/images"/>
-    <copy todir="build/chunked/images">
-      <fileset dir="build/images" includes="**/**"></fileset>
+    <mkdir dir="${build}/chunked/images"/>
+    <copy todir="${build}/chunked/images">
+      <fileset dir="${build}/images" includes="**/**"></fileset>
     </copy>
-    <mkdir dir="build/chunked/css"/>
-    <copy todir="build/chunked/css">
-      <fileset dir="src/css" includes="**/**"></fileset>
+    <mkdir dir="${build}/chunked/css"/>
+    <copy todir="${build}/chunked/css">
+      <fileset dir="${docbook}/src/css" includes="**/**"></fileset>
     </copy>
     <foreach target="-transform-chunked" param="filename">
       <path>
-        <fileset dir="src" includes="**.xml"/>
+        <fileset dir="${docbook}/src" includes="**.xml"/>
       </path>
     </foreach>
   </target>
   
   <target name="html" depends="prepare">
     <echo level="info" message="Creating html pages..."/>
-    <mkdir dir="build/html/images"/>
-    <copy todir="build/html/images">
-      <fileset dir="build/images" includes="**/**"></fileset>
+    <mkdir dir="${build}/html/images"/>
+    <copy todir="${build}/html/images">
+      <fileset dir="${build}/images" includes="**/**"></fileset>
     </copy>
-    <mkdir dir="build/html/css"/>
-    <copy todir="build/html/css">
-      <fileset dir="src/css" includes="**/**"></fileset>
+    <mkdir dir="${build}/html/css"/>
+    <copy todir="${build}/html/css">
+      <fileset dir="${docbook}/src/css" includes="**/**"></fileset>
     </copy>
-    <mkdir dir="build/html"/>
+    <mkdir dir="${build}/html"/>
     <foreach target="-transform-html" param="filename">
       <path>
-        <fileset dir="src" includes="**.xml"/>
+        <fileset dir="${docbook}/src" includes="**.xml"/>
       </path>
     </foreach>
   </target>
@@ -86,9 +88,9 @@
     <propertyregex property="basename" input="${filename}" regexp=".*/([^/]+)\.xml" select="\1"/>
     <propertyregex property="longbasename" input="${filename}" regexp=".*/([^/]+\.xml)" select="\1"/> 
     <echo level="info" message="Processing ${longbasename}"/> 
-    <mkdir dir="build/chunked/${basename}"/> 
-    <xi-xslt style="../tools/custom-xsl/chunked.xsl" validate="false" classpathref="xslt.classpath" in="${filename}" out="build/chunked/${basename}.TIMESTAMP">
-      <param name="base.dir" expression="build/chunked/${basename}/"/>
+    <mkdir dir="${build}/chunked/${basename}"/> 
+    <xi-xslt style="${docbook}/../tools/custom-xsl/chunked.xsl" validate="false" classpathref="xslt.classpath" in="${filename}" out="${build}/chunked/${basename}.TIMESTAMP">
+      <param name="base.dir" expression="${build}/chunked/${basename}/"/>
     </xi-xslt>
   </target>
   
@@ -96,25 +98,25 @@
     <propertyregex property="basename" input="${filename}" regexp=".*/([^/]+)\.xml" select="\1"/>
     <propertyregex property="longbasename" input="${filename}" regexp=".*/([^/]+\.xml)" select="\1"/>
     <echo level="info" message="Processing ${longbasename}"/> 
-    <xi-xslt style="../tools/custom-xsl/html.xsl" classpathref="xslt.classpath" in="${filename}" out="build/html/${basename}.html">
+    <xi-xslt style="${docbook}/../tools/custom-xsl/html.xsl" classpathref="xslt.classpath" in="${filename}" out="${build}/html/${basename}.html">
     </xi-xslt>
   </target>
   
   <target name="pdf" depends="fo">
     <echo level="info" message="Creating PDF documents..."/>
-    <mkdir dir="build/pdf"/>
-    <fop format="application/pdf" outdir="build/pdf" relativebase="true">
-      <fileset dir="build/fo" includes="**.fo"/>
+    <mkdir dir="${build}/pdf"/>
+    <fop format="application/pdf" outdir="${build}/pdf" relativebase="true">
+      <fileset dir="${build}/fo" includes="**.fo"/>
     </fop>
   </target>
   
   <target name="fo" depends="prepare">
     <echo level="info" message="Creating XSL-FO documents..."/>
-    <mkdir dir="build/fo/images"/>
-    <copy todir="build/fo/images">
-      <fileset dir="build/images" includes="**/**"></fileset>
+    <mkdir dir="${build}/fo/images"/>
+    <copy todir="${build}/fo/images">
+      <fileset dir="${build}/images" includes="**/**"></fileset>
     </copy>
-    <xi-xslt basedir="src" includes="**.xml" style="../tools/docbook-xsl-ns/fo/docbook.xsl" validate="false" classpathref="fop.classpath" destdir="build/fo" extension=".fo">
+    <xi-xslt basedir="src" includes="**.xml" style="../tools/docbook-xsl-ns/fo/docbook.xsl" validate="false" classpathref="fop.classpath" destdir="${build}/fo" extension=".fo">
       <param name="section.autolabel" expression="1"/>
       <param name="section.label.includes.component.label" expression="1"/>
       <param name="section.autolabel.max.depth" expression="1"/>
@@ -133,10 +135,6 @@
       <param name="hyphenation" expression="0"/>
       <param name="hyphenate.verbatim" expression="1"/>
     </xi-xslt>
-  </target>
-  
-  <target name="clean">
-    <delete dir="build"/>
   </target>
   
 </project>
