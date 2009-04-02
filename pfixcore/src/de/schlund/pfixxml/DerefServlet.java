@@ -163,7 +163,7 @@ public class DerefServlet extends ServletManager {
                 String[] allparamnames = preq.getRequestParamNames();
                 StringBuffer urlextension = new StringBuffer();
                 for (String tmpname : allparamnames) {
-                    if (tmpname.equals("link") || tmpname.equals("__sign") || tmpname.equals("__enclink") || tmpname.equals("__addallparams")) {
+                    if (tmpname.equals("link") || tmpname.equals("__sign") || tmpname.equals("__enclink") || tmpname.equals("__addallparams") || tmpname.equals("__ts")) {
                         continue;
                     }
                     RequestParam tmpparam = preq.getRequestParam(tmpname);
