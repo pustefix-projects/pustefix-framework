@@ -755,12 +755,21 @@
     <xsl:variable name="link">addallparams:<xsl:value-of select="@href"/></xsl:variable>
     <input type="hidden" name="link">
       <ixsl:attribute name="value"><xsl:value-of select="$link"/></ixsl:attribute>  
-    </input>  
+    </input>
+    <ixsl:variable name="ts">
+      <ixsl:value-of select="deref:getTimeStamp()"/>
+    </ixsl:variable>
     <input type="hidden" name="__sign">
       <ixsl:attribute name="value">
         <ixsl:call-template name="__sign">
           <ixsl:with-param name="in"><xsl:value-of select="$link"/></ixsl:with-param>
+          <ixsl:with-param name="ts" select="$ts"/>
         </ixsl:call-template>
+      </ixsl:attribute>
+    </input>
+    <input type="hidden" name="__ts">
+      <ixsl:attribute name="value">
+        <ixsl:value-of select="$ts"/>
       </ixsl:attribute>
     </input>
     <xsl:apply-templates/>

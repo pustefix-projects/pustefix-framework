@@ -1,3 +1,9 @@
+2009-04-02  Martin Leidig  <mleidig@schlund.de>
+
+	Fixed pfx:externalform bug (missing timestamp param).
+	* projects/core/xsl/forminput.xsl
+	* src/org/pustefixframework/http/dereferer/DerefRequestHandler.java
+
 2009-03-11  Martin Leidig  <mleidig@schlund.de>
 
 	* src/de/schlund/pfixcore/workflow/context/SessionContextImpl.java:
