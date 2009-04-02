@@ -66,9 +66,7 @@
       </roles>
       <timezone>+1</timezone>
     </developer>
-  </developers>
-  <contributors>
-    <contributor>
+    <developer>
       <name>Michael Hartmeier</name>
       <email>mlhartme@users.sourceforge.net</email>
       <organization>United Internet</organization>
@@ -76,8 +74,8 @@
         <role>Java Development</role>
       </roles>
       <timezone>+1</timezone>
-    </contributor>
-  </contributors>
+    </developer>
+  </developers>
 
   <build>
     <plugins>
