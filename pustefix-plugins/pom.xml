@@ -13,8 +13,8 @@
   <packaging>pom</packaging>
   <version>0.14.1-SNAPSHOT</version>
 
-  <name>Pustefix Maven Plugins</name>
-  <description>Pustefix Maven Plugins</description>
+  <name>Pustefix Plugins</name>
+  <description>Pustefix Plugins</description>
   <url>http://pustefixframework.org</url>
 
   <modules>

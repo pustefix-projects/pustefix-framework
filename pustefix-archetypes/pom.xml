@@ -13,8 +13,8 @@
   <packaging>pom</packaging>
   <version>0.14.1-SNAPSHOT</version>
 
-  <name>Pustefix Maven Archetypes</name>
-  <description>Pustefix Maven Archetypes</description>
+  <name>Pustefix Archetypes</name>
+  <description>Pustefix Archetypes</description>
   <url>http://pustefixframework.org</url>
 
   <modules>
