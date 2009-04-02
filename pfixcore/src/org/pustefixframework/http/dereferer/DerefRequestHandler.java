@@ -163,7 +163,7 @@ public class DerefRequestHandler extends AbstractPustefixRequestHandler {
                 String[] allparamnames = preq.getRequestParamNames();
                 StringBuffer urlextension = new StringBuffer();
                 for (String tmpname : allparamnames) {
-                    if (tmpname.equals("link") || tmpname.equals("__sign") || tmpname.equals("__enclink")) {
+                    if (tmpname.equals("link") || tmpname.equals("__sign") || tmpname.equals("__enclink") || tmpname.equals("__ts")) {
                         continue;
                     }
                     RequestParam tmpparam = preq.getRequestParam(tmpname);
