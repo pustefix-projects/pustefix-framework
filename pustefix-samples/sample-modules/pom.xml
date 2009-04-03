@@ -10,6 +10,7 @@
   <modules>
     <module>sample-module-A</module>
     <module>sample-module-B</module>
+    <module>sample-module-C</module>
   </modules>
   <build>
     <plugins>
