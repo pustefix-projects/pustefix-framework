@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?><include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
+  
+  <part name="header">
+    <theme name="default">
+      <div class="part_project">
+        <h1>Sample modules application</h1>
+        <partinfo part="header" theme="default" path="samplemodules/txt/common.xml"/>
+      </div>  
+    </theme>
+  </part>
+  
+  <part name="navigation">
+    <theme name="default">
+      <div class="part_project">
+        <div class="navigation">
+          <pfx:button page="home">Home</pfx:button>
+          <pfx:button page="include">Module includes</pfx:button>
+          <pfx:button page="dynamic">Dynamic-search includes</pfx:button>
+        </div>
+        <partinfo part="navigation" theme="default" path="samplemodules/txt/common.xml"/>
+      </div>  
+    </theme>
+  </part>
+  
+  <part name="partProject">
+    <theme name="default">
+      <div class="part_project">
+        <h3>PROJECT - Project</h3>
+        <xmloutput>
+          <pfx:include part="partC" module="sample-module-C"/>
+        </xmloutput>
+        <br/>
+        <partinfo part="common_include" theme="default" path="samplemodules/txt/common.xml"/>
+      </div>  
+    </theme>
+  </part>
+  
+</include_parts>

@@ -559,6 +559,8 @@
   <global>
     <param name="AName" value="AValue"/>
     <include stylesheet="path/to/AStyleSheet"/>
+    <!-- Stylesheets from module jars can be directly included by setting the module attribute. -->
+    <!-- <include stylesheet="path/to/AStyleSheetFromModule" module="modulename"/> -->
   </global>
 
   <config-include file="myproject/conf/myfile.xml" section="targets"/>
@@ -778,6 +780,8 @@
     Note: All the child nodes are optional (and in fact usually not needed)
   -->
   <include stylesheet="MyProject/xsl/runtime.xsl"/>
+  <!-- Stylesheets from module jars can be directly included by setting the module attribute. -->
+  <!-- <include stylesheet="xsl/runtimeFromModule.xsl" module="modulename"/> -->
   <param name="fubar" value="bar"/>
 </standardpage>]]></programlisting>
       <para>
@@ -802,6 +806,11 @@
             <td>xml</td>
             <td>mandatory</td>
             <td>The name of a xml target to use as input for the "metatags transformation". Often this is a leaf target and one of the projects structural xml files.</td>
+          </tr>
+          <tr>
+            <td>module</td>
+            <td>optional</td>
+            <td>The name of the module from which the xml file should be loaded.</td>
           </tr>
           <tr>
             <td>themes</td>
@@ -884,6 +893,8 @@
       <programlisting language="xml"><![CDATA[<standardmaster name="AName">
   <!-- The name attribute is optional -->
   <include stylesheet="MyProject/xsl/skin.xsl"/>
+  <!-- Stylesheets from module jars can be directly included by setting the module attribute. -->
+  <!-- <include stylesheet="xsl/skinFromModule.xsl" module="modulename"/> -->
   <param name="AName" value="AValue"/>
 </standardmaster>]]></programlisting>
       <para>
@@ -918,6 +929,8 @@
       <programlisting language="xml"><![CDATA[<standardmetatags name="AName">
   <!-- The name attribute is optional -->
   <include stylesheet="MyProject/xsl/metatags.xsl"/>
+  <!-- Stylesheets from module jars can be directly included by setting the module attribute. -->
+  <!-- <include stylesheet="xsl/metatagsFromModule.xsl" module="modulename"/> -->
   <param name="AName" value="AValue"/>
 </standardmetatags>]]></programlisting>
       <para>

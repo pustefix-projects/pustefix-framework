@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?><include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
+  
+  <part name="partCommon">
+    <theme name="default">
+      <div class="part_common">
+        <h3>COMMON - Common</h3>
+        <xmloutput>
+          <pfx:include part="partC" module="sample-module-C"/>
+        </xmloutput>
+        <br/>
+        <partinfo part="common_include" theme="default" path="common/txt/common.xml"/>
+      </div>  
+    </theme>
+  </part>
+  
+</include_parts>

@@ -478,7 +478,7 @@
 </include_parts>]]></programlisting>
       <para>
         A part is referenced with two attributes: The filename of the include file that
-        contains it, and the name of the part.
+        contains it, and the name of the part. The filename can be omitted, if you're referencing a part within the same file.
       </para>
       <programlisting language="xml"><![CDATA[<pfx:include href="MyProject/txt/MyIncludefile" part="Foo" noerror="true|false" noedit="true|false"/>]]></programlisting>
       <para>
@@ -495,7 +495,7 @@
             <tr>
               <td>href</td>
               <td>optional</td>
-              <td>If not given, it defaults to the current include part file</td>
+              <td>If not given, it defaults to the current include part file. If it's not given and the module attribute is set, the path of the current include part file will be used as path within the module (omitting the first path component if the current file isn't already from a module).</td>
             </tr>
             <tr>
               <td>part</td>
@@ -512,6 +512,21 @@
               <td>optional</td>
               <td>Defaults to false. Set this to true to imply that this include part should not be editable via the pustefix editor. Only set this when you know what you do.</td>
             </tr>
+            <tr>
+              <td>level</td>
+              <td>optional</td>
+              <td>Not set by default. Set this to <literal>runtime</literal> if the part should be included at runtime (on the last transformation level).</td>
+            </tr>
+            <tr>
+              <td>search</td>
+              <td>optional</td>
+              <td>Not set by default. Set this to <literal>dynamic</literal> if a matching part should be dynamically searched. The search order is: current project, common folder, and if a module is specified: overriding module, specified module. See <xref linkend="advanced.dyninclude"/>.</td>
+            </tr>
+            <tr>
+              <td>module</td>
+              <td>optional</td>
+              <td>Not set by default. Set this to the name of the module from which the part should be loaded. If dynamic search is set, the module just serves as fallback location if the part can't be found in the project or common location and isn't overrided by another module. See <xref linkend="advanced.dyninclude"/>.</td>
+            </tr>
           </tbody>
         </table>
       </para>
@@ -519,6 +534,16 @@
         Using this tag results in the matching product branch of the include part to be
         inserted in place of the tag.
       </para>
+      <para>
+        If you're deferring an include until runtime using <literal>level="runtime"</literal>, you can also defer the creation of the <literal>href</literal> and <literal>part</literal> values until runtime using the <literal>pfx:href</literal> and <literal>pfx:part</literal> tags instead of the according attributes. The following example shows how to use values coming from the DOM result tree:
+      </para>
+      <programlisting language="xml"><![CDATA[<pfx:include level="runtime">
+  <pfx:href><ixsl:value-of select="/formresult/mypartinfo/@myhref"/></pfx:href>
+  <pfx:part><ixsl:value-of select="/formresult/mypartinfo/@mypartname"/></pfx:part> 
+</pfx:include>]]></programlisting>
+      <note>
+        You should be aware that parts included at runtime aren't transformed with the <literal>master.xsl</literal> stylesheet, i.e. if the included part contains Pustefix tags (forms, buttons, etc.) they won't work. So the runtime inclusion is primarily intended for including simple text/HTML content.
+      </note>
     </section>
     <section xml:id="xslt.pfx.maincontent">
       <title>Generated include requests (&lt;pfx:maincontent&gt;)</title>
@@ -564,6 +589,16 @@
               <td>part</td>
               <td>optional</td>
               <td>defaults to content</td>
+            </tr>
+            <tr>
+              <td>search</td>
+              <td>optional</td>
+              <td>Not set by default. Set this to <literal>dynamic</literal> if a matching part should be dynamically searched. The search order is: current project, common folder, and if a module is specified: overriding module, specified module. See <xref linkend="advanced.dyninclude"/>.</td>
+            </tr>
+            <tr>
+              <td>module</td>
+              <td>optional</td>
+              <td>Not set by default. Set this to the name of the module from which the part should be loaded. If dynamic search is set, the module just serves as fallback location if the part can't be found in the project or common location and isn't overrided by another module. See <xref linkend="advanced.dyninclude"/>.</td>
             </tr>
           </tbody>
         </table>
@@ -637,6 +672,16 @@
                   <listitem><simpara>MyProject/img/default/test.gif</simpara></listitem>
                 </itemizedlist>
               </td>
+            </tr>
+            <tr>
+              <td>search</td>
+              <td>optional</td>
+              <td>Not set by default. Set this to <literal>dynamic</literal> if the image should be dynamically searched. The search order is: current project, common folder, and if a module is specified: overriding module, specified module. The search ends if a matching image is found, regardless if there are matches with a more specific theme down the search chain. See <xref linkend="advanced.dyninclude"/>.</td>
+            </tr>
+            <tr>
+              <td>module</td>
+              <td>optional</td>
+              <td>Not set by default. Set this to the name of the module from which the image should be loaded. If dynamic search is set, the module just serves as fallback location if an according image can't be found in the project or common location or another overriding module. See <xref linkend="advanced.dyninclude"/>.</td>
             </tr>
             <tr>
               <td>other attributes</td>
@@ -753,7 +798,7 @@
         more submit controls, each with different additional data attached and submitted, depending on which submit
         control the user clicks on.
       </para>
-      <programlisting language="xml"><![CDATA[pfx:xinp type="submit|image" pageflow="APageFlow" jumptopage="APage" jumptopageflow="APageFlow" forcestop="true|false|step">
+      <programlisting language="xml"><![CDATA[<pfx:xinp type="submit|image" pageflow="APageFlow" jumptopage="APage" jumptopageflow="APageFlow" forcestop="true|false|step">
   <!--
     Attach additional information to the controls
   -->
@@ -822,7 +867,7 @@
       </para>
       <para>
         When setting the type to <literal>image</literal>, you may also specify the attributes <literal>src</literal>,
-        <literal>themed-path</literal> and <literal>themed-img</literal>. These attributes work exactly as described in
+        <literal>themed-path</literal>, <literal>themed-img</literal>, <literal>search</literal> and <literal>module</literal>. These attributes work exactly as described in
         <xref linkend="xslt.pfx.image"/>.
       </para>
     </section>

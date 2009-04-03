@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?><include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
+  
+  <part name="content">
+    <theme name="default">
+      <div class="part_project">
+        <h2>Dynamic search includes</h2>
+        <xmloutput>
+          <pfx:include part="partA" href="txt/common.xml" module="sample-module-A" search="dynamic"/>
+        </xmloutput>
+        <br/>
+        <xmloutput>
+          <pfx:include part="partAB" href="txt/common.xml" module="sample-module-A" search="dynamic"/>
+        </xmloutput>
+        <br/>
+        <xmloutput>
+          <pfx:include part="partABC" href="txt/common.xml" module="sample-module-A" search="dynamic"/>
+        </xmloutput>
+        <br/>
+        <xmloutput>
+          <pfx:include part="partABC" href="txt/common.xml" module="sample-module-B" search="dynamic"/>
+        </xmloutput>
+        <br/>
+        <xmloutput>
+          <pfx:include part="partABC" href="txt/common.xml" module="sample-module-C" search="dynamic"/>
+        </xmloutput>
+        <br/>
+        <partinfo part="content" theme="default" path="samplemodules/txt/pages/main_dynamic.xml"/>
+      </div>  
+    </theme>
+  </part>
+  
+</include_parts>

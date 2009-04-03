@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project-config xmlns="http://www.pustefix-framework.org/2008/namespace/project-config">
+  
+  <project>
+    <name>samplemodules</name>
+    <description>Sample modules application</description>
+  </project>
+  
+  <editor>
+    <enabled>true</enabled> <!-- Do we really need this? -->
+    <location>http://cms.${fqdn}/</location>
+  </editor>
+  
+  <xml-generator>
+    <config-file>pfixroot:/samplemodules/conf/depend.xml</config-file>
+  </xml-generator>
+  
+  <http-server>
+    
+    <http-port>
+      <address>${fqdn}</address>
+    </http-port>
+    
+    <server-name>samplemodules.${fqdn}</server-name>
+    <server-alias>samplemodules.${machine}</server-alias>
+    
+    <apache>
+      <literal>
+        <!-- Stuff that is copied to the Apache configuration -->
+      </literal>
+    </apache>
+    
+    <tomcat>
+      <enable-extra-webapps>false</enable-extra-webapps>
+    </tomcat>
+    
+  </http-server>
+  
+  <application>
+    
+    <docroot-path>pfixroot:/samplemodules/htdocs</docroot-path>
+    <default-path>/xml/config</default-path>
+    
+    <context-xml-service>
+      <path>/xml/config</path>
+      <config-file>pfixroot:/samplemodules/conf/config.conf.xml</config-file>
+    </context-xml-service>
+    
+    <static>
+      <path>samplemodules/img</path>
+    </static>
+    
+  </application>
+  
+</project-config>

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<make project="samplemodules" lang="en_GB">
+
+  <global>
+    <param name="outputdoctype-public" value="-//W3C//DTD HTML 4.01//EN"/>
+    <param name="outputdoctype-system" value="http://www.w3.org/TR/html40/strict.dtd"/>
+  </global>
+  
+  <navigation>
+    <page name="home" handler="/xml/config" accesskey="H"/>
+    <page name="include" handler="/xml/config" accesskey="I"/>
+    <page name="dynamic" handler="/xml/config" accesskey="D"/>
+  </navigation>
+
+  <standardmaster>
+    <!-- <include stylesheet="samplemodules/xsl/skin.xsl"/> -->
+  </standardmaster>
+  
+  <standardmetatags>
+    <include stylesheet="samplemodules/xsl/metatags.xsl"/>
+    <include stylesheet="xsl/test.xsl" module="sample-module-A"/>
+    <include stylesheet="samplemodules/xsl/test.xsl" />
+  </standardmetatags>
+
+  <standardpage name="home" xml="samplemodules/xml/frame.xml"/>
+  <standardpage name="include" xml="samplemodules/xml/frame.xml"/>
+  <standardpage name="dynamic" xml="samplemodules/xml/frame.xml"/>
+
+</make>

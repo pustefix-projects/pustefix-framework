@@ -184,7 +184,89 @@
       </para>
     </section>
   </section>
+  <section xml:id="advanced.dyninclude">
+    <title>Dynamic resource inclusion</title>
+    <para>
+      Pustefix applications can be modularized by packaging/sharing application parts or components as Pustefix modules, which are regular
+      Jar files with a defined directory structure and a special deployment descriptor (see <xref linkend="modulessupport"/>). Pustefix modules
+      not only contain Java classes, but can contain any kind of resource, like XML, XSL, Javascript, CSS or image files.
+    </para>
+    <para>
+      Prior Pustefix releases required that these resources were extracted to the file system by the build process to be usable in an application.
+      Meanwhile Pustefix supports that XML and XSL files used by the rendering engine (TargetGenerator) can be directly loaded from the module
+      jar files.
+    </para>
+    <para>
+      Developing strongly modularized applications often requires, that you want to be able to adapt parts of a shared
+      module to your application's context without breaking the modularization. Therefor Pustefix supports the dynamic inclusion of resources,
+      which allows you to provide a local version of a resource, which will be automatically taken instead of the according version from a module jar.
+      Additionally resources from modules can be overridden by other modules.
+    </para>
+    <section xml:id="advanced.dyninclude.modinclude">
+      <title>Including resources from modules</title>
+      <para>
+        Resources from modules are directly used by additionally specifying the name of the module. Therefor the according tags from the Pustefix tag library and
+        the configuration elements in <literal>depend.xml</literal> provide a <literal>module</literal> attribute.
+      </para>
+      <para>
+        samplemodule.jar
+        <screen>META-INF/pustefix-module.xml
+PUSTEFIX-INF/img/image.png
+PUSTEFIX-INF/img/theme/image.png
+PUSTEFIX-INF/txt/common.xml
+PUSTEFIX-INF/txt/pages/main_page.xml
+PUSTEFIX-INF/xml/frame.xml
+PUSTEFIX-INF/xsl/metatags.xsl
+PUSTEFIX-INF/xsl/skin.xsl</screen>
+      </para>
+      <para>
+        Let's take a look at how the various resources from the sample module can be directly included using the Pustefix tag library:
+        <programlisting language="xml"><![CDATA[<pfx:xinp type="image" src="img/image.png" module="samplemodule"/>]]></programlisting>
+        <programlisting language="xml"><![CDATA[<pfx:image themed-path="img" themed-img="image.png" module="samplemodule"/>]]></programlisting>
+        <programlisting language="xml"><![CDATA[<pfx:include part="foo" href="txt/common.xml" module="samplemodule"/>]]></programlisting>
+        <programlisting language="xml"><![CDATA[<pfx:maincontent part="content" path="txt/pages" module="samplemodule"/>]]></programlisting>
+      </para>
+      <para>
+        You just have to set the <literal>module</literal> attribute and be aware that the file paths are relative to the <literal>PUSTEFIX-INF</literal> root folder from the module jar file.
+      </para>
+      <para>
+        If you want to directly reference XML/XSL files in the <literal>depend.xml</literal> configuration file, this works the same way by adding a <literal>module</literal> attribute to the according elements:
+      </para>
+<programlisting language="xml"><![CDATA[
+<standardmaster>
+  <include stylesheet="xsl/skin.xsl" module="samplemodule"/>
+</standardmaster>
+]]></programlisting>
+<programlisting language="xml"><![CDATA[
+<standardmetatags>
+  <include stylesheet="xsl/metatags.xsl" module="samplemodule"/>
+</standardmetatags>
+]]></programlisting>
+<programlisting language="xml"><![CDATA[
+<standardpage name="page" xml="xml/frame.xml" module="samplemodule"/>
+]]></programlisting>
+      <para>
+        Including or importing a stylesheet from a module into another stylesheet can be done using a <literal>module</literal> URI:
+      </para>
+<programlisting language="xml"><![CDATA[
+<xsl:import href="module://samplemodule/xsl/test.xsl"/>
+]]></programlisting>
+      <para>
+         A module URI complies with the hierarchical URI syntax <literal>[scheme:][//authority][path][?query][#fragment]</literal>. The <literal>scheme</literal> has to be set to <literal>module</literal> and the authority part is set to the module name.
+      </para>
+      <para>
+        Such URIs also can be programmatically used to get a module resource with the <literal>ResourceUtil</literal> helper class:
+      </para>
+<programlisting language="java"><![CDATA[Resource res = ResourceUtil.getResource("module://samplemodule/txt/test.txt");]]></programlisting>
+    </section>
+    <section xml:id="advanced.dyninclude.dynamic">
+      <title>Dynamically including resources</title>
+    </section>
+    <section xml:id="advanced.dyninclude.override">
+      <title>Overriding module resources</title>
+    </section>
 
+  </section>
   <section xml:id="advanced.rolebasedauth">
     <title>Authentication and authorization</title>
     <para>
