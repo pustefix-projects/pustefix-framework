@@ -36,10 +36,37 @@
     </theme>
   </part>
 
-  <part name="partA_modinc">
+  <part name="partProjectCommonABC">
     <theme name="default">
       <div class="part_module">
-        <h3>AAA - A_modinc</h3>
+        <h3>AAA - ProjectCommonABC</h3>
+        <partinfo part="partProjectCommonABC" theme="default" path="txt/common.xml" module="sample-module-A"/>
+      </div>
+    </theme>
+  </part>
+  
+  <part name="partCommonABC">
+    <theme name="default">
+      <div class="part_module">
+        <h3>AAA - CommonABC</h3>
+        <partinfo part="partCommonABC" theme="default" path="txt/common.xml" module="sample-module-A"/>
+      </div>
+    </theme>
+  </part>
+  
+ <part name="partProjectABC">
+    <theme name="default">
+      <div class="part_module">
+        <h3>AAA - ProjectABC</h3>
+        <partinfo part="partProjectABC" theme="default" path="txt/common.xml" module="sample-module-A"/>
+      </div>
+    </theme>
+  </part> 
+
+  <part name="partA_inc">
+    <theme name="default">
+      <div class="part_module">
+        <h3>AAA - A_inc</h3>
         <xmloutput>
           <pfx:include part="partC" href="txt/common.xml" module="sample-module-C"/>
         </xmloutput>
@@ -52,7 +79,11 @@
           <pfx:include part="partA"/>
         </xmloutput>
         <br/>
-        <partinfo part="partA_modinc" theme="default" path="txt/common.xml" module="sample-module-A"/>
+        <xmloutput>
+          <pfx:include part="partA_test" href="txt/test.xml"/>
+        </xmloutput>
+        <br/>
+        <partinfo part="partA_inc" theme="default" path="txt/common.xml" module="sample-module-A"/>
       </div>
     </theme>
   </part>

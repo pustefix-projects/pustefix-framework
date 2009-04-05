@@ -36,4 +36,31 @@
     </theme>
   </part>
  
+  <part name="partProjectCommonABC">
+    <theme name="default">
+      <div class="part_module">
+        <h3>CCC - ProjectCommonABC</h3>
+        <partinfo part="partProjectCommonABC" theme="default" path="txt/common.xml" module="sample-module-C"/>
+      </div>
+    </theme>
+  </part>
+  
+  <part name="partCommonABC">
+    <theme name="default">
+      <div class="part_module">
+        <h3>CCC - CommonABC</h3>
+        <partinfo part="partCommonABC" theme="default" path="txt/common.xml" module="sample-module-C"/>
+      </div>
+    </theme>
+  </part>
+  
+  <part name="partProjectABC">
+    <theme name="default">
+      <div class="part_module">
+        <h3>CCC - ProjectABC</h3>
+        <partinfo part="partProjectABC" theme="default" path="txt/common.xml" module="sample-module-C"/>
+      </div>
+    </theme>
+  </part> 
+ 
 </include_parts>

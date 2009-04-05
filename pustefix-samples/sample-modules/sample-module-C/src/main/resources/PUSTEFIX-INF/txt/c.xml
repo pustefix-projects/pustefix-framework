@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="ISO-8859-1"?><include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
+
+  <part name="partC">
+    <theme name="default">
+      <div class="part_module">
+        <h3>CCC - C</h3>
+        <partinfo part="partC" theme="default" path="txt/c.xml" module="sample-module-C"/>
+      </div>
+    </theme>
+  </part>
+ 
+</include_parts>

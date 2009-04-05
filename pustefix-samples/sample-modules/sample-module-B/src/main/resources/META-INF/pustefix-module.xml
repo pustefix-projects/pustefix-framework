@@ -9,6 +9,8 @@
   <override-modules>
     <module name="sample-module-A">
       <resource path="txt/common.xml"/>
+      <resource path="txt/ab.xml"/>
+      <resource path="txt/abc.xml"/>
     </module>
   </override-modules>
 
