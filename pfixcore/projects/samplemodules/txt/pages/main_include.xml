@@ -25,7 +25,19 @@
         </xmloutput>
         <br/>
         <xmloutput>
-          <pfx:include part="partA_modinc" href="txt/common.xml" module="sample-module-A"/>
+          <pfx:include part="partCommon_inc" href="common/txt/common.xml"/>
+        </xmloutput>
+        <br/>
+        <xmloutput>
+          <pfx:include part="partProject" href="samplemodules/txt/common.xml"/>
+        </xmloutput>
+        <br/>
+        <xmloutput>
+          <pfx:include part="partProject_inc" href="samplemodules/txt/common.xml"/>
+        </xmloutput>
+        <br/>
+        <xmloutput>
+          <pfx:include part="partA_inc" href="txt/common.xml" module="sample-module-A"/>
         </xmloutput>
         <br/>
         <partinfo part="content" theme="default" path="samplemodules/txt/pages/main_home.xml"/>

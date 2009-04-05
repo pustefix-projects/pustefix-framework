@@ -15,7 +15,7 @@
     <span class="xmloutput">
     &lt;<span class="tagname"><xsl:value-of select="name()"/><xsl:text> </xsl:text></span>
     <xsl:for-each select="@*">
-      <xsl:text> </xsl:text><span class="attname"><xsl:value-of select="name()"/></span>="<span class="attval"><xsl:value-of select="."/></span>"
+      <xsl:text> </xsl:text><span class="attname"><xsl:value-of select="name()"/></span>="<span class="attval"><xsl:value-of select="."/></span>"&#160;
     </xsl:for-each>
     /&gt;
     </span>

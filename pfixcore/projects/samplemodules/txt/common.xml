@@ -26,11 +26,38 @@
     <theme name="default">
       <div class="part_project">
         <h3>PROJECT - Project</h3>
+        <partinfo part="partProject" theme="default" path="samplemodules/txt/common.xml"/>
+      </div>  
+    </theme>
+  </part>
+  
+  <part name="partProjectCommonABC">
+    <theme name="default">
+      <div class="part_project">
+        <h3>PROJECT - ProjectCommonABC</h3>
+        <partinfo part="partProjectCommonABC" theme="default" path="samplemodules/txt/common.xml"/>
+      </div>
+    </theme>
+  </part> 
+  
+  <part name="partProjectABC">
+    <theme name="default">
+      <div class="part_project">
+        <h3>PROJECT - ProjectABC</h3>
+        <partinfo part="partProjectABC" theme="default" path="samplemodules/txt/common.xml"/>
+      </div>
+    </theme>
+  </part> 
+ 
+  <part name="partProject_inc">
+    <theme name="default">
+      <div class="part_project">
+        <h3>PROJECT - Project_inc</h3>
         <xmloutput>
           <pfx:include part="partC" module="sample-module-C"/>
         </xmloutput>
         <br/>
-        <partinfo part="common_include" theme="default" path="samplemodules/txt/common.xml"/>
+        <partinfo part="partProject_inc" theme="default" path="samplemodules/txt/common.xml"/>
       </div>  
     </theme>
   </part>
