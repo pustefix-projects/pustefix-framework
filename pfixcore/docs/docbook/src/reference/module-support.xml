@@ -44,7 +44,29 @@
     <resource-mapping srcpath="resources/txt" targetpath="txt"/>
     <resource-mapping srcpath="resources/images" targetpath="img"/>
   </resources>
+
+  <!--
+    Here you can configure which resources from which other module should be
+    overridden by your module (see "Dynamic resource resolution").
+  -->
+  <override-modules>
+    <module name="modulename">
+      <resource path="path/to/resource"/>
+      ...
+    </module>
+    ...
+  </override-modules>
+
 </module-descriptor>]]></programlisting>
+  <para>
+    While future Pustefix versions will be able to load any kind of resource directly from the module jar file, currently it's required that certain resources, like configuration files or images, are extracted by the build process (using the <literal>resource-mapping</literal> configuration).
+  </para>
+  <para>
+    XML and XSL files used for rendering (TargetGenerator) meanwhile can be loaded directly from the jar file (if located in the <literal>PUSTEFIX-INF</literal> folder). For details on how to reference module resources and how to override modules, see <xref linkend="advanced.dyninclude"/>.
+  </para>
+  <para>
+    Besides those two variants of using resources from module jars, Pustefix supports the automatic merging of statusmessage files. Statusmessages placed under <literal>dyntxt/statusmessages.xml</literal> within a module jar are automatically merged to <literal>projects/modules-override/MODULENAME/dyntxt/statusmessages-merged.xml</literal>. In contrast to <literal>resource-mappings</literal> the merged files aren't readonly, but are intended to be used to change (e.g. localize) the default messages provided by the module (see <xref linkend="concepts.statuscodes"/>).
+  </para>
       </section>
       <section xml:id="modulessupport.types.old">
         <title>Resources placed in modules/ directory</title>

@@ -824,13 +824,15 @@ public interface State {
   xmlns="http://pustefix.sourceforge.net/interfacewrapper200401"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <!--
-    The class attribute references the associated IHandler class. The class attribute is
-    mandatory. The ihandler node is optional, but if it is left out, the generated
+    The class attribute references the associated IHandler class. Alternatively you can
+    reference an existing Spring bean using the bean-ref attribute.
+    The ihandler node is optional, but if it is left out, the generated
     IWrapper will be abstract and cannot be used directly, unless an extends attribute
     has been given to the interface node. Normally you will want to specify an ihandler
     class here.
   -->
   <ihandler class="some.de.schlund.pfixcore.generator.IHandler.class"/>
+  <!-- or <ihandler bean-ref="aBean"/> -->
   <!--
     This node can (and usually will) occur multiple times, one for every parameter that
     should be part of the interface
@@ -1130,5 +1132,118 @@ The statusmessage files for statuscodes coming from the Pustefix core or arbitra
 <para>
 The built-in core and editor statuscodes are merged to <literal>projects/core-override/dyntxt/statusmessages-core-merged.xml</literal> and <literal>projects/core-override/dyntxt/statusmessages-editor-merged.xml</literal>. Pustefix module statuscodes are merged to <literal>projects/modules-override/MODULENAME/dyntxt/statusmessages-merged.xml</literal>.
 </para>
+</section>
+<section xml:id="concepts.interceptors">
+  <title>ContextInterceptors</title>
+  <para>
+    Pustefix provides a mechanism to hook custom logic into the request processing lifecycle. Therefor it provides a set of interception points, where you can register classes or Spring beans implementing the <literal>ContextInterceptor</literal> interface, which then are automatically called during the processing of a request. 
+  </para>
+  <itemizedlist>
+    <para>Common use cases for <literal>ContextInterceptors</literal> are:</para>
+    <listitem>
+      <para>
+        Implementation of cross-cutting concerns like logging, cleanup.
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+        Implementation of standard design patterns like Hibernate's "Open Session in view".
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+        Triggering logic/setting data independent of the requested page, e.g. setting a variant.
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+        Handling of common, page-independent/shared parameters.
+      </para>
+    </listitem>
+  </itemizedlist>
+  <para>
+  <figure xml:id="concepts.servlets.core.figure">
+        <title>ContextInterceptors</title>
+        <mediaobject>
+          <imageobject>
+            <imagedata fileref="images/reference/concepts-interceptors.png" format="PNG"/>
+          </imageobject>
+        </mediaobject>
+  </figure>
+  </para>
+  <para>
+    Currently Pustefix supports three interception points: <literal>start</literal>, which is right before the actual request handling gets started, <literal>end</literal>, which is right after the DOM result tree has been created, and <literal>postrender</literal>, which is right after the view has been rendered.
+  </para>
+<programlisting language="java"><![CDATA[
+public interface ContextInterceptor {
+    void process(Context context, PfixServletRequest preq);
+}
+]]></programlisting>
+  <para>
+    The framework calls the <literal>process</literal> method of the registered <literal>ContextInterceptor</literal> implementations, passing the <literal>Context</literal> and <literal>PfixServletRequest</literal> as parameters.
+  </para>
+  <note>
+    Comparison with <literal>ServletFilters</literal>: <literal>ServletFilters</literal> apply right before/right after a request/response enters/leaves the framework's processing layer and give you means to manipulate the incoming <literal>ServletRequest</literal> and outgoing <literal>ServletResponse</literal>, whereas <literal>ContextInterceptors</literal> are part of the framework's lifecycle and give you direct access to the request (but not the response), <literal>Context</literal> and other Spring beans, and are meant to trigger logic or set data.
+  </note>
+  <para>
+   <literal>ContextInterceptors</literal> are configured in the <literal>Context's</literal> configuration file. Below you can see an a sample configuration fragment showing all available configuration options:
+  </para>
+<programlisting language="xml"><![CDATA[
+<context-xml-service-config>
+ 
+   <context> ... </context>
+
+   <!-- ContextInterceptors are defined within the <interceptors> element directly following the <context> element. -->
+   <interceptors>
+
+     <!-- The interceptors are grouped by their interception points (start, end, postrender), which are represented 
+            by accordingly named elements. -->
+     <start>
+
+        <!-- Interceptors are registered either by setting the ContextInterceptor implementation class or by setting 
+               an according reference to a Spring bean configured elsewhere. -->
+        <interceptor class="mypackage.MyStartInterceptor"/>
+
+        <!-- If you're setting an implementation class, the framework will create an according Spring bean for you. 
+               By default it will get Singleton scope, but you can provide an alternative scope using the scope attribute. --> 
+        <interceptor class="mypackage.MySessionScopedInterceptor" scope="session"/>
+
+        <interceptor bean-ref="myStartInterceptor"/>
+
+     </start>
+
+     <end> ... </end>
+
+     <postrender> ... </postrender>
+
+   </interceptors>
+
+   ...
+
+</context-xml-service-config>
+]]></programlisting>
+  <para>
+    The following example interceptor tries to guess from which country the client request is coming and sets a special variant if it comes from Germany. Therefor it checks the client's IP retrieved from the servlet request using a GeoLocationAPI. It sets a flag after the first check to avoid multiple checks. Remembering the flag this way only works when the interceptor has session scope and synchronization can be omitted because the operation is repeatable and boolean access is atomic.
+  </para>
+<programlisting language="java"><![CDATA[
+public class MySessionScopedInterceptor implements ContextInterceptor {
+	
+	private boolean checked;
+
+	@Override
+	public void process(Context context, PfixServletRequest preq) {
+		if(!checked) {
+			String country = GeoLocationAPI.getCountry(preq.getRemoteAddr());
+			if(country.equals("DE")) context.setVariant("foo");
+			checked = true;
+		}
+	}
+	
+}
+]]></programlisting>
+  <note>
+    <para><literal>ContextInterceptors</literal> are singleton-scoped beans by default. So if you want to store data or call non-threadsafe code, you possibly will have to do some synchronization or use an appropriate scope.</para>
+    <para><literal>ContextInterceptors</literal> are called on every request. So you shouldn't execute long-running tasks and avoid that time-consuming code is unnecessarily called with each invocation.</para>
+  </note>
 </section>
 </chapter>
