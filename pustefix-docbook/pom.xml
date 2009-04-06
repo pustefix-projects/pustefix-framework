@@ -40,7 +40,8 @@
         </dependencies>
         <configuration>
           <xincludeSupported>true</xincludeSupported> 
-          <chunkedOutput>true</chunkedOutput>
+          <chunkedOutput>false</chunkedOutput>
+          <targetDirectory>${basedir}/target/site/docbkx</targetDirectory>
  
           <sectionAutolabel>1</sectionAutolabel>
           <sectionAutolabelMaxDepth>2</sectionAutolabelMaxDepth>
