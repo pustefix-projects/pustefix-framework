@@ -8,7 +8,6 @@
       </activation>
       <properties>
         <makemode>test</makemode>
-        <standalone.tomcat>true</standalone.tomcat>
       </properties>
     </profile>
   </profiles>

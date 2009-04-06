@@ -38,9 +38,7 @@ import de.schlund.pfixxml.resources.FileResource;
 import de.schlund.pfixxml.resources.ResourceUtil;
 
 /**
- * In standalone mode this servlet serves the static files from the docroot.
- * In all modes, it serves files from the webapplication directory below
- * /xml because they would usually be masked by the files within the docroot.   
+ * This servlet serves the static files from the docroot.   
  * 
  * @author Sebastian Marsching <sebastian.marsching@1und1.de>
  */

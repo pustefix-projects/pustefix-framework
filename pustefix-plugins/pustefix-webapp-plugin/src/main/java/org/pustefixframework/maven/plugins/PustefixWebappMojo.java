@@ -112,12 +112,6 @@ public class PustefixWebappMojo extends AbstractMojo {
     private String makemode;
 
     /**
-     * @parameter default-value="true"
-     */
-    private boolean standaloneTomcat;
-    
-    
-    /**
      * @parameter expression="${project}"
      * @required
      * @readonly
@@ -171,7 +165,6 @@ public class PustefixWebappMojo extends AbstractMojo {
             ant.setBaseDir(project.getBasedir());
             ant.setProperty("pfixroot", pfixroot);
             ant.setProperty("aptdir", aptdir);
-            ant.setProperty("standalone.tomcat", Boolean.toString(standaloneTomcat));
             ant.setProperty("makemode", makemode);
             ant.setProperty("data.tar.gz", getDataTarGz());
             try {
@@ -217,7 +210,7 @@ public class PustefixWebappMojo extends AbstractMojo {
     }
     
     private void buildtimeProps() throws IOException {
-        BuildTimeProperties.generate(getProperties(), makemode, getMachine(), getFqdn(), System.getProperty("user.name"), standaloneTomcat);
+        BuildTimeProperties.generate(getProperties(), makemode, getMachine(), getFqdn(), System.getProperty("user.name"));
     }
     private Properties getProperties() {
     	Properties orig;

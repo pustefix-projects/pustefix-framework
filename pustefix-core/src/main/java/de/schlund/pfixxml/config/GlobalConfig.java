@@ -109,8 +109,7 @@ public class GlobalConfig {
     /**
      * Returns the servlet context
      * 
-     * @return The servlet context or <code>null</code> if this instance of
-     *         Pustefix is shared across different contexts (e.g. in standalone mode)
+     * @return The servlet context or <code>null</code> if not available
      */
     public static ServletContext getServletContext() {
         return servletContext;

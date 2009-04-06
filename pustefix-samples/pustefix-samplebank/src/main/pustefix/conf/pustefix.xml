@@ -15,14 +15,7 @@
     <!-- <prop name="xmlserver.output.externalrenderer">true</prop> -->
     
     <!-- URL for the Pustefix editor -->
-    <choose>
-      <when test="$standalone.tomcat = 'true'">
-        <prop name="xmlserver.editor_url">http://cms.${fqdn}:8080</prop>
-      </when>
-      <otherwise>
-        <prop name="xmlserver.editor_url">http://cms.${fqdn}</prop>
-      </otherwise>
-    </choose>
+    <prop name="xmlserver.editor_url">http://cms.${fqdn}:8080</prop>
     
     <choose>
       <when test="$mode = 'prod'">

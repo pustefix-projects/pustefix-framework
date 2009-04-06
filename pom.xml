@@ -22,7 +22,6 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <standalone.tomcat>true</standalone.tomcat>
     <makemode>test</makemode>
   </properties>
 

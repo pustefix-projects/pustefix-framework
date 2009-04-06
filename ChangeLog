@@ -1,3 +1,7 @@
+2009-04-06  Michael Hartmeier <michael.hartmeier@1und1.de>
+
+        Dump standalone.tomcat. It was always true since we have a war file build now.
+
 2009-04-02  Martin Leidig  <mleidig@schlund.de>
 
 	Fixed pfx:externalform bug (missing timestamp param).

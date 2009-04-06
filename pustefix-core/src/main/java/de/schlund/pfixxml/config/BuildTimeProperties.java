@@ -53,12 +53,11 @@ public class BuildTimeProperties {
         props = p; 
     }
     
-    public static void generate(Properties props, String mode, String machine, String fqdn, String uid, boolean standaloneTomcat) throws IOException {
+    public static void generate(Properties props, String mode, String machine, String fqdn, String uid) throws IOException {
         props.setProperty("mode", mode);
         props.setProperty("machine", machine);
         props.setProperty("fqdn", fqdn);
         props.setProperty("uid", uid);
-        props.setProperty("standalone.tomcat", Boolean.toString(standaloneTomcat));
         props.store(ResourceUtil.getFileResourceFromDocroot("buildtime.prop").getOutputStream(), "Properties used at buildtime");
     }
 }

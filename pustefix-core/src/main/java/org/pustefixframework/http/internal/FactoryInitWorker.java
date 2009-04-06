@@ -97,7 +97,7 @@ public class FactoryInitWorker {
     private static long log4jmtime = -1;
     
     private boolean warMode = false;
-    private boolean standaloneMode = false;
+    private boolean docrootSpecified = false;
     
     private final static Object initLock = new Object();
     private static boolean initRunning = false;
@@ -157,7 +157,7 @@ public class FactoryInitWorker {
             // old webapps specify docroot -- true webapps don't
             String docrootstr = servletContext.getInitParameter("pustefix.docroot");
             if (docrootstr != null && !docrootstr.equals("")) {
-                standaloneMode = true;
+                docrootSpecified = true;
             } else {
                 docrootstr = servletContext.getRealPath("/WEB-INF/pfixroot");
                 if (docrootstr == null) {
@@ -225,7 +225,7 @@ public class FactoryInitWorker {
 
     private void configureLogging(Properties properties, ServletContext servletContext) throws ServletException {
         String containerProp = properties.getProperty(PROP_PREFER_CONTAINER_LOGGING);
-        if (warMode || (!standaloneMode && (containerProp != null && containerProp.toLowerCase().equals("true")))) {
+        if (warMode || (!docrootSpecified && (containerProp != null && containerProp.toLowerCase().equals("true")))) {
             ProxyLogUtil.getInstance().configureLog4jProxy();
             ProxyLogUtil.getInstance().setServletContext(servletContext);
         } else {

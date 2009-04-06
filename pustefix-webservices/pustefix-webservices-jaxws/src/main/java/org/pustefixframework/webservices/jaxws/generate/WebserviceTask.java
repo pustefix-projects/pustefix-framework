@@ -64,7 +64,6 @@ public class WebserviceTask extends MatchingTask {
     private File webappdir;
     private File gendir;
     private Path classPath;
-    private boolean standalone;
     private int portbase;
     
     private Set<File> wsgenDirs;
@@ -212,7 +211,7 @@ public class WebserviceTask extends MatchingTask {
                                     // Replace endpoint URL
                                     String srvName = "HOST";
                                     String srvPort = "";
-                                    if (standalone) srvPort = ":" + (portbase + 80);
+                                    srvPort = ":" + (portbase + 80);
                                     String wsUrl = "http://" + srvName + srvPort + globConf.getRequestPath() + "/" + conf.getName();
                                     FileUtils.searchAndReplace(wsdlFile, "UTF-8", "REPLACE_WITH_ACTUAL_URL", wsUrl);
                                     wsdlCount++;
@@ -323,13 +322,6 @@ public class WebserviceTask extends MatchingTask {
     public void setClasspathRef(Reference ref) {
         classPath = new Path(getProject());
         classPath.createPath().setRefid(ref);
-    }
-
-    /**
-     * Set if it's build in Tomcat standalone mode.
-     */
-    public void setStandalone(boolean standalone) {
-        this.standalone = standalone;
     }
 
     /**

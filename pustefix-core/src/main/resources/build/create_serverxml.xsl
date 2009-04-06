@@ -6,7 +6,6 @@
                 xmlns:ext="xalan://de.schlund.pfixcore.util.XsltTransformer"
                 >
 
-  <xsl:param name="standalone">true</xsl:param>
   <xsl:param name="portbase"/>
   <xsl:param name="warmode">false</xsl:param>
   <xsl:param name="webappbase"/>
@@ -111,26 +110,24 @@
       <xsl:if test="not(string($minprocessors)='')"><xsl:attribute name="maxSpareThreads"><xsl:value-of select="$minprocessors"/></xsl:attribute></xsl:if>
       <xsl:if test="not(string($maxprocessors)='')"><xsl:attribute name="maxThreads"><xsl:value-of select="$maxprocessors"/></xsl:attribute></xsl:if>
     </Connector>
-    <xsl:if test="$standalone = 'true'">
-      <Connector maxHttpHeaderSize="8192"
-                 maxThreads="150" minSpareThreads="25" maxSpareThreads="75"
-                 enableLookups="false" acceptCount="100"
-                 connectionTimeout="20000" disableUploadTimeout="true" 
-                 useBodyEncodingForURI="true">
-        <xsl:attribute name="debug"><xsl:value-of select="$debug"/></xsl:attribute>
-        <xsl:attribute name="port"><xsl:value-of select="$portbase+80"/></xsl:attribute>
-        <xsl:attribute name="redirectport"><xsl:value-of select="$portbase+443"/></xsl:attribute>
-      </Connector>
-      <Connector maxHttpHeaderSize="8192"
-                 maxThreads="150" minSpareThreads="25" maxSpareThreads="75"
-                 enableLookups="false" disableUploadTimeout="true"
-                 acceptCount="100" scheme="https" secure="true"
-                 clientAuth="false" sslProtocol="TLS" keystoreFile="conf/keystore" keystorePass="secret"
-                 useBodyEncodingForURI="true">
-        <xsl:attribute name="port"><xsl:value-of select="$portbase+443"/></xsl:attribute>
-        <xsl:attribute name="debug"><xsl:value-of select="$debug"/></xsl:attribute>
-      </Connector>
-    </xsl:if>
+    <Connector maxHttpHeaderSize="8192"
+               maxThreads="150" minSpareThreads="25" maxSpareThreads="75"
+               enableLookups="false" acceptCount="100"
+               connectionTimeout="20000" disableUploadTimeout="true" 
+               useBodyEncodingForURI="true">
+      <xsl:attribute name="debug"><xsl:value-of select="$debug"/></xsl:attribute>
+      <xsl:attribute name="port"><xsl:value-of select="$portbase+80"/></xsl:attribute>
+      <xsl:attribute name="redirectport"><xsl:value-of select="$portbase+443"/></xsl:attribute>
+    </Connector>
+    <Connector maxHttpHeaderSize="8192"
+               maxThreads="150" minSpareThreads="25" maxSpareThreads="75"
+               enableLookups="false" disableUploadTimeout="true"
+               acceptCount="100" scheme="https" secure="true"
+               clientAuth="false" sslProtocol="TLS" keystoreFile="conf/keystore" keystorePass="secret"
+               useBodyEncodingForURI="true">
+      <xsl:attribute name="port"><xsl:value-of select="$portbase+443"/></xsl:attribute>
+      <xsl:attribute name="debug"><xsl:value-of select="$debug"/></xsl:attribute>
+    </Connector>
   </xsl:template>
 
   <xsl:template match="p:project-config">
@@ -186,31 +183,29 @@
         </xsl:choose>
       </xsl:with-param>
       <xsl:with-param name="staticDocBase">
-        <xsl:if test="$standalone = 'true'">
-          <xsl:if test="p:application/p:docroot-path/text()">
-            <xsl:variable name="docroot" select="p:application/p:docroot-path/text()"/>
-            <xsl:variable name="abs_path">
-              <xsl:choose>
-                <xsl:when test="starts-with(normalize-space(text()), 'pfixroot:')">
-                  <xsl:value-of select="$docroot"/><xsl:value-of select="substring-after(normalize-space(text()), 'pfixroot:')"/>
-                </xsl:when>
-                <xsl:when test="starts-with(normalize-space(text()), 'file:')">
-                  <xsl:value-of select="substring-after(normalize-space(text()), 'file:')"/>
-                </xsl:when>
-                <xsl:otherwise>
-                  <xsl:value-of select="normalize-space(text())"/>
-                </xsl:otherwise>
-              </xsl:choose>
-            </xsl:variable>
+        <xsl:if test="p:application/p:docroot-path/text()">
+          <xsl:variable name="docroot" select="p:application/p:docroot-path/text()"/>
+          <xsl:variable name="abs_path">
             <xsl:choose>
-              <xsl:when test="ext:exists($abs_path)">
-                <xsl:value-of select="$abs_path"/>
+              <xsl:when test="starts-with(normalize-space(text()), 'pfixroot:')">
+                <xsl:value-of select="$docroot"/><xsl:value-of select="substring-after(normalize-space(text()), 'pfixroot:')"/>
+              </xsl:when>
+              <xsl:when test="starts-with(normalize-space(text()), 'file:')">
+                <xsl:value-of select="substring-after(normalize-space(text()), 'file:')"/>
               </xsl:when>
               <xsl:otherwise>
-                <xsl:message>CAUTION: documentroot does not exist: <xsl:value-of select="$abs_path"/></xsl:message>
+                <xsl:value-of select="normalize-space(text())"/>
               </xsl:otherwise>
             </xsl:choose>
-          </xsl:if>
+          </xsl:variable>
+          <xsl:choose>
+            <xsl:when test="ext:exists($abs_path)">
+              <xsl:value-of select="$abs_path"/>
+            </xsl:when>
+            <xsl:otherwise>
+              <xsl:message>CAUTION: documentroot does not exist: <xsl:value-of select="$abs_path"/></xsl:message>
+            </xsl:otherwise>
+          </xsl:choose>
         </xsl:if>
       </xsl:with-param>
       <xsl:with-param name="hostbased" select="$hostbased"/>
