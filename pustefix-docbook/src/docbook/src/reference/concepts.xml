@@ -1162,7 +1162,7 @@ The built-in core and editor statuscodes are merged to <literal>projects/core-ov
     </listitem>
   </itemizedlist>
   <para>
-  <figure xml:id="concepts.servlets.core.figure">
+  <figure xml:id="concepts.interceptors.figure">
         <title>ContextInterceptors</title>
         <mediaobject>
           <imageobject>
