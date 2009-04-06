@@ -41,6 +41,23 @@
         <configuration>
           <xincludeSupported>true</xincludeSupported> 
           <chunkedOutput>true</chunkedOutput>
+ 
+          <sectionAutolabel>1</sectionAutolabel>
+          <sectionAutolabelMaxDepth>2</sectionAutolabelMaxDepth>
+          <sectionLabelIncludesComponentLabel>1</sectionLabelIncludesComponentLabel>
+          <htmlCleanup>1</htmlCleanup>
+          <useExtensions>1</useExtensions>
+          <textinsertExtension>1</textinsertExtension>
+          <linenumberingExtension>1</linenumberingExtension>
+          <graphicsizeExtension>0</graphicsizeExtension>
+          <highlightSource>1</highlightSource>
+          <calloutGraphicsPath>images/docbook/callouts/</calloutGraphicsPath>
+          <admonGraphics>1</admonGraphics>
+          <admon.graphics.path>images/docbook/</admon.graphics.path>
+          <htmlStylesheet>css/style.css</htmlStylesheet>
+          <tocSectionDepth>2</tocSectionDepth>
+          <imgSrcPath>../</imgSrcPath>
+
         </configuration>
       </plugin>
     </plugins>
