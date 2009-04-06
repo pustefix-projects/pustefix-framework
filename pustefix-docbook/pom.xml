@@ -53,10 +53,10 @@
           <highlightSource>1</highlightSource>
           <calloutGraphicsPath>images/docbook/callouts/</calloutGraphicsPath>
           <admonGraphics>1</admonGraphics>
-          <admon.graphics.path>images/docbook/</admon.graphics.path>
+          <admonGraphicsPath>images/docbook/</admonGraphicsPath>
           <htmlStylesheet>css/style.css</htmlStylesheet>
           <tocSectionDepth>2</tocSectionDepth>
-          <imgSrcPath>../</imgSrcPath>
+          <imgSrcPath>images/</imgSrcPath>
 
         </configuration>
       </plugin>
