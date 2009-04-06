@@ -18,6 +18,7 @@
   <build>
     <plugins>
       <plugin>
+        <!-- documentation: http://code.google.com/p/docbkx-tools/ -->
         <groupId>com.agilejava.docbkx</groupId>
         <artifactId>docbkx-maven-plugin</artifactId>
         <executions>
