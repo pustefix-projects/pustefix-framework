@@ -214,13 +214,20 @@
       <title>Factory loader configuration (factory.xml)</title>
       <para>
         This property file is located in 
-        <filename>projects/common/conf/factory.xml</filename> and used 
-        by the <classname>de.schlund.pfixxml.FactoryInitServlet</classname> 
-        servlet (contained in the special admin project used in every 
-        Pustefix environment) whenever the servletcontainer starts up to 
+        <filename>projects/common/conf/factory.xml</filename> and used
+        by a ServletContextListener
+        whenever the servletcontainer starts up to 
         initialize services that are used by all the other projects. The
         syntax of this file is described in <xref linkend="configuration.format.props"/>.
       </para>
+      <warning>
+          <title>Deprecated</title>
+          <para>
+            It is not recommended to configure services as true, classloader-wide, singletons in <literal>factory.xml</literal>.
+            We currently support it for backwards compatibility, but support will be dropped in the near future.
+            We recommend that services are configured using Spring.
+          </para>
+        </warning>
     </section>
     
     <section xml:id="configuration.pustefixxml">
@@ -559,6 +566,8 @@
   <global>
     <param name="AName" value="AValue"/>
     <include stylesheet="path/to/AStyleSheet"/>
+    <!-- Stylesheets from module jars can be directly included by setting the module attribute. -->
+    <!-- <include stylesheet="path/to/AStyleSheetFromModule" module="modulename"/> -->
   </global>
 
   <config-include file="myproject/conf/myfile.xml" section="targets"/>
@@ -778,6 +787,8 @@
     Note: All the child nodes are optional (and in fact usually not needed)
   -->
   <include stylesheet="MyProject/xsl/runtime.xsl"/>
+  <!-- Stylesheets from module jars can be directly included by setting the module attribute. -->
+  <!-- <include stylesheet="xsl/runtimeFromModule.xsl" module="modulename"/> -->
   <param name="fubar" value="bar"/>
 </standardpage>]]></programlisting>
       <para>
@@ -802,6 +813,11 @@
             <td>xml</td>
             <td>mandatory</td>
             <td>The name of a xml target to use as input for the "metatags transformation". Often this is a leaf target and one of the projects structural xml files.</td>
+          </tr>
+          <tr>
+            <td>module</td>
+            <td>optional</td>
+            <td>The name of the module from which the xml file should be loaded.</td>
           </tr>
           <tr>
             <td>themes</td>
@@ -884,6 +900,8 @@
       <programlisting language="xml"><![CDATA[<standardmaster name="AName">
   <!-- The name attribute is optional -->
   <include stylesheet="MyProject/xsl/skin.xsl"/>
+  <!-- Stylesheets from module jars can be directly included by setting the module attribute. -->
+  <!-- <include stylesheet="xsl/skinFromModule.xsl" module="modulename"/> -->
   <param name="AName" value="AValue"/>
 </standardmaster>]]></programlisting>
       <para>
@@ -918,6 +936,8 @@
       <programlisting language="xml"><![CDATA[<standardmetatags name="AName">
   <!-- The name attribute is optional -->
   <include stylesheet="MyProject/xsl/metatags.xsl"/>
+  <!-- Stylesheets from module jars can be directly included by setting the module attribute. -->
+  <!-- <include stylesheet="xsl/metatagsFromModule.xsl" module="modulename"/> -->
   <param name="AName" value="AValue"/>
 </standardmetatags>]]></programlisting>
       <para>
@@ -977,6 +997,7 @@
         <programlisting language="xml"><![CDATA[
       <defaultstate class="a.state.Class"/>
       <defaultihandlerstate class="another.state.Class"/>
+      <!-- optional attribute for both elements: parent-bean-ref="..." -->
         ]]></programlisting>
         <tag>defaultstate</tag> and 
         <tag>defaultihandlerstate</tag> are both optional. 
@@ -991,6 +1012,16 @@
         used to set the defaults for the state tag used when 
         processing the <tag>pagerequest</tag> tag 
         (see there for more info).
+        <note>
+          <para>
+          As Pustefix creates a singleton-scoped Spring bean of the specified class
+          for each page, which uses a default state, you can't inject dependencies using the Spring XML configuration. 
+	  That's why Pustefix supports the referencing of parent bean definitions using the <literal>parent-bean-ref</literal>
+	attribute. Thus it's possible to indirectly inject dependencies 
+	into the concrete instances by injecting them into the parent bean 
+	definition.
+          </para>
+        </note>
         <programlisting language="xml"><![CDATA[
     </global-config>
     
@@ -1031,13 +1062,14 @@
         <emphasis>[Since: 0.13.1]</emphasis>  
         <programlisting language="xml"><![CDATA[
       <resource class="A_Resource">
+      <!-- optional attributes: bean-name="A_Name" scope="prototype|request|session|singleton"/> -->
         ]]></programlisting>
         <tag class="attribute">class</tag> is 
         <emphasis>mandatory</emphasis>, can be any 
         Java class, that can be created with a default constructor.
         The <tag class="attribute">scope</tag> attribute is optional
         and defines the scope in which the Spring bean representing
-        the resource is instantiated.
+        the resource is instantiated (session scope by default).
         The <tag class="attribute">bean-name</tag> attribute is 
         optional and specifies the name of the Spring bean that
         is created for this resource.
@@ -1078,6 +1110,18 @@
       </resource>
     </context>
     
+    <interceptors>
+      <start>
+        <interceptor class="mypackage.MyInterceptor"/>
+        <interceptor bean-ref="myInterceptor"/>
+      </start>
+      <end> ... </end>
+      <postrender> ... <postrender>
+    </interceptors>
+        ]]></programlisting>
+        Within the <tag>interceptors</tag> section you can configure ContextInterceptors
+        grouped by the according interception points (for details see <xref linkend="concepts.interceptors"/>).
+        <programlisting language="xml"><![CDATA[
     <scriptedflow name="AName" file="path/to/scriptfile.xml"/>
         ]]></programlisting>
         There may be an arbitrary number of <tag>scriptedflow</tag> 
@@ -1266,6 +1310,11 @@
         </note>
         <programlisting language="xml"><![CDATA[
   <state class="AClassName"/>
+  <!-- Alternative usage forms:
+    <state class="..." bean-name="..." scope="..."/>
+    <state class="..." parent-bean-ref="..."/>
+    <state bean-ref="..."/> 
+  -->
         ]]></programlisting>
         The whole node is optional. If given, the 
         <tag class="attribute">class</tag> attribute must  be the name 
@@ -1276,7 +1325,8 @@
         <orderedlist>
           <listitem>
             <para>If state is given, use the value of it's 
-            <tag class="attribute">class</tag> attribute.</para>
+            <tag class="attribute">class</tag> attribute. When no scope attribute is present, singleton-scope
+            is used by default.</para>
           </listitem>
           <listitem>
             <para>If the pagerequest has an <tag>input</tag> child, use 
@@ -1305,6 +1355,22 @@
         the <tag class="attribute">bean-ref</tag> attribute to specify the
         name of the bean. However the <tag>pagerequest</tag> may not contain
         any configuration if you are using a Spring bean.
+        <note>
+          <para>
+          If you're referencing a custom Spring bean using <literal>bean-ref</literal>,
+          Pustefix can't automatically inject the configuration. So if you're bean is extending
+          the <literal>DefaultIWrapperState</literal> or <literal>StaticState</literal> it
+          might not work as you expected (or not at all) due to the lack of configuration.
+          </para>
+          <para>
+	  That's why Pustefix supports the referencing of parent bean definitions using the <literal>parent-bean-ref</literal>
+	attribute. Thus it's possible to indirectly inject dependencies 
+	into the concrete instances by injecting them into the parent bean 
+	definition. So, despite the fact, that the beans are automatically 
+	created by Pustefix, you're able to inject your own dependencies using
+	the Spring XML configuration.
+          </para>
+        </note>
         <programlisting language="xml"><![CDATA[
       <finalizer class="AClassName"/>
         ]]></programlisting>
@@ -1850,8 +1916,9 @@
     <c:interceptor class="com.example.MyInterceptor"/>
       ]]></programlisting>
       The tags allowed here are the same that are allowed within the 
-      <tag>startinterceptors</tag> and <tag>endinterceptors</tag> tags 
-      of the <link linkend="configuration.servlet.contextxml">ContextXMLServlet configuration</link>.
+      <tag>start</tag>, <tag>end</tag> and <tag>postrender</tag> interceptor tags 
+      of the <link linkend="configuration.servlet.contextxml">ContextXMLServlet configuration</link>
+      (for details also see <xref linkend="concepts.interceptors"/>).
       <programlisting language="xml"><![CDATA[
   </c:interceptors>
   <fr:scriptedflows>
@@ -1911,7 +1978,83 @@
         ]]></programlisting>
       </para>
     </section>
-    
   </section>
-  
+
+  <section xml:id="configuration.spring">
+    <title>Spring configuration and customization</title>
+    <para>
+      Pustefix is based on Spring MVC and uses its DispatcherServlet to bootstrap the ApplicationContext on webapp startup. It configures its own ApplicationContext implementation by passing the <literal>PustefixWebApplicationContext</literal> class as <literal>contextClass</literal> init parameter in the webapp's <literal>web.xml</literal> configuration file.
+    </para>
+    <para>
+      The configuration file locations are passed to the DispatcherServlet using the standard <literal>contextConfigLocation</literal> init parameter. By default Pustefix passes the Pustefix configuration file <literal>myproject/conf/project.xml</literal> and, if exisiting, the file <literal>myproject/conf/spring.xml</literal>, which is intended to contain a standard Spring XML bean configuration. 
+    </para>
+    <section xml:id="configuration.spring.custom">
+      <title>Customizing the Spring configuration</title>
+      <para>
+        Spring supports the externalization of property values from Spring XML configuration files into separate standard java property files. Pustefix extends this mechanism by adding support for the Pustefix XML property file format, which let's you use the <literal>choose/when</literal>-customization and buildtime property capabilities known from other Pustefix configuration files, like <literal>factory.xml</literal>, for Spring properties too.
+      </para>
+      <para>
+        Therefor Pustefix by default registers a Spring <literal>PropertyPlaceholderConfigurer</literal>, which looks for a Pustefix XML property file under <literal>myproject/conf/spring-properties.xml</literal> and a <literal>PropertyOverrideConfigurer</literal>, which looks under <literal>myproject/conf/spring-properties-override.xml</literal>.
+      </para>
+      <para>
+        The following example shows the two ways you can externalize property values:
+      </para>
+<programlisting language="xml"><![CDATA[
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans">
+
+  <bean id="mybean1" class="mypackage.MyBeanClass">
+    <property name="text" value="${default.text}"/>
+  </bean>
+
+  <bean id="mybean2" class="mypackage.MyBeanClass">
+    <property name="text" value="This is the default text"/>
+  </bean>
+
+</beans>
+]]></programlisting>
+      <para>
+        The first bean uses a property placeholder, the second bean already supplies a default value, which should be overwritten by an externalized value.
+      </para>
+      <para>
+        The following <literal>spring-properties.xml</literal> file configures the value for the first bean using the Pustefix customization mechanism to provide a mode-dependent value for the property placeholder:
+      </para>
+<programlisting language="xml"><![CDATA[
+<?xml version="1.0" encoding="UTF-8"?>
+<properties 
+    xmlns="http://www.pustefix-framework.org/2008/namespace/properties-config" 
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.pustefix-framework.org/2008/namespace/properties-config ../../core/schema/properties-config.xsd">
+    
+    <choose>
+      <when test="$mode='prod'">
+        <property name="default.text">I'm in production mode</property>
+      </when>
+      <otherwise>
+        <property name="default.text">I'm in development mode</property>
+      </otherwise>
+    </choose>
+
+</properties>
+]]></programlisting>
+      <para>
+        The following <literal>spring-properties-override.xml</literal> file overrides the value for the second bean by using the format <literal>beanName.property</literal> as property name. It also shows how you can use the available buildtime properties (like <literal>docroot</literal>, <literal>fqdn</literal>, <literal>mode</literal>) within a property value:
+      </para>
+<programlisting language="xml"><![CDATA[
+<?xml version="1.0" encoding="UTF-8"?>
+<properties 
+    xmlns="http://www.pustefix-framework.org/2008/namespace/properties-config" 
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.pustefix-framework.org/2008/namespace/properties-config ../../core/schema/properties-config.xsd">
+    
+    <property name="mybean2.text">I'm in ${mode} mode</property>
+
+</properties>
+]]></programlisting>
+    <para>
+      If you want to register your own <literal>PropertyPlaceholderConfigurer</literal> or <literal>PropertyOverrideConfigurer</literal> capable of the Pustefix XML property format, e.g. for tests or child ApplicationContexts, you can do so by creating a <literal>PustefixPropertiesPersister</literal> bean and referencing it from the configurer's <literal>propertiesPersister</literal> property.
+    </para>
+    </section>
+  </section>
+      
 </chapter>
