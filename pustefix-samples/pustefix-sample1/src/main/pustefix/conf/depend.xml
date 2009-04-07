@@ -14,32 +14,32 @@
   </global>
   
   <navigation>
-    <page name="home"     handler="/xml/config" accesskey="H">
-      <page name="order"    handler="/xml/config" accesskey="O"/>
-      <page name="phantom" handler="/xml/config" accesskey="O" />
-      <page name="overview" handler="/xml/config" accesskey="S"/>
+    <page name="home"     handler="/xml/main" accesskey="H">
+      <page name="order"    handler="/xml/main" accesskey="O"/>
+      <page name="phantom" handler="/xml/main" accesskey="O" />
+      <page name="overview" handler="/xml/main" accesskey="S"/>
     </page>
     
-    <page name="scripting" handler="/xml/config"/>
-    <page name="scriptingstate" handler="/xml/config"/>
-    <page name="encoding" handler="/xml/config"/>
-    <page name="upload" handler="/xml/config"/>
-    <page name="test"     handler="/xml/config"/>
-    <page name="tokenerror"    handler="/xml/config"/>
-    <page name="iwrapperinfo" handler="/xml/config"/>
-    <page name="frames" handler="/xml/config"/>
+    <page name="scripting" handler="/xml/main"/>
+    <page name="scriptingstate" handler="/xml/main"/>
+    <page name="encoding" handler="/xml/main"/>
+    <page name="upload" handler="/xml/main"/>
+    <page name="test"     handler="/xml/main"/>
+    <page name="tokenerror"    handler="/xml/main"/>
+    <page name="iwrapperinfo" handler="/xml/main"/>
+    <page name="frames" handler="/xml/main"/>
     
     <page name="ssltest"  handler="/xml/secure"/>
     <page name="install"  handler="/xml/download"/>
     
-    <page name="geninc"  handler="/xml/config"/>
-    <page name="invalidate" handler="/xml/config"/>
+    <page name="geninc"  handler="/xml/main"/>
+    <page name="invalidate" handler="/xml/main"/>
 
-    <page name="A"  handler="/xml/config"/>
-    <page name="B"  handler="/xml/config"/>
-    <page name="C"  handler="/xml/config"/>
+    <page name="A"  handler="/xml/main"/>
+    <page name="B"  handler="/xml/main"/>
+    <page name="C"  handler="/xml/main"/>
 
-    <page name="testchecks" handler="/xml/config"/>
+    <page name="testchecks" handler="/xml/main"/>
 
     <config-include file="conf/fragments.xml" section="navigation"/>
 

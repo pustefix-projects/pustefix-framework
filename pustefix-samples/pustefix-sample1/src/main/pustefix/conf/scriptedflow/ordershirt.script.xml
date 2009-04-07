@@ -4,7 +4,7 @@
        Simple example that tries to order a shirt size XL
        in the color provided during the request.
        Open 
-         http://sample1.<yourhost>/xml/config?__scriptedflow=ordershirt&color=4
+         http://sample1.<yourhost>/xml/main?__scriptedflow=ordershirt&color=4
        in your browser to see a demonstration.
   -->
   

@@ -7,7 +7,7 @@
   xsi:schemaLocation="http://pustefix.sourceforge.net/configfragments200609 ../../core/schema/configfragments200609.xsd">
 
   <fr:navigation>
-    <page name="IncludeConfPage" handler="/xml/config" />
+    <page name="IncludeConfPage" handler="/xml/main" />
   </fr:navigation>
   <fr:targets>
     <standardpage name="IncludeConfPage" xml="xml/one_frame_navi.xml" />

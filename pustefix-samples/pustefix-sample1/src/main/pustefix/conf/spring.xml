@@ -34,7 +34,7 @@
     <property name="alwaysUseFullPath" value="true"/>
     <property name="mappings">
       <value>
-        /xml/config/**=__pfx_contexthandler
+        /xml/main/**=__pfx_contexthandler
         /xml/download/**=__pfx_directhandler
         /xml/deref/**=__pfx_derefhandler
       </value>
@@ -52,7 +52,7 @@
       <value>pfixroot:/conf/depend.xml</value>
     </property>
     <property name="handlerURI">
-      <value>/xml/config/**</value>
+      <value>/xml/main/**</value>
     </property>
   </bean>
   

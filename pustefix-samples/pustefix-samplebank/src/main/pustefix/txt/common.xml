@@ -58,7 +58,7 @@
     <div class="info">
       <ixsl:for-each select="/formresult/test/authtoken">
         <a>
-          <ixsl:attribute name="href">/xml/config/accountdetails?__sendingauthdata=1&amp;__sendingdata=1&amp;login.AuthToken=<ixsl:value-of select="@value"/></ixsl:attribute>
+          <ixsl:attribute name="href">/xml/main/accountdetails?__sendingauthdata=1&amp;__sendingdata=1&amp;login.AuthToken=<ixsl:value-of select="@value"/></ixsl:attribute>
           Account login via authentication token</a><br/>
       </ixsl:for-each>
     </div>

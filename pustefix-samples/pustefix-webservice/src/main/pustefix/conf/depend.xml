@@ -11,13 +11,13 @@
   </global>
   
   <navigation>
-    <page name="calculator" handler="/xml/config"/>
-    <page name="chat" handler="/xml/config"/>
-    <page name="counter" handler="/xml/config"/>
-    <page name="data" handler="/xml/config"/>
-    <page name="typetest" handler="/xml/config"/>
-    <page name="calltest" handler="/xml/config"/>
-    <page name="beantest" handler="/xml/config"/>
+    <page name="calculator" handler="/xml/main"/>
+    <page name="chat" handler="/xml/main"/>
+    <page name="counter" handler="/xml/main"/>
+    <page name="data" handler="/xml/main"/>
+    <page name="typetest" handler="/xml/main"/>
+    <page name="calltest" handler="/xml/main"/>
+    <page name="beantest" handler="/xml/main"/>
   </navigation>
 
   <standardmaster>

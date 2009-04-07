@@ -60,10 +60,10 @@
   <application>
     
     <docroot-path>pfixroot:/htdocs</docroot-path>
-    <default-path>/xml/config</default-path>
+    <default-path>/xml/main</default-path>
     
     <context-xml-service>
-      <path>/xml/config</path>
+      <path>/xml/main</path>
       <config-file>pfixroot:/conf/config.conf.xml</config-file>
     </context-xml-service>
     

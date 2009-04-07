@@ -2,9 +2,9 @@
 <make lang="en_GB" project="firstapp">
 
   <navigation>
-    <page handler="/xml/app" name="EnterData"/>
-    <page handler="/xml/app" name="ReviewData"/>
-    <page handler="/xml/app" name="Confirm"/>
+    <page handler="/xml/main" name="EnterData"/>
+    <page handler="/xml/main" name="ReviewData"/>
+    <page handler="/xml/main" name="Confirm"/>
   </navigation>
 
   <standardmaster>

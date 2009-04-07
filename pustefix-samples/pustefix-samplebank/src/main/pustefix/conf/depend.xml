@@ -8,12 +8,12 @@
   </global>
   
   <navigation>
-    <page name="home" handler="/xml/config"/>
-    <page name="login"     handler="/xml/config"/>
-    <page name="accountoverview"     handler="/xml/config" accesskey="H"/>
-    <page name="accountdetails"    handler="/xml/config" accesskey="O"/>
-    <page name="test"     handler="/xml/config"/>
-    <page name="logout"     handler="/xml/config"/>
+    <page name="home" handler="/xml/main"/>
+    <page name="login"     handler="/xml/main"/>
+    <page name="accountoverview"     handler="/xml/main" accesskey="H"/>
+    <page name="accountdetails"    handler="/xml/main" accesskey="O"/>
+    <page name="test"     handler="/xml/main"/>
+    <page name="logout"     handler="/xml/main"/>
   </navigation>
   
   <standardmaster/>

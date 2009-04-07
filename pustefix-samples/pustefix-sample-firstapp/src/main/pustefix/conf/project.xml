@@ -47,10 +47,10 @@
   <application>
 
     <docroot-path>pfixroot:/htdocs</docroot-path>
-    <default-path>/xml/app</default-path>
+    <default-path>/xml/main</default-path>
 
     <context-xml-service>
-      <path>/xml/app</path>
+      <path>/xml/main</path>
       <config-file>pfixroot:/conf/app.conf.xml</config-file>
     </context-xml-service>
 

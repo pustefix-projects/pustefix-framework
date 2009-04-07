@@ -12,7 +12,7 @@
   <serveralias>sample1.horst</serveralias>
   
   
-  <defpath>/xml/config</defpath>
+  <defpath>/xml/main</defpath>
   <passthrough>sample1/img</passthrough>
   
   <documentroot>/usr/home/mhm/src/projects/core-RED/example/htdocs</documentroot>
@@ -67,7 +67,7 @@
   
   
   
-  <defpath>/xml/config</defpath>
+  <defpath>/xml/main</defpath>
   
   
   
@@ -110,7 +110,7 @@
   
   
   
-  <defpath>/xml/config</defpath>
+  <defpath>/xml/main</defpath>
   
   
   
@@ -153,7 +153,7 @@
   
   
   
-  <defpath>/xml/config</defpath>
+  <defpath>/xml/main</defpath>
   
   
   
@@ -195,7 +195,7 @@
   <serveralias>webservice.horst</serveralias>
   
   
-  <defpath>/xml/config</defpath>
+  <defpath>/xml/main</defpath>
   
   <documentroot>/usr/home/mhm/src/projects/core-RED/example/webservice/htdocs</documentroot>
   
