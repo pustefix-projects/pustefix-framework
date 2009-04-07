@@ -1,7 +1,6 @@
 package de.schlund.pfixcore.generator.iwrpgen;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;

@@ -68,13 +68,6 @@
         <version>0.14.1-SNAPSHOT</version>
         <executions>
           <execution>
-            <configuration>
-              <docRoot>${basedir}</docRoot>
-              <includes>
-                <include>src/main/pustefix/dyntxt/statuscodeinfo.xml</include>
-              </includes>
-            </configuration>
-            <id>statuscodes</id>
             <goals>
               <goal>generate</goal>
             </goals>
@@ -102,7 +95,7 @@
             <configuration>
               <tasks>
                 <taskdef name="pfx-webservice" classname="org.pustefixframework.webservices.jaxws.generate.WebserviceTask" classpathref="maven.compile.classpath" description="Generates/deploys WSDL, WSDD and JS stubs from web service interfaces/configuration" />
-                <pfx-webservice tmpdir="target/webservice" prjdir="src/main/pustefix" builddir="target/classes" gendir="target/generated-sources" webappdir="target/${artifactId}-${version}/" classpathref="maven.compile.classpath" portbase="80" includes="**/WEB-INF/project.xml" />
+                <pfx-webservice tmpdir="target/webservice" prjdir="src/main/webapp" builddir="target/classes" gendir="target/generated-sources" webappdir="target/${artifactId}-${version}/" classpathref="maven.compile.classpath" portbase="80" includes="**/WEB-INF/project.xml" />
               </tasks>
             </configuration>
             <goals>

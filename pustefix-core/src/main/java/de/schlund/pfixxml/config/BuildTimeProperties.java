@@ -19,7 +19,6 @@
 package de.schlund.pfixxml.config;
 
 import java.io.IOException;
-import java.util.Map;
 import java.util.Properties;
 
 import org.apache.log4j.Logger;
@@ -32,13 +31,15 @@ import de.schlund.pfixxml.resources.ResourceUtil;
  * @author Sebastian Marsching <sebastian.marsching@1und1.de>
  */
 public class BuildTimeProperties {
+    private static final String PATH = "WEB-INF/buildtime.prop";
+    
     private static Properties props = null;
 
     public static Properties getProperties() {
         if (BuildTimeProperties.props == null) {
             Properties props = new Properties();
             try {
-                props.load(ResourceUtil.getFileResourceFromDocroot("buildtime.prop").getInputStream());
+                props.load(ResourceUtil.getFileResourceFromDocroot(PATH).getInputStream());
                 BuildTimeProperties.props = props;
             } catch (IOException e) {
                 Logger.getLogger(BuildTimeProperties.class).error(
@@ -58,6 +59,6 @@ public class BuildTimeProperties {
         props.setProperty("machine", machine);
         props.setProperty("fqdn", fqdn);
         props.setProperty("uid", uid);
-        props.store(ResourceUtil.getFileResourceFromDocroot("buildtime.prop").getOutputStream(), "Properties used at buildtime");
+        props.store(ResourceUtil.getFileResourceFromDocroot(PATH).getOutputStream(), "Properties used at buildtime");
     }
 }

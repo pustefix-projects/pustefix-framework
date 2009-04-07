@@ -59,13 +59,6 @@
         <version>0.14.1-SNAPSHOT</version>
         <executions>
           <execution>
-            <configuration>
-              <docRoot>${basedir}</docRoot>
-              <includes>
-                <include>src/main/pustefix/dyntxt/statuscodeinfo.xml</include>
-              </includes>
-            </configuration>
-            <id>statuscodes</id>
             <goals>
               <goal>generate</goal>
             </goals>

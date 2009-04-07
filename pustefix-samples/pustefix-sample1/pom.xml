@@ -48,6 +48,18 @@
   <build>
     <plugins> 
       <plugin>
+        <!--  TODO: some tests operated on the exploded webapp -->
+        <artifactId>maven-war-plugin</artifactId>
+        <executions>
+          <execution>
+            <phase>compile</phase>
+            <goals>
+              <goal>exploded</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
         <groupId>org.pustefixframework.maven.plugins</groupId>
         <artifactId>pustefix-webapp-plugin</artifactId>
         <version>0.14.1-SNAPSHOT</version>

@@ -80,7 +80,7 @@ public class GlobalConfig {
                 if (dir.isDirectory()) {
                     root = new File(dir, "WEB-INF/web.xml");
                     if (root.exists()) {
-                        return root;
+                        return dir;
                     }
                 }
             }

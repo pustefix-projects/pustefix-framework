@@ -73,14 +73,14 @@ public class PustefixWebappMojo extends AbstractMojo {
     /**
      * Docroot of the application
      * 
-     * @parameter default-value="${project.build.directory}/${project.artifactId}-${project.version}/WEB-INF/pfixroot"
+     * @parameter default-value="${project.build.directory}/${project.artifactId}-${project.version}"
      */
     private String pfixroot;
 
     /**
      * Where to unpack modules
      * 
-     * @parameter default-value="${project.build.directory}/${project.artifactId}-${project.version}/WEB-INF/pfixroot/modules"
+     * @parameter default-value="${project.build.directory}/${project.artifactId}-${project.version}/modules"
      */
     private String modulesdir;
     
@@ -135,7 +135,7 @@ public class PustefixWebappMojo extends AbstractMojo {
         GlobalConfig.reset();
         
         GlobalConfigurator.setDocroot(pfixroot);
-        new File(pfixroot).mkdirs();
+        new File(pfixroot, "WEB-INF").mkdirs();
 
         getLog().info("unpacked " + unpackModules() + " module(s)");
         try {
@@ -210,6 +210,7 @@ public class PustefixWebappMojo extends AbstractMojo {
     }
     
     private void buildtimeProps() throws IOException {
+        
         BuildTimeProperties.generate(getProperties(), makemode, getMachine(), getFqdn(), System.getProperty("user.name"));
     }
     private Properties getProperties() {
