@@ -21,10 +21,13 @@
         <!-- Notes:
              * pdf generation needs an image path because the image is resolved at build-time
                (html images are resolved at runtime) 
-             * documentation: http://code.google.com/p/docbkx-tools/ 
+             * documentation: http://code.google.com/p/docbkx-tools/
+             * built-in images (src/site/resources/docbkx/images/docbkx copied from 
+               http://mvnrepository.com/artifact/org.docbook/docbook-xsl/1.72.0) 
           -->
         <groupId>com.agilejava.docbkx</groupId>
         <artifactId>docbkx-maven-plugin</artifactId>
+        <version>2.0.9</version>
         <executions>
           <execution>
             <id>tutorial-html</id>
@@ -35,6 +38,8 @@
             <configuration>
               <sourceDirectory>src/docbkx/tutorial</sourceDirectory>
               <includes>tutorial.xml</includes>
+              <admonGraphicsPath>images/docbkx/</admonGraphicsPath>
+              <calloutGraphicsPath>images/docbkx/callouts/</calloutGraphicsPath>
             </configuration>
           </execution>
           <execution>
@@ -47,6 +52,8 @@
               <sourceDirectory>src/docbkx/tutorial</sourceDirectory>
               <includes>tutorial.xml</includes>
               <imgSrcPath>../../site/resources/docbkx/</imgSrcPath>
+              <admonGraphicsPath>../../site/resources/docbkx/images/docbkx/</admonGraphicsPath>
+              <calloutGraphicsPath>../../site/resources/docbkx/images/docbkx/callouts/</calloutGraphicsPath>
             </configuration>
           </execution>
           <execution>
@@ -70,6 +77,8 @@
               <sourceDirectory>src/docbkx/reference</sourceDirectory>
               <includes>reference.xml</includes>
               <imgSrcPath>../../site/resources/docbkx/</imgSrcPath>
+              <admonGraphicsPath>../../site/resources/docbkx/images/docbkx/</admonGraphicsPath>
+              <calloutGraphicsPath>../../site/resources/docbkx/images/docbkx/callouts/</calloutGraphicsPath>
             </configuration>
           </execution>
           <execution>
@@ -93,6 +102,8 @@
               <sourceDirectory>src/docbkx/faq</sourceDirectory>
               <includes>faq.xml</includes>
               <imgSrcPath>../../site/resources/docbkx/</imgSrcPath>
+              <admonGraphicsPath>../../site/resources/docbkx/images/docbkx/</admonGraphicsPath>
+              <calloutGraphicsPath>../../site/resources/docbkx/images/docbkx/callouts/</calloutGraphicsPath>
             </configuration>
           </execution>
         </executions>
@@ -118,9 +129,7 @@
           <linenumberingExtension>1</linenumberingExtension>
           <graphicsizeExtension>0</graphicsizeExtension>
           <highlightSource>1</highlightSource>
-          <calloutGraphicsPath>images/docbook/callouts/</calloutGraphicsPath>
           <admonGraphics>1</admonGraphics>
-          <admonGraphicsPath>images/docbook/</admonGraphicsPath>
           <htmlStylesheet>css/style.css</htmlStylesheet>
           <tocSectionDepth>2</tocSectionDepth>
 
