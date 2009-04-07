@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <make project="editor2" lang="en">
   <navigation>
-    <page name="login" handler="/xml/edit"/>
-    <page name="start" handler="/xml/edit"/>
-    <page name="home" handler="/xml/edit"/>
-    <page name="pages" handler="/xml/edit"/>
-    <page name="targets" handler="/xml/edit"/>
-    <page name="images" handler="/xml/edit"/>
-    <page name="includes" handler="/xml/edit"/>
-    <page name="dynincludes" handler="/xml/edit"/>
-    <page name="search" handler="/xml/edit"/>
-    <page name="logout" handler="/xml/edit"/>
-    <page name="jumptopage" handler="/xml/edit"/>
-    <page name="sessionmanager" handler="/xml/edit"/>
-    <page name="useradmin" handler="/xml/edit"/>
-    <page name="useredit" handler="/xml/edit"/>
+    <page name="login" handler="/xml/main"/>
+    <page name="start" handler="/xml/main"/>
+    <page name="home" handler="/xml/main"/>
+    <page name="pages" handler="/xml/main"/>
+    <page name="targets" handler="/xml/main"/>
+    <page name="images" handler="/xml/main"/>
+    <page name="includes" handler="/xml/main"/>
+    <page name="dynincludes" handler="/xml/main"/>
+    <page name="search" handler="/xml/main"/>
+    <page name="logout" handler="/xml/main"/>
+    <page name="jumptopage" handler="/xml/main"/>
+    <page name="sessionmanager" handler="/xml/main"/>
+    <page name="useradmin" handler="/xml/main"/>
+    <page name="useredit" handler="/xml/main"/>
   </navigation>
   
   <global>

@@ -241,7 +241,7 @@
     <virtualhost>horst.ue.schlund.de</virtualhost>
     <servername>cmscore.horst.ue.schlund.de</servername>
     <serveralias>cmscore.horst</serveralias>
-    <defpath>/xml/edit</defpath>
+    <defpath>/xml/main</defpath>
     <passthrough>core/editor/img</passthrough>
     <ports>
       <port number="80"/>

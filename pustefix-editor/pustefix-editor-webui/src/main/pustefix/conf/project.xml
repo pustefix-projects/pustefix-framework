@@ -63,10 +63,10 @@
   <application>
     
     <docroot-path>pfixroot:/docroot</docroot-path>
-    <default-path>/xml/edit</default-path>
+    <default-path>/xml/main</default-path>
     
     <context-xml-service>
-      <path>/xml/edit</path>
+      <path>/xml/main</path>
       <config-file>pfixroot:/conf/edit.conf.xml</config-file>
     </context-xml-service>
     
@@ -84,7 +84,7 @@
         
         <jee:filter-mapping>
           <jee:filter-name>editor-session-cookie-filter</jee:filter-name>
-          <jee:url-pattern>/xml/edit/*</jee:url-pattern>
+          <jee:url-pattern>/xml/main/*</jee:url-pattern>
         </jee:filter-mapping>
       </jee:web-app>
     </web-xml>

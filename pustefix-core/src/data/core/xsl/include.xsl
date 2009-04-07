@@ -284,7 +284,7 @@
               <a href="#">
                 <xsl:choose>
                   <xsl:when test="not(starts-with($__resolveduri,'module:'))">
-                    <ixsl:attribute name="onclick">window.open('<ixsl:value-of select="$__editor_url"/>/xml/edit?__scriptedflow=selectinclude&amp;theme=<xsl:value-of select="string($used_theme)"/>&amp;path=<xsl:value-of select="substring-after($__resolveduri,'/')"/>&amp;part=<xsl:value-of select="$part"/>&amp;uri=<ixsl:value-of select="$__application_url"/>&amp;type=include&amp;__anchor=left_navi|<xsl:value-of select="$realpath"/>','PustefixEditor','menubar=yes,status=yes,resizable=yes');return(false);</ixsl:attribute>
+                    <ixsl:attribute name="onclick">window.open('<ixsl:value-of select="$__editor_url"/>/xml/main?__scriptedflow=selectinclude&amp;theme=<xsl:value-of select="string($used_theme)"/>&amp;path=<xsl:value-of select="substring-after($__resolveduri,'/')"/>&amp;part=<xsl:value-of select="$part"/>&amp;uri=<ixsl:value-of select="$__application_url"/>&amp;type=include&amp;__anchor=left_navi|<xsl:value-of select="$realpath"/>','PustefixEditor','menubar=yes,status=yes,resizable=yes');return(false);</ixsl:attribute>
                   </xsl:when>
                   <xsl:otherwise>
                     <ixsl:attribute name="onclick">alert("Editing <xsl:value-of select="$__resolveduri"/> not yet supported!")</ixsl:attribute>
@@ -298,7 +298,7 @@
           </xsl:when>
           <xsl:when test="$__target_key='__NONE__' and $__editmode = 'admin'">
             <a href="#">
-              <xsl:attribute name="onClick">window.open('<xsl:value-of select="$__editor_url"/>/xml/edit?__scriptedflow=selectinclude&amp;theme=<xsl:value-of select="string($used_theme)"/>&amp;path=<xsl:value-of select="$realpath"/>&amp;part=<xsl:value-of select="$part"/>&amp;name=<xsl:value-of select="$product"/>&amp;uri=<xsl:value-of select="$__application_url"/>&amp;type=dyninclude&amp;__anchor=left_navi|<xsl:value-of select="$realpath"/>','PustefixEditor','menubar=yes,status=yes,resizable=yes');return(false);</xsl:attribute>
+              <xsl:attribute name="onClick">window.open('<xsl:value-of select="$__editor_url"/>/xml/main?__scriptedflow=selectinclude&amp;theme=<xsl:value-of select="string($used_theme)"/>&amp;path=<xsl:value-of select="$realpath"/>&amp;part=<xsl:value-of select="$part"/>&amp;name=<xsl:value-of select="$product"/>&amp;uri=<xsl:value-of select="$__application_url"/>&amp;type=dyninclude&amp;__anchor=left_navi|<xsl:value-of select="$realpath"/>','PustefixEditor','menubar=yes,status=yes,resizable=yes');return(false);</xsl:attribute>
               <img border="0" src="{$__contextpath}/core/img/edit.gif" alt="] Edit include: '{$part}' in file '{$realpath}'" title="Edit include: '{$part}' in file '{$realpath}'"/>
             </a>
           </xsl:when>
