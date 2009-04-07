@@ -18,16 +18,82 @@
   <build>
     <plugins>
       <plugin>
-        <!-- documentation: http://code.google.com/p/docbkx-tools/ -->
+        <!-- Notes:
+             * pdf generation needs an image path because the image is resolved at build-time
+               (html images are resolved at runtime) 
+             * documentation: http://code.google.com/p/docbkx-tools/ 
+          -->
         <groupId>com.agilejava.docbkx</groupId>
         <artifactId>docbkx-maven-plugin</artifactId>
         <executions>
           <execution>
+            <id>tutorial-html</id>
+            <phase>pre-site</phase>
             <goals>
               <goal>generate-html</goal>
+            </goals>
+            <configuration>
+              <sourceDirectory>src/docbkx/tutorial</sourceDirectory>
+              <includes>tutorial.xml</includes>
+            </configuration>
+          </execution>
+          <execution>
+            <id>tutorial-pdf</id>
+            <phase>pre-site</phase>
+            <goals>
               <goal>generate-pdf</goal>
             </goals>
+            <configuration>
+              <sourceDirectory>src/docbkx/tutorial</sourceDirectory>
+              <includes>tutorial.xml</includes>
+              <imgSrcPath>../../site/resources/docbkx/</imgSrcPath>
+            </configuration>
+          </execution>
+          <execution>
+            <id>reference-html</id>
             <phase>pre-site</phase>
+            <goals>
+              <goal>generate-html</goal>
+            </goals>
+            <configuration>
+              <sourceDirectory>src/docbkx/reference</sourceDirectory>
+              <includes>reference.xml</includes>
+            </configuration>
+          </execution>
+          <execution>
+            <id>reference-pdf</id>
+            <phase>pre-site</phase>
+            <goals>
+              <goal>generate-pdf</goal>
+            </goals>
+            <configuration>
+              <sourceDirectory>src/docbkx/reference</sourceDirectory>
+              <includes>reference.xml</includes>
+              <imgSrcPath>../../site/resources/docbkx/</imgSrcPath>
+            </configuration>
+          </execution>
+          <execution>
+            <id>faq-html</id>
+            <phase>pre-site</phase>
+            <goals>
+              <goal>generate-html</goal>
+            </goals>
+            <configuration>
+              <sourceDirectory>src/docbkx/faq</sourceDirectory>
+              <includes>faq.xml</includes>
+            </configuration>
+          </execution>
+          <execution>
+            <id>faq-pdf</id>
+            <phase>pre-site</phase>
+            <goals>
+              <goal>generate-pdf</goal>
+            </goals>
+            <configuration>
+              <sourceDirectory>src/docbkx/faq</sourceDirectory>
+              <includes>faq.xml</includes>
+              <imgSrcPath>../../site/resources/docbkx/</imgSrcPath>
+            </configuration>
           </execution>
         </executions>
         <dependencies>
@@ -57,7 +123,6 @@
           <admonGraphicsPath>images/docbook/</admonGraphicsPath>
           <htmlStylesheet>css/style.css</htmlStylesheet>
           <tocSectionDepth>2</tocSectionDepth>
-          <imgSrcPath>images/</imgSrcPath>
 
         </configuration>
       </plugin>

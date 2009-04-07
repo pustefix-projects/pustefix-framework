@@ -12,11 +12,11 @@
     </copyright>
   </info>
   
-  <xi:include href="faq/installation.xml" />
-  <xi:include href="faq/configuration.xml" />
-  <xi:include href="faq/xmlandxsl.xml" />
-  <xi:include href="faq/pageflows.xml" />
-  <xi:include href="faq/states.xml" />
-  <xi:include href="faq/handler.xml" />
-  <xi:include href="faq/ajax.xml" />
+  <xi:include href="installation.xml" />
+  <xi:include href="configuration.xml" />
+  <xi:include href="xmlandxsl.xml" />
+  <xi:include href="pageflows.xml" />
+  <xi:include href="states.xml" />
+  <xi:include href="handler.xml" />
+  <xi:include href="ajax.xml" />
 </book>

@@ -30,9 +30,9 @@
     </authorgroup>
   </info>
   
-  <xi:include href="tutorial/preface.xml" />
-  <xi:include href="tutorial/getting-started.xml" />
-  <xi:include href="tutorial/wrapper-handler.xml" />
-  <xi:include href="tutorial/user-manager.xml" />
-  <xi:include href="tutorial/ajax-calculator.xml" />
+  <xi:include href="preface.xml" />
+  <xi:include href="getting-started.xml" />
+  <xi:include href="wrapper-handler.xml" />
+  <xi:include href="user-manager.xml" />
+  <xi:include href="ajax-calculator.xml" />
 </book>

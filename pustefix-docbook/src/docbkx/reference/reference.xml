@@ -43,15 +43,15 @@
     </authorgroup>
   </info>
   
-  <xi:include href="reference/preface.xml" />
-  <xi:include href="reference/installation.xml" />
-  <xi:include href="reference/architecture.xml" />
-  <xi:include href="reference/configuration.xml" />
-  <xi:include href="reference/xslt.xml" />
-  <xi:include href="reference/concepts.xml" />
-  <xi:include href="reference/advancedtopics.xml" />
-  <xi:include href="reference/module-support.xml" />
-  <xi:include href="reference/testing.xml" />
-  <xi:include href="reference/glossary.xml" />
+  <xi:include href="preface.xml" />
+  <xi:include href="installation.xml" />
+  <xi:include href="architecture.xml" />
+  <xi:include href="configuration.xml" />
+  <xi:include href="xslt.xml" />
+  <xi:include href="concepts.xml" />
+  <xi:include href="advancedtopics.xml" />
+  <xi:include href="module-support.xml" />
+  <xi:include href="testing.xml" />
+  <xi:include href="glossary.xml" />
 
 </book>
