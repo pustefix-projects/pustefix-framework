@@ -41,8 +41,6 @@ public class GlobalConfig {
     private static URL docrootURL = null;
     private static ServletContext servletContext = null;
     
-    private final static String WAR_DOCROOT = "/WEB-INF/pfixroot";
-    
     /**
      * Returns the absolute to the Pustefix docroot (usually the "projects" directory)
      * 
@@ -80,7 +78,7 @@ public class GlobalConfig {
         if (target.isDirectory()) {
             for (File dir : target.listFiles()) {
                 if (dir.isDirectory()) {
-                    root = new File(dir, "WEB-INF/pfixroot");
+                    root = new File(dir, "WEB-INF/web.xml");
                     if (root.exists()) {
                         return root;
                     }
@@ -122,7 +120,7 @@ public class GlobalConfig {
         servletContext = context;
         ResourceProviderRegistry.register(new DocrootResourceByServletContextProvider(servletContext));
         try {
-            docrootURL = servletContext.getResource(WAR_DOCROOT);
+            docrootURL = servletContext.getResource(".");
         } catch (MalformedURLException e) {
             throw new RuntimeException("Unexpected error while creating URL for docroot!", e);            }
         

@@ -159,7 +159,7 @@ public class FactoryInitWorker {
             if (docrootstr != null && !docrootstr.equals("")) {
                 docrootSpecified = true;
             } else {
-                docrootstr = servletContext.getRealPath("/WEB-INF/pfixroot");
+                docrootstr = servletContext.getRealPath("/");
                 if (docrootstr == null) {
                     warMode = true;
                 }
@@ -180,7 +180,7 @@ public class FactoryInitWorker {
                 de.schlund.pfixxml.PathFactory.getInstance().init(docrootstr);
             }
     
-            String confname = "conf/factory.xml";
+            String confname = "WEB-INF/factory.xml";
             if (confname != null) {
                 FileResource confFile = ResourceUtil.getFileResourceFromDocroot(confname);
                 try {

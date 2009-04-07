@@ -4,7 +4,7 @@
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://pustefix.sourceforge.net/wsconfig200401 ../../core/schema/wsconfig200401.xsd">
 
-  <import href="conf/webservice-import.xml"/>
+  <import href="WEB-INF/webservice-import.xml"/>
 
   <webservice-global>
     <stubgeneration jsnamespace="COMPAT_UNIQUE"/>

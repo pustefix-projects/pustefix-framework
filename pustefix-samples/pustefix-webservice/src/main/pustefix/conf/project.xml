@@ -13,7 +13,7 @@
   </editor>
   
   <xml-generator>
-    <config-file>pfixroot:/conf/depend.xml</config-file>
+    <config-file>pfixroot:/WEB-INF/depend.xml</config-file>
   </xml-generator>
   
   <http-server>
@@ -24,8 +24,8 @@
     
     <https-port>
       <address>${fqdn}</address>
-      <ssl-key>pfixroot:/conf/server.key</ssl-key>
-      <ssl-crt>pfixroot:/conf/server.crt</ssl-crt>
+      <ssl-key>pfixroot:/WEB-INF/server.key</ssl-key>
+      <ssl-crt>pfixroot:/WEB-INF/server.crt</ssl-crt>
     </https-port>
     
     <server-name>webservice.${fqdn}</server-name>
@@ -46,12 +46,12 @@
     
     <context-xml-service>
       <path>/xml/main</path>
-      <config-file>pfixroot:/conf/config.conf.xml</config-file>
+      <config-file>pfixroot:/WEB-INF/config.conf.xml</config-file>
     </context-xml-service>
     
     <webservice-service>
       <path>/xml/webservice</path>
-      <config-file>pfixroot:/conf/webservice.conf.xml</config-file>
+      <config-file>pfixroot:/WEB-INF/webservice.conf.xml</config-file>
     </webservice-service>
     
     <static>

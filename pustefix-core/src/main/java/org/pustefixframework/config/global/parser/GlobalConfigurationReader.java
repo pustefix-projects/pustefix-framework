@@ -34,7 +34,7 @@ public class GlobalConfigurationReader {
     
     public GlobalConfigurationHolder readGlobalConfiguration() throws ParserException {
         // FIXME: Inject ResourceUtil instead of using singleton
-        FileResource resource = ResourceUtil.getFileResourceFromDocroot("conf/projects.xml");
+        FileResource resource = ResourceUtil.getFileResourceFromDocroot("WEB-INF/projects.xml");
         PropertiesBasedCustomizationInfo customizationInfo = new PropertiesBasedCustomizationInfo(BuildTimeProperties.getProperties());
         ClasspathConfiguredParser parser = new ClasspathConfiguredParser("META-INF/org/pustefixframework/config/global/parser/global-projects-config.xml");
         try {

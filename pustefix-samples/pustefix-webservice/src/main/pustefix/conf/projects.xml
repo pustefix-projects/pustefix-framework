@@ -22,9 +22,6 @@
       <defaulthost>sample1.${fqdn}</defaulthost>
       <jvmroute>foo</jvmroute>
     </tomcat>
-    <apache>
-      <logdir>pfixroot:/servletconf/log</logdir>
-    </apache>
   </http-server>
   
   <application>

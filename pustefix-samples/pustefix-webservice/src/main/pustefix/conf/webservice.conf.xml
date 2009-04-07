@@ -4,7 +4,7 @@
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.pustefix-framework.org/2008/namespace/webservice-config ../../core/schema/webservice-config.xsd">
 
-  <import href="conf/webservice-import.xml"/>
+  <import href="WEB-INF/webservice-import.xml"/>
 
   <webservice-global>
   

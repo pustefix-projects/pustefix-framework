@@ -63,7 +63,7 @@
       </xsl:call-template>
       <depxml name="core/xsl/metatags.xsl"/>
       <depxsl name="core/xsl/customizemaster.xsl"/>
-      <depaux name="{$project}/conf/depend.xml"/>
+      <depaux name="{$project}/WEB-INF/depend.xml"/>
       <xsl:call-template name="render_include_ssheets"/>
       <xsl:apply-templates select="param"/>
       <xsl:apply-templates select="depaux"/>

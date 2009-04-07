@@ -73,7 +73,7 @@ public class TestRecording implements TestRecordingMBean, InitializingBean {
    public ApplicationList getApplicationList(boolean tomcat, String sessionSuffix) {
       FileResource file;
       
-      file = ResourceUtil.getFileResourceFromDocroot("servletconf/projects.xml");
+      file = ResourceUtil.getFileResourceFromDocroot("WEB-INF/projects.xml");
       try {
           return ApplicationList.load(Xml.parseMutable(file), tomcat, sessionSuffix);
       } catch (Exception e) {

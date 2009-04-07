@@ -50,7 +50,7 @@ public class WebServiceBeanConfigReaderTest extends BaseTestCase {
         services.put("TestNested", TestImpl.class.getName());
         services.put("TestNestedRef", TestImpl.class.getName());
         
-        FileResource res = ResourceUtil.getFileResource("pfixroot:/conf/spring.xml");
+        FileResource res = ResourceUtil.getFileResource("pfixroot:/WEB-INF/spring.xml");
         List<ServiceConfig> serviceList = WebServiceBeanConfigReader.read(res);
         assertEquals(services.size(), serviceList.size());
         

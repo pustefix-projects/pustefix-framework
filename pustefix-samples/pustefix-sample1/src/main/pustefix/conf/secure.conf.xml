@@ -4,7 +4,7 @@
   xsi:schemaLocation="http://pustefix.sourceforge.net/properties200401 ../../core/schema/properties200401.xsd"
   version="1.0">
 
-  <servletinfo depend="conf/depend.xml" name="pfixcore_project:sample1::servlet:secure">
+  <servletinfo depend="WEB-INF/depend.xml" name="pfixcore_project:sample1::servlet:secure">
     <editmode allow="true" />
     <ssl force="true" />
   </servletinfo>

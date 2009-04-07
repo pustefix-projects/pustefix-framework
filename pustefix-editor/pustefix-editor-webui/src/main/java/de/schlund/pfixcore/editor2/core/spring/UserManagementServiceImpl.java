@@ -55,7 +55,7 @@ import de.schlund.pfixxml.util.Xml;
  * @author Sebastian Marsching <sebastian.marsching@1und1.de>
  */
 public class UserManagementServiceImpl implements UserManagementService {
-    private static final String CONFIG_FILE = "conf/userdata.xml";
+    private static final String CONFIG_FILE = "WEB-INF/userdata.xml";
 
     private SecurityManagerService securitymanager;
     

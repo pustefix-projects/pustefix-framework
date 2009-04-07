@@ -15,7 +15,7 @@
   </editor>
 
   <xml-generator>
-    <config-file>pfixroot:/conf/depend.xml</config-file>
+    <config-file>pfixroot:/WEB-INF/depend.xml</config-file>
   </xml-generator>
 
   <http-server>
@@ -27,8 +27,8 @@
     <!-- we do not use SSL here
     <https-port>
       <address>${symbol_dollar}{fqdn}</address>
-      <ssl-key>pfixroot:/conf/server.key</ssl-key>
-      <ssl-crt>pfixroot:/conf/server.crt</ssl-crt>
+      <ssl-key>pfixroot:/WEB-INF/server.key</ssl-key>
+      <ssl-crt>pfixroot:/WEB-INF/server.crt</ssl-crt>
     </https-port>
     -->
 
@@ -54,7 +54,7 @@
 
     <context-xml-service>
       <path>/xml/app</path>
-      <config-file>pfixroot:/conf/app.conf.xml</config-file>
+      <config-file>pfixroot:/WEB-INF/app.conf.xml</config-file>
     </context-xml-service>
 
     <static>

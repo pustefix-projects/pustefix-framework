@@ -41,8 +41,6 @@ import de.schlund.pfixxml.resources.DocrootResource;
  * @author Sebastian Marsching <sebastian.marsching@1und1.de>
  */
 class DocrootResourceByServletContextImpl extends AbstractDocrootResourceImpl {
-    private final static String ROOT_PREFIX = "/WEB-INF/pfixroot";
-    
     private ServletContext servletContext;
     
     DocrootResourceByServletContextImpl(URI uri, URI originatingUri, ServletContext servletContext) {
@@ -86,14 +84,14 @@ class DocrootResourceByServletContextImpl extends AbstractDocrootResourceImpl {
 
     @Override
     public boolean isDirectory() {
-        Set<?> temp = this.servletContext.getResourcePaths(ROOT_PREFIX + path + "/");
+        Set<?> temp = this.servletContext.getResourcePaths(path + "/");
         return (temp != null && temp.size() > 0);
     }
 
     @Override
     public boolean isFile() {
         try {
-            return (servletContext.getResource(ROOT_PREFIX + path) != null);
+            return (servletContext.getResource(path) != null);
         } catch (MalformedURLException e) {
             return false;
         }
@@ -114,7 +112,7 @@ class DocrootResourceByServletContextImpl extends AbstractDocrootResourceImpl {
         if (!isDirectory()) {
             return null;
         }
-        Set<?> paths = this.servletContext.getResourcePaths(ROOT_PREFIX + path + "/");
+        Set<?> paths = this.servletContext.getResourcePaths(path + "/");
         ArrayList<String> rpaths = new ArrayList<String>();
         for (Object item : paths) {
             String sitem = (String) item;
@@ -143,13 +141,13 @@ class DocrootResourceByServletContextImpl extends AbstractDocrootResourceImpl {
     
     @Override
     public URL toURL() throws MalformedURLException {
-        return servletContext.getResource(ROOT_PREFIX + path);
+        return servletContext.getResource(path);
     }
 
     @Override
     public InputStream getInputStream() throws FileNotFoundException {
         if (isFile()) {
-            return servletContext.getResourceAsStream(ROOT_PREFIX + path);
+            return servletContext.getResourceAsStream(path);
         } else {
             throw new FileNotFoundException("Cannot find file \"" + path + "\" in Pustefix docroot");
         }

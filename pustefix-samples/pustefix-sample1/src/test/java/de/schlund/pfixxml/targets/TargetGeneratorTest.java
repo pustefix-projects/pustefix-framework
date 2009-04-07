@@ -102,7 +102,7 @@ public class TargetGeneratorTest extends TestCase {
         File tmpCacheDir = new File("target/.cache_tmp");
         if (cacheDir.exists()) cacheDir.renameTo(tmpCacheDir);
         try {
-            FileResource res = ResourceUtil.getFileResource(new File(GlobalConfig.guessDocroot(), "conf/depend.xml").toURI());
+            FileResource res = ResourceUtil.getFileResource(new File(GlobalConfig.guessDocroot(), "WEB-INF/depend.xml").toURI());
             TargetGenerator generator = new TargetGenerator(res);
             generator.setIsGetModTimeMaybeUpdateSkipped(true);
             TreeSet<Target> topTargets = generator.getPageTargetTree().getToplevelTargets();

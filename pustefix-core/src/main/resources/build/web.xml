@@ -12,7 +12,7 @@
       </init-param>
       <init-param>
          <param-name>contextConfigLocation</param-name>
-         <param-value>WEB-INF/pfixroot/conf/project.xml WEB-INF/pfixroot/conf/spring.xml</param-value>
+         <param-value>WEB-INF/project.xml WEB-INF/spring.xml</param-value>
       </init-param>
       <load-on-startup>1</load-on-startup>
    </servlet>

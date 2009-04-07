@@ -28,7 +28,7 @@
     </end>
   </interceptors>
 
-  <scriptedflow name="selectinclude" file="conf/scriptedflows/selectinclude.xml" />
+  <scriptedflow name="selectinclude" file="WEB-INF/scriptedflows/selectinclude.xml" />
 
   <role name="ANONYMOUS" initial="true" />
   <role name="AUTHENTICATED" />

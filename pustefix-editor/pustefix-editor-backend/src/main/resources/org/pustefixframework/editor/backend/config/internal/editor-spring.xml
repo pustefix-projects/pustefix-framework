@@ -264,7 +264,7 @@
       <ref bean="de.schlund.pfixcore.editor2.core.spring.beannames.pathresolver"/>
     </property>
     <property name="projectsFilePath">
-      <value>conf/projects.xml</value>
+      <value>WEB-INF/projects.xml</value>
     </property>
   </bean>
 

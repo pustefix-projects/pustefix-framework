@@ -51,7 +51,7 @@ public class WebServiceHttpRequestHandlerTest extends BaseTestCase {
         ctx.setServletContext(servletContext);
         ctx.refresh();
         XmlBeanDefinitionReader xmlReader = new XmlBeanDefinitionReader(ctx);
-        xmlReader.loadBeanDefinitions(new FileSystemResource("src/test/resources/conf/spring.xml"));
+        xmlReader.loadBeanDefinitions(new FileSystemResource("src/test/resources/WEB-INF/spring.xml"));
         
         handler = (WebServiceHttpRequestHandler)ctx.getBean("org.pustefixframework.webservices.spring.WebServiceHttpRequestHandler");
         TestServiceProcessor proc = new TestServiceProcessor();

@@ -14,13 +14,13 @@
     <resource>src/main/pustefix/dyntxt/statusmessages.xml</resource>
     <resource>src/main/pustefix/dyntxt/statusmessages-core-merged.xml</resource>
     <resource>src/main/pustefix/xml/frame.xml</resource>
-    <resource>src/main/pustefix/conf/project.xml</resource>
-    <resource>src/main/pustefix/conf/factory.xml</resource>
-    <resource>src/main/pustefix/conf/pustefix.xml</resource>
-    <resource>src/main/pustefix/conf/projects.xml</resource>
-    <resource>src/main/pustefix/conf/depend.xml</resource>
-    <resource>src/main/pustefix/conf/pfixlog.xml</resource>
-    <resource>src/main/pustefix/conf/app.conf.xml</resource>
+    <resource>src/main/pustefix/WEB-INF/project.xml</resource>
+    <resource>src/main/pustefix/WEB-INF/factory.xml</resource>
+    <resource>src/main/pustefix/WEB-INF/pustefix.xml</resource>
+    <resource>src/main/pustefix/WEB-INF/projects.xml</resource>
+    <resource>src/main/pustefix/WEB-INF/depend.xml</resource>
+    <resource>src/main/pustefix/WEB-INF/pfixlog.xml</resource>
+    <resource>src/main/pustefix/WEB-INF/app.conf.xml</resource>
     <resource>src/main/pustefix/txt/pages/main_Confirm.xml</resource>
     <resource>src/main/pustefix/txt/pages/main_ReviewData.xml</resource>
     <resource>src/main/pustefix/txt/pages/main_EnterData.xml</resource>

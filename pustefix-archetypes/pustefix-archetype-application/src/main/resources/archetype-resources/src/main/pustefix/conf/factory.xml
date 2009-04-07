@@ -6,7 +6,7 @@
             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
             xsi:schemaLocation="http://www.pustefix-framework.org/2008/namespace/properties-config ../../core/schema/properties-config.xsd">
     
-    <prop name="pustefix.log4j.config">conf/pfixlog.xml</prop>
+    <prop name="pustefix.log4j.config">WEB-INF/pfixlog.xml</prop>
     
     <!-- List of all factories to init -->
     <prop name="factory.initialize.02">de.schlund.pfixxml.targets.SPCacheFactory</prop>
@@ -21,7 +21,7 @@
     <!--SPCacheStatistic-->
     <prop name="cachestatistic.queuesize">60</prop>
     <prop name="cachestatistic.queueticks">60000</prop><!--1 minute-->
-    <prop name="cachestatistic.productdata">servletconf/projects.xml</prop>    
+    <prop name="cachestatistic.productdata">WEB-INF/projects.xml</prop>    
     
     <!--PerfStat-->
     <!-- size of buffer for perfevents --> 

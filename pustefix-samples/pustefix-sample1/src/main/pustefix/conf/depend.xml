@@ -41,7 +41,7 @@
 
     <page name="testchecks" handler="/xml/main"/>
 
-    <config-include file="conf/fragments.xml" section="navigation"/>
+    <config-include file="WEB-INF/fragments.xml" section="navigation"/>
 
   </navigation>
 
@@ -62,7 +62,7 @@
     <!-- <include stylesheet="xsl/metatags-additional-variation1.xsl"/> -->
   </standardmetatags>
 
-  <config-include file="conf/fragments.xml" section="targets"/>
+  <config-include file="WEB-INF/fragments.xml" section="targets"/>
 
   <standardpage master="var1" metatags="var1" name="home"     xml="xml/one_frame_navi.xml"/>
   <standardpage name="home"     xml="xml/one_frame_navi.xml" variant="foo"/>

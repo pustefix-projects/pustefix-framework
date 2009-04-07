@@ -4,7 +4,7 @@
             xsi:schemaLocation="http://www.pustefix-framework.org/2008/namespace/properties-config ../../core/schema/properties-config.xsd">
     
     
-    <prop name="pustefix.log4j.config">conf/pfixlog.xml</prop>
+    <prop name="pustefix.log4j.config">WEB-INF/pfixlog.xml</prop>
     <!-- Set this property to use container logging when application
          is deployed as a WAR-archive, even if application is unpacked
          and can use its own logging mechanism                         -->
@@ -24,7 +24,7 @@
     <!--SPCacheStatistic-->
     <prop name="cachestatistic.queuesize">60</prop>
     <prop name="cachestatistic.queueticks">60000</prop><!--1 minute-->
-    <prop name="cachestatistic.productdata">servletconf/projects.xml</prop>
+    <prop name="cachestatistic.productdata">WEB-INF/projects.xml</prop>
    
 </properties>
 

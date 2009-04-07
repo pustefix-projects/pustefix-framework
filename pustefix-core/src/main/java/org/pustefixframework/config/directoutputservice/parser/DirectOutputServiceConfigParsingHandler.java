@@ -41,11 +41,11 @@ public class DirectOutputServiceConfigParsingHandler extends CustomizationAwareP
             DirectOutputServiceConfigImpl serviceConfig = new DirectOutputServiceConfigImpl();
             Properties properties = new Properties(System.getProperties());
             try {
-                PropertyFileReader.read(ResourceUtil.getFileResourceFromDocroot("conf/pustefix.xml"), properties);
+                PropertyFileReader.read(ResourceUtil.getFileResourceFromDocroot("WEB-INF/pustefix.xml"), properties);
             } catch (ParserException e) {
-                throw new ParserException("Error while reading conf/pustefix.xml", e);
+                throw new ParserException("Error while reading WEB-INF/pustefix.xml", e);
             } catch (IOException e) {
-                throw new ParserException("Error while reading conf/pustefix.xml", e);
+                throw new ParserException("Error while reading WEB-INF/pustefix.xml", e);
             }
             serviceConfig.setProperties(properties);
             context.getObjectTreeElement().addObject(serviceConfig);

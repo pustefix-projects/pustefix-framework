@@ -25,9 +25,6 @@
       <defaulthost>ajax-calculator.${symbol_dollar}{fqdn}</defaulthost>
       <jvmroute>foo</jvmroute>
     </tomcat>
-    <apache>
-      <logdir>pfixroot:/servletconf/log</logdir>
-    </apache>
   </http-server>
   
   <application>

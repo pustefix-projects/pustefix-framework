@@ -40,8 +40,8 @@
     <!-- </end> -->
   </interceptors>
 
-  <scriptedflow name="forceadult" file="conf/scriptedflow/forceadult.script.xml" />
-  <scriptedflow name="ordershirt" file="conf/scriptedflow/ordershirt.script.xml" />
+  <scriptedflow name="forceadult" file="WEB-INF/scriptedflow/forceadult.script.xml" />
+  <scriptedflow name="ordershirt" file="WEB-INF/scriptedflow/ordershirt.script.xml" />
 
   <!-- <pageflow name="OrderFlow" stopnext="true"> -->
   <pageflow name="OrderFlow" final="home">
@@ -242,7 +242,7 @@
   </pagerequest>
   
 
-  <config-include file="conf/fragments.xml" section="pagerequests" />
+  <config-include file="WEB-INF/fragments.xml" section="pagerequests" />
 
   <!-- <properties> -->
     <!-- *** some additional properties needed for this application *** -->
