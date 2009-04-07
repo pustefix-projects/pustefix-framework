@@ -1,5 +1,5 @@
 <project>
-  <target name="generate" depends="data, apt, pfixroot, webxml"/>
+  <target name="generate" depends="data, apt"/>
 
   <target name="data">
     <delete dir="${pfixroot}/core"/>
@@ -18,21 +18,6 @@
       preprocessdir="${aptdir}"
       encoding="UTF-8"
       factory="de.schlund.pfixcore.util.CommonAnnotationProcessorFactory" />
-  </target>
-	
-  <target name="webxml">
-  	<property name="webinf" location="${pfixroot}/.."/>
-    <copy toDir="${webinf}" flatten="true">
-      <resources>
-        <javaresource name="build/web.xml" classpathref="plugin.classpath"/>
-      </resources>
-    </copy>
-  </target>
-
-  <target name="pfixroot">
-    <copy toDir="${pfixroot}">
-        <fileset dir="${basedir}/src/main/pustefix"/>
-    </copy>
   </target>
 	
 </project>

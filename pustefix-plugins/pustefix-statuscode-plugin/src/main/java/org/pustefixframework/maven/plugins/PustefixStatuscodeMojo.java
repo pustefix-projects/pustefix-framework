@@ -45,7 +45,7 @@ public class PustefixStatuscodeMojo extends AbstractMojo {
     private File genDir;
     
     /**
-     * @parameter default-value="${basedir}/src/main/pustefix"
+     * @parameter default-value="${basedir}/src/main/webapp"
      * @required
      */
     private File docRoot;
