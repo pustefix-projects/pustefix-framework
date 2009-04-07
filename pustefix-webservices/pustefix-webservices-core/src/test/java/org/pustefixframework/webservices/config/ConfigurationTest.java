@@ -36,7 +36,7 @@ import static org.junit.Assert.*;
 public class ConfigurationTest extends BaseTestCase {
     @Test
     public void serialization() throws Exception {
-        FileResource file=ResourceUtil.getFileResourceFromDocroot("conf"+"/"+"webservice.conf.xml");
+        FileResource file=ResourceUtil.getFileResourceFromDocroot("WEB-INF/webservice.conf.xml");
         Configuration conf=ConfigurationReader.read(file);
         ByteArrayOutputStream out=new ByteArrayOutputStream();
         ConfigurationReader.serialize(conf,out);
