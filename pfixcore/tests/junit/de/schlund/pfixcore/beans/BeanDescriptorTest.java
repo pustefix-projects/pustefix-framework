@@ -19,6 +19,7 @@ import de.schlund.pfixcore.beans.metadata.Bean;
 import de.schlund.pfixcore.beans.metadata.Beans;
 import de.schlund.pfixcore.beans.metadata.DefaultLocator;
 import de.schlund.pfixcore.beans.metadata.Locator;
+import de.schlund.pfixcore.oxm.bean.CovariantBeanB;
 
 public class BeanDescriptorTest extends TestCase {
     
@@ -175,6 +176,14 @@ public class BeanDescriptorTest extends TestCase {
         
         //BeanF xml metadata
         beanDesc=beanDescFactory.getBeanDescriptor(BeanF.class);
+        assertEquals(expProps,beanDesc.getReadableProperties());
+        
+        //Test method covariance
+        CovariantBeanB cbean = new CovariantBeanB();
+        cbean.setValue("foo");
+        beanDesc=new BeanDescriptor(CovariantBeanB.class,beans);
+        expProps=new HashSet<String>();
+        expProps.add("value");
         assertEquals(expProps,beanDesc.getReadableProperties());
         
     }

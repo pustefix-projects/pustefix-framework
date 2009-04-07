@@ -1,3 +1,17 @@
+2009-04-07  Martin Leidig  <mleidig@schlund.de>
+
+	Fixed method covariance problem: now we just skip all
+	synthetic/bridge methods when introspecting a bean.
+
+	Modified:
+	* src/de/schlund/pfixcore/beans/BeanDescriptor.java
+	* tests/junit/de/schlund/pfixcore/beans/BeanDescriptorTest.java
+
+	Added:
+	* tests/junit/de/schlund/pfixcore/oxm/CovariantBeanTest.java
+	* tests/junit/de/schlund/pfixcore/oxm/bean/CovariantBeanA.java
+	* tests/junit/de/schlund/pfixcore/oxm/bean/CovariantBeanB.java
+
 2009-04-02  Martin Leidig  <mleidig@schlund.de>
 
 	Fixed pfx:externalform bug (missing timestamp param).

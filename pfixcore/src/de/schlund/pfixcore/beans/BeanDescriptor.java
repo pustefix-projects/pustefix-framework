@@ -125,7 +125,7 @@ public class BeanDescriptor {
         Method[] methods = clazz.getMethods();
         for (int i = 0; i < methods.length; i++) {
             if (methods[i].getDeclaringClass() != Object.class && methods[i].getDeclaringClass() != Enum.class) {
-                if (!Modifier.isStatic(methods[i].getModifiers())) {
+                if (!Modifier.isStatic(methods[i].getModifiers()) && !methods[i].isSynthetic()) {
                     String origPropName = extractPropertyName(methods[i]);
                     if (origPropName != null) {
                         String propName = origPropName;
