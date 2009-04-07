@@ -73,7 +73,7 @@ public class GlobalConfig {
 
     }
 
-    public static File guessPfixroot() {
+    public static File guessDocroot() {
         File target = new File("target");
         File root;
         
@@ -87,7 +87,7 @@ public class GlobalConfig {
                 }
             }
         }
-        throw new IllegalStateException("cannot guess pfixroot");
+        throw new IllegalStateException("cannot guess docroot");
     }
     
 

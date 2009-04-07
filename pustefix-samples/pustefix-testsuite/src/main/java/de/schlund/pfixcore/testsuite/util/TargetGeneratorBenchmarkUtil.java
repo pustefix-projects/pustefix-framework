@@ -47,7 +47,7 @@ public class TargetGeneratorBenchmarkUtil {
         Properties log4jprops = new Properties();
         log4jprops.setProperty("log4j.threshold", "OFF");
         PropertyConfigurator.configure(log4jprops);
-        GlobalConfigurator.setDocroot(GlobalConfig.guessPfixroot().getAbsolutePath());
+        GlobalConfigurator.setDocroot(GlobalConfig.guessDocroot().getAbsolutePath());
         
         Properties props = new Properties();
         props.setProperty("tgenbench.dependxml", dependxml);

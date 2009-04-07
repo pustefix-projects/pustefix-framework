@@ -26,7 +26,7 @@ import de.schlund.pfixxml.resources.ResourceUtil;
  */
 public class PustefixWebApplicationContextLoader implements ContextLoader {
     
-    private static File DEFAULT_DOCROOT = GlobalConfig.guessPfixroot();
+    private static File DEFAULT_DOCROOT = GlobalConfig.guessDocroot();
     
     private File docroot;
     

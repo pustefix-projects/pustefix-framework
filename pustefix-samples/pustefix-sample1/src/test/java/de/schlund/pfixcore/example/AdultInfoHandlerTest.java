@@ -20,7 +20,7 @@ public class AdultInfoHandlerTest {
     @Before
     public void setUp() throws Exception {
         if (GlobalConfig.getDocroot() == null) {
-            GlobalConfigurator.setDocroot(GlobalConfig.guessPfixroot().getAbsolutePath());
+            GlobalConfigurator.setDocroot(GlobalConfig.guessDocroot().getAbsolutePath());
         }
     }
     
