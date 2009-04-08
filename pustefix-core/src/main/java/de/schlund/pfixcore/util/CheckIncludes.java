@@ -134,7 +134,7 @@ public class CheckIncludes {
 
         String dir = new File(".").getCanonicalPath() + "/";
         
-        DOMConfigurator.configure(dir + "core/conf/generator_quiet.xml");
+        Logging.configure("generator_quiet.xml");
         GlobalConfigurator.setDocroot(dir);
         
         CheckIncludes instance = new CheckIncludes(dir, output, new File(allprjarg), new File(allincarg), new File(allimgarg));

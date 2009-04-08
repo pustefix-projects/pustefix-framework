@@ -55,7 +55,7 @@ public class DelLang {
         }
         GlobalConfigurator.setDocroot(docrt);
         DelLang dellang   = new DelLang(docrt);
-        DOMConfigurator.configure("core/conf/generator_quiet.xml");
+        Logging.configure("generator_quiet.xml");
         dellang.transform(files);
     }
 

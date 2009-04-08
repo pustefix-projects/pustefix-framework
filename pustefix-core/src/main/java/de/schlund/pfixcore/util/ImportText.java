@@ -44,7 +44,7 @@ public class ImportText {
         String    dumpxml = args[1];
         GlobalConfigurator.setDocroot(docroot);
         ImportText trans = new ImportText();
-        DOMConfigurator.configure("core/conf/generator_quiet.xml");
+        Logging.configure("generator_quiet.xml");
         trans.importList(dumpxml);
     }
 

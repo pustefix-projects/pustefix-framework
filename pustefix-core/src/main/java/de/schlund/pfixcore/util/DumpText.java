@@ -63,7 +63,7 @@ public class DumpText implements IDumpText {
             trans = new DumpText();
         }
 
-        DOMConfigurator.configure("core/conf/generator_quiet.xml");
+        Logging.configure("generator_quiet.xml");
         trans.generateList(depend);
     }
 
