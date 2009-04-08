@@ -13,6 +13,13 @@
     <!-- <param name="exclude_custom_ns_prefixes" value="foo"/> -->
   </global>
   
+  <!-- prefix to namespace url mappings to be used in pages xml -->
+  <namespaces>
+    <namespace-declaration prefix="pfx" url="http://www.schlund.de/pustefix/core"/>
+    <namespace-declaration prefix="ixsl" url="http://www.w3.org/1999/XSL/Transform"/>
+    <namespace-declaration prefix="ZZZZZZZZZ" url="http://www.w3.org/1999/XSL/TransformZZZ" exclude-result-prefix="true"/>
+  </namespaces>
+  
   <navigation>
     <page name="home"     handler="/xml/main" accesskey="H">
       <page name="order"    handler="/xml/main" accesskey="O"/>

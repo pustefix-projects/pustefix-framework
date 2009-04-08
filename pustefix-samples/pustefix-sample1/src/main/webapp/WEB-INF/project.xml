@@ -56,7 +56,7 @@
     </tomcat>
     
   </http-server>
-  
+
   <application>
     
     <docroot-path>docroot:/htdocs</docroot-path>
@@ -73,6 +73,8 @@
     </direct-output-service>
     
     <static>
+      <path>core/img</path>
+      <path>core/script</path>
       <path>img</path>
     </static>
     

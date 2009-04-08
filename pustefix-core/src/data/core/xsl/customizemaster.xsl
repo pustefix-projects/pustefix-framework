@@ -57,7 +57,7 @@
   
   <xsl:template match="/xsl:stylesheet/xsl:template[@match='/']/ixsl:stylesheet">
     <xsl:variable name="complete_exclude_result_prefixes" xmlns:prj="http://www.pustefix-framework.org/2008/namespace/project-config">
-      <xsl:for-each select="document('WEB-INF/projects.xml')/prj:global-config/prj:namespaces/prj:namespace-declaration[@exclude-result-prefix='true']">
+      <xsl:for-each select="document('WEB-INF/depend.xml')/make/namespaces/namespace-declaration[@exclude-result-prefix='true']">
         <xsl:value-of select="@prefix"/>
         <xsl:text>:</xsl:text>
         <xsl:value-of select="@url"/>

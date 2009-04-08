@@ -1,3 +1,11 @@
+2009-04-08  Martin Leidig  <mleidig@schlund.de>
+
+	Removed support for global configuration (projects.xml). Moved namespaces 
+	stuff to depend.xml. Tomcat/Apache settings are obsolete.
+	Projects migrating to this core version have to move their namespaces
+	configuration to depend.xml and the static path configuration to
+	project.xml.
+
 2009-04-07  Martin Leidig  <mleidig@schlund.de>
 
 	Fixed method covariance problem: now we just skip all

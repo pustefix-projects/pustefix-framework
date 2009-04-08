@@ -21,8 +21,6 @@ package org.pustefixframework.config.project.parser;
 import java.util.ArrayList;
 
 import org.pustefixframework.config.Constants;
-import org.pustefixframework.config.global.GlobalConfigurationHolder;
-import org.pustefixframework.config.global.StaticPathInfo;
 import org.pustefixframework.http.DocrootRequestHandler;
 import org.springframework.beans.factory.config.BeanDefinitionHolder;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
@@ -53,14 +51,6 @@ public class DocrootRequestHandlerParsingHandler implements ParsingHandler {
         String basePath = basePathElement.getTextContent();
         
         ArrayList<String> paths = new ArrayList<String>();
-        
-        GlobalConfigurationHolder gch = context.getObjectTreeElement().getRoot().getObjectsOfTypeFromSubTree(GlobalConfigurationHolder.class).iterator().next();
-        for (StaticPathInfo pathInfo : gch.getConfigurationRoot().getObjectsOfTypeFromSubTree(StaticPathInfo.class)) {
-            String path = pathInfo.getPath();
-            if (!paths.contains(path)) {
-                paths.add(path);
-            }
-        }
         
         NodeList staticList = applicationElement.getElementsByTagNameNS(Constants.NS_PROJECT, "static");
         for (int i = 0; i < staticList.getLength(); i++) {

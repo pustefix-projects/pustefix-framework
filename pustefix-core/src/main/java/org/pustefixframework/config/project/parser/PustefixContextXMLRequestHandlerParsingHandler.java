@@ -34,8 +34,6 @@ import org.pustefixframework.config.contextxmlservice.ContextXMLServletConfig;
 import org.pustefixframework.config.customization.CustomizationAwareParsingHandler;
 import org.pustefixframework.config.customization.CustomizationInfo;
 import org.pustefixframework.config.customization.PropertiesBasedCustomizationInfo;
-import org.pustefixframework.config.global.GlobalConfigurationHolder;
-import org.pustefixframework.config.global.parser.GlobalConfigurationReader;
 import org.pustefixframework.config.project.EditorLocation;
 import org.pustefixframework.config.project.XMLGeneratorInfo;
 import org.pustefixframework.http.PustefixContextXMLRequestHandler;
@@ -114,7 +112,6 @@ public class PustefixContextXMLRequestHandlerParsingHandler extends Customizatio
         Properties buildTimeProperties = BuildTimeProperties.getProperties();
         CustomizationInfo cusInfo = new PropertiesBasedCustomizationInfo(buildTimeProperties);
         try {
-            GlobalConfigurationHolder globalConfig = (new GlobalConfigurationReader()).readGlobalConfiguration();
             Parser contextXmlConfigParser = new ClasspathConfiguredParser("META-INF/org/pustefixframework/config/context-xml-service/parser/context-xml-service-config.xml");
             
             //Resolve config-includes
@@ -126,7 +123,7 @@ public class PustefixContextXMLRequestHandlerParsingHandler extends Customizatio
             IncludesResolver resolver = new IncludesResolver("http://www.pustefix-framework.org/2008/namespace/context-xml-service-config", "config-include");
             resolver.resolveIncludes(doc);
             
-            final ObjectTreeElement contextXmlConfigTree = contextXmlConfigParser.parse(doc, cusInfo, globalConfig, beanReg, info);
+            final ObjectTreeElement contextXmlConfigTree = contextXmlConfigParser.parse(doc, cusInfo, beanReg, info);
             SubObjectTree subTree = new SubObjectTree() {
               public ObjectTreeElement getRoot() {
                     return contextXmlConfigTree;
