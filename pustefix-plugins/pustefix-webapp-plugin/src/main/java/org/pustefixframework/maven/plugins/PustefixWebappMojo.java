@@ -40,16 +40,9 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.stream.StreamSource;
 
 import org.apache.maven.artifact.Artifact;
-import org.apache.maven.artifact.DependencyResolutionRequiredException;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.project.MavenProject;
-import org.apache.tools.ant.BuildException;
-import org.apache.tools.ant.DefaultLogger;
-import org.apache.tools.ant.Project;
-import org.apache.tools.ant.ProjectHelper;
-import org.apache.tools.ant.types.Path;
-import org.codehaus.plexus.util.StringUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -257,15 +250,6 @@ public class PustefixWebappMojo extends AbstractMojo {
         throw new IllegalStateException(pluginClasspath.toString());
     }
     
-    private Path path(Project antProject, List<String> items) {
-        Path result;
-        
-        result = new Path(antProject);
-        result.setPath(StringUtils.join(items.iterator(), File.pathSeparator));
-        return result;
-        
-    }
-    
     private static List<String> pathStrings(Collection<Artifact> artifacts) {
         List<String> lst;
         
@@ -285,10 +269,9 @@ public class PustefixWebappMojo extends AbstractMojo {
         List<Artifact> artifacts;
         int count;
         File dir;
-        File buildXml;
         
         if (modulesdir == null) {
-            throw new BuildException("Mandatory attribute extractdir is not set!");
+            throw new MojoExecutionException("Mandatory attribute extractdir is not set!");
         }
         artifacts = project.getCompileArtifacts();
         count = 0;
@@ -297,53 +280,20 @@ public class PustefixWebappMojo extends AbstractMojo {
                 dir = processJar(artifact.getFile());
                 if (dir != null) {
                     count++;
-                    buildXml = new File(dir, "build.xml");
-                    if (buildXml.exists()) {
-                        ant(buildXml, null);
-                    }
                 }
             }
         }
         return count;
     }
     
-    private void ant(File buildXml, String target) throws MojoExecutionException {
-        Project ant;
-        DefaultLogger logger;
-        
-        try {
-            ant = new Project();
-            ant.init();
-
-            ProjectHelper.configureProject(ant, buildXml);
-            logger = new DefaultLogger();
-            logger.setOutputPrintStream(System.out);
-            logger.setErrorPrintStream(System.err);
-            logger.setMessageOutputLevel(getLog().isDebugEnabled() ? Project.MSG_DEBUG : Project.MSG_INFO);
-            ant.addBuildListener(logger);
-            ant.setBaseDir(project.getBasedir());
-            ant.setProperty("docroot", docroot);
-            ant.setProperty("makemode", makemode);
-            try {
-                ant.addReference("compile.classpath", path(ant, project.getCompileClasspathElements()));
-            } catch (DependencyResolutionRequiredException e) {
-                throw new IllegalStateException(e);
-            }
-            ant.addReference("plugin.classpath", path(ant, pathStrings(pluginClasspath)));
-            ant.executeTarget(target);
-        } catch (BuildException e) {
-            throw new MojoExecutionException("build exception: " + e.getMessage(), e);
-        }
-    }
-
     /** @return unpacked directory */
-    private File processJar(File jarFile) throws BuildException {
+    private File processJar(File jarFile) throws MojoExecutionException {
         JarFile jar;
         
         try {
             jar = new JarFile(jarFile);
         } catch (IOException e) {
-            throw new BuildException("Error while reading JAR file " + jarFile, e);
+            throw new MojoExecutionException("Error while reading JAR file " + jarFile, e);
         }
         ZipEntry dde = jar.getEntry("META-INF/pustefix-module.xml");
         if (dde == null) {
@@ -353,13 +303,13 @@ public class PustefixWebappMojo extends AbstractMojo {
         try {
             dds = jar.getInputStream(dde);
         } catch (IOException e) {
-            throw new BuildException("Error while reading deployment descriptor from module " + jarFile, e);
+            throw new MojoExecutionException("Error while reading deployment descriptor from module " + jarFile, e);
         }
         DeploymentDescriptor dd;
         try {
             dd = new DeploymentDescriptor(dds);
         } catch (TransformerException e) {
-            throw new BuildException("Error while parsing deployment descriptor from module " + jarFile, e);
+            throw new MojoExecutionException("Error while parsing deployment descriptor from module " + jarFile, e);
         }
         String moduleName = dd.getModuleName();
         for (DeploymentDescriptor.ResourceMapping rm : dd.getResourceMappings()) {
@@ -383,7 +333,7 @@ public class PustefixWebappMojo extends AbstractMojo {
                         try {
                             createFileFromStream(jar.getInputStream(entry), targetfile);
                         } catch (IOException e) {
-                            throw new BuildException("Could not unpack file from JAR module to " + targetfile, e);
+                            throw new MojoExecutionException("Could not unpack file from JAR module to " + targetfile, e);
                         }
                     }
                 }
