@@ -28,9 +28,9 @@ import java.util.List;
 
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
+import org.apache.tools.ant.Task;
 import org.apache.tools.ant.taskdefs.Execute;
 import org.apache.tools.ant.taskdefs.LogStreamHandler;
-import org.apache.tools.ant.taskdefs.MatchingTask;
 import org.apache.tools.ant.types.Commandline;
 import org.apache.tools.ant.types.Path;
 import org.apache.tools.ant.types.Reference;
@@ -40,9 +40,9 @@ import org.apache.tools.ant.types.Reference;
  * @author mleidig@schlund.de
  * 
  */
-public class AptTask extends MatchingTask {
+public class AptTask extends Task {
 
-    private File lastAptRunFile = new File("build/.lastaptrun");
+    private File lastAptRunFile = new File("target/.lastaptrun");
     private Path srcDir;
     private File destDir;
     private File preprocessDir;
