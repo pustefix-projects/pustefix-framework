@@ -20,14 +20,21 @@ package org.pustefixframework.maven.generate;
 
 import java.io.File;
 import java.lang.reflect.Method;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import javax.jws.WebService;
 
+import org.apache.maven.artifact.Artifact;
+import org.apache.maven.artifact.DependencyResolutionRequiredException;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.project.MavenProject;
+import org.apache.tools.ant.Project;
 import org.pustefixframework.webservices.Constants;
 import org.pustefixframework.webservices.config.Configuration;
 import org.pustefixframework.webservices.config.ConfigurationReader;
@@ -85,15 +92,9 @@ public class PustefixWebserviceMojo extends AbstractMojo {
     
     /**
      * Webapp deployment directory.
-     * @parameter default-value="${basedir}/target/${artifactId}-${version}/"
+     * @parameter default-value="${basedir}/target/${project.artifactId}-${project.version}/"
      */
     private File webappdir;
-    
-    /**
-     * Classpath containing application classes.
-     * @parameter default-value=${maven.compiler.classpath}
-     */
-    private String classPath;
     
     /**
      * The relative port for the Tomcat.
@@ -106,6 +107,13 @@ public class PustefixWebserviceMojo extends AbstractMojo {
      */
     private File prjFile;
     
+    /**
+     * @parameter expression="${project}"
+     * @required
+     * @readonly
+     */
+    private MavenProject project;
+
     private Set<File> wsgenDirs;
 
     /**
@@ -208,7 +216,7 @@ public class PustefixWebserviceMojo extends AbstractMojo {
                             if (refConf == null || !wsdlFile.exists() || globalConfChanged || !conf.equals(refConf)
                                     || TaskUtils.checkInterfaceChange(conf.getInterfaceName(), builddir, wsdlFile)) {
                                 if(conf.getInterfaceName()!=null) checkInterface(conf.getInterfaceName());
-                                Class<?> implClass = Class.forName(conf.getImplementationName());
+                                Class<?> implClass = clazz(conf.getImplementationName());
                                 WebService anno = implClass.getAnnotation(WebService.class);
                                 if(anno == null) {
                                     throw new MojoExecutionException("Missing @WebService annotation at service implementation "+
@@ -221,14 +229,15 @@ public class PustefixWebserviceMojo extends AbstractMojo {
                                 
                                     if(!wsgenDir.exists()) wsgenDir.mkdirs();
                                     WsGen wsgen = new WsGen();
-                                    wsgen.setProject(null /* TODO */);
+                                    Project antProject = new Project();
+                                    wsgen.setProject(antProject);
                                     wsgen.setDynamicAttribute("keep", "true");
                                     if(!gendir.exists()) gendir.mkdirs();
                                     wsgen.setDynamicAttribute("sourcedestdir", gendir.getAbsolutePath());
                                     wsgen.setDynamicAttribute("genwsdl", "true");
                                     wsgen.setDynamicAttribute("destdir", builddir.getAbsolutePath());
                                     wsgen.setDynamicAttribute("resourcedestdir", wsgenDir.getAbsolutePath());
-                                    wsgen.setDynamicAttribute("classpath", classPath.toString());
+                                    wsgen.setDynamicAttribute("classpath", getClasspath());
                                     wsgen.setDynamicAttribute("sei", conf.getImplementationName());
                                     String serviceName = "{" + TaskUtils.getTargetNamespace(implClass) + "}" + conf.getName();
                                     wsgen.setDynamicAttribute("servicename", serviceName);
@@ -269,11 +278,30 @@ public class PustefixWebserviceMojo extends AbstractMojo {
                     ConfigurationReader.serialize(srvConf, refWsConfFile);
                 }
             }
-        } catch (Exception x) {
-            throw new MojoExecutionException("failure", x);
+        } catch (MojoExecutionException e) {
+            throw e;
+        } catch (RuntimeException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new MojoExecutionException("failure: " + e.getMessage(), e);
         }
     }
 
+    private String getClasspath() {
+        StringBuilder builder;
+        String str;
+        
+        builder = new StringBuilder();
+        builder.append(builddir.getAbsolutePath());
+        for (Object obj : project.getCompileArtifacts()) {
+            builder.append(':');
+            builder.append(((Artifact) obj).getFile().getAbsolutePath());
+        }
+        str = builder.toString();
+        getLog().debug("classpath: "  + str);
+        return str;
+    }
+    
     /**
      * Get or create temporary/webservice artifact directory for a specific
      * project.
@@ -296,21 +324,56 @@ public class PustefixWebserviceMojo extends AbstractMojo {
      * having no overloaded methods)
      */
     private void checkInterface(String className) throws MojoExecutionException {
-        try {
-            Class<?> clazz = Class.forName(className);
-            if (!clazz.isInterface()) throw new MojoExecutionException("Web service interface class doesn't represent an interface type");
-            Method[] methods = clazz.getDeclaredMethods();
-            HashSet<String> names = new HashSet<String>();
-            for (int i = 0; i < methods.length; i++) {
-                String name = methods[i].getName();
-                if (names.contains(name))
-                    throw new MojoExecutionException("Web service interface class '" + className + "' contains " + "overloaded method '" + name
+        Class<?> clazz = clazz(className);
+        if (!clazz.isInterface()) throw new MojoExecutionException("Web service interface class doesn't represent an interface type");
+        Method[] methods = clazz.getDeclaredMethods();
+        HashSet<String> names = new HashSet<String>();
+        for (int i = 0; i < methods.length; i++) {
+            String name = methods[i].getName();
+            if (names.contains(name))
+                throw new MojoExecutionException("Web service interface class '" + className + "' contains " + "overloaded method '" + name
                             + "'. Method overloading isn't allowed in web service interface definitions, "
                             + "as future WSDL versions (1.2+) will no longer support operation overloading.");
-                names.add(name);
-            }
-        } catch (ClassNotFoundException x) {
-            throw new MojoExecutionException("Web service interface class " + className + " not found", x);
+            names.add(name);
         }
+    }
+
+    private URLClassLoader loader;
+    
+    private Class<?> clazz(String name) throws MojoExecutionException {
+        URL[] cp;
+        List<Artifact> artifacts;
+        
+        if (loader == null) {
+            try {
+                artifacts = project.getCompileArtifacts();
+                cp = new URL[artifacts.size() + 1];
+                cp[0] = builddir.toURI().toURL();
+                for (int i = 1; i < cp.length; i++) {
+                    cp[i] = artifacts.get(i - 1).getFile().toURI().toURL();
+                }
+                loader = new URLClassLoader(cp);
+            } catch (MalformedURLException e) {
+                throw new MojoExecutionException("invalid builddir: " + builddir, e); 
+            }
+        }
+        try {
+            return loader.loadClass(name);
+        } catch (ClassNotFoundException e) {
+            throw new MojoExecutionException(name + ": class not found in classpath " + toString(loader.getURLs()));
+        }
+    }
+    
+    private static String toString(URL[] urls) {
+        StringBuilder builder;
+
+        builder = new StringBuilder();
+        for (URL url : urls) {
+            if (builder.length() > 0) {
+                builder.append(':');
+            }
+            builder.append(url.toString());
+        }
+        return builder.toString();
     }
 }
