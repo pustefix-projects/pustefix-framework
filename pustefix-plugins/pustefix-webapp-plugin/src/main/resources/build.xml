@@ -1,20 +1,9 @@
 <project>
-  <target name="generate" depends="data, apt"/>
+  <target name="generate" depends="data"/>
 
   <target name="data">
     <delete dir="${docroot}/core"/>
     <untar dest="${docroot}" compression="gzip" overwrite="true" src="${data.tar.gz}"/>
   </target>
   	
-  <target name="apt">
-    <taskdef name="pfx-apt"
-      classpathref="plugin.classpath"
-      classname="org.pustefixframework.maven.plugins.AptTask" />
-    <pfx-apt
-      classpathref="plugin.classpath"
-      srcdir="${basedir}/src/main/java"
-      destdir="${basedir}/target/classes"
-      preprocessdir="${aptdir}"/>
-  </target>
-	
 </project>

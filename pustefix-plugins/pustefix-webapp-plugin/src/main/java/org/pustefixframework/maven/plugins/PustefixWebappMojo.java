@@ -89,7 +89,7 @@ public class PustefixWebappMojo extends AbstractMojo {
      * 
      * @parameter default-value="${project.build.directory}/generated-sources/apt"
      */
-    private String aptdir;
+    private File aptdir;
 
     /**
      * @parameter
@@ -131,6 +131,8 @@ public class PustefixWebappMojo extends AbstractMojo {
      * @see org.apache.maven.plugin.Mojo#execute()
      */
     public void execute() throws MojoExecutionException {
+        File basedir;
+        
         // because all executions operate on the same pfixcore classes:
         GlobalConfig.reset();
         
@@ -145,9 +147,25 @@ public class PustefixWebappMojo extends AbstractMojo {
             throw new MojoExecutionException("io execption", e);
         }
         ant(webappBuildXml, "generate");
-        project.addCompileSourceRoot(aptdir);
+        basedir = project.getBasedir();
+        if (new Apt(basedir, aptdir, getLog()).execute(getPluginClasspath()) > 0) {
+            project.addCompileSourceRoot(aptdir.getAbsolutePath());
+        }
     }
-    
+
+    private String getPluginClasspath() {
+        StringBuilder result;
+        
+        result = new StringBuilder();
+        for (String path : pathStrings(pluginClasspath)) {
+            if (result.length() > 0) {
+                result.append(':');
+            } 
+            result.append(path);
+        }
+        return result.toString();
+    }
+
     private void ant(File buildXml, String target) throws MojoExecutionException {
         Project ant;
         DefaultLogger logger;
@@ -164,7 +182,6 @@ public class PustefixWebappMojo extends AbstractMojo {
             ant.addBuildListener(logger);
             ant.setBaseDir(project.getBasedir());
             ant.setProperty("docroot", docroot);
-            ant.setProperty("aptdir", aptdir);
             ant.setProperty("makemode", makemode);
             ant.setProperty("data.tar.gz", getDataTarGz());
             try {
@@ -183,7 +200,6 @@ public class PustefixWebappMojo extends AbstractMojo {
         } catch (BuildException e) {
             throw new MojoExecutionException("build exception: " + e.getMessage(), e);
         }
-        project.addCompileSourceRoot(aptdir);
     }
 
     private void buildFile() throws IOException {
