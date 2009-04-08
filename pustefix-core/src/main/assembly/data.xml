@@ -1,0 +1,12 @@
+<assembly>
+  <id>data</id>
+  <formats><format>jar</format></formats>
+  <baseDirectory></baseDirectory>
+  <fileSets>
+    <fileSet>
+      <directory>src/data</directory>
+      <filtered>false</filtered>
+      <outputDirectory></outputDirectory>
+    </fileSet>
+  </fileSets>
+</assembly>

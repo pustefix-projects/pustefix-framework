@@ -1,9 +1,0 @@
-<project>
-  <target name="generate" depends="data"/>
-
-  <target name="data">
-    <delete dir="${docroot}/core"/>
-    <untar dest="${docroot}" compression="gzip" overwrite="true" src="${data.tar.gz}"/>
-  </target>
-  	
-</project>

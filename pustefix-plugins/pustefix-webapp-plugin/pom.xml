@@ -48,7 +48,6 @@
       <artifactId>pustefix-core</artifactId>
       <version>0.14.1-SNAPSHOT</version>
       <classifier>data</classifier>
-      <type>tar.gz</type>
     </dependency>
   </dependencies>
 

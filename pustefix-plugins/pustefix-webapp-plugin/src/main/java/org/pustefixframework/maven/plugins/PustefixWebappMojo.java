@@ -102,11 +102,6 @@ public class PustefixWebappMojo extends AbstractMojo {
     private String fqdn;
     
     /**
-     * @parameter default-value="${project.build.directory}/webapp-build.xml"
-     */
-    private File webappBuildXml;
-
-    /**
      * @parameter default-value="test"
      */
     private String makemode;
@@ -132,21 +127,28 @@ public class PustefixWebappMojo extends AbstractMojo {
      */
     public void execute() throws MojoExecutionException {
         File basedir;
+        File docrootFile;
         
         // because all executions operate on the same pfixcore classes:
         GlobalConfig.reset();
         
         GlobalConfigurator.setDocroot(docroot);
+        docrootFile = new File(docroot);
+        if (!docrootFile.isDirectory()) {
+            try {
+                extractJar(getDataJar(), docrootFile);
+            } catch (IOException e) {
+                throw new MojoExecutionException("error extracting core data", e);
+            }
+        }
         new File(docroot, "WEB-INF").mkdirs();
 
         getLog().info("unpacked " + unpackModules() + " module(s)");
         try {
-            buildFile();
             buildtimeProps();
         } catch (IOException e) {
-            throw new MojoExecutionException("io execption", e);
+            throw new MojoExecutionException("error creating buildtime.props", e);
         }
-        ant(webappBuildXml, "generate");
         basedir = project.getBasedir();
         if (new Apt(basedir, aptdir, getLog()).execute(getPluginClasspath()) > 0) {
             project.addCompileSourceRoot(aptdir.getAbsolutePath());
@@ -166,69 +168,50 @@ public class PustefixWebappMojo extends AbstractMojo {
         return result.toString();
     }
 
-    private void ant(File buildXml, String target) throws MojoExecutionException {
-        Project ant;
-        DefaultLogger logger;
-        
-        try {
-            ant = new Project();
-            ant.init();
-
-            ProjectHelper.configureProject(ant, buildXml);
-            logger = new DefaultLogger();
-            logger.setOutputPrintStream(System.out);
-            logger.setErrorPrintStream(System.err);
-            logger.setMessageOutputLevel(getLog().isDebugEnabled() ? Project.MSG_DEBUG : Project.MSG_INFO);
-            ant.addBuildListener(logger);
-            ant.setBaseDir(project.getBasedir());
-            ant.setProperty("docroot", docroot);
-            ant.setProperty("makemode", makemode);
-            ant.setProperty("data.tar.gz", getDataTarGz());
-            try {
-                ant.addReference("compile.classpath", path(ant, project.getCompileClasspathElements()));
-            } catch (DependencyResolutionRequiredException e) {
-                throw new IllegalStateException(e);
-            }
-            ant.addReference("plugin.classpath", path(ant, pathStrings(pluginClasspath)));
-            if (target == null) {
-                target = ant.getDefaultTarget();
-                if (target == null) {
-                    throw new MojoExecutionException(buildXml + ": missing default target");
-                }
-            }
-            ant.executeTarget(target);
-        } catch (BuildException e) {
-            throw new MojoExecutionException("build exception: " + e.getMessage(), e);
-        }
+    public void extractJar(String src, File dest) throws IOException {
+         JarFile jar;
+         JarEntry entry;
+         File file;
+         byte[] buffer = new byte[4096];
+         
+         getLog().info("extracting " + src + " to " + dest);
+         jar = new JarFile(src);
+         Enumeration<JarEntry> entries = jar.entries();
+         while (entries.hasMoreElements()) {
+             entry = entries.nextElement();
+             file = new File(dest, entry.getName());
+             if (entry.isDirectory()) {
+                 if (!file.mkdirs()) {
+                     throw new IOException(file + ": cannot create directory");
+                 }
+             } else {
+                 copy(buffer, jar.getInputStream(entry), file);
+             }
+         }
+         jar.close();
     }
 
-    private void buildFile() throws IOException {
-        InputStream src;
-        OutputStream dest;
-        int c;
-        
-        if (webappBuildXml.isFile()) {
-            return;
-        }
-        webappBuildXml.getParentFile().mkdirs();
-        // TODO: expensive
-        src = getClass().getResourceAsStream("/build.xml");
-        dest = new FileOutputStream(webappBuildXml);
-        while (true) {
-            c = src.read();
-            if (c == -1) {
-                break;
-            }
-            dest.write((char) c);
-        }
-        src.close();
-        dest.close();
+    private void copy(byte[] buffer, InputStream src, File file) throws IOException {
+         OutputStream out;
+         int len;
+         
+         out = new FileOutputStream(file);
+         while (true)  {
+             len = src.read(buffer);
+             if (len < 0) {
+                 break;
+             }
+             out.write(buffer, 0, len);
+         }
+         out.close();
+         src.close();
     }
-    
+
+
     private void buildtimeProps() throws IOException {
-        
         BuildTimeProperties.generate(getProperties(), makemode, getMachine(), getFqdn(), System.getProperty("user.name"));
     }
+    
     private Properties getProperties() {
     	Properties orig;
     	Properties result;
@@ -264,7 +247,7 @@ public class PustefixWebappMojo extends AbstractMojo {
         return InetAddress.getLocalHost().getCanonicalHostName();
     }
     
-    private String getDataTarGz() {
+    private String getDataJar() {
         for (Artifact artifact : pluginClasspath) {
             if ("data".equals(artifact.getClassifier()) && "pustefix-core".equals(artifact.getArtifactId()) 
                     && "org.pustefixframework".equals(artifact.getGroupId())) {
@@ -324,6 +307,35 @@ public class PustefixWebappMojo extends AbstractMojo {
         return count;
     }
     
+    private void ant(File buildXml, String target) throws MojoExecutionException {
+        Project ant;
+        DefaultLogger logger;
+        
+        try {
+            ant = new Project();
+            ant.init();
+
+            ProjectHelper.configureProject(ant, buildXml);
+            logger = new DefaultLogger();
+            logger.setOutputPrintStream(System.out);
+            logger.setErrorPrintStream(System.err);
+            logger.setMessageOutputLevel(getLog().isDebugEnabled() ? Project.MSG_DEBUG : Project.MSG_INFO);
+            ant.addBuildListener(logger);
+            ant.setBaseDir(project.getBasedir());
+            ant.setProperty("docroot", docroot);
+            ant.setProperty("makemode", makemode);
+            try {
+                ant.addReference("compile.classpath", path(ant, project.getCompileClasspathElements()));
+            } catch (DependencyResolutionRequiredException e) {
+                throw new IllegalStateException(e);
+            }
+            ant.addReference("plugin.classpath", path(ant, pathStrings(pluginClasspath)));
+            ant.executeTarget(target);
+        } catch (BuildException e) {
+            throw new MojoExecutionException("build exception: " + e.getMessage(), e);
+        }
+    }
+
     /** @return unpacked directory */
     private File processJar(File jarFile) throws BuildException {
         JarFile jar;
