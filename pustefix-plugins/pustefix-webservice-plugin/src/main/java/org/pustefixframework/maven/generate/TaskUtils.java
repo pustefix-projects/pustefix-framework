@@ -32,8 +32,7 @@ import java.net.URL;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
-import org.apache.tools.ant.AntClassLoader;
-import org.apache.tools.ant.BuildException;
+import org.apache.maven.plugin.MojoExecutionException;
 import org.w3c.dom.Document;
 
 /**
@@ -81,11 +80,11 @@ public class TaskUtils {
      * Checks if the webservice interface has been modified since the last
      * modification of a reference file.
      */
-    public static boolean checkInterfaceChange(String className, File buildDir, File refFile) throws BuildException {
+    public static boolean checkInterfaceChange(String className, File buildDir, File refFile) throws MojoExecutionException {
         if(className == null) return false;
         try {
             Class<?> clazz = Class.forName(className);
-            if (!clazz.isInterface()) throw new BuildException("Web service interface class '" + className + "' doesn't define an interface type.");
+            if (!clazz.isInterface()) throw new MojoExecutionException("Web service interface class '" + className + "' doesn't define an interface type.");
             // Check if interface or dependant interfaces changed
             boolean changed = checkTypeChange(clazz, buildDir, refFile);
             if (changed) return true;
@@ -103,31 +102,32 @@ public class TaskUtils {
             }
             return false;
         } catch (ClassNotFoundException x) {
-            throw new BuildException("Web service interface class '" + className + "' not found.", x);
+            throw new MojoExecutionException("Web service interface class '" + className + "' not found.", x);
         }
     }
 
     /**
      * Checks if a class has been modified since the last modification of a
      * reference file.
+     * @throws MojoExecutionException 
      */
-    public static boolean checkTypeChange(Class<?> clazz, File buildDir, File refFile) {
+    public static boolean checkTypeChange(Class<?> clazz, File buildDir, File refFile) throws MojoExecutionException {
         if (!clazz.isPrimitive()) {
             ClassLoader cl = clazz.getClassLoader();
-            if (cl instanceof AntClassLoader) {
+            if (cl != null) {
                 if (clazz.isArray()) return checkTypeChange(getArrayType(clazz), buildDir, refFile);
                 String path = clazz.getName().replace('.', File.separatorChar) + ".class";
                 File file = new File(buildDir, path);
                 long lastMod = Long.MAX_VALUE;
                 if (!file.exists()) {
                     URL url = cl.getResource(path);
-                    if (url == null) throw new BuildException("Can't get URL for webservice class '" + clazz.getName() + "' from jar file.");
+                    if (url == null) throw new MojoExecutionException("Can't get URL for webservice class '" + clazz.getName() + "' from jar file.");
                     else {
                         try {
                             JarURLConnection con = (JarURLConnection) url.openConnection();
                             lastMod = con.getJarEntry().getTime();
                         } catch (IOException x) {
-                            throw new BuildException("Can't get modification time for webservice class '" + clazz.getName() + "' from jar file.");
+                            throw new MojoExecutionException("Can't get modification time for webservice class '" + clazz.getName() + "' from jar file.");
                         }
                     }
                 } else {
@@ -228,7 +228,7 @@ public class TaskUtils {
     /**
      * Reads Document from a XML file.
      */
-    public static Document loadDoc(File file) throws BuildException {
+    public static Document loadDoc(File file) throws  MojoExecutionException {
         try {
             DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
             dbf.setNamespaceAware(true);
@@ -237,7 +237,7 @@ public class TaskUtils {
             Document doc = docBuilder.parse(file);
             return doc;
         } catch (Exception x) {
-            throw new BuildException("Can't load XML document from file " + file.getAbsolutePath(), x);
+            throw new MojoExecutionException("Can't load XML document from file " + file.getAbsolutePath(), x);
         }
     }
 

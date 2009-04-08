@@ -87,19 +87,13 @@
         </executions>
       </plugin>
       <plugin>
-        <artifactId>maven-antrun-plugin</artifactId>
+        <groupId>org.pustefixframework.maven.plugins</groupId>
+        <artifactId>pustefix-webservice-plugin</artifactId>
+        <version>0.14.1-SNAPSHOT</version>
         <executions>
           <execution>
-            <id>webservices</id>
-            <phase>process-classes</phase>
-            <configuration>
-              <tasks>
-                <taskdef name="pfx-webservice" classname="org.pustefixframework.webservices.jaxws.generate.WebserviceTask" classpathref="maven.compile.classpath" description="Generates/deploys WSDL, WSDD and JS stubs from web service interfaces/configuration" />
-                <pfx-webservice tmpdir="target/webservice" prjdir="src/main/webapp" builddir="target/classes" gendir="target/generated-sources" webappdir="target/${artifactId}-${version}/" classpathref="maven.compile.classpath" portbase="80" includes="**/WEB-INF/project.xml" />
-              </tasks>
-            </configuration>
             <goals>
-              <goal>run</goal>
+              <goal>generate</goal>
             </goals>
           </execution>
         </executions>
