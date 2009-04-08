@@ -17,7 +17,7 @@
  *
  */
 
-package de.schlund.pfixcore.generator.iwrpgen;
+package org.pustefixframework.maven.plugins;
 
 import java.io.BufferedReader;
 import java.io.File;

@@ -9,7 +9,7 @@
   <target name="apt">
     <taskdef name="pfx-apt"
       classpathref="plugin.classpath"
-      classname="de.schlund.pfixcore.generator.iwrpgen.AptTask"
+      classname="org.pustefixframework.maven.plugins.AptTask"
       description="Pustefix APT task" />
     <pfx-apt
       classpathref="plugin.classpath"

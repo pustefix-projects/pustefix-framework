@@ -17,7 +17,7 @@
  *
  */
 
-package de.schlund.pfixcore.generator.iwrpgen;
+package org.pustefixframework.maven.plugins;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -41,7 +41,6 @@ import org.apache.tools.ant.types.Reference;
  * 
  */
 public class AptTask extends Task {
-
     private File lastAptRunFile = new File("target/.lastaptrun");
     private Path srcDir;
     private File destDir;
