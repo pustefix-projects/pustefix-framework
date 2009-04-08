@@ -1,6 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <make lang="en_GB" project="firstapp">
 
+  <!-- prefix to namespace url mappings to be used in pages xml -->
+  <namespaces>
+    <namespace-declaration prefix="pfx" url="http://www.schlund.de/pustefix/core"/>
+    <namespace-declaration prefix="ixsl" url="http://www.w3.org/1999/XSL/Transform"/>
+  </namespaces>
+
   <navigation>
     <page handler="/xml/main" name="EnterData"/>
     <page handler="/xml/main" name="ReviewData"/>

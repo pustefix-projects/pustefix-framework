@@ -7,6 +7,12 @@
     <param name="outputdoctype-system" value="http://www.w3.org/TR/html40/strict.dtd"/>
   </global>
   
+  <!-- prefix to namespace url mappings to be used in pages xml -->
+  <namespaces>
+    <namespace-declaration prefix="pfx" url="http://www.schlund.de/pustefix/core"/>
+    <namespace-declaration prefix="ixsl" url="http://www.w3.org/1999/XSL/Transform"/>
+  </namespaces>
+  
   <navigation>
     <page name="home" handler="/xml/main"/>
     <page name="login"     handler="/xml/main"/>

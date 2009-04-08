@@ -17,7 +17,6 @@
   <namespaces>
     <namespace-declaration prefix="pfx" url="http://www.schlund.de/pustefix/core"/>
     <namespace-declaration prefix="ixsl" url="http://www.w3.org/1999/XSL/Transform"/>
-    <namespace-declaration prefix="ZZZZZZZZZ" url="http://www.w3.org/1999/XSL/TransformZZZ" exclude-result-prefix="true"/>
   </namespaces>
   
   <navigation>
