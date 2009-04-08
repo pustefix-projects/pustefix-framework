@@ -45,9 +45,9 @@ public class AptTask extends Task {
     private Path srcDir;
     private File destDir;
     private File preprocessDir;
-    private String factory;
+    private String factory = "de.schlund.pfixcore.util.CommonAnnotationProcessorFactory";
     private Path classPath;
-    private String encoding;
+    private String encoding = "UTF-8";
 
     @Override
     public void execute() throws BuildException {

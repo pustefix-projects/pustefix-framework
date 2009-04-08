@@ -9,15 +9,12 @@
   <target name="apt">
     <taskdef name="pfx-apt"
       classpathref="plugin.classpath"
-      classname="org.pustefixframework.maven.plugins.AptTask"
-      description="Pustefix APT task" />
+      classname="org.pustefixframework.maven.plugins.AptTask" />
     <pfx-apt
       classpathref="plugin.classpath"
       srcdir="${basedir}/src/main/java"
       destdir="${basedir}/target/classes"
-      preprocessdir="${aptdir}"
-      encoding="UTF-8"
-      factory="de.schlund.pfixcore.util.CommonAnnotationProcessorFactory" />
+      preprocessdir="${aptdir}"/>
   </target>
 	
 </project>
