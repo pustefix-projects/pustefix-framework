@@ -116,7 +116,7 @@ public class ImagesResource {
                 Element currentImage = resdoc.createSubNode(elem, "currentimage");
                 String path = this.selectedImage.getPath();
                 String url;
-                if (path.startsWith("pfixroot:/")) {
+                if (path.startsWith("docroot:/")) {
                     url = projectPool.getURIForProject(projectsResource.getSelectedProject())
                         + path.substring(10);
                 } else {

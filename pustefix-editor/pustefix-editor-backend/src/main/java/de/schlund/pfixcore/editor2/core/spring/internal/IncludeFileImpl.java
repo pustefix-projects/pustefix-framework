@@ -59,6 +59,7 @@ public class IncludeFileImpl extends CommonIncludeFileImpl {
         this.projectfactory = projectfactory;
     }
 
+    @Override
     protected IncludePart createIncludePartInstance(String name, Element el, long serial) {
         return new IncludePartImpl(themefactory, includefactory, projectfactory, filesystem,
                 pathresolver, backup, name, this, el, serial);

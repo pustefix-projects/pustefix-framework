@@ -124,6 +124,7 @@ public class IncludePartImpl extends CommonIncludePartImpl {
         return false;
     }
 
+    @Override
     public void deleteThemeVariant(IncludePartThemeVariant variant) throws EditorSecurityException, EditorIOException, EditorParsingException {
         super.deleteThemeVariant(variant);
         

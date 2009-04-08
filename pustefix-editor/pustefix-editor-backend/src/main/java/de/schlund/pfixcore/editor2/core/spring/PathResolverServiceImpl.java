@@ -42,7 +42,7 @@ public class PathResolverServiceImpl implements PathResolverService {
      * @see de.schlund.pfixcore.editor2.core.spring.PathResolverService#resolve(java.lang.String)
      */
     public String resolve(String path) {
-        if (path.startsWith("pfixroot:")) {
+        if (path.startsWith("docroot:")) {
             path=path.substring(9);
         } else if (path.startsWith("module:")) {
             throw new IllegalArgumentException("Modules are currently not supported");

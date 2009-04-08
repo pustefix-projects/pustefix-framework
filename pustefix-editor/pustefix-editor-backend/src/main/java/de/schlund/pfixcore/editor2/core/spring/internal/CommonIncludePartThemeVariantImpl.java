@@ -371,12 +371,14 @@ public abstract class CommonIncludePartThemeVariantImpl extends
         ContentHandler nsPrefixHandler = new DefaultHandler() {
             private boolean foundFirstElement = false;
 
+            @Override
             public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
                 if (foundFirstElement == false) {
                     foundFirstElement = true;
                 }
             }
 
+            @Override
             public void startPrefixMapping(String prefix, String uri) throws SAXException {
                 if (!foundFirstElement) {
                     prefixes.add(prefix);

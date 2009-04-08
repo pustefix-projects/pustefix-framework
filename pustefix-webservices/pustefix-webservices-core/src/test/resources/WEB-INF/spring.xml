@@ -12,7 +12,7 @@
 
   <bean id="org.pustefixframework.webservices.spring.WebServiceHttpRequestHandler"
         class="org.pustefixframework.webservices.spring.WebServiceHttpRequestHandler">
-    <property name="configFile" value="pfixroot:/WEB-INF/webservice.conf.xml"/>
+    <property name="configFile" value="docroot:/WEB-INF/webservice.conf.xml"/>
     <property name="serviceRuntime" ref="serviceRuntime"/>
   </bean>
 

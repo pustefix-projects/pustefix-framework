@@ -89,7 +89,7 @@ public final class IncludeDocumentExtension {
                                    String parent_part_in, String parent_theme_in, String computed_inc,
                                    String module, String search) throws Exception {
        
-        if(path_str.startsWith("pfixroot:")) path_str = path_str.substring(9);
+        if(path_str.startsWith("docroot:")) path_str = path_str.substring(9);
         
         boolean dynamic = false;
         if(search!=null && !search.trim().equals("")) {

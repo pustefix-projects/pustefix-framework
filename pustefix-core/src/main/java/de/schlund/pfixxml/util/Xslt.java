@@ -258,12 +258,12 @@ public class Xslt {
                 return new StreamSource(href);
             }
 
-            if (uri.getScheme() != null && !uri.getScheme().equals("pfixroot") && !uri.getScheme().equals("module")) {
+            if (uri.getScheme() != null && !uri.getScheme().equals("docroot") && !uri.getScheme().equals("module")) {
                 // we don't handle uris with an explicit scheme
                 return new StreamSource(href);
             }
             path = uri.getPath();
-            if (uri.getScheme() != null && uri.getScheme().equals("pfixroot")) {
+            if (uri.getScheme() != null && uri.getScheme().equals("docroot")) {
                 if (path.startsWith("/")) {
                     path = path.substring(1);
                 }

@@ -67,6 +67,7 @@ public class IncludeFileHandler extends DefaultHandler implements LexicalHandler
         }
     }
 
+    @Override
     public void startElement(String uri, String name, String qName, Attributes atts) throws SAXException {
         super.startElement(uri, name, qName, atts);
         String internal = qName;
@@ -113,6 +114,7 @@ public class IncludeFileHandler extends DefaultHandler implements LexicalHandler
         return retval;
     }
 
+    @Override
     public void endElement(String uri, String name, String qName) throws SAXException {
         super.endElement(uri, name, qName);
         String internal = qName;
@@ -128,6 +130,7 @@ public class IncludeFileHandler extends DefaultHandler implements LexicalHandler
         }
     }
 
+    @Override
     public void characters(char ch[], int start, int length) {
         for (int i = start; i < start + length; i++) {
             switch (ch[i]) {

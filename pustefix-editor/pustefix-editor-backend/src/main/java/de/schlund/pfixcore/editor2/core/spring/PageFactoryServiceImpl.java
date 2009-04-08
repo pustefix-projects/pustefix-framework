@@ -57,6 +57,7 @@ public class PageFactoryServiceImpl implements PageFactoryService {
          * 
          * @see java.lang.Object#equals(java.lang.Object)
          */
+        @Override
         public boolean equals(Object obj) {
             if (obj instanceof PageKey) {
                 PageKey pk = (PageKey) obj;
@@ -79,6 +80,7 @@ public class PageFactoryServiceImpl implements PageFactoryService {
          * 
          * @see java.lang.Object#hashCode()
          */
+        @Override
         public int hashCode() {
             if (this.variant == null) {
                 return ("PAGEKEY: " + this.project.getName() + "/" + this.pagename)

@@ -49,7 +49,7 @@ class FileSystemResourceImpl implements FileSystemResource {
             throw new IllegalArgumentException("Cannot handle scheme " + uri.getScheme());
         }
         if (uri.getAuthority() != null && uri.getAuthority().length() != 0) {
-            throw new IllegalArgumentException("pfixroot:// URI may not specify authority");
+            throw new IllegalArgumentException("docroot:// URI may not specify authority");
         }
         if (uri.getHost() != null && uri.getHost().length() != 0) {
             throw new IllegalArgumentException("file:// URI may not specify host");

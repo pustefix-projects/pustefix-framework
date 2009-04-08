@@ -48,6 +48,7 @@ public class PreDoc {
         ANALYZER.addAnalyzer(CONTENTS, new StandardAnalyzer());
     } 
     
+    @Override
     public String toString() {
         return this.getClass() + "\n\tFilename: " + filename + "\n\tPath: " + path + "\n\tLasttouch: " + lasttouch
                 + "\n\tcomments: " + comments + "\n\ttags: " + tags + "\n\tattribKeys: " + attribKeys

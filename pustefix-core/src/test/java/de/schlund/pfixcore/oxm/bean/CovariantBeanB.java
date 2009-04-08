@@ -9,6 +9,7 @@ public class CovariantBeanB extends CovariantBeanA {
     
     private String value;
     
+    @Override
     public String getValue() {
         return value;
     }

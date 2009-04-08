@@ -175,6 +175,7 @@ public class DynIncludePartImpl extends CommonIncludePartImpl {
         }
     }
 
+    @Override
     public void deleteThemeVariant(IncludePartThemeVariant variant) throws EditorSecurityException, EditorIOException, EditorParsingException {
         synchronized (this.cache) {
             super.deleteThemeVariant(variant);

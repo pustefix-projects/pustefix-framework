@@ -58,7 +58,7 @@ public class DynamicResourceProvider implements ResourceProvider {
             try {
                 String uriPath = uri.getPath();
                 uriPath = uriPath.replace("THEME", theme);
-                URI  prjUri = new URI("pfixroot:/"+project+uriPath);
+                URI  prjUri = new URI("docroot:/"+project+uriPath);
                 if(LOG.isDebugEnabled()) LOG.debug("trying "+prjUri.toString());
                 Resource resource = ResourceUtil.getResource(prjUri);
                 if(resource.exists()) {
@@ -76,7 +76,7 @@ public class DynamicResourceProvider implements ResourceProvider {
             try {
                 String uriPath = uri.getPath();
                 uriPath = uriPath.replace("THEME", theme);
-                URI  prjUri = new URI("pfixroot:/"+"common"+uriPath);
+                URI  prjUri = new URI("docroot:/"+"common"+uriPath);
                 if(LOG.isDebugEnabled()) LOG.debug("trying "+prjUri.toString());
                 Resource resource = ResourceUtil.getFileResource(prjUri);
                 resource.setOriginatingURI(uri);
@@ -138,7 +138,7 @@ public class DynamicResourceProvider implements ResourceProvider {
         
         //Return non-existing project resource if search failed
         try {
-            URI  prjUri = new URI("pfixroot:/"+project+uri.getPath());
+            URI  prjUri = new URI("docroot:/"+project+uri.getPath());
             Resource resource = ResourceUtil.getResource(prjUri);
             return resource;
         } catch(URISyntaxException x) {

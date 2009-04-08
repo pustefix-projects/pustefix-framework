@@ -80,6 +80,7 @@ public class DynIncludePartThemeVariantImpl extends
         return new ArrayList<Project>();
     }
 
+    @Override
     protected void writeChangeLog() {
         Logger.getLogger("LOGGER_EDITOR").warn(
                 "DYNTXT: remote_access: " + this.toString());

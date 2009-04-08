@@ -48,11 +48,11 @@ public class JumpToIncludePartHandler implements IHandler {
             return;
         }
         String path = input.getPath();
-        if (!path.startsWith("pfixroot:") && !path.startsWith("module:")) {
+        if (!path.startsWith("docroot:") && !path.startsWith("module:")) {
             if (!path.startsWith("/")) {
                 path = "/" + path;
             }
-            path = "pfixroot:" + path;
+            path = "docroot:" + path;
         }
         if (input.getType().equals("include")) {
             projectsResource.selectProject(input.getProjectURI());

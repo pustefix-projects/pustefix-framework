@@ -29,7 +29,7 @@ import de.schlund.pfixxml.PfixServletRequestImpl;
 import de.schlund.pfixxml.ResultDocument;
 import de.schlund.pfixxml.util.XMLUtils;
 
-@ContextConfiguration(loader=PustefixWebApplicationContextLoader.class,locations={"pfixroot:/WEB-INF/project.xml","pfixroot:/WEB-INF/spring.xml"})
+@ContextConfiguration(loader=PustefixWebApplicationContextLoader.class,locations={"docroot:/WEB-INF/project.xml","docroot:/WEB-INF/spring.xml"})
 public class OrderFlowTest extends AbstractJUnit38SpringContextTests implements ServletContextAware, ApplicationContextAware {
     
     private ServletContext servletContext;

@@ -75,6 +75,7 @@ public class Tripel implements Comparable<Tripel> {
     
     
 
+    @Override
     public String toString() {
         StringBuffer sb = new StringBuffer();
         sb.append(getFilename());
@@ -98,6 +99,7 @@ public class Tripel implements Comparable<Tripel> {
         return sb.toString();
     }
 
+    @Override
     public boolean equals(Object arg0) {
         if (arg0 instanceof Tripel) {
             Tripel c = (Tripel) arg0;
@@ -106,6 +108,7 @@ public class Tripel implements Comparable<Tripel> {
         return false;
     }
 
+    @Override
     public int hashCode() {
         return getPath().hashCode();
     }

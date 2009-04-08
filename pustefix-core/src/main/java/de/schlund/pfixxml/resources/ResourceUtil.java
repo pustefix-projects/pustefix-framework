@@ -69,7 +69,7 @@ public class ResourceUtil {
     /**
      * Creates a resource object using the given uri.
      * At the moment only absolute URIs with the "file" or
-     * "pfixroot" scheme are supported.
+     * "docroot" scheme are supported.
      * 
      * @param uri URI denoting the resource to access
      * @return Resource object for the given URI
@@ -88,7 +88,7 @@ public class ResourceUtil {
             throw new IllegalArgumentException("Cannot handle URIs without a path: "+uri);
         }
         
-        if (scheme.equals("pfixroot")) {
+        if (scheme.equals("docroot")) {
             return (FileResource)getResource(uri);
         } else if (scheme.equals("file")) {
             return new FileSystemResourceImpl(uri);
@@ -165,7 +165,7 @@ public class ResourceUtil {
             path = "/" + path;
         }
         try {
-            return (DocrootResource) getFileResource(new URI("pfixroot", null, path, null, null));
+            return (DocrootResource) getFileResource(new URI("docroot", null, path, null, null));
         } catch (URISyntaxException e) {
             throw new IllegalArgumentException("Path \"" + path + "\" is not well-formed", e);
         }

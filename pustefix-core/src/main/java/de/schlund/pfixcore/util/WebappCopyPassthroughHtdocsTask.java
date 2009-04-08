@@ -274,8 +274,8 @@ public class WebappCopyPassthroughHtdocsTask extends Task {
         if (text.length() == 0) {
             return null;
         } else {
-            if (text.startsWith("pfixroot:")) {
-                text = text.substring("pfixroot:".length());
+            if (text.startsWith("docroot:")) {
+                text = text.substring("docroot:".length());
                 return GlobalConfig.getDocroot() + text;
             } else if (text.startsWith("file:")) {
                 return text.substring("file:".length());

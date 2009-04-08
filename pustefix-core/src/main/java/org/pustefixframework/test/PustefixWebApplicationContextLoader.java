@@ -43,7 +43,7 @@ public class PustefixWebApplicationContextLoader implements ContextLoader {
      * 
      * You have to pass the locations of the project configuration file (project.xml) and
      * one or more Spring configuration files (spring.xml).
-     * Location URIs using the 'pfixroot:' scheme will be resolved to according file URIs.
+     * Location URIs using the 'docroot:' scheme will be resolved to according file URIs.
      * Calling this method also creates a mock ServletContext and initializes factories.
      */
     public ApplicationContext loadContext(String... locations) {
@@ -60,9 +60,9 @@ public class PustefixWebApplicationContextLoader implements ContextLoader {
             throw new RuntimeException("Factory initialization error", x);
         }
         
-        //Resolve "pfixroot:" URIs
+        //Resolve "docroot:" URIs
         for(int i=0;i<locations.length;i++) {
-            if(locations[i].startsWith("pfixroot")) {
+            if(locations[i].startsWith("docroot")) {
                 FileResource fileRes = ResourceUtil.getFileResource(locations[i]);
                 try {
                     locations[i] = fileRes.toURL().toString();

@@ -54,23 +54,23 @@ public abstract class AbstractDocrootResourceImpl implements DocrootResource {
     
     protected AbstractDocrootResourceImpl(URI uri) {
         // Sanity checks
-        if (uri.getScheme() == null || !uri.getScheme().equals("pfixroot")) {
+        if (uri.getScheme() == null || !uri.getScheme().equals("docroot")) {
             throw new IllegalArgumentException("Cannot handle scheme " + uri.getScheme());
         }
         if (uri.getAuthority() != null && uri.getAuthority().length() != 0) {
-            throw new IllegalArgumentException("pfixroot:// URI may not specify authority");
+            throw new IllegalArgumentException("docroot:// URI may not specify authority");
         }
         if (uri.getHost() != null && uri.getHost().length() != 0) {
-            throw new IllegalArgumentException("pfixroot:// URI may not specify host");
+            throw new IllegalArgumentException("docroot:// URI may not specify host");
         }
         if (uri.getPort() != -1) {
-            throw new IllegalArgumentException("pfixroot:// URI may not specify port");
+            throw new IllegalArgumentException("docroot:// URI may not specify port");
         }
         if (uri.getQuery() != null && uri.getQuery().length() != 0) {
-            throw new IllegalArgumentException("pfixroot:// URI may not specify query");
+            throw new IllegalArgumentException("docroot:// URI may not specify query");
         }
         if (uri.getFragment() != null && uri.getFragment().length() != 0) {
-            throw new IllegalArgumentException("pfixroot:// URI may not specify fragment");
+            throw new IllegalArgumentException("docroot:// URI may not specify fragment");
         }
         
         String path = uri.getPath();
@@ -87,7 +87,7 @@ public abstract class AbstractDocrootResourceImpl implements DocrootResource {
         }
         
         try {
-            this.uri = new URI("pfixroot", null, path, null, null).normalize();
+            this.uri = new URI("docroot", null, path, null, null).normalize();
         } catch (URISyntaxException e) {
             throw new RuntimeException(e);
         }
@@ -119,7 +119,7 @@ public abstract class AbstractDocrootResourceImpl implements DocrootResource {
         } else {
             String parentPath = path.substring(0, path.lastIndexOf('/'));
             try {
-                return ResourceUtil.getFileResource(new URI("pfixroot", null, parentPath, null, null));
+                return ResourceUtil.getFileResource(new URI("docroot", null, parentPath, null, null));
             } catch (URISyntaxException e) {
                 throw new RuntimeException(e);
             }

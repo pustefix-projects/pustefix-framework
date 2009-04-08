@@ -15,7 +15,7 @@
   <authadmin/>
   
   <xml-generator>
-    <config-file>pfixroot:/WEB-INF/depend.xml</config-file>
+    <config-file>docroot:/WEB-INF/depend.xml</config-file>
   </xml-generator>
   
   <http-server>
@@ -31,12 +31,12 @@
   
   <application>
     
-    <docroot-path>pfixroot:/htdocs</docroot-path>
+    <docroot-path>docroot:/htdocs</docroot-path>
     <default-path>/xml/main</default-path>
     
     <context-xml-service>
       <path>/xml/main</path>
-      <config-file>pfixroot:/WEB-INF/config.conf.xml</config-file>
+      <config-file>docroot:/WEB-INF/config.conf.xml</config-file>
     </context-xml-service>
     
     <static>

@@ -47,7 +47,8 @@ public class RemoteIncludeServiceImpl extends RemoteCommonIncludeServiceImpl imp
     public void setProjectFactoryService(ProjectFactoryService projectFactoryService) {
         this.projectFactoryService = projectFactoryService;
     }
-    
+
+    @Override
     public Collection<String> getImageDependencies(IncludePartThemeVariantReferenceTO reference, String targetName, boolean recursive) throws EditorParsingException {
         IncludePartThemeVariant v = getIncludePartThemeVariantDOM(reference.path, reference.part, reference.theme);
         if (v == null) {
@@ -67,6 +68,7 @@ public class RemoteIncludeServiceImpl extends RemoteCommonIncludeServiceImpl imp
         return images;
     }
     
+    @Override
     public Collection<IncludePartThemeVariantReferenceTO> getIncludeDependencies(IncludePartThemeVariantReferenceTO reference, String targetName, boolean recursive) throws EditorParsingException {
         IncludePartThemeVariant v = getIncludePartThemeVariantDOM(reference.path, reference.part, reference.theme);
         if (v == null) {
@@ -90,10 +92,12 @@ public class RemoteIncludeServiceImpl extends RemoteCommonIncludeServiceImpl imp
         return includes;
     }
     
+    @Override
     protected IncludePartThemeVariant getIncludePartThemeVariantDOM(String path, String part, String theme) {
         return projectFactoryService.getProject().findIncludePartThemeVariant(path, part, theme);
     }
     
+    @Override
     protected IncludePart getIncludePartDOM(String path, String part) {
         IncludeFile file = getIncludeFileDOM(path);
         if (file == null) {
@@ -102,6 +106,7 @@ public class RemoteIncludeServiceImpl extends RemoteCommonIncludeServiceImpl imp
         return  file.getPart(part);
     }
     
+    @Override
     protected IncludeFile getIncludeFileDOM(String path) {
         try {
             return includeFactoryService.getIncludeFile(path);

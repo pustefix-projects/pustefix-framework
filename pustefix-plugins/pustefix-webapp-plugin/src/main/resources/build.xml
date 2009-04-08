@@ -2,8 +2,8 @@
   <target name="generate" depends="data, apt"/>
 
   <target name="data">
-    <delete dir="${pfixroot}/core"/>
-    <untar dest="${pfixroot}" compression="gzip" overwrite="true" src="${data.tar.gz}"/>
+    <delete dir="${docroot}/core"/>
+    <untar dest="${docroot}" compression="gzip" overwrite="true" src="${data.tar.gz}"/>
   </target>
   	
   <target name="apt">

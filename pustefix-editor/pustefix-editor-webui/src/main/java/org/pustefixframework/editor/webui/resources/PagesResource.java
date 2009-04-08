@@ -95,7 +95,7 @@ public class PagesResource {
                         Element imageElement = resdoc.createSubNode(imagesElement, "image");
                         String path = image.getPath();
                         String url;
-                        if (path.startsWith("pfixroot:/")) {
+                        if (path.startsWith("docroot:/")) {
                             url = projectPool.getURIForProject(projectsResource.getSelectedProject())
                                 + path.substring(10);
                         } else {

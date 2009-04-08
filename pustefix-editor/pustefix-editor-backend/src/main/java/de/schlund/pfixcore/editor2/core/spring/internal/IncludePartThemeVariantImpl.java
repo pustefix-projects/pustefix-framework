@@ -227,6 +227,7 @@ public class IncludePartThemeVariantImpl extends
     }
 
 
+    @Override
     protected void writeChangeLog() {
         Logger.getLogger("LOGGER_EDITOR").warn(
                 "TXT: remote_access: "

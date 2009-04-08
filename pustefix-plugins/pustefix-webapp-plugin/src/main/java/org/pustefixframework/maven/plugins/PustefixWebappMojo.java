@@ -75,7 +75,7 @@ public class PustefixWebappMojo extends AbstractMojo {
      * 
      * @parameter default-value="${project.build.directory}/${project.artifactId}-${project.version}"
      */
-    private String pfixroot;
+    private String docroot;
 
     /**
      * Where to unpack modules
@@ -134,8 +134,8 @@ public class PustefixWebappMojo extends AbstractMojo {
         // because all executions operate on the same pfixcore classes:
         GlobalConfig.reset();
         
-        GlobalConfigurator.setDocroot(pfixroot);
-        new File(pfixroot, "WEB-INF").mkdirs();
+        GlobalConfigurator.setDocroot(docroot);
+        new File(docroot, "WEB-INF").mkdirs();
 
         getLog().info("unpacked " + unpackModules() + " module(s)");
         try {
@@ -163,7 +163,7 @@ public class PustefixWebappMojo extends AbstractMojo {
             logger.setMessageOutputLevel(getLog().isDebugEnabled() ? Project.MSG_DEBUG : Project.MSG_INFO);
             ant.addBuildListener(logger);
             ant.setBaseDir(project.getBasedir());
-            ant.setProperty("pfixroot", pfixroot);
+            ant.setProperty("docroot", docroot);
             ant.setProperty("aptdir", aptdir);
             ant.setProperty("makemode", makemode);
             ant.setProperty("data.tar.gz", getDataTarGz());
