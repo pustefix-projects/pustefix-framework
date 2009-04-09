@@ -27,12 +27,17 @@ import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.lang.reflect.WildcardType;
 import java.net.JarURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLClassLoader;
+import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
+import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.project.MavenProject;
 import org.w3c.dom.Document;
 
 /**
@@ -41,6 +46,63 @@ import org.w3c.dom.Document;
  * @author mleidig@schlund.de
  */
 public class Reflection {
+    public static Reflection create(MavenProject project) throws MojoExecutionException {
+        URL[] cp;
+        List<Artifact> artifacts;
+        StringBuilder classpath;
+        File file;
+        
+        classpath = new StringBuilder();
+        try {
+            artifacts = project.getCompileArtifacts();
+            cp = new URL[artifacts.size() + 1];
+            file = new File(project.getBuild().getOutputDirectory());
+            cp[0] = file.toURI().toURL();
+            classpath.append(file);
+            for (int i = 1; i < cp.length; i++) {
+                file = artifacts.get(i - 1).getFile();
+                cp[i] = file.toURI().toURL();
+                classpath.append(':').append(file.getAbsolutePath());
+            }
+        } catch (MalformedURLException e) {
+            throw new MojoExecutionException("invalid url", e); 
+        }
+        return new Reflection(new URLClassLoader(cp), classpath.toString());
+    }
+    
+    private final URLClassLoader loader;
+    private final String classpath;
+    
+    public Reflection(URLClassLoader loader, String classpath) {
+        this.loader = loader;
+        this.classpath = classpath;
+    }
+    
+    public String getClasspath() {
+        return classpath;
+    }
+    
+    public Class<?> clazz(String name) throws MojoExecutionException {
+        try {
+            return loader.loadClass(name);
+        } catch (ClassNotFoundException e) {
+            throw new MojoExecutionException(name + ": class not found in classpath " + toString(loader.getURLs()));
+        }
+    }
+    
+    private static String toString(URL[] urls) {
+        StringBuilder builder;
+
+        builder = new StringBuilder();
+        for (URL url : urls) {
+            if (builder.length() > 0) {
+                builder.append(':');
+            }
+            builder.append(url.toString());
+        }
+        return builder.toString();
+    }
+    
 
     /**
      * Returns the default target namespace of a class as defined in the JAX-WS
@@ -80,30 +142,26 @@ public class Reflection {
      * Checks if the webservice interface has been modified since the last
      * modification of a reference file.
      */
-    public static boolean checkInterfaceChange(String className, File buildDir, File refFile) throws MojoExecutionException {
+    public boolean checkInterfaceChange(String className, File buildDir, File refFile) throws MojoExecutionException {
         if(className == null) return false;
-        try {
-            Class<?> clazz = Class.forName(className);
-            if (!clazz.isInterface()) throw new MojoExecutionException("Web service interface class '" + className + "' doesn't define an interface type.");
-            // Check if interface or dependant interfaces changed
-            boolean changed = checkTypeChange(clazz, buildDir, refFile);
+        Class<?> clazz = clazz(className);
+        if (!clazz.isInterface()) throw new MojoExecutionException("Web service interface class '" + className + "' doesn't define an interface type.");
+        // Check if interface or dependant interfaces changed
+        boolean changed = checkTypeChange(clazz, buildDir, refFile);
+        if (changed) return true;
+        // Check if method parameter or return type classes changed
+        Method[] meths = clazz.getMethods();
+        for (int i = 0; i < meths.length; i++) {
+            Class<?> ret = meths[i].getReturnType();
+            changed = checkTypeChange(ret, buildDir, refFile);
             if (changed) return true;
-            // Check if method parameter or return type classes changed
-            Method[] meths = clazz.getMethods();
-            for (int i = 0; i < meths.length; i++) {
-                Class<?> ret = meths[i].getReturnType();
-                changed = checkTypeChange(ret, buildDir, refFile);
+            Class<?>[] pars = meths[i].getParameterTypes();
+            for (int j = 0; j < pars.length; j++) {
+                changed = checkTypeChange(pars[j], buildDir, refFile);
                 if (changed) return true;
-                Class<?>[] pars = meths[i].getParameterTypes();
-                for (int j = 0; j < pars.length; j++) {
-                    changed = checkTypeChange(pars[j], buildDir, refFile);
-                    if (changed) return true;
-                }
             }
-            return false;
-        } catch (ClassNotFoundException x) {
-            throw new MojoExecutionException("Web service interface class '" + className + "' not found.", x);
         }
+        return false;
     }
 
     /**
@@ -111,10 +169,10 @@ public class Reflection {
      * reference file.
      * @throws MojoExecutionException 
      */
-    public static boolean checkTypeChange(Class<?> clazz, File buildDir, File refFile) throws MojoExecutionException {
+    public boolean checkTypeChange(Class<?> clazz, File buildDir, File refFile) throws MojoExecutionException {
         if (!clazz.isPrimitive()) {
             ClassLoader cl = clazz.getClassLoader();
-            if (cl != null) {
+            if (cl == loader) {
                 if (clazz.isArray()) return checkTypeChange(getArrayType(clazz), buildDir, refFile);
                 String path = clazz.getName().replace('.', File.separatorChar) + ".class";
                 File file = new File(buildDir, path);
