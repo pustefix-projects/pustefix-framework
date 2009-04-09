@@ -37,8 +37,7 @@ public class HomePageTest extends AbstractJUnit38SpringContextTests {
         session.setAttribute(SessionHelper.SESSION_ID_URL, SessionHelper.getURLSessionId(req));
         
         requestHandler.handleRequest(req, res);
-        Assert.assertTrue(res.getContentAsString(), res.getContentAsString().contains("<title>PFIXCORE Sample</title>"));
-        
+        Assert.assertTrue(res.getContentAsString(), res.getContentAsString().contains("<title>Pustefix Sample</title>"));
     }
 
 }
