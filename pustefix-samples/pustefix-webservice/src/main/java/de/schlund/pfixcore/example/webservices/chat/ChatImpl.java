@@ -28,7 +28,7 @@ import org.pustefixframework.webservices.AbstractService;
  * Window - Preferences - Java - Code Generation - Code and Comments
  */
 @WebService
-public class  extends AbstractService implements Chat {
+public class ChatImpl extends AbstractService implements Chat {
 
     public void login(String nickName) throws Exception {
         ContextChat cc=(ContextChat)this.getContextResource(ContextChat.class.getName());
