@@ -36,11 +36,11 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.w3c.dom.Document;
 
 /**
- * Common utility methods used by the ant tasks
+ * Utility methods used by the mojo.
  * 
  * @author mleidig@schlund.de
  */
-public class TaskUtils {
+public class Reflection {
 
     /**
      * Returns the default target namespace of a class as defined in the JAX-WS

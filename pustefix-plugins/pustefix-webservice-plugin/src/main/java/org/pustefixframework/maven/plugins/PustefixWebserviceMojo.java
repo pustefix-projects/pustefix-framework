@@ -130,7 +130,7 @@ public class PustefixWebserviceMojo extends AbstractMojo {
             
             File confDir = prjFile.getParentFile();
             String projectName = confDir.getParentFile().getName();
-            Document doc = TaskUtils.loadDoc(prjFile);
+            Document doc = Reflection.loadDoc(prjFile);
             Element serviceElem = (Element)doc.getElementsByTagName("webservice-service").item(0);
             if(serviceElem != null) {
                 
@@ -213,7 +213,7 @@ public class PustefixWebserviceMojo extends AbstractMojo {
                             File wsdlFile = new File(wsdlDir, conf.getName() + ".wsdl");
                             // Check if WSDL/Javascript has to be built
                             if (refConf == null || !wsdlFile.exists() || globalConfChanged || !conf.equals(refConf)
-                                    || TaskUtils.checkInterfaceChange(conf.getInterfaceName(), builddir, wsdlFile)) {
+                                    || Reflection.checkInterfaceChange(conf.getInterfaceName(), builddir, wsdlFile)) {
                                 if(conf.getInterfaceName()!=null) checkInterface(conf.getInterfaceName());
                                 Class<?> implClass = clazz(conf.getImplementationName());
                                 WebService anno = implClass.getAnnotation(WebService.class);
@@ -238,7 +238,7 @@ public class PustefixWebserviceMojo extends AbstractMojo {
                                     wsgen.setDynamicAttribute("resourcedestdir", wsgenDir.getAbsolutePath());
                                     wsgen.setDynamicAttribute("classpath", getClasspath());
                                     wsgen.setDynamicAttribute("sei", conf.getImplementationName());
-                                    String serviceName = "{" + TaskUtils.getTargetNamespace(implClass) + "}" + conf.getName();
+                                    String serviceName = "{" + Reflection.getTargetNamespace(implClass) + "}" + conf.getName();
                                     wsgen.setDynamicAttribute("servicename", serviceName);
                                     try {
                                         wsgen.execute();
