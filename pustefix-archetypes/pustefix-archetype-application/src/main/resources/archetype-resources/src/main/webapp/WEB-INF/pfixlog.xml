@@ -6,14 +6,6 @@
 <log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/"
                      xmlns:cus="http://www.schlund.de/pustefix/customize">
 
-  <appender name="PFXPERF" class="org.apache.log4j.RollingFileAppender">
-    <param name="File"><cus:docroot/>log/pustefix-pfxperf.log</param>
-    <param name="MaxFileSize" value="10MB"/>
-    <layout class="org.apache.log4j.PatternLayout">
-      <param name="ConversionPattern" value="%d{ISO8601}|%m${symbol_escape}n"/>
-    </layout>
-  </appender>
-
   <appender name="LOGGER_GENERAL" class="org.apache.log4j.RollingFileAppender">
     <param name="File"><cus:docroot/>log/pustefix-servlet.log</param>
     <param name="MaxFileSize" value="10MB"/>
@@ -38,14 +30,6 @@
     </layout>
   </appender>
 
-  <appender name="LOGGER_EDITOR" class="org.apache.log4j.RollingFileAppender">
-    <param name="File"><cus:docroot/>log/pustefix-editor.log</param>
-    <param name="MaxFileSize" value="10MB"/>
-    <layout class="org.apache.log4j.PatternLayout">
-      <param name="ConversionPattern" value="%d{ISO8601} %m${symbol_escape}n"/>
-    </layout>
-  </appender>
-
   <appender name="LOGGER_TARGET_UPDATER" class="org.apache.log4j.RollingFileAppender">
     <param name="File"><cus:docroot/>log/pustefix-target-updater.log</param>
     <param name="MaxFileSize" value="10MB"/>
@@ -59,14 +43,6 @@
     <param name="MaxFileSize" value="10MB"/>
     <layout class="org.apache.log4j.PatternLayout">
       <param name="ConversionPattern" value="%d{ISO8601} %m${symbol_escape}n"/>
-    </layout>
-  </appender>
-
-  <appender name="LOGGER_PROFILER" class="org.apache.log4j.RollingFileAppender">
-    <param name="File"><cus:docroot/>log/pustefix-profiling.log</param>
-    <param name="MaxFileSize" value="10MB"/>
-    <layout class="org.apache.log4j.PatternLayout">
-      <param name="ConversionPattern" value="%m|%d{ISO8601}${symbol_escape}n"/>
     </layout>
   </appender>
 
@@ -86,15 +62,7 @@
     </layout>
   </appender>
  
-  <appender name="LOGGER_EDITOR_PERF" class="org.apache.log4j.RollingFileAppender">
-    <param name="File"><cus:docroot/>log/pustefix-editor-perf.log</param>
-    <param name="MaxFileSize" value="10MB"/>
-    <layout class="org.apache.log4j.PatternLayout">
-      <param name="ConversionPattern" value="%d{ISO8601} %m${symbol_escape}n"/>
-    </layout>
-  </appender>
- 
-  <!-- Categories -->
+j  <!-- Categories -->
 
   <!-- make some classes quiet by default --> 
   <category name="org.apache" additivity="false">
@@ -107,16 +75,6 @@
     <appender-ref ref="LOGGER_GENERAL"/>
   </category>
 
-  <category name="PFXPERF" additivity="false">
-    <priority value="DEBUG"/>
-    <appender-ref ref="PFXPERF"/>
-  </category>
-
-  <category name="EDITOR_PERF" additivity="false">
-    <priority value="WARN"/>
-    <appender-ref ref="LOGGER_EDITOR_PERF"/>
-  </category>
-  
   <category name="de.schlund.pfixcore.workflow.app.RequestDataImpl" additivity="false">
     <priority value="WARN"/>
     <appender-ref ref="LOGGER_GENERAL"/>
@@ -209,11 +167,6 @@
   
   <!-- special categories for additional logfiles -->
   
-  <category name="LOGGER_EDITOR" additivity="false">
-    <priority value="WARN"/>
-    <appender-ref ref="LOGGER_EDITOR"/>
-  </category>
-
   <category name="de.schlund.pfixcore.editor2.core.spring.PustefixTargetUpdateServiceImpl" additivity="false">
     <priority value="DEBUG"/>
     <appender-ref ref="LOGGER_TARGET_UPDATER"/>
@@ -232,11 +185,6 @@
   <category name="LOGGER_SERIALIZER" additivity="false">
     <priority value="DEBUG"/>
     <appender-ref ref="LOGGER_SERIALIZER"/>
-  </category>
-
-  <category name="LOGGER_PROFILER" additivity="false">
-    <priority value="ERROR"/>
-    <appender-ref ref="LOGGER_PROFILER"/>
   </category>
 
   <category name="LOGGER_DEREF" additivity="false">

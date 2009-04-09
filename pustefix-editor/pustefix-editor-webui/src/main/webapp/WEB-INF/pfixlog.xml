@@ -3,14 +3,6 @@
 <log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/"
                      xmlns:cus="http://www.schlund.de/pustefix/customize">
 
-  <appender name="PFXPERF" class="org.apache.log4j.RollingFileAppender">
-    <param name="File"><cus:docroot/>log/pustefix-pfxperf.log</param>
-    <param name="MaxFileSize" value="10MB"/>
-    <layout class="org.apache.log4j.PatternLayout">
-      <param name="ConversionPattern" value="%d{ISO8601}|%m\n"/>
-    </layout>
-  </appender>
-
   <appender name="LOGGER_GENERAL" class="org.apache.log4j.RollingFileAppender">
     <param name="File"><cus:docroot/>log/pustefix-servlet.log</param>
     <param name="MaxFileSize" value="10MB"/>
@@ -82,14 +74,6 @@
     </layout>
   </appender>
 
-  <appender name="LOGGER_PROFILER" class="org.apache.log4j.RollingFileAppender">
-    <param name="File"><cus:docroot/>log/pustefix-profiling.log</param>
-    <param name="MaxFileSize" value="10MB"/>
-    <layout class="org.apache.log4j.PatternLayout">
-      <param name="ConversionPattern" value="%m|%d{ISO8601}\n"/>
-    </layout>
-  </appender>
-
   <appender name="LOGGER_DEREF" class="org.apache.log4j.RollingFileAppender">
     <param name="File"><cus:docroot/>log/pustefix-deref.log</param>
     <param name="MaxFileSize" value="10MB"/>
@@ -108,12 +92,6 @@
 
  
   <!-- Categories -->
-
-  <!-- make some classes quiet by default --> 
-  <category name="PFXPERF" additivity="false">
-    <priority value="ERROR"/>
-    <appender-ref ref="PFXPERF"/>
-  </category>
 
   <category name="org.apache" additivity="false">
      <priority value="WARN"/>
@@ -205,12 +183,6 @@
     <appender-ref ref="LOGGER_GENERAL"/>
   </category>
   
-  <category name="de.schlund.pfixxml.perflogging" additivity="false">
-    <priority value="WARN"/>
-    <appender-ref ref="PFXPERF"/>
-  </category>
-
-  
   <category name="org.pustefixframework.webservices" additivity="false">
     <cus:choose>
       <cus:when test="$mode = 'prod'">
@@ -283,11 +255,6 @@
   <category name="LOGGER_SERIALIZER" additivity="false">
     <priority value="DEBUG"/>
     <appender-ref ref="LOGGER_SERIALIZER"/>
-  </category>
-
-  <category name="LOGGER_PROFILER" additivity="false">
-    <priority value="ERROR"/>
-    <appender-ref ref="LOGGER_PROFILER"/>
   </category>
 
   <category name="LOGGER_DEREF" additivity="false">
