@@ -30,7 +30,7 @@ public class ApplicationList implements Serializable {
         String defpath;
         
         result = new ApplicationList();
-        iter = XPath.select(projectsXml, "/projects/project[normalize-space(./active/text())='true']").iterator();
+        iter = XPath.select(projectsXml, "/TODO/project[normalize-space(./active/text())='true']").iterator();
         while (iter.hasNext()) {
             project = (Element) iter.next();
             name = project.getAttribute("name");

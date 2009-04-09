@@ -60,27 +60,23 @@ public class Cleanup{
                     String part = clean.getAttribute("part");
                     String theme = clean.getAttribute("theme");
                     
-                    if (!(path.indexOf("projects/core/txt") > 0)) {
-                        Document doc = (Document) changed.get(path);
-                        if (doc == null && (type.equals("part") || type.equals("theme"))) {
-                            IncludeDocument incdoc = IncludeDocumentFactory.getInstance().
-                                getIncludeDocument(null, ResourceUtil.getFileResourceFromDocroot(path), true);
-                            doc                    = incdoc.getDocument();
-                            System.out.println(doc.hashCode());
-                            doc.getDocumentElement().removeAttribute("incpath");
-                            changed.put(path, doc);
-                        }
-                        if (type.equals("part")) {
-                            cleanPart(doc, path, part);
-                        } else if (type.equals("theme")) {
-                            cleanTheme(doc, path, part, theme);
-                        } else if (type.equals("file")) {
-                            cleanFile(path);
-                        } else {
-                            System.out.println("ERROR! type is " + type);
-                        }
+                    Document doc = (Document) changed.get(path);
+                    if (doc == null && (type.equals("part") || type.equals("theme"))) {
+                        IncludeDocument incdoc = IncludeDocumentFactory.getInstance().
+                            getIncludeDocument(null, ResourceUtil.getFileResourceFromDocroot(path), true);
+                        doc                    = incdoc.getDocument();
+                        System.out.println(doc.hashCode());
+                        doc.getDocumentElement().removeAttribute("incpath");
+                        changed.put(path, doc);
+                    }
+                    if (type.equals("part")) {
+                        cleanPart(doc, path, part);
+                    } else if (type.equals("theme")) {
+                        cleanTheme(doc, path, part, theme);
+                    } else if (type.equals("file")) {
+                        cleanFile(path);
                     } else {
-                        System.out.println("Ignoring " + path);
+                        System.out.println("ERROR! type is " + type);
                     }
                 } else {
                     System.out.println("No clean element! " + name);
