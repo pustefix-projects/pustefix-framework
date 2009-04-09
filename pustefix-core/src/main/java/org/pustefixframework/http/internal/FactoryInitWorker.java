@@ -175,11 +175,6 @@ public class FactoryInitWorker {
                 GlobalConfigurator.setServletContext(servletContext);
             }
             
-            if (docrootstr != null) {
-                // For compatibility with old apps, initialize PathFactory
-                de.schlund.pfixxml.PathFactory.getInstance().init(docrootstr);
-            }
-    
             String confname = "WEB-INF/factory.xml";
             if (confname != null) {
                 FileResource confFile = ResourceUtil.getFileResourceFromDocroot(confname);
