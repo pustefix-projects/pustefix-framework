@@ -238,7 +238,7 @@ public class IWrapperAnnotationProcessor implements AnnotationProcessor {
                     PrintWriter writer = filer.createSourceFile(iwrapperClass);
 
                     TransformerFactory tf = TransformerFactory.newInstance();
-                    InputStream fis = getClass().getResourceAsStream("/build/iwrapper.xsl");
+                    InputStream fis = getClass().getResourceAsStream("/pustefix/xsl/iwrapper.xsl");
                     Transformer t = tf.newTransformer(new StreamSource(fis));
                     // t.setOutputProperty(OutputKeys.INDENT,"yes");
                     int ind = iwrapperClass.lastIndexOf('.');

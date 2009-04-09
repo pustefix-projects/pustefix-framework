@@ -91,7 +91,7 @@ public class GenerateIWrappersMojo extends AbstractMojo {
         
         boolean pustefixVersionChanged = !version.equals(lastBuildVersion);
         
-        StreamSource xsl = new StreamSource(getClass().getResourceAsStream("/build/iwrapper.xsl"));
+        StreamSource xsl = new StreamSource(getClass().getResourceAsStream("/pustefix/xsl/iwrapper.xsl"));
         
         DirectoryScanner ds = new DirectoryScanner();
         ds.setIncludes(new String[] {"**/*.iwrp"});

@@ -271,7 +271,7 @@ public class FactoryInitWorker {
             xreader.parse(new InputSource(configFile.getInputStream()));
             ByteArrayOutputStream bufferStream = new ByteArrayOutputStream();
             try {
-                Transformer t = SimpleResolver.configure(tf, "/build/create_log4j_config.xsl");
+                Transformer t = SimpleResolver.configure(tf, "/pustefix/xsl/log4j.xsl");
                 t.transform(new DOMSource(dr.getNode()), new StreamResult(bufferStream));
             } catch (TransformerException e) {
                 throw new SAXException(e);

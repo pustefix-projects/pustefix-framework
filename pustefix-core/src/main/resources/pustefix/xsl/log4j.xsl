@@ -2,7 +2,7 @@
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
   
   <xsl:output method="xml" encoding="UTF-8" indent="yes" doctype-system="http://logging.apache.org/log4j/docs/api/org/apache/log4j/xml/log4j.dtd"/>
-  <xsl:include href="create_lib.xsl"/>
+  <xsl:include href="lib.xsl"/>
 
   <xsl:template match="param">
     <param>

@@ -4,7 +4,7 @@
 
   <xsl:output method="xml" encoding="UTF-8" indent="yes"/>
 
-  <xsl:include href="create_lib.xsl"/>
+  <xsl:include href="lib.xsl"/>
   <xsl:param name="prohibitEdit"/>
   <xsl:param name="projectsFile"/>
   
