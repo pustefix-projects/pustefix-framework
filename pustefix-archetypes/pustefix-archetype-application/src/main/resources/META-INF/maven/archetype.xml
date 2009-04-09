@@ -14,7 +14,6 @@
     <resource>src/main/webapp/WEB-INF/project.xml</resource>
     <resource>src/main/webapp/WEB-INF/factory.xml</resource>
     <resource>src/main/webapp/WEB-INF/pustefix.xml</resource>
-    <resource>src/main/webapp/WEB-INF/projects.xml</resource>
     <resource>src/main/webapp/WEB-INF/depend.xml</resource>
     <resource>src/main/webapp/WEB-INF/pfixlog.xml</resource>
     <resource>src/main/webapp/WEB-INF/app.conf.xml</resource>

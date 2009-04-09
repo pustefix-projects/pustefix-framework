@@ -10,6 +10,11 @@
     <page handler="/xml/app" name="Confirm"/>
   </navigation>
 
+  <namespaces>
+    <namespace-declaration prefix="pfx" url="http://www.schlund.de/pustefix/core"/>
+    <namespace-declaration prefix="ixsl" url="http://www.w3.org/1999/XSL/Transform"/>
+  </namespaces>
+  
   <standardmaster>
     <include stylesheet="xsl/skin.xsl"/>
   </standardmaster>
