@@ -47,14 +47,14 @@ public class DelLang {
     }
 
     public static void main(String[] args) throws Exception {
-        String    docrt = args[0];
+        String    docroot = args[0];
         String    files = args[1];
-        if (files == null || docrt == null) {
+        if (files == null || docroot == null) {
             System.err.println("Usage: java DelLang DOCROOT includefilelist");
             System.exit(0);
         }
-        GlobalConfigurator.setDocroot(docrt);
-        DelLang dellang   = new DelLang(docrt);
+        GlobalConfigurator.setDocroot(docroot);
+        DelLang dellang   = new DelLang(docroot);
         Logging.configure("generator_quiet.xml");
         dellang.transform(files);
     }

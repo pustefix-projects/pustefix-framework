@@ -2,8 +2,6 @@ package org.pustefixframework.config.generic;
 
 import static org.junit.Assert.assertEquals;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.Properties;
 
@@ -15,8 +13,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import de.schlund.pfixxml.config.BuildTimeProperties;
-import de.schlund.pfixxml.config.GlobalConfig;
-import de.schlund.pfixxml.config.GlobalConfigurator;
 
 /**
  * 
@@ -32,9 +28,6 @@ public class PropertyFileReaderTest {
         logger.setLevel((Level)Level.WARN);
         logger.removeAllAppenders();
         logger.addAppender(appender);
-        
-        if(GlobalConfig.getDocroot()==null)
-            GlobalConfigurator.setDocroot(new File("projects").getAbsoluteFile().getAbsolutePath());
     }
     
     @Test
@@ -43,8 +36,7 @@ public class PropertyFileReaderTest {
         btp.put("mode", "test");
         btp.put("fqdn", "fqdn");
         BuildTimeProperties.setProperties(btp);
-        InputStream in = getClass().getResourceAsStream("properties.xml");
-        if(in==null) in = new FileInputStream(new File("src/test/java/org/pustefixframework/config/generic/properties.xml"));
+        InputStream in = getClass().getResourceAsStream("/properties.xml");
         Properties props = new Properties();
         PropertyFileReader.read(in, props);
         Properties refProps = new Properties();
