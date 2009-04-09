@@ -39,7 +39,7 @@ import de.schlund.pfixxml.targets.PageInfoFactory;
 import de.schlund.pfixxml.targets.TargetGenerationException;
 
 /**
- * Implementation of Page using classes from PFIXCORE
+ * Implementation of Page using classes from Pustefix Core
  * 
  * @author Sebastian Marsching <sebastian.marsching@1und1.de>
  */
