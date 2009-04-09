@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="ISO-8859-1"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <project>
   <bannerLeft>
     <name>Pustefix</name>
@@ -10,9 +10,9 @@
       <item name="Pustefix" href="http://org.pustefixframework.org/" />
     </links>
     <menu name="Documents">
-      <item name="Tutorial" href="docbook/html/tutorial.html"/>
-      <item name="Reference" href="docbook/html/reference.html"/>
-      <item name="FAQ" href="docbook/html/faq.html"/>
+      <item name="Tutorial" href="docbkx/tutorial.html"/>
+      <item name="Reference" href="docbkx/reference.html"/>
+      <item name="FAQ" href="docbkx/faq.html"/>
     </menu>
   </body>
 </project>

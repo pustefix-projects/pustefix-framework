@@ -1,7 +1,7 @@
-<?xml version="1.0" encoding="ISO-8859-1"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <xsl:stylesheet xmlns:prop="http://pustefix.sourceforge.net/properties200401" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0" >
   
-  <xsl:output method="xml" encoding="ISO-8859-1"/>
+  <xsl:output method="xml" encoding="UTF-8"/>
   
   <!-- 
   <xsl:template match="prop:properties/prop:prop[@name = 'context.class']">

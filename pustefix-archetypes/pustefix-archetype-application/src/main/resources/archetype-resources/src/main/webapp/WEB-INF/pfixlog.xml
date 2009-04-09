@@ -1,7 +1,7 @@
 #set( $symbol_pound = '#' )
 #set( $symbol_dollar = '$' )
 #set( $symbol_escape = '\' )
-<?xml version="1.0" encoding="ISO-8859-1" ?>
+<?xml version="1.0" encoding="UTF-8" ?>
 
 <log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/"
                      xmlns:cus="http://www.schlund.de/pustefix/customize">

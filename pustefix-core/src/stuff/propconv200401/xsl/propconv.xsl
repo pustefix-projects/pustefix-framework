@@ -8,7 +8,7 @@
   <!-- for being able to comment out whole element trees -->
   <xsl:import href="verb.xsl"/>
 
-  <xsl:output method="xml" encoding="ISO-8859-1" indent="no"/>
+  <xsl:output method="xml" encoding="UTF-8" indent="no"/>
   
   
   <!--<xsl:namespace-alias stylesheet-prefix="cus" result-prefix="cus"/>-->
