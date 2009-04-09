@@ -63,6 +63,11 @@
   
   <dependencies>
     <dependency>
+      <groupId>lucene</groupId>
+      <artifactId>lucene</artifactId>
+      <version>1.4.3</version>
+    </dependency> 
+    <dependency>
       <groupId>org.pustefixframework.editor</groupId>
       <artifactId>pustefix-editor-common</artifactId>
       <version>0.14.1-SNAPSHOT</version>
