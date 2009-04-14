@@ -94,7 +94,7 @@ public class PustefixWebappMojo extends AbstractMojo {
     private String fqdn;
     
     /**
-     * @parameter default-value="test"
+     * @parameter expression="${makemode}"
      */
     private String makemode;
 
@@ -121,6 +121,10 @@ public class PustefixWebappMojo extends AbstractMojo {
         File basedir;
         File docrootFile;
         
+        if (makemode == null || makemode.length() == 0) {
+            makemode = "test";
+        }
+
         // because all executions operate on the same pfixcore classes:
         GlobalConfig.reset();
         
