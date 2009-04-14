@@ -18,7 +18,7 @@
    </servlet>
    <servlet-mapping>
       <servlet-name>dispatcher</servlet-name>
-      <url-pattern>/xml/main/*</url-pattern>
+      <url-pattern>/xml/app/*</url-pattern>
    </servlet-mapping>
    <servlet-mapping>
       <servlet-name>dispatcher</servlet-name>

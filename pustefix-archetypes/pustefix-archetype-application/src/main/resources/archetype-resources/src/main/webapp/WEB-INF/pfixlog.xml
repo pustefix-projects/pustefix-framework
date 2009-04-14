@@ -62,7 +62,7 @@
     </layout>
   </appender>
  
-j  <!-- Categories -->
+  <!-- Categories -->
 
   <!-- make some classes quiet by default --> 
   <category name="org.apache" additivity="false">
@@ -207,9 +207,3 @@ j  <!-- Categories -->
   </root>
   
 </log4j:configuration>
-
-<!--
-Local Variables:
-mode: xml
-End:
--->
