@@ -1,3 +1,11 @@
+2009-04-14  Andreas Kurth  <andreas.kurth@1und1.de>
+
+	Added statusmessages merge support. Core will create its status codes constants
+	class using "-override" directory. Overridden statusmessages will be merged with
+	core/modules default messages. Archetype plugin honours the additional execution
+	goal within webapp plugin configuration.
+	This is exactly the same behaviour like in pre 0.14 pustefix versions.
+
 2009-04-08  Martin Leidig  <mleidig@schlund.de>
 
 	Removed support for global configuration (projects.xml). Moved namespaces 
