@@ -207,6 +207,7 @@
         <executions>
           <execution>
             <configuration>
+              <module>pfixcore</module>
               <docRoot>${basedir}/src/data</docRoot>
               <includes><include>core/dyntxt/statuscodeinfo.xml</include></includes>
             </configuration>
@@ -217,6 +218,7 @@
           </execution>
         </executions>
       </plugin>
-    </plugins>                
+    </plugins>
   </build>
+
 </project>
