@@ -49,11 +49,28 @@ public class DerefRequestHandler extends AbstractPustefixRequestHandler {
     
     protected final static Logger   DEREFLOG        = Logger.getLogger("LOGGER_DEREF");
     protected final static Logger   LOG             = Logger.getLogger(DerefRequestHandler.class);
-    public final static String PROP_DEREFKEY = "derefserver.signkey";
-    public final static String PROP_IGNORESIGN = "derefserver.ignoresign";
-    public final static String PROP_VALIDTIME = "derefserver.validtime";
-    private final static long DEFAULT_VALIDTIME = 1000 * 60 * 60;
+    
+    private String signKey;
+    private long validTime;
+    private boolean mustSign;
+    
     private ServletManagerConfig config;
+    
+    public void setSignKey(String signKey) {
+        this.signKey = signKey;
+    }
+    
+    public String getSignKey() {
+        return signKey;
+    }
+    
+    public void setValidTime(long validTime) {
+        this.validTime = validTime;
+    }
+    
+    public void setMustSign(boolean mustSign) {
+        this.mustSign = mustSign;
+    }
     
     @Override
     protected boolean allowSessionCreate() {
@@ -85,27 +102,11 @@ public class DerefRequestHandler extends AbstractPustefixRequestHandler {
         RequestParam enclinkparam = preq.getRequestParam("__enclink");
         RequestParam signparam    = preq.getRequestParam("__sign");
         RequestParam tsparam      = preq.getRequestParam("__ts");
-        String       key          = config.getProperties().getProperty(PROP_DEREFKEY);
-        String       ign          = config.getProperties().getProperty(PROP_IGNORESIGN);
-
-        long validTime = DEFAULT_VALIDTIME;
-        if(config.getProperties().getProperty(PROP_VALIDTIME)!=null) {
-            validTime = Long.parseLong(config.getProperties().getProperty(PROP_VALIDTIME)) * 1000;
-            if(validTime > DEFAULT_VALIDTIME) {
-                LOG.warn("The chosen deref-link valid time (" + validTime/1000 + "s) is very long.");
-            }
-        }
-        
-        // This is currently set to true by default for backward compatibility. 
-        boolean ignore_nosign = true;
-        if (ign != null && ign.equals("false")) {
-            ignore_nosign = false;
-        }
 
         HttpServletRequest req     = preq.getRequest();
         String             referer = req.getHeader("Referer");
 
-        LOG.debug("===> sign key: " + key);
+        LOG.debug("===> sign key: " + signKey);
         LOG.debug("===> Referer: " + referer);
         
         long timeStamp = 0;
@@ -116,13 +117,13 @@ public class DerefRequestHandler extends AbstractPustefixRequestHandler {
             if (signparam != null && signparam.getValue() != null) {
                 LOG.debug("     with sign: " + signparam.getValue());
             }
-            handleLink(linkparam.getValue(), signparam, timeStamp, validTime, ignore_nosign, preq, res, key);
+            handleLink(linkparam.getValue(), signparam, timeStamp, validTime, mustSign, preq, res, signKey);
             return;
         } else if (enclinkparam != null && enclinkparam.getValue() != null &&
                    signparam != null && signparam.getValue() != null) {
             LOG.debug(" ==> Handle enclink: " + enclinkparam.getValue());
             LOG.debug("     with sign: " + signparam.getValue());
-            handleEnclink(enclinkparam.getValue(), timeStamp, validTime, signparam.getValue(), preq, res, key);
+            handleEnclink(enclinkparam.getValue(), timeStamp, validTime, signparam.getValue(), preq, res, signKey);
             return;
         } else {
             res.sendError(HttpServletResponse.SC_BAD_REQUEST);
@@ -131,7 +132,7 @@ public class DerefRequestHandler extends AbstractPustefixRequestHandler {
     }
 
 
-    private void handleLink(String link, RequestParam signparam, long timeStamp, long validTime, boolean ignore_nosign,
+    private void handleLink(String link, RequestParam signparam, long timeStamp, long validTime, boolean mustSign,
                             PfixServletRequest preq, HttpServletResponse res, String key) throws Exception {
         boolean checked = false;
         boolean signed  = false;
@@ -141,7 +142,7 @@ public class DerefRequestHandler extends AbstractPustefixRequestHandler {
             // This is a "relative absolute" link, no other domain.
             // It doesn't matter if any JS tricks or other stuff is played here, because
             // the link will only be used in the second stage when we do relocate via 302
-            ignore_nosign = true;
+            mustSign = false;
         }
 
         if  (signparam != null && signparam.getValue() != null) {
@@ -158,7 +159,7 @@ public class DerefRequestHandler extends AbstractPustefixRequestHandler {
         
         // We don't currently enforce the signing at this stage. We may change this to enforcing mode,
         // or maybe we will use some clear warning pages in the case of a not signed request.
-        if (checked || (!signed && ignore_nosign)) {
+        if (checked || (!signed && !mustSign)) {
             OutputStream       out    = res.getOutputStream();
             OutputStreamWriter writer = new OutputStreamWriter(out, res.getCharacterEncoding());
             if (addallparams) {
@@ -184,7 +185,7 @@ public class DerefRequestHandler extends AbstractPustefixRequestHandler {
                 }
             }
             String             enclink  = Base64Utils.encode(link.getBytes("utf8"),false);
-            if(!signed && ignore_nosign) timeStamp = System.currentTimeMillis();
+            if(!signed && !mustSign) timeStamp = System.currentTimeMillis();
             String             reallink = getServerURL(preq) +
                 SessionHelper.getClearedURI(preq) + "?__enclink=" + URLEncoder.encode(enclink, "utf8") +
                 "&__sign=" + signString(enclink, timeStamp, key) + "&__ts=" + timeStamp;

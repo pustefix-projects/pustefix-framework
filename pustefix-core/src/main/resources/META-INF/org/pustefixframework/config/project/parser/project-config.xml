@@ -14,9 +14,22 @@
     <match>/p:project-config/p:application</match>
   </handler>
   
+  <!-- Adds the SessionCleaner bean -->
+  <handler class="org.pustefixframework.config.project.parser.SessionCleanerParsingHandler">
+    <match>/p:project-config/p:application//p:context-xml-service</match>
+    <match>/p:project-config/p:application//p:context-xml-service//p:session-cleaner-timeout</match>
+  </handler>
+  
  <!-- Creates dereferer request handler -->
   <handler class="org.pustefixframework.config.project.parser.DerefRequestHandlerParsingHandler">
     <match>/p:project-config/p:application</match>
+    <match>/p:project-config/p:application/p:deref-service</match>
+  </handler>
+  
+  <!-- Creates ExceptionProcessors -->
+  <handler class="org.pustefixframework.config.project.parser.ExceptionProcessingParsingHandler">
+    <match>/p:project-config/p:application</match>
+    <match>/p:project-config/p:application//p:exception-processing</match>
   </handler>
   
   <!-- Adds SessionAdmin bean -->
@@ -46,7 +59,9 @@
   
   <!-- Reads path to depend.xml file -->
   <handler class="org.pustefixframework.config.project.parser.XMLGeneratorInfoParsingHandler">
+    <match>/p:project-config/p:xml-generator</match>
     <match>/p:project-config/p:xml-generator//p:config-file</match>
+    <match>/p:project-config/p:xml-generator//p:check-modtime</match>
   </handler>
   
   <!-- Creates context xml request handler -->
@@ -64,17 +79,35 @@
     <match>//p:project-config/p:editor//p:location</match>
   </handler>
 
+
+  <handler class="org.pustefixframework.config.generic.PropertiesParsingHandler">
+    <match>/p:project-config/p:properties</match>
+  </handler>
+  
+  <handler class="org.pustefixframework.config.generic.PropertyParsingHandler">
+    <match>/p:project-config/p:properties//p:prop</match>
+  </handler>
+
+  <handler class="org.pustefixframework.config.project.parser.RegisterProjectPropertiesParsingHandler" run-order="end">
+    <preceding-handler>org.pustefixframework.config.generic.PropertiesParsingHandler</preceding-handler>
+    <match>/p:project-config/p:properties</match>
+  </handler>
+  
   
   <handler id="org.pustefixframework.config.customization.WhenParsingHandler" class="org.pustefixframework.config.customization.CustomizationWhenParsingHandler">
     <match>/p:project-config/p:choose/p:when</match>
     <match>/p:project-config/p:application/p:choose/p:when</match>
     <match>/p:project-config/p:xml-generator/p:choose/p:when</match>
+    <match>/p:project-config//p:context-xml-service/p:choose/p:when[p:session-cleaner-timeout]</match>
+    <match>/p:project-config/p:properties/p:choose/p:when</match>
   </handler>
   
   <handler id="org.pustefixframework.config.customization.OtherwiseParsingHandler" class="org.pustefixframework.config.customization.CustomizationOtherwiseParsingHandler">
     <match>/p:project-config/p:choose/p:otherwise</match>
     <match>/p:project-config/p:application/p:choose/p:otherwise</match>
     <match>/p:project-config/p:xml-generator/p:choose/p:otherwise</match>
+    <match>/p:project-config//p:context-xml-service/p:choose/p:otherwise[p:session-cleaner-timeout]</match>
+    <match>/p:project-config/p:properties/p:choose/p:otherwise</match>
   </handler>
   
 </configuration>

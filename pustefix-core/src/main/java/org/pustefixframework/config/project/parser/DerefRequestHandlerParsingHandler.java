@@ -17,59 +17,86 @@
  */
 package org.pustefixframework.config.project.parser;
 
-import java.io.IOException;
 import java.util.Properties;
 
+import org.pustefixframework.config.Constants;
 import org.pustefixframework.config.contextxmlservice.ServletManagerConfig;
-import org.pustefixframework.config.generic.PropertyFileReader;
 import org.pustefixframework.http.dereferer.DerefRequestHandler;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinitionHolder;
 import org.springframework.beans.factory.config.RuntimeBeanReference;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
+import org.w3c.dom.Element;
 
 import com.marsching.flexiparse.parser.HandlerContext;
 import com.marsching.flexiparse.parser.ParsingHandler;
 import com.marsching.flexiparse.parser.exception.ParserException;
 
-import de.schlund.pfixxml.resources.ResourceUtil;
 import de.schlund.pfixxml.serverutil.SessionAdmin;
 
 public class DerefRequestHandlerParsingHandler implements ParsingHandler {
     
+    private BeanDefinitionBuilder beanBuilder;
+    
     public void handleNode(HandlerContext context) throws ParserException {
-        final Properties properties = new Properties(System.getProperties());
-        try {
-            PropertyFileReader.read(ResourceUtil.getFileResourceFromDocroot("WEB-INF/pustefix.xml"), properties);
-        } catch (ParserException e) {
-            throw new ParserException("Error while reading WEB-INF/pustefix.xml", e);
-        } catch (IOException e) {
-            throw new ParserException("Error while reading WEB-INF/pustefix.xml", e);
-        }
-        ServletManagerConfig config = new ServletManagerConfig() {
-
-            public Properties getProperties() {
-                return properties;
-            }
-
-            public boolean isSSL() {
-                return false;
-            }
-
-            public boolean needsReload() {
-                return false;
-            }
+        
+        Element root = (Element) context.getNode();
+        
+        if(root.getLocalName().equals("application")) {
             
-        };
-        BeanDefinitionBuilder beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(DerefRequestHandler.class);
-        beanBuilder.setScope("singleton");
-        beanBuilder.setInitMethodName("init");
-        beanBuilder.addPropertyValue("handlerURI", "/xml/deref/**");
-        beanBuilder.addPropertyValue("configuration", config);
-        beanBuilder.addPropertyValue("sessionAdmin", new RuntimeBeanReference(SessionAdmin.class.getName()));
-        BeanDefinition beanDefinition = beanBuilder.getBeanDefinition();
-        BeanDefinitionHolder beanHolder = new BeanDefinitionHolder(beanDefinition, DerefRequestHandler.class.getName());
-        context.getObjectTreeElement().addObject(beanHolder);
+            final Properties properties = new Properties(System.getProperties());
+            ServletManagerConfig config = new ServletManagerConfig() {
+
+                public Properties getProperties() {
+                    return properties;
+                }
+
+                public boolean isSSL() {
+                    return false;
+                }
+
+                public boolean needsReload() {
+                    return false;
+                }
+                
+            };
+            
+            beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(DerefRequestHandler.class);
+            beanBuilder.setScope("singleton");
+            beanBuilder.setInitMethodName("init");
+            beanBuilder.addPropertyValue("handlerURI", "/xml/deref/**");
+            beanBuilder.addPropertyValue("signKey", "TO_BE_REPLACED");
+            beanBuilder.addPropertyValue("configuration", config);
+            beanBuilder.addPropertyValue("sessionAdmin", new RuntimeBeanReference(SessionAdmin.class.getName()));
+            BeanDefinition beanDefinition = beanBuilder.getBeanDefinition();
+            BeanDefinitionHolder beanHolder = new BeanDefinitionHolder(beanDefinition, DerefRequestHandler.class.getName());
+            context.getObjectTreeElement().addObject(beanHolder);
+            
+        } else if(root.getLocalName().equals("deref-service")) {
+        
+            Element serviceElement = (Element) context.getNode();
+            
+            String path="/xml/deref";
+            Element element = (Element) serviceElement.getElementsByTagNameNS(Constants.NS_PROJECT, "path").item(0);
+            if (element != null) path = element.getTextContent().trim();
+            
+            element = (Element) serviceElement.getElementsByTagNameNS(Constants.NS_PROJECT, "signkey").item(0);
+            if (element == null) throw new ParserException("Could not find expected <signkey> element");
+            String signKey = element.getTextContent().trim();
+            
+            long validTime = 1000 * 60 * 60;
+            element = (Element) serviceElement.getElementsByTagNameNS(Constants.NS_PROJECT, "validtime").item(0);
+            if (element != null) validTime = Long.parseLong(element.getTextContent().trim()) * 1000;
+            
+            boolean mustSign = false;
+            element = (Element) serviceElement.getElementsByTagNameNS(Constants.NS_PROJECT, "mustsign").item(0);
+            if (element != null) mustSign = Boolean.parseBoolean(element.getTextContent().trim());
+            
+            beanBuilder.addPropertyValue("handlerURI", path + "/**");
+            beanBuilder.addPropertyValue("signKey", signKey);
+            beanBuilder.addPropertyValue("validTime", validTime);
+            beanBuilder.addPropertyValue("mustSign", mustSign);
+        }
     }
 
 }

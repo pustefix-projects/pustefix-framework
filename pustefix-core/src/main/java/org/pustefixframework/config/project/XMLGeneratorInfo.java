@@ -20,19 +20,42 @@ package org.pustefixframework.config.project;
 
 
 public class XMLGeneratorInfo {
+    
     private String configurationFile;
     private String targetGeneratorBeanName;
-
-    public XMLGeneratorInfo(String configurationFile, String targetGeneratorBeanName) {
+    private boolean checkModtime;
+    
+    public XMLGeneratorInfo() {
+    }
+    
+    public XMLGeneratorInfo(String configurationFile, String targetGeneratorBeanName, boolean checkModtime) {
         this.configurationFile = configurationFile;
         this.targetGeneratorBeanName = targetGeneratorBeanName;
+        this.checkModtime = checkModtime;
     }
     
     public String getConfigurationFile() {
         return this.configurationFile;
     }
     
+    public void setConfigurationFile(String configurationFile) {
+        this.configurationFile = configurationFile;
+    }
+    
     public String getTargetGeneratorBeanName() {
         return this.targetGeneratorBeanName;
     }
+    
+    public void setTargetGeneratorBeanName(String targetGeneratorBeanName) {
+        this.targetGeneratorBeanName = targetGeneratorBeanName;
+    }
+    
+    public boolean getCheckModtime() {
+        return checkModtime;
+    }
+    
+    public void setCheckModtime(boolean checkModtime) {
+        this.checkModtime = checkModtime;
+    }
+
 }

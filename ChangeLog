@@ -1,3 +1,12 @@
+2009-04-15  Martin Leidig  <mleidig@schlund.de>
+
+	Removed support for pustefix.xml configuration file. Now global
+	properties are set in the properties section of the project.xml file.
+	Existing properties from pustefix.xml were moved to project.xml (made
+	most of them to regular elements in the appropriate sections).
+	Refactored some classes to inject configuration as bean property value
+	instead of Properties value. Removed deprecated properties.
+
 2009-04-14  Andreas Kurth  <andreas.kurth@1und1.de>
 
 	Added statusmessages merge support. Core will create its status codes constants

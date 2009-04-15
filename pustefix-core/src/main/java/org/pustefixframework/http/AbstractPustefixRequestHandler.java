@@ -27,8 +27,6 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.Map;
-import java.util.Properties;
 import java.util.TreeSet;
 
 import javax.servlet.ServletContext;
@@ -51,6 +49,7 @@ import de.schlund.pfixxml.FactoryInitUtil;
 import de.schlund.pfixxml.PfixServletRequest;
 import de.schlund.pfixxml.PfixServletRequestImpl;
 import de.schlund.pfixxml.exceptionprocessor.ExceptionConfig;
+import de.schlund.pfixxml.exceptionprocessor.ExceptionProcessingConfiguration;
 import de.schlund.pfixxml.exceptionprocessor.ExceptionProcessor;
 import de.schlund.pfixxml.serverutil.SessionAdmin;
 import de.schlund.pfixxml.serverutil.SessionHelper;
@@ -84,7 +83,6 @@ public abstract class AbstractPustefixRequestHandler implements UriProvidingHttp
     private static final String          PARAM_FORCELOCAL              = "__forcelocal";
     public static final String           PROP_COOKIE_SEC_NOT_ENFORCED  = "servletmanager.cookie_security_not_enforced";
     public static final String           PROP_P3PHEADER                = "servletmanager.p3p";
-    private static final String          PROP_EXCEPTION                = "exception";
     public static final String           PROP_SSL_REDIRECT_PORT        = "pfixcore.ssl_redirect_port.for.";
     protected static final String        DEF_CONTENT_TYPE              = "text/html";
     private static final String          DEFAULT_ENCODING              = "UTF-8";
@@ -95,13 +93,13 @@ public abstract class AbstractPustefixRequestHandler implements UriProvidingHttp
     private boolean                      cookie_security_not_enforced  = false;
     private Logger                       LOGGER_VISIT                  = Logger.getLogger("LOGGER_VISIT");
     private static Logger                       LOG                           = Logger.getLogger(AbstractPustefixRequestHandler.class);
-    private Map<Class<? extends Throwable>, ExceptionConfig> exceptionConfigs = new HashMap<Class<? extends Throwable>, ExceptionConfig>();
     private String                       servletEncoding;
     private ServletContext servletContext;
     private String handlerURI;
     private SessionAdmin sessionAdmin;
     private WebappAdmin webappAdmin;
-
+    private ExceptionProcessingConfiguration exceptionProcessingConfig;
+    
     protected abstract ServletManagerConfig getServletManagerConfig();
 
     protected boolean runningUnderSSL(HttpServletRequest req) {
@@ -792,7 +790,6 @@ public abstract class AbstractPustefixRequestHandler implements UriProvidingHttp
         }
         
         initCookieSec();
-        initExceptionConfigs();
         initServletEncoding();
     }
 
@@ -826,7 +823,7 @@ public abstract class AbstractPustefixRequestHandler implements UriProvidingHttp
             process(preq, res);
         } catch (Throwable e) {
             LOG.error("Exception in process", e);
-            ExceptionConfig exconf = getExceptionConfigForThrowable(e.getClass());
+            ExceptionConfig exconf = exceptionProcessingConfig.getExceptionConfigForThrowable(e.getClass());
             if(exconf != null && exconf.getProcessor()!= null) { 
                 if ( preq.getLastException() == null ) {  
                     ExceptionProcessor eproc = exconf.getProcessor();
@@ -836,120 +833,6 @@ public abstract class AbstractPustefixRequestHandler implements UriProvidingHttp
                 }
             } 
             if(!res.isCommitted()) throw new ServletException("Exception in process.",e);
-        }
-    }
-
-    /**
-     * 
-     * @return null if no processor is responsible for the passed throwable
-     * @throws ServletException
-     * @throws ClassNotFoundException
-     */
-    private ExceptionConfig getExceptionConfigForThrowable(Class<? extends Throwable> clazz) throws ServletException {
-        ExceptionConfig exConf=null;
-        if(clazz!=null) {
-            exConf=exceptionConfigs.get(clazz);
-            if(exConf==null) {
-                if(clazz.getSuperclass() == Object.class) {
-                    LOG.warn("No exception processor, page or forward configured for " + clazz.getName()); 
-                } else {
-                    exConf=getExceptionConfigForThrowable(clazz.getSuperclass().asSubclass(Throwable.class));
-                }
-            }
-        }
-        return exConf;
-    }
-    
-    /**
-     * This method uses all properties prefixed with 'exception' to build ExceptionConfig
-     * objects, which are then stored in the exConfig-Map, keyed by the type attribute
-     * of the ExceptionConfig.
-     * Syntax of key: "exception" '.' JAVATYPE '.' ("forward"|"page"|"processor")
-     * @exception ServletException if the exception configuration defined in the properties
-     * is somehow invalid
-     */
-    private void initExceptionConfigs() throws ServletException {
-        Map<String, ExceptionConfig> tmpExConf = new HashMap<String, ExceptionConfig>();
-        Properties properties = this.getServletManagerConfig().getProperties();
-        Enumeration<?> props = properties.propertyNames();
-        while (props.hasMoreElements()) {
-            String propName = (String) props.nextElement();
-
-            if (propName.startsWith(PROP_EXCEPTION)) {
-                String propValue = properties.getProperty(propName);
-
-                String type = null;
-                String attrName = null;
-                IndexOutOfBoundsException ioobex = null;
-                try {
-                    int dot1 = propName.indexOf('.');
-                    int dot2 = propName.lastIndexOf('.');
-                    type = propName.substring(dot1 + 1, dot2);
-                    attrName = propName.substring(dot2 + 1);
-                } catch (IndexOutOfBoundsException e) {
-                    // logging is done below
-                    ioobex = e;
-                }
-                if (type == null || attrName == null || "".equals(type) || "".equals(attrName)) {
-                    LOG.debug("Could not parse property key \"" + propName + "\" into three non-empty parts separated by '.'", ioobex);
-                }
-
-                ExceptionConfig exConf = (ExceptionConfig) tmpExConf.get(type);
-
-                LOG.debug("Property found for exception processing: " + propName + "=" + propValue);
-
-                if (exConf == null) {
-                    exConf = new ExceptionConfig();
-                    exConf.setType(type);
-                    tmpExConf.put(type, exConf);
-                }
-
-                try {
-                    if ("forward".equals(attrName)) {
-                        exConf.setForward(Boolean.valueOf(propValue).booleanValue());
-                    } else if ("page".equals(attrName)) {
-                        exConf.setPage(propValue);
-                    } else if ("processor".equals(attrName)) {
-                        Class<?> procClass = Class.forName(propValue);
-                        ExceptionProcessor exProc = (ExceptionProcessor) procClass.newInstance();
-                        exConf.setProcessor(exProc);
-                    }
-                } catch (ClassCastException ex) {
-                    throw new ServletException("INVALID CONF: Class " + propValue + " is not an instance of 'ExceptionProcessor'");
-                } catch (IllegalAccessException ex) {
-                    throw new ServletException("INVALID CONF: Can't create instance of class " + propName, ex);
-                } catch (SecurityException ex) {
-                    throw new ServletException("INVALID CONF: Can't create instance of class " + propName, ex);
-                } catch (ClassNotFoundException ex) {
-                    throw new ServletException("INVALID CONF: Can't create instance of class " + propName, ex);
-                } catch (InstantiationException ex) {
-                    throw new ServletException("INVALID CONF: Can't create instance of class " + propName, ex);
-                }
-            }
-        }
-
-        LOG.debug("Finished reading properties for Exception configuration! \n" + tmpExConf);
-
-        exceptionConfigs.clear();
-
-        // validate the ExceptionConfig-instances and save them, keyed by their type-attribute
-        for (Iterator<ExceptionConfig> values = tmpExConf.values().iterator(); values.hasNext();) {
-            ExceptionConfig exConfig = values.next();
-            if (exConfig.validate() == false)
-                throw new ServletException("INVALID ExceptionConfig: \n" + exConfig);
-            else {
-                try {
-                    Class<?> clazz=Class.forName(exConfig.getType());
-                    exceptionConfigs.put(clazz.asSubclass(Throwable.class), exConfig);
-                } catch(ClassNotFoundException x) {
-                    throw new ServletException("Can't find exception class: "+exConfig.getType());
-                }
-            }
-        }
-
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("Complete ExceptionConfig is:");
-            LOG.debug("\n" + exceptionConfigs);
         }
     }
 
@@ -1133,6 +1016,10 @@ public abstract class AbstractPustefixRequestHandler implements UriProvidingHttp
     
     public void setWebappAdmin(WebappAdmin webappAdmin) {
         this.webappAdmin = webappAdmin;
+    }
+    
+    public void setExceptionProcessingConfiguration(ExceptionProcessingConfiguration exceptionProcessingConfig) {
+        this.exceptionProcessingConfig = exceptionProcessingConfig;
     }
     
 }

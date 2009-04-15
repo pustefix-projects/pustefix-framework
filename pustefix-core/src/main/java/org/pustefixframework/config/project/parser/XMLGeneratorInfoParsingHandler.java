@@ -25,6 +25,7 @@ import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.DefaultBeanNameGenerator;
+import org.w3c.dom.Element;
 
 import com.marsching.flexiparse.parser.HandlerContext;
 import com.marsching.flexiparse.parser.exception.ParserException;
@@ -36,26 +37,46 @@ public class XMLGeneratorInfoParsingHandler extends CustomizationAwareParsingHan
 
     @Override
     public void handleNodeIfActive(HandlerContext context) throws ParserException {
-        String uri = context.getNode().getTextContent().trim();
         
-        BeanDefinitionRegistry beanRegistry = ParsingUtils.getSingleTopObject(BeanDefinitionRegistry.class, context);
-        DefaultBeanNameGenerator beanNameGenerator = new DefaultBeanNameGenerator();
+        Element root = (Element)context.getNode();
+
+        if(root.getLocalName().equals("xml-generator")) {
+            
+            XMLGeneratorInfo info = new XMLGeneratorInfo();
+            context.getObjectTreeElement().addObject(info);
         
-        BeanDefinitionBuilder beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(TargetGeneratorFactoryBean.class);
-        beanBuilder.setScope("singleton");
-        beanBuilder.addPropertyValue("configFile", uri);
-        BeanDefinition beanDefinition = beanBuilder.getBeanDefinition();
-        String beanName = beanNameGenerator.generateBeanName(beanDefinition, beanRegistry);
-        beanRegistry.registerBeanDefinition(beanName, beanDefinition);
-        beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(TargetGenerator.class);
-        beanDefinition = beanBuilder.getBeanDefinition();
-        beanDefinition.setFactoryBeanName(beanName);
-        beanDefinition.setFactoryMethodName("getObject");
-        beanName = beanNameGenerator.generateBeanName(beanDefinition, beanRegistry);
-        beanRegistry.registerBeanDefinition(beanName, beanDefinition);
+        } else if(root.getLocalName().equals("config-file")) {
         
-        XMLGeneratorInfo info = new XMLGeneratorInfo(uri, beanName);
-        context.getObjectTreeElement().addObject(info);
+            XMLGeneratorInfo info = ParsingUtils.getSingleTopObject(XMLGeneratorInfo.class, context);
+            
+            String uri = root.getTextContent().trim();
+            
+            BeanDefinitionRegistry beanRegistry = ParsingUtils.getSingleTopObject(BeanDefinitionRegistry.class, context);
+            DefaultBeanNameGenerator beanNameGenerator = new DefaultBeanNameGenerator();
+        
+            BeanDefinitionBuilder beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(TargetGeneratorFactoryBean.class);
+            beanBuilder.setScope("singleton");
+            beanBuilder.addPropertyValue("configFile", uri);
+            BeanDefinition beanDefinition = beanBuilder.getBeanDefinition();
+            String beanName = beanNameGenerator.generateBeanName(beanDefinition, beanRegistry);
+            beanRegistry.registerBeanDefinition(beanName, beanDefinition);
+            beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(TargetGenerator.class);
+            beanDefinition = beanBuilder.getBeanDefinition();
+            beanDefinition.setFactoryBeanName(beanName);
+            beanDefinition.setFactoryMethodName("getObject");
+            beanName = beanNameGenerator.generateBeanName(beanDefinition, beanRegistry);
+            beanRegistry.registerBeanDefinition(beanName, beanDefinition);
+        
+            info.setConfigurationFile(uri);
+            info.setTargetGeneratorBeanName(beanName);
+            
+        } else if(root.getLocalName().equals("check-modtime")) {
+            
+            XMLGeneratorInfo info = ParsingUtils.getSingleTopObject(XMLGeneratorInfo.class, context);
+            boolean checkModtime = Boolean.parseBoolean(root.getTextContent().trim());
+            info.setCheckModtime(checkModtime);
+        }
+        
     }
 
 }

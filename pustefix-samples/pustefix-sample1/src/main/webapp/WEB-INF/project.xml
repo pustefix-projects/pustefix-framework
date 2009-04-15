@@ -7,7 +7,11 @@
   </project>
   
   <editor>
-    <enabled>true</enabled> <!-- Do we really need this? -->
+    <choose>
+      <when test="$mode='test'">
+        <enabled>false</enabled>
+      </when>
+    </choose>
     <location>http://cms.${fqdn}/</location>
     <secret>foobar</secret>
   </editor>
@@ -28,6 +32,12 @@
   
   <xml-generator>
     <config-file>docroot:/WEB-INF/depend.xml</config-file>
+    <choose>
+      <when test="$mode='prod'">
+        <!-- Set this to false if you want to skip the check for changed stylesheets on every request -->
+        <check-modtime>false</check-modtime>
+      </when>
+    </choose>
   </xml-generator>
   
   <http-server>
@@ -65,6 +75,20 @@
     <context-xml-service>
       <path>/xml/main</path>
       <config-file>docroot:/WEB-INF/config.conf.xml</config-file>
+      <!-- Set this to true if you want to skip the last transformation and only get a
+           xml document containing all needed information for an external renderer -->
+      <!-- <render-external>true</render-external> -->  
+      <additional-trail-info>de.schlund.pfixxml.perflogging.DefaultAdditionalTrailInfoImpl</additional-trail-info>
+      <!-- <max-stored-doms>5</max-stored-doms> -->
+      <!-- Set the timeout for removing old SPDocuments. (in seconds) -->
+      <choose>
+        <when test="$mode='prod'">
+          <session-cleaner-timeout>20</session-cleaner-timeout>
+        </when>
+        <otherwise>
+          <session-cleaner-timeout>600</session-cleaner-timeout>
+        </otherwise>
+      </choose>
     </context-xml-service>
     
     <direct-output-service>
@@ -72,24 +96,37 @@
       <config-file>docroot:/WEB-INF/direct.conf.xml</config-file>
     </direct-output-service>
     
+    <deref-service>
+      <path>/xml/deref</path>            <!-- optional: default is /xml/deref -->
+      <signkey>987foobarbaz123</signkey> <!-- mandatory -->
+      <validtime>3600</validtime>        <!-- optional: default is 3600 (seconds) -->
+      <mustsign>false</mustsign>         <!-- optional: default is false -->
+    </deref-service>
+    
     <static>
       <path>core/img</path>
       <path>core/script</path>
       <path>img</path>
     </static>
     
-    <!--  Custom Deplyment descriptor code
-    <web-xml>
-      <jee:web-app xmlns:jee="http://java.sun.com/xml/ns/javaee">
-        <choose>
-          <when test="$mode='test'">
-            <jee:display-name>foo</jee:display-name>
-          </when>
-        </choose>
-      </jee:web-app>
-    </web-xml>
-    -->
+    <choose>
+      <when test="$mode='test'">
+        <exception-processing>
+          <process type="java.lang.Throwable" 
+                   processor="de.schlund.pfixxml.exceptionprocessor.UniversalExceptionProcessor"/>
+          <!-- <process type="mypackage.MyException" forward="true" page="/error.html"/> -->
+        </exception-processing>
+      </when>
+    </choose>
     
   </application>
+  
+  <properties>
+    
+    <!-- Defines SSL ports used for redirect corresponding to the unsecure ports -->
+    <prop name="pfixcore.ssl_redirect_port.for.8080">8443</prop>
+    <prop name="pfixcore.ssl_redirect_port.for.9080">9443</prop>
+
+  </properties>
   
 </project-config>

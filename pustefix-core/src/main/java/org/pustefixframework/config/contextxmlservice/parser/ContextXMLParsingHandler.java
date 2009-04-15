@@ -18,18 +18,15 @@
 
 package org.pustefixframework.config.contextxmlservice.parser;
 
-import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 
 import org.pustefixframework.config.contextxmlservice.PageFlowHolder;
 import org.pustefixframework.config.contextxmlservice.PageRequestConfig;
 import org.pustefixframework.config.contextxmlservice.parser.internal.ContextConfigImpl;
 import org.pustefixframework.config.contextxmlservice.parser.internal.ContextXMLServletConfigImpl;
 import org.pustefixframework.config.generic.ParsingUtils;
-import org.pustefixframework.config.generic.PropertyFileReader;
 import org.springframework.aop.scope.ScopedProxyUtils;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinitionHolder;
@@ -50,7 +47,6 @@ import de.schlund.pfixcore.workflow.ContextResourceManagerImpl;
 import de.schlund.pfixcore.workflow.PageMap;
 import de.schlund.pfixcore.workflow.context.ServerContextImpl;
 import de.schlund.pfixxml.perflogging.PerfLogging;
-import de.schlund.pfixxml.resources.ResourceUtil;
 
 /**
  * 
@@ -65,16 +61,6 @@ public class ContextXMLParsingHandler implements ParsingHandler {
             
             ContextXMLServletConfigImpl ctxConfig = new ContextXMLServletConfigImpl();
             context.getObjectTreeElement().addObject(ctxConfig);
-            
-            Properties properties = new Properties(System.getProperties());
-            try {
-                PropertyFileReader.read(ResourceUtil.getFileResourceFromDocroot("WEB-INF/pustefix.xml"), properties);
-            } catch (ParserException e) {
-                throw new ParserException("Error while reading WEB-INF/pustefix.xml", e);
-            } catch (IOException e) {
-                throw new ParserException("Error while reading WEB-INF/pustefix.xml", e);
-            }
-            ctxConfig.setProperties(properties);
             
         } else {
             ContextConfigImpl contextConfig = ParsingUtils.getSingleSubObjectFromRoot(ContextConfigImpl.class, context);

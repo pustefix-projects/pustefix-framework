@@ -21,7 +21,6 @@ package org.pustefixframework.config.project.parser;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.Properties;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -37,6 +36,7 @@ import org.pustefixframework.config.customization.PropertiesBasedCustomizationIn
 import org.pustefixframework.config.project.EditorLocation;
 import org.pustefixframework.config.project.XMLGeneratorInfo;
 import org.pustefixframework.http.PustefixContextXMLRequestHandler;
+import org.pustefixframework.http.dereferer.DerefRequestHandler;
 import org.springframework.beans.factory.BeanDefinitionStoreException;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinitionHolder;
@@ -57,8 +57,10 @@ import com.marsching.flexiparse.parser.Parser;
 import com.marsching.flexiparse.parser.exception.ParserException;
 
 import de.schlund.pfixcore.workflow.ContextImpl;
+import de.schlund.pfixxml.SessionCleaner;
 import de.schlund.pfixxml.config.BuildTimeProperties;
 import de.schlund.pfixxml.config.includes.IncludesResolver;
+import de.schlund.pfixxml.exceptionprocessor.ExceptionProcessingConfiguration;
 import de.schlund.pfixxml.resources.FileResource;
 import de.schlund.pfixxml.resources.ResourceUtil;
 import de.schlund.pfixxml.serverutil.SessionAdmin;
@@ -69,16 +71,48 @@ public class PustefixContextXMLRequestHandlerParsingHandler extends Customizatio
     @Override
     public void handleNodeIfActive(HandlerContext context) throws ParserException {
         Element serviceElement = (Element) context.getNode();
+        
         Element pathElement = (Element) serviceElement.getElementsByTagNameNS(Constants.NS_PROJECT, "path").item(0);
         if (pathElement == null) {
             throw new ParserException("Could not find expected <path> element");
         }
+        
         Element configurationFileElement = (Element) serviceElement.getElementsByTagNameNS(Constants.NS_PROJECT, "config-file").item(0);
         if (configurationFileElement == null) {
             throw new ParserException("Could not find expected <config-file> element");
         }
+        
         String path = pathElement.getTextContent().trim();
         String configurationFile = configurationFileElement.getTextContent().trim();
+        
+        boolean renderExternal = false;
+        Element renderExtElement = (Element) serviceElement.getElementsByTagNameNS(Constants.NS_PROJECT, "render-external").item(0);
+        if (renderExtElement != null) {
+            renderExternal = Boolean.parseBoolean(renderExtElement.getTextContent().trim());
+        }
+        
+        String additionalTrailInfoRef = null;
+        Element infoElement = (Element) serviceElement.getElementsByTagNameNS(Constants.NS_PROJECT, "additional-trail-info").item(0);
+        if (infoElement != null) {
+            String className = infoElement.getTextContent().trim();
+            Class<?> clazz;
+            try {
+                clazz = Class.forName(className);
+            } catch(ClassNotFoundException x) {
+                throw new ParserException("Can't get additional-trail-info class: " + className, x);
+            }
+            BeanDefinitionBuilder beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(clazz);
+            beanBuilder.setScope("singleton");
+            BeanDefinitionHolder beanHolder = new BeanDefinitionHolder(beanBuilder.getBeanDefinition(), className);
+            context.getObjectTreeElement().addObject(beanHolder);
+            additionalTrailInfoRef = className;
+        }
+        
+        int maxStoredDoms = 5;
+        Element maxElement = (Element) serviceElement.getElementsByTagNameNS(Constants.NS_PROJECT, "max-stored-doms").item(0);
+        if (maxElement != null) {
+            maxStoredDoms = Integer.parseInt(maxElement.getTextContent().trim());
+        }
         
         Collection<XMLGeneratorInfo> infoCollection = context.getObjectTreeElement().getRoot().getObjectsOfTypeFromSubTree(XMLGeneratorInfo.class);
         if (infoCollection.size() != 1) {
@@ -101,10 +135,7 @@ public class PustefixContextXMLRequestHandlerParsingHandler extends Customizatio
         } catch(MalformedURLException x) {
             throw new ParserException("Illegal resource URL",x);
         }
-        Iterator<Object> it = context.getObjectTreeElement().getObjects().iterator();
-        while(it.hasNext()) {
-            System.out.println("OBJ: "+it.next().getClass().getName());
-        }
+
         Collection<BeanDefinitionRegistry> beanRegs = context.getObjectTreeElement().getObjectsOfTypeFromTopTree(BeanDefinitionRegistry.class);
         if(beanRegs.size()==0) throw new ParserException("No BeanDefinitionRegistry object found.");
         else if(beanRegs.size()>1) throw new ParserException("Multiple BeanDefinitionRegistry objects found.");
@@ -155,6 +186,14 @@ public class PustefixContextXMLRequestHandlerParsingHandler extends Customizatio
         }
         beanBuilder.addPropertyValue("webappAdmin", new RuntimeBeanReference(WebappAdmin.class.getName()));
         beanBuilder.addPropertyValue("editorLocation", editorLocation.getLocation());
+        beanBuilder.addPropertyValue("derefHandler", new RuntimeBeanReference(DerefRequestHandler.class.getName()));
+        beanBuilder.addPropertyValue("checkModtime", info.getCheckModtime());
+        beanBuilder.addPropertyValue("sessionCleaner", new RuntimeBeanReference(SessionCleaner.class.getName()));
+        beanBuilder.addPropertyValue("renderExternal", renderExternal);
+        if(additionalTrailInfoRef!=null) 
+            beanBuilder.addPropertyValue("additionalTrailInfo", new RuntimeBeanReference(additionalTrailInfoRef));
+        beanBuilder.addPropertyValue("maxStoredDoms", maxStoredDoms);
+        beanBuilder.addPropertyValue("exceptionProcessingConfiguration", new RuntimeBeanReference(ExceptionProcessingConfiguration.class.getName()));
         BeanDefinition beanDefinition = beanBuilder.getBeanDefinition();
         BeanDefinitionHolder beanHolder = new BeanDefinitionHolder(beanDefinition, PustefixContextXMLRequestHandler.class.getName() + "#" + path);
         context.getObjectTreeElement().addObject(beanHolder);

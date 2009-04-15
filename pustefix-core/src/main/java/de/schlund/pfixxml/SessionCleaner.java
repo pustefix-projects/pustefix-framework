@@ -41,30 +41,25 @@ import de.schlund.pfixxml.util.CacheValueLRU;
  * @version $Id$
  */
 public class SessionCleaner {
-    private static SessionCleaner instance = new SessionCleaner();
+
     private        Timer          timer    = new Timer(true);
     private final static Logger   LOG      = Logger.getLogger(SessionCleaner.class);
     
-    private SessionCleaner() {}
+    private int timeout = 300;
+    
+    public SessionCleaner() {}
 
     /**
-     * @return The <code>SessionCleaner</code> singleton.
+     * Set timeout in seconds.
+     * 
+     * @param timeout
      */
-    public static SessionCleaner getInstance() {
-        return instance;
+    public void setTimeout(int timeout) {
+        this.timeout = timeout;
     }
-
-    /**
-     * Called from the AbstractXMLServlet to store a SPDocument into the supplied SPCache structure
-     * (which in turn is stored in the HTTPSession).  This will also start a TimerTask that removes
-     * the stored SPDocument after the given timeout.
-     *
-     * @param spdoc a <code>SPDocument</code> value
-     * @param storeddoms a <code>Map</code> value
-     * @param timeoutsecs a <code>int</code> value. The timeout when the document should be removed.
-     */
-    public void storeSPDocument(SPDocument spdoc, CacheValueLRU<String,SPDocument> storeddoms, int timeoutsecs) {
-        storeSPDocument(spdoc, null, storeddoms, timeoutsecs);
+    
+    public int getTimeout() {
+        return timeout;
     }
     
     /**
@@ -76,7 +71,20 @@ public class SessionCleaner {
      * @param storeddoms a <code>Map</code> value
      * @param timeoutsecs a <code>int</code> value. The timeout when the document should be removed.
      */
-    public void storeSPDocument(SPDocument spdoc, String frameName, CacheValueLRU<String,SPDocument> storeddoms, int timeoutsecs) {
+    public void storeSPDocument(SPDocument spdoc, CacheValueLRU<String,SPDocument> storeddoms) {
+        storeSPDocument(spdoc, null, storeddoms);
+    }
+    
+    /**
+     * Called from the AbstractXMLServlet to store a SPDocument into the supplied SPCache structure
+     * (which in turn is stored in the HTTPSession).  This will also start a TimerTask that removes
+     * the stored SPDocument after the given timeout.
+     *
+     * @param spdoc a <code>SPDocument</code> value
+     * @param storeddoms a <code>Map</code> value
+     * @param timeoutsecs a <code>int</code> value. The timeout when the document should be removed.
+     */
+    public void storeSPDocument(SPDocument spdoc, String frameName, CacheValueLRU<String,SPDocument> storeddoms) {
         String key = spdoc.getTimestamp() + "";
         if (frameName != null) {
             key = key + "." + frameName;
@@ -87,9 +95,9 @@ public class SessionCleaner {
             LOG.debug("Store SPDocument " + spdoc.getTimestamp() + " under key " + key);
         }
         storeddoms.put(key, spdoc);
-        LOG.info("*** Create new TimerTask with timeout: " + timeoutsecs);
+        LOG.info("*** Create new TimerTask with timeout: " + timeout);
         TimerTask task = new SessionCleanerTask(storeddoms, key);
-        timer.schedule(task, timeoutsecs * 1000);
+        timer.schedule(task, timeout * 1000);
 
     }
 
@@ -138,8 +146,8 @@ public class SessionCleaner {
         }
     }
 
-    public void invalidateSession(HttpSession session, int timeoutsecs) {
-        timer.schedule(new SessionInvalidateTask(session), timeoutsecs * 1000);
+    public void invalidateSession(HttpSession session) {
+        timer.schedule(new SessionInvalidateTask(session), timeout * 1000);
     }
     
 } // SessionCleaner

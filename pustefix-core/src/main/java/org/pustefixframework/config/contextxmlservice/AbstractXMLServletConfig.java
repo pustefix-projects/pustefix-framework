@@ -35,12 +35,4 @@ public interface AbstractXMLServletConfig extends ServletManagerConfig {
      */
     String getServletName();
 
-    /**
-     * If true the {@link de.schlund.pfixxml.AbstractXMLServlet} or its children allow the user to
-     * switch to "editmode" which provides extra debugging information.
-     * 
-     * @return flag specifying whether to activate the edit mode 
-     */
-    boolean isEditMode();
-
 }

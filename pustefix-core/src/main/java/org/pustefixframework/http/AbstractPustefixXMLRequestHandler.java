@@ -60,7 +60,6 @@ import de.schlund.pfixxml.SPDocument;
 import de.schlund.pfixxml.SessionCleaner;
 import de.schlund.pfixxml.Variant;
 import de.schlund.pfixxml.perflogging.AdditionalTrailInfo;
-import de.schlund.pfixxml.perflogging.AdditionalTrailInfoFactory;
 import de.schlund.pfixxml.serverutil.SessionHelper;
 import de.schlund.pfixxml.targets.PageInfo;
 import de.schlund.pfixxml.targets.PageInfoFactory;
@@ -91,8 +90,6 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
     // how to write xml to the result stream
     private enum RENDERMODE { RENDER_NORMAL, RENDER_EXTERNAL, RENDER_FONTIFY, RENDER_XMLONLY };
 
-    private static final int DEF_MAX_STORED_DOMS = 5;
-    
     public static final String DEF_PROP_TMPDIR = "java.io.tmpdir";
     private static final String FONTIFY_SSHEET        = "core/xsl/xmlfontify.xsl";
     public  static final String SESS_LANG             = "__SELECTED_LANGUAGE__";
@@ -122,15 +119,6 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
     private static final String   VALUE_NONE              = "__NONE__";
     private static final String   SUFFIX_SAVEDDOM         = "_SAVED_DOM";
     private static final String   ATTR_SHOWXMLDOC         = "__ATTR_SHOWXMLDOC__";
-    protected static final String PROP_ADD_TRAIL_INFO     = "xmlserver.additionalinfo.implementation";
-    protected static final String PROP_NAME               = "xmlserver.servlet.name";
-    protected static final String PROP_NOEDIT             = "xmlserver.noeditmodeallowed";
-    protected static final String PROP_RENDER_EXT         = "xmlserver.output.externalrenderer";
-    protected static final String PROP_CLEANER_TO         = "sessioncleaner.timeout";
-    protected static final String PROP_MAX_STORED_DOMS    = "xmlserver.maxStoredDoms";
-    protected static final String PROP_SKIP_GETMODTIME_MU = "targetgenerator.skip_getmodtimemaybeupdate";
-    protected static final String PROP_PROHIBITDEBUG      = "xmlserver.prohibitdebug";
-    protected static final String PROP_PROHIBITINFO       = "xmlserver.prohibitinfo";
 
     public static final String PREPROCTIME = "__PREPROCTIME__";
     public static final String GETDOMTIME  = "__GETDOMTIME__";
@@ -139,7 +127,7 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
     public final static String SESS_CLEANUP_FLAG_STAGE1 = "__pfx_session_cleanup_stage1";
     public final static String SESS_CLEANUP_FLAG_STAGE2 = "__pfx_session_cleanup_stage2";
     
-    private int maxStoredDoms = DEF_MAX_STORED_DOMS;
+    private int maxStoredDoms;
     
     /**
      * Holds the TargetGenerator which is the XML/XSL Cache for this
@@ -162,17 +150,19 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
     
     protected abstract AbstractXMLServletConfig getAbstractXMLServletConfig();
     
-    private boolean      render_external            = false;
+    private boolean      renderExternal            = false;
     private boolean      editmodeAllowed            = false;
-    private boolean      skip_getmodtimemaybeupdate = false;
-    private int          scleanertimeout            = 300;
+    private boolean      checkModtime               = true;
     
     private final static Logger LOGGER_TRAIL = Logger.getLogger("LOGGER_TRAIL");
     private final static Logger LOGGER       = Logger.getLogger(AbstractPustefixXMLRequestHandler.class);
     
-    private AdditionalTrailInfo addtrailinfo = null;
+    private AdditionalTrailInfo additionalTrailInfo = null;
     
     private TestRecording testRecording;
+    
+    private DerefRequestHandler derefHandler;
+    private SessionCleaner sessionCleaner;
     
     //~ Methods ....................................................................................
     /**
@@ -203,35 +193,10 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
             throw new ServletException("TargetGenerator is not set");
         }
         
-        editmodeAllowed = this.getAbstractXMLServletConfig().isEditMode();
-
-        String render_external_prop = this.getAbstractXMLServletConfig().getProperties().getProperty(PROP_RENDER_EXT);
-        render_external             = ((render_external_prop != null) && render_external_prop.equals("true"));
+        //editmodeAllowed = this.getAbstractXMLServletConfig().isEditMode();
+        editmodeAllowed = false;
         
-        String skip_gmmu_prop      = this.getAbstractXMLServletConfig().getProperties().getProperty(PROP_SKIP_GETMODTIME_MU);
-        skip_getmodtimemaybeupdate = ((skip_gmmu_prop != null) && skip_gmmu_prop.equals("true"));
-
-        generator.setIsGetModTimeMaybeUpdateSkipped(skip_getmodtimemaybeupdate);
-        String timeout;
-        if ((timeout = this.getAbstractXMLServletConfig().getProperties().getProperty(PROP_CLEANER_TO)) != null) {
-            try {
-                scleanertimeout = new Integer(timeout).intValue();
-            } catch (NumberFormatException e) {
-                throw new ServletException(e.getMessage());
-            }
-        }
-        
-        String strVal=getAbstractXMLServletConfig().getProperties().getProperty(PROP_MAX_STORED_DOMS);
-        if(strVal!=null) {
-            try {
-                maxStoredDoms=Integer.parseInt(strVal);
-            } catch(NumberFormatException e) {
-                throw new ServletException("Illegal property value for '"+PROP_MAX_STORED_DOMS+"': "+strVal,e);
-            }
-        }
-        
-        String addinfoprop = getAbstractXMLServletConfig().getProperties().getProperty(PROP_ADD_TRAIL_INFO);
-        addtrailinfo       = AdditionalTrailInfoFactory.getInstance().getAdditionalTrailInfo(addinfoprop);
+        generator.setIsGetModTimeMaybeUpdateSkipped(!checkModtime);
         
         if (LOGGER.isInfoEnabled()) {
             StringBuffer sb = new StringBuffer(255);
@@ -240,9 +205,9 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
             sb.append("               servletname = ").append(servletname).append("\n");
             sb.append("           editModeAllowed = ").append(editmodeAllowed).append("\n");
             sb.append("             maxStoredDoms = ").append(maxStoredDoms).append("\n");
-            sb.append("                   timeout = ").append(timeout).append("\n");
-            sb.append("skip_getmodtimemaybeupdate = ").append(skip_getmodtimemaybeupdate).append("\n");
-            sb.append("           render_external = ").append(render_external).append("\n");
+            sb.append("                   timeout = ").append(sessionCleaner.getTimeout()).append("\n");
+            sb.append("              checkModtime = ").append(checkModtime).append("\n");
+            sb.append("           render_external = ").append(renderExternal).append("\n");
             LOGGER.info(sb.toString());
         }
     }
@@ -317,7 +282,7 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
         long         getdomtime  = -1;
         
         // Reset the additional trail info before processing the request
-        addtrailinfo.reset();
+        if(additionalTrailInfo!=null) additionalTrailInfo.reset();
 
         // We look for the request parameter __frame and __reuse.
         // These are needed for possible frame handling by the stylesheet;
@@ -341,7 +306,7 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
         if (preq.getQueryString() != null)
             params.put(XSLPARAM_QUERYSTRING, preq.getQueryString());
 
-        params.put(XSLPARAM_DEREFKEY, this.getAbstractXMLServletConfig().getProperties().getProperty(DerefRequestHandler.PROP_DEREFKEY));
+        params.put(XSLPARAM_DEREFKEY, derefHandler.getSignKey());
         if (editorLocation != null) {
             params.put(XSLPARAM_EDITOR_URL, editorLocation);
         }
@@ -443,7 +408,7 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
 //                } else {
 //                    LOGGER.info("**** Storing because SPDoc wants us to. ****");
 //                }
-                SessionCleaner.getInstance().storeSPDocument(spdoc, storeddoms, scleanertimeout);
+                sessionCleaner.storeSPDocument(spdoc, storeddoms);
             } else {
                 LOGGER.info("**** Not storing because no redirect... ****");
             }
@@ -458,7 +423,7 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
                 // arise if the session is invalidated twice.
                 session.setAttribute(SESS_CLEANUP_FLAG_STAGE2, true);
                 
-                SessionCleaner.getInstance().invalidateSession(session, scleanertimeout);
+                sessionCleaner.invalidateSession(session);
             } else {
                 // Invalidate immediately
                 if (session.getAttribute(SESS_CLEANUP_FLAG_STAGE1) != null
@@ -577,7 +542,8 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
         long handletime = System.currentTimeMillis() - currtime;
         preq.getRequest().setAttribute(TRAFOTIME, handletime);
         
-        Map<String, Object> addinfo = addtrailinfo.getData(preq);
+        Map<String, Object> addinfo = null;
+        if(additionalTrailInfo!=null) additionalTrailInfo.getData(preq);
         
         if (session != null && !spdoc.getTrailLogged()) {
             StringBuffer logbuff = new StringBuffer();
@@ -594,8 +560,10 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
             if (flow != null) {
                 logbuff.append("|" + flow);
             }
-            for (Iterator<String> keys = addinfo.keySet().iterator(); keys.hasNext(); ) {
-                logbuff.append("|" + addinfo.get(keys.next()));
+            if(addinfo!=null) {
+                for (Iterator<String> keys = addinfo.keySet().iterator(); keys.hasNext(); ) {
+                    logbuff.append("|" + addinfo.get(keys.next()));
+                }
             }
             LOGGER_TRAIL.warn(logbuff.toString());
             spdoc.setTrailLogged();
@@ -752,7 +720,7 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
             ext = Xml.createDocument();
             ext.appendChild(ext.importNode(doc.getDocumentElement(), true));
         }
-
+        
         ext.insertBefore(ext.createProcessingInstruction("xml-stylesheet", "type=\"text/xsl\" media=\"all\" href=\"file: //"
                                                          + generator.getName() + "/" + stylesheet + "\""),
                          ext.getDocumentElement()); 
@@ -777,7 +745,7 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
         RENDERMODE rendering;
         RequestParam xmlonly;
         
-        if (render_external) {
+        if (renderExternal) {
             return RENDERMODE.RENDER_EXTERNAL;
         }
         xmlonly = pfreq.getRequestParam(PARAM_XMLONLY);
@@ -981,7 +949,7 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
         }
         
         public void registerFrame(String frameName) {
-            SessionCleaner.getInstance().storeSPDocument(spdoc, frameName, storeddoms, scleanertimeout);
+            sessionCleaner.storeSPDocument(spdoc, frameName, storeddoms);
         }
         
         public void unregisterFrame(String frameName) {
@@ -1013,4 +981,29 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
         }
         this.editorLocation = editorLocation;
     }
+    
+    public void setDerefHandler(DerefRequestHandler derefHandler) {
+        this.derefHandler = derefHandler;
+    }
+    
+    public void setCheckModtime(boolean checkModtime) {
+        this.checkModtime = checkModtime;
+    }
+    
+    public void setSessionCleaner(SessionCleaner sessionCleaner) {
+        this.sessionCleaner = sessionCleaner;
+    }
+    
+    public void setRenderExternal(boolean renderExternal) {
+        this.renderExternal = renderExternal;
+    }
+    
+    public void setAdditionalTrailInfo(AdditionalTrailInfo additionalTrailInfo) {
+        this.additionalTrailInfo = additionalTrailInfo;
+    }
+    
+    public void setMaxStoredDoms(int maxStoredDoms) {
+        this.maxStoredDoms = maxStoredDoms;
+    }
+    
 }

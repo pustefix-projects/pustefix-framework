@@ -18,20 +18,16 @@
 
 package org.pustefixframework.config.directoutputservice.parser;
 
-import java.io.IOException;
 import java.util.Collection;
 import java.util.Properties;
 
 import org.pustefixframework.config.customization.CustomizationAwareParsingHandler;
 import org.pustefixframework.config.directoutputservice.DirectOutputPageRequestConfig;
 import org.pustefixframework.config.directoutputservice.parser.internal.DirectOutputServiceConfigImpl;
-import org.pustefixframework.config.generic.PropertyFileReader;
 
 import com.marsching.flexiparse.configuration.RunOrder;
 import com.marsching.flexiparse.parser.HandlerContext;
 import com.marsching.flexiparse.parser.exception.ParserException;
-
-import de.schlund.pfixxml.resources.ResourceUtil;
 
 public class DirectOutputServiceConfigParsingHandler extends CustomizationAwareParsingHandler {
 
@@ -40,13 +36,6 @@ public class DirectOutputServiceConfigParsingHandler extends CustomizationAwareP
         if (context.getRunOrder() == RunOrder.START) {
             DirectOutputServiceConfigImpl serviceConfig = new DirectOutputServiceConfigImpl();
             Properties properties = new Properties(System.getProperties());
-            try {
-                PropertyFileReader.read(ResourceUtil.getFileResourceFromDocroot("WEB-INF/pustefix.xml"), properties);
-            } catch (ParserException e) {
-                throw new ParserException("Error while reading WEB-INF/pustefix.xml", e);
-            } catch (IOException e) {
-                throw new ParserException("Error while reading WEB-INF/pustefix.xml", e);
-            }
             serviceConfig.setProperties(properties);
             context.getObjectTreeElement().addObject(serviceConfig);
         } else if (context.getRunOrder() == RunOrder.END) {
