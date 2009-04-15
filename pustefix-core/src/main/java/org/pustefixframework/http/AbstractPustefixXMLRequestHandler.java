@@ -46,7 +46,6 @@ import javax.xml.transform.stream.StreamResult;
 import org.apache.log4j.Logger;
 import org.pustefixframework.config.contextxmlservice.AbstractXMLServletConfig;
 import org.pustefixframework.config.contextxmlservice.ServletManagerConfig;
-import org.pustefixframework.http.dereferer.DerefRequestHandler;
 import org.w3c.dom.Document;
 
 import de.schlund.pfixcore.exception.PustefixApplicationException;
@@ -103,7 +102,6 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
     private static final String PARAM_REUSE           = "__reuse"; // internally used
     
     private static final String   XSLPARAM_LANG           = "lang";
-    private static final String   XSLPARAM_DEREFKEY       = "__derefkey";
     private static final String   XSLPARAM_SESSID         = "__sessid";
     private static final String   XSLPARAM_URI            = "__uri";
     private static final String   XSLPARAM_SERVP          = "__servletpath";
@@ -161,7 +159,6 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
     
     private TestRecording testRecording;
     
-    private DerefRequestHandler derefHandler;
     private SessionCleaner sessionCleaner;
     
     //~ Methods ....................................................................................
@@ -306,7 +303,6 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
         if (preq.getQueryString() != null)
             params.put(XSLPARAM_QUERYSTRING, preq.getQueryString());
 
-        params.put(XSLPARAM_DEREFKEY, derefHandler.getSignKey());
         if (editorLocation != null) {
             params.put(XSLPARAM_EDITOR_URL, editorLocation);
         }
@@ -980,10 +976,6 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
             editorLocation = editorLocation.substring(0, editorLocation.length() - 1);
         }
         this.editorLocation = editorLocation;
-    }
-    
-    public void setDerefHandler(DerefRequestHandler derefHandler) {
-        this.derefHandler = derefHandler;
     }
     
     public void setCheckModtime(boolean checkModtime) {

@@ -185,7 +185,11 @@
       <ixsl:template name="__sign">
         <ixsl:param name="in"/>
         <ixsl:param name="ts"/>
-        <ixsl:value-of select="deref:signString($in, $ts, $__derefkey)"/>
+        <ixsl:value-of select="deref:getSignature($in, $ts)"/>
+      </ixsl:template>
+      
+      <ixsl:template name="__fake_session_id_argument">
+        <ixsl:value-of select="deref:getFakeSessionIdArgument($__sessid)"/>
       </ixsl:template>
       
       <ixsl:template name="__deref">
@@ -204,7 +208,10 @@
             <ixsl:with-param name="ts" select="$ts"/>
           </ixsl:call-template>
         </ixsl:variable>
-        <ixsl:value-of select="$__contextpath"/><ixsl:text>/xml/deref?link=</ixsl:text>
+        <ixsl:value-of select="$__contextpath"/>
+        <ixsl:text>/xml/deref</ixsl:text>
+        <ixsl:call-template name="__fake_session_id_argument"/>
+        <ixsl:text>?link=</ixsl:text>
         <ixsl:value-of select="$enclink"/>&amp;__sign=<ixsl:value-of select="$sign"/>&amp;__ts=<ixsl:value-of select="$ts"/>
       </ixsl:template>
 

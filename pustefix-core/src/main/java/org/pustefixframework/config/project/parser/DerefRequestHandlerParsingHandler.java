@@ -65,7 +65,6 @@ public class DerefRequestHandlerParsingHandler implements ParsingHandler {
             beanBuilder.setScope("singleton");
             beanBuilder.setInitMethodName("init");
             beanBuilder.addPropertyValue("handlerURI", "/xml/deref/**");
-            beanBuilder.addPropertyValue("signKey", "TO_BE_REPLACED");
             beanBuilder.addPropertyValue("configuration", config);
             beanBuilder.addPropertyValue("sessionAdmin", new RuntimeBeanReference(SessionAdmin.class.getName()));
             BeanDefinition beanDefinition = beanBuilder.getBeanDefinition();
@@ -80,10 +79,6 @@ public class DerefRequestHandlerParsingHandler implements ParsingHandler {
             Element element = (Element) serviceElement.getElementsByTagNameNS(Constants.NS_PROJECT, "path").item(0);
             if (element != null) path = element.getTextContent().trim();
             
-            element = (Element) serviceElement.getElementsByTagNameNS(Constants.NS_PROJECT, "signkey").item(0);
-            if (element == null) throw new ParserException("Could not find expected <signkey> element");
-            String signKey = element.getTextContent().trim();
-            
             long validTime = 1000 * 60 * 60;
             element = (Element) serviceElement.getElementsByTagNameNS(Constants.NS_PROJECT, "validtime").item(0);
             if (element != null) validTime = Long.parseLong(element.getTextContent().trim()) * 1000;
@@ -93,7 +88,6 @@ public class DerefRequestHandlerParsingHandler implements ParsingHandler {
             if (element != null) mustSign = Boolean.parseBoolean(element.getTextContent().trim());
             
             beanBuilder.addPropertyValue("handlerURI", path + "/**");
-            beanBuilder.addPropertyValue("signKey", signKey);
             beanBuilder.addPropertyValue("validTime", validTime);
             beanBuilder.addPropertyValue("mustSign", mustSign);
         }

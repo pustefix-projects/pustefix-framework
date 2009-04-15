@@ -1,3 +1,9 @@
+2009-04-15  Sebastian Marsching <sebastian.marsching@1und1.de>
+
+	Removed static dereferer key. A random key is generated on startup instead
+	and a fake session id is used to ensure that the new request goes to the
+	same node of a cluster.
+
 2009-04-15  Martin Leidig  <mleidig@schlund.de>
 
 	Removed support for pustefix.xml configuration file. Now global

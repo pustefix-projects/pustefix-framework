@@ -36,7 +36,6 @@ import org.pustefixframework.config.customization.PropertiesBasedCustomizationIn
 import org.pustefixframework.config.project.EditorLocation;
 import org.pustefixframework.config.project.XMLGeneratorInfo;
 import org.pustefixframework.http.PustefixContextXMLRequestHandler;
-import org.pustefixframework.http.dereferer.DerefRequestHandler;
 import org.springframework.beans.factory.BeanDefinitionStoreException;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinitionHolder;
@@ -186,7 +185,6 @@ public class PustefixContextXMLRequestHandlerParsingHandler extends Customizatio
         }
         beanBuilder.addPropertyValue("webappAdmin", new RuntimeBeanReference(WebappAdmin.class.getName()));
         beanBuilder.addPropertyValue("editorLocation", editorLocation.getLocation());
-        beanBuilder.addPropertyValue("derefHandler", new RuntimeBeanReference(DerefRequestHandler.class.getName()));
         beanBuilder.addPropertyValue("checkModtime", info.getCheckModtime());
         beanBuilder.addPropertyValue("sessionCleaner", new RuntimeBeanReference(SessionCleaner.class.getName()));
         beanBuilder.addPropertyValue("renderExternal", renderExternal);

@@ -33,7 +33,6 @@ import de.schlund.pfixxml.PfixServletRequest;
 import de.schlund.pfixxml.RequestParam;
 import de.schlund.pfixxml.serverutil.SessionHelper;
 import de.schlund.pfixxml.util.Base64Utils;
-import de.schlund.pfixxml.util.MD5Utils;
 
 /**
  * This class implements a "Dereferer" servlet to get rid of Referer
@@ -50,19 +49,10 @@ public class DerefRequestHandler extends AbstractPustefixRequestHandler {
     protected final static Logger   DEREFLOG        = Logger.getLogger("LOGGER_DEREF");
     protected final static Logger   LOG             = Logger.getLogger(DerefRequestHandler.class);
     
-    private String signKey;
     private long validTime;
     private boolean mustSign;
     
     private ServletManagerConfig config;
-    
-    public void setSignKey(String signKey) {
-        this.signKey = signKey;
-    }
-    
-    public String getSignKey() {
-        return signKey;
-    }
     
     public void setValidTime(long validTime) {
         this.validTime = validTime;
@@ -82,18 +72,18 @@ public class DerefRequestHandler extends AbstractPustefixRequestHandler {
         return (false);
     }
 
-    private String signString(String input, long timeStamp, String key) {
-        return SignUtil.signString(input, timeStamp, key);
+    private String signString(String input, long timeStamp) {
+        return SignUtil.getSignature(input, timeStamp);
     }
 
-    private boolean checkSign(String input, long timeStamp, long validTime, String key, String sign) {
+    private boolean checkSign(String input, long timeStamp, long validTime, String sign) {
         if (input == null || sign == null) {
             return false;
         }
         if( (System.currentTimeMillis()-timeStamp) > validTime) {
             return false;
         }
-        return MD5Utils.hex_md5(input+timeStamp+key, "utf8").equals(sign);
+        return SignUtil.checkSignature(input, timeStamp, sign);
     }
     
     @Override
@@ -106,7 +96,6 @@ public class DerefRequestHandler extends AbstractPustefixRequestHandler {
         HttpServletRequest req     = preq.getRequest();
         String             referer = req.getHeader("Referer");
 
-        LOG.debug("===> sign key: " + signKey);
         LOG.debug("===> Referer: " + referer);
         
         long timeStamp = 0;
@@ -117,13 +106,13 @@ public class DerefRequestHandler extends AbstractPustefixRequestHandler {
             if (signparam != null && signparam.getValue() != null) {
                 LOG.debug("     with sign: " + signparam.getValue());
             }
-            handleLink(linkparam.getValue(), signparam, timeStamp, validTime, mustSign, preq, res, signKey);
+            handleLink(linkparam.getValue(), signparam, timeStamp, validTime, mustSign, preq, res);
             return;
         } else if (enclinkparam != null && enclinkparam.getValue() != null &&
                    signparam != null && signparam.getValue() != null) {
             LOG.debug(" ==> Handle enclink: " + enclinkparam.getValue());
             LOG.debug("     with sign: " + signparam.getValue());
-            handleEnclink(enclinkparam.getValue(), timeStamp, validTime, signparam.getValue(), preq, res, signKey);
+            handleEnclink(enclinkparam.getValue(), timeStamp, validTime, signparam.getValue(), preq, res);
             return;
         } else {
             res.sendError(HttpServletResponse.SC_BAD_REQUEST);
@@ -133,7 +122,7 @@ public class DerefRequestHandler extends AbstractPustefixRequestHandler {
 
 
     private void handleLink(String link, RequestParam signparam, long timeStamp, long validTime, boolean mustSign,
-                            PfixServletRequest preq, HttpServletResponse res, String key) throws Exception {
+                            PfixServletRequest preq, HttpServletResponse res) throws Exception {
         boolean checked = false;
         boolean signed  = false;
         boolean addallparams = false;
@@ -148,7 +137,7 @@ public class DerefRequestHandler extends AbstractPustefixRequestHandler {
         if  (signparam != null && signparam.getValue() != null) {
             signed = true;
         }
-        if (signed && checkSign(link, timeStamp, validTime, key, signparam.getValue())) {
+        if (signed && checkSign(link, timeStamp, validTime, signparam.getValue())) {
             checked = true;
         }
 
@@ -187,8 +176,8 @@ public class DerefRequestHandler extends AbstractPustefixRequestHandler {
             String             enclink  = Base64Utils.encode(link.getBytes("utf8"),false);
             if(!signed && !mustSign) timeStamp = System.currentTimeMillis();
             String             reallink = getServerURL(preq) +
-                SessionHelper.getClearedURI(preq) + "?__enclink=" + URLEncoder.encode(enclink, "utf8") +
-                "&__sign=" + signString(enclink, timeStamp, key) + "&__ts=" + timeStamp;
+                SessionHelper.getClearedURI(preq) + SignUtil.getFakeSessionIdArgument(preq.getRequestedSessionId()) + "?__enclink=" + URLEncoder.encode(enclink, "utf8") +
+                "&__sign=" + signString(enclink, timeStamp) + "&__ts=" + timeStamp;
             
             LOG.debug("===> Meta refresh to link: " + reallink);
             DEREFLOG.info(preq.getServerName() + "|" + link + "|" + preq.getRequest().getHeader("Referer"));
@@ -222,8 +211,8 @@ public class DerefRequestHandler extends AbstractPustefixRequestHandler {
         return url;
     }
 
-    private void handleEnclink(String enclink, long timeStamp, long validTime, String sign, PfixServletRequest preq, HttpServletResponse res, String key) throws Exception {
-        if (checkSign(enclink, timeStamp, validTime, key, sign)) {
+    private void handleEnclink(String enclink, long timeStamp, long validTime, String sign, PfixServletRequest preq, HttpServletResponse res) throws Exception {
+        if (checkSign(enclink, timeStamp, validTime, sign)) {
             String link = new String( Base64Utils.decode(enclink), "utf8");
             if (link.startsWith("/")) {
                 link = getServerURL(preq) + link;
@@ -242,6 +231,11 @@ public class DerefRequestHandler extends AbstractPustefixRequestHandler {
         }
     }
     
+    @Override
+    protected boolean wantsCheckSessionIdValid() {
+        return false;
+    }
+
     @Override
     protected ServletManagerConfig getServletManagerConfig() {
         return this.config;

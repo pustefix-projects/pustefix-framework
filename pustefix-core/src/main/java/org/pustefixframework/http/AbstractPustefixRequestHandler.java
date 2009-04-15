@@ -307,7 +307,7 @@ public abstract class AbstractPustefixRequestHandler implements UriProvidingHttp
                     has_session = false;
                 }
             }
-        } else if (req.getRequestedSessionId() != null) {
+        } else if (req.getRequestedSessionId() != null && wantsCheckSessionIdValid()) {
             LOG.debug("*** Found old and invalid session in request");
             // We have no valid session, but the request contained an invalid session id.
             // case a) This may be an invalid id because we invalidated the session when jumping
@@ -980,6 +980,17 @@ public abstract class AbstractPustefixRequestHandler implements UriProvidingHttp
                 }
             }
         }
+    }
+    
+    /**
+     * Can be overridden by a subclass in order to disable the check
+     * whether a session id provided by a request is valid.
+     * 
+     * @return <code>true</code> if and only if the request handler should
+     * check whether the session id is valid for every request
+     */
+    protected boolean wantsCheckSessionIdValid() {
+        return true;
     }
 
     private void setCookiePath(HttpServletRequest req, Cookie cookie) {

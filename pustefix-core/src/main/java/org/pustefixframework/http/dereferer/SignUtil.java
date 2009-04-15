@@ -17,12 +17,44 @@
  */
 package org.pustefixframework.http.dereferer;
 
+import java.util.Random;
+
 import de.schlund.pfixxml.util.MD5Utils;
 
 public abstract class SignUtil {
     
-    public static String signString(String str, long timeStamp, String key) {
-        return MD5Utils.hex_md5(str + timeStamp + key, "utf8");
+    private final static String SIGN_KEY;
+    
+    static {
+        Random random = new Random();
+        StringBuffer sb = new StringBuffer();
+        for (int i = 0; i < 32; i++) {
+            sb.append(random.nextInt(10));
+        }
+        SIGN_KEY = sb.toString();
+    }
+    
+    public static String getSignature(String str, long timeStamp) {
+        return MD5Utils.hex_md5(str + timeStamp + SIGN_KEY, "utf8");
+    }
+    
+    public static boolean checkSignature(String str, long timeStamp, String signature) {
+        return signature.equals(getSignature(str, timeStamp));
+    }
+    
+    public static String getFakeSessionIdArgument(String sessionId) {
+        // if the session id is empty, there is no fake session id
+        if (sessionId == null || sessionId.trim().length() == 0) {
+            return "";
+        }
+        // if the session id does not contain a jvm route, a fake session id
+        // makes no sense
+        int dotPos = sessionId.lastIndexOf('.');
+        if (dotPos == -1) {
+            return "";
+        }
+        // otherwise, keep the part of the session id after the last dot
+        return ";jsessionid=nosession" + sessionId.substring(dotPos);
     }
     
     public static String getTimeStamp() {
