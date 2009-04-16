@@ -1,3 +1,14 @@
+2009-04-16  Martin Leidig  <mleidig@schlund.de>
+
+	Fixed editmode configuration. Now the editor/enabled setting is used
+	to decide if the editor can be called (and, e.g. the result DOM can be
+	viewed). If the console/tooling extensions are rendered into the sites
+	is still decided by the make mode retrieved from the
+	BuildTimeProperties. In future versions we should support that the
+	editor and other tooling extensions, like the DOM tree view, can be
+	enabled/disabled independently and we shouldn't rely on the mode
+	property to set prohibitEdit.
+
 2009-04-15  Sebastian Marsching <sebastian.marsching@1und1.de>
 
 	Removed static dereferer key. A random key is generated on startup instead

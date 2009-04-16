@@ -79,6 +79,10 @@
     <match>//p:project-config/p:editor//p:location</match>
   </handler>
 
+  <!-- Saves editor info -->
+  <handler class="org.pustefixframework.config.project.parser.EditorInfoParsingHandler">
+    <match>/p:project-config/p:editor//p:enabled</match>
+  </handler>
 
   <handler class="org.pustefixframework.config.generic.PropertiesParsingHandler">
     <match>/p:project-config/p:properties</match>
@@ -99,6 +103,7 @@
     <match>/p:project-config/p:application/p:choose/p:when</match>
     <match>/p:project-config/p:xml-generator/p:choose/p:when</match>
     <match>/p:project-config//p:context-xml-service/p:choose/p:when[p:session-cleaner-timeout]</match>
+    <match>/p:project-config/p:editor/p:choose/p:when</match>
     <match>/p:project-config/p:properties/p:choose/p:when</match>
   </handler>
   
@@ -107,6 +112,7 @@
     <match>/p:project-config/p:application/p:choose/p:otherwise</match>
     <match>/p:project-config/p:xml-generator/p:choose/p:otherwise</match>
     <match>/p:project-config//p:context-xml-service/p:choose/p:otherwise[p:session-cleaner-timeout]</match>
+    <match>/p:project-config/p:editor/p:choose/p:otherwise</match>
     <match>/p:project-config/p:properties/p:choose/p:otherwise</match>
   </handler>
   

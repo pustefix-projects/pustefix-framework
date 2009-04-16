@@ -190,9 +190,6 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
             throw new ServletException("TargetGenerator is not set");
         }
         
-        //editmodeAllowed = this.getAbstractXMLServletConfig().isEditMode();
-        editmodeAllowed = false;
-        
         generator.setIsGetModTimeMaybeUpdateSkipped(!checkModtime);
         
         if (LOGGER.isInfoEnabled()) {
@@ -996,6 +993,10 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
     
     public void setMaxStoredDoms(int maxStoredDoms) {
         this.maxStoredDoms = maxStoredDoms;
+    }
+    
+    public void setEditModeAllowed(boolean editModeAllowed) {
+        this.editmodeAllowed = editModeAllowed;
     }
     
 }

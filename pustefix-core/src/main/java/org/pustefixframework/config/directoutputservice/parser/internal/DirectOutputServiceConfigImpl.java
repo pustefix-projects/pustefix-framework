@@ -46,8 +46,6 @@ public class DirectOutputServiceConfigImpl extends ServletManagerConfigImpl impl
 
     private String servletName = null;
 
-    private boolean editMode = false;
-
     private String externalName;
     
     private boolean sync = true;
@@ -68,14 +66,6 @@ public class DirectOutputServiceConfigImpl extends ServletManagerConfigImpl impl
 
     public String getServletName() {
         return this.servletName;
-    }
-
-    public void setEditMode(boolean enabled) {
-        this.editMode = enabled;
-    }
-
-    public boolean isEditMode() {
-        return this.editMode;
     }
 
     public void setExternalServletName(String externalName) {
