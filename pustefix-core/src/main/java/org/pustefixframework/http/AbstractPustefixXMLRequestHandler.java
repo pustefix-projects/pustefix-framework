@@ -753,7 +753,7 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
         } else {
             throw new IllegalArgumentException("invalid value for " + PARAM_XMLONLY + ": " + value);
         }
-        if (editmodeAllowed || testRecording.isKnownClient(pfreq.getRemoteAddr())) {
+        if (editmodeAllowed || (testRecording!=null && testRecording.isKnownClient(pfreq.getRemoteAddr()))) {
             return rendering;
         } else {
             return RENDERMODE.RENDER_NORMAL;

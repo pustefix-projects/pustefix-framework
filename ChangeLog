@@ -1,3 +1,8 @@
+2009-04-17  Martin Leidig  <mleidig@schlund.de>
+
+	Fixed NPE occurring when edit mode is disabled and no TestRecording
+	bean is registered/configured.
+
 2009-04-16  Martin Leidig  <mleidig@schlund.de>
 
 	Fixed editmode configuration. Now the editor/enabled setting is used
