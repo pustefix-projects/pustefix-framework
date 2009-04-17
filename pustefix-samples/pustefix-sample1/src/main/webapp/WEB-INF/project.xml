@@ -9,7 +9,7 @@
   <editor>
     <choose>
       <when test="$mode='test'">
-        <enabled>false</enabled>
+        <enabled>true</enabled>
       </when>
     </choose>
     <location>http://cms.${fqdn}/</location>
@@ -46,12 +46,14 @@
       <address>${fqdn}</address>
     </http-port>
     
+    <!-- 
     <https-port>
       <address>${fqdn}</address>
       <ssl-key>docroot:/WEB-INF/server.key</ssl-key>
       <ssl-crt>docroot:/WEB-INF/server.crt</ssl-crt>
     </https-port>
-    
+    -->    
+
     <server-name>sample1.${fqdn}</server-name>
     <server-alias>sample1.${machine}</server-alias>
     
