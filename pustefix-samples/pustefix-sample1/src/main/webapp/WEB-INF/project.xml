@@ -97,13 +97,16 @@
       <path>/xml/download</path>
       <config-file>docroot:/WEB-INF/direct.conf.xml</config-file>
     </direct-output-service>
-    
+   
+    <!-- the deref-service element is optional, you only need to provide 
+         it, if you want to override one of its default settings: -->
+    <!--
     <deref-service>
-      <path>/xml/deref</path>            <!-- optional: default is /xml/deref -->
-      <signkey>987foobarbaz123</signkey> <!-- mandatory -->
-      <validtime>3600</validtime>        <!-- optional: default is 3600 (seconds) -->
-      <mustsign>false</mustsign>         <!-- optional: default is false -->
+      <path>/xml/deref</path>
+      <validtime>3600</validtime>
+      <mustsign>true</mustsign>
     </deref-service>
+    -->
     
     <static>
       <path>core/img</path>

@@ -65,6 +65,8 @@ public class DerefRequestHandlerParsingHandler implements ParsingHandler {
             beanBuilder.setScope("singleton");
             beanBuilder.setInitMethodName("init");
             beanBuilder.addPropertyValue("handlerURI", "/xml/deref/**");
+            beanBuilder.addPropertyValue("validTime", 1000 * 60 * 60);
+            beanBuilder.addPropertyValue("mustSign", true);
             beanBuilder.addPropertyValue("configuration", config);
             beanBuilder.addPropertyValue("sessionAdmin", new RuntimeBeanReference(SessionAdmin.class.getName()));
             BeanDefinition beanDefinition = beanBuilder.getBeanDefinition();
@@ -83,7 +85,7 @@ public class DerefRequestHandlerParsingHandler implements ParsingHandler {
             element = (Element) serviceElement.getElementsByTagNameNS(Constants.NS_PROJECT, "validtime").item(0);
             if (element != null) validTime = Long.parseLong(element.getTextContent().trim()) * 1000;
             
-            boolean mustSign = false;
+            boolean mustSign = true;
             element = (Element) serviceElement.getElementsByTagNameNS(Constants.NS_PROJECT, "mustsign").item(0);
             if (element != null) mustSign = Boolean.parseBoolean(element.getTextContent().trim());
             
