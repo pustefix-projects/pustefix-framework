@@ -1,3 +1,8 @@
+2009-04-20  Martin Leidig  <mleidig@schlund.de>
+
+	Fixed submit action bug (ignore unknown actions for next page selected
+	by pageflow mechanism).
+
 2009-04-17  Martin Leidig  <mleidig@schlund.de>
 
 	Made deref-service configuration element optional and set mustsign to

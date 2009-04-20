@@ -33,7 +33,6 @@ import org.pustefixframework.config.contextxmlservice.ProcessActionStateConfig;
 import org.pustefixframework.config.contextxmlservice.StateConfig;
 import org.w3c.dom.Element;
 
-import de.schlund.pfixcore.exception.PustefixApplicationException;
 import de.schlund.pfixcore.generator.IHandler;
 import de.schlund.pfixcore.generator.IWrapper;
 import de.schlund.pfixcore.generator.IWrapperParam;
@@ -335,9 +334,6 @@ public class IWrapperContainerImpl implements IWrapperContainer {
                     if (action != null) {
                         LOG.debug("        ...and found matching ProcessAction: " + action);
                     }
-                }
-                if (action == null) {
-                    throw new PustefixApplicationException("Page has been called with unknown action " + actionname);
                 }
             }
 
