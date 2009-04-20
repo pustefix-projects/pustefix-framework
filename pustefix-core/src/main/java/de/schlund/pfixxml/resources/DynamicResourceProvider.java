@@ -75,7 +75,7 @@ public class DynamicResourceProvider implements ResourceProvider {
             try {
                 String uriPath = uri.getPath();
                 uriPath = uriPath.replace("THEME", theme);
-                URI  prjUri = new URI("docroot:/"+project+uriPath);
+                URI  prjUri = new URI("docroot:"+uriPath);
                 if(LOG.isDebugEnabled()) LOG.debug("trying "+prjUri.toString());
                 Resource resource = ResourceUtil.getResource(prjUri);
                 if(resource.exists()) {
@@ -85,26 +85,6 @@ public class DynamicResourceProvider implements ResourceProvider {
                 }
             } catch(URISyntaxException x) {
                 throw new ResourceProviderException("Error while searching project resource: " + uri, x);
-            }
-        }
-            
-        //search in common
-        for(String theme:themes) {
-            try {
-                String uriPath = uri.getPath();
-                uriPath = uriPath.replace("THEME", theme);
-                URI  prjUri = new URI("docroot:/"+"common"+uriPath);
-                if(LOG.isDebugEnabled()) LOG.debug("trying "+prjUri.toString());
-                Resource resource = ResourceUtil.getFileResource(prjUri);
-                resource.setOriginatingURI(uri);
-                if(resource.exists()) {
-                    if(part == null) return resource;
-                    if(containsPart(resource, part)) return resource;
-                } else if(module == null) {
-                    return resource;
-                }
-            } catch(URISyntaxException x) {
-                throw new ResourceProviderException("Error while searching common resource: " + uri, x);
             }
         }
         
@@ -155,7 +135,7 @@ public class DynamicResourceProvider implements ResourceProvider {
         
         //Return non-existing project resource if search failed
         try {
-            URI  prjUri = new URI("docroot:/"+project+uri.getPath());
+            URI  prjUri = new URI("docroot:"+uri.getPath());
             Resource resource = ResourceUtil.getResource(prjUri);
             return resource;
         } catch(URISyntaxException x) {

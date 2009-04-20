@@ -128,10 +128,6 @@ public final class IncludeDocumentExtension {
         TargetGenerator tgen = TargetGeneratorFactory.getInstance().createGenerator(tgen_path);
         
         if(dynamic) {
-            if(!"module".equals(parentURI.getScheme()) && parentURI.getPath().equals("/"+path_str)) {
-                int ind = path_str.indexOf('/');
-                path_str = path_str.substring(ind+1);
-            }
             uriStr = "dynamic:/" + path_str + "?part=" + part + "&parent=" + parent_uri_str;
             if(module != null) uriStr += "&module="+module;
             else if("module".equals(parentURI.getScheme())) {
@@ -140,10 +136,6 @@ public final class IncludeDocumentExtension {
             uriStr += "&project=" + tgen.getName();
         } else {
             if(module != null) {
-                if(!"module".equals(parentURI.getScheme()) && parentURI.getPath().equals("/"+path_str)) {
-                    int ind = path_str.indexOf('/');
-                    path_str = path_str.substring(ind+1);
-                }
                 uriStr = "module://" + module + "/" + path_str;
             } else if("module".equals(parentURI.getScheme())) {
                 uriStr = "module://" + parentURI.getAuthority() + "/" + path_str;

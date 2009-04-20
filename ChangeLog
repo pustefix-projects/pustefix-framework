@@ -1,5 +1,10 @@
 2009-04-20  Martin Leidig  <mleidig@schlund.de>
 
+	Adapted dynamic module inclusion to new directory layout (e.g. omit
+	project path component, remove common directory fallback, etc.).
+
+2009-04-20  Martin Leidig  <mleidig@schlund.de>
+
 	Fixed problem in TargetGenerator occurring when modtime-check is
 	disabled, but targets aren't pre-built (URI problem when trying to
 	load module resources from file system).
