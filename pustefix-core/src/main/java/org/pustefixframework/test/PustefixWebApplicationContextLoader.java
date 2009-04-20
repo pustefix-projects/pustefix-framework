@@ -20,15 +20,14 @@ package org.pustefixframework.test;
 import java.io.File;
 import java.net.MalformedURLException;
 
-import javax.servlet.ServletException;
-
 import org.pustefixframework.container.spring.beans.PustefixWebApplicationContext;
-import org.pustefixframework.http.internal.FactoryInitWorker;
+import org.pustefixframework.http.internal.PustefixInit;
 import org.springframework.context.ApplicationContext;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.test.context.ContextLoader;
 import org.springframework.web.context.WebApplicationContext;
 
+import de.schlund.pfixcore.exception.PustefixCoreException;
 import de.schlund.pfixxml.config.GlobalConfig;
 import de.schlund.pfixxml.resources.FileResource;
 import de.schlund.pfixxml.resources.ResourceUtil;
@@ -72,9 +71,9 @@ public class PustefixWebApplicationContextLoader implements ContextLoader {
         
         //Initialize factories
         try {
-            FactoryInitWorker.init(servletContext);
-        } catch(ServletException x) {
-            throw new RuntimeException("Factory initialization error", x);
+            PustefixInit.init(servletContext);
+        } catch(PustefixCoreException x) {
+            throw new RuntimeException("Pustfix initialization error", x);
         }
         
         //Resolve "docroot:" URIs

@@ -25,6 +25,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.pustefixframework.container.spring.util.PustefixPropertiesPersister;
+import org.pustefixframework.http.internal.PustefixInit;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.PropertyOverrideConfigurer;
@@ -42,11 +43,21 @@ import org.springframework.web.context.support.AbstractRefreshableWebApplication
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
+import de.schlund.pfixcore.exception.PustefixCoreException;
+import de.schlund.pfixcore.exception.PustefixRuntimeException;
+
 public class PustefixWebApplicationContext extends AbstractRefreshableWebApplicationContext {
-    
+	
     @Override
     protected void loadBeanDefinitions(DefaultListableBeanFactory beanFactory) throws IOException, BeansException {
-        String configLocations[] = getConfigLocations();
+    	
+    	try {
+        	PustefixInit.init(getServletContext());
+    	} catch(PustefixCoreException x) {
+    		throw new PustefixRuntimeException("Pustefix initialization failed", x);
+    	}
+    	
+    	String configLocations[] = getConfigLocations();
         if (configLocations == null) {
             configLocations = getDefaultConfigLocations();
             if (configLocations == null) {

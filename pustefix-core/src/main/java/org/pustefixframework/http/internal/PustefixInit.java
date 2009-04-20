@@ -23,9 +23,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Properties;
 
-import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -41,7 +39,6 @@ import javax.xml.transform.stream.StreamResult;
 
 import org.apache.log4j.Logger;
 import org.apache.log4j.xml.DOMConfigurator;
-import org.pustefixframework.config.generic.PropertyFileReader;
 import org.w3c.dom.Document;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.ErrorHandler;
@@ -52,10 +49,7 @@ import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
 import org.xml.sax.helpers.XMLReaderFactory;
 
-import com.marsching.flexiparse.parser.exception.ParserException;
-
-import de.schlund.pfixxml.FactoryInitException;
-import de.schlund.pfixxml.FactoryInitUtil;
+import de.schlund.pfixcore.exception.PustefixCoreException;
 import de.schlund.pfixxml.config.CustomizationHandler;
 import de.schlund.pfixxml.config.GlobalConfig;
 import de.schlund.pfixxml.config.GlobalConfigurator;
@@ -72,7 +66,7 @@ import de.schlund.pfixxml.util.logging.ProxyLogUtil;
  * "servlet.propfile" parameter which points to a file where all factories are
  * listed.
  */
-public class FactoryInitWorker {
+public class PustefixInit {
 
     /**
      * 
@@ -81,26 +75,14 @@ public class FactoryInitWorker {
 
     // ~ Instance/static variables
     // ..................................................................
-    private final static String PROP_LOG4J = "pustefix.log4j.config";
 
-    private final static String PROP_PREFER_CONTAINER_LOGGING = "pustefix.logging.prefercontainer";
-
-    private final static Logger LOG = Logger.getLogger(FactoryInitWorker.class);
-
-    private static boolean configured = false;
+    private final static Logger LOG = Logger.getLogger(PustefixInit.class);
     
-    private static FactoryInitException initException;
-
-    private static String log4jconfig = null;
+    private static String log4jconfig = "/WEB-INF/pfixlog.xml";
 
     private static long log4jmtime = -1;
+    private static boolean warMode = false;
     
-    private boolean warMode = false;
-    private boolean docrootSpecified = false;
-    
-    private final static Object initLock = new Object();
-    private static boolean initRunning = false;
-
     public static void tryReloadLog4j() {
         if (log4jconfig != null) {
             FileResource l4jfile = ResourceUtil.getFileResourceFromDocroot(log4jconfig);
@@ -112,13 +94,13 @@ public class FactoryInitWorker {
                 try {
                     configureLog4j(l4jfile);
                 } catch (FileNotFoundException e) {
-                    Logger.getLogger(FactoryInitWorker.class).error(
+                    Logger.getLogger(PustefixInit.class).error(
                             "Reloading log4j config failed!", e);
                 } catch (SAXException e) {
-                    Logger.getLogger(FactoryInitWorker.class).error(
+                    Logger.getLogger(PustefixInit.class).error(
                             "Reloading log4j config failed!", e);
                 } catch (IOException e) {
-                    Logger.getLogger(FactoryInitWorker.class).error(
+                    Logger.getLogger(PustefixInit.class).error(
                             "Reloading log4j config failed!", e);
                 }
                 log4jmtime = tmpmtime;
@@ -126,119 +108,61 @@ public class FactoryInitWorker {
         }
     }
     
-    public static void init(ServletContext servletContext) throws ServletException {
-        synchronized (initLock) {
-            if (!initRunning) {
-                initRunning = true;
-                (new FactoryInitWorker()).doInit(servletContext);
-            }
-        }
-    }
-    
-    /**
-     * Initialize this servlet. Also call the 'init' method of all classes
-     * listed in the configuration. These classes must implement the FactoryInit
-     * interface.
-     * 
-     * @param config
-     *            the servlet configuration
-     * @see javax.servlet.Servlet#init(ServletConfig)
-     * @throws ServletException
-     *             on errors
-     */
-    @SuppressWarnings("deprecation")
-    private void doInit(ServletContext servletContext) throws ServletException {
+    public static void init(ServletContext servletContext) throws PustefixCoreException {
         
-        try {
-        
-            Properties properties = new Properties(System.getProperties());
+    	Properties properties = new Properties(System.getProperties());
             
-            // old webapps specify docroot -- true webapps don't
-            String docrootstr = servletContext.getInitParameter("pustefix.docroot");
-            if (docrootstr != null && !docrootstr.equals("")) {
-                docrootSpecified = true;
-            } else {
-                docrootstr = servletContext.getRealPath("/");
-                if (docrootstr == null) {
-                    warMode = true;
-                }
-            }
+    	// old webapps specify docroot -- true webapps don't
+    	String docrootstr = servletContext.getInitParameter("pustefix.docroot");
+    	if (docrootstr == null || docrootstr.equals("")) {
+    		docrootstr = servletContext.getRealPath("/");
+    		if (docrootstr == null) {
+    			warMode = true;
+    		}
+    	}
     
-            // Setup global configuration before doing anything else
-            if (docrootstr != null) {
-                if (!docrootstr.equals(GlobalConfig.getDocroot())) {
-                    GlobalConfigurator.setDocroot(docrootstr);
-                }
-            }
-            if (warMode) {
-                GlobalConfigurator.setServletContext(servletContext);
-            }
+    	// Setup global configuration before doing anything else
+    	if (docrootstr != null) {
+    		if (!docrootstr.equals(GlobalConfig.getDocroot())) {
+    			GlobalConfigurator.setDocroot(docrootstr);
+    		}
+    	}
+    	if (warMode) {
+    		GlobalConfigurator.setServletContext(servletContext);
+    	}
             
-            String confname = "WEB-INF/factory.xml";
-            if (confname != null) {
-                FileResource confFile = ResourceUtil.getFileResourceFromDocroot(confname);
-                try {
-                    PropertyFileReader.read(confFile, properties);
-                } catch (IOException e) {
-                    throw new ServletException("*** [" + confname + "] Not found: "
-                            + e.toString(), e);
-                } catch (ParserException e) {
-                    throw new ServletException("*** [" + confname + "] Parsing-error: "
-                            + e.toString(), e);
-                }
-            } else {
-                throw new ServletException(
-                        "*** FATAL: Need the servlet.propfile property as init parameter! ***");
-            }
-            
-            if (docrootstr != null) {
-                // this is for stuff that can't use the PathFactory. Should not be used
-                // when possible...
-                properties.setProperty("pustefix.docroot", docrootstr);
-            }
+    	if (docrootstr != null) {
+    		// this is for stuff that can't use the PathFactory. Should not be used
+    		// when possible...
+    		properties.setProperty("pustefix.docroot", docrootstr);
+    	}
     
-    
-            configureLogging(properties, servletContext);
-            LOG.debug(">>>> LOG4J Init OK <<<<");
-        
-            FactoryInitUtil.initialize(properties);
-            
-        } catch (FactoryInitException e) {
-            initException = e;
-            throw new ServletException(e.getCause().toString());
-        } catch (ServletException e) {
-            initException = new FactoryInitException("<init>", (e.getRootCause()==null?e:e.getRootCause()));
-            throw e;
-        } catch (RuntimeException e) {
-            initException = new FactoryInitException("<init>", e);
-            throw e;
-        }
-        LOG.debug("***** INIT of FactoryInitServlet done *****");
+    	configureLogging(properties, servletContext);
+    	LOG.debug(">>>> LOG4J Init OK <<<<");
 
     }
 
-    private void configureLogging(Properties properties, ServletContext servletContext) throws ServletException {
-        String containerProp = properties.getProperty(PROP_PREFER_CONTAINER_LOGGING);
-        if (warMode || (!docrootSpecified && (containerProp != null && containerProp.toLowerCase().equals("true")))) {
+    private static void configureLogging(Properties properties, ServletContext servletContext) throws PustefixCoreException {
+        
+    	FileResource l4jfile = ResourceUtil.getFileResourceFromDocroot(log4jconfig);
+    	
+        if(!l4jfile.exists()) {
             ProxyLogUtil.getInstance().configureLog4jProxy();
             ProxyLogUtil.getInstance().setServletContext(servletContext);
         } else {
-            log4jconfig = properties.getProperty(PROP_LOG4J);
-            if (log4jconfig == null || log4jconfig.equals("")) {
-                throw new ServletException("*** FATAL: Need the pustefix.log4j.config property in factory.xml! ***");
-            }
-            FileResource l4jfile = ResourceUtil.getFileResourceFromDocroot(log4jconfig);
+        	
             try {
                 configureLog4j(l4jfile);
             } catch (FileNotFoundException e) {
-                throw new ServletException(l4jfile + ": file for log4j configuration not found!", e);
+                throw new PustefixCoreException(l4jfile + ": file for log4j configuration not found!", e);
             } catch (SAXException e) {
-                throw new ServletException(l4jfile + ": error on parsing log4j configuration file", e);
+                throw new PustefixCoreException(l4jfile + ": error on parsing log4j configuration file", e);
             } catch (IOException e) {
-                throw new ServletException(l4jfile + ": error on reading log4j configuration file!", e);
+                throw new PustefixCoreException(l4jfile + ": error on reading log4j configuration file!", e);
             }
 
         }
+        
     }
 
     private static void configureLog4j(FileResource configFile) throws SAXException, FileNotFoundException, IOException {
@@ -317,14 +241,6 @@ public class FactoryInitWorker {
             throw new RuntimeException(
                     "Could not get instance of SAXTransformerFactory!");
         }
-    }
-
-    public static boolean isConfigured() {
-        return configured;
-    }
-
-    public static FactoryInitException getInitException() {
-        return initException;
     }
 
 }

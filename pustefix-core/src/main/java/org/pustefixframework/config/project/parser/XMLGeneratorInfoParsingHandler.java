@@ -20,8 +20,10 @@ package org.pustefixframework.config.project.parser;
 
 import org.pustefixframework.config.customization.CustomizationAwareParsingHandler;
 import org.pustefixframework.config.generic.ParsingUtils;
+import org.pustefixframework.config.project.ProjectInfo;
 import org.pustefixframework.config.project.XMLGeneratorInfo;
 import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.beans.factory.config.BeanDefinitionHolder;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.DefaultBeanNameGenerator;
@@ -30,11 +32,16 @@ import org.w3c.dom.Element;
 import com.marsching.flexiparse.parser.HandlerContext;
 import com.marsching.flexiparse.parser.exception.ParserException;
 
+import de.schlund.pfixxml.targets.SPCacheFactory;
 import de.schlund.pfixxml.targets.TargetGenerator;
 import de.schlund.pfixxml.targets.TargetGeneratorFactoryBean;
+import de.schlund.pfixxml.targets.cachestat.CacheStatistic;
 
 public class XMLGeneratorInfoParsingHandler extends CustomizationAwareParsingHandler {
 
+	private BeanDefinitionBuilder cacheBeanBuilder;
+	private BeanDefinitionBuilder statsBeanBuilder;
+	
     @Override
     public void handleNodeIfActive(HandlerContext context) throws ParserException {
         
@@ -42,6 +49,28 @@ public class XMLGeneratorInfoParsingHandler extends CustomizationAwareParsingHan
 
         if(root.getLocalName().equals("xml-generator")) {
             
+        	cacheBeanBuilder = BeanDefinitionBuilder.genericBeanDefinition(SPCacheFactory.class);
+        	cacheBeanBuilder.setScope("singleton");
+        	cacheBeanBuilder.setFactoryMethod("getInstance");
+        	cacheBeanBuilder.addPropertyValue("targetCacheCapacity", 30);
+        	cacheBeanBuilder.addPropertyValue("targetCacheClass", "de.schlund.pfixxml.targets.LRUCache");
+        	cacheBeanBuilder.addPropertyValue("includeCacheCapacity", 30);
+        	cacheBeanBuilder.addPropertyValue("includeCacheClass", "de.schlund.pfixxml.targets.LRUCache");
+        	cacheBeanBuilder.setInitMethodName("init");
+        	BeanDefinitionHolder beanHolder = new BeanDefinitionHolder(cacheBeanBuilder.getBeanDefinition(), SPCacheFactory.class.getName());
+        	context.getObjectTreeElement().addObject(beanHolder);
+        	
+        	statsBeanBuilder = BeanDefinitionBuilder.genericBeanDefinition(CacheStatistic.class);
+        	statsBeanBuilder.setScope("singleton");
+        	statsBeanBuilder.setFactoryMethod("getInstance");
+        	statsBeanBuilder.addPropertyValue("queueSize", 60);
+        	statsBeanBuilder.addPropertyValue("queueTicks", 60000);
+        	ProjectInfo projectInfo = ParsingUtils.getSingleTopObject(ProjectInfo.class, context);
+        	statsBeanBuilder.addPropertyValue("projectName", projectInfo.getProjectName());
+        	statsBeanBuilder.setInitMethodName("init");
+        	beanHolder = new BeanDefinitionHolder(statsBeanBuilder.getBeanDefinition(), CacheStatistic.class.getName());
+        	context.getObjectTreeElement().addObject(beanHolder);
+        	
             XMLGeneratorInfo info = new XMLGeneratorInfo();
             context.getObjectTreeElement().addObject(info);
         
@@ -75,6 +104,39 @@ public class XMLGeneratorInfoParsingHandler extends CustomizationAwareParsingHan
             XMLGeneratorInfo info = ParsingUtils.getSingleTopObject(XMLGeneratorInfo.class, context);
             boolean checkModtime = Boolean.parseBoolean(root.getTextContent().trim());
             info.setCheckModtime(checkModtime);
+        
+        } else if(root.getLocalName().equals("include-cache")) {
+        	
+        	String className = root.getAttribute("class").trim();
+        	if(className.length() > 0) {
+        		cacheBeanBuilder.addPropertyValue("includeCacheClass", className);
+        	}
+        	String capacity = root.getAttribute("capacity").trim();
+        	if(capacity.length() > 0) {
+        		cacheBeanBuilder.addPropertyValue("includeCacheCapacity", Integer.parseInt(capacity));
+        	}
+        	
+        } else if(root.getLocalName().equals("target-cache")) {
+        	
+        	String className = root.getAttribute("class").trim();
+        	if(className.length() > 0) {
+        		cacheBeanBuilder.addPropertyValue("targetCacheClass", className);
+        	}
+        	String capacity = root.getAttribute("capacity").trim();
+        	if(capacity.length() > 0) {
+        		cacheBeanBuilder.addPropertyValue("targetCacheCapacity", Integer.parseInt(capacity));
+        	}
+        	
+        } else if(root.getLocalName().equals("cache-statistic")) {
+        	
+        	String queueSize = root.getAttribute("queuesize").trim();
+        	if(queueSize.length() > 0) {
+        		statsBeanBuilder.addPropertyValue("queueSize", Integer.parseInt(queueSize));
+        	}
+        	String queueTicks = root.getAttribute("queueticks").trim();
+        	if(queueTicks.length() > 0) {
+        		statsBeanBuilder.addPropertyValue("queueTicks", Integer.parseInt(queueTicks));
+        	}
         }
         
     }

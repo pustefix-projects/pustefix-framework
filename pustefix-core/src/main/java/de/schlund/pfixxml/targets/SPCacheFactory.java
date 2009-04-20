@@ -18,11 +18,10 @@
 
 package de.schlund.pfixxml.targets;
 import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-import java.util.Properties;
 
 import org.apache.log4j.Logger;
 
+import de.schlund.pfixcore.exception.PustefixRuntimeException;
 import de.schlund.pfixxml.IncludeDocument;
 
 /**
@@ -47,36 +46,25 @@ public class SPCacheFactory {
     private final static Logger LOG = Logger.getLogger(SPCacheFactory.class);
     private static SPCacheFactory instance= new SPCacheFactory();
 
-    private SPCache<Object, Object> targetCache= new LRUCache<Object, Object>();
-    private SPCache<String, IncludeDocument> documentCache= new LRUCache<String, IncludeDocument>();
+    private SPCache<Object, Object> targetCache;
+    private SPCache<String, IncludeDocument> documentCache;
 
-    private static final String PROP_TARGET_CACHE_CLASS= "targetcache.cacheclass";
-    private static final String PROP_TARGET_CACHE_SIZE = "targetcache.cachecapacity";
-
-    private static final String PROP_DOCUMENT_CACHE_CLASS= "includecache.cacheclass";
-    private static final String PROP_DOCUMENT_CACHE_SIZE = "includecache.cachecapacity";
-
-    private SPCacheFactory() {}
+    private int targetCacheCapacity = 30;
+    private int includeCacheCapacity = 30;
+    
+    private String targetCacheClass = LRUCache.class.getName();
+    private String includeCacheClass = LRUCache.class.getName();
+    
+    private SPCacheFactory() {
+    	init();
+    }
 
     /**
      * Implemented from FactoryInit.
      */
-    public void init(Properties props) {
-        synchronized (targetCache) {
-            targetCache.createCache(LRUCache.DEFAULT_SIZE);
-            SPCache<Object, Object> tmp= getConfiguredCache(props, PROP_TARGET_CACHE_CLASS, PROP_TARGET_CACHE_SIZE);
-            if (tmp != null) {
-                targetCache= tmp;
-            }
-        }
-        
-        synchronized (documentCache) {
-            documentCache.createCache(LRUCache.DEFAULT_SIZE);
-            SPCache<String, IncludeDocument> tmp= getConfiguredCache(props, PROP_DOCUMENT_CACHE_CLASS, PROP_DOCUMENT_CACHE_SIZE);
-            if (tmp != null) {
-                documentCache= tmp;
-            }
-        }
+    public void init() {
+        targetCache = getCache(targetCacheClass, targetCacheCapacity);
+        documentCache = getCache(includeCacheClass, includeCacheCapacity);
         if(LOG.isInfoEnabled()) {
         	LOG.info("SPCacheFactory initialized: ");
         	LOG.info("  TargetCache   : Class="+targetCache.getClass().getName()+" Capacity=" + targetCache.getCapacity() + " Size="+targetCache.getSize());
@@ -84,60 +72,16 @@ public class SPCacheFactory {
         }
     }
 
-    private <T1, T2> SPCache<T1, T2> getConfiguredCache(Properties props, String propNameClass, String propNameSize) {
-        SPCache<T1, T2> tmp= null;
-        if (props != null) {
-            String classname= props.getProperty(propNameClass);
-            String csize= props.getProperty(propNameSize);
-            boolean sizeError= false;
-            int cachesize= 0;
-
-            if (csize != null) {
-                try {
-                    cachesize= Integer.parseInt(csize);
-                } catch (NumberFormatException e) {
-                    sizeError= true;
-                    LOG.error("The property " + propNameSize + " is not an int");
-                }
-            } else {
-                sizeError= true;
-                LOG.error("The property " + propNameSize + " is null");
-            }
-
-            if (classname != null && !sizeError) {
-
-                //LOG.warn("*** Found SPCache classname '" + classname + "' in properties!");
-
-                tmp= getCache(classname);
-                if (tmp != null)
-                    tmp.createCache(cachesize);
-            } else
-                LOG.error("Property "+propNameClass+" is null");
-            
-        } else
-            LOG.error("Properties for caches are null");
-            
-        return tmp;
-    }
-
     @SuppressWarnings("unchecked")
-    private <T1, T2> SPCache<T1, T2> getCache(String classname) {
+    private <T1, T2> SPCache<T1, T2> getCache(String className, int capacity) {
         SPCache<T1, T2> retval= null;
         try {
-            Constructor<? extends SPCache> constr= Class.forName(classname).asSubclass(SPCache.class).getConstructor((Class[]) null);
-            retval= constr.newInstance((Object[]) null);
-        } catch (InstantiationException e) {
-            LOG.error("unable to instantiate class [" + classname + "]", e);
-        } catch (IllegalAccessException e) {
-            LOG.error("unable access class [" + classname + "]", e);
-        } catch (ClassNotFoundException e) {
-            LOG.error("unable to find class [" + classname + "]", e);
-        } catch (NoSuchMethodException e) {
-            LOG.error("unable to find correct method in [" + classname + "]", e);
-        } catch (InvocationTargetException e) {
-            LOG.error("unable to invoke correct method in [" + classname + "]", e);
-        } catch (ClassCastException e) {
-            LOG.error("class [" + classname + "] does not implement the interface SPCache", e);
+            Constructor<? extends SPCache> constr = Class.forName(className).asSubclass(SPCache.class).getConstructor((Class[]) null);
+            retval = constr.newInstance((Object[]) null);
+            retval.createCache(capacity);
+        } catch (Exception e) {
+            LOG.error("unable to instantiate class [" + className + "]", e);
+            throw new PustefixRuntimeException("Can't create TargetGenerator cache", e);
         }
         return retval;
     }
@@ -152,25 +96,15 @@ public class SPCacheFactory {
     /**
      * Get the cache for targets.
      */
-    public synchronized SPCache<Object, Object> getCache() {
-        synchronized (targetCache) {
-            /*LOG.debug("Cache is:          "+targetCache.getClass().getName());
-            LOG.debug("Cache capacity is: "+targetCache.getCapacity());
-            LOG.debug("Cache size is:     "+targetCache.getSize());*/
-            return targetCache;
-        }
+    public SPCache<Object, Object> getCache() {
+    	return targetCache;
     }
 
     /**
      * Get the cache for include-modules.
      */
-    public synchronized SPCache<String, IncludeDocument> getDocumentCache() {
-        synchronized (documentCache) {
-            /*LOG.debug("DocumentCache is:          "+documentCache.getClass().getName());
-            LOG.debug("DocumentCache capacity is: "+documentCache.getCapacity());
-            LOG.debug("DocumentCache size is:     "+documentCache.getSize());*/
-            return documentCache;
-        }
+    public SPCache<String, IncludeDocument> getDocumentCache() {
+    	return documentCache;
     }
     
     /**
@@ -178,8 +112,23 @@ public class SPCacheFactory {
      * through getCache() and getDocumentCache()!
      */
      public void reset() {
-         targetCache= new LRUCache<Object, Object>();
-         documentCache= new LRUCache<String, IncludeDocument>();
+    	 init();
+     }
+     
+     public void setTargetCacheCapacity(int targetCacheCapacity) {
+    	 this.targetCacheCapacity = targetCacheCapacity;
+     }
+     
+     public void setIncludeCacheCapacity(int includeCacheCapacity) {
+    	 this.includeCacheCapacity = includeCacheCapacity;
+     }
+     
+     public void setTargetCacheClass(String targetCacheClass) {
+    	 this.targetCacheClass = targetCacheClass;
+     }
+     
+     public void setIncludeCacheClass(String includeCacheClass) {
+    	 this.includeCacheClass = includeCacheClass;
      }
     
 

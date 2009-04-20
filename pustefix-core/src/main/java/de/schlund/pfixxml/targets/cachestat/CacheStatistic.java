@@ -18,16 +18,20 @@
 
 package de.schlund.pfixxml.targets.cachestat;
 
+import java.lang.management.ManagementFactory;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Properties;
 import java.util.Timer;
 
+import javax.management.MBeanServer;
+import javax.management.ObjectName;
+
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.InitializingBean;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -47,15 +51,12 @@ import de.schlund.pfixxml.util.Xml;
  * @author Joerg Haecker <haecker@schlund.de>
  *  
  */
-public class SPCacheStatistic {
+public class CacheStatistic implements CacheStatisticMBean, InitializingBean {
     
-    private static SPCacheStatistic theInstance = new SPCacheStatistic();
+    private static CacheStatistic theInstance = new CacheStatistic();
     private static int REGISTER_MISS = 0;
     private static int REGISTER_HIT = 1;
-    private static String PROP_QUEUESIZE =  "cachestatistic.queuesize";
-    private static String PROP_QUEUETICKS = "cachestatistic.queueticks";
-    public static String PROP_PRODUCTDATA = "cachestatistic.productdata";
-    private final static Logger LOG = Logger.getLogger(SPCacheStatistic.class);
+    private final static Logger LOG = Logger.getLogger(CacheStatistic.class);
     private int queueSize = 0;
     private int queueTicks = 0;
     
@@ -65,12 +66,35 @@ public class SPCacheStatistic {
     private DecimalFormat hitrateFormat = new DecimalFormat("##0.00");
     /** Timer used for AdvanceCacheStatistic */
     private Timer tickTimer = new Timer(true);
+    private String projectName;
 
+    public void afterPropertiesSet() throws Exception {
+        try {
+            MBeanServer mbeanServer = ManagementFactory.getPlatformMBeanServer(); 
+            ObjectName objectName = new ObjectName("Pustefix:type=CacheStatistic,project="+projectName);
+            if(mbeanServer.isRegistered(objectName)) mbeanServer.unregisterMBean(objectName);
+            mbeanServer.registerMBean(this, objectName);
+        } catch(Exception x) {
+            LOG.error("Can't register SPCacheStatistic MBean!",x);
+        } 
+    }
+    
+    public void setProjectName(String projectName) {
+        this.projectName = projectName;
+    }
+    
     public static void reset() {
         theInstance.tickTimer.cancel();
-        theInstance = new SPCacheStatistic();
+        theInstance = new CacheStatistic();
     }
 
+    public void setQueueSize(int queueSize) {
+    	this.queueSize = queueSize;
+    }
+    
+    public void setQueueTicks(int queueTicks) {
+    	this.queueTicks = queueTicks;
+    }
     
      /**
      * Retrieve information which maps the config file
@@ -79,34 +103,7 @@ public class SPCacheStatistic {
      * @throws XMLException if properties are not sensible.
      * @see de.schlund.util.FactoryInit#init(java.util.Properties)
      */
-    public void init(Properties props) throws Exception {
-        String queuesize = props.getProperty(PROP_QUEUESIZE);
-        if(queuesize == null || queuesize.equals("")) {
-            throw new XMLException("Need property '" + PROP_QUEUESIZE+ "'.");
-        }
-        try {
-            queueSize = Integer.parseInt(queuesize);
-        } catch(NumberFormatException e) {
-            throw new XMLException("Property '"+PROP_QUEUESIZE+"' is not a number but: "+queuesize);
-        }
-        if(LOG.isDebugEnabled()) LOG.debug("Got property '"+PROP_QUEUESIZE+"' ="+queueSize);
-        
-        
-        String queueticks = props.getProperty(PROP_QUEUETICKS);
-        if(queueticks == null || queueticks.equals("")) {
-            throw new XMLException("Need property '" + PROP_QUEUETICKS+ "'.");
-        }
-        try {
-            queueTicks = Integer.parseInt(queueticks);
-        } catch(NumberFormatException e) {
-            throw new XMLException("Property '"+PROP_QUEUETICKS+"' is not a number but: "+queueticks);
-        }
-        if(LOG.isDebugEnabled()) LOG.debug("Got property '"+PROP_QUEUETICKS+"' ="+queueTicks);
-        
-        String productdatafile = props.getProperty(PROP_PRODUCTDATA);
-        if (productdatafile == null || productdatafile.equals("")) {
-            throw new XMLException("Need property '" + PROP_PRODUCTDATA + "' for retrieving product data.");
-        }
+    public void init() throws Exception {
     }
 
     
@@ -115,14 +112,14 @@ public class SPCacheStatistic {
     /**
      * Private constructor of a singleton.
      */
-    private SPCacheStatistic() {
+    private CacheStatistic() {
         targetGen2AdvanceStatMapping = new Hashtable<TargetGenerator, AdvanceCacheStatistic>();
     }
 
     /**
      * Get the one and only instance.
      */
-    public static SPCacheStatistic getInstance() {
+    public static CacheStatistic getInstance() {
         return theInstance;
     }
     
@@ -147,7 +144,7 @@ public class SPCacheStatistic {
 	 * Create cache-statistic in XML-format.
 	 */
     @SuppressWarnings("unchecked")
-    public Document getCacheStatisticAsXML() {
+    public Document getAsXML() {
         
         // do clone or synchronize? We need a stable iterator.
         Hashtable<TargetGenerator, AdvanceCacheStatistic> targetgentoinfomap_clone =  
@@ -180,7 +177,7 @@ public class SPCacheStatistic {
      * Create cache-statistic in special format.
      */
     @SuppressWarnings("unchecked")
-    public String getCacheStatisticAsString() {
+    public String getAsString() {
         StringBuffer sb = new StringBuffer(128);
         // do clone or synchronize 
         Hashtable<TargetGenerator, AdvanceCacheStatistic> targetgentoinfomap_clone = 

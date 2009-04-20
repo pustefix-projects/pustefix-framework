@@ -62,6 +62,9 @@
     <match>/p:project-config/p:xml-generator</match>
     <match>/p:project-config/p:xml-generator//p:config-file</match>
     <match>/p:project-config/p:xml-generator//p:check-modtime</match>
+    <match>/p:project-config/p:xml-generator//p:include-cache</match>
+    <match>/p:project-config/p:xml-generator//p:target-cache</match>
+    <match>/p:project-config/p:xml-generator//p:cache-statistic</match>
   </handler>
   
   <!-- Creates context xml request handler -->

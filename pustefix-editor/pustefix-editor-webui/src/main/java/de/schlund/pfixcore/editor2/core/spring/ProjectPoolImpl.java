@@ -83,7 +83,7 @@ public class ProjectPoolImpl implements ProjectPool {
     }
     
     private void loadFromFile() {
-        FileResource file = ResourceUtil.getFileResourceFromDocroot("wEB-INF/editor-locations.xml");
+        FileResource file = ResourceUtil.getFileResourceFromDocroot("WEB-INF/editor-locations.xml");
         Document doc;
         try {
             doc = Xml.parseMutable(file);

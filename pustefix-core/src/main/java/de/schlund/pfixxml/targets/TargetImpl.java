@@ -29,7 +29,7 @@ import org.apache.log4j.Logger;
 import de.schlund.pfixxml.XMLException;
 import de.schlund.pfixxml.resources.FileResource;
 import de.schlund.pfixxml.resources.ResourceUtil;
-import de.schlund.pfixxml.targets.cachestat.SPCacheStatistic;
+import de.schlund.pfixxml.targets.cachestat.CacheStatistic;
 
 /**
  * TargetImpl.java
@@ -303,9 +303,9 @@ public abstract class TargetImpl implements TargetRW, Comparable<Target> {
     
     private void doCacheStatistic(Object value) {
         if (value == null) {
-            SPCacheStatistic.getInstance().registerCacheMiss(this);
+            CacheStatistic.getInstance().registerCacheMiss(this);
         } else {
-            SPCacheStatistic.getInstance().registerCacheHit(this);
+            CacheStatistic.getInstance().registerCacheHit(this);
         }
     }
     

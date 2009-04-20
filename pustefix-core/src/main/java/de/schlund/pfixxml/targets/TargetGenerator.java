@@ -67,7 +67,7 @@ import de.schlund.pfixxml.resources.DocrootResource;
 import de.schlund.pfixxml.resources.FileResource;
 import de.schlund.pfixxml.resources.Resource;
 import de.schlund.pfixxml.resources.ResourceUtil;
-import de.schlund.pfixxml.targets.cachestat.SPCacheStatistic;
+import de.schlund.pfixxml.targets.cachestat.CacheStatistic;
 import de.schlund.pfixxml.util.SimpleResolver;
 import de.schlund.pfixxml.util.TransformerHandlerAdapter;
 import de.schlund.pfixxml.util.Xml;
@@ -839,7 +839,7 @@ public class TargetGenerator implements Comparable<TargetGenerator> {
     }
 
     public static void resetFactories() {
-        SPCacheStatistic.reset();
+        CacheStatistic.reset();
         TargetGeneratorFactory.getInstance().reset();
         TargetFactory.getInstance().reset();
         IncludeDocumentFactory.getInstance().reset();

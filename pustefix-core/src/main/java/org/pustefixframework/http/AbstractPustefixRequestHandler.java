@@ -40,12 +40,10 @@ import org.apache.log4j.Logger;
 import org.pustefixframework.admin.mbeans.WebappAdmin;
 import org.pustefixframework.config.contextxmlservice.ServletManagerConfig;
 import org.pustefixframework.container.spring.http.UriProvidingHttpRequestHandler;
-import org.pustefixframework.http.internal.FactoryInitWorker;
+import org.pustefixframework.http.internal.PustefixInit;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.web.context.ServletContextAware;
 
-import de.schlund.pfixxml.FactoryInitException;
-import de.schlund.pfixxml.FactoryInitUtil;
 import de.schlund.pfixxml.PfixServletRequest;
 import de.schlund.pfixxml.PfixServletRequestImpl;
 import de.schlund.pfixxml.exceptionprocessor.ExceptionConfig;
@@ -367,7 +365,7 @@ public abstract class AbstractPustefixRequestHandler implements UriProvidingHttp
             preq = new PfixServletRequestImpl(req, this.getServletManagerConfig().getProperties());
         }
 
-        FactoryInitWorker.tryReloadLog4j();
+        PustefixInit.tryReloadLog4j();
         
         // End of initialization. Now we handle all cases where we need to redirect.
 
@@ -811,14 +809,6 @@ public abstract class AbstractPustefixRequestHandler implements UriProvidingHttp
 
     private void callProcess(PfixServletRequest preq, HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
         try {
-            if(!FactoryInitWorker.isConfigured() && !FactoryInitUtil.isInitialized()) {
-                FactoryInitException initEx=FactoryInitWorker.getInitException();
-                if(initEx!=null) {
-                    initEx=initEx.copy();
-                    initEx.fillInStackTrace();
-                    throw initEx;
-                } else throw new IllegalStateException("Factories aren't initialized yet.");
-            }
             res.setContentType(DEF_CONTENT_TYPE);
             process(preq, res);
         } catch (Throwable e) {

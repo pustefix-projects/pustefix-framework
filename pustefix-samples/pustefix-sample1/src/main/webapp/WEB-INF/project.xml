@@ -36,6 +36,17 @@
       <when test="$mode='prod'">
         <!-- Set this to false if you want to skip the check for changed stylesheets on every request -->
         <check-modtime>false</check-modtime>
+        <!-- Set capacity and implementation class of the in-memory caches for includes and targets.
+             Defaults (if you leave out the elements):
+             <include-cache capacity="30" class="de.schlund.pfixxml.targets.LRUCache"/>
+             <target-cache capacity="30" class="de.schlund.pfixxml.targets.LRUCache"/>
+        -->
+        <include-cache capacity="50"/>
+        <target-cache capacity="50"/>
+        <!-- Configure cache statistic.
+             Defaults (should work for the most cases and element can be left out):
+             <cache-statistic queuesize="60" queueticks="60000"/>
+        -->
       </when>
     </choose>
   </xml-generator>

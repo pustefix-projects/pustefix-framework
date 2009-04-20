@@ -29,7 +29,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.w3c.dom.Document;
 
-import de.schlund.pfixxml.targets.cachestat.SPCacheStatistic;
+import de.schlund.pfixxml.targets.cachestat.CacheStatistic;
 import de.schlund.pfixxml.util.Xml;
 
 /**
@@ -63,11 +63,11 @@ public class CacheStatisticServlet extends HttpServlet {
         
         if(outmode == OUTPUTXML) {
             Document doc;
-            doc = SPCacheStatistic.getInstance().getCacheStatisticAsXML();
+            doc = CacheStatistic.getInstance().getAsXML();
             res.setContentType("text/xml");
             output = Xml.serialize(doc, true, true);
         } else if(outmode == OUTPUTTEXT) {
-            output = SPCacheStatistic.getInstance().getCacheStatisticAsString(); 
+            output = CacheStatistic.getInstance().getAsString(); 
             res.setContentType("text/plain");
         } else {
             throw new ServletException("No outputmode set.");
