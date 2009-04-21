@@ -37,7 +37,7 @@ public class DocrootResourceOnFileSystemProvider extends DocrootResourceProvider
     public DocrootResourceOnFileSystemProvider(String docroot) {
         this.docroot = docroot;
         if(docroot.endsWith("src/main/webapp")) {
-            File dir = guessDocroot();
+            File dir = guessFallbackDocroot();
             if(dir != null) {
                 fallbackDocroot = dir.getAbsolutePath();
             }
@@ -45,14 +45,16 @@ public class DocrootResourceOnFileSystemProvider extends DocrootResourceProvider
     }
     
     public Resource getResource(URI uri) {
-        if( (uri.getPath().startsWith("/core/") || uri.getPath().startsWith("/modules/")) && docroot.endsWith("src/main/webapp") && fallbackDocroot!=null) {
+    	String path = uri.getPath();
+    	if( fallbackDocroot != null && docroot.endsWith("src/main/webapp") && 
+    			( path.startsWith("/core/") || path.startsWith("/modules/") || path.equals("/WEB-INF/buildtime.prop") ) ) {
             return new DocrootResourceOnFileSystemImpl(uri, fallbackDocroot);
         }
         return new DocrootResourceOnFileSystemImpl(uri, docroot);
     }
 
     
-    public static File guessDocroot() {
+    private static File guessFallbackDocroot() {
         File target = new File("target");
         if(target.exists() && target.isDirectory()) {
             for(File file:target.listFiles()) {
