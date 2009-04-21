@@ -23,7 +23,7 @@ public class XMLGeneratorInfo {
     
     private String configurationFile;
     private String targetGeneratorBeanName;
-    private boolean checkModtime;
+    private boolean checkModtime = true;
     
     public XMLGeneratorInfo() {
     }
