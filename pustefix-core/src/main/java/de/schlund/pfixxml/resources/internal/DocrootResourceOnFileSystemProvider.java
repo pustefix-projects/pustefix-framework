@@ -18,6 +18,7 @@
 
 package de.schlund.pfixxml.resources.internal;
 
+import java.io.File;
 import java.net.URI;
 
 import de.schlund.pfixxml.resources.DocrootResourceProvider;
@@ -31,13 +32,37 @@ import de.schlund.pfixxml.resources.Resource;
 public class DocrootResourceOnFileSystemProvider extends DocrootResourceProvider {
     
     private String docroot;
+    private String fallbackDocroot;
     
     public DocrootResourceOnFileSystemProvider(String docroot) {
         this.docroot = docroot;
+        if(docroot.endsWith("src/main/webapp")) {
+            File dir = guessDocroot();
+            if(dir != null) {
+                fallbackDocroot = dir.getAbsolutePath();
+            }
+        }
     }
     
     public Resource getResource(URI uri) {
+        if( (uri.getPath().startsWith("/core/") || uri.getPath().startsWith("/modules/")) && docroot.endsWith("src/main/webapp") && fallbackDocroot!=null) {
+            return new DocrootResourceOnFileSystemImpl(uri, fallbackDocroot);
+        }
         return new DocrootResourceOnFileSystemImpl(uri, docroot);
     }
 
+    
+    public static File guessDocroot() {
+        File target = new File("target");
+        if(target.exists() && target.isDirectory()) {
+            for(File file:target.listFiles()) {
+                if(file.isDirectory()) {
+                    File webInfDir = new File(file, "WEB-INF");
+                    if(webInfDir.exists()) return file;
+                }
+            }
+        }
+        return null;
+    }
+    
 }

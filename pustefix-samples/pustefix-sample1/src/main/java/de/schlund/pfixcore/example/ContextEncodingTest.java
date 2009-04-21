@@ -33,7 +33,7 @@ import de.schlund.pfixxml.ResultDocument;
  */
 public class ContextEncodingTest {
 
-    private final static String DEFAULT_TEXT = "abcd����";
+    private final static String DEFAULT_TEXT = "abcdäöüß";
     private String              text         = DEFAULT_TEXT;
     private String              encoding     = "";
     private File                file;

@@ -29,6 +29,7 @@
     <page name="scripting" handler="/xml/main"/>
     <page name="scriptingstate" handler="/xml/main"/>
     <page name="encoding" handler="/xml/main"/>
+    <page name="moduletest" handler="/xml/main"/>
     <page name="upload" handler="/xml/main"/>
     <page name="test"     handler="/xml/main"/>
     <page name="tokenerror"    handler="/xml/main"/>
@@ -85,6 +86,7 @@
   <standardpage name="C" xml="xml/one_frame.xml"/>
   
   <standardpage name="encoding" xml="xml/one_frame.xml"/>
+  <standardpage name="moduletest" xml="xml/one_frame.xml"/>
   <standardpage name="upload" xml="xml/one_frame.xml"/>
   <standardpage name="test"     xml="xml/one_frame.xml"/>
   <standardpage name="tokenerror"    xml="xml/one_frame.xml"/>

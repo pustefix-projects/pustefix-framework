@@ -2,7 +2,7 @@
   
   <part name="content">
     <theme name="default">
-      <center>
+      <center>ZZZZZZZZ<br/>
       Test of deref-server for forms: 
       <pfx:externalform href="http://www.gimp.org">
         <input type="text" name="FOO"/>
@@ -118,7 +118,9 @@
         <pfx:button page="invalidate">Invalidate this session</pfx:button>  
         <pfx:button page="frames">Goto frames test</pfx:button> 
         <br/>
-        <pfx:button page="upload">Test upload mechanism</pfx:button>         
+        <pfx:button page="upload">Test upload mechanism</pfx:button>&#160;&#160;
+        <pfx:button page="encoding">Encoding test page</pfx:button>&#160;&#160;
+        <pfx:button page="moduletest">Module test page</pfx:button>  
     </theme>
   </part>
   
