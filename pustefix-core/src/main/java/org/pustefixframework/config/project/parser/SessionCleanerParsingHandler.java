@@ -23,6 +23,7 @@ public class SessionCleanerParsingHandler extends CustomizationAwareParsingHandl
 
     private BeanDefinitionBuilder beanBuilder;
     
+    @Override
     public void handleNodeIfActive(HandlerContext context) throws ParserException {
         Element element = (Element)context.getNode();
         if(element.getLocalName().equals("context-xml-service")) {
