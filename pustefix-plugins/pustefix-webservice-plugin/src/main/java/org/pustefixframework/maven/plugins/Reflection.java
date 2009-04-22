@@ -50,7 +50,7 @@ public class Reflection {
         List<Artifact> artifacts;
         StringBuilder classpath;
         File file;
-        
+
         classpath = new StringBuilder();
         try {
             artifacts = project.getCompileArtifacts();
@@ -66,7 +66,7 @@ public class Reflection {
         } catch (MalformedURLException e) {
             throw new MojoExecutionException("invalid url", e); 
         }
-        return new Reflection(new URLClassLoader(cp), classpath.toString());
+        return new Reflection(new URLClassLoader(cp, Reflection.class.getClassLoader()), classpath.toString());
     }
     
     private final URLClassLoader loader;
