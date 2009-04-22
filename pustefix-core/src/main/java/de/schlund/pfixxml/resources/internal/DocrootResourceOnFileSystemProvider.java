@@ -54,6 +54,8 @@ public class DocrootResourceOnFileSystemProvider extends DocrootResourceProvider
     			( path.startsWith("/core/") || 
     			  path.startsWith("/modules/") ||
     			  path.startsWith("/.cache/") ||
+    			  path.startsWith("/wsscript/") ||
+    			  path.startsWith("/wsdl/") ||
     			  path.equals("/WEB-INF/buildtime.prop") ) ) {
             return new DocrootResourceOnFileSystemImpl(uri, fallbackDocroot);
         }

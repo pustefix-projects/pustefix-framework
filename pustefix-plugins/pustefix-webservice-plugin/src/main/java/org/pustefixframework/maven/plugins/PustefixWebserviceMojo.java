@@ -56,7 +56,7 @@ import de.schlund.pfixxml.util.FileUtils;
  * @author mleidig@schlund.de
 
  * @goal generate
- * @phase process-classes
+ * @phase compile 
  * @requiresDependencyResolution compile
  */
 public class PustefixWebserviceMojo extends AbstractMojo {

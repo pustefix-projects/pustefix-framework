@@ -1,5 +1,12 @@
 2009-04-22  Martin Leidig  <mleidig@schlund.de>
 
+	Moved Pustefix webservice plugin in build process from process-classes 
+	to compile phase. Thus it also works with 'mvn tomcat:run'.
+	Added wsdl and wsscript directories to the default static resource
+	delivery path list.
+
+2009-04-22  Martin Leidig  <mleidig@schlund.de>
+
 	Changed delivery of static resources: Only allow access to resources
 	under a static path configured in project.xml. By default restrict
 	access to resources in the webapp root directory.
