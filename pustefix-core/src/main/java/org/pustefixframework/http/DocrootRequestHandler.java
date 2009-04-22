@@ -74,25 +74,12 @@ public class DocrootRequestHandler implements UriProvidingHttpRequestHandler, Se
     public void handleRequest(HttpServletRequest req, HttpServletResponse res)
             throws ServletException, IOException {
 
-        boolean docrootMode;
-
-        // Get path and determine whether to deliver files from
-        // webapplication or docroot directory
-        String reqPath = req.getPathInfo();
-        String path = reqPath;
-        String servletPath = req.getServletPath();
-        
-
-        if (path != null && (servletPath != null && servletPath.length() > 0)) {
-            docrootMode = false;
-        } else {
-            path = (servletPath != null) ? servletPath : "";
-            path += (reqPath != null) ? reqPath : "";
-            docrootMode = true;
-        }
+        String path = req.getPathInfo();
+      
+        boolean warOnly = getServletContext().getRealPath("/") == null ? true : false;
 
         // Handle default (root) request
-        if (docrootMode && this.defaultpath != null
+        if (this.defaultpath != null
                 && (path == null || path.length() == 0 || path.equals("/"))) {
             res.sendRedirect(req.getContextPath() + this.defaultpath);
             return;
@@ -111,19 +98,13 @@ public class DocrootRequestHandler implements UriProvidingHttpRequestHandler, Se
         }
 
         try {
-            // Docroot is set by context, so if we are in 
-            // WAR mode, the docroot will not be available
-            // and we simply skip to the webapp directory
-            if (docrootMode && (base == null || base.length() == 0)) {
-                docrootMode = false;
-            }
-
             InputStream in = null;
 
-            if (docrootMode) {
-                if (path.startsWith("/")) {
-                    path = path.substring(1);
-                }
+            if (path.startsWith("/")) {
+                path = path.substring(1);
+            }
+            
+            if (!warOnly) {
                 
                 if (passthroughPaths != null) {
                     for (String prefix : this.passthroughPaths) {
@@ -138,13 +119,23 @@ public class DocrootRequestHandler implements UriProvidingHttpRequestHandler, Se
                     FileResource resource = ResourceUtil.getFileResource(baseResource, path);
                     in = new BufferedInputStream(resource.getInputStream());
                 }
+                
             } else {
-                // Use getResourceAsStream() to make sure we can
-                // access the file even in packed WAR mode
-                in = getServletContext().getResourceAsStream(path);
-                if (in == null) {
-                    throw new FileNotFoundException();
+                
+                if (passthroughPaths != null) {
+                    for (String prefix : this.passthroughPaths) {
+                        if (path.startsWith(prefix)) {
+                            // Use getResourceAsStream() to make sure we can
+                            // access the file even in packed WAR mode
+                            in = getServletContext().getResourceAsStream("/"+path);
+                        }
+                    }
                 }
+                
+                if (in == null) {
+                        throw new FileNotFoundException();
+                }
+                
             }
 
             String type = getServletContext().getMimeType(path);

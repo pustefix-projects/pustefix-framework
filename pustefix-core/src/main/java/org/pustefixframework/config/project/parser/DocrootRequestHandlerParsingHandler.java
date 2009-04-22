@@ -52,6 +52,11 @@ public class DocrootRequestHandlerParsingHandler implements ParsingHandler {
         
         ArrayList<String> paths = new ArrayList<String>();
         
+        //Add pre-defined static paths
+        paths.add("core/img");
+        paths.add("core/script");
+        paths.add("wsscript");
+        
         NodeList staticList = applicationElement.getElementsByTagNameNS(Constants.NS_PROJECT, "static");
         for (int i = 0; i < staticList.getLength(); i++) {
             Element staticElement = (Element) staticList.item(i);

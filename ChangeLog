@@ -1,5 +1,13 @@
 2009-04-22  Martin Leidig  <mleidig@schlund.de>
 
+	Changed delivery of static resources: Only allow access to resources
+	under a static path configured in project.xml. By default restrict
+	access to resources in the webapp root directory.
+	Still to do: DocrootRequestHandler has to set additional HTTP headers
+	for caching. Remove htdocs fallback.
+
+2009-04-22  Martin Leidig  <mleidig@schlund.de>
+
 	Fixed NPE in TransformerCallback occurring when DOM view is called for
 	page without config.
 
