@@ -1,3 +1,15 @@
+2009-04-22  Martin Leidig  <mleidig@schlund.de>
+
+	Added support for running webapps from the source directory using
+	'mvn tomcat:run'.
+	Running from source means that src/main/webapp is used as docroot, but
+	resources like the extracted core and module files and the
+	buildtime.prop file are located in the target directory. Pustefix now
+	is able to load these resources anyway by using the target artifact
+	directory as an alternative fallback docroot when running from source.
+	Running a webapp from source enables Pustefix to immediately reload
+	changed resources without having to do a rebuild with maven.
+
 2009-04-20  Martin Leidig  <mleidig@schlund.de>
 
 	Adapted dynamic module inclusion to new directory layout (e.g. omit

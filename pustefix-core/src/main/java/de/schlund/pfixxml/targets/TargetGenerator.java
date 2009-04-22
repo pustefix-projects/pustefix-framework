@@ -119,6 +119,8 @@ public class TargetGenerator implements Comparable<TargetGenerator> {
     private Set<ConfigurationChangeListener> configurationListeners = Collections.synchronizedSet(new HashSet<ConfigurationChangeListener>());
 
     private FileResource config_path;
+    
+    private FileResource cacheDir;
 
     //--
 
@@ -153,7 +155,7 @@ public class TargetGenerator implements Comparable<TargetGenerator> {
     }
 
     public FileResource getDisccachedir() {
-        return ResourceUtil.getFileResourceFromDocroot(CACHEDIR + "/" + getName());
+        return cacheDir;
     }
 
     public PageTargetTree getPageTargetTree() {
@@ -373,14 +375,14 @@ public class TargetGenerator implements Comparable<TargetGenerator> {
         global_themes = new Themes(gl_theme_str);
         default_theme = def_theme_str;
 
-        FileResource disccache = getDisccachedir();
-        if (!disccache.exists()) {
-            disccache.mkdirs();
-        } else if (!disccache.isDirectory() || !disccache.canRead()) {
-            throw new XMLException("Directory " + disccache + " is not readeable or is no directory");
-        } else if (!disccache.canWrite()) {
+        cacheDir = ResourceUtil.getFileResourceFromDocroot(CACHEDIR + "/" + getName());
+        if (!cacheDir.exists()) {
+            cacheDir.mkdirs();
+        } else if (!cacheDir.isDirectory() || !cacheDir.canRead()) {
+            throw new XMLException("Directory " + cacheDir + " is not readeable or is no directory");
+        } else if (!cacheDir.canWrite()) {
             // When running in WAR mode this is okay
-            LOG.warn("Directory " + disccache + " is not writable!");
+            LOG.warn("Directory " + cacheDir + " is not writable!");
         }
 
         HashSet<String> depxmls = new HashSet<String>();

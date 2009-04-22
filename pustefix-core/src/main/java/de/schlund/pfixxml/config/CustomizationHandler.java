@@ -19,6 +19,8 @@
 package de.schlund.pfixxml.config;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Properties;
 
@@ -31,6 +33,10 @@ import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 import org.xml.sax.helpers.DefaultHandler;
+
+import de.schlund.pfixcore.exception.PustefixRuntimeException;
+import de.schlund.pfixxml.resources.FileResource;
+import de.schlund.pfixxml.resources.ResourceUtil;
 
 /**
  * Handler for conditional processing. This handler takes care that only the
@@ -185,6 +191,25 @@ public class CustomizationHandler extends DefaultHandler {
         this.customizationInfo = new PropertiesBasedCustomizationInfo(props);
     }
 
+    public void setFallbackDocroot() {
+        // Support for running webapps from source with 'mvn tomcat:run'
+        // Set the docroot to the docroot where the core dir is located if running from source
+        if(docroot.endsWith("src/main/webapp/")) {
+            FileResource doc = ResourceUtil.getFileResourceFromDocroot("/core/");
+            try {
+                String path = doc.toURL().toURI().getPath();
+                if(path.endsWith("/")) path = path.substring(0, path.length()-1);
+                path = path.substring(0, path.lastIndexOf("/")+1);
+                docroot = path;
+                ((PropertiesBasedCustomizationInfo)customizationInfo).getProperties().setProperty("docroot", docroot);
+            } catch(URISyntaxException x) {
+                throw new PustefixRuntimeException("Error while building docroot path", x);
+            } catch(MalformedURLException x) {
+                throw new PustefixRuntimeException("Error while building docroot path", x);
+            }
+        }
+    }
+    
     private ParsingInfo peekParsingInfo() {
         return (ParsingInfo) this.stack.get(0);
     }

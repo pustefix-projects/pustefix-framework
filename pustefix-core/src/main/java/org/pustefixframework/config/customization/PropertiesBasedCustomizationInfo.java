@@ -151,5 +151,9 @@ public class PropertiesBasedCustomizationInfo implements CustomizationInfo {
     public String resolveVariable(String name) {
         return properties.getProperty(name);
     }
+    
+    public Properties getProperties() {
+        return properties;
+    }
 
 }

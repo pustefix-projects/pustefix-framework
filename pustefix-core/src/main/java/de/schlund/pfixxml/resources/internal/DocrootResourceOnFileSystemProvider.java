@@ -36,6 +36,8 @@ public class DocrootResourceOnFileSystemProvider extends DocrootResourceProvider
     
     public DocrootResourceOnFileSystemProvider(String docroot) {
         this.docroot = docroot;
+        // Support for running webapps from source with 'mvn tomcat:run'
+        // Set the target artifact directory as alternative docroot if docroot is source location 
         if(docroot.endsWith("src/main/webapp")) {
             File dir = guessFallbackDocroot();
             if(dir != null) {
@@ -46,8 +48,13 @@ public class DocrootResourceOnFileSystemProvider extends DocrootResourceProvider
     
     public Resource getResource(URI uri) {
     	String path = uri.getPath();
-    	if( fallbackDocroot != null && docroot.endsWith("src/main/webapp") && 
-    			( path.startsWith("/core/") || path.startsWith("/modules/") || path.equals("/WEB-INF/buildtime.prop") ) ) {
+    	// Support for running webapps from source with 'mvn tomcat:run'
+    	// Use the alternative docroot for paths which aren't located in source dir when running from source
+    	if( fallbackDocroot != null && 
+    			( path.startsWith("/core/") || 
+    			  path.startsWith("/modules/") ||
+    			  path.startsWith("/.cache/") ||
+    			  path.equals("/WEB-INF/buildtime.prop") ) ) {
             return new DocrootResourceOnFileSystemImpl(uri, fallbackDocroot);
         }
         return new DocrootResourceOnFileSystemImpl(uri, docroot);

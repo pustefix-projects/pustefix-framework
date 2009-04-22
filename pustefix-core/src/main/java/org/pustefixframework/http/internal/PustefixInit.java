@@ -181,7 +181,8 @@ public class PustefixInit {
             DOMResult dr = new DOMResult();
             th.setResult(dr);
             DefaultHandler dh = new TransformerHandlerAdapter(th);
-            DefaultHandler cushandler = new CustomizationHandler(dh);
+            CustomizationHandler cushandler = new CustomizationHandler(dh);
+            cushandler.setFallbackDocroot();
             xreader.setContentHandler(cushandler);
             xreader.setDTDHandler(cushandler);
             xreader.setErrorHandler(cushandler);
