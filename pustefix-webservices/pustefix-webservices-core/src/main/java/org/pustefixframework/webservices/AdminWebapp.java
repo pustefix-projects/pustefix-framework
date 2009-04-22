@@ -56,11 +56,8 @@ public class AdminWebapp {
             if(runtime.getConfiguration().getGlobalServiceConfig().getWSDLSupportEnabled()) {
                 String pathInfo=req.getPathInfo();
                 String serviceName;
-                if (pathInfo.startsWith("/")) {
-                    serviceName=pathInfo.substring(1);
-                } else {
-                    serviceName=pathInfo;
-                }
+                int ind = pathInfo.lastIndexOf('/');
+                serviceName=pathInfo.substring(ind+1);
                 ServiceConfig conf=runtime.getConfiguration().getServiceConfig(serviceName);
                 String type=conf.getSessionType();
                 if(type.equals(Constants.SESSION_TYPE_SERVLET) && session==null) {

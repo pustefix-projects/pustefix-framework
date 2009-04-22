@@ -218,7 +218,6 @@ public class TransformerCallback {
                 else
                     throw new IllegalArgumentException("Missing page name");
             }
-            PageRequestConfig pageConfig = context.getContextConfig().getPageRequestConfig(pageName);
             State state = context.getPageMap().getState(pageName);
             if (state instanceof IWrapperState) {
                 IWrapperState iwState = (IWrapperState) state;
@@ -231,13 +230,16 @@ public class TransformerCallback {
                     root.appendChild(elem);
                 }
             }
-            Map<String, ? extends ProcessActionPageRequestConfig> actions = pageConfig.getProcessActions();
-            if (actions != null && !actions.isEmpty()) {
-                Element actionelement = doc.createElement("actions");
-                root.appendChild(actionelement);
-                for (Iterator<? extends ProcessActionPageRequestConfig> iterator = actions.values().iterator(); iterator.hasNext();) {
-                    ProcessActionPageRequestConfig action =  iterator.next();
-                    ResultDocument.addObject(actionelement, "action", action);
+            PageRequestConfig pageConfig = context.getContextConfig().getPageRequestConfig(pageName);
+            if(pageConfig != null) {
+                Map<String, ? extends ProcessActionPageRequestConfig> actions = pageConfig.getProcessActions();
+                if (actions != null && !actions.isEmpty()) {
+                    Element actionelement = doc.createElement("actions");
+                    root.appendChild(actionelement);
+                    for (Iterator<? extends ProcessActionPageRequestConfig> iterator = actions.values().iterator(); iterator.hasNext();) {
+                        ProcessActionPageRequestConfig action =  iterator.next();
+                        ResultDocument.addObject(actionelement, "action", action);
+                    }
                 }
             }
             if (LOG.isDebugEnabled()) {

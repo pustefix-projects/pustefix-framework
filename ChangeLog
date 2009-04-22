@@ -1,5 +1,12 @@
 2009-04-22  Martin Leidig  <mleidig@schlund.de>
 
+	Fixed NPE in TransformerCallback occurring when DOM view is called for
+	page without config.
+
+	Fixed WSDL view for webservices.
+
+2009-04-22  Martin Leidig  <mleidig@schlund.de>
+
 	Added support for running webapps from the source directory using
 	'mvn tomcat:run'.
 	Running from source means that src/main/webapp is used as docroot, but
