@@ -28,6 +28,8 @@ import org.pustefixframework.editor.common.exception.EditorIOException;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
+import de.schlund.pfixxml.resources.FileResource;
+
 
 /**
  * Provides methods to access files on the filesystem.
@@ -77,7 +79,7 @@ public interface FileSystemService {
      * @throws ParserConfigurationException
      * @throws FileNotFoundException
      */
-    public Document readCustomizedXMLDocumentFromFile(File file, String namespace)
+    public Document readCustomizedXMLDocumentFromFile(FileResource file, String namespace)
             throws FileNotFoundException, SAXException, IOException;
 
     /**
@@ -118,4 +120,5 @@ public interface FileSystemService {
      *             If an I/O errors occurs during the copying process
      */
     public void copy(File source, File target) throws EditorIOException;
+
 }

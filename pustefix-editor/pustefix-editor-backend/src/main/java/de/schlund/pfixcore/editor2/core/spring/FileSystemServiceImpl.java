@@ -43,6 +43,7 @@ import org.xml.sax.helpers.DefaultHandler;
 import org.xml.sax.helpers.XMLReaderFactory;
 
 import de.schlund.pfixxml.config.CustomizationHandler;
+import de.schlund.pfixxml.resources.FileResource;
 import de.schlund.pfixxml.util.TransformerHandlerAdapter;
 import de.schlund.pfixxml.util.Xml;
 
@@ -81,18 +82,17 @@ public class FileSystemServiceImpl implements FileSystemService {
         return Xml.parseMutable(file);
     }
     
-    public Document readCustomizedXMLDocumentFromFile(File file, String namespace)
-            throws FileNotFoundException, SAXException, IOException {
+    public Document readCustomizedXMLDocumentFromFile(FileResource file, String namespace) throws FileNotFoundException, SAXException, IOException {
         DOMResult result = new DOMResult();
         try {
-            customize(file, result, namespace);
+            customize(new InputSource(file.getInputStream()), result, namespace);
         } catch (TransformerException e) {
             throw new SAXException(e);
         }
         if (result.getNode().getNodeType() == Node.DOCUMENT_NODE) {
-        	return (Document) result.getNode();
+            return (Document) result.getNode();
         } else {
-        	return result.getNode().getOwnerDocument();
+            return result.getNode().getOwnerDocument();
         }
     }
 
@@ -141,7 +141,7 @@ public class FileSystemServiceImpl implements FileSystemService {
         }
     }
     
-    private static void customize(File input, Result result, String namespace) throws FileNotFoundException, TransformerException {
+    private static void customize(InputSource input, Result result, String namespace) throws FileNotFoundException, TransformerException {
         XMLReader xreader;
         try {
             xreader = XMLReaderFactory.createXMLReader();
@@ -160,14 +160,19 @@ public class FileSystemServiceImpl implements FileSystemService {
 
             th.setResult(result);
             DefaultHandler dh = new TransformerHandlerAdapter(th);
-            DefaultHandler cushandler = new CustomizationHandler(dh, namespace);
+            DefaultHandler cushandler;
+            if (namespace == null) {
+                cushandler = new CustomizationHandler(dh);
+            } else {
+                cushandler = new CustomizationHandler(dh, namespace);
+            }
             xreader.setContentHandler(cushandler);
             xreader.setDTDHandler(cushandler);
             xreader.setErrorHandler(cushandler);
             xreader.setEntityResolver(cushandler);
 
             try {
-                xreader.parse(new InputSource(new FileInputStream(input)));
+                xreader.parse(input);
             } catch (FileNotFoundException e) {
                 throw e;
             } catch (IOException e) {

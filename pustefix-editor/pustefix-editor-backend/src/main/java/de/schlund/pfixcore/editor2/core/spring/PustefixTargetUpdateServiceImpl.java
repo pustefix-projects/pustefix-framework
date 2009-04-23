@@ -18,19 +18,14 @@
 
 package de.schlund.pfixcore.editor2.core.spring;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.Properties;
 
 import org.apache.log4j.Logger;
-import org.pustefixframework.config.generic.PropertyFileReader;
-
-import com.marsching.flexiparse.parser.exception.ParserException;
+import org.pustefixframework.editor.backend.config.EditorProjectInfo;
 
 import de.schlund.pfixcore.lucefix.PfixReadjustment;
-import de.schlund.pfixxml.resources.ResourceUtil;
 import de.schlund.pfixxml.targets.Target;
 import de.schlund.pfixxml.targets.TargetGenerationException;
 import de.schlund.pfixxml.targets.TargetGenerator;
@@ -91,23 +86,6 @@ public class PustefixTargetUpdateServiceImpl implements
         }
     }
     
-    private void checkAutoUpdating() {
-        Properties properties = new Properties();
-        try {
-            PropertyFileReader.read(ResourceUtil.getFileResourceFromDocroot("WEB-INF/factory.xml"), properties);
-        } catch (IOException e) {
-            throw new RuntimeException("Error while reading WEB-INF/factory.xml", e);
-        } catch (ParserException e) {
-            throw new RuntimeException("Error while reading WEB-INF/factory.xml", e);
-        }
-        String generatorProp = properties.getProperty("de.schlund.pfixcore.editor2.updatetargets");
-        boolean generatorFlag = false;
-        if (generatorProp == null || generatorProp.equals("1") || generatorProp.equalsIgnoreCase("true")) {
-            generatorFlag = true;
-        }
-        enableAutoUpdating(generatorFlag);
-    }
-    
     public void setStartupDelay(long delay) {
         this.startupDelay = delay;
     }
@@ -138,7 +116,6 @@ public class PustefixTargetUpdateServiceImpl implements
     }
 
     public void init() {
-        checkAutoUpdating();
         Thread thread = new Thread(this, "pustefix-target-update");
         thread.setPriority(Thread.MIN_PRIORITY);
         thread.setDaemon(true);
@@ -330,5 +307,9 @@ public class PustefixTargetUpdateServiceImpl implements
 
     public void setPfixReadjustment(PfixReadjustment pfixReadjustment) {
         this.pfixReadjustment = pfixReadjustment;
+    }
+    
+    public void setEditorProjectInfo(EditorProjectInfo info) {
+        this.enableAutoUpdating(info.isEnableTargetUpdateService());
     }
 }

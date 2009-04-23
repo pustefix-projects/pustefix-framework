@@ -23,6 +23,7 @@ public class EditorConfig {
     private boolean enabled = true;
     private String location;
     private String secret;
+    private boolean enableTargetUpdateService = true;
     
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
@@ -46,5 +47,13 @@ public class EditorConfig {
     
     public String getSecret() {
         return secret;
+    }
+
+    public void setEnableTargetUpdateService(boolean enableTargetUpdateService) {
+        this.enableTargetUpdateService = enableTargetUpdateService;
+    }
+
+    public boolean isEnableTargetUpdateService() {
+        return enableTargetUpdateService;
     }
 }

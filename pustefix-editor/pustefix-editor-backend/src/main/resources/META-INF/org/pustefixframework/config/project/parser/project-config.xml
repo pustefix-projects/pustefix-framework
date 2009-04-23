@@ -20,6 +20,9 @@
     <xo:element name="p:enabled" target-attribute="enabled" target-type="boolean">
       <xo:text target-attribute="!parent" target-type="boolean"/>
     </xo:element>
+    <xo:element name="p:target-update-service-enabled" target-attribute="enableTargetUpdateService" target-type="boolean" occurrence="0..1">
+      <xo:text target-attribute="!parent" target-type="boolean"/>
+    </xo:element>
     <xo:element name="p:location" target-attribute="location">
       <xo:text target-attribute="!parent"/>
     </xo:element>

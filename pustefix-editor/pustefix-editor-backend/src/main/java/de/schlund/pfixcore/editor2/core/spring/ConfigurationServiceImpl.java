@@ -18,7 +18,6 @@
 
 package de.schlund.pfixcore.editor2.core.spring;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.HashMap;
@@ -27,37 +26,33 @@ import java.util.Map;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.log4j.Logger;
-import org.pustefixframework.config.Constants;
+import org.pustefixframework.container.annotations.Inject;
 import org.pustefixframework.editor.common.exception.EditorInitializationException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
+import de.schlund.pfixxml.targets.TargetGenerator;
+
 
 public class ConfigurationServiceImpl implements ConfigurationService {
     private HashMap<String, String> map = new HashMap<String, String>();
-    private PathResolverService pathresolver;
     private FileSystemService filesystem;
-    private String projectsFile;
-    
-    public void setPathResolverService(PathResolverService pathresolver) {
-        this.pathresolver = pathresolver;
-    }
+    private TargetGenerator targetGenerator;
     
     public void setFileSystemService(FileSystemService filesystem) {
         this.filesystem = filesystem;
     }
     
-    public void setProjectsFilePath(String path) {
-        this.projectsFile = path;
-    }
-    
     public void init() throws FileNotFoundException, SAXException, IOException, ParserConfigurationException, EditorInitializationException {
-        Document doc = filesystem.readCustomizedXMLDocumentFromFile(new File(pathresolver.resolve(projectsFile)), Constants.NS_PROJECT);
+        if (targetGenerator == null) {
+            throw new IllegalStateException("TargetGenerator has not been set");
+        }
+        Document doc = filesystem.readCustomizedXMLDocumentFromFile(targetGenerator.getConfigPath(), null);
         Element rootElement = doc.getDocumentElement();
-        Element namespacesElement = (Element) rootElement.getElementsByTagNameNS(Constants.NS_PROJECT, "namespaces").item(0);
-        NodeList nlist = namespacesElement.getElementsByTagNameNS(Constants.NS_PROJECT, "namespace-declaration");
+        Element namespacesElement = (Element) rootElement.getElementsByTagName("namespaces").item(0);
+        NodeList nlist = namespacesElement.getElementsByTagName("namespace-declaration");
         for (int i = 0; i < nlist.getLength(); i++) {
             Element node = (Element) nlist.item(i);
             if (!node.hasAttribute("prefix")) {
@@ -79,5 +74,9 @@ public class ConfigurationServiceImpl implements ConfigurationService {
     public Map<String, String> getPrefixToNamespaceMappings() {
         return new HashMap<String, String>(this.map);
     }
-
+    
+    @Inject
+    public void setTargetGenerator(TargetGenerator targetGenerator) {
+        this.targetGenerator = targetGenerator;
+    }
 }

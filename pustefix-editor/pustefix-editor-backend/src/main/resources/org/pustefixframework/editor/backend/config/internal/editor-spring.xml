@@ -260,12 +260,6 @@
     <property name="fileSystemService">
       <ref bean="de.schlund.pfixcore.editor2.core.spring.beannames.filesystem"/>
     </property>
-    <property name="pathResolverService">
-      <ref bean="de.schlund.pfixcore.editor2.core.spring.beannames.pathresolver"/>
-    </property>
-    <property name="projectsFilePath">
-      <value>WEB-INF/projects.xml</value>
-    </property>
   </bean>
 
   <bean id="de.schlund.pfixcore.editor2.core.spring.beannames.pustefixtargetupdate" class="de.schlund.pfixcore.editor2.core.spring.PustefixTargetUpdateServiceImpl" init-method="init">
@@ -288,6 +282,9 @@
          only applied to low priority targets -->
     <property name="completeRunDelay">
       <value>120000</value>
+    </property>
+    <property name="editorProjectInfo">
+      <ref bean="org.pustefixframework.editor.backend.config.EditorProjectInfo"/>
     </property>
     <!-- Reference. Do not change! -->
     <property name="pfixReadjustment">

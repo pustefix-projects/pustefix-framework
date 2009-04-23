@@ -27,6 +27,7 @@ package org.pustefixframework.editor.backend.config;
 public class EditorProjectInfo {
     private String name;
     private String description;
+    private boolean enableTargetUpdateService;
     
     /**
      * Sets the name of the project.
@@ -62,5 +63,26 @@ public class EditorProjectInfo {
      */
     public String getDescription() {
         return description;
+    }
+
+    /**
+     * Set the flag indicating whether the service peridically updating
+     * all TargetGenerator targets should be enabled.
+     * 
+     * @param enableTargetUpdateService <code>true</code> to enable
+     *   <code>false</code> to disable the target update service
+     */
+    public void setEnableTargetUpdateService(boolean enableTargetUpdateService) {
+        this.enableTargetUpdateService = enableTargetUpdateService;
+    }
+
+    /**
+     * Returns flag indicating whether the service peridically updating
+     * all TargetGenerator targets should be enabled.
+     * 
+     * @return enabled state for the target update service
+     */
+    public boolean isEnableTargetUpdateService() {
+        return enableTargetUpdateService;
     }
 }

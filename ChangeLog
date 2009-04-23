@@ -1,3 +1,7 @@
+2009-04-23  Sebastian Marsching <sebastian.marsching@1und1.de>
+
+	Removed references to projects.xml and factory.xml from editor code.
+
 2009-04-22  Martin Leidig  <mleidig@schlund.de>
 
 	Moved Pustefix webservice plugin in build process from process-classes 
