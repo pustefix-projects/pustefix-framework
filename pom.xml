@@ -148,12 +148,40 @@
       <url>scpexe://pustefix@pustefixhp.schlund.de/home/pustefix/repository/maven</url>
       <uniqueVersion>false</uniqueVersion>
     </repository>
+    <snapshotRepository>
+      <id>pustefix-snapshots</id>
+      <name>TODO</name>
+      <url>http://todo/setup-pustefix-snapshot-depository</url>
+      <uniqueVersion>true</uniqueVersion>
+    </snapshotRepository>
+ 
     <site>
       <id>pustefix</id>
       <url>scpexe://pustefix@pustefixhp.schlund.de/var/www/pustefix-docs/trunk</url>
     </site>
   </distributionManagement>
-
+  <profiles>
+    <profile>
+      <id>oneandone</id>
+      <properties>
+        <oneandone.releases>http://mavenrepo.united.domain:8081/nexus/content/repositories/1und1-stable</oneandone.releases>
+        <oneandone.snapshots>http://mavenrepo.united.domain:8081/nexus/content/repositories/1und1-snapshots</oneandone.snapshots>
+        <oneandone.tools.releases>http://mavenrepo.united.domain:8081/nexus/content/repositories/1und1-tools-releases</oneandone.tools.releases>
+        <oneandone.tools.snapshots>http://mavenrepo.united.domain:8081/nexus/content/repositories/1und1-tools-snapshots</oneandone.tools.snapshots>
+      </properties>
+      <distributionManagement>
+        <repository>
+          <id>oneandone-releases</id>
+          <url>${oneandone.releases}</url>
+        </repository>
+        <snapshotRepository>
+          <id>oneandone-snapshots</id>
+          <url>${oneandone.snapshots}</url>
+        </snapshotRepository>
+      </distributionManagement>
+    </profile>
+  </profiles>
+ 
   <modules>
     <module>pustefix-libs</module>
     <module>pustefix-webservices</module>

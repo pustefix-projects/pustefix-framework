@@ -22,4 +22,20 @@
     <module>pustefix-archetype-module</module>
   </modules>
 
+  <profiles>
+    <profile>
+      <id>oneandone</id>
+      <distributionManagement>
+        <repository>
+          <id>oneandone-tools-releases</id>
+          <url>${oneandone.tools.releases}</url>
+        </repository>
+        <snapshotRepository>
+          <id>oneandone-tools-snapshots</id>
+          <url>${oneandone.tools.snapshots}</url>
+        </snapshotRepository>
+      </distributionManagement>
+    </profile>
+  </profiles>
+
 </project>
