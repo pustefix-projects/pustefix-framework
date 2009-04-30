@@ -108,6 +108,12 @@ class DocrootResourceByServletContextImpl extends AbstractDocrootResourceImpl {
     }
 
     @Override
+    public long length() {
+        //TODO: implement
+        return -1;
+    }
+    
+    @Override
     public String[] list() {
         if (!isDirectory()) {
             return null;

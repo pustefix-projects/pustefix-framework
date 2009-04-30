@@ -130,6 +130,7 @@ public abstract class AbstractDocrootResourceImpl implements DocrootResource {
     public abstract boolean isFile();
     public abstract boolean isHidden();
     public abstract long lastModified();
+    public abstract long length();
     public abstract String[] list();
     
     public FileResource[] listFileResources() {

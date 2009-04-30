@@ -53,6 +53,8 @@ public interface Resource extends Comparable<Resource> {
      */
     long lastModified();
     
+    long length();
+    
     /**
      * Tests whether the resource denoted by this object is a normal
      * file.  A file is <em>normal</em> if it is not a directory and, in

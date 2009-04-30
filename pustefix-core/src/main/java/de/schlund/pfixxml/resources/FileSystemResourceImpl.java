@@ -136,6 +136,10 @@ class FileSystemResourceImpl implements FileSystemResource {
     public long lastModified() {
         return file.lastModified();
     }
+    
+    public long length() {
+        return file.length();
+    }
 
     public String[] list() {
         return file.list();

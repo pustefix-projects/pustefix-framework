@@ -24,6 +24,7 @@ import java.net.JarURLConnection;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
+import java.util.jar.JarEntry;
 
 import de.schlund.pfixcore.exception.PustefixRuntimeException;
 
@@ -90,6 +91,22 @@ public class ModuleResource implements Resource {
         }
     }
 
+    public long length() {
+        if(url == null) return 0;
+        try {
+            JarURLConnection con = (JarURLConnection)url.openConnection();
+            con.setUseCaches(false);
+            JarEntry entry = con.getJarEntry();
+            if(entry != null) {
+                return con.getJarEntry().getSize();
+            }
+        } catch(FileNotFoundException x) {
+        } catch(IOException x) {
+            throw new RuntimeException("Error checking length", x);
+        }
+        return 0;
+    }
+    
     public URI toURI() {
         return uri;
     }

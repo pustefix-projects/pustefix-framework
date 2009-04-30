@@ -18,12 +18,12 @@
 
 package org.pustefixframework.http;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.List;
 
 import javax.servlet.ServletContext;
@@ -31,11 +31,14 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.log4j.Logger;
 import org.pustefixframework.container.spring.http.UriProvidingHttpRequestHandler;
 import org.springframework.web.context.ServletContextAware;
 
 import de.schlund.pfixxml.resources.FileResource;
+import de.schlund.pfixxml.resources.Resource;
 import de.schlund.pfixxml.resources.ResourceUtil;
+import de.schlund.pfixxml.util.MD5Utils;
 
 /**
  * This servlet serves the static files from the docroot.   
@@ -43,6 +46,9 @@ import de.schlund.pfixxml.resources.ResourceUtil;
  * @author Sebastian Marsching <sebastian.marsching@1und1.de>
  */
 public class DocrootRequestHandler implements UriProvidingHttpRequestHandler, ServletContextAware {
+    
+    private Logger LOG = Logger.getLogger(DocrootRequestHandler.class);
+    
     private String base;
 
     private String defaultpath;
@@ -97,8 +103,11 @@ public class DocrootRequestHandler implements UriProvidingHttpRequestHandler, Se
             return;
         }
 
+        InputStream in = null;
+        long contentLength = -1;
+        long lastModified = -1;
+        
         try {
-            InputStream in = null;
 
             if (path.startsWith("/")) {
                 path = path.substring(1);
@@ -109,7 +118,13 @@ public class DocrootRequestHandler implements UriProvidingHttpRequestHandler, Se
                 if (passthroughPaths != null) {
                     for (String prefix : this.passthroughPaths) {
                         if (path.startsWith(prefix)) {
-                            in = ResourceUtil.getFileResourceFromDocroot(path).getInputStream();
+                            Resource resource = ResourceUtil.getFileResourceFromDocroot(path);
+                            if(resource.exists()) {
+                                contentLength = resource.length();
+                                lastModified = resource.lastModified();
+                                in = resource.getInputStream();
+                                break;
+                            }
                         }
                     }
                 }
@@ -117,7 +132,9 @@ public class DocrootRequestHandler implements UriProvidingHttpRequestHandler, Se
                 if (in == null) {
                     FileResource baseResource = ResourceUtil.getFileResource(base);
                     FileResource resource = ResourceUtil.getFileResource(baseResource, path);
-                    in = new BufferedInputStream(resource.getInputStream());
+                    contentLength = resource.length();
+                    lastModified = resource.lastModified();
+                    in = resource.getInputStream();
                 }
                 
             } else {
@@ -125,42 +142,98 @@ public class DocrootRequestHandler implements UriProvidingHttpRequestHandler, Se
                 if (passthroughPaths != null) {
                     for (String prefix : this.passthroughPaths) {
                         if (path.startsWith(prefix)) {
-                            // Use getResourceAsStream() to make sure we can
+                            // Use getResource() to make sure we can
                             // access the file even in packed WAR mode
-                            in = getServletContext().getResourceAsStream("/"+path);
+                            URL url = getServletContext().getResource("/"+path);
+                            if(url != null) {
+                                URLConnection con = url.openConnection();
+                                lastModified = con.getLastModified();
+                                contentLength = con.getContentLength();
+                                in = url.openStream();
+                                break;
+                            }
                         }
                     }
                 }
                 
-                if (in == null) {
-                        throw new FileNotFoundException();
-                }
-                
             }
-
-            String type = getServletContext().getMimeType(path);
-            if (type == null) {
-                type = "application/octet-stream";
-            }
-            res.setContentType(type);
-
-            OutputStream out = new BufferedOutputStream(res.getOutputStream());
-
-            int bytes_read;
-            byte[] buffer = new byte[8];
-            while ((bytes_read = in.read(buffer)) != -1) {
-                out.write(buffer, 0, bytes_read);
-            }
-            out.flush();
-            in.close();
-            out.close();
-
-        } catch (FileNotFoundException e) {
-            res.sendError(HttpServletResponse.SC_NOT_FOUND, path);
+            
+        } catch(IOException x) {
+            LOG.warn("Resource can't be read: " + path, x);
+            //send 'not found' below
         }
+            
+        if(in == null) {
+            res.sendError(HttpServletResponse.SC_NOT_FOUND, path);
+            if(LOG.isDebugEnabled()) {
+                LOG.debug("Resource doesn't exist -> send 'not found': " + path);
+            }
+            return;
+        }
+            
+        String reqETag = req.getHeader("If-None-Match");
+        if(reqETag != null) {
+            String etag = createETag(path, contentLength, lastModified);
+            if(etag.equals(reqETag)) {
+                res.setStatus(HttpServletResponse.SC_NOT_MODIFIED);
+                res.flushBuffer();
+                if(LOG.isDebugEnabled()) {
+                    LOG.debug("ETag didn't change -> send 'not modified' for resource: " + path);
+                }
+                return;
+            }
+        }
+            
+        long reqMod = req.getDateHeader("If-Modified-Since");
+        if(reqMod != -1) {
+            if(lastModified < reqMod + 1000) {
+                res.setStatus(HttpServletResponse.SC_NOT_MODIFIED);
+                res.flushBuffer();
+                if(LOG.isDebugEnabled()) {
+                    LOG.debug("Modification time didn't change -> send 'not modified' for resource: " + path);
+                }
+                return;
+            }
+        }
+
+        String type = getServletContext().getMimeType(path);
+        if (type == null) {
+            type = "application/octet-stream";
+        }
+        res.setContentType(type);
+        if(contentLength > -1 && contentLength < Integer.MAX_VALUE) {
+            res.setContentLength((int)contentLength);
+        }
+        if(lastModified > -1) {
+            res.setDateHeader("Last-Modified", lastModified);
+        }
+                
+        String etag = MD5Utils.hex_md5(path+contentLength+lastModified);
+        res.setHeader("ETag", etag);
+            
+        res.setHeader("Cache-Control", "max-age=3600");
+            
+        OutputStream out = new BufferedOutputStream(res.getOutputStream());
+
+        int bytes_read;
+        byte[] buffer = new byte[8];
+        while ((bytes_read = in.read(buffer)) != -1) {
+            out.write(buffer, 0, bytes_read);
+        }
+        out.flush();
+        in.close();
+        out.close();
+
     }
 
+    
     public String[] getRegisteredURIs() {
         return new String[] {"/**", "/xml/**"};
     }
+    
+    
+    private String createETag(String path, long length, long modtime) {
+        return MD5Utils.hex_md5(path + length + modtime);
+    }
+
 }

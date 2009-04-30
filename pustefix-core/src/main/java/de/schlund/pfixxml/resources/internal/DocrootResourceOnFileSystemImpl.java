@@ -102,6 +102,11 @@ class DocrootResourceOnFileSystemImpl extends AbstractDocrootResourceImpl {
     }
 
     @Override
+    public long length() {
+        return file.length();
+    }
+    
+    @Override
     public String[] list() {
         return file.list();
     }
