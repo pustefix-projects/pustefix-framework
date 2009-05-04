@@ -4,6 +4,10 @@
   xmlns:p="http://www.pustefix-framework.org/2008/namespace/project-config"
 >
   
+  <handler class="org.pustefixframework.config.project.parser.ProjectInfoParsingHandler">
+    <match>/p:project-config/p:project</match>
+  </handler>
+  
   <!-- Adds handler mapping bean -->
   <handler class="org.pustefixframework.config.project.parser.PustefixHandlerMappingParsingHandler">
     <match>/p:project-config/p:application</match>

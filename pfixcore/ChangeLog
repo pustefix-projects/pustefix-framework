@@ -1,3 +1,9 @@
+2009-05-04  Martin Leidig  <mleidig@schlund.de>
+
+	Fixed JMX bean naming in war-mode (use project name from project.xml
+	instead of name derived from URI to project.xml to register JMX
+	beans).
+
 2009-04-20  Martin Leidig  <mleidig@schlund.de>
 
 	Fixed problem in TargetGenerator occurring when modtime-check is
