@@ -395,15 +395,20 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
         RequestParam actionname = preq.getRequestParam(RequestContextImpl.PARAM_ACTION);
         if (actionname != null && !actionname.getValue().equals("")) {
             LOG.debug("======> Found __action parameter " + actionname);
-            Map<String, ? extends ProcessActionPageRequestConfig> actionmap = getConfigForCurrentPageRequest().getProcessActions();
-            if (actionmap != null) {
-                action = actionmap.get(actionname.getValue());
-                if (action != null) {
-                    LOG.debug("        ...and found matching ProcessAction: " + action);
+            PageRequestConfig pageConf = getConfigForCurrentPageRequest();
+            if(pageConf != null) {
+                Map<String, ? extends ProcessActionPageRequestConfig> actionmap = pageConf.getProcessActions();
+                if (actionmap != null) {
+                    action = actionmap.get(actionname.getValue());
+                    if (action != null) {
+                        LOG.debug("        ...and found matching ProcessAction: " + action);
+                    }
                 }
-            }
-            if (action == null) {
-                throw new PustefixApplicationException("Page " + currentpagerequest.getName() + " has been called with unknown action " + actionname);
+                if (action == null) {
+                    throw new PustefixApplicationException("Page " + currentpagerequest.getName() + " has been called with unknown action " + actionname);
+                }
+            } else {
+                LOG.warn("Page " + currentpagerequest.getName() + " has been called with action, but isn't configured.");
             }
         }
 
