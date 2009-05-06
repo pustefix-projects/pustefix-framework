@@ -1,3 +1,9 @@
+2009-05-05  Martin Leidig  <mleidig@schlund.de>
+
+	* src/de/schlund/pfixxml/SessionCleaner.java: create new Timer if old
+	one is cancelled (e.g. caused by exception). Fixes the problem that an
+	OutOfMemoryError can cancel the timer.
+
 2008-08-05  Martin Leidig  <mleidig@schlund.de>
 
 	* src/de/schlund/pfixxml/DerefServer.java: Limit validity time	of deref 

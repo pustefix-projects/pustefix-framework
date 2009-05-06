@@ -41,7 +41,7 @@ import org.apache.log4j.Category;
  */
 public class SessionCleaner {
     private static SessionCleaner instance     = new SessionCleaner();
-    private        Timer          timer        = new Timer(true);
+    private        Timer          timer;
     private        String         TASK_POSTFIX = "__TIMER_TASK";
     Category       CAT          = Category.getInstance(this.getClass());
     
@@ -54,6 +54,18 @@ public class SessionCleaner {
         return instance;
     }
 
+    private synchronized Timer getTimer() {
+        if(timer == null) timer = new Timer("Timer-SessionCleaner", true);
+        return timer;
+    }
+    
+    private synchronized void resetTimer(Timer oldTimer) {
+        if(timer == oldTimer) {
+            timer = null;
+            CAT.warn("Reset timer.");
+        }
+    }
+    
     /**
      * Called from the AbstractXMLServer to store a SPDocument into the supplied HttpSession.
      * This will also start a TimerTask that removes the stored SPDocument after the given timeout.
@@ -80,7 +92,13 @@ public class SessionCleaner {
             }
             CAT.info("*** Create new TimerTask with timeout: " + timeoutsecs);
             task = new SessionCleanerTask(session,key);
-            timer.schedule(task, timeoutsecs * 1000);
+            Timer t = getTimer();
+            try {
+                t.schedule(task, timeoutsecs * 1000);
+            } catch(IllegalStateException x) {
+                resetTimer(t);
+                getTimer().schedule(task, timeoutsecs * 1000);
+            }
             session.setAttribute(taskkey, task);
             
             session.setAttribute(key, spdoc);
@@ -102,6 +120,9 @@ public class SessionCleaner {
                 synchronized (session) { session.setAttribute(key, null); }
             } catch (IllegalStateException e) {
                 CAT.info("*** Couldn't remove from session... " + e.getMessage() + " ***");
+            } catch (Exception x) {
+                //Catch all exceptions, because throwing them will cancel the timer
+                CAT.warn("Error while cleaning session", x);
             }
             session = null; // we don't want to hold any spurious references to the session that may prohibit it being gc'ed
             key     = null;
