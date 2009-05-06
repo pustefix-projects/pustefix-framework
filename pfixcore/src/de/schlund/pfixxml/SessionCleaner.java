@@ -43,7 +43,7 @@ import de.schlund.pfixxml.util.CacheValueLRU;
  */
 public class SessionCleaner {
     private static SessionCleaner instance = new SessionCleaner();
-    private        Timer          timer    = new Timer(true);
+    private        Timer          timer;
     private final static Logger   LOG      = Logger.getLogger(SessionCleaner.class);
     
     private SessionCleaner() {}
@@ -55,6 +55,18 @@ public class SessionCleaner {
         return instance;
     }
 
+    private synchronized Timer getTimer() {
+        if(timer == null) timer = new Timer("Timer-SessionCleaner", true);
+        return timer;
+    }
+    
+    private synchronized void resetTimer(Timer oldTimer) {
+        if(timer == oldTimer) {
+            timer = null;
+            LOG.warn("Reset timer.");
+        }
+    }
+    
     /**
      * Called from the AbstractXMLServlet to store a SPDocument into the supplied SPCache structure
      * (which in turn is stored in the HTTPSession).  This will also start a TimerTask that removes
@@ -90,8 +102,13 @@ public class SessionCleaner {
         storeddoms.put(key, spdoc);
         LOG.info("*** Create new TimerTask with timeout: " + timeoutsecs);
         TimerTask task = new SessionCleanerTask(storeddoms, key);
-        timer.schedule(task, timeoutsecs * 1000);
-
+        Timer t = getTimer();
+        try {
+            t.schedule(task, timeoutsecs * 1000);
+        } catch(IllegalStateException x) {
+            resetTimer(t);
+            getTimer().schedule(task, timeoutsecs * 1000);
+        }
     }
 
     private class SessionCleanerTask extends TimerTask {
@@ -115,6 +132,8 @@ public class SessionCleaner {
 
             } catch (IllegalStateException e) {
                 LOG.warn("*** Couldn't remove from cache... " + e.getMessage() + " ***");
+            } catch (Exception x) {
+                LOG.warn("Error while cleaning session.", x);
             }
             key        = null;
             storeddoms = null;
@@ -133,12 +152,20 @@ public class SessionCleaner {
                 this.session.invalidate();
             } catch (IllegalStateException e) {
                 // Ignore IllegalStateException
+            } catch(Exception x) {
+                LOG.warn("Error while invalidating session.", x);
             }
         }
     }
 
     public void invalidateSession(HttpSession session, int timeoutsecs) {
-        timer.schedule(new SessionInvalidateTask(session), timeoutsecs * 1000);
+        Timer t = getTimer();
+        try {
+            t.schedule(new SessionInvalidateTask(session), timeoutsecs * 1000);
+        } catch(IllegalStateException x) {
+            resetTimer(t);
+            getTimer().schedule(new SessionInvalidateTask(session), timeoutsecs * 1000);
+        }
     }
     
 } // SessionCleaner

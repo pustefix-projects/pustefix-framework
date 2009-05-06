@@ -1,3 +1,8 @@
+2009-05-06  Martin Leidig  <mleidig@schlund.de>
+
+	Fixed timer problem in SessionCleaner (reset timer after it was
+	cancelled due to exception or error thrown by task or JVM).
+
 2009-05-04  Martin Leidig  <mleidig@schlund.de>
 
 	Fixed JMX bean naming in war-mode (use project name from project.xml
