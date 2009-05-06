@@ -41,6 +41,10 @@ public class ProjectInfo {
     public String getProjectName() {
         return projectName;
     }
+    
+    public void setProjectName(String projectName) {
+        this.projectName = projectName;
+    }
 
     private String extractProjectName(URL url) {
         String s = url.toString();
