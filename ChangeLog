@@ -1,5 +1,9 @@
 2009-05-06  Martin Leidig  <mleidig@schlund.de>
 
+	Fixed NPE when unconfigured page is called with action parameter.
+
+2009-05-06  Martin Leidig  <mleidig@schlund.de>
+
 	Fixed timer problem in SessionCleaner (reset timer after it was
 	cancelled due to exception or error thrown by task or JVM).
 
