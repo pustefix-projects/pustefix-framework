@@ -1721,7 +1721,7 @@ wfxEditor.prototype.getHTML = function(dbg) {
     html = html.replace( /^\n?<pre>\n?/g, "<pre>");
     html = html.replace( /\n?<\/pre>\n$/g, "</pre>");
 
-    html = html.replace( /<br[^\>]*>/g, '<br />' );
+    html = html.replace( /<br>/g, '<br />' );
 
     // Ctrl-A selects entire content including <pre>
     // ==> bring leading and trailing range markers inside <pre>

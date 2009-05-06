@@ -164,14 +164,11 @@
             <ixsl:with-param name="in" select="$link"/>
           </ixsl:call-template>
         </ixsl:variable>
-        <ixsl:variable name="ts">
-          <ixsl:value-of select="deref:getTimeStamp()"/>
-        </ixsl:variable>
         <ixsl:variable name="sign">
-          <ixsl:value-of select="deref:signString($link, $ts, $__derefkey)"/>
+          <ixsl:value-of select="deref:signString($link, $__derefkey)"/>
         </ixsl:variable>
         <ixsl:text>/xml/deref?link=</ixsl:text>
-        <ixsl:value-of select="$enclink"/>&amp;sign=<ixsl:value-of select="$sign"/>&amp;ts=<ixsl:value-of select="$ts"/>
+        <ixsl:value-of select="$enclink"/>&amp;sign=<ixsl:value-of select="$sign"/>
       </ixsl:template>
 
       <ixsl:template match="/">
@@ -288,9 +285,7 @@
   <xsl:template match="pfx:wsscript">
     <script type="text/javascript">
       <ixsl:attribute name="src">
-        <ixsl:value-of select="concat($__contextpath,'/xml/webservice')"/>
-        <xsl:if test="@session='true'">;<ixsl:value-of select="$__sessid"/></xsl:if>
-        <ixsl:value-of select="concat('?wsscript&amp;name=',url:encode('{@name}','{$outputencoding}'),'&amp;type=')"/>
+        <ixsl:value-of select="concat($__contextpath, '/xml/webservice/{@name};',$__sessid,'?wsscript=')"/>
         <xsl:choose>
           <xsl:when test="@type"><xsl:value-of select="@type"/></xsl:when>
           <xsl:otherwise>jsonws</xsl:otherwise>

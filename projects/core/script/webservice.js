@@ -559,7 +559,6 @@ SOAP_DateTimeSerializer.prototype.fillNulls=function(value,length) {
   return filler+value;
 }
 SOAP_DateTimeSerializer.prototype.parseDate=function(dateStr) {
-  if(!dateStr) return null;
   var date=new Date();
   var year=dateStr.substr(0,4);
   date.setUTCFullYear(year);
@@ -578,18 +577,16 @@ SOAP_DateTimeSerializer.prototype.parseDate=function(dateStr) {
   return date;
 }
 SOAP_DateTimeSerializer.prototype.serialize=function(value,name,typeInfo,writer,ctx) {
-  if(value!=null && !(value instanceof Date)) throw new SOAP_SerializeEx("Illegal type: "+(typeof value),"SOAP_DateTimeSerializer.serialize");
-  if(value==null) {
-    this.superclass.serialize(value,name,typeInfo,writer,ctx);
-  } else {
-    var date=value.getUTCFullYear()+"-"+this.fillNulls(value.getUTCMonth()+1,2)+"-"+
+  if(!(value instanceof Date)) throw new SOAP_SerializeEx("Illegal type: "+(typeof value),"SOAP_DateTimeSerializer.serialize");
+  var date=value.getUTCFullYear()+"-"+this.fillNulls(value.getUTCMonth()+1,2)+"-"+
     this.fillNulls(value.getUTCDate(),2)+"T"+this.fillNulls(value.getUTCHours(),2)+":"+
     this.fillNulls(value.getUTCMinutes(),2)+":"+this.fillNulls(value.getUTCSeconds(),2)+"."+
     this.fillNulls(value.getUTCMilliseconds(),3)+"Z";
-    this.superclass.serialize(date,name,typeInfo,writer,ctx);
-  }
+  this.superclass.serialize(date,name,typeInfo,writer,ctx);
 }
 SOAP_DateTimeSerializer.prototype.deserialize=function(typeInfo,element) {
+  //if ( element.getAttributeNS(XML_NS_XSI, 'nil') == 'true' ) return null;
+  //else 
   return this.parseDate(this.superclass.deserialize.call(this,typeInfo,element));
 }
 
@@ -678,7 +675,7 @@ SOAP_BeanSerializer.prototype.serialize=function(value,name,typeInfo,writer,ctx)
     var propInfo=typeInfo.propToInfo[propName];
     var serializer=SOAP_TypeMapping.getSerializerByInfo(propInfo);
     var propVal=value[propName];
-    if(!propVal && typeof propVal=='undefined') throw new SOAP_SerializeEx("Missing bean property: "+propName,"SOAP_BeanSerializer.serialize");
+    if(propVal==undefined) throw new SOAP_SerializeEx("Missing bean property: "+propName,"SOAP_BeanSerializer.serialize");
     serializer.serialize(propVal,propName,propInfo,writer,ctx);
   }
   writer.endElement(name);
@@ -950,18 +947,15 @@ SOAP_Call.prototype.invoke=function() {
   var resDoc;
   if( !this.userCallback && !this.userObject ) {
     // sync
-    this.request=new pfx.net.HTTPRequest('POST',this.endpoint);
-    this.request.setRequestHeader('SOAPAction','""');
+    this.request=new XML_Request('POST',this.endpoint);
     resDoc=this.request.start(writer.xml); 
     return this.callback(resDoc);
   } else {
     // async
     try {
-      this.request=new pfx.net.HTTPRequest( 'POST', this.endpoint, this.callback, this );
-      this.request.setRequestHeader('SOAPAction','""');
-      this.request.setRequestHeader('Request-Id',this.requestID);
+      this.request=new XML_Request( 'POST', this.endpoint, this.callback, this );
       if(this.requestID==null) this.request.start(writer.xml);
-      else this.request.start(writer.xml,null,this.requestID);
+      else this.request.start(writer.xml,this.requestID);
     } catch(ex) { }
   }
 }
@@ -1317,6 +1311,6 @@ SOAP_Stub.prototype._extractCallback=function(call,args,expLen) {
 
 SOAP_Stub.prototype._setURL=function(url) {
   this._url=url.replace(/(https?:\/\/)([^\/]+)(.*)/,window.location.protocol+"//"+window.location.host+"$3");
-  var session=window.location.href.match(/;jsessionid=[A-Z0-9]+\.[a-zA-Z0-9]+/);
+  var session=window.location.href.replace(/.*(;jsessionid=[A-Z0-9]+\.[a-zA-Z0-9]+)(\?.*)?$/,"$1");
   this._url+=session;
 }

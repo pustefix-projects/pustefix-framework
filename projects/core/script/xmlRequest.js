@@ -36,21 +36,11 @@ function XML_Request() {
   this.errors = [];
   this.status = 0;
   this.statusText = "";
-  this.aborted = false;
-  this.retries = 0;
-  this.timer = null;
-  
-  this._retry_content;
-  this._retry_headers;
-  this._retry_reqId;
 
   var self = this;
   this.customOnReadyStateChange = function() { self._customOnReadyStateChange(); };
   this.cancelOnReadyStateChange = function(i, msg) { self._cancelOnReadyStateChange(i, msg); };
 }
-
-XML_Request.TIMEOUT = 120000;
-XML_Request.RETRIES = 0;
 
 XML_Request._xml = [];
 XML_Request._xmlThis = [];
@@ -101,10 +91,6 @@ if( !XML_Request.builtin && !_isOpera && window.ActiveXObject ) {
 
 XML_Request.activeX = typeof XML_Request.msXmlHttp == "string";
 
-XML_Request.prototype.restart = function() {
-  this.start(this._retry_content,this._retry_headers,this._retry_reqId);
-}
-
 //*****************************************************************************
 //
 //*****************************************************************************
@@ -113,11 +99,6 @@ XML_Request.prototype.start = function( content, reqId ) {
   // unique timestamp to prevent caching
   //  var uniq = ""+ new Date().getTime() + Math.floor(1000 * Math.random());
   //  this.url += ( ( this.url.indexOf('?')+1 ) ? '&' : '?' ) + uniq;
-  
-  if(XML_Request.RETRIES>0 && this._retry_content==null) {
-    this._retry_content=content;
-    this._retry_reqId=reqId;
-  }
 
   var i = XML_Request._xml.length;
 
@@ -156,6 +137,55 @@ XML_Request.prototype.start = function( content, reqId ) {
 
     if( typeof XML_Request._xml[i] != "undefined" ) {
 
+      if( this.callback ) {
+        //-------
+        // async
+        //-------
+
+        try {
+          var self = this;
+
+          if( XML_Request.activeX ) {
+            XML_Request._xml[i].onreadystatechange = function() {
+              if( XML_Request._xml[i].readyState == 4 ) {
+                var reqId;
+                try {
+                  reqId = XML_Request._xml[i].getResponseHeader("Request-Id");
+                } catch(e) {
+                }
+                self.callback.call( self.context, XML_Request._xml[i].responseXML, reqId);
+                XML_Request._xml[i] = null;
+              }
+            };
+          } else {
+            XML_Request._xml[i].onreadystatechange = function() {
+              if( XML_Request._xml[i].readyState == 4 ) {
+                try {
+                  self.status     = XML_Request._xml[i].status;
+                  self.statusText = XML_Request._xml[i].statusText;
+                } catch(e) {
+                }
+                if( self.status && self.status >= 300 ) {
+                  //throw new Error("XML_Request: Asynchronous call failed" + " (status " + self.status + ", " + self.statusText + ")");
+                }
+                var reqId;
+                try {
+                  reqId = XML_Request._xml[i].getResponseHeader("Request-Id");
+                } catch(e) {
+                }
+                self.callback.call( self.context, XML_Request._xml[i].responseXML, reqId );
+                XML_Request._xml[i] = null;
+              }
+            };
+          }
+
+        } catch(e) {
+          XML_Request._xml[i] = null;
+          throw new Error("XML_Request: Onreadystatechange failed");
+        }
+      }
+
+
       try {
         XML_Request._xml[i].open( this.method, this.url, this.callback ? true : false); 
 
@@ -174,69 +204,6 @@ XML_Request.prototype.start = function( content, reqId ) {
           } catch(e) {
           }
         }
-        
-        var self = this;
-      
-        if( this.callback ) {
-
-          if( XML_Request.activeX ) {
-            XML_Request._xml[i].onreadystatechange = function() {
-              if( XML_Request._xml[i].readyState == 4 && !self.aborted) {
-                var reqId;
-                try {
-                  reqId = XML_Request._xml[i].getResponseHeader("Request-Id");
-                } catch(e) {
-                }
-                self.callback.call( self.context, XML_Request._xml[i].responseXML, reqId);
-                XML_Request._xml[i] = null;
-                if(self.timer!=null) {
-                  window.clearTimeout(self.timer);
-                  self.timer=null;
-                }
-              }
-            };
-          } else {
-            XML_Request._xml[i].onreadystatechange = function() {
-              if( XML_Request._xml[i].readyState == 4 && !self.aborted ) {
-                try {
-                  self.status     = XML_Request._xml[i].status;
-                  self.statusText = XML_Request._xml[i].statusText;
-                } catch(e) {
-                }
-                if( self.status && self.status >= 300 ) {
-                  //throw new Error("XML_Request: Asynchronous call failed" + " (status " + self.status + ", " + self.statusText + ")");
-                }
-                var reqId;
-                try {
-                  reqId = XML_Request._xml[i].getResponseHeader("Request-Id");
-                } catch(e) {
-                }
-                self.callback.call( self.context, XML_Request._xml[i].responseXML, reqId );
-                XML_Request._xml[i] = null;
-                if(self.timer!=null) {
-                  window.clearTimeout(self.timer);
-                  self.timer==null;
-                }
-              }
-            };
-          }
-        }
-        
-        window.setTimeout(function() {
-          if( XML_Request._xml[i]!=null ) {
-            var state=XML_Request._xml[i].readyState;
-            if( state==1 || state==2 || state==3) {
-              self.aborted=true;
-              XML_Request._xml[i].abort();
-              XML_Request._xml[i]=null;
-              if(self.retries<XML_Request.RETRIES) {
-                self.aborted=false;
-                self.retries++;
-                self.restart();
-              }
-            }
-          }
-        },XML_Request.TIMEOUT)
 
         XML_Request._xml[i].send(content);
           

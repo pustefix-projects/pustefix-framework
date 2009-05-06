@@ -6,6 +6,7 @@
   <global>
     <!-- <include stylesheet="webservice/xsl/runtime.xsl"/> -->
     <param   name="outputmethod"         value="html"/>
+    <param   name="outputencoding"       value="iso-8859-1"/>
     <param   name="outputdoctype-public" value="-//W3C//DTD HTML 4.01//EN"/>
     <param   name="outputdoctype-system" value="http://www.w3.org/TR/html40/strict.dtd"/>
   </global>

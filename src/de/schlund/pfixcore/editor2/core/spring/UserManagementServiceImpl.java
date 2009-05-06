@@ -22,10 +22,9 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 import javax.xml.transform.TransformerException;
 
@@ -60,14 +59,14 @@ public class UserManagementServiceImpl implements UserManagementService {
 
     private PathResolverService pathresolver;
 
-    private Map<String, EditorUser> users;
+    private HashMap<String, EditorUser> users;
 
     private ProjectFactoryService projectfactory;
 
     private boolean initialized;
 
     public UserManagementServiceImpl() {
-        this.users = new LinkedHashMap<String, EditorUser>();
+        this.users = new HashMap<String, EditorUser>();
         this.initialized = false;
     }
 

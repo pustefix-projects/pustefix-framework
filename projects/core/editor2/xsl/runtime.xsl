@@ -2,7 +2,6 @@
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
                 xmlns:func="http://exslt.org/functions"
                 xmlns:edit="http://pustefix.sourceforge.net/pfixcore/editor"
-                exclude-result-prefixes="edit func"
                 version="1.0">
   
   <xsl:template match="*" mode="static_disp">

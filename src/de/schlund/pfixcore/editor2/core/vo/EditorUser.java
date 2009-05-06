@@ -19,9 +19,9 @@
 package de.schlund.pfixcore.editor2.core.vo;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 
 import de.schlund.pfixcore.editor2.core.dom.Project;
 
@@ -43,7 +43,7 @@ public class EditorUser implements Cloneable, Comparable {
 
     private EditorGlobalPermissions globalPermissions;
 
-    private LinkedHashMap<Project, EditorProjectPermissions> projectsPermissions;
+    private HashMap<Project, EditorProjectPermissions> projectsPermissions;
 
     /**
      * Contstructor setting all values (except username) to the empty string and
@@ -59,7 +59,7 @@ public class EditorUser implements Cloneable, Comparable {
         this.sectionName = "";
         this.phoneNumber = "";
         this.globalPermissions = new EditorGlobalPermissions();
-        this.projectsPermissions = new LinkedHashMap<Project, EditorProjectPermissions>();
+        this.projectsPermissions = new HashMap<Project, EditorProjectPermissions>();
     }
 
     /**

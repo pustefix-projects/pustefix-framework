@@ -19,22 +19,28 @@
 
 package de.schlund.pfixxml;
 
+import de.schlund.pfixxml.config.ServletManagerConfig;
+import de.schlund.pfixxml.serverutil.SessionHelper;
+import de.schlund.pfixxml.util.MD5Utils;
+
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.Properties;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
+import javax.servlet.http.HttpSession;
 import org.apache.axis.encoding.Base64;
 import org.apache.log4j.Category;
-
-import de.schlund.pfixxml.config.ServletManagerConfig;
-import de.schlund.pfixxml.serverutil.SessionHelper;
-import de.schlund.pfixxml.util.MD5Utils;
 
 /**
  * This class implements a "Dereferer" servlet to get rid of Referer
@@ -49,8 +55,6 @@ public class DerefServer extends ServletManager {
     protected static Category CAT             = Category.getInstance(DerefServer.class);
     public static String      PROP_DEREFKEY   = "derefserver.signkey";
     public static String      PROP_IGNORESIGN = "derefserver.ignoresign";
-    public final static String PROP_VALIDTIME = "derefserver.validtime";
-    private final static long DEFAULT_VALIDTIME = 1000 * 60 * 60;
     private ServletManagerConfig config;
     
     protected boolean allowSessionCreate() {
@@ -61,40 +65,24 @@ public class DerefServer extends ServletManager {
         return (false);
     }
 
-    public static String signString(String input, long timeStamp, String key) {
-        return MD5Utils.hex_md5(input+timeStamp+key, "utf8");
-    }
-    
-    public static String getTimeStamp() {
-        return String.valueOf(System.currentTimeMillis());
+    public static String signString(String input, String key) {
+        return MD5Utils.hex_md5(input+key, "utf8");
     }
 
-    public static boolean checkSign(String input, long timeStamp, long validTime, String key, String sign) {
+    public static boolean checkSign(String input, String key, String sign) {
         if (input == null || sign == null) {
             return false;
         }
-        if( (System.currentTimeMillis()-timeStamp) > validTime) {
-            return false;
-        }
-        return MD5Utils.hex_md5(input+timeStamp+key, "utf8").equals(sign);
+        return MD5Utils.hex_md5(input+key, "utf8").equals(sign);
     }
     
     protected void process(PfixServletRequest preq, HttpServletResponse res) throws Exception {
         RequestParam linkparam    = preq.getRequestParam("link");
         RequestParam enclinkparam = preq.getRequestParam("enclink");
         RequestParam signparam    = preq.getRequestParam("sign");
-        RequestParam tsparam      = preq.getRequestParam("ts");
         String       key          = config.getProperties().getProperty(PROP_DEREFKEY);
         String       ign          = config.getProperties().getProperty(PROP_IGNORESIGN);
 
-        long validTime = DEFAULT_VALIDTIME;
-        if(config.getProperties().getProperty(PROP_VALIDTIME)!=null) {
-            validTime = Long.parseLong(config.getProperties().getProperty(PROP_VALIDTIME)) * 1000;
-            if(validTime > DEFAULT_VALIDTIME) {
-                CAT.warn("The chosen deref-link valid time (" + validTime/1000 + "s) is very long.");
-            }
-        }
-        
         // This is currently set to true by default for backward compatibility. 
         boolean ignore_nosign = true;
         if (ign != null && ign.equals("false")) {
@@ -107,21 +95,18 @@ public class DerefServer extends ServletManager {
         CAT.debug("===> sign key: " + key);
         CAT.debug("===> Referer: " + referer);
         
-        long timeStamp = 0;
-        if(tsparam!=null && tsparam.getValue()!=null) timeStamp=Long.parseLong(tsparam.getValue());
-        
         if (linkparam != null && linkparam.getValue() != null) {
             CAT.debug(" ==> Handle link: " + linkparam.getValue());
             if (signparam != null && signparam.getValue() != null) {
                 CAT.debug("     with sign: " + signparam.getValue());
             }
-            handleLink(linkparam.getValue(), signparam, timeStamp, validTime, ignore_nosign, preq, res, key);
+            handleLink(linkparam.getValue(), signparam, ignore_nosign, preq, res, key);
             return;
         } else if (enclinkparam != null && enclinkparam.getValue() != null &&
                    signparam != null && signparam.getValue() != null) {
             CAT.debug(" ==> Handle enclink: " + enclinkparam.getValue());
             CAT.debug("     with sign: " + signparam.getValue());
-            handleEnclink(enclinkparam.getValue(), timeStamp, validTime, signparam.getValue(), preq, res, key);
+            handleEnclink(enclinkparam.getValue(), signparam.getValue(), preq, res, key);
             return;
         } else {
             res.sendError(HttpServletResponse.SC_BAD_REQUEST);
@@ -129,8 +114,9 @@ public class DerefServer extends ServletManager {
         }
     }
 
-    private void handleLink(String link, RequestParam signparam, long timeStamp, long validTime, boolean ignore_nosign,
-            PfixServletRequest preq, HttpServletResponse res, String key) throws Exception {
+
+    private void handleLink(String link, RequestParam signparam, boolean ignore_nosign,
+                            PfixServletRequest preq, HttpServletResponse res, String key) throws Exception {
         boolean checked = false;
         boolean signed  = false;
 
@@ -144,7 +130,7 @@ public class DerefServer extends ServletManager {
         if  (signparam != null && signparam.getValue() != null) {
             signed = true;
         }
-        if (signed && checkSign(link, timeStamp, validTime, key, signparam.getValue())) {
+        if (signed && checkSign(link, key, signparam.getValue())) {
             checked = true;
         }
 
@@ -154,10 +140,9 @@ public class DerefServer extends ServletManager {
             OutputStream       out      = res.getOutputStream();
             OutputStreamWriter writer   = new OutputStreamWriter(out, res.getCharacterEncoding());
             String             enclink  = Base64.encode(link.getBytes("utf8"));
-            if(!signed && ignore_nosign) timeStamp = System.currentTimeMillis();
             String             reallink = preq.getScheme() + "://" + preq.getServerName() + ":" + preq.getServerPort() +
                 SessionHelper.getClearedURI(preq) + "?enclink=" + URLEncoder.encode(enclink, "utf8") +
-                "&sign=" + signString(enclink, timeStamp, key) + "&ts=" + timeStamp;
+                "&sign=" + signString(enclink, key);
             
             // Log the occurrence of such a case to check if we can enable the feature in the future
             if (!signed && !link.startsWith("/")) {
@@ -188,9 +173,8 @@ public class DerefServer extends ServletManager {
         }
     }
 
-    private void handleEnclink(String enclink, long timeStamp, long validTime, String sign, PfixServletRequest preq, 
-            HttpServletResponse res, String key) throws Exception {
-        if (checkSign(enclink, timeStamp, validTime, key, sign)) {
+    private void handleEnclink(String enclink, String sign, PfixServletRequest preq, HttpServletResponse res, String key) throws Exception {
+        if (checkSign(enclink, key, sign)) {
             String link = new String( Base64.decode(enclink), "utf8");
             if (link.startsWith("/")) {
                 link = preq.getScheme() + "://" + preq.getServerName() + ":" + preq.getServerPort() + link;

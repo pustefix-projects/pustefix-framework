@@ -125,10 +125,8 @@ public class DirectOutputServletConfig extends ServletManagerConfig implements
                 digester,
                 CONFIG_NS,
                 CUS_NS,
-                new String[] { 
-                        "/directoutputserver/directoutputservletinfo",
-                        "/directoutputserver/directoutputpagerequest/properties",
-                        "/directoutputserver/properties" });
+                new String[] { "/directoutputserver/directoutputservletinfo",
+                        "directoutputserver/directoutputpagerequest/properties" });
         
         String confDocXml = null;
         config.loadTime = System.currentTimeMillis();

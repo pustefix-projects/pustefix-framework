@@ -86,7 +86,9 @@ public class HttpServiceRequest implements ServiceRequest {
 		} else {
             if(cachedMessage==null) {
     			//Check if content type is text/plain text/xml application/xml ?
-                        Reader in=httpRequest.getReader();
+    			String charset=httpRequest.getCharacterEncoding();
+    			if(charset==null) charset="UTF-8";
+    			BufferedReader in=new BufferedReader(new InputStreamReader(httpRequest.getInputStream(),charset));
     			CharArrayWriter data=new CharArrayWriter();
     			char buf[]=new char[4096];
     			int ret;
