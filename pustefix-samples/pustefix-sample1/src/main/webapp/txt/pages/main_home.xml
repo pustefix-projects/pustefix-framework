@@ -2,7 +2,7 @@
   
   <part name="content">
     <theme name="default">
-      <center>ZZZZZZZZ<br/>
+      <center>
       Test of deref-server for forms: 
       <pfx:externalform href="http://www.gimp.org">
         <input type="text" name="FOO"/>

@@ -1,3 +1,10 @@
+2009-05-07  Martin Leidig  <mleidig@schlund.de>
+	
+	Improved Live-Jar support: If the groupId and version of a Pustefix
+	module can't be derived from the jar file name, we'll try to detect
+	them by reading the according MANIFEST entries set by Maven (if
+	'addDefaultImplementationEntries' is enabled in the POM).
+
 2009-05-06  Martin Leidig  <mleidig@schlund.de>
 
 	Fixed NPE when unconfigured page is called with action parameter.

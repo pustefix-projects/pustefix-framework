@@ -18,11 +18,20 @@
 package de.schlund.pfixcore.util;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.jar.Attributes;
+import java.util.jar.Manifest;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -48,6 +57,8 @@ public class LiveJarInfo implements ModuleSourceLocator {
     private static LiveJarInfo instance = new LiveJarInfo();
     
     private Map<String, Entry> entries;
+    private Map<URL, File> urlToLocation;
+    private Set<URL> urlsWithNoLocation;
     
     public static LiveJarInfo getInstance() {
         return instance;
@@ -76,6 +87,8 @@ public class LiveJarInfo implements ModuleSourceLocator {
             Element root = document.getDocumentElement();
             if(root.getLocalName().equals("live") || root.getLocalName().equals("life")) { //support old misspelled name
                 entries = new HashMap<String, Entry>();
+                urlToLocation = new HashMap<URL, File>();
+                urlsWithNoLocation = new HashSet<URL>();
                 List<Element> jarElems = getChildElements(root, "jar");
                 for(Element jarElem:jarElems) {
                     Entry entry = new Entry();
@@ -131,6 +144,10 @@ public class LiveJarInfo implements ModuleSourceLocator {
     }
     
     public File getLocation(URL jarUrl) {
+        
+        File location = urlToLocation.get(jarUrl);
+        if(location != null || urlsWithNoLocation.contains(jarUrl)) return location;
+        
         String path = jarUrl.getPath();
         int ind = path.indexOf('!');
         path = path.substring(0, ind);
@@ -138,16 +155,61 @@ public class LiveJarInfo implements ModuleSourceLocator {
         path = path.substring(ind+1);
         ind = path.lastIndexOf('.');
         path = path.substring(0, ind);
+        //look for entry by jar file name
         Entry entry = entries.get(path);
         if(entry != null) {
             for(File dir:entry.directories) {
                 if(dir.getName().equals("resources")) {
+                    if(LOG.isDebugEnabled()) LOG.debug("Found live location by jar file name: " + path);
+                    urlToLocation.put(jarUrl, dir);
                     return dir;
                 }
             }
         }
+        //look for entry by artifact name and MANIFEST attributes
+        try {
+            URL manifestUrl = new URL(jarUrl, "/META-INF/MANIFEST.MF");
+            URLConnection con = manifestUrl.openConnection();
+            if(con != null) {
+                InputStream in = con.getInputStream();
+                if(in != null) {
+                    Manifest manifest = new Manifest(in);
+                    Attributes attrs = manifest.getMainAttributes();
+                    String groupId = attrs.getValue("Implementation-Vendor-Id");
+                    String version = attrs.getValue("Implementation-Version");
+                    if(groupId != null && version != null) {
+                        int endInd = path.indexOf(version);
+                        if(endInd > 2) {
+                            String artifactId = path.substring(0,endInd-1);
+                            String entryKey = groupId + "+" + artifactId + "+" + version;
+                            entry = entries.get(entryKey);
+                            if(entry != null) {
+                                for(File dir:entry.directories) {
+                                    if(dir.getName().equals("resources")) {
+                                        if(LOG.isDebugEnabled()) 
+                                            LOG.debug("Found live location by artifact name and MANIFEST attributes: " + entryKey);
+                                        urlToLocation.put(jarUrl, dir);
+                                        return dir;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        } catch(FileNotFoundException x) {
+            LOG.warn("Module contains no MANIFEST.MF: "+ jarUrl.toString());
+        } catch(MalformedURLException x) {
+            LOG.warn("Illegal module URL: " + jarUrl.toString(), x);
+        } catch(IOException x) {
+            LOG.warn("IO error reading module data: " + jarUrl.toString(), x);
+        }
+        if(LOG.isDebugEnabled()) LOG.debug("Found no live location: " + jarUrl.toString());
+        urlsWithNoLocation.add(jarUrl);
         return null;
     }
+    
+  
     
     @Override
     public String toString() {
