@@ -5,14 +5,14 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
   <parent>
     <groupId>org.pustefixframework</groupId>
     <artifactId>pustefixframework</artifactId>
-    <version>0.14.0-SNAPSHOT</version>
+    <version>0.14.1</version>
   </parent>
 
   <name>Pustefix External Libraries</name>
 
   <groupId>org.pustefixframework</groupId>
   <artifactId>libs</artifactId>
-  <version>0.14.0-SNAPSHOT</version>
+  <version>0.14.1</version>
   <packaging>pom</packaging>
  
   <build>
