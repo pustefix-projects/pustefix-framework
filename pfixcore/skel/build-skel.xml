@@ -741,7 +741,7 @@ or delete the DOCTYPE definition -->
     <echo message="Output written to ${dir.projects}/CHECKOUTPUT.xml" level="info"/>
   </target>
 
-  <target name="buildtime-props" depends="ant-tasks-stage1" description="creates build-time property file">
+  <target name="buildtime-props" depends="properties, ant-tasks-stage1" description="creates build-time property file">
     <!-- Generate propfile with buildtime information -->
     <pfx-buildtime-props
      file="${dir.projects}/common/conf/buildtime.prop"
