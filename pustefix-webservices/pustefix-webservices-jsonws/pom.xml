@@ -3,20 +3,20 @@
   <parent>
     <artifactId>pustefix-webservices</artifactId>
     <groupId>org.pustefixframework.webservices</groupId>
-    <version>0.14.1-SNAPSHOT</version>
+    <version>0.14.1</version>
   </parent>
 
   <name>Pustefix Webservices Jsonws</name>
 
   <groupId>org.pustefixframework.webservices</groupId>
   <artifactId>pustefix-webservices-jsonws</artifactId>
-  <version>0.14.1-SNAPSHOT</version>
+  <version>0.14.1</version>
 
   <dependencies>
     <dependency>
       <groupId>org.pustefixframework.webservices</groupId>
       <artifactId>pustefix-webservices-core</artifactId>
-      <version>0.14.1-SNAPSHOT</version>
+      <version>0.14.1</version>
     </dependency>
     <dependency>
       <groupId>cglib</groupId>
@@ -27,8 +27,7 @@
   </dependencies>
   <!-- TODO: add javacc like in ant build -->
   <!-- 
-    <javacc target="${dir.src}/de/schlund/pfixcore/webservice/json/JSONParser.jj" outputdirectory="${dir.src}/de/schlund/pfixcore/webservice/json/parser"
-      javacchome="${env.JAVACC_HOME}"
-      />
+    <javacc target="${dir.src}/de/schlund/pfixcore/webservice/json/JSONParser.jj" outputdirectory="${dir.src}/de/schlund/pfixcore/webservice/json/parser" javacchome="${env.JAVACC_HOME}"
+       />
   -->  
 </project>
