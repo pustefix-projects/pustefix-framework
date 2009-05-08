@@ -317,7 +317,7 @@
     <xsl:param name="themed-img"  select="@themed-img"/>
     <xsl:param name="alt" select="@alt"/>
     <xsl:param name="exclude-attributes"/>
-    <xsl:variable name="always-exclude-attributes" select="'src|themed-path|themed-img|alt|width|height|type|name|jumptopage|jumptopageflow|forcestop|pageflow'"/>
+    <xsl:variable name="always-exclude-attributes" select="'src|themed-path|themed-img|alt|width|height|type|name|jumptopage|jumptopageflow|forcestop|pageflow|action'"/>
     <xsl:variable name="realsrc">
       <xsl:call-template name="pfx:image_register_src">
         <xsl:with-param name="src" select="$src"/>
@@ -340,7 +340,7 @@
 
   <xsl:template match="pfx:xinp[@type='submit']">
     <xsl:param name="exclude-attributes"/>
-    <xsl:variable name="always-exclude-attributes" select="'type|name|jumptopage|jumptopageflow|forcestop|pageflow'"/>
+    <xsl:variable name="always-exclude-attributes" select="'type|name|jumptopage|jumptopageflow|forcestop|pageflow|action'"/>
     <ixsl:variable><xsl:attribute name="name">genname_<xsl:value-of select="generate-id(.)"/></xsl:attribute><xsl:value-of select="generate-id(.)"/><ixsl:value-of select="generate-id(.)"/></ixsl:variable>
     <input type="submit">
       <xsl:copy-of select="@*[not(contains(concat('|',$always-exclude-attributes,'|',$exclude-attributes,'|') , concat('|',name(),'|')))]"/>

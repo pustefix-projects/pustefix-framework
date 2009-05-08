@@ -1,3 +1,9 @@
+2009-05-08  Martin Leidig  <mleidig@schlund.de>
+
+	Don't copy through action attributes at input elements. This fixes the
+	following problem in Opera: Actions didn't work in Opera because it uses 
+	the action attribute from the submit button as form action.
+
 2009-05-06  Martin Leidig  <mleidig@schlund.de>
 
 	Fixed NPE when unconfigured page is called with action parameter.
