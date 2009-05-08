@@ -1,3 +1,9 @@
+2009-05-08  Martin Leidig  <mleidig@schlund.de>
+
+	Don't copy through action attributes at input elements. This fixes the
+	following problem in Opera: Actions didn't work in Opera because it uses 
+	the action attribute from the submit button as form action.
+
 2009-05-07  Martin Leidig  <mleidig@schlund.de>
 	
 	Improved Live-Jar support: If the groupId and version of a Pustefix
