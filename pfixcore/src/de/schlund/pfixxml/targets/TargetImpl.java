@@ -142,8 +142,11 @@ public abstract class TargetImpl implements TargetRW, Comparable<Target> {
             LOG.debug("skip_getmodtimemaybeupdate is true. Trying to skip getModTimeMaybeUpdate...");
             if (!onceLoaded) {
                 // do test for exists here!
-                FileResource thefile = ResourceUtil.getFileResource(getTargetGenerator().getDisccachedir(), getTargetKey());
-                if (!thefile.exists()) { // Target has not been loaded once and it doesn't exist in disk cache
+                FileResource thefile = null;
+                if(!getTargetKey().startsWith("module:/")) {
+                    thefile = ResourceUtil.getFileResource(getTargetGenerator().getDisccachedir(), getTargetKey());
+                }
+                if (thefile==null || !thefile.exists()) { // Target has not been loaded once and it doesn't exist in disk cache
                     LOG.debug("Cant't skip getModTimeMaybeUpdated because it has not been loaded " +
                               "and doesn't even exist in disk cache! Generating now !!");
                     try {
