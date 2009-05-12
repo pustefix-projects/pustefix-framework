@@ -1,3 +1,9 @@
+2009-04-20  Martin Leidig  <mleidig@schlund.de>
+
+	Fixed problem in TargetGenerator occurring when modtime-check is
+	disabled, but targets aren't pre-built (URI problem when trying to
+	load module resources from file system).
+
 2009-04-02  Martin Leidig  <mleidig@schlund.de>
 
 	Fixed pfx:externalform bug (missing timestamp param).
