@@ -318,17 +318,17 @@ public class Xslt {
      */
     static class PFErrorListener implements ErrorListener {
         public void warning(TransformerException arg) throws TransformerException {
-            LOG.error("WARNING: "+arg.getMessage());
+            LOG.error("WARNING: "+arg.getMessageAndLocation());
             throw arg;
         }
 
         public void error(TransformerException arg) throws TransformerException {
-            LOG.error("ERROR: "+arg.getMessage());
+            LOG.error("ERROR: "+arg.getMessageAndLocation());
             throw arg;
         }
 
         public void fatalError(TransformerException arg) throws TransformerException {
-            LOG.error("FATAL ERROR: "+arg.getMessage());
+            LOG.error("FATAL ERROR: "+arg.getMessageAndLocation());
             throw arg;
         }
     }

@@ -1,3 +1,7 @@
+2009-05-13  Martin Leidig  <mleidig@schlund.de>
+
+	Additionally log location when logging XSLT error message.
+
 2009-05-08  Martin Leidig  <mleidig@schlund.de>
 
 	Don't copy through action attributes at input elements. This fixes the
