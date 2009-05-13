@@ -24,7 +24,9 @@ import java.io.StringWriter;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import javax.xml.transform.ErrorListener;
@@ -109,7 +111,8 @@ public class Xslt {
     private static Templates loadTemplates(XsltVersion xsltVersion, InputSource input, TargetImpl parent, boolean debug) throws TransformerConfigurationException {
         Source src = new SAXSource(Xml.createXMLReader(), input);
         TransformerFactory factory = XsltProvider.getXsltSupport(xsltVersion).getThreadTransformerFactory();
-        factory.setErrorListener(new PFErrorListener());
+        PFErrorListener errorListener = new PFErrorListener();
+        factory.setErrorListener(errorListener);
         factory.setURIResolver(new FileResolver(parent,xsltVersion,debug));
         try {
             Templates retval = factory.newTemplates(src);
@@ -119,9 +122,20 @@ public class Xslt {
             sb.append("TransformerConfigurationException in doLoadTemplates!\n");
             sb.append("Path: ").append(input.getSystemId()).append("\n");
             sb.append("Message and Location: ").append(e.getMessageAndLocation()).append("\n");
+          
+            
+            List<TransformerException> errors = errorListener.getErrors();
+            if(e.getException() == null && e.getCause() == null && errors.size() > 0) {
+                TransformerException last = e;
+                final int maxDepth = 10;
+                for(int i=errors.size()-1; i>-1 && (errors.size()-i)<=maxDepth && last.getCause()==null; i--) {
+                    last.initCause(errors.get(i));
+                    last=errors.get(i);
+                }  
+            }
+            
             Throwable cause = e.getException();
-            if (cause == null)
-                cause = e.getCause();
+            if (cause == null) cause = e.getCause();
             sb.append("Cause: ").append((cause != null) ? cause.getMessage() : "none").append("\n");
             LOG.error(sb.toString());
             throw e;
@@ -317,6 +331,13 @@ public class Xslt {
      * Implementation of ErrorListener interface.
      */
     static class PFErrorListener implements ErrorListener {
+        
+        private List<TransformerException> errors = new ArrayList<TransformerException>();
+        
+        public List<TransformerException> getErrors() {
+            return errors;
+        }
+        
         public void warning(TransformerException arg) throws TransformerException {
             LOG.error("WARNING: "+arg.getMessageAndLocation());
             throw arg;
@@ -324,11 +345,13 @@ public class Xslt {
 
         public void error(TransformerException arg) throws TransformerException {
             LOG.error("ERROR: "+arg.getMessageAndLocation());
+            errors.add(arg);
             throw arg;
         }
 
         public void fatalError(TransformerException arg) throws TransformerException {
             LOG.error("FATAL ERROR: "+arg.getMessageAndLocation());
+            errors.add(arg);
             throw arg;
         }
     }
