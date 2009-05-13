@@ -23,6 +23,7 @@ or delete the DOCTYPE definition -->
   <property name="dir.lib"                  location="lib"/>
   <property name="lib.includes"             value="lib/**/*.jar"/>
   <property name="test.lib.includes"        value="${lib.includes}"/>
+  <property name="test.junit.fork"          value="true"/>
   <property name="dir.skel"                 location="skel"/>
   <property name="dir.projects"             location="projects"/>
   <property name="dir.docroot"              location="${dir.projects}" description="document root for tomcat, defaults to dir.projects"/>
@@ -1157,7 +1158,7 @@ or delete the DOCTYPE definition -->
   <property name="dir.test.report" location="build/test-reports"/>
   <target name="test" depends="test.compile">
     <mkdir dir="${dir.test.report}"/>
-    <junit dir="./" printSummary="yes" fork="true" haltonfailure="true">
+    <junit dir="./" printSummary="yes" fork="${test.junit.fork}" haltonfailure="true">
       <sysproperty key="basedir" value="."/>
       <formatter type="xml"/>
       <formatter type="plain"/>
