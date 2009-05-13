@@ -146,9 +146,8 @@
   </xsl:template>
 
   <xsl:template match="exception">
-    <xsl:variable name="indent" select="count(ancestor::exception)*15"/>
     <tr>
-      <td colspan="2" bgcolor="#dd9999" style="padding-left:{$indent}px">
+      <td colspan="2" bgcolor="#dd9999">
         <b>
           <xsl:choose>
             <xsl:when test="parent::exception">Cause:</xsl:when>
@@ -158,10 +157,10 @@
       </td>
     </tr>
     <tr bgcolor="#ccccee">
-      <td style="padding-left:{$indent}px">Type</td>
+      <td>Type</td>
       <td><xsl:value-of select="@type"/></td></tr>
     <tr bgcolor="#aaaacc">
-      <td valign="top" style="padding-left:{$indent}px">Message</td>
+      <td valign="top">Message</td>
       <xsl:choose>
         <xsl:when test="@msg != ''">
           <td><xsl:value-of select="@msg"/></td>
@@ -173,7 +172,7 @@
     </tr>
     <tr bgcolor="#ccccee">
       <xsl:variable name="stackid">stack<xsl:value-of select="generate-id()"/></xsl:variable>
-      <td valign="top" style="padding-left:{$indent}px">
+      <td valign="top">
         Stacktrace 
       </td>
       <td>
