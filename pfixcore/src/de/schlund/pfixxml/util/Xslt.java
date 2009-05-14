@@ -126,12 +126,14 @@ public class Xslt {
             
             List<TransformerException> errors = errorListener.getErrors();
             if(e.getException() == null && e.getCause() == null && errors.size() > 0) {
-                TransformerException last = e;
-                final int maxDepth = 10;
-                for(int i=errors.size()-1; i>-1 && (errors.size()-i)<=maxDepth && last.getCause()==null; i--) {
-                    last.initCause(errors.get(i));
-                    last=errors.get(i);
-                }  
+                if(e != errors.get(0)) {
+                    TransformerException last = e;
+                    final int maxDepth = 10;
+                    for(int i=errors.size()-1; i>-1 && (errors.size()-i)<=maxDepth && last.getCause()==null; i--) {
+                        if(last != errors.get(i)) last.initCause(errors.get(i));
+                        last=errors.get(i);
+                    }
+                }
             }
             
             Throwable cause = e.getException();
