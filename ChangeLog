@@ -1,3 +1,10 @@
+2009-05-13  Martin Leidig  <mleidig@schlund.de>
+
+	Improved XSLT stylesheet compilation error handling: Remember
+	TransformerExceptions and add them as TransformerConfigurationException
+	cause to reflect the real problem and not just display the pretty vacant 
+	'Failed to compile stylesheet' message.
+
 2009-05-08  Martin Leidig  <mleidig@schlund.de>
 
 	Don't copy through action attributes at input elements. This fixes the
