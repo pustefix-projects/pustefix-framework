@@ -82,6 +82,8 @@
 
   <xsl:param name="stylesheets_to_include"/>
 
+  <xsl:param name="compress-inline-javascript"/>
+
   <xsl:key name="frameset_key" match="pfx:frameset" use="'fset'"/>
   <xsl:key name="frame_key"    match="pfx:frame"    use="'frame'"/>
 
@@ -94,8 +96,9 @@
                      xmlns:url="xalan://java.net.URLEncoder"
                      xmlns:deref="xalan://org.pustefixframework.http.dereferer.SignUtil"
                      xmlns:callback="xalan://de.schlund.pfixcore.util.TransformerCallback"
+                     xmlns:compress="xalan://org.pustefixframework.util.javascript.CompressorCallback"
                      xmlns:rfh="java:org.pustefixframework.http.AbstractPustefixXMLRequestHandler$RegisterFrameHelper" 
-                     exclude-result-prefixes="pfx cus xsl url deref callback func rfh">
+                     exclude-result-prefixes="pfx cus xsl url deref callback compress func rfh">
 
       <ixsl:import href="core/xsl/default_copy.xsl"/>
       <ixsl:import href="core/xsl/include.xsl"/>
@@ -312,9 +315,20 @@
     <script>
       <xsl:attribute name="language">JavaScript</xsl:attribute>
       <xsl:attribute name="type">text/javascript</xsl:attribute>
-      <xsl:copy-of select="@*"/>
+      <xsl:copy-of select="@*[not(name()='compress')]"/>
       <ixsl:comment>
+        <xsl:choose>
+          <xsl:when test="$compress-inline-javascript='true' and not(@compress='false')">
+            <ixsl:variable name="__script">
+              <xsl:copy-of select="./node()"/>
+            </ixsl:variable>
+            <ixsl:text>&#160;&#10;</ixsl:text>
+            <ixsl:value-of select="compress:compressJavascript($__script)"/>
+          </xsl:when>
+          <xsl:otherwise>
 	<xsl:copy-of select="./node()"/>
+          </xsl:otherwise>
+        </xsl:choose>
 	//</ixsl:comment>
     </script>
   </xsl:template>

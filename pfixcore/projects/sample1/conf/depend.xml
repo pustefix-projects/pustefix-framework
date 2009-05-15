@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <make project="sample1"
-      lang="en_GB">
+      lang="en_GB" 
+      xmlns:cus="http://www.schlund.de/pustefix/customize">
 
   <global>
     <!-- <include stylesheet="sample1/xsl/runtime.xsl"/> -->
@@ -11,6 +12,20 @@
     <!-- FIXME: We need to decide how to add this stuff to master.xsl -->
     <!-- <param name="additional_custom_namespaces" value='xmlns:foo="http://foo.bar.baz"'/> -->
     <!-- <param name="exclude_custom_ns_prefixes" value="foo"/> -->
+    
+    <!-- The following parameter enables inline-javascript compression. This parameter
+         can be overriden within the standardpage tag to enable/disable compression for
+         specific pages.
+         Compression is only done if a Compressor implementation is in the classpath.
+         Currently only the YUI compressor is supported. 
+    -->
+    <!--
+    <cus:choose>
+      <cus:when test="$mode='prod'">
+        <param name="compress-inline-javascript" value="true"/>
+      </cus:when>
+    </cus:choose>
+    -->
   </global>
   
   <navigation>

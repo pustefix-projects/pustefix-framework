@@ -106,6 +106,14 @@
     </layout>
   </appender>
 
+  <appender name="LOGGER_JSCOMPRESS" class="org.apache.log4j.RollingFileAppender">
+    <param name="File"><cus:docroot/>servletconf/log/pustefix-jscompress.log</param>
+    <param name="MaxFileSize" value="10MB"/>
+    <layout class="org.apache.log4j.PatternLayout">
+      <param name="ConversionPattern" value="%d{ISO8601} [%t] %-5p %c [%M():%L] %x - %m\n"/>
+    </layout>
+  </appender>
+
  
   <!-- Categories -->
 
@@ -300,6 +308,10 @@
     <appender-ref ref="LOGGER_JMX"/>
   </category>
 
+  <category name="org.pustefixframework.util.javascript" additivity="false">
+    <priority value="INFO"/>
+    <appender-ref ref="LOGGER_JSCOMPRESS"/>
+  </category>
 
   <!-- default category -->
 
