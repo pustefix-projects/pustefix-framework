@@ -1,3 +1,16 @@
+2009-05-15  Martin Leidig  <mleidig@schlund.de>
+
+	Added support for inline-javascript compression. Compression can be
+	enabled/disabled setting an according param in the global or
+	standardpage section:
+	<param name="compress-inline-javascript" value="true"/>
+	You can use cus:choose/cus:when to enable/disable compression for a
+	specific mode.
+	By default we'll try to use the YUI compressor if it's availabe in the
+	classpath. If you want to explicitly exclude a script section from
+	compression you can set the compress attribute to false:
+	<pfx:script compress="false">
+
 2009-05-13  Martin Leidig  <mleidig@schlund.de>
 
 	Improved XSLT stylesheet compilation error handling: Remember
