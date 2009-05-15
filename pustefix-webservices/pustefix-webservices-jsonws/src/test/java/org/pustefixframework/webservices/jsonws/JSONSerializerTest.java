@@ -147,4 +147,31 @@ public class JSONSerializerTest {
     }
     */
     
+    @Test
+    public void serializeEnums() throws Exception {
+    	
+        JSONSerializer serializer=new JSONSerializer(serializerRegistry);
+        JSONDeserializer deserializer=new JSONDeserializer(deserializerRegistry);
+        
+        StringWriter writer=new StringWriter();
+        EnumTestBean bean = new EnumTestBean();
+        bean.setSimpleEnum(SimpleEnum.BLUE);
+        bean.setComplexEnum(ComplexEnum.RED);
+        bean.setInnerEnum(EnumTestBean.InnerEnum.GREEN);
+        
+        serializer.serialize(bean,writer);
+        String json=writer.toString();
+
+        JSONParser parser=new JSONParser(new StringReader(json));
+        JSONObject jsonObj=(JSONObject)parser.getJSONValue();
+        EnumTestBean refBean=(EnumTestBean)deserializer.deserialize(jsonObj,EnumTestBean.class);
+        
+        writer=new StringWriter();
+        serializer.serialize(refBean,writer);
+        String jsonRef=writer.toString();
+        
+        assertEquals(json,jsonRef);
+        
+    }
+    
 }

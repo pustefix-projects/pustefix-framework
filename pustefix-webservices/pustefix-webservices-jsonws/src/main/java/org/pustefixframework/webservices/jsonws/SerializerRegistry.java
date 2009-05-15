@@ -31,6 +31,7 @@ import org.pustefixframework.webservices.jsonws.serializers.ArraySerializer;
 import org.pustefixframework.webservices.jsonws.serializers.BeanSerializer;
 import org.pustefixframework.webservices.jsonws.serializers.BooleanSerializer;
 import org.pustefixframework.webservices.jsonws.serializers.CalendarSerializer;
+import org.pustefixframework.webservices.jsonws.serializers.EnumSerializer;
 import org.pustefixframework.webservices.jsonws.serializers.ListSerializer;
 import org.pustefixframework.webservices.jsonws.serializers.MapSerializer;
 import org.pustefixframework.webservices.jsonws.serializers.NumberSerializer;
@@ -48,6 +49,7 @@ public class SerializerRegistry {
     ArraySerializer arraySerializer;
     ListSerializer listSerializer;
     MapSerializer mapSerializer;
+    EnumSerializer enumSerializer;
     
     public SerializerRegistry(BeanDescriptorFactory beanDescFactory) {
        
@@ -57,6 +59,7 @@ public class SerializerRegistry {
         arraySerializer=new ArraySerializer();
         listSerializer=new ListSerializer();
         mapSerializer=new MapSerializer();
+        enumSerializer=new EnumSerializer();
         
         serializers.put(String.class,new StringSerializer());
         Serializer ser=new NumberSerializer();
@@ -84,6 +87,7 @@ public class SerializerRegistry {
             if(clazz.isArray()) ser=arraySerializer;
             else if(List.class.isAssignableFrom(clazz)) ser=listSerializer;
             else if(Map.class.isAssignableFrom(clazz)) ser=mapSerializer;
+            else if(Enum.class.isAssignableFrom(clazz)) ser=enumSerializer;
             else ser=beanSerializer;
         }
         return ser;

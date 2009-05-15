@@ -105,4 +105,8 @@ public interface TypeTest {
     
     public BeanImpl[] echoBeanArray(BeanImpl[] beanArray);
     
+    public TestEnum echoEnum(TestEnum testEnum);
+  
+    public EnumTestBean echoEnumBean(EnumTestBean testEnumBean);
+    
 }

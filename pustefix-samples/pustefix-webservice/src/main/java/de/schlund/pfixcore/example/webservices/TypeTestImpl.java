@@ -187,4 +187,14 @@ public class TypeTestImpl implements TypeTest {
         return beanArray;
     }
     
+    @WebMethod(exclude=true)
+    public TestEnum echoEnum(TestEnum testEnum) {
+    	return testEnum;
+    }
+    
+    @WebMethod(exclude=true)
+    public EnumTestBean echoEnumBean(EnumTestBean testEnumBean) {
+    	return testEnumBean;
+    }
+    
 }

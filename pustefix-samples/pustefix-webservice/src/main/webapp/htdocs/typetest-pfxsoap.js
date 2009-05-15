@@ -704,7 +704,35 @@ function serviceCall() {
       var t2=(new Date()).getTime();
       consolePrint("echoBeanArray",(t2-t1),ex);
     }  
-      
+    
+    //echoEnum
+    t1=(new Date()).getTime();
+    try {
+        var enumVal="BLUE";
+        var resVal=ws.echoEnum(enumVal);
+        var t2=(new Date()).getTime();
+        if(resVal!=enumVal) throw "Wrong result";
+        consolePrint("echoEnum",(t2-t1));
+    } catch(ex) {
+        var t2=(new Date()).getTime();
+       consolePrint("echoEnum",(t2-t1),ex);
+    }
+
+    //echoEnumBean
+    t1=(new Date()).getTime();
+    try {
+        var bean=new Object();
+        bean["innerTestEnum"]="BLUE";
+        bean["testEnum"]="RED";
+        var resBean=ws.echoEnumBean(bean);
+        var t2=(new Date()).getTime();
+        if(!equals(resBean,bean)) throw "Wrong result";
+        consolePrint("echoEnumBean",(t2-t1));
+    } catch(ex) {
+        var t2=(new Date()).getTime();
+       consolePrint("echoEnumBean",(t2-t1),ex);
+    }    
+
     var total2=(new Date()).getTime();
        
     timer.stop();
