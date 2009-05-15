@@ -21,7 +21,6 @@ package org.pustefixframework.config.project.parser;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.Properties;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -94,10 +93,7 @@ public class PustefixContextXMLRequestHandlerParsingHandler extends Customizatio
         } catch(MalformedURLException x) {
             throw new ParserException("Illegal resource URL",x);
         }
-        Iterator<Object> it = context.getObjectTreeElement().getObjects().iterator();
-        while(it.hasNext()) {
-            System.out.println("OBJ: "+it.next().getClass().getName());
-        }
+        
         Collection<BeanDefinitionRegistry> beanRegs = context.getObjectTreeElement().getObjectsOfTypeFromTopTree(BeanDefinitionRegistry.class);
         if(beanRegs.size()==0) throw new ParserException("No BeanDefinitionRegistry object found.");
         else if(beanRegs.size()>1) throw new ParserException("Multiple BeanDefinitionRegistry objects found.");
