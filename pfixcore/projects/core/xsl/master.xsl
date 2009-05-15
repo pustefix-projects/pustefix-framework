@@ -311,7 +311,7 @@
     <script>
       <xsl:attribute name="language">JavaScript</xsl:attribute>
       <xsl:attribute name="type">text/javascript</xsl:attribute>
-      <xsl:copy-of select="@*"/>
+      <xsl:copy-of select="@*[not(name()='compress')]"/>
       <ixsl:comment>
 	<xsl:copy-of select="./node()"/>
 	//</ixsl:comment>
