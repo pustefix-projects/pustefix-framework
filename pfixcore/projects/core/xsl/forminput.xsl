@@ -340,27 +340,74 @@
     <xsl:param name="exclude-attributes"/>
     <xsl:param name="module" select="@module"/>
     <xsl:param name="search" select="@search"/>
-    <xsl:variable name="always-exclude-attributes" select="'src|themed-path|themed-img|alt|width|height|type|name|jumptopage|jumptopageflow|forcestop|pageflow|module|search'"/>
-    <xsl:variable name="realsrc">
-      <xsl:call-template name="pfx:image_register_src">
-        <xsl:with-param name="src" select="$src"/>
-        <xsl:with-param name="themed-path" select="$themed-path"/>
-        <xsl:with-param name="themed-img" select="$themed-img"/>
-        <xsl:with-param name="module" select="$module"/>
-        <xsl:with-param name="search" select="$search"/>
-      </xsl:call-template>
-    </xsl:variable>
-    <ixsl:variable><xsl:attribute name="name">genname_<xsl:value-of select="generate-id(.)"/></xsl:attribute><xsl:value-of select="generate-id(.)"/><ixsl:value-of select="generate-id(.)"/></ixsl:variable>
-    <input type="image" src="{{$__contextpath}}/{$realsrc}" alt="{$alt}"> 
-      <xsl:copy-of select="@*[not(contains(concat('|',$always-exclude-attributes,'|',$exclude-attributes,'|') , concat('|',name(),'|')))]"/>
-      <xsl:attribute name="class"><xsl:value-of select="@class"/> PfxInputImage</xsl:attribute>
-      <xsl:call-template name="pfx:image_geom_impl_new">
-        <xsl:with-param name="src" select="$realsrc"/>
-      </xsl:call-template>
-      <ixsl:attribute name="name">__SBMT:<ixsl:value-of select="$genname_{generate-id(.)}"/>:</ixsl:attribute>
-      <xsl:apply-templates/>
-    </input>
-    <xsl:call-template name="generate_coded_input"/>
+    <xsl:variable name="always-exclude-attributes" select="'src|themed-path|themed-img|alt|width|height|type|name|jumptopage|jumptopageflow|forcestop|pageflow|module|search|action|level'"/>
+    <xsl:choose>
+      <xsl:when test="not(@level='runtime')">
+        <xsl:variable name="realsrc">
+          <xsl:call-template name="pfx:image_register_src">
+            <xsl:with-param name="src" select="$src"/>
+            <xsl:with-param name="themed-path" select="$themed-path"/>
+            <xsl:with-param name="themed-img" select="$themed-img"/>
+            <xsl:with-param name="module" select="$module"/>
+            <xsl:with-param name="search" select="$search"/>
+          </xsl:call-template>
+        </xsl:variable>
+        <ixsl:variable><xsl:attribute name="name">genname_<xsl:value-of select="generate-id(.)"/></xsl:attribute><xsl:value-of select="generate-id(.)"/><ixsl:value-of select="generate-id(.)"/></ixsl:variable>
+        <input type="image" src="{{$__contextpath}}/{$realsrc}" alt="{$alt}"> 
+          <xsl:copy-of select="@*[not(contains(concat('|',$always-exclude-attributes,'|',$exclude-attributes,'|') , concat('|',name(),'|')))]"/>
+          <xsl:attribute name="class"><xsl:value-of select="@class"/> PfxInputImage</xsl:attribute>
+          <xsl:call-template name="pfx:image_geom_impl_new">
+            <xsl:with-param name="src" select="$realsrc"/>
+          </xsl:call-template>
+          <ixsl:attribute name="name">__SBMT:<ixsl:value-of select="$genname_{generate-id(.)}"/>:</ixsl:attribute>
+          <xsl:apply-templates/>
+        </input>
+        <xsl:call-template name="generate_coded_input"/>
+      </xsl:when>
+      <xsl:otherwise>
+        <ixsl:variable><xsl:attribute name="name">genname_<xsl:value-of select="generate-id(.)"/></xsl:attribute><xsl:value-of select="generate-id(.)"/><ixsl:value-of select="generate-id(.)"/></ixsl:variable>
+        <input type="image">
+          <xsl:copy-of select="@*[not(contains(concat('|',$always-exclude-attributes,'|',$exclude-attributes,'|') , concat('|',name(),'|')))]"/>
+          <ixsl:variable name="realsrc">
+            <ixsl:call-template name="pfx:image_register_src">
+              <ixsl:with-param name="src">
+                <xsl:choose>
+                  <xsl:when test="pfx:src"><xsl:apply-templates select="pfx:src/node()"/></xsl:when>
+                  <xsl:otherwise><xsl:value-of select="@src"/></xsl:otherwise>
+                </xsl:choose>
+              </ixsl:with-param>
+              <ixsl:with-param name="themed-path">
+                <xsl:choose>
+                  <xsl:when test="pfx:themed-path"><xsl:apply-templates select="pfx:themed-path/node()"/></xsl:when>
+                  <xsl:otherwise><xsl:value-of select="@themed-path"/></xsl:otherwise>
+                </xsl:choose>
+              </ixsl:with-param>
+              <ixsl:with-param name="themed-img">
+                <xsl:choose>
+                  <xsl:when test="pfx:themed-img"><xsl:apply-templates select="pfx:themed-img/node()"/></xsl:when>
+                  <xsl:otherwise><xsl:value-of select="@themed-img"/></xsl:otherwise>
+                </xsl:choose>
+              </ixsl:with-param>
+              <ixsl:with-param name="module"><xsl:value-of select="@module"/></ixsl:with-param>
+              <ixsl:with-param name="search"><xsl:value-of select="@search"/></ixsl:with-param>
+            </ixsl:call-template>
+          </ixsl:variable>
+          <ixsl:attribute name="src"><ixsl:value-of select="concat($__contextpath,'/',$realsrc)"/></ixsl:attribute>
+          <ixsl:attribute name="alt">
+            <xsl:choose>
+              <xsl:when test="pfx:alt"><xsl:apply-templates select="pfx:alt/node()"/></xsl:when>
+              <xsl:otherwise><xsl:value-of select="@alt"/></xsl:otherwise>
+            </xsl:choose>
+          </ixsl:attribute>
+          <ixsl:attribute name="class"><xsl:value-of select="@class"/> PfxInputImage</ixsl:attribute>
+          <ixsl:call-template name="pfx:image_geom_impl_new">
+            <ixsl:with-param name="src" select="$realsrc"/>
+          </ixsl:call-template>
+          <ixsl:attribute name="name">__SBMT:<ixsl:value-of select="$genname_{generate-id(.)}"/>:</ixsl:attribute>
+        </input>
+        <xsl:call-template name="generate_coded_input"/>
+      </xsl:otherwise>
+    </xsl:choose>
   </xsl:template>
 
   <xsl:template match="pfx:xinp[@type='submit']">
