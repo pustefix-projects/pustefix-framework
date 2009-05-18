@@ -1,3 +1,12 @@
+2009-05-18  Martin Leidig  <mleidig@schlund.de>
+
+	Added support for deferring image includes until runtime by setting
+	the <pfx:image> or <pfx:xinp type="image"> element's 'level' attribute
+	to 'runtime'. The 'src', 'themed-path', 'themed-img' and 'alt' values
+	can be lately bound using the according <pfx:src>, <pfx:themed-path>,
+	<pfx:themed-img> and <pfx:alt> elements, which are evaluated at
+	runtime.
+
 2009-05-13  Martin Leidig  <mleidig@schlund.de>
 
 	Improved XSLT stylesheet compilation error handling: Remember
