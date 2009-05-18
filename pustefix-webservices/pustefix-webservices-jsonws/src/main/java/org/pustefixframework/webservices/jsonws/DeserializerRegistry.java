@@ -31,6 +31,7 @@ import org.pustefixframework.webservices.jsonws.deserializers.ArrayDeserializer;
 import org.pustefixframework.webservices.jsonws.deserializers.BeanDeserializer;
 import org.pustefixframework.webservices.jsonws.deserializers.BooleanDeserializer;
 import org.pustefixframework.webservices.jsonws.deserializers.CalendarDeserializer;
+import org.pustefixframework.webservices.jsonws.deserializers.EnumDeserializer;
 import org.pustefixframework.webservices.jsonws.deserializers.NumberDeserializer;
 import org.pustefixframework.webservices.jsonws.deserializers.StringDeserializer;
 
@@ -44,6 +45,7 @@ public class DeserializerRegistry {
     Map<Class<?>,Deserializer> deserializers;
     Deserializer beanDeserializer;
     Deserializer arrayDeserializer;
+    Deserializer enumDeserializer;
     
     public DeserializerRegistry(BeanDescriptorFactory beanDescFactory) {
         
@@ -51,6 +53,7 @@ public class DeserializerRegistry {
         
         beanDeserializer=new BeanDeserializer(beanDescFactory);
         arrayDeserializer=new ArrayDeserializer();
+        enumDeserializer=new EnumDeserializer();
         
         deserializers.put(String.class,new StringDeserializer());
         Deserializer deser=new NumberDeserializer();
@@ -80,6 +83,7 @@ public class DeserializerRegistry {
         if(deser==null) {
             if(clazz.isArray()) deser=arrayDeserializer; 
             else if(List.class.isAssignableFrom(clazz)) deser=arrayDeserializer;
+            else if(Enum.class.isAssignableFrom(clazz)) deser=enumDeserializer;
             else deser=beanDeserializer;
         }
         return deser;
