@@ -398,6 +398,47 @@
     
   </xsl:template>
   
+  <xsl:template match="pfx:image[@level='runtime']">
+    <img>
+      <xsl:variable name="exclude-attributes">|src|alt|themed-path|themed-img|module|search|level|</xsl:variable>
+      <xsl:copy-of select="@*[not(contains($exclude-attributes,concat('|',name(),'|')))]"/>
+      <ixsl:variable name="real_src">
+        <ixsl:call-template name="pfx:image_register_src">
+          <ixsl:with-param name="src">
+            <xsl:choose>
+              <xsl:when test="pfx:src"><xsl:apply-templates select="pfx:src/node()"/></xsl:when>
+              <xsl:otherwise><xsl:value-of select="@src"/></xsl:otherwise>
+            </xsl:choose>
+          </ixsl:with-param>
+          <ixsl:with-param name="themed-path">
+            <xsl:choose>
+              <xsl:when test="pfx:themed-path"><xsl:apply-templates select="pfx:themed-path/node()"/></xsl:when>
+              <xsl:otherwise><xsl:value-of select="@themed-path"/></xsl:otherwise>
+            </xsl:choose>
+          </ixsl:with-param>
+          <ixsl:with-param name="themed-img">
+            <xsl:choose>
+              <xsl:when test="pfx:themed-img"><xsl:apply-templates select="pfx:themed-img/node()"/></xsl:when>
+              <xsl:otherwise><xsl:value-of select="@themed-img"/></xsl:otherwise>
+            </xsl:choose>
+          </ixsl:with-param>
+          <ixsl:with-param name="module"><xsl:value-of select="@module"/></ixsl:with-param>
+          <ixsl:with-param name="search"><xsl:value-of select="@search"/></ixsl:with-param>
+        </ixsl:call-template>
+      </ixsl:variable>
+      <ixsl:attribute name="src"><ixsl:value-of select="concat($__contextpath,'/',$real_src)"/></ixsl:attribute>
+      <ixsl:attribute name="alt">
+        <xsl:choose>
+          <xsl:when test="pfx:alt"><xsl:apply-templates select="pfx:alt/node()"/></xsl:when>
+          <xsl:otherwise><xsl:value-of select="@alt"/></xsl:otherwise>
+        </xsl:choose>
+      </ixsl:attribute>      
+      <ixsl:call-template name="pfx:image_geom_impl">
+        <ixsl:with-param name="src" select="$real_src"/>
+      </ixsl:call-template>
+    </img>
+  </xsl:template>
+  
   <xsl:template name="pfx:image_geom_impl">
     <xsl:param name="src">
       <xsl:value-of select="./@src"/>
