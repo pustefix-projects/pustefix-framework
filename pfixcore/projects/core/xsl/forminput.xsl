@@ -20,7 +20,7 @@
         </ixsl:if>
       </xsl:when>
       <xsl:when test="not($pg = '')">
-        <ixsl:if test="callback:isAccessible($__context__, '{$pg}') = 1">
+        <ixsl:if test="callback:isAccessible($__context__, $__target_gen, '{$pg}') = 1">
           <xsl:apply-templates/>
         </ixsl:if>
       </xsl:when>
@@ -43,7 +43,7 @@
         </ixsl:if>
       </xsl:when>
       <xsl:when test="not($pg = '')">
-        <ixsl:if test="callback:isAccessible($__context__, '{$pg}') = 0">
+        <ixsl:if test="callback:isAccessible($__context__, $__target_gen, '{$pg}') = 0">
           <xsl:apply-templates/>
         </ixsl:if>
       </xsl:when>

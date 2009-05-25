@@ -5,6 +5,7 @@
   <xsl:param name="__context__"/>
   <xsl:param name="__navitree"/>
   <xsl:param name="navitree" select="$__navitree"/>
+  <xsl:param name="__target_gen"/>
 
   <xsl:template match="/">
     <html>
@@ -67,7 +68,7 @@
   <xsl:template name="render_page">
     <xsl:param name="ind"/>
     <xsl:variable name="vis_retval" select="callback:isVisited($__context__, string(@name))"/>
-    <xsl:variable name="acc_retval" select="callback:isAccessible($__context__, string(@name))"/>
+    <xsl:variable name="acc_retval" select="callback:isAccessible($__context__, $__target_gen, string(@name))"/>
     <xsl:variable name="auth_retval" select="callback:checkAuthorization($__context__, string(@name))"/>
 <!--    <xsl:variable name="acc_retval">1</xsl:variable>-->
     <xsl:variable name="visited"> 

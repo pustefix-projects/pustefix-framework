@@ -1,3 +1,11 @@
+2009-05-25  Martin Leidig  <mleidig@schlund.de>
+
+	Fixed pfx:isVisible behaviour for non-existing pages: now -1 is
+	returned again (instead of 1). Because looking if a page is configured
+	doesn't mean that it is not existing (since we support static pages
+	without context configuration), we additionally check if a target
+	exists for pages which aren't configured.
+
 2009-05-13  Martin Leidig  <mleidig@schlund.de>
 
 	Improved XSLT stylesheet compilation error handling: Remember
