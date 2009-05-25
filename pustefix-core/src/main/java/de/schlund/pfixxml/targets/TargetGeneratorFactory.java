@@ -68,6 +68,10 @@ public class TargetGeneratorFactory {
                                     "' isn't a file, can't be read or doesn't exist");
         }
     }
+    
+    public TargetGenerator getGenerator(String key) {
+        return generatormap.get(key);
+    }
 
     public void remove(FileResource genfile) {
         generatormap.remove(genKey(genfile));

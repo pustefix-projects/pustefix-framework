@@ -22,7 +22,7 @@
         </xsl:otherwise>
       </xsl:choose>
     </xsl:variable>
-    <func:result select="callback:isAccessible($__context__, $thepagename)"/>
+    <func:result select="callback:isAccessible($__context__, $__target_gen, $thepagename)"/>
   </func:function>
   
   <func:function name="pfx:isVisited">
