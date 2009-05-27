@@ -1,3 +1,11 @@
+2009-05-27  Martin Leidig  <mleidig@schlund.de>
+
+	Added RenderOutputListener support (output creation notification, 
+	e.g. can be used for external content analysis). A listener has 
+	to implement the according interface and can be configured using 
+	a global property:
+	<prop name="de.schlund.pfixxml.RenderOutputListener">mypackage.MyListener</prop>
+
 2009-05-18  Martin Leidig  <mleidig@schlund.de>
 
 	Added support for deferring image includes until runtime by setting
