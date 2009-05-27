@@ -19,6 +19,7 @@
 
 package de.schlund.pfixxml;
 
+import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Properties;
@@ -65,6 +66,8 @@ public class ContextXMLServlet extends AbstractXMLServlet {
     private final static String SCRIPTEDFLOW_SUFFIX = "__SCRIPTEDFLOW__";
     
     public final static String XSLPARAM_REQUESTCONTEXT = "__context__";
+    
+    private final static String PROP_RENDEROUTPUTLISTENER = "de.schlund.pfixxml.RenderOutputListener";
 
     private ContextXMLServletConfig config = null;
 
@@ -74,6 +77,7 @@ public class ContextXMLServlet extends AbstractXMLServlet {
     private boolean reloadInitDone;
     
     private ContextInterceptor[] postRenderInterceptors;
+    private RenderOutputListener renderOutputListener;
     
     protected ContextXMLServletConfig getContextXMLServletConfig() {
         return this.config;
@@ -295,6 +299,7 @@ public class ContextXMLServlet extends AbstractXMLServlet {
         }
         try {
             createInterceptors();
+            createOutputListener();
         } catch(Exception e) {
             throw new ServletException("Could not create interceptors from " + configFile.toURI(), e);
         }
@@ -322,6 +327,19 @@ public class ContextXMLServlet extends AbstractXMLServlet {
         rcontext.getParentContext().setRequestContextForCurrentThread(null);
     }
     
+    protected void hookAfterDelivery(PfixServletRequest preq, SPDocument spdoc, ByteArrayOutputStream output) {
+        super.hookAfterDelivery(preq, spdoc, output);
+        if(renderOutputListener != null) {
+            RequestContextImpl reqContext = (RequestContextImpl) spdoc.getProperties().get(XSLPARAM_REQUESTCONTEXT);
+            try {
+                renderOutputListener.output(preq, reqContext.getParentContext(), output);
+            } catch(Exception x) {
+                //error in listener shouldn't interfere further processing, just log it out here
+                LOG.error("Error in RenderOutputListener", x);
+            }
+        }
+    }
+    
     private void createInterceptors() throws Exception {
         ArrayList<ContextInterceptor> list = new ArrayList<ContextInterceptor>();
         for (Iterator<Class<? extends ContextInterceptor>> i = config.getContextConfig().getPostRenderInterceptors().iterator(); i.hasNext();) {
@@ -329,6 +347,18 @@ public class ContextXMLServlet extends AbstractXMLServlet {
             list.add(ContextInterceptorFactory.getInstance().getInterceptor(classname));
         }
         postRenderInterceptors = (ContextInterceptor[]) list.toArray(new ContextInterceptor[] {});
+    }
+    
+    private void createOutputListener() {
+        String renderOutputListenerClass = getAbstractXMLServletConfig().getProperties().getProperty(PROP_RENDEROUTPUTLISTENER);
+        if(renderOutputListenerClass != null) {
+            try {
+                Class<? extends RenderOutputListener> clazz = Class.forName(renderOutputListenerClass).asSubclass(RenderOutputListener.class);
+                renderOutputListener = clazz.newInstance();
+            } catch (Exception x) {
+                LOG.error("Can't instantiate RenderOutputListener", x);
+            }
+        }
     }
     
 }

@@ -176,6 +176,7 @@ public abstract class AbstractXMLServlet extends ServletManager {
     
     private AdditionalTrailInfo addtrailinfo = null;
     
+    
     //~ Methods ....................................................................................
     /**
      * Init method of all servlets inheriting from AbstractXMLServlets.
@@ -664,10 +665,15 @@ public abstract class AbstractXMLServlet extends ServletManager {
                 }
                 writer.write(" -->");
                 writer.flush();
+                
+                if(getRendering(preq) == RENDER_NORMAL) {
+                    hookAfterDelivery(preq, spdoc, output);
+                }
             }
         } catch (Exception e) {
             // ignore
         }
+        
     }
 
     
@@ -963,6 +969,10 @@ public abstract class AbstractXMLServlet extends ServletManager {
      * @param stylesheet name of the stylesheet being used
      */
     protected void hookAfterRender(PfixServletRequest preq, SPDocument spdoc, TreeMap<String, Object> paramhash, String stylesheet) {
+        // Empty in default implementation
+    }
+    
+    protected void hookAfterDelivery(PfixServletRequest preq, SPDocument spdoc, ByteArrayOutputStream output) {
         // Empty in default implementation
     }
     
