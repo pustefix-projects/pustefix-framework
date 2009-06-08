@@ -57,13 +57,12 @@ public class GlobalConfig {
             throw new IllegalStateException("Docroot or servlet context may only be set once!");
         }
         docroot = path;
-        ResourceProviderRegistry.register(new DocrootResourceOnFileSystemProvider(docroot));
         try {
             docrootURL =  new URL("file", null, -1, docroot);
         } catch (MalformedURLException e) {
             throw new RuntimeException("Cannot create URL for docroot: " + docroot, e);
         }
-
+        ResourceProviderRegistry.register(new DocrootResourceOnFileSystemProvider(docroot));
     }
     
     /**

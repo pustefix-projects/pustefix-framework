@@ -1,5 +1,16 @@
 2009-06-08  Martin Leidig  <mleidig@schlund.de>
 
+	Added support for inserting additional shared folders into
+	the dynamic include fallback chain right before the common
+	folder. Thus applications can already be modularized in a
+	way appropriate for 0.14 single project applications.
+	The common fallback chain can be extended by placing the
+	property file common-override.conf in projects/common/conf
+	and adding the line of the following format:
+	myproject = common_first_dir, common_second_dir, ...
+
+2009-06-08  Martin Leidig  <mleidig@schlund.de>
+
 	Optimized MD5 checksum creation for rendered HTML by using
 	DigestOutputStream.
 	
