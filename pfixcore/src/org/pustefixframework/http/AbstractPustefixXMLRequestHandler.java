@@ -24,6 +24,9 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.SocketException;
+import java.security.DigestOutputStream;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -637,15 +640,22 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
         
         boolean modified_or_no_etag = true;
         String etag_incoming = preq.getRequest().getHeader("If-None-Match");
-        
+        MessageDigest digest;
+        try {
+            digest = MessageDigest.getInstance("MD5");
+        } catch(NoSuchAlgorithmException x) {
+            throw new RuntimeException("Can't create message digest", x);
+        }
+        DigestOutputStream digestOutput = new DigestOutputStream(output, digest);
         try {
             hookBeforeRender(preq, spdoc, paramhash, stylesheet);
-            render(spdoc, getRendering(preq), res, paramhash, stylesheet, output);
+            render(spdoc, getRendering(preq), res, paramhash, stylesheet, digestOutput);
         } finally {
             hookAfterRender(preq, spdoc, paramhash, stylesheet);
         }
         
-        String etag_outgoing = createETag(output.toString(), spdoc);
+        byte[] digestBytes = digest.digest();
+        String etag_outgoing = MD5Utils.byteToHex(digestBytes);
         res.setHeader("ETag", etag_outgoing);
         
         if (getRendering(preq) == RENDERMODE.RENDER_NORMAL && etag_incoming != null && etag_incoming.equals(etag_outgoing)) {
@@ -665,11 +675,6 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
         }
         
         return modified_or_no_etag;
-    }
-    
-    private String createETag(String output, SPDocument spdoc) {
-        String etag_outgoing = MD5Utils.hex_md5(output.toString());
-        return etag_outgoing;
     }
     
     private void render(SPDocument spdoc, RENDERMODE rendering, HttpServletResponse res, TreeMap<String, Object> paramhash, String stylesheet, OutputStream output) throws RenderingException {
