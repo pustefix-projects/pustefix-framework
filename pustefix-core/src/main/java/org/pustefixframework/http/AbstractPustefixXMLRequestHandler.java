@@ -23,6 +23,9 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.SocketException;
+import java.security.DigestOutputStream;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -530,13 +533,15 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
             setCookies(spdoc,res);
         }
         
-        boolean modified_or_no_etag = doHandleDocument(spdoc, stylesheet, paramhash, preq, res, session);
+        ByteArrayOutputStream output = new ByteArrayOutputStream(4096);
+        
+        boolean modified_or_no_etag = doHandleDocument(spdoc, stylesheet, paramhash, preq, res, session, output);
 
         long handletime = System.currentTimeMillis() - currtime;
         preq.getRequest().setAttribute(TRAFOTIME, handletime);
         
         Map<String, Object> addinfo = null;
-        if(additionalTrailInfo!=null) additionalTrailInfo.getData(preq);
+        if(additionalTrailInfo!=null) addinfo = additionalTrailInfo.getData(preq);
         
         if (session != null && !spdoc.getTrailLogged()) {
             StringBuffer logbuff = new StringBuffer();
@@ -566,22 +571,26 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
             LOGGER.info(">>> Complete handleDocument(...) took " + handletime + "ms" + 
                     " (needed xslt: " + modified_or_no_etag + ")");
         }
-        
         try {
             if (modified_or_no_etag && 
                     (spdoc.getResponseContentType() == null || spdoc.getResponseContentType().startsWith("text/html"))) {
                 OutputStream       out          = res.getOutputStream();
                 OutputStreamWriter writer       = new OutputStreamWriter(out, res.getCharacterEncoding());
                 writer.write("\n<!--");
-                for (Iterator<String> keys = addinfo.keySet().iterator(); keys.hasNext(); ) {
-                    String key = keys.next();
-                    writer.write(" " + key + ": " + addinfo.get(key));
+                if(addinfo != null) {
+                    for (Iterator<String> keys = addinfo.keySet().iterator(); keys.hasNext(); ) {
+                        String key = keys.next();
+                        writer.write(" " + key + ": " + addinfo.get(key));
+                    }
                 }
                 writer.write(" -->");
                 writer.flush();
+                if(getRendering(preq) == RENDERMODE.RENDER_NORMAL) {
+                    hookAfterDelivery(preq, spdoc, output);
+                }
             }
         } catch (Exception e) {
-            // ignore
+            LOGGER.warn("Error adding info data to page", e);
         }
     }
 
@@ -602,20 +611,26 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
     }
     
     private boolean doHandleDocument(SPDocument spdoc, String stylesheet, TreeMap<String, Object> paramhash, 
-            PfixServletRequest preq, HttpServletResponse res, HttpSession session) throws PustefixCoreException {
+            PfixServletRequest preq, HttpServletResponse res, HttpSession session, ByteArrayOutputStream output) throws PustefixCoreException {
         
         boolean modified_or_no_etag = true;
         String etag_incoming = preq.getRequest().getHeader("If-None-Match");
-        ByteArrayOutputStream output = new ByteArrayOutputStream(4096);
-        
+        MessageDigest digest;
+        try {
+            digest = MessageDigest.getInstance("MD5");
+        } catch(NoSuchAlgorithmException x) {
+            throw new RuntimeException("Can't create message digest", x);
+        }
+        DigestOutputStream digestOutput = new DigestOutputStream(output, digest);
         try {
             hookBeforeRender(preq, spdoc, paramhash, stylesheet);
-            render(spdoc, getRendering(preq), res, paramhash, stylesheet, output);
+            render(spdoc, getRendering(preq), res, paramhash, stylesheet, digestOutput);
         } finally {
             hookAfterRender(preq, spdoc, paramhash, stylesheet);
         }
         
-        String etag_outgoing = createETag(output.toString(), spdoc);
+        byte[] digestBytes = digest.digest();
+        String etag_outgoing = MD5Utils.byteToHex(digestBytes);
         res.setHeader("ETag", etag_outgoing);
         
         if (getRendering(preq) == RENDERMODE.RENDER_NORMAL && etag_incoming != null && etag_incoming.equals(etag_outgoing)) {
@@ -635,11 +650,6 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
         }
         
         return modified_or_no_etag;
-    }
-    
-    private String createETag(String output, SPDocument spdoc) {
-        String etag_outgoing = MD5Utils.hex_md5(output.toString());
-        return etag_outgoing;
     }
     
     private void render(SPDocument spdoc, RENDERMODE rendering, HttpServletResponse res, TreeMap<String, Object> paramhash, String stylesheet, OutputStream output) throws RenderingException {
@@ -929,6 +939,10 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
      * @param stylesheet name of the stylesheet being used
      */
     protected void hookAfterRender(PfixServletRequest preq, SPDocument spdoc, TreeMap<String, Object> paramhash, String stylesheet) {
+        // Empty in default implementation
+    }
+    
+    protected void hookAfterDelivery(PfixServletRequest preq, SPDocument spdoc, ByteArrayOutputStream output) {
         // Empty in default implementation
     }
     

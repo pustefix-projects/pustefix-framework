@@ -1,3 +1,18 @@
+2009-06-08  Martin Leidig  <mleidig@schlund.de>
+
+	Optimized MD5 checksum creation for rendered HTML by using
+	DigestOutputStream.
+
+	Fixed NPE in trailinfo logging.
+
+2009-06-08  Martin Leidig  <mleidig@schlund.de>
+
+	Added RenderOutputListener support (output creation notification, 
+	e.g. can be used for external content analysis). A listener has 
+	to implement the according interface and can be configured using 
+	a global property:
+	<prop name="de.schlund.pfixxml.RenderOutputListener">mypackage.MyListener</prop>
+
 2009-05-25  Martin Leidig  <mleidig@schlund.de>
 
 	Fixed pfx:isVisible behaviour for non-existing pages: now -1 is
