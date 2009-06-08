@@ -558,7 +558,9 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
             setCookies(spdoc,res);
         }
         
-        boolean modified_or_no_etag = doHandleDocument(spdoc, stylesheet, paramhash, preq, res, session);
+        ByteArrayOutputStream output = new ByteArrayOutputStream(4096);
+        
+        boolean modified_or_no_etag = doHandleDocument(spdoc, stylesheet, paramhash, preq, res, session, output);
 
         long handletime = System.currentTimeMillis() - currtime;
         preq.getRequest().setAttribute(TRAFOTIME, handletime);
@@ -604,6 +606,10 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
                 }
                 writer.write(" -->");
                 writer.flush();
+                
+                if(getRendering(preq) == RENDERMODE.RENDER_NORMAL) {
+                    hookAfterDelivery(preq, spdoc, output);
+                }
             }
         } catch (Exception e) {
             // ignore
@@ -627,11 +633,10 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
     }
     
     private boolean doHandleDocument(SPDocument spdoc, String stylesheet, TreeMap<String, Object> paramhash, 
-            PfixServletRequest preq, HttpServletResponse res, HttpSession session) throws PustefixCoreException {
+            PfixServletRequest preq, HttpServletResponse res, HttpSession session, ByteArrayOutputStream output) throws PustefixCoreException {
         
         boolean modified_or_no_etag = true;
         String etag_incoming = preq.getRequest().getHeader("If-None-Match");
-        ByteArrayOutputStream output = new ByteArrayOutputStream(4096);
         
         try {
             hookBeforeRender(preq, spdoc, paramhash, stylesheet);
@@ -954,6 +959,10 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
      * @param stylesheet name of the stylesheet being used
      */
     protected void hookAfterRender(PfixServletRequest preq, SPDocument spdoc, TreeMap<String, Object> paramhash, String stylesheet) {
+        // Empty in default implementation
+    }
+    
+    protected void hookAfterDelivery(PfixServletRequest preq, SPDocument spdoc, ByteArrayOutputStream output) {
         // Empty in default implementation
     }
     

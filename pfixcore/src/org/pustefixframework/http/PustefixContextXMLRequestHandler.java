@@ -19,11 +19,13 @@
 
 package org.pustefixframework.http;
 
+import java.io.ByteArrayOutputStream;
 import java.util.TreeMap;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpSession;
 
+import org.apache.log4j.Logger;
 import org.pustefixframework.config.contextxmlservice.AbstractXMLServletConfig;
 import org.pustefixframework.config.contextxmlservice.ContextXMLServletConfig;
 import org.pustefixframework.config.contextxmlservice.PageRequestConfig;
@@ -43,6 +45,7 @@ import de.schlund.pfixcore.workflow.ExtendedContext;
 import de.schlund.pfixcore.workflow.context.RequestContextImpl;
 import de.schlund.pfixxml.PfixServletRequest;
 import de.schlund.pfixxml.PfixServletRequestImpl;
+import de.schlund.pfixxml.RenderOutputListener;
 import de.schlund.pfixxml.RequestParam;
 import de.schlund.pfixxml.SPDocument;
 
@@ -53,6 +56,8 @@ import de.schlund.pfixxml.SPDocument;
 
 public class PustefixContextXMLRequestHandler extends AbstractPustefixXMLRequestHandler {
    
+    private final static Logger LOG       = Logger.getLogger(PustefixContextXMLRequestHandler.class);
+    
     // private final static String ALREADY_SSL = "__CONTEXT_ALREADY_SSL__";
 
     private final static String PARAM_SCRIPTEDFLOW = "__scriptedflow";
@@ -60,10 +65,14 @@ public class PustefixContextXMLRequestHandler extends AbstractPustefixXMLRequest
     private final static String SCRIPTEDFLOW_SUFFIX = "__SCRIPTEDFLOW__";
     
     public final static String XSLPARAM_REQUESTCONTEXT = "__context__";
+    
+    private final static String PROP_RENDEROUTPUTLISTENER = "de.schlund.pfixxml.RenderOutputListener";
 
     private ContextXMLServletConfig config = null;
-
+    
     private ContextImpl context = null;
+    
+    private RenderOutputListener renderOutputListener;
     
     protected ContextXMLServletConfig getContextXMLServletConfig() {
         return this.config;
@@ -98,6 +107,11 @@ public class PustefixContextXMLRequestHandler extends AbstractPustefixXMLRequest
 
     protected boolean allowSessionCreate() {
         return true;
+    }
+    
+    public void init() throws ServletException {
+        super.init();
+        createOutputListener();
     }
 
     public SPDocument getDom(PfixServletRequest preq) throws PustefixApplicationException, PustefixCoreException {
@@ -264,6 +278,31 @@ public class PustefixContextXMLRequestHandler extends AbstractPustefixXMLRequest
         rcontext.getParentContext().setRequestContextForCurrentThread(null);
     }
 
+    protected void hookAfterDelivery(PfixServletRequest preq, SPDocument spdoc, ByteArrayOutputStream output) {
+        super.hookAfterDelivery(preq, spdoc, output);
+        if(renderOutputListener != null) {
+            RequestContextImpl reqContext = (RequestContextImpl) spdoc.getProperties().get(XSLPARAM_REQUESTCONTEXT);
+            try {
+                renderOutputListener.output(preq, reqContext.getParentContext(), output);
+            } catch(Exception x) {
+                //error in listener shouldn't interfere further processing, just log it out here
+                LOG.error("Error in RenderOutputListener", x);
+            }
+        }
+    }
+    
+    private void createOutputListener() {
+        String renderOutputListenerClass = getAbstractXMLServletConfig().getProperties().getProperty(PROP_RENDEROUTPUTLISTENER);
+        if(renderOutputListenerClass != null) {
+            try {
+                Class<? extends RenderOutputListener> clazz = Class.forName(renderOutputListenerClass).asSubclass(RenderOutputListener.class);
+                renderOutputListener = clazz.newInstance();
+            } catch (Exception x) {
+                LOG.error("Can't instantiate RenderOutputListener", x);
+            }
+        }
+    }
+    
     public void setContext(ContextImpl context) {
         this.context = context;
     }
