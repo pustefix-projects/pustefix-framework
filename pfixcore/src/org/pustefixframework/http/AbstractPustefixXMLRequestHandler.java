@@ -568,7 +568,8 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
         long handletime = System.currentTimeMillis() - currtime;
         preq.getRequest().setAttribute(TRAFOTIME, handletime);
         
-        Map<String, Object> addinfo = addtrailinfo.getData(preq);
+        Map<String, Object> addinfo = null;
+        if(addtrailinfo != null) addinfo = addtrailinfo.getData(preq);
         
         if (session != null && !spdoc.getTrailLogged()) {
             StringBuffer logbuff = new StringBuffer();
@@ -585,8 +586,10 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
             if (flow != null) {
                 logbuff.append("|" + flow);
             }
-            for (Iterator<String> keys = addinfo.keySet().iterator(); keys.hasNext(); ) {
-                logbuff.append("|" + addinfo.get(keys.next()));
+            if(addinfo != null) {
+                for (Iterator<String> keys = addinfo.keySet().iterator(); keys.hasNext(); ) {
+                    logbuff.append("|" + addinfo.get(keys.next()));
+                }
             }
             LOGGER_TRAIL.warn(logbuff.toString());
             spdoc.setTrailLogged();
@@ -603,9 +606,11 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
                 OutputStream       out          = res.getOutputStream();
                 OutputStreamWriter writer       = new OutputStreamWriter(out, res.getCharacterEncoding());
                 writer.write("\n<!--");
-                for (Iterator<String> keys = addinfo.keySet().iterator(); keys.hasNext(); ) {
-                    String key = keys.next();
-                    writer.write(" " + key + ": " + addinfo.get(key));
+                if(addinfo != null) {
+                    for (Iterator<String> keys = addinfo.keySet().iterator(); keys.hasNext(); ) {
+                        String key = keys.next();
+                        writer.write(" " + key + ": " + addinfo.get(key));
+                    }
                 }
                 writer.write(" -->");
                 writer.flush();
@@ -615,7 +620,7 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
                 }
             }
         } catch (Exception e) {
-            // ignore
+            LOGGER.warn("Error adding info data to page", e);
         }
     }
 

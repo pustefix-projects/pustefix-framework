@@ -2,6 +2,8 @@
 
 	Optimized MD5 checksum creation for rendered HTML by using
 	DigestOutputStream.
+	
+	Fixed NPE in trailinfo logging.
 
 2009-06-08  Martin Leidig  <mleidig@schlund.de>
 
