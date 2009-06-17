@@ -12,7 +12,7 @@
     <relativePath>../pom.xml</relativePath>
   </parent>  
 
-  <name>Spring-DM module archetype</name>
+  <name>Pustefix Archetype Spring-DM module</name>
 
   <groupId>org.pustefixframework.maven.archetypes</groupId>
   <artifactId>pustefix-archetype-springmodule</artifactId>
