@@ -125,7 +125,6 @@
          <groupId>org.aopalliance</groupId>
          <artifactId>com.springsource.org.aopalliance</artifactId>
          <version>1.0.0</version>
-         <scope>test</scope>
       </dependency>
 
       <!-- Equinox OSGi platform -->
