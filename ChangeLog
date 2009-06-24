@@ -1,3 +1,8 @@
+2009-06-24  Martin Leidig  <mleidig@schlund.de>
+
+	Added support for relative resolving of xincluded Pustefix
+	property files.
+
 2009-06-24  Sebastian Marsching <sebastian.marsching@1und1.de>
 
 	Fixed maven.test.skip property for pustefix-sample1 project.
