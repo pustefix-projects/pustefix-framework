@@ -1,5 +1,11 @@
 2009-06-24  Martin Leidig  <mleidig@schlund.de>
 
+	Re-added support for adding literal Apache configuration in the server
+	context (formerly known as "extendvedhost" now it can be found under
+	http-server/literal-server).
+
+2009-06-24  Martin Leidig  <mleidig@schlund.de>
+
 	Added support for relative resolving of xincluded Pustefix
 	property files.
 

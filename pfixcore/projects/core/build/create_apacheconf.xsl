@@ -152,6 +152,7 @@ CustomLog  <xsl:value-of select="$path"/>/access_log combined
 </xsl:if>
 
 &lt;/VirtualHost&gt;
+
     </xsl:if>
   </xsl:template>
   
@@ -250,6 +251,10 @@ CustomLog  <xsl:value-of select="$path"/>/access_log combined
     <xsl:element name="{name()}" namespace="{namespace-uri()}">
       <xsl:copy-of select="./@*"/><xsl:apply-templates mode="customization"/>
     </xsl:element>
+  </xsl:template>
+  
+  <xsl:template mode="ports" match="p:literal-server">
+    <xsl:apply-templates/>
   </xsl:template>
   
   <xsl:template mode="ports" match="*">
