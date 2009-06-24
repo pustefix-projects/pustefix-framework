@@ -45,10 +45,14 @@ public class PustefixPropertiesPersister extends DefaultPropertiesPersister {
             PropertyFileReader.read(inputSource, properties);
         } catch(ParserException x) {
             String msg = x.getMessage();
-            if(x.getCause() != null) msg += "[" + x.getCause().getMessage() +"]";
+            Throwable cause = x.getCause();
+            while(cause != null) {
+                msg += "[" + cause.getMessage() +"]";
+                cause = cause.getCause();
+            }
             //TODO: IOException doesn't support Throwable constructor argument in 1.5
             //we should throw a derived IOException here
-            throw new IOException("Error reading XML properties: "+x.getMessage());
+            throw new IOException("Error reading XML properties: " + msg);
         }
     }
 
