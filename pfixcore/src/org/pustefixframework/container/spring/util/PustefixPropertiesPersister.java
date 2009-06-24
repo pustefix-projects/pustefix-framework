@@ -34,8 +34,8 @@ public class PustefixPropertiesPersister extends DefaultPropertiesPersister {
         try {
             PropertyFileReader.read(in, properties);
         } catch(ParserException x) {
-            throw new IOException("Error reading XML properties: "+x.getMessage());
+            throw new IOException("Error reading XML properties: "+x.getMessage(), x);
         }
     }
-    
+
 }
