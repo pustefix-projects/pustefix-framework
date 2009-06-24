@@ -458,8 +458,13 @@
     
     <apache>
       <literal>
-        <!-- Stuff that is copied to the Apache configuration -->
+        <!-- Stuff that is copied to the Apache configuration 
+             within the Virtual Host context -->
       </literal>
+      <literal-server>
+        <!-- Stuff that is copied to the Apache configuration
+             within the server context -->
+      </literal-server>
     </apache>
     
     <tomcat>
