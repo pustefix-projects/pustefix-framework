@@ -1,3 +1,8 @@
+2009-06-24  Martin Leidig  <mleidig@schlund.de>
+
+	Added support for relative resolving of xincluded Pustefix
+	property files.
+
 2009-06-08  Martin Leidig  <mleidig@schlund.de>
 
 	Added support for inserting additional shared folders into

@@ -120,7 +120,13 @@ public class PustefixWebApplicationContext extends AbstractRefreshableWebApplica
         BeanDefinitionBuilder beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(clazz);
         beanBuilder.setScope("singleton");
         beanBuilder.addPropertyValue("location", location);
-        beanBuilder.addPropertyValue("propertiesPersister", new PustefixPropertiesPersister());
+        PustefixPropertiesPersister persister = new PustefixPropertiesPersister();
+        try {
+            persister.setLocation(location.getURI());
+        } catch(IOException x) {
+            //ignore
+        }
+        beanBuilder.addPropertyValue("propertiesPersister", persister);
         BeanDefinition definition = beanBuilder.getBeanDefinition();
         DefaultBeanNameGenerator beanNameGenerator = new DefaultBeanNameGenerator();
         String name = beanNameGenerator.generateBeanName(definition, registry);
