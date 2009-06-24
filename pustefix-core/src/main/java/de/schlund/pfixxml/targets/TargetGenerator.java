@@ -40,6 +40,7 @@ import javax.xml.transform.sax.TransformerHandler;
 
 import org.apache.log4j.Logger;
 import org.apache.log4j.xml.DOMConfigurator;
+import org.pustefixframework.config.customization.RuntimeProperties;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -55,7 +56,6 @@ import de.schlund.pfixcore.util.Meminfo;
 import de.schlund.pfixcore.workflow.NavigationFactory;
 import de.schlund.pfixxml.IncludeDocumentFactory;
 import de.schlund.pfixxml.XMLException;
-import de.schlund.pfixxml.config.BuildTimeProperties;
 import de.schlund.pfixxml.config.CustomizationHandler;
 import de.schlund.pfixxml.config.GlobalConfigurator;
 import de.schlund.pfixxml.config.includes.FileIncludeEvent;
@@ -299,7 +299,7 @@ public class TargetGenerator implements Comparable<TargetGenerator> {
             xreader.parse(new InputSource(new StringReader(fullXml)));
             try {
                 Transformer trans = SimpleResolver.configure(tf, "/pustefix/xsl/depend.xsl");
-                if (BuildTimeProperties.getProperties().getProperty("mode").equals("prod")) {
+                if (RuntimeProperties.getProperties().getProperty("mode").equals("prod")) {
                     trans.setParameter("prohibitEdit", "yes");
                 } else {
                     trans.setParameter("prohibitEdit", "no");

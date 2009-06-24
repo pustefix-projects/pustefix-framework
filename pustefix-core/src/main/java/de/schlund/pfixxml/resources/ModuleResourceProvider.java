@@ -24,11 +24,11 @@ import java.net.URL;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.pustefixframework.config.customization.RuntimeProperties;
 
 import de.schlund.pfixcore.exception.PustefixRuntimeException;
 import de.schlund.pfixcore.util.ModuleDescriptor;
 import de.schlund.pfixcore.util.ModuleInfo;
-import de.schlund.pfixxml.config.BuildTimeProperties;
 
 /**
  * 
@@ -59,7 +59,7 @@ public class ModuleResourceProvider implements ResourceProvider {
         if(desc != null) {
             URL url = getJarURL(desc.getURL());
             //Ensure module resources are read from classpath in production environment
-            if(!BuildTimeProperties.getProperties().getProperty("mode").equals("prod")) {
+            if(!RuntimeProperties.getProperties().getProperty("mode").equals("prod")) {
                 List<ModuleSourceLocator> locators = ModuleSourceLocatorRegistry.getInstance().getLocators();
                 for(ModuleSourceLocator locator:locators) {
                     File location = locator.getLocation(url);

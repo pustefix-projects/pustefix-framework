@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.pustefixframework.osgi</groupId>
+    <artifactId>pustefix-osgi</artifactId>
+    <version>0.14.2-SNAPSHOT</version>
+  </parent>
+
+  <groupId>org.pustefixframework.osgi</groupId>
+  <artifactId>pustefix-osgi-spring-dm</artifactId>
+  <version>0.14.2-SNAPSHOT</version>
+  <packaging>bundle</packaging>
+
+  <name>Pustefix Core support for Spring DM</name>
+  
+  <dependencies>
+    <dependency>
+      <groupId>org.pustefixframework</groupId>
+      <artifactId>pustefix-core</artifactId>
+      <version>0.14.2-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.osgi</groupId>
+      <artifactId>spring-osgi-web</artifactId>
+      <version>1.2.0</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.osgi</groupId>
+      <artifactId>spring-osgi-extender</artifactId>
+      <version>1.2.0</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>servlet-api</artifactId>
+      <version>2.4</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.osgi</groupId>
+      <artifactId>osgi_R4_core</artifactId>
+      <version>1.0</version>
+      <scope>provided</scope>
+      <optional>true</optional>
+    </dependency>
+    <dependency>
+      <groupId>org.osgi</groupId>
+      <artifactId>osgi_R4_compendium</artifactId>
+      <version>1.0</version>
+      <scope>provided</scope>
+      <optional>true</optional>
+    </dependency>
+  </dependencies>
+ 
+  <build>
+    <plugins> 
+      <!-- do not add to root pom because it forks a new lifecycle: -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-source-plugin</artifactId>
+        <executions>
+          <execution>
+           <goals><goal>jar</goal></goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>maven-bundle-plugin</artifactId>
+        <extensions>true</extensions>
+<!--
+        <configuration>
+          <instructions>
+            <Export-Package>org.pustefixframework.osgi.support</Export-Package>
+            <Private-Package>org.pustefixframework.*</Private-Package>
+            <Bundle-Activator>org.pustefixframework.osgi.internal.Activator</Bundle-Activator>
+          </instructions>
+        </configuration>
+-->
+      </plugin>
+    </plugins>
+  </build>
+  
+</project>

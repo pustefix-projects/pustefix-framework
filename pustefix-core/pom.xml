@@ -11,7 +11,7 @@
   <groupId>org.pustefixframework</groupId>
   <artifactId>pustefix-core</artifactId>
   <version>1.0.0-SNAPSHOT</version>
-  <packaging>jar</packaging>
+  <packaging>bundle</packaging>
 
   <name>Pustefix Core</name>
 
@@ -38,6 +38,21 @@
  
   <dependencies>
     <dependency>
+      <groupId>org.osgi</groupId>
+      <artifactId>osgi_R4_core</artifactId>
+      <version>1.0</version>
+      <scope>provided</scope>
+      <optional>true</optional>
+    </dependency>
+    <dependency>
+      <groupId>org.osgi</groupId>
+      <artifactId>osgi_R4_compendium</artifactId>
+      <version>1.0</version>
+      <scope>provided</scope>
+      <optional>true</optional>
+    </dependency>
+    
+    <dependency>
       <groupId>xml-resolver</groupId>
       <artifactId>xml-resolver</artifactId>
       <version>[1.1,1.3)</version>
@@ -46,6 +61,13 @@
       <groupId>commons-collections</groupId>
       <artifactId>commons-collections</artifactId>
       <version>3.2.1</version>
+    </dependency>
+ 
+    <dependency>
+      <groupId>org.springframework.osgi</groupId>
+      <artifactId>spring-osgi-web</artifactId>
+      <version>1.2.0</version>
+      <scope>provided</scope>
     </dependency>
  
     <dependency>
@@ -89,11 +111,6 @@
       <artifactId>spring-test</artifactId>
       <version>2.5.6</version>
     </dependency>
-    <dependency>
-      <groupId>urbanophile</groupId>
-      <artifactId>java-getopt</artifactId>
-      <version>1.0.9</version>
-    </dependency>
 
     <dependency>
       <groupId>concurrent</groupId>
@@ -119,6 +136,11 @@
       <groupId>com.icl.saxon</groupId>
       <artifactId>saxon</artifactId>
       <version>6.5.5</version>
+    </dependency>
+    <dependency>
+      <groupId>net.sf.saxon</groupId>
+      <artifactId>saxon</artifactId>
+      <version>8.7</version>
     </dependency>
     <dependency>
       <groupId>net.sf.saxon</groupId>
@@ -158,6 +180,23 @@
            <goals><goal>jar</goal></goals>
           </execution>
         </executions>
+      </plugin>
+ 
+      <plugin>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>maven-bundle-plugin</artifactId>
+        <extensions>true</extensions>
+        <configuration>
+          <instructions>
+            <Export-Package>!*.internal,!*.impl,!*.internal.*,!*.impl.*,!.,org.pustefixframework.*,de.schlund.*</Export-Package>
+            <Embed-Dependency>saxon,saxon-dom,saxon-xpath</Embed-Dependency>
+            <Import-Package>!com.saxonica.validate,!com.sun.mirror.*,org.apache.log4j,!org.apache.log4j.*,*</Import-Package>
+<!--
+            <Private-Package>org.pustefixframework.*</Private-Package>
+            <Bundle-Activator>org.pustefixframework.osgi.internal.Activator</Bundle-Activator>
+-->
+          </instructions>
+        </configuration>
       </plugin>
  
       <plugin>

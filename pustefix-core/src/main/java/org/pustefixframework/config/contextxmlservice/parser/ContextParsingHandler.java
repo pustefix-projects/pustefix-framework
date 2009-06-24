@@ -18,10 +18,10 @@
 
 package org.pustefixframework.config.contextxmlservice.parser;
 
+import org.pustefixframework.config.application.XMLGeneratorInfo;
 import org.pustefixframework.config.contextxmlservice.parser.internal.ContextConfigImpl;
 import org.pustefixframework.config.contextxmlservice.parser.internal.ContextXMLServletConfigImpl;
 import org.pustefixframework.config.generic.ParsingUtils;
-import org.pustefixframework.config.project.XMLGeneratorInfo;
 import org.w3c.dom.Element;
 
 import com.marsching.flexiparse.parser.HandlerContext;

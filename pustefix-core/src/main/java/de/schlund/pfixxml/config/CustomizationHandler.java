@@ -27,6 +27,7 @@ import java.util.Properties;
 import javax.xml.xpath.XPathExpressionException;
 
 import org.pustefixframework.config.customization.PropertiesBasedCustomizationInfo;
+import org.pustefixframework.config.customization.RuntimeProperties;
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
 import org.xml.sax.Locator;
@@ -126,7 +127,7 @@ public class CustomizationHandler extends DefaultHandler {
      *        elements within
      */
     public CustomizationHandler(DefaultHandler targetHandler, String namespace) {
-        this(targetHandler, BuildTimeProperties.getProperties(), namespace,
+        this(targetHandler, RuntimeProperties.getProperties(), namespace,
                 namespace);
     }
 
@@ -142,7 +143,7 @@ public class CustomizationHandler extends DefaultHandler {
      */
     public CustomizationHandler(DefaultHandler targetHandler, String namespace,
             String namespaceContent) {
-        this(targetHandler, BuildTimeProperties.getProperties(), namespace,
+        this(targetHandler, RuntimeProperties.getProperties(), namespace,
                 namespaceContent);
     }
 
@@ -158,7 +159,7 @@ public class CustomizationHandler extends DefaultHandler {
      */
     public CustomizationHandler(DefaultHandler targetHandler, String namespace,
             String namespaceContent, String[] pathsToMatch) {
-        this(targetHandler, BuildTimeProperties.getProperties(), namespace,
+        this(targetHandler, RuntimeProperties.getProperties(), namespace,
                 namespaceContent);
         this.matchingPaths = pathsToMatch;
     }

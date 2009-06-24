@@ -1,3 +1,12 @@
+2009-06-24  Sebastian Marsching <sebastian.marsching@1und1.de>
+
+	Fixed maven.test.skip property for pustefix-sample1 project.
+
+	Changed "build time property" mechanism to "runtime property" using
+	a file from the classpath.
+	
+	Created basic support for Spring Dynamic Modules for OSGi.
+
 2009-06-08  Martin Leidig  <mleidig@schlund.de>
 
 	Optimized MD5 checksum creation for rendered HTML by using

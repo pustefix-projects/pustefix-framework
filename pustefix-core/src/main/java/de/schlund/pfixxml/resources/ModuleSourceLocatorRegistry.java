@@ -20,8 +20,9 @@ package de.schlund.pfixxml.resources;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.pustefixframework.config.customization.RuntimeProperties;
+
 import de.schlund.pfixcore.util.LiveJarInfo;
-import de.schlund.pfixxml.config.BuildTimeProperties;
 
 /**
  * 
@@ -44,7 +45,7 @@ public class ModuleSourceLocatorRegistry {
     
     private void registerDefaultLocators() {
         //TODO: dynamic/configurable registration
-        if(!BuildTimeProperties.getProperties().getProperty("mode").equals("prod")) {
+        if(!RuntimeProperties.getProperties().getProperty("mode").equals("prod")) {
             LiveJarInfo locator = LiveJarInfo.getInstance();
             if(locator.hasEntries()) registerLocators(locator);
         }

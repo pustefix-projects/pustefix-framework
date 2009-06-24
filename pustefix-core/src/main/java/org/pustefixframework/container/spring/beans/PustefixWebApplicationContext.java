@@ -69,7 +69,7 @@ public class PustefixWebApplicationContext extends AbstractRefreshableWebApplica
         springReader.setResourceLoader(this);
         springReader.setEntityResolver(new ResourceEntityResolver(this));
 
-        PustefixProjectBeanDefinitionReader pustefixReader = new PustefixProjectBeanDefinitionReader(beanFactory);
+        PustefixApplicationBeanDefinitionReader pustefixReader = new PustefixApplicationBeanDefinitionReader(beanFactory, null);
         pustefixReader.setResourceLoader(this);
 
         for (int i = 0; i < configLocations.length; i++) {

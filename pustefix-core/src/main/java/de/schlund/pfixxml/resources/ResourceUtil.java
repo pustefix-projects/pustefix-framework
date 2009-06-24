@@ -46,7 +46,7 @@ public class ResourceUtil {
                     throw new RuntimeException("Can't get resource: " + uri, x);
                 }
             }
-            return getFileResource(uri);
+            return null;
         } else {
             return getFileResourceFromDocroot(uri.toString());
         }

@@ -15,10 +15,22 @@
  * along with Pustefix; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-package org.pustefixframework.config;
 
-public abstract class Constants {
-    public final static String NS_APPLICATION = "http://www.pustefix-framework.org/2009/namespace/application-config";
-    public final static String NS_DIRECT_OUTPUT_SERVICE = "http://www.pustefix-framework.org/2008/namespace/direct-output-service-config";
-    public final static String NS_CONTEXT_XML_SERVICE = "http://www.pustefix-framework.org/2008/namespace/context-xml-service-config";
+package org.pustefixframework.config.application;
+
+/**
+ * Stores URL of editor frontend  
+ * 
+ * @author Sebastian Marsching <sebastian.marsching@1und1.de>
+ */
+public class EditorLocation {
+    private String location;
+    
+    public EditorLocation(String location) {
+        this.location = location;
+    }
+    
+    public String getLocation() {
+        return this.location;
+    }
 }

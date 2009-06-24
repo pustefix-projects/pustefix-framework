@@ -67,7 +67,7 @@
               <goal>test</goal>
             </goals>
             <configuration>
-              <skip>false</skip>
+              <skip>${maven.test.skip}</skip>
             </configuration>
           </execution>
         </executions>

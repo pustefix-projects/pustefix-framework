@@ -26,11 +26,11 @@ import java.io.InputStream;
 import java.util.Properties;
 
 import org.pustefixframework.config.customization.PropertiesBasedCustomizationInfo;
+import org.pustefixframework.config.customization.RuntimeProperties;
 
 import com.marsching.flexiparse.parser.ClasspathConfiguredParser;
 import com.marsching.flexiparse.parser.exception.ParserException;
 
-import de.schlund.pfixxml.config.BuildTimeProperties;
 import de.schlund.pfixxml.resources.FileResource;
 
 /**
@@ -52,7 +52,7 @@ public class PropertyFileReader {
     
     public static void read(InputStream in, Properties properties) throws ParserException {
         
-        PropertiesBasedCustomizationInfo customizationInfo = new PropertiesBasedCustomizationInfo(BuildTimeProperties.getProperties());
+        PropertiesBasedCustomizationInfo customizationInfo = new PropertiesBasedCustomizationInfo(RuntimeProperties.getProperties());
         ClasspathConfiguredParser parser = new ClasspathConfiguredParser("META-INF/org/pustefixframework/config/generic/properties-config.xml");
         
         parser.parse(in, customizationInfo, properties);

@@ -188,6 +188,7 @@
     <module>pustefix-plugins</module>
     <module>pustefix-archetypes</module>
     <module>pustefix-core</module>
+    <module>pustefix-osgi</module>
     <module>pustefix-samples</module>
     <module>pustefix-editor</module>
     <module>pustefix-docbook</module>

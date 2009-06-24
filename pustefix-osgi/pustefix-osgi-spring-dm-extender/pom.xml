@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.pustefixframework.osgi</groupId>
+    <artifactId>pustefix-osgi</artifactId>
+    <version>0.14.2-SNAPSHOT</version>
+  </parent>
+
+  <groupId>org.pustefixframework.osgi</groupId>
+  <artifactId>pustefix-osgi-spring-dm-extender</artifactId>
+  <version>0.14.2-SNAPSHOT</version>
+  <packaging>bundle</packaging>
+
+  <name>Pustefix Core support for Spring DM</name>
+  
+  <dependencies>
+    <dependency>
+      <groupId>org.pustefixframework.osgi</groupId>
+      <artifactId>pustefix-osgi-spring-dm</artifactId>
+      <version>0.14.2-SNAPSHOT</version>
+    </dependency>
+  </dependencies>
+ 
+  <build>
+    <plugins> 
+      <!-- do not add to root pom because it forks a new lifecycle: -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-source-plugin</artifactId>
+        <executions>
+          <execution>
+           <goals><goal>jar</goal></goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>maven-bundle-plugin</artifactId>
+        <extensions>true</extensions>
+        <configuration>
+          <instructions>
+            <Fragment-Host>org.springframework.osgi.extender;bundle-version="1.2.0"</Fragment-Host>
+            <Import-Package>org.pustefixframework.osgi.support,org.springframework.osgi.extender.support</Import-Package>
+<!--
+            <Export-Package>org.pustefixframework.osgi.support</Export-Package>
+            <Private-Package>org.pustefixframework.*</Private-Package>
+            <Bundle-Activator>org.pustefixframework.osgi.internal.Activator</Bundle-Activator>
+-->
+          </instructions>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+  
+</project>
