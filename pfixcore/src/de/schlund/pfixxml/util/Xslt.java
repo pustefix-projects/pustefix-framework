@@ -198,6 +198,7 @@ public class Xslt {
             start = System.currentTimeMillis();
         try {
             ExtensionFunctionUtils.setExtensionFunctionError(null);
+            trafo.setErrorListener(new PFErrorListener());
             trafo.transform(new DOMSource(Xml.parse(xsltVersion,xml)), result);
         } catch(TransformerException x) {
             Throwable t=ExtensionFunctionUtils.getExtensionFunctionError();
@@ -348,7 +349,6 @@ public class Xslt {
         
         public void warning(TransformerException arg) throws TransformerException {
             LOG.error("WARNING: "+arg.getMessageAndLocation());
-            throw arg;
         }
 
         public void error(TransformerException arg) throws TransformerException {
