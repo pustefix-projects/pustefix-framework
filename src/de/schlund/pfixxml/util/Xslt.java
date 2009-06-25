@@ -324,8 +324,8 @@ public class Xslt {
         }
         
         public void warning(TransformerException arg) throws TransformerException {
-            LOG.error("WARNING: "+arg.getMessageAndLocation());
-            throw arg;
+            LOG.warn("WARNING: "+arg.getMessageAndLocation());
+            //throw arg;
         }
 
         public void error(TransformerException arg) throws TransformerException {
