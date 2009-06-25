@@ -20,6 +20,8 @@
 package de.schlund.pfixxml;
 
 import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.StringTokenizer;
@@ -152,6 +154,9 @@ public class ImageGeometry {
     }
 
     private static ImageGeometryData getImageGeometryData(String path) {
+        if(path.startsWith("http") || path.startsWith("//")) {
+            return getRemoteImageGeometryData(path);
+        }
         synchronized (imageinfo) {
             FileResource img = ResourceUtil.getFileResourceFromDocroot(path);
             if (img.exists() && img.canRead() && img.isFile()) {
@@ -177,6 +182,42 @@ public class ImageGeometry {
             }
             return null;
         }
+    }
+    
+    private static ImageGeometryData getRemoteImageGeometryData(String path) {
+        synchronized (imageinfo) {
+            ImageGeometryData geom = imageinfo.get(path);
+            if(geom != null) return geom; 
+        }
+        try {
+            String urlStr = path;
+            if(urlStr.startsWith("https")) urlStr = "http" + urlStr.substring(5);
+            else if(urlStr.startsWith("//")) urlStr = "http:" + urlStr;
+            URL url = new URL(urlStr);
+            HttpURLConnection con=(HttpURLConnection)url.openConnection();
+            con.setConnectTimeout(3000);
+            con.setReadTimeout(3000);
+            ImageGeometryData geom = new ImageGeometryData(con);
+            //TODO: notice HTTP caching headers
+            synchronized (imageinfo) {
+                imageinfo.put(path, geom);
+            }
+            return geom;
+        } catch(Exception x) {
+            LOG.error("Couldn't get image size for " + path, x);
+            return null;
+        }
+    }
+    
+    public static void main(String[] args) {
+        //String path="http://img.1und1.de/InternationalPrice/red/xl/euro/3/99/none/none.png";
+        String path="https://img.1und1.de/InternationalPrice/red/xl/euro/3/99/none/none.png";
+        //String path="//img.1und1.de/InternationalPrice/red/xl/euro/3/99/none/none.png";
+        ImageGeometryData data = ImageGeometry.getImageGeometryData(path);
+        if(data != null) 
+        System.out.println(data.getWidth() + " " + data.getHeight()+" "+data.lastModified());
+        System.out.println(ImageGeometry.getHeight(path));
+        System.out.println(ImageGeometry.getWidth(path));
     }
     
 }// ImageGeometry
