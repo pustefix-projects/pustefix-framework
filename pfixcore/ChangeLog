@@ -1,3 +1,10 @@
+2009-06-25  Martin Leidig  <mleidig@schlund.de>
+
+	Fixed HTTP caching header problem: adding custom HTTP headers using
+	SPDocument.addResponseHeader caused that the "Cache-Control" and
+	"Expires" headers weren't set. Now these headers are always set if
+	they were not overridden by the application.
+
 2009-06-24  Martin Leidig  <mleidig@schlund.de>
 
 	Re-added support for adding literal Apache configuration in the server

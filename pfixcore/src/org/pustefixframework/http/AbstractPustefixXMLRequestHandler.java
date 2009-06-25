@@ -493,9 +493,12 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
                 }
                 res.setHeader(key, val);
             }
-        } else {
-            // set some default values to force generating new requests every time...
+        } 
+        // set some default values to force generating new requests every time...
+        if(!headers.containsKey("Expires")) {
             res.setHeader("Expires", "Mon, 05 Jul 1970 05:07:00 GMT");
+        }
+        if(!headers.containsKey("Cache-Control")) {
             res.setHeader("Cache-Control", "private");
         }
         // Check if a content type was supplied
