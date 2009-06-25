@@ -114,8 +114,6 @@ public class Xslt {
             sb.append("TransformerConfigurationException in doLoadTemplates!\n");
             sb.append("Path: ").append(input.getSystemId()).append("\n");
             sb.append("Message and Location: ").append(e.getMessageAndLocation()).append("\n");
-          
-            
             List<TransformerException> errors = errorListener.getErrors();
             if(e.getException() == null && e.getCause() == null && errors.size() > 0) {
                 if(e != errors.get(0)) {
@@ -127,7 +125,6 @@ public class Xslt {
                     }
                 }
             }
-            
             Throwable cause = e.getException();
             if (cause == null) cause = e.getCause();
             sb.append("Cause: ").append((cause != null) ? cause.getMessage() : "none").append("\n");
@@ -182,6 +179,7 @@ public class Xslt {
             start = System.currentTimeMillis();
         try {
             ExtensionFunctionUtils.setExtensionFunctionError(null);
+            trafo.setErrorListener(new PFErrorListener()); 
             trafo.transform(new DOMSource(Xml.parse(xsltVersion,xml)), result);
         } catch(TransformerException x) {
             Throwable t=ExtensionFunctionUtils.getExtensionFunctionError();
@@ -325,7 +323,6 @@ public class Xslt {
         
         public void warning(TransformerException arg) throws TransformerException {
             LOG.warn("WARNING: "+arg.getMessageAndLocation());
-            //throw arg;
         }
 
         public void error(TransformerException arg) throws TransformerException {
