@@ -31,6 +31,7 @@ import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanNameGenerator;
 import org.springframework.beans.factory.support.DefaultBeanNameGenerator;
+import org.springframework.osgi.context.ConfigurableOsgiBundleApplicationContext;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
@@ -64,6 +65,7 @@ public class ContextResourceParsingHandler implements ParsingHandler {
         
         ContextConfigImpl config = ParsingUtils.getSingleTopObject(ContextConfigImpl.class, context);
         BeanDefinitionRegistry beanReg = ParsingUtils.getSingleTopObject(BeanDefinitionRegistry.class, context);
+        ConfigurableOsgiBundleApplicationContext appContext = ParsingUtils.getSingleTopObject(ConfigurableOsgiBundleApplicationContext.class, context);
         
         Set<String> registeredInterfaces = new HashSet<String>();
         
@@ -71,7 +73,7 @@ public class ContextResourceParsingHandler implements ParsingHandler {
        
         Class<?> implClass = null;
         try {
-            implClass = Class.forName(className);
+            implClass = Class.forName(className, true, appContext.getClassLoader());
         } catch (ClassNotFoundException e) {
             throw new ParserException("Could not load class \"" + className + "\"!", e);
         }
@@ -94,7 +96,7 @@ public class ContextResourceParsingHandler implements ParsingHandler {
             }
             Class<?> itfClass = null;
             try {
-                itfClass = Class.forName(itfClassName);
+                itfClass = Class.forName(itfClassName, true, appContext.getClassLoader());
             } catch (ClassNotFoundException e) {
                 throw new ParserException("Could not load class \"" + itfClassName + "\"!", e);
             }

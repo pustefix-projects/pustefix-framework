@@ -43,14 +43,15 @@ import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanNameGenerator;
 import org.springframework.beans.factory.support.DefaultBeanNameGenerator;
 import org.springframework.beans.factory.support.ManagedMap;
+import org.springframework.osgi.context.ConfigurableOsgiBundleApplicationContext;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 
 import com.marsching.flexiparse.objecttree.ObjectTreeElement;
 import com.marsching.flexiparse.objecttree.SubObjectTree;
-import com.marsching.flexiparse.parser.ClasspathConfiguredParser;
 import com.marsching.flexiparse.parser.HandlerContext;
+import com.marsching.flexiparse.parser.OSGiAwareParser;
 import com.marsching.flexiparse.parser.exception.ParserException;
 
 import de.schlund.pfixcore.workflow.ContextImpl;
@@ -82,7 +83,9 @@ public class PustefixContextDirectOutputRequestHandlerParsingHandler extends Cus
         
         BeanDefinitionRegistry registry = ParsingUtils.getSingleTopObject(BeanDefinitionRegistry.class, context);
         
-        ClasspathConfiguredParser configParser = new ClasspathConfiguredParser("META-INF/org/pustefixframework/config/direct-output-service/parser/direct-output-service-config.xml");
+        ConfigurableOsgiBundleApplicationContext appContext = ParsingUtils.getSingleTopObject(ConfigurableOsgiBundleApplicationContext.class, context);
+        
+        OSGiAwareParser configParser = new OSGiAwareParser(appContext.getBundleContext(), "META-INF/org/pustefixframework/config/direct-output-service/parser/direct-output-service-config.xml");
         final ObjectTreeElement root;
         try {
             DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
@@ -92,7 +95,7 @@ public class PustefixContextDirectOutputRequestHandlerParsingHandler extends Cus
             Document doc = db.parse(ResourceUtil.getFileResource(configurationFile).getInputStream()); 
             IncludesResolver resolver = new IncludesResolver("http://www.pustefix-framework.org/2008/namespace/direct-output-service-config", "config-include");
             resolver.resolveIncludes(doc);
-            root = configParser.parse(doc, info, registry);
+            root = configParser.parse(doc, info, registry, appContext);
         } catch (FileNotFoundException e) {
             throw new ParserException("Could not find referenced configuration file: " + configurationFile, e);
         } catch (ParserConfigurationException e) {

@@ -23,6 +23,7 @@ import org.pustefixframework.config.contextxmlservice.parser.internal.ScriptingS
 import org.pustefixframework.config.contextxmlservice.parser.internal.StateConfigImpl;
 import org.pustefixframework.config.customization.CustomizationAwareParsingHandler;
 import org.pustefixframework.config.generic.ParsingUtils;
+import org.springframework.osgi.context.ConfigurableOsgiBundleApplicationContext;
 import org.w3c.dom.Element;
 
 import com.marsching.flexiparse.parser.HandlerContext;
@@ -37,6 +38,8 @@ public class PageRequestStateParsingHandler extends CustomizationAwareParsingHan
     protected void handleNodeIfActive(HandlerContext context) throws ParserException {
         PageRequestConfigImpl pageConfig = ParsingUtils.getSingleTopObject(PageRequestConfigImpl.class, context);
         StateConfigImpl stateConfig = ParsingUtils.getSingleTopObject(StateConfigImpl.class, context);
+
+        ConfigurableOsgiBundleApplicationContext appContext = ParsingUtils.getSingleTopObject(ConfigurableOsgiBundleApplicationContext.class, context);
         
         Element stateElement = (Element) context.getNode();
         String stateClassName = stateElement.getAttribute("class");
@@ -76,6 +79,7 @@ public class PageRequestStateParsingHandler extends CustomizationAwareParsingHan
         
         if (stateClassName.length() > 0) {
             if (stateClassName.startsWith("script:")) {
+                // FIXME Fix or drop support for scripts
                 String scriptPath = stateClassName.substring(7);
                 stateConfig.setState(ScriptingState.class);
                 ScriptingStatePathInfo info = new ScriptingStatePathInfo();
@@ -84,7 +88,7 @@ public class PageRequestStateParsingHandler extends CustomizationAwareParsingHan
             } else {
                 Class<?> clazz;
                 try {
-                    clazz = Class.forName(stateClassName);
+                    clazz = Class.forName(stateClassName, true, appContext.getClassLoader());
                 } catch (ClassNotFoundException e) {
                     throw new ParserException("Could not load state class " + stateClassName, e);
                 }

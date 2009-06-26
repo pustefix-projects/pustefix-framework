@@ -22,6 +22,7 @@ import org.pustefixframework.config.contextxmlservice.PageRequestConfig;
 import org.pustefixframework.config.contextxmlservice.parser.internal.IWrapperConfigImpl;
 import org.pustefixframework.config.contextxmlservice.parser.internal.StateConfigImpl;
 import org.pustefixframework.config.generic.ParsingUtils;
+import org.springframework.osgi.context.ConfigurableOsgiBundleApplicationContext;
 import org.w3c.dom.Element;
 
 import com.marsching.flexiparse.parser.HandlerContext;
@@ -41,6 +42,8 @@ public class PageRequestInputWrapperParsingHandler implements ParsingHandler {
        
         Element element = (Element)context.getNode();
         ParsingUtils.checkAttributes(element, new String[] {"class", "prefix"}, new String[] {"checkactive", "activeignore", "logging"});
+
+        ConfigurableOsgiBundleApplicationContext appContext = ParsingUtils.getSingleTopObject(ConfigurableOsgiBundleApplicationContext.class, context);
          
         StateConfigImpl stateConfig = ParsingUtils.getFirstTopObject(StateConfigImpl.class, context, true);
         PageRequestConfig pageConfig = ParsingUtils.getFirstTopObject(PageRequestConfig.class, context, true);
@@ -52,7 +55,7 @@ public class PageRequestInputWrapperParsingHandler implements ParsingHandler {
         String className = element.getAttribute("class").trim();
         Class<?> wrapperClass;
         try {
-            wrapperClass = Class.forName(className);
+            wrapperClass = Class.forName(className, true, appContext.getClassLoader());
         } catch (ClassNotFoundException e) {
             throw new ParserException("Could not load wrapper class \"" + className + "\"!");
         }

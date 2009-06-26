@@ -1,3 +1,8 @@
+2009-06-26  Sebastian Marsching <sebastian.marsching@1und1.de>
+
+	Use OSGi-aware fleXiParse parser and use ApplicationContext's class loader
+	to load non-core beans.
+
 2009-06-25  Martin Leidig  <mleidig@schlund.de>
 
 	Fixed HTTP caching header problem: adding custom HTTP headers using

@@ -20,6 +20,7 @@ package org.pustefixframework.config.contextxmlservice.parser;
 
 import org.pustefixframework.config.contextxmlservice.parser.internal.ContextXMLServletConfigImpl;
 import org.pustefixframework.config.generic.ParsingUtils;
+import org.springframework.osgi.context.ConfigurableOsgiBundleApplicationContext;
 import org.w3c.dom.Element;
 
 import com.marsching.flexiparse.parser.HandlerContext;
@@ -40,13 +41,15 @@ public class RoleProviderParsingHandler implements ParsingHandler {
         Element element = (Element)context.getNode();
         ParsingUtils.checkAttributes(element, new String[] {"class"}, null);
         
+        ConfigurableOsgiBundleApplicationContext appContext = ParsingUtils.getSingleTopObject(ConfigurableOsgiBundleApplicationContext.class, context);
+
         ContextXMLServletConfigImpl config = ParsingUtils.getSingleTopObject(ContextXMLServletConfigImpl.class, context);     
         
         RoleProvider roleProvider;
         String className = element.getAttribute("class").trim();
         if (className == null || className.trim().equals("")) throw new ParserException("Element 'roleprovider' requires 'class' attribute.");
         try {
-            Class<?> clazz = Class.forName(className);
+            Class<?> clazz = Class.forName(className, true, appContext.getClassLoader());
             if (!RoleProvider.class.isAssignableFrom(clazz))
                 throw new ParserException("Class '" + className + "' doesn't implement the RoleProvider interface.");
             roleProvider = (RoleProvider) clazz.newInstance();

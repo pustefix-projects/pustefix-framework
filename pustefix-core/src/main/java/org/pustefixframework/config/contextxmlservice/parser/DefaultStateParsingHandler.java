@@ -19,6 +19,7 @@ package org.pustefixframework.config.contextxmlservice.parser;
 
 import org.pustefixframework.config.contextxmlservice.parser.internal.ContextXMLServletConfigImpl;
 import org.pustefixframework.config.generic.ParsingUtils;
+import org.springframework.osgi.context.ConfigurableOsgiBundleApplicationContext;
 import org.w3c.dom.Element;
 
 import com.marsching.flexiparse.parser.HandlerContext;
@@ -39,12 +40,14 @@ public class DefaultStateParsingHandler implements ParsingHandler {
         Element element = (Element)context.getNode();
         ParsingUtils.checkAttributes(element, new String[] {"class"}, new String[] {"parent-bean-ref"});
    
+        ConfigurableOsgiBundleApplicationContext appContext = ParsingUtils.getSingleTopObject(ConfigurableOsgiBundleApplicationContext.class, context);
+
         ContextXMLServletConfigImpl config = ParsingUtils.getSingleTopObject(ContextXMLServletConfigImpl.class, context);     
         
         String className = element.getAttribute("class");
         Class<?> clazz;
         try {
-            clazz = Class.forName(className);
+            clazz = Class.forName(className, true, appContext.getClassLoader());
         } catch (ClassNotFoundException e) {
             throw new ParserException("Could not load class \"" + className + "\"!", e);
         }

@@ -38,7 +38,7 @@ import org.springframework.osgi.context.ConfigurableOsgiBundleApplicationContext
 import org.xml.sax.EntityResolver;
 
 import com.marsching.flexiparse.objecttree.ObjectTreeElement;
-import com.marsching.flexiparse.parser.ClasspathConfiguredParser;
+import com.marsching.flexiparse.parser.OSGiAwareParser;
 import com.marsching.flexiparse.parser.Parser;
 import com.marsching.flexiparse.parser.exception.ParserException;
 
@@ -88,21 +88,14 @@ public abstract class PustefixAbstractBeanDefinitionReader extends AbstractBeanD
     }
     
     public int loadBeanDefinitions(Resource resource) throws BeanDefinitionStoreException {
-        // TODO Use BeanFactory's class loader
         ObjectTreeElement applicationConfigTree;
         Properties buildTimeProperties = RuntimeProperties.getProperties();
         CustomizationInfo info = new PropertiesBasedCustomizationInfo(buildTimeProperties);
         try {
-            // TODO Use OSGi-aware configuration parser
-            ClassLoader ccl = Thread.currentThread().getContextClassLoader();
-            Thread.currentThread().setContextClassLoader(this.getClass().getClassLoader());
-            try {
-                Parser applicationConfigParser = new ClasspathConfiguredParser(getParserConfigurationPath());
-                ProjectInfo projectInfo = new ProjectInfo(resource.getURL());
-                applicationConfigTree = applicationConfigParser.parse(resource.getInputStream(), info, getRegistry(), projectInfo);
-            } finally {
-                Thread.currentThread().setContextClassLoader(ccl);
-            }
+            Parser applicationConfigParser = new OSGiAwareParser(getApplicationContext().getBundleContext(), getParserConfigurationPath());
+            // FIXME ProjectInfo probably won't work with the new URIs
+            ProjectInfo projectInfo = new ProjectInfo(resource.getURL());
+            applicationConfigTree = applicationConfigParser.parse(resource.getInputStream(), info, getRegistry(), projectInfo, getApplicationContext());
         } catch (ParserException e) {
             throw new BeanDefinitionStoreException("Error while parsing " + resource + ": " + e.getMessage(), e);
         } catch (IOException e) {

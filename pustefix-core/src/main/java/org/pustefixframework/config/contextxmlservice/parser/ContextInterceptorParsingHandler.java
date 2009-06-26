@@ -26,6 +26,7 @@ import org.springframework.beans.factory.config.BeanDefinitionHolder;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.DefaultBeanNameGenerator;
+import org.springframework.osgi.context.ConfigurableOsgiBundleApplicationContext;
 import org.w3c.dom.Element;
 
 import com.marsching.flexiparse.parser.HandlerContext;
@@ -49,9 +50,11 @@ public class ContextInterceptorParsingHandler implements ParsingHandler {
         String beanRef = element.getAttribute("bean-ref").trim();
         if(className.length()>0) {
             
+            ConfigurableOsgiBundleApplicationContext appContext = ParsingUtils.getSingleTopObject(ConfigurableOsgiBundleApplicationContext.class, context);
+
             Class<?> clazz;
             try {
-                clazz = Class.forName(className);
+                clazz = Class.forName(className, true, appContext.getClassLoader());
             } catch (ClassNotFoundException e) {
                 throw new ParserException("Could not load interceptor class " + className, e);
             }

@@ -88,7 +88,7 @@
     <dependency>
       <groupId>com.marsching.flexiparse</groupId>
       <artifactId>flexiparse</artifactId>
-      <version>0.2.1</version>
+      <version>1.0.1</version>
     </dependency>
     <dependency>
       <groupId>cglib</groupId>

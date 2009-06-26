@@ -33,6 +33,7 @@ import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanNameGenerator;
 import org.springframework.beans.factory.support.DefaultBeanNameGenerator;
+import org.springframework.osgi.context.ConfigurableOsgiBundleApplicationContext;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
@@ -47,6 +48,8 @@ public class DirectOutputPageRequestParsingHandler extends CustomizationAwarePar
     @Override
     protected void handleNodeIfActive(HandlerContext context) throws ParserException {
         if (context.getRunOrder() == RunOrder.START) {
+            ConfigurableOsgiBundleApplicationContext appContext = ParsingUtils.getSingleTopObject(ConfigurableOsgiBundleApplicationContext.class, context);
+            
             Element elem = (Element) context.getNode();
             String pageName = elem.getAttribute("name");
             if (pageName.length() == 0) {
@@ -79,7 +82,7 @@ public class DirectOutputPageRequestParsingHandler extends CustomizationAwarePar
             if (className.length() != 0) {
                 Class<?> clazz;
                 try {
-                    clazz = Class.forName(className);
+                    clazz = Class.forName(className, true, appContext.getClassLoader());
                 } catch (ClassNotFoundException e) {
                     throw new ParserException("Could not load class \"" + className + "\"!", e);
                 }

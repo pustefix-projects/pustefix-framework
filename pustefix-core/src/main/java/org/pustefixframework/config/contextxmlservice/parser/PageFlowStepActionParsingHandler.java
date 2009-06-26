@@ -21,6 +21,7 @@ package org.pustefixframework.config.contextxmlservice.parser;
 import org.pustefixframework.config.contextxmlservice.parser.internal.PageFlowStepActionConditionConfigImpl;
 import org.pustefixframework.config.contextxmlservice.parser.internal.PageFlowStepActionConfigImpl;
 import org.pustefixframework.config.generic.ParsingUtils;
+import org.springframework.osgi.context.ConfigurableOsgiBundleApplicationContext;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 
@@ -29,6 +30,7 @@ import com.marsching.flexiparse.parser.ParsingHandler;
 import com.marsching.flexiparse.parser.exception.ParserException;
 
 import de.schlund.pfixcore.workflow.FlowStepAction;
+import de.schlund.pfixcore.workflow.FlowStepJumpToAction;
 
 /**
  * 
@@ -41,18 +43,22 @@ public class PageFlowStepActionParsingHandler implements ParsingHandler {
        
         Element element = (Element)context.getNode();
         
+        ConfigurableOsgiBundleApplicationContext appContext = ParsingUtils.getSingleTopObject(ConfigurableOsgiBundleApplicationContext.class, context);
+
         PageFlowStepActionConditionConfigImpl condConfig = ParsingUtils.getFirstTopObject(PageFlowStepActionConditionConfigImpl.class, context, true);
         
+        Class<?> clazz = null;
         String type = element.getAttribute("type").trim();
         if (type.length()==0) {
             throw new ParserException("Mandatory attribute \"type\" is missing!");
         }
         if (type.equals("jumpto")) {
-            type = "de.schlund.pfixcore.workflow.FlowStepJumpToAction";
+            clazz = FlowStepJumpToAction.class;
         }
-        Class<?> clazz;
         try {
-            clazz = Class.forName(type);
+            if (clazz == null) {
+                clazz = Class.forName(type, true, appContext.getClassLoader());
+            }
         } catch (ClassNotFoundException e) {
             throw new ParserException("Could not load class \"" + type + "\"!", e);
         }

@@ -24,6 +24,7 @@ import org.pustefixframework.config.contextxmlservice.ContextXMLServletConfig;
 import org.pustefixframework.config.contextxmlservice.parser.internal.StateConfigImpl;
 import org.pustefixframework.config.generic.ParsingUtils;
 import org.springframework.beans.factory.config.RuntimeBeanReference;
+import org.springframework.osgi.context.ConfigurableOsgiBundleApplicationContext;
 import org.w3c.dom.Element;
 
 import com.marsching.flexiparse.parser.HandlerContext;
@@ -44,6 +45,8 @@ public class PageRequestOutputResourceParsingHandler implements ParsingHandler {
         Element element = (Element)context.getNode();
         ParsingUtils.checkAttributes(element, new String[] {"node"}, new String[] {"class","bean-ref"});
         
+        ConfigurableOsgiBundleApplicationContext appContext = ParsingUtils.getSingleTopObject(ConfigurableOsgiBundleApplicationContext.class, context);
+
         StateConfigImpl stateConfig = ParsingUtils.getFirstTopObject(StateConfigImpl.class, context, true);
         String node = element.getAttribute("node").trim();
        
@@ -55,7 +58,7 @@ public class PageRequestOutputResourceParsingHandler implements ParsingHandler {
         if (className.length() > 0) {
             Class<?> clazz;
             try {
-                clazz = Class.forName(className);
+                clazz = Class.forName(className, true, appContext.getClassLoader());
             } catch (ClassNotFoundException e) {
                 throw new ParserException("Could not load resource interface \"" + className + "\"!");
             }
