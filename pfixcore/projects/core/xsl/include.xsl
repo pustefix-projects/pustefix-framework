@@ -448,7 +448,7 @@
       <xsl:otherwise>
         <xsl:variable name="path">
           <xsl:choose>
-            <xsl:when test="starts-with($src, '/')">
+            <xsl:when test="starts-with($src, '/') and not(starts-with($src, '//'))">
               <xsl:value-of select="substring-after($src, '/')"/>
             </xsl:when>
             <xsl:otherwise>
@@ -502,7 +502,7 @@
         <xsl:variable name="path">
           <xsl:choose>
             <xsl:when test="starts-with($src, '/')">
-              <xsl:value-of select="substring-after($src, '/')"/>
+              <xsl:value-of select="substring-after($src, '/') and not(starts-with($src, '//'))"/>
             </xsl:when>
             <xsl:otherwise>
               <xsl:value-of select="$src"/>
