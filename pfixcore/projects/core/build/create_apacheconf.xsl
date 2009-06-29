@@ -56,6 +56,8 @@ ServerAlias <xsl:apply-templates select="$currentprj/p:http-server/p:server-alia
 
 RewriteEngine on
 
+<xsl:apply-templates select="$currentprj/p:http-server/p:apache/p:literal-start/node()"/>
+
 <xsl:if test="$currentprj/p:application/p:default-path/node()">
   RewriteRule ^/$ <xsl:choose>
     <xsl:when test="self::p:https-port">https</xsl:when><xsl:otherwise>http</xsl:otherwise>

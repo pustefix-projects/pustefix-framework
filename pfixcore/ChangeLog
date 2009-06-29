@@ -1,3 +1,10 @@
+2009-06-29  Martin Leidig  <mleidig@schlund.de>
+
+	Re-added support for adding literal Apache configuration at the 
+	beginning of the VirtualHost context (formerly konwn as
+	"literalstart" now it can be found under
+	"http-server/apache/literal-start".
+
 2009-06-26  Martin Leidig  <mleidig@schlund.de>
 
 	Fixed "too many open files" problem when using the standard
@@ -14,7 +21,7 @@
 
 	Re-added support for adding literal Apache configuration in the server
 	context (formerly known as "extendvedhost" now it can be found under
-	http-server/literal-server).
+	"http-server/apache/literal-server").
 
 2009-06-24  Martin Leidig  <mleidig@schlund.de>
 
