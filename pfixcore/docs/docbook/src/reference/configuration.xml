@@ -461,6 +461,10 @@
         <!-- Stuff that is copied to the Apache configuration 
              within the Virtual Host context -->
       </literal>
+      <literal-start>
+        <!-- Stuff that is copied to the Apache configuration
+             at the start of the VirtualHost context -->
+      </literal-start>
       <literal-server>
         <!-- Stuff that is copied to the Apache configuration
              within the server context -->
