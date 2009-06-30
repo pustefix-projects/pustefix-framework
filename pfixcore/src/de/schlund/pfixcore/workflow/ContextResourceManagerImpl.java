@@ -94,7 +94,7 @@ public class ContextResourceManagerImpl implements ContextResourceManager, Appli
      */
     public Object getResource(String name) {
         ContextResourceConfig conf = contextConfig.getContextResourceConfig(name);
-        if(conf==null) throw new IllegalArgumentException("Resource not found: "+name);
+        if(conf==null) return null;
         return applicationContext.getBean(conf.getBeanName());
     }
 
@@ -104,6 +104,7 @@ public class ContextResourceManagerImpl implements ContextResourceManager, Appli
     @SuppressWarnings("unchecked")
     public <T> T getResource(Class<T> clazz) {
         ContextResourceConfig conf = contextConfig.getContextResourceConfig(clazz.getName());
+        if(conf == null) return null;
         return (T)applicationContext.getBean(conf.getBeanName());
     }
     
