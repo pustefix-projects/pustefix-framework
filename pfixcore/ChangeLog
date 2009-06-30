@@ -1,3 +1,9 @@
+2009-06-30  Martin Leidig  <mleidig@schlund.de>
+
+	Return null instead of throwing a NPE when calling
+	ContextResourceManager.getResource for unconfigured
+	ContextResources.
+
 2009-06-29  Martin Leidig  <mleidig@schlund.de>
 
 	Re-added support for adding literal Apache configuration at the 
