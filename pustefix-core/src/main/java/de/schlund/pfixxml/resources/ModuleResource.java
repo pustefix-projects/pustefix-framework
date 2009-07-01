@@ -27,6 +27,7 @@ import java.net.URL;
 import java.util.jar.JarEntry;
 
 import de.schlund.pfixcore.exception.PustefixRuntimeException;
+import de.schlund.pfixcore.util.JarFileURLConnection;
 
 public class ModuleResource implements Resource {
 
@@ -49,6 +50,17 @@ public class ModuleResource implements Resource {
         this.uri = uri;
     }
     
+    private JarURLConnection getConnection() throws IOException {
+        
+        JarURLConnection con = new JarFileURLConnection(url);
+        //Use own JarURLConnection implementation to workaround problem
+        //with standard implementation, which causes too many open file
+        //handles because they are not destroyed until garbage collection
+        //JarURLConnection con = (JarURLConnection)url.openConnection();
+        //con.setUseCaches(false);
+        return con;
+    }
+    
     public boolean canRead() {
         //TODO: implement
         return true;
@@ -57,8 +69,7 @@ public class ModuleResource implements Resource {
     public boolean exists() {
         if(url == null) return false;
         try {
-            JarURLConnection con = (JarURLConnection)url.openConnection();
-            con.setUseCaches(false);
+            JarURLConnection con = getConnection();
             con.getJarEntry();
             return true;
         } catch(FileNotFoundException x) {
@@ -70,8 +81,7 @@ public class ModuleResource implements Resource {
 
     public InputStream getInputStream() throws IOException {
         if(url == null) throw new IOException("Resource doesn't exist");
-        JarURLConnection con = (JarURLConnection)url.openConnection();
-        con.setUseCaches(false);
+        JarURLConnection con = getConnection();
         return con.getInputStream();
     }
 
@@ -83,8 +93,7 @@ public class ModuleResource implements Resource {
     public long lastModified() {
         if(url == null) return 0;
         try {
-            JarURLConnection con = (JarURLConnection)url.openConnection();
-            con.setUseCaches(false);
+            JarURLConnection con = getConnection();
             return con.getLastModified();
         } catch(IOException x) {
             throw new RuntimeException("Error checking modification time", x);
