@@ -26,6 +26,7 @@ import java.io.InputStream;
 import java.util.Properties;
 
 import org.pustefixframework.config.customization.PropertiesBasedCustomizationInfo;
+import org.xml.sax.InputSource;
 
 import com.marsching.flexiparse.parser.ClasspathConfiguredParser;
 import com.marsching.flexiparse.parser.exception.ParserException;
@@ -43,20 +44,28 @@ import de.schlund.pfixxml.resources.FileResource;
 public class PropertyFileReader {
     
     public static void read(File file, Properties properties) throws ParserException, FileNotFoundException {
-        read(new FileInputStream(file), properties);
+        InputSource in = new InputSource(new FileInputStream(file));
+        in.setSystemId(file.toURI().toASCIIString());
+        read(in, properties);
     }
     
     public static void read(FileResource resource, Properties properties) throws ParserException, IOException {
-        read(resource.getInputStream(), properties);
+        InputSource in = new InputSource(resource.getInputStream());
+        in.setSystemId(resource.toURI().toASCIIString());
+        read(in, properties);
     }
     
-    public static void read(InputStream in, Properties properties) throws ParserException {
+    public static void read(InputStream in, Properties properties) throws ParserException { 
+        read(new InputSource(in), properties);
+    }
+    
+    public static void read(InputSource in, Properties properties) throws ParserException {
         
         PropertiesBasedCustomizationInfo customizationInfo = new PropertiesBasedCustomizationInfo(BuildTimeProperties.getProperties());
         ClasspathConfiguredParser parser = new ClasspathConfiguredParser("META-INF/org/pustefixframework/config/generic/properties-config.xml");
         
         parser.parse(in, customizationInfo, properties);
-        
+
         //TODO: alternative error check and support of empty property files 
         if(properties.size()==0) throw new ParserException("No properties found. Check if your property file "+
                 "is valid and uses the correct XML namespace.");

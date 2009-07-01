@@ -4,6 +4,11 @@
 	ContextResourceManager.getResource for unconfigured
 	ContextResources.
 
+2009-06-24  Martin Leidig  <mleidig@schlund.de>
+
+        Added support for relative resolving of xincluded Pustefix
+        property files.
+
 2009-06-08  Martin Leidig  <mleidig@schlund.de>
 
 	Optimized MD5 checksum creation for rendered HTML by using
