@@ -53,6 +53,7 @@ import com.marsching.flexiparse.objecttree.SubObjectTree;
 import com.marsching.flexiparse.parser.HandlerContext;
 import com.marsching.flexiparse.parser.OSGiAwareParser;
 import com.marsching.flexiparse.parser.exception.ParserException;
+import com.sun.xml.internal.ws.transport.http.ResourceLoader;
 
 import de.schlund.pfixcore.workflow.ContextImpl;
 import de.schlund.pfixxml.config.includes.IncludesResolver;
@@ -82,7 +83,8 @@ public class PustefixContextDirectOutputRequestHandlerParsingHandler extends Cus
         CustomizationInfo info = infoCollection.iterator().next();
         
         BeanDefinitionRegistry registry = ParsingUtils.getSingleTopObject(BeanDefinitionRegistry.class, context);
-        
+
+        ResourceLoader resourceLoader = ParsingUtils.getSingleTopObject(ResourceLoader.class, context);
         ConfigurableOsgiBundleApplicationContext appContext = ParsingUtils.getSingleTopObject(ConfigurableOsgiBundleApplicationContext.class, context);
         
         OSGiAwareParser configParser = new OSGiAwareParser(appContext.getBundleContext(), "META-INF/org/pustefixframework/config/direct-output-service/parser/direct-output-service-config.xml");
@@ -95,7 +97,7 @@ public class PustefixContextDirectOutputRequestHandlerParsingHandler extends Cus
             Document doc = db.parse(ResourceUtil.getFileResource(configurationFile).getInputStream()); 
             IncludesResolver resolver = new IncludesResolver("http://www.pustefix-framework.org/2008/namespace/direct-output-service-config", "config-include");
             resolver.resolveIncludes(doc);
-            root = configParser.parse(doc, info, registry, appContext);
+            root = configParser.parse(doc, info, registry, appContext, resourceLoader);
         } catch (FileNotFoundException e) {
             throw new ParserException("Could not find referenced configuration file: " + configurationFile, e);
         } catch (ParserConfigurationException e) {

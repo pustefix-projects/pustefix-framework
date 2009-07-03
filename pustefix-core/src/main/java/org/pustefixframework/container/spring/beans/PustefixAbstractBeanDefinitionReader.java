@@ -26,6 +26,8 @@ import org.pustefixframework.config.application.ProjectInfo;
 import org.pustefixframework.config.customization.CustomizationInfo;
 import org.pustefixframework.config.customization.PropertiesBasedCustomizationInfo;
 import org.pustefixframework.config.customization.RuntimeProperties;
+import org.pustefixframework.container.spring.beans.internal.BundleResourceLoader;
+import org.pustefixframework.resource.ResourceLoader;
 import org.springframework.beans.factory.BeanDefinitionStoreException;
 import org.springframework.beans.factory.config.BeanDefinitionHolder;
 import org.springframework.beans.factory.support.AbstractBeanDefinitionReader;
@@ -91,11 +93,12 @@ public abstract class PustefixAbstractBeanDefinitionReader extends AbstractBeanD
         ObjectTreeElement applicationConfigTree;
         Properties buildTimeProperties = RuntimeProperties.getProperties();
         CustomizationInfo info = new PropertiesBasedCustomizationInfo(buildTimeProperties);
+        ResourceLoader resourceLoader = new BundleResourceLoader(osgiBundleApplicationContext.getBundleContext());
         try {
             Parser applicationConfigParser = new OSGiAwareParser(getApplicationContext().getBundleContext(), getParserConfigurationPath());
             // FIXME ProjectInfo probably won't work with the new URIs
             ProjectInfo projectInfo = new ProjectInfo(resource.getURL());
-            applicationConfigTree = applicationConfigParser.parse(resource.getInputStream(), info, getRegistry(), projectInfo, getApplicationContext());
+            applicationConfigTree = applicationConfigParser.parse(resource.getInputStream(), info, getRegistry(), projectInfo, getApplicationContext(), resourceLoader);
         } catch (ParserException e) {
             throw new BeanDefinitionStoreException("Error while parsing " + resource + ": " + e.getMessage(), e);
         } catch (IOException e) {

@@ -58,6 +58,7 @@ import com.marsching.flexiparse.parser.HandlerContext;
 import com.marsching.flexiparse.parser.OSGiAwareParser;
 import com.marsching.flexiparse.parser.Parser;
 import com.marsching.flexiparse.parser.exception.ParserException;
+import com.sun.xml.internal.ws.transport.http.ResourceLoader;
 
 import de.schlund.pfixcore.workflow.ContextImpl;
 import de.schlund.pfixxml.SessionCleaner;
@@ -142,6 +143,7 @@ public class PustefixContextXMLRequestHandlerParsingHandler extends Customizatio
         if(beanRegs.size()==0) throw new ParserException("No BeanDefinitionRegistry object found.");
         else if(beanRegs.size()>1) throw new ParserException("Multiple BeanDefinitionRegistry objects found.");
         BeanDefinitionRegistry beanReg = beanRegs.iterator().next();
+        ResourceLoader resourceLoader = ParsingUtils.getSingleTopObject(ResourceLoader.class, context);
         Properties buildTimeProperties = RuntimeProperties.getProperties();
         CustomizationInfo cusInfo = new PropertiesBasedCustomizationInfo(buildTimeProperties);
         try {
@@ -158,7 +160,7 @@ public class PustefixContextXMLRequestHandlerParsingHandler extends Customizatio
             IncludesResolver resolver = new IncludesResolver("http://www.pustefix-framework.org/2008/namespace/context-xml-service-config", "config-include");
             resolver.resolveIncludes(doc);
             
-            final ObjectTreeElement contextXmlConfigTree = contextXmlConfigParser.parse(doc, cusInfo, beanReg, info, appContext);
+            final ObjectTreeElement contextXmlConfigTree = contextXmlConfigParser.parse(doc, cusInfo, beanReg, info, appContext, resourceLoader);
             SubObjectTree subTree = new SubObjectTree() {
               public ObjectTreeElement getRoot() {
                     return contextXmlConfigTree;
