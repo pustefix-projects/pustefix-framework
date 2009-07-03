@@ -71,4 +71,65 @@ public interface ResourceLoader {
      * @return all resource for uri
      */
     Resource[] getResources(URI uri, Map<String, ?> parameters);
+
+    /**
+     * Returns the "best-matching" resource for a given URI or
+     * <code>null</code> if no resource can be found for the URI.
+     * The list of found resources is filtered for only those resources,
+     * that implement the given interface.
+     * 
+     * @param uri URI describing the resource
+     * @param resourceClass class or interface the returned resource(s)
+     *  has to implement.
+     * @return resource for uri
+     */
+    <T extends Resource> T getResource(URI uri, Class<? extends T> resourceClass);
+
+    /**
+     * Returns all resources for a given URI or
+     * <code>null</code> if no resource can be found for the URI.
+     * The list of found resources is filtered for only those resources,
+     * that implement the given interface.
+     * 
+     * @param uri URI describing the resource
+     * @param resourceClass class or interface the returned resource(s)
+     *  has to implement.
+     * @return all resource for uri
+     */
+    <T extends Resource> T[] getResources(URI uri, Class<? extends T> resourceClass);
+
+    /**
+     * Returns the "best-matching" resource for a given URI or
+     * <code>null</code> if no resource can be found for the URI.
+     * {@link ResourceSelector}s may use the parameters to decide
+     * which resource matches best.
+     * The list of found resources is filtered for only those resources,
+     * that implement the given interface.
+     * 
+     * @param uri URI describing the resource
+     * @param parameters paramters for selectors or <code>null</code>
+     *  if no parameters are given
+     * @param resourceClass class or interface the returned resource(s)
+     *  has to implement.
+     * @return resource for uri
+     */
+    <T extends Resource> T getResource(URI uri, Map<String, ?> parameters, Class<? extends T> resourceClass);
+
+    /**
+     * Returns all resources for a given URI or
+     * <code>null</code> if no resource can be found for the URI.
+     * {@link ResourceSelector}s may use the parameters to decide
+     * which resources match best.
+     * The list of found resources is filtered for only those resources,
+     * that implement the given interface.
+     * 
+     * @param uri URI describing the resource
+     * @param parameters paramters for selectors or <code>null</code>
+     *  if no parameters are given
+     * @param resourceClass class or interface the returned resource(s)
+     *  has to implement.
+     * @return all resource for uri
+     */
+    <T extends Resource> T[] getResources(URI uri, Map<String, ?> parameters, Class<? extends T> resourceClass);
+
 }

@@ -18,7 +18,9 @@
 
 package org.pustefixframework.resource;
 
+import java.lang.reflect.Array;
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.Map;
 
 
@@ -30,7 +32,7 @@ import java.util.Map;
 public abstract class AbstractResourceLoader implements ResourceLoader {
 
     public Resource getResource(URI uri) {
-        return getResource(uri, null);
+        return getResource(uri, (Map<String, ?>) null);
     }
 
     public Resource getResource(URI uri, Map<String, ?> parameters) {
@@ -43,6 +45,56 @@ public abstract class AbstractResourceLoader implements ResourceLoader {
     }
 
     public Resource[] getResources(URI uri) {
-        return getResources(uri, null);
+        return getResources(uri, (Map<String, ?>) null);
+    }
+
+    public <T extends Resource> T getResource(URI uri, Class<? extends T> resourceClass) {
+        Resource resource = getResource(uri);
+        if (resource == null) {
+            return null;
+        }
+        if (resourceClass.isAssignableFrom(resource.getClass())) {
+            return resourceClass.cast(resource);
+        }
+        return null;
+    }
+
+    public <T extends Resource> T getResource(URI uri, Map<String, ?> parameters, Class<? extends T> resourceClass) {
+        Resource resource = getResource(uri, parameters);
+        if (resource == null) {
+            return null;
+        }
+        if (resourceClass.isAssignableFrom(resource.getClass())) {
+            return resourceClass.cast(resource);
+        }
+        return null;
+    }
+
+    public <T extends Resource> T[] getResources(URI uri, Class<? extends T> resourceClass) {
+        return filterResourcesForClass(getResources(uri), resourceClass);
+    }
+
+    public <T extends Resource> T[] getResources(URI uri, Map<String, ?> parameters, Class<? extends T> resourceClass) {
+        return filterResourcesForClass(getResources(uri, parameters), resourceClass);
+    }
+    
+    protected <T extends Resource> T[] filterResourcesForClass(Resource[] resources, Class<? extends T> resourceClass) {
+        if (resources == null) {
+            return null;
+        }
+        ArrayList<T> filteredResources = new ArrayList<T>();
+        for (int i = 0; i < resources.length; i++) {
+            Resource resource = resources[i];
+            if (resourceClass.isAssignableFrom(resource.getClass())) {
+                filteredResources.add(resourceClass.cast(resource));
+            }
+        }
+        if (filteredResources.size() == 0) {
+            return null;
+        }
+        @SuppressWarnings("unchecked")
+        T[] result = (T[]) Array.newInstance(resourceClass, filteredResources.size());
+        filteredResources.toArray(result);
+        return result;
     }
 }

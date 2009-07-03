@@ -19,7 +19,8 @@
 package org.pustefixframework.config.application.parser;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Collection;
 import java.util.Properties;
 
@@ -39,14 +40,14 @@ import org.pustefixframework.config.customization.PropertiesBasedCustomizationIn
 import org.pustefixframework.config.customization.RuntimeProperties;
 import org.pustefixframework.config.generic.ParsingUtils;
 import org.pustefixframework.http.PustefixContextXMLRequestHandler;
+import org.pustefixframework.resource.InputStreamResource;
+import org.pustefixframework.resource.ResourceLoader;
 import org.springframework.beans.factory.BeanDefinitionStoreException;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinitionHolder;
 import org.springframework.beans.factory.config.RuntimeBeanReference;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.UrlResource;
 import org.springframework.osgi.context.ConfigurableOsgiBundleApplicationContext;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -58,14 +59,11 @@ import com.marsching.flexiparse.parser.HandlerContext;
 import com.marsching.flexiparse.parser.OSGiAwareParser;
 import com.marsching.flexiparse.parser.Parser;
 import com.marsching.flexiparse.parser.exception.ParserException;
-import com.sun.xml.internal.ws.transport.http.ResourceLoader;
 
 import de.schlund.pfixcore.workflow.ContextImpl;
 import de.schlund.pfixxml.SessionCleaner;
 import de.schlund.pfixxml.config.includes.IncludesResolver;
 import de.schlund.pfixxml.exceptionprocessor.ExceptionProcessingConfiguration;
-import de.schlund.pfixxml.resources.FileResource;
-import de.schlund.pfixxml.resources.ResourceUtil;
 import de.schlund.pfixxml.serverutil.SessionAdmin;
 import de.schlund.pfixxml.testrecording.TestRecording;
 
@@ -73,6 +71,8 @@ public class PustefixContextXMLRequestHandlerParsingHandler extends Customizatio
 
     @Override
     public void handleNodeIfActive(HandlerContext context) throws ParserException {
+        ResourceLoader resourceLoader = ParsingUtils.getSingleTopObject(ResourceLoader.class, context);
+
         Element serviceElement = (Element) context.getNode();
         
         Element pathElement = (Element) serviceElement.getElementsByTagNameNS(Constants.NS_APPLICATION, "path").item(0);
@@ -86,7 +86,16 @@ public class PustefixContextXMLRequestHandlerParsingHandler extends Customizatio
         }
         
         String path = pathElement.getTextContent().trim();
-        String configurationFile = configurationFileElement.getTextContent().trim();
+        URI configurationURI;
+        try {
+            configurationURI = new URI(configurationFileElement.getTextContent().trim());
+        } catch (URISyntaxException e) {
+            throw new ParserException("Not a valid URI: " + configurationFileElement.getTextContent().trim());
+        }
+        InputStreamResource configurationResource = resourceLoader.getResource(configurationURI, InputStreamResource.class);
+        if (configurationResource == null) {
+            throw new ParserException("Resource at URI \"" + configurationURI.toASCIIString() + "\" could not be found");
+        }
         
         boolean renderExternal = false;
         Element renderExtElement = (Element) serviceElement.getElementsByTagNameNS(Constants.NS_APPLICATION, "render-external").item(0);
@@ -131,19 +140,10 @@ public class PustefixContextXMLRequestHandlerParsingHandler extends Customizatio
             editorLocation = new EditorLocation(null);
         }
        
-        FileResource fileRes = ResourceUtil.getFileResource(configurationFile);
-        Resource res = null;
-        try {
-            res = new UrlResource(fileRes.toURL());
-        } catch(MalformedURLException x) {
-            throw new ParserException("Illegal resource URL",x);
-        }
-
         Collection<BeanDefinitionRegistry> beanRegs = context.getObjectTreeElement().getObjectsOfTypeFromTopTree(BeanDefinitionRegistry.class);
         if(beanRegs.size()==0) throw new ParserException("No BeanDefinitionRegistry object found.");
         else if(beanRegs.size()>1) throw new ParserException("Multiple BeanDefinitionRegistry objects found.");
         BeanDefinitionRegistry beanReg = beanRegs.iterator().next();
-        ResourceLoader resourceLoader = ParsingUtils.getSingleTopObject(ResourceLoader.class, context);
         Properties buildTimeProperties = RuntimeProperties.getProperties();
         CustomizationInfo cusInfo = new PropertiesBasedCustomizationInfo(buildTimeProperties);
         try {
@@ -156,7 +156,7 @@ public class PustefixContextXMLRequestHandlerParsingHandler extends Customizatio
             dbf.setNamespaceAware(true);
             dbf.setXIncludeAware(true);
             DocumentBuilder db = dbf.newDocumentBuilder();
-            Document doc = db.parse(ResourceUtil.getFileResource(configurationFile).getInputStream()); 
+            Document doc = db.parse(configurationResource.getInputStream()); 
             IncludesResolver resolver = new IncludesResolver("http://www.pustefix-framework.org/2008/namespace/context-xml-service-config", "config-include");
             resolver.resolveIncludes(doc);
             
@@ -172,9 +172,9 @@ public class PustefixContextXMLRequestHandlerParsingHandler extends Customizatio
         } catch (SAXException e) {
             throw new ParserException("Error while parsing referenced file: " + e.getMessage(), e);
         } catch (ParserException e) {
-            throw new BeanDefinitionStoreException("Error while parsing " + res + ": " + e.getMessage(), e);
+            throw new BeanDefinitionStoreException("Error while parsing " + configurationURI.toASCIIString() + ": " + e.getMessage(), e);
         } catch (IOException e) {
-            throw new BeanDefinitionStoreException("Error while parsing " + res + ": " + e.getMessage(), e);
+            throw new BeanDefinitionStoreException("Error while parsing " + configurationURI.toASCIIString() + ": " + e.getMessage(), e);
         }
         
         ContextXMLServletConfig config = context.getObjectTreeElement().getObjectsOfTypeFromSubTree(ContextXMLServletConfig.class).iterator().next();

@@ -20,6 +20,8 @@ package org.pustefixframework.config.application.parser;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -35,6 +37,8 @@ import org.pustefixframework.config.directoutputservice.DirectOutputPageRequestC
 import org.pustefixframework.config.directoutputservice.DirectOutputServiceConfig;
 import org.pustefixframework.config.generic.ParsingUtils;
 import org.pustefixframework.http.PustefixContextDirectOutputRequestHandler;
+import org.pustefixframework.resource.InputStreamResource;
+import org.pustefixframework.resource.ResourceLoader;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.MapFactoryBean;
 import org.springframework.beans.factory.config.RuntimeBeanReference;
@@ -53,17 +57,17 @@ import com.marsching.flexiparse.objecttree.SubObjectTree;
 import com.marsching.flexiparse.parser.HandlerContext;
 import com.marsching.flexiparse.parser.OSGiAwareParser;
 import com.marsching.flexiparse.parser.exception.ParserException;
-import com.sun.xml.internal.ws.transport.http.ResourceLoader;
 
 import de.schlund.pfixcore.workflow.ContextImpl;
 import de.schlund.pfixxml.config.includes.IncludesResolver;
-import de.schlund.pfixxml.resources.ResourceUtil;
 import de.schlund.pfixxml.serverutil.SessionAdmin;
 
 public class PustefixContextDirectOutputRequestHandlerParsingHandler extends CustomizationAwareParsingHandler {
 
     @Override
     public void handleNodeIfActive(HandlerContext context) throws ParserException {
+        ResourceLoader resourceLoader = ParsingUtils.getSingleTopObject(ResourceLoader.class, context);
+
         Element serviceElement = (Element) context.getNode();
         Element pathElement = (Element) serviceElement.getElementsByTagNameNS(Constants.NS_APPLICATION, "path").item(0);
         if (pathElement == null) {
@@ -75,6 +79,16 @@ public class PustefixContextDirectOutputRequestHandlerParsingHandler extends Cus
         }
         String path = pathElement.getTextContent().trim();
         String configurationFile = configurationFileElement.getTextContent().trim();
+        URI configurationURI;
+        try {
+            configurationURI = new URI(configurationFile);
+        } catch (URISyntaxException e) {
+            throw new ParserException("Not a valid URI: " + configurationFile, e);
+        }
+        InputStreamResource configurationResource = resourceLoader.getResource(configurationURI, InputStreamResource.class);
+        if (configurationResource == null) {
+            throw new ParserException("Resource at URI \"" + configurationURI.toASCIIString() + "\" could not be found");
+        }
 
         Collection<CustomizationInfo> infoCollection = context.getObjectTreeElement().getObjectsOfTypeFromTopTree(CustomizationInfo.class);
         if (infoCollection.isEmpty()) {
@@ -84,7 +98,6 @@ public class PustefixContextDirectOutputRequestHandlerParsingHandler extends Cus
         
         BeanDefinitionRegistry registry = ParsingUtils.getSingleTopObject(BeanDefinitionRegistry.class, context);
 
-        ResourceLoader resourceLoader = ParsingUtils.getSingleTopObject(ResourceLoader.class, context);
         ConfigurableOsgiBundleApplicationContext appContext = ParsingUtils.getSingleTopObject(ConfigurableOsgiBundleApplicationContext.class, context);
         
         OSGiAwareParser configParser = new OSGiAwareParser(appContext.getBundleContext(), "META-INF/org/pustefixframework/config/direct-output-service/parser/direct-output-service-config.xml");
@@ -94,7 +107,7 @@ public class PustefixContextDirectOutputRequestHandlerParsingHandler extends Cus
             dbf.setNamespaceAware(true);
             dbf.setXIncludeAware(true);
             DocumentBuilder db = dbf.newDocumentBuilder();
-            Document doc = db.parse(ResourceUtil.getFileResource(configurationFile).getInputStream()); 
+            Document doc = db.parse(configurationResource.getInputStream()); 
             IncludesResolver resolver = new IncludesResolver("http://www.pustefix-framework.org/2008/namespace/direct-output-service-config", "config-include");
             resolver.resolveIncludes(doc);
             root = configParser.parse(doc, info, registry, appContext, resourceLoader);

@@ -36,6 +36,7 @@ import org.springframework.beans.factory.config.BeanDefinitionHolder;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.config.RuntimeBeanReference;
+import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanDefinitionValidationException;
@@ -105,11 +106,19 @@ public class AnnotationBeanDefinitionPostProcessor implements BeanFactoryPostPro
      * invalid method
      */
     private void processBeanDefinition(String beanName, BeanDefinition beanDefinition, ConfigurableListableBeanFactory beanFactory) {
-        if(beanDefinition.isAbstract()) return;
+        if (beanDefinition.isAbstract()) {
+            return;
+        }
         ClassLoader beanClassLoader = getClassLoader(beanFactory);
-        Class<?> beanClass;
+        Class<?> beanClass = null;
+        if (beanDefinition instanceof AbstractBeanDefinition) {
+            AbstractBeanDefinition abstractBeanDefinition = (AbstractBeanDefinition) beanDefinition;
+            beanClass = abstractBeanDefinition.getBeanClass();
+        }
         try {
-            beanClass = beanClassLoader.loadClass(beanDefinition.getBeanClassName());
+            if (beanClass == null) {
+                beanClass = beanClassLoader.loadClass(beanDefinition.getBeanClassName());
+            }
         } catch (ClassNotFoundException e) {
             throw new BeanDefinitionValidationException("Class \"" + beanDefinition.getBeanClassName() + "\" specified for bean \"" + beanName + "\" could not be loaded.");
         }
