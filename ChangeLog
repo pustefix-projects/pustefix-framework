@@ -1,3 +1,8 @@
+2009-07-03  Sebastian Marsching <sebastian.marsching@1und1.de>
+
+	First part of new resource framework:
+	Base classes and bundle resource loader implementation.
+
 2009-06-30  Martin Leidig  <mleidig@schlund.de>
 
 	Return null instead of throwing a NPE when calling
