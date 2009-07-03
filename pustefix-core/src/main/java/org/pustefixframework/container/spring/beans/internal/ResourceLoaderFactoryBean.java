@@ -16,21 +16,26 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-package org.pustefixframework.resource;
+package org.pustefixframework.container.spring.beans.internal;
 
-import java.net.URL;
-
+import org.pustefixframework.resource.ResourceLoader;
 
 /**
- * Resource that is backed by a URL.
+ * Provides resource loader to application context. Has to be used as resource
+ * loader has to be initialized before application context is started.  
  * 
  * @author Sebastian Marsching <sebastian.marsching@1und1.de>
  */
-public interface URLResource extends InputStreamResource {
-    /**
-     * Returns the URL that is used to get content from this resource.
-     * 
-     * @return url of this resource
-     */
-    URL getURL();
+public class ResourceLoaderFactoryBean {
+
+    private ResourceLoader resourceLoader;
+
+    public Object getObject() throws Exception {
+        return resourceLoader;
+    }
+
+    public void setResourceLoader(ResourceLoader resourceLoader) {
+        this.resourceLoader = resourceLoader;
+    }
+
 }

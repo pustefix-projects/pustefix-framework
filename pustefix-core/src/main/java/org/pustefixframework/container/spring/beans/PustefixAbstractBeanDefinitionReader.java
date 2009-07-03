@@ -27,10 +27,13 @@ import org.pustefixframework.config.customization.CustomizationInfo;
 import org.pustefixframework.config.customization.PropertiesBasedCustomizationInfo;
 import org.pustefixframework.config.customization.RuntimeProperties;
 import org.pustefixframework.container.spring.beans.internal.BundleResourceLoader;
+import org.pustefixframework.container.spring.beans.internal.ResourceLoaderFactoryBean;
 import org.pustefixframework.resource.ResourceLoader;
 import org.springframework.beans.factory.BeanDefinitionStoreException;
+import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinitionHolder;
 import org.springframework.beans.factory.support.AbstractBeanDefinitionReader;
+import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionReader;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.xml.NamespaceHandlerResolver;
@@ -129,6 +132,22 @@ public abstract class PustefixAbstractBeanDefinitionReader extends AbstractBeanD
             springReader.setNamespaceHandlerResolver(getNamespaceHandlerResolver());
             count += springReader.loadBeanDefinitions(springConfig);
         }
+        
+        // Register resource loader
+        BeanDefinitionBuilder beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(ResourceLoaderFactoryBean.class);
+        beanBuilder.setScope("singleton");
+        beanBuilder.addPropertyValue("resourceLoader", resourceLoader);
+        BeanDefinition beanDefinition = beanBuilder.getBeanDefinition();
+        String beanName = getBeanNameGenerator().generateBeanName(beanDefinition, getRegistry());
+        getRegistry().registerBeanDefinition(beanName, beanDefinition);
+        count++;
+        beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(ResourceLoader.class);
+        beanDefinition = beanBuilder.getBeanDefinition();
+        beanDefinition.setFactoryBeanName(beanName);
+        beanDefinition.setFactoryMethodName("getObject");
+        getRegistry().registerBeanDefinition(ResourceLoader.class.getName(), beanDefinition);
+        count++;
+
         return count;
     }
     
