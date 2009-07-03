@@ -17,7 +17,6 @@
    <properties>
       <spring.version>2.5.6.A</spring.version>
       <spring.osgi.version>1.2.0</spring.osgi.version>
-      <equinox.version>3.5.0.v20090311-1300</equinox.version>
       <slf4j.version>1.5.6</slf4j.version>
    </properties>
 
@@ -127,13 +126,20 @@
          <version>1.0.0</version>
       </dependency>
 
-      <!-- Equinox OSGi platform -->
+      <!-- OSGi -->
       <dependency>
-         <groupId>org.eclipse.osgi</groupId>
-         <artifactId>org.eclipse.osgi</artifactId>
-         <version>${symbol_dollar}{equinox.version}</version>
-         <type>jar</type>
-         <scope>test</scope>
+         <groupId>org.osgi</groupId>
+         <artifactId>osgi_R4_core</artifactId>
+         <version>1.0</version>
+         <scope>provided</scope>
+         <optional>true</optional>
+      </dependency>
+      <dependency>
+         <groupId>org.osgi</groupId>
+         <artifactId>osgi_R4_compendium</artifactId>
+         <version>1.0</version>
+         <scope>provided</scope>
+         <optional>true</optional>
       </dependency>
 
    </dependencies>
