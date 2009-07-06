@@ -726,8 +726,18 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
             authConstraint = parentcontext.getContextConfig().getDefaultAuthConstraint();
         if (authConstraint != null) {
             if (!authConstraint.isAuthorized(parentcontext)) {
-                if (LOG.isDebugEnabled())
+                if (LOG.isDebugEnabled()) {
                     LOG.debug("Not authorized to access page '" + pageName + "'");
+                    StringBuilder sb = new StringBuilder();
+                    sb.append("Authorization failure:");
+                    sb.append("\nRoles: ");
+                    for(Role role:context.getAuthentication().getRoles()) {
+                        sb.append(role.getName()).append(" ");
+                    }
+                    sb.append("\nAuthconstraint: ").append(authConstraint.toString());
+                    sb.append("\nPage: " + pageName + " " +(pageConfig == null ? "-" : pageConfig.getPageName()));
+                    LOG.debug(sb.toString());
+                }
                 throw new AuthConstraintViolation("Not authorized to access page '" + pageName + "'.", "pageaccess", pageName, authConstraint);
             }
         }
