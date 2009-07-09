@@ -132,6 +132,10 @@
     <match>/c:context-xml-service-config/c:pagerequest/c:variant</match>
   </handler>
 
+  <handler class="org.pustefixframework.config.contextxmlservice.parser.PageRequestDefaultFlowParsingHandler">
+    <match>/c:context-xml-service-config/c:pagerequest//c:defaultflow</match>
+  </handler>
+
   <handler class="org.pustefixframework.config.contextxmlservice.parser.PageRequestStateParsingHandler">
     <match>/c:context-xml-service-config/c:pagerequest//c:state</match>
   </handler>
