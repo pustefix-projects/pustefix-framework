@@ -20,16 +20,19 @@ package de.schlund.pfixcore.workflow.app;
 
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.URI;
 import java.util.Properties;
 
 import javax.servlet.http.HttpServletResponse;
+
+import org.pustefixframework.container.annotations.Inject;
+import org.pustefixframework.resource.InputStreamResource;
+import org.pustefixframework.resource.ResourceLoader;
 
 import de.schlund.pfixcore.workflow.ContextResourceManager;
 import de.schlund.pfixcore.workflow.DirectOutputState;
 import de.schlund.pfixxml.PfixServletRequest;
 import de.schlund.pfixxml.XMLException;
-import de.schlund.pfixxml.resources.FileResource;
-import de.schlund.pfixxml.resources.ResourceUtil;
 
 /**
  * FileDownloadDOState.java
@@ -46,6 +49,7 @@ import de.schlund.pfixxml.resources.ResourceUtil;
 public class FileDownloadDOState implements DirectOutputState {
     private final static String PROP_FILENAME = "downloadfile";
     private final static String PROP_MIMETYPE = "downloadmimetype";
+    private ResourceLoader resourceLoader;
     
     /**
      * Describe <code>isAccessible</code> method here.
@@ -69,9 +73,8 @@ public class FileDownloadDOState implements DirectOutputState {
             throw new XMLException("*** Need property " + PROP_MIMETYPE + " ***");
         }
 
-        FileResource file = ResourceUtil.getFileResourceFromDocroot(filename);
-
-        if (file.exists() && file.canRead()) {
+        InputStreamResource resource = resourceLoader.getResource(new URI(filename), InputStreamResource.class);
+        if (resource != null) {
             return true;
         } else {
             return false;
@@ -94,15 +97,20 @@ public class FileDownloadDOState implements DirectOutputState {
     public synchronized void handleRequest(ContextResourceManager crm, Properties props, PfixServletRequest preq, HttpServletResponse res) throws Exception {
         String filename = props.getProperty(PROP_FILENAME);
         String mimetype = props.getProperty(PROP_MIMETYPE);
-        FileResource file = ResourceUtil.getFileResourceFromDocroot(filename);
+        InputStreamResource resource = resourceLoader.getResource(new URI(filename), InputStreamResource.class);
         
         res.setContentType(mimetype);
-        InputStream  fin  = file.getInputStream();
+        InputStream  fin  = resource.getInputStream();
         OutputStream     out  = res.getOutputStream();
         byte[]           buff = new byte[4096];
         int              num  = 0;
         while ((num = fin.read(buff)) != -1) {
             out.write(buff, 0, num);
         }
+    }
+    
+    @Inject
+    public void setResourceLoader(ResourceLoader resourceLoader) {
+        this.resourceLoader = resourceLoader;
     }
 }

@@ -17,8 +17,13 @@
  */
 package org.pustefixframework.config.contextxmlservice.parser;
 
+import java.net.URI;
+import java.net.URISyntaxException;
+
 import org.pustefixframework.config.contextxmlservice.parser.internal.ContextXMLServletConfigImpl;
 import org.pustefixframework.config.generic.ParsingUtils;
+import org.pustefixframework.resource.InputStreamResource;
+import org.pustefixframework.resource.ResourceLoader;
 import org.w3c.dom.Element;
 
 import com.marsching.flexiparse.parser.HandlerContext;
@@ -32,12 +37,21 @@ public class ScriptedFlowParsingHandler implements ParsingHandler {
        
         Element element = (Element)context.getNode();
         ParsingUtils.checkAttributes(element, new String[] {"name","file"}, null);
-        
+
+        ResourceLoader resourceLoader = ParsingUtils.getSingleTopObject(ResourceLoader.class, context);
+
         ContextXMLServletConfigImpl config = ParsingUtils.getSingleTopObject(ContextXMLServletConfigImpl.class, context);     
         
         String scriptName = element.getAttribute("name").trim();
         String scriptFile = element.getAttribute("file").trim();
-        config.getScriptedFlowConfig().addScript(scriptName, scriptFile);
+        URI uri;
+        try {
+            uri = new URI(scriptFile);
+        } catch (URISyntaxException e) {
+            throw new ParserException("Not a valid URI: " + scriptFile, e);
+        }
+        InputStreamResource resource = resourceLoader.getResource(uri, InputStreamResource.class);
+        config.getScriptedFlowConfig().addScript(scriptName, resource);
         
     }
 

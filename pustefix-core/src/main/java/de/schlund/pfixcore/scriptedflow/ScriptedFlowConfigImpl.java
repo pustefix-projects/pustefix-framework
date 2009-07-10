@@ -18,14 +18,17 @@
 
 package de.schlund.pfixcore.scriptedflow;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
+
+import org.pustefixframework.resource.InputStreamResource;
 
 import de.schlund.pfixcore.scriptedflow.compiler.Compiler;
 import de.schlund.pfixcore.scriptedflow.compiler.CompilerException;
 import de.schlund.pfixcore.scriptedflow.vm.Script;
-import de.schlund.pfixxml.resources.FileResource;
-import de.schlund.pfixxml.resources.ResourceUtil;
+import de.schlund.pfixxml.util.MD5Utils;
 
 /**
  * Stores configuration for scripted flows.  
@@ -34,9 +37,9 @@ import de.schlund.pfixxml.resources.ResourceUtil;
  */
 public class ScriptedFlowConfigImpl implements ScriptedFlowConfig {
     private class Triple {
-        long mtime = -1;
+        String hexMD5 = "";
 
-        FileResource file = null;
+        InputStreamResource file = null;
 
         Script script = null;
     }
@@ -52,23 +55,25 @@ public class ScriptedFlowConfigImpl implements ScriptedFlowConfig {
             return null;
         }
         synchronized (t) {
-            if (t.script == null || t.file.lastModified() > t.mtime) {
-                if (!t.file.exists()) {
-                    throw new CompilerException(
-                            "Scripted flow "
-                                    + name
-                                    + " is defined but corresponding file does not exist");
-                }
-                t.mtime = t.file.lastModified();
+            String hexMD5;
+            try {
+                InputStream is = t.file.getInputStream();
+                hexMD5 = MD5Utils.hex_md5(is);
+                is.close();
+            } catch (IOException e) {
+                throw new CompilerException("Could not read scripted flow \"" + name + "\" from file \"" + t.file.getURI().toASCIIString() + "\"", e);
+            }
+            if (t.script == null || !t.hexMD5.equals(hexMD5)) {
+                t.hexMD5 = hexMD5;
                 t.script = Compiler.compile(t.file);
             }
             return t.script;
         }
     }
 
-    public void addScript(String name, String path) {
+    public void addScript(String name, InputStreamResource resource) {
         Triple t = new Triple();
-        t.file = ResourceUtil.getFileResourceFromDocroot(path);
+        t.file = resource;
         scripts.put(name, t);
     }
 }

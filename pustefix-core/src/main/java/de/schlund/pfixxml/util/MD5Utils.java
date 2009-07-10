@@ -16,7 +16,10 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 package de.schlund.pfixxml.util;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.security.DigestInputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
@@ -66,6 +69,29 @@ public class MD5Utils {
         try {
             MessageDigest md = MessageDigest.getInstance("MD5");
             byte[] raw = md.digest(new String(message).getBytes(charset));
+            result = byteToHex(raw);
+        }
+        catch (NoSuchAlgorithmException ex) {
+            logger.error("this should not happen!",ex);
+            throw new RuntimeException("No Such Algorithm",ex);
+        }
+        catch (UnsupportedEncodingException ex) {
+            logger.error("this should not happen!",ex);
+            throw new RuntimeException("Unsupported Charset",ex);
+        }
+        return result;
+    }
+
+    public static String hex_md5(InputStream inputStream) throws IOException{ 
+        String result = "";
+        try {
+            MessageDigest md = MessageDigest.getInstance("MD5");
+            DigestInputStream dis = new DigestInputStream(inputStream, md);
+            byte[] tempBuffer = new byte[8192];
+            while (dis.read(tempBuffer) != -1) {
+                // Action is performed in condition
+            }
+            byte[] raw = md.digest();
             result = byteToHex(raw);
         }
         catch (NoSuchAlgorithmException ex) {

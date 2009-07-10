@@ -22,11 +22,14 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.pustefixframework.resource.InputStreamResource;
+import org.pustefixframework.resource.URLResource;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 import de.schlund.pfixcore.scriptedflow.vm.Instruction;
@@ -37,7 +40,6 @@ import de.schlund.pfixcore.scriptedflow.vm.pvo.DynamicObject;
 import de.schlund.pfixcore.scriptedflow.vm.pvo.ListObject;
 import de.schlund.pfixcore.scriptedflow.vm.pvo.ParamValueObject;
 import de.schlund.pfixcore.scriptedflow.vm.pvo.StaticObject;
-import de.schlund.pfixxml.resources.FileResource;
 import de.schlund.pfixxml.util.Xml;
 
 /**
@@ -50,19 +52,23 @@ import de.schlund.pfixxml.util.Xml;
 public class Compiler {
     public final static String NS_SCRIPTEDFLOW = "http://pustefix.sourceforge.net/scriptedflow200602";
 
-    public static Script compile(FileResource scriptFile) throws CompilerException {
+    public static Script compile(InputStreamResource resource) throws CompilerException {
         Document doc;
         try {
-            doc = Xml.parseMutable(scriptFile);
+            InputSource is = new InputSource(resource.getInputStream());
+            if (resource instanceof URLResource) {
+                is.setSystemId(((URLResource) resource).getURL().toExternalForm());
+            }
+            doc = Xml.parseMutable(is);
         } catch (SAXException e) {
-            throw new CompilerException("XML parser could not parse file " + scriptFile.toString(), e);
+            throw new CompilerException("XML parser could not parse file " + resource.toString(), e);
         } catch (IOException e) {
-            throw new CompilerException("XML parser could not read file " + scriptFile.toString(), e);
+            throw new CompilerException("XML parser could not read file " + resource.toString(), e);
         }
         
         Element root = doc.getDocumentElement();
         if (!root.getLocalName().equals("scriptedflow") || !root.getNamespaceURI().equals(NS_SCRIPTEDFLOW)) {
-            throw new CompilerException("Input file " + scriptFile.toString() + " is not a scripted flow!");
+            throw new CompilerException("Input file " + resource.toString() + " is not a scripted flow!");
         }
         
         // Check version
@@ -74,7 +80,7 @@ public class Compiler {
         }
         
         if (!version.equals("1.0")) {
-            throw new CompilerException("Script file \"" + scriptFile.toString() + "\" uses version "
+            throw new CompilerException("Script file \"" + resource.toString() + "\" uses version "
                                         + version + " but compiler only supports version 1.0");
         }
         
