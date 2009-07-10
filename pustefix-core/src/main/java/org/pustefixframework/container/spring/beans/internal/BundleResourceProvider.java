@@ -103,7 +103,7 @@ public class BundleResourceProvider implements ResourceProvider {
         ArrayList<URLResourceImpl> resources = new ArrayList<URLResourceImpl>();
         @SuppressWarnings("unchecked")
         Enumeration<URL> en = bundle.findEntries(path, filename, false);
-        while (en.hasMoreElements()) {
+        while (en != null && en.hasMoreElements()) {
             URL url = (URL) en.nextElement();
             URLResourceImpl resource = new URLResourceImpl(uri, originallyRequestedURI, url);
             resources.add(resource);
