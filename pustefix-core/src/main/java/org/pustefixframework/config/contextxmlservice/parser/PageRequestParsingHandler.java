@@ -30,7 +30,7 @@ import org.pustefixframework.config.contextxmlservice.parser.internal.PageReques
 import org.pustefixframework.config.contextxmlservice.parser.internal.ScriptingStatePathInfo;
 import org.pustefixframework.config.contextxmlservice.parser.internal.StateConfigImpl;
 import org.pustefixframework.config.generic.ParsingUtils;
-import org.springframework.aop.scope.ScopedProxyUtils;
+import org.pustefixframework.container.spring.beans.support.ScopedProxyUtils;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinitionHolder;
 import org.springframework.beans.factory.config.RuntimeBeanReference;

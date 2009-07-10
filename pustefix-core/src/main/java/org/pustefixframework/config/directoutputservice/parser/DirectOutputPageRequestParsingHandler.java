@@ -26,7 +26,7 @@ import org.pustefixframework.config.Constants;
 import org.pustefixframework.config.customization.CustomizationAwareParsingHandler;
 import org.pustefixframework.config.directoutputservice.parser.internal.DirectOutputPageRequestConfigImpl;
 import org.pustefixframework.config.generic.ParsingUtils;
-import org.springframework.aop.scope.ScopedProxyUtils;
+import org.pustefixframework.container.spring.beans.support.ScopedProxyUtils;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinitionHolder;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;

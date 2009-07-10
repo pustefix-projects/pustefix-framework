@@ -1,5 +1,8 @@
 2009-07-10  Sebastian Marsching <sebastian.marsching@1und1.de>
 
+	Create modified implementation of ScopedProxyUtils / ScopedProxyFactoryBean
+	that uses class loader of target bean class.
+
 	Refactored resource handling in target generator.
 
 	Support for "persistentstorage:"-URIs providing access to the

@@ -27,7 +27,7 @@ import java.util.Set;
 import org.pustefixframework.container.annotations.ImplementedBy;
 import org.pustefixframework.container.annotations.Inject;
 import org.pustefixframework.container.annotations.Scope;
-import org.springframework.aop.scope.ScopedProxyUtils;
+import org.pustefixframework.container.spring.beans.support.ScopedProxyUtils;
 import org.springframework.beans.PropertyValue;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
