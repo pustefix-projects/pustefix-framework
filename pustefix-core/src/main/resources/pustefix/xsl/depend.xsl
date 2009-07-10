@@ -7,6 +7,7 @@
   <xsl:include href="lib.xsl"/>
   <xsl:param name="prohibitEdit"/>
   <xsl:param name="projectsFile"/>
+  <xsl:param name="dependXmlUri"/>
   
   <!-- Saxon/Xalan incompatibility/bug workaround: while the condition [@name=/make/@project] works 
   for Xalan, Saxon needs [@name=current()/make/@project] to select an external document node based
@@ -63,7 +64,7 @@
       </xsl:call-template>
       <depxml name="pustefixcore:/xsl/metatags.xsl"/>
       <depxsl name="pustefixcore:/xsl/customizemaster.xsl"/>
-      <depaux name="{$project}/WEB-INF/depend.xml"/>
+      <depaux name="{$dependXmlUri}"/>
       <xsl:call-template name="render_include_ssheets"/>
       <xsl:apply-templates select="param"/>
       <xsl:apply-templates select="depaux"/>

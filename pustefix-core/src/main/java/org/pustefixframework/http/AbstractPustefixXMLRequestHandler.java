@@ -798,7 +798,7 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
                 }
             }
         }
-        paramhash.put(TargetGenerator.XSLPARAM_TG, generator.getConfigPath().toString());
+        paramhash.put(TargetGenerator.XSLPARAM_TG, generator.getConfigPath().getOriginalURI().toASCIIString());
         paramhash.put(TargetGenerator.XSLPARAM_TKEY, VALUE_NONE);
         paramhash.put(TargetGenerator.XSLPARAM_NAVITREE, NavigationFactory.getInstance().getNavigation(generator.getConfigPath(), generator.getXsltVersion()).getNavigationXMLElement());
 

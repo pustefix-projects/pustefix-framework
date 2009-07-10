@@ -286,6 +286,7 @@ public class TargetGenerator implements Comparable<TargetGenerator> {
                 } else {
                     trans.setParameter("prohibitEdit", "no");
                 }
+                trans.setParameter("dependXmlUri", configFile.getOriginalURI());
                 trans.transform(new DOMSource(dr.getNode()), dr2);
                 Node tempNode = dr2.getNode();
                 config = tempNode.getOwnerDocument();
@@ -407,12 +408,7 @@ public class TargetGenerator implements Comparable<TargetGenerator> {
                 Element aux = (Element) allaux.item(j);
                 URI uri;
 				try {
-				    // FIXME: Do not use hard-coded path to depend.xml
-					if (aux.getAttribute("name").contains("depend.xml")) {
-					    uri = new URI("bundle:/META-INF/pustefix/depend.xml");
-					} else {
-					    uri = new URI(aux.getAttribute("name"));
-					}
+				    uri = new URI(aux.getAttribute("name"));
 				} catch (URISyntaxException e) {
 					throw new XMLException("Illegal aux name: " + aux.getAttribute("name"), e);
 				}
@@ -437,7 +433,7 @@ public class TargetGenerator implements Comparable<TargetGenerator> {
         }
         LOG.warn("\n=====> Preliminaries took " + (System.currentTimeMillis() - start) + "ms. Now looping over " + allstructs.keySet().size() + " targets");
         start = System.currentTimeMillis();
-        String tgParam = configFile.toString();
+        String tgParam = configFile.getOriginalURI().toASCIIString();
         for (Iterator<String> i = allstructs.keySet().iterator(); i.hasNext();) {
             TargetStruct struct = allstructs.get(i.next());
             createTargetFromTargetStruct(struct, allstructs, depxmls, depxsls, tgParam);

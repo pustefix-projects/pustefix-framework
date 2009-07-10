@@ -143,6 +143,14 @@ public final class IncludeDocumentExtension {
         // EEEEK! this code is in need of some serious beautifying....
         
         try {
+            // FIXME: This is just a work-around. We probably want to resolve
+            // relative URI relatively
+            if (!uriStr.contains(":")) {
+                if (!uriStr.startsWith("/")) {
+                    uriStr = "/" + uriStr;
+                }
+                uriStr = "bundle:/PUSTEFIX-INF" + uriStr;
+            }
             URI uri = new URI(uriStr);
             Resource path = tgen.getResourceLoader().getResource(uri);
             resolvedUri.set(path.getURI().toString());
