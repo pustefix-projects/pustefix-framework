@@ -22,8 +22,6 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.TreeSet;
 
-import org.apache.log4j.NDC;
-
 import de.schlund.pfixxml.XMLException;
 import de.schlund.pfixxml.util.ResourceUtils;
 
@@ -134,7 +132,6 @@ public abstract class LeafTarget extends TargetImpl {
             XMLException, IOException {
         long mymodtime = getModTime();
         long maxmodtime = ResourceUtils.lastModified(targetRes);
-        NDC.push("    ");
         TREE.debug("> " + getTargetKey());
 
         for (Iterator<AuxDependency> i = this.getAuxDependencyManager().getChildren()
@@ -165,7 +162,6 @@ public abstract class LeafTarget extends TargetImpl {
         } else {
             TREE.debug("  [" + getTargetKey() + ": leaf node...]");
         }
-        NDC.pop();
         return getModTime();
     }
 

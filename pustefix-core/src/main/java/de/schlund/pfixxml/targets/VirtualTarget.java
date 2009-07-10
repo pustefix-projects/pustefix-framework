@@ -28,7 +28,6 @@ import javax.xml.transform.Templates;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.stream.StreamResult;
 
-import org.apache.log4j.NDC;
 import org.pustefixframework.resource.FileResource;
 import org.pustefixframework.resource.OutputStreamResource;
 import org.w3c.dom.Document;
@@ -214,7 +213,6 @@ public abstract class VirtualTarget extends TargetImpl {
         // long currmodtime = getModTime();
         long maxmodtime = 0;
         long tmpmodtime;
-        NDC.push("    ");
         TREE.debug("> " + getTargetKey());
         maxmodtime = ((TargetImpl) getXMLSource()).getModTimeMaybeUpdate();
         // if (maxmodtime > currmodtime) {
@@ -295,7 +293,6 @@ public abstract class VirtualTarget extends TargetImpl {
         } else {
             TREE.debug("  [" + getTargetKey() + ": skipping...]");
         }
-        NDC.pop();
         return getModTime();
     }
 
