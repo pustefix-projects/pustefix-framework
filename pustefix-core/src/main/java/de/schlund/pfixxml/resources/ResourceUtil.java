@@ -110,6 +110,7 @@ public class ResourceUtil {
      * @see #getFileResource(URI)
      */
     public static FileResource getFileResource(String uri) {
+    	System.out.println("================> "+uri);
     	// Replace spaces in URI with %20
     	// URIs must not contain spaces, however
     	// there is plenty of code that doesn't check for

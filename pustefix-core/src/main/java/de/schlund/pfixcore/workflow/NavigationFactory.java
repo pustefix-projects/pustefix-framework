@@ -25,10 +25,9 @@ import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 
 import org.apache.log4j.Logger;
+import org.pustefixframework.resource.Resource;
 import org.xml.sax.SAXException;
 
-import de.schlund.pfixxml.resources.FileResource;
-import de.schlund.pfixxml.resources.ResourceUtil;
 import de.schlund.pfixxml.util.XsltVersion;
 
 
@@ -38,6 +37,7 @@ import de.schlund.pfixxml.util.XsltVersion;
  */
 
 public class NavigationFactory {
+	
     private final static Logger LOG = Logger.getLogger(NavigationFactory.class);
     private static HashMap<String, Navigation> navis = new HashMap<String, Navigation>();
     private static NavigationFactory instance = new NavigationFactory();
@@ -45,19 +45,14 @@ public class NavigationFactory {
     public static NavigationFactory getInstance() {
         return instance;
     }
-    
-    public synchronized Navigation getNavigation(String navifilename,XsltVersion xsltVersion) throws Exception {
-        FileResource navifile = ResourceUtil.getFileResourceFromDocroot(navifilename);
-        return getNavigation(navifile,xsltVersion);
-    }
             
-    public synchronized Navigation getNavigation(FileResource navifile,XsltVersion xsltVersion) throws NavigationInitializationException {
+    public synchronized Navigation getNavigation(Resource navifile,XsltVersion xsltVersion) throws NavigationInitializationException {
        
         Navigation navi = null;
         
-        navi = navis.get(navifile.toURI().toString());
+        navi = navis.get(navifile.toString());
         
-        if (navi == null || navi.needsReload()) {
+        if (navi == null) {
             LOG.warn("***** Creating Navigation object *******");
             try {
                 navi     = new Navigation(navifile,xsltVersion);
@@ -70,7 +65,7 @@ public class NavigationFactory {
             } catch (TransformerException e) {
                 throw new NavigationInitializationException("Exception while loading navigation file " + navifile, e);
             }
-            navis.put(navifile.toURI().toString(), navi);
+            navis.put(navifile.toString(), navi);
         }
         
         return navi;

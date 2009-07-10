@@ -21,7 +21,8 @@ import java.util.Iterator;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
-import de.schlund.pfixxml.resources.Resource;
+import org.pustefixframework.resource.Resource;
+
 
 /**
  * AuxDependencyFactory.java

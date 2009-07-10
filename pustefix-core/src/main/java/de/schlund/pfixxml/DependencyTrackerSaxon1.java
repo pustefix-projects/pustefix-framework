@@ -18,9 +18,10 @@
 
 package de.schlund.pfixxml;
 
+import org.pustefixframework.resource.Resource;
+
 import com.icl.saxon.Context;
 
-import de.schlund.pfixxml.resources.Resource;
 import de.schlund.pfixxml.targets.VirtualTarget;
 import de.schlund.pfixxml.util.XsltContext;
 import de.schlund.pfixxml.util.xsltimpl.XsltContextSaxon1;

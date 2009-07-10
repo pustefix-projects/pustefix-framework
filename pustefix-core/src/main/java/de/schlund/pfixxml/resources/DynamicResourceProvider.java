@@ -146,10 +146,11 @@ public class DynamicResourceProvider implements ResourceProvider {
  
     private boolean containsPart(Resource res, String part) throws ResourceProviderException {
         try {
-            IncludeDocument incDoc = IncludeDocumentFactory.getInstance().getIncludeDocument(XsltProvider.getPreferredXsltVersion(), res, false);
-            Document doc = incDoc.getDocument();
-            List<Node> ns = XPath.select(doc, "/include_parts/part[@name='" + part + "']");
-            if(ns.size()>0) return true;
+        	//TODO: to be removed
+            //IncludeDocument incDoc = IncludeDocumentFactory.getInstance().getIncludeDocument(XsltProvider.getPreferredXsltVersion(), res, false);
+            //Document doc = incDoc.getDocument();
+            //List<Node> ns = XPath.select(doc, "/include_parts/part[@name='" + part + "']");
+            //if(ns.size()>0) return true;
             return false;
         } catch (Exception x) {
             throw new ResourceProviderException("Error while searching part in document: " + res.toURI(), x);

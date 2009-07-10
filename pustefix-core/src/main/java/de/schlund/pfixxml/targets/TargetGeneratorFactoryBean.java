@@ -18,7 +18,9 @@
 
 package de.schlund.pfixxml.targets;
 
-import de.schlund.pfixxml.resources.FileResource;
+import org.pustefixframework.resource.Resource;
+import org.pustefixframework.resource.ResourceLoader;
+
 import de.schlund.pfixxml.resources.ResourceUtil;
 
 
@@ -31,8 +33,9 @@ import de.schlund.pfixxml.resources.ResourceUtil;
  */
 public class TargetGeneratorFactoryBean {
     
-    private FileResource configFile;
-
+    private Resource configFile;
+    private ResourceLoader resourceLoader;
+    
     /**
      * Returns the TargetGenerator instance for the configured configuration
      * file path.
@@ -41,7 +44,7 @@ public class TargetGeneratorFactoryBean {
      * @throws Exception if TargetGenerator cannot be created
      */
     public Object getObject() throws Exception {
-        return TargetGeneratorFactory.getInstance().createGenerator(configFile);
+        return TargetGeneratorFactory.getInstance().createGenerator(configFile, resourceLoader);
     }
     
     /**
@@ -51,8 +54,12 @@ public class TargetGeneratorFactoryBean {
      * 
      * @param path URI of configuration file
      */
-    public void setConfigFile(String path) {
-        configFile = ResourceUtil.getFileResource(path);
+    public void setConfigFile(Resource configFile) {
+        this.configFile = configFile;
+    }
+    
+    public void setResourceLoader(ResourceLoader resourceLoader) {
+    	this.resourceLoader = resourceLoader;
     }
     
 }

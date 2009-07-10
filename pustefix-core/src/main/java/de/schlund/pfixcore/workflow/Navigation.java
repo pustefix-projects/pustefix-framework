@@ -22,10 +22,8 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
@@ -34,6 +32,8 @@ import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.sax.SAXTransformerFactory;
 import javax.xml.transform.sax.TransformerHandler;
 
+import org.pustefixframework.resource.InputStreamResource;
+import org.pustefixframework.resource.Resource;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -44,41 +44,23 @@ import org.xml.sax.helpers.DefaultHandler;
 import org.xml.sax.helpers.XMLReaderFactory;
 
 import de.schlund.pfixxml.config.CustomizationHandler;
-import de.schlund.pfixxml.config.includes.FileIncludeEvent;
-import de.schlund.pfixxml.config.includes.FileIncludeEventListener;
-import de.schlund.pfixxml.config.includes.IncludesResolver;
-import de.schlund.pfixxml.resources.FileResource;
 import de.schlund.pfixxml.util.TransformerHandlerAdapter;
 import de.schlund.pfixxml.util.XPath;
 import de.schlund.pfixxml.util.Xml;
 import de.schlund.pfixxml.util.XsltVersion;
 
 public class Navigation {
+	
     private NavigationElement                   pageroot = new NavigationElement("__NONE__", "__NONE__");
     private Map<String, NavigationElement> pagetonavi;
     
-    private Set<FileResource> fileDependencies = new HashSet<FileResource>();
-    private long loadTime = 0;
-    
     private Element navigationXMLElement = null;
     
-    public Navigation(FileResource navifile,XsltVersion xsltVersion) throws IOException, SAXException, TransformerException, TransformerConfigurationException {
-        loadTime = System.currentTimeMillis();
-        Document navitree = Xml.parseMutable(navifile);
-        
-        IncludesResolver iresolver = new IncludesResolver(null, "config-include");
-        // Make sure list of dependencies only contains the file itself
-        fileDependencies.clear();
-        fileDependencies.add(navifile);
-        FileIncludeEventListener listener = new FileIncludeEventListener() {
-
-            public void fileIncluded(FileIncludeEvent event) {
-                fileDependencies.add(event.getIncludedFile());
-            }
-
-        };
-        iresolver.registerListener(listener);
-        iresolver.resolveIncludes(navitree);
+    public Navigation(Resource navifile, XsltVersion xsltVersion) throws IOException, SAXException, TransformerException, TransformerConfigurationException {
+    	if(!(navifile instanceof InputStreamResource)) throw new IllegalArgumentException("Expected InputStreamResource");
+    	//TODO: make navigation dynamic
+    	
+        Document navitree = Xml.parseMutable((InputStreamResource)navifile);
         
         TransformerFactory tf = TransformerFactory.newInstance();
         if (tf.getFeature(SAXTransformerFactory.FEATURE)) {
@@ -113,17 +95,7 @@ public class Navigation {
         pagetonavi        = new HashMap<String, NavigationElement>();
         recursePagetree(pageroot, nl);
     }
-    
-    public boolean needsReload() {
-        for (FileResource file : fileDependencies) {
-            long lastModified = file.lastModified();
-            if (lastModified > loadTime) {
-                return true;
-            }
-        }
-        return false;
-    }
-    
+
     public Element getNavigationXMLElement() {
         return navigationXMLElement;
     }

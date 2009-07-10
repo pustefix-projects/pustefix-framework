@@ -22,10 +22,11 @@ import java.io.IOException;
 
 import javax.xml.transform.TransformerException;
 
+import org.pustefixframework.resource.InputStreamResource;
+import org.pustefixframework.resource.Resource;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
-import de.schlund.pfixxml.resources.Resource;
 import de.schlund.pfixxml.util.Xml;
 import de.schlund.pfixxml.util.XsltVersion;
 
@@ -66,11 +67,11 @@ public class IncludeDocument {
         modTime  = path.lastModified();
 
         if (mutable) {
-            doc = Xml.parseMutable(path);
+            doc = Xml.parseMutable((InputStreamResource)path);
         } else {
             //TODO: avoid exception by providing an appropriate method signature
             if(xsltVersion==null) throw new IllegalArgumentException("XsltVersion is required!");
-            doc = Xml.parse(xsltVersion, path);
+            doc = Xml.parse(xsltVersion, (InputStreamResource)path);
         }
     }
 

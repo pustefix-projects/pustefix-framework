@@ -21,6 +21,8 @@ package de.schlund.pfixxml.targets;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -39,8 +41,12 @@ import javax.xml.transform.sax.SAXTransformerFactory;
 import javax.xml.transform.sax.TransformerHandler;
 
 import org.apache.log4j.Logger;
-import org.apache.log4j.xml.DOMConfigurator;
 import org.pustefixframework.config.customization.RuntimeProperties;
+import org.pustefixframework.resource.FileSystemResource;
+import org.pustefixframework.resource.FileSystemResourceImpl;
+import org.pustefixframework.resource.InputStreamResource;
+import org.pustefixframework.resource.Resource;
+import org.pustefixframework.resource.ResourceLoader;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -57,16 +63,8 @@ import de.schlund.pfixcore.workflow.NavigationFactory;
 import de.schlund.pfixxml.IncludeDocumentFactory;
 import de.schlund.pfixxml.XMLException;
 import de.schlund.pfixxml.config.CustomizationHandler;
-import de.schlund.pfixxml.config.GlobalConfigurator;
-import de.schlund.pfixxml.config.includes.FileIncludeEvent;
-import de.schlund.pfixxml.config.includes.FileIncludeEventListener;
-import de.schlund.pfixxml.config.includes.IncludesResolver;
 import de.schlund.pfixxml.event.ConfigurationChangeEvent;
 import de.schlund.pfixxml.event.ConfigurationChangeListener;
-import de.schlund.pfixxml.resources.DocrootResource;
-import de.schlund.pfixxml.resources.FileResource;
-import de.schlund.pfixxml.resources.Resource;
-import de.schlund.pfixxml.resources.ResourceUtil;
 import de.schlund.pfixxml.targets.cachestat.CacheStatistic;
 import de.schlund.pfixxml.util.SimpleResolver;
 import de.schlund.pfixxml.util.TransformerHandlerAdapter;
@@ -101,8 +99,6 @@ public class TargetGenerator implements Comparable<TargetGenerator> {
 
     private long config_mtime = 0;
 
-    private Set<FileResource> configFileDependencies = new HashSet<FileResource>();
-
     private String name;
     
     private XsltVersion xsltVersion=XsltVersion.XSLT1; //default, can be overridden in depend.xml 
@@ -118,15 +114,18 @@ public class TargetGenerator implements Comparable<TargetGenerator> {
 
     private Set<ConfigurationChangeListener> configurationListeners = Collections.synchronizedSet(new HashSet<ConfigurationChangeListener>());
 
-    private FileResource config_path;
+    private Resource config_path;
     
-    private FileResource cacheDir;
-
+    private FileSystemResource cacheDir;
+    
+    private ResourceLoader resourceLoader;
+    
     //--
 
-    public TargetGenerator(FileResource confile) throws IOException, SAXException, XMLException {
+    public TargetGenerator(Resource confile, ResourceLoader resourceLoader) throws IOException, SAXException, XMLException {
+    	if(!(confile instanceof InputStreamResource)) throw new IllegalArgumentException("Expected InputStreamResource");
         this.config_path = confile;
-
+        this.resourceLoader = resourceLoader;
         Meminfo.print("TG: Before loading " + confile.toString());
         loadConfig(confile);
         Meminfo.print("TG: after loading targets for " + confile.toString());
@@ -154,12 +153,16 @@ public class TargetGenerator implements Comparable<TargetGenerator> {
         return language;
     }
 
-    public FileResource getDisccachedir() {
+    public FileSystemResource getDisccachedir() {
         return cacheDir;
     }
 
     public PageTargetTree getPageTargetTree() {
         return pagetree;
+    }
+    
+    public ResourceLoader getResourceLoader() {
+    	return resourceLoader;
     }
 
     //-- targets
@@ -228,22 +231,14 @@ public class TargetGenerator implements Comparable<TargetGenerator> {
     }
 
     private boolean needsReload() {
-        for (FileResource file : configFileDependencies) {
-            if (file.lastModified() > config_mtime) {
-                return true;
-            }
-        }
-        return false;
+    	//TODO: check if underlying resources changed (in devel mode, when bundle is exploded or life-jar
+    	return false;
     }
     
-    protected long getConfigMaxModTime() {
-        long tmptime = -1;
-        for (FileResource file: configFileDependencies) {
-            tmptime = Math.max(file.lastModified(), tmptime);
-        }
-        return tmptime;
+    public long getConfigMaxModTime() {
+    	return config_mtime;
     }
-
+    
     private void fireConfigurationChangeEvent() {
         for (Iterator<ConfigurationChangeListener> i = this.configurationListeners.iterator(); i.hasNext();) {
             ConfigurationChangeListener listener = i.next();
@@ -251,30 +246,17 @@ public class TargetGenerator implements Comparable<TargetGenerator> {
         }
     }
 
-    private void loadConfig(FileResource configFile) throws XMLException, IOException, SAXException {
+    private void loadConfig(Resource configFile) throws XMLException, IOException, SAXException {
         config_mtime = System.currentTimeMillis();
-        String path = configFile.toURI().toString();
-        LOG.warn("\n***** CAUTION! ***** loading config " + path + "...");
+        LOG.warn("\n***** CAUTION! ***** loading config " + configFile.toString() + "...");
 
         Document config;
 
         // String containing the XML code with resolved includes
         String fullXml = null;
 
-        Document confDoc = Xml.parseMutable(configFile);
-        IncludesResolver iresolver = new IncludesResolver(null, "config-include");
-        // Make sure list of dependencies only contains the file itself
-        configFileDependencies.clear();
-        configFileDependencies.add(configFile);
-        FileIncludeEventListener listener = new FileIncludeEventListener() {
-
-            public void fileIncluded(FileIncludeEvent event) {
-                configFileDependencies.add(event.getIncludedFile());
-            }
-
-        };
-        iresolver.registerListener(listener);
-        iresolver.resolveIncludes(confDoc);
+        Document confDoc = Xml.parseMutable((InputStreamResource)configFile);
+       
         fullXml = Xml.serialize(confDoc, false, true);
 
         XMLReader xreader = XMLReaderFactory.createXMLReader();
@@ -298,6 +280,7 @@ public class TargetGenerator implements Comparable<TargetGenerator> {
             xreader.setEntityResolver(cushandler);
             xreader.parse(new InputSource(new StringReader(fullXml)));
             try {
+            	
                 Transformer trans = SimpleResolver.configure(tf, "/pustefix/xsl/depend.xsl");
                 if (RuntimeProperties.getProperties().getProperty("mode").equals("prod")) {
                     trans.setParameter("prohibitEdit", "yes");
@@ -318,6 +301,7 @@ public class TargetGenerator implements Comparable<TargetGenerator> {
                     }
                 }
             } catch (TransformerException e) {
+            	e.printStackTrace();
                 throw new SAXException(e);
             }
         } else {
@@ -339,17 +323,7 @@ public class TargetGenerator implements Comparable<TargetGenerator> {
         NodeList targetnodes = config.getElementsByTagName("target");
 
         name = root.getAttribute("project");
-        if (name == null || name.length() == 0) {
-            // Generate name based on path to depend.xml
-            String relativePath;
-            if (configFile instanceof DocrootResource) {
-                relativePath = ((DocrootResource) configFile).getRelativePath();
-            } else {
-                throw new XMLException("project attribute is not set and depend.xml is not within docroot");
-            }
-            name = "GENERATED_NAME" + relativePath.replace("/", "_SLASH_");
-        }
-        
+        if(name == null) throw new RuntimeException("Missing project name");
         
         language = getAttribute(root, "lang");
 
@@ -375,12 +349,13 @@ public class TargetGenerator implements Comparable<TargetGenerator> {
         global_themes = new Themes(gl_theme_str);
         default_theme = def_theme_str;
 
-        cacheDir = ResourceUtil.getFileResourceFromDocroot(CACHEDIR + "/" + getName());
+        //TODO: configurable cachedir location
+        cacheDir = new FileSystemResourceImpl(new File("file:/tmp/pustefix/"+CACHEDIR + "/" + getName()));
         if (!cacheDir.exists()) {
-            cacheDir.mkdirs();
-        } else if (!cacheDir.isDirectory() || !cacheDir.canRead()) {
+            cacheDir.getFile().mkdirs();
+        } else if (!cacheDir.getFile().isDirectory() || !cacheDir.getFile().canRead()) {
             throw new XMLException("Directory " + cacheDir + " is not readeable or is no directory");
-        } else if (!cacheDir.canWrite()) {
+        } else if (!cacheDir.getFile().canWrite()) {
             // When running in WAR mode this is okay
             LOG.warn("Directory " + cacheDir + " is not writable!");
         }
@@ -431,7 +406,15 @@ public class TargetGenerator implements Comparable<TargetGenerator> {
             }
             for (int j = 0; j < allaux.getLength(); j++) {
                 Element aux = (Element) allaux.item(j);
-                Resource auxname = ResourceUtil.getResource(aux.getAttribute("name"));
+                URI uri;
+				try {
+					if(aux.getAttribute("name").contains("depend.xml")) uri = new URI("bundle:/META-INF/depend.xml");
+					else uri = new URI(aux.getAttribute("name"));
+				} catch (URISyntaxException e) {
+					throw new XMLException("Illegal aux name: " + aux.getAttribute("name"), e);
+				}
+				System.out.println("AUUUUUUUUX: "+uri.toString());
+                Resource auxname = resourceLoader.getResource(uri);
                 depaux.add(auxname);
             }
             struct.setDepaux(depaux);
@@ -566,7 +549,22 @@ public class TargetGenerator implements Comparable<TargetGenerator> {
 
     private TargetRW createTarget(TargetType type, String key, Themes themes) {
         TargetFactory tfac = TargetFactory.getInstance();
-        TargetRW tmp = tfac.getTarget(type, this, key, themes);
+        Resource targetRes;
+        Resource targetAuxRes;
+		try {
+			URI uri = new URI("bundle:/PUSTEFIX-INF/"+key);
+			System.out.println(uri.toString());
+			if(type.equals(TargetType.XML_LEAF) || type.equals(TargetType.XSL_LEAF)) {
+				targetRes = resourceLoader.getResource(new URI("bundle:/PUSTEFIX-INF/"+key));
+			} else {
+				targetRes = new FileSystemResourceImpl(new File("file:/tmp/pustefix/"+CACHEDIR+"/"+key));
+			}
+			targetAuxRes = new FileSystemResourceImpl(new File("file:/tmp/pustefix/"+CACHEDIR + "/" + key + ".aux"));
+		} catch (URISyntaxException e) {
+			throw new RuntimeException("Illegal URI: " + key, e);
+		}
+		if(targetRes == null) throw new RuntimeException("Can't get resource: "+key);
+        TargetRW tmp = tfac.getTarget(type, this, targetRes, targetAuxRes, key, themes);
         TargetRW tmp2 = getTargetRW(key);
 
         if (tmp2 == null) {
@@ -668,53 +666,53 @@ public class TargetGenerator implements Comparable<TargetGenerator> {
 
     // *******************************************************************************************
 
-    public static void main(String[] args) {
-        TargetGenerator gen = null;
-
-        String log4jconfig = System.getProperty("log4jconfig");
-        if (log4jconfig == null || log4jconfig.equals("")) {
-            System.out.println("*** FATAL: Need the log4jconfig property. Exiting... ***");
-            System.exit(-1);
-        }
-        DOMConfigurator.configure(log4jconfig);
-
-        if (args.length > 1) {
-            File docroot = new File(args[0]);
-            if (!docroot.exists() || !docroot.isDirectory()) {
-                throw new IllegalArgumentException("*** First argument has to be the docroot directory! ***");
-            }
-            GlobalConfigurator.setDocroot(docroot.getPath());
-
-            for (int i = 1; i < args.length; i++) {
-                try {
-                    /* resetting the factories for better memory performance */
-                    TargetGenerator.resetFactories();
-                    System.gc();
-
-                    FileResource file = ResourceUtil.getFileResourceFromDocroot(args[i]);
-                    if (file.exists() && file.canRead() && file.isFile()) {
-                        gen = TargetGeneratorFactory.getInstance().createGenerator(file);
-                        gen.setIsGetModTimeMaybeUpdateSkipped(false);
-                        System.out.println("---------- Doing " + args[i] + "...");
-                        gen.generateAll();
-                        System.out.println("---------- ...done [" + args[i] + "]");
-                        TargetGeneratorFactory.getInstance().remove(file);
-                    } else {
-                        LOG.error("Couldn't read configfile '" + args[i] + "'");
-                        throw (new XMLException("Oops!"));
-                    }
-                } catch (Exception e) {
-                    LOG.error("Oops! TargetGenerator exit!", e);
-                    System.exit(-1);
-                }
-            }
-
-            System.out.println(report.toString());
-
-        } else {
-            LOG.error("Need docroot and configfile(s) to work on");
-        }
-    }
+//    public static void main(String[] args) {
+//        TargetGenerator gen = null;
+//
+//        String log4jconfig = System.getProperty("log4jconfig");
+//        if (log4jconfig == null || log4jconfig.equals("")) {
+//            System.out.println("*** FATAL: Need the log4jconfig property. Exiting... ***");
+//            System.exit(-1);
+//        }
+//        DOMConfigurator.configure(log4jconfig);
+//
+//        if (args.length > 1) {
+//            File docroot = new File(args[0]);
+//            if (!docroot.exists() || !docroot.isDirectory()) {
+//                throw new IllegalArgumentException("*** First argument has to be the docroot directory! ***");
+//            }
+//            GlobalConfigurator.setDocroot(docroot.getPath());
+//
+//            for (int i = 1; i < args.length; i++) {
+//                try {
+//                    /* resetting the factories for better memory performance */
+//                    TargetGenerator.resetFactories();
+//                    System.gc();
+//
+//                    FileResource file = ResourceUtil.getFileResourceFromDocroot(args[i]);
+//                    if (file.exists() && file.canRead() && file.isFile()) {
+//                        gen = TargetGeneratorFactory.getInstance().createGenerator(file);
+//                        gen.setIsGetModTimeMaybeUpdateSkipped(false);
+//                        System.out.println("---------- Doing " + args[i] + "...");
+//                        gen.generateAll();
+//                        System.out.println("---------- ...done [" + args[i] + "]");
+//                        TargetGeneratorFactory.getInstance().remove(file);
+//                    } else {
+//                        LOG.error("Couldn't read configfile '" + args[i] + "'");
+//                        throw (new XMLException("Oops!"));
+//                    }
+//                } catch (Exception e) {
+//                    LOG.error("Oops! TargetGenerator exit!", e);
+//                    System.exit(-1);
+//                }
+//            }
+//
+//            System.out.println(report.toString());
+//
+//        } else {
+//            LOG.error("Need docroot and configfile(s) to work on");
+//        }
+//    }
 
     /**
      * Make sure this target generator object is properly configured before calling this method.
@@ -740,7 +738,7 @@ public class TargetGenerator implements Comparable<TargetGenerator> {
 
     public void generateTarget(Target target) throws Exception {
         if (target.getType() != TargetType.XML_LEAF && target.getType() != TargetType.XSL_LEAF) {
-            String path = getDisccachedir().toURI().toString();
+            String path = getDisccachedir().toString();
             System.out.println(">>>>> Generating " + path + File.separator + target.getTargetKey() + " from " + target.getXMLSource().getTargetKey() + " and " + target.getXSLSource().getTargetKey());
 
             boolean needs_update = false;
@@ -877,7 +875,7 @@ public class TargetGenerator implements Comparable<TargetGenerator> {
         return cmp.getName().compareTo(this.getName());
     }
 
-    public FileResource getConfigPath() {
+    public Resource getConfigPath() {
         return this.config_path;
     }
 

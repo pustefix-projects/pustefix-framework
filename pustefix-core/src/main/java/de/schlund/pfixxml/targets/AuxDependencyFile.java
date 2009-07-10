@@ -18,11 +18,11 @@
 
 package de.schlund.pfixxml.targets;
 
+import java.io.IOException;
 import java.util.Iterator;
 import java.util.TreeSet;
 
-import de.schlund.pfixxml.resources.Resource;
-import de.schlund.pfixxml.resources.ResourceUtil;
+import org.pustefixframework.resource.Resource;
 
 /**
  * Dependency referencing a static file on the filesystem
@@ -30,7 +30,8 @@ import de.schlund.pfixxml.resources.ResourceUtil;
  * @author Sebastian Marsching <sebastian.marsching@1und1.de>
  */
 public class AuxDependencyFile extends AbstractAuxDependency {
-    private Resource path;
+
+	private Resource path;
 
     private long last_lastModTime = -1;
     
@@ -52,9 +53,11 @@ public class AuxDependencyFile extends AbstractAuxDependency {
     }
     
     public long getModTime() {
-        if("dynamic".equals(path.getOriginatingURI().getScheme())) {
-            Resource res = ResourceUtil.getResource(path.getOriginatingURI());
-            if(!res.toURI().equals(path.toURI())) {
+        if("dynamic".equals(path.getOriginalURI().getScheme())) {
+        	//TODO: check if original resource UIR is dynamically resolved 
+        	//to other resource and force update
+        	Resource res = path;
+            if(!res.getURI().equals(path.getURI())) {
                 TreeSet<Target> targets = TargetDependencyRelation.getInstance()
                 .getAffectedTargets(this);
                 for (Iterator<Target> i = targets.iterator(); i.hasNext();) {
@@ -63,7 +66,7 @@ public class AuxDependencyFile extends AbstractAuxDependency {
                 }
             }
         }
-        if (path.exists() && path.canRead() && path.isFile()) {
+        if (path.exists()) {
             if (last_lastModTime == 0) {
                 // We change from the file being checked once to not exist to "it exists now".
                 // so we need to make sure that all targets using it will be rebuild.
@@ -74,7 +77,11 @@ public class AuxDependencyFile extends AbstractAuxDependency {
                     target.setForceUpdate();
                 }
             }
-            last_lastModTime = path.lastModified();
+            try {
+            	last_lastModTime = path.lastModified();
+            } catch(IOException x) {
+            	throw new RuntimeException("Can't get resource modification time: " + path.toString(), x);
+            }
             return last_lastModTime;
         } else {
             if (last_lastModTime > 0) {
@@ -111,7 +118,7 @@ public class AuxDependencyFile extends AbstractAuxDependency {
         }
         
         AuxDependencyFile a = (AuxDependencyFile) o;
-        return path.compareTo(a.path);
+        return path.getURI().compareTo(a.path.getURI());
     }
 
     @Override
@@ -121,7 +128,7 @@ public class AuxDependencyFile extends AbstractAuxDependency {
 
     @Override
     public String toString() {
-        return "[AUX/" + getType() + " " + getPath().toURI().toString() + "]";
+        return "[AUX/" + getType() + " " + getPath().toString() + "]";
     }
 
 }

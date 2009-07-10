@@ -22,9 +22,8 @@ package de.schlund.pfixxml.targets;
 import java.util.HashMap;
 
 import org.apache.log4j.Logger;
-
-import de.schlund.pfixxml.XMLException;
-import de.schlund.pfixxml.resources.FileResource;
+import org.pustefixframework.resource.Resource;
+import org.pustefixframework.resource.ResourceLoader;
 
 
 public class TargetGeneratorFactory {
@@ -36,48 +35,43 @@ public class TargetGeneratorFactory {
         return instance;
     }
 
-    public synchronized TargetGenerator createGenerator(FileResource cfile) throws Exception {
-        if (cfile.exists() && cfile.isFile() && cfile.canRead()) {
-            String key = genKey(cfile);
-            TargetGenerator generator = (TargetGenerator) generatormap.get(key);
-            if (generator == null) {
-                LOG.debug("-- Init TargetGenerator --");
-                generator = new TargetGenerator(cfile);
+    public synchronized TargetGenerator createGenerator(Resource cfile, ResourceLoader resourceLoader) throws Exception {
+    	String key = genKey(cfile);
+    	TargetGenerator generator = (TargetGenerator) generatormap.get(key);
+    	if (generator == null) {
+    		LOG.debug("-- Init TargetGenerator --");
+    		generator = new TargetGenerator(cfile, resourceLoader);
                 
-                // Check generator has unique name
-                String tgenName = generator.getName();
-                for (TargetGenerator tgen : generatormap.values()) {
-                    if (tgen.getName().equals(tgenName)) {
-                        String msg = "Cannot create TargetGenerator for config file \"" 
-                            + generator.getConfigPath().toString() 
-                            + "\" as it is using the name \"" + tgenName
-                            + "\" which is already being used by TargetGenerator with config file \""
-                            + tgen.getConfigPath().toString() + "\"";
-                        LOG.error(msg);
-                        throw new Exception(msg);
-                    }
-                }
+    		// Check generator has unique name
+    		String tgenName = generator.getName();
+    		for (TargetGenerator tgen : generatormap.values()) {
+    			if (tgen.getName().equals(tgenName)) {
+    				String msg = "Cannot create TargetGenerator for config file \"" 
+    					+ generator.getConfigPath().toString() 
+    					+ "\" as it is using the name \"" + tgenName
+    					+ "\" which is already being used by TargetGenerator with config file \""
+    					+ tgen.getConfigPath().toString() + "\"";
+    				LOG.error(msg);
+    				throw new Exception(msg);
+    			}
+    		}
                 
-                generatormap.put(key, generator);
-            } else {
-                generator.tryReinit();
-            }
-            return generator;
-        } else {
-            throw new XMLException("\nConfigfile '" + cfile.toString() +
-                                    "' isn't a file, can't be read or doesn't exist");
-        }
+    		generatormap.put(key, generator);
+    	} else {
+    		generator.tryReinit();
+    	}
+    	return generator;
     }
     
     public TargetGenerator getGenerator(String key) {
         return generatormap.get(key);
     }
 
-    public void remove(FileResource genfile) {
+    public void remove(Resource genfile) {
         generatormap.remove(genKey(genfile));
     }
 
-    private String genKey(FileResource genfile) {
+    private String genKey(Resource genfile) {
         return genfile.toString();
     }
     

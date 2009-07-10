@@ -22,9 +22,10 @@ import java.io.IOException;
 
 import javax.xml.transform.TransformerException;
 
+import org.pustefixframework.resource.Resource;
 import org.xml.sax.SAXException;
 
-import de.schlund.pfixxml.resources.Resource;
+
 import de.schlund.pfixxml.targets.SPCache;
 import de.schlund.pfixxml.targets.SPCacheFactory;
 import de.schlund.pfixxml.util.XsltVersion;
@@ -79,12 +80,16 @@ public class IncludeDocumentFactory {
     }
     
     private String getKey(XsltVersion xsltVersion, Resource path, boolean mutable) {
-        return mutable ? path.toURI().toString() + "_mutable" : path.toURI().toString() + "_imutable"+"_"+xsltVersion;
+        return mutable ? path.getURI().toString() + "_mutable" : path.getURI().toString() + "_imutable"+"_"+xsltVersion;
     }
 
     private boolean isDocumentInCacheObsolete(Resource path, String newkey) {
         long savedTime = ((IncludeDocument) cache.getValue(newkey)).getModTime();
-        return path.lastModified() > savedTime ? true : false;
+        try {
+        	return path.lastModified() > savedTime ? true : false;
+        } catch(IOException x) {
+        	throw new RuntimeException("Can't get modification time: " + path.toString(), x);
+        }
     }
 
     public void reset() {

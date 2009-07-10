@@ -25,8 +25,7 @@ import java.util.TreeSet;
 import org.apache.log4j.NDC;
 
 import de.schlund.pfixxml.XMLException;
-import de.schlund.pfixxml.resources.Resource;
-import de.schlund.pfixxml.resources.ResourceUtil;
+
 
 /**
  * LeafTarget.java
@@ -79,8 +78,7 @@ public abstract class LeafTarget extends TargetImpl {
     public boolean needsUpdate() throws Exception {
         synchronized (sharedleaf) {
             long mymodtime = sharedleaf.getModTime();
-            Resource doc = ResourceUtil.getResource(getTargetKey());
-            long maxmodtime = doc.lastModified();
+            long maxmodtime = targetRes.lastModified();
             boolean depup = true;
 
             for (Iterator<AuxDependency> i = this.getAuxDependencyManager().getChildren()
@@ -134,7 +132,7 @@ public abstract class LeafTarget extends TargetImpl {
     protected long getModTimeMaybeUpdate() throws TargetGenerationException,
             XMLException, IOException {
         long mymodtime = getModTime();
-        long maxmodtime = ResourceUtil.getResource(getTargetKey()).lastModified();
+        long maxmodtime = targetRes.lastModified();
         NDC.push("    ");
         TREE.debug("> " + getTargetKey());
 

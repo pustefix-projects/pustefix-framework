@@ -44,6 +44,8 @@ import javax.xml.transform.sax.SAXSource;
 import javax.xml.transform.stream.StreamResult;
 
 import org.apache.log4j.Logger;
+import org.pustefixframework.resource.InputStreamResource;
+import org.pustefixframework.resource.OutputStreamResource;
 import org.w3c.dom.Comment;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -156,6 +158,18 @@ public class Xml {
             throw new TransformerException("Can't read XML resource: " + res.toURI().toString(), x);
         }
     }
+    
+    public static Document parse(XsltVersion xsltVersion, InputStreamResource res) throws TransformerException {
+    	InputSource is = new InputSource();
+        is.setSystemId(res.getURI().toASCIIString());
+        try {
+            is.setByteStream(res.getInputStream());
+            SAXSource src = new SAXSource(createXMLReader(), is);
+            return parse(xsltVersion,src);
+        } catch(IOException x) {
+            throw new TransformerException("Can't read XML resource: " + res.getURI().toString(), x);
+        }
+    }
 
     /**
      * Create a document from a sourcefile in the filesystem.
@@ -205,6 +219,13 @@ public class Xml {
             throw new IOException("expected file, got directory: " + file);
         }
         return parseMutable(new InputSource(file.toURL().toString()));
+    }
+    
+    public static Document parseMutable(InputStreamResource res) throws IOException, SAXException {
+    	InputSource in = new InputSource();
+    	in.setByteStream(res.getInputStream());
+    	in.setSystemId(res.getURI().toASCIIString());
+    	return parseMutable(in);
     }
     
     public static Document parseMutable(Resource res) throws IOException, SAXException {
@@ -279,6 +300,16 @@ public class Xml {
     }
     
     public static void serialize(Node node, FileResource file, boolean pp, boolean decl) throws IOException {
+        ByteArrayOutputStream tmp = new ByteArrayOutputStream();
+
+        serialize(node, tmp, pp, decl);
+        
+        OutputStream dest = file.getOutputStream();
+        dest.write(tmp.toByteArray());
+        dest.close();
+    }
+    
+    public static void serialize(Node node, OutputStreamResource file, boolean pp, boolean decl) throws IOException {
         ByteArrayOutputStream tmp = new ByteArrayOutputStream();
 
         serialize(node, tmp, pp, decl);

@@ -17,6 +17,10 @@
  */
 package de.schlund.pfixxml.util;
 
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+
 import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
@@ -24,6 +28,9 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.URIResolver;
 import javax.xml.transform.stream.StreamSource;
+
+import org.pustefixframework.resource.ResourceLoader;
+import org.pustefixframework.resource.URLResource;
 
 public class SimpleResolver implements URIResolver {
     public static Transformer configure(TransformerFactory factory, String resource) throws TransformerConfigurationException {
@@ -37,7 +44,7 @@ public class SimpleResolver implements URIResolver {
     //--
     
     private URIResolver defaultResolver;
-    
+  
     public SimpleResolver(URIResolver defaultResolver) {
         this.defaultResolver = defaultResolver;
     }
@@ -45,7 +52,7 @@ public class SimpleResolver implements URIResolver {
     public Source resolve(String href, String base) throws TransformerException {
         int idx;
         String ref;
-        
+        System.out.println("*********** resolve: "+href+" "+base);
         if (href.contains(":")) {
             ref = href;
         } else {
@@ -56,6 +63,15 @@ public class SimpleResolver implements URIResolver {
                 ref = base.substring(0, idx) + "/" + href;
             }
         }
-        return defaultResolver.resolve(ref, base);
+        
+        URI uri;
+		try {
+			uri = new URI(ref);
+		} catch (URISyntaxException e) {
+			throw new TransformerException("Illegal URI: " + ref, e);
+		}
+  
+		return new StreamSource(ref);
+		
     }
 }

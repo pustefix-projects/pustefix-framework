@@ -17,12 +17,13 @@
  */
 
 package de.schlund.pfixxml;
+
 import java.net.URI;
 
 import org.apache.log4j.Logger;
+import org.pustefixframework.resource.Resource;
 
 import de.schlund.pfixxml.resources.FileResource;
-import de.schlund.pfixxml.resources.Resource;
 import de.schlund.pfixxml.resources.ResourceUtil;
 import de.schlund.pfixxml.targets.TargetGenerator;
 import de.schlund.pfixxml.targets.TargetGeneratorFactory;
@@ -58,8 +59,7 @@ public class ImageThemedSrc {
         }
         
         String[]        themes    = null;
-        FileResource    tgen_path = ResourceUtil.getFileResource(targetGen);
-        TargetGenerator gen       = TargetGeneratorFactory.getInstance().createGenerator(tgen_path);
+        TargetGenerator gen       = TargetGeneratorFactory.getInstance().getGenerator(targetGen);
           
         VirtualTarget target = null;
         if (!targetKey.equals("__NONE__")) {
@@ -78,8 +78,8 @@ public class ImageThemedSrc {
             if(dynamic) {
                 String uri =  "dynamic:/"+src+"?project="+gen.getName();
                 if(module != null) uri += "&module="+module;
-                Resource res = ResourceUtil.getResource(uri);
-                URI resUri = res.toURI();
+                Resource res = gen.getResourceLoader().getResource(new URI(uri));
+                URI resUri = res.getURI();
                 if("module".equals(resUri.getScheme()) && res.exists()) {
                     src = "modules/"+resUri.getAuthority()+"/"+src;
                 } else {
@@ -90,7 +90,10 @@ public class ImageThemedSrc {
                 if (IncludeDocumentExtension.isIncludeDocument(context)) {
                     parent_path = IncludeDocumentExtension.getSystemId(context);
                 }
-                Resource relativeParent = parent_path.equals("") ? null : ResourceUtil.getResource(parent_path);
+                Resource relativeParent = null;
+                if(!parent_path.equals("")) {
+                	relativeParent = gen.getResourceLoader().getResource(new URI(parent_path));
+                }
                 DependencyTracker.logTyped("image", res, "", "", relativeParent, parent_part_in, parent_product_in, target);
                 return src;
             } else {
@@ -114,8 +117,8 @@ public class ImageThemedSrc {
                 String uri =  "dynamic:/" + themed_path +"/THEME/" + themed_img +"?project="+gen.getName();
                 uri += themeParam;
                 if(module != null) uri += "&module="+module;
-                Resource res = ResourceUtil.getResource(uri);
-                URI resUri = res.toURI();
+                Resource res = gen.getResourceLoader().getResource(new URI(uri));
+                URI resUri = res.getURI();
                 if("module".equals(resUri.getScheme()) && res.exists()) {
                     testsrc = "modules/"+resUri.getAuthority()+resUri.getPath();
                 } else {
@@ -123,7 +126,10 @@ public class ImageThemedSrc {
                     if(testsrc.startsWith("/")) testsrc=testsrc.substring(1);
                 }
                 String parent_path = IncludeDocumentExtension.getSystemId(context);
-                Resource relativeParent = parent_path.equals("") ? null : ResourceUtil.getResource(parent_path);
+                Resource relativeParent = null;
+                if(!parent_path.equals("")) {
+                	relativeParent = gen.getResourceLoader().getResource(new URI(parent_path));
+                }
                 DependencyTracker.logTyped("image", res, "", "", relativeParent, parent_part_in, parent_product_in, target);
                 //DependencyTracker.logImage(context, testsrc, parent_part_in, parent_product_in, targetGen, targetKey, "image");
             } else {

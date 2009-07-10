@@ -45,6 +45,7 @@ import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
 import org.apache.log4j.Logger;
+import org.pustefixframework.resource.InputStreamResource;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 
@@ -97,6 +98,20 @@ public class Xslt {
             input = new InputSource(path.toURL().toString());
         } catch (MalformedURLException e) {
             throw new TransformerConfigurationException("\"" + path.toString() + "\" does not respresent a valid file", e);
+        }
+        return loadTemplates(xsltVersion, input, parent);
+    }
+    
+    public static Templates loadTemplates(XsltVersion xsltVersion, InputStreamResource res, TargetImpl parent) throws TransformerConfigurationException {
+        InputSource input;
+        try {
+            input = new InputSource();
+            input.setSystemId(res.getURI().toASCIIString());
+            input.setByteStream(res.getInputStream());
+        } catch (MalformedURLException e) {
+            throw new TransformerConfigurationException("\"" + res.toString() + "\" does not respresent a valid file", e);
+        } catch(IOException x) {
+        	throw new TransformerConfigurationException("Can't read template resource: " + res.toString(), x);
         }
         return loadTemplates(xsltVersion, input, parent);
     }
@@ -315,7 +330,7 @@ public class Xslt {
                     // There is a bug in Saxon 6.5.3 which causes
                     // a NullPointerException to be thrown, if systemId
                     // is not set
-                    source.setSystemId(target.getTargetGenerator().getDisccachedir().toURI().toString() + "/" + path);
+                    source.setSystemId(target.getTargetGenerator().getDisccachedir().getURI().toString() + "/" + path);
                 
                     // Register included stylesheet with target
                     parent.getAuxDependencyManager().addDependencyTarget(target.getTargetKey());

@@ -26,14 +26,12 @@ import java.util.List;
 import javax.xml.transform.TransformerException;
 
 import org.apache.log4j.Logger;
+import org.pustefixframework.resource.Resource;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
-import de.schlund.pfixxml.resources.FileResource;
-import de.schlund.pfixxml.resources.Resource;
-import de.schlund.pfixxml.resources.ResourceUtil;
 import de.schlund.pfixxml.targets.TargetGenerator;
 import de.schlund.pfixxml.targets.TargetGeneratorFactory;
 import de.schlund.pfixxml.targets.VirtualTarget;
@@ -112,7 +110,6 @@ public final class IncludeDocumentExtension {
         String       parent_uri_str  = "";
         String       parent_part     = "";
         String       parent_theme    = "";
-        FileResource tgen_path       = ResourceUtil.getFileResource(targetgen);
         
         String parentSystemId = getSystemId(context);
         URI parentURI = new URI(parentSystemId);
@@ -125,7 +122,7 @@ public final class IncludeDocumentExtension {
         
         String uriStr = path_str;
         
-        TargetGenerator tgen = TargetGeneratorFactory.getInstance().createGenerator(tgen_path);
+        TargetGenerator tgen = TargetGeneratorFactory.getInstance().getGenerator(targetgen);
         
         if(dynamic) {
             uriStr = "dynamic:/" + path_str + "?part=" + part + "&parent=" + parent_uri_str;
@@ -145,10 +142,14 @@ public final class IncludeDocumentExtension {
         // EEEEK! this code is in need of some serious beautifying....
         
         try {
-            
-            Resource    path        = ResourceUtil.getResource(uriStr);
-            resolvedUri.set(path.toURI().toString());
-            Resource    parent_path = "".equals(parent_uri_str) ? null : ResourceUtil.getResource(parent_uri_str);
+            URI uri = new URI(uriStr);
+            Resource path = tgen.getResourceLoader().getResource(uri);
+            resolvedUri.set(path.getURI().toString());
+            Resource    parent_path = null;
+            if(!parent_uri_str.equals("")) {
+            	uri = new URI(parent_uri_str);
+            	parent_path = tgen.getResourceLoader().getResource(uri);
+            }
             boolean            dolog       = !targetkey.equals(NOTARGET);
             int                length      = 0;
             IncludeDocument    iDoc        = null;

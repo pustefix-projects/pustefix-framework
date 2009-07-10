@@ -22,10 +22,12 @@ import java.util.TreeMap;
 
 import javax.xml.transform.TransformerException;
 
+import org.pustefixframework.resource.InputStreamResource;
+import org.pustefixframework.resource.OutputStreamResource;
+import org.pustefixframework.resource.FileSystemResource;
+import org.pustefixframework.resource.Resource;
 import org.w3c.dom.Document;
 
-import de.schlund.pfixxml.resources.FileResource;
-import de.schlund.pfixxml.resources.ResourceUtil;
 import de.schlund.pfixxml.util.Xml;
 
 /**
@@ -41,9 +43,14 @@ import de.schlund.pfixxml.util.Xml;
 
 public class XMLVirtualTarget extends VirtualTarget {
 
-    public XMLVirtualTarget(TargetType type, TargetGenerator gen, String key, Themes themes) throws Exception {
+    public XMLVirtualTarget(TargetType type, TargetGenerator gen, Resource targetRes, Resource targetAuxRes, String key, Themes themes) throws Exception {
+        if(!(targetRes instanceof InputStreamResource)) throw new IllegalArgumentException("Expected InputStreamResource");
+        if(!(targetRes instanceof OutputStreamResource)) throw new IllegalArgumentException("Expected OutputStreamResource");
+    	if(!(targetRes instanceof FileSystemResource)) throw new IllegalArgumentException("Expected FileSystemResource");
         this.type      = type;
         this.generator = gen;
+        this.targetRes = targetRes;
+        this.targetAuxRes = targetAuxRes;
         this.targetkey = key;
         this.themes    = themes;
         this.params = new TreeMap<String, Object>();
@@ -56,9 +63,8 @@ public class XMLVirtualTarget extends VirtualTarget {
      */
     @Override
     protected Object getValueFromDiscCache() throws TransformerException {
-        FileResource thefile = ResourceUtil.getFileResource(getTargetGenerator().getDisccachedir(), getTargetKey());
-        if (thefile.exists() && thefile.isFile()) {
-            return Xml.parse(generator.getXsltVersion(), thefile);
+        if (targetRes.exists()) {
+            return Xml.parse(generator.getXsltVersion(), (InputStreamResource)targetRes);
         } else {
             return null;
         }

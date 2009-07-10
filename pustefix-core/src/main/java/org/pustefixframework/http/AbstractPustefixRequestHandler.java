@@ -140,6 +140,9 @@ public abstract class AbstractPustefixRequestHandler implements UriProvidingHttp
 
     public void handleRequest(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
         
+    	//TODO: refactor
+    	initLate();
+    	
         if(webappAdmin!=null) webappAdmin.refreshIfTriggered();
         
         req.setCharacterEncoding(servletEncoding);
@@ -773,10 +776,15 @@ public abstract class AbstractPustefixRequestHandler implements UriProvidingHttp
 
     
     public void afterPropertiesSet() throws Exception {
-        init();
+        //TODO: refactor
+    	//init();
     }
     
     public void init() throws ServletException {
+    	
+    }
+    
+    public void initLate() throws ServletException {
         ServletContext ctx = getServletContext();
         LOG.debug("*** Servlet container is '" + ctx.getServerInfo() + "'");
         int major = ctx.getMajorVersion();
@@ -808,7 +816,7 @@ public abstract class AbstractPustefixRequestHandler implements UriProvidingHttp
     }
 
     private void callProcess(PfixServletRequest preq, HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
-        try {
+    	try {
             res.setContentType(DEF_CONTENT_TYPE);
             process(preq, res);
         } catch (Throwable e) {

@@ -19,7 +19,9 @@
 package de.schlund.pfixxml;
 
 import net.sf.saxon.expr.XPathContext;
-import de.schlund.pfixxml.resources.Resource;
+
+import org.pustefixframework.resource.Resource;
+
 import de.schlund.pfixxml.targets.VirtualTarget;
 import de.schlund.pfixxml.util.XsltContext;
 import de.schlund.pfixxml.util.xsltimpl.XsltContextSaxon2;

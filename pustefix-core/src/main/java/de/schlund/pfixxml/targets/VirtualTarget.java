@@ -29,11 +29,11 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.stream.StreamResult;
 
 import org.apache.log4j.NDC;
+import org.pustefixframework.resource.FileSystemResource;
+import org.pustefixframework.resource.OutputStreamResource;
 import org.w3c.dom.Document;
 
 import de.schlund.pfixxml.XMLException;
-import de.schlund.pfixxml.resources.FileResource;
-import de.schlund.pfixxml.resources.ResourceUtil;
 import de.schlund.pfixxml.util.Xslt;
 
 /**
@@ -107,9 +107,12 @@ public abstract class VirtualTarget extends TargetImpl {
         if (modtime == 0) {
             synchronized (this) {
                 if (modtime == 0) {
-                    FileResource doc = ResourceUtil.getFileResource(getTargetGenerator().getDisccachedir(), getTargetKey());
-                    if (doc.exists() && doc.isFile()) {
-                        setModTime(doc.lastModified());
+                    if (targetRes.exists()) {
+                    	try {
+                    		setModTime(targetRes.lastModified());
+                    	} catch(IOException x) {
+                    		throw new RuntimeException("Error checking modification time: " + targetRes.toString(), x);
+                    	}
                     }
                 }
             }
@@ -270,10 +273,8 @@ public abstract class VirtualTarget extends TargetImpl {
                         // a complete rebuild of this target the next try
                         storeValue(null);
                         setModTime(-1);
-                        FileResource cachefile = ResourceUtil.getFileResource(getTargetGenerator()
-                                .getDisccachedir(), getTargetKey());
-                        if (cachefile.exists()) {
-                            cachefile.delete();
+                        if (targetRes.exists()) {
+                        	((FileSystemResource)targetRes).getFile().delete();
                         }
 
                         TransformerException tex = e;
@@ -304,9 +305,8 @@ public abstract class VirtualTarget extends TargetImpl {
         String key = getTargetKey();
         Target tmpxmlsource = getXMLSource();
         Target tmpxslsource = getXSLSource();
-        FileResource cachepath = getTargetGenerator().getDisccachedir();
-        FileResource cachefile = ResourceUtil.getFileResource(cachepath, key);
-        cachefile.getParentAsFileResource().mkdirs();
+        
+        ((FileSystemResource)targetRes).getFile().getParentFile().mkdirs();
         if (LOG.isDebugEnabled()) {
             LOG.debug(key + ": Getting " + getType() + " by XSLTrafo ("
                     + tmpxmlsource.getTargetKey() + " / "
@@ -338,7 +338,7 @@ public abstract class VirtualTarget extends TargetImpl {
         // when transformation was sucessfully finished
         ByteArrayOutputStream temp = new ByteArrayOutputStream();
         Xslt.transform(xmlobj, templ, tmpparams, new StreamResult(temp));
-        OutputStream out = cachefile.getOutputStream();
+        OutputStream out = ((OutputStreamResource)targetRes).getOutputStream();
         out.write(temp.toByteArray());
         out.close();
         
@@ -349,7 +349,7 @@ public abstract class VirtualTarget extends TargetImpl {
         // Now we need to save the current value of the auxdependencies
         getAuxDependencyManager().saveAuxdepend();
         // and let's update the modification time.
-        setModTime(cachefile.lastModified());
+        setModTime(targetRes.lastModified());
         forceupdate = false;
     }
 

@@ -18,6 +18,7 @@
 
 package de.schlund.pfixxml.targets;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.util.HashMap;
@@ -27,13 +28,14 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
+import org.pustefixframework.resource.FileSystemResource;
+import org.pustefixframework.resource.InputStreamResource;
+import org.pustefixframework.resource.OutputStreamResource;
+import org.pustefixframework.resource.Resource;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
-import de.schlund.pfixxml.resources.FileResource;
-import de.schlund.pfixxml.resources.Resource;
-import de.schlund.pfixxml.resources.ResourceUtil;
 import de.schlund.pfixxml.util.Xml;
 
 /**
@@ -48,6 +50,7 @@ import de.schlund.pfixxml.util.Xml;
  */
 
 public class AuxDependencyManager {
+	
     private final static Logger   LOG    = Logger.getLogger(AuxDependencyManager.class);
     private final static String   DEPAUX = "depaux";
     private TargetImpl   target;
@@ -60,23 +63,33 @@ public class AuxDependencyManager {
     }
         
     public synchronized void tryInitAuxdepend() throws Exception {
-        FileResource auxfile = ResourceUtil.getFileResource(target.getTargetGenerator().getDisccachedir(), target.getTargetKey() + ".aux");
-        if (auxfile.exists() && auxfile.canRead() && auxfile.isFile()) {
-            Document        doc     = Xml.parseMutable(auxfile);
+    	Resource auxfile = target.getTargetAuxResource();
+        if (auxfile.exists()) {
+            Document        doc     = Xml.parseMutable((InputStreamResource)auxfile);
             NodeList        auxdeps = doc.getElementsByTagName(DEPAUX);
             if (auxdeps.getLength() > 0) {
                 for (int j = 0; j < auxdeps.getLength(); j++) {
                     String          type           = ((Element) auxdeps.item(j)).getAttribute("type");
                     String          path_attr      = ((Element) auxdeps.item(j)).getAttribute("path");
-                    Resource        path           = "".equals(path_attr)? null : ResourceUtil.getResource(path_attr);
+                    Resource path = null;
+                    if(!path_attr.equals("")) {
+                    	URI uri = new URI(path_attr);
+                    	path = target.getTargetGenerator().getResourceLoader().getResource(uri);
+                    }
                     if(path != null) {
                         String          orig_uri       = ((Element) auxdeps.item(j)).getAttribute("orig_uri");
-                        path.setOriginatingURI(new URI(orig_uri));
+                        URI uri = new URI(orig_uri);
+                        //TODO: set original URI
+                        //path.setOriginatingURI();
                     }
                     String          part           = ((Element) auxdeps.item(j)).getAttribute("part");
                     String          product        = ((Element) auxdeps.item(j)).getAttribute("product");
                     String          parent_attr    = ((Element) auxdeps.item(j)).getAttribute("parent_path");
-                    Resource        parent_path    = "".equals(parent_attr)? null : ResourceUtil.getResource(parent_attr);
+                    Resource parent_path = null;
+                    if(!parent_attr.equals("")) {
+                    	URI uri = new URI(parent_attr);
+                    	parent_path = target.getTargetGenerator().getResourceLoader().getResource(uri);
+                    }
                     String          parent_part    = ((Element) auxdeps.item(j)).getAttribute("parent_part");
                     String          parent_product = ((Element) auxdeps.item(j)).getAttribute("parent_product");
                     String          target_attr    = ((Element) auxdeps.item(j)).getAttribute("target");
@@ -132,8 +145,8 @@ public class AuxDependencyManager {
         if (part != null && part.equals("")) part = null;
         if (theme != null && theme.equals("")) theme = null;
         LOG.info("Adding Dependency of type 'text' to Target '" + target.getFullName() + "':");
-        LOG.info("*** [" + path.toURI().toString() + "][" + part + "][" + theme + "][" +
-                 ((parent_path == null)? "null" : parent_path.toURI().toString()) + "][" + parent_part + "][" + parent_theme + "]");
+        LOG.info("*** [" + path.toString() + "][" + part + "][" + theme + "][" +
+                 ((parent_path == null)? "null" : parent_path.toString()) + "][" + parent_part + "][" + parent_theme + "]");
 
         child = AuxDependencyFactory.getInstance().getAuxDependencyInclude(path, part, theme);
         parent = getParentDependency(parent_path, parent_part, parent_theme);
@@ -150,8 +163,8 @@ public class AuxDependencyManager {
         AuxDependency parent = null;
 
         LOG.info("Adding Dependency of type 'text' to Target '" + target.getFullName() + "':");
-        LOG.info("*** [" + path.toURI().toString() + "][" +
-                 ((parent_path == null)? "null" : parent_path.toURI().toString()) + "][" + parent_part + "][" + parent_theme + "]");
+        LOG.info("*** [" + path.toString() + "][" +
+                 ((parent_path == null)? "null" : parent_path.toString()) + "][" + parent_part + "][" + parent_theme + "]");
 
         child = AuxDependencyFactory.getInstance().getAuxDependencyImage(path);
         parent = getParentDependency(parent_path, parent_part, parent_theme);
@@ -167,7 +180,7 @@ public class AuxDependencyManager {
         AuxDependency child  = null;
 
         LOG.info("Adding Dependency of type 'text' to Target '" + target.getFullName() + "':");
-        LOG.info("*** [" + path.toURI().toString() + "]");
+        LOG.info("*** [" + path.toString() + "]");
 
         child = AuxDependencyFactory.getInstance().getAuxDependencyFile(path);
         
@@ -219,9 +232,8 @@ public class AuxDependencyManager {
     public synchronized void saveAuxdepend() throws IOException  {
         LOG.info("===> Trying to save aux info of Target '" + target.getTargetKey() + "'");
 
-        FileResource       path   = ResourceUtil.getFileResource(target.getTargetGenerator().getDisccachedir(),
-                                                                 target.getTargetKey() + ".aux");
-        FileResource       dir    = path.getParentAsFileResource();
+        FileSystemResource       path   = (FileSystemResource)target.getTargetAuxResource();
+        File dir    = path.getFile().getParentFile();
         
         // Make sure parent directory is existing (for leaf targets)
         if (dir != null) {
@@ -262,26 +274,26 @@ public class AuxDependencyManager {
                         depaux.setAttribute("type", type.getTag());
                         if (aux.getType() == DependencyType.TEXT) {
                             AuxDependencyInclude a = (AuxDependencyInclude) aux;
-                            depaux.setAttribute("path", a.getPath().toURI().toString());
-                            if(a.getPath().getOriginatingURI() != null) {
-                                depaux.setAttribute("orig_uri", a.getPath().getOriginatingURI().toString());
+                            depaux.setAttribute("path", a.getPath().getURI().toString());
+                            if(a.getPath().getOriginalURI() != null) {
+                                depaux.setAttribute("orig_uri", a.getPath().getOriginalURI().toString());
                             }
                             depaux.setAttribute("part", a.getPart());
                             depaux.setAttribute("product", a.getTheme());
                             if (parent_path != null) 
-                                depaux.setAttribute("parent_path", parent_path.toURI().toString());
+                                depaux.setAttribute("parent_path", parent_path.getURI().toString());
                             if (parent_part != null) 
                                 depaux.setAttribute("parent_part", parent_part);
                             if (parent_theme != null) 
                                 depaux.setAttribute("parent_product", parent_theme);
                         } else if (aux.getType() == DependencyType.IMAGE) {
                             AuxDependencyImage a = (AuxDependencyImage) aux;
-                            depaux.setAttribute("path", a.getPath().toURI().toString());
-                            if(a.getPath().getOriginatingURI() != null) {
-                                depaux.setAttribute("orig_uri", a.getPath().getOriginatingURI().toString());
+                            depaux.setAttribute("path", a.getPath().getURI().toString());
+                            if(a.getPath().getOriginalURI() != null) {
+                                depaux.setAttribute("orig_uri", a.getPath().getOriginalURI().toString());
                             }
                             if (parent_path != null) 
-                                depaux.setAttribute("parent_path", parent_path.toURI().toString());
+                                depaux.setAttribute("parent_path", parent_path.getURI().toString());
                             if (parent_part != null) 
                                 depaux.setAttribute("parent_part", parent_part);
                             if (parent_theme != null) 
@@ -294,7 +306,7 @@ public class AuxDependencyManager {
                 }
             }
         }
-        Xml.serialize(auxdoc, path, true, true);
+        Xml.serialize(auxdoc, (OutputStreamResource)path, true, true);
     }
 
     public TreeSet<AuxDependency> getChildren() {

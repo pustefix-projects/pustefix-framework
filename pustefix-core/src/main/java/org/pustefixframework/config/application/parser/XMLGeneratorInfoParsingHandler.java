@@ -18,10 +18,16 @@
 
 package org.pustefixframework.config.application.parser;
 
+import java.net.URI;
+import java.net.URISyntaxException;
+
 import org.pustefixframework.config.application.ProjectInfo;
 import org.pustefixframework.config.application.XMLGeneratorInfo;
 import org.pustefixframework.config.customization.CustomizationAwareParsingHandler;
 import org.pustefixframework.config.generic.ParsingUtils;
+import org.pustefixframework.resource.InputStreamResource;
+import org.pustefixframework.resource.ResourceLoader;
+import org.pustefixframework.resource.URLResource;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinitionHolder;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
@@ -77,6 +83,7 @@ public class XMLGeneratorInfoParsingHandler extends CustomizationAwareParsingHan
         } else if(root.getLocalName().equals("config-file")) {
         
             XMLGeneratorInfo info = ParsingUtils.getSingleTopObject(XMLGeneratorInfo.class, context);
+            ResourceLoader resourceLoader = ParsingUtils.getSingleTopObject(ResourceLoader.class, context);
             
             String uri = root.getTextContent().trim();
             
@@ -85,7 +92,16 @@ public class XMLGeneratorInfoParsingHandler extends CustomizationAwareParsingHan
         
             BeanDefinitionBuilder beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(TargetGeneratorFactoryBean.class);
             beanBuilder.setScope("singleton");
-            beanBuilder.addPropertyValue("configFile", uri);
+            
+            URI confURI;
+            try {
+            	confURI = new URI(uri);
+            } catch(URISyntaxException x) {
+            	throw new ParserException("Illegal config-file URI: " + uri, x);
+            }
+            URLResource confRes = resourceLoader.getResource(confURI, URLResource.class);
+            beanBuilder.addPropertyValue("configFile", confRes);
+            beanBuilder.addPropertyValue("resourceLoader", resourceLoader);
             BeanDefinition beanDefinition = beanBuilder.getBeanDefinition();
             String beanName = beanNameGenerator.generateBeanName(beanDefinition, beanRegistry);
             beanRegistry.registerBeanDefinition(beanName, beanDefinition);

@@ -16,6 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 package de.schlund.pfixcore.util;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -24,14 +25,14 @@ import java.util.Iterator;
 import java.util.TreeSet;
 
 import org.apache.log4j.xml.DOMConfigurator;
+import org.pustefixframework.resource.InputStreamResource;
+import org.pustefixframework.resource.Resource;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import de.schlund.pfixxml.config.GlobalConfigurator;
-import de.schlund.pfixxml.resources.DocrootResource;
-import de.schlund.pfixxml.resources.ResourceUtil;
 import de.schlund.pfixxml.targets.AuxDependency;
 import de.schlund.pfixxml.targets.AuxDependencyFactory;
 import de.schlund.pfixxml.targets.AuxDependencyFile;
@@ -56,8 +57,8 @@ public class CheckIncludes {
     // private static final String XPATH = "/include_parts/part/theme";
     
     private HashMap<String, TargetGenerator> generators = new HashMap<String, TargetGenerator>();
-    private TreeSet<DocrootResource> includefilenames = new TreeSet<DocrootResource>();
-    private TreeSet<DocrootResource> imagefilenames = new TreeSet<DocrootResource>();
+    private TreeSet<Resource> includefilenames = new TreeSet<Resource>();
+    private TreeSet<Resource> imagefilenames = new TreeSet<Resource>();
     private TreeSet<AuxDependency> unavail = new TreeSet<AuxDependency>();
     private TreeSet<AuxDependency> includes;
     private String  pwd;
@@ -67,40 +68,40 @@ public class CheckIncludes {
 //        dbfac.setNamespaceAware(true);
     }
     
-    public CheckIncludes(String pwd, String outfile, File allprj, File allincs, File allimgs) throws Exception {
-        this.pwd     = pwd;
-        this.outfile = outfile;
-        String         line;
-        BufferedReader input;
-        
-        input = new BufferedReader(new FileReader(allincs));
-        while ((line = input.readLine()) != null) {
-            // line = new File(pwd + line).getCanonicalPath();
-            includefilenames.add(ResourceUtil.getFileResourceFromDocroot(line));
-        }
-        input.close();
-
-        input = new BufferedReader(new FileReader(allimgs));
-        while ((line = input.readLine()) != null) {
-            // line = new File(pwd + line).getCanonicalPath();
-            imagefilenames.add(ResourceUtil.getFileResourceFromDocroot(line));
-        }
-        input.close();
-        
-        input = new BufferedReader(new FileReader(allprj));
-        while ((line = input.readLine()) != null) {
-            // line = pwd + line;
-            TargetGenerator gen = new TargetGenerator(ResourceUtil.getFileResourceFromDocroot(line));
-            generators.put(pwd + line, gen);
-        }
-        input.close();
-
-        includes = AuxDependencyFactory.getInstance().getAllAuxDependencies();
-        for (Iterator<AuxDependency> i = includes.iterator(); i.hasNext();) {
-            AuxDependency aux = i.next();
-            unavail.add(aux);
-        }
-    }
+//    public CheckIncludes(String pwd, String outfile, File allprj, File allincs, File allimgs) throws Exception {
+//        this.pwd     = pwd;
+//        this.outfile = outfile;
+//        String         line;
+//        BufferedReader input;
+//        
+//        input = new BufferedReader(new FileReader(allincs));
+//        while ((line = input.readLine()) != null) {
+//            // line = new File(pwd + line).getCanonicalPath();
+//            includefilenames.add(ResourceUtil.getFileResourceFromDocroot(line));
+//        }
+//        input.close();
+//
+//        input = new BufferedReader(new FileReader(allimgs));
+//        while ((line = input.readLine()) != null) {
+//            // line = new File(pwd + line).getCanonicalPath();
+//            imagefilenames.add(ResourceUtil.getFileResourceFromDocroot(line));
+//        }
+//        input.close();
+//        
+//        input = new BufferedReader(new FileReader(allprj));
+//        while ((line = input.readLine()) != null) {
+//            // line = pwd + line;
+//            TargetGenerator gen = new TargetGenerator(ResourceUtil.getFileResourceFromDocroot(line));
+//            generators.put(pwd + line, gen);
+//        }
+//        input.close();
+//
+//        includes = AuxDependencyFactory.getInstance().getAllAuxDependencies();
+//        for (Iterator<AuxDependency> i = includes.iterator(); i.hasNext();) {
+//            AuxDependency aux = i.next();
+//            unavail.add(aux);
+//        }
+//    }
 
     public void doCheck() throws Exception {
         Document doc         = Xml.createDocument();
@@ -125,21 +126,21 @@ public class CheckIncludes {
         Xml.serialize(doc, outfile, true, true);
     }
     
-    public static void main(String[] args) throws Exception {
-        String output    = args[0];
-        String allprjarg = args[1];
-        String allincarg = args[2];
-        String allimgarg = args[3];
-
-        String dir = new File(".").getCanonicalPath() + "/";
-        
-        Logging.configure("generator_quiet.xml");
-        GlobalConfigurator.setDocroot(dir);
-        
-        CheckIncludes instance = new CheckIncludes(dir, output, new File(allprjarg), new File(allincarg), new File(allimgarg));
-        instance.doCheck();
-
-    }
+//    public static void main(String[] args) throws Exception {
+//        String output    = args[0];
+//        String allprjarg = args[1];
+//        String allincarg = args[2];
+//        String allimgarg = args[3];
+//
+//        String dir = new File(".").getCanonicalPath() + "/";
+//        
+//        Logging.configure("generator_quiet.xml");
+//        GlobalConfigurator.setDocroot(dir);
+//        
+//        CheckIncludes instance = new CheckIncludes(dir, output, new File(allprjarg), new File(allincarg), new File(allimgarg));
+//        instance.doCheck();
+//
+//    }
 
     private void checkForUnavailableIncludes(Document result, Element res_root) throws Exception {
         for (Iterator<String> i = generators.keySet().iterator(); i.hasNext();) {
@@ -168,7 +169,7 @@ public class CheckIncludes {
                     Element elem = result.createElement("MISSING");
                     prj_elem.appendChild(elem);
                     elem.setAttribute("type", aux.getType().toString());
-                    String path = ((AuxDependencyFile) aux).getPath().toURI().toString();
+                    String path = ((AuxDependencyFile) aux).getPath().getURI().toString();
                     if (aux.getType().equals(DependencyType.TEXT)) {
                         AuxDependencyInclude a = (AuxDependencyInclude) aux;
                         elem.setAttribute("path", path);
@@ -176,7 +177,7 @@ public class CheckIncludes {
                         elem.setAttribute("theme", a.getTheme());
                     } else if (aux.getType().equals(DependencyType.IMAGE)) {
                         AuxDependencyImage a = (AuxDependencyImage) aux;
-                        elem.setAttribute("path", a.getPath().toURI().toString());
+                        elem.setAttribute("path", a.getPath().getURI().toString());
                     }
                 }
             }
@@ -184,11 +185,11 @@ public class CheckIncludes {
     }
 
     private void checkForUnusedImages(Document result, Element res_root) throws Exception {
-        for (Iterator<DocrootResource> i = imagefilenames.iterator(); i.hasNext();) {
-            DocrootResource img = i.next();
+        for (Iterator<Resource> i = imagefilenames.iterator(); i.hasNext();) {
+            Resource img = i.next();
 
             Element res_image = result.createElement("image");
-            res_image.setAttribute("name", img.getRelativePath());
+            res_image.setAttribute("name", img.getURI().toString());
             
             res_root.appendChild(res_image);
             
@@ -203,16 +204,16 @@ public class CheckIncludes {
     }
     
     private void checkForUnusedIncludes(Document result, Element res_root) throws Exception {
-        for (Iterator<DocrootResource> i = includefilenames.iterator(); i.hasNext();) {
-            DocrootResource path = i.next();
+        for (Iterator<Resource> i = includefilenames.iterator(); i.hasNext();) {
+            Resource path = i.next();
             Document doc;
 
             Element res_incfile = result.createElement("incfile");
             res_root.appendChild(res_incfile);
-            res_incfile.setAttribute("name", path.getRelativePath());
+            res_incfile.setAttribute("name", path.getURI().toString());
             
             try {
-                doc = Xml.parseMutable(path);
+                doc = Xml.parseMutable((InputStreamResource)path);
             } catch (Exception e) {
                 Element error = result.createElement("ERROR");
                 res_incfile.appendChild(error);
@@ -236,7 +237,7 @@ public class CheckIncludes {
                     if (!partelem.getNodeName().equals("part")) {
                         Element error = result.createElement("ERROR");
                         res_incfile.appendChild(error);
-                        error.setAttribute("cause", "invalid node in include file (child of root != part): " + path.toURI().getPath().substring(1) + "/" + partelem.getNodeName());
+                        error.setAttribute("cause", "invalid node in include file (child of root != part): " + path.getURI().getPath().substring(1) + "/" + partelem.getNodeName());
                         continue;
                     }
 
@@ -252,7 +253,7 @@ public class CheckIncludes {
                                 Element error = result.createElement("ERROR");
                                 res_part.appendChild(error);
                                 error.setAttribute("cause", "invalid node in part (child of part != theme): " +
-                                                   path.toURI().getPath().substring(1) + "/" + partelem.getNodeName() + "/" + themeelem.getNodeName());
+                                                   path.getURI().getPath().substring(1) + "/" + partelem.getNodeName() + "/" + themeelem.getNodeName());
                                 continue;
                             }
 

@@ -18,7 +18,9 @@
 
 package de.schlund.pfixxml.targets;
 
-import de.schlund.pfixxml.resources.Resource;
+import org.pustefixframework.resource.Resource;
+
+
 
 /**
  * Stores information about an include part used by a target.
@@ -96,7 +98,7 @@ public class AuxDependencyInclude extends AuxDependencyFile {
 
     @Override
     public String toString() {
-        return "[AUX/" + getType() + " " + getPath().toURI().toString() + "@"
+        return "[AUX/" + getType() + " " + getPath().toString() + "@"
                 + getPart() + "@" + getTheme() + "]";
     }
 

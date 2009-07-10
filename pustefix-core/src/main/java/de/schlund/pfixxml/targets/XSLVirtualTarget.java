@@ -22,10 +22,12 @@ import java.util.TreeMap;
 
 import javax.xml.transform.TransformerException;
 
+import org.pustefixframework.resource.InputStreamResource;
+import org.pustefixframework.resource.OutputStreamResource;
+import org.pustefixframework.resource.FileSystemResource;
+import org.pustefixframework.resource.Resource;
 import org.w3c.dom.Document;
 
-import de.schlund.pfixxml.resources.FileResource;
-import de.schlund.pfixxml.resources.ResourceUtil;
 import de.schlund.pfixxml.util.Xml;
 import de.schlund.pfixxml.util.Xslt;
 
@@ -40,10 +42,15 @@ import de.schlund.pfixxml.util.Xslt;
 
 public class XSLVirtualTarget extends VirtualTarget {
 
-    public XSLVirtualTarget(TargetType type, TargetGenerator gen, String key,
+    public XSLVirtualTarget(TargetType type, TargetGenerator gen, Resource targetRes, Resource targetAuxRes, String key,
             Themes themes) throws Exception {
-        this.type = type;
+    	if(!(targetRes instanceof InputStreamResource)) throw new IllegalArgumentException("Expected InputStreamResource");
+    	if(!(targetRes instanceof OutputStreamResource)) throw new IllegalArgumentException("Expected OutputStreamResource");
+    	if(!(targetRes instanceof FileSystemResource)) throw new IllegalArgumentException("Expected FileSystemResource");
+    	this.type = type;
         this.generator = gen;
+        this.targetRes = targetRes;
+        this.targetAuxRes = targetAuxRes;
         this.targetkey = key;
         this.themes = themes;
         this.params = new TreeMap<String, Object>();
@@ -56,9 +63,8 @@ public class XSLVirtualTarget extends VirtualTarget {
      */
     @Override
     protected Object getValueFromDiscCache() throws TransformerException {
-        FileResource thefile = ResourceUtil.getFileResource(getTargetGenerator().getDisccachedir(), getTargetKey());
-        if (thefile.exists() && thefile.isFile()) {
-            return Xslt.loadTemplates(generator.getXsltVersion(), thefile, this);
+        if (targetRes.exists()) {
+            return Xslt.loadTemplates(generator.getXsltVersion(), (InputStreamResource)targetRes, this);
         } else {
             return null;
         }
@@ -67,11 +73,9 @@ public class XSLVirtualTarget extends VirtualTarget {
     public Document getDOM() throws TargetGenerationException {
         // Make sure we have an up-to-date version
         this.getValue();
-        
-        FileResource thefile = ResourceUtil.getFileResource(getTargetGenerator().getDisccachedir(), getTargetKey());
-        if (thefile.exists() && thefile.isFile()) {
+        if (targetRes.exists()) {
             try {
-                return Xml.parse(generator.getXsltVersion(), thefile);
+                return Xml.parse(generator.getXsltVersion(), (InputStreamResource)targetRes);
             } catch (TransformerException e) {
                 throw new TargetGenerationException("Error while reading DOM from disccache for target "
                                                     + getTargetKey(), e);

@@ -17,9 +17,12 @@
  */
 
 package de.schlund.pfixxml.targets;
+import java.io.IOException;
 import java.util.TreeSet;
 
-import de.schlund.pfixxml.resources.Resource;
+import org.pustefixframework.resource.Resource;
+
+
 
 /**
  * SharedLeaf.java
@@ -62,8 +65,12 @@ public class SharedLeaf implements Comparable<SharedLeaf> {
 
     public long getModTime() {
         if (modtime == 0) {
-            if (path.exists() && path.isFile()) {
-                setModTime(path.lastModified());
+            if (path.exists()) {
+            	try {
+            		setModTime(path.lastModified());
+            	} catch(IOException x) {
+            		throw new RuntimeException("Can't get modification time of resource: " + path.toString());
+            	}
             }
         }
         return modtime;
@@ -73,7 +80,7 @@ public class SharedLeaf implements Comparable<SharedLeaf> {
     // comparable interface
     
     public int compareTo(SharedLeaf in) {
-        return path.compareTo(in.path);
+        return path.getURI().compareTo(in.path.getURI());
     }
 
 }// SharedLeaf

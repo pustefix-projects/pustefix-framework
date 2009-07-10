@@ -55,9 +55,6 @@ import de.schlund.pfixcore.workflow.State;
 import de.schlund.pfixcore.workflow.context.AccessibilityChecker;
 import de.schlund.pfixcore.workflow.context.RequestContextImpl;
 import de.schlund.pfixxml.ResultDocument;
-import de.schlund.pfixxml.resources.FileResource;
-import de.schlund.pfixxml.resources.ResourceUtil;
-import de.schlund.pfixxml.targets.PageTargetTree;
 import de.schlund.pfixxml.targets.TargetGenerator;
 import de.schlund.pfixxml.targets.TargetGeneratorFactory;
 import de.schlund.pfixxml.util.ExtensionFunctionUtils;
@@ -89,10 +86,6 @@ public class TransformerCallback {
             boolean pageExists = true;
             if(context.getContextConfig().getPageRequestConfig(pagename) == null) {
                 TargetGenerator gen = TargetGeneratorFactory.getInstance().getGenerator(targetgen);
-                if(gen == null) {
-                    FileResource res = ResourceUtil.getFileResource(targetgen);
-                    gen = TargetGeneratorFactory.getInstance().createGenerator(res);
-                }
                 pageExists = (gen.getPageTargetTree().getPageInfoForPageName(pagename) != null);
             }
             if(pageExists) {

@@ -19,11 +19,11 @@
 package de.schlund.pfixxml;
 
 
-import org.apache.log4j.Logger;
+import java.net.URI;
 
-import de.schlund.pfixxml.resources.FileResource;
-import de.schlund.pfixxml.resources.Resource;
-import de.schlund.pfixxml.resources.ResourceUtil;
+import org.apache.log4j.Logger;
+import org.pustefixframework.resource.Resource;
+
 import de.schlund.pfixxml.targets.DependencyType;
 import de.schlund.pfixxml.targets.TargetGenerator;
 import de.schlund.pfixxml.targets.TargetGeneratorFactory;
@@ -42,8 +42,7 @@ public class DependencyTracker {
             return "0";
         }
 
-        FileResource    tgen_path = ResourceUtil.getFileResource(targetGen);
-        TargetGenerator gen       = TargetGeneratorFactory.getInstance().createGenerator(tgen_path);
+        TargetGenerator gen       = TargetGeneratorFactory.getInstance().getGenerator(targetGen);
         VirtualTarget   target    = (VirtualTarget) gen.getTarget(targetKey);
 
         String parent_path  = "";
@@ -64,8 +63,13 @@ public class DependencyTracker {
             LOG.error("Error adding Dependency: empty path"); 
             return "1"; 
         }
-        Resource relativePath   = ResourceUtil.getResource(path);
-        Resource relativeParent = parent_path.equals("") ? null : ResourceUtil.getResource(parent_path);
+        URI uri = new URI(path);
+        Resource relativePath = gen.getResourceLoader().getResource(uri);
+        Resource relativeParent = null;
+        if(!parent_path.equals("")) {
+        	uri = new URI(parent_path);
+        	relativeParent = gen.getResourceLoader().getResource(uri);
+        }
         try {
             logTyped(type, relativePath, "", "", relativeParent, parent_part, parent_theme, target);
             return "0";
@@ -82,10 +86,10 @@ public class DependencyTracker {
             String project = target.getTargetGenerator().getName();
             LOG.debug("Adding dependency to AuxdependencyManager :+\n"+
                       "Type       = " + type + "\n" +
-                      "Path       = " + path.toURI().toString() + "\n" +
+                      "Path       = " + path.getURI().toString() + "\n" +
                       "Part       = " + part + "\n" +
                       "Theme      = " + theme + "\n" +
-                      "ParentPath = " + ((parent_path == null)? "null" : parent_path.toURI().toString()) + "\n" +
+                      "ParentPath = " + ((parent_path == null)? "null" : parent_path.getURI().toString()) + "\n" +
                       "ParentPart = " + parent_part + "\n" +
                       "ParentProd = " + parent_theme + "\n" +
                       "Project    = " + project + "\n");

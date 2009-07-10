@@ -70,7 +70,7 @@ public class AuxDependencyTarget extends AbstractAuxDependency {
 
         AuxDependencyTarget a = (AuxDependencyTarget) o;
         
-        comp = tgen.getConfigPath().compareTo(a.tgen.getConfigPath());
+        comp = tgen.getConfigPath().getURI().compareTo(a.tgen.getConfigPath().getURI());
         if (comp != 0) {
             return comp;
         }
@@ -94,7 +94,7 @@ public class AuxDependencyTarget extends AbstractAuxDependency {
 
     @Override
     public String toString() {
-        String path = tgen.getConfigPath().toURI().toString();
+        String path = tgen.getConfigPath().toString();
         return "[AUX/" + getType() + " " + path + ": " + targetkey + "]";
     }
 

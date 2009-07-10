@@ -18,7 +18,9 @@
 
 package de.schlund.pfixxml.targets;
 
-import de.schlund.pfixxml.resources.Resource;
+import org.pustefixframework.resource.Resource;
+
+
 
 /**
  * Dependency referencing an image that is embedded into a target.

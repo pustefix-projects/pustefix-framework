@@ -26,6 +26,7 @@ import java.util.TreeSet;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.apache.log4j.xml.DOMConfigurator;
+import org.pustefixframework.resource.Resource;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
@@ -34,8 +35,6 @@ import org.w3c.dom.NodeList;
 
 import de.schlund.pfixxml.IncludeDocumentFactory;
 import de.schlund.pfixxml.config.GlobalConfigurator;
-import de.schlund.pfixxml.resources.Resource;
-import de.schlund.pfixxml.resources.ResourceUtil;
 import de.schlund.pfixxml.targets.AuxDependency;
 import de.schlund.pfixxml.targets.AuxDependencyInclude;
 import de.schlund.pfixxml.targets.DependencyType;
@@ -94,30 +93,30 @@ public class DumpText implements IDumpText {
      * @exception Exception if an error occurs
      */
     public void generateList(String depend) throws Exception {
-        Document list = dbfac.newDocumentBuilder().newDocument();
-        Element  root = list.createElement("dumpedincludeparts");
-        root.setAttribute("xmlns:pfx", "http://www.schlund.de/pustefix/core");
-        root.setAttribute("xmlns:ixsl", "http://www.w3.org/1999/XSL/Transform");
-        root.setAttribute("dependfile", depend);
-        addRootNodeAtributes(root);
-        list.appendChild(root);
-        root.appendChild(list.createTextNode("\n"));
-        
-        TargetGenerator gen  = new TargetGenerator(ResourceUtil.getFileResourceFromDocroot(depend));
-        TreeSet<AuxDependency> incs = TargetDependencyRelation.getInstance().getProjectDependenciesForType(gen, DependencyType.TEXT);
-        for (Iterator<AuxDependency> i = incs.iterator(); i.hasNext();) {
-            AuxDependencyInclude aux  = (AuxDependencyInclude) i.next();
-            if (includePartOK(aux)) {
-                Resource file = aux.getPath();
-                if (file.exists()) {
-                    System.out.print(".");
-                    handleInclude(root, aux);
-                }
-            }
-        }
-        root.appendChild(list.createTextNode("\n"));
-        Xml.serialize(list, "dump.xml", false, true);
-        System.out.print("\n");
+//        Document list = dbfac.newDocumentBuilder().newDocument();
+//        Element  root = list.createElement("dumpedincludeparts");
+//        root.setAttribute("xmlns:pfx", "http://www.schlund.de/pustefix/core");
+//        root.setAttribute("xmlns:ixsl", "http://www.w3.org/1999/XSL/Transform");
+//        root.setAttribute("dependfile", depend);
+//        addRootNodeAtributes(root);
+//        list.appendChild(root);
+//        root.appendChild(list.createTextNode("\n"));
+//        
+//        TargetGenerator gen  = new TargetGenerator(ResourceUtil.getFileResourceFromDocroot(depend));
+//        TreeSet<AuxDependency> incs = TargetDependencyRelation.getInstance().getProjectDependenciesForType(gen, DependencyType.TEXT);
+//        for (Iterator<AuxDependency> i = incs.iterator(); i.hasNext();) {
+//            AuxDependencyInclude aux  = (AuxDependencyInclude) i.next();
+//            if (includePartOK(aux)) {
+//                Resource file = aux.getPath();
+//                if (file.exists()) {
+//                    System.out.print(".");
+//                    handleInclude(root, aux);
+//                }
+//            }
+//        }
+//        root.appendChild(list.createTextNode("\n"));
+//        Xml.serialize(list, "dump.xml", false, true);
+//        System.out.print("\n");
     }
 
     /**
@@ -172,7 +171,7 @@ public class DumpText implements IDumpText {
 
             Element partelem = doc.createElement("USEDINCLUDE");
             partelem.setAttribute("PART", part);
-            partelem.setAttribute("PATH", path.toURI().toString());
+            partelem.setAttribute("PATH", path.getURI().toString());
 
             root.appendChild(doc.createTextNode("\n"));
             root.appendChild(doc.createTextNode("  "));
@@ -203,7 +202,7 @@ public class DumpText implements IDumpText {
                     partelem.appendChild(node);
                 }
             } else {
-                System.out.print("\nDidn't find matching theme in part " + part + "@" + path.toURI().toString() + " for theme " + theme + "!");
+                System.out.print("\nDidn't find matching theme in part " + part + "@" + path.getURI().toString() + " for theme " + theme + "!");
             }
         }
     }

@@ -21,10 +21,10 @@ package de.schlund.pfixxml.targets;
 
 import javax.xml.transform.TransformerException;
 
+import org.pustefixframework.resource.InputStreamResource;
+import org.pustefixframework.resource.Resource;
 import org.w3c.dom.Document;
 
-import de.schlund.pfixxml.resources.Resource;
-import de.schlund.pfixxml.resources.ResourceUtil;
 import de.schlund.pfixxml.util.Xml;
 
 /**
@@ -40,13 +40,15 @@ import de.schlund.pfixxml.util.Xml;
 
 public class XMLLeafTarget extends LeafTarget {
 
-    public XMLLeafTarget(TargetType type, TargetGenerator gen, String key, Themes themes) throws Exception {
-        this.type      = type;
+    public XMLLeafTarget(TargetType type, TargetGenerator gen, Resource targetRes, Resource targetAuxRes, String key, Themes themes) throws Exception {
+    	if(!(targetRes instanceof InputStreamResource)) throw new IllegalArgumentException("Expected InputStreamResource");
+    	this.type      = type;
         this.generator = gen;
         this.targetkey = key;
+        this.targetRes = targetRes;
+        this.targetAuxRes = targetAuxRes;
         this.themes    = themes;
-        Resource targetpath = ResourceUtil.getResource(key);
-        this.sharedleaf = SharedLeafFactory.getInstance().getSharedLeaf(generator.getXsltVersion(),targetpath);
+        this.sharedleaf = SharedLeafFactory.getInstance().getSharedLeaf(generator.getXsltVersion(), targetRes);
         // Create empty manager to avoid null pointer exceptions
         this.auxdepmanager = new AuxDependencyManager(this);
     }
@@ -56,9 +58,8 @@ public class XMLLeafTarget extends LeafTarget {
      */
     @Override
     protected Object getValueFromDiscCache() throws TransformerException {
-        Resource thefile = ResourceUtil.getResource(getTargetKey());
-        if (thefile.exists() && thefile.isFile()) {
-            return Xml.parse(generator.getXsltVersion(), thefile);
+        if (targetRes.exists()) {
+            return Xml.parse(generator.getXsltVersion(), (InputStreamResource)targetRes);
         } else {
             return null;
         }

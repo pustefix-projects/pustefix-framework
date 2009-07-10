@@ -21,6 +21,7 @@ import java.lang.reflect.Constructor;
 import java.util.TreeMap;
 
 import org.apache.log4j.Logger;
+import org.pustefixframework.resource.Resource;
 
 /**
  * TargetFactory.java
@@ -54,11 +55,11 @@ public class TargetFactory {
         return false;
     }
 
-    public synchronized TargetRW getTarget(TargetType type, TargetGenerator gen, String targetkey, Themes themes) {
+    public synchronized TargetRW getTarget(TargetType type, TargetGenerator gen, Resource targetRes, Resource targetAuxRes, String targetkey, Themes themes) {
         String   key = createKey(type, gen, targetkey);
         TargetRW ret = (TargetRW) targetmap.get(key);
         if (ret == null) {
-            ret = createTargetForType(type, gen, targetkey, themes);
+            ret = createTargetForType(type, gen, targetRes, targetAuxRes, targetkey, themes);
             targetmap.put(key, ret);
         }
         return ret;
@@ -68,13 +69,13 @@ public class TargetFactory {
         return(type.getTag() + "@" + gen.getName() + "@" + targetkey);
     }
     
-    private TargetRW createTargetForType(TargetType type, TargetGenerator gen, String targetkey, Themes themes) {
+    private TargetRW createTargetForType(TargetType type, TargetGenerator gen, Resource targetRes, Resource targetAuxRes, String targetkey, Themes themes) {
         TargetRW target;
         LOG.debug("===> Creating target '" + targetkey + "' " + type + " [" + gen.getName() + "]");
         try {
             Class<? extends TargetRW>       theclass    = type.getTargetClass();
-            Constructor<? extends TargetRW> constructor = theclass.getConstructor(new Class[]{type.getClass(), gen.getClass(), targetkey.getClass(), Themes.class});
-            target = constructor.newInstance(new Object[]{type, gen, targetkey, themes});
+            Constructor<? extends TargetRW> constructor = theclass.getConstructor(new Class[]{type.getClass(), gen.getClass(), Resource.class, Resource.class, targetkey.getClass(), Themes.class});
+            target = constructor.newInstance(new Object[]{type, gen, targetRes, targetAuxRes, targetkey, themes});
         } catch (Exception e) {
             throw new RuntimeException("error creating target '" + targetkey + "' " + type + " [" + gen.getName() + "]: " + e.toString(), e);
         }
