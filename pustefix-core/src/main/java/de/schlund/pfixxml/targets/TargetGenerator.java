@@ -407,8 +407,12 @@ public class TargetGenerator implements Comparable<TargetGenerator> {
                 Element aux = (Element) allaux.item(j);
                 URI uri;
 				try {
-					if(aux.getAttribute("name").contains("depend.xml")) uri = new URI("bundle:/META-INF/depend.xml");
-					else uri = new URI(aux.getAttribute("name"));
+				    // FIXME: Do not use hard-coded path to depend.xml
+					if (aux.getAttribute("name").contains("depend.xml")) {
+					    uri = new URI("bundle:/META-INF/pustefix/depend.xml");
+					} else {
+					    uri = new URI(aux.getAttribute("name"));
+					}
 				} catch (URISyntaxException e) {
 					throw new XMLException("Illegal aux name: " + aux.getAttribute("name"), e);
 				}
@@ -551,10 +555,17 @@ public class TargetGenerator implements Comparable<TargetGenerator> {
         Resource targetRes;
         FileResource targetAuxRes;
 		try {
-			URI uri = new URI("bundle:/PUSTEFIX-INF/"+key);
+			URI uri;
+			if (key.contains(":")) {
+			    uri = new URI(key);
+			} else {
+			    // TODO Relativ URIs should be resolved relative to the 
+			    // configuration file
+			    uri = new URI("bundle:/PUSTEFIX-INF/" + key);
+			}
 			System.out.println(uri.toString());
 			if(type.equals(TargetType.XML_LEAF) || type.equals(TargetType.XSL_LEAF)) {
-				targetRes = resourceLoader.getResource(new URI("bundle:/PUSTEFIX-INF/"+key));
+				targetRes = resourceLoader.getResource(uri);
 			} else {
 			    targetRes = getFileResourceFromPersistentStorage(key);
 			}
