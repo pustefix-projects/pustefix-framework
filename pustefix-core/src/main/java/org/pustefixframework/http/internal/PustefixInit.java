@@ -17,47 +17,15 @@
  */
 package org.pustefixframework.http.internal;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.Properties;
 
 import javax.servlet.ServletContext;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerConfigurationException;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMResult;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.sax.SAXTransformerFactory;
-import javax.xml.transform.sax.TransformerHandler;
-import javax.xml.transform.stream.StreamResult;
 
 import org.apache.log4j.Logger;
-import org.apache.log4j.xml.DOMConfigurator;
-import org.w3c.dom.Document;
-import org.xml.sax.EntityResolver;
-import org.xml.sax.ErrorHandler;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
-import org.xml.sax.SAXParseException;
-import org.xml.sax.XMLReader;
-import org.xml.sax.helpers.DefaultHandler;
-import org.xml.sax.helpers.XMLReaderFactory;
 
 import de.schlund.pfixcore.exception.PustefixCoreException;
-import de.schlund.pfixxml.config.CustomizationHandler;
 import de.schlund.pfixxml.config.GlobalConfig;
 import de.schlund.pfixxml.config.GlobalConfigurator;
-import de.schlund.pfixxml.resources.FileResource;
-import de.schlund.pfixxml.resources.ResourceUtil;
-import de.schlund.pfixxml.util.SimpleResolver;
-import de.schlund.pfixxml.util.TransformerHandlerAdapter;
-import de.schlund.pfixxml.util.logging.ProxyLogUtil;
 
 /**
  * This Servlet is just there to have it's init method called on startup of the
@@ -78,35 +46,8 @@ public class PustefixInit {
 
     private final static Logger LOG = Logger.getLogger(PustefixInit.class);
     
-    private static String log4jconfig = "/WEB-INF/pfixlog.xml";
-
     private static long log4jmtime = -1;
     private static boolean warMode = false;
-    
-    public static void tryReloadLog4j() {
-        if (log4jconfig != null) {
-            FileResource l4jfile = ResourceUtil.getFileResourceFromDocroot(log4jconfig);
-            long tmpmtime = l4jfile.lastModified();
-            if (tmpmtime > log4jmtime) {
-                LOG.error("\n\n################################\n"
-                        + "#### Reloading log4j config ####\n"
-                        + "################################\n");
-                try {
-                    configureLog4j(l4jfile);
-                } catch (FileNotFoundException e) {
-                    Logger.getLogger(PustefixInit.class).error(
-                            "Reloading log4j config failed!", e);
-                } catch (SAXException e) {
-                    Logger.getLogger(PustefixInit.class).error(
-                            "Reloading log4j config failed!", e);
-                } catch (IOException e) {
-                    Logger.getLogger(PustefixInit.class).error(
-                            "Reloading log4j config failed!", e);
-                }
-                log4jmtime = tmpmtime;
-            }
-        }
-    }
     
     public static void init(ServletContext servletContext) throws PustefixCoreException {
         
@@ -136,112 +77,7 @@ public class PustefixInit {
     		// when possible...
     		properties.setProperty("pustefix.docroot", docrootstr);
     	}
-    
-    	configureLogging(properties, servletContext);
-    	LOG.debug(">>>> LOG4J Init OK <<<<");
 
-    }
-
-    private static void configureLogging(Properties properties, ServletContext servletContext) throws PustefixCoreException {
-        
-    	FileResource l4jfile = ResourceUtil.getFileResourceFromDocroot(log4jconfig);
-    	
-        if(!l4jfile.exists()) {
-            ProxyLogUtil.getInstance().configureLog4jProxy();
-            ProxyLogUtil.getInstance().setServletContext(servletContext);
-        } else {
-        	
-            try {
-                configureLog4j(l4jfile);
-            } catch (FileNotFoundException e) {
-                throw new PustefixCoreException(l4jfile + ": file for log4j configuration not found!", e);
-            } catch (SAXException e) {
-                throw new PustefixCoreException(l4jfile + ": error on parsing log4j configuration file", e);
-            } catch (IOException e) {
-                throw new PustefixCoreException(l4jfile + ": error on reading log4j configuration file!", e);
-            }
-
-        }
-        
-    }
-
-    private static void configureLog4j(FileResource configFile) throws SAXException, FileNotFoundException, IOException {
-        log4jmtime = configFile.lastModified();
-        XMLReader xreader = XMLReaderFactory.createXMLReader();
-        TransformerFactory tf = TransformerFactory.newInstance();
-        if (tf.getFeature(SAXTransformerFactory.FEATURE)) {
-            SAXTransformerFactory stf = (SAXTransformerFactory) tf;
-            TransformerHandler th;
-            try {
-                th = stf.newTransformerHandler();
-            } catch (TransformerConfigurationException e) {
-                throw new RuntimeException(
-                        "Failed to configure TransformerFactory!", e);
-            }
-            DOMResult dr = new DOMResult();
-            th.setResult(dr);
-            DefaultHandler dh = new TransformerHandlerAdapter(th);
-            CustomizationHandler cushandler = new CustomizationHandler(dh);
-            cushandler.setFallbackDocroot();
-            xreader.setContentHandler(cushandler);
-            xreader.setDTDHandler(cushandler);
-            xreader.setErrorHandler(cushandler);
-            xreader.setEntityResolver(cushandler);
-            xreader.parse(new InputSource(configFile.getInputStream()));
-            ByteArrayOutputStream bufferStream = new ByteArrayOutputStream();
-            try {
-                Transformer t = SimpleResolver.configure(tf, "/pustefix/xsl/log4j.xsl");
-                t.transform(new DOMSource(dr.getNode()), new StreamResult(bufferStream));
-            } catch (TransformerException e) {
-                throw new SAXException(e);
-            }
-            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-            dbf.setValidating(true);
-            dbf.setNamespaceAware(true);
-            Document confDoc;
-            try {
-                DocumentBuilder db = dbf.newDocumentBuilder();
-                db.setEntityResolver(new EntityResolver() {
-
-                    public InputSource resolveEntity(String publicId, String systemId) throws SAXException, IOException {
-                        if (systemId.equals("http://logging.apache.org/log4j/docs/api/org/apache/log4j/xml/log4j.dtd")) {
-                            return new InputSource(ResourceUtil.getFileResourceFromDocroot("core/schema/log4j.dtd").getInputStream());
-                        }
-                        return null;
-                    }
-                    
-                });
-                db.setErrorHandler(new ErrorHandler() {
-
-                    public void warning(SAXParseException exception) throws SAXException {
-                        System.err.println("Warning while parsing log4j configuration: ");
-                        exception.printStackTrace(System.err);
-                    }
-
-                    public void error(SAXParseException exception) throws SAXException {
-                        System.err.println("Error while parsing log4j configuration: ");
-                        exception.printStackTrace(System.err);
-                    }
-
-                    public void fatalError(SAXParseException exception) throws SAXException {
-                        System.err.println("Fatal error while parsing log4j configuration: ");
-                        exception.printStackTrace(System.err);                    }
-                    
-                });
-                confDoc = db.parse(new ByteArrayInputStream(bufferStream.toByteArray()));
-            } catch (SAXException e) {
-                throw e;
-            } catch (IOException e) {
-                throw e;
-            } catch (ParserConfigurationException e) {
-                String msg = "Error while trying to create DOM document";
-                throw new RuntimeException(msg, e);
-            }
-            DOMConfigurator.configure(confDoc.getDocumentElement());
-        } else {
-            throw new RuntimeException(
-                    "Could not get instance of SAXTransformerFactory!");
-        }
     }
 
 }

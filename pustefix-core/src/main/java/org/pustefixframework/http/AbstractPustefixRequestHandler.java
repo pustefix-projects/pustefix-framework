@@ -40,7 +40,6 @@ import org.apache.log4j.Logger;
 import org.pustefixframework.admin.mbeans.WebappAdmin;
 import org.pustefixframework.config.contextxmlservice.ServletManagerConfig;
 import org.pustefixframework.container.spring.http.UriProvidingHttpRequestHandler;
-import org.pustefixframework.http.internal.PustefixInit;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.web.context.ServletContextAware;
 
@@ -367,8 +366,6 @@ public abstract class AbstractPustefixRequestHandler implements UriProvidingHttp
             LOG.debug("*** Creating PfixServletRequest object.");
             preq = new PfixServletRequestImpl(req, this.getServletManagerConfig().getProperties());
         }
-
-        PustefixInit.tryReloadLog4j();
         
         // End of initialization. Now we handle all cases where we need to redirect.
 
