@@ -288,21 +288,16 @@ public class IWrapperContainerImpl implements IWrapperContainer {
                     throw new XMLException("FATAL: you have already defined a wrapper with prefix " + prefix + " on page '" + context.getCurrentPageRequest().getName() + "'");
                 }
 
-                String iface = iConfig.getWrapperClass().getName();
-
-                Class<?> thewrapper = null;
+                Class<?> thewrapper = iConfig.getWrapperClass();
                 IWrapper wrapper = null;
                 try {
-                    thewrapper = Class.forName(iface);
                     wrapper = (IWrapper) thewrapper.newInstance();
-                } catch (ClassNotFoundException e) {
-                    throw new XMLException("unable to find class [" + iface + "] :" + e.getMessage());
                 } catch (InstantiationException e) {
-                    throw new XMLException("unable to instantiate class [" + iface + "] :" + e.getMessage());
+                    throw new XMLException("unable to instantiate class [" + thewrapper.getName() + "] :" + e.getMessage());
                 } catch (IllegalAccessException e) {
-                    throw new XMLException("unable to acces class [" + iface + "] :" + e.getMessage());
+                    throw new XMLException("unable to acces class [" + thewrapper.getName() + "] :" + e.getMessage());
                 } catch (ClassCastException e) {
-                    throw new XMLException("class [" + iface + "] does not implement the interface IWrapper :" + e.getMessage());
+                    throw new XMLException("class [" + thewrapper.getName() + "] does not implement the interface IWrapper :" + e.getMessage());
                 }
 
                 wrapper.defineOrder(order++);
