@@ -497,11 +497,13 @@ public class PfixServletRequestImpl implements PfixServletRequest {
     private static String getPageName(String[] uris, String path) {
     	String matchUri = "";
     	for(String uri:uris) {
+    		//TODO: ** handling
+    		if(uri.endsWith("**")) uri = uri.substring(0,uri.length()-2);
     		if(path.startsWith(uri) && uri.length()>matchUri.length()) {
     			matchUri = uri;
     		}
     	}
-    	path = path.substring(matchUri.length()+1);
+    	path = path.substring(matchUri.length());
     	return path;
     }
     
