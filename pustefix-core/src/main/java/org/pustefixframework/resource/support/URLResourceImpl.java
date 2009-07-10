@@ -50,7 +50,7 @@ public class URLResourceImpl extends AbstractResource implements InputStreamReso
         if (originallyRequestedURI != null) {
             this.uri = originallyRequestedURI;
         } else {
-            this.originalURI = uri;
+            this.uri = uri;
         }
         this.url = url;
     }

@@ -55,7 +55,7 @@ public class FileResourceImpl extends AbstractResource implements FileResource {
         if (originallyRequestedURI != null) {
             this.uri = originallyRequestedURI;
         } else {
-            this.originalURI = uri;
+            this.uri = uri;
         }
         this.file = file;
     }
