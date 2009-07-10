@@ -96,4 +96,8 @@ public class FileResourceImpl extends AbstractResource implements FileResource {
         return file;
     }
 
+    public long lastModified() {
+        return file.lastModified();
+    }
+
 }

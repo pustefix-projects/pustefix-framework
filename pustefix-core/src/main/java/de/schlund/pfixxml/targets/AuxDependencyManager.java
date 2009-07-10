@@ -28,7 +28,7 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
-import org.pustefixframework.resource.FileSystemResource;
+import org.pustefixframework.resource.FileResource;
 import org.pustefixframework.resource.InputStreamResource;
 import org.pustefixframework.resource.OutputStreamResource;
 import org.pustefixframework.resource.Resource;
@@ -36,6 +36,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
+import de.schlund.pfixxml.util.ResourceUtils;
 import de.schlund.pfixxml.util.Xml;
 
 /**
@@ -64,7 +65,7 @@ public class AuxDependencyManager {
         
     public synchronized void tryInitAuxdepend() throws Exception {
     	Resource auxfile = target.getTargetAuxResource();
-        if (auxfile.exists()) {
+        if (ResourceUtils.exists(auxfile)) {
             Document        doc     = Xml.parseMutable((InputStreamResource)auxfile);
             NodeList        auxdeps = doc.getElementsByTagName(DEPAUX);
             if (auxdeps.getLength() > 0) {
@@ -232,8 +233,8 @@ public class AuxDependencyManager {
     public synchronized void saveAuxdepend() throws IOException  {
         LOG.info("===> Trying to save aux info of Target '" + target.getTargetKey() + "'");
 
-        FileSystemResource       path   = (FileSystemResource)target.getTargetAuxResource();
-        File dir    = path.getFile().getParentFile();
+        FileResource path = target.getTargetAuxResource();
+        File dir = path.getFile().getParentFile();
         
         // Make sure parent directory is existing (for leaf targets)
         if (dir != null) {

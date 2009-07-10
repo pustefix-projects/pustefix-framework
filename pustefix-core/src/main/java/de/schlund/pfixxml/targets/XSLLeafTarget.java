@@ -25,10 +25,12 @@ import java.io.IOException;
 import javax.xml.transform.Templates;
 import javax.xml.transform.TransformerException;
 
+import org.pustefixframework.resource.FileResource;
 import org.pustefixframework.resource.InputStreamResource;
 import org.pustefixframework.resource.Resource;
 import org.w3c.dom.Document;
 
+import de.schlund.pfixxml.util.ResourceUtils;
 import de.schlund.pfixxml.util.Xml;
 import de.schlund.pfixxml.util.Xslt;
 
@@ -45,7 +47,7 @@ import de.schlund.pfixxml.util.Xslt;
 
 public class XSLLeafTarget extends LeafTarget {
 
-    public XSLLeafTarget(TargetType type, TargetGenerator gen, Resource targetRes, Resource targetAuxRes, String key, Themes themes) throws Exception {
+    public XSLLeafTarget(TargetType type, TargetGenerator gen, Resource targetRes, FileResource targetAuxRes, String key, Themes themes) throws Exception {
     	if(!(targetRes instanceof InputStreamResource)) throw new IllegalArgumentException("Expected InputStreamResource");
     	this.type      = type;
         this.generator = gen;
@@ -63,7 +65,7 @@ public class XSLLeafTarget extends LeafTarget {
      */
     @Override
     protected Object getValueFromDiscCache() throws TransformerException {
-        if (targetRes.exists()) {
+        if (ResourceUtils.exists(targetRes)) {
             // reset the target dependency list as they will be set up again
             this.getAuxDependencyManager().reset();
             
@@ -84,7 +86,7 @@ public class XSLLeafTarget extends LeafTarget {
     }
 
     public Document getDOM() throws TargetGenerationException {
-        if (targetRes.exists()) {
+        if (ResourceUtils.exists(targetRes)) {
             try {
                 return Xml.parse(generator.getXsltVersion(), (InputStreamResource)targetRes);
             } catch (TransformerException e) {

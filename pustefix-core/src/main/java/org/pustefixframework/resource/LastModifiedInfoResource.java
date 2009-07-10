@@ -18,19 +18,20 @@
 
 package org.pustefixframework.resource;
 
-import java.net.URL;
-
 
 /**
- * Resource that is backed by a URL.
+ * Represents a resource that has meta-information about the last time
+ * it was modified.
  * 
  * @author Sebastian Marsching <sebastian.marsching@1und1.de>
  */
-public interface URLResource extends InputStreamResource, LastModifiedInfoResource {
+public interface LastModifiedInfoResource extends Resource {
     /**
-     * Returns the URL that is used to get content from this resource.
-     * 
-     * @return url of this resource
+     * Returns the time this resource was last modified. 
+     * @return A <code>long</code> value representing the time the file was
+     *   last modified, measured in milliseconds since the epoch
+     *   (00:00:00 GMT, January 1, 1970), or <code>0L</code> if the
+     *   file does not exist or if an I/O error occurs
      */
-    URL getURL();
+    long lastModified();
 }

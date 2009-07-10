@@ -24,10 +24,12 @@ import java.util.TreeSet;
 import javax.xml.transform.TransformerException;
 
 import org.apache.log4j.Logger;
+import org.pustefixframework.resource.FileResource;
 import org.pustefixframework.resource.Resource;
 
 import de.schlund.pfixxml.XMLException;
 import de.schlund.pfixxml.targets.cachestat.CacheStatistic;
+import de.schlund.pfixxml.util.ResourceUtils;
 
 /**
  * TargetImpl.java
@@ -48,7 +50,7 @@ public abstract class TargetImpl implements TargetRW, Comparable<Target> {
     protected TargetGenerator      generator;
     protected String               targetkey;
     protected Resource             targetRes;
-    protected Resource             targetAuxRes;
+    protected FileResource         targetAuxRes;
     protected Themes               themes          = null;
     protected TreeMap<String, Object> params       = null;
     protected Target               xmlsource       = null;
@@ -84,7 +86,7 @@ public abstract class TargetImpl implements TargetRW, Comparable<Target> {
     	return targetRes;
     }
     
-    public Resource getTargetAuxResource() {
+    public FileResource getTargetAuxResource() {
     	return targetAuxRes;
     }
 
@@ -149,7 +151,7 @@ public abstract class TargetImpl implements TargetRW, Comparable<Target> {
             LOG.debug("skip_getmodtimemaybeupdate is true. Trying to skip getModTimeMaybeUpdate...");
             if (!onceLoaded) {
                 // do test for exists here!
-                if (!targetRes.exists()) { // Target has not been loaded once and it doesn't exist in disk cache
+                if (!ResourceUtils.exists(targetRes)) { // Target has not been loaded once and it doesn't exist in disk cache
                     LOG.debug("Cant't skip getModTimeMaybeUpdated because it has not been loaded " +
                               "and doesn't even exist in disk cache! Generating now !!");
                     try {
@@ -245,11 +247,7 @@ public abstract class TargetImpl implements TargetRW, Comparable<Target> {
                     // newer any more, so set the mod time of the target to the mod time of the file
                     // in disk cache
                     if (isDiskCacheNewerThenMemCache()) {
-                    	try {
-                    		setModTime(targetRes.lastModified());
-                    	} catch(IOException x) {
-                    		throw new TransformerException("Can't get modification time: " + targetRes.toString(), x);
-                    	}
+                        setModTime(ResourceUtils.lastModified(targetRes));
                     }
 
                     // now the target is generated
@@ -274,12 +272,7 @@ public abstract class TargetImpl implements TargetRW, Comparable<Target> {
     
     public boolean isDiskCacheNewerThenMemCache() {
         long target_mod_time = getModTime();
-        long disk_mod_time;
-        try {
-            disk_mod_time = targetRes.lastModified();
-        } catch(IOException x) {
-        	throw new RuntimeException("Error getting resource modification time: " + targetRes.toString(), x);
-        }
+        long disk_mod_time = ResourceUtils.lastModified(targetRes);
         if (LOG.isDebugEnabled()) {
             LOG.debug("File in DiskCache "+ targetRes.toString()
                     + " (" + disk_mod_time + ") is "

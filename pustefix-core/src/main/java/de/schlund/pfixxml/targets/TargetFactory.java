@@ -21,6 +21,7 @@ import java.lang.reflect.Constructor;
 import java.util.TreeMap;
 
 import org.apache.log4j.Logger;
+import org.pustefixframework.resource.FileResource;
 import org.pustefixframework.resource.Resource;
 
 /**
@@ -55,7 +56,7 @@ public class TargetFactory {
         return false;
     }
 
-    public synchronized TargetRW getTarget(TargetType type, TargetGenerator gen, Resource targetRes, Resource targetAuxRes, String targetkey, Themes themes) {
+    public synchronized TargetRW getTarget(TargetType type, TargetGenerator gen, Resource targetRes, FileResource targetAuxRes, String targetkey, Themes themes) {
         String   key = createKey(type, gen, targetkey);
         TargetRW ret = (TargetRW) targetmap.get(key);
         if (ret == null) {
@@ -69,12 +70,16 @@ public class TargetFactory {
         return(type.getTag() + "@" + gen.getName() + "@" + targetkey);
     }
     
-    private TargetRW createTargetForType(TargetType type, TargetGenerator gen, Resource targetRes, Resource targetAuxRes, String targetkey, Themes themes) {
+    private TargetRW createTargetForType(TargetType type, TargetGenerator gen, Resource targetRes, FileResource targetAuxRes, String targetkey, Themes themes) {
         TargetRW target;
         LOG.debug("===> Creating target '" + targetkey + "' " + type + " [" + gen.getName() + "]");
+        if (!(targetRes instanceof FileResource)) {
+            if (type.equals(TargetType.XML_VIRTUAL) || type.equals(TargetType.XSL_VIRTUAL)) {
+                throw new RuntimeException("error creating target '" + targetkey + "' " + type + " [" + gen.getName() + "]: Attempt to create virtual target from resource that is not implementing FileResource"); 
+            }
+        }
         try {
-            Class<? extends TargetRW>       theclass    = type.getTargetClass();
-            Constructor<? extends TargetRW> constructor = theclass.getConstructor(new Class[]{type.getClass(), gen.getClass(), Resource.class, Resource.class, targetkey.getClass(), Themes.class});
+            Constructor<? extends TargetRW> constructor = type.getTargetClassConstructor();
             target = constructor.newInstance(new Object[]{type, gen, targetRes, targetAuxRes, targetkey, themes});
         } catch (Exception e) {
             throw new RuntimeException("error creating target '" + targetkey + "' " + type + " [" + gen.getName() + "]: " + e.toString(), e);

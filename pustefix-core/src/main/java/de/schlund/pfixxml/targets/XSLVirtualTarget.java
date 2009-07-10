@@ -22,10 +22,8 @@ import java.util.TreeMap;
 
 import javax.xml.transform.TransformerException;
 
+import org.pustefixframework.resource.FileResource;
 import org.pustefixframework.resource.InputStreamResource;
-import org.pustefixframework.resource.OutputStreamResource;
-import org.pustefixframework.resource.FileSystemResource;
-import org.pustefixframework.resource.Resource;
 import org.w3c.dom.Document;
 
 import de.schlund.pfixxml.util.Xml;
@@ -42,11 +40,8 @@ import de.schlund.pfixxml.util.Xslt;
 
 public class XSLVirtualTarget extends VirtualTarget {
 
-    public XSLVirtualTarget(TargetType type, TargetGenerator gen, Resource targetRes, Resource targetAuxRes, String key,
+    public XSLVirtualTarget(TargetType type, TargetGenerator gen, FileResource targetRes, FileResource targetAuxRes, String key,
             Themes themes) throws Exception {
-    	if(!(targetRes instanceof InputStreamResource)) throw new IllegalArgumentException("Expected InputStreamResource");
-    	if(!(targetRes instanceof OutputStreamResource)) throw new IllegalArgumentException("Expected OutputStreamResource");
-    	if(!(targetRes instanceof FileSystemResource)) throw new IllegalArgumentException("Expected FileSystemResource");
     	this.type = type;
         this.generator = gen;
         this.targetRes = targetRes;
@@ -63,7 +58,7 @@ public class XSLVirtualTarget extends VirtualTarget {
      */
     @Override
     protected Object getValueFromDiscCache() throws TransformerException {
-        if (targetRes.exists()) {
+        if (targetRes.getFile().exists()) {
             return Xslt.loadTemplates(generator.getXsltVersion(), (InputStreamResource)targetRes, this);
         } else {
             return null;
@@ -73,7 +68,7 @@ public class XSLVirtualTarget extends VirtualTarget {
     public Document getDOM() throws TargetGenerationException {
         // Make sure we have an up-to-date version
         this.getValue();
-        if (targetRes.exists()) {
+        if (targetRes.getFile().exists()) {
             try {
                 return Xml.parse(generator.getXsltVersion(), (InputStreamResource)targetRes);
             } catch (TransformerException e) {

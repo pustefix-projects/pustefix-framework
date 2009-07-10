@@ -18,6 +18,11 @@
 
 package de.schlund.pfixxml.targets;
 
+import java.lang.reflect.Constructor;
+
+import org.pustefixframework.resource.FileResource;
+import org.pustefixframework.resource.Resource;
+
 /**
  * TargetType.java
  *
@@ -31,18 +36,20 @@ package de.schlund.pfixxml.targets;
 
 public final class TargetType {
 
-    public static final TargetType XSL_LEAF   = new TargetType("xsl_leaf", "de.schlund.pfixxml.targets.XSLLeafTarget");
-    public static final TargetType XML_LEAF   = new TargetType("xml_leaf", "de.schlund.pfixxml.targets.XMLLeafTarget");
-    public static final TargetType XSL_VIRTUAL = new TargetType("xsl",     "de.schlund.pfixxml.targets.XSLVirtualTarget");
-    public static final TargetType XML_VIRTUAL = new TargetType("xml",     "de.schlund.pfixxml.targets.XMLVirtualTarget");
+    public static final TargetType XSL_LEAF   = new TargetType("xsl_leaf", "de.schlund.pfixxml.targets.XSLLeafTarget", false);
+    public static final TargetType XML_LEAF   = new TargetType("xml_leaf", "de.schlund.pfixxml.targets.XMLLeafTarget", false);
+    public static final TargetType XSL_VIRTUAL = new TargetType("xsl",     "de.schlund.pfixxml.targets.XSLVirtualTarget", true);
+    public static final TargetType XML_VIRTUAL = new TargetType("xml",     "de.schlund.pfixxml.targets.XMLVirtualTarget", true);
     
     private static final TargetType[] typearray = {XSL_LEAF, XML_LEAF, XSL_VIRTUAL, XML_VIRTUAL}; 
     
+    private boolean virtual;
     private String tag;
     private Class<? extends TargetRW>  theclass;
     
-    private TargetType(String tag, String theclass) {
+    private TargetType(String tag, String theclass, boolean virtual) {
         try {
+            this.virtual = virtual;
             this.tag      = tag;
             this.theclass = Class.forName(theclass).asSubclass(TargetRW.class);
         } catch (ClassNotFoundException e) {
@@ -61,6 +68,14 @@ public final class TargetType {
     
     public Class<? extends TargetRW> getTargetClass() {
         return theclass;
+    }
+    
+    public Constructor<? extends TargetRW> getTargetClassConstructor() throws SecurityException, NoSuchMethodException {
+        if (virtual) {
+            return theclass.getConstructor(new Class[]{TargetType.class, TargetGenerator.class, FileResource.class, FileResource.class, String.class, Themes.class});
+        } else {
+            return theclass.getConstructor(new Class[]{TargetType.class, TargetGenerator.class, Resource.class, FileResource.class, String.class, Themes.class});
+        }
     }
 
     public static TargetType getByTag(String type) {

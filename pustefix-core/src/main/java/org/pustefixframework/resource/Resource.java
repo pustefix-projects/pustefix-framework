@@ -18,7 +18,6 @@
 
 package org.pustefixframework.resource;
 
-import java.io.IOException;
 import java.net.URI;
 
 
@@ -58,10 +57,5 @@ public interface Resource {
      *  <code>null</code>
      */
     URI[] getSupplementaryURIs();
-    
-    boolean exists();
-    
-    long lastModified() throws IOException;
-    
     
 }

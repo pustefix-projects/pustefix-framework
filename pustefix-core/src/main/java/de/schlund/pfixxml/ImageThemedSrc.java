@@ -28,6 +28,7 @@ import de.schlund.pfixxml.resources.ResourceUtil;
 import de.schlund.pfixxml.targets.TargetGenerator;
 import de.schlund.pfixxml.targets.TargetGeneratorFactory;
 import de.schlund.pfixxml.targets.VirtualTarget;
+import de.schlund.pfixxml.util.ResourceUtils;
 import de.schlund.pfixxml.util.XsltContext;
     
 /**
@@ -80,7 +81,7 @@ public class ImageThemedSrc {
                 if(module != null) uri += "&module="+module;
                 Resource res = gen.getResourceLoader().getResource(new URI(uri));
                 URI resUri = res.getURI();
-                if("module".equals(resUri.getScheme()) && res.exists()) {
+                if("module".equals(resUri.getScheme()) && ResourceUtils.exists(res)) {
                     src = "modules/"+resUri.getAuthority()+"/"+src;
                 } else {
                     src = resUri.getPath();
@@ -119,7 +120,7 @@ public class ImageThemedSrc {
                 if(module != null) uri += "&module="+module;
                 Resource res = gen.getResourceLoader().getResource(new URI(uri));
                 URI resUri = res.getURI();
-                if("module".equals(resUri.getScheme()) && res.exists()) {
+                if("module".equals(resUri.getScheme()) && ResourceUtils.exists(res)) {
                     testsrc = "modules/"+resUri.getAuthority()+resUri.getPath();
                 } else {
                     testsrc = resUri.getPath();

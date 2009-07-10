@@ -28,6 +28,7 @@ import org.xml.sax.SAXException;
 
 import de.schlund.pfixxml.targets.SPCache;
 import de.schlund.pfixxml.targets.SPCacheFactory;
+import de.schlund.pfixxml.util.ResourceUtils;
 import de.schlund.pfixxml.util.XsltVersion;
 
 /**
@@ -85,11 +86,7 @@ public class IncludeDocumentFactory {
 
     private boolean isDocumentInCacheObsolete(Resource path, String newkey) {
         long savedTime = ((IncludeDocument) cache.getValue(newkey)).getModTime();
-        try {
-        	return path.lastModified() > savedTime ? true : false;
-        } catch(IOException x) {
-        	throw new RuntimeException("Can't get modification time: " + path.toString(), x);
-        }
+    	return ResourceUtils.lastModified(path) > savedTime ? true : false;
     }
 
     public void reset() {

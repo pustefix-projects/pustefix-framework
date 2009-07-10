@@ -42,8 +42,7 @@ import javax.xml.transform.sax.TransformerHandler;
 
 import org.apache.log4j.Logger;
 import org.pustefixframework.config.customization.RuntimeProperties;
-import org.pustefixframework.resource.FileSystemResource;
-import org.pustefixframework.resource.FileSystemResourceImpl;
+import org.pustefixframework.resource.FileResource;
 import org.pustefixframework.resource.InputStreamResource;
 import org.pustefixframework.resource.Resource;
 import org.pustefixframework.resource.ResourceLoader;
@@ -116,7 +115,7 @@ public class TargetGenerator implements Comparable<TargetGenerator> {
 
     private Resource config_path;
     
-    private FileSystemResource cacheDir;
+    private FileResource cacheDir;
     
     private ResourceLoader resourceLoader;
     
@@ -153,7 +152,7 @@ public class TargetGenerator implements Comparable<TargetGenerator> {
         return language;
     }
 
-    public FileSystemResource getDisccachedir() {
+    public FileResource getDisccachedir() {
         return cacheDir;
     }
 
@@ -350,8 +349,8 @@ public class TargetGenerator implements Comparable<TargetGenerator> {
         default_theme = def_theme_str;
 
         //TODO: configurable cachedir location
-        cacheDir = new FileSystemResourceImpl(new File("file:/tmp/pustefix/"+CACHEDIR + "/" + getName()));
-        if (!cacheDir.exists()) {
+        cacheDir = getFileResourceFromPersistentStorage("");
+        if (!cacheDir.getFile().exists()) {
             cacheDir.getFile().mkdirs();
         } else if (!cacheDir.getFile().isDirectory() || !cacheDir.getFile().canRead()) {
             throw new XMLException("Directory " + cacheDir + " is not readeable or is no directory");
@@ -550,16 +549,16 @@ public class TargetGenerator implements Comparable<TargetGenerator> {
     private TargetRW createTarget(TargetType type, String key, Themes themes) {
         TargetFactory tfac = TargetFactory.getInstance();
         Resource targetRes;
-        Resource targetAuxRes;
+        FileResource targetAuxRes;
 		try {
 			URI uri = new URI("bundle:/PUSTEFIX-INF/"+key);
 			System.out.println(uri.toString());
 			if(type.equals(TargetType.XML_LEAF) || type.equals(TargetType.XSL_LEAF)) {
 				targetRes = resourceLoader.getResource(new URI("bundle:/PUSTEFIX-INF/"+key));
 			} else {
-				targetRes = new FileSystemResourceImpl(new File("file:/tmp/pustefix/"+CACHEDIR+"/"+key));
+			    targetRes = getFileResourceFromPersistentStorage(key);
 			}
-			targetAuxRes = new FileSystemResourceImpl(new File("file:/tmp/pustefix/"+CACHEDIR + "/" + key + ".aux"));
+			targetAuxRes = getFileResourceFromPersistentStorage(key + ".aux");
 		} catch (URISyntaxException e) {
 			throw new RuntimeException("Illegal URI: " + key, e);
 		}
@@ -878,5 +877,21 @@ public class TargetGenerator implements Comparable<TargetGenerator> {
     public Resource getConfigPath() {
         return this.config_path;
     }
-
+    
+    private FileResource getFileResourceFromPersistentStorage(String path) {
+        if (!path.startsWith("/") && path.length() > 0) {
+            path = "/" + path;
+        }
+        String uri = "persistentstorage:/" + CACHEDIR + "/" + getName() + path;
+        Resource resource;
+        try {
+            resource = resourceLoader.getResource(new URI(uri));
+        } catch (URISyntaxException e) {
+            throw new RuntimeException("Could not create URI from string: " + uri, e);
+        }
+        if (!(resource instanceof FileResource)) {
+            throw new RuntimeException("Expected resource implementing " + FileResource.class.getName() + " but got instance of " + resource.getClass().getName());
+        }
+        return (FileResource) resource;
+    }
 }

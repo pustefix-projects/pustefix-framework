@@ -75,4 +75,12 @@ public class URLResourceImpl extends AbstractResource implements InputStreamReso
         return url;
     }
 
+    public long lastModified() {
+        try {
+            return url.openConnection().getLastModified();
+        } catch (IOException e) {
+            return 0;
+        }
+    }
+
 }

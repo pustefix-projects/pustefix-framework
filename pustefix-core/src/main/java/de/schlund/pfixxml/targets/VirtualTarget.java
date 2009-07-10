@@ -29,11 +29,12 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.stream.StreamResult;
 
 import org.apache.log4j.NDC;
-import org.pustefixframework.resource.FileSystemResource;
+import org.pustefixframework.resource.FileResource;
 import org.pustefixframework.resource.OutputStreamResource;
 import org.w3c.dom.Document;
 
 import de.schlund.pfixxml.XMLException;
+import de.schlund.pfixxml.util.ResourceUtils;
 import de.schlund.pfixxml.util.Xslt;
 
 /**
@@ -52,6 +53,8 @@ public abstract class VirtualTarget extends TargetImpl {
     protected TreeSet<PageInfo> pageinfos = new TreeSet<PageInfo>();
 
     protected boolean forceupdate = false;
+    
+    protected FileResource targetRes;
 
     /**
      * @see de.schlund.pfixxml.targets.TargetRW#addPageInfo(de.schlund.pfixxml.targets.PageInfo)
@@ -107,12 +110,8 @@ public abstract class VirtualTarget extends TargetImpl {
         if (modtime == 0) {
             synchronized (this) {
                 if (modtime == 0) {
-                    if (targetRes.exists()) {
-                    	try {
-                    		setModTime(targetRes.lastModified());
-                    	} catch(IOException x) {
-                    		throw new RuntimeException("Error checking modification time: " + targetRes.toString(), x);
-                    	}
+                    if (targetRes.getFile().exists()) {
+                		setModTime(targetRes.lastModified());
                     }
                 }
             }
@@ -273,8 +272,8 @@ public abstract class VirtualTarget extends TargetImpl {
                         // a complete rebuild of this target the next try
                         storeValue(null);
                         setModTime(-1);
-                        if (targetRes.exists()) {
-                        	((FileSystemResource)targetRes).getFile().delete();
+                        if (targetRes.getFile().exists()) {
+                        	targetRes.getFile().delete();
                         }
 
                         TransformerException tex = e;
@@ -306,7 +305,7 @@ public abstract class VirtualTarget extends TargetImpl {
         Target tmpxmlsource = getXMLSource();
         Target tmpxslsource = getXSLSource();
         
-        ((FileSystemResource)targetRes).getFile().getParentFile().mkdirs();
+        targetRes.getFile().getParentFile().mkdirs();
         if (LOG.isDebugEnabled()) {
             LOG.debug(key + ": Getting " + getType() + " by XSLTrafo ("
                     + tmpxmlsource.getTargetKey() + " / "
@@ -349,7 +348,7 @@ public abstract class VirtualTarget extends TargetImpl {
         // Now we need to save the current value of the auxdependencies
         getAuxDependencyManager().saveAuxdepend();
         // and let's update the modification time.
-        setModTime(targetRes.lastModified());
+        setModTime(ResourceUtils.lastModified(targetRes));
         forceupdate = false;
     }
 

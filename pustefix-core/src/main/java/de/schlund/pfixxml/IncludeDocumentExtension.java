@@ -36,6 +36,7 @@ import de.schlund.pfixxml.targets.TargetGenerator;
 import de.schlund.pfixxml.targets.TargetGeneratorFactory;
 import de.schlund.pfixxml.targets.VirtualTarget;
 import de.schlund.pfixxml.util.ExtensionFunctionUtils;
+import de.schlund.pfixxml.util.ResourceUtils;
 import de.schlund.pfixxml.util.XPath;
 import de.schlund.pfixxml.util.Xml;
 import de.schlund.pfixxml.util.XsltContext;
@@ -174,7 +175,7 @@ public final class IncludeDocumentExtension {
             
             String DEF_THEME = tgen.getDefaultTheme();
 
-            if (path == null || !path.exists()) {
+            if (path == null || !ResourceUtils.exists(path)) {
                 if (dolog) {
                     DependencyTracker.logTyped("text", path, part, DEF_THEME,
                                                parent_path, parent_part, parent_theme, target);

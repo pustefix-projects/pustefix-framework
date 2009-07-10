@@ -21,10 +21,12 @@ package de.schlund.pfixxml.targets;
 
 import javax.xml.transform.TransformerException;
 
+import org.pustefixframework.resource.FileResource;
 import org.pustefixframework.resource.InputStreamResource;
 import org.pustefixframework.resource.Resource;
 import org.w3c.dom.Document;
 
+import de.schlund.pfixxml.util.ResourceUtils;
 import de.schlund.pfixxml.util.Xml;
 
 /**
@@ -40,7 +42,7 @@ import de.schlund.pfixxml.util.Xml;
 
 public class XMLLeafTarget extends LeafTarget {
 
-    public XMLLeafTarget(TargetType type, TargetGenerator gen, Resource targetRes, Resource targetAuxRes, String key, Themes themes) throws Exception {
+    public XMLLeafTarget(TargetType type, TargetGenerator gen, Resource targetRes, FileResource targetAuxRes, String key, Themes themes) throws Exception {
     	if(!(targetRes instanceof InputStreamResource)) throw new IllegalArgumentException("Expected InputStreamResource");
     	this.type      = type;
         this.generator = gen;
@@ -58,7 +60,7 @@ public class XMLLeafTarget extends LeafTarget {
      */
     @Override
     protected Object getValueFromDiscCache() throws TransformerException {
-        if (targetRes.exists()) {
+        if (ResourceUtils.exists(targetRes)) {
             return Xml.parse(generator.getXsltVersion(), (InputStreamResource)targetRes);
         } else {
             return null;

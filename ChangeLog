@@ -1,5 +1,7 @@
 2009-07-10  Sebastian Marsching <sebastian.marsching@1und1.de>
 
+	Refactored resource handling in target generator.
+
 	Support for "persistentstorage:"-URIs providing access to the
 	persistent storage area of the OSGi container.
 

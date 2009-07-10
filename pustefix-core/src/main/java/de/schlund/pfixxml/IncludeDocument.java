@@ -27,6 +27,7 @@ import org.pustefixframework.resource.Resource;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
+import de.schlund.pfixxml.util.ResourceUtils;
 import de.schlund.pfixxml.util.Xml;
 import de.schlund.pfixxml.util.XsltVersion;
 
@@ -64,7 +65,7 @@ public class IncludeDocument {
      * to modify an immutable document will cause an exception.
      */
     public void createDocument(XsltVersion xsltVersion, Resource path, boolean mutable) throws SAXException, IOException, TransformerException {
-        modTime  = path.lastModified();
+        modTime  = ResourceUtils.lastModified(path);
 
         if (mutable) {
             doc = Xml.parseMutable((InputStreamResource)path);

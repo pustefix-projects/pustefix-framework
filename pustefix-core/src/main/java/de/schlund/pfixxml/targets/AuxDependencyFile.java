@@ -18,11 +18,12 @@
 
 package de.schlund.pfixxml.targets;
 
-import java.io.IOException;
 import java.util.Iterator;
 import java.util.TreeSet;
 
 import org.pustefixframework.resource.Resource;
+
+import de.schlund.pfixxml.util.ResourceUtils;
 
 /**
  * Dependency referencing a static file on the filesystem
@@ -66,7 +67,7 @@ public class AuxDependencyFile extends AbstractAuxDependency {
                 }
             }
         }
-        if (path.exists()) {
+        if (ResourceUtils.exists(path)) {
             if (last_lastModTime == 0) {
                 // We change from the file being checked once to not exist to "it exists now".
                 // so we need to make sure that all targets using it will be rebuild.
@@ -77,11 +78,7 @@ public class AuxDependencyFile extends AbstractAuxDependency {
                     target.setForceUpdate();
                 }
             }
-            try {
-            	last_lastModTime = path.lastModified();
-            } catch(IOException x) {
-            	throw new RuntimeException("Can't get resource modification time: " + path.toString(), x);
-            }
+        	last_lastModTime = ResourceUtils.lastModified(path);
             return last_lastModTime;
         } else {
             if (last_lastModTime > 0) {
