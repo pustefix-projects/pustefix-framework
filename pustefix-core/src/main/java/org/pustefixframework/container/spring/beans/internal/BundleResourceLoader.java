@@ -44,6 +44,7 @@ import org.pustefixframework.resource.ResourceSelector;
 public class BundleResourceLoader extends AbstractResourceLoader {
     
     private ResourceProvider bundleResourceProvider;
+    private ResourceProvider persistentStorageResourceProvider;
     private LinkedHashSet<ResourceSelector> resourceSelectors = new LinkedHashSet<ResourceSelector>();
     private LinkedHashSet<ResourceProvider> resourceProviders = new LinkedHashSet<ResourceProvider>();
     private LinkedHashMap<String, ResourceProvider> resourceProviderMap = new LinkedHashMap<String, ResourceProvider>();
@@ -52,6 +53,7 @@ public class BundleResourceLoader extends AbstractResourceLoader {
     
     public BundleResourceLoader(BundleContext bundleContext) {
         this.bundleResourceProvider = new BundleResourceProvider(bundleContext);
+        this.persistentStorageResourceProvider = new PersistentStorageResourceProvider(bundleContext);
         this.resourceProviderServiceTracker = new ResourceProviderServiceTracker(bundleContext);
         resourceProviderServiceTracker.open(true);
         this.resourceSelectorServiceTracker = new ResourceSelectorServiceTracker(bundleContext);
@@ -86,6 +88,9 @@ public class BundleResourceLoader extends AbstractResourceLoader {
         }
         if (scheme.equals("bundle")) {
             return bundleResourceProvider.getResources(uri, null);
+        }
+        if (scheme.equals("persistentstorage")) {
+            return persistentStorageResourceProvider.getResources(uri, null);
         }
         ResourceProvider resourceProvider;
         synchronized (resourceProviderMap) {

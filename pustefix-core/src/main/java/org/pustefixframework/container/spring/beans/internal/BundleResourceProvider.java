@@ -28,6 +28,7 @@ import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.pustefixframework.resource.Resource;
 import org.pustefixframework.resource.ResourceProvider;
+import org.pustefixframework.resource.support.URLResourceImpl;
 
 
 /**
@@ -99,12 +100,12 @@ public class BundleResourceProvider implements ResourceProvider {
         if (filename.trim().length() == 0) {
             return null;
         }
-        ArrayList<BundleResource> resources = new ArrayList<BundleResource>();
+        ArrayList<URLResourceImpl> resources = new ArrayList<URLResourceImpl>();
         @SuppressWarnings("unchecked")
         Enumeration<URL> en = bundle.findEntries(path, filename, false);
         while (en.hasMoreElements()) {
             URL url = (URL) en.nextElement();
-            BundleResource resource = new BundleResource(uri, originallyRequestedURI, url);
+            URLResourceImpl resource = new URLResourceImpl(uri, originallyRequestedURI, url);
             resources.add(resource);
         }
         if (resources.size() == 0) {

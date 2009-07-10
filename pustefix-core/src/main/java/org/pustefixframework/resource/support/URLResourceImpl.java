@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-package org.pustefixframework.container.spring.beans.internal;
+package org.pustefixframework.resource.support;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -28,17 +28,24 @@ import org.pustefixframework.resource.InputStreamResource;
 import org.pustefixframework.resource.URLResource;
 
 /**
- * Resource from an OSGi bundle.  
+ * Resource implementation using a URL to access the resource's content.  
  * 
  * @author Sebastian Marsching <sebastian.marsching@1und1.de>
  */
-public class BundleResource extends AbstractResource implements InputStreamResource, URLResource {
+public class URLResourceImpl extends AbstractResource implements InputStreamResource, URLResource {
 
     private URI uri;
     private URI originalURI;
     private URL url;
 
-    public BundleResource(URI uri, URI originallyRequestedURI, URL url) {
+    /**
+     * Creates a new URL based resource.
+     * 
+     * @param uri is returned by {@link #getURI()}
+     * @param originallyRequestedURI is returned by {@link #getOriginalURI()}
+     * @param url is used to actually access the resource
+     */
+    public URLResourceImpl(URI uri, URI originallyRequestedURI, URL url) {
         this.originalURI = uri;
         if (originallyRequestedURI != null) {
             this.uri = originallyRequestedURI;
