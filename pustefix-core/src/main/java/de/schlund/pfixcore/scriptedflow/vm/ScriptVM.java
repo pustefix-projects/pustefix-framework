@@ -270,7 +270,8 @@ public class ScriptVM {
     private boolean doVirtualRequest(String pagename, Map<String, String[]> reqParams, PfixServletRequest origPreq, ExtendedContext rcontext) throws PustefixApplicationException, PustefixCoreException {
 
         HttpServletRequest vhttpreq = new VirtualHttpServletRequest(origPreq.getRequest(), pagename, reqParams);
-        PfixServletRequest vpreq    = new PfixServletRequestImpl(vhttpreq, System.getProperties());
+        //TODO: passing of registered URIs / solve pathinfo construction problem
+        PfixServletRequest vpreq    = new PfixServletRequestImpl(vhttpreq, new String[0], System.getProperties());
         
         // Send request to the context and use returned SPDocument
         // for further processing

@@ -77,7 +77,7 @@ public class PfixServletRequestImpl implements PfixServletRequest {
     private int                   serverport;
     private HttpServletRequest    request;
     private long                  starttime        = 0;
-
+    private String[] uris;
 
     /* (non-Javadoc)
      * @see de.schlund.pfixxml.PfixServletRequest#getCreationTimeStamp()
@@ -95,7 +95,7 @@ public class PfixServletRequestImpl implements PfixServletRequest {
      * @param properties
      * @param cUtil
      */
-    public PfixServletRequestImpl(HttpServletRequest req, Properties properties) {
+    public PfixServletRequestImpl(HttpServletRequest req, String[] uris, Properties properties) {
     
         starttime   = System.currentTimeMillis();
         getRequestParams(req, properties);
@@ -106,6 +106,7 @@ public class PfixServletRequestImpl implements PfixServletRequest {
         serverport  = req.getServerPort();
         request     = req;
         session     = req.getSession(false);
+        this.uris   = uris;
 
     }
 
@@ -477,11 +478,12 @@ public class PfixServletRequestImpl implements PfixServletRequest {
             pagename = name.getValue();
         } else if (pathinfo != null && !pathinfo.equals("") && 
                    pathinfo.startsWith("/") && pathinfo.length() > 1) {
-            pagename = pathinfo.substring(1);
+        	pagename = getPageName(uris, pathinfo);
         } else {
             return null;
         }
         // We must remove any '::' that may have slipped in through the request
+        
         if (pagename.indexOf("::") > 0) {
             pagename = pagename.substring(0, pagename.indexOf("::"));
         }
@@ -490,6 +492,17 @@ public class PfixServletRequestImpl implements PfixServletRequest {
         } else {
             return null;
         }
+    }
+    
+    private static String getPageName(String[] uris, String path) {
+    	String matchUri = "";
+    	for(String uri:uris) {
+    		if(path.startsWith(uri) && uri.length()>matchUri.length()) {
+    			matchUri = uri;
+    		}
+    	}
+    	path = path.substring(matchUri.length()+1);
+    	return path;
     }
     
 } // PfixServletRequest

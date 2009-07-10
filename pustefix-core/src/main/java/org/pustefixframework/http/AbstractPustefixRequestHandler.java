@@ -364,7 +364,7 @@ public abstract class AbstractPustefixRequestHandler implements UriProvidingHttp
         }
         if (preq == null) {
             LOG.debug("*** Creating PfixServletRequest object.");
-            preq = new PfixServletRequestImpl(req, this.getServletManagerConfig().getProperties());
+            preq = new PfixServletRequestImpl(req, this.getRegisteredURIs(), this.getServletManagerConfig().getProperties());
         }
         
         // End of initialization. Now we handle all cases where we need to redirect.
