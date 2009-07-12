@@ -18,28 +18,29 @@
 
 package de.schlund.util.statuscodes;
 
-import de.schlund.pfixxml.resources.DocrootResource;
+import java.net.URI;
 
 public class StatusCode {
+ 
     private final String part;
-    private final DocrootResource path;
+    private final URI uri;
     
-    public StatusCode(String part, DocrootResource path) { 
+    public StatusCode(String part, URI uri) { 
         this.part = part;
-        this.path = path;
+        this.uri = uri;
     }
 
     public String getStatusCodeId() { 
         return part;
     }
 
-    public DocrootResource getStatusCodePath() {
-        return path;
+    public URI getStatusCodeURI() {
+        return uri;
     }
 
     @Override
     public String toString() {
-        return "StatusCode:" + getStatusCodeId() + "@" + getStatusCodePath().getRelativePath();
+        return "StatusCode:" + getStatusCodeId() + "@" + getStatusCodeURI();
     }
 
     public static String convertToFieldName(String part) {

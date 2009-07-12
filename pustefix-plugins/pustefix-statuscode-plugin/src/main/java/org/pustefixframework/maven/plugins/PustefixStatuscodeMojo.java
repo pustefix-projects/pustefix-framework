@@ -44,10 +44,10 @@ public class PustefixStatuscodeMojo extends AbstractMojo {
     private File genDir;
     
     /**
-     * @parameter default-value="${basedir}/src/main/webapp"
+     * @parameter default-value="${basedir}/src/main/resources/PUSTEFIX-INF"
      * @required
      */
-    private File docRoot;
+    private File resDir;
     
     /**
      * @parameter
@@ -79,7 +79,7 @@ public class PustefixStatuscodeMojo extends AbstractMojo {
     
     public void execute() throws MojoExecutionException {
         
-	if(!docRoot.exists()) return;
+	if(!resDir.exists()) return;
   
         DirectoryScanner ds = new DirectoryScanner();
         if(includes!=null) {
@@ -88,7 +88,7 @@ public class PustefixStatuscodeMojo extends AbstractMojo {
             ds.setIncludes(new String[] { "dyntxt/statuscodeinfo.xml" });
         }
         if(excludes!=null) ds.setExcludes(excludes);
-        ds.setBasedir(docRoot);
+        ds.setBasedir(resDir);
         ds.setCaseSensitive(true);
         ds.scan();
         String[] files = ds.getIncludedFiles();
@@ -100,7 +100,7 @@ public class PustefixStatuscodeMojo extends AbstractMojo {
         }
         
         try {
-            Result result = GenerateSCodes.generateFromInfo(resList, docRoot.getAbsolutePath(), genDir, module, targetPath);
+            Result result = GenerateSCodes.generateFromInfo(resList, resDir.getAbsolutePath(), genDir, module, targetPath);
             if(result.generatedClasses.size()>0) {
                 getLog().info("Generated "+result.generatedClasses.size()+" statuscode class"+
                         (result.generatedClasses.size()>1?"es":""));

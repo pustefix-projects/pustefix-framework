@@ -247,8 +247,8 @@
           <execution>
             <configuration>
               <module>pfixcore</module>
-              <docRoot>${basedir}/src/data</docRoot>
-              <includes><include>core/dyntxt/statuscodeinfo.xml</include></includes>
+              <docRoot>${basedir}/src/main/resources/PUSTEFIX-INF</docRoot>
+              <includes><include>dyntxt/statuscodeinfo.xml</include></includes>
             </configuration>
             <id>statuscodes</id>
             <goals>
