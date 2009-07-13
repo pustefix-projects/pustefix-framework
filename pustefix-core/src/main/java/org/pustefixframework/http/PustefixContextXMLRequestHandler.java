@@ -209,7 +209,7 @@ public class PustefixContextXMLRequestHandler extends AbstractPustefixXMLRequest
                 String scheme = preq.getScheme();
                 String port = String.valueOf(preq.getServerPort());
                 String redirectURL = scheme + "://" + getServerName(preq.getRequest()) 
-                    + ":" + port + preq.getContextPath() + preq.getServletPath() + "/" + spdoc.getPagename() 
+                    + ":" + port + preq.getRequestBasePath() + "/" + spdoc.getPagename() 
                     + ";jsessionid=" + preq.getSession(false).getId() + "?__reuse=" + spdoc.getTimestamp();
                 RequestParam rp = preq.getRequestParam("__frame");
                 if (rp != null) {

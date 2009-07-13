@@ -42,6 +42,8 @@ public class XSLVirtualTarget extends VirtualTarget {
 
     public XSLVirtualTarget(TargetType type, TargetGenerator gen, FileResource targetRes, FileResource targetAuxRes, String key,
             Themes themes) throws Exception {
+    	if(targetRes == null) throw new NullPointerException("targetRes must not be null");
+    	if(targetAuxRes == null) throw new NullPointerException("targetAuxRes must not be null");
     	this.type = type;
         this.generator = gen;
         this.targetRes = targetRes;
@@ -58,7 +60,7 @@ public class XSLVirtualTarget extends VirtualTarget {
      */
     @Override
     protected Object getValueFromDiscCache() throws TransformerException {
-        if (targetRes.getFile().exists()) {
+        if (((FileResource)targetRes).getFile().exists()) {
             return Xslt.loadTemplates(generator.getXsltVersion(), (InputStreamResource)targetRes, this);
         } else {
             return null;
@@ -68,7 +70,7 @@ public class XSLVirtualTarget extends VirtualTarget {
     public Document getDOM() throws TargetGenerationException {
         // Make sure we have an up-to-date version
         this.getValue();
-        if (targetRes.getFile().exists()) {
+        if (((FileResource)targetRes).getFile().exists()) {
             try {
                 return Xml.parse(generator.getXsltVersion(), (InputStreamResource)targetRes);
             } catch (TransformerException e) {

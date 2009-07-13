@@ -225,4 +225,13 @@ public interface PfixServletRequest {
      */
     public String getPageName();
 
+    
+    /**
+     * Extracts the complete request path including the context and servlet
+     * path, but omitting the last page name part from pathinfo
+     * 
+     * @return complete request path without page
+     */
+    public String getRequestBasePath();
+    
 }

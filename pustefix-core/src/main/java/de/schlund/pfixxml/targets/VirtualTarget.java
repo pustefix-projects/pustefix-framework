@@ -52,8 +52,6 @@ public abstract class VirtualTarget extends TargetImpl {
     protected TreeSet<PageInfo> pageinfos = new TreeSet<PageInfo>();
 
     protected boolean forceupdate = false;
-    
-    protected FileResource targetRes;
 
     /**
      * @see de.schlund.pfixxml.targets.TargetRW#addPageInfo(de.schlund.pfixxml.targets.PageInfo)
@@ -109,8 +107,8 @@ public abstract class VirtualTarget extends TargetImpl {
         if (modtime == 0) {
             synchronized (this) {
                 if (modtime == 0) {
-                    if (targetRes.getFile().exists()) {
-                		setModTime(targetRes.lastModified());
+                    if (((FileResource)targetRes).getFile().exists()) {
+                		setModTime(((FileResource)targetRes).lastModified());
                     }
                 }
             }
@@ -270,8 +268,8 @@ public abstract class VirtualTarget extends TargetImpl {
                         // a complete rebuild of this target the next try
                         storeValue(null);
                         setModTime(-1);
-                        if (targetRes.getFile().exists()) {
-                        	targetRes.getFile().delete();
+                        if (((FileResource)targetRes).getFile().exists()) {
+                        	((FileResource)targetRes).getFile().delete();
                         }
 
                         TransformerException tex = e;
@@ -302,7 +300,7 @@ public abstract class VirtualTarget extends TargetImpl {
         Target tmpxmlsource = getXMLSource();
         Target tmpxslsource = getXSLSource();
         
-        targetRes.getFile().getParentFile().mkdirs();
+        ((FileResource)targetRes).getFile().getParentFile().mkdirs();
         if (LOG.isDebugEnabled()) {
             LOG.debug(key + ": Getting " + getType() + " by XSLTrafo ("
                     + tmpxmlsource.getTargetKey() + " / "

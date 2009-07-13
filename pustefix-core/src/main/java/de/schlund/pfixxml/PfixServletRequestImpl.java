@@ -34,6 +34,7 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
 import org.pustefixframework.http.AbstractPustefixXMLRequestHandler;
+import org.springframework.util.AntPathMatcher;
 
 import de.schlund.pfixxml.multipart.MultipartHandler;
 import de.schlund.pfixxml.multipart.PartData;
@@ -494,17 +495,30 @@ public class PfixServletRequestImpl implements PfixServletRequest {
         }
     }
     
+    public String getRequestBasePath() {
+    	String path = getPathInfo();
+    	String pageName = getPageName(uris, path);
+    	if(!pageName.equals("")) {
+    		int ind = path.lastIndexOf(pageName);
+    		path = path.substring(0,ind);
+    	}
+    	path = getContextPath()+getServletPath()+path;
+    	if(path.endsWith("/")) path = path.substring(0, path.length()-1);
+    	return path;
+    }
+    
     private static String getPageName(String[] uris, String path) {
-    	String matchUri = "";
+    	String pageName = "";
     	for(String uri:uris) {
-    		//TODO: ** handling
-    		if(uri.endsWith("**")) uri = uri.substring(0,uri.length()-2);
-    		if(path.startsWith(uri) && uri.length()>matchUri.length()) {
-    			matchUri = uri;
+    		AntPathMatcher matcher = new AntPathMatcher();
+    		String matchPath = matcher.extractPathWithinPattern(uri, path);
+    		if(!matchPath.equals("")) {
+    			if(pageName.equals("") || matchPath.length() < pageName.length()) {
+    				pageName = matchPath;
+    			}
     		}
     	}
-    	path = path.substring(matchUri.length());
-    	return path;
+    	return pageName;
     }
     
 } // PfixServletRequest

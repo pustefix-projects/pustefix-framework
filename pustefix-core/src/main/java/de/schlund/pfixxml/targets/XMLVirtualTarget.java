@@ -58,7 +58,7 @@ public class XMLVirtualTarget extends VirtualTarget {
      */
     @Override
     protected Object getValueFromDiscCache() throws TransformerException {
-        if (targetRes.getFile().exists()) {
+        if (((FileResource)targetRes).getFile().exists()) {
             return Xml.parse(generator.getXsltVersion(), (InputStreamResource)targetRes);
         } else {
             return null;
