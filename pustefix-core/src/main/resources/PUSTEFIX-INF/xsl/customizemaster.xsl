@@ -11,6 +11,7 @@
   <xsl:param name="product"/>
   <xsl:param name="lang"/>
   <xsl:param name="__target_gen"/>
+  <xsl:param name="__namespaces"/>
   
   <xsl:param name="stylesheets_to_include"/>
   <xsl:param name="exclude_result_prefixes"/>
@@ -57,7 +58,7 @@
   
   <xsl:template match="/xsl:stylesheet/xsl:template[@match='/']/ixsl:stylesheet">
     <xsl:variable name="complete_exclude_result_prefixes" xmlns:prj="http://www.pustefix-framework.org/2008/namespace/project-config">
-      <xsl:for-each select="document($__target_gen)/make/namespaces/namespace-declaration[@exclude-result-prefix='true']">
+      <xsl:for-each select="document($__namespaces)/namespace-declaration[@exclude-result-prefix='true']">
         <xsl:value-of select="@prefix"/>
         <xsl:text>:</xsl:text>
         <xsl:value-of select="@url"/>

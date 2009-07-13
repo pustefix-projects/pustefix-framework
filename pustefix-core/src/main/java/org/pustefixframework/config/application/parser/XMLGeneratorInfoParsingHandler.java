@@ -25,7 +25,6 @@ import org.pustefixframework.config.application.ProjectInfo;
 import org.pustefixframework.config.application.XMLGeneratorInfo;
 import org.pustefixframework.config.customization.CustomizationAwareParsingHandler;
 import org.pustefixframework.config.generic.ParsingUtils;
-import org.pustefixframework.resource.InputStreamResource;
 import org.pustefixframework.resource.ResourceLoader;
 import org.pustefixframework.resource.URLResource;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -40,7 +39,6 @@ import com.marsching.flexiparse.parser.exception.ParserException;
 
 import de.schlund.pfixxml.targets.SPCacheFactory;
 import de.schlund.pfixxml.targets.TargetGenerator;
-import de.schlund.pfixxml.targets.TargetGeneratorFactoryBean;
 import de.schlund.pfixxml.targets.cachestat.CacheStatistic;
 
 public class XMLGeneratorInfoParsingHandler extends CustomizationAwareParsingHandler {
@@ -90,7 +88,7 @@ public class XMLGeneratorInfoParsingHandler extends CustomizationAwareParsingHan
             BeanDefinitionRegistry beanRegistry = ParsingUtils.getSingleTopObject(BeanDefinitionRegistry.class, context);
             DefaultBeanNameGenerator beanNameGenerator = new DefaultBeanNameGenerator();
         
-            BeanDefinitionBuilder beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(TargetGeneratorFactoryBean.class);
+            BeanDefinitionBuilder beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(TargetGenerator.class);
             beanBuilder.setScope("singleton");
             
             URI confURI;
@@ -105,14 +103,8 @@ public class XMLGeneratorInfoParsingHandler extends CustomizationAwareParsingHan
             BeanDefinition beanDefinition = beanBuilder.getBeanDefinition();
             String beanName = beanNameGenerator.generateBeanName(beanDefinition, beanRegistry);
             beanRegistry.registerBeanDefinition(beanName, beanDefinition);
-            beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(TargetGenerator.class);
-            beanDefinition = beanBuilder.getBeanDefinition();
-            beanDefinition.setFactoryBeanName(beanName);
-            beanDefinition.setFactoryMethodName("getObject");
-            beanName = beanNameGenerator.generateBeanName(beanDefinition, beanRegistry);
-            beanRegistry.registerBeanDefinition(beanName, beanDefinition);
-        
-            info.setConfigurationFile(uri);
+                       info.setConfigurationFile(uri);
+                       
             info.setTargetGeneratorBeanName(beanName);
             
         } else if(root.getLocalName().equals("check-modtime")) {

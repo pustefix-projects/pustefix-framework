@@ -46,6 +46,7 @@ import org.pustefixframework.resource.FileResource;
 import org.pustefixframework.resource.InputStreamResource;
 import org.pustefixframework.resource.Resource;
 import org.pustefixframework.resource.ResourceLoader;
+import org.springframework.beans.factory.InitializingBean;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -58,7 +59,6 @@ import org.xml.sax.helpers.DefaultHandler;
 import org.xml.sax.helpers.XMLReaderFactory;
 
 import de.schlund.pfixcore.util.Meminfo;
-import de.schlund.pfixcore.workflow.NavigationFactory;
 import de.schlund.pfixxml.IncludeDocumentFactory;
 import de.schlund.pfixxml.XMLException;
 import de.schlund.pfixxml.config.CustomizationHandler;
@@ -76,13 +76,15 @@ import de.schlund.pfixxml.util.XsltVersion;
  *
  */
 
-public class TargetGenerator implements Comparable<TargetGenerator> {
+public class TargetGenerator implements Comparable<TargetGenerator>, InitializingBean {
 
     public static final String XSLPARAM_TG = "__target_gen";
 
     public static final String XSLPARAM_TKEY = "__target_key";
     
     public static final String XSLPARAM_NAVITREE = "__navitree";
+    
+    public static final String XSLPARAM_NAMESPACES = "__namespaces";
 
     public static final String CACHEDIR = ".cache";
 
@@ -92,6 +94,9 @@ public class TargetGenerator implements Comparable<TargetGenerator> {
 
     private PageTargetTree pagetree = new PageTargetTree();
 
+    private Element navigation;
+    private Element namespaces;
+    
     private HashMap<String, Target> alltargets = new HashMap<String, Target>();
 
     private boolean isGetModTimeMaybeUpdateSkipped = false;
@@ -113,7 +118,7 @@ public class TargetGenerator implements Comparable<TargetGenerator> {
 
     private Set<ConfigurationChangeListener> configurationListeners = Collections.synchronizedSet(new HashSet<ConfigurationChangeListener>());
 
-    private Resource config_path;
+    private Resource configFile;
     
     private FileResource cacheDir;
     
@@ -121,19 +126,24 @@ public class TargetGenerator implements Comparable<TargetGenerator> {
     
     //--
 
-    public TargetGenerator(Resource confile, ResourceLoader resourceLoader) throws IOException, SAXException, XMLException {
-    	if(!(confile instanceof InputStreamResource)) throw new IllegalArgumentException("Expected InputStreamResource");
-        this.config_path = confile;
-        this.resourceLoader = resourceLoader;
-        Meminfo.print("TG: Before loading " + confile.toString());
-        loadConfig(confile);
-        Meminfo.print("TG: after loading targets for " + confile.toString());
+    public void afterPropertiesSet() throws Exception {
+    	Meminfo.print("TG: Before loading " + configFile.toString());
+        loadConfig(configFile);
+        Meminfo.print("TG: after loading targets for " + configFile.toString());
     }
-
+    
     //-- attributes
 
     public String getName() {
         return name;
+    }
+    
+    public void setConfigFile(InputStreamResource configFile) {
+    	this.configFile = configFile;
+    }
+    
+    public void setResourceLoader(ResourceLoader resourceLoader) {
+    	this.resourceLoader = resourceLoader;
     }
     
     public XsltVersion getXsltVersion() {
@@ -158,6 +168,14 @@ public class TargetGenerator implements Comparable<TargetGenerator> {
 
     public PageTargetTree getPageTargetTree() {
         return pagetree;
+    }
+    
+    public Element getNavigation() {
+    	return navigation;
+    }
+    
+    public Element getNamespaces() {
+    	return namespaces;
     }
     
     public ResourceLoader getResourceLoader() {
@@ -213,7 +231,7 @@ public class TargetGenerator implements Comparable<TargetGenerator> {
 
     public synchronized boolean tryReinit() throws Exception {
         if (needsReload()) {
-            LOG.warn("\n\n###############################\n" + "#### Reloading depend file: " + this.config_path.toString() + "\n" + "###############################\n");
+            LOG.warn("\n\n###############################\n" + "#### Reloading depend file: " + this.configFile.toString() + "\n" + "###############################\n");
             synchronized (alltargets) {
                 if (alltargets != null && !alltargets.isEmpty()) {
                     TargetDependencyRelation.getInstance().resetAllRelations((Collection<Target>) alltargets.values());
@@ -221,7 +239,7 @@ public class TargetGenerator implements Comparable<TargetGenerator> {
             }
             pagetree = new PageTargetTree();
             alltargets = new HashMap<String, Target>();
-            loadConfig(this.config_path);
+            loadConfig(this.configFile);
             this.fireConfigurationChangeEvent();
             return true;
         } else {
@@ -248,7 +266,7 @@ public class TargetGenerator implements Comparable<TargetGenerator> {
     private void loadConfig(Resource configFile) throws XMLException, IOException, SAXException {
         config_mtime = System.currentTimeMillis();
         LOG.warn("\n***** CAUTION! ***** loading config " + configFile.toString() + "...");
-
+        
         Document config;
 
         // String containing the XML code with resolved includes
@@ -307,7 +325,7 @@ public class TargetGenerator implements Comparable<TargetGenerator> {
         } else {
             throw new RuntimeException("Could not get instance of SAXTransformerFactory!");
         }
-
+        
         Element root = (Element) config.getElementsByTagName("make").item(0);
         
         String versionStr=root.getAttribute("xsltversion");
@@ -319,6 +337,10 @@ public class TargetGenerator implements Comparable<TargetGenerator> {
             }
         }
         
+        //TODO: dynamic navigation and namespaces
+        Document internalDoc = Xml.parse(xsltVersion, config);
+        navigation = (Element)internalDoc.getElementsByTagName("navigation").item(0);
+        namespaces = (Element)internalDoc.getElementsByTagName("namespaces").item(0);
         
         NodeList targetnodes = config.getElementsByTagName("target");
 
@@ -412,7 +434,6 @@ public class TargetGenerator implements Comparable<TargetGenerator> {
 				} catch (URISyntaxException e) {
 					throw new XMLException("Illegal aux name: " + aux.getAttribute("name"), e);
 				}
-				System.out.println("AUUUUUUUUX: "+uri.toString());
                 Resource auxname = resourceLoader.getResource(uri);
                 depaux.add(auxname);
             }
@@ -433,10 +454,9 @@ public class TargetGenerator implements Comparable<TargetGenerator> {
         }
         LOG.warn("\n=====> Preliminaries took " + (System.currentTimeMillis() - start) + "ms. Now looping over " + allstructs.keySet().size() + " targets");
         start = System.currentTimeMillis();
-        String tgParam = configFile.getOriginalURI().toASCIIString();
         for (Iterator<String> i = allstructs.keySet().iterator(); i.hasNext();) {
             TargetStruct struct = allstructs.get(i.next());
-            createTargetFromTargetStruct(struct, allstructs, depxmls, depxsls, tgParam);
+            createTargetFromTargetStruct(struct, allstructs, depxmls, depxsls);
         }
         LOG.warn("\n=====> Creating targets took " + (System.currentTimeMillis() - start) + "ms. Now init pagetree");
         start = System.currentTimeMillis();
@@ -444,7 +464,7 @@ public class TargetGenerator implements Comparable<TargetGenerator> {
         LOG.warn("\n=====> Init of Pagetree took " + (System.currentTimeMillis() - start) + "ms. Ready...");
     }
 
-    private TargetRW createTargetFromTargetStruct(TargetStruct struct, HashMap<String, TargetStruct> allstructs, HashSet<String> depxmls, HashSet<String> depxsls, String tgParam) throws XMLException {
+    private TargetRW createTargetFromTargetStruct(TargetStruct struct, HashMap<String, TargetStruct> allstructs, HashSet<String> depxmls, HashSet<String> depxsls) throws XMLException {
 
         String key = struct.getName();
         String type = struct.getType();
@@ -469,14 +489,14 @@ public class TargetGenerator implements Comparable<TargetGenerator> {
             if (!allstructs.containsKey(xmldep)) {
                 xmlsource = createTarget(TargetType.XML_LEAF, xmldep, null);
             } else {
-                xmlsource = createTargetFromTargetStruct(allstructs.get(xmldep), allstructs, depxmls, depxsls, tgParam);
+                xmlsource = createTargetFromTargetStruct(allstructs.get(xmldep), allstructs, depxmls, depxsls);
             }
 
             // Check if xsldep is a leaf node or virtual:
             if (!allstructs.containsKey(xsldep)) {
                 xslsource = createTarget(TargetType.XSL_LEAF, xsldep, null);
             } else {
-                xslsource = createTargetFromTargetStruct(allstructs.get(xsldep), allstructs, depxmls, depxsls, tgParam);
+                xslsource = createTargetFromTargetStruct(allstructs.get(xsldep), allstructs, depxmls, depxsls);
             }
 
             String themes_str = struct.getThemes();
@@ -515,14 +535,11 @@ public class TargetGenerator implements Comparable<TargetGenerator> {
                 LOG.debug("* Adding Param " + pname + " with value " + value);
                 virtual.addParam(pname, value);
             }
-            virtual.addParam(XSLPARAM_TG, tgParam);
+            virtual.addParam(XSLPARAM_TG, this);
             virtual.addParam(XSLPARAM_TKEY, key);
-            try {
-                virtual.addParam(XSLPARAM_NAVITREE, NavigationFactory.getInstance().getNavigation(this.config_path,getXsltVersion()).getNavigationXMLElement());
-            } catch (Exception e) {
-                throw new XMLException("Cannot get navigation tree", e);
-            }
-            
+            virtual.addParam(XSLPARAM_NAVITREE, navigation);
+            virtual.addParam(XSLPARAM_NAMESPACES, namespaces);
+                        
             if (!depxmls.contains(key) && !depxsls.contains(key)) {
                 // it's a toplevel target...
                 if (pagename == null) {
@@ -846,7 +863,6 @@ public class TargetGenerator implements Comparable<TargetGenerator> {
 
     public static void resetFactories() {
         CacheStatistic.reset();
-        TargetGeneratorFactory.getInstance().reset();
         TargetFactory.getInstance().reset();
         IncludeDocumentFactory.getInstance().reset();
         PageInfoFactory.getInstance().reset();
@@ -882,7 +898,7 @@ public class TargetGenerator implements Comparable<TargetGenerator> {
     }
 
     public Resource getConfigPath() {
-        return this.config_path;
+        return this.configFile;
     }
     
     private FileResource getFileResourceFromPersistentStorage(String path) {

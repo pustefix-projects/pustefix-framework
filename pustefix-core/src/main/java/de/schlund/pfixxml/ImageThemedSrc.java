@@ -26,7 +26,6 @@ import org.pustefixframework.resource.Resource;
 import de.schlund.pfixxml.resources.FileResource;
 import de.schlund.pfixxml.resources.ResourceUtil;
 import de.schlund.pfixxml.targets.TargetGenerator;
-import de.schlund.pfixxml.targets.TargetGeneratorFactory;
 import de.schlund.pfixxml.targets.VirtualTarget;
 import de.schlund.pfixxml.util.ResourceUtils;
 import de.schlund.pfixxml.util.XsltContext;
@@ -46,7 +45,7 @@ public class ImageThemedSrc {
     /** xslt extension */
     public static String getSrc(XsltContext context, String src, String themed_path, String themed_img,
                                 String parent_part_in, String parent_product_in,
-                                String targetGen, String targetKey, String module, String search) throws Exception {
+                                TargetGenerator targetGen, String targetKey, String module, String search) throws Exception {
         
         boolean dynamic = false;
         if(search!=null && !search.trim().equals("")) {
@@ -60,15 +59,14 @@ public class ImageThemedSrc {
         }
         
         String[]        themes    = null;
-        TargetGenerator gen       = TargetGeneratorFactory.getInstance().getGenerator(targetGen);
           
         VirtualTarget target = null;
         if (!targetKey.equals("__NONE__")) {
-            target = (VirtualTarget) gen.getTarget(targetKey);
+            target = (VirtualTarget) targetGen.getTarget(targetKey);
             themes               = target.getThemes().getThemesArr();
         }
         if (themes == null) {
-            themes = gen.getGlobalThemes().getThemesArr();
+            themes = targetGen.getGlobalThemes().getThemesArr();
         }
         
         if (isSimpleSrc(src, themed_path, themed_img)) {
@@ -77,9 +75,9 @@ public class ImageThemedSrc {
             }
             LOG.debug("  -> Register image src '" + src + "'");
             if(dynamic) {
-                String uri =  "dynamic:/"+src+"?project="+gen.getName();
+                String uri =  "dynamic:/"+src+"?project="+targetGen.getName();
                 if(module != null) uri += "&module="+module;
-                Resource res = gen.getResourceLoader().getResource(new URI(uri));
+                Resource res = targetGen.getResourceLoader().getResource(new URI(uri));
                 URI resUri = res.getURI();
                 if("module".equals(resUri.getScheme()) && ResourceUtils.exists(res)) {
                     src = "modules/"+resUri.getAuthority()+"/"+src;
@@ -93,7 +91,7 @@ public class ImageThemedSrc {
                 }
                 Resource relativeParent = null;
                 if(!parent_path.equals("")) {
-                	relativeParent = gen.getResourceLoader().getResource(new URI(parent_path));
+                	relativeParent = targetGen.getResourceLoader().getResource(new URI(parent_path));
                 }
                 DependencyTracker.logTyped("image", res, "", "", relativeParent, parent_part_in, parent_product_in, target);
                 return src;
@@ -115,10 +113,10 @@ public class ImageThemedSrc {
                     themeParam += themes[i];
                     if(i<themes.length-1) themeParam += ",";
                 }
-                String uri =  "dynamic:/" + themed_path +"/THEME/" + themed_img +"?project="+gen.getName();
+                String uri =  "dynamic:/" + themed_path +"/THEME/" + themed_img +"?project="+targetGen.getName();
                 uri += themeParam;
                 if(module != null) uri += "&module="+module;
-                Resource res = gen.getResourceLoader().getResource(new URI(uri));
+                Resource res = targetGen.getResourceLoader().getResource(new URI(uri));
                 URI resUri = res.getURI();
                 if("module".equals(resUri.getScheme()) && ResourceUtils.exists(res)) {
                     testsrc = "modules/"+resUri.getAuthority()+resUri.getPath();
@@ -129,7 +127,7 @@ public class ImageThemedSrc {
                 String parent_path = IncludeDocumentExtension.getSystemId(context);
                 Resource relativeParent = null;
                 if(!parent_path.equals("")) {
-                	relativeParent = gen.getResourceLoader().getResource(new URI(parent_path));
+                	relativeParent = targetGen.getResourceLoader().getResource(new URI(parent_path));
                 }
                 DependencyTracker.logTyped("image", res, "", "", relativeParent, parent_part_in, parent_product_in, target);
                 //DependencyTracker.logImage(context, testsrc, parent_part_in, parent_product_in, targetGen, targetKey, "image");

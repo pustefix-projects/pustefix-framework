@@ -22,6 +22,7 @@ import org.pustefixframework.resource.Resource;
 
 import com.icl.saxon.Context;
 
+import de.schlund.pfixxml.targets.TargetGenerator;
 import de.schlund.pfixxml.targets.VirtualTarget;
 import de.schlund.pfixxml.util.XsltContext;
 import de.schlund.pfixxml.util.xsltimpl.XsltContextSaxon1;
@@ -32,7 +33,7 @@ import de.schlund.pfixxml.util.xsltimpl.XsltContextSaxon1;
 public class DependencyTrackerSaxon1 {
 
     public static String logImage(Context context,String path,String parent_part_in,String parent_theme_in,
-            String targetGen,String targetKey,String type) throws Exception {
+            TargetGenerator targetGen,String targetKey,String type) throws Exception {
         XsltContext xsltContext=new XsltContextSaxon1(context);
         return DependencyTracker.logImage(xsltContext,path,parent_part_in,parent_theme_in,targetGen,targetKey,type);
     }

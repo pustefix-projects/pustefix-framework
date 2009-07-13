@@ -26,7 +26,6 @@ import org.pustefixframework.resource.Resource;
 
 import de.schlund.pfixxml.targets.DependencyType;
 import de.schlund.pfixxml.targets.TargetGenerator;
-import de.schlund.pfixxml.targets.TargetGeneratorFactory;
 import de.schlund.pfixxml.targets.VirtualTarget;
 import de.schlund.pfixxml.util.XsltContext;
 
@@ -36,14 +35,13 @@ public class DependencyTracker {
     /** xslt extension */
     public static String logImage(XsltContext context, String path,
                                   String parent_part_in, String parent_theme_in,
-                                  String targetGen, String targetKey, String type) throws Exception {
+                                  TargetGenerator targetGen, String targetKey, String type) throws Exception {
 
         if (targetKey.equals("__NONE__")) {
             return "0";
         }
 
-        TargetGenerator gen       = TargetGeneratorFactory.getInstance().getGenerator(targetGen);
-        VirtualTarget   target    = (VirtualTarget) gen.getTarget(targetKey);
+        VirtualTarget   target    = (VirtualTarget) targetGen.getTarget(targetKey);
 
         String parent_path  = "";
         String parent_part  = "";
@@ -64,11 +62,11 @@ public class DependencyTracker {
             return "1"; 
         }
         URI uri = new URI(path);
-        Resource relativePath = gen.getResourceLoader().getResource(uri);
+        Resource relativePath = targetGen.getResourceLoader().getResource(uri);
         Resource relativeParent = null;
         if(!parent_path.equals("")) {
         	uri = new URI(parent_path);
-        	relativeParent = gen.getResourceLoader().getResource(uri);
+        	relativeParent = targetGen.getResourceLoader().getResource(uri);
         }
         try {
             logTyped(type, relativePath, "", "", relativeParent, parent_part, parent_theme, target);

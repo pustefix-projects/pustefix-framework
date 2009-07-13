@@ -234,7 +234,7 @@
       <xsl:otherwise>
         <xsl:variable name="incnodes"
                       select="include:get(string($realpath), string($part),
-                              string($__target_gen), string($__target_key),
+                              $__target_gen, string($__target_key),
                               string($parent_part), string($parent_theme), $computed_inc, $module, $search)"/>
         <!-- Start image of edited region -->
         <xsl:choose>
@@ -360,7 +360,7 @@
         <xsl:variable name="parent_theme"><xsl:value-of select="ancestor::theme[position() = 1]/@name"/></xsl:variable>
         <xsl:value-of select="image:getSrc(string($src),string($themed-path),string($themed-img),
                               string($parent_part),string($parent_theme),
-                              string($__target_gen),string($__target_key),string($module),string($search))"/>          
+                              $__target_gen,string($__target_key),string($module),string($search))"/>          
       </xsl:when>
       <xsl:otherwise>
         <xsl:message terminate="no">

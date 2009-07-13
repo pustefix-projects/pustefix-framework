@@ -33,7 +33,6 @@ import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
 import de.schlund.pfixxml.targets.TargetGenerator;
-import de.schlund.pfixxml.targets.TargetGeneratorFactory;
 import de.schlund.pfixxml.targets.VirtualTarget;
 import de.schlund.pfixxml.util.ExtensionFunctionUtils;
 import de.schlund.pfixxml.util.ResourceUtils;
@@ -83,7 +82,7 @@ public final class IncludeDocumentExtension {
      * @throws Exception on all errors
      */
     public static final Object get(XsltContext context, String path_str, String part,
-                                   String targetgen, String targetkey,
+                                   TargetGenerator targetGen, String targetkey,
                                    String parent_part_in, String parent_theme_in, String computed_inc,
                                    String module, String search) throws Exception {
        
@@ -123,15 +122,13 @@ public final class IncludeDocumentExtension {
         
         String uriStr = path_str;
         
-        TargetGenerator tgen = TargetGeneratorFactory.getInstance().getGenerator(targetgen);
-        
         if(dynamic) {
             uriStr = "dynamic:/" + path_str + "?part=" + part + "&parent=" + parent_uri_str;
             if(module != null) uriStr += "&module="+module;
             else if("module".equals(parentURI.getScheme())) {
                 uriStr += "&module="+parentURI.getAuthority();
             }
-            uriStr += "&project=" + tgen.getName();
+            uriStr += "&project=" + targetGen.getName();
         } else {
             if(module != null) {
                 uriStr = "module://" + module + "/" + path_str;
@@ -152,21 +149,21 @@ public final class IncludeDocumentExtension {
                 uriStr = "bundle:/PUSTEFIX-INF" + uriStr;
             }
             URI uri = new URI(uriStr);
-            Resource path = tgen.getResourceLoader().getResource(uri);
+            Resource path = targetGen.getResourceLoader().getResource(uri);
             resolvedUri.set(path.getURI().toString());
             Resource    parent_path = null;
             if(!parent_uri_str.equals("")) {
             	uri = new URI(parent_uri_str);
-            	parent_path = tgen.getResourceLoader().getResource(uri);
+            	parent_path = targetGen.getResourceLoader().getResource(uri);
             }
             boolean            dolog       = !targetkey.equals(NOTARGET);
             int                length      = 0;
             IncludeDocument    iDoc        = null;
             Document           doc;
 
-            VirtualTarget target = (VirtualTarget) tgen.getTarget(targetkey);
+            VirtualTarget target = (VirtualTarget) targetGen.getTarget(targetkey);
 
-            String[] themes = tgen.getGlobalThemes().getThemesArr();
+            String[] themes = targetGen.getGlobalThemes().getThemesArr();
             if (!targetkey.equals(NOTARGET)) {
                 themes = target.getThemes().getThemesArr();
             }
@@ -181,7 +178,7 @@ public final class IncludeDocumentExtension {
                 throw ex;
             }
             
-            String DEF_THEME = tgen.getDefaultTheme();
+            String DEF_THEME = targetGen.getDefaultTheme();
 
             if (path == null || !ResourceUtils.exists(path)) {
                 if (dolog) {
@@ -301,7 +298,7 @@ public final class IncludeDocumentExtension {
             //return new EmptyNodeSet();
             
         } catch (Exception e) {
-            Object[] args = {uriStr, part, targetgen, targetkey, 
+            Object[] args = {uriStr, part, targetGen, targetkey, 
                              parent_uri_str, parent_part, parent_theme};
             String sb = MessageFormat.format("path={0}|part={1}|targetgen={2}|targetkey={3}|"+
                                              "parent_path={4}|parent_part={5}|parent_theme={6}", args);

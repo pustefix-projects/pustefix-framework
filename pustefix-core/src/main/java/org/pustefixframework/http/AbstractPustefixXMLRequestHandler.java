@@ -53,7 +53,6 @@ import org.w3c.dom.Document;
 
 import de.schlund.pfixcore.exception.PustefixApplicationException;
 import de.schlund.pfixcore.exception.PustefixCoreException;
-import de.schlund.pfixcore.workflow.NavigationFactory;
 import de.schlund.pfixcore.workflow.NavigationInitializationException;
 import de.schlund.pfixxml.PfixServletRequest;
 import de.schlund.pfixxml.RenderingException;
@@ -798,9 +797,10 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
                 }
             }
         }
-        paramhash.put(TargetGenerator.XSLPARAM_TG, generator.getConfigPath().getOriginalURI().toASCIIString());
+        paramhash.put(TargetGenerator.XSLPARAM_TG, generator);
         paramhash.put(TargetGenerator.XSLPARAM_TKEY, VALUE_NONE);
-        paramhash.put(TargetGenerator.XSLPARAM_NAVITREE, NavigationFactory.getInstance().getNavigation(generator.getConfigPath(), generator.getXsltVersion()).getNavigationXMLElement());
+        paramhash.put(TargetGenerator.XSLPARAM_NAVITREE, generator.getNavigation());
+        paramhash.put(TargetGenerator.XSLPARAM_NAMESPACES, generator.getNamespaces());
 
         String session_to_link_from_external = getSessionAdmin().getExternalSessionId(session);
         paramhash.put("__external_session_ref", session_to_link_from_external);

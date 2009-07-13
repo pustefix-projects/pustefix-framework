@@ -20,6 +20,7 @@ package de.schlund.pfixxml;
 
 import com.icl.saxon.Context;
 
+import de.schlund.pfixxml.targets.TargetGenerator;
 import de.schlund.pfixxml.util.XsltContext;
 import de.schlund.pfixxml.util.xsltimpl.XsltContextSaxon1;
 
@@ -28,10 +29,10 @@ import de.schlund.pfixxml.util.xsltimpl.XsltContextSaxon1;
  */
 public class IncludeDocumentExtensionSaxon1 {
     
-    public static Object get(Context context,String path_str,String part,String targetgen,String targetkey,
+    public static Object get(Context context,String path_str,String part,TargetGenerator targetGen,String targetkey,
             String parent_part_in,String parent_theme_in,String computed_inc,String module,String search) throws Exception {    
         XsltContext xsltContext=new XsltContextSaxon1(context);
-        return IncludeDocumentExtension.get(xsltContext,path_str,part,targetgen,targetkey,
+        return IncludeDocumentExtension.get(xsltContext,path_str,part,targetGen,targetkey,
                 parent_part_in,parent_theme_in,computed_inc,module,search);
     }
     
