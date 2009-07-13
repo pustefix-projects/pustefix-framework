@@ -130,7 +130,6 @@ public class GenerateSCodes {
                 scLibFile.getParentFile().mkdirs();
             }
         }
-System.out.println("GENNNNNNNNNNNNNNNNNNNNNNNNNNNN");
         Writer writer = new OutputStreamWriter(new FileOutputStream(scLibFile), "ascii");
         createHeader(writer, className);
         List<URI> uris = new ArrayList<URI>();
