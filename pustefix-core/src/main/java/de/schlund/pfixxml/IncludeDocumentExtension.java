@@ -102,9 +102,6 @@ public final class IncludeDocumentExtension {
         if (path_str == null || path_str.equals("")) {
             throw new XMLException("Need href attribute for pfx:include or path of parent part must be deducible");
         }
-        if (path_str.matches("^\\w+:.*")) {
-            throw new XMLException("Attribute href must not contain URI: " + path_str);
-        }
         if (path_str.startsWith("/")) path_str = path_str.substring(1);
         
         String       parent_uri_str  = "";
