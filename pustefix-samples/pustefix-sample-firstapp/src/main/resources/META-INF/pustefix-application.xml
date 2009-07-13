@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<project-config xmlns="http://www.pustefix-framework.org/2008/namespace/project-config">
+<pustefix-application xmlns="http://www.pustefix-framework.org/2009/namespace/application-config">
 
-<project>
+  <project>
   <name>firstapp</name>
   <description>My first Pustefix application</description>
   </project>
@@ -12,7 +12,7 @@
   </editor>
 
   <xml-generator>
-    <config-file>docroot:/WEB-INF/depend.xml</config-file>
+    <config-file>bundle:/META-INF/pustefix/depend.xml</config-file>
     <choose>
       <when test="$mode='prod'">
         <!-- Set this to false if you want to skip the check for changed stylesheets on every request -->
@@ -57,7 +57,7 @@
 
     <context-xml-service>
       <path>/xml/main</path>
-      <config-file>docroot:/WEB-INF/app.conf.xml</config-file>
+      <config-file>bundle:/META-INF/pustefix/app.conf.xml</config-file>
       <additional-trail-info>de.schlund.pfixxml.perflogging.DefaultAdditionalTrailInfoImpl</additional-trail-info>
       <choose>
         <when test="$mode='prod'">
@@ -97,4 +97,4 @@
   </properties>
   -->
   
-</project-config>
+</pustefix-application>
