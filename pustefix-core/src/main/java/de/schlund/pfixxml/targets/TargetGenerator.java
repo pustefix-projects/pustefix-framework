@@ -572,9 +572,16 @@ public class TargetGenerator implements Comparable<TargetGenerator>, Initializin
 			if (key.contains(":")) {
 			    uri = new URI(key);
 			} else {
+				//TODO: replace workaround
+				if(key.startsWith("core")) {
+					int ind = key.indexOf('/');
+					String str = key.substring(ind+1);
+					uri = new URI("pustefixcore:/"+str);
+				} else {
 			    // TODO Relativ URIs should be resolved relative to the 
 			    // configuration file
 			    uri = new URI("bundle:/PUSTEFIX-INF/" + key);
+				}
 			}
 			System.out.println(uri.toString());
 			if(type.equals(TargetType.XML_LEAF) || type.equals(TargetType.XSL_LEAF)) {
