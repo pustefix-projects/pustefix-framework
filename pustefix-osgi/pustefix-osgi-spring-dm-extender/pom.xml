@@ -15,6 +15,22 @@
 
   <name>Pustefix Core support for Spring Extender</name>
   
+  <dependencies>
+    <dependency>
+      <groupId>org.osgi</groupId>
+      <artifactId>osgi_R4_core</artifactId>
+      <version>1.0</version>
+      <scope>provided</scope>
+      <optional>true</optional>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.osgi</groupId>
+      <artifactId>spring-osgi-extender</artifactId>
+      <version>1.2.0</version>
+      <scope>provided</scope>
+    </dependency>
+  </dependencies>
+  
   <build>
     <plugins> 
       <!-- do not add to root pom because it forks a new lifecycle: -->
@@ -34,7 +50,7 @@
         <configuration>
           <instructions>
             <Fragment-Host>org.springframework.osgi.extender;bundle-version="1.2.0"</Fragment-Host>
-            <Import-Package>org.pustefixframework.osgi.support,org.springframework.osgi.extender.support</Import-Package>
+            <Import-Package>org.pustefixframework.container.spring.extender,org.springframework.osgi.extender.support</Import-Package>
 <!--
             <Export-Package>org.pustefixframework.osgi.support</Export-Package>
             <Private-Package>org.pustefixframework.*</Private-Package>
