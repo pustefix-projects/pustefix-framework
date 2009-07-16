@@ -3,7 +3,7 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
   
-  <bean name="applicationContextCreator" class="org.pustefixframework.osgi.support.PustefixApplicationContextCreator">
+  <bean name="applicationContextCreator" class="org.pustefixframework.container.spring.extender.PustefixApplicationContextCreator">
     <property name="defaultApplicationContextCreator">
       <bean class="org.springframework.osgi.extender.support.DefaultOsgiApplicationContextCreator"></bean>
     </property>

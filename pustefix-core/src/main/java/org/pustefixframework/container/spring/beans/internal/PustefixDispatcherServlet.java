@@ -16,9 +16,9 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-package org.pustefixframework.osgi.support.internal;
+package org.pustefixframework.container.spring.beans.internal;
 
-import org.pustefixframework.osgi.support.PustefixOsgiWebApplicationContext;
+import org.pustefixframework.container.spring.beans.PustefixOsgiWebApplicationContext;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationEvent;

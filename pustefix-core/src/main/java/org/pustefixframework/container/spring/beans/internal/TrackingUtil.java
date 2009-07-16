@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.pustefixframework.osgi.support.internal;
+package org.pustefixframework.container.spring.beans.internal;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;

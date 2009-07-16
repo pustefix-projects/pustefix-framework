@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-package org.pustefixframework.osgi.support;
+package org.pustefixframework.container.spring.beans;
 
 import java.io.IOException;
 
@@ -31,11 +31,10 @@ import org.osgi.framework.ServiceReference;
 import org.osgi.service.http.HttpService;
 import org.osgi.service.http.NamespaceException;
 import org.osgi.util.tracker.ServiceTracker;
-import org.pustefixframework.container.spring.beans.PustefixApplicationBeanDefinitionReader;
-import org.pustefixframework.osgi.ExtendedHttpService;
-import org.pustefixframework.osgi.support.internal.PustefixDispatcherServlet;
-import org.pustefixframework.osgi.support.internal.ServletConfigProxy;
-import org.pustefixframework.osgi.support.internal.ServletContextProxy;
+import org.pustefixframework.container.spring.beans.internal.PustefixDispatcherServlet;
+import org.pustefixframework.container.spring.beans.internal.ServletConfigProxy;
+import org.pustefixframework.container.spring.beans.internal.ServletContextProxy;
+import org.pustefixframework.http.ExtendedHttpService;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;

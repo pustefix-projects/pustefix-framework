@@ -36,7 +36,6 @@
   </dependencies>
 
   <modules>
-    <module>pustefix-osgi-spring-dm</module>
     <module>pustefix-osgi-spring-dm-extender</module>
   </modules>
 

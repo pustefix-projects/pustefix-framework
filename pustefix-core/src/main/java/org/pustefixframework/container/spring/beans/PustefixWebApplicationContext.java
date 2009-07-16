@@ -46,6 +46,7 @@ import org.xml.sax.SAXException;
 import de.schlund.pfixcore.exception.PustefixCoreException;
 import de.schlund.pfixcore.exception.PustefixRuntimeException;
 
+// FIXME: Remove this class and all references to it
 public class PustefixWebApplicationContext extends AbstractRefreshableWebApplicationContext {
 	
     @Override

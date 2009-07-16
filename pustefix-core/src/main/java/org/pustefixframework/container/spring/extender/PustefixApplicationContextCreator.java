@@ -16,10 +16,12 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-package org.pustefixframework.osgi.support;
+package org.pustefixframework.container.spring.extender;
 
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
+import org.pustefixframework.container.spring.beans.PustefixOsgiApplicationContext;
+import org.pustefixframework.container.spring.beans.PustefixOsgiWebApplicationContext;
 import org.springframework.osgi.context.DelegatedExecutionOsgiBundleApplicationContext;
 import org.springframework.osgi.extender.OsgiApplicationContextCreator;
 

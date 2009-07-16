@@ -13,16 +13,8 @@
   <version>1.0.0-SNAPSHOT</version>
   <packaging>bundle</packaging>
 
-  <name>Pustefix Core support for Spring DM</name>
+  <name>Pustefix Core support for Spring Extender</name>
   
-  <dependencies>
-    <dependency>
-      <groupId>org.pustefixframework.osgi</groupId>
-      <artifactId>pustefix-osgi-spring-dm</artifactId>
-      <version>1.0.0-SNAPSHOT</version>
-    </dependency>
-  </dependencies>
- 
   <build>
     <plugins> 
       <!-- do not add to root pom because it forks a new lifecycle: -->

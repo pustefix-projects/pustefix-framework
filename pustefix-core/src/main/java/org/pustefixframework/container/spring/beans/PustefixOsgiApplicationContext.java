@@ -16,16 +16,14 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-package org.pustefixframework.osgi.support;
+package org.pustefixframework.container.spring.beans;
 
 import java.io.IOException;
 
 import org.osgi.framework.BundleContext;
-import org.pustefixframework.container.spring.beans.AnnotationBeanDefinitionPostProcessor;
-import org.pustefixframework.container.spring.beans.PustefixModuleBeanDefinitionReader;
-import org.pustefixframework.osgi.support.internal.DelegatedEntityResolver;
-import org.pustefixframework.osgi.support.internal.DelegatedNamespaceHandlerResolver;
-import org.pustefixframework.osgi.support.internal.TrackingUtil;
+import org.pustefixframework.container.spring.beans.internal.DelegatedEntityResolver;
+import org.pustefixframework.container.spring.beans.internal.DelegatedNamespaceHandlerResolver;
+import org.pustefixframework.container.spring.beans.internal.TrackingUtil;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.beans.factory.xml.DefaultNamespaceHandlerResolver;

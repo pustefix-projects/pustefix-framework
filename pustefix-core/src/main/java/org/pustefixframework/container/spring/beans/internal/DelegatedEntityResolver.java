@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.pustefixframework.osgi.support.internal;
+package org.pustefixframework.container.spring.beans.internal;
 
 import java.io.IOException;
 import java.util.Iterator;
