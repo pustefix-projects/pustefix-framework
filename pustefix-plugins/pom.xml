@@ -20,9 +20,9 @@
   <modules>
     <module>pustefix-statuscode-plugin</module>
     <module>pustefix-iwrapper-plugin</module>
-    <module>pustefix-generate-plugin</module>
-    <module>pustefix-webapp-plugin</module>
-    <module>pustefix-webservice-plugin</module>
+    <!--<module>pustefix-generate-plugin</module>-->
+    <!--<module>pustefix-webapp-plugin</module>-->
+    <!--<module>pustefix-webservice-plugin</module>-->
     <module>pustefix-launcher-plugin</module>
     <module>pustefix-eclipse-plugin</module>
   </modules>

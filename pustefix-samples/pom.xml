@@ -16,11 +16,13 @@
   <name>Pustefix Samples</name>
   <modules>
     <module>pustefix-sample-firstapp</module>
+<!--
     <module>pustefix-sample1</module>
     <module>pustefix-samplebank</module>
     <module>pustefix-testsuite</module>
     <module>pustefix-webservice</module>
     <module>sample-modules</module>
     <module>moduletest</module>
+-->
   </modules>  
 </project>
