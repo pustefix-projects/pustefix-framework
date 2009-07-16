@@ -1,5 +1,7 @@
 2009-07-16  Sebastian Marsching <sebastian.marsching@1und1.de>
 
+	Support for file: URIs
+
 	Removed code for building pustefix-core-*-data.jar.
 
 2009-07-10  Sebastian Marsching <sebastian.marsching@1und1.de>

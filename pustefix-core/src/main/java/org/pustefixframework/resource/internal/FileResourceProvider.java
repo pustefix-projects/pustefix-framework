@@ -18,29 +18,26 @@
 
 package org.pustefixframework.resource.internal;
 
-import java.io.IOException;
+import java.io.File;
 import java.net.URI;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Enumeration;
 
+import org.pustefixframework.resource.FileResource;
 import org.pustefixframework.resource.Resource;
 import org.pustefixframework.resource.ResourceProvider;
-import org.pustefixframework.resource.support.URLResourceImpl;
+import org.pustefixframework.resource.support.FileResourceImpl;
 
 
 /**
- * Provides resources from Pustefix Core's PFX-INF directory using
- * the pustefixcore scheme.  
+ * Provides resources from the file system using the file scheme.  
  * 
  * @author Sebastian Marsching <sebastian.marsching@1und1.de>
  */
-public class PustefixCoreResourceProvider implements ResourceProvider {
+public class FileResourceProvider implements ResourceProvider {
     
-    private final static String[] SUPPORTED_SCHEMES = new String[] { "pustefixcore" };
+    private final static String[] SUPPORTED_SCHEMES = new String[] { "file" };
     
     public Resource[] getResources(URI uri, URI originallyRequestedURI) {
-        if (uri.getScheme() == null || !uri.getScheme().equals("pustefixcore")) {
+        if (uri.getScheme() == null || !uri.getScheme().equals("file")) {
             throw new IllegalArgumentException("Cannot handle URI \"" + uri.toASCIIString() + "\": Scheme is not supported");
         }
         if (uri.getAuthority() != null && uri.getAuthority().trim().length() != 0) {
@@ -49,22 +46,9 @@ public class PustefixCoreResourceProvider implements ResourceProvider {
         if (uri.getPath() == null || !uri.getPath().startsWith("/")) {
             throw new IllegalArgumentException("Error: URI \"" + uri.toASCIIString() + "\" does not specify an absolute path");
         }
-        Enumeration<URL> en;
-        try {
-            en = this.getClass().getClassLoader().getResources("PUSTEFIX-INF" + uri.getPath());
-        } catch (IOException e) {
-            return null;
-        }
-        ArrayList<URLResourceImpl> resources = new ArrayList<URLResourceImpl>();
-        while (en != null && en.hasMoreElements()) {
-            URL url = (URL) en.nextElement();
-            URLResourceImpl resource = new URLResourceImpl(uri, originallyRequestedURI, url);
-            resources.add(resource);
-        }
-        if (resources.size() == 0) {
-            return null;
-        }
-        return resources.toArray(new Resource[resources.size()]);
+        File file = new File(uri.getPath());
+        FileResource resource = new FileResourceImpl(uri, originallyRequestedURI, file);
+        return new Resource[] { resource };
     }
 
     public String[] getSchemes() {

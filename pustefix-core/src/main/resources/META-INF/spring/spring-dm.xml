@@ -7,8 +7,12 @@
        http://www.springframework.org/schema/osgi  
        http://www.springframework.org/schema/osgi/spring-osgi.xsd">
 
+    <!-- Provides resources for pustefixcore: URIs -->
     <osgi:service ref="pustefixCoreResourceProvider" interface="org.pustefixframework.resource.ResourceProvider" />
+    <bean id="pustefixCoreResourceProvider" class="org.pustefixframework.resource.internal.PustefixCoreResourceProvider" />
     
-    <bean id="pustefixCoreResourceProvider" class="org.pustefixframework.resource.internal.PustefixCoreResourceProvider">
-    </bean>
+    <!-- Provides resource for file: URIs -->
+    <osgi:service ref="fileResourceProvider" interface="org.pustefixframework.resource.ResourceProvider" />
+    <bean id="fileResourceProvider" class="org.pustefixframework.resource.internal.FileResourceProvider" />
+    
 </beans>
