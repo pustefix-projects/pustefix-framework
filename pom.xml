@@ -23,9 +23,9 @@
   </organization>
 
   <scm>
-    <connection>scm:svn:https://pustefix.svn.sourceforge.net/svnroot/pustefix/trunk</connection>
-    <developerConnection>scm:svn:https://pustefix.svn.sourceforge.net/svnroot/pustefix/trunk</developerConnection>
-    <url>http://dev.pustefix-framework.org/browser/trunk</url>
+    <connection>scm:svn:https://pustefix.svn.sourceforge.net/svnroot/pustefix/branches/release-0.14.x</connection>
+    <developerConnection>scm:svn:https://pustefix.svn.sourceforge.net/svnroot/pustefix/branches/release-0.14.x</developerConnection>
+    <url>http://dev.pustefix-framework.org/browser/branches/release-0.14.x</url>
   </scm>
 
   <properties>
