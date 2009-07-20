@@ -83,6 +83,8 @@ public class PustefixInit {
     private static long log4jmtime = -1;
     private static boolean warMode = false;
     
+    private static boolean initDone;
+    
     public static void tryReloadLog4j() {
         if (log4jconfig != null) {
             FileResource l4jfile = ResourceUtil.getFileResourceFromDocroot(log4jconfig);
@@ -109,6 +111,9 @@ public class PustefixInit {
     }
     
     public static void init(ServletContext servletContext) throws PustefixCoreException {
+        
+        //avoid re-initializations, e.g. when ApplicationContext is refreshed
+        if(initDone) return;
         
     	Properties properties = new Properties(System.getProperties());
             
@@ -139,6 +144,8 @@ public class PustefixInit {
     
     	configureLogging(properties, servletContext);
     	LOG.debug(">>>> LOG4J Init OK <<<<");
+    	
+    	initDone = true;
 
     }
 
