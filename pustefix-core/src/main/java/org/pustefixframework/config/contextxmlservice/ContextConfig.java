@@ -19,6 +19,7 @@
 package org.pustefixframework.config.contextxmlservice;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 import org.w3c.dom.Document;
@@ -71,19 +72,12 @@ public interface ContextConfig {
     ContextResourceConfig getContextResourceConfig(String name);
 
     /**
-     * Returns a list of all pageflows.
+     * Returns a map mapping page flow (full) names to
+     * page flow implementations.
      * 
-     * @return list of pageflows
+     * @return page flow map
      */
-    List<? extends PageFlow> getPageFlows();
-
-    /**
-     * Returns the pageflow specified by <code>name</code>.
-     * 
-     * @param name name of the pageflow
-     * @return pageflow instance
-     */
-    PageFlow getPageFlow(String name);
+    Map<String, PageFlow> getPageFlowMap();
 
     /**
      * Returns a list of configurations for all pagerequests.

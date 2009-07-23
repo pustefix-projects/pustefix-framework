@@ -19,6 +19,7 @@
 package org.pustefixframework.config.contextxmlservice.parser.internal;
 
 import java.util.AbstractMap;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -43,6 +44,7 @@ public class PageFlowMap extends AbstractMap<String, PageFlow> {
     private Map<String, PageFlow> cachedMap;
     private final Object updateLock = new Object();
     private List<?> pageFlowObjects;
+    private Throwable cause;
     
     private ExtensionPointRegistrationListener<PageFlowExtensionPoint, PageFlowExtension> listener =
         new ExtensionPointRegistrationListener<PageFlowExtensionPoint, PageFlowExtension>() {
@@ -62,28 +64,46 @@ public class PageFlowMap extends AbstractMap<String, PageFlow> {
     @Override
     public Set<java.util.Map.Entry<String, PageFlow>> entrySet() {
         synchronized (updateLock) {
+            if (cachedMap == null) {
+                if (cause != null) {
+                    throw new IllegalStateException("Page flow map cannot be used as a problem occured during intialization", cause);
+                } else {
+                    throw new IllegalStateException("Page flow map has not been initialized");
+                }
+            }
             return cachedMap.entrySet();
         }
     }
     
     private void updateCache() {
         synchronized (updateLock) {
-            this.cachedMap = new LinkedHashMap<String, PageFlow>();
-            for (Object pageFlowObject : pageFlowObjects) {
-                if (pageFlowObject instanceof PageFlow) {
-                    PageFlow pageFlow = (PageFlow) pageFlowObject;
-                    cachedMap.put(pageFlow.getName(), pageFlow);
-                } else if (pageFlowObject instanceof PageFlowExtensionPointImpl) {
-                    PageFlowExtensionPointImpl pageFlowExtensionPoint = (PageFlowExtensionPointImpl) pageFlowObject;
-                    for (PageFlowExtension extension : pageFlowExtensionPoint.getExtensions()) {
-                        for (PageFlow pageFlow : extension.getPageFlows()) {
-                            cachedMap.put(pageFlow.getName(), pageFlow);
+            try {
+                cachedMap = new LinkedHashMap<String, PageFlow>();
+                for (Object pageFlowObject : pageFlowObjects) {
+                    if (pageFlowObject instanceof PageFlow) {
+                        PageFlow pageFlow = (PageFlow) pageFlowObject;
+                        cachedMap.put(pageFlow.getName(), pageFlow);
+                    } else if (pageFlowObject instanceof PageFlowExtensionPointImpl) {
+                        PageFlowExtensionPointImpl pageFlowExtensionPoint = (PageFlowExtensionPointImpl) pageFlowObject;
+                        for (PageFlowExtension extension : pageFlowExtensionPoint.getExtensions()) {
+                            for (PageFlow pageFlow : extension.getPageFlows()) {
+                                cachedMap.put(pageFlow.getName(), pageFlow);
+                            }
                         }
+                    } else {
+                        throw new RuntimeException("pageFlowObjects contains object of unsupported type " + pageFlowObject.getClass().getName());
                     }
-                } else {
-                    throw new RuntimeException("pageFlowObjects contains object of unsupported type " + pageFlowObject.getClass().getName());
                 }
+            } catch (Throwable e) {
+                // Store exception for later use
+                cachedMap = null;
+                cause = e;
+                return;
             }
+            // Make sure map is not modified
+            cachedMap = Collections.unmodifiableMap(cachedMap);
+            // If update was successful, delete cause
+            cause = null;
         }
     }
 

@@ -19,7 +19,6 @@
 package org.pustefixframework.config.contextxmlservice.parser;
 
 import java.util.Collection;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -110,10 +109,12 @@ public class ContextXMLParsingHandler implements ParsingHandler {
                 postRenderInterceptors.add(new RuntimeBeanReference(interceptorBeanName));
             }
             
-            List<Object> pageFlowObjectList = new LinkedList<Object>();
-            for (Object o : context.getObjectTreeElement().getObjectsOfTypeFromTopTree(Object.class)) {
+            @SuppressWarnings("unchecked")
+            List<Object> pageFlowObjectList = new ManagedList();
+            for (Object o : context.getObjectTreeElement().getObjectsOfTypeFromSubTree(Object.class)) {
                 if (o instanceof PageFlowHolder) {
-                    pageFlowObjectList.add(o);
+                    PageFlowHolder pageFlowholder = (PageFlowHolder) o;
+                    pageFlowObjectList.add(pageFlowholder.getPageFlowObject());
                 } else if (o instanceof PageFlowExtensionPointImpl) {
                     pageFlowObjectList.add(o);
                 }

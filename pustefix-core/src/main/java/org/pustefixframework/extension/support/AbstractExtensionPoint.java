@@ -198,7 +198,7 @@ public class AbstractExtensionPoint <T1 extends AbstractExtensionPoint<T1, T2>, 
     public Collection<T2> getExtensions() {
         synchronized (extensions) {
             if (extensions.size() < cardinalityMin) {
-                throw new IllegalStateException("getExtension() has been called while " + extensions.size() + " extension(s) where present but a minimum of " + cardinalityMin + " extension(s) is required.");
+                throw new IllegalStateException("getExtension() for extension point \"" + getId() + "\" has been called while " + extensions.size() + " extension(s) were present but a minimum of " + cardinalityMin + " extension(s) is required.");
             }
             if (cardinalityMax == -1 || extensions.size() <= cardinalityMax) {
                 return Collections.unmodifiableList(new LinkedList<T2>(extensions));

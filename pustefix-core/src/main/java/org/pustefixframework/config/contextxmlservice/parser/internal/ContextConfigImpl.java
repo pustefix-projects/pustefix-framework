@@ -183,16 +183,12 @@ public class ContextConfigImpl implements ContextConfig {
         return resourceMap.get(name);
     }
     
-    public List<PageFlow> getPageFlows() {
-        return new ArrayList<PageFlow>(this.pageflows.values());
-    }
-    
     public void setPageFlowMap(Map<String, PageFlow> map) {
         this.pageflows = map;
     }
     
-    public PageFlow getPageFlow(String name) {
-        return this.pageflows.get(name);
+    public Map<String, PageFlow> getPageFlowMap() {
+        return this.pageflows;
     }
     
     public void addPageRequest(PageRequestConfigImpl config) {
