@@ -104,6 +104,10 @@
     <match>/c:context-xml-service-config/c:pageflow</match>
   </handler>
   
+  <handler class="org.pustefixframework.config.contextxmlservice.parser.PageFlowExtensionPointParsingHandler">
+    <match>/c:context-xml-service-config/c:extension-point[@type='context.pageflow']</match>
+  </handler>
+  
   <handler class="org.pustefixframework.config.contextxmlservice.parser.PageFlowVariantParsingHandler">
     <match>/c:context-xml-service-config/c:pageflow/c:variant</match>
   </handler>

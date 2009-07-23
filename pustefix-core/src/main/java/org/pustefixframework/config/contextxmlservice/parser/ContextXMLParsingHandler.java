@@ -19,6 +19,7 @@
 package org.pustefixframework.config.contextxmlservice.parser;
 
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -26,6 +27,8 @@ import org.pustefixframework.config.contextxmlservice.PageFlowHolder;
 import org.pustefixframework.config.contextxmlservice.PageRequestConfig;
 import org.pustefixframework.config.contextxmlservice.parser.internal.ContextConfigImpl;
 import org.pustefixframework.config.contextxmlservice.parser.internal.ContextXMLServletConfigImpl;
+import org.pustefixframework.config.contextxmlservice.parser.internal.PageFlowExtensionPointImpl;
+import org.pustefixframework.config.contextxmlservice.parser.internal.PageFlowMap;
 import org.pustefixframework.config.generic.ParsingUtils;
 import org.pustefixframework.container.spring.beans.support.ScopedProxyUtils;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -107,11 +110,21 @@ public class ContextXMLParsingHandler implements ParsingHandler {
                 postRenderInterceptors.add(new RuntimeBeanReference(interceptorBeanName));
             }
             
-            @SuppressWarnings("unchecked")
-            Map<String, Object> pageFlowMap = new ManagedMap();
-            for (PageFlowHolder pageFlowHolder : context.getObjectTreeElement().getObjectsOfTypeFromSubTree(PageFlowHolder.class)) {
-                pageFlowMap.put(pageFlowHolder.getName(), pageFlowHolder.getPageFlowObject());
+            List<Object> pageFlowObjectList = new LinkedList<Object>();
+            for (Object o : context.getObjectTreeElement().getObjectsOfTypeFromTopTree(Object.class)) {
+                if (o instanceof PageFlowHolder) {
+                    pageFlowObjectList.add(o);
+                } else if (o instanceof PageFlowExtensionPointImpl) {
+                    pageFlowObjectList.add(o);
+                }
             }
+            
+            beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(PageFlowMap.class);
+            beanBuilder.setScope("singleton");
+            beanBuilder.addPropertyValue("pageFlowObjects", pageFlowObjectList);
+            beanDefinition = beanBuilder.getBeanDefinition();
+            String pageFlowMapBeanName = beanNameGenerator.generateBeanName(beanDefinition, beanRegistry);
+            beanRegistry.registerBeanDefinition(pageFlowMapBeanName, beanDefinition);
             
             beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(ContextConfigImpl.class);
             beanBuilder.setScope("singleton");
@@ -119,7 +132,7 @@ public class ContextXMLParsingHandler implements ParsingHandler {
             beanBuilder.addPropertyValue("startInterceptors", startInterceptors);
             beanBuilder.addPropertyValue("endInterceptors", endInterceptors);
             beanBuilder.addPropertyValue("postRenderInterceptors", postRenderInterceptors);
-            beanBuilder.addPropertyValue("pageFlowMap", pageFlowMap);
+            beanBuilder.addPropertyReference("pageFlowMap", pageFlowMapBeanName);
             beanDefinition = beanBuilder.getBeanDefinition();
             String contextConfigBeanName = beanNameGenerator.generateBeanName(beanDefinition, beanRegistry);
             beanRegistry.registerBeanDefinition(contextConfigBeanName, beanDefinition);
