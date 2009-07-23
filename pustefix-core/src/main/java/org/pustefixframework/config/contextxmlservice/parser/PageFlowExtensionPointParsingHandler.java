@@ -19,66 +19,25 @@
 package org.pustefixframework.config.contextxmlservice.parser;
 
 import org.pustefixframework.config.contextxmlservice.parser.internal.PageFlowExtensionPointImpl;
-import org.pustefixframework.config.generic.ParsingUtils;
+import org.pustefixframework.config.generic.AbstractExtensionPointParsingHandler;
 import org.pustefixframework.extension.ExtensionPoint;
-import org.pustefixframework.extension.PageFlowExtensionPoint;
-import org.springframework.beans.factory.config.BeanDefinition;
-import org.springframework.beans.factory.support.BeanDefinitionBuilder;
-import org.springframework.beans.factory.support.BeanDefinitionRegistry;
-import org.springframework.beans.factory.support.DefaultBeanNameGenerator;
-import org.springframework.osgi.service.exporter.support.OsgiServiceFactoryBean;
-import org.w3c.dom.Element;
 
-import com.marsching.flexiparse.parser.HandlerContext;
-import com.marsching.flexiparse.parser.ParsingHandler;
 import com.marsching.flexiparse.parser.exception.ParserException;
 
 
 /**
  * Handles the declaration of a page flow extension point.
  */
-public class PageFlowExtensionPointParsingHandler implements ParsingHandler {
-    
-    public void handleNode(HandlerContext context) throws ParserException {
-       
-        Element element = (Element)context.getNode();
-        ParsingUtils.checkAttributes(element, new String[] {"id", "type"}, new String[] {"version", "cardinality"});
-        
-        String id = element.getAttribute("id").trim();
-        String type = element.getAttribute("type").trim();
-        String version = element.getAttribute("version").trim();
-        if (version.length() == 0) {
-            version = "0.0.0";
-        }
-        String cardinality = element.getAttribute("cardinality").trim();
-        if (cardinality.length() == 0) {
-            cardinality = "0..n";
-        }
-        
+public class PageFlowExtensionPointParsingHandler extends AbstractExtensionPointParsingHandler {
+
+    @Override
+    protected ExtensionPoint<?> createExtensionPoint(String id, String type, String version, String cardinality) throws ParserException {
         PageFlowExtensionPointImpl extensionPoint = new PageFlowExtensionPointImpl();
         extensionPoint.setId(id);
         extensionPoint.setType(type);
         extensionPoint.setVersion(version);
         extensionPoint.setCardinality(cardinality);
-        
-        // Register extension point as a service
-        BeanDefinitionRegistry beanRegistry = ParsingUtils.getSingleTopObject(BeanDefinitionRegistry.class, context);
-        DefaultBeanNameGenerator beanNameGenerator = new DefaultBeanNameGenerator();
-        String beanName;
-        BeanDefinition beanDefinition;
-        BeanDefinitionBuilder beanBuilder;
-        
-        beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(OsgiServiceFactoryBean.class);
-        beanBuilder.setScope("singleton");
-        beanBuilder.addPropertyValue("interfaces", new Class[] {ExtensionPoint.class, PageFlowExtensionPoint.class});
-        //beanBuilder.addPropertyValue("serviceProperties", serviceProperties);
-        beanBuilder.addPropertyValue("target", extensionPoint);
-        beanDefinition = beanBuilder.getBeanDefinition();
-        beanName = beanNameGenerator.generateBeanName(beanDefinition, beanRegistry);
-        beanRegistry.registerBeanDefinition(beanName, beanDefinition);
-        
-        // Make extension point available in object tree
-        context.getObjectTreeElement().addObject(extensionPoint);
+        return extensionPoint;
     }
 
 }
