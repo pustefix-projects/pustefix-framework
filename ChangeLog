@@ -1,5 +1,9 @@
 2009-07-24  Sebastian Marsching <sebastian.marsching@1und1.de>
 
+	Added code to load the configuration for a module application context.
+
+	Added more code for page flow extension points.
+
 	Made Pustefix Context available and register request and session
 	scope in module's application context.
 

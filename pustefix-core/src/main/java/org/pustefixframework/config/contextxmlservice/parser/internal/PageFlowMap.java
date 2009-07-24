@@ -58,7 +58,11 @@ public class PageFlowMap extends AbstractMap<String, PageFlow> {
             public void afterUnregisterExtension(PageFlowExtensionPoint extensionPoint, PageFlowExtension extension) {
                 updateCache();
             }
-        
+
+            @Override
+            public void updateExtension(PageFlowExtensionPoint extensionPoint, PageFlowExtension extension) {
+                updateCache();
+            }
     };
     
     @Override
@@ -71,11 +75,13 @@ public class PageFlowMap extends AbstractMap<String, PageFlow> {
                     throw new IllegalStateException("Page flow map has not been initialized");
                 }
             }
+            // cachedMap is unmodifiable, therefore iterators
+            // on this map are save.
             return cachedMap.entrySet();
         }
     }
     
-    private void updateCache() {
+    protected void updateCache() {
         synchronized (updateLock) {
             try {
                 cachedMap = new LinkedHashMap<String, PageFlow>();

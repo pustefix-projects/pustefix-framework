@@ -1,0 +1,46 @@
+<?xml version="1.0"?>
+<configuration
+  xmlns="http://www.marsching.com/2008/flexiparse/configurationNS"
+  xmlns:c="http://www.pustefix-framework.org/2008/namespace/context-xml-service-config"
+  xmlns:xi="http://www.w3.org/2001/XInclude"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="
+    http://www.marsching.com/2008/flexiparse/configurationNS http://www.marsching.com/2008/flexiparse/flexiparse-configuration.xsd
+  "
+>
+  
+  <!-- Page flows -->
+  
+  <handler class="org.pustefixframework.config.contextxmlservice.parser.PageFlowExtensionParsingHandler" run-order="end">
+    <match>/c:context-xml-service-config/c:extension[@type='context.pageflow']</match>
+  </handler>
+  
+  <handler class="org.pustefixframework.config.contextxmlservice.parser.PageFlowParsingHandler">
+    <match>/c:context-xml-service-config/c:extension[@type='context.pageflow']/c:pageflow</match>
+  </handler>
+  
+  <handler class="org.pustefixframework.config.contextxmlservice.parser.PageFlowExtensionPointParsingHandler">
+    <match>/c:context-xml-service-config/c:extension[@type='context.pageflow']/c:extension-point[@type='context.pageflow']</match>
+  </handler>
+  
+  <handler class="org.pustefixframework.config.contextxmlservice.parser.PageFlowVariantParsingHandler">
+    <match>/c:context-xml-service-config/c:extension[@type='context.pageflow']/c:pageflow/c:variant</match>
+  </handler>
+  
+  <handler class="org.pustefixframework.config.contextxmlservice.parser.PageFlowStepParsingHandler">
+    <match>/c:context-xml-service-config/c:extension[@type='context.pageflow']/c:pageflow//c:flowstep</match>
+  </handler>
+  
+  <handler class="org.pustefixframework.config.contextxmlservice.parser.PageFlowStepOnContinueParsingHandler">
+    <match>/c:context-xml-service-config/c:extension[@type='context.pageflow']/c:pageflow//c:flowstep/c:oncontinue</match>
+  </handler>
+  
+  <handler class="org.pustefixframework.config.contextxmlservice.parser.PageFlowStepConditionParsingHandler">
+    <match>/c:context-xml-service-config/c:extension[@type='context.pageflow']/c:pageflow//c:flowstep/c:oncontinue/c:when</match>
+  </handler>
+  
+  <handler class="org.pustefixframework.config.contextxmlservice.parser.PageFlowStepActionParsingHandler">
+    <match>/c:context-xml-service-config/c:extension[@type='context.pageflow']/c:pageflow//c:flowstep/c:oncontinue/c:when/c:action</match>
+  </handler>
+  
+</configuration>

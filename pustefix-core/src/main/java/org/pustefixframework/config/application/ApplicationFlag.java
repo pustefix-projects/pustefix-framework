@@ -16,20 +16,16 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-package org.pustefixframework.extension;
+package org.pustefixframework.config.application;
 
 
 /**
- * An extension point that can be extended with page flows.  
+ * The presence of an instance of this class at the top of the object tree
+ * signals that the configuration file, that is parsed, belongs to an 
+ * application.  
  * 
  * @author Sebastian Marsching <sebastian.marsching@1und1.de>
  */
-public interface PageFlowExtensionPoint extends ExtensionPoint<PageFlowExtension> {
-    /**
-     * This method has to be called by an extension, if the list of
-     * page flows provided by this extension has changed.
-     * 
-     * @param extension the extension that has changed
-     */
-    void updateExtension(PageFlowExtension extension);
+public class ApplicationFlag {
+
 }

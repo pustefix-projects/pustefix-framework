@@ -24,17 +24,13 @@ import java.net.URISyntaxException;
 import java.util.Collection;
 import java.util.Properties;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-
 import org.pustefixframework.admin.mbeans.WebappAdmin;
 import org.pustefixframework.config.Constants;
+import org.pustefixframework.config.application.ApplicationFlag;
 import org.pustefixframework.config.application.EditorInfo;
 import org.pustefixframework.config.application.EditorLocation;
 import org.pustefixframework.config.application.XMLGeneratorInfo;
 import org.pustefixframework.config.contextxmlservice.ContextXMLServletConfig;
-import org.pustefixframework.config.customization.CustomizationAwareParsingHandler;
 import org.pustefixframework.config.customization.CustomizationInfo;
 import org.pustefixframework.config.customization.PropertiesBasedCustomizationInfo;
 import org.pustefixframework.config.customization.RuntimeProperties;
@@ -42,6 +38,7 @@ import org.pustefixframework.config.generic.ParsingUtils;
 import org.pustefixframework.http.PustefixContextXMLRequestHandler;
 import org.pustefixframework.resource.InputStreamResource;
 import org.pustefixframework.resource.ResourceLoader;
+import org.pustefixframework.resource.URLResource;
 import org.springframework.beans.factory.BeanDefinitionStoreException;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinitionHolder;
@@ -49,28 +46,26 @@ import org.springframework.beans.factory.config.RuntimeBeanReference;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.osgi.context.ConfigurableOsgiBundleApplicationContext;
-import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.xml.sax.SAXException;
+import org.xml.sax.InputSource;
 
 import com.marsching.flexiparse.objecttree.ObjectTreeElement;
 import com.marsching.flexiparse.objecttree.SubObjectTree;
 import com.marsching.flexiparse.parser.HandlerContext;
 import com.marsching.flexiparse.parser.OSGiAwareParser;
 import com.marsching.flexiparse.parser.Parser;
+import com.marsching.flexiparse.parser.ParsingHandler;
 import com.marsching.flexiparse.parser.exception.ParserException;
 
 import de.schlund.pfixcore.workflow.ContextImpl;
 import de.schlund.pfixxml.SessionCleaner;
-import de.schlund.pfixxml.config.includes.IncludesResolver;
 import de.schlund.pfixxml.exceptionprocessor.ExceptionProcessingConfiguration;
 import de.schlund.pfixxml.serverutil.SessionAdmin;
 import de.schlund.pfixxml.testrecording.TestRecording;
 
-public class PustefixContextXMLRequestHandlerParsingHandler extends CustomizationAwareParsingHandler {
+public class PustefixContextXMLRequestHandlerParsingHandler implements ParsingHandler {
 
-    @Override
-    public void handleNodeIfActive(HandlerContext context) throws ParserException {
+    public void handleNode(HandlerContext context) throws ParserException {
         ResourceLoader resourceLoader = ParsingUtils.getSingleTopObject(ResourceLoader.class, context);
 
         Element serviceElement = (Element) context.getNode();
@@ -141,36 +136,32 @@ public class PustefixContextXMLRequestHandlerParsingHandler extends Customizatio
         }
        
         Collection<BeanDefinitionRegistry> beanRegs = context.getObjectTreeElement().getObjectsOfTypeFromTopTree(BeanDefinitionRegistry.class);
-        if(beanRegs.size()==0) throw new ParserException("No BeanDefinitionRegistry object found.");
-        else if(beanRegs.size()>1) throw new ParserException("Multiple BeanDefinitionRegistry objects found.");
+        if (beanRegs.size() == 0) {
+            throw new ParserException("No BeanDefinitionRegistry object found.");
+        } else if (beanRegs.size() > 1) {
+            throw new ParserException("Multiple BeanDefinitionRegistry objects found.");
+        }
         BeanDefinitionRegistry beanReg = beanRegs.iterator().next();
         Properties buildTimeProperties = RuntimeProperties.getProperties();
         CustomizationInfo cusInfo = new PropertiesBasedCustomizationInfo(buildTimeProperties);
         try {
             ConfigurableOsgiBundleApplicationContext appContext = ParsingUtils.getSingleTopObject(ConfigurableOsgiBundleApplicationContext.class, context);
             
-            Parser contextXmlConfigParser = new OSGiAwareParser(appContext.getBundleContext(), "META-INF/org/pustefixframework/config/context-xml-service/parser/context-xml-service-config.xml");
+            Parser contextXmlConfigParser = new OSGiAwareParser(appContext.getBundleContext(), "META-INF/org/pustefixframework/config/context-xml-service/parser/context-xml-service-config-application.xml");
             
-            //Resolve config-includes
-            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-            dbf.setNamespaceAware(true);
-            dbf.setXIncludeAware(true);
-            DocumentBuilder db = dbf.newDocumentBuilder();
-            Document doc = db.parse(configurationResource.getInputStream()); 
-            IncludesResolver resolver = new IncludesResolver("http://www.pustefix-framework.org/2008/namespace/context-xml-service-config", "config-include");
-            resolver.resolveIncludes(doc);
+            InputSource configurationSource = new InputSource(configurationResource.getInputStream());
+            if (configurationResource instanceof URLResource) {
+                URLResource urlResource = (URLResource) configurationResource;
+                configurationSource.setSystemId(urlResource.getURL().toExternalForm());
+            }
             
-            final ObjectTreeElement contextXmlConfigTree = contextXmlConfigParser.parse(doc, cusInfo, beanReg, info, appContext, resourceLoader);
+            final ObjectTreeElement contextXmlConfigTree = contextXmlConfigParser.parse(configurationSource, cusInfo, beanReg, info, appContext, resourceLoader, new ApplicationFlag());
             SubObjectTree subTree = new SubObjectTree() {
               public ObjectTreeElement getRoot() {
                     return contextXmlConfigTree;
                 }  
             };
             context.getObjectTreeElement().addObject(subTree);
-        } catch (ParserConfigurationException e) {
-            throw new RuntimeException("Could not initialize XML parser: " + e.getMessage(), e);
-        } catch (SAXException e) {
-            throw new ParserException("Error while parsing referenced file: " + e.getMessage(), e);
         } catch (ParserException e) {
             throw new BeanDefinitionStoreException("Error while parsing " + configurationURI.toASCIIString() + ": " + e.getMessage(), e);
         } catch (IOException e) {

@@ -74,5 +74,15 @@ public class ExtensionPointRegistrationListener <T1 extends ExtensionPoint<? ext
     public void afterUnregisterExtension(T1 extensionPoint, T2 extension) {
         
     }
-
+    
+    /**
+     * This method is called when an extension has notified the
+     * extension point about an internal change.
+     * 
+     * @param extensionPoint extension point that is sending this event
+     * @param extension extension that has caused this event to be sent
+     */
+    public void updateExtension(T1 extensionPoint, T2 extension) {
+        
+    }
 }

@@ -1,0 +1,44 @@
+<?xml version="1.0"?>
+<configuration
+  xmlns="http://www.marsching.com/2008/flexiparse/configurationNS"
+  xmlns:p="http://www.pustefix-framework.org/2009/namespace/module-config"
+>
+  
+  <!-- Handle context xml configuration -->
+  
+  <handler class="org.pustefixframework.config.module.parser.PustefixContextXMLRequestHandlerParsingHandler">
+    <match>/p:pustefix-module/p:application//p:context-xml-service</match>
+  </handler>
+  
+  
+  <!-- Properties support (unused at the moment) -->
+  
+  <handler class="org.pustefixframework.config.generic.PropertiesParsingHandler">
+    <match>/p:pustefix-module/p:properties</match>
+  </handler>
+  
+  <handler class="org.pustefixframework.config.generic.PropertyParsingHandler">
+    <match>/p:pustefix-module/p:properties//p:prop</match>
+  </handler>
+  
+<!--
+  <handler class="org.pustefixframework.config.application.parser.RegisterProjectPropertiesParsingHandler" run-order="end">
+    <preceding-handler>org.pustefixframework.config.generic.PropertiesParsingHandler</preceding-handler>
+    <match>/p:pustefix-module/p:properties</match>
+  </handler>
+-->
+  
+  
+  <!-- Customization support -->
+  
+  <handler id="org.pustefixframework.config.customization.WhenParsingHandler" class="org.pustefixframework.config.customization.CustomizationWhenParsingHandler">
+    <match>/p:pustefix-module/p:choose/p:when</match>
+    <match>/p:pustefix-module/p:properties/p:choose/p:when</match>
+  </handler>
+  
+  <handler id="org.pustefixframework.config.customization.OtherwiseParsingHandler" class="org.pustefixframework.config.customization.CustomizationOtherwiseParsingHandler">
+    <match>/p:pustefix-module/p:choose/p:otherwise</match>
+    <match>/p:pustefix-module/p:properties/p:choose/p:otherwise</match>
+  </handler>
+  
+</configuration>

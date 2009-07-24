@@ -24,6 +24,8 @@ import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.Set;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.pustefixframework.extension.Extension;
 import org.pustefixframework.extension.ExtensionPoint;
 
@@ -46,6 +48,8 @@ public class AbstractExtensionPoint <T1 extends AbstractExtensionPoint<T1, T2>, 
     
     protected String cardinality;
     protected int cardinalityMin = 0;
+    
+    protected final Log logger = LogFactory.getLog(this.getClass());
     /**
      * Maximum number of extensions that can be active at the same time.
      * A value of -1 means the number of active extensions is not limited.
@@ -153,13 +157,24 @@ public class AbstractExtensionPoint <T1 extends AbstractExtensionPoint<T1, T2>, 
             throw new IllegalArgumentException("Registering extension of type " + extension.getType() + " at extension point of type " + getType() + " is not supported.");
         }
         synchronized (extensions) {
+            if (extensions.contains(extension)) {
+                return;
+            }
             synchronized (listeners) {
                 for (ExtensionPointRegistrationListener<? super T1, ? super T2> listener : listeners) {
-                    listener.beforeRegisterExtension(thisToT1(), extension);
+                    try {
+                        listener.beforeRegisterExtension(thisToT1(), extension);
+                    } catch (Throwable e) {
+                        logger.warn("Error while calling listener's beforeRegisterExtension method", e);
+                    }
                 }
                 extensions.add(extension);
                 for (ExtensionPointRegistrationListener<? super T1, ? super T2> listener : listeners) {
-                    listener.afterRegisterExtension(thisToT1(), extension);
+                    try {
+                        listener.afterRegisterExtension(thisToT1(), extension);
+                    } catch (Throwable e) {
+                        logger.warn("Error while calling listener's afterRegisterExtension method", e);
+                    }
                 }
             }
         }
@@ -167,13 +182,50 @@ public class AbstractExtensionPoint <T1 extends AbstractExtensionPoint<T1, T2>, 
     
     public void unregisterExtension(T2 extension) {
         synchronized (extensions) {
+            if (!extensions.contains(extension)) {
+                return;
+            }
             synchronized (listeners) {
                 for (ExtensionPointRegistrationListener<? super T1, ? super T2> listener : listeners) {
-                    listener.beforeUnregisterExtension(thisToT1(), extension);
+                    try {
+                        listener.beforeUnregisterExtension(thisToT1(), extension);
+                    } catch (Throwable e) {
+                        logger.warn("Error while calling listener's beforeUnregisterExtension method", e);
+                    }
                 }
                 extensions.remove(extension);
                 for (ExtensionPointRegistrationListener<? super T1, ? super T2> listener : listeners) {
-                    listener.afterUnregisterExtension(thisToT1(), extension);
+                    try {
+                        listener.afterUnregisterExtension(thisToT1(), extension);
+                    } catch (Throwable e) {
+                        logger.warn("Error while calling listener's afterUnregisterExtension method", e);
+                    }
+                }
+            }
+        }
+    }
+    
+    /**
+     * Allows an extension to notify the extension point about a change
+     * in its internal state. The extension point will then call the
+     * <code>updateExtension</code> method of all registration listeners.
+     * If <code>extension</code> is not a registered extension, no actions
+     * will be performed.
+     * 
+     * @param extension the extension that has changed its internal state 
+     */
+    public void updateExtension(T2 extension) {
+        synchronized (extensions) {
+            if (!extensions.contains(extension)) {
+                return;
+            }
+            synchronized (listeners) {
+                for (ExtensionPointRegistrationListener<? super T1, ? super T2> listener : listeners) {
+                    try {
+                        listener.updateExtension(thisToT1(), extension);
+                    } catch (Throwable e) {
+                        logger.warn("Error while calling listener's updateExtension method", e);
+                    }
                 }
             }
         }
