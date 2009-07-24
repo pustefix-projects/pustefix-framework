@@ -40,7 +40,7 @@ import de.schlund.pfixcore.workflow.ContextImpl;
  * 
  * @author Sebastian Marsching <sebastian.marsching@1und1.de>
  */
-public class PustefixOsgiApplicationContext extends AbstractPustefixOsgiApplicationContext {
+public class PustefixOsgiApplicationContext extends PustefixAbstractOsgiApplicationContext {
     
     protected void loadBeanDefinitions(DefaultListableBeanFactory beanFactory) throws IOException, BeansException {
         String configLocations[] = getConfigLocations();

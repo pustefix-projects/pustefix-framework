@@ -47,7 +47,7 @@ import org.xml.sax.EntityResolver;
  * 
  * @author Sebastian Marsching <sebastian.marsching@1und1.de>
  */
-public abstract class AbstractPustefixOsgiApplicationContext extends OsgiBundleXmlApplicationContext {
+public abstract class PustefixAbstractOsgiApplicationContext extends OsgiBundleXmlApplicationContext {
     
     protected abstract void loadBeanDefinitions(DefaultListableBeanFactory beanFactory) throws IOException, BeansException;/**
 
