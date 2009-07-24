@@ -20,19 +20,17 @@ package org.pustefixframework.container.spring.beans;
 
 import java.io.IOException;
 
-import org.osgi.framework.BundleContext;
-import org.pustefixframework.container.spring.beans.internal.DelegatedEntityResolver;
-import org.pustefixframework.container.spring.beans.internal.DelegatedNamespaceHandlerResolver;
-import org.pustefixframework.container.spring.beans.internal.TrackingUtil;
+import org.pustefixframework.container.spring.beans.internal.WebApplicationContextStore;
+import org.springframework.aop.TargetSource;
+import org.springframework.aop.framework.ProxyFactoryBean;
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
-import org.springframework.beans.factory.xml.DefaultNamespaceHandlerResolver;
-import org.springframework.beans.factory.xml.DelegatingEntityResolver;
-import org.springframework.beans.factory.xml.NamespaceHandlerResolver;
-import org.springframework.osgi.context.support.OsgiBundleXmlApplicationContext;
-import org.springframework.osgi.util.OsgiStringUtils;
-import org.springframework.util.Assert;
-import org.xml.sax.EntityResolver;
+import org.springframework.web.context.support.WebApplicationContextUtils;
+
+import de.schlund.pfixcore.workflow.ContextImpl;
 
 
 /**
@@ -42,7 +40,7 @@ import org.xml.sax.EntityResolver;
  * 
  * @author Sebastian Marsching <sebastian.marsching@1und1.de>
  */
-public class PustefixOsgiApplicationContext extends OsgiBundleXmlApplicationContext {
+public class PustefixOsgiApplicationContext extends AbstractPustefixOsgiApplicationContext {
     
     protected void loadBeanDefinitions(DefaultListableBeanFactory beanFactory) throws IOException, BeansException {
         String configLocations[] = getConfigLocations();
@@ -60,6 +58,11 @@ public class PustefixOsgiApplicationContext extends OsgiBundleXmlApplicationCont
             reader.setEntityResolver(createEntityResolver(getBundleContext(), getClassLoader()));
             reader.setNamespaceHandlerResolver(createNamespaceHandlerResolver(getBundleContext(), getClassLoader()));
             reader.loadBeanDefinitions(configLocations);
+            
+            // Context proxy has to be created before processing
+            // inject annotations. Otherwise, the context would
+            // not be injected.
+            createContextProxyBeanDefinition(beanFactory);
             
             afterLoadBeanDefinitions(beanFactory);
         } catch (RuntimeException e) {
@@ -82,58 +85,53 @@ public class PustefixOsgiApplicationContext extends OsgiBundleXmlApplicationCont
         AnnotationBeanDefinitionPostProcessor annotationPostProcessor = new AnnotationBeanDefinitionPostProcessor();
         annotationPostProcessor.postProcessBeanFactory(beanFactory);
     }
-    
-    /**
-     * Creates a {@link NamespaceHandlerResolver} that delegates to 
-     * corresponding OSGi services.
-     * 
-     * @param bundleContext bundle context of the bundle this ApplicationContext
-     *  is being instantiated for
-     * @param bundleClassLoader the bundle's class loader
-     * @return delegating NamespaceHandlerResolver
-     */
-    protected NamespaceHandlerResolver createNamespaceHandlerResolver(BundleContext bundleContext, ClassLoader bundleClassLoader)
-    {
-        Assert.notNull(bundleContext, "bundleContext is required");
-        NamespaceHandlerResolver localNamespaceResolver = new DefaultNamespaceHandlerResolver(bundleClassLoader);
-        NamespaceHandlerResolver osgiServiceNamespaceResolver = lookupNamespaceHandlerResolver(bundleContext, localNamespaceResolver);
-        DelegatedNamespaceHandlerResolver delegate = new DelegatedNamespaceHandlerResolver();
-        delegate.addNamespaceHandler(localNamespaceResolver, "LocalNamespaceResolver for bundle " + OsgiStringUtils.nullSafeNameAndSymName(bundleContext.getBundle()));
-        delegate.addNamespaceHandler(osgiServiceNamespaceResolver, "OSGi Service resolver");
-        return delegate;
-    }
 
     /**
-     * Creates an {@link EntityResolver} that delegates to corresponding
-     * OSGi services.
+     * Creates and registers a bean definition for a factory bean proxying
+     * {@link ContextImpl}. This bean is needed, as the context depends
+     * on the application that is calling the module code and therefore
+     * the context has to be stored in a thread local.
      * 
-     * @param bundleContext bundle context of the bundle this ApplicationContext
-     *  is being intantiated for
-     * @param bundleClassLoader the bundle's class loader
-     * @return delegating EntityResolver
+     * @param beanFactory registry the proxy is created within
      */
-    protected EntityResolver createEntityResolver(BundleContext bundleContext, ClassLoader bundleClassLoader)
-    {
-        Assert.notNull(bundleContext, "bundleContext is required");
-        EntityResolver localEntityResolver = new DelegatingEntityResolver(bundleClassLoader);
-        EntityResolver osgiServiceEntityResolver = lookupEntityResolver(bundleContext, localEntityResolver);
-        DelegatedEntityResolver delegate = new DelegatedEntityResolver();
-        delegate.addEntityResolver(localEntityResolver, "LocalEntityResolver for bundle " + OsgiStringUtils.nullSafeNameAndSymName(bundleContext.getBundle()));
-        delegate.addEntityResolver(osgiServiceEntityResolver, "OSGi Service resolver");
-        return delegate;
+    protected void createContextProxyBeanDefinition(DefaultListableBeanFactory beanFactory) {
+        TargetSource targetSource = new TargetSource() {
+
+            public Object getTarget() throws Exception {
+                PustefixOsgiWebApplicationContext applicationContext = WebApplicationContextStore.getApplicationContext();
+                if (applicationContext == null) {
+                    return null;
+                }
+                return applicationContext.getBean(ContextImpl.class.getName());
+            }
+
+            public Class<?> getTargetClass() {
+                return ContextImpl.class;
+            }
+
+            public boolean isStatic() {
+                return false;
+            }
+
+            public void releaseTarget(Object target) throws Exception {
+                // Thread local is released by dispatcher servlet
+            }
+            
+        };
+        
+        BeanDefinitionBuilder beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(ProxyFactoryBean.class);
+        beanBuilder.setScope("singleton");
+        beanBuilder.addPropertyValue("singleton", true);
+        beanBuilder.addPropertyValue("targetSource", targetSource);
+        BeanDefinition beanDefinition = beanBuilder.getBeanDefinition();
+        beanFactory.registerBeanDefinition(ContextImpl.class.getName(), beanDefinition);
     }
 
-    private NamespaceHandlerResolver lookupNamespaceHandlerResolver(BundleContext bundleContext, Object fallbackObject)
-    {
-        return (NamespaceHandlerResolver)TrackingUtil.getService(new Class[] {
-            org.springframework.beans.factory.xml.NamespaceHandlerResolver.class
-        }, null, (org.springframework.beans.factory.xml.NamespaceHandlerResolver.class).getClassLoader(), bundleContext, fallbackObject);
+    @Override
+    protected void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
+        super.postProcessBeanFactory(beanFactory);
+        
+        WebApplicationContextUtils.registerWebApplicationScopes(beanFactory);
     }
 
-    private EntityResolver lookupEntityResolver(BundleContext bundleContext, Object fallbackObject)
-    {
-        return (EntityResolver)TrackingUtil.getService(new Class[] {
-            org.xml.sax.EntityResolver.class
-        }, null, (org.xml.sax.EntityResolver.class).getClassLoader(), bundleContext, fallbackObject);
-    }
 }

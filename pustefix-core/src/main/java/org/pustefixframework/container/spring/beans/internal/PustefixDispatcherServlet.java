@@ -18,6 +18,9 @@
 
 package org.pustefixframework.container.spring.beans.internal;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.pustefixframework.container.spring.beans.PustefixOsgiWebApplicationContext;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
@@ -50,6 +53,18 @@ public class PustefixDispatcherServlet extends DispatcherServlet {
         this.applicationContext.setServletContext(getServletContext());
         this.applicationContext.setServletConfig(getServletConfig());
         return this.applicationContext;
+    }
+
+    @Override
+    protected void doService(HttpServletRequest req, HttpServletResponse res) throws Exception {
+        // Store the application context in a thread local, so that it can
+        // be retrieved by other components during request processing.
+        try {
+            WebApplicationContextStore.setApplicationContext(this.applicationContext);
+            super.doService(req, res);
+        } finally {
+            WebApplicationContextStore.setApplicationContext(null);
+        }
     }
 
     @Override

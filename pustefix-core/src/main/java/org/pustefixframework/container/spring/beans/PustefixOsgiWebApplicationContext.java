@@ -57,7 +57,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  * 
  * @author Sebastian Marsching <sebastian.marsching@1und1.de>
  */
-public class PustefixOsgiWebApplicationContext extends PustefixOsgiApplicationContext
+public class PustefixOsgiWebApplicationContext extends AbstractPustefixOsgiApplicationContext
     implements ConfigurableWebApplicationContext {
 
     private ServletContextProxy servletContextProxy = new ServletContextProxy();
