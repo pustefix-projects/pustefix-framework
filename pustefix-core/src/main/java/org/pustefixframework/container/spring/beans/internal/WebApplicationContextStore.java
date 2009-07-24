@@ -29,7 +29,8 @@ import org.pustefixframework.container.spring.beans.PustefixOsgiWebApplicationCo
  */
 public abstract class WebApplicationContextStore {
 
-    private static ThreadLocal<PustefixOsgiWebApplicationContext> applicationContext;
+    private final static ThreadLocal<PustefixOsgiWebApplicationContext> applicationContext =
+        new ThreadLocal<PustefixOsgiWebApplicationContext>();
 
     public static PustefixOsgiWebApplicationContext getApplicationContext() {
         return applicationContext.get();
