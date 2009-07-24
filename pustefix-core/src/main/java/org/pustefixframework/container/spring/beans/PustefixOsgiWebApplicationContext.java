@@ -233,7 +233,7 @@ public class PustefixOsgiWebApplicationContext extends PustefixAbstractOsgiAppli
 
         @Override
         public Object addingService(ServiceReference reference) {
-            HttpService httpService = (HttpService) context.getService(reference);
+            HttpService httpService = (HttpService) super.addingService(reference);
             try {
                 httpService.registerServlet("/", new PustefixDispatcherServlet(applicationContext), null, null);
             } catch (ServletException e) {
@@ -266,7 +266,7 @@ public class PustefixOsgiWebApplicationContext extends PustefixAbstractOsgiAppli
 
         @Override
         public Object addingService(ServiceReference reference) {
-            ExtendedHttpService httpService = (ExtendedHttpService) context.getService(reference);
+            ExtendedHttpService httpService = (ExtendedHttpService) super.addingService(reference);
             try {
                 httpService.registerServlet("/", new PustefixDispatcherServlet(applicationContext), null, bundleContext.getBundle());
             } catch (ServletException e) {

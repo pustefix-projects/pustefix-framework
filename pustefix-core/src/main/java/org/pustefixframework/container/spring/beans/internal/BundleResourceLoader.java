@@ -131,7 +131,7 @@ public class BundleResourceLoader extends AbstractResourceLoader {
 
         @Override
         public Object addingService(ServiceReference reference) {
-            ResourceProvider resourceProvider = (ResourceProvider) context.getService(reference);
+            ResourceProvider resourceProvider = (ResourceProvider) super.addingService(reference);
             synchronized (resourceProviders) {
                 resourceProviders.add(resourceProvider);
                 updateResourceProviderMap();
@@ -157,7 +157,7 @@ public class BundleResourceLoader extends AbstractResourceLoader {
 
         @Override
         public Object addingService(ServiceReference reference) {
-            ResourceSelector resourceSelector = (ResourceSelector) context.getService(reference);
+            ResourceSelector resourceSelector = (ResourceSelector) super.addingService(reference);
             synchronized (resourceSelector) {
                 resourceSelectors.add(resourceSelector);
             }
