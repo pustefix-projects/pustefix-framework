@@ -77,10 +77,13 @@ public class SessionContextImpl {
         public void valueUnbound(HttpSessionBindingEvent ev) {
             // Send event to registered listeners
             try {
+                SessionStatusListener[] currentListeners;
                 synchronized (this) {
-                    for (SessionStatusListener l : sessionListeners) {
-                        l.sessionStatusChanged(new SessionStatusEvent(SessionStatusEvent.Type.SESSION_DESTROYED));
-                    }
+                    currentListeners = new SessionStatusListener[sessionListeners.size()];
+                    sessionListeners.toArray(currentListeners);
+                }
+                for (SessionStatusListener l : currentListeners) {
+                    l.sessionStatusChanged(new SessionStatusEvent(SessionStatusEvent.Type.SESSION_DESTROYED));
                 }
             } catch(Throwable t) {
                 //if we're not catching all exceptions here, valueUnbound for the SessionAdmin
