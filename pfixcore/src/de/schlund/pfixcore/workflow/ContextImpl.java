@@ -86,10 +86,13 @@ public class ContextImpl implements Context, AccessibilityChecker, ExtendedConte
 
             public void valueUnbound(HttpSessionBindingEvent ev) {
                 // Send event to registered listeners
+                SessionStatusListener[] currentListeners;
                 synchronized (this) {
-                    for (SessionStatusListener l : sessionListeners) {
-                        l.sessionStatusChanged(new SessionStatusEvent(SessionStatusEvent.Type.SESSION_DESTROYED));
-                    }
+                    currentListeners = new SessionStatusListener[sessionListeners.size()];
+                    sessionListeners.toArray(currentListeners);
+                }
+                for (SessionStatusListener l : currentListeners) {
+                    l.sessionStatusChanged(new SessionStatusEvent(SessionStatusEvent.Type.SESSION_DESTROYED));
                 }
             }
         }
