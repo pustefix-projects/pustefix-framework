@@ -1,3 +1,11 @@
+2009-07-27  Martin Leidig  <mleidig@schlund.de>
+
+	Fixed possible deadlock within SessionEndNotificator when
+	one thread adds a SessionListener after getting a lock to an 
+	application object, while another thread is invalidating 
+	the session and calls a registered SessionListener, which itself
+	tries to lock the same application object.
+
 2009-07-09  Martin Leidig  <mleidig@schlund.de>
 
 	Re-added forgotten defaultflow config option for pagerequests.
