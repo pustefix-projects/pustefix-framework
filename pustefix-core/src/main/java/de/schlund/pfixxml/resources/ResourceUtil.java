@@ -46,6 +46,7 @@ public class ResourceUtil {
                     throw new RuntimeException("Can't get resource: " + uri, x);
                 }
             }
+            if(!scheme.equals("file")) throw new RuntimeException("No ResourceProvider registered for scheme: " + scheme);
             return getFileResource(uri);
         } else {
             return getFileResourceFromDocroot(uri.toString());
