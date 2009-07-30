@@ -30,7 +30,9 @@ import com.marsching.flexiparse.parser.ParsingHandler;
 import com.marsching.flexiparse.parser.exception.ParserException;
 
 import de.schlund.pfixcore.workflow.FlowStepAction;
+import de.schlund.pfixcore.workflow.FlowStepForceStopAction;
 import de.schlund.pfixcore.workflow.FlowStepJumpToAction;
+import de.schlund.pfixcore.workflow.FlowStepSetFlowAction;
 
 /**
  * 
@@ -38,7 +40,9 @@ import de.schlund.pfixcore.workflow.FlowStepJumpToAction;
  *
  */
 public class PageFlowStepActionParsingHandler implements ParsingHandler {
-
+    private final static String JUMPTO = "jumpto";
+    private final static String SETFLOW = "setflow";
+    private final static String STOP = "stop";
     public void handleNode(HandlerContext context) throws ParserException {
        
         Element element = (Element)context.getNode();
@@ -52,15 +56,18 @@ public class PageFlowStepActionParsingHandler implements ParsingHandler {
         if (type.length()==0) {
             throw new ParserException("Mandatory attribute \"type\" is missing!");
         }
-        if (type.equals("jumpto")) {
+        if (type.equals(JUMPTO)) {
             clazz = FlowStepJumpToAction.class;
-        }
-        try {
-            if (clazz == null) {
+        } else if (type.equals(SETFLOW)) {
+            clazz = FlowStepSetFlowAction.class;
+        } else if (type.equals(STOP)) {
+            clazz = FlowStepForceStopAction.class;
+        } else {
+            try {
                 clazz = Class.forName(type, true, appContext.getClassLoader());
+            } catch (ClassNotFoundException e) {
+                throw new ParserException("Could not load class \"" + type + "\"!", e);
             }
-        } catch (ClassNotFoundException e) {
-            throw new ParserException("Could not load class \"" + type + "\"!", e);
         }
         if (!FlowStepAction.class.isAssignableFrom(clazz)) {
             throw new ParserException("Pageflow step action " + clazz + " does not implmenent " + FlowStepAction.class + " interface!");
