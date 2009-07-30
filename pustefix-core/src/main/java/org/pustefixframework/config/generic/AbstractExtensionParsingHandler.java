@@ -60,7 +60,7 @@ public abstract class AbstractExtensionParsingHandler implements ParsingHandler 
             if (version.length() == 0) {
                 version = "*";
             }
-            if (!VersionUtils.checkVersionOrRange(version)) {
+            if (!VersionUtils.isVersionOrRange(version)) {
                 throw new ParserException("Not a valid version or version range: " + version);
             }
             ExtensionTargetInfo info = new ExtensionTargetInfo();
