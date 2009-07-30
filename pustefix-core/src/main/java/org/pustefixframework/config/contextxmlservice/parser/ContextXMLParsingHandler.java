@@ -28,6 +28,7 @@ import org.pustefixframework.config.contextxmlservice.parser.internal.ContextCon
 import org.pustefixframework.config.contextxmlservice.parser.internal.ContextXMLServletConfigImpl;
 import org.pustefixframework.config.contextxmlservice.parser.internal.PageFlowExtensionPointImpl;
 import org.pustefixframework.config.contextxmlservice.parser.internal.PageFlowMap;
+import org.pustefixframework.config.contextxmlservice.parser.internal.PageFlowVariantExtensionPointImpl;
 import org.pustefixframework.config.generic.ParsingUtils;
 import org.pustefixframework.container.spring.beans.support.ScopedProxyUtils;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -116,6 +117,8 @@ public class ContextXMLParsingHandler implements ParsingHandler {
                     PageFlowHolder pageFlowholder = (PageFlowHolder) o;
                     pageFlowObjectList.add(pageFlowholder.getPageFlowObject());
                 } else if (o instanceof PageFlowExtensionPointImpl) {
+                    pageFlowObjectList.add(o);
+                } else if (o instanceof PageFlowVariantExtensionPointImpl) {
                     pageFlowObjectList.add(o);
                 }
             }

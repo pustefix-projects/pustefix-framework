@@ -25,8 +25,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.pustefixframework.extension.PageFlowExtension;
 import org.pustefixframework.extension.PageFlowExtensionPoint;
+import org.pustefixframework.extension.PageFlowVariantExtension;
+import org.pustefixframework.extension.PageFlowVariantExtensionPoint;
 import org.pustefixframework.extension.support.ExtensionPointRegistrationListener;
 
 import de.schlund.pfixcore.workflow.context.PageFlow;
@@ -46,6 +50,8 @@ public class PageFlowMap extends AbstractMap<String, PageFlow> {
     private List<?> pageFlowObjects;
     private Throwable cause;
     
+    protected final Log logger = LogFactory.getLog(this.getClass());
+    
     private ExtensionPointRegistrationListener<PageFlowExtensionPoint, PageFlowExtension> listener =
         new ExtensionPointRegistrationListener<PageFlowExtensionPoint, PageFlowExtension>() {
 
@@ -64,7 +70,26 @@ public class PageFlowMap extends AbstractMap<String, PageFlow> {
                 updateCache();
             }
     };
-    
+
+    private ExtensionPointRegistrationListener<PageFlowVariantExtensionPoint, PageFlowVariantExtension> variantListener =
+        new ExtensionPointRegistrationListener<PageFlowVariantExtensionPoint, PageFlowVariantExtension>() {
+
+            @Override
+            public void afterRegisterExtension(PageFlowVariantExtensionPoint extensionPoint, PageFlowVariantExtension extension) {
+                updateCache();
+            }
+
+            @Override
+            public void afterUnregisterExtension(PageFlowVariantExtensionPoint extensionPoint, PageFlowVariantExtension extension) {
+                updateCache();
+            }
+
+            @Override
+            public void updateExtension(PageFlowVariantExtensionPoint extensionPoint, PageFlowVariantExtension extension) {
+                updateCache();
+            }
+    };
+
     @Override
     public Set<java.util.Map.Entry<String, PageFlow>> entrySet() {
         synchronized (updateLock) {
@@ -88,11 +113,32 @@ public class PageFlowMap extends AbstractMap<String, PageFlow> {
                 for (Object pageFlowObject : pageFlowObjects) {
                     if (pageFlowObject instanceof PageFlow) {
                         PageFlow pageFlow = (PageFlow) pageFlowObject;
+                        if (cachedMap.containsKey(pageFlow.getName())) {
+                            logger.warn("Overwriting page flow \"" + pageFlow.getName() + "\" because it is declared twice.");
+                        }
                         cachedMap.put(pageFlow.getName(), pageFlow);
                     } else if (pageFlowObject instanceof PageFlowExtensionPointImpl) {
                         PageFlowExtensionPointImpl pageFlowExtensionPoint = (PageFlowExtensionPointImpl) pageFlowObject;
                         for (PageFlowExtension extension : pageFlowExtensionPoint.getExtensions()) {
                             for (PageFlow pageFlow : extension.getPageFlows()) {
+                                if (cachedMap.containsKey(pageFlow.getName())) {
+                                    logger.warn("Overwriting page flow \"" + pageFlow.getName() + "\" because it is declared twice.");
+                                }
+                                cachedMap.put(pageFlow.getName(), pageFlow);
+                            }
+                        }
+                    } else if (pageFlowObject instanceof PageFlowVariantExtensionPointImpl) {
+                        PageFlowVariantExtensionPointImpl pageFlowVariantExtensionPoint = (PageFlowVariantExtensionPointImpl) pageFlowObject;
+                        String pageFlowName = pageFlowVariantExtensionPoint.getPageFlowName();
+                        for (PageFlowVariantExtension extension : pageFlowVariantExtensionPoint.getExtensions()) {
+                            for (PageFlow pageFlow : extension.getPageFlows()) {
+                                if (!pageFlow.getRootName().equals(pageFlowName) || pageFlow.getName().equals(pageFlowName)) {
+                                    logger.warn("Ignoring page flow \"" + pageFlow.getName() + " as it is not a variant of page flow \"" + pageFlowName + "\".");
+                                    continue;
+                                }
+                                if (cachedMap.containsKey(pageFlow.getName())) {
+                                    logger.warn("Overwriting page flow \"" + pageFlow.getName() + "\" because it is declared twice.");
+                                }
                                 cachedMap.put(pageFlow.getName(), pageFlow);
                             }
                         }
@@ -126,6 +172,9 @@ public class PageFlowMap extends AbstractMap<String, PageFlow> {
                 if (o instanceof PageFlowExtensionPointImpl) {
                     PageFlowExtensionPointImpl pageFlowExtensionPoint = (PageFlowExtensionPointImpl) o;
                     pageFlowExtensionPoint.unregisterListener(listener);
+                } else if (o instanceof PageFlowVariantExtensionPointImpl) {
+                    PageFlowVariantExtensionPointImpl pageFlowVariantExtensionPoint = (PageFlowVariantExtensionPointImpl) o;
+                    pageFlowVariantExtensionPoint.unregisterListener(variantListener);
                 }
             }
         }
@@ -134,6 +183,9 @@ public class PageFlowMap extends AbstractMap<String, PageFlow> {
             if (o instanceof PageFlowExtensionPointImpl) {
                 PageFlowExtensionPointImpl pageFlowExtensionPoint = (PageFlowExtensionPointImpl) o;
                 pageFlowExtensionPoint.registerListener(listener);
+            } else if (o instanceof PageFlowVariantExtensionPointImpl) {
+                PageFlowVariantExtensionPointImpl pageFlowVariantExtensionPoint = (PageFlowVariantExtensionPointImpl) o;
+                pageFlowVariantExtensionPoint.registerListener(variantListener);
             }
         }
         updateCache();

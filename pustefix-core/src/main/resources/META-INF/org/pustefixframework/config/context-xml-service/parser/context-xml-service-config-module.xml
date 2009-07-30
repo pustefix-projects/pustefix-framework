@@ -15,32 +15,50 @@
     <match>/c:context-xml-service-config/c:extension[@type='context.pageflow']</match>
   </handler>
   
+  <handler class="org.pustefixframework.config.contextxmlservice.parser.PageFlowVariantExtensionParsingHandler" run-order="end">
+    <match>/c:context-xml-service-config/c:extension[@type='context.pageflowvariant']</match>
+  </handler>
+  
   <handler class="org.pustefixframework.config.contextxmlservice.parser.PageFlowParsingHandler">
     <match>/c:context-xml-service-config/c:extension[@type='context.pageflow']/c:pageflow</match>
+  </handler>
+  
+  <handler class="org.pustefixframework.config.contextxmlservice.parser.PageFlowDummyParsingHandler">
+    <match>/c:context-xml-service-config/c:extension[@type='context.pageflowvariant']/c:pageflow</match>
   </handler>
   
   <handler class="org.pustefixframework.config.contextxmlservice.parser.PageFlowExtensionPointParsingHandler">
     <match>/c:context-xml-service-config/c:extension[@type='context.pageflow']/c:extension-point[@type='context.pageflow']</match>
   </handler>
   
+  <handler class="org.pustefixframework.config.contextxmlservice.parser.PageFlowVariantExtensionPointParsingHandler">
+    <match>/c:context-xml-service-config/c:extension[@type='context.pageflow']/c:pageflow/c:extension-point[@type='context.pageflowvariant']</match>
+    <match>/c:context-xml-service-config/c:extension[@type='context.pageflowvariant']/c:pageflow/c:extension-point[@type='context.pageflowvariant']</match>
+  </handler>
+  
   <handler class="org.pustefixframework.config.contextxmlservice.parser.PageFlowVariantParsingHandler">
     <match>/c:context-xml-service-config/c:extension[@type='context.pageflow']/c:pageflow/c:variant</match>
+    <match>/c:context-xml-service-config/c:extension[@type='context.pageflowvariant']/c:pageflow/c:variant</match>
   </handler>
   
   <handler class="org.pustefixframework.config.contextxmlservice.parser.PageFlowStepParsingHandler">
     <match>/c:context-xml-service-config/c:extension[@type='context.pageflow']/c:pageflow//c:flowstep</match>
+    <match>/c:context-xml-service-config/c:extension[@type='context.pageflowvariant']/c:pageflow//c:flowstep</match>
   </handler>
   
   <handler class="org.pustefixframework.config.contextxmlservice.parser.PageFlowStepOnContinueParsingHandler">
     <match>/c:context-xml-service-config/c:extension[@type='context.pageflow']/c:pageflow//c:flowstep/c:oncontinue</match>
+    <match>/c:context-xml-service-config/c:extension[@type='context.pageflowvariant']/c:pageflow//c:flowstep/c:oncontinue</match>
   </handler>
   
   <handler class="org.pustefixframework.config.contextxmlservice.parser.PageFlowStepConditionParsingHandler">
     <match>/c:context-xml-service-config/c:extension[@type='context.pageflow']/c:pageflow//c:flowstep/c:oncontinue/c:when</match>
+    <match>/c:context-xml-service-config/c:extension[@type='context.pageflowvariant']/c:pageflow//c:flowstep/c:oncontinue/c:when</match>
   </handler>
   
   <handler class="org.pustefixframework.config.contextxmlservice.parser.PageFlowStepActionParsingHandler">
     <match>/c:context-xml-service-config/c:extension[@type='context.pageflow']/c:pageflow//c:flowstep/c:oncontinue/c:when/c:action</match>
+    <match>/c:context-xml-service-config/c:extension[@type='context.pageflowvariant']/c:pageflow//c:flowstep/c:oncontinue/c:when/c:action</match>
   </handler>
   
 </configuration>

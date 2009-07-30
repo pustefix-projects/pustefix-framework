@@ -90,6 +90,7 @@ public abstract class AbstractExtensionParsingHandler implements ParsingHandler 
      * @param type type of the extension
      * @param extensionTargetInfos list of all extension points
      *  that should be extended
+     * @param context context the parsing handler was called with
      * @return bean definition for a subclass of {@link AbstractExtension}.
      *  The fields extensionTargetInfos and type are set by the base class.
      *  The field extensionPointType has to be set by the child implementation.

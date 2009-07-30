@@ -18,8 +18,10 @@
 
 package org.pustefixframework.config.contextxmlservice.parser;
 
-import org.pustefixframework.config.contextxmlservice.parser.internal.PageFlowExtensionPointImpl;
+import org.pustefixframework.config.contextxmlservice.PageFlowConfig;
+import org.pustefixframework.config.contextxmlservice.parser.internal.PageFlowVariantExtensionPointImpl;
 import org.pustefixframework.config.generic.AbstractExtensionPointParsingHandler;
+import org.pustefixframework.config.generic.ParsingUtils;
 import org.pustefixframework.extension.ExtensionPoint;
 
 import com.marsching.flexiparse.parser.HandlerContext;
@@ -27,13 +29,16 @@ import com.marsching.flexiparse.parser.exception.ParserException;
 
 
 /**
- * Handles the declaration of a page flow extension point.
+ * Handles the declaration of a page flow variant extension point.
  */
-public class PageFlowExtensionPointParsingHandler extends AbstractExtensionPointParsingHandler {
+public class PageFlowVariantExtensionPointParsingHandler extends AbstractExtensionPointParsingHandler {
 
     @Override
     protected ExtensionPoint<?> createExtensionPoint(String id, String type, String version, String cardinality, HandlerContext context) throws ParserException {
-        PageFlowExtensionPointImpl extensionPoint = new PageFlowExtensionPointImpl();
+        PageFlowConfig defaultConfig = ParsingUtils.getSingleTopObject(PageFlowConfig.class, context);
+        
+        PageFlowVariantExtensionPointImpl extensionPoint = new PageFlowVariantExtensionPointImpl();
+        extensionPoint.setPageFlowName(defaultConfig.getFlowName());
         extensionPoint.setId(id);
         extensionPoint.setType(type);
         extensionPoint.setVersion(version);

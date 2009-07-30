@@ -59,7 +59,7 @@ public abstract class AbstractExtensionPointParsingHandler implements ParsingHan
             cardinality = "0..n";
         }
         
-        ExtensionPoint<?> extensionPoint = createExtensionPoint(id, type, version, cardinality);
+        ExtensionPoint<?> extensionPoint = createExtensionPoint(id, type, version, cardinality, context);
         
         // Register extension point as a service
         BeanDefinitionRegistry beanRegistry = ParsingUtils.getSingleTopObject(BeanDefinitionRegistry.class, context);
@@ -93,9 +93,10 @@ public abstract class AbstractExtensionPointParsingHandler implements ParsingHan
      * @param type type of the extension point
      * @param version version of the extension point
      * @param cardinality cardinality for the extension point
+     * @param context context the parsing handler was called with
      * @return extension point object of the appropriate type
      * @throws ParserException if extension point cannot be created
      *  (e.g. type is not supported)
      */
-    protected abstract ExtensionPoint<?> createExtensionPoint(String id, String type, String version, String cardinality) throws ParserException;
+    protected abstract ExtensionPoint<?> createExtensionPoint(String id, String type, String version, String cardinality, HandlerContext context) throws ParserException;
 }

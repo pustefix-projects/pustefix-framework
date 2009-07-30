@@ -23,7 +23,6 @@ import java.util.List;
 
 import org.pustefixframework.config.contextxmlservice.PageFlowHolder;
 import org.pustefixframework.config.contextxmlservice.parser.internal.PageFlowExtensionImpl;
-import org.pustefixframework.config.contextxmlservice.parser.internal.PageFlowExtensionPointImpl;
 import org.pustefixframework.config.contextxmlservice.parser.internal.PageFlowVariantExtensionPointImpl;
 import org.pustefixframework.config.generic.AbstractExtensionParsingHandler;
 import org.pustefixframework.extension.support.ExtensionTargetInfo;
@@ -40,7 +39,7 @@ import com.marsching.flexiparse.parser.exception.ParserException;
  * 
  * @author Sebastian Marsching <sebastian.marsching@1und1.de>
  */
-public class PageFlowExtensionParsingHandler extends AbstractExtensionParsingHandler {
+public class PageFlowVariantExtensionParsingHandler extends AbstractExtensionParsingHandler {
 
     @Override
     protected BeanDefinition createExtension(String type, Collection<ExtensionTargetInfo> extensionTargetInfos, HandlerContext context) throws ParserException {
@@ -50,8 +49,6 @@ public class PageFlowExtensionParsingHandler extends AbstractExtensionParsingHan
             if (o instanceof PageFlowHolder) {
                 PageFlowHolder pageFlowholder = (PageFlowHolder) o;
                 pageFlowObjects.add(pageFlowholder.getPageFlowObject());
-            } else if (o instanceof PageFlowExtensionPointImpl) {
-                pageFlowObjects.add(o);
             } else if (o instanceof PageFlowVariantExtensionPointImpl) {
                 pageFlowObjects.add(o);
             }
