@@ -25,19 +25,39 @@
           </tr>
           <tr>
             <td>Email:</td>
-            <td><pfx:xinp type="text" name="user.email"/></td>
+            <td>
+              <pfx:xinp type="text" name="user.email"/>
+              <pfx:checkfield name="user.email">
+                <pfx:error><div style="color:#ff0000;"><pfx:scode/></div></pfx:error>
+              </pfx:checkfield>
+            </td>
           </tr>
           <tr>
             <td>Homepage:</td>
-            <td><pfx:xinp type="text" name="user.homepage"/></td>
+            <td>
+              <pfx:xinp type="text" name="user.homepage"/>
+              <pfx:checkfield name="user.homepage">
+                <pfx:error><div style="color:#ff0000;"><pfx:scode/></div></pfx:error>
+              </pfx:checkfield>
+            </td>
           </tr>
           <tr>
             <td>Birthdate:</td>
-            <td><pfx:xinp type="text" name="user.birthdate"/></td>
+            <td>
+              <pfx:xinp type="text" name="user.birthdate"/>
+              <pfx:checkfield name="user.birthdate">
+                <pfx:error><div style="color:#ff0000;"><pfx:scode/></div></pfx:error>
+              </pfx:checkfield>
+            </td>
           </tr>
           <tr>
             <td>Administrator:</td>
-            <td><pfx:xinp type="check" name="user.admin" value="true"/></td>
+            <td>
+              <pfx:xinp type="check" name="user.admin" value="true"/>
+              <pfx:checkfield name="user.admin">
+                <pfx:error><div style="color:#ff0000;"><pfx:scode/></div></pfx:error>
+              </pfx:checkfield>
+            </td>
           </tr>
         </table>
         <pfx:xinp type="submit" value="register"/>
