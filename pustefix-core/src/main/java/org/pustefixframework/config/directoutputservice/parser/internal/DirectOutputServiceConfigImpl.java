@@ -29,7 +29,7 @@ import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
 import org.pustefixframework.config.contextxmlservice.SSLOption;
-import org.pustefixframework.config.contextxmlservice.parser.internal.ServletManagerConfigImpl;
+import org.pustefixframework.config.contextxmlservice.parser.internal.AbstractPustefixRequestHandlerConfigImpl;
 import org.pustefixframework.config.directoutputservice.DirectOutputPageRequestConfig;
 import org.pustefixframework.config.directoutputservice.DirectOutputServiceConfig;
 
@@ -40,7 +40,7 @@ import de.schlund.pfixxml.resources.FileResource;
  * 
  * @author Sebastian Marsching <sebastian.marsching@1und1.de>
  */
-public class DirectOutputServiceConfigImpl extends ServletManagerConfigImpl implements
+public class DirectOutputServiceConfigImpl extends AbstractPustefixRequestHandlerConfigImpl implements
         SSLOption, DirectOutputServiceConfig {
     private final static Logger LOG = Logger.getLogger(DirectOutputServiceConfigImpl.class);
 

@@ -55,7 +55,6 @@ import de.schlund.pfixcore.workflow.ConfigurableState;
 import de.schlund.pfixcore.workflow.Context;
 import de.schlund.pfixcore.workflow.ContextImpl;
 import de.schlund.pfixcore.workflow.ContextInterceptor;
-import de.schlund.pfixcore.workflow.PageMap;
 import de.schlund.pfixcore.workflow.PageRequest;
 import de.schlund.pfixcore.workflow.PageRequestStatus;
 import de.schlund.pfixcore.workflow.State;
@@ -91,7 +90,6 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
     private ServerContextImpl   servercontext;
     private PageFlowManager     pageflowmanager;
     private VariantManager      variantmanager;
-    private PageMap             pagemap;
 
     private Variant             variant             = null;
     private String              language            = null;
@@ -117,7 +115,6 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
         this.servercontext = servercontext;
         this.pageflowmanager = servercontext.getPageFlowManager();
         this.variantmanager = servercontext.getVariantManager();
-        this.pagemap = servercontext.getPageMap();
 
         this.variant = parentcontext.getSessionVariant();
         this.language = parentcontext.getSessionLanguage();
@@ -605,7 +602,7 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
         if (!startwithflow) {
             ResultDocument resdoc;
 
-            State state = pagemap.getState(currentpagerequest);
+            State state = getState(currentpagerequest);
             if (state == null) {
                 LOG.warn("*** Can't get a handling state for page " + currentpagerequest);
                 LOG.warn("    ...will continue and use the default state '" + parentcontext.getContextConfig().getDefaultState().getName() + "'");
@@ -956,7 +953,7 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
     }
 
     private State getStateForPageRequest(PageRequest page) throws PustefixApplicationException {
-        State state = pagemap.getState(page);
+        State state = getState(page);
         if (state == null) {
             final Class<? extends State> clazz = parentcontext.getContextConfig().getDefaultState();
             try {
@@ -1015,6 +1012,14 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
             }
         }
         return state;
+    }
+    
+    private State getState(PageRequest pageRequest) {
+        PageRequestConfig config = servercontext.getContextConfig().getPageRequestConfig(pageRequest.getName());
+        if (config == null) {
+            return null;
+        }
+        return config.getState();
     }
 
 }

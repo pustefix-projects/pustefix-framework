@@ -80,11 +80,11 @@ public interface ContextConfig {
     Map<String, PageFlow> getPageFlowMap();
 
     /**
-     * Returns a list of configurations for all pagerequests.
+     * Returns the map mapping page names to the respective configurations.
      * 
-     * @return list of all pagerequest configurations.
+     * @return map containing page configurations
      */
-    List<? extends PageRequestConfig> getPageRequestConfigs();
+    Map<String, ? extends PageRequestConfig> getPageRequestConfigMap();
 
     /**
      * Returns the configuration for the pagerequest specified by <code>name</code>.

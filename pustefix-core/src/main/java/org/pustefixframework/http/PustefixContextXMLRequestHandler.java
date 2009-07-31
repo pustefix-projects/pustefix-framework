@@ -25,8 +25,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
-import org.pustefixframework.config.contextxmlservice.AbstractXMLServletConfig;
-import org.pustefixframework.config.contextxmlservice.ContextXMLServletConfig;
+import org.pustefixframework.config.contextxmlservice.AbstractPustefixXMLRequestHandlerConfig;
+import org.pustefixframework.config.contextxmlservice.PustefixContextXMLRequestHandlerConfig;
 import org.pustefixframework.config.contextxmlservice.PageRequestConfig;
 
 import de.schlund.pfixcore.exception.PustefixApplicationException;
@@ -67,22 +67,22 @@ public class PustefixContextXMLRequestHandler extends AbstractPustefixXMLRequest
     
     private final static String PROP_RENDEROUTPUTLISTENER = "de.schlund.pfixxml.RenderOutputListener";
 
-    private ContextXMLServletConfig config = null;
+    private PustefixContextXMLRequestHandlerConfig config = null;
     
     private ContextImpl context = null;
     
     private RenderOutputListener renderOutputListener;
     
-    protected ContextXMLServletConfig getContextXMLServletConfig() {
+    protected PustefixContextXMLRequestHandlerConfig getContextXMLServletConfig() {
         return this.config;
     }
 
-    public void setConfiguration(ContextXMLServletConfig config) {
+    public void setConfiguration(PustefixContextXMLRequestHandlerConfig config) {
         this.config = config;
     }
     
     @Override
-    protected AbstractXMLServletConfig getAbstractXMLServletConfig() {
+    protected AbstractPustefixXMLRequestHandlerConfig getAbstractXMLServletConfig() {
         return this.config;
     }
     

@@ -30,7 +30,9 @@ import org.pustefixframework.config.application.ApplicationFlag;
 import org.pustefixframework.config.application.EditorInfo;
 import org.pustefixframework.config.application.EditorLocation;
 import org.pustefixframework.config.application.XMLGeneratorInfo;
-import org.pustefixframework.config.contextxmlservice.ContextXMLServletConfig;
+import org.pustefixframework.config.contextxmlservice.ContextConfigHolder;
+import org.pustefixframework.config.contextxmlservice.PustefixContextXMLRequestHandlerConfig;
+import org.pustefixframework.config.contextxmlservice.parser.internal.SimplePustefixContextXMLRequestHandlerConfig;
 import org.pustefixframework.config.customization.CustomizationInfo;
 import org.pustefixframework.config.customization.PropertiesBasedCustomizationInfo;
 import org.pustefixframework.config.customization.RuntimeProperties;
@@ -45,6 +47,8 @@ import org.springframework.beans.factory.config.BeanDefinitionHolder;
 import org.springframework.beans.factory.config.RuntimeBeanReference;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
+import org.springframework.beans.factory.support.BeanNameGenerator;
+import org.springframework.beans.factory.support.DefaultBeanNameGenerator;
 import org.springframework.osgi.context.ConfigurableOsgiBundleApplicationContext;
 import org.w3c.dom.Element;
 import org.xml.sax.InputSource;
@@ -168,15 +172,24 @@ public class PustefixContextXMLRequestHandlerParsingHandler implements ParsingHa
             throw new BeanDefinitionStoreException("Error while parsing " + configurationURI.toASCIIString() + ": " + e.getMessage(), e);
         }
         
-        ContextXMLServletConfig config = context.getObjectTreeElement().getObjectsOfTypeFromSubTree(ContextXMLServletConfig.class).iterator().next();
+        PustefixContextXMLRequestHandlerConfig config = ParsingUtils.getSingleSubObject(PustefixContextXMLRequestHandlerConfig.class, context);
+        ContextConfigHolder contextConfigHolder = ParsingUtils.getSingleSubObject(ContextConfigHolder.class, context);
         
-        BeanDefinitionBuilder beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(PustefixContextXMLRequestHandler.class);
+        BeanDefinitionBuilder beanBuilder;
+        BeanDefinition beanDefinition;
+        BeanNameGenerator beanNameGenerator = new DefaultBeanNameGenerator();
+        
+        beanDefinition = SimplePustefixContextXMLRequestHandlerConfig.generateBeanDefinition(config, contextConfigHolder);
+        String configBeanName = beanNameGenerator.generateBeanName(beanDefinition, beanReg);
+        beanReg.registerBeanDefinition(configBeanName, beanDefinition);
+        
+        beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(PustefixContextXMLRequestHandler.class);
         beanBuilder.setScope("singleton");
         beanBuilder.setInitMethodName("init");
         beanBuilder.addPropertyValue("targetGenerator", new RuntimeBeanReference(info.getTargetGeneratorBeanName()));
         beanBuilder.addPropertyValue("handlerURI", path + "/**");
         beanBuilder.addPropertyValue("context", new RuntimeBeanReference(ContextImpl.class.getName()));
-        beanBuilder.addPropertyValue("configuration", config);
+        beanBuilder.addPropertyReference("configuration", configBeanName);
         beanBuilder.addPropertyValue("sessionAdmin", new RuntimeBeanReference(SessionAdmin.class.getName()));
         if(beanReg.isBeanNameInUse(TestRecording.class.getName())) {
             beanBuilder.addPropertyValue("testRecording", new RuntimeBeanReference(TestRecording.class.getName()));
@@ -194,7 +207,7 @@ public class PustefixContextXMLRequestHandlerParsingHandler implements ParsingHa
         if(editorInfos.size()>0) {
             beanBuilder.addPropertyValue("editModeAllowed", editorInfos.iterator().next().getEnabled());
         }
-        BeanDefinition beanDefinition = beanBuilder.getBeanDefinition();
+        beanDefinition = beanBuilder.getBeanDefinition();
         BeanDefinitionHolder beanHolder = new BeanDefinitionHolder(beanDefinition, PustefixContextXMLRequestHandler.class.getName() + "#" + path);
         context.getObjectTreeElement().addObject(beanHolder);
         

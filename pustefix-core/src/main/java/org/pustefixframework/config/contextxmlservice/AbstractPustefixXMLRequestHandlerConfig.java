@@ -18,28 +18,21 @@
 
 package org.pustefixframework.config.contextxmlservice;
 
-import de.schlund.pfixcore.scriptedflow.ScriptedFlowConfig;
-
 /**
- * Provides configuration for {@link de.schlund.pfixxml.ContextXMLServlet}.  
+ * Provides configuration for an {@link de.schlund.pfixxml.AbstractXMLServlet} instance or one of its
+ * child classes.  
  * 
  * @author Sebastian Marsching <sebastian.marsching@1und1.de>
  */
-public interface ContextXMLServletConfig extends AbstractXMLServletConfig {
+public interface AbstractPustefixXMLRequestHandlerConfig extends AbstractPustefixRequestHandlerConfig {
 
     /**
-     * Returns configuration that should be used by the context instances
-     * created by the servlet.
+     * Returns name for the servlet instance. This name is used to build attribute
+     * names which are used to store data within the servlet context and servlet
+     * session. This name has to be unique within the servlet context.
      * 
-     * @return configuration for context instances
+     * @return Name for the servlet instance
      */
-    ContextConfig getContextConfig();
-    
-    /**
-     * Returns scripted flows configuration.
-     * 
-     * @return scripted flows configuration.
-     */
-    ScriptedFlowConfig getScriptedFlowConfig();
+    String getServletName();
 
 }

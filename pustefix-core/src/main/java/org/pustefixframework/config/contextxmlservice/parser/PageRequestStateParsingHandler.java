@@ -18,7 +18,6 @@
 
 package org.pustefixframework.config.contextxmlservice.parser;
 
-import org.pustefixframework.config.contextxmlservice.parser.internal.PageRequestConfigImpl;
 import org.pustefixframework.config.contextxmlservice.parser.internal.ScriptingStatePathInfo;
 import org.pustefixframework.config.contextxmlservice.parser.internal.StateConfigImpl;
 import org.pustefixframework.config.customization.CustomizationAwareParsingHandler;
@@ -36,7 +35,6 @@ public class PageRequestStateParsingHandler extends CustomizationAwareParsingHan
 
     @Override
     protected void handleNodeIfActive(HandlerContext context) throws ParserException {
-        PageRequestConfigImpl pageConfig = ParsingUtils.getSingleTopObject(PageRequestConfigImpl.class, context);
         StateConfigImpl stateConfig = ParsingUtils.getSingleTopObject(StateConfigImpl.class, context);
 
         ConfigurableOsgiBundleApplicationContext appContext = ParsingUtils.getSingleTopObject(ConfigurableOsgiBundleApplicationContext.class, context);
@@ -70,7 +68,7 @@ public class PageRequestStateParsingHandler extends CustomizationAwareParsingHan
         
         if (beanRef.length() > 0) {
             stateConfig.setExternalBean(true);
-            pageConfig.setBeanName(beanRef);
+            stateConfig.setBeanName(beanRef);
         }
         
         if (parentBeanRef.length() > 0) {
@@ -97,7 +95,7 @@ public class PageRequestStateParsingHandler extends CustomizationAwareParsingHan
                 }
                 stateConfig.setState(clazz.asSubclass(ConfigurableState.class));
                 if (beanName.length() > 0) {
-                    pageConfig.setBeanName(beanName);
+                    stateConfig.setBeanName(beanName);
                 }
             }
         }

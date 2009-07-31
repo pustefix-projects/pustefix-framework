@@ -21,7 +21,7 @@ package org.pustefixframework.config.contextxmlservice.parser.internal;
 import java.util.Enumeration;
 import java.util.Properties;
 
-import org.pustefixframework.config.contextxmlservice.ServletManagerConfig;
+import org.pustefixframework.config.contextxmlservice.AbstractPustefixRequestHandlerConfig;
 
 
 /**
@@ -29,7 +29,7 @@ import org.pustefixframework.config.contextxmlservice.ServletManagerConfig;
  * 
  * @author Sebastian Marsching <sebastian.marsching@1und1.de>
  */
-public class ServletManagerConfigImpl implements ServletManagerConfig {
+public class AbstractPustefixRequestHandlerConfigImpl implements AbstractPustefixRequestHandlerConfig {
 
     private boolean ssl;
     private Properties props = new Properties();

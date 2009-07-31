@@ -1,5 +1,8 @@
 2009-07-30  Sebastian Marsching <sebastian.marsching@1und1.de>
 
+	Refactored page configuration in order to prepare for extension
+	point support.
+
 	Added page flow step extension points.
 
 	Removed caching of page name to page flow name map.

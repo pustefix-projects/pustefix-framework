@@ -18,21 +18,30 @@
 
 package org.pustefixframework.config.contextxmlservice;
 
+import org.springframework.beans.factory.config.BeanReference;
+
 /**
- * Provides configuration for an {@link de.schlund.pfixxml.AbstractXMLServlet} instance or one of its
- * child classes.  
+ * Holds a page request config object.  
  * 
  * @author Sebastian Marsching <sebastian.marsching@1und1.de>
  */
-public interface AbstractXMLServletConfig extends ServletManagerConfig {
+public interface PageRequestConfigHolder {
 
     /**
-     * Returns name for the servlet instance. This name is used to build attribute
-     * names which are used to store data within the servlet context and servlet
-     * session. This name has to be unique within the servlet context.
+     * Returns the name of the page. The name is the identifier which is used
+     * to reference the page in other parts of the configuration
+     * (e.g. forms, page flows).
      * 
-     * @return Name for the servlet instance
+     * @return name of the page hold by this holder object
      */
-    String getServletName();
+    String getName();
 
+    /**
+     * Returns the page request config object. The returned object must either 
+     * implement the {@link PageRequestConfig} interface or be a 
+     * {@link BeanReference} to a bean that implements this interface.
+     * 
+     * @return object containing page request configuration
+     */
+    Object getPageRequestConfigObject();
 }

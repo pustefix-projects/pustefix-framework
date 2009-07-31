@@ -47,8 +47,8 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
 import org.apache.log4j.Logger;
-import org.pustefixframework.config.contextxmlservice.AbstractXMLServletConfig;
-import org.pustefixframework.config.contextxmlservice.ServletManagerConfig;
+import org.pustefixframework.config.contextxmlservice.AbstractPustefixXMLRequestHandlerConfig;
+import org.pustefixframework.config.contextxmlservice.AbstractPustefixRequestHandlerConfig;
 import org.w3c.dom.Document;
 
 import de.schlund.pfixcore.exception.PustefixApplicationException;
@@ -144,11 +144,11 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
     protected String editorLocation;
     
     @Override
-    protected ServletManagerConfig getServletManagerConfig() {
+    protected AbstractPustefixRequestHandlerConfig getServletManagerConfig() {
         return this.getAbstractXMLServletConfig();
     }
     
-    protected abstract AbstractXMLServletConfig getAbstractXMLServletConfig();
+    protected abstract AbstractPustefixXMLRequestHandlerConfig getAbstractXMLServletConfig();
     
     private boolean      renderExternal            = false;
     private boolean      editmodeAllowed            = false;
@@ -167,7 +167,7 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
     /**
      * Init method of all servlets inheriting from AbstractXMLServlets.
      * It calls super.init(Config) as a first step.
-     * @param ContextXMLServletConfig config. Passed in from the servlet container.
+     * @param PustefixContextXMLRequestHandlerConfig config. Passed in from the servlet container.
      * @return void
      * @exception ServletException thrown when the initialisation goes havoc somehow
      */

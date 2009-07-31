@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.Properties;
 
 import de.schlund.pfixcore.auth.AuthConstraint;
+import de.schlund.pfixcore.workflow.State;
 
 /**
  * Provides configuration for a specific page.  
@@ -48,12 +49,11 @@ public interface PageRequestConfig {
     boolean isSSL();
 
     /**
-     * Returns the name of the bean that handles requests for this
-     * page.
+     * Returns the state representing the page.
      * 
-     * @return bean name
+     * @return Pustefix page state
      */
-    String getBeanName();
+    State getState();
 
     AuthConstraint getAuthConstraint();
     

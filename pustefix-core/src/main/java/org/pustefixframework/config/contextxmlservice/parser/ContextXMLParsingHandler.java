@@ -22,10 +22,11 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import org.pustefixframework.config.contextxmlservice.ContextConfigHolder;
 import org.pustefixframework.config.contextxmlservice.PageFlowHolder;
-import org.pustefixframework.config.contextxmlservice.PageRequestConfig;
+import org.pustefixframework.config.contextxmlservice.PageRequestConfigHolder;
 import org.pustefixframework.config.contextxmlservice.parser.internal.ContextConfigImpl;
-import org.pustefixframework.config.contextxmlservice.parser.internal.ContextXMLServletConfigImpl;
+import org.pustefixframework.config.contextxmlservice.parser.internal.PustefixContextXMLRequestHandlerConfigImpl;
 import org.pustefixframework.config.contextxmlservice.parser.internal.PageFlowExtensionPointImpl;
 import org.pustefixframework.config.contextxmlservice.parser.internal.PageFlowMap;
 import org.pustefixframework.config.contextxmlservice.parser.internal.PageFlowVariantExtensionPointImpl;
@@ -47,7 +48,6 @@ import com.marsching.flexiparse.parser.exception.ParserException;
 
 import de.schlund.pfixcore.workflow.ContextImpl;
 import de.schlund.pfixcore.workflow.ContextResourceManagerImpl;
-import de.schlund.pfixcore.workflow.PageMap;
 import de.schlund.pfixcore.workflow.context.ServerContextImpl;
 import de.schlund.pfixxml.perflogging.PerfLogging;
 
@@ -62,17 +62,11 @@ public class ContextXMLParsingHandler implements ParsingHandler {
         
         if (context.getRunOrder() == RunOrder.START) {
             
-            ContextXMLServletConfigImpl ctxConfig = new ContextXMLServletConfigImpl();
+            PustefixContextXMLRequestHandlerConfigImpl ctxConfig = new PustefixContextXMLRequestHandlerConfigImpl();
             context.getObjectTreeElement().addObject(ctxConfig);
             
         } else {
             ContextConfigImpl contextConfig = ParsingUtils.getSingleSubObjectFromRoot(ContextConfigImpl.class, context);
-            
-            try {
-                contextConfig.checkAuthConstraints();
-            } catch(Exception x) {
-                throw new ParserException("Authconstraints are invalid", x);
-            }
             
             BeanDefinitionBuilder beanBuilder;
             BeanDefinition beanDefinition;
@@ -82,17 +76,10 @@ public class ContextXMLParsingHandler implements ParsingHandler {
             
             @SuppressWarnings("unchecked")
             Map<String, Object> pageMap = new ManagedMap();
-            Collection<PageRequestConfig> pageCollection = context.getObjectTreeElement().getObjectsOfTypeFromSubTree(PageRequestConfig.class);
-            for (PageRequestConfig pageConfig : pageCollection) {
-                pageMap.put(pageConfig.getPageName(), new RuntimeBeanReference(pageConfig.getBeanName()));
+            Collection<PageRequestConfigHolder> pageCollection = context.getObjectTreeElement().getObjectsOfTypeFromSubTree(PageRequestConfigHolder.class);
+            for (PageRequestConfigHolder pageConfigHolder : pageCollection) {
+                pageMap.put(pageConfigHolder.getName(), pageConfigHolder.getPageRequestConfigObject());
             }
-            
-            beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(PageMap.class);
-            beanBuilder.setScope("singleton");
-            beanBuilder.addPropertyValue("map", pageMap);
-            beanDefinition = beanBuilder.getBeanDefinition();
-            String pageMapBeanName = beanNameGenerator.generateBeanName(beanDefinition, beanRegistry);
-            beanRegistry.registerBeanDefinition(pageMapBeanName, beanDefinition);
             
             @SuppressWarnings("unchecked")
             List<Object> startInterceptors = new ManagedList();
@@ -136,16 +123,24 @@ public class ContextXMLParsingHandler implements ParsingHandler {
             beanBuilder.addPropertyValue("startInterceptors", startInterceptors);
             beanBuilder.addPropertyValue("endInterceptors", endInterceptors);
             beanBuilder.addPropertyValue("postRenderInterceptors", postRenderInterceptors);
+            beanBuilder.addPropertyValue("pageRequestConfigMap", pageMap);
             beanBuilder.addPropertyReference("pageFlowMap", pageFlowMapBeanName);
             beanDefinition = beanBuilder.getBeanDefinition();
             String contextConfigBeanName = beanNameGenerator.generateBeanName(beanDefinition, beanRegistry);
             beanRegistry.registerBeanDefinition(contextConfigBeanName, beanDefinition);
+            final RuntimeBeanReference contextConfigReference = new RuntimeBeanReference(contextConfigBeanName);
+            context.getObjectTreeElement().addObject(new ContextConfigHolder() {
+
+                public Object getContextConfigObject() {
+                    return contextConfigReference;
+                }
+                
+            });
             
             beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(ServerContextImpl.class);
             beanBuilder.setScope("singleton");
             beanBuilder.setInitMethodName("init");
             beanBuilder.addPropertyReference("config", contextConfigBeanName);
-            beanBuilder.addPropertyReference("pageMap", pageMapBeanName);
             beanDefinition = beanBuilder.getBeanDefinition();
             beanHolder = new BeanDefinitionHolder(beanDefinition, ServerContextImpl.class.getName() );
             context.getObjectTreeElement().addObject(beanHolder);

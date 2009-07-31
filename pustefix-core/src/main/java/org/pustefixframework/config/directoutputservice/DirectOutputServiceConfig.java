@@ -20,7 +20,7 @@ package org.pustefixframework.config.directoutputservice;
 
 import java.util.List;
 
-import org.pustefixframework.config.contextxmlservice.ServletManagerConfig;
+import org.pustefixframework.config.contextxmlservice.AbstractPustefixRequestHandlerConfig;
 
 
 /**
@@ -28,7 +28,7 @@ import org.pustefixframework.config.contextxmlservice.ServletManagerConfig;
  * 
  * @author Sebastian Marsching <sebastian.marsching@1und1.de>
  */
-public interface DirectOutputServiceConfig extends ServletManagerConfig {
+public interface DirectOutputServiceConfig extends AbstractPustefixRequestHandlerConfig {
 
     /**
      * Returns the name of the corresponding {@link de.schlund.pfixxml.ContextXMLServlet}

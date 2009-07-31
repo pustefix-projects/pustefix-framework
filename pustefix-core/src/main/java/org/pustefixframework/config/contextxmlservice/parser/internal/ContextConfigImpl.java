@@ -27,7 +27,6 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import java.util.Set;
 import java.util.Map.Entry;
 
 import net.sf.cglib.proxy.Enhancer;
@@ -35,6 +34,7 @@ import net.sf.cglib.proxy.Enhancer;
 import org.apache.log4j.Logger;
 import org.pustefixframework.config.contextxmlservice.ContextConfig;
 import org.pustefixframework.config.contextxmlservice.ContextResourceConfig;
+import org.pustefixframework.config.contextxmlservice.PageRequestConfig;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -68,8 +68,7 @@ public class ContextConfigImpl implements ContextConfig {
     private LinkedHashMap<Class<?>, ContextResourceConfigImpl> resources = new LinkedHashMap<Class<?>, ContextResourceConfigImpl>();
     private List<ContextResourceConfigImpl> cacheResources = null; 
     private Map<String, PageFlow> pageflows = new HashMap<String, PageFlow>();
-    private HashMap<String, PageRequestConfigImpl> pagerequests = new HashMap<String, PageRequestConfigImpl>();
-    private List<PageRequestConfigImpl> cachePagerequests = null;
+    private Map<String, ? extends PageRequestConfig> pagerequests;
     private ArrayList<ContextInterceptor> startinterceptors = new ArrayList<ContextInterceptor>();
     private ArrayList<ContextInterceptor> endinterceptors = new ArrayList<ContextInterceptor>();
     private ArrayList<ContextInterceptor> postRenderInterceptors = new ArrayList<ContextInterceptor>();
@@ -97,7 +96,6 @@ public class ContextConfigImpl implements ContextConfig {
     public ContextConfigImpl(ContextConfigImpl ref) {
         this.authConstraintRefsResolved = ref.authConstraintRefsResolved;
         this.authConstraints = ref.authConstraints;
-        this.cachePagerequests = ref.cachePagerequests;
         this.cacheResources = ref.cacheResources;
         this.conditions = ref.conditions;
         this.defaultAuthConstraint = ref.defaultAuthConstraint;
@@ -189,32 +187,6 @@ public class ContextConfigImpl implements ContextConfig {
     
     public Map<String, PageFlow> getPageFlowMap() {
         return this.pageflows;
-    }
-    
-    public void addPageRequest(PageRequestConfigImpl config) {
-        if (this.pagerequests.containsKey(config.getPageName())) {
-            LOG.warn("Overwriting configuration for pagerequest" + config.getPageName());
-        }
-        this.pagerequests.put(config.getPageName(), config);
-        this.cachePagerequests = null;
-    }
-    
-    public List<PageRequestConfigImpl> getPageRequestConfigs() {
-        List<PageRequestConfigImpl> list = this.cachePagerequests;
-        if (list == null) {
-            list = new ArrayList<PageRequestConfigImpl>();
-            for (Iterator<Entry<String, PageRequestConfigImpl>> i = this.pagerequests.entrySet().iterator(); i.hasNext();) {
-                Entry<String, PageRequestConfigImpl> entry = i.next();
-                list.add(entry.getValue());
-            
-            }
-            this.cachePagerequests = Collections.unmodifiableList(list);
-        }
-        return list;
-    }
-    
-    public PageRequestConfigImpl getPageRequestConfig(String name) {
-        return this.pagerequests.get(name);
     }
     
     public void addStartInterceptorBean(String beanName) {
@@ -427,41 +399,17 @@ public class ContextConfigImpl implements ContextConfig {
         }
         return condition;
     }
-      
-    public void checkAuthConstraints() throws Exception {
-        Set<String> authPages = new LinkedHashSet<String>();
-        List<PageRequestConfigImpl> pages = getPageRequestConfigs();
-        for (PageRequestConfigImpl page : pages) {
-            AuthConstraint authConstraint = page.getAuthConstraint();
-            if (authConstraint == null) authConstraint = getDefaultAuthConstraint();
-            if (authConstraint != null) {
-                authPages.clear();
-                authPages.add(page.getPageName());
-                checkAuthConstraint(authConstraint, authPages, page.getPageName());
-            }
-        }
+
+    public Map<String, ? extends PageRequestConfig> getPageRequestConfigMap() {
+        return pagerequests;
     }
-    
-    private void checkAuthConstraint(AuthConstraint authConstraint, Set<String> authPages, String lastAuthPage) throws Exception {
-        String authPage = authConstraint.getAuthPage();
-        if (authPage != null && !authPage.equals(lastAuthPage)) {
-            if (authPages.contains(authPage)) {
-                StringBuilder sb = new StringBuilder();
-                for (String s : authPages)
-                    sb.append(s + " -> ");
-                sb.append(authPage);
-                throw new Exception("Circular authconstraint@authpage reference: " + sb.toString());
-            }
-            PageRequestConfigImpl cfg = getPageRequestConfig(authPage);
-            if (cfg != null) {
-                AuthConstraint ac = cfg.getAuthConstraint();
-                if (ac == null) ac = getDefaultAuthConstraint();
-                if (ac != null) {
-                    authPages.add(authPage);
-                    checkAuthConstraint(ac, authPages, authPage);
-                }
-            } else throw new Exception("Authpage not configured: " + authPage);
-        }
+
+    public void setPageRequestConfigMap(Map<String, ? extends PageRequestConfig> pageRequestConfigMap) {
+        this.pagerequests = pageRequestConfigMap;
+    }
+
+    public PageRequestConfig getPageRequestConfig(String name) {
+        return getPageRequestConfigMap().get(name);
     }
     
 }

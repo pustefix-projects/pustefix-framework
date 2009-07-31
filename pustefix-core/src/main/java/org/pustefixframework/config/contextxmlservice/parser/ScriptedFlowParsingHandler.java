@@ -20,7 +20,7 @@ package org.pustefixframework.config.contextxmlservice.parser;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-import org.pustefixframework.config.contextxmlservice.parser.internal.ContextXMLServletConfigImpl;
+import org.pustefixframework.config.contextxmlservice.parser.internal.PustefixContextXMLRequestHandlerConfigImpl;
 import org.pustefixframework.config.generic.ParsingUtils;
 import org.pustefixframework.resource.InputStreamResource;
 import org.pustefixframework.resource.ResourceLoader;
@@ -40,7 +40,7 @@ public class ScriptedFlowParsingHandler implements ParsingHandler {
 
         ResourceLoader resourceLoader = ParsingUtils.getSingleTopObject(ResourceLoader.class, context);
 
-        ContextXMLServletConfigImpl config = ParsingUtils.getSingleTopObject(ContextXMLServletConfigImpl.class, context);     
+        PustefixContextXMLRequestHandlerConfigImpl config = ParsingUtils.getSingleTopObject(PustefixContextXMLRequestHandlerConfigImpl.class, context);     
         
         String scriptName = element.getAttribute("name").trim();
         String scriptFile = element.getAttribute("file").trim();

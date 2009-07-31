@@ -20,7 +20,7 @@ package org.pustefixframework.config.application.parser;
 import java.util.Properties;
 
 import org.pustefixframework.config.Constants;
-import org.pustefixframework.config.contextxmlservice.ServletManagerConfig;
+import org.pustefixframework.config.contextxmlservice.AbstractPustefixRequestHandlerConfig;
 import org.pustefixframework.http.dereferer.DerefRequestHandler;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinitionHolder;
@@ -45,7 +45,7 @@ public class DerefRequestHandlerParsingHandler implements ParsingHandler {
         if(root.getLocalName().equals("application")) {
             
             final Properties properties = new Properties(System.getProperties());
-            ServletManagerConfig config = new ServletManagerConfig() {
+            AbstractPustefixRequestHandlerConfig config = new AbstractPustefixRequestHandlerConfig() {
 
                 public Properties getProperties() {
                     return properties;

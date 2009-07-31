@@ -18,22 +18,18 @@
 
 package org.pustefixframework.config.contextxmlservice.parser.internal;
 
-import java.util.HashSet;
-import java.util.Set;
-
-import org.pustefixframework.config.contextxmlservice.ContextXMLServletConfig;
+import org.pustefixframework.config.contextxmlservice.PustefixContextXMLRequestHandlerConfig;
 import org.pustefixframework.config.contextxmlservice.SSLOption;
 
 import de.schlund.pfixcore.scriptedflow.ScriptedFlowConfigImpl;
 import de.schlund.pfixcore.workflow.ConfigurableState;
-import de.schlund.pfixxml.resources.FileResource;
 
 /**
  * Stores configuration for a Pustefix servlet
  * 
  * @author Sebastian Marsching <sebastian.marsching@1und1.de>
  */
-public class ContextXMLServletConfigImpl extends AbstractXMLServletConfigImpl implements ContextXMLServletConfig, SSLOption {
+public class PustefixContextXMLRequestHandlerConfigImpl extends AbstractPustefixXMLRequestHandlerConfigImpl implements PustefixContextXMLRequestHandlerConfig, SSLOption {
     private final static Class<de.schlund.pfixcore.workflow.app.DefaultIWrapperState> DEFAULT_IHANDLER_STATE = de.schlund.pfixcore.workflow.app.DefaultIWrapperState.class;
 
     private final static Class<de.schlund.pfixcore.workflow.app.StaticState> DEFAULT_STATIC_STATE = de.schlund.pfixcore.workflow.app.StaticState.class;
@@ -47,10 +43,6 @@ public class ContextXMLServletConfigImpl extends AbstractXMLServletConfigImpl im
     private ContextConfigImpl contextConfig;
 
     private ScriptedFlowConfigImpl scriptedFlowConfig = new ScriptedFlowConfigImpl();
-
-    private Set<FileResource> fileDependencies = new HashSet<FileResource>();
-
-    private long loadTime = 0;
 
     public void setDefaultStaticState(Class<? extends ConfigurableState> clazz) {
         this.defaultStateClass = clazz;
@@ -99,16 +91,4 @@ public class ContextXMLServletConfigImpl extends AbstractXMLServletConfigImpl im
         return this.scriptedFlowConfig;
     }
 
-    /* (non-Javadoc)
-     * @see de.schlund.pfixxml.config.ContextXMLServletConfig#needsReload()
-     */
-    @Override
-    public boolean needsReload() {
-        for (FileResource file : fileDependencies) {
-            if (file.lastModified() > loadTime) {
-                return true;
-            }
-        }
-        return false;
-    }
 }

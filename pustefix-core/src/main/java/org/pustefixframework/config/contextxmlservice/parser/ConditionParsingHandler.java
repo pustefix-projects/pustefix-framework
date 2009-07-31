@@ -20,7 +20,7 @@ package org.pustefixframework.config.contextxmlservice.parser;
 import java.util.Iterator;
 
 import org.pustefixframework.config.contextxmlservice.parser.internal.AuthConstraintRef;
-import org.pustefixframework.config.contextxmlservice.parser.internal.ContextXMLServletConfigImpl;
+import org.pustefixframework.config.contextxmlservice.parser.internal.PustefixContextXMLRequestHandlerConfigImpl;
 import org.pustefixframework.config.generic.ParsingUtils;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -51,7 +51,7 @@ public class ConditionParsingHandler implements ParsingHandler {
         Element element = (Element)context.getNode();
         ParsingUtils.checkAttributes(element, null, new String[] {"name", "class", "ref", "id"});
         
-        ContextXMLServletConfigImpl config = ParsingUtils.getSingleTopObject(ContextXMLServletConfigImpl.class, context);
+        PustefixContextXMLRequestHandlerConfigImpl config = ParsingUtils.getSingleTopObject(PustefixContextXMLRequestHandlerConfigImpl.class, context);
         
         Iterator<Condition> parentConditions = context.getObjectTreeElement().getObjectsOfTypeFromTopTree(Condition.class).iterator();
         Condition parentCondition = null;

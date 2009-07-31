@@ -26,7 +26,7 @@ import java.util.Properties;
  * 
  * @author Sebastian Marsching <sebastian.marsching@1und1.de>
  */
-public interface ServletManagerConfig {
+public interface AbstractPustefixRequestHandlerConfig {
 
     /**
      * If <code>true</code> a secure communication channel should be used for

@@ -152,9 +152,9 @@ public class TransformerCallback {
             ContextImpl context = requestContext.getParentContext();
             State state;
             if (pageName != null) {
-                state = context.getPageMap().getState(pageName);
+                state = getState(context, pageName);
             } else {
-                state = context.getPageMap().getState(context.getCurrentPageRequest());
+                state = getState(context, context.getCurrentPageRequest().getName());
             }
             if (state == null) {
                 return false;
@@ -184,9 +184,9 @@ public class TransformerCallback {
             }
             State state;
             if (pageName != null) {
-                state = context.getPageMap().getState(pageName);
+                state = getState(context, pageName);
             } else {
-                state = context.getPageMap().getState(context.getCurrentPageRequest());
+                state = getState(context, context.getCurrentPageRequest().getName());
             }
             if (state == null) {
                 return null;
@@ -224,7 +224,7 @@ public class TransformerCallback {
                 else
                     throw new IllegalArgumentException("Missing page name");
             }
-            State state = context.getPageMap().getState(pageName);
+            State state = getState(context, pageName);
             if (state instanceof IWrapperState) {
                 IWrapperState iwState = (IWrapperState) state;
                 Map<String, ? extends IWrapperConfig> iwrappers = iwState.getIWrapperConfigMap();
@@ -393,6 +393,14 @@ public class TransformerCallback {
             ExtensionFunctionUtils.setExtensionFunctionError(x);
             throw x;
         }
+    }
+
+    private static State getState(ContextImpl context, String pageName) {
+        PageRequestConfig config = context.getContextConfig().getPageRequestConfig(pageName);
+        if (config == null) {
+            return null;
+        }
+        return config.getState();
     }
     
 }

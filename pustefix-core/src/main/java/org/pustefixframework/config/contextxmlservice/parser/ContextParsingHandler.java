@@ -20,7 +20,7 @@ package org.pustefixframework.config.contextxmlservice.parser;
 
 import org.pustefixframework.config.application.XMLGeneratorInfo;
 import org.pustefixframework.config.contextxmlservice.parser.internal.ContextConfigImpl;
-import org.pustefixframework.config.contextxmlservice.parser.internal.ContextXMLServletConfigImpl;
+import org.pustefixframework.config.contextxmlservice.parser.internal.PustefixContextXMLRequestHandlerConfigImpl;
 import org.pustefixframework.config.generic.ParsingUtils;
 import org.w3c.dom.Element;
 
@@ -42,7 +42,7 @@ public class ContextParsingHandler implements ParsingHandler {
         ParsingUtils.checkAttributes(element, null, new String[] {"defaultpage", "synchronized"});
         
         XMLGeneratorInfo info = ParsingUtils.getSingleTopObject(XMLGeneratorInfo.class, context);
-        ContextXMLServletConfigImpl config = ParsingUtils.getSingleTopObject(ContextXMLServletConfigImpl.class, context);
+        PustefixContextXMLRequestHandlerConfigImpl config = ParsingUtils.getSingleTopObject(PustefixContextXMLRequestHandlerConfigImpl.class, context);
         
         ContextConfigImpl ctxConfig = new ContextConfigImpl();
         // Navigation is stored in depend.xml

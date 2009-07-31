@@ -20,7 +20,7 @@ package org.pustefixframework.config.contextxmlservice.parser;
 
 import org.pustefixframework.config.contextxmlservice.ContextConfig;
 import org.pustefixframework.config.contextxmlservice.ContextResourceConfig;
-import org.pustefixframework.config.contextxmlservice.ContextXMLServletConfig;
+import org.pustefixframework.config.contextxmlservice.PustefixContextXMLRequestHandlerConfig;
 import org.pustefixframework.config.contextxmlservice.parser.internal.StateConfigImpl;
 import org.pustefixframework.config.generic.ParsingUtils;
 import org.springframework.beans.factory.config.RuntimeBeanReference;
@@ -62,7 +62,7 @@ public class PageRequestOutputResourceParsingHandler implements ParsingHandler {
             } catch (ClassNotFoundException e) {
                 throw new ParserException("Could not load resource interface \"" + className + "\"!");
             }
-            ContextXMLServletConfig servletConfig = ParsingUtils.getSingleTopObject(ContextXMLServletConfig.class, context);
+            PustefixContextXMLRequestHandlerConfig servletConfig = ParsingUtils.getSingleTopObject(PustefixContextXMLRequestHandlerConfig.class, context);
             ContextConfig contextConfig = servletConfig.getContextConfig();
             ContextResourceConfig resourceConfig = contextConfig.getContextResourceConfig(clazz);
             if (resourceConfig == null) {

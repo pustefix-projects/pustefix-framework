@@ -16,23 +16,23 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-package org.pustefixframework.config.contextxmlservice.parser.internal;
+package org.pustefixframework.config.contextxmlservice;
 
-import org.pustefixframework.config.contextxmlservice.AbstractXMLServletConfig;
+import org.springframework.beans.factory.config.BeanReference;
 
-public class AbstractXMLServletConfigImpl extends ServletManagerConfigImpl implements AbstractXMLServletConfig {
+/**
+ * Holds the context configuration.  
+ * 
+ * @author Sebastian Marsching <sebastian.marsching@1und1.de>
+ */
+public interface ContextConfigHolder {
 
-    private String servletName;
-
-    public void setServletName(String value) {
-        this.servletName = value;
-    }
-
-    /* (non-Javadoc)
-     * @see de.schlund.pfixxml.config.IAbstractXMLServletConfig#getServletName()
+    /**
+     * Returns the context configuration object. The returned object must 
+     * either implement the {@link ContextConfig} interface or be a 
+     * {@link BeanReference} to a bean that implements this interface.
+     * 
+     * @return context configuration
      */
-    public String getServletName() {
-        return this.servletName;
-    }
-
+    Object getContextConfigObject();
 }

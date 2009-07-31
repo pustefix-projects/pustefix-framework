@@ -26,7 +26,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
-import org.pustefixframework.config.contextxmlservice.ServletManagerConfig;
+import org.pustefixframework.config.contextxmlservice.AbstractPustefixRequestHandlerConfig;
 import org.pustefixframework.http.AbstractPustefixRequestHandler;
 
 import de.schlund.pfixxml.PfixServletRequest;
@@ -52,7 +52,7 @@ public class DerefRequestHandler extends AbstractPustefixRequestHandler {
     private long validTime;
     private boolean mustSign;
     
-    private ServletManagerConfig config;
+    private AbstractPustefixRequestHandlerConfig config;
     
     public void setValidTime(long validTime) {
         this.validTime = validTime;
@@ -237,11 +237,11 @@ public class DerefRequestHandler extends AbstractPustefixRequestHandler {
     }
 
     @Override
-    protected ServletManagerConfig getServletManagerConfig() {
+    protected AbstractPustefixRequestHandlerConfig getServletManagerConfig() {
         return this.config;
     }
     
-    public void setConfiguration(ServletManagerConfig config) {
+    public void setConfiguration(AbstractPustefixRequestHandlerConfig config) {
         this.config = config;
     }
     

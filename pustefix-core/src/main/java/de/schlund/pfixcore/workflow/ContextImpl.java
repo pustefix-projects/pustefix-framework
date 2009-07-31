@@ -355,8 +355,4 @@ public class ContextImpl implements AccessibilityChecker, ExtendedContext, Token
     public PfixServletRequest getPfixServletRequest() {
         return getRequestContextForCurrentThreadWithError().getPfixServletRequest();
     }
-    
-    public PageMap getPageMap() {
-        return getServerContext().getPageMap();
-    }
 }

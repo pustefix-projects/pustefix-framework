@@ -38,7 +38,7 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
 import org.pustefixframework.admin.mbeans.WebappAdmin;
-import org.pustefixframework.config.contextxmlservice.ServletManagerConfig;
+import org.pustefixframework.config.contextxmlservice.AbstractPustefixRequestHandlerConfig;
 import org.pustefixframework.container.spring.http.UriProvidingHttpRequestHandler;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.web.context.ServletContextAware;
@@ -97,7 +97,7 @@ public abstract class AbstractPustefixRequestHandler implements UriProvidingHttp
     private WebappAdmin webappAdmin;
     private ExceptionProcessingConfiguration exceptionProcessingConfig;
     
-    protected abstract ServletManagerConfig getServletManagerConfig();
+    protected abstract AbstractPustefixRequestHandlerConfig getServletManagerConfig();
 
     protected boolean runningUnderSSL(HttpServletRequest req) {
         return req.isSecure();

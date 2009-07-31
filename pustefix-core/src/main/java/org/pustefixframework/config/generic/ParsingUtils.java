@@ -76,7 +76,17 @@ public class ParsingUtils {
         }
         return configs.iterator().next();
     }
-    
+
+    public static <T> T getSingleSubObject(Class<T> clazz, HandlerContext context) throws ParserException {
+        Collection<T> configs = context.getObjectTreeElement().getObjectsOfTypeFromSubTree(clazz);
+        if(configs.size()==0) {
+            throw new ParserException("Object tree contains no instance of type '"+clazz.getName()+"'.");
+        } else if(configs.size()>1) {
+            throw new ParserException("Object tree contains multiple instances of type '"+clazz.getName()+"'.");
+        }
+        return configs.iterator().next();
+    }
+
     public static <T> T getFirstTopObject(Class<T> clazz, HandlerContext context, boolean mandatory) throws ParserException {
         Collection<T> configs = context.getObjectTreeElement().getObjectsOfTypeFromTopTree(clazz);
         if(configs.size()==0 && mandatory) {

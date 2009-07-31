@@ -26,8 +26,12 @@ import java.util.Properties;
 
 import org.pustefixframework.config.contextxmlservice.PageRequestConfig;
 import org.pustefixframework.config.contextxmlservice.SSLOption;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.beans.factory.config.RuntimeBeanReference;
+import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 
 import de.schlund.pfixcore.auth.AuthConstraint;
+import de.schlund.pfixcore.workflow.State;
 
 /**
  * Stores configuration for a PageRequest
@@ -40,9 +44,10 @@ public class PageRequestConfigImpl implements Cloneable, PageRequestConfig, SSLO
     private boolean ssl = false;
     private AuthConstraint authConstraint;
     private String defaultFlow = null;
-    private String beanName = null;
     private Properties props = new Properties();
     private LinkedHashMap<String, ProcessActionPageRequestConfigImpl> actions = new LinkedHashMap<String, ProcessActionPageRequestConfigImpl>();
+    private State state;
+    private RuntimeBeanReference stateReference;
     
     public void setPageName(String page) {
         this.pageName = page;
@@ -90,12 +95,20 @@ public class PageRequestConfigImpl implements Cloneable, PageRequestConfig, SSLO
         return super.clone();
     }
 
-    public String getBeanName() {
-        return this.beanName ;
+    public State getState() {
+        return this.state;
     }
-    
-    public void setBeanName(String beanName) {
-        this.beanName = beanName;
+
+    public void setState(State state) {
+        this.state = state;
+    }
+
+    public RuntimeBeanReference getStateReference() {
+        return this.stateReference;
+    }
+
+    public void setStateReference(RuntimeBeanReference stateReference) {
+        this.stateReference = stateReference;
     }
     
     public void setProperties(Properties props) {
@@ -114,8 +127,26 @@ public class PageRequestConfigImpl implements Cloneable, PageRequestConfig, SSLO
     public Map<String, ProcessActionPageRequestConfigImpl> getProcessActions() {
         return Collections.unmodifiableMap(this.actions);
     }
-    
+
+    public void setProcessActions(Map<String, ProcessActionPageRequestConfigImpl> actions) {
+        this.actions = new LinkedHashMap<String, ProcessActionPageRequestConfigImpl>(actions);
+    }
+
     public void addProcessAction(String name, ProcessActionPageRequestConfigImpl action) {
         actions.put(name, action);
+    }
+
+    public BeanDefinition generateBeanDefinition() {
+        BeanDefinitionBuilder beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(PageRequestConfigImpl.class);
+        beanBuilder.setScope("singleton");
+        beanBuilder.addPropertyValue("pageName", getPageName());
+        beanBuilder.addPropertyValue("SSL", isSSL());
+        beanBuilder.addPropertyValue("authConstraint", getAuthConstraint());
+        beanBuilder.addPropertyValue("defaultFlow", getDefaultFlow());
+        beanBuilder.addPropertyValue("state", getStateReference());
+        beanBuilder.addPropertyValue("properties", getProperties());
+        beanBuilder.addPropertyValue("processActions", getProperties());
+        
+        return beanBuilder.getBeanDefinition();
     }
  }

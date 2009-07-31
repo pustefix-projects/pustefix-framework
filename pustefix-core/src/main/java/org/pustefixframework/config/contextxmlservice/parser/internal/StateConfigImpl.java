@@ -50,6 +50,7 @@ public class StateConfigImpl implements Cloneable, StateConfig {
     private StateConfig.Policy policy = StateConfig.Policy.ANY;
     private boolean requiresToken = false;
     private boolean externalBean = false;
+    private String beanName;
     private String parentBeanName = null;
     private String scope = "singleton";
     private Map<String, ProcessActionStateConfig> actions = new LinkedHashMap<String, ProcessActionStateConfig>();
@@ -208,5 +209,13 @@ public class StateConfigImpl implements Cloneable, StateConfig {
     
     public void addProcessAction(String name, ProcessActionStateConfig action) {
         actions.put(name, action);
+    }
+
+    public void setBeanName(String beanName) {
+        this.beanName = beanName;
+    }
+
+    public String getBeanName() {
+        return beanName;
     }
  }

@@ -26,7 +26,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
-import org.pustefixframework.config.contextxmlservice.ServletManagerConfig;
+import org.pustefixframework.config.contextxmlservice.AbstractPustefixRequestHandlerConfig;
 import org.pustefixframework.config.directoutputservice.DirectOutputPageRequestConfig;
 import org.pustefixframework.config.directoutputservice.DirectOutputServiceConfig;
 
@@ -195,7 +195,7 @@ public class PustefixContextDirectOutputRequestHandler extends AbstractPustefixR
     }
     
     @Override
-    protected ServletManagerConfig getServletManagerConfig() {
+    protected AbstractPustefixRequestHandlerConfig getServletManagerConfig() {
         return this.config;
     }
 
