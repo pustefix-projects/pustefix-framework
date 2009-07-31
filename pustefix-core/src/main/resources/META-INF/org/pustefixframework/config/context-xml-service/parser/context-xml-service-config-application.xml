@@ -100,7 +100,7 @@
     
   <!--  pageflows -->
   
-  <handler class="org.pustefixframework.config.contextxmlservice.parser.PageFlowParsingHandler">
+  <handler class="org.pustefixframework.config.contextxmlservice.parser.PageFlowParsingHandler" run-order="both">
     <match>/c:context-xml-service-config/c:pageflow</match>
   </handler>
   
@@ -112,12 +112,16 @@
     <match>/c:context-xml-service-config/c:pageflow/c:extension-point[@type='context.pageflowvariant']</match>
   </handler>
   
-  <handler class="org.pustefixframework.config.contextxmlservice.parser.PageFlowVariantParsingHandler">
+  <handler class="org.pustefixframework.config.contextxmlservice.parser.PageFlowVariantParsingHandler" run-order="both">
     <match>/c:context-xml-service-config/c:pageflow/c:variant</match>
   </handler>
   
   <handler class="org.pustefixframework.config.contextxmlservice.parser.PageFlowStepParsingHandler">
     <match>/c:context-xml-service-config/c:pageflow//c:flowstep</match>
+  </handler>
+  
+  <handler class="org.pustefixframework.config.contextxmlservice.parser.PageFlowStepExtensionPointParsingHandler">
+    <match>/c:context-xml-service-config/c:pageflow//c:extension-point[@type='context.flowstep']</match>
   </handler>
   
   <handler class="org.pustefixframework.config.contextxmlservice.parser.PageFlowStepOnContinueParsingHandler">

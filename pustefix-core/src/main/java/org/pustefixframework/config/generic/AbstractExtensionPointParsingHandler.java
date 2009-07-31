@@ -18,11 +18,12 @@
 
 package org.pustefixframework.config.generic;
 
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Map;
 
 import org.pustefixframework.extension.ExtensionPoint;
-import org.pustefixframework.extension.PageFlowExtensionPoint;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
@@ -73,9 +74,14 @@ public abstract class AbstractExtensionPointParsingHandler implements ParsingHan
         serviceProperties.put("type", type);
         serviceProperties.put("version", version);
         
+        LinkedList<Class<?>> exportedInterfaces = new LinkedList<Class<?>>();
+        exportedInterfaces.addAll(Arrays.asList(getExportedInterfaces(id, type, version, cardinality, context)));
+        if (!exportedInterfaces.contains(ExtensionPoint.class)) {
+            exportedInterfaces.add(0, ExtensionPoint.class);
+        }
         beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(OsgiServiceFactoryBean.class);
         beanBuilder.setScope("singleton");
-        beanBuilder.addPropertyValue("interfaces", new Class[] {ExtensionPoint.class, PageFlowExtensionPoint.class});
+        beanBuilder.addPropertyValue("interfaces", exportedInterfaces.toArray(new Class<?>[exportedInterfaces.size()]));
         beanBuilder.addPropertyValue("serviceProperties", serviceProperties);
         beanBuilder.addPropertyValue("target", extensionPoint);
         beanDefinition = beanBuilder.getBeanDefinition();
@@ -99,4 +105,20 @@ public abstract class AbstractExtensionPointParsingHandler implements ParsingHan
      *  (e.g. type is not supported)
      */
     protected abstract ExtensionPoint<?> createExtensionPoint(String id, String type, String version, String cardinality, HandlerContext context) throws ParserException;
+    
+    /**
+     * Returns the list of types, for which the exported service is registered.
+     * The service is always registered using the {@link ExtensionPoint} 
+     * interface.
+     * 
+     * @param id identifier for the extension point
+     * @param type type of the extension point
+     * @param version version of the extension point
+     * @param cardinality cardinality for the extension point
+     * @param context context the parsing handler was called with
+     * @return list of types that are exported
+     * @throws ParserException if a problem occurs while determining the list
+     *  of exported types
+     */
+    protected abstract Class<?>[] getExportedInterfaces(String id, String type, String version, String cardinality, HandlerContext context) throws ParserException;
 }

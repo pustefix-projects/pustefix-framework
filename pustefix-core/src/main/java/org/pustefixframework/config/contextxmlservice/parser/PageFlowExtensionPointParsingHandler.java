@@ -21,6 +21,7 @@ package org.pustefixframework.config.contextxmlservice.parser;
 import org.pustefixframework.config.contextxmlservice.parser.internal.PageFlowExtensionPointImpl;
 import org.pustefixframework.config.generic.AbstractExtensionPointParsingHandler;
 import org.pustefixframework.extension.ExtensionPoint;
+import org.pustefixframework.extension.PageFlowExtensionPoint;
 
 import com.marsching.flexiparse.parser.HandlerContext;
 import com.marsching.flexiparse.parser.exception.ParserException;
@@ -39,6 +40,11 @@ public class PageFlowExtensionPointParsingHandler extends AbstractExtensionPoint
         extensionPoint.setVersion(version);
         extensionPoint.setCardinality(cardinality);
         return extensionPoint;
+    }
+
+    @Override
+    protected Class<?>[] getExportedInterfaces(String id, String type, String version, String cardinality, HandlerContext context) throws ParserException {
+        return new Class<?>[] { PageFlowExtensionPoint.class };
     }
 
 }

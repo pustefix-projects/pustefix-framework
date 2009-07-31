@@ -1,5 +1,11 @@
 2009-07-30  Sebastian Marsching <sebastian.marsching@1und1.de>
 
+	Added page flow step extension points.
+
+	Removed caching of page name to page flow name map.
+
+2009-07-30  Sebastian Marsching <sebastian.marsching@1und1.de>
+
 	Removed FlowStepActionFactory.
 
 	Support for page flow variant extension points.

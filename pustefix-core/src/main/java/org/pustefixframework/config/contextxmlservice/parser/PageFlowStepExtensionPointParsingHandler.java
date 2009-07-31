@@ -18,28 +18,23 @@
 
 package org.pustefixframework.config.contextxmlservice.parser;
 
-import org.pustefixframework.config.contextxmlservice.PageFlowConfig;
-import org.pustefixframework.config.contextxmlservice.parser.internal.PageFlowVariantExtensionPointImpl;
+import org.pustefixframework.config.contextxmlservice.parser.internal.PageFlowStepExtensionPointImpl;
 import org.pustefixframework.config.generic.AbstractExtensionPointParsingHandler;
-import org.pustefixframework.config.generic.ParsingUtils;
 import org.pustefixframework.extension.ExtensionPoint;
-import org.pustefixframework.extension.PageFlowVariantExtensionPoint;
+import org.pustefixframework.extension.PageFlowStepExtensionPoint;
 
 import com.marsching.flexiparse.parser.HandlerContext;
 import com.marsching.flexiparse.parser.exception.ParserException;
 
 
 /**
- * Handles the declaration of a page flow variant extension point.
+ * Handles the declaration of a page flow extension point.
  */
-public class PageFlowVariantExtensionPointParsingHandler extends AbstractExtensionPointParsingHandler {
+public class PageFlowStepExtensionPointParsingHandler extends AbstractExtensionPointParsingHandler {
 
     @Override
     protected ExtensionPoint<?> createExtensionPoint(String id, String type, String version, String cardinality, HandlerContext context) throws ParserException {
-        PageFlowConfig defaultConfig = ParsingUtils.getSingleTopObject(PageFlowConfig.class, context);
-        
-        PageFlowVariantExtensionPointImpl extensionPoint = new PageFlowVariantExtensionPointImpl();
-        extensionPoint.setPageFlowName(defaultConfig.getFlowName());
+        PageFlowStepExtensionPointImpl extensionPoint = new PageFlowStepExtensionPointImpl();
         extensionPoint.setId(id);
         extensionPoint.setType(type);
         extensionPoint.setVersion(version);
@@ -49,7 +44,7 @@ public class PageFlowVariantExtensionPointParsingHandler extends AbstractExtensi
 
     @Override
     protected Class<?>[] getExportedInterfaces(String id, String type, String version, String cardinality, HandlerContext context) throws ParserException {
-        return new Class<?>[] { PageFlowVariantExtensionPoint.class };
+        return new Class<?>[] { PageFlowStepExtensionPoint.class };
     }
 
 }

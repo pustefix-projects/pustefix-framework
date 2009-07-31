@@ -18,16 +18,10 @@
 
 package de.schlund.pfixcore.workflow.context;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.LinkedList;
 
 import org.apache.log4j.Logger;
 import org.pustefixframework.config.contextxmlservice.ContextConfig;
-import org.pustefixframework.config.contextxmlservice.PageRequestConfig;
 
 import de.schlund.pfixcore.workflow.PageRequest;
 import de.schlund.pfixcore.workflow.VariantManager;
@@ -39,9 +33,6 @@ import de.schlund.pfixxml.Variant;
  */
 
 public class PageFlowManager {
-    private Map<String, Set<String>> pagetoflowmap = new HashMap<String, Set<String>>();
-    private Map<String, PageFlow> flowmap;
-    
     private VariantManager vmanager;
     private ContextConfig config;
 
@@ -54,80 +45,45 @@ public class PageFlowManager {
         this.config = config;
     }
 
-    private void updateMaps() {
-        if (flowmap != null && flowmap.equals(config.getPageFlowMap())) {
-            // Nothing has changed, so no update is needed
-            return;
-        }
-        
-        // Store a copy of the page flow map
-        flowmap = new LinkedHashMap<String, PageFlow>(config.getPageFlowMap());
-        
-        // Initialize map mapping each page name to a list of
-        // flows which contain this page in at least one variant
-        // and create PageFlow object for each flow
-        for (PageFlow flow : flowmap.values()) {
-            String rootname = flow.getRootName();
-            for (PageRequestConfig pageConfig : config.getPageRequestConfigs()) {
-                String pageName = getRootName(pageConfig.getPageName());
-                if (flow.containsPage(pageName)) {
-                    Set<String> names = pagetoflowmap.get(pageName);
-                    if (names == null) {
-                        names = new HashSet<String>();
-                        pagetoflowmap.put(pageName, names);
-                    }
-                    if (!names.contains(rootname)) {
-                        names.add(rootname);
-                    }
+    protected PageFlow pageFlowToPageRequest(PageFlow lastflow, PageRequest page, Variant variant) {
+        String pageRootName = page.getRootName();
+        if (lastflow == null || !lastflow.containsPage(pageRootName)) {
+            
+            LinkedList<String> pageFlowRootNames = new LinkedList<String>();
+            for (PageFlow pageFlow : config.getPageFlowMap().values()) {
+                if (pageFlow.containsPage(pageRootName)) {
+                    pageFlowRootNames.add(pageFlow.getRootName());
                 }
             }
-        }
-    }
-
-    private String getRootName(String genericName) {
-        if (!genericName.contains("::")) {
-            return genericName;
-        } else {
-            return genericName.substring(0, genericName.indexOf("::"));
-        }
-    }
-
-    protected PageFlow pageFlowToPageRequest(PageFlow lastflow, PageRequest page, Variant variant) {
-        synchronized(pagetoflowmap) {
-            updateMaps();
-            //LOG.debug("===> Testing pageflow: " + currentflow.getName() + " / page: " + page);
-            if (lastflow == null || !lastflow.containsPage(page.getRootName())) {
-                Set<String> rootflownames = pagetoflowmap.get(page.getRootName());
-                if (rootflownames == null) {
-                    LOG.debug("===> Page " + page + " isn't a member of any pageflow: returning no pageflow");
-                    return null;
-                }
-                if (config.getPageRequestConfig(page.getName()) != null) {
-                    String defaultFlowForRequest = this.config.getPageRequestConfig(page.getName()).getDefaultFlow();
-                    if (defaultFlowForRequest != null) {
-                        LOG.debug("===> Page " + page + " has a default flow specified: Using flow " + defaultFlowForRequest);
-                        String pageflowname = vmanager.getVariantMatchingPageFlowName(defaultFlowForRequest, variant);
-                        PageFlow pf = getPageFlowByName(pageflowname);
-                        if (pf.containsPage(page.getRootName())) {
-                            LOG.debug("===> Switching to pageflow: " + pf.getName());
-                            return pf;
-                        }
-                    }
-                }
-                for (Iterator<String> i = rootflownames.iterator(); i.hasNext();) {
-                    String pageflowname = vmanager.getVariantMatchingPageFlowName(i.next(), variant);
+            if (pageFlowRootNames.size() == 0) {
+                LOG.debug("===> Page " + page + " isn't a member of any pageflow: returning no pageflow");
+                return null;
+            }
+            if (config.getPageRequestConfig(page.getName()) != null) {
+                String defaultFlowForRequest = this.config.getPageRequestConfig(page.getName()).getDefaultFlow();
+                if (defaultFlowForRequest != null) {
+                    LOG.debug("===> Page " + page + " has a default flow specified: Using flow " + defaultFlowForRequest);
+                    String pageflowname = vmanager.getVariantMatchingPageFlowName(defaultFlowForRequest, variant);
                     PageFlow pf = getPageFlowByName(pageflowname);
                     if (pf.containsPage(page.getRootName())) {
-                        //LOG.debug("===> Switching to pageflow: " + pf.getName());
+                        LOG.debug("===> Switching to pageflow: " + pf.getName());
                         return pf;
                     }
                 }
-                LOG.debug("===> Page " + page + " isn't a member of any valid pageflow: returning no pageflow");
-                return null;
-            } else {
-                LOG.debug("===> Page " + page + " is member of the last used pageflow: Reusing flow " + lastflow.getName());
-                return lastflow;
             }
+            for (String pageFlowRootName : pageFlowRootNames) {
+                String pageFlowName = vmanager.getVariantMatchingPageFlowName(pageFlowRootName, variant);
+                PageFlow pf = getPageFlowByName(pageFlowName);
+                if (pf.containsPage(page.getRootName())) {
+                    //LOG.debug("===> Switching to pageflow: " + pf.getName());
+                    return pf;
+                }
+            }
+            LOG.debug("===> Page " + page + " isn't a member of any valid pageflow: returning no pageflow");
+            return null;
+        } else {
+            LOG.debug("===> Page " + page + " is member of the last used pageflow: Reusing flow " + lastflow.getName());
+            return lastflow;
         }
     }
     

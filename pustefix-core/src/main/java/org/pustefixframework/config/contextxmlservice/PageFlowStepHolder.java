@@ -18,39 +18,23 @@
 
 package org.pustefixframework.config.contextxmlservice;
 
+import org.springframework.beans.factory.config.BeanReference;
+
+import de.schlund.pfixcore.workflow.FlowStep;
 
 /**
- * Provides configuration for a page flow.  
+ * Holds a page flow step object.  
  * 
  * @author Sebastian Marsching <sebastian.marsching@1und1.de>
  */
-public interface PageFlowConfig {
+public interface PageFlowStepHolder {
 
     /**
-     *  Returns name of the page flow. The name is used to uniquely identify
-     *  a pageflow in a servlet configuration.
-     *  
-     * @return name of the page flow
-     */
-    String getFlowName();
-
-    /**
-     * Returns name of the final page of the page flow. The final page is the
-     * page that the flow will jump to, when the flow has been processed (no
-     * page of the flow needs input).
+     * Returns the page flow step object. The returned object must either 
+     * implement the {@link FlowStep} interface or be a {@link BeanReference} 
+     * to a bean that implements this interface.
      * 
-     * @return the name of the final page or <code>null</code> if no final
-     * page is defined
+     * @return page flow step
      */
-    String getFinalPage();
-
-    /**
-     * If <code>true</code>, will force the page flow to stop at each page,
-     * even if it does not require input.
-     * 
-     * @return flag indicating whether to always stop at the next page after
-     * a submit 
-     */
-    boolean isStopNext();
-
+    Object getPageFlowStepObject();
 }
