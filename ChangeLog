@@ -1,5 +1,7 @@
 2009-07-30  Sebastian Marsching <sebastian.marsching@1und1.de>
 
+	Added page request extension points.
+
 	Refactored page configuration in order to prepare for extension
 	point support.
 

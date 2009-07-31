@@ -84,18 +84,18 @@
     <match>/c:context-xml-service-config/c:pagerequest/c:authconstraint//c:condition</match>
     <match>/c:context-xml-service-config/c:pagerequest/c:authconstraint//c:authconstraint</match>
     <match>/c:context-xml-service-config/c:pagerequest/c:authconstraint//c:hasrole</match>
-    <match>/c:context-xml-service-config/c:pagerequest/*[self::default or self::variant]/c:authconstraint//c:and</match>
-    <match>/c:context-xml-service-config/c:pagerequest/*[self::default or self::variant]/c:authconstraint//c:or</match>
-    <match>/c:context-xml-service-config/c:pagerequest/*[self::default or self::variant]/c:authconstraint//c:not</match>
-    <match>/c:context-xml-service-config/c:pagerequest/*[self::default or self::variant]/c:authconstraint//c:condition</match>
-    <match>/c:context-xml-service-config/c:pagerequest/*[self::default or self::variant]/c:authconstraint//c:authconstraint</match>
-    <match>/c:context-xml-service-config/c:pagerequest/*[self::default or self::variant]/c:authconstraint//c:hasrole</match>
+    <match>/c:context-xml-service-config/c:pagerequest/*[self::c:default or self::c:variant]/c:authconstraint//c:and</match>
+    <match>/c:context-xml-service-config/c:pagerequest/*[self::c:default or self::c:variant]/c:authconstraint//c:or</match>
+    <match>/c:context-xml-service-config/c:pagerequest/*[self::c:default or self::c:variant]/c:authconstraint//c:not</match>
+    <match>/c:context-xml-service-config/c:pagerequest/*[self::c:default or self::c:variant]/c:authconstraint//c:condition</match>
+    <match>/c:context-xml-service-config/c:pagerequest/*[self::c:default or self::c:variant]/c:authconstraint//c:authconstraint</match>
+    <match>/c:context-xml-service-config/c:pagerequest/*[self::c:default or self::c:variant]/c:authconstraint//c:hasrole</match>
   </handler>
  
   <handler class="org.pustefixframework.config.contextxmlservice.parser.AuthConstraintParsingHandler">
     <match>/c:context-xml-service-config/c:authconstraint</match>
     <match>/c:context-xml-service-config/c:pagerequest/c:authconstraint</match>
-    <match>/c:context-xml-service-config/c:pagerequest/*[self::default or self::variant]/c:authconstraint</match>
+    <match>/c:context-xml-service-config/c:pagerequest/*[self::c:default or self::c:variant]/c:authconstraint</match>
   </handler>
     
   <!--  pageflows -->
@@ -136,8 +136,17 @@
     <match>/c:context-xml-service-config/c:pageflow//c:flowstep/c:oncontinue/c:when/c:action</match>
   </handler>
   
-    
-    
+  
+  <!-- Page configuration -->
+  
+  <handler class="org.pustefixframework.config.contextxmlservice.parser.PageRequestConfigExtensionPointParsingHandler">
+    <match>/c:context-xml-service-config/c:extension-point[@type='context.pagerequest']</match>
+  </handler>
+  
+  <handler class="org.pustefixframework.config.contextxmlservice.parser.PageRequestConfigVariantExtensionPointParsingHandler">
+    <match>/c:context-xml-service-config/c:pagerequest/extension-point[@type='context.pagerequestvariant']</match>
+  </handler>
+  
   <handler class="org.pustefixframework.config.contextxmlservice.parser.PageRequestParsingHandler" run-order="both">
     <match>/c:context-xml-service-config/c:pagerequest[not(child::c:variant) and not (child::c:default)]</match>
     <match>/c:context-xml-service-config/c:pagerequest/c:default</match>
