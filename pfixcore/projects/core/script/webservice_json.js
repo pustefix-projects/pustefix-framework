@@ -6,7 +6,7 @@ pfx.ws.json.deserialize=function(response) {
    if(this._debug==true) alert("Response: "+response);
 	eval("res="+response);
 	return res;
-}
+};
 
 pfx.ws.json.serialize=function(obj) {
 	var json=null;
@@ -83,25 +83,25 @@ pfx.ws.json.BaseStub=function(service,context) {
    this._requestPath="/xml/webservice";
    this._protocol="jsonws";
    this._uri=null;
-}
+};
 
 pfx.ws.json.BaseStub.prototype.setService=function(service) {
    this._service=service;
    this._uri=null;
-}
+};
 
 pfx.ws.json.BaseStub.prototype.setContext=function(context) {
    this._context=context;
-}
+};
 
 pfx.ws.json.BaseStub.prototype.setRequestPath=function(requestPath) {
    this._requestPath=requestPath;
    this._uri=null;
-}
+};
 
 pfx.ws.json.BaseStub.prototype.setDebug=function(debug) {
    this._debug=debug;
-}
+};
 
 pfx.ws.json.BaseStub.prototype.getURI=function() {
    if(this._uri==null) {
@@ -109,12 +109,12 @@ pfx.ws.json.BaseStub.prototype.getURI=function() {
       this._uri=window.location.protocol+"//"+window.location.host+this._requestPath+"/"+this._service+session;
    }
    return this._uri;
-}
+};
 
 pfx.ws.json.BaseStub.prototype.callMethod=function(method,args,expLen) {
    var wsCall=new pfx.ws.json.Call(this.getURI(),this._context,this._debug);
    return wsCall.invoke(method,args,expLen);
-}
+};
 
 
 //
@@ -124,7 +124,7 @@ pfx.ws.json.BaseStub.prototype.callMethod=function(method,args,expLen) {
 pfx.ws.json.DynamicProxy=function(service,context) {
    pfx.ws.json.BaseStub.call(this,service,context);
    this._proxySetup();
-}
+};
 
 pfx.ws.json.DynamicProxy.prototype=new pfx.ws.json.BaseStub;
 
@@ -132,7 +132,7 @@ pfx.ws.json.DynamicProxy.prototype._proxySetup=function() {
    var req=new pfx.net.HTTPRequest('POST',this.getURI()+'?json',this._proxySetupCB,this);
    req.setRequestHeader('wstype',this._protocol);
    req.start('',0);
-}
+};
 
 pfx.ws.json.DynamicProxy.prototype._proxySetupCB=function(response) {
    eval("response="+response);
@@ -140,7 +140,7 @@ pfx.ws.json.DynamicProxy.prototype._proxySetupCB=function(response) {
    for(var i=0;i<methods.length;i++) {
       this._createMethod(methods[i]);
    }
-}
+};
 
 pfx.ws.json.DynamicProxy.prototype._createMethod=function(name) {
    var f=function() {
@@ -149,12 +149,12 @@ pfx.ws.json.DynamicProxy.prototype._createMethod=function(name) {
    f.ownerObject=this;
    f.methodName=name;
    this[name]=f;
-}
+};
 
 pfx.ws.json.DynamicProxy.prototype._callMethod=function(method,args) {
    var wsCall=new pfx.ws.json.Call(this.getURI(),this._context,this._debug);
    return wsCall.invoke(method,args);
-}
+};
 
 
 
@@ -168,7 +168,7 @@ pfx.ws.json.Call=function(uri,context,debug) {
    this._debug=debug;
    this._opName=null;
    this._userCallback=null;
-}
+};
 
 pfx.ws.json.Call.prototype.invoke=function(method,args,expLen) {
    this._opName=method;
@@ -217,7 +217,7 @@ pfx.ws.json.Call.prototype.invoke=function(method,args,expLen) {
       var response=httpReq.start(jsonStr,null,jsonReq.id);
       return this.callback(response);
    }
-}
+};
 
 pfx.ws.json.Call.prototype.callback=function(text) {
    var res=pfx.ws.json.deserialize(text);
@@ -233,4 +233,4 @@ pfx.ws.json.Call.prototype.callback=function(text) {
      else if(this._context) this._context[this._opName].call(this._context,res.result,res.id,null);
      else return res.result;
    }
-}
+};

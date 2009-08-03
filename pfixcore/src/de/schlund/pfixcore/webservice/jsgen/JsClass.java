@@ -97,7 +97,7 @@ public class JsClass {
         out.write(sb.toString().getBytes());
         getConstructorBody().printCode("  ", out);
         sb = new StringBuffer();
-        sb.append("}\n");
+        sb.append("};\n");
         sb.append(name + ".prototype=new " + baseName + ";\n");
         out.write(sb.toString().getBytes());
         for (int i = 0; i < methods.length; i++)
