@@ -78,7 +78,7 @@ public class JsMethod {
         sb.append(getJsClass().getName() + ".prototype." + getName() + "=function(" + getParamList() + ") {\n");
         out.write(sb.toString().getBytes());
         getBody().printCode(indent, out);
-        out.write("}\n".getBytes());
+        out.write("};\n".getBytes());
     }
 
 }
