@@ -19,11 +19,16 @@
 package org.pustefixframework.config.contextxmlservice.parser;
 
 import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 import org.pustefixframework.config.Constants;
 import org.pustefixframework.config.contextxmlservice.IWrapperConfig;
 import org.pustefixframework.config.contextxmlservice.PageRequestConfigHolder;
+import org.pustefixframework.config.contextxmlservice.PageRequestOutputResourceHolder;
+import org.pustefixframework.config.contextxmlservice.parser.internal.PageRequestOutputResourceExtensionPointImpl;
+import org.pustefixframework.config.contextxmlservice.parser.internal.PageRequestOutputResourceMap;
 import org.pustefixframework.config.contextxmlservice.parser.internal.PustefixContextXMLRequestHandlerConfigImpl;
 import org.pustefixframework.config.contextxmlservice.parser.internal.IWrapperConfigImpl;
 import org.pustefixframework.config.contextxmlservice.parser.internal.PageRequestConfigImpl;
@@ -244,12 +249,25 @@ public class PageRequestParsingHandler implements ParsingHandler {
             wrapperMap.put(prefix, new RuntimeBeanReference(wrapperConfigBeanName));
         }
         
+        @SuppressWarnings("unchecked")
+        Map<String, Object> contextResources = new ManagedMap();
+        for (PageRequestOutputResourceHolder holder : context.getObjectTreeElement().getObjectsOfTypeFromSubTree(PageRequestOutputResourceHolder.class)) {
+            contextResources.put(holder.getName(), holder.getOutputResource());
+        }
+        List<PageRequestOutputResourceExtensionPointImpl> contextResourceExtensionPoints = new LinkedList<PageRequestOutputResourceExtensionPointImpl>();
+        contextResourceExtensionPoints.addAll(context.getObjectTreeElement().getObjectsOfTypeFromSubTree(PageRequestOutputResourceExtensionPointImpl.class));
+        beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(PageRequestOutputResourceMap.class);
+        beanBuilder.setScope("singleton");
+        beanBuilder.addPropertyValue("outputResources", contextResources);
+        beanBuilder.addPropertyValue("outputResourceExtensionPoints", contextResourceExtensionPoints);
+        beanDefinition = beanBuilder.getBeanDefinition();
+        String outputResourceMapBeanName = nameGenerator.generateBeanName(beanDefinition, beanRegistry);
+        beanRegistry.registerBeanDefinition(outputResourceMapBeanName, beanDefinition);
+        
         beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(StateConfigImpl.class);
         beanBuilder.setScope("singleton");
-        @SuppressWarnings("unchecked")
-        Map<String, Object> contextResources = new ManagedMap(stateConfig.getContextResources().size());
         contextResources.putAll(stateConfig.getContextResources());
-        beanBuilder.addPropertyValue("contextResources", contextResources);
+        beanBuilder.addPropertyReference("contextResources", outputResourceMapBeanName);
         beanBuilder.addPropertyValue("finalizer", stateConfig.getFinalizer());
         beanBuilder.addPropertyValue("requiresToken", stateConfig.requiresToken());
         beanBuilder.addPropertyValue("IWrapperPolicy", stateConfig.getIWrapperPolicy());

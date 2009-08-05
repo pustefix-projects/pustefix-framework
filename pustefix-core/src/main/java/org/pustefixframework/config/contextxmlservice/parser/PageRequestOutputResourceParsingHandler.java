@@ -20,8 +20,8 @@ package org.pustefixframework.config.contextxmlservice.parser;
 
 import org.pustefixframework.config.contextxmlservice.ContextConfig;
 import org.pustefixframework.config.contextxmlservice.ContextResourceConfig;
+import org.pustefixframework.config.contextxmlservice.PageRequestOutputResourceHolder;
 import org.pustefixframework.config.contextxmlservice.PustefixContextXMLRequestHandlerConfig;
-import org.pustefixframework.config.contextxmlservice.parser.internal.StateConfigImpl;
 import org.pustefixframework.config.generic.ParsingUtils;
 import org.springframework.beans.factory.config.RuntimeBeanReference;
 import org.springframework.osgi.context.ConfigurableOsgiBundleApplicationContext;
@@ -47,8 +47,7 @@ public class PageRequestOutputResourceParsingHandler implements ParsingHandler {
         
         ConfigurableOsgiBundleApplicationContext appContext = ParsingUtils.getSingleTopObject(ConfigurableOsgiBundleApplicationContext.class, context);
 
-        StateConfigImpl stateConfig = ParsingUtils.getFirstTopObject(StateConfigImpl.class, context, true);
-        String node = element.getAttribute("node").trim();
+        final String node = element.getAttribute("node").trim();
        
         String className = element.getAttribute("class").trim();
         String beanRef = element.getAttribute("bean-ref").trim();
@@ -68,11 +67,22 @@ public class PageRequestOutputResourceParsingHandler implements ParsingHandler {
             if (resourceConfig == null) {
                 throw new ParserException("Could not find suitable context resource for class or interface \"" + className + "\"!");
             }
-            stateConfig.addContextResource(node, new RuntimeBeanReference(resourceConfig.getBeanName()));
-        } else if (beanRef.length() > 0) {
-            stateConfig.addContextResource(node, new RuntimeBeanReference(beanRef));
+            beanRef = resourceConfig.getBeanName();
         }
-        
+
+        final RuntimeBeanReference reference = new RuntimeBeanReference(beanRef);
+        PageRequestOutputResourceHolder holder = new PageRequestOutputResourceHolder() {
+
+            public String getName() {
+                return node;
+            }
+
+            public Object getOutputResource() {
+                return reference;
+            }
+            
+        };
+        context.getObjectTreeElement().addObject(holder);
     }
 
 }

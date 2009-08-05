@@ -173,6 +173,10 @@
     <match>/c:context-xml-service-config/c:pagerequest//c:output/c:resource</match>
   </handler>
   
+  <handler class="org.pustefixframework.config.contextxmlservice.parser.PageRequestOutputResourceExtensionPointParsingHandler">
+    <match>/c:context-xml-service-config/c:pagerequest//c:output/c:extension-point[@type='context.resource']</match>
+  </handler>
+  
   <!-- actions -->
   
   <handler class="org.pustefixframework.config.contextxmlservice.parser.ProcessActionParsingHandler">
