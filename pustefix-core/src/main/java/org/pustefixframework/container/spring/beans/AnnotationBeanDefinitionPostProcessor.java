@@ -113,14 +113,19 @@ public class AnnotationBeanDefinitionPostProcessor implements BeanFactoryPostPro
         Class<?> beanClass = null;
         if (beanDefinition instanceof AbstractBeanDefinition) {
             AbstractBeanDefinition abstractBeanDefinition = (AbstractBeanDefinition) beanDefinition;
-            beanClass = abstractBeanDefinition.getBeanClass();
+            try {
+                beanClass = abstractBeanDefinition.getBeanClass();
+            } catch (IllegalStateException e) {
+                // bean class might not have been resolved yet
+                beanClass = null;
+            }
         }
         try {
             if (beanClass == null) {
                 beanClass = beanClassLoader.loadClass(beanDefinition.getBeanClassName());
             }
         } catch (ClassNotFoundException e) {
-            throw new BeanDefinitionValidationException("Class \"" + beanDefinition.getBeanClassName() + "\" specified for bean \"" + beanName + "\" could not be loaded.");
+            throw new BeanDefinitionValidationException("Class \"" + beanDefinition.getBeanClassName() + "\" specified for bean \"" + beanName + "\" could not be loaded.", e);
         }
         if(notAnnotatedClasses.contains(beanClass)) return;
         
