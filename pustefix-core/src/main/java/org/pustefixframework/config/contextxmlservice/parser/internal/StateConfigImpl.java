@@ -176,19 +176,9 @@ public class StateConfigImpl implements Cloneable, StateConfig {
     }
     
     public Map<String, ? extends ProcessActionStateConfig> getProcessActions() {
-        //When Spring's PropertyPlaceholderConfigurer is used it will clear and
-        //refill property value maps, even if there's nothing to replace, take a
-        //look at http://jira.springframework.org/browse/SPR-5318 
-        //To be able to work with Spring 2.5.6 we'll return a modifiable map here
-        //TODO: return unmodifiable map when issue is fixed
         return this.actions; 
-        //return Collections.unmodifiableMap(this.actions);
     }
     
-    public void addProcessAction(String name, ProcessActionStateConfig action) {
-        actions.put(name, action);
-    }
-
     public void setBeanName(String beanName) {
         this.beanName = beanName;
     }

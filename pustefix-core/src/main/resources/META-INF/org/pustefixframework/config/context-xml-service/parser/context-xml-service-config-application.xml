@@ -192,6 +192,10 @@
     <match>/c:context-xml-service-config/c:pagerequest//c:process/c:action/c:retrieve/c:wrapper</match>
   </handler>
   
+  <handler class="org.pustefixframework.config.contextxmlservice.parser.PageRequestProcessActionConfigExtensionPointParsingHandler">
+    <match>/c:context-xml-service-config/c:pagerequest//c:process/c:extension-point[@type='context.action']</match>
+  </handler>
+  
   <handler class="org.pustefixframework.config.contextxmlservice.parser.PageRequestRegisterPropertiesParsingHandler" run-order="end">
     <preceding-handler>org.pustefixframework.config.generic.PropertiesParsingHandler</preceding-handler>
     <match>/c:context-xml-service-config/c:pagerequest//c:properties</match>

@@ -27,13 +27,18 @@ import org.pustefixframework.config.Constants;
 import org.pustefixframework.config.contextxmlservice.IWrapperConfig;
 import org.pustefixframework.config.contextxmlservice.PageRequestConfigHolder;
 import org.pustefixframework.config.contextxmlservice.PageRequestOutputResourceHolder;
+import org.pustefixframework.config.contextxmlservice.ProcessActionPageRequestConfig;
+import org.pustefixframework.config.contextxmlservice.ProcessActionStateConfig;
+import org.pustefixframework.config.contextxmlservice.parser.internal.IWrapperConfigImpl;
 import org.pustefixframework.config.contextxmlservice.parser.internal.IWrapperConfigMap;
+import org.pustefixframework.config.contextxmlservice.parser.internal.PageRequestConfigImpl;
 import org.pustefixframework.config.contextxmlservice.parser.internal.PageRequestIWrapperConfigExtensionPointImpl;
 import org.pustefixframework.config.contextxmlservice.parser.internal.PageRequestOutputResourceExtensionPointImpl;
 import org.pustefixframework.config.contextxmlservice.parser.internal.PageRequestOutputResourceMap;
+import org.pustefixframework.config.contextxmlservice.parser.internal.PageRequestProcessActionConfigExtensionPointImpl;
+import org.pustefixframework.config.contextxmlservice.parser.internal.ProcessActionPageRequestConfigMap;
+import org.pustefixframework.config.contextxmlservice.parser.internal.ProcessActionStateConfigMap;
 import org.pustefixframework.config.contextxmlservice.parser.internal.PustefixContextXMLRequestHandlerConfigImpl;
-import org.pustefixframework.config.contextxmlservice.parser.internal.IWrapperConfigImpl;
-import org.pustefixframework.config.contextxmlservice.parser.internal.PageRequestConfigImpl;
 import org.pustefixframework.config.contextxmlservice.parser.internal.ScriptingStatePathInfo;
 import org.pustefixframework.config.contextxmlservice.parser.internal.StateConfigImpl;
 import org.pustefixframework.config.generic.ParsingUtils;
@@ -155,7 +160,19 @@ public class PageRequestParsingHandler implements ParsingHandler {
         DefaultBeanNameGenerator beanNameGenerator = new DefaultBeanNameGenerator();
         
         for (PageRequestConfigImpl pageConfig : context.getObjectTreeElement().getObjectsOfType(PageRequestConfigImpl.class)) {
-            BeanDefinition beanDefinition = pageConfig.generateBeanDefinition();
+            
+            List<Object> processActionObjects = new LinkedList<Object>();
+            for (Object o : context.getObjectTreeElement().getObjectsOfTypeFromSubTree(Object.class)) {
+                if (o instanceof ProcessActionPageRequestConfig) {
+                    processActionObjects.add(o);
+                } else if (o instanceof PageRequestProcessActionConfigExtensionPointImpl) {
+                    processActionObjects.add(o);
+                }
+            }
+            ProcessActionPageRequestConfigMap processActionPageRequestConfigMap = new ProcessActionPageRequestConfigMap();
+            processActionPageRequestConfigMap.setProcessActionConfigObjects(processActionObjects);
+                        
+            BeanDefinition beanDefinition = pageConfig.generateBeanDefinition(processActionPageRequestConfigMap);
             String beanName = beanNameGenerator.generateBeanName(beanDefinition, beanRegistry);
             beanRegistry.registerBeanDefinition(beanName, beanDefinition);
             final RuntimeBeanReference beanReference = new RuntimeBeanReference(beanName);
@@ -225,6 +242,18 @@ public class PageRequestParsingHandler implements ParsingHandler {
         String outputResourceMapBeanName = nameGenerator.generateBeanName(beanDefinition, beanRegistry);
         beanRegistry.registerBeanDefinition(outputResourceMapBeanName, beanDefinition);
         
+        List<Object> processActionObjects = new LinkedList<Object>();
+        for (Object o : context.getObjectTreeElement().getObjectsOfTypeFromSubTree(Object.class)) {
+            if (o instanceof ProcessActionStateConfig) {
+                processActionObjects.add(o);
+            } else if (o instanceof PageRequestProcessActionConfigExtensionPointImpl) {
+                processActionObjects.add(o);
+            }
+        }
+        ProcessActionStateConfigMap processActionStateConfigMap = new ProcessActionStateConfigMap();
+        processActionStateConfigMap.setProcessActionConfigObjects(processActionObjects);
+
+        
         Class<? extends ConfigurableState> stateClass = stateConfig.getState();
         if (stateClass == null) {
             if (wrapperObjects.size() > 0) {
@@ -241,7 +270,7 @@ public class PageRequestParsingHandler implements ParsingHandler {
         beanBuilder.addPropertyValue("requiresToken", stateConfig.requiresToken());
         beanBuilder.addPropertyValue("IWrapperPolicy", stateConfig.getIWrapperPolicy());
         beanBuilder.addPropertyReference("IWrappers", wrapperMapBeanName);
-        beanBuilder.addPropertyValue("processActions", stateConfig.getProcessActions());
+        beanBuilder.addPropertyValue("processActions", processActionStateConfigMap);
         beanBuilder.addPropertyValue("properties", stateConfig.getProperties());
         beanBuilder.addPropertyValue("state", stateClass);
         beanDefinition = beanBuilder.getBeanDefinition();

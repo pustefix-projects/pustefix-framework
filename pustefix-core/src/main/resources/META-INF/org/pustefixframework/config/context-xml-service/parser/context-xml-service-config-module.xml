@@ -187,11 +187,23 @@
   
   <handler class="org.pustefixframework.config.contextxmlservice.parser.ProcessActionParsingHandler">
     <match>/c:context-xml-service-config/c:extension[@type='context.pagerequest' or @type='context.pagerequestvariant']/c:pagerequest//c:process/c:action</match>
+    <match>/c:context-xml-service-config/c:extension[@type='context.action']/c:action</match>
   </handler>
   
   <handler class="org.pustefixframework.config.contextxmlservice.parser.ProcessActionWrapperParsingHandler">
     <match>/c:context-xml-service-config/c:extension[@type='context.pagerequest' or @type='context.pagerequestvariant']/c:pagerequest//c:process/c:action/c:submit/c:wrapper</match>
     <match>/c:context-xml-service-config/c:extension[@type='context.pagerequest' or @type='context.pagerequestvariant']/c:pagerequest//c:process/c:action/c:retrieve/c:wrapper</match>
+    <match>/c:context-xml-service-config/c:extension[@type='context.action']/c:action/c:submit/c:wrapper</match>
+    <match>/c:context-xml-service-config/c:extension[@type='context.action']/c:action/c:retrieve/c:wrapper</match>
+  </handler>
+  
+  <handler class="org.pustefixframework.config.contextxmlservice.parser.PageRequestProcessActionConfigExtensionPointParsingHandler">
+    <match>/c:context-xml-service-config/c:extension[@type='context.pagerequest' or @type='context.pagerequestvariant']/c:pagerequest//c:process/c:extension-point[@type='context.action']</match>
+    <match>/c:context-xml-service-config/c:extension[@type='context.action']/c:extension-point[@type='context.action']</match>
+  </handler>
+
+  <handler class="org.pustefixframework.config.contextxmlservice.parser.PageRequestProcessActionConfigExtensionParsingHandler" run-order="end">
+    <match>/c:context-xml-service-config/c:extension[@type='context.action']</match>
   </handler>
   
   <handler class="org.pustefixframework.config.contextxmlservice.parser.PageRequestRegisterPropertiesParsingHandler" run-order="end">

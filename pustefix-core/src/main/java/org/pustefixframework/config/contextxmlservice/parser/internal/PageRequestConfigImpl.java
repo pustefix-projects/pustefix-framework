@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.pustefixframework.config.contextxmlservice.PageRequestConfig;
+import org.pustefixframework.config.contextxmlservice.ProcessActionPageRequestConfig;
 import org.pustefixframework.config.contextxmlservice.SSLOption;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.RuntimeBeanReference;
@@ -132,11 +133,7 @@ public class PageRequestConfigImpl implements Cloneable, PageRequestConfig, SSLO
         this.actions = new LinkedHashMap<String, ProcessActionPageRequestConfigImpl>(actions);
     }
 
-    public void addProcessAction(String name, ProcessActionPageRequestConfigImpl action) {
-        actions.put(name, action);
-    }
-
-    public BeanDefinition generateBeanDefinition() {
+    public BeanDefinition generateBeanDefinition(Map<String, ? extends ProcessActionPageRequestConfig> processActionConfigs) {
         BeanDefinitionBuilder beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(PageRequestConfigImpl.class);
         beanBuilder.setScope("singleton");
         beanBuilder.addPropertyValue("pageName", getPageName());
@@ -145,7 +142,7 @@ public class PageRequestConfigImpl implements Cloneable, PageRequestConfig, SSLO
         beanBuilder.addPropertyValue("defaultFlow", getDefaultFlow());
         beanBuilder.addPropertyValue("state", getStateReference());
         beanBuilder.addPropertyValue("properties", getProperties());
-        beanBuilder.addPropertyValue("processActions", getProperties());
+        beanBuilder.addPropertyValue("processActions", processActionConfigs);
         
         return beanBuilder.getBeanDefinition();
     }
