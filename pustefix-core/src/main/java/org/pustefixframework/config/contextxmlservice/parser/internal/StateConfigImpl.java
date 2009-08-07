@@ -60,27 +60,11 @@ public class StateConfigImpl implements Cloneable, StateConfig {
     }
     
     public Class<? extends ConfigurableState> getState() {
-        if (this.stateClass != null) {
-            return this.stateClass;
-        } else {
-            if (this.iwrappers.size() > 0) {
-                return this.defaultIWrapperStateClass;
-            } else {
-                return this.defaultStaticStateClass;
-            }
-        }
+        return this.stateClass;
     }
     
     public String getParentBeanName() {
-        if(parentBeanName != null) return parentBeanName;
-        if(stateClass == null) {
-            if(this.iwrappers.size() > 0) {
-                return defaultIWrapperStateParentBeanName;
-            } else {
-                return defaultStaticStateParentBeanName;
-            }
-        }
-        return null;
+        return parentBeanName;
     }
     
     public void setParentBeanName(String parentBeanName) {
@@ -89,6 +73,10 @@ public class StateConfigImpl implements Cloneable, StateConfig {
     
     public void setDefaultStaticState(Class<? extends ConfigurableState> clazz) {
         this.defaultStaticStateClass = clazz;
+    }
+
+    public Class<? extends ConfigurableState> getDefaultStaticState() {
+        return this.defaultStaticStateClass;
     }
     
     public void setDefaultStaticStateParentBeanName(String parentBeanName) {
@@ -101,6 +89,10 @@ public class StateConfigImpl implements Cloneable, StateConfig {
     
     public void setDefaultIHandlerState(Class<? extends ConfigurableState> clazz) {
         this.defaultIWrapperStateClass = clazz;
+    }
+    
+    public Class<? extends ConfigurableState> getDefaultIHandlerState() {
+        return this.defaultIWrapperStateClass;
     }
     
     public void setDefaultIHandlerStateParentBeanName(String parentBeanName) {
@@ -125,10 +117,6 @@ public class StateConfigImpl implements Cloneable, StateConfig {
     
     public Class<? extends ResdocFinalizer> getFinalizer() {
         return this.finalizer;
-    }
-    
-    public void addIWrapper(IWrapperConfigImpl config) {
-        this.iwrappers.put(config.getPrefix(), config);
     }
     
     public void setIWrappers(Map<String, IWrapperConfig> iwrappers) {

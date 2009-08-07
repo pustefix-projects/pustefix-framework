@@ -1,3 +1,9 @@
+2009-08-07  Sebastian Marsching <sebastian.marsching@1und1.de>
+
+	Added extension point support for input wrappers.
+
+	Removed PropertyObjectManager.
+
 2009-08-05  Sebastian Marsching <sebastian.marsching@1und1.de>
 
 	Added page request output resource extension points.

@@ -157,6 +157,16 @@
   
   <handler class="org.pustefixframework.config.contextxmlservice.parser.PageRequestInputWrapperParsingHandler">
     <match>/c:context-xml-service-config/c:extension[@type='context.pagerequest' or @type='context.pagerequestvariant']/c:pagerequest//c:input/c:wrapper</match>
+    <match>/c:context-xml-service-config/c:extension[@type='context.wrapper']/c:wrapper</match>
+  </handler>
+  
+  <handler class="org.pustefixframework.config.contextxmlservice.parser.PageRequestIWrapperConfigExtensionPointParsingHandler">
+    <match>/c:context-xml-service-config/c:extension[@type='context.pagerequest' or @type='context.pagerequestvariant']/c:pagerequest//c:input/c:extension-point[@type='context.wrapper']</match>
+    <match>/c:context-xml-service-config/c:extension[@type='context.wrapper']/c:extension-point[@type='context.wrapper']</match>
+  </handler>
+  
+  <handler class="org.pustefixframework.config.contextxmlservice.parser.PageRequestIWrapperConfigExtensionParsingHandler" run-order="end">
+    <match>/c:context-xml-service-config/c:extension[@type='context.wrapper']</match>
   </handler>
   
   <handler class="org.pustefixframework.config.contextxmlservice.parser.PageRequestOutputResourceExtensionParsingHandler" run-order="end">

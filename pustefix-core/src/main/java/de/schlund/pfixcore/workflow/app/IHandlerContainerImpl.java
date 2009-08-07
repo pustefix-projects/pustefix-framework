@@ -20,7 +20,6 @@ package de.schlund.pfixcore.workflow.app;
 
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.Properties;
 
 import org.pustefixframework.config.contextxmlservice.IWrapperConfig;
 import org.pustefixframework.config.contextxmlservice.StateConfig;
@@ -52,25 +51,26 @@ public class IHandlerContainerImpl implements IHandlerContainer {
     private StateConfig stateConfig;
     
     /**
-     * Initialize the IHandlers. Get the handlers from {@link IHandlerFactory}
-     * and store them.
-     * @param props the properties containing the interface names
-     * @see de.schlund.pfixcore.workflow.app.IHandlerContainer#initIHandlers(Properties)
+     * Initialize list of handlers (and active handlers) from state 
+     * configuration.
      */
-    public void initIHandlers(StateConfig config) {
+    public void init() {
+        if (stateConfig == null) {
+            throw new IllegalStateException("stateConfig has to be set before calling init()");
+        }
+        
         handlers  = new HashSet<IHandler>();
         activeset = new HashSet<IHandler>();
-        stateConfig = config;
         
-        if (config.getIWrapperPolicy() == StateConfig.Policy.ALL) {
+        if (stateConfig.getIWrapperPolicy() == StateConfig.Policy.ALL) {
             this.policy = "ALL";
-        } else if (config.getIWrapperPolicy() == StateConfig.Policy.ANY) {
+        } else if (stateConfig.getIWrapperPolicy() == StateConfig.Policy.ANY) {
             this.policy = "ANY";
         } else {
             this.policy = "NONE";
         }
         
-        for (IWrapperConfig iConfig : config.getIWrappers().values()) {
+        for (IWrapperConfig iConfig : stateConfig.getIWrappers().values()) {
             IHandler handler = iConfig.getHandler();
             handlers.add(handler);
             if (iConfig.doCheckActive()) {
@@ -78,6 +78,10 @@ public class IHandlerContainerImpl implements IHandlerContainer {
             }
         }
         
+    }
+
+    public void setStateConfig(StateConfig stateConfig) {
+        this.stateConfig = stateConfig;
     }
     
     public boolean isAccessible(Context context) throws Exception {

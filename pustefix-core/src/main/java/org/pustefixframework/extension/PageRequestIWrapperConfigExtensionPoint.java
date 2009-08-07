@@ -16,18 +16,22 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-package de.schlund.pfixxml;
+package org.pustefixframework.extension;
+
+import de.schlund.pfixcore.generator.IWrapper;
 
 /**
- * Classes which will get managed by the PropertyObjectManager have to implement
- * this interface. They should provide an empty constructor and the opportunity
- * to get initialized by an object containing the configuration.
+ * An extension point that can be extended with a list of {@link IWrapper}s.  
  * 
- * @author Sebastian Marsching
+ * @author Sebastian Marsching <sebastian.marsching@1und1.de>
  */
-public interface ConfigurableObject {
+public interface PageRequestIWrapperConfigExtensionPoint extends ExtensionPoint<PageRequestIWrapperConfigExtension> {
 
-    /**Initialize newly created instance with configuration object.*/
-    public void init(Object config) throws Exception;	
-
+    /**
+     * This method has to be called by an extension, if the list of
+     * page configurations provided by this extension has changed.
+     * 
+     * @param extension the extension that has changed
+     */
+    void updateExtension(PageRequestIWrapperConfigExtension extension);
 }

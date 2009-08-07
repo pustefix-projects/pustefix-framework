@@ -35,10 +35,12 @@ import de.schlund.pfixxml.ResultDocument;
 public interface IHandlerContainer {
 
     /**
-     * Initialize all IHandlers in this container.
-     * @param config Configuration for pagerequest
+     * Sets state configuration for the state this IHandlerContainer
+     * is created for.
+     * 
+     * @param stateConfig state configuration
      */
-    void initIHandlers(StateConfig config);
+    void setStateConfig(StateConfig stateConfig);
 
     /**
      * Determine if the associated page is accessible.

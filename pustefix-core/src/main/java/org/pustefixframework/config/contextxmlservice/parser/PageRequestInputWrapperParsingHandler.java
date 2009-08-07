@@ -20,7 +20,6 @@ package org.pustefixframework.config.contextxmlservice.parser;
 
 import org.pustefixframework.config.contextxmlservice.PageRequestConfig;
 import org.pustefixframework.config.contextxmlservice.parser.internal.IWrapperConfigImpl;
-import org.pustefixframework.config.contextxmlservice.parser.internal.StateConfigImpl;
 import org.pustefixframework.config.generic.ParsingUtils;
 import org.springframework.osgi.context.ConfigurableOsgiBundleApplicationContext;
 import org.w3c.dom.Element;
@@ -45,8 +44,7 @@ public class PageRequestInputWrapperParsingHandler implements ParsingHandler {
 
         ConfigurableOsgiBundleApplicationContext appContext = ParsingUtils.getSingleTopObject(ConfigurableOsgiBundleApplicationContext.class, context);
          
-        StateConfigImpl stateConfig = ParsingUtils.getFirstTopObject(StateConfigImpl.class, context, true);
-        PageRequestConfig pageConfig = ParsingUtils.getFirstTopObject(PageRequestConfig.class, context, true);
+        PageRequestConfig pageConfig = ParsingUtils.getFirstTopObject(PageRequestConfig.class, context, false);
         IWrapperConfigImpl wrapperConfig = new IWrapperConfigImpl();
         
         String prefix = element.getAttribute("prefix").trim();
@@ -60,7 +58,7 @@ public class PageRequestInputWrapperParsingHandler implements ParsingHandler {
             throw new ParserException("Could not load wrapper class \"" + className + "\"!");
         }
         if (!IWrapper.class.isAssignableFrom(wrapperClass)) {
-            throw new ParserException("Input wrapper class " + wrapperClass + " on page " + pageConfig.getPageName() + " does not implement " + IWrapper.class + " interface!");
+            throw new ParserException("Input wrapper class " + wrapperClass + " on page " + ((pageConfig != null) ? pageConfig.getPageName() : "[unknown]") + " does not implement " + IWrapper.class + " interface!");
         }
         wrapperConfig.setWrapperClass(wrapperClass.asSubclass(IWrapper.class));
         
@@ -89,8 +87,8 @@ public class PageRequestInputWrapperParsingHandler implements ParsingHandler {
         } else {
             wrapperConfig.setLogging(false);
         }
-        stateConfig.addIWrapper(wrapperConfig);
         
+        context.getObjectTreeElement().addObject(wrapperConfig);
     }
 
 }

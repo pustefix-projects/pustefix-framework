@@ -16,20 +16,17 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-package de.schlund.pfixxml;
+package org.pustefixframework.config.contextxmlservice.parser.internal;
 
-import java.util.Properties;
+import org.pustefixframework.extension.PageRequestIWrapperConfigExtension;
+import org.pustefixframework.extension.PageRequestIWrapperConfigExtensionPoint;
+import org.pustefixframework.extension.support.AbstractExtensionPoint;
+
 
 /**
- * Classes which will get managed by the PropertyObjectManager have to implement
- * this interface. They should provide an empty constructor and the opportunity
- * to get initialized by a Properties object.
+ * Simplest possible implementation of {@link PageRequestIWrapperConfigExtensionPoint}.  
  * 
- * @author mleidig
+ * @author Sebastian Marsching <sebastian.marsching@1und1.de>
  */
-public interface PropertyObject {
-
-    /**Initialize newly created instance with Properties object.*/
-    public void init(Properties props) throws Exception;	
-
+public class PageRequestIWrapperConfigExtensionPointImpl extends AbstractExtensionPoint<PageRequestIWrapperConfigExtensionPointImpl, PageRequestIWrapperConfigExtension> implements PageRequestIWrapperConfigExtensionPoint {
 }

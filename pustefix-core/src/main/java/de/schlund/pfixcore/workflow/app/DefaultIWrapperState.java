@@ -30,7 +30,6 @@ import de.schlund.pfixcore.workflow.IWrapperState;
 import de.schlund.pfixcore.workflow.RequestTokenAwareState;
 import de.schlund.pfixcore.workflow.StateImpl;
 import de.schlund.pfixxml.PfixServletRequest;
-import de.schlund.pfixxml.PropertyObjectManager;
 import de.schlund.pfixxml.RequestParam;
 import de.schlund.pfixxml.ResultDocument;
 import de.schlund.pfixxml.XMLException;
@@ -47,7 +46,7 @@ import de.schlund.pfixxml.XMLException;
 public class DefaultIWrapperState extends StateImpl implements IWrapperState, RequestTokenAwareState {
 
     private final static String DEF_FINALIZER     = "de.schlund.pfixcore.workflow.app.ResdocSimpleFinalizer";
-    private final static String IHDL_CONT_MANAGER = "de.schlund.pfixcore.workflow.app.IHandlerContainerManager";
+    private IHandlerContainer handlerContainer;
 
     /**
      * @see de.schlund.pfixcore.workflow.State#isAccessible(Context,
@@ -55,7 +54,7 @@ public class DefaultIWrapperState extends StateImpl implements IWrapperState, Re
      */
     @Override
     public boolean isAccessible(Context context, PfixServletRequest preq) throws Exception {
-        return getIHandlerContainer(context).isAccessible(context);
+        return getIHandlerContainer().isAccessible(context);
     }
 
     /**
@@ -66,7 +65,7 @@ public class DefaultIWrapperState extends StateImpl implements IWrapperState, Re
     public boolean needsData(Context context, PfixServletRequest preq) throws Exception {
         CAT.debug(">>> [" + context.getCurrentPageRequest().getName() + "] Checking needsData()...");
 
-        boolean retval = getIHandlerContainer(context).needsData(context);
+        boolean retval = getIHandlerContainer().needsData(context);
         if (retval) {
             CAT.debug("    TRUE! now going to retrieve the current status.");
         } else {
@@ -86,7 +85,7 @@ public class DefaultIWrapperState extends StateImpl implements IWrapperState, Re
         ResdocFinalizer rfinal = getResdocFinalizer(context);
         ResultDocument  resdoc = new ResultDocument();
       
-        IWrapperContainer wrp_container =  getIHandlerContainer(context).createIWrapperContainerInstance(context, preq, resdoc);
+        IWrapperContainer wrp_container =  getIHandlerContainer().createIWrapperContainerInstance(context, preq, resdoc);
 
         if (isSubmitTrigger(context, preq)) {
             CAT.debug(">>> In SubmitHandling...");
@@ -184,14 +183,13 @@ public class DefaultIWrapperState extends StateImpl implements IWrapperState, Re
         return resdoc;
     }
 
-    // Remember, a IHandlerContainer is a flyweight!!!
-    protected IHandlerContainer getIHandlerContainer(Context context) throws Exception {
-        // Use context config object as dummy configuration object to make sure
-        // each context (server) has its own IHandlerContainerManager
-        IHandlerContainerManager ihcm = (IHandlerContainerManager) PropertyObjectManager.getInstance().getConfigurableObject(context.getContextConfig(), IHDL_CONT_MANAGER);
-        return ihcm.getIHandlerContainer(context, this.getConfig());
+    public IHandlerContainer getIHandlerContainer() {
+        return handlerContainer;
     }
 
+    public void setIHandlerContainer(IHandlerContainer handlerContainer) {
+        this.handlerContainer = handlerContainer;
+    }
     
     // Remember, a ResdocFinalizer is a flyweight!!!
     protected ResdocFinalizer getResdocFinalizer(Context context) throws XMLException {
