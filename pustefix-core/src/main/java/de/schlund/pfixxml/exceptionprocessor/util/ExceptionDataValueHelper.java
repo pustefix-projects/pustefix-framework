@@ -27,7 +27,7 @@ import java.util.LinkedList;
 import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
-import org.pustefixframework.container.spring.beans.PustefixWebApplicationContext;
+import org.pustefixframework.container.spring.beans.PustefixOsgiWebApplicationContext;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 
 import de.schlund.pfixxml.PfixServletRequest;
@@ -120,8 +120,8 @@ public class ExceptionDataValueHelper {
 	        while(e.hasMoreElements()) {
 	            String name = (String)e.nextElement();
 	            Object value = session.getServletContext().getAttribute(name);
-	            if(value instanceof PustefixWebApplicationContext) {
-	                PustefixWebApplicationContext appContext = (PustefixWebApplicationContext)value;
+	            if(value instanceof PustefixOsgiWebApplicationContext) {
+	                PustefixOsgiWebApplicationContext appContext = (PustefixOsgiWebApplicationContext)value;
 	                try {
 	                    SessionAdmin sessionAdmin = (SessionAdmin)appContext.getBean(SessionAdmin.class.getName());
 	                    return sessionAdmin;

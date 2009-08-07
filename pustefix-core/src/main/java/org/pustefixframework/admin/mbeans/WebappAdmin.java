@@ -25,7 +25,7 @@ import javax.management.MBeanServer;
 import javax.management.ObjectName;
 
 import org.apache.log4j.Logger;
-import org.pustefixframework.container.spring.beans.PustefixWebApplicationContext;
+import org.pustefixframework.container.spring.beans.PustefixOsgiWebApplicationContext;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
@@ -115,7 +115,7 @@ public class WebappAdmin implements WebappAdminMBean, InitializingBean, Applicat
     
     private void doRefresh() {
         long t1 = System.currentTimeMillis();
-        ((PustefixWebApplicationContext)applicationContext).refresh();
+        ((PustefixOsgiWebApplicationContext)applicationContext).refresh();
         refreshTriggered = false;
         long t2 = System.currentTimeMillis();
         LOG.info("Refreshed ApplicationContext of project '"+projectName+"' ["+(t2-t1)+"ms]");
