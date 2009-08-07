@@ -238,7 +238,6 @@ public class PageRequestParsingHandler implements ParsingHandler {
         beanBuilder.setScope("singleton");
         contextResources.putAll(stateConfig.getContextResources());
         beanBuilder.addPropertyReference("contextResources", outputResourceMapBeanName);
-        beanBuilder.addPropertyValue("finalizer", stateConfig.getFinalizer());
         beanBuilder.addPropertyValue("requiresToken", stateConfig.requiresToken());
         beanBuilder.addPropertyValue("IWrapperPolicy", stateConfig.getIWrapperPolicy());
         beanBuilder.addPropertyReference("IWrappers", wrapperMapBeanName);

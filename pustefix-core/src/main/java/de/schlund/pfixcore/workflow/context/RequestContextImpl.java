@@ -59,7 +59,6 @@ import de.schlund.pfixcore.workflow.PageRequest;
 import de.schlund.pfixcore.workflow.PageRequestStatus;
 import de.schlund.pfixcore.workflow.State;
 import de.schlund.pfixcore.workflow.VariantManager;
-import de.schlund.pfixcore.workflow.app.ResdocFinalizer;
 import de.schlund.pfixxml.PfixServletRequest;
 import de.schlund.pfixxml.RequestParam;
 import de.schlund.pfixxml.ResultDocument;
@@ -969,10 +968,6 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
 
                     public Map<String, ?> getContextResources() {
                         return Collections.emptyMap();
-                    }
-
-                    public Class<? extends ResdocFinalizer> getFinalizer() {
-                        return null;
                     }
 
                     public Policy getIWrapperPolicy() {
