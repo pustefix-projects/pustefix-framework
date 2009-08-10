@@ -17,14 +17,10 @@
  */
 package de.schlund.pfixcore.util;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.TreeSet;
 
-import org.apache.log4j.xml.DOMConfigurator;
 import org.pustefixframework.resource.InputStreamResource;
 import org.pustefixframework.resource.Resource;
 import org.w3c.dom.Document;
@@ -32,7 +28,6 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import de.schlund.pfixxml.config.GlobalConfigurator;
 import de.schlund.pfixxml.targets.AuxDependency;
 import de.schlund.pfixxml.targets.AuxDependencyFactory;
 import de.schlund.pfixxml.targets.AuxDependencyFile;

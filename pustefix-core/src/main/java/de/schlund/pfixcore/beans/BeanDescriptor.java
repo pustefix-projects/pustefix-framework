@@ -25,10 +25,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Set;
 
-import org.apache.log4j.ConsoleAppender;
-import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-import org.apache.log4j.PatternLayout;
 
 import de.schlund.pfixcore.beans.metadata.Bean;
 import de.schlund.pfixcore.beans.metadata.Beans;

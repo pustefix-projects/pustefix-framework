@@ -22,15 +22,9 @@ import java.net.URISyntaxException;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
 
 import de.schlund.pfixcore.util.ModuleInfo;
-import de.schlund.pfixxml.IncludeDocument;
-import de.schlund.pfixxml.IncludeDocumentFactory;
 import de.schlund.pfixxml.util.URIParameters;
-import de.schlund.pfixxml.util.XPath;
-import de.schlund.pfixxml.util.XsltProvider;
 
 /**
  * 
