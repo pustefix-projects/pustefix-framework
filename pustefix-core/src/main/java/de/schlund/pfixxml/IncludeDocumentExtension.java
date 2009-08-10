@@ -85,8 +85,6 @@ public final class IncludeDocumentExtension {
                                    TargetGenerator targetGen, String targetkey,
                                    String parent_part_in, String parent_theme_in, String computed_inc,
                                    String module, String search) throws Exception {
-       
-        if(path_str.startsWith("docroot:")) path_str = path_str.substring(9);
         
         boolean dynamic = false;
         if(search!=null && !search.trim().equals("")) {
@@ -120,31 +118,23 @@ public final class IncludeDocumentExtension {
         String uriStr = path_str;
         
         if(dynamic) {
+        	//TODO: dynamic scheme support
             uriStr = "dynamic:/" + path_str + "?part=" + part + "&parent=" + parent_uri_str;
             if(module != null) uriStr += "&module="+module;
-            else if("module".equals(parentURI.getScheme())) {
+            else if("bundle".equals(parentURI.getScheme())) {
                 uriStr += "&module="+parentURI.getAuthority();
             }
             uriStr += "&project=" + targetGen.getName();
         } else {
             if(module != null) {
                 uriStr = "bundle://" + module + "/PUSTEFIX-INF/" + path_str;
-            } else if("module".equals(parentURI.getScheme())) {
+            } else if("bundle".equals(parentURI.getScheme())) {
                 uriStr = "bundle://" + parentURI.getAuthority() + "/PUSTEFIX-INF/" + path_str;
-            }
+            } else throw new IllegalArgumentException("Don't know which bundle should be referenced.");
         }
         
-        // EEEEK! this code is in need of some serious beautifying....
-        
         try {
-            // FIXME: This is just a work-around. We probably want to resolve
-            // relative URI relatively
-            if (!uriStr.contains(":")) {
-                if (!uriStr.startsWith("/")) {
-                    uriStr = "/" + uriStr;
-                }
-                uriStr = "bundle:/PUSTEFIX-INF" + uriStr;
-            }
+          
             URI uri = new URI(uriStr);
             Resource path = targetGen.getResourceLoader().getResource(uri);
             
