@@ -18,7 +18,6 @@
 
 package org.pustefixframework.http;
 
-import java.util.Map;
 import java.util.Properties;
 
 import javax.servlet.ServletException;
@@ -28,7 +27,7 @@ import javax.servlet.http.HttpSession;
 import org.apache.log4j.Logger;
 import org.pustefixframework.config.contextxmlservice.AbstractPustefixRequestHandlerConfig;
 import org.pustefixframework.config.directoutputservice.DirectOutputPageRequestConfig;
-import org.pustefixframework.config.directoutputservice.DirectOutputServiceConfig;
+import org.pustefixframework.config.directoutputservice.DirectOutputRequestHandlerConfig;
 
 import de.schlund.pfixcore.auth.AuthConstraint;
 import de.schlund.pfixcore.workflow.ContextImpl;
@@ -66,8 +65,7 @@ import de.schlund.pfixxml.resources.FileResource;
  */
 public class PustefixContextDirectOutputRequestHandler extends AbstractPustefixRequestHandler {
     private Logger                    LOG       = Logger.getLogger(this.getClass());
-    private DirectOutputServiceConfig config;
-    private Map<String, DirectOutputState> stateMap;
+    private DirectOutputRequestHandlerConfig config;
     
     private ContextImpl context;
     
@@ -171,7 +169,7 @@ public class PustefixContextDirectOutputRequestHandler extends AbstractPustefixR
          }
          
          PageRequest       page  = new PageRequest(pagename);
-         DirectOutputState state = stateMap.get(page.getName());
+         DirectOutputState state = pageConfig != null ? pageConfig.getDirectOutputState() : null;
          if (state != null) {
              Properties props   = config.getPageRequest(page.getName()).getProperties();
              boolean    allowed = state.isAccessible(crm, props, preq);
@@ -207,11 +205,7 @@ public class PustefixContextDirectOutputRequestHandler extends AbstractPustefixR
         this.context = context;
     }
     
-    public void setStateMap(Map<String, DirectOutputState> stateMap) {
-        this.stateMap = stateMap;
-    }
-    
-    public void setConfiguration(DirectOutputServiceConfig config) {
+    public void setConfiguration(DirectOutputRequestHandlerConfig config) {
         this.config = config;
     }
     

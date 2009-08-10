@@ -23,6 +23,8 @@ import java.util.Properties;
 
 import org.pustefixframework.config.directoutputservice.DirectOutputPageRequestConfig;
 
+import de.schlund.pfixcore.workflow.DirectOutputState;
+
 
 /**
  * Stores configuration for a DirectOutputServlet PageRequest
@@ -34,6 +36,8 @@ public class DirectOutputPageRequestConfigImpl implements DirectOutputPageReques
     private String pageName = null;
     
     private String stateBean = null;
+    
+    private DirectOutputState directOutputState = null;
     
     private Properties properties = new Properties();
 
@@ -81,5 +85,13 @@ public class DirectOutputPageRequestConfigImpl implements DirectOutputPageReques
     public String getAuthConstraintRef() {
         return authConstraintRef;
     }
-    
+
+    public DirectOutputState getDirectOutputState() {
+        return directOutputState;
+    }
+
+    public void setDirectOutputState(DirectOutputState directOutputState) {
+        this.directOutputState = directOutputState;
+    }
+
 }

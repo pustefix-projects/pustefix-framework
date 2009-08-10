@@ -1,3 +1,7 @@
+2009-08-10  Sebastian Marsching <sebastian.marsching@1und1.de>
+
+	Added extension point support for direct output pages
+
 2009-08-07  Sebastian Marsching <sebastian.marsching@1und1.de>
 
 	Removed old PustefixWebApplicationContext.

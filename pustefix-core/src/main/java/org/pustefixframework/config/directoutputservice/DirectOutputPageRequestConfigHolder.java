@@ -18,40 +18,21 @@
 
 package org.pustefixframework.config.directoutputservice;
 
-import java.util.Properties;
-
-import de.schlund.pfixcore.workflow.DirectOutputState;
+import org.springframework.beans.factory.config.BeanReference;
 
 /**
- * Provides configuration for a direct output page. This configuration is 
- * used by {@link de.schlund.pfixxml.DirectOutputServlet} to configure the
- * pages provided.   
+ * Holds a direct output page config object.  
  * 
  * @author Sebastian Marsching <sebastian.marsching@1und1.de>
  */
-public interface DirectOutputPageRequestConfig {
+public interface DirectOutputPageRequestConfigHolder {
 
     /**
-     * Returns name identifying the page.
+     * Returns the direct output page config object. The returned object must 
+     * either implement the {@link DirectOutputPageRequestConfig} interface or 
+     * be a {@link BeanReference} to a bean that implements this interface.
      * 
-     * @return name of the page
+     * @return object containing direct output configuration
      */
-    String getPageName();
-    
-    String getAuthConstraintRef();
-
-    /**
-     * Returns the direct output state.
-     * 
-     * @return the direct output state
-     */
-    DirectOutputState getDirectOutputState();
-
-    /**
-     * Returns extra configuration parameters.
-     * 
-     * @return configuration parameters
-     */
-    Properties getProperties();
-
+    Object getDirectOutputPageRequestConfigObject();
 }

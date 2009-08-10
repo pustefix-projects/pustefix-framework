@@ -24,11 +24,13 @@ import java.util.Properties;
 
 import org.pustefixframework.config.Constants;
 import org.pustefixframework.config.customization.CustomizationAwareParsingHandler;
+import org.pustefixframework.config.directoutputservice.DirectOutputPageRequestConfigHolder;
 import org.pustefixframework.config.directoutputservice.parser.internal.DirectOutputPageRequestConfigImpl;
 import org.pustefixframework.config.generic.ParsingUtils;
 import org.pustefixframework.container.spring.beans.support.ScopedProxyUtils;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinitionHolder;
+import org.springframework.beans.factory.config.RuntimeBeanReference;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanNameGenerator;
@@ -97,6 +99,7 @@ public class DirectOutputPageRequestParsingHandler extends CustomizationAwarePar
             reqConfig.setBeanName(beanRef);
             context.getObjectTreeElement().addObject(reqConfig);
         } else if (context.getRunOrder() == RunOrder.END) {
+            BeanDefinitionRegistry beanRegistry = ParsingUtils.getSingleTopObject(BeanDefinitionRegistry.class, context);
             DirectOutputPageRequestConfigImpl reqConfig = context.getObjectTreeElement().getObjectsOfType(DirectOutputPageRequestConfigImpl.class).iterator().next();
             Collection<Properties> propertiesCollection = context.getObjectTreeElement().getObjectsOfTypeFromSubTree(Properties.class);
             Properties properties = new Properties();
@@ -109,6 +112,26 @@ public class DirectOutputPageRequestParsingHandler extends CustomizationAwarePar
                 }
             }
             reqConfig.setProperties(properties);
+            
+            BeanDefinitionBuilder beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(DirectOutputPageRequestConfigImpl.class);
+            beanBuilder.setScope("singleton");
+            beanBuilder.addPropertyValue("authConstraintRef", reqConfig.getAuthConstraintRef());
+            beanBuilder.addPropertyValue("pageName", reqConfig.getPageName());
+            beanBuilder.addPropertyValue("properties", reqConfig.getProperties());
+            beanBuilder.addPropertyReference("directOutputState", reqConfig.getBeanName());
+            BeanDefinition beanDefinition = beanBuilder.getBeanDefinition();
+            DefaultBeanNameGenerator beanNameGenerator = new DefaultBeanNameGenerator();
+            String beanName = beanNameGenerator.generateBeanName(beanDefinition, beanRegistry);
+            beanRegistry.registerBeanDefinition(beanName, beanDefinition);
+            final RuntimeBeanReference beanReference = new RuntimeBeanReference(beanName);
+            
+            context.getObjectTreeElement().addObject(new DirectOutputPageRequestConfigHolder() {
+
+                public Object getDirectOutputPageRequestConfigObject() {
+                    return beanReference;
+                }
+                
+            });
         }
     }
     

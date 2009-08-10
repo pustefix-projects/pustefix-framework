@@ -11,6 +11,13 @@
   </handler>
   
   
+  <!-- Handle direct output configuration -->
+  
+  <handler class="org.pustefixframework.config.module.parser.PustefixContextDirectOutputRequestHandlerParsingHandler">
+    <match>/p:pustefix-module/p:application//p:direct-output-service</match>
+  </handler>
+  
+  
   <!-- Properties support (unused at the moment) -->
   
   <handler class="org.pustefixframework.config.generic.PropertiesParsingHandler">

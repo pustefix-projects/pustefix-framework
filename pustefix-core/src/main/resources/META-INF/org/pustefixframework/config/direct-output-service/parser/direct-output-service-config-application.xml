@@ -8,7 +8,11 @@
     <match>/c:direct-output-service-config//c:directoutputpagerequest</match>
   </handler>
   
-  <handler class="org.pustefixframework.config.directoutputservice.parser.DirectOutputServiceConfigParsingHandler" run-order="both">
+  <handler class="org.pustefixframework.config.directoutputservice.parser.DirectOutputPageRequestConfigExtensionPointParsingHandler">
+    <match>/c:direct-output-service-config//c:extension-point[@type='direct.pagerequest']</match>
+  </handler>
+  
+  <handler class="org.pustefixframework.config.directoutputservice.parser.DirectOutputRequestHandlerConfigParsingHandler" run-order="both">
     <match>/c:direct-output-service-config</match>
   </handler>
   

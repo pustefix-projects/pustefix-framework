@@ -18,7 +18,7 @@
 
 package org.pustefixframework.config.directoutputservice;
 
-import java.util.List;
+import java.util.Map;
 
 import org.pustefixframework.config.contextxmlservice.AbstractPustefixRequestHandlerConfig;
 
@@ -28,16 +28,7 @@ import org.pustefixframework.config.contextxmlservice.AbstractPustefixRequestHan
  * 
  * @author Sebastian Marsching <sebastian.marsching@1und1.de>
  */
-public interface DirectOutputServiceConfig extends AbstractPustefixRequestHandlerConfig {
-
-    /**
-     * Returns the name of the corresponding {@link de.schlund.pfixxml.ContextXMLServlet}
-     * instance. This instance is used in order to retrieve a {@link de.schlund.pfixcore.workflow.Context}
-     * object for the session.
-     * 
-     * @return name of the corresponding servlet
-     */
-    String getExternalServletName();
+public interface DirectOutputRequestHandlerConfig extends AbstractPustefixRequestHandlerConfig {
 
     /**
      * If <code>true</code> the servlet synchronizes on the session (more precisely
@@ -50,11 +41,12 @@ public interface DirectOutputServiceConfig extends AbstractPustefixRequestHandle
     String getAuthConstraintRef();
 
     /**
-     * Returns a list of pages configured for this servlet.
+     * Returns the map of pages configured for this request handler.
+     * The map uses the page name as the key and the configuration as the value.
      * 
-     * @return list of page configurations
+     * @return map of page configurations
      */
-    List<? extends DirectOutputPageRequestConfig> getPageRequests();
+    Map<String, ? extends DirectOutputPageRequestConfig> getPageRequests();
 
     /**
      * Returns the page configuration for the page of the specified name.

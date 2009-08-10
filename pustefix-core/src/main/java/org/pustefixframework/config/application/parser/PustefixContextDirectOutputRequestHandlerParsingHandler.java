@@ -23,8 +23,6 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -33,20 +31,17 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.pustefixframework.config.Constants;
 import org.pustefixframework.config.customization.CustomizationAwareParsingHandler;
 import org.pustefixframework.config.customization.CustomizationInfo;
-import org.pustefixframework.config.directoutputservice.DirectOutputPageRequestConfig;
-import org.pustefixframework.config.directoutputservice.DirectOutputServiceConfig;
+import org.pustefixframework.config.directoutputservice.DirectOutputRequestHandlerConfigHolder;
 import org.pustefixframework.config.generic.ParsingUtils;
 import org.pustefixframework.http.PustefixContextDirectOutputRequestHandler;
 import org.pustefixframework.resource.InputStreamResource;
 import org.pustefixframework.resource.ResourceLoader;
 import org.springframework.beans.factory.config.BeanDefinition;
-import org.springframework.beans.factory.config.MapFactoryBean;
 import org.springframework.beans.factory.config.RuntimeBeanReference;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanNameGenerator;
 import org.springframework.beans.factory.support.DefaultBeanNameGenerator;
-import org.springframework.beans.factory.support.ManagedMap;
 import org.springframework.osgi.context.ConfigurableOsgiBundleApplicationContext;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -100,7 +95,7 @@ public class PustefixContextDirectOutputRequestHandlerParsingHandler extends Cus
 
         ConfigurableOsgiBundleApplicationContext appContext = ParsingUtils.getSingleTopObject(ConfigurableOsgiBundleApplicationContext.class, context);
         
-        OSGiAwareParser configParser = new OSGiAwareParser(appContext.getBundleContext(), "META-INF/org/pustefixframework/config/direct-output-service/parser/direct-output-service-config.xml");
+        OSGiAwareParser configParser = new OSGiAwareParser(appContext.getBundleContext(), "META-INF/org/pustefixframework/config/direct-output-service/parser/direct-output-service-config-application.xml");
         final ObjectTreeElement root;
         try {
             DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
@@ -129,33 +124,18 @@ public class PustefixContextDirectOutputRequestHandlerParsingHandler extends Cus
         };
         context.getObjectTreeElement().addObject(subtree);
         
-        DirectOutputServiceConfig config = root.getObjectsOfTypeFromSubTree(DirectOutputServiceConfig.class).iterator().next();
-        Map<String, Object> stateMap = new HashMap<String, Object>();
-        for (DirectOutputPageRequestConfig pConfig : config.getPageRequests()) {
-            stateMap.put(pConfig.getPageName(), new RuntimeBeanReference(pConfig.getBeanName()));
-        }
+        DirectOutputRequestHandlerConfigHolder configHolder = root.getObjectsOfTypeFromSubTree(DirectOutputRequestHandlerConfigHolder.class).iterator().next();
         
         BeanNameGenerator nameGenerator = new DefaultBeanNameGenerator();
         BeanDefinitionBuilder beanBuilder;
         BeanDefinition beanDefinition;
-        
-        String mapBeanName;
-        beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(MapFactoryBean.class);
-        @SuppressWarnings("unchecked")
-        Map<String, Object> managedMap = new ManagedMap(stateMap.size());
-        managedMap.putAll(stateMap);
-        beanBuilder.addPropertyValue("sourceMap", managedMap);
-        beanDefinition = beanBuilder.getBeanDefinition();
-        mapBeanName = nameGenerator.generateBeanName(beanDefinition, registry);
-        registry.registerBeanDefinition(mapBeanName, beanDefinition);
         
         beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(PustefixContextDirectOutputRequestHandler.class);
         beanBuilder.setScope("singleton");
         beanBuilder.setInitMethodName("init");
         beanBuilder.addPropertyValue("handlerURI", path + "/**");
         beanBuilder.addPropertyValue("context", new RuntimeBeanReference(ContextImpl.class.getName()));
-        beanBuilder.addPropertyValue("stateMap", new RuntimeBeanReference(mapBeanName));
-        beanBuilder.addPropertyValue("configuration", config);
+        beanBuilder.addPropertyValue("configuration", configHolder.getDirectOutputServiceConfigObject());
         beanBuilder.addPropertyValue("sessionAdmin", new RuntimeBeanReference(SessionAdmin.class.getName()));
         beanDefinition = beanBuilder.getBeanDefinition();
         registry.registerBeanDefinition(nameGenerator.generateBeanName(beanDefinition, registry), beanDefinition);

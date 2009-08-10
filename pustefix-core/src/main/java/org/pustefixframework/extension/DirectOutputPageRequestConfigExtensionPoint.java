@@ -16,42 +16,21 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-package org.pustefixframework.config.directoutputservice;
+package org.pustefixframework.extension;
 
-import java.util.Properties;
-
-import de.schlund.pfixcore.workflow.DirectOutputState;
 
 /**
- * Provides configuration for a direct output page. This configuration is 
- * used by {@link de.schlund.pfixxml.DirectOutputServlet} to configure the
- * pages provided.   
+ * An extension point that can be extended with direct output page 
+ * configurations.  
  * 
  * @author Sebastian Marsching <sebastian.marsching@1und1.de>
  */
-public interface DirectOutputPageRequestConfig {
-
+public interface DirectOutputPageRequestConfigExtensionPoint extends ExtensionPoint<DirectOutputPageRequestConfigExtension> {
     /**
-     * Returns name identifying the page.
+     * This method has to be called by an extension, if the list of
+     * page configurations provided by this extension has changed.
      * 
-     * @return name of the page
+     * @param extension the extension that has changed
      */
-    String getPageName();
-    
-    String getAuthConstraintRef();
-
-    /**
-     * Returns the direct output state.
-     * 
-     * @return the direct output state
-     */
-    DirectOutputState getDirectOutputState();
-
-    /**
-     * Returns extra configuration parameters.
-     * 
-     * @return configuration parameters
-     */
-    Properties getProperties();
-
+    void updateExtension(DirectOutputPageRequestConfigExtension extension);
 }
