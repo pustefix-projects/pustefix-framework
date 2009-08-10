@@ -54,7 +54,6 @@ import com.marsching.flexiparse.parser.OSGiAwareParser;
 import com.marsching.flexiparse.parser.exception.ParserException;
 
 import de.schlund.pfixcore.workflow.ContextImpl;
-import de.schlund.pfixxml.config.includes.IncludesResolver;
 import de.schlund.pfixxml.serverutil.SessionAdmin;
 
 public class PustefixContextDirectOutputRequestHandlerParsingHandler extends CustomizationAwareParsingHandler {
@@ -103,8 +102,6 @@ public class PustefixContextDirectOutputRequestHandlerParsingHandler extends Cus
             dbf.setXIncludeAware(true);
             DocumentBuilder db = dbf.newDocumentBuilder();
             Document doc = db.parse(configurationResource.getInputStream()); 
-            IncludesResolver resolver = new IncludesResolver("http://www.pustefix-framework.org/2008/namespace/direct-output-service-config", "config-include");
-            resolver.resolveIncludes(doc);
             root = configParser.parse(doc, info, registry, appContext, resourceLoader);
         } catch (FileNotFoundException e) {
             throw new ParserException("Could not find referenced configuration file: " + configurationFile, e);
