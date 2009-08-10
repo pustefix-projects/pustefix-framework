@@ -47,7 +47,12 @@
       <!-- this is tricky to understand --> 
       <xsl:with-param name="computed_inc">true</xsl:with-param>
       <xsl:with-param name="noerr" select="$noerror"/>      
-      <xsl:with-param name="module" select="@module"/>
+      <xsl:with-param name="module">
+        <xsl:choose>
+          <xsl:when test="@module"><xsl:value-of select="@module"/></xsl:when>
+          <xsl:otherwise><xsl:value-of select="$module"/></xsl:otherwise>
+        </xsl:choose>
+      </xsl:with-param>
       <xsl:with-param name="search" select="@search"/>
     </xsl:call-template>
   </xsl:template>

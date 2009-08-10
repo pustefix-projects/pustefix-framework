@@ -49,6 +49,10 @@ import javax.xml.transform.stream.StreamResult;
 import org.apache.log4j.Logger;
 import org.pustefixframework.config.contextxmlservice.AbstractPustefixXMLRequestHandlerConfig;
 import org.pustefixframework.config.contextxmlservice.AbstractPustefixRequestHandlerConfig;
+import org.pustefixframework.xmlgenerator.targets.PageTargetTree;
+import org.pustefixframework.xmlgenerator.targets.Target;
+import org.pustefixframework.xmlgenerator.targets.TargetGenerationException;
+import org.pustefixframework.xmlgenerator.targets.TargetGenerator;
 import org.w3c.dom.Document;
 
 import de.schlund.pfixcore.exception.PustefixApplicationException;
@@ -62,12 +66,6 @@ import de.schlund.pfixxml.SessionCleaner;
 import de.schlund.pfixxml.Variant;
 import de.schlund.pfixxml.perflogging.AdditionalTrailInfo;
 import de.schlund.pfixxml.serverutil.SessionHelper;
-import de.schlund.pfixxml.targets.PageInfo;
-import de.schlund.pfixxml.targets.PageInfoFactory;
-import de.schlund.pfixxml.targets.PageTargetTree;
-import de.schlund.pfixxml.targets.Target;
-import de.schlund.pfixxml.targets.TargetGenerationException;
-import de.schlund.pfixxml.targets.TargetGenerator;
 import de.schlund.pfixxml.testrecording.TestRecording;
 import de.schlund.pfixxml.testrecording.TrailLogger;
 import de.schlund.pfixxml.util.CacheValueLRU;
@@ -197,7 +195,6 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
         if (LOGGER.isInfoEnabled()) {
             StringBuffer sb = new StringBuffer(255);
             sb.append("\n").append("AbstractXMLServlet properties after initValues(): \n");
-            sb.append("                targetconf = ").append(generator.getConfigPath()).append("\n");
             sb.append("               servletname = ").append(servletname).append("\n");
             sb.append("           editModeAllowed = ").append(editmodeAllowed).append("\n");
             sb.append("             maxStoredDoms = ").append(maxStoredDoms).append("\n");
@@ -817,7 +814,6 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
         if (pagename != null) {
             Variant        variant    = spdoc.getVariant();
             PageTargetTree pagetree   = generator.getPageTargetTree();
-            PageInfo       pinfo      = null;
             Target         target     = null;
             String         variant_id = null;
             if (variant != null && variant.getVariantFallbackArray() != null) {
@@ -825,8 +821,7 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
                 for (int i = 0; i < variants.length; i++) {
                     variant_id = variants[i];
                     LOGGER.info("   ** Trying variant '" + variant_id + "' **");
-                    pinfo   = PageInfoFactory.getInstance().getPage(generator, pagename, variant_id);
-                    target  = pagetree.getTargetForPageInfo(pinfo);
+                    target  = pagetree.getTargetForPage(pagename, variant_id);
                     if (target != null) {
                         return target.getTargetKey();
                     }
@@ -834,8 +829,7 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
             }
             if (target == null) {
                 LOGGER.info("   ** Trying root variant **");
-                pinfo = PageInfoFactory.getInstance().getPage(generator, pagename, null);
-                target = pagetree.getTargetForPageInfo(pinfo);
+                target = pagetree.getTargetForPage(pagename, null);
             }
             if (target == null) {
                 LOGGER.warn("\n********************** NO TARGET ******************************");

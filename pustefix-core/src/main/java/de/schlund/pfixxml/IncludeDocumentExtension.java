@@ -26,16 +26,16 @@ import java.util.List;
 import javax.xml.transform.TransformerException;
 
 import org.apache.log4j.Logger;
+import org.pustefixframework.resource.NullResource;
 import org.pustefixframework.resource.Resource;
+import org.pustefixframework.xmlgenerator.targets.TargetGenerator;
+import org.pustefixframework.xmlgenerator.targets.VirtualTarget;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
-import de.schlund.pfixxml.targets.TargetGenerator;
-import de.schlund.pfixxml.targets.VirtualTarget;
 import de.schlund.pfixxml.util.ExtensionFunctionUtils;
-import de.schlund.pfixxml.util.ResourceUtils;
 import de.schlund.pfixxml.util.XPath;
 import de.schlund.pfixxml.util.Xml;
 import de.schlund.pfixxml.util.XsltContext;
@@ -128,9 +128,9 @@ public final class IncludeDocumentExtension {
             uriStr += "&project=" + targetGen.getName();
         } else {
             if(module != null) {
-                uriStr = "module://" + module + "/" + path_str;
+                uriStr = "bundle://" + module + "/PUSTEFIX-INF/" + path_str;
             } else if("module".equals(parentURI.getScheme())) {
-                uriStr = "module://" + parentURI.getAuthority() + "/" + path_str;
+                uriStr = "bundle://" + parentURI.getAuthority() + "/PUSTEFIX-INF/" + path_str;
             }
         }
         
@@ -147,7 +147,9 @@ public final class IncludeDocumentExtension {
             }
             URI uri = new URI(uriStr);
             Resource path = targetGen.getResourceLoader().getResource(uri);
-            resolvedUri.set(path.getURI().toString());
+            
+            resolvedUri.set(path == null? uri.toString():path.getURI().toString());
+            
             Resource    parent_path = null;
             if(!parent_uri_str.equals("")) {
             	uri = new URI(parent_uri_str);
@@ -177,17 +179,18 @@ public final class IncludeDocumentExtension {
             
             String DEF_THEME = targetGen.getDefaultTheme();
 
-            if (path == null || !ResourceUtils.exists(path)) {
+            if (path == null) {
                 if (dolog) {
-                    DependencyTracker.logTyped("text", path, part, DEF_THEME,
+                    DependencyTracker.logTyped("text", new NullResource(uri), part, DEF_THEME,
                                                parent_path, parent_part, parent_theme, target);
                 }
                 return errorNode(context,DEF_THEME);
                 //return new EmptyNodeSet();
             }
+            
             // get the includedocument
             try {
-                iDoc = IncludeDocumentFactory.getInstance().getIncludeDocument(context.getXsltVersion(), path, false);
+                iDoc = targetGen.getIncludeDocument(context.getXsltVersion(), path, false);
             } catch (SAXException saxex) {
                 if (dolog)
                     DependencyTracker.logTyped("text", path, part, DEF_THEME,

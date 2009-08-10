@@ -19,6 +19,7 @@ package de.schlund.pfixxml.util;
 
 import java.io.File;
 import java.io.StringWriter;
+import java.net.URI;
 
 import javax.xml.transform.Result;
 import javax.xml.transform.Templates;
@@ -28,6 +29,8 @@ import javax.xml.transform.stream.StreamResult;
 
 import junit.framework.TestCase;
 
+import org.pustefixframework.resource.FileResource;
+import org.pustefixframework.resource.support.FileResourceImpl;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -35,8 +38,6 @@ import org.w3c.dom.NodeList;
 
 import com.icl.saxon.om.AbstractNode;
 import com.icl.saxon.om.NodeInfo;
-
-import de.schlund.pfixxml.resources.ResourceUtil;
 
 public class XsltTest extends TestCase {
 
@@ -93,7 +94,10 @@ public class XsltTest extends TestCase {
         Templates trafo;
 
         doc = Xml.parse(getXsltVersion(), new File(PREFIX + xml));
-        trafo = Xslt.loadTemplates(getXsltVersion(), ResourceUtil.getFileResource("file://" + (new File(PREFIX + xsl)).getAbsolutePath()));
+        URI uri = new URI("file://" + (new File(PREFIX + xsl)).getAbsolutePath());
+        File file = new File(uri);
+        FileResource resource = new FileResourceImpl(uri, null, file);
+        trafo = Xslt.loadTemplates(getXsltVersion(), resource);
         Xslt.transform(doc, trafo, null, result);
     }
 

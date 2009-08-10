@@ -36,6 +36,7 @@ import org.apache.log4j.Logger;
 import org.pustefixframework.config.contextxmlservice.IWrapperConfig;
 import org.pustefixframework.config.contextxmlservice.PageRequestConfig;
 import org.pustefixframework.config.contextxmlservice.ProcessActionPageRequestConfig;
+import org.pustefixframework.xmlgenerator.targets.TargetGenerator;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -55,7 +56,6 @@ import de.schlund.pfixcore.workflow.State;
 import de.schlund.pfixcore.workflow.context.AccessibilityChecker;
 import de.schlund.pfixcore.workflow.context.RequestContextImpl;
 import de.schlund.pfixxml.ResultDocument;
-import de.schlund.pfixxml.targets.TargetGenerator;
 import de.schlund.pfixxml.util.ExtensionFunctionUtils;
 import de.schlund.pfixxml.util.Xml;
 import de.schlund.pfixxml.util.XsltVersion;
@@ -84,7 +84,7 @@ public class TransformerCallback {
             
             boolean pageExists = true;
             if(context.getContextConfig().getPageRequestConfig(pagename) == null) {
-                pageExists = (targetGen.getPageTargetTree().getPageInfoForPageName(pagename) != null);
+                pageExists = targetGen.getPageTargetTree().containsPage(pagename);
             }
             if(pageExists) {
                 AccessibilityChecker check = (AccessibilityChecker) context;

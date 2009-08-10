@@ -30,12 +30,9 @@ import javax.servlet.http.HttpSession;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.InitializingBean;
 
-import de.schlund.pfixxml.resources.FileResource;
-import de.schlund.pfixxml.resources.ResourceUtil;
 import de.schlund.pfixxml.serverutil.SessionAdmin;
 import de.schlund.pfixxml.serverutil.SessionData;
 import de.schlund.pfixxml.serverutil.SessionInfoStruct;
-import de.schlund.pfixxml.util.Xml;
 
 public class TestRecording implements TestRecordingMBean, InitializingBean {
 
@@ -88,14 +85,11 @@ public class TestRecording implements TestRecordingMBean, InitializingBean {
    }
    
    public ApplicationList getApplicationList(boolean tomcat, String sessionSuffix) {
-      FileResource file;
-      
-      file = ResourceUtil.getFileResourceFromDocroot("WEB-INF/projects.xml");
-      try {
-          return ApplicationList.load(Xml.parseMutable(file), tomcat, sessionSuffix);
-      } catch (Exception e) {
-          throw new RuntimeException(e);
-      }
+	   ApplicationList list = new ApplicationList();
+	   //TODO: get missing application information
+	   Application app = new Application(projectName, null, tomcat, null, null);
+	   list.add(app);
+	   return list;
   }
    
    public List<SessionData> getSessions(String serverName, String remoteAddr) {

@@ -18,6 +18,8 @@
 
 package org.pustefixframework.config.customization;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetAddress;
@@ -27,7 +29,6 @@ import java.util.Properties;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import de.schlund.pfixxml.resources.ResourceUtil;
 
 /**
  * Provides easy access to properties stored at buildtime 
@@ -90,11 +91,11 @@ public class RuntimeProperties {
         return username;
     }
     
-    public static void generate(Properties props, String mode, String machine, String fqdn, String uid) throws IOException {
+    public static void generate(File resourceDir, Properties props, String mode, String machine, String fqdn, String uid) throws IOException {
         props.setProperty("mode", mode);
         props.setProperty("machine", machine);
         props.setProperty("fqdn", fqdn);
         props.setProperty("uid", uid);
-        props.store(ResourceUtil.getFileResourceFromDocroot(PATH).getOutputStream(), "Properties used at buildtime");
+        props.store(new FileOutputStream(new File(resourceDir, PATH)), "Properties used at buildtime");
     }
 }

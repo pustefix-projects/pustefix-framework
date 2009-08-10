@@ -43,7 +43,6 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import de.schlund.pfixcore.exception.PustefixRuntimeException;
-import de.schlund.pfixxml.resources.ModuleSourceLocator;
 
 /**
  * 

@@ -27,6 +27,9 @@ import org.pustefixframework.config.customization.CustomizationAwareParsingHandl
 import org.pustefixframework.config.generic.ParsingUtils;
 import org.pustefixframework.resource.ResourceLoader;
 import org.pustefixframework.resource.URLResource;
+import org.pustefixframework.xmlgenerator.cachestat.CacheStatistic;
+import org.pustefixframework.xmlgenerator.targets.LRUCache;
+import org.pustefixframework.xmlgenerator.targets.TargetGenerator;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinitionHolder;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
@@ -34,16 +37,20 @@ import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.DefaultBeanNameGenerator;
 import org.w3c.dom.Element;
 
+import com.marsching.flexiparse.configuration.RunOrder;
 import com.marsching.flexiparse.parser.HandlerContext;
 import com.marsching.flexiparse.parser.exception.ParserException;
 
-import de.schlund.pfixxml.targets.SPCacheFactory;
-import de.schlund.pfixxml.targets.TargetGenerator;
-import de.schlund.pfixxml.targets.cachestat.CacheStatistic;
 
 public class XMLGeneratorInfoParsingHandler extends CustomizationAwareParsingHandler {
 
-	private BeanDefinitionBuilder cacheBeanBuilder;
+	private final String TARGETGENERATOR_BEANNAME = "org.pustefixframework.xmlgenerator";
+	private final String TARGETCACHE_BEANNAME = "org.pustefixframework.xmlgenerator.targetcache";
+	private final String INCLUDECACHE_BEANNAME = "org.pustefixframework.xmlgenerator.includecache";
+	private final String CACHESTATISTIC_BEANNAME = "org.pustefixframework.xmlgenerator.cachestatistic";
+	
+	private BeanDefinitionBuilder targetCacheBeanBuilder;
+	private BeanDefinitionBuilder includeCacheBeanBuilder;
 	private BeanDefinitionBuilder statsBeanBuilder;
 	
     @Override
@@ -51,28 +58,18 @@ public class XMLGeneratorInfoParsingHandler extends CustomizationAwareParsingHan
         
         Element root = (Element)context.getNode();
 
+        if(context.getRunOrder() == RunOrder.START) {
+        
         if(root.getLocalName().equals("xml-generator")) {
-            
-        	cacheBeanBuilder = BeanDefinitionBuilder.genericBeanDefinition(SPCacheFactory.class);
-        	cacheBeanBuilder.setScope("singleton");
-        	cacheBeanBuilder.setFactoryMethod("getInstance");
-        	cacheBeanBuilder.addPropertyValue("targetCacheCapacity", 30);
-        	cacheBeanBuilder.addPropertyValue("targetCacheClass", "de.schlund.pfixxml.targets.LRUCache");
-        	cacheBeanBuilder.addPropertyValue("includeCacheCapacity", 30);
-        	cacheBeanBuilder.addPropertyValue("includeCacheClass", "de.schlund.pfixxml.targets.LRUCache");
-        	cacheBeanBuilder.setInitMethodName("init");
-        	BeanDefinitionHolder beanHolder = new BeanDefinitionHolder(cacheBeanBuilder.getBeanDefinition(), SPCacheFactory.class.getName());
-        	context.getObjectTreeElement().addObject(beanHolder);
         	
         	statsBeanBuilder = BeanDefinitionBuilder.genericBeanDefinition(CacheStatistic.class);
         	statsBeanBuilder.setScope("singleton");
-        	statsBeanBuilder.setFactoryMethod("getInstance");
         	statsBeanBuilder.addPropertyValue("queueSize", 60);
         	statsBeanBuilder.addPropertyValue("queueTicks", 60000);
         	ProjectInfo projectInfo = ParsingUtils.getSingleTopObject(ProjectInfo.class, context);
         	statsBeanBuilder.addPropertyValue("projectName", projectInfo.getProjectName());
-        	statsBeanBuilder.setInitMethodName("init");
-        	beanHolder = new BeanDefinitionHolder(statsBeanBuilder.getBeanDefinition(), CacheStatistic.class.getName());
+        	statsBeanBuilder.addPropertyReference("targetGenerator", TARGETGENERATOR_BEANNAME);
+        	BeanDefinitionHolder beanHolder = new BeanDefinitionHolder(statsBeanBuilder.getBeanDefinition(), CACHESTATISTIC_BEANNAME);
         	context.getObjectTreeElement().addObject(beanHolder);
         	
             XMLGeneratorInfo info = new XMLGeneratorInfo();
@@ -86,7 +83,6 @@ public class XMLGeneratorInfoParsingHandler extends CustomizationAwareParsingHan
             String uri = root.getTextContent().trim();
             
             BeanDefinitionRegistry beanRegistry = ParsingUtils.getSingleTopObject(BeanDefinitionRegistry.class, context);
-            DefaultBeanNameGenerator beanNameGenerator = new DefaultBeanNameGenerator();
         
             BeanDefinitionBuilder beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(TargetGenerator.class);
             beanBuilder.setScope("singleton");
@@ -100,12 +96,13 @@ public class XMLGeneratorInfoParsingHandler extends CustomizationAwareParsingHan
             URLResource confRes = resourceLoader.getResource(confURI, URLResource.class);
             beanBuilder.addPropertyValue("configFile", confRes);
             beanBuilder.addPropertyValue("resourceLoader", resourceLoader);
+            beanBuilder.addPropertyReference("targetCache", TARGETCACHE_BEANNAME);
+            beanBuilder.addPropertyReference("includeCache", INCLUDECACHE_BEANNAME);
+            beanBuilder.addPropertyReference("cacheStatistic", CACHESTATISTIC_BEANNAME);
             BeanDefinition beanDefinition = beanBuilder.getBeanDefinition();
-            String beanName = beanNameGenerator.generateBeanName(beanDefinition, beanRegistry);
-            beanRegistry.registerBeanDefinition(beanName, beanDefinition);
-                       info.setConfigurationFile(uri);
-                       
-            info.setTargetGeneratorBeanName(beanName);
+            beanRegistry.registerBeanDefinition(TARGETGENERATOR_BEANNAME, beanDefinition);
+            info.setConfigurationFile(uri);           
+            info.setTargetGeneratorBeanName(TARGETGENERATOR_BEANNAME);
             
         } else if(root.getLocalName().equals("check-modtime")) {
             
@@ -116,24 +113,42 @@ public class XMLGeneratorInfoParsingHandler extends CustomizationAwareParsingHan
         } else if(root.getLocalName().equals("include-cache")) {
         	
         	String className = root.getAttribute("class").trim();
+        	Class<?> clazz = LRUCache.class;
         	if(className.length() > 0) {
-        		cacheBeanBuilder.addPropertyValue("includeCacheClass", className);
+        		try {
+					clazz = Class.forName(className);
+				} catch (ClassNotFoundException e) {
+					throw new ParserException("Can't get cache class", e);
+				}
         	}
-        	String capacity = root.getAttribute("capacity").trim();
-        	if(capacity.length() > 0) {
-        		cacheBeanBuilder.addPropertyValue("includeCacheCapacity", Integer.parseInt(capacity));
+        	includeCacheBeanBuilder = BeanDefinitionBuilder.genericBeanDefinition(clazz);
+    		includeCacheBeanBuilder.setScope("singleton");
+    		int capacity = 30;
+        	String capacityStr = root.getAttribute("capacity").trim();
+        	if(capacityStr.length() > 0) {
+        		capacity = Integer.parseInt(capacityStr);
         	}
+        	includeCacheBeanBuilder.addConstructorArgValue(capacity);
         	
         } else if(root.getLocalName().equals("target-cache")) {
         	
         	String className = root.getAttribute("class").trim();
+        	Class<?> clazz = LRUCache.class;
         	if(className.length() > 0) {
-        		cacheBeanBuilder.addPropertyValue("targetCacheClass", className);
+        		try {
+					clazz = Class.forName(className);
+				} catch (ClassNotFoundException e) {
+					throw new ParserException("Can't get cache class", e);
+				}
         	}
-        	String capacity = root.getAttribute("capacity").trim();
-        	if(capacity.length() > 0) {
-        		cacheBeanBuilder.addPropertyValue("targetCacheCapacity", Integer.parseInt(capacity));
+        	targetCacheBeanBuilder = BeanDefinitionBuilder.genericBeanDefinition(clazz);
+    		targetCacheBeanBuilder.setScope("singleton");
+    		int capacity = 30;
+    		String capacityStr = root.getAttribute("capacity").trim();
+        	if(capacityStr.length() > 0) {
+        		capacity = Integer.parseInt(capacityStr);
         	}
+    		targetCacheBeanBuilder.addConstructorArgValue(capacity);
         	
         } else if(root.getLocalName().equals("cache-statistic")) {
         	
@@ -145,6 +160,30 @@ public class XMLGeneratorInfoParsingHandler extends CustomizationAwareParsingHan
         	if(queueTicks.length() > 0) {
         		statsBeanBuilder.addPropertyValue("queueTicks", Integer.parseInt(queueTicks));
         	}
+        }
+        
+        } else {
+        	
+        	 if(root.getLocalName().equals("xml-generator")) {
+        	
+        		 if(targetCacheBeanBuilder == null) {
+        			 targetCacheBeanBuilder = BeanDefinitionBuilder.genericBeanDefinition(LRUCache.class);
+        			 targetCacheBeanBuilder.setScope("singleton");
+        			 targetCacheBeanBuilder.addConstructorArgValue(30);
+        		 }
+        		 BeanDefinitionHolder beanHolder = new BeanDefinitionHolder(targetCacheBeanBuilder.getBeanDefinition(), TARGETCACHE_BEANNAME);
+        		 context.getObjectTreeElement().addObject(beanHolder);
+	        	
+        		 if(includeCacheBeanBuilder == null) {
+        			 includeCacheBeanBuilder = BeanDefinitionBuilder.genericBeanDefinition(LRUCache.class);
+        			 includeCacheBeanBuilder.setScope("singleton");
+        			 includeCacheBeanBuilder.addConstructorArgValue(30);
+        		 }
+        		 beanHolder = new BeanDefinitionHolder(includeCacheBeanBuilder.getBeanDefinition(), INCLUDECACHE_BEANNAME);
+        		 context.getObjectTreeElement().addObject(beanHolder);
+        	
+        	 }
+        	
         }
         
     }

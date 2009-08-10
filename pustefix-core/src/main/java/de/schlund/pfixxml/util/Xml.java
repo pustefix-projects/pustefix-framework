@@ -26,7 +26,6 @@ import java.io.OutputStream;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.Writer;
-import java.net.MalformedURLException;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -44,6 +43,7 @@ import javax.xml.transform.sax.SAXSource;
 import javax.xml.transform.stream.StreamResult;
 
 import org.apache.log4j.Logger;
+import org.pustefixframework.resource.FileResource;
 import org.pustefixframework.resource.InputStreamResource;
 import org.pustefixframework.resource.OutputStreamResource;
 import org.w3c.dom.Comment;
@@ -59,8 +59,7 @@ import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.XMLReaderFactory;
 
 import de.schlund.pfixxml.SPDocument;
-import de.schlund.pfixxml.resources.FileResource;
-import de.schlund.pfixxml.resources.Resource;
+
 
 public class Xml {
     
@@ -138,25 +137,9 @@ public class Xml {
     }
     
     public static Document parse(XsltVersion xsltVersion, FileResource file) throws TransformerException {
-        SAXSource src;
-        try {
-            src = new SAXSource(createXMLReader(), new InputSource(file.toURL().toString()));
-        } catch (MalformedURLException e) {
-            throw new TransformerException("Cannot create URL for input file: " + file.toString(), e);
-        }
+        SAXSource src; 
+        src = new SAXSource(createXMLReader(), new InputSource(file.getURI().toString()));
         return parse(xsltVersion,src);
-    }
-    
-    public static Document parse(XsltVersion xsltVersion, Resource res) throws TransformerException {
-        InputSource is = new InputSource();
-        is.setSystemId(res.toURI().toString());
-        try {
-            is.setByteStream(res.getInputStream());
-            SAXSource src = new SAXSource(createXMLReader(), is);
-            return parse(xsltVersion,src);
-        } catch(IOException x) {
-            throw new TransformerException("Can't read XML resource: " + res.toURI().toString(), x);
-        }
     }
     
     public static Document parse(XsltVersion xsltVersion, InputStreamResource res) throws TransformerException {
@@ -214,11 +197,7 @@ public class Xml {
     }
     
     public static Document parseMutable(FileResource file) throws IOException, SAXException {
-        if (file.isDirectory()) {
-            // otherwise, I get obscure content-not-allowed-here exceptions
-            throw new IOException("expected file, got directory: " + file);
-        }
-        return parseMutable(new InputSource(file.toURL().toString()));
+        return parseMutable(new InputSource(file.getURI().toString()));
     }
     
     public static Document parseMutable(InputStreamResource res) throws IOException, SAXException {
@@ -226,10 +205,6 @@ public class Xml {
     	in.setByteStream(res.getInputStream());
     	in.setSystemId(res.getURI().toASCIIString());
     	return parseMutable(in);
-    }
-    
-    public static Document parseMutable(Resource res) throws IOException, SAXException {
-        return parseMutable(new InputSource(res.toURI().toString()));
     }
     
     public static Document parseMutable(File file) throws IOException, SAXException {

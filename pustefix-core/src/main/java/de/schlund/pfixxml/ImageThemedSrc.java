@@ -22,11 +22,9 @@ import java.net.URI;
 
 import org.apache.log4j.Logger;
 import org.pustefixframework.resource.Resource;
+import org.pustefixframework.xmlgenerator.targets.TargetGenerator;
+import org.pustefixframework.xmlgenerator.targets.VirtualTarget;
 
-import de.schlund.pfixxml.resources.FileResource;
-import de.schlund.pfixxml.resources.ResourceUtil;
-import de.schlund.pfixxml.targets.TargetGenerator;
-import de.schlund.pfixxml.targets.VirtualTarget;
 import de.schlund.pfixxml.util.ResourceUtils;
 import de.schlund.pfixxml.util.XsltContext;
     
@@ -75,6 +73,7 @@ public class ImageThemedSrc {
             }
             LOG.debug("  -> Register image src '" + src + "'");
             if(dynamic) {
+            	//TODO: dynamic scheme support
                 String uri =  "dynamic:/"+src+"?project="+targetGen.getName();
                 if(module != null) uri += "&module="+module;
                 Resource res = targetGen.getResourceLoader().getResource(new URI(uri));
@@ -96,7 +95,7 @@ public class ImageThemedSrc {
                 DependencyTracker.logTyped("image", res, "", "", relativeParent, parent_part_in, parent_product_in, target);
                 return src;
             } else {
-                if(module!=null) src =  "modules/"+module+"/"+src;
+            	src = "bundle://" + module + "/PUSTEFIX-INF/" + src;
                 DependencyTracker.logImage(context, src, parent_part_in, parent_product_in, targetGen, targetKey, "image");
                 return src;
             }
@@ -108,6 +107,7 @@ public class ImageThemedSrc {
             String testsrc = null;
             
             if(dynamic) {
+            	//TODO: dynamic scheme support
                 String themeParam = "&themes=";
                 for (int i = 0; i < themes.length; i++) {
                     themeParam += themes[i];
@@ -135,14 +135,11 @@ public class ImageThemedSrc {
             
             for (int i = 0; i < themes.length; i++) {
                 String currtheme = themes[i];
-                testsrc = themed_path + "/" + currtheme + "/" + themed_img;
-                
-                if(module!=null) {
-                    testsrc =  "modules/"+module+"/"+testsrc;
-                }
+                testsrc = "bundle://" + module + "/PUSTEFIX-INF/" + themed_path + "/" + currtheme + "/" + themed_img;
+                Resource res = targetGen.getResourceLoader().getResource(new URI(testsrc));
                 
                 LOG.info("  -> Trying to find image src '" + testsrc + "'");
-                if (existsImage(testsrc)) {
+                if (ResourceUtils.exists(res)) {
                     LOG.info("    -> Found src '" + testsrc + "'");
                     DependencyTracker.logImage(context, testsrc, parent_part_in, parent_product_in, targetGen, targetKey, "image");
                     return testsrc;
@@ -173,11 +170,6 @@ public class ImageThemedSrc {
 
     private static boolean isThemedSrc(String src, String path, String img) {
         return ((src == null || src.equals("")) && path != null && !path.equals("") && img != null && !img.equals(""));
-    }
-
-    private static boolean existsImage(String path) {
-        FileResource img = ResourceUtil.getFileResourceFromDocroot(path);
-        return (img.exists() && img.canRead() && img.isFile());
     }
 
 }

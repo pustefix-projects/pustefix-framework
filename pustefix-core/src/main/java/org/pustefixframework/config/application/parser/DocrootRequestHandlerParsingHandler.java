@@ -21,7 +21,9 @@ package org.pustefixframework.config.application.parser;
 import java.util.ArrayList;
 
 import org.pustefixframework.config.Constants;
+import org.pustefixframework.config.generic.ParsingUtils;
 import org.pustefixframework.http.DocrootRequestHandler;
+import org.pustefixframework.resource.ResourceLoader;
 import org.springframework.beans.factory.config.BeanDefinitionHolder;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.w3c.dom.Element;
@@ -75,6 +77,9 @@ public class DocrootRequestHandlerParsingHandler implements ParsingHandler {
         beanBuilder.addPropertyValue("base", basePath);
         beanBuilder.addPropertyValue("defaultPath", defaultPath);
         beanBuilder.addPropertyValue("passthroughPaths", paths);
+        
+        ResourceLoader resourceLoader = ParsingUtils.getSingleTopObject(ResourceLoader.class, context);
+        beanBuilder.addPropertyValue("resourceLoader", resourceLoader);
         
         context.getObjectTreeElement().addObject(new BeanDefinitionHolder(beanBuilder.getBeanDefinition(), "org.pustefixframework.http.DocrootRequestHandler"));
     }

@@ -27,12 +27,12 @@ import java.util.Properties;
 
 import org.pustefixframework.config.customization.PropertiesBasedCustomizationInfo;
 import org.pustefixframework.config.customization.RuntimeProperties;
+import org.pustefixframework.resource.InputStreamResource;
 import org.xml.sax.InputSource;
 
 import com.marsching.flexiparse.parser.ClasspathConfiguredParser;
 import com.marsching.flexiparse.parser.exception.ParserException;
 
-import de.schlund.pfixxml.resources.FileResource;
 
 /**
  * Helper class providing methods to read in Properties from customizable
@@ -49,9 +49,9 @@ public class PropertyFileReader {
         read(in, properties);
     }
     
-    public static void read(FileResource resource, Properties properties) throws ParserException, IOException {
+    public static void read(InputStreamResource resource, Properties properties) throws ParserException, IOException {
         InputSource in = new InputSource(resource.getInputStream());
-        in.setSystemId(resource.toURI().toASCIIString());
+        in.setSystemId(resource.getURI().toASCIIString());
         read(in, properties);
     }
     

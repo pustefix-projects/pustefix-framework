@@ -29,7 +29,6 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import de.schlund.pfixxml.config.GlobalConfigurator;
 import de.schlund.pfixxml.util.XPath;
 import de.schlund.pfixxml.util.Xml;
 
@@ -55,7 +54,6 @@ public class Cleanup{
 
     public static void main(String[] args) throws Exception {
         String pwd = new File(".").getCanonicalPath();
-        GlobalConfigurator.setDocroot(pwd);
         Cleanup cleanup = new Cleanup();
         cleanup.clean();
     }

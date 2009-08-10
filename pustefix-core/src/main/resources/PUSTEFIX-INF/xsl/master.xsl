@@ -71,6 +71,7 @@
   <!-- Needed for navibuttons to work. Normally not needed in the resulting stylesheet -->
   <xsl:param name="navigation"><cus:navigation/></xsl:param>
   <xsl:param name="page"/>
+  <xsl:param name="module"/>
   <xsl:param name="__navitree"/>
   <xsl:param name="navitree" select="$__navitree"/>
 
@@ -170,6 +171,7 @@
       
       <ixsl:param name="lang"><xsl:value-of select="$lang"/></ixsl:param>
       <ixsl:variable name="page"><xsl:value-of select="$page"/></ixsl:variable>
+      <ixsl:variable name="module"><xsl:value-of select="$module"/></ixsl:variable>
       <ixsl:variable name="product"><xsl:value-of select="$product"/></ixsl:variable>
       <ixsl:variable name="__root" select="/"/>
       

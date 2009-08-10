@@ -10,6 +10,11 @@
     <match>/p:pustefix-module/p:application//p:context-xml-service</match>
   </handler>
   
+  <!--  Handle xml-generator configuration -->
+  
+  <handler class="org.pustefixframework.config.module.parser.XMLGeneratorParsingHandler">
+    <match>/p:pustefix-module//p:xml-generator</match>
+  </handler>
   
   <!-- Handle direct output configuration -->
   

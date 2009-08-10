@@ -22,6 +22,8 @@ import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.List;
@@ -33,11 +35,11 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
 import org.pustefixframework.container.spring.http.UriProvidingHttpRequestHandler;
+import org.pustefixframework.resource.InputStreamResource;
+import org.pustefixframework.resource.Resource;
+import org.pustefixframework.resource.ResourceLoader;
 import org.springframework.web.context.ServletContextAware;
 
-import de.schlund.pfixxml.resources.FileResource;
-import de.schlund.pfixxml.resources.Resource;
-import de.schlund.pfixxml.resources.ResourceUtil;
 import de.schlund.pfixxml.util.MD5Utils;
 
 /**
@@ -56,6 +58,8 @@ public class DocrootRequestHandler implements UriProvidingHttpRequestHandler, Se
     private List<String> passthroughPaths;
     
     private ServletContext servletContext;
+    
+    private ResourceLoader resourceLoader;
 
     public ServletContext getServletContext() {
         return servletContext;
@@ -76,12 +80,16 @@ public class DocrootRequestHandler implements UriProvidingHttpRequestHandler, Se
     public void setBase(String path) {
         this.base = path;
     }
+    
+    public void setResourceLoader(ResourceLoader resourceLoader) {
+    	this.resourceLoader = resourceLoader;
+    }
 
     public void handleRequest(HttpServletRequest req, HttpServletResponse res)
             throws ServletException, IOException {
-
+    	
         String path = req.getPathInfo();
-      
+
         boolean warOnly = getServletContext().getRealPath("/") == null ? true : false;
 
         // Handle default (root) request
@@ -113,29 +121,44 @@ public class DocrootRequestHandler implements UriProvidingHttpRequestHandler, Se
                 path = path.substring(1);
             }
             
+            if(path.startsWith("core/img") || path.startsWith("core/script")) {
+        		URI uri;
+				try {
+					uri = new URI("pustefixcore:/"+path.substring(5));
+				} catch (URISyntaxException x) {
+					throw new ServletException("Illegal resource URI: " + path);
+				}
+				InputStreamResource resource = resourceLoader.getResource(uri, InputStreamResource.class);
+        		if(resource == null) {
+        			res.sendError(HttpServletResponse.SC_NOT_FOUND, uri.toString());
+        			return;
+        		}
+        		in = resource.getInputStream();
+        	}
+            
             if (!warOnly) {
                 
-                if (passthroughPaths != null) {
-                    for (String prefix : this.passthroughPaths) {
-                        if (path.startsWith(prefix)) {
-                            Resource resource = ResourceUtil.getFileResourceFromDocroot(path);
-                            if(resource.exists()) {
-                                contentLength = resource.length();
-                                lastModified = resource.lastModified();
-                                in = resource.getInputStream();
-                                break;
-                            }
-                        }
-                    }
-                }
-                
-                if (in == null) {
-                    FileResource baseResource = ResourceUtil.getFileResource(base);
-                    FileResource resource = ResourceUtil.getFileResource(baseResource, path);
-                    contentLength = resource.length();
-                    lastModified = resource.lastModified();
-                    in = resource.getInputStream();
-                }
+//                if (passthroughPaths != null) {
+//                    for (String prefix : this.passthroughPaths) {
+//                        if (path.startsWith(prefix)) {
+//                            Resource resource = resourceLoader.getResource(uri)ResourceUtil.getFileResourceFromDocroot(path);
+//                            if(resource.exists()) {
+//                                contentLength = resource.length();
+//                                lastModified = resource.lastModified();
+//                                in = resource.getInputStream();
+//                                break;
+//                            }
+//                        }
+//                    }
+//                }
+//                
+//                if (in == null) {
+//                    FileResource baseResource = ResourceUtil.getFileResource(base);
+//                    FileResource resource = ResourceUtil.getFileResource(baseResource, path);
+//                    contentLength = resource.length();
+//                    lastModified = resource.lastModified();
+//                    in = resource.getInputStream();
+//                }
                 
             } else {
                 

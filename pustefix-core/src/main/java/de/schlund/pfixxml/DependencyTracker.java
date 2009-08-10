@@ -23,10 +23,10 @@ import java.net.URI;
 
 import org.apache.log4j.Logger;
 import org.pustefixframework.resource.Resource;
+import org.pustefixframework.xmlgenerator.targets.DependencyType;
+import org.pustefixframework.xmlgenerator.targets.TargetGenerator;
+import org.pustefixframework.xmlgenerator.targets.VirtualTarget;
 
-import de.schlund.pfixxml.targets.DependencyType;
-import de.schlund.pfixxml.targets.TargetGenerator;
-import de.schlund.pfixxml.targets.VirtualTarget;
 import de.schlund.pfixxml.util.XsltContext;
 
 public class DependencyTracker {

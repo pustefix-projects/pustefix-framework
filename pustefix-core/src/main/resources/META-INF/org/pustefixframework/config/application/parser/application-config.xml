@@ -62,7 +62,7 @@
   </handler>
   
   <!-- Reads path to depend.xml file -->
-  <handler class="org.pustefixframework.config.application.parser.XMLGeneratorInfoParsingHandler">
+  <handler class="org.pustefixframework.config.application.parser.XMLGeneratorInfoParsingHandler" run-order="both">
     <match>/p:pustefix-application/p:xml-generator</match>
     <match>/p:pustefix-application/p:xml-generator//p:config-file</match>
     <match>/p:pustefix-application/p:xml-generator//p:check-modtime</match>

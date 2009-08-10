@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<configuration
+  xmlns="http://www.marsching.com/2008/flexiparse/configurationNS"
+  xmlns:c="http://www.pustefix-framework.org/2008/namespace/xml-generator-config">
+  
+
+  <handler class="org.pustefixframework.xmlgenerator.config.parser.XMLExtensionParsingHandler">
+    <match>/c:xml-generator-config/c:extension</match>
+  </handler>
+  
+  <handler class="org.pustefixframework.xmlgenerator.config.parser.XMLExtensionPointParsingHandler">
+    <match>/c:xml-generator-config/c:extension//c:extension-point</match>
+  </handler>
+  
+  <handler class="org.pustefixframework.xmlgenerator.config.parser.PageParsingHandler">
+    <match>/c:xml-generator-config/c:extension[@type='xml.page']//c:page</match>
+  </handler>
+  
+  <handler class="org.pustefixframework.xmlgenerator.config.parser.NamespaceDeclarationParsingHandler">
+    <match>/c:xml-generator-config/c:extension[@type='xml.namespace']/c:namespace-declaration</match>
+  </handler>
+  
+  <handler class="org.pustefixframework.xmlgenerator.config.parser.StandardPageParsingHandler">
+    <match>/c:xml-generator-config/c:extension[@type='xml.standardpage']/c:standardpage</match>
+  </handler>
+
+</configuration>

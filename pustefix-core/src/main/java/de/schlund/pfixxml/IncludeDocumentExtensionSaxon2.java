@@ -20,9 +20,9 @@ package de.schlund.pfixxml;
 
 import net.sf.saxon.expr.XPathContext;
 
+import org.pustefixframework.xmlgenerator.targets.TargetGenerator;
 import org.w3c.dom.Node;
 
-import de.schlund.pfixxml.targets.TargetGenerator;
 import de.schlund.pfixxml.util.XsltContext;
 import de.schlund.pfixxml.util.xsltimpl.XsltContextSaxon2;
 

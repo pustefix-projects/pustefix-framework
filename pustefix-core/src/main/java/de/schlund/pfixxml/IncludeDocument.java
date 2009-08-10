@@ -23,11 +23,12 @@ import java.io.IOException;
 import javax.xml.transform.TransformerException;
 
 import org.pustefixframework.resource.InputStreamResource;
+import org.pustefixframework.resource.LastModifiedInfoResource;
+import org.pustefixframework.resource.NullResource;
 import org.pustefixframework.resource.Resource;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
-import de.schlund.pfixxml.util.ResourceUtils;
 import de.schlund.pfixxml.util.Xml;
 import de.schlund.pfixxml.util.XsltVersion;
 
@@ -65,7 +66,8 @@ public class IncludeDocument {
      * to modify an immutable document will cause an exception.
      */
     public void createDocument(XsltVersion xsltVersion, Resource path, boolean mutable) throws SAXException, IOException, TransformerException {
-        modTime  = ResourceUtils.lastModified(path);
+        if(path instanceof NullResource) throw new IOException("Resource not found: "+path.getURI().toString());
+    	modTime  = ((LastModifiedInfoResource)path).lastModified();
 
         if (mutable) {
             doc = Xml.parseMutable((InputStreamResource)path);

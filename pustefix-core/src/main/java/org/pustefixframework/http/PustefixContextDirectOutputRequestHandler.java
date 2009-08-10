@@ -20,7 +20,6 @@ package org.pustefixframework.http;
 
 import java.util.Properties;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
@@ -35,7 +34,6 @@ import de.schlund.pfixcore.workflow.ContextResourceManager;
 import de.schlund.pfixcore.workflow.DirectOutputState;
 import de.schlund.pfixcore.workflow.PageRequest;
 import de.schlund.pfixxml.PfixServletRequest;
-import de.schlund.pfixxml.resources.FileResource;
 
 /**
  * The <code>DirectOutputServlet</code> is a servlet that hijacks the {@link de.schlund.pfixcore.workflow.Context} of a
@@ -195,10 +193,6 @@ public class PustefixContextDirectOutputRequestHandler extends AbstractPustefixR
     @Override
     protected AbstractPustefixRequestHandlerConfig getServletManagerConfig() {
         return this.config;
-    }
-
-    protected void reloadServletConfig(FileResource configFile, Properties globalProperties) throws ServletException {
-        // Do nothing, configuration is injected
     }
     
     public void setContext(ContextImpl context) {

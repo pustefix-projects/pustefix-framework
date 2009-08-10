@@ -20,28 +20,19 @@ package de.schlund.pfixcore.util;
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.Iterator;
-import java.util.TreeSet;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 
-import org.apache.log4j.xml.DOMConfigurator;
 import org.pustefixframework.resource.Resource;
+import org.pustefixframework.xmlgenerator.targets.AuxDependencyInclude;
+import org.pustefixframework.xmlgenerator.targets.TargetGenerator;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import de.schlund.pfixxml.IncludeDocumentFactory;
-import de.schlund.pfixxml.config.GlobalConfigurator;
-import de.schlund.pfixxml.targets.AuxDependency;
-import de.schlund.pfixxml.targets.AuxDependencyInclude;
-import de.schlund.pfixxml.targets.DependencyType;
-import de.schlund.pfixxml.targets.TargetDependencyRelation;
-import de.schlund.pfixxml.targets.TargetGenerator;
 import de.schlund.pfixxml.util.XPath;
-import de.schlund.pfixxml.util.Xml;
 
 
 /**
@@ -70,7 +61,7 @@ public class DumpText implements IDumpText {
         }
         String    docroot = args[0];
         String    depend  = args[1];
-        GlobalConfigurator.setDocroot(docroot);
+       
         IDumpText trans;
         if (args.length == 3) {
             Class<?> clazz = Class.forName(args[2]);
@@ -163,8 +154,9 @@ public class DumpText implements IDumpText {
         String theme         = aux.getTheme();
         Document doc         = root.getOwnerDocument();
 
-        IncludeDocumentFactory incfac = IncludeDocumentFactory.getInstance();
-        Document incdoc  = incfac.getIncludeDocument(null, path, true).getDocument();
+        TargetGenerator targetGen = new TargetGenerator();
+        //TODO: setup TargetGenerator
+        Document incdoc  = targetGen.getIncludeDocument(null, path, true).getDocument();
         Node     extpart = XPath.selectNode(incdoc, "/include_parts/part[@name = '" + part + "']");
         
         if (extpart != null) {

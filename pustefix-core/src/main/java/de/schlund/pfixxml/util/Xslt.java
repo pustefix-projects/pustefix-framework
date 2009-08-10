@@ -19,6 +19,7 @@ package de.schlund.pfixxml.util;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.StringWriter;
 import java.net.MalformedURLException;
@@ -46,16 +47,15 @@ import javax.xml.transform.stream.StreamSource;
 
 import org.apache.log4j.Logger;
 import org.pustefixframework.resource.InputStreamResource;
+import org.pustefixframework.resource.Resource;
+import org.pustefixframework.resource.ResourceLoader;
+import org.pustefixframework.xmlgenerator.targets.LeafTarget;
+import org.pustefixframework.xmlgenerator.targets.Target;
+import org.pustefixframework.xmlgenerator.targets.TargetGenerationException;
+import org.pustefixframework.xmlgenerator.targets.TargetImpl;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 
-import de.schlund.pfixxml.resources.FileResource;
-import de.schlund.pfixxml.resources.Resource;
-import de.schlund.pfixxml.resources.ResourceUtil;
-import de.schlund.pfixxml.targets.LeafTarget;
-import de.schlund.pfixxml.targets.Target;
-import de.schlund.pfixxml.targets.TargetGenerationException;
-import de.schlund.pfixxml.targets.TargetImpl;
 
 public class Xslt {
     
@@ -87,19 +87,13 @@ public class Xslt {
     public static Templates loadTemplates(Path path) throws TransformerConfigurationException {
         return loadTemplates(XsltVersion.XSLT1, new InputSource("file://" + path.resolve().getAbsolutePath()), null);
     }
-
-    public static Templates loadTemplates(XsltVersion xsltVersion, FileResource path) throws TransformerConfigurationException {
-        return loadTemplates(xsltVersion, path, null);
+    
+    public static Templates loadTemplates(XsltVersion xsltVersion, InputStreamResource path) throws TransformerConfigurationException {
+    	return loadTemplates(xsltVersion, path, null);
     }
-
-    public static Templates loadTemplates(XsltVersion xsltVersion, FileResource path, TargetImpl parent) throws TransformerConfigurationException {
-        InputSource input;
-        try {
-            input = new InputSource(path.toURL().toString());
-        } catch (MalformedURLException e) {
-            throw new TransformerConfigurationException("\"" + path.toString() + "\" does not respresent a valid file", e);
-        }
-        return loadTemplates(xsltVersion, input, parent);
+    
+    public static Templates loadTemplates(XsltVersion xsltVersion, InputStream in) throws TransformerConfigurationException {
+    	return loadTemplates(xsltVersion, new InputSource(in), null);
     }
     
     public static Templates loadTemplates(XsltVersion xsltVersion, InputStreamResource res, TargetImpl parent) throws TransformerConfigurationException {
@@ -306,6 +300,7 @@ public class Xslt {
             if (parent != null) {
                 Target target = parent.getTargetGenerator().getTarget(path);
                 if (target == null) {
+                	if(path.equals("")) throw new IllegalArgumentException("Empty path ["+ href + "| " + base +"]");
                     target = parent.getTargetGenerator().createXMLLeafTarget(path);
                 }
                 
@@ -337,12 +332,14 @@ public class Xslt {
                     return source;
                 }
             }
-            resource = ResourceUtil.getResource(path);
-            if(!resource.exists()) {
+            
+            ResourceLoader resourceLoader = parent.getTargetGenerator().getResourceLoader();
+            resource = resourceLoader.getResource(uri);
+            if(resource == null) {
                 throw new TransformerException("Resource can't be found: " + uri.toString());
             }
             try {
-            	Source source = new StreamSource(resource.getInputStream(), path);
+            	Source source = new StreamSource(((InputStreamResource)resource).getInputStream(), path);
             	return source;
             } catch(IOException x) {
             	throw new TransformerException("Can't read resource: " + path);

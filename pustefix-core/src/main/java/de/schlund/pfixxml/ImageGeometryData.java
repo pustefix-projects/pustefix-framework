@@ -21,7 +21,9 @@ package de.schlund.pfixxml;
 import java.io.IOException;
 import java.io.InputStream;
 
-import de.schlund.pfixxml.resources.FileResource;
+import org.pustefixframework.resource.InputStreamResource;
+import org.pustefixframework.resource.LastModifiedInfoResource;
+
 
 
 /**
@@ -42,13 +44,15 @@ public class ImageGeometryData {
     private long    mtime;
     private String  type;
     
-    public ImageGeometryData(FileResource img) throws IOException {
+    public ImageGeometryData(InputStreamResource img) throws IOException {
         ImageInfo       info       = new ImageInfo();
         InputStream     img_stream = img.getInputStream();
         info.setInput(img_stream);
         if (info.check()) {
             ok     = true;
-            mtime  = img.lastModified();
+            if(img instanceof LastModifiedInfoResource) {
+            	mtime  = ((LastModifiedInfoResource)img).lastModified();
+            }
             type   = info.getFormatName();
             width  = info.getWidth();
             height = info.getHeight(); 

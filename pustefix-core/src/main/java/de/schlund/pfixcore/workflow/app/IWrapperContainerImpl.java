@@ -44,8 +44,6 @@ import de.schlund.pfixxml.PfixServletRequest;
 import de.schlund.pfixxml.RequestParam;
 import de.schlund.pfixxml.ResultDocument;
 import de.schlund.pfixxml.XMLException;
-import de.schlund.pfixxml.resources.FileResource;
-import de.schlund.pfixxml.resources.ResourceUtil;
 
 /**
  * Default implementation of the <code>IWrapperContainer</code> interface.
@@ -69,7 +67,6 @@ public class IWrapperContainerImpl implements IWrapperContainer {
     private static final String       SUBMIT_WRAPPER   = "SUBWRP";
     private static final String       RETRIEVE_WRAPPER = "RETWRP";
     private static final String       SELECT_WRAPPER   = "SELWRP";
-    private static final String       WRAPPER_LOGDIR   = "interfacelogging";
 
     /**
      * This method must be called right after an instance of this class is
@@ -308,14 +305,6 @@ public class IWrapperContainerImpl implements IWrapperContainer {
 
                 allwrappers.add(wrapper);
 
-                String logdir = context.getProperties().getProperty(WRAPPER_LOGDIR);
-                boolean dolog = iConfig.getLogging();
-                if (dolog && logdir != null && !logdir.equals("")) {
-                    FileResource dir = ResourceUtil.getFileResourceFromDocroot(logdir);
-                    if (dir.isDirectory() && dir.canWrite()) {
-                        wrapper.initLogging(dir, context.getCurrentPageRequest().getName(), context.getVisitId());
-                    }
-                }
             }
 
             ProcessActionStateConfig action = null;

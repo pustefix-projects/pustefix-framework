@@ -35,9 +35,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import de.schlund.pfixxml.config.GlobalConfigurator;
-import de.schlund.pfixxml.resources.FileResource;
-import de.schlund.pfixxml.resources.ResourceUtil;
+import de.schlund.pfixxml.util.FileUtils;
 import de.schlund.pfixxml.util.Xml;
 
 /**
@@ -53,13 +51,14 @@ public class DelLang {
     private Pattern pattern = Pattern.compile("^\\s*$");
     int onelangcount = 0;
     int multilangcount = 0;
-            
+    private File docroot;
+    
     static {
         dbfac.setNamespaceAware(true);
     }
     
     public DelLang(String docroot) {
-        // this.docroot = docroot;
+        this.docroot = new File(docroot);
     }
 
     public static void main(String[] args) throws Exception {
@@ -69,7 +68,6 @@ public class DelLang {
             System.err.println("Usage: java DelLang DOCROOT includefilelist");
             System.exit(0);
         }
-        GlobalConfigurator.setDocroot(docroot);
         DelLang dellang   = new DelLang(docroot);
         Logging.configure("generator_quiet.xml");
         dellang.transform(files);
@@ -78,21 +76,22 @@ public class DelLang {
     public void transform(String files) throws Exception {
 
         BufferedReader input  = new BufferedReader(new FileReader(files));
-        Set<FileResource>      inames = new TreeSet<FileResource>();
+        Set<File>      inames = new TreeSet<File>();
         String         line;
         
         while ((line = input.readLine()) != null) {
-            inames.add(ResourceUtil.getFileResourceFromDocroot(line.substring(2)));
+        	inames.add(new File(docroot, line.substring(2)));
         }
         input.close();
         
 
         Document doc;
         
-        for (Iterator<FileResource> i = inames.iterator(); i.hasNext();) {
-            FileResource path = i.next();
+        for (Iterator<File> i = inames.iterator(); i.hasNext();) {
+            File path = i.next();
             
             System.out.print(path + ":");
+            
             doc = Xml.parseMutable(path);
             handleDoc(doc);
             
@@ -100,7 +99,7 @@ public class DelLang {
             out.getParentFile().mkdirs();
             Xml.serialize(doc, out, false, true);
 
-            ResourceUtil.copy(ResourceUtil.getFileResource(out.toURI()), path);
+            FileUtils.copyFile(out, path);
             out.delete();
             System.out.println("");
         }

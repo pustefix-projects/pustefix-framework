@@ -30,7 +30,6 @@ import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.RuntimeBeanReference;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 
-import de.schlund.pfixxml.resources.FileResource;
 
 /**
  * Stores configuration for a Pustefix servlet
@@ -44,8 +43,6 @@ public class DirectOutputRequestHandlerConfigImpl extends AbstractPustefixReques
     private String authConstraintRef;
     
     private Map<String, ? extends DirectOutputPageRequestConfig> pageRequests;
-    
-    private Set<FileResource> fileDependencies = new HashSet<FileResource>();
 
     private long loadTime = 0;
 
@@ -81,16 +78,6 @@ public class DirectOutputRequestHandlerConfigImpl extends AbstractPustefixReques
 
     public void setPageRequests(Map<String, ? extends DirectOutputPageRequestConfig> pageRequests) {
         this.pageRequests = pageRequests;
-    }
-
-    @Override
-    public boolean needsReload() {
-        for (FileResource file : fileDependencies) {
-            if (file.lastModified() > loadTime) {
-                return true;
-            }
-        }
-        return false;
     }
 
     public BeanDefinition createBeanDefinition(RuntimeBeanReference directOutputPageMap) {

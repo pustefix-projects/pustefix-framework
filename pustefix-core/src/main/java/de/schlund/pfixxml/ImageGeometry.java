@@ -19,14 +19,18 @@
 package de.schlund.pfixxml;
 
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.StringTokenizer;
 
 import org.apache.log4j.Logger;
+import org.pustefixframework.resource.InputStreamResource;
+import org.pustefixframework.resource.Resource;
+import org.pustefixframework.resource.ResourceLoader;
 
-import de.schlund.pfixxml.resources.FileResource;
-import de.schlund.pfixxml.resources.ResourceUtil;
+import de.schlund.pfixxml.util.ResourceUtils;
 
 
 /**
@@ -43,6 +47,9 @@ import de.schlund.pfixxml.resources.ResourceUtil;
 public class ImageGeometry {
     private static Map<String, ImageGeometryData> imageinfo = new HashMap<String, ImageGeometryData>();
     private final static Logger                         LOG       = Logger.getLogger(ImageGeometry.class); 
+    
+    //TODO: pass as parameter instead static, inject resource loader
+    private static ResourceLoader resourceLoader;
     
     
     public static int getHeight(String path) {
@@ -152,20 +159,26 @@ public class ImageGeometry {
 
     private static ImageGeometryData getImageGeometryData(String path) {
         synchronized (imageinfo) {
-            FileResource img = ResourceUtil.getFileResourceFromDocroot(path);
-            if (img.exists() && img.canRead() && img.isFile()) {
-                long              mtime = img.lastModified();
+        	URI uri;
+			try {
+				uri = new URI(path);
+			} catch (URISyntaxException x) {
+				throw new IllegalArgumentException("Illegal image URI: " + path, x);
+			}
+            Resource img = resourceLoader.getResource(uri);
+            if (ResourceUtils.exists(img)) {
+                long              mtime = ResourceUtils.lastModified(img);
                 ImageGeometryData tmp = imageinfo.get(path);
                 if (tmp == null || mtime > tmp.lastModified()) {
                     // LOG.debug("Cache miss or outdated for: " + path);
                     try {
-                        tmp = new ImageGeometryData(img);
+                        tmp = new ImageGeometryData((InputStreamResource)img);
                     } catch (IOException e) {
-                        LOG.error("*** Couldn't get geometry for " + path, e);
+                        LOG.error("*** Couldn't get geometry for " + uri.toString(), e);
                         return null;
                     }
                     if (!tmp.isOK()) {
-                        LOG.error("*** Image data wasn't recognized for " + path);
+                        LOG.error("*** Image data wasn't recognized for " + uri.toString());
                         return null;
                     }
                     imageinfo.put(path, tmp);

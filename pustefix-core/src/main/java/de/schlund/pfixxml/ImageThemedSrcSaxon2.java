@@ -18,8 +18,9 @@
 
 package de.schlund.pfixxml;
 
+import org.pustefixframework.xmlgenerator.targets.TargetGenerator;
+
 import net.sf.saxon.expr.XPathContext;
-import de.schlund.pfixxml.targets.TargetGenerator;
 import de.schlund.pfixxml.util.XsltContext;
 import de.schlund.pfixxml.util.xsltimpl.XsltContextSaxon2;
 

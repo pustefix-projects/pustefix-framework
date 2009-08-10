@@ -19,7 +19,6 @@ package de.schlund.pfixcore.generator;
 
 import java.io.IOException;
 
-import de.schlund.pfixxml.resources.FileResource;
 import de.schlund.util.statuscodes.StatusCode;
 
 
@@ -46,7 +45,6 @@ import de.schlund.util.statuscodes.StatusCode;
      
 public interface IWrapper extends Comparable<IWrapper> {
     void    init(String prefix) throws Exception;
-    void    initLogging(FileResource logdir, String pagename, String visitid);
     void    tryParamLogging() throws IOException;
     void    tryErrorLogging() throws IOException;
     void    load(RequestData req) throws Exception; 

@@ -23,19 +23,18 @@ import java.util.TreeSet;
 
 import org.pustefixframework.resource.InputStreamResource;
 import org.pustefixframework.resource.Resource;
+import org.pustefixframework.xmlgenerator.targets.AuxDependency;
+import org.pustefixframework.xmlgenerator.targets.AuxDependencyFactory;
+import org.pustefixframework.xmlgenerator.targets.AuxDependencyFile;
+import org.pustefixframework.xmlgenerator.targets.AuxDependencyImage;
+import org.pustefixframework.xmlgenerator.targets.AuxDependencyInclude;
+import org.pustefixframework.xmlgenerator.targets.DependencyType;
+import org.pustefixframework.xmlgenerator.targets.TargetGenerator;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import de.schlund.pfixxml.targets.AuxDependency;
-import de.schlund.pfixxml.targets.AuxDependencyFactory;
-import de.schlund.pfixxml.targets.AuxDependencyFile;
-import de.schlund.pfixxml.targets.AuxDependencyImage;
-import de.schlund.pfixxml.targets.AuxDependencyInclude;
-import de.schlund.pfixxml.targets.DependencyType;
-import de.schlund.pfixxml.targets.TargetDependencyRelation;
-import de.schlund.pfixxml.targets.TargetGenerator;
 import de.schlund.pfixxml.util.Xml;
 
 /**
@@ -98,7 +97,7 @@ public class CheckIncludes {
 //        }
 //    }
 
-    public void doCheck() throws Exception {
+    public void doCheck(AuxDependencyFactory auxDependencyFactory) throws Exception {
         Document doc         = Xml.createDocument();
 
         Element  check_root  = doc.createElement("checkresult");
@@ -113,10 +112,10 @@ public class CheckIncludes {
         check_root.appendChild(images_root);
         check_root.appendChild(prj_root);
         
-        checkForUnusedIncludes(doc, files_root);
-        checkForUnusedImages(doc, images_root);
+        checkForUnusedIncludes(auxDependencyFactory, doc, files_root);
+        checkForUnusedImages(auxDependencyFactory, doc, images_root);
 
-        checkForUnavailableIncludes(doc, prj_root);
+        checkForUnavailableIncludes(auxDependencyFactory, doc, prj_root);
         
         Xml.serialize(doc, outfile, true, true);
     }
@@ -137,11 +136,11 @@ public class CheckIncludes {
 //
 //    }
 
-    private void checkForUnavailableIncludes(Document result, Element res_root) throws Exception {
+    private void checkForUnavailableIncludes(AuxDependencyFactory auxDependencyFactory, Document result, Element res_root) throws Exception {
         for (Iterator<String> i = generators.keySet().iterator(); i.hasNext();) {
             String depend = i.next();
             TargetGenerator gen = generators.get(depend);
-            TreeSet<AuxDependency> deps = TargetDependencyRelation.getInstance().getProjectDependencies(gen);
+            TreeSet<AuxDependency> deps = auxDependencyFactory.getTargetDependencyRelation().getProjectDependencies(gen);
             if (deps == null) {
                 return;
             }
@@ -179,7 +178,7 @@ public class CheckIncludes {
         }
     }
 
-    private void checkForUnusedImages(Document result, Element res_root) throws Exception {
+    private void checkForUnusedImages(AuxDependencyFactory auxDependencyFactory, Document result, Element res_root) throws Exception {
         for (Iterator<Resource> i = imagefilenames.iterator(); i.hasNext();) {
             Resource img = i.next();
 
@@ -188,7 +187,7 @@ public class CheckIncludes {
             
             res_root.appendChild(res_image);
             
-            AuxDependency aux =  AuxDependencyFactory.getInstance().getAuxDependencyImage(img);
+            AuxDependency aux =  auxDependencyFactory.getAuxDependencyImage(img);
             if (!includes.contains(aux)) {
                 res_image.setAttribute("UNUSED", "true");
                 continue;
@@ -198,7 +197,7 @@ public class CheckIncludes {
         }
     }
     
-    private void checkForUnusedIncludes(Document result, Element res_root) throws Exception {
+    private void checkForUnusedIncludes(AuxDependencyFactory auxDependencyFactory, Document result, Element res_root) throws Exception {
         for (Iterator<Resource> i = includefilenames.iterator(); i.hasNext();) {
             Resource path = i.next();
             Document doc;
@@ -259,8 +258,7 @@ public class CheckIncludes {
                             res_part.appendChild(res_theme);
                             res_theme.setAttribute("name", theme);
                             
-                            AuxDependency aux =
-                                AuxDependencyFactory.getInstance().getAuxDependencyInclude(path, part, theme);
+                            AuxDependency aux = auxDependencyFactory.getAuxDependencyInclude(path, part, theme);
                             if (!includes.contains(aux)) {
                                 res_theme.setAttribute("UNUSED", "true");
                                 continue;
