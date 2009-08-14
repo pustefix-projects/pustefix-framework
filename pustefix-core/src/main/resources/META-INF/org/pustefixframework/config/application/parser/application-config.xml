@@ -14,8 +14,12 @@
   </handler>
   
   <!-- Creates request handler for static resources -->
-  <handler class="org.pustefixframework.config.application.parser.DocrootRequestHandlerParsingHandler">
+  <handler class="org.pustefixframework.config.application.parser.DocrootRequestHandlerParsingHandler" run-order="end">
     <match>/p:pustefix-application/p:application</match>
+  </handler>
+  
+  <handler class="org.pustefixframework.config.application.parser.StaticResourceExtensionPointParsingHandler">
+    <match>/p:pustefix-application/p:application/p:static/p:extension-point[@type='application.static']</match>
   </handler>
   
   <!-- Adds the SessionCleaner bean -->

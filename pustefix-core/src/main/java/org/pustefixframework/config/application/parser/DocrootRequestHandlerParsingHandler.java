@@ -19,8 +19,10 @@
 package org.pustefixframework.config.application.parser;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 
 import org.pustefixframework.config.Constants;
+import org.pustefixframework.config.application.parser.internal.StaticResourceExtensionPointImpl;
 import org.pustefixframework.config.generic.ParsingUtils;
 import org.pustefixframework.http.DocrootRequestHandler;
 import org.pustefixframework.resource.ResourceLoader;
@@ -33,6 +35,11 @@ import com.marsching.flexiparse.parser.HandlerContext;
 import com.marsching.flexiparse.parser.ParsingHandler;
 import com.marsching.flexiparse.parser.exception.ParserException;
 
+/**
+ * Handles configuration and creation of static resource request handler.  
+ * 
+ * @author Sebastian Marsching <sebastian.marsching@1und1.de>
+ */
 public class DocrootRequestHandlerParsingHandler implements ParsingHandler {
     
     public void handleNode(HandlerContext context) throws ParserException {
@@ -46,17 +53,15 @@ public class DocrootRequestHandlerParsingHandler implements ParsingHandler {
         String defaultPath = defaultPathElement.getTextContent();
 
         NodeList basePathList = applicationElement.getElementsByTagNameNS(Constants.NS_APPLICATION, "docroot-path");
-        if (basePathList.getLength() != 1) {
+        if (basePathList.getLength() > 1) {
             throw new ParserException("Found " + basePathList.getLength() + " <docroot-path> elements but expected one.");
         }
-        Element basePathElement = (Element)basePathList.item(0);
-        String basePath = basePathElement.getTextContent();
+        Element basePathElement = basePathList.getLength() > 0 ? (Element)basePathList.item(0) : null;
+        String basePath = basePathElement != null ? basePathElement.getTextContent() : null;
         
         ArrayList<String> paths = new ArrayList<String>();
         
         //Add pre-defined static paths
-        paths.add("core/img");
-        paths.add("core/script");
         paths.add("wsscript");
         
         NodeList staticList = applicationElement.getElementsByTagNameNS(Constants.NS_APPLICATION, "static");
@@ -72,11 +77,15 @@ public class DocrootRequestHandlerParsingHandler implements ParsingHandler {
             }
         }
         
+        LinkedList<StaticResourceExtensionPointImpl> extensionPoints = new LinkedList<StaticResourceExtensionPointImpl>();
+        extensionPoints.addAll(context.getObjectTreeElement().getObjectsOfTypeFromSubTree(StaticResourceExtensionPointImpl.class));
+        
         BeanDefinitionBuilder beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(DocrootRequestHandler.class);
         beanBuilder.setScope("singleton");
         beanBuilder.addPropertyValue("base", basePath);
         beanBuilder.addPropertyValue("defaultPath", defaultPath);
-        beanBuilder.addPropertyValue("passthroughPaths", paths);
+        beanBuilder.addPropertyValue("applicationPathPrefixes", paths);
+        beanBuilder.addPropertyValue("staticResourceExtensionPoints", extensionPoints);
         
         ResourceLoader resourceLoader = ParsingUtils.getSingleTopObject(ResourceLoader.class, context);
         beanBuilder.addPropertyValue("resourceLoader", resourceLoader);

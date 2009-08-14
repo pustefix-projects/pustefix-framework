@@ -1,5 +1,10 @@
 2009-08-10  Sebastian Marsching <sebastian.marsching@1und1.de>
 
+	Added extension points for static resource and rewrote 
+	DocrootRequestHandler to use new resource system.
+
+2009-08-10  Sebastian Marsching <sebastian.marsching@1und1.de>
+
 	Removed config-include support.
 
 	Added extension point support for direct output pages
