@@ -2,7 +2,6 @@
 <configuration
   xmlns="http://www.marsching.com/2008/flexiparse/configurationNS"
   xmlns:c="http://www.pustefix-framework.org/2008/namespace/xml-generator-config">
-  
 
   <handler class="org.pustefixframework.xmlgenerator.config.parser.XMLExtensionParsingHandler">
     <match>/c:xml-generator-config/c:extension</match>
@@ -22,6 +21,26 @@
   
   <handler class="org.pustefixframework.xmlgenerator.config.parser.StandardPageParsingHandler">
     <match>/c:xml-generator-config/c:extension[@type='xml.standardpage']/c:standardpage</match>
+  </handler>
+
+  <handler class="org.pustefixframework.xmlgenerator.config.parser.StandardMasterParsingHandler">
+    <match>/c:xml-generator-config/c:extension[@type='xml.standardmaster']/c:standardmaster</match>
+  </handler>
+  
+  <handler class="org.pustefixframework.xmlgenerator.config.parser.StandardMetatagsParsingHandler">
+    <match>/c:xml-generator-config/c:extension[@type='xml.standardmetatags']/c:standardmetatags</match>
+  </handler>
+  
+  <handler class="org.pustefixframework.xmlgenerator.config.parser.TargetDefParsingHandler">
+    <match>/c:xml-generator-config/c:extension[@type='xml.target']/c:target</match>
+  </handler>
+  
+  <handler class="org.pustefixframework.xmlgenerator.config.parser.IncludeParsingHandler">
+    <match>/c:xml-generator-config/c:extension//c:include</match>
+  </handler>
+  
+    <handler class="org.pustefixframework.xmlgenerator.config.parser.ParameterParsingHandler">
+    <match>/c:xml-generator-config/c:extension//c:param</match>
   </handler>
 
 </configuration>

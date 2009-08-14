@@ -528,4 +528,54 @@
     <func:result select="include:getRelativePathFromSystemId()"/>
   </func:function>
 
+  <xsl:template match="pfx:extension-point">
+    <xsl:variable name="extensions" select="include:getExtensions($__target_gen, $__target_key, @id, @version)"/>
+    <xsl:choose>
+      <xsl:when test="$extensions/extension-point/missing-extension">
+        <xsl:variable name="msg">Missing extension for extension point '<xsl:value-of select="@id"/>'</xsl:variable>
+        <xsl:if test="$prohibitEdit = 'no'">
+          <img src="{{$__contextpath}}/core/img/warning.gif">
+            <xsl:if test="$__target_key = '__NONE__'">
+              <xsl:attribute name="src"><xsl:value-of select="$__contextpath"/>/core/img/warning.gif</xsl:attribute>
+            </xsl:if>
+            <xsl:attribute name="alt"><xsl:value-of select="$msg"/></xsl:attribute>
+            <xsl:attribute name="title"><xsl:value-of select="$msg"/></xsl:attribute>
+          </img>
+        </xsl:if>
+        <xsl:message>WARNING!!! <xsl:value-of select="$msg"/></xsl:message>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:for-each select="$extensions/extension-point/extension">
+          <xsl:choose>
+            <xsl:when test="theme">
+              <xsl:apply-templates select="theme/node()">
+                <xsl:with-param name="__env" select="."/>
+              </xsl:apply-templates>
+            </xsl:when>
+            <xsl:when test="missing-theme">
+              <xsl:variable name="msg">Missing theme within extension '<xsl:value-of select="@uri"/>@<xsl:value-of select="@part"/>' of extension point '<xsl:value-of select="../@id"/>'</xsl:variable>
+              <xsl:if test="$prohibitEdit = 'no'">
+                <img src="{{$__contextpath}}/core/img/warning.gif">
+                  <xsl:if test="$__target_key = '__NONE__'">
+                    <xsl:attribute name="src"><xsl:value-of select="$__contextpath"/>/core/img/warning.gif</xsl:attribute>
+                  </xsl:if>
+                  <xsl:attribute name="alt"><xsl:value-of select="$msg"/></xsl:attribute>
+                  <xsl:attribute name="title"><xsl:value-of select="$msg"/></xsl:attribute>
+                </img>
+              </xsl:if>
+              <xsl:message>WARNING!!! <xsl:value-of select="$msg"/></xsl:message>
+            </xsl:when>
+            <xsl:otherwise>
+               <xsl:message>
+                 WARNING!!! Retrieved unexpected XML for extension point '<xsl:value-of select="@id"/>':
+                 <xsl:copy-of select="$extensions"/>
+               </xsl:message>
+            </xsl:otherwise>
+          </xsl:choose>
+        </xsl:for-each>
+      </xsl:otherwise>
+    </xsl:choose>
+    
+  </xsl:template>
+
 </xsl:stylesheet>

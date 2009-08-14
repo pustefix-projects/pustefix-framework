@@ -55,5 +55,11 @@ public class IncludeDocumentExtensionSaxon1 {
     public static String getResolvedURI() {
         return IncludeDocumentExtension.getResolvedURI();
     }
+    
+    public static Object getExtensions(Context context, TargetGenerator targetGen,
+    		String targetKey, String extensionPointId, String extensionPointVersion) throws Exception {
+    	XsltContext xsltContext=new XsltContextSaxon1(context);
+    	return IncludeDocumentExtension.getExtensions(xsltContext, targetGen, targetKey, extensionPointId, extensionPointVersion);
+    }
 
 }

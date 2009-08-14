@@ -75,6 +75,11 @@
     <match>/p:pustefix-application/p:xml-generator//p:cache-statistic</match>
   </handler>
   
+  <!--  Handle view extensions and extension points -->
+  <handler class="org.pustefixframework.xmlgenerator.view.ViewExtensionsParsingHandler" run-order="end">
+    <match>/p:pustefix-application/p:xml-generator</match>
+  </handler>
+  
   <!-- Creates context xml request handler -->
   <handler class="org.pustefixframework.config.application.parser.PustefixContextXMLRequestHandlerParsingHandler">
     <match>/p:pustefix-application/p:application//p:context-xml-service</match>

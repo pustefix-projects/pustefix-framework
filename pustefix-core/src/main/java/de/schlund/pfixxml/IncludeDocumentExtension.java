@@ -30,6 +30,7 @@ import org.pustefixframework.resource.NullResource;
 import org.pustefixframework.resource.Resource;
 import org.pustefixframework.xmlgenerator.targets.TargetGenerator;
 import org.pustefixframework.xmlgenerator.targets.VirtualTarget;
+import org.pustefixframework.xmlgenerator.view.ViewExtensionResolver;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -126,11 +127,15 @@ public final class IncludeDocumentExtension {
             }
             uriStr += "&project=" + targetGen.getName();
         } else {
-            if(module != null) {
-                uriStr = "bundle://" + module + "/PUSTEFIX-INF/" + path_str;
-            } else if("bundle".equals(parentURI.getScheme())) {
-                uriStr = "bundle://" + parentURI.getAuthority() + "/PUSTEFIX-INF/" + path_str;
-            } else throw new IllegalArgumentException("Don't know which bundle should be referenced.");
+        	if(!uriStr.matches("^\\w+:.*")) {
+        		if(module != null) {
+        			uriStr = "bundle://" + module + "/PUSTEFIX-INF/" + path_str;
+        		} else if("bundle".equals(parentURI.getScheme())) {
+        			uriStr = "bundle://" + parentURI.getAuthority() + "/PUSTEFIX-INF/" + path_str;
+        		} else {
+        			throw new IllegalArgumentException("Don't know which bundle should be referenced: " + uriStr);
+        		}
+            }
         }
         
         try {
@@ -328,4 +333,19 @@ public final class IncludeDocumentExtension {
     public static boolean isIncludeDocument(XsltContext context) {
         return context.getDocumentElementName().equals("include_parts");
     }
+    
+    
+    public static final Node getExtensions(XsltContext context, TargetGenerator targetGen,
+    		String targetKey, String extensionPointId, String extensionPointVersion) throws Exception {
+    	try {
+    		ViewExtensionResolver resolver = targetGen.getViewExtensionResolver();
+    		Node node = resolver.getExtensionNodes(context, targetKey, extensionPointId, extensionPointVersion);
+    		return node;
+    	} catch (Exception x) {
+    		ExtensionFunctionUtils.setExtensionFunctionError(x);
+    		throw x;
+    	}
+    }
+    
+    
 }// end of class IncludeDocumentExtension

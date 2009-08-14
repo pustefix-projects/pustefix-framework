@@ -66,6 +66,8 @@ import org.pustefixframework.xmlgenerator.config.model.StandardPage;
 import org.pustefixframework.xmlgenerator.config.model.TargetDef;
 import org.pustefixframework.xmlgenerator.config.model.ThemeConfig;
 import org.pustefixframework.xmlgenerator.config.model.VariantConfig;
+import org.pustefixframework.xmlgenerator.view.ViewExtensionResolver;
+import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.osgi.context.BundleContextAware;
 import org.w3c.dom.Document;
@@ -90,7 +92,7 @@ import de.schlund.pfixxml.util.XsltVersion;
  *
  */
 
-public class TargetGenerator implements ModelChangeListener, InitializingBean, BundleContextAware {
+public class TargetGenerator implements ModelChangeListener, InitializingBean, BundleContextAware, DisposableBean {
 
     public static final String XSLPARAM_TG = "__target_gen";
     public static final String XSLPARAM_TKEY = "__target_key";
@@ -143,6 +145,8 @@ public class TargetGenerator implements ModelChangeListener, InitializingBean, B
     
     private AuxDependencyFactory auxDependencyFactory;
     private TargetDependencyRelation targetDependencyRelation;
+    
+    private ViewExtensionResolver viewExtensionResolver;
     
     //--
 
@@ -238,6 +242,9 @@ public class TargetGenerator implements ModelChangeListener, InitializingBean, B
     	return resourceLoader;
     }
     
+    public ViewExtensionResolver getViewExtensionResolver() {
+    	return viewExtensionResolver;
+    }
     
 
     //-- targets
@@ -328,7 +335,7 @@ public class TargetGenerator implements ModelChangeListener, InitializingBean, B
         targetDependencyRelation = new TargetDependencyRelation();
         auxDependencyFactory = new AuxDependencyFactory(targetDependencyRelation);
         sharedLeaves = new TreeMap<String, SharedLeaf>();
-        
+        viewExtensionResolver = new ViewExtensionResolver(this, bundleContext);
         
         try {
         	Parser configParser = new OSGiAwareParser(bundleContext, "META-INF/org/pustefixframework/xmlgenerator/config/parser/xml-generator-config.xml");
@@ -962,7 +969,7 @@ public class TargetGenerator implements ModelChangeListener, InitializingBean, B
 		// mutable vs. immutable document creation
 		if (xsltVersion == null && !mutable) throw new IllegalArgumentException("XsltVersion has to be specified to create a immutable document.");
 		IncludeDocument includeDocument = null;
-		String key = mutable ? path.getURI().toString() + "_mutable" : path.getURI().toString() + "_imutable" + "_" + xsltVersion;
+		String key = mutable ? path.getOriginalURI().toString() + "_mutable" : path.getOriginalURI().toString() + "_imutable" + "_" + xsltVersion;
 		synchronized (includeCache) {
 			includeDocument = includeCache.getValue(key);
 		}
@@ -987,4 +994,8 @@ public class TargetGenerator implements ModelChangeListener, InitializingBean, B
 		}
     }
     
+	public void destroy() throws Exception {
+		viewExtensionResolver.destroy();	
+	}
+	
 }

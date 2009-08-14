@@ -15,7 +15,7 @@
   </handler>
   
   <handler class="org.pustefixframework.xmlgenerator.config.parser.ParameterParsingHandler">
-    <match>/c:xml-generator-config//c:parameter</match>
+    <match>/c:xml-generator-config//c:paramr</match>
   </handler>
   
   <handler class="org.pustefixframework.xmlgenerator.config.parser.NamespaceDeclarationParsingHandler">
