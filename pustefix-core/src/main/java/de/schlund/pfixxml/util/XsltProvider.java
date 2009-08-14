@@ -108,6 +108,9 @@ public class XsltProvider {
     }
     
     public static XmlSupport getXmlSupport(XsltVersion version) {
+        if (version == null) {
+            version = preferredXsltVersion;
+        }
         return xmlSupport.get(version);
     }
     
@@ -116,6 +119,9 @@ public class XsltProvider {
     }
     
     public static XPathSupport getXPathSupport(XsltVersion version) {
+        if (version == null) {
+            version = preferredXsltVersion;
+        }
         return xpathSupport.get(version);
     }
     
@@ -124,6 +130,9 @@ public class XsltProvider {
     }
     
     public static XsltSupport getXsltSupport(XsltVersion version) {
+        if (version == null) {
+            version = preferredXsltVersion;
+        }
         return xsltSupport.get(version);
     }
     
