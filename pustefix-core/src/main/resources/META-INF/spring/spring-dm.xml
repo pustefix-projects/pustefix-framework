@@ -15,4 +15,12 @@
     <osgi:service ref="fileResourceProvider" interface="org.pustefixframework.resource.ResourceProvider" />
     <bean id="fileResourceProvider" class="org.pustefixframework.resource.internal.FileResourceProvider" />
     
+    <!-- Provides resource for includepart: URIs -->
+    <osgi:service ref="includePartResourceProvider" interface="org.pustefixframework.resource.ResourceProvider" />
+    <bean id="includePartResourceProvider" class="org.pustefixframework.resource.internal.IncludePartResourceProvider" />
+    
+    <!-- Provides selector for theme preference -->
+    <osgi:service ref="themeResourceSelector" interface="org.pustefixframework.resource.ResourceSelector" />
+    <bean id="themeResourceSelector" class="org.pustefixframework.resource.internal.ThemeResourceSelector" />
+    
 </beans>
