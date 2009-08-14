@@ -23,6 +23,7 @@ import java.net.URI;
 
 import org.osgi.framework.BundleContext;
 import org.pustefixframework.resource.Resource;
+import org.pustefixframework.resource.ResourceLoader;
 import org.pustefixframework.resource.ResourceProvider;
 import org.pustefixframework.resource.support.FileResourceImpl;
 
@@ -43,7 +44,7 @@ public class PersistentStorageResourceProvider implements ResourceProvider {
         this.bundleContext = bundleContext;
     }
 
-    public Resource[] getResources(URI uri, URI originallyRequestedURI) {
+    public Resource[] getResources(URI uri, URI originallyRequestedURI, ResourceLoader resourceLoader) {
         if (uri.getScheme() == null || !uri.getScheme().equals("persistentstorage")) {
             throw new IllegalArgumentException("Cannot handle URI \"" + uri.toASCIIString() + "\": Scheme is not supported");
         }

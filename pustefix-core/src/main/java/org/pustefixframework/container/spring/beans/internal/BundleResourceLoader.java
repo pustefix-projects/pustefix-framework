@@ -87,10 +87,10 @@ public class BundleResourceLoader extends AbstractResourceLoader {
             return null;
         }
         if (scheme.equals("bundle")) {
-            return bundleResourceProvider.getResources(uri, null);
+            return bundleResourceProvider.getResources(uri, null, this);
         }
         if (scheme.equals("persistentstorage")) {
-            return persistentStorageResourceProvider.getResources(uri, null);
+            return persistentStorageResourceProvider.getResources(uri, null, this);
         }
         ResourceProvider resourceProvider;
         synchronized (resourceProviderMap) {
@@ -99,7 +99,7 @@ public class BundleResourceLoader extends AbstractResourceLoader {
         if (resourceProvider == null) {
             return null;
         }
-        return resourceProvider.getResources(uri, null);
+        return resourceProvider.getResources(uri, null, this);
     }
     
     private void updateResourceProviderMap() {

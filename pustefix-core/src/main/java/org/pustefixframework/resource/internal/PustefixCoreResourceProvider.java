@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 
 import org.pustefixframework.resource.Resource;
+import org.pustefixframework.resource.ResourceLoader;
 import org.pustefixframework.resource.ResourceProvider;
 import org.pustefixframework.resource.support.URLResourceImpl;
 
@@ -39,7 +40,7 @@ public class PustefixCoreResourceProvider implements ResourceProvider {
     
     private final static String[] SUPPORTED_SCHEMES = new String[] { "pustefixcore" };
     
-    public Resource[] getResources(URI uri, URI originallyRequestedURI) {
+    public Resource[] getResources(URI uri, URI originallyRequestedURI, ResourceLoader resourceLoader) {
         if (uri.getScheme() == null || !uri.getScheme().equals("pustefixcore")) {
             throw new IllegalArgumentException("Cannot handle URI \"" + uri.toASCIIString() + "\": Scheme is not supported");
         }

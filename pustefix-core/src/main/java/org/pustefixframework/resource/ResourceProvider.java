@@ -34,9 +34,12 @@ public interface ResourceProvider {
      * @param uri URI specifying the resources
      * @param originallyRequestedURI URI that was originally used to request
      *  the resource or <code>null</code> if identical to <code>uri</code>.
+     * @param resourceLoader the resource loader that should be used in order
+     *  to resolve URIs which are part of this URI. The resource provider has
+     *  to ensure that this process does not result in a recursive loop.
      * @return list of resources or <code>null</code>
      */
-    Resource[] getResources(URI uri, URI originallyRequestedURI);
+    Resource[] getResources(URI uri, URI originallyRequestedURI, ResourceLoader resourceLoader);
     
     /**
      * Returns the list of schemes supported by this provider.

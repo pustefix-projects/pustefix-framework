@@ -23,6 +23,7 @@ import java.net.URI;
 
 import org.pustefixframework.resource.FileResource;
 import org.pustefixframework.resource.Resource;
+import org.pustefixframework.resource.ResourceLoader;
 import org.pustefixframework.resource.ResourceProvider;
 import org.pustefixframework.resource.support.FileResourceImpl;
 
@@ -36,7 +37,7 @@ public class FileResourceProvider implements ResourceProvider {
     
     private final static String[] SUPPORTED_SCHEMES = new String[] { "file" };
     
-    public Resource[] getResources(URI uri, URI originallyRequestedURI) {
+    public Resource[] getResources(URI uri, URI originallyRequestedURI, ResourceLoader resourceLoader) {
         if (uri.getScheme() == null || !uri.getScheme().equals("file")) {
             throw new IllegalArgumentException("Cannot handle URI \"" + uri.toASCIIString() + "\": Scheme is not supported");
         }
