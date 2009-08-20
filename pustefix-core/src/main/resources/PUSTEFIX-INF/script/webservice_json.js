@@ -106,7 +106,7 @@ pfx.ws.json.BaseStub.prototype.setDebug=function(debug) {
 
 pfx.ws.json.BaseStub.prototype.getURI=function() {
    if(this._uri==null) {
-      var session=window.location.href.match(/;jsessionid=[A-Z0-9]+(\.[a-zA-Z0-9]+)?/)[0];
+      var session=window.location.href.match(/;jsessionid=[a-zA-Z0-9]+(\.[a-zA-Z0-9]+)?/)[0];
       var reqpath=window.location.pathname;
       var pcs=reqpath.split('/');
       pcs=pcs.slice(1,pcs.length-3);
