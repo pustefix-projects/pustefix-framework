@@ -59,6 +59,12 @@
     </dependency>
     <dependency>
       <groupId>org.springframework.osgi</groupId>
+      <artifactId>spring-osgi-mock</artifactId>
+      <version>1.2.0</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.osgi</groupId>
       <artifactId>spring-osgi-extender</artifactId>
       <version>1.2.0</version>
       <scope>provided</scope>
