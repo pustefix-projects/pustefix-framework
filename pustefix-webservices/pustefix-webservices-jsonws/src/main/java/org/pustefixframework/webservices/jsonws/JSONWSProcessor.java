@@ -29,13 +29,6 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.pustefixframework.webservices.json.JSONArray;
-import org.pustefixframework.webservices.json.JSONObject;
-import org.pustefixframework.webservices.json.parser.JSONParser;
-
-import de.schlund.pfixcore.beans.BeanDescriptorFactory;
-import de.schlund.pfixcore.beans.InitException;
-import de.schlund.pfixcore.beans.metadata.DefaultLocator;
 import org.pustefixframework.webservices.ProcessingInfo;
 import org.pustefixframework.webservices.ServiceCallContext;
 import org.pustefixframework.webservices.ServiceDescriptor;
@@ -45,9 +38,16 @@ import org.pustefixframework.webservices.ServiceRegistry;
 import org.pustefixframework.webservices.ServiceRequest;
 import org.pustefixframework.webservices.ServiceResponse;
 import org.pustefixframework.webservices.ServiceRuntime;
-import org.pustefixframework.webservices.config.ServiceConfig;
 import org.pustefixframework.webservices.fault.Fault;
 import org.pustefixframework.webservices.fault.FaultHandler;
+import org.pustefixframework.webservices.json.JSONArray;
+import org.pustefixframework.webservices.json.JSONObject;
+import org.pustefixframework.webservices.json.parser.JSONParser;
+import org.pustefixframework.webservices.spring.WebserviceRegistration;
+
+import de.schlund.pfixcore.beans.BeanDescriptorFactory;
+import de.schlund.pfixcore.beans.InitException;
+import de.schlund.pfixcore.beans.metadata.DefaultLocator;
 
 /**
  * @author mleidig@schlund.de
@@ -84,7 +84,7 @@ public class JSONWSProcessor implements ServiceProcessor {
         try {
             
             String serviceName=req.getServiceName();
-            ServiceConfig service=registry.getService(serviceName);
+            WebserviceRegistration service=registry.getWebserviceRegistration(serviceName);
             if(service==null) throw new ServiceException("Service not found: "+serviceName);
             
             if(req.getParameter("json")!=null) {
@@ -172,7 +172,7 @@ public class JSONWSProcessor implements ServiceProcessor {
                             
                             //Invocation
                             try { 
-                                Object serviceObject=registry.getServiceObject(serviceName);
+                                Object serviceObject=service.getTarget();
                                 resultObject=method.invoke(serviceObject,paramObjects);
                             } catch(Throwable t) {
                                 if(t instanceof InvocationTargetException && t.getCause()!=null) error=t.getCause();
@@ -202,7 +202,10 @@ public class JSONWSProcessor implements ServiceProcessor {
                     if(resultObject instanceof Void || resultObject==null) {
                         writer.write("null");
                     } else {
-                        JSONSerializer jsonSer=new JSONSerializer(serializerRegistry,service.getJSONClassHinting());
+                    	boolean classHinting = false;
+                    	if(service.getClassHinting() != null) classHinting = service.getClassHinting();
+                    	else if(runtime.getConfiguration().getClassHinting() != null) classHinting = runtime.getConfiguration().getClassHinting();
+                        JSONSerializer jsonSer=new JSONSerializer(serializerRegistry, classHinting);
                         jsonSer.serialize(resultObject,writer);
                     }
                     long t2=System.currentTimeMillis();
@@ -215,8 +218,7 @@ public class JSONWSProcessor implements ServiceProcessor {
                     Fault fault=new Fault(serviceName,callContext.getServiceRequest(),
                             callContext.getServiceResponse(),jsonData,callContext.getContext());
                     fault.setThrowable(error);
-                    FaultHandler faultHandler=service.getFaultHandler();
-                    if(faultHandler==null) faultHandler=runtime.getConfiguration().getGlobalServiceConfig().getFaultHandler();
+                    FaultHandler faultHandler=runtime.getConfiguration().getFaultHandler();
                     if(faultHandler!=null) faultHandler.handleFault(fault);
                     error=fault.getThrowable();
                     JSONObject errobj=new JSONObject();
@@ -261,16 +263,16 @@ public class JSONWSProcessor implements ServiceProcessor {
         }
     }
     
-    private JSONObject listMethods(ServiceConfig service,ServiceRuntime runtime,ServiceRegistry srvReg) throws ServiceException {
+    private JSONObject listMethods(WebserviceRegistration registration,ServiceRuntime runtime,ServiceRegistry srvReg) throws ServiceException {
         JSONArray meths=new JSONArray();
-        ServiceDescriptor desc=runtime.getServiceDescriptorCache().getServiceDescriptor(service);
+        ServiceDescriptor desc=runtime.getServiceDescriptorCache().getServiceDescriptor(registration);
         if(desc!=null) {
             for(String methName:desc.getMethods()) meths.add(methName);
             JSONObject resObj=new JSONObject();
             resObj.putMember("result",meths);
             resObj.putMember("id",0);
             return resObj;
-        } else throw new ServiceException("Unknown service: "+service.getName());
+        } else throw new ServiceException("Unknown service: "+registration.getServiceName());
     }
     
 }

@@ -27,37 +27,40 @@ import org.pustefixframework.webservices.Constants;
 import org.pustefixframework.webservices.ServiceDescriptor;
 import org.pustefixframework.webservices.ServiceException;
 import org.pustefixframework.webservices.ServiceStubGenerator;
-import org.pustefixframework.webservices.config.ServiceConfig;
+import org.pustefixframework.webservices.config.WebserviceConfiguration;
 import org.pustefixframework.webservices.jsgen.JsBlock;
 import org.pustefixframework.webservices.jsgen.JsClass;
 import org.pustefixframework.webservices.jsgen.JsMethod;
 import org.pustefixframework.webservices.jsgen.JsParam;
 import org.pustefixframework.webservices.jsgen.JsStatement;
+import org.pustefixframework.webservices.spring.WebserviceRegistration;
 
 /**
  * @author mleidig@schlund.de
  */
 public class JSONWSStubGenerator implements ServiceStubGenerator {
 
-    public void generateStub(ServiceConfig service,OutputStream out) throws ServiceException,IOException {
-        ServiceDescriptor desc=new ServiceDescriptor(service);
+    public void generateStub(WebserviceRegistration registration, WebserviceConfiguration configuration, OutputStream out) throws ServiceException,IOException {
+        
+    	ServiceDescriptor desc=new ServiceDescriptor(registration);
         JsParam[] constParams=new JsParam[] {new JsParam("context"),new JsParam("scope")};
        
         String jsClassName=null;
-        if(service.getStubJSNamespace().equals(Constants.STUBGEN_JSNAMESPACE_COMPAT)) {
-            jsClassName=Constants.STUBGEN_DEFAULT_JSNAMESPACE+service.getName();
-        } else if(service.getStubJSNamespace().equals(Constants.STUBGEN_JSNAMESPACE_COMPATUNIQUE)) {
-            jsClassName=Constants.STUBGEN_JSONWS_JSNAMESPACE+service.getName();
-        } else if(service.getStubJSNamespace().equals(Constants.STUBGEN_JSNAMESPACE_JAVANAME)) {
-            jsClassName=desc.getServiceClass().getName();
+        String namespace = registration.getStubJSNamespace();
+        if(namespace == null) namespace = configuration.getStubJSNamespace();
+        if(namespace.equals(Constants.STUBGEN_JSNAMESPACE_COMPAT)) {
+            jsClassName = Constants.STUBGEN_DEFAULT_JSNAMESPACE + registration.getServiceName();
+        } else if(namespace.equals(Constants.STUBGEN_JSNAMESPACE_COMPATUNIQUE)) {
+            jsClassName = Constants.STUBGEN_JSONWS_JSNAMESPACE + registration.getServiceName();
+        } else if(namespace.equals(Constants.STUBGEN_JSNAMESPACE_JAVANAME)) {
+            jsClassName = desc.getServiceClass().getName();
         } else {
-            String prefix=service.getStubJSNamespace();
-            if(prefix.contains(".")&&!prefix.endsWith(".")) prefix+=".";
-            jsClassName=prefix+service.getName();
+            if(namespace.contains(".") && !namespace.endsWith(".")) namespace+=".";
+            jsClassName = namespace + registration.getServiceName();
         }
         JsClass jsClass=new JsClass(jsClassName,"pfx.ws.json.BaseStub",constParams);
         JsBlock block=jsClass.getConstructorBody();
-        block.addStatement(new JsStatement("pfx.ws.json.BaseStub.call(this,\""+service.getName()+"\",context,scope)"));
+        block.addStatement(new JsStatement("pfx.ws.json.BaseStub.call(this,\""+registration.getServiceName()+"\",context,scope)"));
         for(String methName:desc.getMethods()) {
             List<Method> meths=desc.getMethods(methName);
             for(Method meth:meths) {
