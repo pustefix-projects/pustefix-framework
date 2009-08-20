@@ -23,6 +23,11 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Before;
 import org.junit.Test;
 import org.pustefixframework.webservices.BaseTestCase;
+import org.pustefixframework.webservices.ProtocolProvider;
+import org.pustefixframework.webservices.ProtocolProviderRegistry;
+import org.pustefixframework.webservices.ProtocolProviderRegistryImpl;
+import org.pustefixframework.webservices.ServiceProcessor;
+import org.pustefixframework.webservices.ServiceStubGenerator;
 import org.pustefixframework.webservices.TestServiceProcessor;
 import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
 import org.springframework.core.io.FileSystemResource;
@@ -53,9 +58,26 @@ public class WebServiceHttpRequestHandlerTest extends BaseTestCase {
         xmlReader.loadBeanDefinitions(new FileSystemResource("src/test/resources/WEB-INF/spring.xml"));
         
         handler = (WebServiceHttpRequestHandler)ctx.getBean("org.pustefixframework.webservices.spring.WebServiceHttpRequestHandler");
-        TestServiceProcessor proc = new TestServiceProcessor();
-        proc.setServiceMethod("echo");
-        handler.getServiceRuntime().addServiceProcessor("TEST", proc);
+       
+        ProtocolProvider proto = new ProtocolProvider() {
+        	public String getProtocolName() {
+        		return "TEST";
+        	}
+        	public String getProtocolVersion() {
+        		return "1";
+        	}
+        	public ServiceProcessor getServiceProcessor() {
+        		TestServiceProcessor proc = new TestServiceProcessor();
+        		proc.setServiceMethod("echo");
+        	    return proc;    
+        	}
+        	public ServiceStubGenerator getServiceStubGenerator() {
+        		return null;
+        	}
+        };
+        ProtocolProviderRegistryImpl protoRegistry = new ProtocolProviderRegistryImpl();
+        protoRegistry.addProtocolProvider(proto);
+        handler.getServiceRuntime().setProtocolProviderRegistry(protoRegistry);
     }
 
     @Test

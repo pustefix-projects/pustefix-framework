@@ -28,7 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.pustefixframework.webservices.config.ServiceConfig;
+import org.pustefixframework.webservices.spring.WebserviceRegistration;
 
 
 /**
@@ -44,14 +44,14 @@ public class ServiceDescriptor {
         serviceMethods=introspect(serviceClass);
     }
     
-	public ServiceDescriptor(ServiceConfig serviceConfig) throws ServiceException {
+	public ServiceDescriptor(WebserviceRegistration registration) throws ServiceException {
         try {
-            ClassLoader cl=Thread.currentThread().getContextClassLoader();
+            ClassLoader cl = registration.getTarget().getClass().getClassLoader();
             Class<?> itf = null;
-            if(serviceConfig.getInterfaceName()!=null) {
-                itf = Class.forName(serviceConfig.getInterfaceName(),true,cl);
+            if(registration.getInterface() != null) {
+                itf = Class.forName(registration.getInterface(), true, cl);
             }
-            Class<?> clazz=Class.forName(serviceConfig.getImplementationName(),true,cl);
+            Class<?> clazz = registration.getTarget().getClass();
             if(itf==null) serviceMethods=introspect(clazz);
             else serviceMethods=introspect(clazz,itf);
             serviceClass=itf;

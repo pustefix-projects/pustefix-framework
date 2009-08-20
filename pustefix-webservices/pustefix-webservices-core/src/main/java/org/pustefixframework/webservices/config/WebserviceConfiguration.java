@@ -38,13 +38,10 @@ import org.pustefixframework.webservices.fault.FaultHandler;
  * 
  * @author mleidig@schlund.de
  */
-public class GlobalServiceConfig implements Serializable {
+public class WebserviceConfiguration implements Serializable {
 
-    /**
-     * 
-     */
     private static final long serialVersionUID = -8134435783633908273L;
-    private String                 server;
+   
     private String                 reqPath          = "/xml/webservice";
     private Boolean                wsdlSupport      = Boolean.TRUE;
     private String                 wsdlRepo         = "/wsdl";
@@ -54,11 +51,10 @@ public class GlobalServiceConfig implements Serializable {
     private String                 protocolType     = Constants.PROTOCOL_TYPE_JSONWS;
     private String                 encStyle         = Constants.ENCODING_STYLE_RPC;
     private String                 encUse           = Constants.ENCODING_USE_ENCODED;
-    private Boolean                jsonClassHinting = Boolean.FALSE;
+    private Boolean                classHinting     = Boolean.FALSE;
     private String                 sessType         = Constants.SESSION_TYPE_SERVLET;
     private String                 scopeType        = Constants.SERVICE_SCOPE_APPLICATION;
     private Boolean                sslForce         = Boolean.FALSE;
-    private String                 ctxName;
     private String                 authConstraintRef;
     private Boolean                ctxSync          = Boolean.TRUE;
     private Boolean                admin            = Boolean.FALSE;
@@ -69,15 +65,6 @@ public class GlobalServiceConfig implements Serializable {
     private transient FaultHandler faultHandler;
     private URL                    defaultBeanMetaDataUrl;
 
-    public GlobalServiceConfig() {}
-
-    public String getServer() {
-        return server;
-    }
-
-    public void setServer(String server) {
-        this.server = server;
-    }
 
     public String getRequestPath() {
         return reqPath;
@@ -151,12 +138,12 @@ public class GlobalServiceConfig implements Serializable {
         this.encUse = encUse;
     }
 
-    public Boolean getJSONClassHinting() {
-        return jsonClassHinting;
+    public Boolean getClassHinting() {
+        return classHinting;
     }
 
-    public void setJSONClassHinting(Boolean jsonClassHinting) {
-        this.jsonClassHinting = jsonClassHinting;
+    public void setClassHinting(Boolean classHinting) {
+        this.classHinting = classHinting;
     }
 
     public String getSessionType() {
@@ -182,14 +169,6 @@ public class GlobalServiceConfig implements Serializable {
     public void setSSLForce(Boolean sslForce) {
         this.sslForce = sslForce;
     }
-
-    public String getContextName() {
-        return ctxName;
-    }
-
-    public void setContextName(String ctxName) {
-        this.ctxName = ctxName;
-    }
     
     public String getAuthConstraintRef() {
         return authConstraintRef;
@@ -199,7 +178,7 @@ public class GlobalServiceConfig implements Serializable {
         this.authConstraintRef = authConstraintRef;
     }
 
-    public boolean getSynchronizeOnContext() {
+    public Boolean getSynchronizeOnContext() {
         return ctxSync;
     }
 
@@ -266,8 +245,8 @@ public class GlobalServiceConfig implements Serializable {
     @Override
     public boolean equals(Object obj) {
 
-        if (obj instanceof GlobalServiceConfig) {
-            GlobalServiceConfig ref = (GlobalServiceConfig) obj;
+        if (obj instanceof WebserviceConfiguration) {
+            WebserviceConfiguration ref = (WebserviceConfiguration) obj;
             Method[] meths = getClass().getDeclaredMethods();
             for (int i = 0; i < meths.length; i++) {
                 Method meth = meths[i];

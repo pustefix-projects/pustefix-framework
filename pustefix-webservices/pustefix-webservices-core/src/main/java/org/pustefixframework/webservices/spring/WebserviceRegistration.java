@@ -18,28 +18,26 @@
 package org.pustefixframework.webservices.spring;
 
 /**
+ * Instances of this class are holding the configuration of a webservice
+ * and are referencing the backing service object.
  * 
- * @author mleidig
+ * @author mleidig@schlund.de
  *
  */
-public class WebServiceRegistration {
+public class WebserviceRegistration {
 
     private String serviceName;
-    private String targetBeanName;
     private Object target;
     private String interfaceName;
     private String protocol;
     private String sessionType;
     private String authConstraint;
+    private Boolean ctxSync;
+    private Boolean sslForce;
+    private Boolean classHinting;
+    private String jsNamespace;
     
-    public String getTargetBeanName() {
-        return targetBeanName;
-    }
-
-    public void setTargetBeanName(String targetBeanName) {
-        this.targetBeanName = targetBeanName;
-    }
-
+    
     public String getServiceName() {
         return serviceName;
     }
@@ -86,6 +84,38 @@ public class WebServiceRegistration {
 
     public void setAuthConstraint(String authConstraint) {
         this.authConstraint = authConstraint;
+    }
+    
+    public Boolean getSynchronizeOnContext() {
+    	return ctxSync;
+    }
+
+    public void setSynchronizeOnContext(Boolean ctxSync) {
+        this.ctxSync = ctxSync;
+    }
+    
+    public Boolean getSSLForce() {
+        return sslForce;
+    }
+
+    public void setSSLForce(Boolean sslForce) {
+        this.sslForce = sslForce;
+    }
+    
+    public Boolean getClassHinting() {
+        return classHinting;
+    }
+
+    public void setJSONClassHinting(Boolean classHinting) {
+        this.classHinting = classHinting;
+    }
+
+    public String getStubJSNamespace() {
+        return jsNamespace;
+    }
+
+    public void setStubJSNamespace(String jsNamespace) {
+        this.jsNamespace = jsNamespace;
     }
     
 }

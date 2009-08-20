@@ -12,12 +12,14 @@
 
   <bean id="org.pustefixframework.webservices.spring.WebServiceHttpRequestHandler"
         class="org.pustefixframework.webservices.spring.WebServiceHttpRequestHandler">
-    <property name="configFile" value="docroot:/WEB-INF/webservice.conf.xml"/>
+    <property name="configuration" ref="configuration"/>
     <property name="serviceRuntime" ref="serviceRuntime"/>
   </bean>
 
   <bean id="serviceRuntime"
         class="org.pustefixframework.webservices.ServiceRuntime"/>
+
+  <bean id="configuration" class="org.pustefixframework.webservices.config.Configuration"/>
 
   <bean id="calculator" class="org.pustefixframework.webservices.example.CalculatorImpl"/>
   

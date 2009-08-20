@@ -21,7 +21,8 @@ package org.pustefixframework.webservices;
 import java.io.IOException;
 import java.io.OutputStream;
 
-import org.pustefixframework.webservices.config.ServiceConfig;
+import org.pustefixframework.webservices.config.WebserviceConfiguration;
+import org.pustefixframework.webservices.spring.WebserviceRegistration;
 
 
 /**
@@ -29,6 +30,6 @@ import org.pustefixframework.webservices.config.ServiceConfig;
  */
 public interface ServiceStubGenerator {
 
-    public void generateStub(ServiceConfig service,OutputStream out) throws ServiceException,IOException;
+    public void generateStub(WebserviceRegistration service, WebserviceConfiguration configuration, OutputStream out) throws ServiceException,IOException;
     
 }

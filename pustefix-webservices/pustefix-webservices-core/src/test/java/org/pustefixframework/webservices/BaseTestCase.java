@@ -17,16 +17,11 @@
  */
 package org.pustefixframework.webservices;
 
-import java.io.File;
-
 import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
 import org.junit.Before;
-
-import de.schlund.pfixxml.config.GlobalConfig;
-import de.schlund.pfixxml.config.GlobalConfigurator;
 
 /**
  * 
@@ -44,8 +39,6 @@ public abstract class BaseTestCase {
         logger.removeAllAppenders();
         logger.addAppender(appender);
         
-        if(GlobalConfig.getDocroot()==null)
-            GlobalConfigurator.setDocroot(new File("src/test/resources").getAbsoluteFile().getAbsolutePath());
     }
     
 }

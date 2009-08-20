@@ -24,7 +24,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
-import org.pustefixframework.config.generic.PropertyFileReader;
 import org.pustefixframework.webservices.ServiceRequest;
 import org.pustefixframework.webservices.ServiceResponse;
 
@@ -32,8 +31,7 @@ import de.schlund.pfixxml.PfixServletRequest;
 import de.schlund.pfixxml.PfixServletRequestImpl;
 import de.schlund.pfixxml.exceptionprocessor.ExceptionConfig;
 import de.schlund.pfixxml.exceptionprocessor.ExceptionProcessor;
-import de.schlund.pfixxml.resources.FileResource;
-import de.schlund.pfixxml.resources.ResourceUtil;
+
 
 public class ExceptionProcessorAdapter extends FaultHandler {
 
@@ -44,9 +42,6 @@ public class ExceptionProcessorAdapter extends FaultHandler {
 
     final static Logger LOG=Logger.getLogger(ExceptionProcessorAdapter.class);
     
-    private final static String PARAM_CONFIG="config";
-    private final static String PROP_EXPROC="exception.java.lang.Throwable.processor";
-    
     ExceptionProcessor exProc;
     Properties exProcProps;
     ExceptionConfig exConf;
@@ -55,30 +50,13 @@ public class ExceptionProcessorAdapter extends FaultHandler {
         
     }
     
+    //TODO: inject ExceptionProcessor
+    public void setExceptionProcessor(ExceptionProcessor exProc) {
+    	this.exProc = exProc;
+    }
+    
     @Override
     public void init() {
-        String config=getParam(PARAM_CONFIG);
-        if(config==null) throw new IllegalArgumentException("Parameter '"+PARAM_CONFIG+"' is missing.");
-        FileResource configFile=ResourceUtil.getFileResourceFromDocroot(config);
-        exProcProps=new Properties();
-        try {
-            PropertyFileReader.read(configFile,exProcProps);
-        } catch(Exception x) {
-            throw new RuntimeException("Can't load properties from "+configFile,x);
-        }
-        String procName=exProcProps.getProperty(PROP_EXPROC);
-        if(procName!=null) {
-            try {
-                Class<?> clazz=Class.forName(procName);
-                exProc=(ExceptionProcessor)clazz.newInstance();
-                exConf=new ExceptionConfig();
-                exConf.setPage("webservice");
-                exConf.setProcessor(exProc);
-                exConf.setType("java.lang.Throwable");
-            } catch(Exception x) {
-                throw new RuntimeException("Can't instantiate ExceptionProcessor.",x);
-            }
-        } else LOG.warn("No ExceptionProcessor for java.lang.Throwable found in properties!");
     }
     
     @Override
@@ -94,7 +72,7 @@ public class ExceptionProcessorAdapter extends FaultHandler {
             if(srvReq.getUnderlyingRequest() instanceof HttpServletRequest) {
                 HttpServletRequest req=(HttpServletRequest)srvReq.getUnderlyingRequest();
                 HttpServletResponse res=(HttpServletResponse)srvRes.getUnderlyingResponse();
-                PfixServletRequest pfixReq=new PfixServletRequestImpl(req,new Properties());
+                PfixServletRequest pfixReq=new PfixServletRequestImpl(req, new String[0], new Properties());
                 HttpSession session=req.getSession(false);
                 if(session!=null) {
                     try {

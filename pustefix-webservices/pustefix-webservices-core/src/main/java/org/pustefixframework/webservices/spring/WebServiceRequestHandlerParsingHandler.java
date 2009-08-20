@@ -17,12 +17,18 @@
  */
 package org.pustefixframework.webservices.spring;
 
+import org.osgi.framework.BundleContext;
 import org.pustefixframework.config.Constants;
+import org.pustefixframework.config.generic.ParsingUtils;
 import org.pustefixframework.webservices.ServiceRuntime;
+import org.pustefixframework.webservices.config.WebserviceConfiguration;
+import org.pustefixframework.webservices.osgi.ProtocolProviderServiceTracker;
+import org.pustefixframework.webservices.osgi.WebserviceExtensionPointImpl;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinitionHolder;
 import org.springframework.beans.factory.config.RuntimeBeanReference;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
+import org.springframework.osgi.context.ConfigurableOsgiBundleApplicationContext;
 import org.w3c.dom.Element;
 
 import com.marsching.flexiparse.parser.HandlerContext;
@@ -43,17 +49,16 @@ public class WebServiceRequestHandlerParsingHandler implements ParsingHandler {
       
         Element serviceElement = (Element)context.getNode();
         
-        Element pathElement = (Element)serviceElement.getElementsByTagNameNS(Constants.NS_PROJECT,"path").item(0);
+        Element pathElement = (Element)serviceElement.getElementsByTagNameNS(Constants.NS_APPLICATION,"path").item(0);
         if (pathElement == null) throw new ParserException("Could not find expected <path> element");
         String path = pathElement.getTextContent().trim();
         
-        Element configurationFileElement = (Element)serviceElement.getElementsByTagNameNS(Constants.NS_PROJECT,"config-file").item(0);
-        if (configurationFileElement == null) throw new ParserException("Could not find expected <config-file> element");
-        String configurationFile = configurationFileElement.getTextContent().trim();
+       
+        WebserviceConfiguration configuration = new WebserviceConfiguration();
         
         BeanDefinitionBuilder beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(WebServiceHttpRequestHandler.class);
         beanBuilder.setScope("singleton");
-        beanBuilder.addPropertyValue("configFile", configurationFile);
+        beanBuilder.addPropertyValue("configuration", configuration);
         beanBuilder.addPropertyValue("handlerURI", path + "/**");
         beanBuilder.addPropertyValue("serviceRuntime", new RuntimeBeanReference(ServiceRuntime.class.getName()));
         BeanDefinition beanDefinition = beanBuilder.getBeanDefinition();
@@ -64,9 +69,22 @@ public class WebServiceRequestHandlerParsingHandler implements ParsingHandler {
         beanBuilder.setScope("singleton");
         beanBuilder.addPropertyValue("serverContext", new RuntimeBeanReference(ServerContextImpl.class.getName()));
         beanBuilder.addPropertyValue("context", new RuntimeBeanReference(ContextImpl.class.getName()));
+        beanBuilder.addPropertyValue("protocolProviderRegistry", new RuntimeBeanReference(ProtocolProviderServiceTracker.class.getName()));
         beanDefinition = beanBuilder.getBeanDefinition();
         beanHolder = new BeanDefinitionHolder(beanDefinition, ServiceRuntime.class.getName());
         context.getObjectTreeElement().addObject(beanHolder);
+        
+        beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(ProtocolProviderServiceTracker.class);
+        beanBuilder.setScope("singleton");
+        ConfigurableOsgiBundleApplicationContext appContext = ParsingUtils.getSingleTopObject(ConfigurableOsgiBundleApplicationContext.class, context);
+        BundleContext bundleContext = appContext.getBundleContext();
+        beanBuilder.addConstructorArgValue(bundleContext);
+        beanDefinition = beanBuilder.getBeanDefinition();
+        beanHolder = new BeanDefinitionHolder(beanDefinition, ProtocolProviderServiceTracker.class.getName());
+        context.getObjectTreeElement().addObject(beanHolder);
+        
+        beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(WebserviceExtensionPointImpl.class);
+		beanBuilder.addPropertyValue("id", "webservice.application");
         
     }
 
