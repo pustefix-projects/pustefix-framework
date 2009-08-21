@@ -28,7 +28,6 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 
-import org.pustefixframework.resource.AbstractResource;
 import org.pustefixframework.resource.FileResource;
 
 /**

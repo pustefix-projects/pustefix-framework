@@ -1,6 +1,8 @@
-package org.pustefixframework.resource;
+package org.pustefixframework.resource.support;
 
 import java.net.URI;
+
+import org.pustefixframework.resource.Resource;
 
 public class NullResource implements Resource {
 

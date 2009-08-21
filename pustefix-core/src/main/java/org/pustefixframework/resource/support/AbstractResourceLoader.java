@@ -16,12 +16,15 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-package org.pustefixframework.resource;
+package org.pustefixframework.resource.support;
 
 import java.lang.reflect.Array;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Map;
+
+import org.pustefixframework.resource.Resource;
+import org.pustefixframework.resource.ResourceLoader;
 
 
 /**

@@ -24,8 +24,8 @@ import javax.xml.transform.TransformerException;
 
 import org.pustefixframework.resource.InputStreamResource;
 import org.pustefixframework.resource.LastModifiedInfoResource;
-import org.pustefixframework.resource.NullResource;
 import org.pustefixframework.resource.Resource;
+import org.pustefixframework.resource.support.NullResource;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 

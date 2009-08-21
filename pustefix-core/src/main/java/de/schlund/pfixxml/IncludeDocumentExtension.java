@@ -26,8 +26,8 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.pustefixframework.resource.IncludePartResource;
-import org.pustefixframework.resource.NullResource;
 import org.pustefixframework.resource.Resource;
+import org.pustefixframework.resource.support.NullResource;
 import org.pustefixframework.xmlgenerator.targets.TargetGenerator;
 import org.pustefixframework.xmlgenerator.targets.VirtualTarget;
 import org.pustefixframework.xmlgenerator.view.ViewExtensionResolver;

@@ -23,7 +23,6 @@ import java.io.InputStream;
 import java.net.URI;
 import java.net.URL;
 
-import org.pustefixframework.resource.AbstractResource;
 import org.pustefixframework.resource.InputStreamResource;
 import org.pustefixframework.resource.URLResource;
 

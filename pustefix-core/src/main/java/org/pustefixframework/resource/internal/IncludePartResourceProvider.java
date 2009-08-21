@@ -28,12 +28,12 @@ import java.util.LinkedList;
 
 import javax.xml.transform.TransformerException;
 
-import org.pustefixframework.resource.AbstractResource;
 import org.pustefixframework.resource.IncludePartResource;
 import org.pustefixframework.resource.InputStreamResource;
 import org.pustefixframework.resource.Resource;
 import org.pustefixframework.resource.ResourceLoader;
 import org.pustefixframework.resource.ResourceProvider;
+import org.pustefixframework.resource.support.AbstractResource;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
