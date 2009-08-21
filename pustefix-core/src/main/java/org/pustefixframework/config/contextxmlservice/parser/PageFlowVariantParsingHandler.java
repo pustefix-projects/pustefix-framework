@@ -49,13 +49,13 @@ public class PageFlowVariantParsingHandler implements ParsingHandler {
     public void handleNodeStart(HandlerContext context) throws ParserException {
        
         Element element = (Element) context.getNode();
-        PageFlowHolder defaultVariantHolder = ParsingUtils.getFirstTopObject(PageFlowHolder.class, context, true);
         ParsingUtils.checkAttributes(element, new String[] {"name"}, new String[] {"bean-ref"});
         
         String variantName = element.getAttribute("name").trim();
         String beanRef = element.getAttribute("bean-ref").trim();
         
         if (beanRef.length() > 0) {
+            PageFlowHolder defaultVariantHolder = ParsingUtils.getFirstTopObject(PageFlowHolder.class, context, true);
             context.getObjectTreeElement().addObject(new PageFlowHolderImpl(defaultVariantHolder.getName() + "::" + variantName, beanRef));
         } else {
             PageFlowConfig defaultConfig = ParsingUtils.getSingleTopObject(PageFlowConfig.class, context);

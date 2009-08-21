@@ -63,7 +63,7 @@
     <match>/c:context-xml-service-config/c:extension[@type='context.pageflowvariant']/c:pageflow/c:variant</match>
   </handler>
   
-  <handler class="org.pustefixframework.config.contextxmlservice.parser.PageFlowStepParsingHandler">
+  <handler class="org.pustefixframework.config.contextxmlservice.parser.PageFlowStepParsingHandler" run-order="both">
     <match>/c:context-xml-service-config/c:extension[@type='context.pageflow']/c:pageflow//c:flowstep</match>
     <match>/c:context-xml-service-config/c:extension[@type='context.pageflowvariant']/c:pageflow//c:flowstep</match>
     <match>/c:context-xml-service-config/c:extension[@type='context.flowstep']/c:flowstep</match>
