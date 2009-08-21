@@ -59,9 +59,7 @@ public class WebServiceHttpRequestHandler implements UriProvidingHttpRequestHand
     private ServletContext servletContext;
     private String handlerURI;
     private ApplicationContext applicationContext;
-    
-    private static final String GENERATOR_IMPL_JSONWS="org.pustefixframework.webservices.jsonws.JSONWSStubGenerator";
-    
+      
     private WebserviceExtension rootExtension;
     
     public void afterPropertiesSet() throws Exception {

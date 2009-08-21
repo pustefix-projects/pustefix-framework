@@ -22,9 +22,9 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.pustefixframework.test.BundleContextAwareBeanPostProcessor;
 import org.pustefixframework.webservices.BaseTestCase;
 import org.pustefixframework.webservices.ProtocolProvider;
-import org.pustefixframework.webservices.ProtocolProviderRegistry;
 import org.pustefixframework.webservices.ProtocolProviderRegistryImpl;
 import org.pustefixframework.webservices.ServiceProcessor;
 import org.pustefixframework.webservices.ServiceStubGenerator;
@@ -51,11 +51,12 @@ public class WebServiceHttpRequestHandlerTest extends BaseTestCase {
     public void setUp() {
         super.setUp();        
         GenericWebApplicationContext ctx=new GenericWebApplicationContext();
+        ctx.getBeanFactory().addBeanPostProcessor(new BundleContextAwareBeanPostProcessor());
         MockServletContext servletContext = new MockServletContext();
         ctx.setServletContext(servletContext);
         ctx.refresh();
         XmlBeanDefinitionReader xmlReader = new XmlBeanDefinitionReader(ctx);
-        xmlReader.loadBeanDefinitions(new FileSystemResource("src/test/resources/WEB-INF/spring.xml"));
+        xmlReader.loadBeanDefinitions(new FileSystemResource("src/test/resources/META-INF/pustefix/spring.xml"));
         
         handler = (WebServiceHttpRequestHandler)ctx.getBean("org.pustefixframework.webservices.spring.WebServiceHttpRequestHandler");
        

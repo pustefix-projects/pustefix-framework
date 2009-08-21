@@ -6,7 +6,6 @@ import java.util.List;
 
 import org.pustefixframework.extension.support.AbstractExtension;
 import org.pustefixframework.extension.support.ExtensionPointRegistrationListener;
-import org.pustefixframework.extension.support.ExtensionTargetInfo;
 import org.pustefixframework.webservices.spring.WebserviceRegistration;
 
 public class WebserviceExtensionImpl extends AbstractExtension<WebserviceExtensionPoint,WebserviceExtensionImpl> implements WebserviceExtension {

@@ -16,10 +16,9 @@
     <property name="serviceRuntime" ref="serviceRuntime"/>
   </bean>
 
-  <bean id="serviceRuntime"
-        class="org.pustefixframework.webservices.ServiceRuntime"/>
+  <bean id="serviceRuntime" class="org.pustefixframework.webservices.ServiceRuntime"/>
 
-  <bean id="configuration" class="org.pustefixframework.webservices.config.Configuration"/>
+  <bean id="configuration" class="org.pustefixframework.webservices.config.WebserviceConfiguration"/>
 
   <bean id="calculator" class="org.pustefixframework.webservices.example.CalculatorImpl"/>
   
@@ -32,8 +31,10 @@
     <property name="text" value="Test singleton scope"/>
   </bean>
 
-
-  <ws:webservice 
+  <ws:extension id="webservice.extension">
+    <ws:extends extension-point="webservice.root"/>
+  
+    <ws:webservice 
         id="service_calculator" 
         servicename="Calculator" 
         interface="org.pustefixframework.webservices.example.Calculator" 
@@ -41,30 +42,31 @@
         protocol="TEST" 
         session="none" />
   
-  <ws:webservice
+    <ws:webservice
         id="service_test_session"
         servicename="Test"
         interface="org.pustefixframework.webservices.example.Test"
         ref="test_session"
         protocol="TEST" />
   
-  <ws:webservice 
+    <ws:webservice 
         id="service_test_nested" 
         servicename="TestNested" 
         interface="org.pustefixframework.webservices.example.Test"
         authconstraint="MY_AUTHCONSTRAINT"
         protocol="TEST" >
-    <bean class="org.pustefixframework.webservices.example.TestImpl"/>
-  </ws:webservice>
+      <bean class="org.pustefixframework.webservices.example.TestImpl"/>
+    </ws:webservice>
   
-  <ws:webservice 
+    <ws:webservice 
         id="service_test_nestedref" 
         servicename="TestNestedRef" 
         interface="org.pustefixframework.webservices.example.Test"
         protocol="TEST"
         session="none">
-    <ref bean="test_singleton"/>
-  </ws:webservice>
+      <ref bean="test_singleton"/>
+    </ws:webservice>
   
- 
+  </ws:extension>
+
 </beans>
