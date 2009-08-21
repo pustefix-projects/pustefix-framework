@@ -197,7 +197,7 @@
  
   <modules>
     <module>pustefix-libs</module>
-    <!--<module>pustefix-webservices</module>-->
+    <module>pustefix-webservices</module>
     <module>pustefix-plugins</module>
     <module>pustefix-archetypes</module>
     <module>pustefix-core</module>

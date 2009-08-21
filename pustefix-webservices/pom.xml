@@ -35,7 +35,7 @@
 
   <modules>
     <module>pustefix-webservices-core</module>
-    <module>pustefix-webservices-jaxws</module>
+    <!--<module>pustefix-webservices-jaxws</module>-->
     <module>pustefix-webservices-jsonws</module>
   </modules>
 
