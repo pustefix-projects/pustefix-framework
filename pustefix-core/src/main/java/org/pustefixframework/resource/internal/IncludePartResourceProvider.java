@@ -26,6 +26,8 @@ import java.net.URLEncoder;
 import java.util.Collection;
 import java.util.LinkedList;
 
+import javax.xml.transform.TransformerException;
+
 import org.pustefixframework.resource.AbstractResource;
 import org.pustefixframework.resource.IncludePartResource;
 import org.pustefixframework.resource.InputStreamResource;
@@ -38,6 +40,7 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import de.schlund.pfixxml.util.Xml;
+import de.schlund.pfixxml.util.XsltVersion;
 
 /**
  * Provides resources from the file system using the file scheme.  
@@ -103,13 +106,18 @@ public class IncludePartResourceProvider implements ResourceProvider {
 
     private Collection<IncludePartResource> loadIncludePartsFromFile(InputStreamResource resource, String includePartName, String requestedThemeName, URI originallyRequestedURI) {
         Document document;
+        //TODO: find way to control which type of DOM we use here
         try {
-            document = Xml.parseMutable(resource);
-        } catch (IOException e) {
-            return null;
-        } catch (SAXException e) {
-            return null;
+//            document = Xml.parseMutable(resource);
+            document = Xml.parse(XsltVersion.XSLT1, resource);
+        } catch (TransformerException e) {
+        	return null;
         }
+//        } catch (IOException e) {
+//            return null;
+//        } catch (SAXException e) {
+//            return null;
+//        }
         Element rootElement = document.getDocumentElement();
         if (rootElement.getNamespaceURI() != null) {
             return null;
