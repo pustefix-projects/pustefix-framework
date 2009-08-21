@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<make project="testsuite" lang="en_US">
+<xml-generator-config lang="en_US" project="testsuite" xmlns="http://www.pustefix-framework.org/2008/namespace/xml-generator-config">
   
   <global>
     <param name="outputdoctype-public" value="-//W3C//DTD HTML 4.01//EN"/>
@@ -53,4 +53,4 @@
   <standardpage name="Test5" xml="xml/test.xml"/>
   <standardpage name="Test5Form" xml="xml/test.xml"/>
   <standardpage name="Test5Failed" xml="xml/test.xml"/>
-</make>
+</xml-generator-config>
