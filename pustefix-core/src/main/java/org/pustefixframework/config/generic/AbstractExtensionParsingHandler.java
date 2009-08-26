@@ -51,6 +51,7 @@ public abstract class AbstractExtensionParsingHandler implements ParsingHandler 
         String type = element.getAttribute("type").trim();
         
         NodeList nl = element.getElementsByTagNameNS(element.getNamespaceURI(), "extend");
+        if(nl.getLength() == 0) nl = element.getElementsByTagNameNS(element.getNamespaceURI(), "extends");
         LinkedList<ExtensionTargetInfo> infos = new LinkedList<ExtensionTargetInfo>();
         for (int i = 0; i < nl.getLength(); i++) {
             Element extendElement = (Element) nl.item(i);

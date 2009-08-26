@@ -724,8 +724,7 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
         }
         
         ext.insertBefore(ext.createProcessingInstruction("xml-stylesheet", "type=\"text/xsl\" media=\"all\" href=\"file: //"
-                                                         + generator.getName() + "/" + stylesheet + "\""),
-                         ext.getDocumentElement()); 
+        			+ stylesheet + "\""), ext.getDocumentElement()); 
         for (Iterator<String> i = paramhash.keySet().iterator(); i.hasNext();) {
             String key = i.next();
             String val = (String) paramhash.get(key);

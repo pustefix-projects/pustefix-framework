@@ -8,7 +8,6 @@
   
   <xsl:output method="xml" encoding="UTF-8" indent="no"/>
   
-  <xsl:param name="product"/>
   <xsl:param name="lang"/>
   <xsl:param name="__target_gen"/>
   <xsl:param name="__namespaces"/>
@@ -128,10 +127,6 @@
 
   <xsl:template match="cus:navigation">
     <xsl:value-of select="$__target_gen"/>
-  </xsl:template>
-
-  <xsl:template match="cus:product">
-    <xsl:value-of select="$product"/>
   </xsl:template>
 
   <xsl:template match="cus:lang">

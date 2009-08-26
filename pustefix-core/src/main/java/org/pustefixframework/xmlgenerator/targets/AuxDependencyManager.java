@@ -86,7 +86,7 @@ public class AuxDependencyManager {
                         //path.setOriginatingURI();
                     }
                     String          part           = ((Element) auxdeps.item(j)).getAttribute("part");
-                    String          product        = ((Element) auxdeps.item(j)).getAttribute("product");
+                    String          theme          = ((Element) auxdeps.item(j)).getAttribute("theme");
                     String          parent_attr    = ((Element) auxdeps.item(j)).getAttribute("parent_path");
                     Resource parent_path = null;
                     if(!parent_attr.equals("")) {
@@ -94,14 +94,14 @@ public class AuxDependencyManager {
                     	parent_path = target.getTargetGenerator().getResourceLoader().getResource(uri);
                     }
                     String          parent_part    = ((Element) auxdeps.item(j)).getAttribute("parent_part");
-                    String          parent_product = ((Element) auxdeps.item(j)).getAttribute("parent_product");
+                    String          parent_theme = ((Element) auxdeps.item(j)).getAttribute("parent_theme");
                     String          target_attr    = ((Element) auxdeps.item(j)).getAttribute("target");
 
                     DependencyType thetype        = DependencyType.getByTag(type);
                     if (thetype == DependencyType.TEXT) {
-                        addDependencyInclude(path, part, product, parent_path, parent_part, parent_product);
+                        addDependencyInclude(path, part, theme, parent_path, parent_part, parent_theme);
                     } else if (thetype == DependencyType.IMAGE) {
-                        addDependencyImage(path, parent_path, parent_part, parent_product);
+                        addDependencyImage(path, parent_path, parent_part, parent_theme);
                     } else if (thetype == DependencyType.TARGET) {
                         addDependencyTarget(target_attr);
                     }
@@ -122,7 +122,7 @@ public class AuxDependencyManager {
         if (parent_path != null && parent_part != null && parent_theme != null) {
             LOG.debug("*** Found another AuxDependency as Parent...");
             parent = target.getTargetGenerator().getAuxDependencyFactory()
-                    .getAuxDependencyInclude(parent_path, parent_part,
+                    .getAuxDependencyInclude(parent_path, target.getTargetGenerator().getResourceLoader(), parent_part,
                             parent_theme);
         } else if (parent_path == null && parent_part == null
                 && parent_theme == null) {
@@ -151,7 +151,7 @@ public class AuxDependencyManager {
         LOG.info("*** [" + path.toString() + "][" + part + "][" + theme + "][" +
                  ((parent_path == null)? "null" : parent_path.toString()) + "][" + parent_part + "][" + parent_theme + "]");
 
-        child = target.getTargetGenerator().getAuxDependencyFactory().getAuxDependencyInclude(path, part, theme);
+        child = target.getTargetGenerator().getAuxDependencyFactory().getAuxDependencyInclude(path, target.getTargetGenerator().getResourceLoader(), part, theme);
         parent = getParentDependency(parent_path, parent_part, parent_theme);
         
         targetDependencyRelation.addRelation(parent, child, target);
@@ -169,7 +169,7 @@ public class AuxDependencyManager {
         LOG.info("*** [" + path.toString() + "][" +
                  ((parent_path == null)? "null" : parent_path.toString()) + "][" + parent_part + "][" + parent_theme + "]");
 
-        child = target.getTargetGenerator().getAuxDependencyFactory().getAuxDependencyImage(path);
+        child = target.getTargetGenerator().getAuxDependencyFactory().getAuxDependencyImage(path, target.getTargetGenerator().getResourceLoader());
         parent = getParentDependency(parent_path, parent_part, parent_theme);
         
         targetDependencyRelation.addRelation(parent, child, target);
@@ -185,7 +185,7 @@ public class AuxDependencyManager {
         LOG.info("Adding Dependency of type 'text' to Target '" + target.getFullName() + "':");
         LOG.info("*** [" + path.toString() + "]");
 
-        child = target.getTargetGenerator().getAuxDependencyFactory().getAuxDependencyFile(path);
+        child = target.getTargetGenerator().getAuxDependencyFactory().getAuxDependencyFile(path, target.getTargetGenerator().getResourceLoader());
         
         targetDependencyRelation.addRelation(root, child, target);
     }
@@ -282,13 +282,13 @@ public class AuxDependencyManager {
                                 depaux.setAttribute("orig_uri", a.getPath().getOriginalURI().toString());
                             }
                             depaux.setAttribute("part", a.getPart());
-                            depaux.setAttribute("product", a.getTheme());
+                            depaux.setAttribute("theme", a.getTheme());
                             if (parent_path != null) 
                                 depaux.setAttribute("parent_path", parent_path.getURI().toString());
                             if (parent_part != null) 
                                 depaux.setAttribute("parent_part", parent_part);
                             if (parent_theme != null) 
-                                depaux.setAttribute("parent_product", parent_theme);
+                                depaux.setAttribute("parent_theme", parent_theme);
                         } else if (aux.getType() == DependencyType.IMAGE) {
                             AuxDependencyImage a = (AuxDependencyImage) aux;
                             depaux.setAttribute("path", a.getPath().getURI().toString());
@@ -300,7 +300,7 @@ public class AuxDependencyManager {
                             if (parent_part != null) 
                                 depaux.setAttribute("parent_part", parent_part);
                             if (parent_theme != null) 
-                                depaux.setAttribute("parent_product", parent_theme);
+                                depaux.setAttribute("parent_theme", parent_theme);
                         } else if (aux.getType() == DependencyType.TARGET) {
                             Target target = ((AuxDependencyTarget) aux).getTarget();
                             depaux.setAttribute("target", target.getTargetKey());

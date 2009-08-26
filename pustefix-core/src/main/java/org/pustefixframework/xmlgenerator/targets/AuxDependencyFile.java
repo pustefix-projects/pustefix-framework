@@ -21,7 +21,9 @@ package org.pustefixframework.xmlgenerator.targets;
 import java.util.Iterator;
 import java.util.TreeSet;
 
+import org.pustefixframework.resource.DynamicResource;
 import org.pustefixframework.resource.Resource;
+import org.pustefixframework.resource.ResourceLoader;
 
 import de.schlund.pfixxml.util.ResourceUtils;
 
@@ -33,15 +35,17 @@ import de.schlund.pfixxml.util.ResourceUtils;
 public class AuxDependencyFile extends AbstractAuxDependency {
 
 	private Resource path;
+	private ResourceLoader resourceLoader;
 
     private long last_lastModTime = -1;
     
     protected int hashCode;
     
-    public AuxDependencyFile(TargetDependencyRelation targetDependencyRelation, Resource path) {
+    public AuxDependencyFile(TargetDependencyRelation targetDependencyRelation, Resource path, ResourceLoader resourceLoader) {
     	super(targetDependencyRelation);
         this.type = DependencyType.FILE;
         this.path = path;
+        this.resourceLoader = resourceLoader;
         this.hashCode = (type.getTag() + ":" + path.toString()).hashCode();
     }
     
@@ -55,11 +59,9 @@ public class AuxDependencyFile extends AbstractAuxDependency {
     }
     
     public long getModTime() {
-        if("dynamic".equals(path.getOriginalURI().getScheme())) {
-        	//TODO: check if original resource UIR is dynamically resolved 
-        	//to other resource and force update
-        	Resource res = path;
-            if(!res.getURI().equals(path.getURI())) {
+        if(path instanceof DynamicResource) {
+        	Resource res = resourceLoader.getResource(((DynamicResource)path).getDynamicURI());
+            if(!res.getOriginalURI().equals(path.getOriginalURI())) {
                 TreeSet<Target> targets = targetDependencyRelation.getAffectedTargets(this);
                 for (Iterator<Target> i = targets.iterator(); i.hasNext();) {
                     VirtualTarget target = (VirtualTarget) i.next();

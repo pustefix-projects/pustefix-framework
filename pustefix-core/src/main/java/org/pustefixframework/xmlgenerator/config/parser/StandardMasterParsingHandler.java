@@ -17,8 +17,11 @@
  */
 package org.pustefixframework.xmlgenerator.config.parser;
 
+import org.osgi.framework.BundleContext;
 import org.pustefixframework.config.generic.ParsingUtils;
+import org.pustefixframework.resource.ResourceLoader;
 import org.pustefixframework.xmlgenerator.config.model.Configuration;
+import org.pustefixframework.xmlgenerator.config.model.SourceInfo;
 import org.pustefixframework.xmlgenerator.config.model.StandardMaster;
 import org.pustefixframework.xmlgenerator.config.model.XMLExtension;
 import org.w3c.dom.Element;
@@ -40,6 +43,13 @@ public class StandardMasterParsingHandler implements ParsingHandler {
         ParsingUtils.checkAttributes(element, null, new String[] {"name"});
         
         StandardMaster master = new StandardMaster();
+        
+        BundleContext bundleContext = ParsingUtils.getSingleTopObject(BundleContext.class, context);
+        String bundleName = bundleContext.getBundle().getSymbolicName();
+        ResourceLoader resourceLoader = ParsingUtils.getSingleTopObject(ResourceLoader.class, context);
+        
+        SourceInfo sourceInfo = new SourceInfo(bundleName, resourceLoader);
+        master.setSourceInfo(sourceInfo);
         
         String name = element.getAttribute("name").trim();
         if(name.length()>0) {

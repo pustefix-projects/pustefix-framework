@@ -19,10 +19,12 @@ package org.pustefixframework.xmlgenerator.config.parser;
 
 import java.util.List;
 
+import org.osgi.framework.BundleContext;
 import org.pustefixframework.config.Constants;
 import org.pustefixframework.config.generic.ParsingUtils;
-import org.pustefixframework.xmlgenerator.config.model.AbstractModelElement;
+import org.pustefixframework.resource.ResourceLoader;
 import org.pustefixframework.xmlgenerator.config.model.Configuration;
+import org.pustefixframework.xmlgenerator.config.model.SourceInfo;
 import org.pustefixframework.xmlgenerator.config.model.TargetDef;
 import org.pustefixframework.xmlgenerator.config.model.XMLExtension;
 import org.w3c.dom.Element;
@@ -45,6 +47,13 @@ public class TargetDefParsingHandler implements ParsingHandler {
         ParsingUtils.checkAttributes(element, new String[] {"name","type"}, new String[] {"themes", "page", "variant"});
         
         TargetDef target = new TargetDef();
+        
+        BundleContext bundleContext = ParsingUtils.getSingleTopObject(BundleContext.class, context);
+        String bundleName = bundleContext.getBundle().getSymbolicName();
+        ResourceLoader resourceLoader = ParsingUtils.getSingleTopObject(ResourceLoader.class, context);
+        
+        SourceInfo sourceInfo = new SourceInfo(bundleName, resourceLoader);
+        target.setSourceInfo(sourceInfo);
         
         String name = element.getAttribute("name").trim();
         target.setName(name);

@@ -35,7 +35,6 @@ import org.springframework.beans.factory.InitializingBean;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import de.schlund.pfixxml.XMLException;
 import de.schlund.pfixxml.util.Xml;
 
 /**
@@ -108,7 +107,6 @@ public class CacheStatistic implements CacheStatisticMBean, InitializingBean {
     /**
 	 * Create cache-statistic in XML-format.
 	 */
-    @SuppressWarnings("unchecked")
     public Document getAsXML() {
 
         Document doc = Xml.createDocument();
@@ -133,13 +131,12 @@ public class CacheStatistic implements CacheStatisticMBean, InitializingBean {
     /**
      * Create cache-statistic in special format.
      */
-    @SuppressWarnings("unchecked")
     public String getAsString() {
         StringBuffer sb = new StringBuffer(128);
         long totalmisses = cacheStat.getMisses();
         long totalhits = cacheStat.getHits();
         String hitrate = formatHitrate(totalhits, totalmisses);
-        sb.append("|" + targetGenerator.getName() + ":" + totalhits + "," + totalmisses + "," + hitrate);
+        sb.append("|" + totalhits + "," + totalmisses + "," + hitrate);
         sb.insert(0, "TOTAL:" + totalhits + "," + totalmisses + "," + hitrate);
         return sb.toString();
     }
@@ -151,7 +148,6 @@ public class CacheStatistic implements CacheStatisticMBean, InitializingBean {
 
             Element ele_tg = doc.createElement("product");
 
-            ele_tg.setAttribute("name", targetGenerator.getName());
             long hits = cacheStat.getHits();
             long misses = cacheStat.getMisses();
             String hitrate = formatHitrate(hits, misses) + "%";

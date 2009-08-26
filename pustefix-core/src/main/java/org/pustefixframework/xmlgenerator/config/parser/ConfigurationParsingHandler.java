@@ -40,9 +40,6 @@ public class ConfigurationParsingHandler implements ParsingHandler {
     	ParsingUtils.checkAttributes(element, new String[] {"project", "lang", "xmlns"}, new String[] {"themes", "xsltversion"});    	
     	
      	Configuration configuration = ParsingUtils.getSingleTopObject(Configuration.class, context);
-     	
-    	String project = element.getAttribute("project").trim();
-    	configuration.setProject(project);
     	
     	String language = element.getAttribute("lang").trim();
     	configuration.setLanguage(language);

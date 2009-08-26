@@ -121,8 +121,8 @@ public class DelLang {
                 NodeList partchildren   = rootchild.getChildNodes();
                 for (int j = 0; j < partchildren.getLength(); j++) {
                     Node partchild = partchildren.item(j);
-                    if (partchild.getNodeType() == Node.ELEMENT_NODE && partchild.getNodeName().equals("product")) {
-                        String   productname     = ((Element) partchild).getAttribute("name");
+                    if (partchild.getNodeType() == Node.ELEMENT_NODE && partchild.getNodeName().equals("theme")) {
+                        String   themename     = ((Element) partchild).getAttribute("name");
                         NodeList prodchildren    = partchild.getChildNodes();
                         int      count           = prodchildren.getLength();
                         boolean  multilang       = false;
@@ -137,7 +137,7 @@ public class DelLang {
                                     }
                                 } else {
                                     System.out.println("*** Wrong element " + tmp.getNodeName() +
-                                                       " under part/product " + partname + "/" + productname);
+                                                       " under part/theme " + partname + "/" + themename);
                                     System.exit(1);
                                 }
                             }
@@ -172,7 +172,7 @@ public class DelLang {
                                 if ((k == 0 || k == (count - 1)) && prodchild.getNodeType() == Node.TEXT_NODE) {
                                     Matcher matcher = pattern.matcher(prodchild.getNodeValue());
                                     if (!matcher.matches()) {
-                                        System.out.println("==>" + partname + "/" + productname + ":" + prodchild.getNodeValue());
+                                        System.out.println("==>" + partname + "/" + themename + ":" + prodchild.getNodeValue());
                                         theme.appendChild(prodchild);
                                     }
                                 }

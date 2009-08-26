@@ -38,6 +38,12 @@
     <match>/p:pustefix-module/p:application/p:extension[@type='application.static']/p:extension-point[@type='application.static']</match>
   </handler>
   
+  <!--  Handle dynamic include configuration -->
+  
+  <handler class="org.pustefixframework.config.module.parser.DynamicIncludeInfoParsingHandler">
+    <match>/p:pustefix-module/p:dynamic-includes</match>
+  </handler>
+  
   <!-- Properties support (unused at the moment) -->
   
   <handler class="org.pustefixframework.config.generic.PropertiesParsingHandler">

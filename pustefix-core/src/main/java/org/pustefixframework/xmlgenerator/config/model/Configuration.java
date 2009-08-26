@@ -8,7 +8,6 @@ import de.schlund.pfixxml.util.XsltVersion;
 
 public class Configuration extends AbstractModelElement implements IncludeConfig, ParameterConfig {
 
-	private String project;
 	private String language;
 	private String[] themes;
 	private XsltVersion xsltVersion;
@@ -34,14 +33,6 @@ public class Configuration extends AbstractModelElement implements IncludeConfig
 	
 	public void modelChanged(ModelChangeEvent event) {
 		notifyModelChangeListeners(event);
-	}
-	
-	public String getProject() {
-		return project;
-	}
-	
-	public void setProject(String project) {
-		this.project = project;
 	}
 	
 	public String getLanguage() {

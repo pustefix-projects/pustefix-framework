@@ -19,6 +19,13 @@
     <osgi:service ref="includePartResourceProvider" interface="org.pustefixframework.resource.ResourceProvider" />
     <bean id="includePartResourceProvider" class="org.pustefixframework.resource.internal.IncludePartResourceProvider" />
     
+    <!-- Provides resource for dynamic: URIs -->
+    <osgi:service ref="dynamicResourceProvider" interface="org.pustefixframework.resource.ResourceProvider" />
+    <bean id="dynamicResourceProvider" class="org.pustefixframework.resource.internal.DynamicResourceProvider">
+      <property name="dynamicIncludeInfoRegistry" ref="dynincInfoRegistry"/>
+    </bean>
+    <bean id="dynincInfoRegistry" class="org.pustefixframework.resource.internal.DynamicIncludeInfoRegistry"/>
+    
     <!-- Provides selector for theme preference -->
     <osgi:service ref="themeResourceSelector" interface="org.pustefixframework.resource.ResourceSelector" />
     <bean id="themeResourceSelector" class="org.pustefixframework.resource.internal.ThemeResourceSelector" />

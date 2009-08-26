@@ -89,7 +89,7 @@ public abstract class TargetImpl implements TargetRW, Comparable<Target> {
     }
 
     public String getFullName() {
-        return generator.getName() + "@" + targetkey;
+        return targetkey;
     }
     
     /**
@@ -256,11 +256,7 @@ public abstract class TargetImpl implements TargetRW, Comparable<Target> {
      * @see java.lang.Comparable#compareTo(java.lang.Object)
      */
     public int compareTo(Target in) {
-        if (getTargetGenerator().getName().compareTo(in.getTargetGenerator().getName()) != 0) {
-            return getTargetGenerator().getName().compareTo(in.getTargetGenerator().getName());
-        } else {
-            return getTargetKey().compareTo(in.getTargetKey());
-        }
+    	return getTargetKey().compareTo(in.getTargetKey());
     }
 
     

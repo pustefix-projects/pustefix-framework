@@ -20,7 +20,6 @@ package org.pustefixframework.xmlgenerator.targets;
 
 import java.io.IOException;
 import java.util.Iterator;
-import java.util.TreeSet;
 
 import de.schlund.pfixxml.XMLException;
 import de.schlund.pfixxml.util.ResourceUtils;
@@ -99,8 +98,7 @@ public abstract class LeafTarget extends TargetImpl {
 
     @Override
     public String toString() {
-        return "[TARGET: " + getType() + " " + getTargetKey() + "@"
-                + getTargetGenerator().getName() + "]";
+        return "[TARGET: " + getType() + " " + getTargetKey() + "]";
     }
 
     @Override

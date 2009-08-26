@@ -19,6 +19,7 @@
 package org.pustefixframework.xmlgenerator.targets;
 
 import org.pustefixframework.resource.Resource;
+import org.pustefixframework.resource.ResourceLoader;
 
 
 
@@ -32,8 +33,8 @@ import org.pustefixframework.resource.Resource;
  */
 public class AuxDependencyImage extends AuxDependencyFile {
 
-    public AuxDependencyImage(TargetDependencyRelation targetDependencyRelation, Resource path) {
-        super(targetDependencyRelation, path);
+    public AuxDependencyImage(TargetDependencyRelation targetDependencyRelation, Resource path, ResourceLoader resourceLoader) {
+        super(targetDependencyRelation, path, resourceLoader);
         this.type = DependencyType.IMAGE;
     }
 

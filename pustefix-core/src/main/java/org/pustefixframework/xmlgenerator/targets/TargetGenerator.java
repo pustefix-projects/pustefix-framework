@@ -163,8 +163,8 @@ public class TargetGenerator implements ModelChangeListener, InitializingBean, B
     
     //-- attributes
 
-    public String getName() {
-        return configuration.getProject();
+    public String getApplicationBundle() {
+    	return bundleContext.getBundle().getSymbolicName();
     }
     
     public void setConfigFile(InputStreamResource configFile) {
@@ -183,7 +183,7 @@ public class TargetGenerator implements ModelChangeListener, InitializingBean, B
     	if(globalThemes == null) {
     		String[] themes = configuration.getThemes();
     		if(themes == null || themes.length == 0) {
-    			themes = new String[] {getName(), "default"};
+    			themes = new String[] {"default"};
     		} else if(!themes[themes.length-1].equals("default")) {
     			defaultTheme = themes[themes.length-1];
     			themes = Arrays.copyOf(themes, themes.length+1);
@@ -289,7 +289,7 @@ public class TargetGenerator implements ModelChangeListener, InitializingBean, B
 
     @Override
     public String toString() {
-        return "[TG: " + getName() + "; " + alltargets.size() + " targets defined.]";
+        return "[TG: " + alltargets.size() + " targets defined.]";
     }
 
     // *******************************************************************************************
@@ -451,7 +451,6 @@ public class TargetGenerator implements ModelChangeListener, InitializingBean, B
         			themeList.add(theme);
         		}
         	} else {
-        		themeList.add(configuration.getProject());
         		themeList.add("default");
         	}
         	if(!themeList.get(themeList.size()-1).equals("default")) {
@@ -524,9 +523,9 @@ public class TargetGenerator implements ModelChangeListener, InitializingBean, B
     	}
     	
     	addStandardParameters(target, targetDef);
+    	target.addParam("bundle", targetDef.getSourceInfo().getBundleSymbolicName());
     	if(doProhibitEdit()) target.addParam("prohibitEdit", "yes");
     	if(targetDef.getPage() != null) target.addParam("page", targetDef.getPage());
-    	target.addParam("product", configuration.getProject());
     	target.addParam("lang", configuration.getLanguage());
     	
     	alltargets.put(key, target);
@@ -566,7 +565,7 @@ public class TargetGenerator implements ModelChangeListener, InitializingBean, B
     	xslTarget.setXSLSource(xslSource);
     	
     	addStandardParameters(xslTarget, standardMaster);
-    	xslTarget.addParam("product", configuration.getProject());
+    	xslTarget.addParam("bundle", standardMaster.getSourceInfo().getBundleSymbolicName());
     	xslTarget.addParam("lang", configuration.getLanguage());
     	String includes = "";
     	for(IncludeDef include: standardMaster.getIncludes()) {
@@ -598,7 +597,7 @@ public class TargetGenerator implements ModelChangeListener, InitializingBean, B
     	xslTarget.setXSLSource(xslSource);
     	
         addStandardParameters(xslTarget, standardMetatags);
-        xslTarget.addParam("product", configuration.getProject());
+        xslTarget.addParam("bundle", standardMetatags.getSourceInfo().getBundleSymbolicName());
     	xslTarget.addParam("lang", configuration.getLanguage());
     	String includes = "";
     	for(IncludeDef include: standardMetatags.getIncludes()) {
@@ -645,10 +644,10 @@ public class TargetGenerator implements ModelChangeListener, InitializingBean, B
     	xmlTarget.setXSLSource(xslSource);
     	
         addStandardParameters(xmlTarget, standardPage);
+        xmlTarget.addParam("bundle", standardPage.getSourceInfo().getBundleSymbolicName());
         xmlTarget.addParam("page", standardPage.getName());
         if(doProhibitEdit()) xmlTarget.addParam("prohibitEdit", "yes");
         if(!xmlTarget.getParams().containsKey("outputencoding")) xmlTarget.addParam("outputencoding", getDefaultEncoding());
-        xmlTarget.addParam("module", standardPage.getSourceInfo().getBundleSymbolicName());
         
     	alltargets.put(xmlKey, xmlTarget);
     	depTargets.add(xmlTarget);
@@ -676,7 +675,7 @@ public class TargetGenerator implements ModelChangeListener, InitializingBean, B
         xslTarget.addParam("page", standardPage.getName());
         if(doProhibitEdit()) xslTarget.addParam("prohibitEdit", "yes");
         if(!xslTarget.getParams().containsKey("outputencoding")) xslTarget.addParam("outputencoding", getDefaultEncoding());
-        xslTarget.addParam("module", standardPage.getSourceInfo().getBundleSymbolicName());
+        xslTarget.addParam("bundle", standardPage.getSourceInfo().getBundleSymbolicName());
         
     	alltargets.put(xslKey, xslTarget);
     	depTargets.add(xslTarget);
@@ -788,7 +787,7 @@ public class TargetGenerator implements ModelChangeListener, InitializingBean, B
                     notifyListenerTargetDone(target);
                 } catch (TargetGenerationException tgex) {
                     notifyListenerTargetException(target, tgex);
-                    report.addError(tgex, getName());
+                    report.addError(tgex);
                     tgex.printStackTrace();
                 }
             } else {
@@ -881,7 +880,7 @@ public class TargetGenerator implements ModelChangeListener, InitializingBean, B
         if (!path.startsWith("/") && path.length() > 0) {
             path = "/" + path;
         }
-        String uri = "persistentstorage:/" + CACHEDIR + "/" + getName() + path;
+        String uri = "persistentstorage:/" + CACHEDIR + "/" + path;
         Resource resource;
         try {
             resource = resourceLoader.getResource(new URI(uri));

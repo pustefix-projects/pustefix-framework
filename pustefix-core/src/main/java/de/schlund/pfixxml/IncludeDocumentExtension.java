@@ -21,11 +21,11 @@ package de.schlund.pfixxml;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.MessageFormat;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
+
+import javax.xml.transform.TransformerException;
 
 import org.apache.log4j.Logger;
-import org.pustefixframework.resource.IncludePartResource;
 import org.pustefixframework.resource.Resource;
 import org.pustefixframework.resource.support.NullResource;
 import org.pustefixframework.xmlgenerator.targets.TargetGenerator;
@@ -34,8 +34,10 @@ import org.pustefixframework.xmlgenerator.view.ViewExtensionResolver;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
+import org.xml.sax.SAXException;
 
 import de.schlund.pfixxml.util.ExtensionFunctionUtils;
+import de.schlund.pfixxml.util.XPath;
 import de.schlund.pfixxml.util.Xml;
 import de.schlund.pfixxml.util.XsltContext;
 
@@ -54,6 +56,9 @@ public final class IncludeDocumentExtension {
     // ..................................................................
     private static final Logger       LOG        = Logger.getLogger(IncludeDocumentExtension.class);
     private static final String NOTARGET   = "__NONE__";
+    private static final String XPPARTNAME = "/include_parts/part[@name='";
+    private static final String XTHEMENAME = "/theme[@name = '";
+    private static final String XPNAMEEND  = "']";
     
     private static ThreadLocal<String> resolvedUri = new ThreadLocal<String>();
     
@@ -113,30 +118,38 @@ public final class IncludeDocumentExtension {
         
         String uriStr = path_str;
         
-        if(dynamic) {
-        	//TODO: dynamic scheme support
-            uriStr = "dynamic:/" + path_str + "?part=" + part + "&parent=" + parent_uri_str;
-            if(module != null) uriStr += "&module="+module;
-            else if("bundle".equals(parentURI.getScheme())) {
-                uriStr += "&module="+parentURI.getAuthority();
-            }
-            uriStr += "&project=" + targetGen.getName();
-        } else {
-        	if(!uriStr.matches("^\\w+:.*")) {
-        		if(module != null) {
-        			uriStr = "bundle://" + module + "/PUSTEFIX-INF/" + path_str;
-        		} else if("bundle".equals(parentURI.getScheme())) {
-        			uriStr = "bundle://" + parentURI.getAuthority() + "/PUSTEFIX-INF/" + path_str;
-        		} else {
-        			throw new IllegalArgumentException("Don't know which bundle should be referenced: " + uriStr);
-        		}
+        if(!uriStr.matches("^\\w+:.*")) {
+
+            if(module == null && "bundle".equals(parentURI.getScheme())) module = parentURI.getAuthority();
+            if(module == null) throw new IllegalArgumentException("Can't detect source bundle of: " + uriStr + "parent: " + parentURI.toASCIIString());
+
+            if(dynamic) {
+                    uriStr = "dynamic://" + module + "/PUSTEFIX-INF/" + path_str + "?part=" + part +
+                                            "&parent=" + parent_uri_str + "&application=" + targetGen.getApplicationBundle();
+            } else {
+                    uriStr = "bundle://" + module + "/PUSTEFIX-INF/" + path_str;
             }
         }
         
         try {
-                  		
-            VirtualTarget target = (VirtualTarget) targetGen.getTarget(targetkey);
+          
+            URI uri = new URI(uriStr);
+            Resource path = targetGen.getResourceLoader().getResource(uri);
             
+            resolvedUri.set(path == null? uri.toString():path.getURI().toString());
+            
+            Resource    parent_path = null;
+            if(!parent_uri_str.equals("")) {
+            	uri = new URI(parent_uri_str);
+            	parent_path = targetGen.getResourceLoader().getResource(uri);
+            }
+            boolean            dolog       = !targetkey.equals(NOTARGET);
+            int                length      = 0;
+            IncludeDocument    iDoc        = null;
+            Document           doc;
+
+            VirtualTarget target = (VirtualTarget) targetGen.getTarget(targetkey);
+
             String[] themes = targetGen.getGlobalThemes().getThemesArr();
             if (!targetkey.equals(NOTARGET)) {
                 themes = target.getThemes().getThemesArr();
@@ -151,36 +164,126 @@ public final class IncludeDocumentExtension {
                 target.setStoredException(ex);
                 throw ex;
             }
+            
             String DEF_THEME = targetGen.getDefaultTheme();
 
-        	Map<String,Object> paramMap = new HashMap<String,Object>();
-        	paramMap.put("preferredThemes", themes);
-        	URI uri = new URI("includepart:"+uriStr+":"+part);
-        	
-        	//TODO: cache include parts
-        	IncludePartResource resource = targetGen.getResourceLoader().getResource(uri, paramMap, IncludePartResource.class);
-        	resolvedUri.set(resource == null? uri.toString():resource.getURI().toString());
-            
-        	Resource parentResource = null;
-        	if(!parent_uri_str.equals("")) {
-        		URI parentUri = new URI(parent_uri_str);
-        		parentResource = targetGen.getResourceLoader().getResource(parentUri);
-        	}
-        	
-        	boolean dolog = !targetkey.equals(NOTARGET);
-            if (resource == null) {
+            if (path == null) {
                 if (dolog) {
                     DependencyTracker.logTyped("text", new NullResource(uri), part, DEF_THEME,
-                                               parentResource, parent_part, parent_theme, target);
+                                               parent_path, parent_part, parent_theme, target);
                 }
-                return errorNode(context, DEF_THEME);
-            } else {
-            	if (dolog) {
-            		DependencyTracker.logTyped("text", resource, part, resource.getTheme(),
-                                                       parentResource, parent_part, parent_theme, target);
-            	}
-            	return resource.getElement();
+                return errorNode(context,DEF_THEME);
+                //return new EmptyNodeSet();
             }
+            
+            // get the includedocument
+            try {
+                iDoc = targetGen.getIncludeDocument(context.getXsltVersion(), path, false);
+            } catch (SAXException saxex) {
+                if (dolog)
+                    DependencyTracker.logTyped("text", path, part, DEF_THEME,
+                                               parent_path, parent_part, parent_theme, target);
+                target.setStoredException(saxex);
+                throw saxex;
+            }
+            doc = iDoc.getDocument();
+            // Get the part
+            List<Node> ns;
+            try {
+                ns = XPath.select(doc, XPPARTNAME + part + XPNAMEEND);
+            } catch (TransformerException e) {
+                if (dolog)
+                    DependencyTracker.logTyped("text", path, part, DEF_THEME,
+                                               parent_path, parent_part, parent_theme, target);
+                throw e;
+            }
+            length = ns.size();
+            if (length == 0) {
+                // part not found
+                LOG.debug("*** Part '" + part + "' is 0 times defined.");
+                if (dolog) {
+                    DependencyTracker.logTyped("text", path, part, DEF_THEME,
+                                               parent_path, parent_part, parent_theme, target);
+                }
+                return errorNode(context,DEF_THEME);
+                //return new EmptyNodeSet();
+            } else if (length > 1) {
+                // too many parts. Error!
+                if (dolog) {
+                    DependencyTracker.logTyped("text", path, part, DEF_THEME,
+                                               parent_path, parent_part, parent_theme, target);
+                }
+                XMLException ex = new XMLException("*** Part '" + part + "' is multiple times defined! Must be exactly 1");
+                if(target!=null) target.setStoredException(ex);
+                throw ex;
+            }
+
+            // OK, we have found the part. Find the specfic theme branch matching the theme fallback list.
+            LOG.debug("   => Found part '" +  part + "'");
+            
+            for (int i = 0; i < themes.length; i++) {
+
+                String curr_theme = themes[i]; 
+                LOG.debug("     => Trying to find theme branch for theme '" + curr_theme + "'");
+                
+                try {
+                    ns = XPath.select(doc, XPPARTNAME + part + XPNAMEEND + XTHEMENAME + curr_theme + XPNAMEEND);
+                } catch (TransformerException e) {
+                    if (dolog)
+                        DependencyTracker.logTyped("text", path, part, DEF_THEME,
+                                                   parent_path, parent_part, parent_theme, target);
+                    throw e;
+                }
+                length = ns.size();
+                if (length == 0) {
+                    // Didn't find a theme part matching curr_theme, trying next in fallback line
+                    if (i < (themes.length - 1)) {
+                        LOG.debug("        Part '" + part + "' has no theme branch matching '" + curr_theme + "', trying next theme");
+                    } else {
+                        LOG.warn("        Part '" + part + "' has no theme branch matching '" + curr_theme + "', no more theme to try!");
+                    }
+                    continue;
+                } else if (length == 1) {
+                    LOG.debug("        Found theme branch '" + curr_theme + "' => STOP");
+                    // specific theme found
+                    boolean ok = true;
+                    if (dolog) {
+                        try {
+                            DependencyTracker.logTyped("text", path, part, curr_theme,
+                                                       parent_path, parent_part, parent_theme, target);
+                        } catch (Exception e) {
+                            // TODO
+                            ok = false;
+                        }
+                    }
+                    return ok? (Object) ns.get(0) : errorNode(context,curr_theme);
+                    //return ok? (Object) ns.get(0) : new EmptyNodeSet();
+                } else {
+                    // too many specific themes found. Error!
+                    if (dolog) {
+                        DependencyTracker.logTyped("text", path, part, DEF_THEME,
+                                                   parent_path, parent_part, parent_theme, target);
+                    }
+                    XMLException ex = new XMLException("*** Theme branch '" + curr_theme +
+                                                       "' is defined multiple times under part '" + part + "@" + path + "'");
+                    target.setStoredException(ex);
+                    throw ex;
+                }
+            }
+            
+            // We are only here if none of the themes produced a match:
+            @SuppressWarnings("unused")
+            boolean ok = true;
+            if (dolog) {
+                try {
+                    DependencyTracker.logTyped("text", path, part, DEF_THEME,
+                                               parent_path, parent_part, parent_theme, target);
+                } catch (Exception e) { // TODO
+                    ok = false;
+                }
+            }
+            return errorNode(context,DEF_THEME);
+            //return new EmptyNodeSet();
             
         } catch (Exception e) {
             Object[] args = {uriStr, part, targetGen, targetkey, 
@@ -191,6 +294,7 @@ public final class IncludeDocumentExtension {
             ExtensionFunctionUtils.setExtensionFunctionError(e);
             throw e;
         }
+        
     }
     
     public static String getResolvedURI() {
@@ -214,7 +318,9 @@ public final class IncludeDocumentExtension {
         String sysid = context.getSystemId();
         try {
             URI uri = new URI(sysid);
-            return uri.getPath();
+            String path = uri.getPath();
+            if(path.startsWith("/PUSTEFIX-INF")) path = path.substring(13);
+            return path;
         } catch(URISyntaxException x) {
             throw new IllegalArgumentException("Illegal system id: " + sysid, x);
         }

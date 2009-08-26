@@ -22,6 +22,7 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 
 import org.pustefixframework.resource.Resource;
+import org.pustefixframework.resource.ResourceLoader;
 
 
 /**
@@ -72,31 +73,31 @@ public class AuxDependencyFactory {
         return root;
     }
     
-    public synchronized AuxDependencyInclude getAuxDependencyInclude(Resource path, String part, String theme) {
+    public synchronized AuxDependencyInclude getAuxDependencyInclude(Resource path, ResourceLoader resourceLoader, String part, String theme) {
         String key = DependencyType.TEXT.getTag() + "@" + path.toString() + "@" + part + "@" + theme;
         AuxDependencyInclude ret = includeparts.get(key);
         if (ret == null) {
-            ret = new AuxDependencyInclude(targetDependencyRelation, path, part, theme);
+            ret = new AuxDependencyInclude(targetDependencyRelation, path, resourceLoader, part, theme);
             includeparts.put(key, ret);
         }
         return ret;
     }
     
-    public synchronized AuxDependencyImage getAuxDependencyImage(Resource path) {
+    public synchronized AuxDependencyImage getAuxDependencyImage(Resource path, ResourceLoader resourceLoader) {
         String key = path.toString();
         AuxDependencyImage ret = (AuxDependencyImage) images.get(key);
         if (ret == null) {
-            ret = new AuxDependencyImage(targetDependencyRelation, path);
+            ret = new AuxDependencyImage(targetDependencyRelation, path, resourceLoader);
             images.put(key, ret);
         }
         return ret;
     }
     
-    public synchronized AuxDependencyFile getAuxDependencyFile(Resource path) {
+    public synchronized AuxDependencyFile getAuxDependencyFile(Resource path, ResourceLoader resourceLoader) {
         String key = path.toString();
         AuxDependencyFile ret = (AuxDependencyFile) files.get(key);
         if (ret == null) {
-            ret = new AuxDependencyFile(targetDependencyRelation, path);
+            ret = new AuxDependencyFile(targetDependencyRelation, path, resourceLoader);
             files.put(key, ret);
         }
         return ret;

@@ -298,7 +298,7 @@
           </xsl:when>
           <xsl:when test="$__target_key='__NONE__' and $__editmode = 'admin'">
             <a href="#">
-              <xsl:attribute name="onClick">window.open('<xsl:value-of select="$__editor_url"/>/xml/main?__scriptedflow=selectinclude&amp;theme=<xsl:value-of select="string($used_theme)"/>&amp;path=<xsl:value-of select="$realpath"/>&amp;part=<xsl:value-of select="$part"/>&amp;name=<xsl:value-of select="$product"/>&amp;uri=<xsl:value-of select="$__application_url"/>&amp;type=dyninclude&amp;__anchor=left_navi|<xsl:value-of select="$realpath"/>','PustefixEditor','menubar=yes,status=yes,resizable=yes');return(false);</xsl:attribute>
+              <xsl:attribute name="onClick">window.open('<xsl:value-of select="$__editor_url"/>/xml/main?__scriptedflow=selectinclude&amp;theme=<xsl:value-of select="string($used_theme)"/>&amp;path=<xsl:value-of select="$realpath"/>&amp;part=<xsl:value-of select="$part"/>&amp;uri=<xsl:value-of select="$__application_url"/>&amp;type=dyninclude&amp;__anchor=left_navi|<xsl:value-of select="$realpath"/>','PustefixEditor','menubar=yes,status=yes,resizable=yes');return(false);</xsl:attribute>
               <img border="0" src="{$__contextpath}/core/img/edit.gif" alt="] Edit include: '{$part}' in file '{$realpath}'" title="Edit include: '{$part}' in file '{$realpath}'"/>
             </a>
           </xsl:when>
@@ -465,7 +465,7 @@
               <xsl:value-of select="./@width"/>
             </xsl:when>
             <xsl:otherwise>
-              <xsl:value-of select="geometry:getWidth(string($path))"/>
+              <xsl:value-of select="geometry:getWidth(string($path),$__target_gen)"/>
             </xsl:otherwise>
           </xsl:choose>
         </xsl:variable>
@@ -475,7 +475,7 @@
               <xsl:value-of select="./@height"/>
             </xsl:when>
             <xsl:otherwise>
-              <xsl:value-of select="geometry:getHeight(string($path))"/>
+              <xsl:value-of select="geometry:getHeight(string($path),$__target_gen)"/>
             </xsl:otherwise>
           </xsl:choose>
         </xsl:variable>
@@ -513,7 +513,7 @@
           </xsl:choose>
         </xsl:variable>
         <xsl:variable name="style">
-          <xsl:value-of select="geometry:getStyleStringForImage(string($path), string(./@style), string(./@width), string(./@height))"/>
+          <xsl:value-of select="geometry:getStyleStringForImage(string($path), string(./@style), string(./@width), string(./@height), $__target_gen)"/>
         </xsl:variable>
         <xsl:if test="not($style = '')">
           <xsl:attribute name="style">

@@ -17,6 +17,7 @@ public class TargetDef extends AbstractModelElement implements ParameterConfig, 
 	private String xsl;
 	private ExtensibleList<DependencyDef> auxDependencies = new ExtensibleList<DependencyDef>();
 	private ExtensibleList<Parameter> parameters = new ExtensibleList<Parameter>();
+	private SourceInfo sourceInfo;
 	
 	public TargetDef() {
 		auxDependencies.addModelChangeListener(this);
@@ -93,6 +94,14 @@ public class TargetDef extends AbstractModelElement implements ParameterConfig, 
 
 	public void addParameter(String name, String value) {
 		parameters.add(new Parameter(name, value));
+	}
+	
+	public SourceInfo getSourceInfo() {
+		return sourceInfo;
+	}
+	
+	public void setSourceInfo(SourceInfo sourceInfo) {
+		this.sourceInfo = sourceInfo;
 	}
 	
 }

@@ -22,7 +22,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Iterator;
 import java.util.TreeMap;
-import java.util.TreeSet;
 
 import javax.xml.transform.Templates;
 import javax.xml.transform.TransformerException;
@@ -150,13 +149,11 @@ public abstract class VirtualTarget extends TargetImpl {
     @Override
     public String toString() {
         if (getXMLSource() != null && getXSLSource() != null) {
-            return "[TARGET: " + getType() + " " + getTargetKey() + "@"
-                    + getTargetGenerator().getName() + "[" + themes.getId()
+            return "[TARGET: " + getType() + " " + getTargetKey() + "[" + themes.getId()
                     + "]" + " <" + getXMLSource().getTargetKey() + "> <"
                     + getXSLSource().getTargetKey() + ">]";
         } else {
-            return "[TARGET: " + getType() + " " + getTargetKey() + "@"
-                    + getTargetGenerator().getName() + "[" + themes.getId()
+            return "[TARGET: " + getType() + " " + getTargetKey() + "[" + themes.getId()
                     + "]]";
         }
     }

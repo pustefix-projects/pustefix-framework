@@ -29,7 +29,9 @@ import org.apache.log4j.Logger;
 import org.pustefixframework.resource.InputStreamResource;
 import org.pustefixframework.resource.Resource;
 import org.pustefixframework.resource.ResourceLoader;
+import org.pustefixframework.xmlgenerator.targets.TargetGenerator;
 
+import de.schlund.pfixxml.util.ExtensionFunctionUtils;
 import de.schlund.pfixxml.util.ResourceUtils;
 
 
@@ -48,116 +50,133 @@ public class ImageGeometry {
     private static Map<String, ImageGeometryData> imageinfo = new HashMap<String, ImageGeometryData>();
     private final static Logger                         LOG       = Logger.getLogger(ImageGeometry.class); 
     
-    //TODO: pass as parameter instead static, inject resource loader
-    private static ResourceLoader resourceLoader;
-    
-    
-    public static int getHeight(String path) {
-        ImageGeometryData data = getImageGeometryData(path);
-        if (data == null) {
-            return -1;
-        } else {
-            return data.getHeight();
-        }
+
+    public static int getHeight(String path, TargetGenerator targetGen) {
+    	try {
+	        ImageGeometryData data = getImageGeometryData(path, targetGen.getResourceLoader());
+	        if (data == null) {
+	            return -1;
+	        } else {
+	            return data.getHeight();
+	        }
+    	} catch(RuntimeException x) {
+    		ExtensionFunctionUtils.setExtensionFunctionError(x);
+    		throw x;
+    	}
     }
     
-    public static int getWidth(String path) {
-        ImageGeometryData data = getImageGeometryData(path);
-        if (data == null) {
-            return -1;
-        } else {
-            return data.getWidth();
-        }
+    public static int getWidth(String path, TargetGenerator targetGen) {
+    	try {
+	        ImageGeometryData data = getImageGeometryData(path, targetGen.getResourceLoader());
+	        if (data == null) {
+	            return -1;
+	        } else {
+	            return data.getWidth();
+	        }
+       	} catch(RuntimeException x) {
+    		ExtensionFunctionUtils.setExtensionFunctionError(x);
+    		throw x;
+    	}
     }
 
-    public static String getType(String path) {
-        ImageGeometryData data = getImageGeometryData(path);
-        if (data == null) {
-            return null;
-        } else {
-            return data.getType();
-        }
+    public static String getType(String path, TargetGenerator targetGen) {
+    	try {
+	        ImageGeometryData data = getImageGeometryData(path, targetGen.getResourceLoader());
+	        if (data == null) {
+	            return null;
+	        } else {
+	            return data.getType();
+	        }
+       	} catch(RuntimeException x) {
+    		ExtensionFunctionUtils.setExtensionFunctionError(x);
+    		throw x;
+    	}
     }
     
-    public static String getStyleStringForImage(String path, String userStyle, String userWidth, String userHeight) {
-        ImageGeometryData data = getImageGeometryData(path);
-        int targetWidth=-1;
-        int targetHeight=-1;
-        String targetWidthUnit = "px";
-        String targetHeightUnit = "px";
-
-        if (userWidth != null && userWidth.length() > 0) {
-            userWidth = userWidth.trim();
-            if (userWidth.endsWith("%")) {
-                targetWidthUnit = "%";
-                userWidth = userWidth.substring(0, userWidth.length() - 1);
-            }
-            try {
-                targetWidth = Integer.parseInt(userWidth);
-            } catch (NumberFormatException e) {
-                LOG.error("*** Image " + path + " supplied invalid data for width parameter: " + userWidth);
-                targetWidth = -1;
-            }
-        } else {
-            if (data != null) targetWidth = data.getWidth();
-        }
-        if (userHeight != null && userHeight.length() > 0) {
-            userHeight = userHeight.trim();
-            if (userHeight.endsWith("%")) {
-                targetHeightUnit = "%";
-                userHeight = userHeight.substring(0, userHeight.length() - 1);
-            }
-            try {
-                targetHeight = Integer.parseInt(userHeight);
-            } catch (NumberFormatException e) {
-                LOG.error("*** Image " + path + " supplied invalid data for height parameter: " + userHeight);
-                targetHeight = -1;
-            }
-        } else {
-            if (data != null) targetHeight = data.getHeight();
-        }
-        
-        boolean haveWidth = false, haveHeight = false;
-        
-        if (userStyle == null) {
-            userStyle = "";
-        }
-        StringBuffer genStyle = new StringBuffer(userStyle.trim());
-        
-        StringTokenizer st = new StringTokenizer(userStyle, ";");
-        while (st.hasMoreTokens()) {
-            String token = st.nextToken();
-            String propName = token.substring(0, token.indexOf(':'));
-            propName = propName.trim().toLowerCase();
-            if (propName.equals("width")) {
-                haveWidth = true;
-            } else if (propName.equals("height")) {
-                haveHeight = true;
-            }
-        }
-        
-        if (!haveWidth && targetWidth != -1) {
-            if (genStyle.length() > 0 && genStyle.charAt(genStyle.length()-1) != ';') {
-                genStyle.append(';');
-            }
-            genStyle.append("width:");
-            genStyle.append(targetWidth);
-            genStyle.append(targetWidthUnit + ";");
-        }
-        
-        if (!haveHeight && targetHeight != -1) {
-            if (genStyle.length() > 0 && genStyle.charAt(genStyle.length()-1) != ';') {
-                genStyle.append(';');
-            }
-            genStyle.append("height:");
-            genStyle.append(targetHeight);
-            genStyle.append(targetHeightUnit + ";");
-        }
-        
-        return genStyle.toString();
+    public static String getStyleStringForImage(String path, String userStyle, String userWidth, String userHeight, TargetGenerator targetGen) {
+    	try {
+	        ImageGeometryData data = getImageGeometryData(path, targetGen.getResourceLoader());
+	        int targetWidth=-1;
+	        int targetHeight=-1;
+	        String targetWidthUnit = "px";
+	        String targetHeightUnit = "px";
+	
+	        if (userWidth != null && userWidth.length() > 0) {
+	            userWidth = userWidth.trim();
+	            if (userWidth.endsWith("%")) {
+	                targetWidthUnit = "%";
+	                userWidth = userWidth.substring(0, userWidth.length() - 1);
+	            }
+	            try {
+	                targetWidth = Integer.parseInt(userWidth);
+	            } catch (NumberFormatException e) {
+	                LOG.error("*** Image " + path + " supplied invalid data for width parameter: " + userWidth);
+	                targetWidth = -1;
+	            }
+	        } else {
+	            if (data != null) targetWidth = data.getWidth();
+	        }
+	        if (userHeight != null && userHeight.length() > 0) {
+	            userHeight = userHeight.trim();
+	            if (userHeight.endsWith("%")) {
+	                targetHeightUnit = "%";
+	                userHeight = userHeight.substring(0, userHeight.length() - 1);
+	            }
+	            try {
+	                targetHeight = Integer.parseInt(userHeight);
+	            } catch (NumberFormatException e) {
+	                LOG.error("*** Image " + path + " supplied invalid data for height parameter: " + userHeight);
+	                targetHeight = -1;
+	            }
+	        } else {
+	            if (data != null) targetHeight = data.getHeight();
+	        }
+	        
+	        boolean haveWidth = false, haveHeight = false;
+	        
+	        if (userStyle == null) {
+	            userStyle = "";
+	        }
+	        StringBuffer genStyle = new StringBuffer(userStyle.trim());
+	        
+	        StringTokenizer st = new StringTokenizer(userStyle, ";");
+	        while (st.hasMoreTokens()) {
+	            String token = st.nextToken();
+	            String propName = token.substring(0, token.indexOf(':'));
+	            propName = propName.trim().toLowerCase();
+	            if (propName.equals("width")) {
+	                haveWidth = true;
+	            } else if (propName.equals("height")) {
+	                haveHeight = true;
+	            }
+	        }
+	        
+	        if (!haveWidth && targetWidth != -1) {
+	            if (genStyle.length() > 0 && genStyle.charAt(genStyle.length()-1) != ';') {
+	                genStyle.append(';');
+	            }
+	            genStyle.append("width:");
+	            genStyle.append(targetWidth);
+	            genStyle.append(targetWidthUnit + ";");
+	        }
+	        
+	        if (!haveHeight && targetHeight != -1) {
+	            if (genStyle.length() > 0 && genStyle.charAt(genStyle.length()-1) != ';') {
+	                genStyle.append(';');
+	            }
+	            genStyle.append("height:");
+	            genStyle.append(targetHeight);
+	            genStyle.append(targetHeightUnit + ";");
+	        }
+	        
+	        return genStyle.toString();
+       	} catch(RuntimeException x) {
+    		ExtensionFunctionUtils.setExtensionFunctionError(x);
+    		throw x;
+    	}
     }
 
-    private static ImageGeometryData getImageGeometryData(String path) {
+    private static ImageGeometryData getImageGeometryData(String path, ResourceLoader resourceLoader) {
         synchronized (imageinfo) {
         	URI uri;
 			try {

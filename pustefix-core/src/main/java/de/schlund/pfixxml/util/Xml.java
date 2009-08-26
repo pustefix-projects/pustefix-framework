@@ -144,7 +144,7 @@ public class Xml {
     
     public static Document parse(XsltVersion xsltVersion, InputStreamResource res) throws TransformerException {
     	InputSource is = new InputSource();
-        is.setSystemId(res.getURI().toASCIIString());
+        is.setSystemId(res.getOriginalURI().toASCIIString());
         try {
             is.setByteStream(res.getInputStream());
             SAXSource src = new SAXSource(createXMLReader(), is);

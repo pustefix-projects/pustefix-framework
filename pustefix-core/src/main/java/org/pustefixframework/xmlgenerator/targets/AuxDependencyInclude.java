@@ -19,6 +19,7 @@
 package org.pustefixframework.xmlgenerator.targets;
 
 import org.pustefixframework.resource.Resource;
+import org.pustefixframework.resource.ResourceLoader;
 
 
 
@@ -33,8 +34,8 @@ public class AuxDependencyInclude extends AuxDependencyFile {
 
     private String theme;
 
-    public AuxDependencyInclude(TargetDependencyRelation targetDependencyRelation, Resource path, String part, String theme) {
-        super(targetDependencyRelation, path);
+    public AuxDependencyInclude(TargetDependencyRelation targetDependencyRelation, Resource path, ResourceLoader resourceLoader, String part, String theme) {
+        super(targetDependencyRelation, path, resourceLoader);
         this.type = DependencyType.TEXT;
         this.part = part;
         this.theme = theme;
