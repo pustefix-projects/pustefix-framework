@@ -25,6 +25,7 @@
     <!--<module>pustefix-webservice-plugin</module>-->
     <module>pustefix-launcher-plugin</module>
     <module>pustefix-eclipse-plugin</module>
+    <module>pustefix-autoconfig-plugin</module>
   </modules>
 
   <profiles>
