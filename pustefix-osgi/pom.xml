@@ -37,6 +37,7 @@
 
   <modules>
     <module>pustefix-osgi-spring-dm-extender</module>
+    <module>pustefix-osgi-logservice-bridge</module>
   </modules>
 
 </project>
