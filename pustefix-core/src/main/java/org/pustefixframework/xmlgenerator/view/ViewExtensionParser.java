@@ -61,7 +61,6 @@ public class ViewExtensionParser {
 			}
 			try {
 				read(resource, bundleContext, extensions, extensionPoints);
-				System.out.println(fileCount + " " + resource.toString());
 				fileCount++;
 			} catch(UnsupportedDoctypeException x) {
 				//ignore XML files containing no Pustefix include parts

@@ -61,7 +61,6 @@ public class DynamicResourceProvider implements ResourceProvider {
     }
 
     public Resource[] getResources(URI uri, URI originallyRequestedURI, ResourceLoader resourceLoader) {
-    	System.out.println("DYNAMICRES: "+uri.toASCIIString());
         if (uri.getScheme() == null || !uri.getScheme().equals("dynamic")) {
             throw new IllegalArgumentException("Cannot handle URI \"" + uri.toASCIIString() + "\": Scheme is not supported");
         }
