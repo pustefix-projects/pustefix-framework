@@ -18,6 +18,8 @@
 
 package org.pustefixframework.container.spring.beans.internal;
 
+import java.io.File;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -26,10 +28,12 @@ import java.util.Enumeration;
 
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
+import org.osgi.util.tracker.ServiceTracker;
 import org.pustefixframework.resource.Resource;
 import org.pustefixframework.resource.ResourceLoader;
 import org.pustefixframework.resource.ResourceProvider;
 import org.pustefixframework.resource.support.URLResourceImpl;
+
 
 
 /**
@@ -45,8 +49,12 @@ public class BundleResourceProvider implements ResourceProvider {
     
     private final static String[] SUPPORTED_SCHEMES = new String[] {"bundle"};
 
+    private ServiceTracker sourceLocatorServiceTracker;
+    
     public BundleResourceProvider(BundleContext bundleContext) {
         this.bundleContext = bundleContext;
+        sourceLocatorServiceTracker = new ServiceTracker(bundleContext, BundleSourceLocatorRegistry.class.getName(), null);
+        sourceLocatorServiceTracker.open();
     }
 
     public Resource[] getResources(URI uri, URI originallyRequestedURI, ResourceLoader resourceLoader) {
@@ -101,6 +109,21 @@ public class BundleResourceProvider implements ResourceProvider {
         if (filename.trim().length() == 0) {
             return null;
         }
+        //try to get resource from the bundle source directory using a registered BundleSourceLocator
+        BundleSourceLocatorRegistry sourceLocatorRegistry = (BundleSourceLocatorRegistry)sourceLocatorServiceTracker.getService();
+        if(sourceLocatorRegistry != null) {
+        	File bundleSrcDir = sourceLocatorRegistry.getSourceLocation(bundle.getSymbolicName(), (String)bundle.getHeaders().get("Bundle-Version"));
+        	if(bundleSrcDir != null) {
+        		File srcFile = new File(bundleSrcDir, "src/main/resources/" + path + "/" + filename);
+        		try {
+					URLResourceImpl resource = new URLResourceImpl(uri, originallyRequestedURI, srcFile.toURI().toURL());
+					return new Resource[] {resource};
+        		} catch (MalformedURLException e) {
+        			throw new IllegalArgumentException("Illegal file URL: " + srcFile.toURI().toASCIIString(), e);
+				}
+        		//TODO: handle resources from fragments
+        	}
+        }
         ArrayList<URLResourceImpl> resources = new ArrayList<URLResourceImpl>();
         @SuppressWarnings("unchecked")
         Enumeration<URL> en = bundle.findEntries(path, filename, false);
@@ -118,5 +141,11 @@ public class BundleResourceProvider implements ResourceProvider {
     public String[] getSchemes() {
         return SUPPORTED_SCHEMES;
     }
-
+    
+    @Override
+    protected void finalize() throws Throwable {
+    	sourceLocatorServiceTracker.close();
+    	super.finalize();
+    }
+    
 }

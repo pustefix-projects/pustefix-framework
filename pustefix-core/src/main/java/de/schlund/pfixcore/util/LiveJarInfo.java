@@ -37,6 +37,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.apache.log4j.Logger;
+import org.pustefixframework.container.spring.beans.internal.BundleSourceLocator;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -49,7 +50,7 @@ import de.schlund.pfixcore.exception.PustefixRuntimeException;
  * @author mleidig@schlund.de
  *
  */
-public class LiveJarInfo implements ModuleSourceLocator {
+public class LiveJarInfo implements BundleSourceLocator {
     
     private static Logger LOG = Logger.getLogger(LiveJarInfo.class);
     
@@ -140,6 +141,12 @@ public class LiveJarInfo implements ModuleSourceLocator {
             }
         }
         return elems;
+    }
+    
+    public File getSourceLocation(String bundleSymbolicName,
+    		String bundleVersion) {
+    	// TODO Auto-generated method stub
+    	return null;
     }
     
     public File getLocation(URL jarUrl) {

@@ -15,21 +15,21 @@
  * along with Pustefix; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-package de.schlund.pfixcore.util;
+package org.pustefixframework.container.spring.beans.internal;
 
 import java.io.File;
-import java.net.URL;
 
 /**
- * Implementors can provide a source or unpacked directory for a pustefix module 
- * specified by the jar file's URL. Thus resources are loaded from this location
- * instead of the jar file. 
+ * Implementors can provide a source or unpacked directory for bundles, which 
+ * will be used to load resources instead of the packaged bundle itself. Thus
+ * resources can be reloaded at development time without having to rebuild and
+ * reload the whole bundle.
  * 
  * @author mleidig@schlund.de
  *
  */
-public interface ModuleSourceLocator {
+public interface BundleSourceLocator {
 
-    public File getLocation(URL jarUrl);
+    public File getSourceLocation(String bundleSymbolicName, String bundleVersion);
     
 }
