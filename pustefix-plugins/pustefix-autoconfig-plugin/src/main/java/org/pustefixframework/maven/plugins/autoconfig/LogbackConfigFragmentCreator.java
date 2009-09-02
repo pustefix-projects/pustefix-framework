@@ -71,7 +71,7 @@ public class LogbackConfigFragmentCreator extends ConfigFragmentCreator {
 		layout.setAttribute("class", "ch.qos.logback.classic.PatternLayout");
 		appender.appendChild(layout);
 		Element pattern = doc.createElement("Pattern");
-		pattern.setTextContent("%d{HH:mm:ss.SSS} XXX [%thread] %-5level %logger{36} - %msg%n");
+		pattern.setTextContent("%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n");
 		layout.appendChild(pattern);
 		Element root = doc.createElement("root");
 		String logLevel = params.get("logLevel");
