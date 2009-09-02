@@ -3,13 +3,13 @@
   <parent>
     <groupId>org.pustefixframework.osgi</groupId>
     <artifactId>pustefix-osgi</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>1.0.0</version>
   </parent>
 
   <name>Pustefix OSGi LogService bridge</name>
   <groupId>org.pustefixframework.osgi</groupId>
   <artifactId>pustefix-osgi-logservice-bridge</artifactId>
-  <version>1.0.0-SNAPSHOT</version>
+  <version>1.0.0</version>
   <packaging>bundle</packaging>
 
   <dependencies>

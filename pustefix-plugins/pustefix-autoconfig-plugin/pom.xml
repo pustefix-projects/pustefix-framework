@@ -5,11 +5,11 @@
   <parent>
     <artifactId>pustefix-plugins</artifactId>
     <groupId>org.pustefixframework.maven.plugins</groupId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>1.0.0</version>
   </parent>
   <groupId>org.pustefixframework.maven.plugins</groupId>
   <artifactId>pustefix-autoconfig-plugin</artifactId>
-  <version>1.0.0-SNAPSHOT</version>
+  <version>1.0.0</version>
   <packaging>maven-plugin</packaging>
   <name>pustefix-autoconfig-plugin Maven Mojo</name>
   <url>http://maven.apache.org</url>
