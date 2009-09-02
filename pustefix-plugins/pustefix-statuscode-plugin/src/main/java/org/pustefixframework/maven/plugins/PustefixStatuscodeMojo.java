@@ -25,6 +25,8 @@ import java.util.List;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.project.MavenProject;
+import org.apache.maven.shared.osgi.DefaultMaven2OsgiConverter;
+import org.apache.maven.shared.osgi.Maven2OsgiConverter;
 import org.codehaus.plexus.util.DirectoryScanner;
 import org.pustefixframework.maven.plugins.GenerateSCodes.Result;
 
@@ -97,6 +99,11 @@ public class PustefixStatuscodeMojo extends AbstractMojo {
         for (int i = 0; i < files.length; i++) {
             String file = files[i];
             resList.add(file);
+        }
+        
+        if(module == null) {
+        	Maven2OsgiConverter converter = new DefaultMaven2OsgiConverter();
+        	module = converter.getBundleSymbolicName(project.getArtifact());
         }
         
         try {
