@@ -31,11 +31,11 @@
     <bean id="themeResourceSelector" class="org.pustefixframework.resource.internal.ThemeResourceSelector" />
     
     <!--  Provides BundleSourceLocators for loading resources from source folders -->
-    <osgi:service ref="bundleSourceLocatorRegistry" interface="de.schlund.pfixcore.util.BundleSourceLocatorRegistry"/>
-    <bean id="bundleSourceLocatorRegistry" class="de.schlund.pfixcore.util.BundleSourceLocatorRegistryImpl"/>
+    <osgi:service ref="bundleSourceLocatorRegistry" interface="org.pustefixframework.container.spring.beans.internal.BundleSourceLocatorRegistry"/>
+    <bean id="bundleSourceLocatorRegistry" class="org.pustefixframework.container.spring.beans.internal.BundleSourceLocatorRegistryImpl"/>
     
-    <osgi:service ref="bundleIndexLocator" interface="de.schlund.pfixcore.util.BundleSourceLocator"/>
-    <bean id="bundleIndexLocator" class="de.schlund.pfixcore.util.BundleIndexLocator"/>
+    <osgi:service ref="bundleIndexLocator" interface="org.pustefixframework.container.spring.beans.internal.BundleSourceLocator"/>
+    <bean id="bundleIndexLocator" class="org.pustefixframework.container.spring.beans.internal.BundleIndexLocator"/>
     
     
 </beans>
