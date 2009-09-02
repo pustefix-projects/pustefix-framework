@@ -26,6 +26,7 @@
     <module>pustefix-launcher-plugin</module>
     <module>pustefix-eclipse-plugin</module>
     <module>pustefix-autoconfig-plugin</module>
+    <module>pustefix-bundleindex-plugin</module>
   </modules>
 
   <profiles>
