@@ -89,6 +89,60 @@
           </execution>
         </executions>
       </plugin>
+      <plugin>
+        <groupId>org.pustefixframework.maven.plugins</groupId>
+        <artifactId>pustefix-autoconfig-plugin</artifactId>
+        <version>1.0.0-SNAPSHOT</version>
+        <configuration>
+          <mode>${mode}</mode>
+          <logLevel>${logLevel}</logLevel>
+        </configuration>
+        <executions>
+          <execution>
+            <goals>
+              <goal>generate-config-fragments</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.pustefixframework.maven.plugins</groupId>
+        <artifactId>pustefix-bundleindex-plugin</artifactId>
+        <version>1.0.0-SNAPSHOT</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>update-bundle-index</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.pustefixframework.maven.plugins</groupId>
+        <artifactId>pustefix-launcher-plugin</artifactId>
+        <version>1.0.0-SNAPSHOT</version>
+      </plugin>
     </plugins>
   </build>
+  
+  <profiles>
+    <profile>
+      <id>test</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <properties>
+        <mode>test</mode>
+        <logLevel>info</logLevel>
+      </properties>
+    </profile>
+    <profile>
+      <id>prod</id>
+      <properties>
+        <mode>prod</mode>
+        <logLevel>warn</logLevel>
+      </properties>
+    </profile>
+  </profiles>
+  
 </project>
