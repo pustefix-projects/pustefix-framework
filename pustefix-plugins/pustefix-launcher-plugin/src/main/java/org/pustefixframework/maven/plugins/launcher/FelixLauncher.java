@@ -71,7 +71,7 @@ public class FelixLauncher implements Launcher {
 		}
 	}
 
-	public void launch(List<BundleConfig> bundles, File launcherDirectory, URIToFileResolver resolver) {
+	public void launch(List<BundleConfig> bundles, File launcherDirectory, URIToFileResolver resolver, int defaultStartLevel) {
 		
 		File frameworkBundleFile;
 		File mainBundleFile;
@@ -81,7 +81,8 @@ public class FelixLauncher implements Launcher {
 			mainBundleFile = resolver.resolve(new URI(MAIN_BUNDLE));
 			for(String shellBundle:SHELL_BUNDLES) {
 				File file = resolver.resolve(new URI(shellBundle));
-				bundles.add(0, new BundleConfig(file, true));
+				String name = Utils.getBundleSymbolicNameFromJar(file);
+				bundles.add(0, new BundleConfig(file, name, true, defaultStartLevel));
 			}
 		} catch(URISyntaxException x) {
 			throw new RuntimeException("Illegal bundle URI", x);

@@ -18,6 +18,6 @@ public interface Launcher {
 	 * @param launcherDirectory Location to store data
 	 * @param resolver Resolver for required additional artifacts
 	 */
-	public void launch(List<BundleConfig> bundles, File launcherDirectory, URIToFileResolver resolver);
+	public void launch(List<BundleConfig> bundles, File launcherDirectory, URIToFileResolver resolver, int defaultStartLevel);
 		
 }

@@ -1,10 +1,16 @@
 package org.pustefixframework.maven.plugins.launcher;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -33,6 +39,9 @@ import org.apache.maven.project.artifact.MavenMetadataSource;
  * resolved from the project's POM or a configuration file.
  *
  * @goal run
+ * 
+ * @execute phase="package"
+ * 
  */
 public class LauncherMojo extends AbstractMojo implements URIToFileResolver {
 	
@@ -43,9 +52,19 @@ public class LauncherMojo extends AbstractMojo implements URIToFileResolver {
     private File launcherDirectory;
     
     /**
+     * @parameter default-value="${basedir}/provisioning.conf"
+     */
+    private File provisioningConfig;
+    
+    /**
      * @parameter default-value="equinox"
      */
     private String osgiRuntime;
+    
+    /**
+     * @parameter default-value=4
+     */
+    private int defaultStartLevel;
     
     /** @parameter expression="${project}" */
     private MavenProject mavenProject;
@@ -87,62 +106,124 @@ public class LauncherMojo extends AbstractMojo implements URIToFileResolver {
     	
     	
     	if(mavenProject.getPackaging().equals("bundle")) {
-    		BundleConfig bundle = new BundleConfig(mavenProject.getBasedir(), true);
+    	    String bundleSymbolicName = Utils.getBundleSymbolicNameFromProject(mavenProject.getBasedir());
+    	    File bundleDir = new File(mavenProject.getBasedir(),"target/classes");
+    		BundleConfig bundle = new BundleConfig(bundleDir, bundleSymbolicName, true, defaultStartLevel);
     		bundles.add(bundle);
     	}
+    	
+    	Set<String> excludedBundles = new HashSet<String>();
+        if(provisioningConfig.exists()) {
+            String line = null;
+            try {
+                BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(provisioningConfig)));
+                while((line = reader.readLine()) != null) {
+                    line = line.trim();
+                    if(!(line.equals("")||line.startsWith("#"))) {
+                        if(line.startsWith("!")) {
+                            line = line.substring(1).trim();
+                            excludedBundles.add(line);
+                        } else if(line.startsWith("mvn:") ||  line.startsWith("file:")) {
+                        	String uriStr = line;
+                        	int level = defaultStartLevel;
+                        	int ind = line.indexOf('@');
+                        	if(ind > -1) {
+                        		uriStr = line.substring(0,ind);
+                        		level = Integer.parseInt(line.substring(ind+1));
+                        	}
+                            URI uri = new URI(uriStr);
+                            BundleConfig bundleConfig = getBundleConfig(uri, level);
+                            if(bundleConfig != null) bundles.add(bundleConfig);
+                        } else throw new MojoExecutionException("Unsupported provisioning config entry: " + line);
+                    }
+                }
+            } catch(URISyntaxException x) {
+                throw new MojoExecutionException("Illegal URI in provisioning configuration file '" +
+                        provisioningConfig.getAbsolutePath() + "': " + line, x);
+                
+            } catch(IOException x) {
+                throw new MojoExecutionException("Error while reading provisioning configuration from file '" + 
+                        provisioningConfig.getAbsolutePath() + "'.", x);
+            }
+        }
     	
     	try {
     		List<?> list=mavenProject.getDependencies();
     		Set<?> dependencyArtifacts = MavenMetadataSource.createArtifacts( artifactFactory, list, null, null, null );
     		Artifact pomArtifact = mavenProject.getArtifact();
-    	
     		ArtifactResolutionResult result = resolver.resolveTransitively(dependencyArtifacts, pomArtifact, 
     			Collections.EMPTY_MAP, localRepository, remoteRepositories, metadataSource, null, Collections.EMPTY_LIST);
     		Set<?> resolved = result.getArtifacts();
     		Iterator<?> it = resolved.iterator();
     		while(it.hasNext()) {
     			Artifact artifact = (Artifact)it.next();
-    			if(!artifact.getArtifactId().equals("com.springsource.slf4j.jcl")) {
     			if(artifact.getScope().equals(Artifact.SCOPE_RUNTIME) || artifact.getScope().equals(Artifact.SCOPE_COMPILE)) {
-    				JarFile jarFile = new JarFile(artifact.getFile());
-    				Manifest m=jarFile.getManifest();
-    				boolean startable = false;
-    				String fragmentHost = m.getMainAttributes().getValue("Fragment-Host");
-    				if(fragmentHost == null) {
-    					String bundleActivator = m.getMainAttributes().getValue("Bundle-Activator");
-    					if(bundleActivator != null) startable = true;
-    				}
-    				BundleConfig bundle = new BundleConfig(artifact.getFile(), startable);
-    				bundles.add(bundle);
-    			}
+    			    BundleConfig bundleConfig = getBundleConfig(artifact.getFile(), defaultStartLevel);
+    			    if(bundleConfig != null && !excludedBundles.contains(bundleConfig.getBundleSymbolicName())) 
+    			        bundles.add(bundleConfig);
     			}
     		}
-    	
     	} catch(Exception x) {
-    		x.printStackTrace();
+    		throw new MojoExecutionException("Error resolving artifact dependencies", x);
     	}
-       
-    
-    	launcher.launch(bundles, launcherDirectory, this);
     	
+    	launcher.launch(bundles, launcherDirectory, this, defaultStartLevel);
+    	
+    }
+    
+    private BundleConfig getBundleConfig(URI uri, int startLevel) throws MojoExecutionException {
+        File file = resolve(uri);
+        if(!file.exists()) throw new MojoExecutionException("Bundle doesn't exist: " + uri.toASCIIString());
+        return getBundleConfig(file, startLevel);
+    }
+    
+    private BundleConfig getBundleConfig(File file, int startLevel) throws MojoExecutionException {
+    	BundleConfig bundleConfig = null;
+    	try {
+	    	JarFile jarFile = new JarFile(file);
+			Manifest manifest = jarFile.getManifest();
+			if(manifest.getMainAttributes().getValue("Bundle-ManifestVersion") != null) {
+				boolean startable = false;
+				String fragmentHost = manifest.getMainAttributes().getValue("Fragment-Host");
+				if(fragmentHost == null) startable = true;
+				String bundleSymbolicName = manifest.getMainAttributes().getValue("Bundle-SymbolicName");
+				bundleConfig = new BundleConfig(file, bundleSymbolicName, startable, startLevel);
+			} else {
+				if(getLog().isDebugEnabled()) {
+					getLog().debug("Artifact '" + file.getAbsolutePath() + "'" +
+							" doesn't contain 'Bundle-ManifestVersion' MANIFEST.MF entry -> artifact will be ignored.");
+				}
+			}
+    	} catch(IOException x) {
+    		throw new MojoExecutionException("Can't read MANIFEST.MF of artifact '" + file.getAbsolutePath() + "'.", x);
+    	}
+		return bundleConfig;
     }
     
     public File resolve(URI uri) {
     	if(uri.getScheme().equals("mvn")) {
     		Artifact artifact = resolveMavenURI(uri);
     		return artifact.getFile();
-    	} 
-    	return null;
+    	} else if(uri.getScheme().equals("file")) {
+    		if(!uri.getSchemeSpecificPart().startsWith("/")) {
+    			URI base = mavenProject.getBasedir().toURI();
+        		uri = base.resolve(uri.getSchemeSpecificPart());
+    		}
+    		File file = new File(uri);
+    		return file;
+    	} else throw new IllegalArgumentException("URI scheme not supported: " + uri.getScheme());
     }
     
     private Artifact resolveMavenURI(URI uri) {
-    	String[] parts = uri.getSchemeSpecificPart().split("/");
+        String path = uri.getSchemeSpecificPart();
+    	String[] parts = path.split("/");
     	String groupId = parts[0];
     	String artifactId = parts[1];
     	String version = parts[2];
     	String type = parts[3];
     	VersionRange versionRange;
     	try {
+    	//	versionRange = VersionRange.createFromVersion(version);
     		versionRange = VersionRange.createFromVersionSpec(version);
     	} catch(InvalidVersionSpecificationException x) {
     		throw new RuntimeException("Illegal OSGi runtime version spec: " + version, x);

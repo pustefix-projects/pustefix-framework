@@ -13,6 +13,19 @@
   <packaging>maven-plugin</packaging>
   <name>Pustefix OSGi Runtime Launcher Plugin</name>
   <url>http://pustefix-framework.org</url>
+  
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-plugin-plugin</artifactId>
+        <version>2.3</version>
+        <configuration>
+          <goalPrefix>pustefix-launcher</goalPrefix>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+  
   <dependencies>
     <dependency>
       <groupId>org.apache.maven</groupId>

@@ -18,13 +18,15 @@ import java.util.jar.Manifest;
 public class EquinoxLauncher implements Launcher {
 
 	private static String FRAMEWORK_BUNDLE = "mvn:org.eclipse.osgi/org.eclipse.osgi/[3.2.0.0,4.0.0.0)/jar";
-
-	private void configure(File launcherDirectory, List<BundleConfig> bundles, File framework) {
-		createConfigProperties(launcherDirectory, bundles, framework);
+	private static String SERVICE_BUNDLE = "mvn:org.eclipse.osgi/org.eclipse.osgi.services/3.1.200.v20071203/jar";
+	private static String LOGGING_BUNDLE = "mvn:org.eclipse.equinox/log/1.0.100-v20070226/jar";
+	
+	private void configure(File launcherDirectory, List<BundleConfig> bundles, File framework, int defaultStartLevel) {
+		createConfigProperties(launcherDirectory, bundles, framework, defaultStartLevel);
 		createDevProperties(launcherDirectory, bundles);
 	}
 	
-	private void createConfigProperties(File launcherDirectory, List<BundleConfig> bundles, File framework) {
+	private void createConfigProperties(File launcherDirectory, List<BundleConfig> bundles, File framework, int defaultStartLevel) {
 		StringBuilder config = new StringBuilder();
     	
     	config.append("org.osgi.supports.framework.extension=true\n");
@@ -35,10 +37,16 @@ public class EquinoxLauncher implements Launcher {
     	Iterator<BundleConfig> it = bundles.iterator();
     	while(it.hasNext()) {
     		BundleConfig bundle = it.next();
+    		
 			config.append("reference:file:").append(bundle.getFile().getAbsolutePath());
-			if(bundle.doStart()) config.append("@start");
-			if(it.hasNext()) config.append(",");
 			
+			if(bundle.doStart()) {
+			    if(bundle.getStartLevel()==4) config.append("@start");
+			    else config.append("@"+bundle.getStartLevel()+":start");
+			}
+			
+			if(it.hasNext()) config.append(",");
+    		
 		}
 		config.append("\n");
     	
@@ -55,6 +63,8 @@ public class EquinoxLauncher implements Launcher {
     	config.append("osgi.install.area=file:").append(launcherDirectory.getAbsolutePath()).append("\n");
     	config.append("osgi.noShutdown=true\n");
     	
+    	config.append("org.osgi.service.http.port=8080\n");
+    	
     	try {
     		File configFile = new File(launcherDirectory,"config.ini");
     		FileOutputStream out = new FileOutputStream(configFile);
@@ -69,7 +79,7 @@ public class EquinoxLauncher implements Launcher {
 		Properties props = new Properties();
 		for(BundleConfig bundle:bundles) {
 			if(bundle.getFile().isDirectory()) {
-				File manifestFile = new File(bundle.getFile(), "src/main/resources/META-INF/MANIFEST.MF");
+				File manifestFile = new File(bundle.getFile(), "META-INF/MANIFEST.MF");
 				if(!manifestFile.exists()) 
 					throw new RuntimeException("Missing manifest file: " + manifestFile.getAbsolutePath());
 				try {
@@ -77,7 +87,7 @@ public class EquinoxLauncher implements Launcher {
 					String bundleName = manifest.getMainAttributes().getValue("Bundle-SymbolicName");
 					if(bundleName==null) 
 						throw new RuntimeException("Missing Bundle-SymbolicName entry in manifest: " + manifestFile.getAbsolutePath());
-					props.setProperty(bundleName, "target/classes");
+					//props.setProperty(bundleName, "target/classes");
 				} catch(IOException x) {
 					throw new RuntimeException("Error reading manifest file: " + manifestFile.getAbsolutePath());
 				}
@@ -95,16 +105,20 @@ public class EquinoxLauncher implements Launcher {
 	}
 
 	
-	public void launch(List<BundleConfig> bundles, File launcherDirectory, URIToFileResolver resolver) {
+	public void launch(List<BundleConfig> bundles, File launcherDirectory, URIToFileResolver resolver, int defaultStartLevel) {
 		
 		File framework;
 		try {
 			framework = resolver.resolve(new URI(FRAMEWORK_BUNDLE));
+			File serviceBundle = resolver.resolve(new URI(SERVICE_BUNDLE));
+			bundles.add(new BundleConfig(serviceBundle, Utils.getBundleSymbolicNameFromJar(serviceBundle), true, defaultStartLevel));
+			File loggingBundle = resolver.resolve(new URI(LOGGING_BUNDLE));
+			bundles.add(new BundleConfig(loggingBundle, Utils.getBundleSymbolicNameFromJar(loggingBundle), true, 3));
 		} catch (URISyntaxException x) {
 			throw new RuntimeException("Illegal bundle URI", x);
 		}
 		
-		configure(launcherDirectory, bundles, framework);
+		configure(launcherDirectory, bundles, framework, defaultStartLevel);
     	try {
     		File configFile = new File(launcherDirectory,"config.ini");
     		
