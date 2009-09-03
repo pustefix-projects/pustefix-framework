@@ -121,7 +121,7 @@ public final class IncludeDocumentExtension {
         if(!uriStr.matches("^\\w+:.*")) {
 
             if(module == null && "bundle".equals(parentURI.getScheme())) module = parentURI.getAuthority();
-            if(module == null) throw new IllegalArgumentException("Can't detect source bundle of: " + uriStr + "parent: " + parentURI.toASCIIString());
+            if(module == null) throw new IllegalArgumentException("Can't detect source bundle of: " + uriStr + " parent: " + parentURI.toASCIIString());
 
             if(dynamic) {
                     uriStr = "dynamic://" + module + "/PUSTEFIX-INF/" + path_str + "?part=" + part +

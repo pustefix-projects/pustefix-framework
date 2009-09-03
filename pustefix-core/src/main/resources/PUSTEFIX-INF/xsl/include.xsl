@@ -338,9 +338,12 @@
           </xsl:otherwise>
         </xsl:choose>
       </ixsl:with-param>
-      <xsl:if test="@module">
-        <ixsl:with-param name="module"><xsl:value-of select="@module"/></ixsl:with-param>
-      </xsl:if>
+      <ixsl:with-param name="module">
+        <xsl:choose>
+          <xsl:when test="@module"><xsl:value-of select="@module"/></xsl:when>
+          <xsl:otherwise><xsl:value-of select="$bundle"/></xsl:otherwise>
+        </xsl:choose>
+      </ixsl:with-param>
       <xsl:if test="@search">
         <ixsl:with-param name="search"><xsl:value-of select="@search"/></ixsl:with-param>
       </xsl:if>
