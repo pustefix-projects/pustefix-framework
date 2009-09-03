@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<project-config xmlns="http://www.pustefix-framework.org/2008/namespace/project-config">
+<pustefix-application xmlns="http://www.pustefix-framework.org/2009/namespace/application-config">
   
   <project>
     <name>sample1</name>
@@ -31,7 +31,7 @@
   <testrecording/>
   
   <xml-generator>
-    <config-file>docroot:/WEB-INF/depend.xml</config-file>
+    <config-file>bundle:/META-INF/pustefix/depend.xml</config-file>
     <choose>
       <when test="$mode='prod'">
         <!-- Set this to false if you want to skip the check for changed stylesheets on every request -->
@@ -87,7 +87,7 @@
     
     <context-xml-service>
       <path>/xml/main</path>
-      <config-file>docroot:/WEB-INF/config.conf.xml</config-file>
+      <config-file>bundle:/META-INF/pustefix/config.conf.xml</config-file>
       <!-- Set this to true if you want to skip the last transformation and only get a
            xml document containing all needed information for an external renderer -->
       <!-- <render-external>true</render-external> -->  
@@ -106,7 +106,7 @@
     
     <direct-output-service>
       <path>/xml/download</path>
-      <config-file>docroot:/WEB-INF/direct.conf.xml</config-file>
+      <config-file>bundle:/META-INF/pustefix/direct.conf.xml</config-file>
     </direct-output-service>
    
     <!-- the deref-service element is optional, you only need to provide 
@@ -123,6 +123,7 @@
       <path>core/img</path>
       <path>core/script</path>
       <path>img</path>
+      <path>css</path>
       <path>modules/animal-module/img</path>
     </static>
     
@@ -146,4 +147,4 @@
 
   </properties>
   
-</project-config>
+</pustefix-application>

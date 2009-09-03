@@ -15,10 +15,16 @@
              <td>ColorNo: <ixsl:value-of select="/formresult/tshirt/@color"/></td>
              <td>
                <ixsl:for-each select="/formresult/tshirt/feature/int">
+                 <pfx:include level="runtime">
+                   <pfx:part>tshirt_feature_<ixsl:value-of select="./text()"/></pfx:part>
+                   <pfx:href>dyntxt/order_features.xml</pfx:href>
+                 </pfx:include>
+                 <!-- 
                  <ixsl:call-template name="pfx:include">
                    <ixsl:with-param name="part">tshirt_feature_<ixsl:value-of select="./text()"/></ixsl:with-param>
                    <ixsl:with-param name="href">dyntxt/order_features.xml</ixsl:with-param>                   
-                 </ixsl:call-template>   
+                 </ixsl:call-template>
+                 -->   
                  <br/>
                </ixsl:for-each>
              </td>
@@ -37,10 +43,16 @@
                <td>ColorNo: <ixsl:value-of select="/formresult/trouser/@color"/></td>
                <td>
                  <ixsl:for-each select="/formresult/trouser/feature/int">
+                   <pfx:include level="runtime">
+                     <pfx:part>trouser_feature_<ixsl:value-of select="./text()"/></pfx:part>
+                     <pfx:href>dyntxt/order_features.xml</pfx:href>
+                   </pfx:include>
+                   <!-- 
                    <ixsl:call-template name="pfx:include">
                      <ixsl:with-param name="part">trouser_feature_<ixsl:value-of select="./text()"/></ixsl:with-param>
                      <ixsl:with-param name="href">dyntxt/order_features.xml</ixsl:with-param>                   
-                   </ixsl:call-template>   
+                   </ixsl:call-template>
+                   -->   
                    <br/>
                  </ixsl:for-each>
                </td>

@@ -8,6 +8,7 @@
 
   <context:annotation-config/>
 
+  <!--
   <bean id="testdata" class="de.schlund.pfixcore.example.TestData" scope="session" parent="testdata_base">
     <aop:scoped-proxy/>
     <property name="data" ref="${ref.testdata}"/>
@@ -28,5 +29,6 @@
   <bean id="testdata_base" abstract="true">
     <property name="text" value="${testdata.defaulttext}"/>
   </bean>
+  -->
 
 </beans>

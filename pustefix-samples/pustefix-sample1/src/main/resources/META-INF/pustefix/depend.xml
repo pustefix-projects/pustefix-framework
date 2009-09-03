@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<make project="sample1"
-      lang="en_GB">
+<xml-generator-config lang="en_GB" project="sample1" xmlns="http://www.pustefix-framework.org/2008/namespace/xml-generator-config">
 
   <global>
     <!-- <include stylesheet="xsl/runtime.xsl"/> -->
@@ -46,8 +45,8 @@
     <page name="C"  handler="/xml/main"/>
 
     <page name="testchecks" handler="/xml/main"/>
-
-    <config-include file="WEB-INF/fragments.xml" section="navigation"/>
+     
+    <page name="IncludeConfPage" handler="/xml/main" />
 
   </navigation>
 
@@ -68,7 +67,7 @@
     <!-- <include stylesheet="xsl/metatags-additional-variation1.xsl"/> -->
   </standardmetatags>
 
-  <config-include file="WEB-INF/fragments.xml" section="targets"/>
+  <standardpage name="IncludeConfPage" xml="xml/one_frame_navi.xml" />
 
   <standardpage master="var1" metatags="var1" name="home"     xml="xml/one_frame_navi.xml"/>
   <standardpage name="home"     xml="xml/one_frame_navi.xml" variant="foo"/>
@@ -107,4 +106,4 @@
     <depxsl name="metatags.xsl"/>
   </target>
 
-</make>
+</xml-generator-config>

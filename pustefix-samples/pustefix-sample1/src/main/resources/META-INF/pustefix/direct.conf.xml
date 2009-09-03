@@ -9,10 +9,16 @@
     <!-- <force-serial-requests>true</force-serial-requests> -->
   </global-config>
   
-  <config-include file="WEB-INF/fragments.xml" refid="directtest" />
+  <directoutputpagerequest name="test">
+    <directoutputstate class="de.schlund.pfixcore.example.FileDownloadDOState" />
+    <properties>
+      <prop name="downloadfile">htdocs/style.css</prop>
+      <prop name="downloadmimetype">text/plain</prop>
+    </properties>
+  </directoutputpagerequest>
   
   <directoutputpagerequest name="install">
-    <directoutputstate class="de.schlund.pfixcore.workflow.app.FileDownloadDOState" />
+    <directoutputstate class="de.schlund.pfixcore.example.FileDownloadDOState" />
     <properties>
       <prop name="downloadfile">htdocs/style.css</prop>
       <prop name="downloadmimetype">text/plain</prop>

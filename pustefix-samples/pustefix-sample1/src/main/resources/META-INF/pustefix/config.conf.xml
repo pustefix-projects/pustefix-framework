@@ -40,8 +40,10 @@
     <!-- </end> -->
   </interceptors>
 
-  <scriptedflow name="forceadult" file="WEB-INF/scriptedflow/forceadult.script.xml" />
-  <scriptedflow name="ordershirt" file="WEB-INF/scriptedflow/ordershirt.script.xml" />
+  <!-- 
+  <scriptedflow name="forceadult" file="bundle:/META-INF/pustefix/scriptedflow/forceadult.script.xml" />
+  <scriptedflow name="ordershirt" file="bundle:/META-INF/pustefix/scriptedflow/ordershirt.script.xml" />
+  -->
 
   <!-- <pageflow name="OrderFlow" stopnext="true"> -->
   <pageflow name="OrderFlow" final="home">
@@ -117,7 +119,7 @@
       </input>
       <output>
         <resource node="adultinfo" class="de.schlund.pfixcore.example.ContextAdultInfo" />
-        <resource node="testdata" bean-ref="testdata"/>
+        <!--<resource node="testdata" bean-ref="testdata"/>-->
       </output>
     </default>
     <variant name="foo:bar:baz">
@@ -215,6 +217,7 @@
     </output>
   </pagerequest>
 
+  <!--
   <pagerequest name="scriptingstate">
     <state class="script:script/ScriptingState.bsh" />
     <output>
@@ -230,6 +233,7 @@
       <resource node="tshirt" class="de.schlund.pfixcore.example.ContextTShirt" />
     </output>
   </pagerequest>
+  -->
 
   <pagerequest name="invalidate">
     <state class="de.schlund.pfixcore.example.InvalidateSessionState" />
@@ -241,8 +245,7 @@
     </input>
   </pagerequest>
   
-
-  <config-include file="WEB-INF/fragments.xml" section="pagerequests" />
+  <pagerequest name="IncludeConfPage" />
 
   <!-- <properties> -->
     <!-- *** some additional properties needed for this application *** -->

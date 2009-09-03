@@ -1,0 +1,149 @@
+================================================
+Migrating Pustefix applications from 0.14 to 1.0
+================================================
+
+- pustefix-webapp-plugin aus pom.xml löschen
+
+- Create folders
+    src/main/resources
+    src/main/resources/META-INF
+    src/main/resources/META-INF/pustefix
+    src/main/resources/PUSTEFIX-INF
+    
+- Move resource subfolders (dyntxt, htdocs, img, script, txt, xml, xsl, ...)
+    from src/main/webapp 
+      to src/main/resources/PUSTEFIX-INF
+    
+- Move (and rename) main project configuration file
+    from src/main/webapp/WEB-INF/project.xml
+      to src/main/resources/META-INF/pustefix-application.xml
+
+- Remove src/main/webapp/WEB-INF/web.xml
+
+- Remove src/main/webapp/WEB-INF/pfixlog.xml
+    (TODO: describe how to do logging, e.g. converting pfixlog.xml to logback.xml and creating fragment)
+
+- Move remaining configuration files (config.conf.xml, direct.conf.xml, depend.xml, spring.xml, scriptedflow, ...) 
+    to src/main/resources/META-INF/pustefix
+
+- Remove src/main/webapp folder (which should be empty now)
+
+- Adapt configuration in src/main/resources/META-INF/pustefix-application.xml
+
+    replace <project-config xmlns="http://www.pustefix-framework.org/2008/namespace/project-config">
+    by <pustefix-application xmlns="http://www.pustefix-framework.org/2009/namespace/application-config">
+    
+    change <config-file> paths (within <xml-generator>, <context-xml-service>,<direct-output-service>)
+    from docroot:/WEB-INF/...
+    to bundle:/META-INF/pustefix/...
+    
+- Adapt configuration in src/main/resource/META-INF/pustefix/depend.xml
+
+    replace <make project="..." lang="...">
+    by <xml-generator-config project="..." lang="..." 
+          xmlns="http://www.pustefix-framework.org/2008/namespace/xml-generator-config">
+    
+- Replace config-includes by extension-points, configuration-fragments by extensions
+    (TODO: describe details)    
+    
+- Signature of StatusCode setters in casters, pre/post checks has to be changed from String to StatusCode
+  (because the according classes are loaded with another classloader and don't see StatusCodeLibs)
+  
+- PustefixPropertiesPersister/Spring-PropertyPlaceholderConfigurer
+    
+- Changes in pom.xml:
+
+    change packaging from 'war' to 'bundle'
+    
+    add maven-bundle-plugin to plugins:
+    
+      <plugin>
+         <groupId>org.apache.felix</groupId>
+         <artifactId>maven-bundle-plugin</artifactId>
+         <extensions>true</extensions>
+         <version>2.0.0</version>
+         <configuration>
+            <instructions>
+              <Bundle-RequiredExecutionEnvironment>J2SE-1.5</Bundle-RequiredExecutionEnvironment>
+              <Include-Resource>src/main/resources</Include-Resource>
+              <Export-Package></Export-Package>
+              <Import-Package>*, org.aopalliance.aop;version="1.0.0", org.springframework.aop.scope;version="2.5.6.A", org.springframework.aop;version="2.5.6.A", org.springframework.aop.framework;version="2.5.6.A", net.sf.cglib.core;version="2.1.3", net.sf.cglib.proxy;version="2.1.3", net.sf.cglib.reflect;version="2.1.3"</Import-Package>
+            </instructions>
+         </configuration>
+         <executions>
+            <execution>
+               <id>bundle-manifest</id>
+               <phase>process-classes</phase>
+               <goals>
+                  <goal>manifest</goal>
+               </goals>
+            </execution>
+         </executions>
+      </plugin>
+      
+    add pustefix-autoconfig-plugin (optional)
+    
+      <plugin>
+        <groupId>org.pustefixframework.maven.plugins</groupId>
+        <artifactId>pustefix-autoconfig-plugin</artifactId>
+        <version>1.0.0</version>
+        <configuration>
+          <mode>${mode}</mode>
+          <logLevel>${logLevel}</logLevel>
+        </configuration>
+        <executions>
+          <execution>
+            <goals>
+              <goal>generate-config-fragments</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    
+    add pustefix-bundleindex-plugin (optional)
+    
+      <plugin>
+        <groupId>org.pustefixframework.maven.plugins</groupId>
+        <artifactId>pustefix-bundleindex-plugin</artifactId>
+        <version>1.0.0</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>update-bundle-index</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      
+    add pustefix-launcher-plugin (optional)
+    
+      <plugin>
+        <groupId>org.pustefixframework.maven.plugins</groupId>
+        <artifactId>pustefix-launcher-plugin</artifactId>
+        <version>1.0.0</version>
+      </plugin>
+
+    add profiles
+    
+      <profile>
+      <id>test</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <properties>
+        <mode>test</mode>
+        <logLevel>info</logLevel>
+      </properties>
+    </profile>
+    <profile>
+      <id>prod</id>
+      <properties>
+        <mode>prod</mode>
+        <logLevel>warn</logLevel>
+      </properties>
+     </profile>
+
+===========================================
+Migrating Pustefix modules from 0.14 to 1.0
+===========================================
+
