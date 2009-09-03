@@ -86,7 +86,9 @@ public class AnnotationBeanDefinitionPostProcessor implements BeanFactoryPostPro
         this.scopedProxyMap.clear();
         for (String beanName : beanFactory.getBeanDefinitionNames()) {
             BeanDefinition beanDefinition = beanFactory.getBeanDefinition(beanName);
-            if (!beanDefinition.isAbstract() && beanDefinition.getBeanClassName().equals("org.springframework.aop.scope.ScopedProxyFactoryBean")) {
+            if (!beanDefinition.isAbstract() && 
+            		( beanDefinition.getBeanClassName().equals("org.springframework.aop.scope.ScopedProxyFactoryBean")
+            		|| beanDefinition.getBeanClassName().equals("org.pustefixframework.container.spring.beans.support.ScopedProxyFactoryBean")	)) {
                 PropertyValue value = beanDefinition.getPropertyValues().getPropertyValue("targetBeanName");
                 if (value != null) {
                     scopedProxyMap.put((String) value.getValue(), beanName);
@@ -222,11 +224,16 @@ public class AnnotationBeanDefinitionPostProcessor implements BeanFactoryPostPro
             BeanDefinition beanDefinition = beanFactory.getBeanDefinition(beanName);
             if(beanDefinition.isAbstract()) continue;
             Class<?> beanClass;
+            
             try {
                 beanClass = beanClassLoader.loadClass(beanDefinition.getBeanClassName());
             } catch (ClassNotFoundException e) {
-                throw new BeanDefinitionValidationException("Type \"" + beanDefinition.getBeanClassName() + "\" could not be loaded.");
+                //throw new BeanDefinitionValidationException("Type \"" + beanDefinition.getBeanClassName() + "\" could not be loaded.");
+                //don't throw an exception here since 1.0, because classes can be loaded by other classloader,
+                //but we're only interested in classes loaded with the current BeanFactory's classloader here
+            	continue;
             }
+           
             if (wantedType.isAssignableFrom(beanClass)) {
                 if (matchingBeanName == null) {
                     matchingBeanName = beanName;
