@@ -59,7 +59,7 @@ public class TargetDefParsingHandler implements ParsingHandler {
         target.setName(name);
         
         String type = ParsingUtils.getAttribute(element, "type", new String[] {"xml", "xsl"}, null);
-        target.setType(TargetDef.Type.valueOf(type));
+        target.setType(TargetDef.Type.valueOf(type.toUpperCase()));
         
         String themes = element.getAttribute("themes").trim();
     	if(themes.length()>0) {
