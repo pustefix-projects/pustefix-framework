@@ -24,7 +24,6 @@ import org.pustefixframework.generated.CoreStatusCodes;
 import de.schlund.pfixcore.generator.IWrapperParamPostCheck;
 import de.schlund.pfixcore.generator.SimpleCheck;
 import de.schlund.util.statuscodes.StatusCode;
-import de.schlund.util.statuscodes.StatusCodeHelper;
 
 /**
  * IntegerRange.java
@@ -49,12 +48,12 @@ public class IntegerRange extends SimpleCheck implements IWrapperParamPostCheck 
         scode_big   = CoreStatusCodes.POSTCHECK_INTEGER_TOO_BIG;
     }
 
-    public void setScodeTooSmall(String fqscode) {
-        scode_small = StatusCodeHelper.getStatusCodeByName(fqscode);
+    public void setScodeTooSmall(StatusCode scode) {
+        scode_small = scode;
     }
 
-    public void setScodeTooBig(String fqscode) {
-        scode_big = StatusCodeHelper.getStatusCodeByName(fqscode);
+    public void setScodeTooBig(StatusCode scode) {
+        scode_big = scode;
     }
 
     public void setRange(String param) {

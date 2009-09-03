@@ -28,7 +28,6 @@ import de.schlund.pfixxml.RequestParam;
 import de.schlund.pfixxml.RequestParamType;
 import de.schlund.pfixxml.multipart.FileData;
 import de.schlund.util.statuscodes.StatusCode;
-import de.schlund.util.statuscodes.StatusCodeHelper;
 
 /**
  * ToFile.java
@@ -47,8 +46,8 @@ public class ToFile extends SimpleCheck implements IWrapperParamCaster {
         scode = CoreStatusCodes.CASTER_ERR_TO_FILE;
     }
 
-    public void setScodeCastError(String fqscode) {
-        scode = StatusCodeHelper.getStatusCodeByName(fqscode);
+    public void setScodeCastError(StatusCode scode) {
+        this.scode = scode;
     }
 
     public Object[] getValue() {

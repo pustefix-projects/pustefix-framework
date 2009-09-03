@@ -25,7 +25,6 @@ import de.schlund.pfixcore.generator.IWrapperParamCaster;
 import de.schlund.pfixcore.generator.SimpleCheck;
 import de.schlund.pfixxml.RequestParam;
 import de.schlund.util.statuscodes.StatusCode;
-import de.schlund.util.statuscodes.StatusCodeHelper;
 
 /**
  * ToDouble.java
@@ -46,8 +45,8 @@ public class ToDouble extends SimpleCheck implements IWrapperParamCaster {
         scode = CoreStatusCodes.CASTER_ERR_TO_DOUBLE;
     }
     
-    public void setScodeCastError(String fqscode) {
-        scode = StatusCodeHelper.getStatusCodeByName(fqscode);
+    public void setScodeCastError(StatusCode scode) {
+        this.scode = scode;
     }
 
     public Object[] getValue() {

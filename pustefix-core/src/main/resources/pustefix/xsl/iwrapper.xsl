@@ -158,7 +158,7 @@ public <xsl:if test="not(/iwrp:interface/iwrp:ihandler) and not(@extends)">abstr
             <xsl:otherwise>null</xsl:otherwise>
           </xsl:choose>, "<xsl:value-of select="$ptype"/>", <xsl:value-of select="$trim"/>);
           <xsl:if test="@missingscode and $occurrence = 'false'">
-        pinfo.setCustomSCode("<xsl:value-of select="@missingscode"/>");
+        pinfo.setCustomSCode(<xsl:call-template name="get_scode_arg"><xsl:with-param name="scode" select="@missingscode"/></xsl:call-template>);
           </xsl:if>
         params.put("<xsl:value-of select="$pname"/>", pinfo);
           <xsl:if test="./iwrp:caster">
@@ -294,8 +294,17 @@ public <xsl:if test="not(/iwrp:interface/iwrp:ihandler) and not(@extends)">abstr
     <xsl:param name="var"/>
     <xsl:for-each select="$node/iwrp:cparam">
       <xsl:variable name="cpname" select="concat(translate(substring(./@name, 1, 1), 'abcdefghijklmnopqrstuvwxyz', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'), substring(./@name, 2))"/>
-      <xsl:variable name="cpvalue" select="./@value"/>
-        ((<xsl:value-of select="$class"/>) <xsl:value-of select="$var"/>).set<xsl:value-of select="$cpname"/>("<xsl:value-of select="$cpvalue"/>");
+      <xsl:variable name="cpvalue">
+        <xsl:choose>
+          <xsl:when test="contains(translate($cpname,'SCODE','scode'),'scode')">
+            <xsl:call-template name="get_scode_arg"><xsl:with-param name="scode"><xsl:value-of select="@value"/></xsl:with-param></xsl:call-template>
+          </xsl:when>
+          <xsl:otherwise>
+            "<xsl:value-of select="./@value"/>"
+          </xsl:otherwise>
+        </xsl:choose>
+      </xsl:variable>
+        ((<xsl:value-of select="$class"/>) <xsl:value-of select="$var"/>).set<xsl:value-of select="$cpname"/>(<xsl:value-of select="$cpvalue"/>);
     </xsl:for-each> 
   </xsl:template>
   
@@ -374,6 +383,14 @@ public <xsl:if test="not(/iwrp:interface/iwrp:ihandler) and not(@extends)">abstr
         }<xsl:text/>
     </xsl:if>
     )<xsl:text/>
+  </xsl:template>
+
+  <xsl:template name="get_scode_arg">
+    <xsl:param name="scode"/>
+    <xsl:choose>
+      <xsl:when test="contains($scode,'#')"><xsl:value-of select="substring-before($scode,'#')"/>.getStatusCodeByName("<xsl:value-of select="substring-after($scode,'#')"/>")</xsl:when>
+      <xsl:otherwise>org.pustefixframework.generated.CoreStatusCodes.getStatusCodeByName("<xsl:value-of select="$scode"/>")</xsl:otherwise>
+    </xsl:choose>
   </xsl:template>
 
 </xsl:stylesheet>

@@ -30,7 +30,6 @@ import de.schlund.pfixcore.generator.IWrapperParamUncaster;
 import de.schlund.pfixcore.generator.SimpleCheck;
 import de.schlund.pfixxml.RequestParam;
 import de.schlund.util.statuscodes.StatusCode;
-import de.schlund.util.statuscodes.StatusCodeHelper;
 
 /**
  * ToDate.java
@@ -53,8 +52,8 @@ public class ToDate extends SimpleCheck implements IWrapperParamCaster, IWrapper
         scode = CoreStatusCodes.CASTER_ERR_TO_DATE;
     }
     
-    public void setScodeCastError(String fqscode) {
-        scode = StatusCodeHelper.getStatusCodeByName(fqscode);
+    public void setScodeCastError(StatusCode scode) {
+        this.scode = scode;
     }
 
     public void setFormat(String fmtstr) {
