@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-package de.schlund.pfixcore.generator.iwrpgen;
+package org.pustefixframework.maven.plugins.iwrapperbean;
 
 import java.io.InputStream;
 import java.io.PrintWriter;
@@ -55,6 +55,14 @@ import com.sun.mirror.type.TypeMirror;
 import com.sun.mirror.type.VoidType;
 import com.sun.mirror.util.SimpleDeclarationVisitor;
 
+import de.schlund.pfixcore.generator.annotation.Caster;
+import de.schlund.pfixcore.generator.annotation.IWrapper;
+import de.schlund.pfixcore.generator.annotation.Param;
+import de.schlund.pfixcore.generator.annotation.PostCheck;
+import de.schlund.pfixcore.generator.annotation.PreCheck;
+import de.schlund.pfixcore.generator.annotation.Property;
+import de.schlund.pfixcore.generator.annotation.Transient;
+
 /**
  * @author mleidig@schlund.de
  */
@@ -76,13 +84,13 @@ public class IWrapperAnnotationProcessor implements AnnotationProcessor {
 
     public IWrapperAnnotationProcessor(AnnotationProcessorEnvironment env) {
         this.env = env;
-        iwrpType = (AnnotationTypeDeclaration) env.getTypeDeclaration("de.schlund.pfixcore.generator.annotation.IWrapper");
-        transientType = (AnnotationTypeDeclaration) env.getTypeDeclaration("de.schlund.pfixcore.generator.annotation.Transient");
-        paramType = (AnnotationTypeDeclaration) env.getTypeDeclaration("de.schlund.pfixcore.generator.annotation.Param");
-        casterType = (AnnotationTypeDeclaration) env.getTypeDeclaration("de.schlund.pfixcore.generator.annotation.Caster");
-        preCheckType = (AnnotationTypeDeclaration) env.getTypeDeclaration("de.schlund.pfixcore.generator.annotation.PreCheck");
-        postCheckType = (AnnotationTypeDeclaration) env.getTypeDeclaration("de.schlund.pfixcore.generator.annotation.PostCheck");
-        propertyType = (AnnotationTypeDeclaration) env.getTypeDeclaration("de.schlund.pfixcore.generator.annotation.Property");
+        iwrpType = (AnnotationTypeDeclaration) env.getTypeDeclaration(IWrapper.class.getName());
+        transientType = (AnnotationTypeDeclaration) env.getTypeDeclaration(Transient.class.getName());
+        paramType = (AnnotationTypeDeclaration) env.getTypeDeclaration(Param.class.getName());
+        casterType = (AnnotationTypeDeclaration) env.getTypeDeclaration(Caster.class.getName());
+        preCheckType = (AnnotationTypeDeclaration) env.getTypeDeclaration(PreCheck.class.getName());
+        postCheckType = (AnnotationTypeDeclaration) env.getTypeDeclaration(PostCheck.class.getName());
+        propertyType = (AnnotationTypeDeclaration) env.getTypeDeclaration(Property.class.getName());
     }
 
     public void process() {

@@ -19,8 +19,6 @@
 package org.pustefixframework.maven.plugins.iwrapperbean;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import org.apache.maven.artifact.Artifact;
@@ -33,7 +31,6 @@ import org.apache.maven.project.MavenProject;
  *
  * @goal generate
  * @phase generate-sources
- * @requiresDependencyResolution compile
  */
 public class IWrapperBeanMojo extends AbstractMojo {
   
@@ -46,48 +43,39 @@ public class IWrapperBeanMojo extends AbstractMojo {
 
     /** @parameter expression="${project}" */
     private MavenProject mavenProject;
-    
+
     /**
      * @parameter expression="${plugin.artifacts}"
+     * @required
+     * @readonly
      */
-    private List<Artifact> pluginClasspath;
+    private List<Artifact> pluginArtifacts;
+    
+    /**
+     * @parameter expression="${plugin.pluginArtifact}"
+     * @required
+     * @readonly
+     */
+    private Artifact pluginArtifact;
     
     /**
      * @see org.apache.maven.plugin.Mojo#execute()
      */
     public void execute() throws MojoExecutionException {
     	
+    	String classpath = "";
+    	for(Artifact artifact:pluginArtifacts) {
+    		classpath += artifact.getFile().getAbsolutePath()+":";
+    	}
+    	classpath += pluginArtifact.getFile().getAbsolutePath();
+    	
+    	
         File basedir = mavenProject.getBasedir();
-        if (new Apt(basedir, aptdir, getLog()).execute(getPluginClasspath()) > 0) {
-            mavenProject.addCompileSourceRoot(aptdir.getAbsolutePath());
-        }
+        new Apt(basedir, aptdir, getLog()).execute(classpath);
         
+        if(aptdir.exists()) mavenProject.addCompileSourceRoot(aptdir.getAbsolutePath());
     }
     
-    private String getPluginClasspath() {
-        StringBuilder result;
-        
-        result = new StringBuilder();
-        for (String path : pathStrings(pluginClasspath)) {
-            if (result.length() > 0) {
-                result.append(':');
-            } 
-            result.append(path);
-        }
-        return result.toString();
-    }
-    
-    private static List<String> pathStrings(Collection<Artifact> artifacts) {
-        List<String> lst;
-        
-        lst = new ArrayList<String>();
-        if (artifacts != null) {
-            for (Artifact a : artifacts) {
-                lst.add(a.getFile().getPath());
-            }
-        }
 
-        return lst;
-    }
-
+  
 }

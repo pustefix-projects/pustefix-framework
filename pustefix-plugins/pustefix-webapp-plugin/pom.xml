@@ -38,12 +38,6 @@
       <artifactId>pustefix-core</artifactId>
       <version>1.0.0</version>
     </dependency>
-    <dependency>
-      <groupId>org.pustefixframework</groupId>
-      <artifactId>pustefix-core</artifactId>
-      <version>1.0.0</version>
-      <classifier>data</classifier>
-    </dependency>
   </dependencies>
 
 </project>

@@ -18,13 +18,10 @@
 package de.schlund.pfixcore.example;
 
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 import org.pustefixframework.test.MockContext;
 
 import de.schlund.pfixcore.example.iwrapper.AdultInfo;
-import de.schlund.pfixxml.config.GlobalConfig;
-import de.schlund.pfixxml.config.GlobalConfigurator;
 
 /**
  * Example test case showing how to test IWrappers and IHandlers.
@@ -33,13 +30,6 @@ import de.schlund.pfixxml.config.GlobalConfigurator;
  *
  */
 public class AdultInfoHandlerTest {
-
-    @Before
-    public void setUp() throws Exception {
-        if (GlobalConfig.getDocroot() == null) {
-            GlobalConfigurator.setDocroot(GlobalConfig.guessDocroot().getAbsolutePath());
-        }
-    }
     
     @Test
     public void testHandler() throws Exception {

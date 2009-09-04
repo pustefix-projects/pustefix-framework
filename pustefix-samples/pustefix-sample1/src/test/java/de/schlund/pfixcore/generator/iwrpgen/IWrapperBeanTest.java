@@ -17,28 +17,20 @@
  */
 package de.schlund.pfixcore.generator.iwrpgen;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
 import junit.framework.TestCase;
-import de.schlund.pfixcore.example.test.Bean;
+
 import de.schlund.pfixcore.example.test.BeanWrapper;
+
+import de.schlund.pfixcore.example.test.Bean;
 import de.schlund.pfixcore.example.test.Data;
-import de.schlund.pfixxml.config.GlobalConfig;
-import de.schlund.pfixxml.config.GlobalConfigurator;
 
 /**
  * @author mleidig@schlund.de
  */
 public class IWrapperBeanTest extends TestCase {
-
-    @Override
-    protected void setUp() throws Exception {
-        if (GlobalConfig.getDocroot() == null) {
-            GlobalConfigurator.setDocroot(GlobalConfig.guessDocroot().getAbsolutePath());
-        }
-    }
 
     public void testWrapperToBean() throws Exception {
 

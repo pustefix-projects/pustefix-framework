@@ -18,9 +18,11 @@
 
 package org.pustefixframework.maven.plugins.iwrapperbean;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
@@ -71,7 +73,7 @@ public class Apt {
         if (!srcDir.exists()) throw new MojoExecutionException("Source directory doesn't exist: " + srcDir.getAbsolutePath());
         List<File> newFiles = fileScanner.getChangedFiles(srcDir, destDir, lastAptRun);
         modList.addAll(newFiles);
-        if (fileScanner.getScanCount() > 0) System.out.println(fileScanner.printStatistics());
+        if (fileScanner.getScanCount() > 0) log.info(fileScanner.printStatistics());
         return modList;
     }
 
@@ -108,7 +110,7 @@ public class Apt {
         cmd.add("-encoding");
         cmd.add("UTF-8");
         cmd.add("-factory");
-        cmd.add("de.schlund.pfixcore.util.CommonAnnotationProcessorFactory");
+        cmd.add("org.pustefixframework.maven.plugins.iwrapperbean.IWrapperAnnotationProcessorFactory");
         cmd.add("-s");
         cmd.add(preprocessDir.toString());
         cmd.add("@" + filelist);
@@ -118,7 +120,13 @@ public class Apt {
             ProcessBuilder builder = new ProcessBuilder(cmd);
             builder.directory(basedir);
             builder.redirectErrorStream(true);
-            int ret = builder.start().waitFor();
+            Process process = builder.start();
+            int ret = process.waitFor();
+            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+            String line = null;
+            while((line=reader.readLine())!=null) {
+            	log.info(line);
+            }
             if (ret != 0) throw new MojoExecutionException("Error while executing apt (exit value: " + ret + ").");
         } catch (IOException e) {
             throw new MojoExecutionException("Error invoking apt", e);

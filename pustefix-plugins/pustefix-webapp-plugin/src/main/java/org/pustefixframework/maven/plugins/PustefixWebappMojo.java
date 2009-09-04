@@ -47,9 +47,8 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import de.schlund.pfixxml.config.BuildTimeProperties;
-import de.schlund.pfixxml.config.GlobalConfig;
-import de.schlund.pfixxml.config.GlobalConfigurator;
+import com.sun.tools.apt.comp.Apt;
+
 import de.schlund.pfixxml.util.Xml;
 import de.schlund.pfixxml.util.XsltVersion;
 
@@ -125,30 +124,8 @@ public class PustefixWebappMojo extends AbstractMojo {
             makemode = "test";
         }
 
-        // because all executions operate on the same pfixcore classes:
-        GlobalConfig.reset();
-        
-        GlobalConfigurator.setDocroot(docroot);
-        docrootFile = new File(docroot);
-        if (!docrootFile.isDirectory()) {
-            try {
-                extractJar(getDataJar(), docrootFile);
-            } catch (IOException e) {
-                throw new MojoExecutionException("error extracting core data", e);
-            }
-        }
-        new File(docroot, "WEB-INF").mkdirs();
-
-        getLog().info("unpacked " + unpackModules() + " module(s)");
-        try {
-            buildtimeProps();
-        } catch (IOException e) {
-            throw new MojoExecutionException("error creating buildtime.props", e);
-        }
-        basedir = project.getBasedir();
-        if (new Apt(basedir, aptdir, getLog()).execute(getPluginClasspath()) > 0) {
-            project.addCompileSourceRoot(aptdir.getAbsolutePath());
-        }
+      
+       
     }
 
     private String getPluginClasspath() {
@@ -204,10 +181,7 @@ public class PustefixWebappMojo extends AbstractMojo {
     }
 
 
-    private void buildtimeProps() throws IOException {
-        BuildTimeProperties.generate(getProperties(), makemode, getMachine(), getFqdn(), System.getProperty("user.name"));
-    }
-    
+  
     private Properties getProperties() {
     	Properties orig;
     	Properties result;

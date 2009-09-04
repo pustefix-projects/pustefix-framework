@@ -158,7 +158,7 @@
     <repository>
       <id>pustefix</id>
       <name>Pustefix Maven Repository</name>
-      <url>scpexe://pustefix@pustefixhp.schlund.de/home/pustefix/repository/maven</url>
+      <url>scpexe://pustefixhp.schlund.de/home/pustefix/repository/maven</url>
       <uniqueVersion>false</uniqueVersion>
     </repository>
     <snapshotRepository>
