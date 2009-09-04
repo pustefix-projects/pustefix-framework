@@ -19,6 +19,8 @@
 package org.pustefixframework.maven.plugins.iwrapperbean;
 
 import java.io.File;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.List;
 
 import org.apache.maven.artifact.Artifact;
@@ -47,17 +49,10 @@ public class IWrapperBeanMojo extends AbstractMojo {
     /**
      * @parameter expression="${plugin.artifacts}"
      * @required
-     * @readonly
      */
     private List<Artifact> pluginArtifacts;
     
-    /**
-     * @parameter expression="${plugin.pluginArtifact}"
-     * @required
-     * @readonly
-     */
-    private Artifact pluginArtifact;
-    
+   
     /**
      * @see org.apache.maven.plugin.Mojo#execute()
      */
@@ -67,8 +62,16 @@ public class IWrapperBeanMojo extends AbstractMojo {
     	for(Artifact artifact:pluginArtifacts) {
     		classpath += artifact.getFile().getAbsolutePath()+":";
     	}
-    	classpath += pluginArtifact.getFile().getAbsolutePath();
-    	
+    
+    	URLClassLoader cl = (URLClassLoader)getClass().getClassLoader();
+    	URL[] urls= cl.getURLs();
+    	for(URL url:urls) {
+    		String str = url.toExternalForm();
+    		if(str.startsWith("file:/")) {
+    			File file=new File(str);
+    			classpath+=file.getAbsolutePath()+":";
+    		}
+    	}
     	
         File basedir = mavenProject.getBasedir();
         new Apt(basedir, aptdir, getLog()).execute(classpath);
