@@ -120,8 +120,6 @@
     -->
     
     <static>
-      <path>core/img</path>
-      <path>core/script</path>
       <path>img</path>
       <path>css</path>
       <path>modules/animal-module/img</path>

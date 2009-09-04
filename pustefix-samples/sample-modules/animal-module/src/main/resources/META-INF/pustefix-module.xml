@@ -1,10 +1,4 @@
-<module-descriptor xsi:schemaLocation="http://pustefix.sourceforge.net/moduledescriptor200702 http://pustefix.sourceforge.net/moduledescriptor200702.xsd" xmlns="http://pustefix.sourceforge.net/moduledescriptor200702" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<?xml version="1.0" encoding="utf-8"?>
+<pustefix-module xmlns="http://www.pustefix-framework.org/2009/namespace/module-config">
 
-  <module-name>animal-module</module-name>
-
-  <resources>
-    <resource-mapping srcpath="PUSTEFIX-INF/dyntxt" targetpath="dyntxt"/>
-    <resource-mapping srcpath="PUSTEFIX-INF/img" targetpath="img"/>
-  </resources>
-
-</module-descriptor>
+</pustefix-module>

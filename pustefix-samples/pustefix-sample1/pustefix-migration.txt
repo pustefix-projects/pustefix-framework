@@ -37,7 +37,9 @@ Migrating Pustefix applications from 0.14 to 1.0
     from docroot:/WEB-INF/...
     to bundle:/META-INF/pustefix/...
     
-- Adapt configuration in src/main/resource/META-INF/pustefix/depend.xml
+    remove <path>core/img</path> and <path>core/script</path> from <static> section
+    
+- Adapt configuration in src/main/resources/META-INF/pustefix/depend.xml
 
     replace <make project="..." lang="...">
     by <xml-generator-config project="..." lang="..." 
@@ -143,7 +145,57 @@ Migrating Pustefix applications from 0.14 to 1.0
       </properties>
      </profile>
 
+- View XML changes:
+
+  Images from modules now are directly referenced from the bundle (no mapping/extracting to module folder any more),
+  so the according <pfx:image> tags have to be adapted, examples:
+  
+    from <pfx:image src="modules/mymodule/img/myimage.jpg"/>
+    to <pfx:image src="img/myimage.jpg" module="myBundleSymbolicName"/> 
+
+    low-level, e.g. in Javascript:
+    window.document.images['myimg'].src = "/bundle://myBundleSymbolicName/PUSTEFIX-INF/img/myimage.jpg";
+
+    (TODO: should use request prefix mapping here)
+
 ===========================================
 Migrating Pustefix modules from 0.14 to 1.0
 ===========================================
 
+- Adapt main configuration file src/main/resources/META-INF/pustefix-module.xml
+
+    replace <module-descriptor> root tag by 
+    <pustefix-module xmlns="http://www.pustefix-framework.org/2009/namespace/module-config">
+
+    remove <module-name> and <resources> elements
+    
+- Changes in pom.xml:
+
+    change packaging from 'jar' to 'bundle'
+    
+    add maven-bundle-plugin to plugins:
+    
+      <plugin>
+         <groupId>org.apache.felix</groupId>
+         <artifactId>maven-bundle-plugin</artifactId>
+         <extensions>true</extensions>
+         <version>2.0.0</version>
+         <configuration>
+            <instructions>
+              <Bundle-RequiredExecutionEnvironment>J2SE-1.5</Bundle-RequiredExecutionEnvironment>
+              <Include-Resource>src/main/resources</Include-Resource>
+              <Export-Package></Export-Package>
+              <Import-Package>*, org.aopalliance.aop;version="1.0.0", org.springframework.aop.scope;version="2.5.6.A", org.springframework.aop;version="2.5.6.A", org.springframework.aop.framework;version="2.5.6.A", net.sf.cglib.core;version="2.1.3", net.sf.cglib.proxy;version="2.1.3", net.sf.cglib.reflect;version="2.1.3"</Import-Package>
+            </instructions>
+         </configuration>
+         <executions>
+            <execution>
+               <id>bundle-manifest</id>
+               <phase>process-classes</phase>
+               <goals>
+                  <goal>manifest</goal>
+               </goals>
+            </execution>
+         </executions>
+      </plugin>
+    
