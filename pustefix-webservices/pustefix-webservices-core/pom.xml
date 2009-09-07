@@ -42,12 +42,12 @@
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-core</artifactId>
-      <version>[2.5.5,2.6)</version>
+      <version>2.5.6.A</version>
     </dependency>
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-test</artifactId>
-      <version>[2.5.5,2.6)</version>
+      <version>2.5.6.A</version>
     </dependency>
     <dependency>
       <groupId>com.marsching.flexiparse</groupId>
