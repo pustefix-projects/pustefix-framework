@@ -41,12 +41,12 @@
     </dependency>
     <dependency>
       <groupId>org.springframework</groupId>
-      <artifactId>spring-core</artifactId>
+      <artifactId>org.springframework.core</artifactId>
       <version>2.5.6.A</version>
     </dependency>
     <dependency>
       <groupId>org.springframework</groupId>
-      <artifactId>spring-test</artifactId>
+      <artifactId>org.springframework.test</artifactId>
       <version>2.5.6.A</version>
     </dependency>
     <dependency>
