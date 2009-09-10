@@ -15,7 +15,7 @@
  * along with Pustefix; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-package de.schlund.pfixxml.util;
+package org.pustefixframework.util.io;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -23,14 +23,31 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 
 /**
- * This class contains a set of commonly used utility methods for the files.
+ * This class contains a set of commonly used utility methods for files.
  * 
  * @author mleidig@schlund.de
  *
  */
 public class FileUtils {
+	
+	/**
+	 * Deletes file. Non-empty directories are recursively removed.
+	 * 
+	 * @param file - the file or directory, which should be deleted
+	 */
+	public static void delete(File file) {
+		if(file.isDirectory()) {
+			File[] children = file.listFiles();
+			for(File child: children) {
+				delete(child);
+			}
+		}
+		file.delete();
+	}
 
     /**
      * Reads a text file into a string and replaces each substring that matches the regular
@@ -147,5 +164,59 @@ public class FileUtils {
             out.close();
         }
     }
+    
+    /**
+     * Creates symbolic link using the Unix ln command.
+     * Links into subdirectories can be made relative.
+     * (should be replaced in the future by the according java.nio.file facilities)
+     * 
+     * @param src - the link source (including the link name)
+     * @param target - the link target
+     * @param relative - specifies if links into subdirectories should be made relative
+     * @return the link's file object
+     * @throws IOException
+     */
+	public static File createSymbolicLink(File src, File target, boolean relative) throws IOException {
+		if(src.exists()) throw new IllegalArgumentException("Link source file already exists: " + src.getCanonicalPath());
+		if(!target.exists()) throw new IllegalArgumentException("Link target file doesn't exist: " + target.getCanonicalPath());
+		StringWriter writer = new StringWriter();
+		PrintWriter output = new PrintWriter(writer);
+		String targetPath = target.getCanonicalPath();
+		String srcPath = src.getCanonicalPath();
+		if(relative) {
+			targetPath = getRelativePath(src, target);
+		}
+		String cmd = "ln -s " + targetPath + " " + srcPath;
+		int res = RuntimeExecutor.exec(cmd, output);
+		if(res != 0) {
+			throw new IOException("Error creating symbolic link: " + writer.toString());
+		}
+		output.close();
+		return target;
+	}
+	
+	/**
+	 * Get relative path from source to target file (only supports
+	 * forward-relativity, no backwards-walking with "..")
+	 * 
+	 * @param src - source file
+	 * @param target - target file
+	 * @return relative path from source to target file
+	 * @throws IOException
+	 */
+	private static String getRelativePath(File src, File target) throws IOException {
+		if(src.getParentFile() != null && target.getParentFile() != null) {
+			String srcPath = src.getParentFile().getCanonicalPath();
+			String targetPath = target.getParentFile().getCanonicalPath();
+			if(targetPath.startsWith(srcPath)) {
+				if(targetPath.length() == srcPath.length()) {
+					return target.getName();
+				} else {
+					return targetPath.substring(srcPath.length() + 1) + "/" + target.getName();
+				}
+			}
+		}
+		return target.getCanonicalPath();
+	}
     
 }
