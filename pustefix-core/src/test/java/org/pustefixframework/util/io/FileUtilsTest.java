@@ -36,14 +36,21 @@ public class FileUtilsTest extends TestCase {
 		File barLink = new File(baseDir, "barlink");
 		File bazLink = new File(fooDir, "bazlink");
 		
-		fooLink = FileUtils.createSymbolicLink(fooLink, fooDir, true);
-		assertEquals(fooLink.getCanonicalPath(), fooDir.getCanonicalPath());
+		FileUtils.createSymbolicLink(fooLink, fooDir, true);
+		assertEquals((new File(fooLink,".")).getCanonicalPath(), fooDir.getCanonicalPath());
+		assertTrue(FileUtils.isSymbolicLink(fooLink));
 		
-		barLink = FileUtils.createSymbolicLink(barLink, barDir, true);
-		assertEquals(barLink.getCanonicalPath(), barDir.getAbsolutePath());
+		FileUtils.createSymbolicLink(barLink, barDir, true);
+		assertEquals((new File(barLink,".")).getCanonicalPath(), barDir.getAbsolutePath());
+		assertTrue(FileUtils.isSymbolicLink(barLink));
 		
-		bazLink = FileUtils.createSymbolicLink(bazLink, bazDir, true);
-		assertEquals(bazLink.getCanonicalPath(), bazDir.getAbsolutePath());
+		FileUtils.createSymbolicLink(bazLink, bazDir, true);
+		assertEquals((new File(bazLink,".")).getCanonicalPath(), bazDir.getAbsolutePath());
+		assertTrue(FileUtils.isSymbolicLink(bazLink));
+		
+		File nonExistingLink = new File(baseDir, "nolink");
+		assertFalse(FileUtils.isSymbolicLink(nonExistingLink));
+		assertFalse(FileUtils.isSymbolicLink(fooDir));
 		
 	}
 	

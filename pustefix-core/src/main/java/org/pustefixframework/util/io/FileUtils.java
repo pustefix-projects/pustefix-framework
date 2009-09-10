@@ -173,10 +173,9 @@ public class FileUtils {
      * @param src - the link source (including the link name)
      * @param target - the link target
      * @param relative - specifies if links into subdirectories should be made relative
-     * @return the link's file object
      * @throws IOException
      */
-	public static File createSymbolicLink(File src, File target, boolean relative) throws IOException {
+	public static void createSymbolicLink(File src, File target, boolean relative) throws IOException {
 		if(src.exists()) throw new IllegalArgumentException("Link source file already exists: " + src.getCanonicalPath());
 		if(!target.exists()) throw new IllegalArgumentException("Link target file doesn't exist: " + target.getCanonicalPath());
 		StringWriter writer = new StringWriter();
@@ -188,11 +187,26 @@ public class FileUtils {
 		}
 		String cmd = "ln -s " + targetPath + " " + srcPath;
 		int res = RuntimeExecutor.exec(cmd, output);
+		output.close();
 		if(res != 0) {
 			throw new IOException("Error creating symbolic link: " + writer.toString());
 		}
+	}
+	
+	/**
+	 * Checks if file is symbolic link.
+	 * 
+	 * @param file - file to check
+	 * @return - true if file is symbolic link, false otherwise
+	 * @throws IOException
+	 */
+	public static boolean isSymbolicLink(File file) throws IOException {
+		String cmd = "test -L " + file.getAbsolutePath();
+		StringWriter writer = new StringWriter();
+		PrintWriter output = new PrintWriter(writer);
+		int res = RuntimeExecutor.exec(cmd, output);
 		output.close();
-		return target;
+		return res == 0;
 	}
 	
 	/**
