@@ -5,8 +5,6 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Method;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Iterator;
@@ -16,10 +14,8 @@ import java.util.Properties;
 import java.util.jar.Manifest;
 
 public class EquinoxLauncher implements Launcher {
-
-	private static String FRAMEWORK_BUNDLE = "mvn:org.eclipse.osgi/org.eclipse.osgi/[3.2.0.0,4.0.0.0)/jar";
-	private static String SERVICE_BUNDLE = "mvn:org.eclipse.osgi/org.eclipse.osgi.services/3.1.200.v20071203/jar";
-	private static String LOGGING_BUNDLE = "mvn:org.eclipse.equinox/log/1.0.100-v20070226/jar";
+	
+	private static String FRAMEWORK_BUNDLE_SYMBOLIC_NAME = "org.eclipse.osgi";
 	
 	private void configure(File launcherDirectory, List<BundleConfig> bundles, File framework, int defaultStartLevel) {
 		createConfigProperties(launcherDirectory, bundles, framework, defaultStartLevel);
@@ -37,15 +33,16 @@ public class EquinoxLauncher implements Launcher {
     	Iterator<BundleConfig> it = bundles.iterator();
     	while(it.hasNext()) {
     		BundleConfig bundle = it.next();
-    		
-			config.append("reference:file:").append(bundle.getFile().getAbsolutePath());
-			
-			if(bundle.doStart()) {
-			    if(bundle.getStartLevel()==4) config.append("@start");
-			    else config.append("@"+bundle.getStartLevel()+":start");
-			}
-			
-			if(it.hasNext()) config.append(",");
+    		if(!bundle.getBundleSymbolicName().equals(FRAMEWORK_BUNDLE_SYMBOLIC_NAME)) {
+				config.append("reference:file:").append(bundle.getFile().getAbsolutePath());
+				
+				if(bundle.doStart()) {
+				    if(bundle.getStartLevel()==4) config.append("@start");
+				    else config.append("@"+bundle.getStartLevel()+":start");
+				}
+				
+				if(it.hasNext()) config.append(",");
+    		}
     		
 		}
 		config.append("\n");
@@ -107,16 +104,14 @@ public class EquinoxLauncher implements Launcher {
 	
 	public void launch(List<BundleConfig> bundles, File launcherDirectory, URIToFileResolver resolver, int defaultStartLevel) {
 		
-		File framework;
-		try {
-			framework = resolver.resolve(new URI(FRAMEWORK_BUNDLE));
-			File serviceBundle = resolver.resolve(new URI(SERVICE_BUNDLE));
-			bundles.add(new BundleConfig(serviceBundle, Utils.getBundleSymbolicNameFromJar(serviceBundle), true, defaultStartLevel));
-			File loggingBundle = resolver.resolve(new URI(LOGGING_BUNDLE));
-			bundles.add(new BundleConfig(loggingBundle, Utils.getBundleSymbolicNameFromJar(loggingBundle), true, 3));
-		} catch (URISyntaxException x) {
-			throw new RuntimeException("Illegal bundle URI", x);
+		File framework = null;
+		for(BundleConfig bundle: bundles) {
+			if(bundle.getBundleSymbolicName().equals("org.eclipse.osgi")) {
+				framework = bundle.getFile();
+				break;
+			}
 		}
+		if(framework == null) throw new RuntimeException("No Equinox framework bundle found.");
 		
 		configure(launcherDirectory, bundles, framework, defaultStartLevel);
     	try {
@@ -124,7 +119,6 @@ public class EquinoxLauncher implements Launcher {
     		
     		Properties props = new Properties();
     		props.load(new FileInputStream(configFile));
-    		
     		
     		URL[] urls = {framework.toURI().toURL()};
     		URLClassLoader cl = new URLClassLoader(urls);

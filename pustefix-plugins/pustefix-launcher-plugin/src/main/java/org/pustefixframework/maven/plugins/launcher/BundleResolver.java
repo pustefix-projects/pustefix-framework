@@ -2,18 +2,16 @@ package org.pustefixframework.maven.plugins.launcher;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
@@ -29,82 +27,44 @@ import org.apache.maven.artifact.resolver.ArtifactResolver;
 import org.apache.maven.artifact.versioning.ArtifactVersion;
 import org.apache.maven.artifact.versioning.InvalidVersionSpecificationException;
 import org.apache.maven.artifact.versioning.VersionRange;
-import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.artifact.MavenMetadataSource;
 
-/**
- * Goal which launches an OSGi runtime including the provisioning of bundles
- * resolved from the project's POM or a configuration file.
- *
- * @goal run
- * 
- * @execute phase="package"
- * 
- */
-public class LauncherMojo extends AbstractMojo implements URIToFileResolver {
+
+public class BundleResolver implements URIToFileResolver {
 	
-    /**
-     * @parameter default-value="${project.build.directory}/launcher"
-     * @required
-     */
-    private File launcherDirectory;
-    
-    /**
-     * @parameter default-value="${basedir}/provisioning.conf"
-     */
-    private File provisioningConfig;
-    
-    /**
-     * @parameter default-value="equinox"
-     */
-    private String osgiRuntime;
-    
-    /**
-     * @parameter default-value=4
-     */
-    private int defaultStartLevel;
-    
-    /** @parameter expression="${project}" */
-    private MavenProject mavenProject;
-    
-    /** @component */
-    private ArtifactFactory artifactFactory;
+	protected URL[] provisioningConfigs;
+    protected int defaultStartLevel;
+    protected MavenProject mavenProject;
+    protected ArtifactFactory artifactFactory;
+    protected ArtifactResolver resolver;
+    protected ArtifactMetadataSource metadataSource;
+    protected ArtifactRepository localRepository;
+    protected List<?> remoteRepositories;
+    protected Log log;
 
-    /** @component */
-    private ArtifactResolver resolver;
-
-    /** @component */
-    private ArtifactMetadataSource metadataSource;
-
-    /**@parameter expression="${localRepository}" */
-    private ArtifactRepository localRepository;
-
-    /** @parameter expression="${project.remoteArtifactRepositories}" */
-    private List<?> remoteRepositories;
-
-    private Map<String, Launcher> launchers;
-    private Launcher launcher;
-    
-    public LauncherMojo() {
-    	launchers = new HashMap<String, Launcher>();
-    	launchers.put("equinox", new EquinoxLauncher());
-    	launchers.put("felix" , new FelixLauncher());
-    }
-
-    public void execute() throws MojoExecutionException {
+    public BundleResolver(URL[] provisioningConfigs, int defaultStartLevel,
+			MavenProject mavenProject, ArtifactFactory artifactFactory,
+			ArtifactResolver resolver, ArtifactMetadataSource metadataSource,
+			ArtifactRepository localRepository, List<?> remoteRepositories,
+			Log log) {
     	
-    	launcher = launchers.get(osgiRuntime);
-    	if(launcher == null) {
-    		throw new MojoExecutionException("OSGi runtime not supported: " + osgiRuntime);
-    	}
-    	
-    	if(!launcherDirectory.exists()) launcherDirectory.mkdir();
+		this.provisioningConfigs = provisioningConfigs;
+		this.defaultStartLevel = defaultStartLevel;
+		this.mavenProject = mavenProject;
+		this.artifactFactory = artifactFactory;
+		this.resolver = resolver;
+		this.metadataSource = metadataSource;
+		this.localRepository = localRepository;
+		this.remoteRepositories = remoteRepositories;
+		this.log = log;
+	}
+
+	public List<BundleConfig> resolve() throws MojoExecutionException {
     	
     	List<BundleConfig> bundles = new ArrayList<BundleConfig>();
-    	
-    	
     	if(mavenProject.getPackaging().equals("bundle")) {
     	    String bundleSymbolicName = Utils.getBundleSymbolicNameFromProject(mavenProject.getBasedir());
     	    File bundleDir = new File(mavenProject.getBasedir(),"target/classes");
@@ -113,40 +73,40 @@ public class LauncherMojo extends AbstractMojo implements URIToFileResolver {
     	}
     	
     	Set<String> excludedBundles = new HashSet<String>();
-        if(provisioningConfig.exists()) {
-            String line = null;
-            try {
-                BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(provisioningConfig)));
-                while((line = reader.readLine()) != null) {
-                    line = line.trim();
-                    if(!(line.equals("")||line.startsWith("#"))) {
-                        if(line.startsWith("!")) {
-                            line = line.substring(1).trim();
-                            excludedBundles.add(line);
-                        } else if(line.startsWith("mvn:") ||  line.startsWith("file:")) {
-                        	String uriStr = line;
-                        	int level = defaultStartLevel;
-                        	int ind = line.indexOf('@');
-                        	if(ind > -1) {
-                        		uriStr = line.substring(0,ind);
-                        		level = Integer.parseInt(line.substring(ind+1));
-                        	}
-                            URI uri = new URI(uriStr);
-                            BundleConfig bundleConfig = getBundleConfig(uri, level);
-                            if(bundleConfig != null) bundles.add(bundleConfig);
-                        } else throw new MojoExecutionException("Unsupported provisioning config entry: " + line);
-                    }
-                }
-            } catch(URISyntaxException x) {
-                throw new MojoExecutionException("Illegal URI in provisioning configuration file '" +
-                        provisioningConfig.getAbsolutePath() + "': " + line, x);
-                
-            } catch(IOException x) {
-                throw new MojoExecutionException("Error while reading provisioning configuration from file '" + 
-                        provisioningConfig.getAbsolutePath() + "'.", x);
-            }
-        }
-    	
+    	for(URL provisioningConfig: provisioningConfigs) {
+	            String line = null;
+	            try {
+	                BufferedReader reader = new BufferedReader(new InputStreamReader(provisioningConfig.openStream()));
+	                while((line = reader.readLine()) != null) {
+	                    line = line.trim();
+	                    if(!(line.equals("")||line.startsWith("#"))) {
+	                        if(line.startsWith("!")) {
+	                            line = line.substring(1).trim();
+	                            excludedBundles.add(line);
+	                        } else if(line.startsWith("mvn:") ||  line.startsWith("file:")) {
+	                        	String uriStr = line;
+	                        	int level = defaultStartLevel;
+	                        	int ind = line.indexOf('@');
+	                        	if(ind > -1) {
+	                        		uriStr = line.substring(0,ind);
+	                        		level = Integer.parseInt(line.substring(ind+1));
+	                        	}
+	                            URI uri = new URI(uriStr);
+	                            BundleConfig bundleConfig = getBundleConfig(uri, level);
+	                            if(bundleConfig != null) bundles.add(bundleConfig);
+	                        } else throw new MojoExecutionException("Unsupported provisioning config entry: " + line);
+	                    }
+	                }
+	            } catch(URISyntaxException x) {
+	                throw new MojoExecutionException("Illegal URI in provisioning configuration file '" +
+	                        provisioningConfig.toExternalForm() + "': " + line, x);
+	                
+	            } catch(IOException x) {
+	                throw new MojoExecutionException("Error while reading provisioning configuration from file '" + 
+	                        provisioningConfig.toExternalForm() + "'.", x);
+	            }
+    	}
+        
     	try {
     		List<?> list=mavenProject.getDependencies();
     		Set<?> dependencyArtifacts = MavenMetadataSource.createArtifacts( artifactFactory, list, null, null, null );
@@ -167,7 +127,7 @@ public class LauncherMojo extends AbstractMojo implements URIToFileResolver {
     		throw new MojoExecutionException("Error resolving artifact dependencies", x);
     	}
     	
-    	launcher.launch(bundles, launcherDirectory, this, defaultStartLevel);
+    	return bundles;
     	
     }
     
@@ -186,11 +146,11 @@ public class LauncherMojo extends AbstractMojo implements URIToFileResolver {
 				boolean startable = false;
 				String fragmentHost = manifest.getMainAttributes().getValue("Fragment-Host");
 				if(fragmentHost == null) startable = true;
-				String bundleSymbolicName = manifest.getMainAttributes().getValue("Bundle-SymbolicName");
+				String bundleSymbolicName = Utils.getBundleSymbolicName(manifest);
 				bundleConfig = new BundleConfig(file, bundleSymbolicName, startable, startLevel);
 			} else {
-				if(getLog().isDebugEnabled()) {
-					getLog().debug("Artifact '" + file.getAbsolutePath() + "'" +
+				if(log.isDebugEnabled()) {
+					log.debug("Artifact '" + file.getAbsolutePath() + "'" +
 							" doesn't contain 'Bundle-ManifestVersion' MANIFEST.MF entry -> artifact will be ignored.");
 				}
 			}
