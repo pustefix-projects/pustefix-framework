@@ -4,47 +4,35 @@
   xsi:schemaLocation="http://docbook.org/ns/docbook http://www.docbook.org/xml/5.0CR7/xsd/docbook.xsd"
 >
   <title>Module Support</title>
-    <para>
-      Modules allow you to share functionality, configuration options and view elements
-      between different Pustefix installations.
-    </para>
-    <section xml:id="modulessupport.types">
-      <title>Different module types</title>
-      <para>
-        Pustefix supports two ways for providing resources (include parts, images,
-        stylesheets, etc.) used by different projects.
-      </para>
-      <section xml:id="modulessupport.types.new">
-        <title>Resources within library JARs</title>
-        <para>
-          The first (preferred) way is to place a JAR archive somewhere in the library
-          path (usually <filename>lib/</filename>) that contains a special deployment descriptor.
-          This deployment descriptor has to be named <filename>META-INF/pustefix-module.xml</filename> in
-          order to be recognized by the Pustefix build system. This deployment descriptor
-          is a XML file with the following format:
-        </para>
-        <programlisting language="xml"><![CDATA[<module-descriptor
-  xsi:schemaLocation="http://pustefix.sourceforge.net/moduledescriptor200702 http://pustefix.sourceforge.net/moduledescriptor200702.xsd"
-  xmlns="http://pustefix.sourceforge.net/moduledescriptor200702"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <para>
+    Modules allow you to share functionality, configuration options and view 
+    elements between different Pustefix applications.
+  </para>
+  <para>
+    Pustefix modules are OSGi bundles and are in fact structured similar to 
+    Pustefix applications. However, instead of a 
+    <filename>pustefix-application.xml</filename> a 
+    <filename>pustefix-module.xml</filename> has to be placed in the 
+    <filename>META-INF</filename> directory of the bundle. 
+  </para>
+  <programlisting language="xml"><![CDATA[<pustefix-module xmlns="http://www.pustefix-framework.org/2009/namespace/module-config">
   
-  <!--
-    The module name is used to construct the path the resources will be extracted to.
-    In this example the path would be projects/modules/mytest/.
-  -->  
-  <module-name>mytest</module-name>
-  <resources>
-    <!--
-      The srcpath attributes the directory within the JAR archive that contains the
-      resources. The targetpath attribute is optional and specifies the path the
-      resources are copied to (relative to the module directory). An empty targetpath
-      (the default) specifies the module directory itself
-      (e.g. projects/modules/mymodule) as the target directory.
-    -->
-    <resource-mapping srcpath="resources/txt" targetpath="txt"/>
-    <resource-mapping srcpath="resources/images" targetpath="img"/>
-  </resources>
-
+  <application>
+    <context-xml-service>
+      <config-file>bundle:/META-INF/pustefix/app.conf.xml</config-file>
+    </context-xml-service>
+    <direct-output-service>
+      <config-file>bundle:/META-INF/pustefix/direct.conf.xml</config-file>
+    </direct-output-service>
+    
+    <extension type="application.static">
+      <extend extension-point="static"/>
+      <request-path-prefix>mymodule</request-path-prefix>
+      <path>img</path>
+    </extension>
+  </application>
+  
+  <!-- TODO: Does this still apply to Pustefix 1.0? -->
   <!--
     Here you can configure which resources from which other module should be
     overridden by your module (see "Dynamic resource resolution").
@@ -57,53 +45,25 @@
     ...
   </override-modules>
 
-</module-descriptor>]]></programlisting>
+</pustefix-module>]]></programlisting>
   <para>
-    While future Pustefix versions will be able to load any kind of resource directly from the module jar file, currently it's required that certain resources, like configuration files or images, are extracted by the build process (using the <literal>resource-mapping</literal> configuration).
+    Pustefix allows for extending applications by using an extension point
+    mechanism. (TODO: Write chapter about extension points.)
   </para>
   <para>
     XML and XSL files used for rendering (TargetGenerator) meanwhile can be loaded directly from the jar file (if located in the <literal>PUSTEFIX-INF</literal> folder). For details on how to reference module resources and how to override modules, see <xref linkend="advanced.dyninclude"/>.
   </para>
   <para>
-    Besides those two variants of using resources from module jars, Pustefix supports the automatic merging of statusmessage files. Statusmessages placed under <literal>dyntxt/statusmessages.xml</literal> within a module jar are automatically merged to <literal>projects/modules-override/MODULENAME/dyntxt/statusmessages-merged.xml</literal>. In contrast to <literal>resource-mappings</literal> the merged files aren't readonly, but are intended to be used to change (e.g. localize) the default messages provided by the module (see <xref linkend="concepts.statuscodes"/>).
+    Pustefix supports the automatic merging of statusmessage files. Statusmessages placed under <literal>dyntxt/statusmessages.xml</literal> within a module jar are automatically merged to <literal>projects/modules-override/MODULENAME/dyntxt/statusmessages-merged.xml</literal>. In contrast to <literal>resource-mappings</literal> the merged files aren't readonly, but are intended to be used to change (e.g. localize) the default messages provided by the module (see <xref linkend="concepts.statuscodes"/>).
   </para>
-      </section>
-      <section xml:id="modulessupport.types.old">
-        <title>Resources placed in modules/ directory</title>
-        <para>
-          The old way is to place a JAR file in the <filename>modules/</filename> directory of the Pustefix
-          environment. In this case no deplyoment descriptor is needed (and even if
-          present it is not read). However you have to ensure that all files within
-          the JAR file are in a properly named directory as the archive will be directly
-          extracted to the <filename>projects/modules/</filename> directory.
-        </para>
-        <warning>
-          <title>Deprecated</title>
-          <para>
-            It is not recommended to use these types of modules in Pustefix 0.12.x or higher.
-            The the new way (see <xref linkend="modulessupport.types.new"/>) is much more
-            powerful, we will drop support for the <filename>modules</filename> directory
-            in a future Pustefix release.
-          </para>
-        </warning>
-      </section>
-    </section>
-    <section xml:id="modulessupport.actions">
-      <title>Actions applied on module resources after unpacking</title>
-      <para>
-        If your module contains an ant build file, Pustefix can execute this build
-        file after unpacking. If you want to deploy a build file, that is run automatically,
-        place a buildfile called <filename>build.xml</filename> in the folder
-        <filename>projects/modules/&lt;module-name&gt;/</filename>.
-      </para>
-    </section>
-    <section xml:id="modulessupport.maven">
-      <title>Creating new modules using the Maven archetype</title>
-      <para>
-        Pustefix provides a Maven archetype, which can be used to create new modules. It sets up
-        a maven project with pre-configured POM, deployment descriptor and statusmessage support.
-      </para>
-      <screen>
+  
+  <section xml:id="modulessupport.maven">
+    <title>Creating new modules using the Maven archetype</title>
+    <para>
+      Pustefix provides a Maven archetype, which can be used to create new modules. It sets up
+      a maven project with pre-configured POM, deployment descriptor and statusmessage support.
+    </para>
+    <screen>
 mvn archetype:create \
 -DarchetypeGroupId=org.pustefixframework.maven.archetypes \
 -DarchetypeArtifactId=pustefix-module-archetype \
@@ -111,14 +71,14 @@ mvn archetype:create \
 -DgroupId=mytld.myorg.myapp.mysection \
 -DartifactId=mymodule \
 -Dversion=1.0  
-      </screen>
-      <para>
-        You have to supply your own values for the <option>groupId</option>, <option>artifactId</option>
-        and <option>version</option> parameters. The chosen <option>artifactId</option> will be used as 
-	default module and target folder name, the <option>groupId</option> as Java package name. Executing
-        the above command creates the following directory structure and artifacts: 
-      </para>
-      <screen>
+    </screen>
+    <para>
+      You have to supply your own values for the <option>groupId</option>, <option>artifactId</option>
+      and <option>version</option> parameters. The chosen <option>artifactId</option> will be used as 
+default module and target folder name, the <option>groupId</option> as Java package name. Executing
+      the above command creates the following directory structure and artifacts: 
+    </para>
+    <screen>
 mymodule/
 mymodule/pom.xml
 mymodule/src
@@ -129,10 +89,10 @@ mymodule/src/main/resources/dyntxt/statusmessages.xml
 mymodule/src/main/resources/dyntxt/statuscodeinfo.xml
 mymodule/src/main/resources/META-INF
 mymodule/src/main/resources/META-INF/pustefix-module.xml
-      </screen>
-      <para>
-        Building with <literal>mvn clean package</literal> creates a deployable Pustfix module. At the moment
-        the only addition to the Maven standard build is the generation of StatusCode constant classes.
-      </para>
-    </section>
+    </screen>
+    <para>
+      Building with <literal>mvn clean package</literal> creates a deployable Pustfix module. At the moment
+      the only addition to the Maven standard build is the generation of StatusCode constant classes.
+    </para>
+  </section>
 </chapter>

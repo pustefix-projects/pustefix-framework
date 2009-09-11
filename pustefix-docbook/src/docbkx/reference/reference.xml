@@ -5,10 +5,10 @@
 >
   <info>
     <title>Pustefix Reference Documentation</title>
-    <subtitle>Version 0.13.x</subtitle>
-    <releaseinfo>This documentation relates to Pustefix 0.13.x.
-    While most parts still apply to Pustefix 0.14, some parts may be out-dated due
-    to the changes made in conjunction with the migration of the build system from ant to maven with 0.14.</releaseinfo>
+    <subtitle>Version 1.0.x</subtitle>
+    <releaseinfo>This documentation relates to Pustefix 1.0.x.
+    As is has not been completely updated yet, some parts might still refer
+    to version 0.14.x or even 0.13.x.</releaseinfo>
     <copyright>
       <year>2007</year>
       <year>2008</year>

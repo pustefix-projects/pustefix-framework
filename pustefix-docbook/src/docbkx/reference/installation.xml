@@ -21,14 +21,11 @@
         </para>
       </listitem>
       <listitem>
-        <para>Apache Tomcat 5.5.x</para>
-      </listitem>
-      <listitem>
-        <para>Apache Ant 1.6.5 or newer</para>
+        <para>Apache Maven 2.0.9 or newer</para>
       </listitem>
     </itemizedlist>
     <para>
-      The installation of these tools (except Tomcat) is not covered by this
+      The installation of these tools is not covered by this
       tutorial. Please refer to the documentation provided with these tools
       for installation instructions.
     </para>
@@ -47,78 +44,45 @@
       expects these folders.
     </para>
   </section>
-  <section xml:id="installation.unpack">
-    <title>Unpack the skeleton</title>
+  <section xml:id="installation.repositories">
+    <title>Add Pustefix repository to your Maven configuration</title>
     <para>
-      Download the newest <literal>pfixcore-skel-X.X.X.tar.gz</literal> from 
-      Pustefix's <link xlink:href="http://sourceforge.net/project/showfiles.php?group_id=72089&amp;package_id=71811">downloads page</link>.
-      Unpack the archive to a temporary directory. A new directory with the name 
-      <filename>skel</filename> will be created. Copy the content of this directory
-      to your new project directory.
+      In order to be able to resolve the dependencies, you should add the
+      Pustefix repository to your list of Maven repositories in your
+      <filename>~/.m2/settings.xml</filename>.
     </para>
-    <para>
-      Now you need to download Apache Tomcat. Choose the 
-      <literal>.tar.gz</literal> archive from the download page and place it in 
-      the <filename>lib/tomcat</filename> directory of your project directory.
-    </para>
-    <para>
-      After you are done with that, refresh the resources view in Eclipse to
-      make the new files appear.
-    </para>
+    <programlisting language="xml"><![CDATA[
+<settings>
+  <profiles>
+    <profile>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <id>pustefix-repositories</id>
+      <repositories>
+        <repository>
+          <id>pustefix></id>
+          <url>http://www.pustefix-framework.org/repository/maven</url>
+        </repository>
+      </repositories>
+      <pluginRepositories>
+        <pluginRepository>
+          <id>pustefix></id>
+          <url>http://www.pustefix-framework.org/repository/maven</url>
+        </pluginRepository>
+      </pluginRepositories>
+    </profile>
+  </profiles>
+</settings>
+    ]]></programlisting>
   </section>
   <section xml:id="installation.configureeclipse">
     <title>Configure Eclipse</title>
     <para>
-      To make features like auto-completion and auto-build work, you have to 
-      import the libraries into Eclipse. Right-click on your project in Eclipse
-      and choose "Build Path" ⇒ "Configure Build Path...". Now use the
-      "Add JARs..." button to add all libraries from the project's 
-      <filename>lib</filename> directory.
-    </para>
-    <para>
-      As Pustefix generates some classes, you have to add the folder with the
-      generated sources to Eclipse's source path. To make this work choose the
-      "Source" tab in the same dialog you used to configure the build path and
-      add the <filename>gensrc</filename> folder to the list of source folders.
-    </para>
-    <para>
-      Finally, you have to configure the path to the JAR file containing Ant.
-      In Eclipse choose <guimenu>Window</guimenu> ⇒ <guimenuitem>Preferences</guimenuitem>.
-      In the dialog window choose <guimenu>Java</guimenu> ⇒ <guimenuitem>Build Path</guimenuitem> ⇒
-      <guimenuitem>Classpath Variables</guimenuitem>. Choose
-      <guimenuitem>New...</guimenuitem> and create a variable with the name <literal>PFX_ANT_LIB</literal>
-      that contains the path to the <filename>lib/ant.jar</filename> within your
-      Ant installation directory.
-    </para>
-  </section>
-  <section xml:id="installation.firstbuild">
-    <title>Build parameters &amp; first build</title>
-    <para>
-      Within the project directory, create a file called 
-      <filename>build.properties</filename> containing two properties:
-    </para>
-    <programlisting>standalone.tomcat=true
-makemode=test</programlisting>
-    <para>
-      The first property tells the build process, that we do want to run
-      Tomcat without Apache Httpd integration. Apache Httpd integration can 
-      be useful, because static files can be served faster. However this
-      is an advanced topic and for our purposes Tomcat alone will be okay. 
-    </para>
-    <para>
-      The second parameter set the so-called "make mode". This flag can be
-      set to either "test" or "prod" and will cause the editor console
-      to appear in web pages when in "test" mode. In fact you can even make
-      your own settings depend on the make mode, but we will take care of 
-      this later. For the moment "test" mode is just what we want. By the way,
-      whenever you switch the make mode, you should do a complete rebuild 
-      using <command>ant realclean &amp;&amp; ant</command> to make sure, 
-      all resources have been built using the same make mode.
-    </para>
-    <para>
-      Now run <command>ant</command> to perform a first build of the 
-      environment. This will create needed symlinks and initialize the 
-      environment.
+      You can generate an Eclipse configuration for your project
+      using "mvn eclipse:eclipse". After generating the configuration
+      you can import your project to the Eclipse workspace using the
+      import wizard in the Eclipse workbench. 
     </para>
   </section>
 
