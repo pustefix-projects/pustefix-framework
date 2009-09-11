@@ -50,6 +50,7 @@ public class ViewExtensionParser {
 		extensions = new ArrayList<ViewExtension>();
 		extensionPoints = new ArrayList<ViewExtensionPoint>();
 		Enumeration<?> e = bundleContext.getBundle().findEntries("PUSTEFIX-INF", "*.xml", true);
+		if(e != null) {
 		while(e.hasMoreElements()) {
 			URL url = (URL)e.nextElement();
 			URLResource resource;
@@ -67,6 +68,7 @@ public class ViewExtensionParser {
 			} catch(Exception x) {
 				throw new RuntimeException("Error reading include part file: " + url.toString(), x);
 			}
+		}
 		}
 		if(logger.isDebugEnabled()) {
 			logger.debug("Found " + extensions.size() + " extensions in bundle '" + bundleContext.getBundle().getSymbolicName() + "'");
