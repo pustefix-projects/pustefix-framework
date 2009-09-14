@@ -25,6 +25,7 @@ import java.io.OutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLConnection;
+import java.net.URLEncoder;
 import java.util.List;
 
 import javax.servlet.ServletContext;
@@ -123,7 +124,12 @@ public class DocrootRequestHandler implements UriProvidingHttpRequestHandler, La
         // Create relative URI
         URI pathURI;
         try {
-            pathURI = new URI(null, null, path, null, null);
+            // The URI constructors assemble a string that is then parsed.
+            // Therefore a scheme in the path part will be interpreted as a 
+            // scheme if no explicit scheme is given.
+            // To avoid the construction of an absolute URI, we use the single 
+            // argument constructor here, but encode the string.
+            pathURI = new URI(URLEncoder.encode(path, "UTF-8"));
         } catch (URISyntaxException e) {
             if (res != null) {
                 res.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid path.");
