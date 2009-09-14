@@ -223,17 +223,26 @@ public class AnnotationBeanDefinitionPostProcessor implements BeanFactoryPostPro
             }
             BeanDefinition beanDefinition = beanFactory.getBeanDefinition(beanName);
             if(beanDefinition.isAbstract()) continue;
-            Class<?> beanClass;
+            Class<?> beanClass = null;
             
-            try {
-                beanClass = beanClassLoader.loadClass(beanDefinition.getBeanClassName());
-            } catch (ClassNotFoundException e) {
-                //throw new BeanDefinitionValidationException("Type \"" + beanDefinition.getBeanClassName() + "\" could not be loaded.");
-                //don't throw an exception here since 1.0, because classes can be loaded by other classloader,
-                //but we're only interested in classes loaded with the current BeanFactory's classloader here
-            	continue;
+            if (beanDefinition instanceof AbstractBeanDefinition) {
+                try {
+                    beanClass = ((AbstractBeanDefinition) beanDefinition).getBeanClass();
+                } catch (IllegalStateException e) {
+                    // Bean class might not have been initialized yet
+                    beanClass = null;
+                }
             }
-           
+            if (beanClass == null) {
+                try {
+                    beanClass = beanClassLoader.loadClass(beanDefinition.getBeanClassName());
+                } catch (ClassNotFoundException e) {
+                    // Bean class has neither been set nor can be loaded from class name.
+                    // This is an error condition.
+                    throw new BeanDefinitionValidationException("Type \"" + beanDefinition.getBeanClassName() + "\" could not be loaded.");
+                }
+            }
+
             if (wantedType.isAssignableFrom(beanClass)) {
                 if (matchingBeanName == null) {
                     matchingBeanName = beanName;
