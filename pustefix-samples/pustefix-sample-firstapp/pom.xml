@@ -75,6 +75,57 @@
           </execution>
         </executions>
       </plugin>
+      <plugin>
+        <groupId>org.pustefixframework.maven.plugins</groupId>
+        <artifactId>pustefix-iwrapperbean-plugin</artifactId>
+        <version>1.0.0</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      
+      <plugin>
+        <groupId>org.pustefixframework.maven.plugins</groupId>
+        <artifactId>pustefix-autoconfig-plugin</artifactId>
+        <version>1.0.0</version>
+        <configuration>
+          <mode>${mode}</mode>
+          <logLevel>${logLevel}</logLevel>
+        </configuration>
+        <executions>
+          <execution>
+            <goals>
+              <goal>generate-config-fragments</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.pustefixframework.maven.plugins</groupId>
+        <artifactId>pustefix-bundleindex-plugin</artifactId>
+        <version>1.0.0</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>update-bundle-index</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.pustefixframework.maven.plugins</groupId>
+        <artifactId>pustefix-launcher-plugin</artifactId>
+        <version>1.0.0</version>
+      </plugin>
+      <plugin>
+        <groupId>org.pustefixframework.maven.plugins</groupId>
+        <artifactId>pustefix-eclipse-plugin</artifactId>
+        <version>1.0.0</version>
+      </plugin>
     </plugins>
   </build>
 </project>

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<make lang="en_GB" project="firstapp">
+<xml-generator-config lang="en_GB" project="firstapp" xmlns="http://www.pustefix-framework.org/2008/namespace/xml-generator-config">
 
   <!-- prefix to namespace url mappings to be used in pages xml -->
   <namespaces>
@@ -25,4 +25,4 @@
   <standardpage name="ReviewData" xml="xml/frame.xml"/>
   <standardpage name="Confirm" xml="xml/frame.xml"/>
   
-</make>
+</xml-generator-config>
