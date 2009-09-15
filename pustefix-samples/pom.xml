@@ -5,12 +5,12 @@
   <parent>
     <groupId>org.pustefixframework</groupId>
     <artifactId>pustefixframework</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.1-SNAPSHOT</version>
   </parent>
 
   <groupId>org.pustefixframework</groupId>
   <artifactId>pustefix-samples</artifactId>
-  <version>1.0.0</version>
+  <version>1.0.1-SNAPSHOT</version>
 
   <packaging>pom</packaging>
   <name>Pustefix Samples</name>
@@ -19,7 +19,9 @@
     <module>pustefix-sample1</module>
 <!--
     <module>pustefix-samplebank</module>
+-->
     <module>pustefix-testsuite</module>
+<!--
     <module>pustefix-webservice</module>
 -->
     <module>sample-modules</module>

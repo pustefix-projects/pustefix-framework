@@ -5,12 +5,12 @@
   <parent>
     <groupId>org.pustefixframework.osgi</groupId>
     <artifactId>pustefix-osgi</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.1-SNAPSHOT</version>
   </parent>
 
   <groupId>org.pustefixframework.osgi</groupId>
   <artifactId>pustefix-osgi-spring-dm-extender</artifactId>
-  <version>1.0.0</version>
+  <version>1.0.1-SNAPSHOT</version>
   <packaging>bundle</packaging>
 
   <name>Pustefix Core support for Spring Extender</name>

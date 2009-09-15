@@ -3,14 +3,14 @@
   <parent>
     <artifactId>pustefixframework</artifactId>
     <groupId>org.pustefixframework</groupId>
-    <version>1.0.0</version>
+    <version>1.0.1-SNAPSHOT</version>
   </parent>
 
   <name>Pustefix Docbook Documentation</name>
 
   <groupId>org.pustefixframework</groupId>
   <artifactId>pustefix-docbook</artifactId>
-  <version>1.0.0</version>
+  <version>1.0.1-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <build>

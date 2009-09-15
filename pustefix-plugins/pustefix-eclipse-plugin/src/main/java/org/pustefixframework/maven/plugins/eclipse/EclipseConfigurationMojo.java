@@ -107,17 +107,10 @@ public class EclipseConfigurationMojo extends AbstractMojo {
     	runConfBuilder.build(launchConfigFile, bundles);
     	
     	//Create linked resource entry for META-INF in .project
-    	File rootMeta = new File(mavenProject.getBasedir(), "META-INF");
-    	if(!rootMeta.exists()) {
-    		try {
-	    		if(!FileUtils.isSymbolicLink(rootMeta)) {
-	    			File meta = new File(mavenProject.getBasedir(), "target/classes/META-INF");
-	    	    	FileUtils.createSymbolicLink(rootMeta, meta, true);
-	    		}
-    		} catch(IOException x) {
-    			throw new MojoExecutionException("Error checking/creating symbolic link to manifest", x);
-    		}
-    	}
+    	ProjectConfigBuilder prjBuilder = new ProjectConfigBuilder();
+    	prjBuilder.build(mavenProject.getBasedir());
+    	
+    	
     	
 	}
 
