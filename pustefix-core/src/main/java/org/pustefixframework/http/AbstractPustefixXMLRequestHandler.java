@@ -150,6 +150,7 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
     
     private boolean      renderExternal            = false;
     private boolean      editmodeAllowed            = false;
+    private boolean      xmlOnlyAllowed             = false;
     private boolean      checkModtime               = true;
     
     private final static Logger LOGGER_TRAIL = Logger.getLogger("LOGGER_TRAIL");
@@ -197,6 +198,7 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
             sb.append("\n").append("AbstractXMLServlet properties after initValues(): \n");
             sb.append("               servletname = ").append(servletname).append("\n");
             sb.append("           editModeAllowed = ").append(editmodeAllowed).append("\n");
+            sb.append("            xmlOnlyAllowed = ").append(xmlOnlyAllowed).append("\n");
             sb.append("             maxStoredDoms = ").append(maxStoredDoms).append("\n");
             sb.append("                   timeout = ").append(sessionCleaner.getTimeout()).append("\n");
             sb.append("              checkModtime = ").append(checkModtime).append("\n");
@@ -387,10 +389,10 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
         handleDocument(preq, res, spdoc, params, doreuse);
 
         if (session != null && (getRendering(preq) != RENDERMODE.RENDER_FONTIFY) && !doreuse) {
-            // This will store just the last dom, but only when editmode is allowed (so this normally doesn't apply to production mode)
+            // This will store just the last dom, but only when xmlOnlyMode is allowed (so this normally doesn't apply to production mode)
             // This is a seperate place from the SessionCleaner as we don't want to interfere with this, nor do we want to use 
             // the whole queue of possible stored SPDocs only for the viewing of the DOM during development.
-            if (editmodeAllowed) {
+            if (xmlOnlyAllowed) {
                 session.setAttribute(ATTR_SHOWXMLDOC, spdoc);
             }
 
@@ -761,7 +763,7 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
         } else {
             throw new IllegalArgumentException("invalid value for " + PARAM_XMLONLY + ": " + value);
         }
-        if (editmodeAllowed || (testRecording!=null && testRecording.isKnownClient(pfreq.getRemoteAddr()))) {
+        if (xmlOnlyAllowed || (testRecording!=null && testRecording.isKnownClient(pfreq.getRemoteAddr()))) {
             return rendering;
         } else {
             return RENDERMODE.RENDER_NORMAL;
@@ -1007,6 +1009,10 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
     
     public void setEditModeAllowed(boolean editModeAllowed) {
         this.editmodeAllowed = editModeAllowed;
+    }
+    
+    public void setXmlOnlyAllowed(boolean xmlOnlyAllowed) {
+    	this.xmlOnlyAllowed = xmlOnlyAllowed;
     }
     
 }

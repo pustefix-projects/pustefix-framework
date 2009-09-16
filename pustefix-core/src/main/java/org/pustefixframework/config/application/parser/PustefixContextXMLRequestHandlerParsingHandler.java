@@ -132,13 +132,10 @@ public class PustefixContextXMLRequestHandlerParsingHandler implements ParsingHa
         XMLGeneratorInfo info = infoCollection.iterator().next();
         
         Collection<EditorLocation> editorLocationCollection = context.getObjectTreeElement().getRoot().getObjectsOfTypeFromSubTree(EditorLocation.class);
-        EditorLocation editorLocation;
+        EditorLocation editorLocation = null;
         if (editorLocationCollection.size() > 0) {
             editorLocation = editorLocationCollection.iterator().next();
-        } else {
-            editorLocation = new EditorLocation(null);
         }
-       
         Collection<BeanDefinitionRegistry> beanRegs = context.getObjectTreeElement().getObjectsOfTypeFromTopTree(BeanDefinitionRegistry.class);
         if (beanRegs.size() == 0) {
             throw new ParserException("No BeanDefinitionRegistry object found.");
@@ -195,7 +192,9 @@ public class PustefixContextXMLRequestHandlerParsingHandler implements ParsingHa
             beanBuilder.addPropertyValue("testRecording", new RuntimeBeanReference(TestRecording.class.getName()));
         }
         beanBuilder.addPropertyValue("webappAdmin", new RuntimeBeanReference(WebappAdmin.class.getName()));
-        beanBuilder.addPropertyValue("editorLocation", editorLocation.getLocation());
+        if(editorLocation != null) {
+        	beanBuilder.addPropertyValue("editorLocation", editorLocation.getLocation());
+        }
         beanBuilder.addPropertyValue("checkModtime", info.getCheckModtime());
         beanBuilder.addPropertyValue("sessionCleaner", new RuntimeBeanReference(SessionCleaner.class.getName()));
         beanBuilder.addPropertyValue("renderExternal", renderExternal);
@@ -206,6 +205,9 @@ public class PustefixContextXMLRequestHandlerParsingHandler implements ParsingHa
         Collection<EditorInfo> editorInfos = context.getObjectTreeElement().getRoot().getObjectsOfTypeFromSubTree(EditorInfo.class);
         if(editorInfos.size()>0) {
             beanBuilder.addPropertyValue("editModeAllowed", editorInfos.iterator().next().getEnabled());
+        }
+        if(!RuntimeProperties.getProperties().getProperty("mode").equals("prod")) {
+        	beanBuilder.addPropertyValue("xmlOnlyAllowed", true);
         }
         beanDefinition = beanBuilder.getBeanDefinition();
         BeanDefinitionHolder beanHolder = new BeanDefinitionHolder(beanDefinition, PustefixContextXMLRequestHandler.class.getName() + "#" + path);
