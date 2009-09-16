@@ -20,10 +20,14 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.pustefixframework.util.xml.DOMUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.w3c.dom.Text;
 
+/**
+ * Adds linked resources to META-INF and PUSTEFIX-INF to Eclipse .project,
+ * so that PDE is satisfied and detects bundle project
+ * 
+ * @author mleidig@schlund.de
+ *
+ */
 public class ProjectConfigBuilder {
 	
 	public void build(File baseDir) throws MojoExecutionException {
@@ -47,6 +51,7 @@ public class ProjectConfigBuilder {
 				if(linkedRes == null) {
 					linkedRes = doc.createElement("linkedResources");
 					root.appendChild(linkedRes);
+					DOMUtils.format(linkedRes, 2, 2);
 				}
 				List<Element> links = DOMUtils.getChildElementsByTagName(linkedRes, "link");
 				Set<String> linkNames = new HashSet<String>();
@@ -54,13 +59,16 @@ public class ProjectConfigBuilder {
 					Element name = DOMUtils.getChildElementByTagName(link, "name");
 					if(name != null) linkNames.add(name.getTextContent().trim());
 				}
+				//we're using absolute paths here, because Eclipse 3.x doesn't support project relative links
+				Element linkElem = null;
 				if(!linkNames.contains("META-INF")) {
-					addLinkElement(linkedRes, "META-INF", 2, new File(baseDir, "target/classes/META-INF/MANIFEST.MF"));
+					linkElem = addLinkElement(linkedRes, "META-INF", 2, new File(baseDir, "target/classes/META-INF"));
+					DOMUtils.format(linkElem, 4, 2);
 				}
 				if(!linkNames.contains("PUSTEFIX-INF")) {
-					addLinkElement(linkedRes, "PUSTEFIX-INF", 2, new File(baseDir, "src/main/resources/PUSTEFIX-INF"));
+					linkElem = addLinkElement(linkedRes, "PUSTEFIX-INF", 2, new File(baseDir, "src/main/resources/PUSTEFIX-INF"));
+					DOMUtils.format(linkElem, 4, 2);
 				}
-				//format(linkedRes, 2);
 			}
 			Transformer transformer;
 			try {
@@ -84,7 +92,7 @@ public class ProjectConfigBuilder {
 		
 	}
 	
-	private void addLinkElement(Element parent, String name, int type, File location) {
+	private Element addLinkElement(Element parent, String name, int type, File location) {
 		Document doc = parent.getOwnerDocument();
 		Element linkElem = doc.createElement("link");
 		Element nameElem = doc.createElement("name");
@@ -97,26 +105,7 @@ public class ProjectConfigBuilder {
 		locElem.setTextContent(location.getAbsolutePath());
 		linkElem.appendChild(locElem);
 		parent.appendChild(linkElem);
-	}
-	
-	private void stripWhitespace(Element element) {
-		System.out.println("NNN: "+element.getNodeName());
-		NodeList nodes = element.getChildNodes();
-		for(int i=0; i<nodes.getLength(); i++) {
-			Node node = nodes.item(i);
-			if(node.getNodeType() == Node.TEXT_NODE) {
-				String text = ((Text)node).getTextContent();
-				text = text.trim();
-				/**
-				if(i>0 && nodes.item(i-1).getNodeType() != Node.TEXT_NODE) {
-					Node textNode = parent.getOwnerDocument().createTextNode("\n");
-					parent.insertBefore(textNode, element);
-				}
-				i++;
-				format(element, indent+2);
-				*/
-			} 
-		}
+		return linkElem;
 	}
 	
 }
