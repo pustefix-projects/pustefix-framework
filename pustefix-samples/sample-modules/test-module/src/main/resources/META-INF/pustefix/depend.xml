@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xml-generator-config xmlns="http://www.pustefix-framework.org/2008/namespace/xml-generator-config">
+
+  <extension type="xml.page">
+    <extend extension-point="navigation.main"/>
+    <page handler="/xml/main" name="Test1"/>
+    <page handler="/xml/main" name="Test2"/>
+    <extension-point id="navigation.sub" type="xml.page"/>
+    <page handler="/xml/main" name="Hey"/>
+  </extension>
+
+  <extension type="xml.namespace">
+    <extend extension-point="namespaces.main"/>
+    <namespace-declaration prefix="foo" url="http://foo"/>
+    <extension-point id="namespaces.sub" type="xml.namespace"/>
+  </extension>
+
+  <extension type="xml.standardpage">
+    <extend extension-point="standardpage.main"/>
+    <standardpage name="Test1" xml="xml/frame.xml"/>
+    <standardpage name="Test2" xml="bundle://org.pustefixframework.pustefix-sample-firstapp/PUSTEFIX-INF/xml/frame.xml"/>
+  </extension>
+
+</xml-generator-config>

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<pustefix-module xmlns="http://www.pustefix-framework.org/2009/namespace/module-config">
+
+  <application>
+    
+    <context-xml-service>
+      <config-file>bundle:/META-INF/pustefix/app.conf.xml</config-file>
+    </context-xml-service>
+    
+  </application>
+
+  <xml-generator>
+    <config-file>bundle:/META-INF/pustefix/depend.xml</config-file>
+  </xml-generator>
+ 
+  <dynamic-includes> 
+    <override-modules>
+      <module name="org.pustefixframework.samples.modules.test-module">
+        <resource path="txt/common.xml"/>
+      </module>
+    </override-modules>
+  </dynamic-includes>
+
+</pustefix-module>
