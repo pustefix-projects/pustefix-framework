@@ -16,6 +16,18 @@
     
   <packaging>maven-plugin</packaging>
 
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-plugin-plugin</artifactId>
+        <version>2.3</version>
+        <configuration>
+          <goalPrefix>pustefix-webapp</goalPrefix>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
   <dependencies>
     <dependency>
       <groupId>org.apache.maven</groupId>
@@ -36,6 +48,11 @@
     <dependency>
       <groupId>org.pustefixframework</groupId>
       <artifactId>pustefix-core</artifactId>
+      <version>1.0.1-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>org.pustefixframework.maven.plugins</groupId>
+      <artifactId>pustefix-launcher-plugin</artifactId>
       <version>1.0.1-SNAPSHOT</version>
     </dependency>
   </dependencies>
