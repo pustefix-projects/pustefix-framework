@@ -37,4 +37,7 @@ public class ImageThemedSrcSaxon1 {
                 parent_theme_in,targetGen,targetKey,module,search);
     }
 
+    public static String uriToPath(String uri) {
+        return ImageThemedSrc.uriToPath(uri);
+    }
 }

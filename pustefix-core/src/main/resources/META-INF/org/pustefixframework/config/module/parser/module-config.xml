@@ -30,12 +30,17 @@
   
   <!-- Handle static resources -->
   
+  <handler class="org.pustefixframework.config.application.parser.DefaultStaticResourceExtensionParsingHandler" run-order="end">
+    <match>/p:pustefix-module/p:application/p:static</match>
+  </handler>
+  
   <handler class="org.pustefixframework.config.application.parser.StaticResourceExtensionParsingHandler" run-order="end">
     <match>/p:pustefix-module/p:application/p:extension[@type='application.static']</match>
   </handler>
   
   <handler class="org.pustefixframework.config.application.parser.StaticResourceExtensionPointParsingHandler">
     <match>/p:pustefix-module/p:application/p:extension[@type='application.static']/p:extension-point[@type='application.static']</match>
+    <match>/p:pustefix-module/p:application/p:static/p:extension-point[@type='application.static']</match>
   </handler>
   
   <!--  Handle dynamic include configuration -->

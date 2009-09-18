@@ -19,6 +19,7 @@
 package de.schlund.pfixxml;
 
 import java.net.URI;
+import java.net.URISyntaxException;
 
 import org.apache.log4j.Logger;
 import org.pustefixframework.resource.Resource;
@@ -174,6 +175,36 @@ public class ImageThemedSrc {
 
     private static boolean isThemedSrc(String src, String path, String img) {
         return ((src == null || src.equals("")) && path != null && !path.equals("") && img != null && !img.equals(""));
+    }
+
+    /**
+     * Transforms a URI (with the bundle scheme) to a path, that can be used
+     * to access the resource over the web. This will only work for Pustefix 
+     * bundles and only if the resource path has been explicitly exported by 
+     * the bundle.
+     * 
+     * @param uri URI string
+     * @return path relative to servlet context path (starting with a slash)
+     */
+    public static String uriToPath(String uriString) {
+        URI uri;
+        try {
+            uri = new URI(uriString);
+        } catch (URISyntaxException e) {
+            // Invalid URI
+            return uriString;
+        }
+        if (uri.getScheme().equals("bundle")) {
+            String bundleSymbolicName = uri.getAuthority();
+            String path = uri.getPath();
+            if (path.startsWith("/PUSTEFIX-INF/")) {
+                path = path.substring(13);
+            }
+            return "/bundle/" + bundleSymbolicName + path;
+        }
+        // URI cannot be transformed for unknown scheme,
+        // thus the original string is returned
+        return uriString;
     }
 
 }

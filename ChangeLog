@@ -1,3 +1,7 @@
+2009-09-18  Sebastian Marsching <sebastian.marsching@1und1.de>
+
+	Fixed URI handling in pfx:image.
+
 2009-08-10  Sebastian Marsching <sebastian.marsching@1und1.de>
 
 	Added support for includepart scheme.

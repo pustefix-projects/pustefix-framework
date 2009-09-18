@@ -35,5 +35,8 @@ public class ImageThemedSrcSaxon2 {
         return ImageThemedSrc.getSrc(xsltContext,src,themed_path,themed_img,parent_part_in,
                 parent_theme_in,targetGen,targetKey,module,search);
     }
-    
+
+    public static String uriToPath(String uri) {
+        return ImageThemedSrc.uriToPath(uri);
+    }
 }

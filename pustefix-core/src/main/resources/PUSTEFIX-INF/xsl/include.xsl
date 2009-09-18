@@ -391,7 +391,11 @@
         <xsl:with-param name="search" select="$search"/>
       </xsl:call-template>
     </xsl:variable>
-    <img src="{{$__contextpath}}/{$real_src}" alt="{$alt}">
+    <img alt="{$alt}">
+      <xsl:attribute name="src">
+        <xsl:text>{$__contextpath}</xsl:text>
+        <xsl:value-of select="image:uriToPath($real_src)"/>
+      </xsl:attribute>
       <xsl:if test="$__target_key='__NONE__'"><xsl:attribute name="src"><xsl:value-of select="concat($__contextpath,'/',$real_src)"/></xsl:attribute></xsl:if>      
       <xsl:copy-of select="@*[not(contains(concat('|',$always-exclude-attributes,'|',$exclude-attributes,'|') , concat('|',name(),'|')))]"/>
       <xsl:call-template name="pfx:image_geom_impl">
@@ -430,7 +434,9 @@
           <ixsl:with-param name="search"><xsl:value-of select="@search"/></ixsl:with-param>
         </ixsl:call-template>
       </ixsl:variable>
-      <ixsl:attribute name="src"><ixsl:value-of select="concat($__contextpath,'/',$real_src)"/></ixsl:attribute>
+      <ixsl:attribute name="src">
+        <ixsl:value-of select="concat($__contextpath,image:uriToPath($real_src))"/>
+      </ixsl:attribute>
       <ixsl:attribute name="alt">
         <xsl:choose>
           <xsl:when test="pfx:alt"><xsl:apply-templates select="pfx:alt/node()"/></xsl:when>

@@ -22,6 +22,12 @@
     <match>/p:pustefix-application/p:application/p:static/p:extension-point[@type='application.static']</match>
   </handler>
   
+  <!-- It is important, that we also register the application's resources
+       under the module path, otherwise references will not be resolved correctly -->
+  <handler class="org.pustefixframework.config.application.parser.DefaultStaticResourceExtensionParsingHandler" run-order="end">
+    <match>/p:pustefix-application/p:application/p:static</match>
+  </handler>
+  
   <!-- Adds the SessionCleaner bean -->
   <handler class="org.pustefixframework.config.application.parser.SessionCleanerParsingHandler">
     <match>/p:pustefix-application/p:application//p:context-xml-service</match>

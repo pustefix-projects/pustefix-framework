@@ -19,15 +19,23 @@
 package org.pustefixframework.config.application.parser;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Map;
 
 import org.pustefixframework.config.Constants;
 import org.pustefixframework.config.application.parser.internal.StaticResourceExtensionPointImpl;
 import org.pustefixframework.config.generic.ParsingUtils;
+import org.pustefixframework.extension.ExtensionPoint;
+import org.pustefixframework.extension.StaticResourceExtensionPoint;
 import org.pustefixframework.http.DocrootRequestHandler;
 import org.pustefixframework.resource.ResourceLoader;
+import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinitionHolder;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
+import org.springframework.beans.factory.support.BeanDefinitionRegistry;
+import org.springframework.beans.factory.support.DefaultBeanNameGenerator;
+import org.springframework.osgi.service.exporter.support.OsgiServiceFactoryBean;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
@@ -78,6 +86,7 @@ public class DocrootRequestHandlerParsingHandler implements ParsingHandler {
         }
         
         LinkedList<StaticResourceExtensionPointImpl> extensionPoints = new LinkedList<StaticResourceExtensionPointImpl>();
+        extensionPoints.add(createDefaultStaticResourceExtensionPoint(context));
         extensionPoints.addAll(context.getObjectTreeElement().getObjectsOfTypeFromSubTree(StaticResourceExtensionPointImpl.class));
         
         BeanDefinitionBuilder beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(DocrootRequestHandler.class);
@@ -93,4 +102,33 @@ public class DocrootRequestHandlerParsingHandler implements ParsingHandler {
         context.getObjectTreeElement().addObject(new BeanDefinitionHolder(beanBuilder.getBeanDefinition(), "org.pustefixframework.http.DocrootRequestHandler"));
     }
 
+    private StaticResourceExtensionPointImpl createDefaultStaticResourceExtensionPoint(HandlerContext context) throws ParserException {
+        StaticResourceExtensionPointImpl extensionPoint = new StaticResourceExtensionPointImpl();
+        extensionPoint.setCardinality("0..n");
+        extensionPoint.setId(Constants.EXTENSION_POINT_DEFAULT_STATIC_RESOURCES);
+        extensionPoint.setType("application.static");
+        extensionPoint.setVersion("0.0.0");
+        
+        BeanDefinitionRegistry beanRegistry = ParsingUtils.getSingleTopObject(BeanDefinitionRegistry.class, context);
+        DefaultBeanNameGenerator beanNameGenerator = new DefaultBeanNameGenerator();
+        String beanName;
+        BeanDefinition beanDefinition;
+        BeanDefinitionBuilder beanBuilder;
+        
+        Map<String, String> serviceProperties = new HashMap<String, String>();
+        serviceProperties.put("extension-point", Constants.EXTENSION_POINT_DEFAULT_STATIC_RESOURCES);
+        serviceProperties.put("type", "application.static");
+        serviceProperties.put("version", "0.0.0");
+        
+        beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(OsgiServiceFactoryBean.class);
+        beanBuilder.setScope("singleton");
+        beanBuilder.addPropertyValue("interfaces", new Class[] {ExtensionPoint.class, StaticResourceExtensionPoint.class});
+        beanBuilder.addPropertyValue("serviceProperties", serviceProperties);
+        beanBuilder.addPropertyValue("target", extensionPoint);
+        beanDefinition = beanBuilder.getBeanDefinition();
+        beanName = beanNameGenerator.generateBeanName(beanDefinition, beanRegistry);
+        beanRegistry.registerBeanDefinition(beanName, beanDefinition);
+
+        return extensionPoint;
+    }
 }
