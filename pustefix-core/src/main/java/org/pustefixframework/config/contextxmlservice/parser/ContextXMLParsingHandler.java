@@ -158,13 +158,11 @@ public class ContextXMLParsingHandler implements ParsingHandler {
             beanHolder = new BeanDefinitionHolder(beanDefinition, ServerContextImpl.class.getName() );
             context.getObjectTreeElement().addObject(beanHolder);
             
-            BeanDefinitionRegistry beanReg = ParsingUtils.getSingleTopObject(BeanDefinitionRegistry.class, context);
-            
             beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(ContextResourceManagerImpl.class);
             beanBuilder.setScope("session");
             beanDefinition = beanBuilder.getBeanDefinition();
             beanHolder = new BeanDefinitionHolder(beanDefinition, ContextResourceManagerImpl.class.getName());
-            beanHolder = ScopedProxyUtils.createScopedProxy(beanHolder, beanReg, true);
+            beanHolder = ScopedProxyUtils.createScopedProxy(beanHolder, beanRegistry, true);
             context.getObjectTreeElement().addObject(beanHolder); 
             
             beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(ContextImpl.class);
@@ -173,15 +171,14 @@ public class ContextXMLParsingHandler implements ParsingHandler {
             beanBuilder.addPropertyReference("serverContext", ServerContextImpl.class.getName());
             beanBuilder.addPropertyReference("contextResourceManager", ContextResourceManagerImpl.class.getName());
             
-            if(beanReg.isBeanNameInUse(PerfLogging.class.getName())) {
+            if (beanRegistry.isBeanNameInUse(PerfLogging.class.getName())) {
                 beanBuilder.addPropertyReference("perfLogging", PerfLogging.class.getName());
             }
             
             beanDefinition = beanBuilder.getBeanDefinition();
             beanHolder = new BeanDefinitionHolder(beanDefinition, ContextImpl.class.getName(), new String[] {"pustefixContext"});
-            beanHolder = ScopedProxyUtils.createScopedProxy(beanHolder, beanReg, true);
+            beanHolder = ScopedProxyUtils.createScopedProxy(beanHolder, beanRegistry, true);
             context.getObjectTreeElement().addObject(beanHolder); 
-            
         }
     }
 

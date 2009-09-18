@@ -27,6 +27,7 @@ import org.apache.log4j.Logger;
 import org.pustefixframework.config.contextxmlservice.AbstractPustefixRequestHandlerConfig;
 import org.pustefixframework.config.directoutputservice.DirectOutputPageRequestConfig;
 import org.pustefixframework.config.directoutputservice.DirectOutputRequestHandlerConfig;
+import org.pustefixframework.http.internal.ContextStore;
 
 import de.schlund.pfixcore.auth.AuthConstraint;
 import de.schlund.pfixcore.workflow.ContextImpl;
@@ -121,6 +122,7 @@ public class PustefixContextDirectOutputRequestHandler extends AbstractPustefixR
          
          // Make sure the context is initialized and deinitialized this thread
          context.prepareForRequest();
+         ContextStore.setContextForCurrentThread(context);
          try {
              if (config.isSynchronized()) {
                  synchronized (context) {
@@ -130,6 +132,7 @@ public class PustefixContextDirectOutputRequestHandler extends AbstractPustefixR
                  doProcess(preq, res, context);
              }
          } finally {
+             ContextStore.setContextForCurrentThread(null);
              context.cleanupAfterRequest();
          }
     }

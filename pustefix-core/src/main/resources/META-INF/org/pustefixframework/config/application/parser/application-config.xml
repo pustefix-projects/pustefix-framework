@@ -120,6 +120,12 @@
   </handler>
   
   
+  <!-- Register context store request interceptor -->
+  <handler class="org.pustefixframework.config.application.parser.RegisterContextStoreWebRequestInterceptorParsingHandler">
+    <match>/p:pustefix-application</match>
+  </handler>
+  
+  
   <handler id="org.pustefixframework.config.customization.WhenParsingHandler" class="org.pustefixframework.config.customization.CustomizationWhenParsingHandler">
     <match>/p:pustefix-application/p:choose/p:when</match>
     <match>/p:pustefix-application/p:application/p:choose/p:when</match>
