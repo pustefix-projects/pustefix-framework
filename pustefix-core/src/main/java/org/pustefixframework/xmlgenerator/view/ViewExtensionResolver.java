@@ -7,6 +7,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.TransformerException;
 
 import org.osgi.framework.BundleContext;
@@ -75,7 +76,9 @@ public class ViewExtensionResolver {
 			if(!depList.contains(target)) depList.add(target);
 		}
 		
-		Document extDoc  = Xml.createDocumentBuilder().newDocument();
+		DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
+		docBuilderFactory.setNamespaceAware(true);
+		Document extDoc  = docBuilderFactory.newDocumentBuilder().newDocument();
     	Element extElem = extDoc.createElement("extension-point");
     	extElem.setAttribute("id", extensionPointId);
     	extElem.setAttribute("version", extensionPointVersion);
