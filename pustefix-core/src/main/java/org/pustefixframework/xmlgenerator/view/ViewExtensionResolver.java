@@ -82,6 +82,9 @@ public class ViewExtensionResolver {
     	Element extElem = extDoc.createElement("extension-point");
     	extElem.setAttribute("id", extensionPointId);
     	extElem.setAttribute("version", extensionPointVersion);
+    	//TODO: remove this workaround and check why namespaces of imported nodes don't get declared
+    	extElem.setAttribute("xmlns:ixsl","http://www.w3.org/1999/XSL/Transform");
+    	extElem.setAttribute("xmlns:pfx","http://www.schlund.de/pustefix/core");
     	extDoc.appendChild(extElem);
     	
     	try {
@@ -112,6 +115,7 @@ public class ViewExtensionResolver {
     		Element errorElem = extDoc.createElement("missing-extension");
     		extElem.appendChild(errorElem);
     	}
+    	
 		extDoc = Xml.parse(context.getXsltVersion(), extDoc);
 		return extDoc;
 		
