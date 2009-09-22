@@ -115,12 +115,14 @@ public class BundleResourceProvider implements ResourceProvider {
         	File bundleSrcDir = sourceLocatorRegistry.getSourceLocation(bundle.getSymbolicName(), (String)bundle.getHeaders().get("Bundle-Version"));
         	if(bundleSrcDir != null) {
         		File srcFile = new File(bundleSrcDir, "src/main/resources/" + path + "/" + filename);
-        		try {
-					URLResourceImpl resource = new URLResourceImpl(uri, originallyRequestedURI, srcFile.toURI().toURL());
-					return new Resource[] {resource};
-        		} catch (MalformedURLException e) {
-        			throw new IllegalArgumentException("Illegal file URL: " + srcFile.toURI().toASCIIString(), e);
-				}
+        		if(srcFile.exists()) {
+	        		try {
+						URLResourceImpl resource = new URLResourceImpl(uri, originallyRequestedURI, srcFile.toURI().toURL());
+						return new Resource[] {resource};
+	        		} catch (MalformedURLException e) {
+	        			throw new IllegalArgumentException("Illegal file URL: " + srcFile.toURI().toASCIIString(), e);
+					}
+        		}
         		//TODO: handle resources from fragments
         	}
         }

@@ -22,6 +22,8 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.MessageFormat;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.xml.transform.TransformerException;
 
@@ -37,6 +39,7 @@ import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
 import de.schlund.pfixxml.util.ExtensionFunctionUtils;
+import de.schlund.pfixxml.util.URIParameters;
 import de.schlund.pfixxml.util.XPath;
 import de.schlund.pfixxml.util.Xml;
 import de.schlund.pfixxml.util.XsltContext;
@@ -61,6 +64,8 @@ public final class IncludeDocumentExtension {
     private static final String XPNAMEEND  = "']";
     
     private static ThreadLocal<String> resolvedUri = new ThreadLocal<String>();
+    
+    private static Pattern dynamicUriPattern = Pattern.compile("dynamic://[^?#]*(\\?([^#]*))?(#.*)?");
     
     //~ Methods
     // ....................................................................................
@@ -129,6 +134,23 @@ public final class IncludeDocumentExtension {
             } else {
                     uriStr = "bundle://" + module + "/PUSTEFIX-INF/" + path_str;
             }
+        } else if(uriStr.matches("^dynamic://.*")) {
+        	//add missing dynamic URI parameters
+        	Matcher matcher = dynamicUriPattern.matcher(uriStr);
+        	if(matcher.matches()) {
+    			URIParameters params;
+    			if(matcher.group(2) != null) params = new URIParameters(matcher.group(2), "UTF-8");
+    			else params = new URIParameters();
+    			if(params.getParameter("application") == null) params.addParameter("application", targetGen.getApplicationBundle());
+    			if(params.getParameter("part") == null) params.addParameter("part", part);
+    			if(params.getParameter("parent") == null) params.addParameter("parent", parent_uri_str);
+    			if(matcher.group(2) == null) {
+    				if(matcher.group(3) == null) uriStr += "?" + params.toString();
+    				else uriStr = uriStr.substring(0, matcher.start(3)) + "?" +  params.toString() + uriStr.substring(matcher.start(3));
+    			} else {
+    				uriStr = uriStr.substring(0, matcher.start(2)) + params.toString() + uriStr.substring(matcher.end(2));
+    			}
+        	}
         }
         
         try {
