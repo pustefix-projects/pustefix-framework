@@ -97,6 +97,11 @@ public class ViewExtensionResolver {
     			Element elem = extDoc.createElement("extension");
     			extElem.appendChild(elem);
     			elem.setAttribute("part", ext.getPartName());
+    			elem.setAttribute("module", ext.getModule());
+    			String path = ext.getResource().getOriginalURI().getPath();
+    			int ind = path.indexOf("PUSTEFIX-INF");
+    			path = path.substring(ind + "PUSTEFIX-INF".length() + 1);
+    			elem.setAttribute("path", path);
     			elem.setAttribute("uri", ext.getResource().getOriginalURI().toASCIIString());
     			IncludeDocument doc = targetGenerator.getIncludeDocument(targetGenerator.getXsltVersion(), ext.getResource(), false);
     			Node themeNode = getThemeNode(context, doc, themes, ext.getPartName(), targetKey, target);

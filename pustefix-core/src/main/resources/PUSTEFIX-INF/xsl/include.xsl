@@ -198,11 +198,12 @@
     <xsl:param name="computed_inc">false</xsl:param>
     <xsl:param name="parent_part"><xsl:value-of select="ancestor::part[position() = 1]/@name"/></xsl:param>
     <xsl:param name="parent_theme"><xsl:value-of select="ancestor::theme[position() = 1]/@name"/></xsl:param>
+    <xsl:param name="extension" select="ancestor::extension[position() = 1]"/>
     <xsl:param name="noerror"><xsl:value-of select="@noerror"/></xsl:param>
     <xsl:param name="noedit"><xsl:value-of select="@noedit"/></xsl:param>
     <xsl:param name="part"><xsl:value-of select="@part"/></xsl:param>
     <xsl:param name="href"><xsl:value-of select="@href"/></xsl:param>
-    <xsl:param name="module"><xsl:value-of select="@module"/></xsl:param>
+    <xsl:param name="module"><xsl:choose><xsl:when test="@module"><xsl:value-of select="@module"/></xsl:when><xsl:when test="$extension"><xsl:value-of select="$extension/@module"/></xsl:when></xsl:choose></xsl:param>
     <xsl:param name="search"><xsl:value-of select="@search"/></xsl:param>
     <xsl:variable name="href_int">
       <xsl:if test="$href">
@@ -221,6 +222,9 @@
       <xsl:choose>
         <xsl:when test="not(string($href_int) = '')">
           <xsl:value-of select="string($href_int)"/>
+        </xsl:when>
+        <xsl:when test="$extension">
+          <xsl:value-of select="$extension/@path"/>
         </xsl:when>
         <xsl:otherwise>
           <xsl:value-of select="include:getRelativePathFromSystemId()"/>

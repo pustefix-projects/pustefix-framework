@@ -13,5 +13,6 @@ public interface ViewExtension extends Extension {
 
 	public String getPartName();
 	public Resource getResource();
+	public String getModule();
 	
 }

@@ -23,6 +23,10 @@ public class ViewExtensionImpl extends AbstractExtension<ViewExtensionPoint,View
 		this.partName = partName;
 	}
 	
+	public String getModule() {
+		return bundleContext.getBundle().getSymbolicName();
+	}
+	
 	public Resource getResource() {
 		return resource;
 	}
