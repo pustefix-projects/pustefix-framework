@@ -290,7 +290,7 @@ public class GenerateSCodes {
 
     
     private static URI getModuleURI(String relPath, String module, String targetPath) {
-        String uriStr = "bundle://"+module+"/PUSTEFIX-INF/"+relPath;
+        String uriStr = "dynamic://"+module+"/PUSTEFIX-INF/"+relPath;
         try {
             return new URI(uriStr);
         } catch (URISyntaxException e) {
