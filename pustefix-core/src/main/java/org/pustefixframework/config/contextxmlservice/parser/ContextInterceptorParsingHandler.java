@@ -18,11 +18,12 @@
 
 package org.pustefixframework.config.contextxmlservice.parser;
 
-import org.pustefixframework.config.contextxmlservice.parser.internal.PustefixContextXMLRequestHandlerConfigImpl;
+import org.pustefixframework.config.contextxmlservice.ContextInterceptorHolder;
 import org.pustefixframework.config.generic.ParsingUtils;
 import org.pustefixframework.container.spring.beans.support.ScopedProxyUtils;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinitionHolder;
+import org.springframework.beans.factory.config.RuntimeBeanReference;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.DefaultBeanNameGenerator;
@@ -35,21 +36,24 @@ import com.marsching.flexiparse.parser.exception.ParserException;
 
 import de.schlund.pfixcore.workflow.ContextInterceptor;
 
+/**
+ * Handles definitions of context interceptors  
+ * 
+ * @author Sebastian Marsching <sebastian.marsching@1und1.de>
+ */
 public class ContextInterceptorParsingHandler implements ParsingHandler {
 
     public void handleNode(HandlerContext context) throws ParserException {
-       
-        Element element = (Element)context.getNode();
-        ParsingUtils.checkAttributes(element, null, new String[] {"class","bean-ref"});
-        
-        PustefixContextXMLRequestHandlerConfigImpl config = ParsingUtils.getSingleTopObject(PustefixContextXMLRequestHandlerConfigImpl.class, context);     
-        
+
+        Element element = (Element) context.getNode();
+        ParsingUtils.checkAttributes(element, null, new String[] { "class", "bean-ref" });
+
         String beanName;
-        
+
         String className = element.getAttribute("class").trim();
         String beanRef = element.getAttribute("bean-ref").trim();
-        if(className.length()>0) {
-            
+        if (className.length() > 0) {
+
             ConfigurableOsgiBundleApplicationContext appContext = ParsingUtils.getSingleTopObject(ConfigurableOsgiBundleApplicationContext.class, context);
 
             Class<?> clazz;
@@ -61,18 +65,18 @@ public class ContextInterceptorParsingHandler implements ParsingHandler {
             if (!ContextInterceptor.class.isAssignableFrom(clazz)) {
                 throw new ParserException("Context interceptor " + clazz + " does not implement " + ContextInterceptor.class + " interface!");
             }
-            
+
             String scope = element.getAttribute("scope");
             if (scope == null || scope.length() == 0) {
                 scope = "singleton";
             }
-            
+
             BeanDefinitionRegistry beanRegistry = ParsingUtils.getSingleTopObject(BeanDefinitionRegistry.class, context);
             DefaultBeanNameGenerator beanNameGenerator = new DefaultBeanNameGenerator();
             BeanDefinitionBuilder beanBuilder;
             BeanDefinitionHolder beanHolder;
             BeanDefinition beanDefinition;
-            
+
             beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(clazz);
             beanBuilder.setScope(scope);
             beanDefinition = beanBuilder.getBeanDefinition();
@@ -87,27 +91,24 @@ public class ContextInterceptorParsingHandler implements ParsingHandler {
                     beanRegistry.registerAlias(beanHolder.getBeanName(), alias);
                 }
             }
-            if(beanRef.length()>0) {
+            if (beanRef.length() > 0) {
                 throw new ParserException("Setting 'class' and 'bean-ref' attribute at 'interceptor' element isn't allowed.");
             }
-        } else if(beanRef.length()>0) {
+        } else if (beanRef.length() > 0) {
             beanName = beanRef;
         } else {
             throw new ParserException("No 'class' or 'bean-ref' attribute set at 'interceptor' element.");
         }
-       
-        
-        Element parent = (Element)element.getParentNode();
-        if (parent.getNodeName().equals("start")) {
-            config.getContextConfig().addStartInterceptorBean(beanName);
-        }
-        if (parent.getNodeName().equals("end")) {
-            config.getContextConfig().addEndInterceptorBean(beanName);
-        }
-        if (parent.getNodeName().equals("postrender")) {
-            config.getContextConfig().addPostRenderInterceptorBean(beanName);
-        }
-        
+
+        final RuntimeBeanReference beanReference = new RuntimeBeanReference(beanName);
+
+        context.getObjectTreeElement().addObject(new ContextInterceptorHolder() {
+
+            public Object getContextInterceptorObject() {
+                return beanReference;
+            }
+
+        });
     }
 
 }

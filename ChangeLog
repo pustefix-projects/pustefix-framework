@@ -1,3 +1,7 @@
+2009-09-24  Sebastian Marsching <sebastian.marsching@1und1.de>
+
+	Added extension points for context interceptors.
+
 2009-09-18  Sebastian Marsching <sebastian.marsching@1und1.de>
 
 	Made Pustefix context available in modules.

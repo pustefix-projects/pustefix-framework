@@ -18,9 +18,11 @@
 
 package org.pustefixframework.config.contextxmlservice.parser;
 
+import java.util.Collections;
 import java.util.List;
 
 import org.pustefixframework.config.contextxmlservice.ContextConfigHolder;
+import org.pustefixframework.config.contextxmlservice.ContextInterceptorListHolder;
 import org.pustefixframework.config.contextxmlservice.PageFlowHolder;
 import org.pustefixframework.config.contextxmlservice.PageRequestConfigHolder;
 import org.pustefixframework.config.contextxmlservice.parser.internal.ContextConfigImpl;
@@ -93,23 +95,23 @@ public class ContextXMLParsingHandler implements ParsingHandler {
             beanDefinition = beanBuilder.getBeanDefinition();
             String pageMapBeanName = beanNameGenerator.generateBeanName(beanDefinition, beanRegistry);
             beanRegistry.registerBeanDefinition(pageMapBeanName, beanDefinition);
-            
-            @SuppressWarnings("unchecked")
-            List<Object> startInterceptors = new ManagedList();
-            for (String interceptorBeanName : contextConfig.getStartInterceptorBeans()) {
-                startInterceptors.add(new RuntimeBeanReference(interceptorBeanName));
+
+            Object startInterceptors = Collections.emptyList();
+            Object endInterceptors = Collections.emptyList();
+            Object postRenderInterceptors = Collections.emptyList();
+
+            for (ContextInterceptorListHolder holder : context.getObjectTreeElement().getObjectsOfTypeFromSubTree(ContextInterceptorListHolder.class)) {
+                if (holder.getListType().equals("start")) {
+                    startInterceptors = holder.getContextInterceptorListObject();
+                } else if (holder.getListType().equals("end")) {
+                    endInterceptors = holder.getContextInterceptorListObject();
+                } else if (holder.getListType().equals("postrender")) {
+                    postRenderInterceptors = holder.getContextInterceptorListObject();
+                } else {
+                    throw new ParserException("Found ContextInterceptorListHolder with unknown type \"" + holder.getListType() + "\".");
+                }
             }
-            @SuppressWarnings("unchecked")
-            List<Object> endInterceptors = new ManagedList();
-            for (String interceptorBeanName : contextConfig.getEndInterceptorBeans()) {
-                endInterceptors.add(new RuntimeBeanReference(interceptorBeanName));
-            }
-            @SuppressWarnings("unchecked")
-            List<Object> postRenderInterceptors = new ManagedList();
-            for (String interceptorBeanName : contextConfig.getPostRenderInterceptorBeans()) {
-                postRenderInterceptors.add(new RuntimeBeanReference(interceptorBeanName));
-            }
-            
+
             @SuppressWarnings("unchecked")
             List<Object> pageFlowObjectList = new ManagedList();
             for (Object o : context.getObjectTreeElement().getObjectsOfTypeFromSubTree(Object.class)) {

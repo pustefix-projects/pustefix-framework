@@ -55,6 +55,16 @@
     <match>/c:context-xml-service-config/c:interceptors//c:interceptor</match>
   </handler>
   
+  <handler class="org.pustefixframework.config.contextxmlservice.parser.ContextInterceptorListParsingHandler" run-order="end">
+    <match>/c:context-xml-service-config/c:interceptors/c:start</match>
+    <match>/c:context-xml-service-config/c:interceptors/c:end</match>
+    <match>/c:context-xml-service-config/c:interceptors/c:postrender</match>
+  </handler>
+  
+  <handler class="org.pustefixframework.config.contextxmlservice.parser.ContextInterceptorExtensionPointParsingHandler">
+    <match>/c:context-xml-service-config/c:interceptors//c:extension-point[@type='context.interceptor']</match>
+  </handler>
+  
   <!-- scriptedflows -->
   <handler class="org.pustefixframework.config.contextxmlservice.parser.ScriptedFlowParsingHandler">
     <match>/c:context-xml-service-config/c:scriptedflow</match>
