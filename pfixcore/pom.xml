@@ -4,7 +4,7 @@
   <groupId>org.pustefixframework</groupId>
   <artifactId>pfixcore</artifactId>
   <name>pfixcore</name>
-  <version>0.13.7</version>
+  <version>0.13.8</version>
   <dependencies>
     <dependency>
       <groupId>ant-contrib</groupId>
