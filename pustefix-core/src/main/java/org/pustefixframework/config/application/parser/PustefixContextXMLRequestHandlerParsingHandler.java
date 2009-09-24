@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Collection;
+import java.util.List;
 import java.util.Properties;
 
 import org.pustefixframework.admin.mbeans.WebappAdmin;
@@ -32,6 +33,9 @@ import org.pustefixframework.config.application.EditorLocation;
 import org.pustefixframework.config.application.XMLGeneratorInfo;
 import org.pustefixframework.config.contextxmlservice.ContextConfigHolder;
 import org.pustefixframework.config.contextxmlservice.PustefixContextXMLRequestHandlerConfig;
+import org.pustefixframework.config.contextxmlservice.ScriptedFlowProvider;
+import org.pustefixframework.config.contextxmlservice.parser.internal.ScriptedFlowExtensionPointImpl;
+import org.pustefixframework.config.contextxmlservice.parser.internal.ScriptedFlowMap;
 import org.pustefixframework.config.contextxmlservice.parser.internal.SimplePustefixContextXMLRequestHandlerConfig;
 import org.pustefixframework.config.customization.CustomizationInfo;
 import org.pustefixframework.config.customization.PropertiesBasedCustomizationInfo;
@@ -49,6 +53,7 @@ import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanNameGenerator;
 import org.springframework.beans.factory.support.DefaultBeanNameGenerator;
+import org.springframework.beans.factory.support.ManagedList;
 import org.springframework.osgi.context.ConfigurableOsgiBundleApplicationContext;
 import org.w3c.dom.Element;
 import org.xml.sax.InputSource;
@@ -73,17 +78,17 @@ public class PustefixContextXMLRequestHandlerParsingHandler implements ParsingHa
         ResourceLoader resourceLoader = ParsingUtils.getSingleTopObject(ResourceLoader.class, context);
 
         Element serviceElement = (Element) context.getNode();
-        
+
         Element pathElement = (Element) serviceElement.getElementsByTagNameNS(Constants.NS_APPLICATION, "path").item(0);
         if (pathElement == null) {
             throw new ParserException("Could not find expected <path> element");
         }
-        
+
         Element configurationFileElement = (Element) serviceElement.getElementsByTagNameNS(Constants.NS_APPLICATION, "config-file").item(0);
         if (configurationFileElement == null) {
             throw new ParserException("Could not find expected <config-file> element");
         }
-        
+
         String path = pathElement.getTextContent().trim();
         URI configurationURI;
         try {
@@ -95,13 +100,13 @@ public class PustefixContextXMLRequestHandlerParsingHandler implements ParsingHa
         if (configurationResource == null) {
             throw new ParserException("Resource at URI \"" + configurationURI.toASCIIString() + "\" could not be found");
         }
-        
+
         boolean renderExternal = false;
         Element renderExtElement = (Element) serviceElement.getElementsByTagNameNS(Constants.NS_APPLICATION, "render-external").item(0);
         if (renderExtElement != null) {
             renderExternal = Boolean.parseBoolean(renderExtElement.getTextContent().trim());
         }
-        
+
         String additionalTrailInfoRef = null;
         Element infoElement = (Element) serviceElement.getElementsByTagNameNS(Constants.NS_APPLICATION, "additional-trail-info").item(0);
         if (infoElement != null) {
@@ -109,7 +114,7 @@ public class PustefixContextXMLRequestHandlerParsingHandler implements ParsingHa
             Class<?> clazz;
             try {
                 clazz = Class.forName(className);
-            } catch(ClassNotFoundException x) {
+            } catch (ClassNotFoundException x) {
                 throw new ParserException("Can't get additional-trail-info class: " + className, x);
             }
             BeanDefinitionBuilder beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(clazz);
@@ -118,19 +123,19 @@ public class PustefixContextXMLRequestHandlerParsingHandler implements ParsingHa
             context.getObjectTreeElement().addObject(beanHolder);
             additionalTrailInfoRef = className;
         }
-        
+
         int maxStoredDoms = 5;
         Element maxElement = (Element) serviceElement.getElementsByTagNameNS(Constants.NS_APPLICATION, "max-stored-doms").item(0);
         if (maxElement != null) {
             maxStoredDoms = Integer.parseInt(maxElement.getTextContent().trim());
         }
-        
+
         Collection<XMLGeneratorInfo> infoCollection = context.getObjectTreeElement().getRoot().getObjectsOfTypeFromSubTree(XMLGeneratorInfo.class);
         if (infoCollection.size() != 1) {
             throw new ParserException("Found " + infoCollection.size() + " instances of XMLGeneratorInfo but expected exactly one");
         }
         XMLGeneratorInfo info = infoCollection.iterator().next();
-        
+
         Collection<EditorLocation> editorLocationCollection = context.getObjectTreeElement().getRoot().getObjectsOfTypeFromSubTree(EditorLocation.class);
         EditorLocation editorLocation = null;
         if (editorLocationCollection.size() > 0) {
@@ -142,25 +147,26 @@ public class PustefixContextXMLRequestHandlerParsingHandler implements ParsingHa
         } else if (beanRegs.size() > 1) {
             throw new ParserException("Multiple BeanDefinitionRegistry objects found.");
         }
-        BeanDefinitionRegistry beanReg = beanRegs.iterator().next();
+        BeanDefinitionRegistry beanRegistry = beanRegs.iterator().next();
         Properties buildTimeProperties = RuntimeProperties.getProperties();
         CustomizationInfo cusInfo = new PropertiesBasedCustomizationInfo(buildTimeProperties);
         try {
             ConfigurableOsgiBundleApplicationContext appContext = ParsingUtils.getSingleTopObject(ConfigurableOsgiBundleApplicationContext.class, context);
-            
+
             Parser contextXmlConfigParser = new OSGiAwareParser(appContext.getBundleContext(), "META-INF/org/pustefixframework/config/context-xml-service/parser/context-xml-service-config-application.xml");
-            
+
             InputSource configurationSource = new InputSource(configurationResource.getInputStream());
             if (configurationResource instanceof URLResource) {
                 URLResource urlResource = (URLResource) configurationResource;
                 configurationSource.setSystemId(urlResource.getURL().toExternalForm());
             }
-            
-            final ObjectTreeElement contextXmlConfigTree = contextXmlConfigParser.parse(configurationSource, cusInfo, beanReg, info, appContext, resourceLoader, new ApplicationFlag());
+
+            final ObjectTreeElement contextXmlConfigTree = contextXmlConfigParser.parse(configurationSource, cusInfo, beanRegistry, info, appContext, resourceLoader, new ApplicationFlag());
             SubObjectTree subTree = new SubObjectTree() {
-              public ObjectTreeElement getRoot() {
+
+                public ObjectTreeElement getRoot() {
                     return contextXmlConfigTree;
-                }  
+                }
             };
             context.getObjectTreeElement().addObject(subTree);
         } catch (ParserException e) {
@@ -168,18 +174,35 @@ public class PustefixContextXMLRequestHandlerParsingHandler implements ParsingHa
         } catch (IOException e) {
             throw new BeanDefinitionStoreException("Error while parsing " + configurationURI.toASCIIString() + ": " + e.getMessage(), e);
         }
-        
+
         PustefixContextXMLRequestHandlerConfig config = ParsingUtils.getSingleSubObject(PustefixContextXMLRequestHandlerConfig.class, context);
         ContextConfigHolder contextConfigHolder = ParsingUtils.getSingleSubObject(ContextConfigHolder.class, context);
-        
+
         BeanDefinitionBuilder beanBuilder;
         BeanDefinition beanDefinition;
         BeanNameGenerator beanNameGenerator = new DefaultBeanNameGenerator();
-        
-        beanDefinition = SimplePustefixContextXMLRequestHandlerConfig.generateBeanDefinition(config, contextConfigHolder);
-        String configBeanName = beanNameGenerator.generateBeanName(beanDefinition, beanReg);
-        beanReg.registerBeanDefinition(configBeanName, beanDefinition);
-        
+
+        @SuppressWarnings("unchecked")
+        List<Object> scriptedFlowObjectList = new ManagedList();
+        for (Object o : context.getObjectTreeElement().getObjectsOfTypeFromSubTree(Object.class)) {
+            if (o instanceof ScriptedFlowProvider) {
+                scriptedFlowObjectList.add(o);
+            } else if (o instanceof ScriptedFlowExtensionPointImpl) {
+                scriptedFlowObjectList.add(o);
+            }
+        }
+
+        beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(ScriptedFlowMap.class);
+        beanBuilder.setScope("singleton");
+        beanBuilder.addPropertyValue("scriptedFlowObjects", scriptedFlowObjectList);
+        beanDefinition = beanBuilder.getBeanDefinition();
+        String scriptedFlowMapBeanName = beanNameGenerator.generateBeanName(beanDefinition, beanRegistry);
+        beanRegistry.registerBeanDefinition(scriptedFlowMapBeanName, beanDefinition);
+
+        beanDefinition = SimplePustefixContextXMLRequestHandlerConfig.generateBeanDefinition(config, new RuntimeBeanReference(scriptedFlowMapBeanName), contextConfigHolder);
+        String configBeanName = beanNameGenerator.generateBeanName(beanDefinition, beanRegistry);
+        beanRegistry.registerBeanDefinition(configBeanName, beanDefinition);
+
         beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(PustefixContextXMLRequestHandler.class);
         beanBuilder.setScope("singleton");
         beanBuilder.setInitMethodName("init");
@@ -188,31 +211,31 @@ public class PustefixContextXMLRequestHandlerParsingHandler implements ParsingHa
         beanBuilder.addPropertyValue("context", new RuntimeBeanReference(ContextImpl.class.getName()));
         beanBuilder.addPropertyReference("configuration", configBeanName);
         beanBuilder.addPropertyValue("sessionAdmin", new RuntimeBeanReference(SessionAdmin.class.getName()));
-        if(beanReg.isBeanNameInUse(TestRecording.class.getName())) {
+        if (beanRegistry.isBeanNameInUse(TestRecording.class.getName())) {
             beanBuilder.addPropertyValue("testRecording", new RuntimeBeanReference(TestRecording.class.getName()));
         }
         beanBuilder.addPropertyValue("webappAdmin", new RuntimeBeanReference(WebappAdmin.class.getName()));
-        if(editorLocation != null) {
-        	beanBuilder.addPropertyValue("editorLocation", editorLocation.getLocation());
+        if (editorLocation != null) {
+            beanBuilder.addPropertyValue("editorLocation", editorLocation.getLocation());
         }
         beanBuilder.addPropertyValue("checkModtime", info.getCheckModtime());
         beanBuilder.addPropertyValue("sessionCleaner", new RuntimeBeanReference(SessionCleaner.class.getName()));
         beanBuilder.addPropertyValue("renderExternal", renderExternal);
-        if(additionalTrailInfoRef!=null) 
+        if (additionalTrailInfoRef != null)
             beanBuilder.addPropertyValue("additionalTrailInfo", new RuntimeBeanReference(additionalTrailInfoRef));
         beanBuilder.addPropertyValue("maxStoredDoms", maxStoredDoms);
         beanBuilder.addPropertyValue("exceptionProcessingConfiguration", new RuntimeBeanReference(ExceptionProcessingConfiguration.class.getName()));
         Collection<EditorInfo> editorInfos = context.getObjectTreeElement().getRoot().getObjectsOfTypeFromSubTree(EditorInfo.class);
-        if(editorInfos.size()>0) {
+        if (editorInfos.size() > 0) {
             beanBuilder.addPropertyValue("editModeAllowed", editorInfos.iterator().next().getEnabled());
         }
-        if(!RuntimeProperties.getProperties().getProperty("mode").equals("prod")) {
-        	beanBuilder.addPropertyValue("xmlOnlyAllowed", true);
+        if (!RuntimeProperties.getProperties().getProperty("mode").equals("prod")) {
+            beanBuilder.addPropertyValue("xmlOnlyAllowed", true);
         }
         beanDefinition = beanBuilder.getBeanDefinition();
         BeanDefinitionHolder beanHolder = new BeanDefinitionHolder(beanDefinition, PustefixContextXMLRequestHandler.class.getName() + "#" + path);
         context.getObjectTreeElement().addObject(beanHolder);
-        
+
     }
 
 }

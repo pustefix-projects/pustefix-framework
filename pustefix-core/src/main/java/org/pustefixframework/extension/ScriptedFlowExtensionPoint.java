@@ -16,31 +16,20 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-package org.pustefixframework.config.contextxmlservice;
-
-import java.util.Map;
+package org.pustefixframework.extension;
 
 /**
- * Provides configuration for {@link de.schlund.pfixxml.ContextXMLServlet}.  
+ * An extension point that can be extended with scripted flows.  
  * 
  * @author Sebastian Marsching <sebastian.marsching@1und1.de>
  */
-public interface PustefixContextXMLRequestHandlerConfig extends AbstractPustefixXMLRequestHandlerConfig {
+public interface ScriptedFlowExtensionPoint extends ExtensionPoint<ScriptedFlowExtension> {
 
     /**
-     * Returns configuration that should be used by the context instances
-     * created by the servlet.
+     * This method has to be called by an extension, if the list of
+     * scripted flows provided by this extension has changed.
      * 
-     * @return configuration for context instances
+     * @param extension the extension that has changed
      */
-    ContextConfig getContextConfig();
-    
-    /**
-     * Returns map of scripted flows. The name of the flow is used
-     * as the key and a provider for the flow as the value of the map.
-     * 
-     * @return scripted flows
-     */
-    Map<String, ? extends ScriptedFlowProvider> getScriptedFlows();
-
+    void updateExtension(ScriptedFlowExtension extension);
 }

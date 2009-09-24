@@ -18,29 +18,29 @@
 
 package org.pustefixframework.config.contextxmlservice;
 
-import java.util.Map;
+import de.schlund.pfixcore.scriptedflow.compiler.CompilerException;
+import de.schlund.pfixcore.scriptedflow.vm.Script;
 
 /**
- * Provides configuration for {@link de.schlund.pfixxml.ContextXMLServlet}.  
+ * Provides a compiled scripted flow.
  * 
  * @author Sebastian Marsching <sebastian.marsching@1und1.de>
  */
-public interface PustefixContextXMLRequestHandlerConfig extends AbstractPustefixXMLRequestHandlerConfig {
+public interface ScriptedFlowProvider {
 
     /**
-     * Returns configuration that should be used by the context instances
-     * created by the servlet.
+     * Returns the name of the scripted flow that is provided
+     * by this object.
      * 
-     * @return configuration for context instances
+     * @return name of the scripted flow
      */
-    ContextConfig getContextConfig();
-    
-    /**
-     * Returns map of scripted flows. The name of the flow is used
-     * as the key and a provider for the flow as the value of the map.
-     * 
-     * @return scripted flows
-     */
-    Map<String, ? extends ScriptedFlowProvider> getScriptedFlows();
+    String getName();
 
+    /**
+     * Returns a compiled scripted flow object.
+     * 
+     * @return compiled scripted flow
+     * @throws CompilerException if source code cannot be compiled
+     */
+    Script getScript() throws CompilerException;
 }

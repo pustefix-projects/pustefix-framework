@@ -18,10 +18,12 @@
 
 package org.pustefixframework.config.contextxmlservice.parser.internal;
 
+import java.util.Map;
+
 import org.pustefixframework.config.contextxmlservice.PustefixContextXMLRequestHandlerConfig;
 import org.pustefixframework.config.contextxmlservice.SSLOption;
+import org.pustefixframework.config.contextxmlservice.ScriptedFlowProvider;
 
-import de.schlund.pfixcore.scriptedflow.ScriptedFlowConfigImpl;
 import de.schlund.pfixcore.workflow.ConfigurableState;
 
 /**
@@ -42,7 +44,7 @@ public class PustefixContextXMLRequestHandlerConfigImpl extends AbstractPustefix
 
     private ContextConfigImpl contextConfig;
 
-    private ScriptedFlowConfigImpl scriptedFlowConfig = new ScriptedFlowConfigImpl();
+    private Map<String, ? extends ScriptedFlowProvider> scriptedFlows;
 
     public void setDefaultStaticState(Class<? extends ConfigurableState> clazz) {
         this.defaultStateClass = clazz;
@@ -87,8 +89,12 @@ public class PustefixContextXMLRequestHandlerConfigImpl extends AbstractPustefix
         return this.contextConfig;
     }
 
-    public ScriptedFlowConfigImpl getScriptedFlowConfig() {
-        return this.scriptedFlowConfig;
+    public Map<String, ? extends ScriptedFlowProvider> getScriptedFlows() {
+        return this.scriptedFlows;
+    }
+
+    public void setScriptedFlows(Map<String, ? extends ScriptedFlowProvider> scriptedFlows) {
+        this.scriptedFlows = scriptedFlows;
     }
 
 }

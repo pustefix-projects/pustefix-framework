@@ -26,13 +26,13 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
 import org.pustefixframework.config.contextxmlservice.AbstractPustefixXMLRequestHandlerConfig;
-import org.pustefixframework.config.contextxmlservice.PustefixContextXMLRequestHandlerConfig;
 import org.pustefixframework.config.contextxmlservice.PageRequestConfig;
+import org.pustefixframework.config.contextxmlservice.PustefixContextXMLRequestHandlerConfig;
+import org.pustefixframework.config.contextxmlservice.ScriptedFlowProvider;
 
 import de.schlund.pfixcore.exception.PustefixApplicationException;
 import de.schlund.pfixcore.exception.PustefixCoreException;
 import de.schlund.pfixcore.exception.PustefixRuntimeException;
-import de.schlund.pfixcore.scriptedflow.ScriptedFlowConfig;
 import de.schlund.pfixcore.scriptedflow.ScriptedFlowInfo;
 import de.schlund.pfixcore.scriptedflow.compiler.CompilerException;
 import de.schlund.pfixcore.scriptedflow.vm.Script;
@@ -235,8 +235,12 @@ public class PustefixContextXMLRequestHandler extends AbstractPustefixXMLRequest
     }
 
     private Script getScriptedFlowByName(String scriptedFlowName) throws CompilerException {
-        ScriptedFlowConfig config = getContextXMLServletConfig().getScriptedFlowConfig();
-        return config.getScript(scriptedFlowName);
+        ScriptedFlowProvider scriptedFlowProvider = getContextXMLServletConfig().getScriptedFlows().get(scriptedFlowName);
+        if (scriptedFlowProvider != null) {
+            return scriptedFlowProvider.getScript();
+        } else {
+            return null;
+        }
     }
 
     private ScriptedFlowInfo getScriptedFlowInfo(PfixServletRequest preq) {

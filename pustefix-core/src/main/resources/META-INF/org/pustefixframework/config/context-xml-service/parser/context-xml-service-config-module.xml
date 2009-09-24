@@ -227,6 +227,21 @@
   </handler>
   
   
+  <!-- Scripted flows -->
+  
+  <handler class="org.pustefixframework.config.contextxmlservice.parser.ScriptedFlowParsingHandler">
+    <match>/c:context-xml-service-config/c:extension[@type='context.scriptedflow']/c:scriptedflow</match>
+  </handler>
+  
+  <handler class="org.pustefixframework.config.contextxmlservice.parser.ScriptedFlowExtensionPointParsingHandler">
+    <match>/c:context-xml-service-config/c:extension[@type='context.scriptedflow']/c:extension-point[@type='context.scriptedflow']</match>
+  </handler>
+  
+  <handler class="org.pustefixframework.config.contextxmlservice.parser.ScriptedFlowExtensionParsingHandler" run-order="end">
+    <match>/c:context-xml-service-config/c:extension[@type='context.scriptedflow']</match>
+  </handler>
+  
+  
   <!-- Properties -->
   
   <handler class="org.pustefixframework.config.generic.PropertiesParsingHandler">

@@ -18,13 +18,15 @@
 
 package org.pustefixframework.config.contextxmlservice.parser.internal;
 
+import java.util.Map;
+
 import org.pustefixframework.config.contextxmlservice.ContextConfig;
 import org.pustefixframework.config.contextxmlservice.ContextConfigHolder;
 import org.pustefixframework.config.contextxmlservice.PustefixContextXMLRequestHandlerConfig;
+import org.pustefixframework.config.contextxmlservice.ScriptedFlowProvider;
 import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.beans.factory.config.BeanReference;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
-
-import de.schlund.pfixcore.scriptedflow.ScriptedFlowConfig;
 
 /**
  * Very simple implementation of {@link PustefixContextXMLRequestHandlerConfig}, that
@@ -37,7 +39,7 @@ public class SimplePustefixContextXMLRequestHandlerConfig extends AbstractPustef
 
     private ContextConfig contextConfig;
 
-    private ScriptedFlowConfig scriptedFlowConfig;
+    private Map<String, ? extends ScriptedFlowProvider> scriptedFlows;
 
     public void setContextConfig(ContextConfig contextConfig) {
         this.contextConfig = contextConfig;
@@ -47,19 +49,19 @@ public class SimplePustefixContextXMLRequestHandlerConfig extends AbstractPustef
         return contextConfig;
     }
 
-    public void setScriptedFlowConfig(ScriptedFlowConfig scriptedFlowConfig) {
-        this.scriptedFlowConfig = scriptedFlowConfig;
+    public Map<String, ? extends ScriptedFlowProvider> getScriptedFlows() {
+        return scriptedFlows;
     }
 
-    public ScriptedFlowConfig getScriptedFlowConfig() {
-        return scriptedFlowConfig;
+    public void setScriptedFlows(Map<String, ? extends ScriptedFlowProvider> scriptedFlows) {
+        this.scriptedFlows = scriptedFlows;
     }
-    
-    public static BeanDefinition generateBeanDefinition(PustefixContextXMLRequestHandlerConfig config, ContextConfigHolder contextConfigHolder) {
+
+    public static BeanDefinition generateBeanDefinition(PustefixContextXMLRequestHandlerConfig config, BeanReference scriptedFlowMapReference, ContextConfigHolder contextConfigHolder) {
         BeanDefinitionBuilder beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(SimplePustefixContextXMLRequestHandlerConfig.class);
         beanBuilder.setScope("singleton");
         beanBuilder.addPropertyValue("properties", config.getProperties());
-        beanBuilder.addPropertyValue("scriptedFlowConfig", config.getScriptedFlowConfig());
+        beanBuilder.addPropertyValue("scriptedFlows", scriptedFlowMapReference);
         beanBuilder.addPropertyValue("servletName", config.getServletName());
         beanBuilder.addPropertyValue("SSL", config.isSSL());
         beanBuilder.addPropertyValue("contextConfig", contextConfigHolder.getContextConfigObject());
