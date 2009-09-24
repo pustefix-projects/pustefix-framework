@@ -480,6 +480,11 @@ public class PfixServletRequestImpl implements PfixServletRequest {
         } else if (pathinfo != null && !pathinfo.equals("") && 
                    pathinfo.startsWith("/") && pathinfo.length() > 1) {
         	pagename = getPageName(uris, pathinfo);
+        	if (pagename.length() == 0) {
+        	    // Special handling for scripted flows.
+        	    // Use everything after slash as page name.
+        	    pagename = pathinfo.substring(1);
+        	}
         } else {
             return null;
         }
