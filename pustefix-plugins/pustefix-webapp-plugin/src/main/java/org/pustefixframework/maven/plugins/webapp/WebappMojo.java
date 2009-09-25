@@ -2,14 +2,18 @@ package org.pustefixframework.maven.plugins.webapp;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Iterator;
 import java.util.List;
+import java.util.jar.JarEntry;
+import java.util.jar.JarOutputStream;
 
 import org.apache.maven.artifact.factory.ArtifactFactory;
 import org.apache.maven.artifact.metadata.ArtifactMetadataSource;
@@ -54,6 +58,12 @@ public class WebappMojo extends AbstractMojo {
     protected List<ArtifactRepository> remoteRepositories;
 
     
+    /**
+     * @parameter default-value="${basedir}/target/${project.artifactId}-${project.version}.war""
+     * @required
+     */
+    private File warFile;
+    
 	/**
      * @parameter default-value="${basedir}/provisioning.conf"
      */
@@ -78,6 +88,9 @@ public class WebappMojo extends AbstractMojo {
     
     public void execute() throws MojoExecutionException {
     	
+    	if(warDirectory.exists()) {
+    		FileUtils.delete(warDirectory);
+    	}
     	warDirectory.mkdir();
     	
     	File webInfDir = new File(warDirectory, "WEB-INF");
@@ -109,11 +122,10 @@ public class WebappMojo extends AbstractMojo {
     	
     	List<BundleConfig> bundles = bundleResolver.resolve();
     	for(BundleConfig bundle:bundles) {
-    		System.out.println("BUNDLE: "+bundle.getFile().getAbsolutePath());
     		File source = bundle.getFile();
     		if(source.isDirectory()) {
-    			//TODO: get real jar
-    			source = new File(mavenProject.getBasedir(), "/target/pustefix-sample1-1.0.1-SNAPSHOT.jar");
+    			File targetDir = new File(mavenProject.getBasedir(), "target");
+    			source = new File(targetDir, mavenProject.getArtifactId() + "-" + mavenProject.getVersion() + ".jar");
     			BundleConfig bc = new BundleConfig(source, bundle.getBundleSymbolicName(), true, 4);
     			bundles.set(bundles.indexOf(bundle), bc);
     		}
@@ -166,7 +178,7 @@ public class WebappMojo extends AbstractMojo {
 		config.append("osgi.clean=true\n");
 		config.append("org.osgi.supports.framework.fragment=true\n");
 		config.append("osgi.bundles=");
-		config.append("org.eclipse.equinox.common@2:start,org.eclipse.equinox.servletbridge.extensionbundle,org.eclipse.equinox.http.servlet,org.eclipse.equinox.http.servletbridge@3:start,");
+		config.append("org.eclipse.equinox.common@2:start,org.eclipse.osgi.services,org.eclipse.equinox.servletbridge.extensionbundle,org.eclipse.equinox.http.servlet,org.eclipse.equinox.http.servletbridge@3:start,");
 
 	
     	Iterator<BundleConfig> it = bundles.iterator();
@@ -185,7 +197,7 @@ public class WebappMojo extends AbstractMojo {
     		
 		}
     	config.append("\n");
-
+	
     	try {
     		File configFile = new File(configDir,"config.ini");
     		FileOutputStream out = new FileOutputStream(configFile);
@@ -195,7 +207,41 @@ public class WebappMojo extends AbstractMojo {
 			throw new RuntimeException("Error creating Equinox configuration", x);
 		}
     	
+    	try {
+    		FileOutputStream out = new FileOutputStream(warFile);
+    		JarOutputStream jarOut = new JarOutputStream(out);
+    		addJarEntry(jarOut, warDirectory, warDirectory);
+    		jarOut.close();
+    	} catch(IOException x) {
+    		throw new MojoExecutionException("Error writing war file", x);
+    	}
+    	
     }
+
+	private void addJarEntry(JarOutputStream out, File warDir, File file) throws IOException {
+		
+		String warPath = warDir.getCanonicalPath();
+		String filePath = file.getCanonicalPath();
+		if(!filePath.startsWith(warPath)) throw new IOException("File isn't relative to war directory: " + filePath);
+		String relPath;
+		if(filePath.equals(warPath)) relPath = "";
+		else relPath = filePath.substring(warPath.length() + 1);
+		
+		if(file.isDirectory() && !file.getName().startsWith(".")) {
+			if(!relPath.equals("")) {
+				JarEntry entry = new JarEntry(relPath + "/");
+				out.putNextEntry(entry);
+			}
+			File[] children = file.listFiles();
+			for(File child: children) {
+				addJarEntry(out, warDir, child);
+			}
+		} else {
+		    JarEntry entry = new JarEntry(relPath);
+		    out.putNextEntry(entry);
+		    copyFileToStream(file, out);
+		}
+	}
     
     
     private static void copyFile(URL url, File destFile) throws IOException {
@@ -212,5 +258,16 @@ public class WebappMojo extends AbstractMojo {
         }
     }
     
-  
+    protected void copyFileToStream(File file, OutputStream out) throws IOException {
+	     FileInputStream in = new FileInputStream(file);
+	     byte[] buffer = new byte[4096];
+	     int no = 0;
+	     try {
+	    	 while ((no = in.read(buffer)) != -1)
+	    		 out.write(buffer, 0, no);
+	     } finally {
+	    	 in.close();
+	     }
+	}
+    
 }
