@@ -50,7 +50,7 @@
         <configuration>
           <instructions>
             <Fragment-Host>org.springframework.osgi.extender;bundle-version="1.2.0"</Fragment-Host>
-            <Import-Package>org.pustefixframework.container.spring.extender,org.springframework.osgi.extender.support</Import-Package>
+            <Import-Package>org.pustefixframework.container.spring.extender"</Import-Package>
 <!--
             <Export-Package>org.pustefixframework.osgi.support</Export-Package>
             <Private-Package>org.pustefixframework.*</Private-Package>
