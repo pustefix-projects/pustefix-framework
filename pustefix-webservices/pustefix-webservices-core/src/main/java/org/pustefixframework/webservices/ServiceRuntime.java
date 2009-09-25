@@ -37,6 +37,7 @@ import org.pustefixframework.webservices.utils.FileCache;
 import org.pustefixframework.webservices.utils.FileCacheData;
 import org.pustefixframework.webservices.utils.RecordingRequestWrapper;
 import org.pustefixframework.webservices.utils.RecordingResponseWrapper;
+import org.springframework.aop.framework.Advised;
 
 import de.schlund.pfixcore.auth.AuthConstraint;
 import de.schlund.pfixcore.workflow.ContextImpl;
@@ -210,7 +211,14 @@ public class ServiceRuntime {
             procInfo.startProcessing();
                                                                   
             if(context!=null&&srvConf.getSynchronizeOnContext()) {
-                synchronized(context) {
+                Advised proxy = (Advised)context;
+                Object object = null;
+                try {
+                    object = proxy.getTargetSource().getTarget();
+                } catch (Exception e) {
+                    throw new RuntimeException("Can't get target object", e);
+                }
+                synchronized(object) {
                     processor.process(serviceReq,serviceRes,this,serviceReg,procInfo);
                 }
             } else {
