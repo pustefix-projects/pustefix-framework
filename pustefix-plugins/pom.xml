@@ -22,7 +22,7 @@
     <module>pustefix-iwrapper-plugin</module>
     <module>pustefix-iwrapperbean-plugin</module>
     <!--<module>pustefix-generate-plugin</module>-->
-    <!--<module>pustefix-webapp-plugin</module>-->
+    <module>pustefix-webapp-plugin</module>
     <!--<module>pustefix-webservice-plugin</module>-->
     <module>pustefix-launcher-plugin</module>
     <module>pustefix-eclipse-plugin</module>
