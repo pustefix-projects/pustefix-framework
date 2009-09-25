@@ -4,12 +4,12 @@
   <parent>
     <groupId>org.pustefixframework.samples.modules</groupId>
     <artifactId>sample-modules</artifactId>
-    <version>0.14.3-SNAPSHOT</version>
+    <version>0.14.3</version>
   </parent>
 
   <groupId>org.pustefixframework.samples.modules</groupId>
   <artifactId>animal-module</artifactId>
-  <version>0.14.3-SNAPSHOT</version>
+  <version>0.14.3</version>
   <packaging>jar</packaging>
   <name>Pustefix Animal Sample Module</name>
 
@@ -17,7 +17,7 @@
     <dependency>
       <groupId>org.pustefixframework</groupId>
       <artifactId>pustefix-core</artifactId>
-      <version>0.14.3-SNAPSHOT</version>
+      <version>0.14.3</version>
     </dependency>
   </dependencies>
 </project>
