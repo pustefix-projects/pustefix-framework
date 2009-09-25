@@ -28,6 +28,7 @@ import org.pustefixframework.config.contextxmlservice.AbstractPustefixRequestHan
 import org.pustefixframework.config.directoutputservice.DirectOutputPageRequestConfig;
 import org.pustefixframework.config.directoutputservice.DirectOutputRequestHandlerConfig;
 import org.pustefixframework.http.internal.ContextStore;
+import org.springframework.aop.framework.Advised;
 
 import de.schlund.pfixcore.auth.AuthConstraint;
 import de.schlund.pfixcore.workflow.ContextImpl;
@@ -125,7 +126,10 @@ public class PustefixContextDirectOutputRequestHandler extends AbstractPustefixR
          ContextStore.setContextForCurrentThread(context);
          try {
              if (config.isSynchronized()) {
-                 synchronized (context) {
+                 Advised proxy = (Advised)context;
+                 Object contextObject = proxy.getTargetSource().getTarget();
+                 //we need to synchronize on the proxy's target context object here
+                 synchronized (contextObject) {
                      doProcess(preq, res, context);
                  }
              } else {
