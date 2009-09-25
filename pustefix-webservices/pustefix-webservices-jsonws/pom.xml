@@ -3,14 +3,14 @@
   <parent>
     <artifactId>pustefix-webservices</artifactId>
     <groupId>org.pustefixframework.webservices</groupId>
-    <version>1.0.1-SNAPSHOT</version>
+    <version>1.0.1</version>
   </parent>
 
   <name>Pustefix Webservices Jsonws</name>
 
   <groupId>org.pustefixframework.webservices</groupId>
   <artifactId>pustefix-webservices-jsonws</artifactId>
-  <version>1.0.1-SNAPSHOT</version>
+  <version>1.0.1</version>
   <packaging>bundle</packaging>
 
   <dependencies>
@@ -24,7 +24,7 @@
     <dependency>
       <groupId>org.pustefixframework.webservices</groupId>
       <artifactId>pustefix-webservices-core</artifactId>
-      <version>1.0.1-SNAPSHOT</version>
+      <version>1.0.1</version>
     </dependency>
     <dependency>
       <groupId>cglib</groupId>
