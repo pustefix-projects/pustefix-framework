@@ -71,7 +71,7 @@ public class FelixLauncher implements Launcher {
 		}
 	}
 
-	public void launch(List<BundleConfig> bundles, File launcherDirectory, URIToFileResolver resolver, int defaultStartLevel) {
+	public void launch(List<BundleConfig> bundles, File launcherDirectory, URIToFileResolver resolver, int defaultStartLevel, int httpPort) {
 		
 		File frameworkBundleFile;
 		File mainBundleFile;

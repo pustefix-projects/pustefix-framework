@@ -57,6 +57,11 @@ public class LauncherMojo extends AbstractMojo {
     protected int defaultStartLevel;
 	
     /**
+     * @parameter default-value=8080
+     */
+    protected int httpPort;
+    
+    /**
      * @parameter default-value="${project.build.directory}/launcher"
      * @required
      */
@@ -101,7 +106,7 @@ public class LauncherMojo extends AbstractMojo {
     	
     	List<BundleConfig> bundles = bundleResolver.resolve();
     	
-    	launcher.launch(bundles, launcherDirectory, bundleResolver, defaultStartLevel);
+    	launcher.launch(bundles, launcherDirectory, bundleResolver, defaultStartLevel, httpPort);
     }
 	
 }

@@ -17,14 +17,14 @@ public class EquinoxLauncher implements Launcher {
 	
 	private static String FRAMEWORK_BUNDLE_SYMBOLIC_NAME = "org.eclipse.osgi";
 	
-	private void configure(File launcherDirectory, List<BundleConfig> bundles, File framework, int defaultStartLevel) {
-		createConfigProperties(launcherDirectory, bundles, framework, defaultStartLevel);
+	private void configure(File launcherDirectory, List<BundleConfig> bundles, File framework, int defaultStartLevel, int httpPort) {
+		createConfigProperties(launcherDirectory, bundles, framework, defaultStartLevel, httpPort);
 		createDevProperties(launcherDirectory, bundles);
 	}
 	
-	private void createConfigProperties(File launcherDirectory, List<BundleConfig> bundles, File framework, int defaultStartLevel) {
+	private void createConfigProperties(File launcherDirectory, List<BundleConfig> bundles, File framework, int defaultStartLevel, int httpPort) {
 		StringBuilder config = new StringBuilder();
-    	
+
     	config.append("org.osgi.supports.framework.extension=true\n");
     	config.append("org.osgi.supports.framework.fragment=true\n");
     	config.append("org.osgi.supports.framework.requirebundle=true\n");	
@@ -59,9 +59,9 @@ public class EquinoxLauncher implements Launcher {
     	config.append("osgi.framework=").append(framework.toURI().toString()).append("\n");
     	config.append("osgi.install.area=file:").append(launcherDirectory.getAbsolutePath()).append("\n");
     	config.append("osgi.noShutdown=true\n");
-    	
-    	config.append("org.osgi.service.http.port=8080\n");
-    	
+
+    	config.append("org.osgi.service.http.port=").append(httpPort).append("\n");
+
     	try {
     		File configFile = new File(launcherDirectory,"config.ini");
     		FileOutputStream out = new FileOutputStream(configFile);
@@ -102,8 +102,8 @@ public class EquinoxLauncher implements Launcher {
 	}
 
 	
-	public void launch(List<BundleConfig> bundles, File launcherDirectory, URIToFileResolver resolver, int defaultStartLevel) {
-		
+	public void launch(List<BundleConfig> bundles, File launcherDirectory, URIToFileResolver resolver, int defaultStartLevel, int httpPort) {
+
 		File framework = null;
 		for(BundleConfig bundle: bundles) {
 			if(bundle.getBundleSymbolicName().equals("org.eclipse.osgi")) {
@@ -113,7 +113,7 @@ public class EquinoxLauncher implements Launcher {
 		}
 		if(framework == null) throw new RuntimeException("No Equinox framework bundle found.");
 		
-		configure(launcherDirectory, bundles, framework, defaultStartLevel);
+		configure(launcherDirectory, bundles, framework, defaultStartLevel, httpPort);
     	try {
     		File configFile = new File(launcherDirectory,"config.ini");
     		
@@ -132,13 +132,12 @@ public class EquinoxLauncher implements Launcher {
 				try {
 					Thread.sleep(1000);
 				} catch(InterruptedException x) {
-				
+
 				}
 			}
     	} catch(Exception x) {
     		throw new RuntimeException("Error launching Equinox OSGI-runtime", x);
     	}
 	}
-	
-	    
+
 }
