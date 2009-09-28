@@ -8,7 +8,7 @@
   <groupId>org.pustefixframework.webservices</groupId>
   <artifactId>pustefix-webservices-core</artifactId>
   <name>pustefix-webservices-core</name>
-  <version>0.1.7</version>
+  <version>0.1.9</version>
   <url>http://maven.apache.org</url>
   <dependencies>
     <dependency>

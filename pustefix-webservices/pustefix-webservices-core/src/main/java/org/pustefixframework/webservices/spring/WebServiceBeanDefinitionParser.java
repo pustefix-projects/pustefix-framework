@@ -50,7 +50,10 @@ public class WebServiceBeanDefinitionParser extends AbstractSingleBeanDefinition
        
        String sessionType = element.getAttribute("session");
        if(sessionType!=null) beanDefBuilder.addPropertyValue("sessionType", sessionType);
-       
+      
+       String authConstraint = element.getAttribute("authconstraint");
+       if(authConstraint!=null) beanDefBuilder.addPropertyValue("authConstraint", authConstraint);
+        
        Object target = null;
        if (element.hasAttribute("ref")) { 
            target = new RuntimeBeanReference(element.getAttribute("ref"));
