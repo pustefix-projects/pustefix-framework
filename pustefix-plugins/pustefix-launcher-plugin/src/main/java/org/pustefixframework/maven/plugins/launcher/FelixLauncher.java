@@ -4,28 +4,20 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
 public class FelixLauncher implements Launcher {
-
-	private static String FRAMEWORK_BUNDLE = "mvn:org.apache.felix/org.apache.felix.framework/[1.8.1,2.0.0)/bundle";
-	private static String MAIN_BUNDLE = "mvn:org.apache.felix/org.apache.felix.main/[1.8.1,2.0.0)/bundle";
-	private static String[] SHELL_BUNDLES = {
-		"mvn:org.apache.felix/org.apache.felix.shell/[1.0.2,1.3.0)/bundle",
-		"mvn:org.apache.felix/org.apache.felix.shell.tui/[1.0.2,1.3.0)/bundle"
-	};
 	
-	public void configure(File launcherDirectory, List<BundleConfig> bundles, File framework) {
+	private static String FRAMEWORK_BUNDLE_SYMBOLIC_NAME = "org.apache.felix.framework";
+	private static String MAIN_BUNDLE_SYMBOLIC_NAME = "org.apache.felix.main";
+	
+	public void configure(File launcherDirectory, List<BundleConfig> bundles, File framework, int httpPort) {
 		
 		StringBuilder config = new StringBuilder();
 		
@@ -34,10 +26,13 @@ public class FelixLauncher implements Launcher {
 		boolean first = true;
     	while(it.hasNext()) {
     		BundleConfig bundle = it.next();
-    		if(bundle.doStart()) {
-    			if(first) first = false;
-    			else config.append(" ");
-    			config.append("reference:file:").append(bundle.getFile().getAbsolutePath());
+    		if(!(bundle.getBundleSymbolicName().equals(FRAMEWORK_BUNDLE_SYMBOLIC_NAME)||
+    				bundle.getBundleSymbolicName().equals(MAIN_BUNDLE_SYMBOLIC_NAME))) {
+    			if(bundle.doStart()) {
+    				if(first) first = false;
+    				else config.append(" ");
+    				config.append("reference:file:").append(bundle.getFile().getAbsolutePath());
+    			}
     		}
 		}
 		config.append("\n");
@@ -47,10 +42,13 @@ public class FelixLauncher implements Launcher {
 		first = true;
     	while(it.hasNext()) {
     		BundleConfig bundle = it.next();
-    		if(!bundle.doStart()) {
-    			if(first) first = false;
-    			else config.append(" ");
-    			config.append("reference:file:").append(bundle.getFile().getAbsolutePath());
+    		if(!(bundle.getBundleSymbolicName().equals(FRAMEWORK_BUNDLE_SYMBOLIC_NAME)||
+    				bundle.getBundleSymbolicName().equals(MAIN_BUNDLE_SYMBOLIC_NAME))) {
+    			if(!bundle.doStart()) {
+    				if(first) first = false;
+    				else config.append(" ");
+    				config.append("reference:file:").append(bundle.getFile().getAbsolutePath());
+    			}
     		}
 		}
     	config.append("\n");
@@ -60,6 +58,8 @@ public class FelixLauncher implements Launcher {
     	config.append("\n");
     	
     	config.append("org.osgi.framework.storage.clean=onFirstInit\n");
+    	
+    	config.append("org.osgi.service.http.port=").append(httpPort).append("\n");
     	
     	try {
     		File configFile = new File(launcherDirectory,"config.properties");
@@ -73,22 +73,20 @@ public class FelixLauncher implements Launcher {
 
 	public void launch(List<BundleConfig> bundles, File launcherDirectory, URIToFileResolver resolver, int defaultStartLevel, int httpPort) {
 		
-		File frameworkBundleFile;
-		File mainBundleFile;
-		
-		try {
-			frameworkBundleFile = resolver.resolve(new URI(FRAMEWORK_BUNDLE));
-			mainBundleFile = resolver.resolve(new URI(MAIN_BUNDLE));
-			for(String shellBundle:SHELL_BUNDLES) {
-				File file = resolver.resolve(new URI(shellBundle));
-				String name = Utils.getBundleSymbolicNameFromJar(file);
-				bundles.add(0, new BundleConfig(file, name, true, defaultStartLevel));
-			}
-		} catch(URISyntaxException x) {
-			throw new RuntimeException("Illegal bundle URI", x);
-		}
+		File frameworkBundleFile = null;
+		File mainBundleFile = null;
 	
-		configure(launcherDirectory, bundles, frameworkBundleFile);
+		for(BundleConfig bundle: bundles) {
+			if(bundle.getBundleSymbolicName().equals(FRAMEWORK_BUNDLE_SYMBOLIC_NAME)) {
+				frameworkBundleFile = bundle.getFile();
+			} else if(bundle.getBundleSymbolicName().equals(MAIN_BUNDLE_SYMBOLIC_NAME)) {
+				mainBundleFile = bundle.getFile();
+			}
+		}
+		if(frameworkBundleFile == null) throw new RuntimeException("No Felix framework bundle found.");
+		if(mainBundleFile == null) throw new RuntimeException("No Felix main bundle found.");
+		
+		configure(launcherDirectory, bundles, frameworkBundleFile, httpPort);
 		
 		try {
 			
@@ -100,18 +98,27 @@ public class FelixLauncher implements Launcher {
     		URL[] urls = {frameworkBundleFile.toURI().toURL(), mainBundleFile.toURI().toURL()};
     		URLClassLoader cl = new URLClassLoader(urls);
     		
-    		List<Object> list = new ArrayList<Object>();
-    		Class<?> activatorClass = cl.loadClass("org.apache.felix.main.AutoActivator");
-    		Constructor<?> con = activatorClass.getConstructor(Map.class);
-    		list.add(con.newInstance(props));
-    		props.put("felix.systembundle.activators", list);
-    		Class<?> starterClass = cl.loadClass("org.apache.felix.framework.Felix");
-    		con = starterClass.getConstructor(Map.class);
-    		Object obj = con.newInstance(props);
-    		Method meth = starterClass.getMethod("start");
-    		meth.invoke(obj);
-    		meth = starterClass.getMethod("waitForStop", long.class);
-    		meth.invoke(obj, 1000);
+    		Class<?> frameworkFactoryClass = cl.loadClass("org.apache.felix.framework.FrameworkFactory");
+    		Object frameworkFactory = frameworkFactoryClass.newInstance();
+    		Method meth = frameworkFactoryClass.getMethod("newFramework", Map.class);
+    		Object framework = meth.invoke(frameworkFactory, props);
+    		meth = framework.getClass().getMethod("init");
+    		meth.invoke(framework);
+    		
+    		Class<?> bundleItf = getInterface(framework.getClass(), "org.osgi.framework.Bundle");
+    		meth = bundleItf.getMethod("getBundleContext", new Class[0]);
+    		
+    		Object bundleContext = meth.invoke(framework); 
+    		Class<?> bundleContextItf = getInterface(bundleContext.getClass(), "org.osgi.framework.BundleContext");
+    		
+    		Class<?> autoClass = cl.loadClass("org.apache.felix.main.AutoProcessor");
+    		meth = autoClass.getMethod("process", Map.class, bundleContextItf);
+    		meth.invoke(null, props, bundleContext);
+    		
+    		meth = framework.getClass().getMethod("start");
+    		meth.invoke(framework);
+    		meth = framework.getClass().getMethod("waitForStop", long.class);
+    		meth.invoke(framework, 0);
     		
     	} catch(Exception x) {
     		throw new RuntimeException("Error launching Felix OSGi runtime", x);
@@ -119,4 +126,16 @@ public class FelixLauncher implements Launcher {
 		
 	}
 
+	private Class<?> getInterface(Class<?> clazz, String interfaceName) {
+		Class<?>[] itfs = clazz.getInterfaces();
+		for(Class<?> itf: itfs) {
+			if(itf.getName().equals(interfaceName)) return itf;
+			else {
+				Class<?> supItf = getInterface(itf, interfaceName);
+				if(supItf != null) return supItf;
+			}
+		}
+		return null;
+	}
+	
 }
