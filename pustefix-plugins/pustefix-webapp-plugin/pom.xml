@@ -5,14 +5,14 @@
   <parent>
     <groupId>org.pustefixframework.maven.plugins</groupId>
     <artifactId>pustefix-plugins</artifactId>
-    <version>1.0.1</version>
+    <version>1.0.2-SNAPSHOT</version>
   </parent>
     
   <name>Pustefix Webapp Plugin</name>
   
   <groupId>org.pustefixframework.maven.plugins</groupId>
   <artifactId>pustefix-webapp-plugin</artifactId>
-  <version>1.0.1</version>
+  <version>1.0.2-SNAPSHOT</version>
     
   <packaging>maven-plugin</packaging>
 
@@ -48,12 +48,12 @@
     <dependency>
       <groupId>org.pustefixframework</groupId>
       <artifactId>pustefix-core</artifactId>
-      <version>1.0.1</version>
+      <version>1.0.2-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.pustefixframework.maven.plugins</groupId>
       <artifactId>pustefix-launcher-plugin</artifactId>
-      <version>1.0.1</version>
+      <version>1.0.2-SNAPSHOT</version>
     </dependency>
   </dependencies>
 
