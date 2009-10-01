@@ -65,21 +65,12 @@ public class Xml {
     
     static final Logger               CAT     = Logger.getLogger(Xml.class);
     
-    private static String DEFAULT_XMLREADER = "com.sun.org.apache.xerces.internal.parsers.SAXParser";
-    private static String DEFAULT_DOCUMENTBUILDERFACTORY = "com.sun.org.apache.xerces.internal.jaxp.DocumentBuilderFactoryImpl";
-    
     private static final DocumentBuilderFactory factory = createDocumentBuilderFactory();
    
     //-- this is where you configure the xml parser:
 
     public static XMLReader createXMLReader() {
         XMLReader reader = null;
-        try {
-            reader = XMLReaderFactory.createXMLReader(DEFAULT_XMLREADER);
-        } catch(SAXException x) {
-            x.printStackTrace();
-            //ignore and try to get XMLReader via factory finder in next step
-        }
         if(reader == null) {
             try {
                 reader = XMLReaderFactory.createXMLReader();
@@ -352,15 +343,6 @@ public class Xml {
 
     private static DocumentBuilderFactory createDocumentBuilderFactory() {
         DocumentBuilderFactory fact = null;
-        try {
-            ClassLoader cl = Thread.currentThread().getContextClassLoader();
-            if(cl == null) cl = Xml.class.getClassLoader();
-            Class<?> clazz = Class.forName(DEFAULT_DOCUMENTBUILDERFACTORY, true, cl);
-            fact = (DocumentBuilderFactory)clazz.newInstance();
-        } catch(Exception x) {
-            x.printStackTrace();
-            //ignore and try to get DocumentBuilderFactory via factory finder in next step
-        }
         if(fact == null) {
             try {
                 fact = DocumentBuilderFactory.newInstance();
