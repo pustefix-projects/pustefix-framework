@@ -40,6 +40,8 @@ public class VirtualHttpServletRequest implements HttpServletRequest {
 
     private String pagename = null;
 
+    private String requestHandlerPath = null;
+
     private Map<String, String[]> params;
 
     private String queryString;
@@ -47,8 +49,9 @@ public class VirtualHttpServletRequest implements HttpServletRequest {
     // Constructor is intenionally in default scope
     // as it should only be used within this package
     VirtualHttpServletRequest(HttpServletRequest originalRequest,
-            String pagename, Map<String, String[]> params) {
+            String requestHandlerPath, String pagename, Map<String, String[]> params) {
         this.orig = originalRequest;
+        this.requestHandlerPath = requestHandlerPath;
         this.pagename = pagename;
         this.params = params;
 
@@ -110,9 +113,9 @@ public class VirtualHttpServletRequest implements HttpServletRequest {
 
     public String getPathInfo() {
         if (pagename == null) {
-            return null;
+            return requestHandlerPath;
         } else {
-            return "/" + pagename;
+            return ((requestHandlerPath != null) ? requestHandlerPath : "") + "/" + pagename;
         }
     }
 
@@ -360,7 +363,7 @@ public class VirtualHttpServletRequest implements HttpServletRequest {
      *         any parameters or path info
      */
     public static HttpServletRequest getVoidRequest(HttpServletRequest orig) {
-        return new VirtualHttpServletRequest(orig, null,
+        return new VirtualHttpServletRequest(orig, null, null,
                 new HashMap<String, String[]>());
     }
 
