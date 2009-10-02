@@ -26,6 +26,7 @@ import org.apache.maven.artifact.resolver.ArtifactResolutionResult;
 import org.apache.maven.artifact.resolver.ArtifactResolver;
 import org.apache.maven.artifact.versioning.ArtifactVersion;
 import org.apache.maven.artifact.versioning.InvalidVersionSpecificationException;
+import org.apache.maven.artifact.versioning.Restriction;
 import org.apache.maven.artifact.versioning.VersionRange;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
@@ -188,6 +189,7 @@ public class BundleResolver implements URIToFileResolver {
     	} catch(InvalidVersionSpecificationException x) {
     		throw new RuntimeException("Illegal OSGi runtime version spec: " + version, x);
     	}
+    	
     	Artifact artifact = artifactFactory.createPluginArtifact(groupId, artifactId, versionRange);
     	try {
 			List<?> versions = metadataSource.retrieveAvailableVersions(artifact, localRepository, remoteRepositories);
@@ -200,7 +202,18 @@ public class BundleResolver implements URIToFileResolver {
 					else if(compareVersion(latestVersion, artifactVersion) >0) latestVersion = artifactVersion;
 				}
 			}
-			if(latestVersion == null) throw new RuntimeException("Artifact not found: " + uri.toString());
+			
+			if(latestVersion == null) {
+				if(versionRange.getRestrictions().size() == 1) {
+					Restriction restriction = (Restriction)versionRange.getRestrictions().get(0);
+					//handle broken/missing maven-metadata -> try to resolve fix version
+					if(restriction.getLowerBound()!=null && restriction.getLowerBound().equals(restriction.getUpperBound()) &&
+							restriction.isLowerBoundInclusive() && restriction.isUpperBoundInclusive())
+							latestVersion = restriction.getLowerBound();
+				}
+				if(latestVersion == null) throw new RuntimeException("Artifact not found: " + uri.toString() + " Version: " + versionRange);
+			}
+			
 			artifact = artifactFactory.createArtifactWithClassifier(groupId, artifactId, latestVersion.toString(), type, null);
     	} catch (ArtifactMetadataRetrievalException x) {
 			throw new RuntimeException("Error while checking available versions: " + uri.toString(), x);
