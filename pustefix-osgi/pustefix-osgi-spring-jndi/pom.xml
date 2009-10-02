@@ -1,0 +1,45 @@
+<?xml version="1.0"?><project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.pustefixframework.osgi</groupId>
+    <artifactId>pustefix-osgi</artifactId>
+    <version>1.0.2-SNAPSHOT</version>
+  </parent>
+
+  <name>Pustefix OSGi JNDI namespace handlers for Spring</name>
+  <groupId>org.pustefixframework.osgi</groupId>
+  <artifactId>pustefix-osgi-spring-jndi</artifactId>
+  <version>1.0.2-SNAPSHOT</version>
+  <packaging>bundle</packaging>
+
+  <dependencies>
+    <dependency>
+       <groupId>org.springframework</groupId>
+       <artifactId>org.springframework.beans</artifactId>
+       <version>2.5.6.A </version>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>org.springframework.context</artifactId>
+      <version>2.5.6.A</version>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>maven-bundle-plugin</artifactId>
+        <extensions>true</extensions>
+        <configuration>
+          <instructions>
+            <Bundle-Activator>org.pustefixframework.osgi.logging.LogServiceBridge</Bundle-Activator>
+            <Bundle-RequiredExecutionEnvironment>J2SE-1.5</Bundle-RequiredExecutionEnvironment>
+            <Import-Package>*, org.eclipse.equinox.servletbridge;resolution:=optional</Import-Package>
+          </instructions>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
+</project>
