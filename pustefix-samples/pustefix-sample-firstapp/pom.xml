@@ -126,6 +126,11 @@
         <artifactId>pustefix-eclipse-plugin</artifactId>
         <version>1.0.2-SNAPSHOT</version>
       </plugin>
+      <plugin>
+        <groupId>org.pustefixframework.maven.plugins</groupId>
+        <artifactId>pustefix-webapp-plugin</artifactId>
+        <version>1.0.1</version>
+      </plugin>
     </plugins>
   </build>
 </project>
