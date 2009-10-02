@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns="http://pustefixframework.org/schema/webservices"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns:beans="http://www.springframework.org/schema/beans"
+    targetNamespace="http://pustefixframework.org/schema/webservices"
+    elementFormDefault="qualified"
+    attributeFormDefault="unqualified">
+
+   <xsd:import namespace="http://www.springframework.org/schema/beans"/>
+
+   <xsd:element name="extension">
+      <xsd:complexType>
+         <xsd:sequence>
+            <xsd:element ref="extends" minOccurs="1" maxOccurs="unbounded"/>
+            <xsd:choice minOccurs="0" maxOccurs="unbounded">
+               <xsd:element ref="webservice"/>
+               <xsd:element ref="extension-point"/>
+            </xsd:choice>
+         </xsd:sequence> 
+         <xsd:attribute name="id" type="xsd:ID"/>
+      </xsd:complexType>
+   </xsd:element>
+
+   <xsd:element name="extends">
+      <xsd:complexType>
+         <xsd:attribute name="extension-point" type="xsd:string"/>
+         <xsd:attribute name="version" type="xsd:string"/>
+      </xsd:complexType>
+   </xsd:element>
+   
+   <xsd:element name="extension-point">
+      <xsd:complexType>
+         <xsd:attribute name="id" type="xsd:string"/>
+         <xsd:attribute name="version" type="xsd:string"/>
+         <xsd:attribute name="cardinality" type="xsd:string"/>
+      </xsd:complexType>
+   </xsd:element>
+
+   <xsd:element name="webservice">
+      <xsd:complexType>
+         <xsd:complexContent>
+            <xsd:extension base="beans:identifiedType">
+               <xsd:sequence minOccurs="0" maxOccurs="1">
+                 <xsd:any namespace="##other" minOccurs="0" maxOccurs="1" processContents="skip"/>
+               </xsd:sequence>
+               <xsd:attribute name="servicename" type="NameType" use="required"/>
+               <xsd:attribute name="interface" type="ClassType" use="optional"/>
+               <xsd:attribute name="ref" type="xsd:string" use="optional"/>
+               <xsd:attribute name="protocol" type="ProtocolType" use="optional" default="JSONWS"/>
+               <xsd:attribute name="session" type="SessionType" use="optional" default="servlet"/>
+               <xsd:attribute name="authconstraint" type="xsd:string" use="optional"/>
+            </xsd:extension>
+         </xsd:complexContent>
+      </xsd:complexType>
+   </xsd:element>
+
+  <xsd:simpleType name="NameType">
+    <xsd:restriction base="xsd:string">
+      <xsd:pattern value="[a-zA-Z][a-zA-Z0-9_]*"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name="ClassType">
+    <xsd:restriction base="xsd:string">
+      <xsd:pattern value="[a-zA-Z][a-zA-Z0-9_]*(\.[a-zA-Z][a-zA-Z0-9_]*)*"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name="ProtocolType">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="SOAP"/>
+      <xsd:enumeration value="JSONWS"/>
+      <xsd:enumeration value="JSONQX"/>
+      <xsd:enumeration value="TEST"/>
+      <xsd:enumeration value="ANY"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name="SessionType">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="servlet"/>
+      <xsd:enumeration value="none"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+</xsd:schema>
