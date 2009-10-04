@@ -20,6 +20,7 @@
 <!--
     <module>pustefix-samplebank</module>
 -->
+    <module>pustefix-taskmanager</module>
     <module>pustefix-testsuite</module>
 <!--
     <module>pustefix-webservice</module>

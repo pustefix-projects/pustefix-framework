@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xml-generator-config xmlns="http://www.pustefix-framework.org/2008/namespace/xml-generator-config">
+
+  <extension type="xml.page">
+    <extend extension-point="navigation.main"/>
+    <page handler="/xml/main" name="login"/>
+  </extension>
+
+  <extension type="xml.standardpage">
+    <extend extension-point="standardpage.main"/>
+    <standardpage name="login" xml="dynamic:/xml/page.xml"/>
+  </extension>
+
+</xml-generator-config>
