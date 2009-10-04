@@ -35,6 +35,8 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.TransformerException;
@@ -83,6 +85,7 @@ import de.schlund.pfixxml.IncludeDocument;
 import de.schlund.pfixxml.XMLException;
 import de.schlund.pfixxml.event.ConfigurationChangeEvent;
 import de.schlund.pfixxml.event.ConfigurationChangeListener;
+import de.schlund.pfixxml.util.URIParameters;
 import de.schlund.pfixxml.util.Xml;
 import de.schlund.pfixxml.util.XsltVersion;
 
@@ -101,6 +104,8 @@ public class TargetGenerator implements ModelChangeListener, InitializingBean, B
 
     public static final String CACHEDIR = ".cache";
 
+    private static Pattern dynamicUriPattern = Pattern.compile("dynamic://[^?#]*(\\?([^#]*))?(#.*)?");
+    
     protected final Log logger = LogFactory.getLog(TargetGenerator.class);
     
     private static TargetGenerationReport report = new TargetGenerationReport();
@@ -630,7 +635,24 @@ public class TargetGenerator implements ModelChangeListener, InitializingBean, B
     	FileResource targetRes = getFileResourceFromPersistentStorage(xmlKey);
     	FileResource targetAuxRes = getFileResourceFromPersistentStorage(xmlKey + ".aux");
     	
-    	Target xmlSource = createTarget(configuration, TargetType.XML_LEAF, standardPage.getXML());
+    	String xml = standardPage.getXML();
+    	if(xml.matches("^dynamic://.*")) {
+            //add missing dynamic URI parameters
+            Matcher matcher = dynamicUriPattern.matcher(xml);
+            if(matcher.matches()) {
+                URIParameters params;
+                if(matcher.group(2) != null) params = new URIParameters(matcher.group(2), "UTF-8");
+                else params = new URIParameters();
+                if(params.getParameter("application") == null) params.addParameter("application", getApplicationBundle());
+                if(matcher.group(2) == null) {
+                    if(matcher.group(3) == null) xml += "?" + params.toString();
+                    else xml = xml.substring(0, matcher.start(3)) + "?" +  params.toString() + xml.substring(matcher.start(3));
+                } else {
+                    xml = xml.substring(0, matcher.start(2)) + params.toString() + xml.substring(matcher.end(2));
+                }
+            }
+    	}
+    	Target xmlSource = createTarget(configuration, TargetType.XML_LEAF, xml);
     	
     	String metatags = "metatags.xsl";
     	if(standardPage.getMetatags() != null) {

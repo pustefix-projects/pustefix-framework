@@ -23,6 +23,7 @@ import java.net.URISyntaxException;
 import org.osgi.framework.BundleContext;
 import org.pustefixframework.config.generic.ParsingUtils;
 import org.pustefixframework.resource.ResourceLoader;
+import org.pustefixframework.resource.support.DynamicResourceUtils;
 import org.pustefixframework.xmlgenerator.config.model.Configuration;
 import org.pustefixframework.xmlgenerator.config.model.SourceInfo;
 import org.pustefixframework.xmlgenerator.config.model.StandardPage;
@@ -65,11 +66,17 @@ public class StandardPageParsingHandler implements ParsingHandler {
         	if(uri.getScheme()==null && xml.contains("/")) {
         		if(xml.startsWith("/")) xml=xml.substring(1);
         		uri = new URI("bundle://"+bundleName+"/PUSTEFIX-INF/"+xml);
+        		xml = uri.toString();
+        	} else if("dynamic".equals(uri.getScheme())) {
+        	    xml = DynamicResourceUtils.setBundleName(uri.toString(), bundleName);
+        	    xml = DynamicResourceUtils.setBasePath(xml, "/PUSTEFIX-INF");
+        	} else {
+        	    xml = uri.toString();
         	}
         } catch(URISyntaxException x) {
         	throw new ParserException("Illegal URI: "+xml, x);
         }
-        page.setXML(uri.toString());
+        page.setXML(xml);
         
         String themes = element.getAttribute("themes").trim();
     	if(themes.length()>0) {
