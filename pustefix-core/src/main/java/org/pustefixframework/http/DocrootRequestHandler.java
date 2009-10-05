@@ -238,7 +238,7 @@ public class DocrootRequestHandler implements UriProvidingHttpRequestHandler, La
             mimeType = urlResource.getURL().openConnection().getContentType();
         }
 
-        if (mimeType == null) {
+        if (mimeType == null || mimeType.equals("content/unknown")) {
             mimeType = servletContext.getMimeType(req.getPathInfo());
         }
 
