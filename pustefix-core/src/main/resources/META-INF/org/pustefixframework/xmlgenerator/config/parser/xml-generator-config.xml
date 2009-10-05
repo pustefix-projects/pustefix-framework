@@ -15,7 +15,7 @@
   </handler>
   
   <handler class="org.pustefixframework.xmlgenerator.config.parser.ParameterParsingHandler">
-    <match>/c:xml-generator-config//c:paramr</match>
+    <match>/c:xml-generator-config//c:param</match>
   </handler>
   
   <handler class="org.pustefixframework.xmlgenerator.config.parser.NamespaceDeclarationParsingHandler">
@@ -36,6 +36,7 @@
   
   <handler class="org.pustefixframework.xmlgenerator.config.parser.XMLExtensionPointParsingHandler">
     <match>/c:xml-generator-config/c:extension-point</match>
+    <match>/c:xml-generator-config/c:standardmetatags/c:extension-point[@type='xml.include']</match>
   </handler>
   
   <handler class="org.pustefixframework.xmlgenerator.config.parser.StandardMasterParsingHandler">

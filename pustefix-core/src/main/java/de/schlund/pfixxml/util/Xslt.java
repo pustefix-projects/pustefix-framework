@@ -128,6 +128,7 @@ public class Xslt {
             Templates retval = factory.newTemplates(src);
             return retval;
         } catch (TransformerConfigurationException e) {
+        	e.printStackTrace();
             StringBuffer sb = new StringBuffer();
             sb.append("TransformerConfigurationException in doLoadTemplates!\n");
             sb.append("Path: ").append(input.getSystemId()).append("\n");
@@ -282,18 +283,10 @@ public class Xslt {
             } catch (URISyntaxException e) {
                 return new StreamSource(href);
             }
-
-            if (uri.getScheme() != null && !uri.getScheme().equals("docroot") && !uri.getScheme().equals("module")) {
-                // we don't handle uris with an explicit scheme
-                return new StreamSource(href);
-            }
+            
             path = uri.getPath();
-            if (uri.getScheme() != null && uri.getScheme().equals("docroot")) {
-                if (path.startsWith("/")) {
-                    path = path.substring(1);
-                }
-            }
-            if("module".equals(uri.getScheme())) {
+         
+            if("bundle".equals(uri.getScheme())) {
                 path = uri.toString();
             }
             

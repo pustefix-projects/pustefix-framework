@@ -76,6 +76,8 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 
+import sun.nio.cs.ext.TIS_620;
+
 import com.marsching.flexiparse.parser.OSGiAwareParser;
 import com.marsching.flexiparse.parser.Parser;
 
@@ -348,9 +350,13 @@ public class TargetGenerator implements ModelChangeListener, InitializingBean, B
         	CustomizationInfo cusInfo = new PropertiesBasedCustomizationInfo(buildTimeProperties);
         	InputStream in = ((InputStreamResource)configFile).getInputStream();
         	configuration = new Configuration();
-        	configuration.addModelChangeListener(this);
         	
         	configParser.parse(in, cusInfo, configuration, bundleContext, resourceLoader);
+        	for(StandardMaster master:configuration.getStandardMasters()) addModelElement(master);
+        	for(StandardMetatags metatags:configuration.getStandardMetatags()) addModelElement(metatags);
+        	for(TargetDef targetDef:configuration.getTargetDefs()) addModelElement(targetDef);
+        	for(StandardPage page:configuration.getStandardPages()) addModelElement(page);
+        	configuration.addModelChangeListener(this);
         	
         	//TODO: configurable cachedir location
             cacheDir = getFileResourceFromPersistentStorage("");
@@ -395,7 +401,7 @@ public class TargetGenerator implements ModelChangeListener, InitializingBean, B
         			addModelElement(elem);
         		}
     		}
-    	}
+    	} else throw new PustefixRuntimeException("Model change not supported: " + event.getSource());
     }
     
     private void removeModelElement(ModelElement modelElement) {
@@ -411,13 +417,14 @@ public class TargetGenerator implements ModelChangeListener, InitializingBean, B
     }
   
     private void addModelElement(ModelElement modelElement) {
-    	if(modelElement instanceof StandardPage) {
+    	if(modelElement instanceof StandardPage || modelElement instanceof TargetDef ||
+    			modelElement instanceof StandardMaster || modelElement instanceof StandardMetatags) {
 	    	try {
 				createTarget(configuration, modelElement);
 			} catch(Exception x) {
 				throw new PustefixRuntimeException("Can't create targets for model element", x);
 			}
-    	}
+    	} else throw new PustefixRuntimeException("Illegal model element type: " + modelElement.getClass().getName());
     }
     
     

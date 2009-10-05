@@ -20,8 +20,12 @@ package org.pustefixframework.xmlgenerator.config.parser;
 import java.net.URI;
 import java.net.URISyntaxException;
 
+import org.osgi.framework.BundleContext;
 import org.pustefixframework.config.generic.ParsingUtils;
+import org.pustefixframework.resource.support.DynamicResourceUtils;
 import org.pustefixframework.xmlgenerator.config.model.IncludeConfig;
+import org.pustefixframework.xmlgenerator.config.model.IncludeDef;
+import org.pustefixframework.xmlgenerator.config.model.XMLExtension;
 import org.w3c.dom.Element;
 
 import com.marsching.flexiparse.parser.HandlerContext;
@@ -40,14 +44,32 @@ public class IncludeParsingHandler implements ParsingHandler {
         Element element = (Element)context.getNode();
         ParsingUtils.checkAttributes(element, new String[] {"stylesheet"}, null);
         
-        IncludeConfig config = ParsingUtils.getFirstTopObject(IncludeConfig.class, context, true);
+        BundleContext bundleContext = ParsingUtils.getSingleTopObject(BundleContext.class, context);
+        String bundleName = bundleContext.getBundle().getSymbolicName();
+        
         String stylesheet = element.getAttribute("stylesheet");
+        URI uri;
         try {
-			URI uri = new URI(stylesheet);
-			config.addInclude(uri);
-		} catch (URISyntaxException e) {
-			throw new ParserException("Illegal stylesheet URI: " + stylesheet, e);
-		}
+        	uri = new URI(stylesheet);
+        	if(uri.getScheme() == null && stylesheet.contains("/")) {
+        		if(stylesheet.startsWith("/")) stylesheet = stylesheet.substring(1);
+        		uri = new URI("bundle://" + bundleName + "/PUSTEFIX-INF/" + stylesheet);
+        	} else if("dynamic".equals(uri.getScheme())) {
+        	    stylesheet = DynamicResourceUtils.setBundleName(uri.toString(), bundleName);
+        	    stylesheet = DynamicResourceUtils.setBasePath(stylesheet, "/PUSTEFIX-INF");
+        	    uri = new URI(stylesheet);
+        	}
+        } catch(URISyntaxException x) {
+        	throw new ParserException("Illegal URI: "+ stylesheet, x);
+        }
+        IncludeDef inc = new IncludeDef(uri);
+        IncludeConfig config = ParsingUtils.getFirstTopObject(IncludeConfig.class, context, false);
+        if(config != null) {
+        	 config.addInclude(uri);
+        } else {
+        	XMLExtension<IncludeDef> ext = XMLExtensionParsingUtils.getListExtension(context);
+        	ext.add(inc);
+        }
         
     }
 

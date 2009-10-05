@@ -18,7 +18,9 @@
 package org.pustefixframework.xmlgenerator.config.parser;
 
 import org.pustefixframework.config.generic.ParsingUtils;
+import org.pustefixframework.xmlgenerator.config.model.Parameter;
 import org.pustefixframework.xmlgenerator.config.model.ParameterConfig;
+import org.pustefixframework.xmlgenerator.config.model.XMLExtension;
 import org.w3c.dom.Element;
 
 import com.marsching.flexiparse.parser.HandlerContext;
@@ -37,10 +39,16 @@ public class ParameterParsingHandler implements ParsingHandler {
         Element element = (Element)context.getNode();
         ParsingUtils.checkAttributes(element, new String[] {"name", "value"}, null);
         
-        ParameterConfig config = ParsingUtils.getFirstTopObject(ParameterConfig.class, context, true);
         String name = element.getAttribute("name");
         String value = element.getAttribute("value");
-        config.addParameter(name, value);
+        
+        ParameterConfig config = ParsingUtils.getFirstTopObject(ParameterConfig.class, context, true);
+        if(config!=null) {
+        	config.addParameter(name, value);
+        } else {
+        	XMLExtension<Parameter> ext = XMLExtensionParsingUtils.getListExtension(context);
+        	ext.add(new Parameter(name, value));
+        }
     }
 
 }

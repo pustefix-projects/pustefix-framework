@@ -9,7 +9,9 @@ import org.pustefixframework.extension.ExtensionPoint;
 import org.pustefixframework.extension.support.AbstractExtensionPoint;
 import org.pustefixframework.xmlgenerator.config.model.Configuration;
 import org.pustefixframework.xmlgenerator.config.model.ExtensibleList;
+import org.pustefixframework.xmlgenerator.config.model.IncludeConfig;
 import org.pustefixframework.xmlgenerator.config.model.ModelElement;
+import org.pustefixframework.xmlgenerator.config.model.ParameterConfig;
 import org.pustefixframework.xmlgenerator.config.model.XMLExtension;
 import org.pustefixframework.xmlgenerator.config.model.XMLExtensionPoint;
 import org.pustefixframework.xmlgenerator.config.model.XMLExtensionPointImpl;
@@ -104,9 +106,19 @@ public class XMLExtensionPointParsingHandler implements ParsingHandler {
 					} else if(type == XMLExtensionPoint.Type.TARGET_DEFINITION) {
 						list = (ExtensibleList<?>)config.getTargetDefs();
 					} else if(type == XMLExtensionPoint.Type.XSL_INCLUDE) {
-						list = (ExtensibleList<?>)config.getIncludes();
+						IncludeConfig incConfig = ParsingUtils.getFirstTopObject(IncludeConfig.class, context, false);
+						if(incConfig != null) {
+							list = (ExtensibleList<?>)incConfig.getIncludes();
+						} else {
+							list = (ExtensibleList<?>)config.getIncludes();
+						}
 					} else if(type == XMLExtensionPoint.Type.XSL_PARAMETER) {
-						list = (ExtensibleList<?>)config.getParameters();
+						ParameterConfig paramConfig = ParsingUtils.getFirstTopObject(ParameterConfig.class, context, false);
+						if(paramConfig != null) {
+							list = (ExtensibleList<?>)paramConfig.getParameters();
+						} else {
+							list = (ExtensibleList<?>)config.getParameters();
+						}
 					} else {
 						throw new ParserException("Extension point not supported: " + extensionPoint.getId()+" "+extensionPoint.getType());
 					}

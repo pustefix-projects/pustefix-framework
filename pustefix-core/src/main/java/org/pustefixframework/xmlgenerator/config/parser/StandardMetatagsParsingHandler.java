@@ -56,7 +56,6 @@ public class StandardMetatagsParsingHandler implements ParsingHandler {
         	metatags.setName(name);
         }
         
-        context.getObjectTreeElement().addObject(metatags);
         Configuration configuration = ParsingUtils.getFirstTopObject(Configuration.class, context, false);
         if(configuration != null) {
         	configuration.addStandardMetatags(metatags);
@@ -64,6 +63,8 @@ public class StandardMetatagsParsingHandler implements ParsingHandler {
         	XMLExtension<StandardMetatags> ext = XMLExtensionParsingUtils.getListExtension(context);
     		ext.add(metatags);
         }
+        
+        context.getObjectTreeElement().addObject(metatags);
         
     }
 
