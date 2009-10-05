@@ -1,33 +1,30 @@
-body      { color: #000000; background-color: #666666; width: 1024px; border-color: #333333; border-style:solid; border-width:1px;
-            margin:6px; font-family: Verdana, Helvetica, Tahoma, Arial, Sans, sans-serif; font-size: 12px; }
-div.page { background-color: #ffffff; height:100%; }
-div.header { padding:3px; border-bottom: 1px solid #666666;}
+html {
+  height:100%;
+}
+
+body {
+  color: #000000; 
+  background-color: #666666; 
+  width: 1024px; 
+  border-color: #333333; 
+  border-style:solid; 
+  border-width:1px;
+  height: 100%; 
+  margin:6px; 
+  font-family: Verdana, Helvetica, Tahoma, Arial, Sans, sans-serif; 
+  font-size: 12px;
+}
+
+div.page {
+  background-color: #ffffff;
+  height:100%; 
+}
+
+div.header {
+  padding:3px;
+  border-bottom: 1px solid #666666;
+}
+
 div.content {
   padding: 20px;	
 }
-td        { font-family: Verdana, Helvetica, Tahoma, Arial, Sans, sans-serif; font-size: 12px; }
-a         { text-decoration: none }
-a:link    { color: #bb3333; }
-a:visited { color: #773333; }
-a:hover   { text-decoration: underline; }
-a:active  { color: #ff0000; }
-
-.errmsg                 { background-color: #eeaaaa; border: 1px solid #995555;}
-.PfxError               { font-weight: bold; }
-input.PfxError          { background-color: #ffcccc; font-weight: normal }
-select.PfxError         { background-color: #ffcccc; font-weight: normal }
-#special .PfxError      { color: blue; }
-#special input.PfxError { background-color: #eeeeaa; font-weight: normal }
-
-.core_button_active     { color: #0050f0; font-weight: bold; }
-.core_button_invisible  { color: #a0a0a0; }
-
-.boxed                  { border: 1px black solid; } 
-
-#pagemsgs               { border: 1px black solid; width: 400px; }
-.PfxMessage             { font-weight: bold; background-color: #aaeeaa;}
-.PfxMessageLevel_warn   { font-weight: bold; background-color: #eeee66;}
-.PfxMessageLevel_error  { font-weight: bold; background-color: #ffbbaa;}
-
-.info tr td             { padding: 2px; border: 1px solid black; }
-.info tr td:first-child { background-color: #33cc99; }
