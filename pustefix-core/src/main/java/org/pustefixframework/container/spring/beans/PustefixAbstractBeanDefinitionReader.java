@@ -40,6 +40,9 @@ import org.springframework.beans.factory.xml.NamespaceHandlerResolver;
 import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
 import org.springframework.core.io.Resource;
 import org.springframework.osgi.context.ConfigurableOsgiBundleApplicationContext;
+import org.springframework.osgi.extender.support.ApplicationContextConfiguration;
+import org.springframework.osgi.extender.support.scanning.ConfigurationScanner;
+import org.springframework.osgi.extender.support.scanning.DefaultConfigurationScanner;
 import org.xml.sax.EntityResolver;
 
 import com.marsching.flexiparse.objecttree.ObjectTreeElement;
@@ -121,16 +124,24 @@ public abstract class PustefixAbstractBeanDefinitionReader extends AbstractBeanD
                 }
             }
         }
-        // TODO: Make path to spring configuration configurable
+        
+        XmlBeanDefinitionReader springReader = new XmlBeanDefinitionReader(this.getRegistry());
         Resource springConfig = this.getResourceLoader().getResource("osgibundle:/META-INF/pustefix/spring.xml");
         if (springConfig.exists()) {
-            XmlBeanDefinitionReader springReader = new XmlBeanDefinitionReader(this.getRegistry());
             springReader.setBeanClassLoader(getBeanClassLoader());
             springReader.setBeanNameGenerator(getBeanNameGenerator());
             springReader.setResourceLoader(getResourceLoader());
             springReader.setEntityResolver(getEntityResolver());
             springReader.setNamespaceHandlerResolver(getNamespaceHandlerResolver());
             count += springReader.loadBeanDefinitions(springConfig);
+        }
+        
+        // Read bean definitions from Spring DM default location ("osgibundle:/META-INF/spring/*.xml")
+        ConfigurationScanner scanner = new DefaultConfigurationScanner();
+        ApplicationContextConfiguration appConfig = new ApplicationContextConfiguration(getApplicationContext().getBundle(), scanner);
+        String[] configLocations = appConfig.getConfigurationLocations();
+        for(String configLocation: configLocations) {
+        	springReader.loadBeanDefinitions(configLocation);
         }
         
         // Register resource loader
