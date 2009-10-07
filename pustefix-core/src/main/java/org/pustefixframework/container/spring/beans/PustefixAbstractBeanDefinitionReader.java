@@ -125,23 +125,25 @@ public abstract class PustefixAbstractBeanDefinitionReader extends AbstractBeanD
             }
         }
         
-        XmlBeanDefinitionReader springReader = new XmlBeanDefinitionReader(this.getRegistry());
+        // Read bean definitions from Spring DM default location ("osgibundle:/META-INF/spring/*.xml")
+        ConfigurationScanner scanner = new DefaultConfigurationScanner();
+        ApplicationContextConfiguration appConfig = new ApplicationContextConfiguration(getApplicationContext().getBundle(), scanner);
+        String[] configLocations = appConfig.getConfigurationLocations();
+        
         Resource springConfig = this.getResourceLoader().getResource("osgibundle:/META-INF/pustefix/spring.xml");
-        if (springConfig.exists()) {
+        if (springConfig.exists() || configLocations.length > 0) {
+        	XmlBeanDefinitionReader springReader = new XmlBeanDefinitionReader(this.getRegistry());
             springReader.setBeanClassLoader(getBeanClassLoader());
             springReader.setBeanNameGenerator(getBeanNameGenerator());
             springReader.setResourceLoader(getResourceLoader());
             springReader.setEntityResolver(getEntityResolver());
             springReader.setNamespaceHandlerResolver(getNamespaceHandlerResolver());
-            count += springReader.loadBeanDefinitions(springConfig);
-        }
-        
-        // Read bean definitions from Spring DM default location ("osgibundle:/META-INF/spring/*.xml")
-        ConfigurationScanner scanner = new DefaultConfigurationScanner();
-        ApplicationContextConfiguration appConfig = new ApplicationContextConfiguration(getApplicationContext().getBundle(), scanner);
-        String[] configLocations = appConfig.getConfigurationLocations();
-        for(String configLocation: configLocations) {
-        	springReader.loadBeanDefinitions(configLocation);
+            if(springConfig.exists()) {
+            	count += springReader.loadBeanDefinitions(springConfig);
+            }
+            for(String configLocation: configLocations) {
+            	count += springReader.loadBeanDefinitions(configLocation);
+            }
         }
         
         // Register resource loader
