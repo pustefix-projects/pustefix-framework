@@ -15,27 +15,17 @@
  * along with Pustefix; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-package de.schlund.pfixcore.auth;
 
-import de.schlund.pfixcore.workflow.Context;
+package org.pustefixframework.config.contextxmlservice.parser.internal;
+
+import org.pustefixframework.extension.RoleExtension;
+import org.pustefixframework.extension.RoleExtensionPoint;
+import org.pustefixframework.extension.support.AbstractExtensionPoint;
 
 /**
+ * Implementation of {@link RoleExtensionPoint}.  
  * 
  * @author mleidig@schlund.de
- * 
  */
-public interface AuthConstraint extends Condition {
-
-    public boolean isAuthorized(Context context);
-
-    public Condition getCondition();
-
-    public void setCondition(Condition condition);
-
-    public String getId();
-
-    public String getAuthPage();
-    
-    public boolean isDefault();
-
+public class RoleExtensionPointImpl extends AbstractExtensionPoint<RoleExtensionPointImpl, RoleExtension> implements RoleExtensionPoint {
 }

@@ -18,6 +18,7 @@
 
 package org.pustefixframework.config.contextxmlservice.parser;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -25,6 +26,9 @@ import org.pustefixframework.config.contextxmlservice.ContextConfigHolder;
 import org.pustefixframework.config.contextxmlservice.ContextInterceptorListHolder;
 import org.pustefixframework.config.contextxmlservice.PageFlowHolder;
 import org.pustefixframework.config.contextxmlservice.PageRequestConfigHolder;
+import org.pustefixframework.config.contextxmlservice.parser.internal.AuthConstraintExtensionPointImpl;
+import org.pustefixframework.config.contextxmlservice.parser.internal.AuthConstraintMap;
+import org.pustefixframework.config.contextxmlservice.parser.internal.AuthConstraintRef;
 import org.pustefixframework.config.contextxmlservice.parser.internal.ContextConfigImpl;
 import org.pustefixframework.config.contextxmlservice.parser.internal.PageFlowExtensionPointImpl;
 import org.pustefixframework.config.contextxmlservice.parser.internal.PageFlowMap;
@@ -33,6 +37,8 @@ import org.pustefixframework.config.contextxmlservice.parser.internal.PageReques
 import org.pustefixframework.config.contextxmlservice.parser.internal.PageRequestConfigMap;
 import org.pustefixframework.config.contextxmlservice.parser.internal.PageRequestConfigVariantExtensionPointImpl;
 import org.pustefixframework.config.contextxmlservice.parser.internal.PustefixContextXMLRequestHandlerConfigImpl;
+import org.pustefixframework.config.contextxmlservice.parser.internal.RoleExtensionPointImpl;
+import org.pustefixframework.config.contextxmlservice.parser.internal.RoleMap;
 import org.pustefixframework.config.generic.ParsingUtils;
 import org.pustefixframework.container.spring.beans.support.ScopedProxyUtils;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -48,6 +54,8 @@ import com.marsching.flexiparse.parser.HandlerContext;
 import com.marsching.flexiparse.parser.ParsingHandler;
 import com.marsching.flexiparse.parser.exception.ParserException;
 
+import de.schlund.pfixcore.auth.AuthConstraint;
+import de.schlund.pfixcore.auth.Role;
 import de.schlund.pfixcore.workflow.ContextImpl;
 import de.schlund.pfixcore.workflow.ContextResourceManagerImpl;
 import de.schlund.pfixcore.workflow.context.ServerContextImpl;
@@ -132,9 +140,34 @@ public class ContextXMLParsingHandler implements ParsingHandler {
             String pageFlowMapBeanName = beanNameGenerator.generateBeanName(beanDefinition, beanRegistry);
             beanRegistry.registerBeanDefinition(pageFlowMapBeanName, beanDefinition);
             
+            List<Object> roleObjectList = new ArrayList<Object>();
+            List<Object> authConstraintObjectList = new ArrayList<Object>();
+            for (Object obj : context.getObjectTreeElement().getObjectsOfTypeFromSubTree(Object.class)) {
+                if (obj instanceof AuthConstraint) {
+                	AuthConstraint con = (AuthConstraint)obj;
+                	if(!(con instanceof AuthConstraintRef)) {
+                		if(!con.getId().equals("anonymous")) {
+                			authConstraintObjectList.add(con);
+                		}
+                	}
+                } else if (obj instanceof Role) {
+                	roleObjectList.add(obj);
+                } else if (obj instanceof AuthConstraintExtensionPointImpl) {
+                	authConstraintObjectList.add(obj);
+                } else if (obj instanceof RoleExtensionPointImpl) {
+                	roleObjectList.add(obj);
+                }
+            }
+            RoleMap roles = new RoleMap();
+            roles.setRoleObjects(roleObjectList);
+            AuthConstraintMap authConstraints = new AuthConstraintMap();
+            authConstraints.setAuthConstraintObjects(authConstraintObjectList);
+            
             beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(ContextConfigImpl.class);
             beanBuilder.setScope("singleton");
             beanBuilder.addConstructorArgValue(contextConfig);
+            beanBuilder.addPropertyValue("roles", roles);
+            beanBuilder.addPropertyValue("authConstraints", authConstraints);
             beanBuilder.addPropertyValue("startInterceptors", startInterceptors);
             beanBuilder.addPropertyValue("endInterceptors", endInterceptors);
             beanBuilder.addPropertyValue("postRenderInterceptors", postRenderInterceptors);

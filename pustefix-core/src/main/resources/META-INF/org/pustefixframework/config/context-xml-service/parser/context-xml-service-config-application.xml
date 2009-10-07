@@ -85,6 +85,10 @@
     <match>/c:context-xml-service-config/c:role</match>
   </handler>
   
+  <handler class="org.pustefixframework.config.contextxmlservice.parser.RoleExtensionPointParsingHandler">
+    <match>/c:context-xml-service-config/c:extension-point[@type='context.role']</match>
+  </handler>
+  
   <handler class="org.pustefixframework.config.contextxmlservice.parser.ConditionParsingHandler">
     <match>/c:context-xml-service-config/c:condition</match>
     <match>/c:context-xml-service-config/c:authconstraint//c:and</match>
@@ -111,6 +115,10 @@
     <match>/c:context-xml-service-config/c:authconstraint</match>
     <match>/c:context-xml-service-config/c:pagerequest/c:authconstraint</match>
     <match>/c:context-xml-service-config/c:pagerequest/*[self::c:default or self::c:variant]/c:authconstraint</match>
+  </handler>
+  
+  <handler class="org.pustefixframework.config.contextxmlservice.parser.AuthConstraintExtensionPointParsingHandler">
+    <match>/c:context-xml-service-config/c:extension-point[@type='context.authconstraint']</match>
   </handler>
     
   <!--  pageflows -->

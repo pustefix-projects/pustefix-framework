@@ -71,8 +71,6 @@ public class ConditionParsingHandler implements ParsingHandler {
             String roleName = element.getAttribute("name").trim();
             if(roleName.equals("")) throw new ParserException("Element 'hasrole' requires 'name' attribute value.");
             condition = new HasRole(roleName);
-            Role role = config.getContextConfig().getRoleProvider().getRole(roleName);
-            if (role == null) throw new ParserException("Condition hasrole references unknown role: " + roleName);
         } else if (name.equals("condition")) {
             if (!inCondition) {
                 String id = element.getAttribute("id").trim();

@@ -41,7 +41,6 @@ import org.w3c.dom.Element;
 import de.schlund.pfixcore.auth.AuthConstraint;
 import de.schlund.pfixcore.auth.Condition;
 import de.schlund.pfixcore.auth.RoleProvider;
-import de.schlund.pfixcore.auth.RoleProviderImpl;
 import de.schlund.pfixcore.auth.conditions.ConditionGroup;
 import de.schlund.pfixcore.auth.conditions.HasRole;
 import de.schlund.pfixcore.auth.conditions.Not;
@@ -75,10 +74,9 @@ public class ContextConfigImpl implements ContextConfig {
     private String navigationFile = null;
     private Properties props = new Properties();
     private boolean synchronize = true;
-    private Map<String,AuthConstraint> authConstraints = new HashMap<String,AuthConstraint>();
-    private AuthConstraint defaultAuthConstraint;
+    private AuthConstraintMap authConstraints = new AuthConstraintMap();
+    private RoleProvider roleProvider = new RoleMap();
     private Map<String,Condition> conditions = new HashMap<String,Condition>();
-    private RoleProvider roleProvider = new RoleProviderImpl();
     private boolean authConstraintRefsResolved = false;
     private List<String> startInterceptorBeans = new ArrayList<String>();
     private List<String> endInterceptorBeans = new ArrayList<String>();
@@ -98,7 +96,6 @@ public class ContextConfigImpl implements ContextConfig {
         this.authConstraints = ref.authConstraints;
         this.cacheResources = ref.cacheResources;
         this.conditions = ref.conditions;
-        this.defaultAuthConstraint = ref.defaultAuthConstraint;
         this.defaultPage = ref.defaultPage;
         this.defaultStateClass = ref.defaultStateClass;
         this.endInterceptorBeans = ref.endInterceptorBeans;
@@ -240,6 +237,10 @@ public class ContextConfigImpl implements ContextConfig {
         return Collections.unmodifiableList(postRenderInterceptors);
     }
     
+    public void setRoles(RoleMap roleMap) {
+    	roleProvider = roleMap;
+    }
+    
     public RoleProvider getRoleProvider() {
         return roleProvider;
     }
@@ -248,21 +249,16 @@ public class ContextConfigImpl implements ContextConfig {
         roleProvider = customProvider;
     }
     
-    public void addAuthConstraint(String id,AuthConstraint authConstraint) {
-    	authConstraints.put(id,authConstraint);
-    	
-    }
-    
     public AuthConstraint getAuthConstraint(String id) {
     	return authConstraints.get(id);
     }
     
-    public void setDefaultAuthConstraint(AuthConstraint authConstraint) {
-       defaultAuthConstraint=authConstraint;
+    public AuthConstraint getDefaultAuthConstraint() {
+       return authConstraints.getDefaultAuthConstraint();
     }
     
-    public AuthConstraint getDefaultAuthConstraint() {
-       return defaultAuthConstraint;
+    public void setAuthConstraints(AuthConstraintMap authConstraints) {
+    	this.authConstraints = authConstraints;
     }
     
     public Condition getCondition(String id) {

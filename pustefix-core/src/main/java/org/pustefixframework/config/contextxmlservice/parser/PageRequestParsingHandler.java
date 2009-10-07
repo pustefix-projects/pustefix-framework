@@ -58,6 +58,7 @@ import com.marsching.flexiparse.parser.HandlerContext;
 import com.marsching.flexiparse.parser.ParsingHandler;
 import com.marsching.flexiparse.parser.exception.ParserException;
 
+import de.schlund.pfixcore.auth.AuthConstraint;
 import de.schlund.pfixcore.generator.IHandler;
 import de.schlund.pfixcore.generator.IWrapper;
 import de.schlund.pfixcore.generator.UseHandlerBeanRef;
@@ -171,7 +172,10 @@ public class PageRequestParsingHandler implements ParsingHandler {
             }
             ProcessActionPageRequestConfigMap processActionPageRequestConfigMap = new ProcessActionPageRequestConfigMap();
             processActionPageRequestConfigMap.setProcessActionConfigObjects(processActionObjects);
-                        
+                   
+            AuthConstraint authConstraint = ParsingUtils.getOptionalSingleSubObject(AuthConstraint.class, context);
+            pageConfig.setAuthConstraint(authConstraint);
+            
             BeanDefinition beanDefinition = pageConfig.generateBeanDefinition(processActionPageRequestConfigMap);
             String beanName = beanNameGenerator.generateBeanName(beanDefinition, beanRegistry);
             beanRegistry.registerBeanDefinition(beanName, beanDefinition);

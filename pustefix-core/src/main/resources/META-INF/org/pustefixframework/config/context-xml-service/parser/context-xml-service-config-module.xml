@@ -124,11 +124,6 @@
     <match>/c:context-xml-service-config/c:extension[@type='context.pagerequest' or @type='context.pagerequestvariant']/c:pagerequest/*[self::c:default or self::c:variant]/c:authconstraint//c:hasrole</match>
   </handler>
   
-  <handler class="org.pustefixframework.config.contextxmlservice.parser.AuthConstraintParsingHandler">
-    <match>/c:context-xml-service-config/c:extension[@type='context.pagerequest']/c:pagerequest/c:authconstraint</match>
-    <match>/c:context-xml-service-config/c:extension[@type='context.pagerequest' or @type='context.pagerequestvariant']/c:pagerequest/*[self::c:default or self::c:variant]/c:authconstraint</match>
-  </handler>
-  
   <handler class="org.pustefixframework.config.contextxmlservice.parser.PageRequestConfigExtensionPointParsingHandler">
     <match>/c:context-xml-service-config/c:extension[@type='context.pagerequest']/c:extension-point[@type='context.pagerequest']</match>
   </handler>
@@ -241,6 +236,62 @@
     <match>/c:context-xml-service-config/c:extension[@type='context.scriptedflow']</match>
   </handler>
   
+  <!-- Roles -->
+  
+  <handler class="org.pustefixframework.config.contextxmlservice.parser.RoleParsingHandler">
+    <match>/c:context-xml-service-config/c:extension[@type='context.role']/c:role</match>
+  </handler>
+  
+  <handler class="org.pustefixframework.config.contextxmlservice.parser.RoleExtensionParsingHandler" run-order="end">
+    <match>/c:context-xml-service-config/c:extension[@type='context.role']</match>
+  </handler>
+  
+  <handler class="org.pustefixframework.config.contextxmlservice.parser.RoleExtensionPointParsingHandler">
+    <match>/c:context-xml-service-config/c:extension[@type='context.role']/c:extension-point[@type='context.role']</match>
+  </handler>
+  
+  <!-- Authconstraints -->
+  
+  <handler class="org.pustefixframework.config.contextxmlservice.parser.AuthConstraintExtensionParsingHandler" run-order="end">
+    <match>/c:context-xml-service-config/c:extension[@type='context.authconstraint']</match>
+  </handler>
+  
+  <handler class="org.pustefixframework.config.contextxmlservice.parser.AuthConstraintExtensionPointParsingHandler">
+    <match>/c:context-xml-service-config/c:extension[@type='context.authconstraint']/c:extension-point[@type='context.authconstraint']</match>
+  </handler>
+  
+  <handler class="org.pustefixframework.config.contextxmlservice.parser.AuthConstraintExtensionParsingHandler" run-order="end">
+    <match>/c:context-xml-service-config/c:extension[@type='context.authconstraint']</match>
+  </handler>
+  
+  <handler class="org.pustefixframework.config.contextxmlservice.parser.AuthConstraintParsingHandler">
+    <match>/c:context-xml-service-config/c:extension[@type='context.authconstraint']/c:authconstraint</match>
+    <match>/c:context-xml-service-config/c:extension[@type='context.pagerequest' or @type='context.pagerequestvariant']/c:pagerequest/c:authconstraint</match>
+    <match>/c:context-xml-service-config/c:extension[@type='context.pagerequest' or @type='context.pagerequestvariant']/c:pagerequest/*[self::c:default or self::c:variant]/c:authconstraint</match>
+  </handler>
+  
+  <handler class="org.pustefixframework.config.contextxmlservice.parser.AuthConstraintExtensionPointParsingHandler">
+    <match>/c:context-xml-service-config/c:extension[@type='context.authconstraint']/c:extension-point[@type='context.authconstraint']</match>
+  </handler>
+  
+  <handler class="org.pustefixframework.config.contextxmlservice.parser.AuthConstraintExtensionParsingHandler" run-order="end">
+    <match>/c:context-xml-service-config/c:extension[@type='context.authconstraint']</match>
+  </handler>
+  
+  <handler class="org.pustefixframework.config.contextxmlservice.parser.ConditionParsingHandler">
+    <match>/c:context-xml-service-config/c:extension[@type='context.authconstraint']/c:authconstraint//c:and</match>
+    <match>/c:context-xml-service-config/c:extension[@type='context.authconstraint']/c:authconstraint//c:or</match>
+    <match>/c:context-xml-service-config/c:extension[@type='context.authconstraint']/c:authconstraint//c:not</match>
+    <match>/c:context-xml-service-config/c:extension[@type='context.authconstraint']/c:authconstraint//c:condition</match>
+    <match>/c:context-xml-service-config/c:extension[@type='context.authconstraint']/c:authconstraint//c:authconstraint</match>
+    <match>/c:context-xml-service-config/c:extension[@type='context.authconstraint']/c:authconstraint//c:hasrole</match>
+    <match>/c:context-xml-service-config/c:extension[@type='context.authconstraint']/c:pagerequest/c:authconstraint//c:and</match>
+    <match>/c:context-xml-service-config/c:extension[@type='context.authconstraint']/c:pagerequest/c:authconstraint//c:or</match>
+    <match>/c:context-xml-service-config/c:extension[@type='context.authconstraint']/c:pagerequest/c:authconstraint//c:not</match>
+    <match>/c:context-xml-service-config/c:extension[@type='context.authconstraint']/c:pagerequest/c:authconstraint//c:condition</match>
+    <match>/c:context-xml-service-config/c:extension[@type='context.authconstraint']/c:pagerequest/c:authconstraint//c:authconstraint</match>
+    <match>/c:context-xml-service-config/c:extension[@type='context.authconstraint']/c:pagerequest/c:authconstraint//c:hasrole</match>
+  </handler>
   
   <!-- Properties -->
   

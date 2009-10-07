@@ -17,8 +17,7 @@
  */
 package org.pustefixframework.config.contextxmlservice.parser;
 
-import org.pustefixframework.config.contextxmlservice.parser.internal.PustefixContextXMLRequestHandlerConfigImpl;
-import org.pustefixframework.config.contextxmlservice.parser.internal.PageRequestConfigImpl;
+import org.pustefixframework.config.contextxmlservice.parser.internal.AuthConstraintRef;
 import org.pustefixframework.config.generic.ParsingUtils;
 import org.w3c.dom.Element;
 
@@ -26,11 +25,12 @@ import com.marsching.flexiparse.parser.HandlerContext;
 import com.marsching.flexiparse.parser.ParsingHandler;
 import com.marsching.flexiparse.parser.exception.ParserException;
 
+import de.schlund.pfixcore.auth.AuthConstraint;
 import de.schlund.pfixcore.auth.AuthConstraintImpl;
 
 /**
  * 
- * @author mleidig
+ * @author mleidig@schlund.de
  *
  */
 public class AuthConstraintParsingHandler implements ParsingHandler {
@@ -40,44 +40,30 @@ public class AuthConstraintParsingHandler implements ParsingHandler {
         Element element = (Element)context.getNode();
         ParsingUtils.checkAttributes(element, null, new String[] {"id", "default", "ref", "authpage"});
         
-        PustefixContextXMLRequestHandlerConfigImpl config = ParsingUtils.getSingleTopObject(PustefixContextXMLRequestHandlerConfigImpl.class, context);
-        
-        boolean topLevel = false;
-        Element parentElement = (Element)element.getParentNode();
-        if(parentElement.getNodeName().equals("context-xml-service-config")) {
-            topLevel = true;
-        }
-        
-        AuthConstraintImpl constraint = null;
-        if (topLevel) {
-            String constraintId = element.getAttribute("id").trim();
-            if (constraintId.equals("")) throw new ParserException("Top-level element 'authconstraint' requires attribute 'id'");
-            constraint = new AuthConstraintImpl(constraintId);
-            context.getObjectTreeElement().addObject(constraint);
-            config.getContextConfig().addAuthConstraint(constraintId, constraint);
-            String defStr = element.getAttribute("default").trim();
-            if (!defStr.equals("")) {
-                boolean def = Boolean.valueOf(defStr);
-                if (def) config.getContextConfig().setDefaultAuthConstraint(constraint);
-            }
+        AuthConstraint constraint = null;
+     
+        String constraintRef = element.getAttribute("ref").trim();
+        String constraintId = element.getAttribute("id").trim();
+        if(constraintRef.length()>0) {
+        	constraint = new AuthConstraintRef(constraintRef);
         } else {
-            if (!config.getContextConfig().authConstraintRefsResolved()) {
-                config.getContextConfig().resolveAuthConstraintRefs();
+        	if(constraintId.length()>0) {
+        		constraint = new AuthConstraintImpl(constraintId);
+        	} else {
+        		constraint = new AuthConstraintImpl("anonymous");
+        	}
+        	String defStr = element.getAttribute("default").trim();
+            if(defStr.length()>0) {
+                boolean def = Boolean.valueOf(defStr);
+                ((AuthConstraintImpl)constraint).setDefault(def);
             }
-            String constraintRef = element.getAttribute("ref").trim();
-            if (!constraintRef.equals("")) {
-                constraint = (AuthConstraintImpl) config.getContextConfig().getAuthConstraint(constraintRef);
-                if (constraint == null) throw new ParserException("Referenced 'authconstraint' element can't be found: " + constraintRef);
-            } else {
-                constraint = new AuthConstraintImpl("anonymous");
+            String authPage = element.getAttribute("authpage").trim();
+            if(authPage.length()>0) {
+            	((AuthConstraintImpl)constraint).setAuthPage(authPage);
             }
-            context.getObjectTreeElement().addObject(constraint);
-            PageRequestConfigImpl pageConfig = ParsingUtils.getSingleTopObject(PageRequestConfigImpl.class, context);
-            pageConfig.setAuthConstraint(constraint);
         }
-        String authPage = element.getAttribute("authpage").trim();
-        if (!authPage.equals("")) constraint.setAuthPage(authPage);
         
+        context.getObjectTreeElement().addObject(constraint);
     }
 
 }

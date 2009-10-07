@@ -19,6 +19,7 @@ package org.pustefixframework.config.generic;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 
 import org.w3c.dom.Element;
@@ -154,6 +155,16 @@ public class ParsingUtils {
             throw new ParserException("Object tree contains multiple instances of type '"+clazz.getName()+"'.");
         }
         return configs.iterator().next();
+    }
+    
+    public static <T> T getOptionalSingleSubObject(Class<T> clazz, HandlerContext context) throws ParserException {
+        Collection<T> configs = context.getObjectTreeElement().getObjectsOfTypeFromSubTree(clazz);
+        if(configs.size()==1) {
+            return configs.iterator().next();
+        } else if(configs.size()>1) {
+            throw new ParserException("Object tree contains multiple instances of type '"+clazz.getName()+"'.");
+        }
+        return null;
     }
 
     public static <T> T getFirstTopObject(Class<T> clazz, HandlerContext context, boolean mandatory) throws ParserException {

@@ -29,7 +29,8 @@ public class AuthConstraintImpl implements AuthConstraint {
     private Condition condition;
     private String authPage;
     private String id;
-
+    private boolean isDefault;
+    
     public AuthConstraintImpl(String id) {
         this.id = id;
     }
@@ -44,6 +45,14 @@ public class AuthConstraintImpl implements AuthConstraint {
 
     public String getId() {
         return id;
+    }
+    
+    public boolean isDefault() {
+    	return isDefault;
+    }
+    
+    public void setDefault(boolean isDefault) {
+    	this.isDefault = isDefault;
     }
 
     public void setAuthPage(String authPage) {
