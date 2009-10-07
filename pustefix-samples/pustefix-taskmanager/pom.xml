@@ -18,8 +18,8 @@
   <modules>
     <module>taskmanager-webapp</module>
     <module>taskmanager-login</module>
-<!--
     <module>taskmanager-model</module>
+<!--
     <module>taskmanager-persistence</module>
 -->
   </modules>
