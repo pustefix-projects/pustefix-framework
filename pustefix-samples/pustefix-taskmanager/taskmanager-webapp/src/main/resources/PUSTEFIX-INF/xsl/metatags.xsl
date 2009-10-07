@@ -3,6 +3,9 @@
                 xmlns:pfx="http://www.schlund.de/pustefix/core" 
                 xmlns:ixsl="http://www.w3.org/1999/XSL/TransformOutputAlias" version="1.0">
 
+  <xsl:template match="bar">
+    BAAAAAAAAAAAAAAAAAAAAAAARRRRRRRRRRRRRRRRRRR
+  </xsl:template>
 
   <xsl:template match="pagemsgs">
     <pfx:checkmessage>
@@ -19,7 +22,7 @@
     </pfx:checkmessage>
   </xsl:template>
   
-  <xsl:template match="errormsg">
+  <xsl:template match="showFieldError">
     <pfx:checkfield>
       <pfx:name>
         <xsl:choose>
@@ -28,13 +31,9 @@
         </xsl:choose>
       </pfx:name>
       <pfx:error>
-        <tr>
-          <td colspan="2">
-            <div class="errmsg">
-              <pfx:scode/>
-            </div>
-          </td>
-        </tr>
+        <span class="errormsg">
+          <pfx:scode/>
+        </span>
       </pfx:error>
     </pfx:checkfield>
   </xsl:template>

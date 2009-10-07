@@ -29,6 +29,7 @@
   
   <standardmetatags>
     <include stylesheet="xsl/metatags.xsl"/>
+    <extension-point type="xml.include" id="standardmetatags.include.main"/>
   </standardmetatags>
 
   <extension-point type="xml.standardpage" id="standardpage.main"/>

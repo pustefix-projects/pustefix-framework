@@ -39,6 +39,12 @@
     <!--   <interceptor class="de.schlund.pfixcore.example.SampleStartIC"/> -->
     <!-- </end> -->
   </interceptors>
+<!--
+  <role name="ANONYMOUS" initial="true"/>
+  <role name="AUTHORIZED"/>
+-->
+  <extension-point type="context.role" id="roles.main"/>
+  <extension-point type="context.authconstraint" id="authconstraints.main"/>
 
   <!-- 
   <scriptedflow name="forceadult" file="bundle:/META-INF/pustefix/scriptedflow/forceadult.script.xml" />
@@ -91,6 +97,8 @@
   </pageflow>
 
   <!-- *** PageRequests and associated properties *** -->
+
+  <extension-point type="context.pagerequest" id="pagerequest.main"/>
 
   <pagerequest name="A">
     <input>

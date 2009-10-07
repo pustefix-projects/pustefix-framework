@@ -4,7 +4,8 @@
     <theme name="default">
    
         Task overview
-     
+        <foo/>  
+        <bar/>   
     </theme>
   </part>
   

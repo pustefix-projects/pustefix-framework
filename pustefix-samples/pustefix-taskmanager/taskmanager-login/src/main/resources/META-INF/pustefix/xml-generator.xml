@@ -6,6 +6,11 @@
     <page handler="/xml/main" name="login"/>
   </extension>
 
+  <extension type="xml.include">
+    <extend extension-point="standardmetatags.include.main"/>
+    <include stylesheet="xsl/metatags.xsl"/>
+  </extension>
+
   <extension type="xml.standardpage">
     <extend extension-point="standardpage.main"/>
     <standardpage name="login" xml="dynamic:/xml/page.xml"/>

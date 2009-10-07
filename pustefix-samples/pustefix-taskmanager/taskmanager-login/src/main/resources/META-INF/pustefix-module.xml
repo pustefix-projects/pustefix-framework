@@ -4,7 +4,7 @@
   <application>
     
     <context-xml-service>
-      <config-file>bundle:/META-INF/pustefix/app.conf.xml</config-file>
+      <config-file>bundle:/META-INF/pustefix/context-xml-service.xml</config-file>
     </context-xml-service>
    
     <extension type="application.static">
@@ -16,7 +16,7 @@
   </application>
 
   <xml-generator>
-    <config-file>bundle:/META-INF/pustefix/depend.xml</config-file>
+    <config-file>bundle:/META-INF/pustefix/xml-generator.xml</config-file>
   </xml-generator>
 
   <dynamic-includes>

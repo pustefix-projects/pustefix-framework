@@ -28,3 +28,21 @@ div.header {
 div.content {
   padding: 20px;	
 }
+
+span.errormsg {
+  color: red;
+  font-weight: bold;
+}
+
+table.formtable {
+  padding: 20px;
+}
+
+table.formtable tr.buttonrow {
+  
+}
+
+table.formtable tr.buttonrow td {
+  padding-top: 10px;
+  
+}
