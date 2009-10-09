@@ -66,12 +66,19 @@ public class BundleResolver implements URIToFileResolver {
 	public List<BundleConfig> resolve() throws MojoExecutionException {
     	
     	List<BundleConfig> bundles = new ArrayList<BundleConfig>();
-    	if(mavenProject.getPackaging().equals("bundle")) {
+    	// TODO discuss
+    	/* akurth: Requiring packaging==bundle doesn't make sense to me.
+    	 * 1: Use of launcher-plugin/webapp-plugin already indicates that
+    	 *    we're building a bundled OSGi web application.
+    	 * 2: We prevent users from going "MANIFEST first",
+    	 *    because packaging will be jar then.
+    	 */
+    	//if(mavenProject.getPackaging().equals("bundle")) {
     	    String bundleSymbolicName = Utils.getBundleSymbolicNameFromProject(mavenProject.getBasedir());
     	    File bundleDir = new File(mavenProject.getBasedir(),"target/classes");
     		BundleConfig bundle = new BundleConfig(bundleDir, bundleSymbolicName, true, defaultStartLevel);
     		bundles.add(bundle);
-    	}
+    	//}
     	
     	Set<String> excludedBundles = new HashSet<String>();
     	for(URL provisioningConfig: provisioningConfigs) {
