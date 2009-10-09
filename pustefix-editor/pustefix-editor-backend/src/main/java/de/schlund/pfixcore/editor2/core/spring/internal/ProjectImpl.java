@@ -73,6 +73,8 @@ public class ProjectImpl extends AbstractProject {
     private String projectName;
 
     private String projectComment;
+    
+    private boolean includePartsEditableByDefault;
 
     private VariantFactoryService variantfactory;
 
@@ -118,9 +120,11 @@ public class ProjectImpl extends AbstractProject {
             TargetFactoryService targetfactory,
             ConfigurationService configuration,
             PustefixTargetUpdateService updater, String name, String comment,
+            boolean includePartsEditableByDefault,
             TargetGenerator tgen) throws EditorInitializationException {
         this.projectName = name;
         this.projectComment = comment;
+        this.includePartsEditableByDefault = includePartsEditableByDefault;
         this.variantfactory = variantfactory;
         this.themefactory = themefactory;
         this.pagefactory = pagefactory;
@@ -490,6 +494,10 @@ public class ProjectImpl extends AbstractProject {
 
     public Map<String, String> getPrefixToNamespaceMappings() {
         return configuration.getPrefixToNamespaceMappings();
+    }
+
+    public boolean isIncludePartsEditableByDefault() {
+        return includePartsEditableByDefault;
     }
 
 }

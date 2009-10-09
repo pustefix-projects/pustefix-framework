@@ -116,6 +116,7 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
     private static final String   XSLPARAM_FRAME          = "__frame";
     private static final String   XSLPARAM_REUSE          = "__reusestamp";
     private static final String   XSLPARAM_EDITOR_URL     = "__editor_url";
+    private static final String   XSLPARAM_EDITOR_INCLUDE_PARTS_EDITABLE_BY_DEFAULT = "__editor_include_parts_editable_by_default";
     private static final String   XSL_PARAM_APP_URL       = "__application_url";
     private static final String   VALUE_NONE              = "__NONE__";
     private static final String   SUFFIX_SAVEDDOM         = "_SAVED_DOM";
@@ -153,6 +154,7 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
     
     private boolean      renderExternal            = false;
     private boolean      editmodeAllowed            = false;
+    private boolean      includePartsEditableByDefault = true;
     private boolean      checkModtime               = true;
     
     private final static Logger LOGGER_TRAIL = Logger.getLogger("LOGGER_TRAIL");
@@ -801,6 +803,7 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
         paramhash.put(TargetGenerator.XSLPARAM_TG, generator.getConfigPath().toURI().toString());
         paramhash.put(TargetGenerator.XSLPARAM_TKEY, VALUE_NONE);
         paramhash.put(TargetGenerator.XSLPARAM_NAVITREE, NavigationFactory.getInstance().getNavigation(generator.getConfigPath(), generator.getXsltVersion()).getNavigationXMLElement());
+        paramhash.put(XSLPARAM_EDITOR_INCLUDE_PARTS_EDITABLE_BY_DEFAULT, Boolean.toString(includePartsEditableByDefault));
 
         String session_to_link_from_external = getSessionAdmin().getExternalSessionId(session);
         paramhash.put("__external_session_ref", session_to_link_from_external);
@@ -1014,6 +1017,10 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
     
     public void setEditModeAllowed(boolean editModeAllowed) {
         this.editmodeAllowed = editModeAllowed;
+    }
+
+    public void setIncludePartsEditableByDefault(boolean includePartsEditableByDefault) {
+        this.includePartsEditableByDefault = includePartsEditableByDefault;
     }
     
 }

@@ -24,6 +24,7 @@ public class EditorConfig {
     private String location;
     private String secret;
     private boolean enableTargetUpdateService = true;
+    private boolean includePartsEditableByDefault = true;
     
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
@@ -55,5 +56,13 @@ public class EditorConfig {
 
     public boolean isEnableTargetUpdateService() {
         return enableTargetUpdateService;
+    }
+
+    public void setIncludePartsEditableByDefault(boolean includePartsEditableByDefault) {
+        this.includePartsEditableByDefault = includePartsEditableByDefault;
+    }
+
+    public boolean isIncludePartsEditableByDefault() {
+        return includePartsEditableByDefault;
     }
 }

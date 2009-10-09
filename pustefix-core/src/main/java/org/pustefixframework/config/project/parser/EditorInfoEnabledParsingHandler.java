@@ -19,18 +19,22 @@
 package org.pustefixframework.config.project.parser;
 
 import org.pustefixframework.config.customization.CustomizationAwareParsingHandler;
+import org.pustefixframework.config.generic.ParsingUtils;
 import org.pustefixframework.config.project.EditorInfo;
+import org.w3c.dom.Element;
 
 import com.marsching.flexiparse.parser.HandlerContext;
 import com.marsching.flexiparse.parser.exception.ParserException;
 
 
-public class EditorInfoParsingHandler extends CustomizationAwareParsingHandler {
+public class EditorInfoEnabledParsingHandler extends CustomizationAwareParsingHandler {
     
     @Override
     protected void handleNodeIfActive(HandlerContext context) throws ParserException {
-        EditorInfo info = new EditorInfo();
-        context.getObjectTreeElement().addObject(info);
+        Element element = (Element) context.getNode();
+        boolean enabled = Boolean.valueOf(element.getTextContent().trim());
+        EditorInfo info = ParsingUtils.getSingleTopObject(EditorInfo.class, context);
+        info.setEnabled(enabled);
     }
     
 }

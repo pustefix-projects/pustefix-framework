@@ -69,6 +69,7 @@ public class EditorParsingHandler extends CustomizationAwareParsingHandler {
         beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(EditorProjectInfo.class);
         beanBuilder.addPropertyValue("name", projectInfo.getName());
         beanBuilder.addPropertyValue("description", projectInfo.getDescription());
+        beanBuilder.addPropertyValue("includePartsEditableByDefault", editorConfig.isIncludePartsEditableByDefault());
         beanBuilder.addPropertyValue("enableTargetUpdateService", editorConfig.isEnableTargetUpdateService());
         beanDefinition = beanBuilder.getBeanDefinition();
         beanRegistry.registerBeanDefinition(EditorProjectInfo.class.getName(), beanDefinition);

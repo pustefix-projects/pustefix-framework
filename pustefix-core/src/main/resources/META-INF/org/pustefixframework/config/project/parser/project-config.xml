@@ -81,16 +81,26 @@
     <match>/p:project-config/p:application//p:direct-output-service</match>
   </handler>
   
+  
   <!-- Saves path with editor location -->
   <handler class="org.pustefixframework.config.project.parser.EditorLocationParsingHandler">
     <match>//p:project-config/p:editor//p:location</match>
   </handler>
-
+  
   <!-- Saves editor info -->
   <handler class="org.pustefixframework.config.project.parser.EditorInfoParsingHandler">
+    <match>/p:project-config/p:editor</match>
+  </handler>
+  
+  <handler class="org.pustefixframework.config.project.parser.EditorInfoEnabledParsingHandler">
     <match>/p:project-config/p:editor//p:enabled</match>
   </handler>
-
+  
+  <handler class="org.pustefixframework.config.project.parser.EditorInfoIncludePartsParsingHandler">
+    <match>/p:project-config/p:editor//p:include-parts-editable-by-default</match>
+  </handler>
+  
+  
   <handler class="org.pustefixframework.config.generic.PropertiesParsingHandler">
     <match>/p:project-config/p:properties</match>
   </handler>

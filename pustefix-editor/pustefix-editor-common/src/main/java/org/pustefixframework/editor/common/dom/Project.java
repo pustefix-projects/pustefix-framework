@@ -148,7 +148,18 @@ public interface Project {
      * @return Map of pre-configured prefix-to-namespace-url mappings.
      */
     Map<String, String> getPrefixToNamespaceMappings();
-    
+
+    /**
+     * Returns <code>true</code>, if all include parts, which have not
+     * explicitly been marked as <emph>not</emph> editable, can be edited
+     * by users (having the required project permissions). If 
+     * <code>false</code>, on the parts that have been explicitly marked as 
+     * editable, can be edited.
+     * 
+     * @return flag indicating the default editable state of include parts
+     */
+    boolean isIncludePartsEditableByDefault();
+
     /**
      * Returns a list of all files containing DynIncludes.
      * 

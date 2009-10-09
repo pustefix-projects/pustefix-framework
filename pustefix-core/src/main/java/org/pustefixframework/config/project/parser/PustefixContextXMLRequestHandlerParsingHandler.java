@@ -195,7 +195,9 @@ public class PustefixContextXMLRequestHandlerParsingHandler extends Customizatio
         beanBuilder.addPropertyValue("exceptionProcessingConfiguration", new RuntimeBeanReference(ExceptionProcessingConfiguration.class.getName()));
         Collection<EditorInfo> editorInfos = context.getObjectTreeElement().getRoot().getObjectsOfTypeFromSubTree(EditorInfo.class);
         if(editorInfos.size()>0) {
-            beanBuilder.addPropertyValue("editModeAllowed", editorInfos.iterator().next().getEnabled());
+            EditorInfo editorInfo = editorInfos.iterator().next();
+            beanBuilder.addPropertyValue("editModeAllowed", editorInfo.isEnabled());
+            beanBuilder.addPropertyValue("includePartsEditableByDefault", editorInfo.isIncludePartsEditableByDefault());
         }
         BeanDefinition beanDefinition = beanBuilder.getBeanDefinition();
         BeanDefinitionHolder beanHolder = new BeanDefinitionHolder(beanDefinition, PustefixContextXMLRequestHandler.class.getName() + "#" + path);
