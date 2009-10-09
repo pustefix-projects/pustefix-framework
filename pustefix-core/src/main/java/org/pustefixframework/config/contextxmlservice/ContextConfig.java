@@ -41,19 +41,26 @@ import de.schlund.pfixxml.Variant;
 public interface ContextConfig {
 
     /**
-     * return the default state to use if no more specific information is available
-     * @return State the default state to use for a page where no other information is given. 
+     * Returns the type of the default state. This is the type of the state
+     * returned by {@link #getDefaultState()}.
+     * @return type of default state 
      */
-    Class<? extends State> getDefaultState();
-    
-     /**
+    Class<? extends State> getDefaultStateType();
+
+    /**
+     * Returns the default state to use if no more specific information is available.
+     * @return the default state to use for a page where no other information is given. 
+     */
+    State getDefaultState();
+
+    /**
      * Returns name of the page to use when the user enters the site without
      * specifying a specific page.
      * 
      * @return name of default page
      */
     String getDefaultPage(Variant variant);
-    
+
     /**
      * Returns a list of the configuration for all context resources that should
      * be created by the context.
@@ -69,6 +76,7 @@ public interface ContextConfig {
      * @return configuration object for the context resource
      */
     ContextResourceConfig getContextResourceConfig(Class<?> clazz);
+
     ContextResourceConfig getContextResourceConfig(String name);
 
     /**
@@ -107,7 +115,7 @@ public interface ContextConfig {
      * @return list of end interceptors
      */
     List<? extends ContextInterceptor> getEndInterceptors();
-    
+
     /**
      * Returns a list of all postrender interceptors.
      * 
@@ -140,9 +148,13 @@ public interface ContextConfig {
     boolean isSynchronized();
 
     RoleProvider getRoleProvider();
+
     AuthConstraint getDefaultAuthConstraint();
+
     AuthConstraint getAuthConstraint(String id);
+
     Condition getCondition(String id);
+
     Element getAuthConstraintAsXML(Document doc, AuthConstraint authConstraint);
-    
+
 }

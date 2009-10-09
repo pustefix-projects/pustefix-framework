@@ -55,37 +55,59 @@ import de.schlund.pfixxml.Variant;
  * @author Sebastian Marsching <sebastian.marsching@1und1.de>
  */
 public class ContextConfigImpl implements ContextConfig {
+
     // Caution: This implementation is not thread-safe. However, it
     // does not have to be as a configuration is initialized only once.
-    
+
     private final static Logger LOG = Logger.getLogger(ContextConfigImpl.class);
+
     private Class<? extends State> defaultStateClass = null;
-    
+
+    private State defaultState = null;
+
     private String defaultPage = null;
-    private Map<String,String> variantToDefaultPage = new HashMap<String,String>();
-    private Map<String,ContextResourceConfigImpl> resourceMap = new HashMap<String,ContextResourceConfigImpl>();
+
+    private Map<String, String> variantToDefaultPage = new HashMap<String, String>();
+
+    private Map<String, ContextResourceConfigImpl> resourceMap = new HashMap<String, ContextResourceConfigImpl>();
+
     private LinkedHashMap<Class<?>, ContextResourceConfigImpl> resources = new LinkedHashMap<Class<?>, ContextResourceConfigImpl>();
-    private List<ContextResourceConfigImpl> cacheResources = null; 
+
+    private List<ContextResourceConfigImpl> cacheResources = null;
+
     private Map<String, PageFlow> pageflows = new HashMap<String, PageFlow>();
+
     private Map<String, ? extends PageRequestConfig> pagerequests;
+
     private ArrayList<ContextInterceptor> startinterceptors = new ArrayList<ContextInterceptor>();
+
     private ArrayList<ContextInterceptor> endinterceptors = new ArrayList<ContextInterceptor>();
+
     private ArrayList<ContextInterceptor> postRenderInterceptors = new ArrayList<ContextInterceptor>();
+
     private String navigationFile = null;
+
     private Properties props = new Properties();
+
     private boolean synchronize = true;
     private AuthConstraintMap authConstraints = new AuthConstraintMap();
     private RoleProvider roleProvider = new RoleMap();
-    private Map<String,Condition> conditions = new HashMap<String,Condition>();
+
+    private Map<String, Condition> conditions = new HashMap<String, Condition>();
+
+
     private boolean authConstraintRefsResolved = false;
+
     private List<String> startInterceptorBeans = new ArrayList<String>();
+
     private List<String> endInterceptorBeans = new ArrayList<String>();
+
     private List<String> postRenderInterceptorBeans = new ArrayList<String>();
-    
+
     public ContextConfigImpl() {
         // Default constructor
     }
-    
+
     /**
      * Copy constructor. Does not perform deep copy!
      * 
@@ -97,6 +119,7 @@ public class ContextConfigImpl implements ContextConfig {
         this.cacheResources = ref.cacheResources;
         this.conditions = ref.conditions;
         this.defaultPage = ref.defaultPage;
+        this.defaultState = ref.defaultState;
         this.defaultStateClass = ref.defaultStateClass;
         this.endInterceptorBeans = ref.endInterceptorBeans;
         this.endinterceptors = ref.endinterceptors;
@@ -114,33 +137,35 @@ public class ContextConfigImpl implements ContextConfig {
         this.synchronize = ref.synchronize;
         this.variantToDefaultPage = ref.variantToDefaultPage;
     }
-    
+
     public void setDefaultPage(String page) {
         this.defaultPage = page;
     }
-    
+
     public void setDefaultPage(String variantName, String page) {
         variantToDefaultPage.put(variantName, page);
     }
-    
+
     public String getDefaultPage(Variant variant) {
         String page = null;
-        if(variant != null) {
+        if (variant != null) {
             page = variantToDefaultPage.get(variant.getVariantId());
-            for(String variantId : variant.getVariantFallbackArray()) {
-              page = variantToDefaultPage.get(variantId);
-              if(page != null) break;
+            for (String variantId : variant.getVariantFallbackArray()) {
+                page = variantToDefaultPage.get(variantId);
+                if (page != null)
+                    break;
             }
         }
-        if(page == null) page = defaultPage;
+        if (page == null)
+            page = defaultPage;
         return page;
     }
-    
-    public void setDefaultState(Class<? extends State> clazz) {
+
+    public void setDefaultStateType(Class<? extends State> clazz) {
         this.defaultStateClass = clazz;
     }
 
-    public Class<? extends State> getDefaultState() {
+    public Class<? extends State> getDefaultStateType() {
         return this.defaultStateClass;
     }
 
@@ -149,12 +174,12 @@ public class ContextConfigImpl implements ContextConfig {
             LOG.warn("Overwriting configuration for context resource " + config.getContextResourceClass().getName());
         }
         resources.put(config.getContextResourceClass(), config);
-        for(Class<?> itf:config.getInterfaces()) {
+        for (Class<?> itf : config.getInterfaces()) {
             resourceMap.put(itf.getName(), config);
         }
         cacheResources = null;
     }
-    
+
     public List<ContextResourceConfigImpl> getContextResourceConfigs() {
         List<ContextResourceConfigImpl> list = cacheResources;
         if (list == null) {
@@ -166,77 +191,77 @@ public class ContextConfigImpl implements ContextConfig {
         }
         return list;
     }
-    
+
     public ContextResourceConfig getContextResourceConfig(Class<?> clazz) {
-        if(Enhancer.isEnhanced(clazz)) {
+        if (Enhancer.isEnhanced(clazz)) {
             clazz = clazz.getSuperclass();
         }
         return getContextResourceConfig(clazz.getName());
     }
-    
+
     public ContextResourceConfig getContextResourceConfig(String name) {
         return resourceMap.get(name);
     }
-    
+
     public void setPageFlowMap(Map<String, PageFlow> map) {
         this.pageflows = map;
     }
-    
+
     public Map<String, PageFlow> getPageFlowMap() {
         return this.pageflows;
     }
-    
+
     public void addStartInterceptorBean(String beanName) {
         this.startInterceptorBeans.add(beanName);
     }
-    
+
     public List<String> getStartInterceptorBeans() {
         return this.startInterceptorBeans;
     }
-    
+
     public void setStartInterceptors(List<? extends ContextInterceptor> interceptors) {
         this.startinterceptors.clear();
         this.startinterceptors.addAll(interceptors);
     }
-    
+
     public List<? extends ContextInterceptor> getStartInterceptors() {
         return Collections.unmodifiableList(startinterceptors);
     }
-    
+
     public void addEndInterceptorBean(String beanName) {
         this.endInterceptorBeans.add(beanName);
     }
-    
+
     public List<String> getEndInterceptorBeans() {
         return this.endInterceptorBeans;
     }
-    
+
     public void setEndInterceptors(List<? extends ContextInterceptor> interceptors) {
         this.endinterceptors.clear();
         this.endinterceptors.addAll(interceptors);
     }
-    
+
     public List<? extends ContextInterceptor> getEndInterceptors() {
         return Collections.unmodifiableList(endinterceptors);
     }
-    
+
     public void addPostRenderInterceptorBean(String beanName) {
         this.postRenderInterceptorBeans.add(beanName);
     }
-    
+
     public List<String> getPostRenderInterceptorBeans() {
         return this.postRenderInterceptorBeans;
     }
-    
+
     public void setPostRenderInterceptors(List<? extends ContextInterceptor> interceptors) {
         this.postRenderInterceptors.clear();
         this.postRenderInterceptors.addAll(interceptors);
     }
-    
+
     public List<? extends ContextInterceptor> getPostRenderInterceptors() {
         return Collections.unmodifiableList(postRenderInterceptors);
     }
-    
+
     public void setRoles(RoleMap roleMap) {
     	roleProvider = roleMap;
     }
@@ -244,31 +269,31 @@ public class ContextConfigImpl implements ContextConfig {
     public RoleProvider getRoleProvider() {
         return roleProvider;
     }
-    
+
     public void setCustomRoleProvider(RoleProvider customProvider) {
         roleProvider = customProvider;
     }
-    
+
     public AuthConstraint getAuthConstraint(String id) {
-    	return authConstraints.get(id);
+        return authConstraints.get(id);
     }
-    
+
     public AuthConstraint getDefaultAuthConstraint() {
        return authConstraints.getDefaultAuthConstraint();
     }
-    
+
     public void setAuthConstraints(AuthConstraintMap authConstraints) {
     	this.authConstraints = authConstraints;
     }
-    
+
     public Condition getCondition(String id) {
         return conditions.get(id);
     }
-    
+
     public void addCondition(String id, Condition condition) {
-        conditions.put(id,condition);
+        conditions.put(id, condition);
     }
-    
+
     public Element getAuthConstraintAsXML(Document doc, AuthConstraint authConstraint) {
         Element element = doc.createElement("authconstraint");
         Condition condition = authConstraint.getCondition();
@@ -277,16 +302,17 @@ public class ContextConfigImpl implements ContextConfig {
         }
         return element;
     }
-    
+
     private String getConditionId(Condition condition) {
-        Iterator<Entry<String,Condition>> entries = conditions.entrySet().iterator();
-        while(entries.hasNext()) {
-            Entry<String,Condition> entry = entries.next();
-            if(entry.getValue()==condition) return entry.getKey();
+        Iterator<Entry<String, Condition>> entries = conditions.entrySet().iterator();
+        while (entries.hasNext()) {
+            Entry<String, Condition> entry = entries.next();
+            if (entry.getValue() == condition)
+                return entry.getKey();
         }
         return null;
     }
-    
+
     private Element getConditionAsXML(Document doc, Condition condition) {
         Element result = null;
         if (ConditionGroup.class.isAssignableFrom(condition.getClass())) {
@@ -304,7 +330,8 @@ public class ContextConfigImpl implements ContextConfig {
         } else if (Not.class.isAssignableFrom(condition.getClass())) {
             result = doc.createElement("not");
             Condition subCond = ((Not) condition).get();
-            if (subCond != null) result.appendChild(getConditionAsXML(doc, subCond));
+            if (subCond != null)
+                result.appendChild(getConditionAsXML(doc, subCond));
         } else {
             String condId = getConditionId(condition);
             result = doc.createElement("condition");
@@ -312,11 +339,11 @@ public class ContextConfigImpl implements ContextConfig {
         }
         return result;
     }
-    
+
     public void setNavigationFile(String filename) {
-        this.navigationFile  = filename;
+        this.navigationFile = filename;
     }
-    
+
     public String getNavigationFile() {
         return this.navigationFile;
     }
@@ -324,74 +351,80 @@ public class ContextConfigImpl implements ContextConfig {
     public void setProperties(Properties properties) {
         this.props = properties;
     }
-    
+
     public Properties getProperties() {
         return this.props;
     }
-    
+
     public void setSynchronized(boolean sync) {
         this.synchronize = sync;
     }
-    
+
     public boolean isSynchronized() {
         return this.synchronize;
     }
-    
+
     public boolean authConstraintRefsResolved() {
         return authConstraintRefsResolved;
     }
-    
+
     public void resolveAuthConstraintRefs() {
         LinkedHashSet<String> refList = new LinkedHashSet<String>();
-        for(AuthConstraint constraint:authConstraints.values()) {
+        for (AuthConstraint constraint : authConstraints.values()) {
             refList.clear();
             resolveAuthConstraintRefs(constraint, refList);
         }
         authConstraintRefsResolved = true;
     }
-    
+
     private Condition resolveAuthConstraintRefs(Condition condition, LinkedHashSet<String> refList) {
-        if(condition instanceof AuthConstraintRef) {
-            AuthConstraintRef ref = (AuthConstraintRef)condition;
-            if(refList.contains(ref.getRef())) {
+        if (condition instanceof AuthConstraintRef) {
+            AuthConstraintRef ref = (AuthConstraintRef) condition;
+            if (refList.contains(ref.getRef())) {
                 StringBuilder sb = new StringBuilder();
-                for(String str:refList) {
-                    if(str.equals(ref.getRef())) sb.append("( ");
-                    sb.append(str+" -> ");
+                for (String str : refList) {
+                    if (str.equals(ref.getRef()))
+                        sb.append("( ");
+                    sb.append(str + " -> ");
                 }
-                sb.append(ref.getRef()+" )");
-                throw new RuntimeException("Circular authconstraint reference: "+sb.toString());
+                sb.append(ref.getRef() + " )");
+                throw new RuntimeException("Circular authconstraint reference: " + sb.toString());
             }
             AuthConstraint constraint = getAuthConstraint(ref.getRef());
-            if(constraint == null) throw new RuntimeException("Referenced authconstraint not found: "+ref.getRef());
+            if (constraint == null)
+                throw new RuntimeException("Referenced authconstraint not found: " + ref.getRef());
             Condition constraintCond = constraint.getCondition();
-            if(constraintCond == null) throw new RuntimeException("Referenced authconstraint has no condition: "+ref.getRef());
+            if (constraintCond == null)
+                throw new RuntimeException("Referenced authconstraint has no condition: " + ref.getRef());
             refList.add(ref.getRef());
             condition = resolveAuthConstraintRefs(constraintCond, refList);
             refList.remove(ref.getRef());
-        } else if(condition instanceof ConditionGroup) {
-            ConditionGroup condGroup = (ConditionGroup)condition;
+        } else if (condition instanceof ConditionGroup) {
+            ConditionGroup condGroup = (ConditionGroup) condition;
             List<Condition> conds = condGroup.getConditions();
-            for(Condition cond:conds) {
-                Condition resCond = resolveAuthConstraintRefs(cond,refList);
-                if(cond!=resCond) {
-                    int ind=conds.indexOf(cond);
-                    if(ind == -1) throw new RuntimeException("Condition can't be found: "+cond);
+            for (Condition cond : conds) {
+                Condition resCond = resolveAuthConstraintRefs(cond, refList);
+                if (cond != resCond) {
+                    int ind = conds.indexOf(cond);
+                    if (ind == -1)
+                        throw new RuntimeException("Condition can't be found: " + cond);
                     conds.set(ind, resCond);
                 }
             }
-        } else if(condition instanceof Not) {
-            Not condNot = (Not)condition;
+        } else if (condition instanceof Not) {
+            Not condNot = (Not) condition;
             Condition cond = condNot.get();
-            Condition resCond = resolveAuthConstraintRefs(cond,refList);
-            if(cond!=resCond) condNot.set(resCond);
-        } else if(condition instanceof AuthConstraint) {
-            AuthConstraint condAuth = (AuthConstraint)condition;
+            Condition resCond = resolveAuthConstraintRefs(cond, refList);
+            if (cond != resCond)
+                condNot.set(resCond);
+        } else if (condition instanceof AuthConstraint) {
+            AuthConstraint condAuth = (AuthConstraint) condition;
             Condition cond = condAuth.getCondition();
             refList.add(condAuth.getId());
-            Condition resCond = resolveAuthConstraintRefs(cond,refList);
+            Condition resCond = resolveAuthConstraintRefs(cond, refList);
             refList.remove(condAuth.getId());
-            if(cond!=resCond) condAuth.setCondition(resCond);
+            if (cond != resCond)
+                condAuth.setCondition(resCond);
         }
         return condition;
     }
@@ -407,5 +440,13 @@ public class ContextConfigImpl implements ContextConfig {
     public PageRequestConfig getPageRequestConfig(String name) {
         return getPageRequestConfigMap().get(name);
     }
-    
+
+    public State getDefaultState() {
+        return defaultState;
+    }
+
+    public void setDefaultState(State defaultState) {
+        this.defaultState = defaultState;
+    }
+
 }

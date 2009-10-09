@@ -1,3 +1,8 @@
+2009-10-09  Sebastian Marsching <sebastian.marsching@1und1.de>
+
+	Create a Spring bean for the default state, to make injection
+	available to the default state.
+
 2009-09-24  Sebastian Marsching <sebastian.marsching@1und1.de>
 
 	Added extension points for scripted flows.

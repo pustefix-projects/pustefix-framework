@@ -28,7 +28,6 @@ import com.marsching.flexiparse.parser.HandlerContext;
 import com.marsching.flexiparse.parser.ParsingHandler;
 import com.marsching.flexiparse.parser.exception.ParserException;
 
-
 /**
  * 
  * @author mleidig
@@ -37,21 +36,22 @@ import com.marsching.flexiparse.parser.exception.ParserException;
 public class ContextParsingHandler implements ParsingHandler {
 
     public void handleNode(HandlerContext context) throws ParserException {
-        
-        Element element = (Element)context.getNode();
-        ParsingUtils.checkAttributes(element, null, new String[] {"defaultpage", "synchronized"});
-        
+
+        Element element = (Element) context.getNode();
+        ParsingUtils.checkAttributes(element, null, new String[] { "defaultpage", "synchronized" });
+
         XMLGeneratorInfo info = ParsingUtils.getSingleTopObject(XMLGeneratorInfo.class, context);
         PustefixContextXMLRequestHandlerConfigImpl config = ParsingUtils.getSingleTopObject(PustefixContextXMLRequestHandlerConfigImpl.class, context);
-        
+
         ContextConfigImpl ctxConfig = new ContextConfigImpl();
         // Navigation is stored in depend.xml
         ctxConfig.setNavigationFile(info.getConfigurationFile());
-        ctxConfig.setDefaultState(config.getDefaultStaticState());
-        
+        ctxConfig.setDefaultStateType(config.getDefaultStaticState());
+
         String defaultPage = element.getAttribute("defaultpage").trim();
-        if(defaultPage.length()>0) ctxConfig.setDefaultPage(defaultPage);
-        
+        if (defaultPage.length() > 0)
+            ctxConfig.setDefaultPage(defaultPage);
+
         String syncStr = element.getAttribute("synchronized");
         if (syncStr.length() > 0) {
             ctxConfig.setSynchronized(Boolean.parseBoolean(syncStr));

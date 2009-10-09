@@ -21,11 +21,16 @@ package org.pustefixframework.config.contextxmlservice.parser;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.Properties;
 
 import org.pustefixframework.config.contextxmlservice.ContextConfigHolder;
 import org.pustefixframework.config.contextxmlservice.ContextInterceptorListHolder;
+import org.pustefixframework.config.contextxmlservice.IWrapperConfig;
 import org.pustefixframework.config.contextxmlservice.PageFlowHolder;
 import org.pustefixframework.config.contextxmlservice.PageRequestConfigHolder;
+import org.pustefixframework.config.contextxmlservice.ProcessActionStateConfig;
+import org.pustefixframework.config.contextxmlservice.StateConfig;
 import org.pustefixframework.config.contextxmlservice.parser.internal.AuthConstraintExtensionPointImpl;
 import org.pustefixframework.config.contextxmlservice.parser.internal.AuthConstraintMap;
 import org.pustefixframework.config.contextxmlservice.parser.internal.AuthConstraintRef;
@@ -56,8 +61,10 @@ import com.marsching.flexiparse.parser.exception.ParserException;
 
 import de.schlund.pfixcore.auth.AuthConstraint;
 import de.schlund.pfixcore.auth.Role;
+import de.schlund.pfixcore.workflow.ConfigurableState;
 import de.schlund.pfixcore.workflow.ContextImpl;
 import de.schlund.pfixcore.workflow.ContextResourceManagerImpl;
+import de.schlund.pfixcore.workflow.State;
 import de.schlund.pfixcore.workflow.context.ServerContextImpl;
 import de.schlund.pfixxml.perflogging.PerfLogging;
 
@@ -69,21 +76,21 @@ import de.schlund.pfixxml.perflogging.PerfLogging;
 public class ContextXMLParsingHandler implements ParsingHandler {
 
     public void handleNode(HandlerContext context) throws ParserException {
-        
+
         if (context.getRunOrder() == RunOrder.START) {
-            
+
             PustefixContextXMLRequestHandlerConfigImpl ctxConfig = new PustefixContextXMLRequestHandlerConfigImpl();
             context.getObjectTreeElement().addObject(ctxConfig);
-            
+
         } else {
             ContextConfigImpl contextConfig = ParsingUtils.getSingleSubObjectFromRoot(ContextConfigImpl.class, context);
-            
+
             BeanDefinitionBuilder beanBuilder;
             BeanDefinition beanDefinition;
             BeanDefinitionHolder beanHolder;
             DefaultBeanNameGenerator beanNameGenerator = new DefaultBeanNameGenerator();
             BeanDefinitionRegistry beanRegistry = ParsingUtils.getSingleTopObject(BeanDefinitionRegistry.class, context);
-            
+
             @SuppressWarnings("unchecked")
             List<Object> pageList = new ManagedList();
             for (Object o : context.getObjectTreeElement().getObjectsOfTypeFromSubTree(Object.class)) {
@@ -96,7 +103,7 @@ public class ContextXMLParsingHandler implements ParsingHandler {
                     pageList.add(o);
                 }
             }
-            
+
             beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(PageRequestConfigMap.class);
             beanBuilder.setScope("singleton");
             beanBuilder.addPropertyValue("pageRequestConfigObjects", pageList);
@@ -132,37 +139,88 @@ public class ContextXMLParsingHandler implements ParsingHandler {
                     pageFlowObjectList.add(o);
                 }
             }
-            
+
             beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(PageFlowMap.class);
             beanBuilder.setScope("singleton");
             beanBuilder.addPropertyValue("pageFlowObjects", pageFlowObjectList);
             beanDefinition = beanBuilder.getBeanDefinition();
             String pageFlowMapBeanName = beanNameGenerator.generateBeanName(beanDefinition, beanRegistry);
             beanRegistry.registerBeanDefinition(pageFlowMapBeanName, beanDefinition);
-            
+
+            // Create bean definition for default state
+            Class<? extends State> defaultStateType = contextConfig.getDefaultStateType();
+            beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(defaultStateType);
+            beanBuilder.setScope("prototype");
+            if (ConfigurableState.class.isAssignableFrom(defaultStateType)) {
+                final Class<? extends ConfigurableState> stateType = defaultStateType.asSubclass(ConfigurableState.class);
+                StateConfig config = new StateConfig() {
+
+                    public Map<String, ?> getContextResources() {
+                        return Collections.emptyMap();
+                    }
+
+                    public Policy getIWrapperPolicy() {
+                        return Policy.ANY;
+                    }
+
+                    public Map<String, ? extends IWrapperConfig> getIWrappers() {
+                        return Collections.emptyMap();
+                    }
+
+                    public Map<String, ? extends ProcessActionStateConfig> getProcessActions() {
+                        return Collections.emptyMap();
+                    }
+
+                    public Properties getProperties() {
+                        return new Properties();
+                    }
+
+                    public String getScope() {
+                        return "prototype";
+                    }
+
+                    public Class<? extends ConfigurableState> getState() {
+                        return stateType;
+                    }
+
+                    public boolean isExternalBean() {
+                        return false;
+                    }
+
+                    public boolean requiresToken() {
+                        return false;
+                    }
+
+                };
+                beanBuilder.addPropertyValue("config", config);
+            }
+            beanDefinition = beanBuilder.getBeanDefinition();
+            String defaultStateBeanName = beanNameGenerator.generateBeanName(beanDefinition, beanRegistry);
+            beanRegistry.registerBeanDefinition(defaultStateBeanName, beanDefinition);
+
             List<Object> roleObjectList = new ArrayList<Object>();
             List<Object> authConstraintObjectList = new ArrayList<Object>();
             for (Object obj : context.getObjectTreeElement().getObjectsOfTypeFromSubTree(Object.class)) {
                 if (obj instanceof AuthConstraint) {
-                	AuthConstraint con = (AuthConstraint)obj;
-                	if(!(con instanceof AuthConstraintRef)) {
-                		if(!con.getId().equals("anonymous")) {
-                			authConstraintObjectList.add(con);
-                		}
-                	}
+                    AuthConstraint con = (AuthConstraint) obj;
+                    if (!(con instanceof AuthConstraintRef)) {
+                        if (!con.getId().equals("anonymous")) {
+                            authConstraintObjectList.add(con);
+                        }
+                    }
                 } else if (obj instanceof Role) {
-                	roleObjectList.add(obj);
+                    roleObjectList.add(obj);
                 } else if (obj instanceof AuthConstraintExtensionPointImpl) {
-                	authConstraintObjectList.add(obj);
+                    authConstraintObjectList.add(obj);
                 } else if (obj instanceof RoleExtensionPointImpl) {
-                	roleObjectList.add(obj);
+                    roleObjectList.add(obj);
                 }
             }
             RoleMap roles = new RoleMap();
             roles.setRoleObjects(roleObjectList);
             AuthConstraintMap authConstraints = new AuthConstraintMap();
             authConstraints.setAuthConstraintObjects(authConstraintObjectList);
-            
+
             beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(ContextConfigImpl.class);
             beanBuilder.setScope("singleton");
             beanBuilder.addConstructorArgValue(contextConfig);
@@ -173,6 +231,7 @@ public class ContextXMLParsingHandler implements ParsingHandler {
             beanBuilder.addPropertyValue("postRenderInterceptors", postRenderInterceptors);
             beanBuilder.addPropertyReference("pageRequestConfigMap", pageMapBeanName);
             beanBuilder.addPropertyReference("pageFlowMap", pageFlowMapBeanName);
+            beanBuilder.addPropertyReference("defaultState", defaultStateBeanName);
             beanDefinition = beanBuilder.getBeanDefinition();
             String contextConfigBeanName = beanNameGenerator.generateBeanName(beanDefinition, beanRegistry);
             beanRegistry.registerBeanDefinition(contextConfigBeanName, beanDefinition);
@@ -182,38 +241,38 @@ public class ContextXMLParsingHandler implements ParsingHandler {
                 public Object getContextConfigObject() {
                     return contextConfigReference;
                 }
-                
+
             });
-            
+
             beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(ServerContextImpl.class);
             beanBuilder.setScope("singleton");
             beanBuilder.setInitMethodName("init");
             beanBuilder.addPropertyReference("config", contextConfigBeanName);
             beanDefinition = beanBuilder.getBeanDefinition();
-            beanHolder = new BeanDefinitionHolder(beanDefinition, ServerContextImpl.class.getName() );
+            beanHolder = new BeanDefinitionHolder(beanDefinition, ServerContextImpl.class.getName());
             context.getObjectTreeElement().addObject(beanHolder);
-            
+
             beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(ContextResourceManagerImpl.class);
             beanBuilder.setScope("session");
             beanDefinition = beanBuilder.getBeanDefinition();
             beanHolder = new BeanDefinitionHolder(beanDefinition, ContextResourceManagerImpl.class.getName());
             beanHolder = ScopedProxyUtils.createScopedProxy(beanHolder, beanRegistry, true);
-            context.getObjectTreeElement().addObject(beanHolder); 
-            
+            context.getObjectTreeElement().addObject(beanHolder);
+
             beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(ContextImpl.class);
             beanBuilder.setScope("session");
             beanBuilder.setInitMethodName("init");
             beanBuilder.addPropertyReference("serverContext", ServerContextImpl.class.getName());
             beanBuilder.addPropertyReference("contextResourceManager", ContextResourceManagerImpl.class.getName());
-            
+
             if (beanRegistry.isBeanNameInUse(PerfLogging.class.getName())) {
                 beanBuilder.addPropertyReference("perfLogging", PerfLogging.class.getName());
             }
-            
+
             beanDefinition = beanBuilder.getBeanDefinition();
-            beanHolder = new BeanDefinitionHolder(beanDefinition, ContextImpl.class.getName(), new String[] {"pustefixContext"});
+            beanHolder = new BeanDefinitionHolder(beanDefinition, ContextImpl.class.getName(), new String[] { "pustefixContext" });
             beanHolder = ScopedProxyUtils.createScopedProxy(beanHolder, beanRegistry, true);
-            context.getObjectTreeElement().addObject(beanHolder); 
+            context.getObjectTreeElement().addObject(beanHolder);
         }
     }
 
