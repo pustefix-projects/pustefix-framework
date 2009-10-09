@@ -477,17 +477,23 @@ public class PfixServletRequestImpl implements PfixServletRequest {
         RequestParam name     = getRequestParam(PAGEPARAM);
         if (name != null && !name.getValue().equals("")) {
             pagename = name.getValue();
-        } else if (pathinfo != null && !pathinfo.equals("") && 
-                   pathinfo.startsWith("/") && pathinfo.length() > 1) {
+        } else if (pathinfo != null && pathinfo.length() != 0) {
+            if (pathinfo.startsWith("/")) {
+                pathinfo = "/" + pathinfo;
+            }
+            // Remove jsessionid argument (if present)
+            if (pathinfo.contains(";")) {
+                pathinfo = pathinfo.substring(0, pathinfo.indexOf(";"));
+            }
+            
+            if (pathinfo.length() <= 1) {
+                // Slash only
+                return null;
+            }
         	pagename = getPageName(uris, pathinfo);
-        	//TODO: handle scripted flow case in an alternative way,
-        	//because the following causes that paths without page
-        	//are interpreted as page names themselves
-        	//if (pagename.length() == 0) {
-        	    // Special handling for scripted flows.
-        	    // Use everything after slash as page name.
-        	    //pagename = pathinfo.substring(1);
-        	//}
+        	if (pagename == null) {
+        	    return null;
+        	}
         } else {
             return null;
         }
@@ -506,9 +512,14 @@ public class PfixServletRequestImpl implements PfixServletRequest {
     public String getRequestBasePath() {
     	String path = getPathInfo();
     	String pageName = getPageName(uris, path);
-    	if(!pageName.equals("")) {
+    	if(pageName != null && !pageName.equals("")) {
     		int ind = path.lastIndexOf(pageName);
     		path = path.substring(0,ind);
+    	} else {
+    	    // Make sure to remove jsessionid parameter
+    	    if (path.contains(";")) {
+    	        path = path.substring(0, path.indexOf(";"));
+    	    }
     	}
     	path = getContextPath()+getServletPath()+path;
     	if(path.endsWith("/")) path = path.substring(0, path.length()-1);
@@ -526,7 +537,11 @@ public class PfixServletRequestImpl implements PfixServletRequest {
     			}
     		}
     	}
-    	return pageName;
+    	if (pageName.length() > 0) {
+    	    return pageName;
+    	} else {
+    	    return null;
+    	}
     }
     
 } // PfixServletRequest
