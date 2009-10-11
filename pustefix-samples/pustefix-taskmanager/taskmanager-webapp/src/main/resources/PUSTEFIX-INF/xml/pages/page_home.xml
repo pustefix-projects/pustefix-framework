@@ -2,10 +2,21 @@
   
   <part name="content">
     <theme name="default">
-   
-        Task overview
-        <foo/>  
-        <bar/>   
+        <h1>Task lists</h1>
+        <table cellpadding="10px">
+          <tr>
+            <th align="left">Name</th>
+            <th align="left">Description</th>
+            <th align="left">Open tasks</th>
+            <th align="left">Total tasks</th> 
+          </tr>
+          <tr>
+            <td align="left">Work tasks</td>
+            <td align="left">Tasks to be done at work</td>
+            <td align="right">3</td>
+            <td align="right">7</td>
+          </tr>
+        </table>
     </theme>
   </part>
   
