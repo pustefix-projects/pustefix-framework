@@ -16,9 +16,10 @@
   <packaging>pom</packaging>
 
   <modules>
-    <module>taskmanager-webapp</module>
+    <module>taskmanager-database</module>
     <module>taskmanager-login</module>
     <module>taskmanager-model</module>
+    <module>taskmanager-webapp</module>
 <!--
     <module>taskmanager-persistence</module>
 -->
