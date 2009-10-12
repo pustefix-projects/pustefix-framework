@@ -40,6 +40,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
     private PathResolverService pathresolver;
     private FileSystemService filesystem;
     private String projectsFile;
+    private boolean includePartsEditableByDefault = true;
     
     public void setPathResolverService(PathResolverService pathresolver) {
         this.pathresolver = pathresolver;
@@ -74,10 +75,22 @@ public class ConfigurationServiceImpl implements ConfigurationService {
             String url = node.getAttribute("url");
             this.map.put(prefix, url);
         }
+
+        Element editorElement = (Element) rootElement.getElementsByTagNameNS(Constants.NS_PROJECT, "editor").item(0);
+        if (editorElement != null) {
+            Element includePartsEditableByDefaultElement = (Element) editorElement.getElementsByTagNameNS(Constants.NS_PROJECT, "include-parts-editable-by-default").item(0);
+            if (includePartsEditableByDefaultElement != null) {
+                this.includePartsEditableByDefault  = Boolean.parseBoolean(includePartsEditableByDefaultElement.getTextContent());
+            }
+        }
     }
 
     public Map<String, String> getPrefixToNamespaceMappings() {
         return new HashMap<String, String>(this.map);
+    }
+
+    public boolean isIncludePartsEditableByDefault() {
+        return includePartsEditableByDefault;
     }
 
 }
