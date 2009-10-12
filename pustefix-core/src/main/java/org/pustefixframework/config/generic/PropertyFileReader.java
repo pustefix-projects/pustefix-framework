@@ -25,12 +25,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
+import org.osgi.framework.BundleContext;
 import org.pustefixframework.config.customization.PropertiesBasedCustomizationInfo;
 import org.pustefixframework.config.customization.RuntimeProperties;
 import org.pustefixframework.resource.InputStreamResource;
 import org.xml.sax.InputSource;
 
-import com.marsching.flexiparse.parser.ClasspathConfiguredParser;
+import com.marsching.flexiparse.parser.OSGiAwareParser;
 import com.marsching.flexiparse.parser.exception.ParserException;
 
 
@@ -43,26 +44,26 @@ import com.marsching.flexiparse.parser.exception.ParserException;
  */
 public class PropertyFileReader {
     
-    public static void read(File file, Properties properties) throws ParserException, FileNotFoundException {
+    public static void read(File file, BundleContext bundleContext, Properties properties) throws ParserException, FileNotFoundException {
         InputSource in = new InputSource(new FileInputStream(file));
         in.setSystemId(file.toURI().toASCIIString());
-        read(in, properties);
+        read(in, bundleContext, properties);
     }
     
-    public static void read(InputStreamResource resource, Properties properties) throws ParserException, IOException {
+    public static void read(InputStreamResource resource, BundleContext bundleContext, Properties properties) throws ParserException, IOException {
         InputSource in = new InputSource(resource.getInputStream());
         in.setSystemId(resource.getURI().toASCIIString());
-        read(in, properties);
+        read(in, bundleContext, properties);
     }
     
-    public static void read(InputStream in, Properties properties) throws ParserException { 
-        read(new InputSource(in), properties);
+    public static void read(InputStream in, BundleContext bundleContext, Properties properties) throws ParserException { 
+        read(new InputSource(in), bundleContext, properties);
     }
     
-    public static void read(InputSource in, Properties properties) throws ParserException {
+    public static void read(InputSource in, BundleContext bundleContext, Properties properties) throws ParserException {
         
         PropertiesBasedCustomizationInfo customizationInfo = new PropertiesBasedCustomizationInfo(RuntimeProperties.getProperties());
-        ClasspathConfiguredParser parser = new ClasspathConfiguredParser("META-INF/org/pustefixframework/config/generic/properties-config.xml");
+        OSGiAwareParser parser = new OSGiAwareParser(bundleContext, "META-INF/org/pustefixframework/config/generic/properties-config.xml");
         
         parser.parse(in, customizationInfo, properties);
 

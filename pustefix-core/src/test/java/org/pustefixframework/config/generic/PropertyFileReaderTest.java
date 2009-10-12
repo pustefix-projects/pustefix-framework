@@ -29,6 +29,7 @@ import org.apache.log4j.PatternLayout;
 import org.junit.Before;
 import org.junit.Test;
 import org.pustefixframework.config.customization.RuntimeProperties;
+import org.springframework.osgi.mock.MockBundleContext;
 
 
 /**
@@ -51,7 +52,8 @@ public class PropertyFileReaderTest {
     public void test() throws Exception {
         InputStream in = getClass().getResourceAsStream("/properties.xml");
         Properties props = new Properties();
-        PropertyFileReader.read(in, props);
+        MockBundleContext bundleContext = new MockBundleContext();
+        PropertyFileReader.read(in, bundleContext, props);
         Properties refProps = new Properties();
         refProps.setProperty("foo", "bar");
         refProps.setProperty("hey", "ho");
