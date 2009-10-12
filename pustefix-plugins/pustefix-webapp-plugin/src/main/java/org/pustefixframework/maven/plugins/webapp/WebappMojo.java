@@ -24,6 +24,7 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.project.MavenProject;
 import org.pustefixframework.maven.plugins.launcher.BundleConfig;
 import org.pustefixframework.maven.plugins.launcher.BundleResolver;
+import org.pustefixframework.maven.plugins.launcher.FelixLauncher;
 import org.pustefixframework.util.io.FileUtils;
 
 /**
@@ -38,8 +39,9 @@ import org.pustefixframework.util.io.FileUtils;
 public class WebappMojo extends AbstractMojo {
     
 	private static String FRAMEWORK_BUNDLE_SYMBOLIC_NAME = "org.eclipse.osgi";
-	
-    /** @parameter expression="${project}" */
+	private static final String JETTY_BUNDLE_SYMBOLIC_NAME = "org.apache.felix.http.jetty";
+
+	/** @parameter expression="${project}" */
     protected MavenProject mavenProject;
     
     /** @component */
@@ -132,7 +134,7 @@ public class WebappMojo extends AbstractMojo {
     		File target = new File(pluginsDir, source.getName());
     		
     		try {
-				if(!bundle.getBundleSymbolicName().contains("felix")) FileUtils.copyFile(source, target);
+				if(!bundle.getBundleSymbolicName().contains(JETTY_BUNDLE_SYMBOLIC_NAME)) FileUtils.copyFile(source, target);
 			} catch (IOException x) {
 				throw new MojoExecutionException("Can't copy bundle: " + bundle.getFile().getAbsolutePath(), x);
 			}
@@ -184,7 +186,7 @@ public class WebappMojo extends AbstractMojo {
     	Iterator<BundleConfig> it = bundles.iterator();
     	while(it.hasNext()) {
     		BundleConfig bundle = it.next();
-    		if(!bundle.getBundleSymbolicName().equals(FRAMEWORK_BUNDLE_SYMBOLIC_NAME) && !bundle.getBundleSymbolicName().contains("felix")) {
+    		if(!bundle.getBundleSymbolicName().equals(FRAMEWORK_BUNDLE_SYMBOLIC_NAME) && !bundle.getBundleSymbolicName().contains(JETTY_BUNDLE_SYMBOLIC_NAME)) {
 				config.append(bundle.getFile().getName());
 				
 				if(bundle.doStart()) {
