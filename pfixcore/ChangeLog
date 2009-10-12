@@ -1,3 +1,13 @@
+2009-10-12  Sebastian Marsching  <sebastian.marsching@1und1.de>
+
+	* src/de/schlund/pfixcore/editor2/core/spring/ConfigurationService.java: 
+	* src/de/schlund/pfixcore/editor2/core/spring/ConfigurationServiceImpl.java: 
+	* src/de/schlund/pfixcore/editor2/core/spring/SecurityManagerServiceImpl.java: 
+	* projects/common/conf/editor-spring.xml: 
+	* projects/core/xsl/include.xsl: 
+	* projects/core/img/noedit.gif: 
+	Added support for enabling / disabling editing of include parts per part.
+
 2009-07-28  Martin Leidig  <mleidig@schlund.de>
 
 	Released Pfixcore 0.12.5

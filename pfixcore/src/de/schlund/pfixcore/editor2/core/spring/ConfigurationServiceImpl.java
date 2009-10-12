@@ -43,6 +43,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
     private PathResolverService pathresolver;
     private FileSystemService filesystem;
     private String projectsFile;
+    private boolean includePartsEditableByDefault = true;
     
     public void setPathResolverService(PathResolverService pathresolver) {
         this.pathresolver = pathresolver;
@@ -84,10 +85,29 @@ public class ConfigurationServiceImpl implements ConfigurationService {
             String url = node.getAttribute("url");
             this.map.put(prefix, url);
         }
+
+        try {
+            nlist = XPath.select(doc.getDocumentElement(), "common/editor/include-parts-editable-by-default");
+        } catch (TransformerException e) {
+            // Should never happen
+            String err = "XPath error!";
+            Logger.getLogger(this.getClass()).error(err, e);
+            throw new RuntimeException(err, e);
+        }
+        if (nlist.size() > 0) {
+            Element includePartsEditableByDefaultElement = (Element) nlist.get(0);
+            if (includePartsEditableByDefaultElement != null) {
+                this.includePartsEditableByDefault  = Boolean.parseBoolean(includePartsEditableByDefaultElement.getTextContent());
+            }
+        }
     }
 
     public Map<String, String> getPrefixToNamespaceMappings() {
         return new HashMap<String, String>(this.map);
+    }
+
+    public boolean isIncludePartsEditableByDefault() {
+        return includePartsEditableByDefault;
     }
 
 }

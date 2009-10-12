@@ -22,6 +22,9 @@ import java.security.Principal;
 import java.util.HashSet;
 import java.util.Iterator;
 
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+
 import de.schlund.pfixcore.editor2.core.dom.Image;
 import de.schlund.pfixcore.editor2.core.dom.IncludePart;
 import de.schlund.pfixcore.editor2.core.dom.IncludePartThemeVariant;
@@ -37,6 +40,8 @@ public class SecurityManagerServiceImpl implements SecurityManagerService {
 
     private UserManagementService usermanagement;
 
+    private ConfigurationService configuration;
+
     private final static String PRINCIPAL_KEY = SecurityManagerServiceImpl.class
             .getName()
             + ".principal";
@@ -49,6 +54,10 @@ public class SecurityManagerServiceImpl implements SecurityManagerService {
         this.usermanagement = usermanagement;
     }
 
+    public void setConfigurationService(ConfigurationService configuration) {
+        this.configuration = configuration;
+    }
+
     public void setPrincipal(Principal principal) {
         this.session.set(PRINCIPAL_KEY, principal);
     }
@@ -58,12 +67,24 @@ public class SecurityManagerServiceImpl implements SecurityManagerService {
     }
 
     public boolean mayEditIncludePartThemeVariant(IncludePartThemeVariant part) {
+        // Check project permissions
         for (Iterator<Page> i = part.getAffectedPages().iterator(); i.hasNext();) {
             Page page = i.next();
             if (page != null && !mayEditIncludePartForProject(page.getProject()))
                 return false;
         }
-        return true;
+
+        // Check include part permissions
+        Node xmlNode = part.getIncludePart().getContentXML();
+        if (xmlNode.getNodeType() == Node.ELEMENT_NODE) {
+            Element xmlElement = (Element) xmlNode;
+            String editableAttribute = xmlElement.getAttribute("editable");
+            if (editableAttribute.length() != 0) {
+                return Boolean.parseBoolean(editableAttribute);
+            }
+        }
+
+        return configuration.isIncludePartsEditableByDefault();
     }
 
     public boolean mayEditIncludePartForProject(Project project) {
@@ -129,8 +150,9 @@ public class SecurityManagerServiceImpl implements SecurityManagerService {
                 }
             }
         }
-        // No test failed, so the user is allowed to create the part
-        return true;
+        // No test failed, so the user is allowed to create the part,
+        // if parts may be editted by default
+        return configuration.isIncludePartsEditableByDefault();
     }
 
     public void checkCreateIncludePartThemeVariant(IncludePart part, Theme theme)
