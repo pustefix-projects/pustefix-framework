@@ -108,6 +108,9 @@ public class DatabaseSetup {
                 stmt.execute("INSERT INTO user (name,password) VALUES ('test', 'password')");
                 stmt.close();
             }
+            stmt = con.createStatement();
+            stmt.execute("INSERT INTO tasklist (user, name, description) VALUES (0, 'test', 'test')");
+            stmt.close();
         
         } finally {
             if(con != null) con.close();

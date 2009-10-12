@@ -9,4 +9,6 @@
 
    <osgi:reference id="dataSource" interface="javax.sql.DataSource"/>
 
+   <osgi:reference id="taskListsDao" interface="org.pustefixframework.samples.taskmanager.dataaccess.dao.TaskListsDao"/>
+
 </beans>
