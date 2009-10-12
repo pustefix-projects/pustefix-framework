@@ -201,6 +201,9 @@
     <property name="userManagementService">
       <ref bean="usermanagement"/>
     </property>
+    <property name="configurationService">
+      <ref bean="configuration"/>
+    </property>  
   </bean>
 
   <bean id="userpasswordauthentication" class="de.schlund.pfixcore.editor2.core.spring.UserPasswordAuthenticationServiceImpl">
