@@ -20,9 +20,7 @@
     <module>taskmanager-login</module>
     <module>taskmanager-model</module>
     <module>taskmanager-webapp</module>
-<!--
-    <module>taskmanager-persistence</module>
--->
+    <module>taskmanager-dataaccess</module>
   </modules>
 
   <build>
