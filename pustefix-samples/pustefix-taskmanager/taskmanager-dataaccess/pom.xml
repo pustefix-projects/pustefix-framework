@@ -26,7 +26,12 @@
       <artifactId>com.springsource.org.hibernate</artifactId>
       <version>3.3.1.GA</version>
     </dependency>
-    
+    <dependency>
+      <groupId>org.hibernate</groupId>
+      <artifactId>com.springsource.org.hibernate.ejb</artifactId>
+      <version>3.4.0.GA</version>
+    </dependency>
+   
     <dependency>
       <groupId>org.hibernate</groupId>
       <artifactId>com.springsource.org.hibernate.annotations</artifactId>
@@ -77,20 +82,21 @@
                             org.pustefixframework.samples.taskmanager.model,
                             javax.sql,
                             javax.persistence;version="1.0.0",
+                            javax.persistence.spi;version="1.0.0",
                             org.aopalliance.aop;version="1.0.0",
                             javassist.util.proxy;version="3.3.0.ga",
-                            org.hibernate;version="3.3.1.GA",
-                            org.hibernate.cfg;version="3.3.1.GA",
-                            org.hibernate.hql.ast;version="3.3.1.GA",
+                            org.hibernate.jdbc;version="3.3.1.GA",
                             org.hibernate.proxy;version="3.3.1.GA",
+                            org.hibernate.hql.ast;version="3.3.1.GA",
                             org.springframework.aop;version="2.5.6.A",
                             org.springframework.aop.framework;version="2.5.6.A",
                             org.springframework.beans.factory;version="2.5.6.A",
                             org.springframework.core;version="2.5.6.A",
                             org.springframework.dao.support;version="2.5.6.A",
-                            org.springframework.orm.hibernate3;version="2.5.6.A",
-                            org.springframework.orm.hibernate3.support;version="2.5.6.A",
-                            org.springframework.transaction;version="2.5.6.A",
+                            org.springframework.orm.jpa;version="2.5.6.A",
+                            org.springframework.orm.jpa.support;version="2.5.6.A",
+                            org.springframework.orm.jpa.vendor;version="2.5.6.A",
+                            org.springframework.transaction;version="2.5.6.A"
             </Import-Package>           
             </instructions>
          </configuration>

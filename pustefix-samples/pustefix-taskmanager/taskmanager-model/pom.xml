@@ -14,7 +14,12 @@
   <name>Pustefix Taskmanager Data Model Bundle</name>
 
   <dependencies>
- 
+      <dependency>
+                        <groupId>javax.persistence</groupId>
+                        <artifactId>persistence-api</artifactId>
+                        <version>1.0</version>
+                </dependency>
+   
   </dependencies>
   
  <build>
@@ -29,7 +34,7 @@
               <Bundle-RequiredExecutionEnvironment>J2SE-1.5</Bundle-RequiredExecutionEnvironment>
               <Include-Resource>src/main/resources</Include-Resource>
               <Export-Package>org.pustefixframework.samples.taskmanager.model</Export-Package>
-              <Import-Package>*, javax.servlet.http, org.springframework.context;version="2.5.6.A", org.springframework.beans;version="2.5.6.A", de.schlund.pfixcore.workflow.context, de.schlund.pfixxml.perflogging, de.schlund.pfixcore.auth, org.pustefixframework.config.contextxmlservice, de.schlund.pfixcore.exception, org.aopalliance.aop;version="1.0.0", org.springframework.aop.scope;version="2.5.6.A", org.springframework.aop;version="2.5.6.A", org.springframework.aop.framework;version="2.5.6.A", net.sf.cglib.core;version="2.1.3", net.sf.cglib.proxy;version="2.1.3", net.sf.cglib.reflect;version="2.1.3"</Import-Package>
+              <Import-Package>*, org.hibernate.proxy;version="3.3.1.GA",  org.hibernate.hql.ast;version="3.3.1.GA", javassist.util.proxy;version="3.3.0.ga", javax.servlet.http, org.springframework.context;version="2.5.6.A", org.springframework.beans;version="2.5.6.A", de.schlund.pfixcore.workflow.context, de.schlund.pfixxml.perflogging, de.schlund.pfixcore.auth, org.pustefixframework.config.contextxmlservice, de.schlund.pfixcore.exception, org.aopalliance.aop;version="1.0.0", org.springframework.aop.scope;version="2.5.6.A", org.springframework.aop;version="2.5.6.A", org.springframework.aop.framework;version="2.5.6.A", net.sf.cglib.core;version="2.1.3", net.sf.cglib.proxy;version="2.1.3", net.sf.cglib.reflect;version="2.1.3"</Import-Package>
             </instructions>
          </configuration>
       </plugin>

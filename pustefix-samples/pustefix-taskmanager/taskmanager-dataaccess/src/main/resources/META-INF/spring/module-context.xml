@@ -8,24 +8,32 @@
 			http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd
 			http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd">
 
-	<bean id="taskListsDao" class="org.pustefixframework.samples.taskmanager.dataaccess.dao.hibernate.TaskListsDaoImpl">
-		<property name="sessionFactory" ref="sessionFactory"/>
+	<bean id="taskListsDao" class="org.pustefixframework.samples.taskmanager.dataaccess.dao.hibernatejpa.TaskListsDaoImpl">
+		<property name="entityManagerFactory" ref="entityManagerFactory"/>
 	</bean>
 
-	<bean id="sessionFactory" class="org.springframework.orm.hibernate3.LocalSessionFactoryBean">
-    	<property name="dataSource" ref="dataSource"/>
-    	<property name="configurationClass" value="org.hibernate.cfg.AnnotationConfiguration"/>
-    	<property name="configLocation" value="classpath:/org/pustefixframework/samples/taskmanager/dataaccess/dao/hibernate/hibernate.cfg.xml"/>
-		<property name="hibernateProperties">
-			<value>
-			  hibernate.dialect=org.hibernate.dialect.HSQLDialect
-			  hibernate.show_sql=true
-			</value>
-    	</property>
-    </bean>
+   <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+      <property name="dataSource" ref="dataSource"/>
+      <property name="jpaPropertyMap">
+        <map>
+          <entry key="hibernate.archive.autodetection" value="none"/>
+        </map>
+      </property>
+      <property name="jpaVendorAdapter">
+         <bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter">
+            <property name="databasePlatform" value="org.hibernate.dialect.HSQLDialect"/> 
+            <property name="generateDdl" value="false"/>
+            <property name="showSql" value="true"/>
+         </bean>
+      </property>
+      
+      <property name="persistenceXmlLocation">
+         <value>classpath:/org/pustefixframework/samples/taskmanager/dataaccess/dao/hibernatejpa/persistence.xml</value>
+      </property>
+   </bean>
 
-	<bean id="transactionManager" class="org.springframework.orm.hibernate3.HibernateTransactionManager">
-		<property name="sessionFactory" ref="sessionFactory"/>
-	</bean>
+   <bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
+      <property name="entityManagerFactory" ref="entityManagerFactory"/>
+   </bean>
 
 </beans>
