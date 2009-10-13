@@ -71,8 +71,14 @@ public class ManifestCheckMojo extends AbstractMojo {
         // Validate parameter srcDirs
         if (srcDirs == null) {
             srcDirs = new HashSet<File>();
-            srcDirs.add(new File("src/main/java"));
-            srcDirs.add(new File("target/generated-sources"));
+            File default1 = new File("src/main/java");
+            if (default1.isDirectory()) {
+                srcDirs.add(default1);
+            }
+            File default2 = new File("target/generated-sources");
+            if (default2.isDirectory()) {
+                srcDirs.add(default2);
+            }
         }
         Iterator<File> it = srcDirs.iterator();
         while (it.hasNext()) {
