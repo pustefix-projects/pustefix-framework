@@ -74,10 +74,12 @@ public class ManifestCheckMojo extends AbstractMojo {
             srcDirs.add(new File("src/main/java"));
             srcDirs.add(new File("target/generated-sources"));
         }
-        for (File dir : srcDirs) {
+        Iterator<File> it = srcDirs.iterator();
+        while (it.hasNext()) {
+            File dir = it.next();
             if (!dir.isDirectory()) {
                 log("warn", "SrcDir " + dir.getAbsolutePath() + " is not a directory");
-                srcDirs.remove(dir);
+                it.remove();
             }
         }
 
