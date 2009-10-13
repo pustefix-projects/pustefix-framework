@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.pustefixframework.osgi</groupId>
+    <artifactId>pustefix-osgi</artifactId>
+    <version>1.0.2-SNAPSHOT</version>
+  </parent>
+
+  <groupId>org.pustefixframework.osgi</groupId>
+  <artifactId>pustefix-osgi-antlr-hibernate</artifactId>
+  <version>1.0.2-SNAPSHOT</version>
+  <packaging>bundle</packaging>
+
+  <name>Pustefix Antlr Fragment Bundle For Hibernate</name>
+ 
+  <description>
+     Antlr fragment bundle which makes hibernate classes visible to antlr.
+     This solves the following exception occurring at runtime:
+     org.hibernate.QueryException: ClassNotFoundException: org.hibernate.hql.ast.HqlToken 
+  </description>
+
+  <dependencies>
+  </dependencies>
+  
+  <build>
+    <plugins> 
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-source-plugin</artifactId>
+        <executions>
+          <execution>
+           <goals><goal>jar</goal></goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>maven-bundle-plugin</artifactId>
+        <extensions>true</extensions>
+        <configuration>
+          <instructions>
+            <Fragment-Host>com.springsource.antlr</Fragment-Host>
+            <Import-Package>org.hibernate.hql.ast;version="3.3.1.GA"</Import-Package>
+          </instructions>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+  
+</project>
