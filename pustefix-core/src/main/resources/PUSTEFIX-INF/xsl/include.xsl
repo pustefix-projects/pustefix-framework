@@ -267,9 +267,11 @@
         </xsl:variable>
         <xsl:choose>
           <xsl:when test="$incnodes and $incnodes[name() = 'theme']">
+            <pfx:partinfo bundle="{include:getResolvedBundleName()}" path="{include:getResolvedPath()}">
             <xsl:apply-templates select="$incnodes/node()">
               <xsl:with-param name="__env" select="."/>
             </xsl:apply-templates>
+            </pfx:partinfo>
           </xsl:when>
           <xsl:when test="not($noerror = 'true')">
             <xsl:call-template name="pfx:missinc">
@@ -375,6 +377,11 @@
         </xsl:message>
       </xsl:otherwise>
     </xsl:choose>
+  </xsl:template>
+  
+  <xsl:template name="pfx:imageUriToPath">
+    <xsl:param name="uri"/>
+    <xsl:value-of select="image:uriToPath($uri)"/>
   </xsl:template>
   
   <xsl:template match="pfx:image" name="pfx:image">

@@ -56,6 +56,14 @@ public class IncludeDocumentExtensionSaxon1 {
         return IncludeDocumentExtension.getResolvedURI();
     }
     
+    public static String getResolvedBundleName() {
+        return IncludeDocumentExtension.getResolvedBundleName();
+    }
+    
+    public static String getResolvedPath() {
+        return IncludeDocumentExtension.getResolvedPath();
+    }
+    
     public static Object getExtensions(Context context, TargetGenerator targetGen,
     		String targetKey, String extensionPointId, String extensionPointVersion) throws Exception {
     	XsltContext xsltContext=new XsltContextSaxon1(context);

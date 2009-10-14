@@ -317,7 +317,13 @@
     <xsl:param name="themed-img"  select="@themed-img"/>
     <xsl:param name="alt" select="@alt"/>
     <xsl:param name="exclude-attributes"/>
-    <xsl:param name="module" select="@module"/>
+    <xsl:param name="module">
+      <xsl:choose>
+        <xsl:when test="@module"><xsl:value-of select="@module"/></xsl:when>
+        <xsl:when test="ancestor::pfx:partinfo[position()=1]"><xsl:value-of select="ancestor::pfx:partinfo[position()=1]/@bundle"/></xsl:when>
+        <xsl:otherwise><xsl:value-of select="$bundle"/></xsl:otherwise>
+      </xsl:choose>
+    </xsl:param>
     <xsl:param name="search" select="@search"/>
     <xsl:variable name="always-exclude-attributes" select="'src|themed-path|themed-img|alt|width|height|type|name|jumptopage|jumptopageflow|forcestop|pageflow|module|search|action|level'"/>
     <xsl:choose>
@@ -334,6 +340,10 @@
         <ixsl:variable><xsl:attribute name="name">genname_<xsl:value-of select="generate-id(.)"/></xsl:attribute><xsl:value-of select="generate-id(.)"/><ixsl:value-of select="generate-id(.)"/></ixsl:variable>
         <input type="image" src="{{$__contextpath}}/{$realsrc}" alt="{$alt}"> 
           <xsl:copy-of select="@*[not(contains(concat('|',$always-exclude-attributes,'|',$exclude-attributes,'|') , concat('|',name(),'|')))]"/>
+          <xsl:attribute name="src">
+            <xsl:text>{$__contextpath}</xsl:text>
+            <xsl:call-template name="pfx:imageUriToPath"><xsl:with-param name="uri" select="$realsrc"/></xsl:call-template>
+          </xsl:attribute>
           <xsl:attribute name="class"><xsl:value-of select="@class"/> PfxInputImage</xsl:attribute>
           <xsl:call-template name="pfx:image_geom_impl_new">
             <xsl:with-param name="src" select="$realsrc"/>

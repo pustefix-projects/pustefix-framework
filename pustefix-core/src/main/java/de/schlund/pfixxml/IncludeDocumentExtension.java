@@ -66,6 +66,7 @@ public final class IncludeDocumentExtension {
     private static ThreadLocal<String> resolvedUri = new ThreadLocal<String>();
     
     private static Pattern dynamicUriPattern = Pattern.compile("dynamic://[^?#]*(\\?([^#]*))?(#.*)?");
+    private static Pattern bundlePattern = Pattern.compile("bundle://([^/]+)(/[^#?]+).*");
     
     //~ Methods
     // ....................................................................................
@@ -323,6 +324,22 @@ public final class IncludeDocumentExtension {
         return resolvedUri.get();
     }
 
+    public static String getResolvedBundleName() {
+        Matcher matcher = bundlePattern.matcher(getResolvedURI());
+        if(matcher.matches()) {
+            return matcher.group(1);
+        }
+        return "";
+    }
+    
+    public static String getResolvedPath() {
+        Matcher matcher = bundlePattern.matcher(getResolvedURI());
+        if(matcher.matches()) {
+            return matcher.group(2);
+        }
+        return "";
+    }
+    
     private static final Node errorNode(XsltContext context,String prodname) {
         Document retdoc  = Xml.createDocumentBuilder().newDocument();
         Element  retelem = retdoc.createElement("missing");
