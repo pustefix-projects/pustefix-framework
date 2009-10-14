@@ -2,30 +2,40 @@ package org.pustefixframework.samples.taskmanager.dataaccess.dao.hibernatejpa;
 
 import java.util.List;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
+
 import org.pustefixframework.samples.taskmanager.dataaccess.dao.TaskListsDao;
 import org.pustefixframework.samples.taskmanager.model.TaskList;
-import org.springframework.orm.jpa.support.JpaDaoSupport;
 
-public class TaskListsDaoImpl extends JpaDaoSupport implements TaskListsDao {
+public class TaskListsDaoImpl implements TaskListsDao {
+    
+    @PersistenceContext
+    private EntityManager em;
 
-    public List<TaskList> getTaskLists() {
-        return getJpaTemplate().find("select t from TaskList t order by t.id");
+    public List<TaskList> getTaskListsByUser(int userId) {
+       Query query = em.createQuery("from TaskList as t where t.user = :user");
+       query.setParameter("user", userId);
+       return (List<TaskList>)query.getResultList(); 
     }
 
     public void addTaskList(TaskList taskList) {
-        getJpaTemplate().persist(taskList);
+    	em.persist(taskList);
     }
 
     public void deleteTaskList(TaskList taskList) {
-        getJpaTemplate().remove(taskList);
+    	em.remove(taskList);
     }
 
     public void updateTaskList(TaskList taskList) {
-        getJpaTemplate().merge(taskList);
+    	em.merge(taskList);
     }
 
     public TaskList getTaskList(int id) {
-        return (TaskList)getJpaTemplate().getReference(TaskList.class, id);
+    	Query query = em.createQuery("from TaskList as t where t.id = :id");
+        query.setParameter("id", id);
+        return (TaskList)query.getSingleResult();
     }
 
 }

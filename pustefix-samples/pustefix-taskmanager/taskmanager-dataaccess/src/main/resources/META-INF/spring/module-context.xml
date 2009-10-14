@@ -8,8 +8,9 @@
 			http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd
 			http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd">
 
+   <context:annotation-config/>
+
 	<bean id="taskListsDao" class="org.pustefixframework.samples.taskmanager.dataaccess.dao.hibernatejpa.TaskListsDaoImpl">
-		<property name="entityManagerFactory" ref="entityManagerFactory"/>
 	</bean>
 
    <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">

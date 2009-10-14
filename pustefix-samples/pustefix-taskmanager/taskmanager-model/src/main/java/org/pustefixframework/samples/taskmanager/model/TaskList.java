@@ -12,10 +12,10 @@ public class TaskList {
 	@Id
 	@Column(name="id")
 	@GeneratedValue(strategy = GenerationType.AUTO)
-    private long id;
+    private int id;
     
 	
-	private long user;
+	private int user;
     
 	@Column(name="name")
 	private String name;
@@ -23,10 +23,10 @@ public class TaskList {
 	@Column(name="description")
     private String description;
     
-    public long getId() {
+    public int getId() {
         return id;
     }
-    public void setId(long id) {
+    public void setId(int id) {
         this.id = id;
     }
     public String getName() {
@@ -41,7 +41,7 @@ public class TaskList {
     public void setDescription(String description) {
         this.description = description;
     }
-    public void setUser(long user) {
+    public void setUser(int user) {
         this.user = user;
     }
     

@@ -105,12 +105,25 @@ public class DatabaseSetup {
             if(!result.next()) {
                 stmt.close();
                 stmt = con.createStatement();
-                stmt.execute("INSERT INTO user (name,password) VALUES ('test', 'password')");
+                stmt.execute("INSERT INTO user (name,password) VALUES ('test', 'test')");
+                stmt.close();
+                stmt = con.createStatement();
+                stmt.execute("INSERT INTO tasklist (user, name, description) VALUES (0, 'Home tasks', 'Tasks to be done at home')");
                 stmt.close();
             }
+            
             stmt = con.createStatement();
-            stmt.execute("INSERT INTO tasklist (user, name, description) VALUES (0, 'test', 'test')");
-            stmt.close();
+            result = stmt.executeQuery("SELECT * FROM user WHERE name='guest'");
+            if(!result.next()) {
+                stmt.close();
+                stmt = con.createStatement();
+                stmt.execute("INSERT INTO user (name,password) VALUES ('guest', 'guest')");
+                stmt.close();
+                stmt = con.createStatement();
+                stmt.execute("INSERT INTO tasklist (user, name, description) VALUES (1, 'Work tasks', 'Tasks to be done at work')");
+                stmt.close();
+            }
+           
         
         } finally {
             if(con != null) con.close();
