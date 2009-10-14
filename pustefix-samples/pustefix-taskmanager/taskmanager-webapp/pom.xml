@@ -42,7 +42,11 @@
       <groupId>org.pustefixframework.samples.taskmanager</groupId>
       <artifactId>taskmanager-dataaccess</artifactId>
       <version>1.0.2-SNAPSHOT</version>
-      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.pustefixframework.samples.taskmanager</groupId>
+      <artifactId>taskmanager-user</artifactId>
+      <version>1.0.2-SNAPSHOT</version>
     </dependency>
   </dependencies>
  
@@ -77,9 +81,17 @@
             <instructions>
               <Bundle-RequiredExecutionEnvironment>J2SE-1.5</Bundle-RequiredExecutionEnvironment>
               <Include-Resource>src/main/resources</Include-Resource>
-              <Private-Package>de.schlund.pfixcore.example.*</Private-Package>
+              <Private-Package>org.pustefixframework.samples.taskmanager.web</Private-Package>
               <Export-Package></Export-Package>
-              <Import-Package>*, org.aopalliance.aop;version="1.0.0", org.springframework.aop.scope;version="2.5.6.A", org.springframework.aop;version="2.5.6.A", org.springframework.aop.framework;version="2.5.6.A", net.sf.cglib.core;version="2.1.3", net.sf.cglib.proxy;version="2.1.3", net.sf.cglib.reflect;version="2.1.3"</Import-Package>
+              <Import-Package>*,
+                              org.pustefixframework.samples.taskmanager.user,
+                              org.aopalliance.aop;version="1.0.0", 
+                              org.springframework.aop.scope;version="2.5.6.A", 
+                              org.springframework.aop;version="2.5.6.A", 
+                              org.springframework.aop.framework;version="2.5.6.A", 
+                              net.sf.cglib.core;version="2.1.3", 
+                              net.sf.cglib.proxy;version="2.1.3", 
+                              net.sf.cglib.reflect;version="2.1.3"</Import-Package>
             </instructions>
          </configuration>
          <executions>

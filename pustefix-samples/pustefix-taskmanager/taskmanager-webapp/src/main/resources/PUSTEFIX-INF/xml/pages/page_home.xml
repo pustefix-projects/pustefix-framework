@@ -10,12 +10,14 @@
             <th align="left">Open tasks</th>
             <th align="left">Total tasks</th> 
           </tr>
+          <ixsl:for-each select="/formresult/tasklists/taskList">
           <tr>
-            <td align="left">Work tasks</td>
-            <td align="left">Tasks to be done at work</td>
-            <td align="right">3</td>
-            <td align="right">7</td>
+            <td align="left"><ixsl:value-of select="@name"/></td>
+            <td align="left"><ixsl:value-of select="@description"/></td>
+            <td align="right">TODO</td>
+            <td align="right">TODO</td>
           </tr>
+          </ixsl:for-each>
         </table>
     </theme>
   </part>

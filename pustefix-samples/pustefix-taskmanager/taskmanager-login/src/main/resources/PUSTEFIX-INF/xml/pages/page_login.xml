@@ -15,7 +15,7 @@
           </tr>
           <tr>
             <td>Password:</td>
-            <td><pfx:xinp type="text" name="login.password" size="20"/></td>
+            <td><pfx:xinp type="password" name="login.password" size="20"/></td>
             <td><showFieldError name="login.password"/></td>
           </tr>
           <tr class="buttonrow">
