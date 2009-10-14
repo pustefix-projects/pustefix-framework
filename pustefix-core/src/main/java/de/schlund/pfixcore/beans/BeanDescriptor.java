@@ -20,8 +20,10 @@ package de.schlund.pfixcore.beans;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.lang.reflect.Proxy;
 import java.lang.reflect.Type;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
@@ -59,6 +61,7 @@ public class BeanDescriptor {
     }
 
     private <T> void introspectNew(Class<T> clazz, Beans metadata) {
+    	
         Field[] fields = clazz.getFields();
         for (int i = 0; i < fields.length; i++) {
             if (!Modifier.isStatic(fields[i].getModifiers()) && !Modifier.isFinal(fields[i].getModifiers())) {
@@ -117,12 +120,28 @@ public class BeanDescriptor {
                 }
             }
         }
+    	
+    	//exclude bean properties derived from Spring internal interfaces mixed into JDK dynamic proxy
+        Set<String> excludedProps = new HashSet<String>();
+    	if(Proxy.isProxyClass(clazz)) {
+    		Class<?>[] itfs = clazz.getInterfaces();
+    		for(Class<?> itf:itfs) {
+    			if(itf.getName().startsWith("org.springframework.")) {
+    				Method[] meths = itf.getMethods();
+    				for(Method meth:meths) {
+    					String propName = extractPropertyName(meth);
+         				if(propName != null) excludedProps.add(propName);
+         			}
+         		}
+         	}
+         }
+        
         Method[] methods = clazz.getMethods();
         for (int i = 0; i < methods.length; i++) {
             if (methods[i].getDeclaringClass() != Object.class && methods[i].getDeclaringClass() != Enum.class) {
                 if (!Modifier.isStatic(methods[i].getModifiers()) && !methods[i].isSynthetic()) {
                     String origPropName = extractPropertyName(methods[i]);
-                    if (origPropName != null) {
+                    if (origPropName != null && !excludedProps.contains(origPropName)) {
                         String propName = origPropName;
                         boolean isExcluded = false;
                         Bean beanMeta = null;
