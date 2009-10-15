@@ -101,7 +101,23 @@ public class DatabaseSetup {
             }
             
             Statement stmt = con.createStatement();
-            ResultSet result = stmt.executeQuery("SELECT * FROM user WHERE name='test'");
+            ResultSet result = stmt.executeQuery("SELECT * FROM priority WHERE id=0");
+            if(!result.next()) {
+            	stmt.close();
+                stmt = con.createStatement();
+                stmt.execute("INSERT INTO priority (name) VALUES ('normal')");
+            }
+            
+            stmt = con.createStatement();
+            result = stmt.executeQuery("SELECT * FROM state WHERE id=0");
+            if(!result.next()) {
+            	stmt.close();
+                stmt = con.createStatement();
+                stmt.execute("INSERT INTO state (name) VALUES ('open')");
+            }
+            
+            stmt = con.createStatement();
+            result = stmt.executeQuery("SELECT * FROM user WHERE name='test'");
             if(!result.next()) {
                 stmt.close();
                 stmt = con.createStatement();
@@ -109,6 +125,9 @@ public class DatabaseSetup {
                 stmt.close();
                 stmt = con.createStatement();
                 stmt.execute("INSERT INTO tasklist (user, name, description) VALUES (0, 'Home tasks', 'Tasks to be done at home')");
+                stmt.close();
+                stmt = con.createStatement();
+                stmt.execute("INSERT INTO task (tasklist, summary, description, priority, state, creation_date, target_date) VALUES (0, 'A task', 'A task to be done', 0, 0, '2005-07-16 07:39:25', '2005-07-16 07:39:25')");
                 stmt.close();
             }
             

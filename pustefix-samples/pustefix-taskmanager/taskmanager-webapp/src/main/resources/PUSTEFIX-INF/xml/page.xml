@@ -17,7 +17,12 @@
           </table>
         </div>
         <div class="content">
-          <pfx:maincontent path="xml/pages" prefix="page_" part="content"/>
+        
+          <pfx:button page="TaskListOverview">Task list overview</pfx:button>
+          <pfx:button page="TaskOverview">Task overview</pfx:button>
+          
+        
+          <pfx:maincontent path="xml/pages" prefix="" part="content"/>
         </div>
       </div>
       <pfx:editconsole/>

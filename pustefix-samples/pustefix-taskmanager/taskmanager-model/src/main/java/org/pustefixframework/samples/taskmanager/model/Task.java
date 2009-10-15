@@ -3,25 +3,50 @@ package org.pustefixframework.samples.taskmanager.model;
 import java.util.Date;
 import java.util.List;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+
+@Entity
 public class Task {
     
     public enum Priority {LOW, NORMAL, HIGH};
     public enum State {OPEN, CLOSED};
     
-    private long id;
+	@Id
+	@Column(name="id")
+	@GeneratedValue(strategy = GenerationType.AUTO)
+    private int id;
+	
     private String summary;
     private String description;
     private Priority priority;
     private State state;
-    private Date creationDate;
-    private Date targetDate;
-    private List<Task> dependentTasks;
     
-    public long getId() {
+    @Column(name="creation_date")
+    private Date creationDate;
+    
+    @Column(name="target_date")
+    private Date targetDate;
+    
+    //TODO add support for task dependencies
+    //private List<Task> dependentTasks;
+    
+    @ManyToOne(fetch=FetchType.LAZY)
+    @JoinColumn(name="tasklist")  
+    private TaskList taskList;  
+    
+    public int getId() {
         return id;
     }
     
-    public void setId(long id) {
+    public void setId(int id) {
         this.id = id;
     }
     
@@ -61,9 +86,11 @@ public class Task {
         return creationDate;
     }
     
+    
     public void setCreationDate(Date creationDate) {
         this.creationDate = creationDate;
     }
+    
     
     public Date getTargetDate() {
         return targetDate;
@@ -73,6 +100,7 @@ public class Task {
         this.targetDate = targetDate;
     }
     
+    /**
     public List<Task> getDependentTasks() {
         return dependentTasks;
     }
@@ -80,5 +108,6 @@ public class Task {
     public void setDependentTasks(List<Task> dependentTasks) {
         this.dependentTasks = dependentTasks;
     }
+    */
 
 }

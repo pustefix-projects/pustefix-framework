@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?><include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
+  
+  <part name="content">
+    <theme name="default">
+        <h1>Tasks</h1>
+        <table cellpadding="10px">
+          <tr>
+            <th align="left">Summary</th>
+            <th align="left">Description</th>
+            <th align="left">Priority</th>
+            <th align="left">State</th>
+            <th align="left">Creation date</th>
+            <th align="left">Target date</th>
+            <th></th>
+          </tr>
+          <ixsl:for-each select="/formresult/tasks/tasks/task">
+          <tr>
+            <td align="left"><ixsl:value-of select="@summary"/></td>
+            <td align="left"><ixsl:value-of select="@description"/></td>
+            <td align="right"><ixsl:value-of select="@priority"/></td>
+            <td align="right"><ixsl:value-of select="@state"/></td>
+            <td align="right">TODO</td>
+            <td align="right">TODO</td>
+            <td>
+              <pfx:button action="select">
+                <pfx:image src="img/tasks-32x32.png"/>
+                <pfx:argument name="select.id">0</pfx:argument>
+              </pfx:button>
+              <pfx:button action="delete">
+                <pfx:image src="img/delete-32x32.png"/>
+                <pfx:argument name="delete.id">0</pfx:argument>
+              </pfx:button>
+            </td>
+          </tr>
+          </ixsl:for-each>
+        </table>
+    </theme>
+  </part>
+  
+ 
+</include_parts>

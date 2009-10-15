@@ -1,10 +1,15 @@
 package org.pustefixframework.samples.taskmanager.model;
 
+import java.util.List;
+
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 
 @Entity
 public class TaskList {
@@ -23,6 +28,9 @@ public class TaskList {
 	@Column(name="description")
     private String description;
     
+	@OneToMany(mappedBy="taskList",fetch=FetchType.EAGER)
+	private List<Task> tasks;
+	
     public int getId() {
         return id;
     }
@@ -45,6 +53,8 @@ public class TaskList {
         this.user = user;
     }
     
+    public List<Task> getTasks() {
+    	return tasks;
+    }
     
-
 }

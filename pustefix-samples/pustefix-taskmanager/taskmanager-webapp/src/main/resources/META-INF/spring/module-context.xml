@@ -8,11 +8,7 @@
 
   <context:annotation-config/>
 
- 
-  <bean id="contextTaskLists" class="org.pustefixframework.samples.taskmanager.web.ContextTaskLists" scope="session">
-    <aop:scoped-proxy/>
-    <property name="taskListsDao" ref="taskListsDao"/>
-    <property name="contextUser" ref="contextUser"/>
-  </bean>
-  
+  <bean id="contextTaskLists" class="org.pustefixframework.samples.taskmanager.web.ContextTaskLists"/>
+  <bean id="contextTasks" class="org.pustefixframework.samples.taskmanager.web.ContextTasks"/>
+
 </beans>

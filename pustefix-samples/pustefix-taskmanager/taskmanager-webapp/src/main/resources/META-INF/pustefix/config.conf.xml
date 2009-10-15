@@ -9,7 +9,8 @@
     <!-- <force-ssl>true</force-ssl> -->
   </global-config>
 
-  <context defaultpage="home">
+  <context defaultpage="TaskListOverview">
+    
   </context>
 
 <!--
@@ -19,18 +20,62 @@
   <extension-point type="context.role" id="roles.main"/>
   <extension-point type="context.authconstraint" id="authconstraints.main"/>
 
-  <pageflow name="DefaultFlow" final="home">
-      <flowstep name="home" />
+  <pageflow name="TaskListFlow" final="TaskListOverview">
+      <flowstep name="TaskListOverview"/>
+      <flowstep name="TaskOverview"/>
+      <flowstep name="EditTask"/>
   </pageflow>
 
   <extension-point type="context.pagerequest" id="pagerequest.main"/>
 
-  <pagerequest name="home">
+  <pagerequest name="TaskListOverview">
     <!--<authconstraint ref="AC_AUTHORIZED"/>-->
+     <input>
+        <wrapper prefix="select" class="org.pustefixframework.samples.taskmanager.web.SelectTaskList"/>
+        <wrapper prefix="delete" class="org.pustefixframework.samples.taskmanager.web.DeleteTaskList"/>
+     </input>
+     <process>
+        <action name="select" jumptopage="TaskOverview">
+           <submit>
+             <wrapper ref="select"/>
+           </submit>
+        </action>
+        <action name="delete">
+           <submit>
+             <wrapper ref="delete"/>
+           </submit>
+        </action>
+     </process>
      <output>
-      <resource node="user" bean-ref="contextUser"/>
-      <resource node="tasklists" bean-ref="contextTaskLists"/>
+        <resource node="user" bean-ref="contextUser"/>
+        <resource node="tasklists" bean-ref="contextTaskLists"/>
     </output>
+  </pagerequest>
+
+  <pagerequest name="TaskOverview">
+    <input>
+      <wrapper prefix="select" class="org.pustefixframework.samples.taskmanager.web.SelectTask"/>
+      <wrapper prefix="delete" class="org.pustefixframework.samples.taskmanager.web.DeleteTask"/>
+    </input>
+    <process>
+        <action name="select" jumptopage="EditTask">
+           <submit>
+             <wrapper ref="select"/>
+           </submit>
+        </action>
+        <action name="delete">
+           <submit>
+             <wrapper ref="delete"/>
+           </submit>
+        </action>
+     </process>
+     <output>
+       <resource node="tasks" bean-ref="contextTasks"/>
+     </output>
+  </pagerequest>
+  
+  <pagerequest name="EditTask">
+  
   </pagerequest>
 
 </context-xml-service-config>

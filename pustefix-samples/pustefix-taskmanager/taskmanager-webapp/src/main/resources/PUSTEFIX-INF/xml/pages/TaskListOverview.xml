@@ -8,7 +8,8 @@
             <th align="left">Name</th>
             <th align="left">Description</th>
             <th align="left">Open tasks</th>
-            <th align="left">Total tasks</th> 
+            <th align="left">Total tasks</th>
+            <th></th>
           </tr>
           <ixsl:for-each select="/formresult/tasklists/taskList">
           <tr>
@@ -16,6 +17,16 @@
             <td align="left"><ixsl:value-of select="@description"/></td>
             <td align="right">TODO</td>
             <td align="right">TODO</td>
+            <td>
+              <pfx:button action="select">
+                <pfx:image src="img/tasks-32x32.png"/>
+                <pfx:argument name="select.id">0</pfx:argument>
+              </pfx:button>
+              <pfx:button action="delete">
+                <pfx:image src="img/delete-32x32.png"/>
+                <pfx:argument name="delete.id">0</pfx:argument>
+              </pfx:button>
+            </td>
           </tr>
           </ixsl:for-each>
         </table>

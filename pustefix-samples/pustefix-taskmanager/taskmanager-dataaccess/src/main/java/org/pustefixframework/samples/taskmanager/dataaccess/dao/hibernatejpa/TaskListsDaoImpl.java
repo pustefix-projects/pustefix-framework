@@ -15,9 +15,16 @@ public class TaskListsDaoImpl implements TaskListsDao {
     private EntityManager em;
 
     public List<TaskList> getTaskListsByUser(int userId) {
-       Query query = em.createQuery("from TaskList as t where t.user = :user");
-       query.setParameter("user", userId);
+       Query query = em.createQuery("from TaskList as t where t.user = :userId");
+       query.setParameter("userId", userId);
        return (List<TaskList>)query.getResultList(); 
+    }
+    
+    public TaskList getTaskListByUser(int userId, int taskListId) {
+    	Query query = em.createQuery("from TaskList as t where t.user = :userId and t.id = :taskListId");
+    	query.setParameter("userId", userId);
+    	query.setParameter("taskListId", taskListId);
+    	return (TaskList)query.getSingleResult();
     }
 
     public void addTaskList(TaskList taskList) {
@@ -30,12 +37,6 @@ public class TaskListsDaoImpl implements TaskListsDao {
 
     public void updateTaskList(TaskList taskList) {
     	em.merge(taskList);
-    }
-
-    public TaskList getTaskList(int id) {
-    	Query query = em.createQuery("from TaskList as t where t.id = :id");
-        query.setParameter("id", id);
-        return (TaskList)query.getSingleResult();
     }
 
 }

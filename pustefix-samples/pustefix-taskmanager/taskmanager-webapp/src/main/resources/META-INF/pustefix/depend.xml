@@ -19,7 +19,12 @@
   </namespaces>
   
   <navigation>
-    <page name="home" handler="/xml/main" accesskey="H"/>
+    <page name="TaskListOverview" handler="/xml/main"/>
+    <page name="EditTaskList" handler="/xml/main"/>
+    <page name="DeleteTaskList" handler="/xml/main"/>
+    <page name="TaskOverview" handler="/xml/main"/>
+    <page name="EditTask" handler="/xml/main"/>
+    <page name="DeleteTask" handler="/xml/main"/>
     <extension-point type="xml.page" id="navigation.main"/>
   </navigation>
 
@@ -34,6 +39,11 @@
 
   <extension-point type="xml.standardpage" id="standardpage.main"/>
 
-  <standardpage name="home" xml="xml/page.xml"/>
+  <standardpage name="TaskListOverview" xml="xml/page.xml"/>
+  <standardpage name="EditTaskList" xml="xml/page.xml"/>
+  <standardpage name="DeleteTaskList" xml="xml/page.xml"/>
+  <standardpage name="TaskOverview" xml="xml/page.xml"/>
+  <standardpage name="EditTask" xml="xml/page.xml"/>
+  <standardpage name="DeleteTask" xml="xml/page.xml"/>
 
 </xml-generator-config>
