@@ -2,7 +2,23 @@
   
   <part name="content">
     <theme name="default">
-        <h1>Tasks</h1>
+        <h1>Tasklist</h1>
+        <table>
+          <tr>
+            <td valign="top">
+              <div style="font-size:140%; font-weight:bold; padding-bottom: 5px;"><ixsl:value-of select="/formresult/tasks/@name"/></div>
+              <div style="font-size:120%; font-style:italic"><ixsl:value-of select="/formresult/tasks/@description"/></div>
+            </td>
+            <td valign="bottom" style="padding-left:10px">
+              <pfx:button action="edit" >
+                <pfx:image src="img/edit-32x32.png" border="0" title="Edit tasklist description"/>
+                <pfx:argument name="edit.id">0</pfx:argument>
+              </pfx:button>
+            </td>
+          </tr>
+        </table>
+     
+      
         <table cellpadding="10px">
           <tr>
             <th align="left">Summary</th>
@@ -21,13 +37,14 @@
             <td align="right"><ixsl:value-of select="@state"/></td>
             <td align="right">TODO</td>
             <td align="right">TODO</td>
-            <td>
-              <pfx:button action="select">
-                <pfx:image src="img/tasks-32x32.png"/>
-                <pfx:argument name="select.id">0</pfx:argument>
+            <td style="padding-left:20px">
+              <pfx:button action="edit">
+                <pfx:image src="img/edit-32x32.png" border="0" title="Edit task description"/>
+                <pfx:argument name="edit.id">0</pfx:argument>
               </pfx:button>
+              <span style="padding-left:15px"></span>
               <pfx:button action="delete">
-                <pfx:image src="img/delete-32x32.png"/>
+                <pfx:image src="img/delete-32x32.png" border="0" title="Delete task"/>
                 <pfx:argument name="delete.id">0</pfx:argument>
               </pfx:button>
             </td>

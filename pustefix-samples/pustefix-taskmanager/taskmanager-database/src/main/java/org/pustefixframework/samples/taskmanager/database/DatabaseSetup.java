@@ -129,6 +129,9 @@ public class DatabaseSetup {
                 stmt = con.createStatement();
                 stmt.execute("INSERT INTO task (tasklist, summary, description, priority, state, creation_date, target_date) VALUES (0, 'A task', 'A task to be done', 0, 0, '2005-07-16 07:39:25', '2005-07-16 07:39:25')");
                 stmt.close();
+                stmt = con.createStatement();
+                stmt.execute("INSERT INTO task (tasklist, summary, description, priority, state, creation_date, target_date) VALUES (0, 'A task', 'A task to be done', 1, 1, '2005-07-16 07:39:25', '2005-07-16 07:39:25')");
+                stmt.close();
             }
             
             stmt = con.createStatement();
