@@ -105,7 +105,14 @@ public class DatabaseSetup {
             if(!result.next()) {
             	stmt.close();
                 stmt = con.createStatement();
-                stmt.execute("INSERT INTO priority (name) VALUES ('normal')");
+                stmt.execute("INSERT INTO priority (name) VALUES ('NORMAL')");
+                stmt.close();
+                stmt = con.createStatement();
+                stmt.execute("INSERT INTO priority (name) VALUES ('LOW')");
+                stmt.close();
+                stmt = con.createStatement();
+                stmt.execute("INSERT INTO priority (name) VALUES ('HIGH')");
+                stmt.close();
             }
             
             stmt = con.createStatement();
@@ -113,7 +120,11 @@ public class DatabaseSetup {
             if(!result.next()) {
             	stmt.close();
                 stmt = con.createStatement();
-                stmt.execute("INSERT INTO state (name) VALUES ('open')");
+                stmt.execute("INSERT INTO state (name) VALUES ('OPEN')");
+                stmt.close();
+                stmt = con.createStatement();
+                stmt.execute("INSERT INTO state (name) VALUES ('CLOSED')");
+                stmt.close();
             }
             
             stmt = con.createStatement();

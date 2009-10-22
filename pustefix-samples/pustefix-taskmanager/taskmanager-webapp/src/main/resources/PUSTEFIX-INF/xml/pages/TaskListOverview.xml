@@ -9,21 +9,26 @@
             <th align="left">Description</th>
             <th align="left">Open tasks</th>
             <th align="left">Total tasks</th>
-            <th></th>
+            <th align="right">
+              <pfx:button action="create" >
+                <pfx:image src="img/edit-24x24.png" border="0" alt="Create new tasklist" title="Create new tasklist"/>
+                <pfx:argument name="create.id">0</pfx:argument>
+              </pfx:button>
+            </th>
           </tr>
           <ixsl:for-each select="/formresult/tasklists/taskList">
-          <tr>
+          <tr  style="cursor:pointer">
             <td align="left"><ixsl:value-of select="@name"/></td>
             <td align="left"><ixsl:value-of select="@description"/></td>
             <td align="right">TODO</td>
             <td align="right">TODO</td>
             <td>
               <pfx:button action="select">
-                <pfx:image src="img/tasks-32x32.png"/>
+                <pfx:image src="img/edit-24x24.png" border="0" alt="Select tasklist" title="Select tasklist" />
                 <pfx:argument name="select.id">0</pfx:argument>
               </pfx:button>
               <pfx:button action="delete">
-                <pfx:image src="img/delete-32x32.png"/>
+                <pfx:image src="img/trash-24x24.png" border="0" alt="Delete tasklist" title="Delete tasklist"/>
                 <pfx:argument name="delete.id">0</pfx:argument>
               </pfx:button>
             </td>

@@ -23,7 +23,6 @@
   <pageflow name="TaskListFlow" final="TaskListOverview">
       <flowstep name="TaskListOverview"/>
       <flowstep name="TaskOverview"/>
-      <flowstep name="EditTask"/>
   </pageflow>
 
   <extension-point type="context.pagerequest" id="pagerequest.main"/>
@@ -58,7 +57,7 @@
       <wrapper prefix="delete" class="org.pustefixframework.samples.taskmanager.web.DeleteTask"/>
     </input>
     <process>
-        <action name="select" jumptopage="EditTask">
+        <action name="select" jumptopage="TaskDetails">
            <submit>
              <wrapper ref="select"/>
            </submit>
@@ -74,8 +73,14 @@
      </output>
   </pagerequest>
   
-  <pagerequest name="EditTask">
+  <pagerequest name="TaskDetails">
   
+  </pagerequest>
+  
+  <pagerequest name="TaskListDetails">
+    <input>
+      <wrapper prefix="edit" class="org.pustefixframework.samples.taskmanager.web.EditTaskList"/>
+    </input>
   </pagerequest>
 
 </context-xml-service-config>
