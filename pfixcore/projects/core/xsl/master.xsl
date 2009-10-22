@@ -320,13 +320,19 @@
         <xsl:choose>
           <xsl:when test="$compress-inline-javascript='true' and not(@compress='false')">
             <ixsl:variable name="__script">
-              <xsl:copy-of select="./node()"/>
+              <xsl:choose>
+                <xsl:when test="@transform='true'"><xsl:apply-templates/></xsl:when>
+                <xsl:otherwise><xsl:copy-of select="./node()"/></xsl:otherwise>
+              </xsl:choose>
             </ixsl:variable>
             <ixsl:text>&#160;&#10;</ixsl:text>
             <ixsl:value-of select="compress:compressJavascript($__script)"/>
           </xsl:when>
           <xsl:otherwise>
-	<xsl:copy-of select="./node()"/>
+            <xsl:choose>
+              <xsl:when test="@transform='true'"><xsl:apply-templates/></xsl:when>
+              <xsl:otherwise><xsl:copy-of select="./node()"/></xsl:otherwise>
+            </xsl:choose>
           </xsl:otherwise>
         </xsl:choose>
 	//</ixsl:comment>
