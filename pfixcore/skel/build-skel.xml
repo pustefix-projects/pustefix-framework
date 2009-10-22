@@ -126,6 +126,7 @@ or delete the DOCTYPE definition -->
   <path id="test.classpath">
     <path refid="test.libs"/>
     <pathelement location="${dir.build}"/>
+    <pathelement location="${test.libs.additional}"/>
   </path>
 
   <target name="check-newbuildskel">
