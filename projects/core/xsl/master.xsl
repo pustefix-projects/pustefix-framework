@@ -313,7 +313,10 @@
       <xsl:attribute name="type">text/javascript</xsl:attribute>
       <xsl:copy-of select="@*[not(name()='compress')]"/>
       <ixsl:comment>
-	<xsl:copy-of select="./node()"/>
+        <xsl:choose>
+          <xsl:when test="@transform='true'"><xsl:apply-templates/></xsl:when>
+          <xsl:otherwise><xsl:copy-of select="./node()"/></xsl:otherwise>
+        </xsl:choose>
 	//</ixsl:comment>
     </script>
   </xsl:template>
