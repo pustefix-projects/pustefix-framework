@@ -8,7 +8,7 @@
                 xmlns:geometry="xalan://de.schlund.pfixxml.ImageGeometry"
                 xmlns:func="http://exslt.org/functions"
                 xmlns:prj="http://www.pustefix-framework.org/2008/namespace/project-config"
-                exclude-result-prefixes="include image geometry">
+                exclude-result-prefixes="include image geometry prj">
 
   <!-- The needed parameters must be set in the including stylesheet! -->
 
