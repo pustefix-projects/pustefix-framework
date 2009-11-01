@@ -191,7 +191,7 @@
         <extensions>true</extensions>
         <configuration>
           <instructions>
-            <Export-Package>!*.internal,!*.impl,!*.internal.*,!*.impl.*,!.,org.pustefixframework.*,de.schlund.*</Export-Package>
+            <Export-Package>de.schlund.pfixcore.oxm.impl.annotation,!*.internal,!*.impl,!*.internal.*,!*.impl.*,!.,org.pustefixframework.*,de.schlund.*</Export-Package>
             <Embed-Dependency>saxon,saxon-dom,saxon-xpath</Embed-Dependency>
             <Import-Package>!com.saxonica.validate,!com.sun.mirror.*,org.apache.log4j,!org.apache.log4j.*,*,net.sf.cglib.core,net.sf.cglib.proxy,net.sf.cglib.reflect</Import-Package>
 <!--
