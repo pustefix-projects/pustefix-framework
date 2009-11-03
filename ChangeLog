@@ -1,3 +1,18 @@
+2009-11-03  Martin Leidig  <mleidig@schlund.de>
+
+	Added support for using ant-style patterns to specify overridden module
+	resources in module descriptor.
+
+	Example:
+	<override-modules>
+	  <module name="amodule">
+	    <!-- all XML files from txt folder: -->
+	    <resource path="txt/*.xml"/>
+	    <!-- all XSL files from xsl folder or arbitrary subfolders: -->
+	    <resource path="xsl/**/*.xsl"/>
+	  </module>
+	</override-modules>
+
 2009-10-09  Sebastian Marsching <sebastian.marsching@1und1.de>
 
 	Create a Spring bean for the default state, to make injection

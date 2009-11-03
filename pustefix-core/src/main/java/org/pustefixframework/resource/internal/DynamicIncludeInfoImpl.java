@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.pustefixframework.config.Constants;
+import org.springframework.util.AntPathMatcher;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -39,7 +40,11 @@ public class DynamicIncludeInfoImpl implements DynamicIncludeInfo {
     
     private String name;
     private int dynamicSearchLevel;
-    private Map<String,Set<String>> overrideMap = new HashMap<String,Set<String>>();
+
+    private Map<String,Set<String>> moduleToResourcePaths = new HashMap<String,Set<String>>();
+    private Map<String,Set<String>> moduleToResourcePathPatterns = new HashMap<String,Set<String>>();
+    
+    private AntPathMatcher antPathMatcher = new AntPathMatcher();
     
     public DynamicIncludeInfoImpl(String name, int dynamicSearchLevel) {
         this.name = name;
@@ -51,27 +56,44 @@ public class DynamicIncludeInfoImpl implements DynamicIncludeInfo {
     }
     
     public int getDynamicSearchLevel() {
-    	return dynamicSearchLevel;
+        return dynamicSearchLevel;
     }
     
+    /**
+     * Adds resource/module overridden by this module.
+     * 
+     * @param module - Module name
+     * @param resourcePath - Resource path (either the full path or an ant-style pattern)
+     */
     public void addOverridedResource(String module, String resourcePath) {
-        Set<String> resList = overrideMap.get(module);
-        if(resList == null) {
-            resList = new HashSet<String>();
-            overrideMap.put(module,resList);
+        if(resourcePath.contains("?") || resourcePath.contains("*")) {
+            Set<String> resList = moduleToResourcePathPatterns.get(module);
+            if(resList == null) {
+                resList = new HashSet<String>();
+                moduleToResourcePathPatterns.put(module, resList);
+            }
+            resList.add(resourcePath);
+        } else {
+            Set<String> resList = moduleToResourcePaths.get(module);
+            if(resList == null) {
+                resList = new HashSet<String>();
+                moduleToResourcePaths.put(module, resList);
+            }
+            resList.add(resourcePath);
         }
-        resList.add(resourcePath);
-    }
-    
-    public Set<String> getOverridedResources(String module) {
-        return overrideMap.get(module);
     }
     
     public boolean overridesResource(String module, String path) {
-        Set<String> overrides = overrideMap.get(module);
+        Set<String> overrides = moduleToResourcePaths.get(module);
         if(overrides != null) {
-        	return overrides.contains(path);
+            if(overrides.contains(path)) return true;
         }
+        overrides = moduleToResourcePathPatterns.get(module);
+        if(overrides != null) {
+            for(String pattern: overrides) {
+                if(antPathMatcher.match(pattern, path)) return true;
+            }
+        }        
         return false;
     }
     
@@ -81,31 +103,31 @@ public class DynamicIncludeInfoImpl implements DynamicIncludeInfo {
     }
         
     public static DynamicIncludeInfoImpl create(String moduleName, Element element) {
-    	DynamicIncludeInfoImpl dynInfo;
+        DynamicIncludeInfoImpl dynInfo;
         if(element.getNamespaceURI().equals(Constants.NS_MODULE) && element.getLocalName().equals("dynamic-includes")) {
-        	int level = -1;
-        	Element searchElem = getSingleChildElement(element, Constants.NS_MODULE, "auto-search", false);
-        	if(searchElem != null) {
-        		String levelStr = searchElem.getAttribute("level").trim();
-        		if(levelStr.length() > 0) level = Integer.parseInt(levelStr);
-        	}
-        	dynInfo = new DynamicIncludeInfoImpl(moduleName, level);
-        	Element overrideElem = getSingleChildElement(element, Constants.NS_MODULE, "override-modules", false);
-        	if(overrideElem != null) {	
-	        	List<Element> modElems = getChildElements(overrideElem, Constants.NS_MODULE, "module");
-	        	for(Element modElem:modElems) {
-	        		String modName = modElem.getAttribute("name").trim();
-	        		if(modName.equals("")) throw new IllegalArgumentException("Element 'module' requires 'name' attribute!");
-	        		List<Element> resElems = getChildElements(modElem, Constants.NS_MODULE, "resource");
-	        		for(Element resElem:resElems) {
-	        			String resPath = resElem.getAttribute("path").trim();
-	        			if(resPath.equals("")) throw new IllegalArgumentException("Element 'resource' requires 'path' attribute!");
-	        			if(!resPath.startsWith("/")) resPath = "/" + resPath;
-	        			if(!resPath.startsWith("/PUSTEFIX-INF")) resPath = "/PUSTEFIX-INF" + resPath;
-	        			dynInfo.addOverridedResource(modName, resPath);
-	        		}
-	        	}
-        	}
+            int level = -1;
+            Element searchElem = getSingleChildElement(element, Constants.NS_MODULE, "auto-search", false);
+            if(searchElem != null) {
+                String levelStr = searchElem.getAttribute("level").trim();
+                if(levelStr.length() > 0) level = Integer.parseInt(levelStr);
+            }
+            dynInfo = new DynamicIncludeInfoImpl(moduleName, level);
+            Element overrideElem = getSingleChildElement(element, Constants.NS_MODULE, "override-modules", false);
+            if(overrideElem != null) {    
+                List<Element> modElems = getChildElements(overrideElem, Constants.NS_MODULE, "module");
+                for(Element modElem:modElems) {
+                    String modName = modElem.getAttribute("name").trim();
+                    if(modName.equals("")) throw new IllegalArgumentException("Element 'module' requires 'name' attribute!");
+                    List<Element> resElems = getChildElements(modElem, Constants.NS_MODULE, "resource");
+                    for(Element resElem:resElems) {
+                        String resPath = resElem.getAttribute("path").trim();
+                        if(resPath.equals("")) throw new IllegalArgumentException("Element 'resource' requires 'path' attribute!");
+                        if(!resPath.startsWith("/")) resPath = "/" + resPath;
+                        if(!resPath.startsWith("/PUSTEFIX-INF")) resPath = "/PUSTEFIX-INF" + resPath;
+                        dynInfo.addOverridedResource(modName, resPath);
+                    }
+                }
+            }
         } else throw new IllegalArgumentException("Unexpected module descriptor element: " + element.getNodeName());
         return dynInfo;
     }
