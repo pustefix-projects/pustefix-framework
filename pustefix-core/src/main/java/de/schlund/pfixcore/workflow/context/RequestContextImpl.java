@@ -33,6 +33,7 @@ import javax.servlet.http.Cookie;
 import org.apache.log4j.Logger;
 import org.pustefixframework.config.contextxmlservice.PageRequestConfig;
 import org.pustefixframework.config.contextxmlservice.ProcessActionPageRequestConfig;
+import org.pustefixframework.config.contextxmlservice.parser.internal.AuthConstraintRef;
 import org.pustefixframework.http.AbstractPustefixRequestHandler;
 import org.pustefixframework.http.PustefixContextXMLRequestHandler;
 import org.w3c.dom.Document;
@@ -321,7 +322,7 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
             }
             rp = preq.getRequestParam("__lf");
             if (rp != null) {
-            	redirectURL += "&__lf=" + rp.getValue();
+                redirectURL += "&__lf=" + rp.getValue();
             }
             spdoc.setRedirect(redirectURL);
 
@@ -364,11 +365,8 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
         roleAuth = (reqParam != null && reqParam.isTrue());
         if (roleAuth) {
             roleAuthTarget = currentpagerequest.getName();
-            AuthConstraint authConst = null;
             PageRequestConfig targetPageConf = servercontext.getContextConfig().getPageRequestConfig(roleAuthTarget);
-            if (targetPageConf != null) authConst = targetPageConf.getAuthConstraint();
-            if (authConst == null)
-                authConst = getParentContext().getContextConfig().getDefaultAuthConstraint();
+            AuthConstraint authConst = getAuthConstraint(targetPageConf);
             if (authConst != null) {
                 String authPageName = authConst.getAuthPage();
                 if (authPageName != null) {
@@ -710,12 +708,8 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
 
     public void checkAuthorization(Context context) {
         String pageName = currentpagerequest.getRootName();
-        AuthConstraint authConstraint = null;
-        PageRequestConfig pageConfig = this.getConfigForCurrentPageRequest();
-        if(pageConfig != null) authConstraint = pageConfig.getAuthConstraint();
-        if (authConstraint == null)
-            authConstraint = parentcontext.getContextConfig().getDefaultAuthConstraint();
-        if (authConstraint != null) {
+        AuthConstraint authConstraint = getAuthConstraint(getConfigForCurrentPageRequest());
+        if(authConstraint != null) {
             if (!authConstraint.isAuthorized(parentcontext)) {
                 if (LOG.isDebugEnabled())
                     LOG.debug("Not authorized to access page '" + pageName + "'");
@@ -726,16 +720,37 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
 
     /**
      * Returns if accessing the current page is already permitted or 
-     * it it will be possible by authenticating using an according authpage 
+     * if it will be possible by authenticating using an according authpage 
      */
     private boolean isAuthorizationPossible() {
-        PageRequestConfig pageConfig = getConfigForCurrentPageRequest();
-        if(pageConfig != null) {
-            AuthConstraint authConstraint = pageConfig.getAuthConstraint();
-            if (authConstraint == null) authConstraint = parentcontext.getContextConfig().getDefaultAuthConstraint();
-            if (authConstraint != null && !authConstraint.isAuthorized(parentcontext) && authConstraint.getAuthPage()==null) return false;
+        AuthConstraint authConstraint = getAuthConstraint(getConfigForCurrentPageRequest());
+        if(authConstraint != null) {
+            if(!authConstraint.isAuthorized(parentcontext) && authConstraint.getAuthPage()==null) return false;
         }
         return true;
+    }
+
+    /**
+     * Get the AuthConstraint for a page. If the page has no AuthConstraint configured
+     * the default AuthConstraint is returned (if defined).
+     * If an AuthConstraint is of type AuthConstraintRef the reference instance is replaced by
+     * the according AuthConstraint instance.
+     * 
+     * @param pageConfig - page configuration
+     * @return the AuthConstraint for a page
+     */
+    public AuthConstraint getAuthConstraint(PageRequestConfig pageConfig) {
+        AuthConstraint authConstraint = null;
+        if(pageConfig != null) authConstraint = pageConfig.getAuthConstraint();
+        if(authConstraint == null) authConstraint = parentcontext.getContextConfig().getDefaultAuthConstraint();
+        if(authConstraint != null) {
+            if(authConstraint instanceof AuthConstraintRef) {
+                AuthConstraintRef ref = (AuthConstraintRef)authConstraint;
+                authConstraint = parentcontext.getContextConfig().getAuthConstraint(ref.getRef());
+                if(authConstraint == null) throw new RuntimeException("Authconstraint reference '" + ref.getRef() + " can't be resolved.");
+            }
+        }
+        return authConstraint;
     }
     
     private ResultDocument checkPageAuthorization() throws PustefixApplicationException, PustefixCoreException {
@@ -757,10 +772,7 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
             roleAuthDeps.add(authEx.getTarget());
             PageRequest localAuthPage = null;
             PageRequestConfig pageConfig = this.getConfigForCurrentPageRequest();
-            AuthConstraint authConstraint = null;
-            if(pageConfig != null) authConstraint = pageConfig.getAuthConstraint();
-            if (authConstraint == null)
-                authConstraint = parentcontext.getContextConfig().getDefaultAuthConstraint();
+            AuthConstraint authConstraint = getAuthConstraint(pageConfig);
             if (authConstraint != null) {
                 String authPageName = authConstraint.getAuthPage();
                 if (authPageName != null)

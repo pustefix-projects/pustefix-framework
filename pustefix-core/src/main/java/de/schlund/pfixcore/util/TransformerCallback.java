@@ -360,14 +360,11 @@ public class TransformerCallback {
             int result = 0;
             ContextImpl context = requestContext.getParentContext();
             PageRequestConfig config = context.getContextConfig().getPageRequestConfig(pageName);
-            if(config != null) {
-                AuthConstraint authConst = config.getAuthConstraint();
-                if(authConst==null) authConst = context.getContextConfig().getDefaultAuthConstraint();
-                if(authConst != null) {
-                    if(authConst.isAuthorized(context)) result = 1;
-                    else if(authConst.getAuthPage()!=null) result = 2;
-                    else result = 3;
-                }
+            AuthConstraint authConst = requestContext.getAuthConstraint(config);
+            if(authConst != null) {
+                if(authConst.isAuthorized(context)) result = 1;
+                else if(authConst.getAuthPage()!=null) result = 2;
+                else result = 3;
             }
             return result;
         } catch (Exception x) {
@@ -381,12 +378,9 @@ public class TransformerCallback {
             boolean result = true;
             ContextImpl context = requestContext.getParentContext();
             PageRequestConfig config = context.getContextConfig().getPageRequestConfig(pageName);
-            if(config != null) {
-                AuthConstraint authConst = config.getAuthConstraint();
-                if(authConst==null) authConst = context.getContextConfig().getDefaultAuthConstraint();
-                if(authConst != null) {
-                    if(!authConst.isAuthorized(context)) result = false;
-                }
+            AuthConstraint authConst = requestContext.getAuthConstraint(config);
+            if(authConst != null) {
+                if(!authConst.isAuthorized(context)) result = false;
             }
             return result;
         } catch (Exception x) {
