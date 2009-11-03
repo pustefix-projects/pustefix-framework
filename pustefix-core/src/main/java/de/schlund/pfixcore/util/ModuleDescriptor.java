@@ -28,6 +28,7 @@ import java.util.Set;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
+import org.springframework.util.AntPathMatcher;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -44,7 +45,10 @@ public class ModuleDescriptor {
     
     private URL url;
     private String name;
-    private Map<String,Set<String>> overrideMap = new HashMap<String,Set<String>>();
+    private Map<String,Set<String>> moduleToResourcePaths = new HashMap<String,Set<String>>();
+    private Map<String,Set<String>> moduleToResourcePathPatterns = new HashMap<String,Set<String>>();
+    
+    private AntPathMatcher antPathMatcher = new AntPathMatcher();
     
     public ModuleDescriptor(URL url, String name) {
         this.url = url;
@@ -59,22 +63,41 @@ public class ModuleDescriptor {
         return name;
     }
     
+    /**
+     * Adds resource/module overridden by this module.
+     * 
+     * @param module - Module name
+     * @param resourcePath - Resource path (either the full path or an ant-style pattern)
+     */
     public void addOverridedResource(String module, String resourcePath) {
-        Set<String> resList = overrideMap.get(module);
-        if(resList == null) {
-            resList = new HashSet<String>();
-            overrideMap.put(module,resList);
+        if(resourcePath.contains("?") || resourcePath.contains("*")) {
+            Set<String> resList = moduleToResourcePathPatterns.get(module);
+            if(resList == null) {
+                resList = new HashSet<String>();
+                moduleToResourcePathPatterns.put(module, resList);
+            }
+            resList.add(resourcePath);
+        } else {
+            Set<String> resList = moduleToResourcePaths.get(module);
+            if(resList == null) {
+                resList = new HashSet<String>();
+                moduleToResourcePaths.put(module, resList);
+            }
+            resList.add(resourcePath);
         }
-        resList.add(resourcePath);
-    }
-    
-    public Set<String> getOverridedResources(String module) {
-        return overrideMap.get(module);
     }
     
     public boolean overridesResource(String module, String path) {
-        Set<String> overrides = overrideMap.get(module);
-        if(overrides != null) return overrides.contains(path);
+        Set<String> overrides = moduleToResourcePaths.get(module);
+        if(overrides != null) {
+            if(overrides.contains(path)) return true;
+        }
+        overrides = moduleToResourcePathPatterns.get(module);
+        if(overrides != null) {
+            for(String pattern: overrides) {
+                if(antPathMatcher.match(pattern, path)) return true;
+            }
+        }
         return false;
     }
     
