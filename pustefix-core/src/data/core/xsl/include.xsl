@@ -319,6 +319,7 @@
             </ixsl:if>
           </xsl:when>
           <xsl:when test="$__target_key='__NONE__' and $__editmode = 'admin'">
+            <xsl:variable name="__resolveduri"><xsl:value-of select="include:getResolvedURI()"/></xsl:variable>
             <xsl:choose>
               <xsl:when test="$incnodes/parent::part/@editable='true' or (not($incnodes/parent::part/@editable='false') and $__editor_include_parts_editable_by_default='true')">
                 <xsl:call-template name="pfx:include_internal_render_edit_runtime">
@@ -352,7 +353,7 @@
           <ixsl:attribute name="onclick">window.open('<ixsl:value-of select="$__editor_url"/>/xml/main?__scriptedflow=selectinclude&amp;theme=<xsl:value-of select="string($used_theme)"/>&amp;path=<xsl:value-of select="substring-after($resolved_uri,'/')"/>&amp;part=<xsl:value-of select="$part"/>&amp;uri=<ixsl:value-of select="$__application_url"/>&amp;type=include&amp;__anchor=left_navi|<xsl:value-of select="$realpath"/>','PustefixEditor','menubar=yes,status=yes,resizable=yes');return(false);</ixsl:attribute>
         </xsl:when>
         <xsl:otherwise>
-          <ixsl:attribute name="onclick">alert("Editing <xsl:value-of select="$__resolveduri"/> not yet supported!")</ixsl:attribute>
+          <ixsl:attribute name="onclick">alert("Editing <xsl:value-of select="$resolved_uri"/> not yet supported!")</ixsl:attribute>
         </xsl:otherwise>
       </xsl:choose>
       <img border="0" src="{{$__contextpath}}/core/img/edit.gif"
