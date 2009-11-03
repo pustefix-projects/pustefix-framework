@@ -36,10 +36,13 @@
   <!--
     Here you can configure which resources from which other module should be
     overridden by your module (see "Dynamic resource resolution").
+    Resources can be specified either by their full path or using ant-style
+    patterns.
   -->
   <override-modules>
     <module name="modulename">
       <resource path="path/to/resource"/>
+      <resource path="path/**/to/*.xml"/>
       ...
     </module>
     ...
