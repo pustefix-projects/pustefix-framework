@@ -2,8 +2,10 @@ package de.schlund.pfixcore.util;
 
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -30,6 +32,7 @@ public class ModuleDescriptor {
     private String name;
     private Map<String,Set<String>> moduleToResourcePaths = new HashMap<String,Set<String>>();
     private Map<String,Set<String>> moduleToResourcePathPatterns = new HashMap<String,Set<String>>();
+    private Dictionary<String,String> filterAttributes = new Hashtable<String,String>();
     
     private AntPathMatcher antPathMatcher = new AntPathMatcher();
     
@@ -83,6 +86,14 @@ public class ModuleDescriptor {
         }
         return false;
     }
+
+    public void addFilterAttribute(String name, String value) {
+        filterAttributes.put(name, value);
+    }
+    
+    public Dictionary<String,String> getFilterAttributes() {
+        return filterAttributes;
+    }
     
     @Override
     public String toString() {
@@ -104,6 +115,14 @@ public class ModuleDescriptor {
             moduleInfo = new ModuleDescriptor(url, name);
             Element overElem = getSingleChildElement(root, NAMESPACE_MODULE_DESCRIPTOR, "override-modules", false);
             if(overElem != null) {
+                List<Element> filterAttrElems = getChildElements(overElem, NAMESPACE_MODULE_DESCRIPTOR, "filter-attribute");
+                for(Element filterAttrElem: filterAttrElems) {
+                    String filterAttrName = filterAttrElem.getAttribute("name");
+                    if(filterAttrName.equals("")) throw new Exception("Element 'filter-attribute' requires 'name' attribute!");
+                    String filterAttrValue = filterAttrElem.getAttribute("value");
+                    if(filterAttrValue.equals("")) throw new Exception("Element 'filter-attribute' requires 'value' attribute!");
+                    moduleInfo.addFilterAttribute(filterAttrName, filterAttrValue);
+                }
                 List<Element> modElems = getChildElements(overElem, NAMESPACE_MODULE_DESCRIPTOR, "module");
                 for(Element modElem:modElems) {
                     String modName = modElem.getAttribute("name").trim();

@@ -63,6 +63,9 @@
     <match>/p:project-config/p:application//p:direct-output-service</match>
   </handler>
 
+  <handler class="org.pustefixframework.config.project.parser.DynamicIncludesParsingHandler">
+    <match>/p:project-config/p:dynamic-includes</match>
+  </handler>
   
   <handler id="org.pustefixframework.config.customization.WhenParsingHandler" class="org.pustefixframework.config.customization.CustomizationWhenParsingHandler">
     <match>/p:project-config/p:choose/p:when</match>

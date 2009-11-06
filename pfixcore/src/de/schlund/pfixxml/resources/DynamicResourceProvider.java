@@ -18,6 +18,7 @@ import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
+import de.schlund.pfixcore.util.ModuleFilterInfo;
 import de.schlund.pfixcore.util.ModuleInfo;
 import de.schlund.pfixxml.IncludeDocument;
 import de.schlund.pfixxml.IncludeDocumentFactory;
@@ -183,7 +184,8 @@ public class DynamicResourceProvider implements ResourceProvider {
         ModuleInfo moduleInfo = ModuleInfo.getInstance();
         String path = uri.getPath();
         if(path.startsWith("/")) path = path.substring(1);
-        List<String> overMods = moduleInfo.getOverridingModules(module, path);
+        ModuleFilter filter = ModuleFilterInfo.getInstance().getModuleFilter(project);
+        List<String> overMods = moduleInfo.getOverridingModules(module, filter, path);
         if(overMods.size()>1) {
             LOG.warn("Multiple modules found which override resource '"+path+"' from module '"+module+"'.");
         }
