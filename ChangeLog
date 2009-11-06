@@ -1,5 +1,9 @@
 2009-11-06  Sebastian Marsching <sebastian.marsching@1und1.de>
 
+	Added JavaScript support for JSON resources.
+	These functions are based on pfx.net.HTTPRequest and 
+	and their code is stored in jsonResources.js.
+
 	Added Java-side support for delivering "context resources" 
 	through JSON, using the special "__json/" page name. 
 
