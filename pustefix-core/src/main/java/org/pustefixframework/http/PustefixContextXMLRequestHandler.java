@@ -19,9 +19,13 @@
 package org.pustefixframework.http;
 
 import java.io.ByteArrayOutputStream;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.TreeMap;
 
 import javax.servlet.ServletException;
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
@@ -29,6 +33,8 @@ import org.pustefixframework.config.contextxmlservice.AbstractPustefixXMLRequest
 import org.pustefixframework.config.contextxmlservice.PageRequestConfig;
 import org.pustefixframework.config.contextxmlservice.PustefixContextXMLRequestHandlerConfig;
 import org.pustefixframework.config.contextxmlservice.ScriptedFlowProvider;
+import org.pustefixframework.util.json.JSONUtil;
+import org.w3c.dom.Element;
 
 import de.schlund.pfixcore.exception.PustefixApplicationException;
 import de.schlund.pfixcore.exception.PustefixCoreException;
@@ -38,6 +44,7 @@ import de.schlund.pfixcore.scriptedflow.compiler.CompilerException;
 import de.schlund.pfixcore.scriptedflow.vm.Script;
 import de.schlund.pfixcore.scriptedflow.vm.ScriptVM;
 import de.schlund.pfixcore.scriptedflow.vm.VirtualHttpServletRequest;
+import de.schlund.pfixcore.util.StateUtil;
 import de.schlund.pfixcore.workflow.ContextImpl;
 import de.schlund.pfixcore.workflow.ContextInterceptor;
 import de.schlund.pfixcore.workflow.ExtendedContext;
@@ -46,6 +53,7 @@ import de.schlund.pfixxml.PfixServletRequest;
 import de.schlund.pfixxml.PfixServletRequestImpl;
 import de.schlund.pfixxml.RenderOutputListener;
 import de.schlund.pfixxml.RequestParam;
+import de.schlund.pfixxml.ResultDocument;
 import de.schlund.pfixxml.SPDocument;
 
 /**
@@ -115,6 +123,71 @@ public class PustefixContextXMLRequestHandler extends AbstractPustefixXMLRequest
     public void init() throws ServletException {
         super.init();
         createOutputListener();
+    }
+
+    @Override
+    protected void process(PfixServletRequest preq, HttpServletResponse res) throws Exception {
+        String pagename = preq.getPageName();
+        if (pagename != null && pagename.startsWith("__json/")) {
+            // JSON request
+            handleJSONRequest(preq, res);
+        } else {
+            // Normal request processing
+            super.process(preq, res);
+        }
+    }
+
+    private void handleJSONRequest(PfixServletRequest preq, HttpServletResponse res) throws Exception {
+        String pagename = preq.getPageName();
+        if (!pagename.startsWith("__json/")) {
+            res.sendError(HttpServletResponse.SC_BAD_REQUEST);
+            return;
+        }
+
+        HttpSession session = preq.getSession(false);
+        if (session == null || session.getAttribute(SESS_CLEANUP_FLAG_STAGE2) != null) {
+            res.sendError(HttpServletResponse.SC_FORBIDDEN);
+            return;
+        }
+
+        String resourceNamesString = pagename.substring("__json/".length());
+        String[] resourceNames = resourceNamesString.split(",");
+
+        Map<String, Object> resources = new HashMap<String, Object>();
+        for (String resourceName : resourceNames) {
+            resourceName = resourceName.trim();
+            if (resourceName.length() == 0) {
+                continue;
+            }
+            Object resource = getContextXMLServletConfig().getJSONOutputResources().get(resourceName);
+            if (resource == null) {
+                res.sendError(HttpServletResponse.SC_NOT_FOUND, "No resource for alias " + resourceName + " found");
+            }
+            resources.put(resourceName, resource);
+        }
+
+        res.setContentType("application/json");
+        ServletOutputStream out = res.getOutputStream();
+
+        ResultDocument resdoc = new ResultDocument();
+        int count = resources.size();
+        out.print('{');
+        for (String alias : resources.keySet()) {
+            Object resource = resources.get(alias);
+            StateUtil.renderContextResource(resource, resdoc, alias);
+            Element element = (Element) resdoc.getRootElement().getElementsByTagName(alias).item(0);
+            out.print("\"" + alias + "\":");
+            out.print(JSONUtil.xmlElementToJSON(element));
+
+            count--;
+            if (count > 0) {
+                out.print(',');
+            }
+        }
+        out.print('}');
+
+        out.flush();
+        out.close();
     }
 
     @Override

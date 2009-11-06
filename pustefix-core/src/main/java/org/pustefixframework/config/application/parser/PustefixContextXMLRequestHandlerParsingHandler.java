@@ -23,6 +23,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 import org.pustefixframework.admin.mbeans.WebappAdmin;
@@ -32,8 +33,11 @@ import org.pustefixframework.config.application.EditorInfo;
 import org.pustefixframework.config.application.EditorLocation;
 import org.pustefixframework.config.application.XMLGeneratorInfo;
 import org.pustefixframework.config.contextxmlservice.ContextConfigHolder;
+import org.pustefixframework.config.contextxmlservice.JSONOutputResourceHolder;
 import org.pustefixframework.config.contextxmlservice.PustefixContextXMLRequestHandlerConfig;
 import org.pustefixframework.config.contextxmlservice.ScriptedFlowProvider;
+import org.pustefixframework.config.contextxmlservice.parser.internal.JSONOutputResourceExtensionPointImpl;
+import org.pustefixframework.config.contextxmlservice.parser.internal.JSONOutputResourceMap;
 import org.pustefixframework.config.contextxmlservice.parser.internal.ScriptedFlowExtensionPointImpl;
 import org.pustefixframework.config.contextxmlservice.parser.internal.ScriptedFlowMap;
 import org.pustefixframework.config.contextxmlservice.parser.internal.SimplePustefixContextXMLRequestHandlerConfig;
@@ -54,6 +58,7 @@ import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanNameGenerator;
 import org.springframework.beans.factory.support.DefaultBeanNameGenerator;
 import org.springframework.beans.factory.support.ManagedList;
+import org.springframework.beans.factory.support.ManagedMap;
 import org.springframework.osgi.context.ConfigurableOsgiBundleApplicationContext;
 import org.w3c.dom.Element;
 import org.xml.sax.InputSource;
@@ -198,8 +203,22 @@ public class PustefixContextXMLRequestHandlerParsingHandler implements ParsingHa
         beanDefinition = beanBuilder.getBeanDefinition();
         String scriptedFlowMapBeanName = beanNameGenerator.generateBeanName(beanDefinition, beanRegistry);
         beanRegistry.registerBeanDefinition(scriptedFlowMapBeanName, beanDefinition);
+        
+        @SuppressWarnings("unchecked")
+        Map<String, Object> publicJSONObjectMap = new ManagedMap();
+        for (JSONOutputResourceHolder holder : context.getObjectTreeElement().getObjectsOfTypeFromSubTree(JSONOutputResourceHolder.class)) {
+            publicJSONObjectMap.put(holder.getName(), holder.getJSONOutputResource());
+        }
+        
+        beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(JSONOutputResourceMap.class);
+        beanBuilder.setScope("singleton");
+        beanBuilder.addPropertyValue("JSONOutputResources", publicJSONObjectMap);
+        beanBuilder.addPropertyValue("JSONOutputResourceExtensionPoints", context.getObjectTreeElement().getObjectsOfTypeFromSubTree(JSONOutputResourceExtensionPointImpl.class));
+        beanDefinition = beanBuilder.getBeanDefinition();
+        String jsonOutputResourceMapBeanName = beanNameGenerator.generateBeanName(beanDefinition, beanRegistry);
+        beanRegistry.registerBeanDefinition(jsonOutputResourceMapBeanName, beanDefinition);
 
-        beanDefinition = SimplePustefixContextXMLRequestHandlerConfig.generateBeanDefinition(config, new RuntimeBeanReference(scriptedFlowMapBeanName), contextConfigHolder);
+        beanDefinition = SimplePustefixContextXMLRequestHandlerConfig.generateBeanDefinition(config, new RuntimeBeanReference(scriptedFlowMapBeanName), new RuntimeBeanReference(jsonOutputResourceMapBeanName), contextConfigHolder);
         String configBeanName = beanNameGenerator.generateBeanName(beanDefinition, beanRegistry);
         beanRegistry.registerBeanDefinition(configBeanName, beanDefinition);
 

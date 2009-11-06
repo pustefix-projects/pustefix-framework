@@ -293,6 +293,22 @@
     <match>/c:context-xml-service-config/c:extension[@type='context.authconstraint']/c:pagerequest/c:authconstraint//c:hasrole</match>
   </handler>
   
+  
+  <!-- JSON output object -->
+  
+  <handler class="org.pustefixframework.config.contextxmlservice.parser.JSONOutputResourceParsingHandler">
+    <match>/c:context-xml-service-config/c:extension[@type='context.jsonoutput']/c:resource</match>
+  </handler>
+  
+  <handler class="org.pustefixframework.config.contextxmlservice.parser.JSONOutputResourceExtensionPointParsingHandler">
+    <match>/c:context-xml-service-config/c:extension[@type='context.jsonoutput']//c:extension-point[@type='context.jsonoutput']</match>
+  </handler>
+  
+  <handler class="org.pustefixframework.config.contextxmlservice.parser.JSONOutputResourceExtensionParsingHandler" run-order="end">
+    <match>/c:context-xml-service-config/c:extension[@type='context.jsonoutput']</match>
+  </handler>
+  
+  
   <!-- Properties -->
   
   <handler class="org.pustefixframework.config.generic.PropertiesParsingHandler">

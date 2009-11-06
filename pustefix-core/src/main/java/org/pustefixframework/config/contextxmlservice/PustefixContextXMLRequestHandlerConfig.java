@@ -43,4 +43,13 @@ public interface PustefixContextXMLRequestHandlerConfig extends AbstractPustefix
      */
     Map<String, ? extends ScriptedFlowProvider> getScriptedFlows();
 
+    /**
+     * Returns a map mapping string aliases, to context resource
+     * instances. This map is used in order to decide which 
+     * resources should be exposed through JSON using the specified
+     * aliases.
+     * 
+     * @return map of context resources
+     */
+    Map<String, ?> getJSONOutputResources();
 }

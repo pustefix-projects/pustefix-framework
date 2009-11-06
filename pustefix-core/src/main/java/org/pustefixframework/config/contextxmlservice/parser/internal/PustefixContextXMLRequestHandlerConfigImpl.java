@@ -46,6 +46,8 @@ public class PustefixContextXMLRequestHandlerConfigImpl extends AbstractPustefix
 
     private Map<String, ? extends ScriptedFlowProvider> scriptedFlows;
 
+    private Map<String, ?> jsonOutputResources;
+
     public void setDefaultStaticState(Class<? extends ConfigurableState> clazz) {
         this.defaultStateClass = clazz;
     }
@@ -95,6 +97,14 @@ public class PustefixContextXMLRequestHandlerConfigImpl extends AbstractPustefix
 
     public void setScriptedFlows(Map<String, ? extends ScriptedFlowProvider> scriptedFlows) {
         this.scriptedFlows = scriptedFlows;
+    }
+
+    public void setJSONOutputResources(Map<String, ?> jsonOutputResources) {
+        this.jsonOutputResources = jsonOutputResources;
+    }
+
+    public Map<String, ?> getJSONOutputResources() {
+        return jsonOutputResources;
     }
 
 }

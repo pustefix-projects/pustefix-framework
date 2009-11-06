@@ -225,6 +225,17 @@
   </handler>
   
   
+  <!-- JSON output object -->
+  
+  <handler class="org.pustefixframework.config.contextxmlservice.parser.JSONOutputResourceParsingHandler">
+    <match>/c:context-xml-service-config/c:json-output/c:resource</match>
+  </handler>
+  
+  <handler class="org.pustefixframework.config.contextxmlservice.parser.JSONOutputResourceExtensionPointParsingHandler">
+    <match>/c:context-xml-service-config/c:json-output//c:extension-point[@type='context.jsonoutput']</match>
+  </handler>
+  
+  
   <handler class="org.pustefixframework.config.generic.PropertiesParsingHandler">
     <match>/c:context-xml-service-config//c:properties</match>
     <match>/c:context-xml-service-config/c:context//c:resource//c:properties</match>

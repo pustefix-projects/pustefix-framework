@@ -71,7 +71,7 @@ public class StateUtil {
     }
     
     @SuppressWarnings("deprecation")
-    private static void renderContextResource(Object cr, ResultDocument resdoc, String nodename) throws Exception {
+    public static void renderContextResource(Object cr, ResultDocument resdoc, String nodename) throws Exception {
         String classname = cr.getClass().getName();
         Class<?> clazz = cr.getClass();
         if(Enhancer.isEnhanced(clazz)) {

@@ -41,6 +41,8 @@ public class SimplePustefixContextXMLRequestHandlerConfig extends AbstractPustef
 
     private Map<String, ? extends ScriptedFlowProvider> scriptedFlows;
 
+    private Map<String, ?> jsonOutputResources;
+
     public void setContextConfig(ContextConfig contextConfig) {
         this.contextConfig = contextConfig;
     }
@@ -57,11 +59,20 @@ public class SimplePustefixContextXMLRequestHandlerConfig extends AbstractPustef
         this.scriptedFlows = scriptedFlows;
     }
 
-    public static BeanDefinition generateBeanDefinition(PustefixContextXMLRequestHandlerConfig config, BeanReference scriptedFlowMapReference, ContextConfigHolder contextConfigHolder) {
+    public void setJSONOutputResources(Map<String, ?> jsonOutputResources) {
+        this.jsonOutputResources = jsonOutputResources;
+    }
+
+    public Map<String, ?> getJSONOutputResources() {
+        return jsonOutputResources;
+    }
+
+    public static BeanDefinition generateBeanDefinition(PustefixContextXMLRequestHandlerConfig config, BeanReference scriptedFlowMapReference, BeanReference jsonOutputResourceMapReference, ContextConfigHolder contextConfigHolder) {
         BeanDefinitionBuilder beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(SimplePustefixContextXMLRequestHandlerConfig.class);
         beanBuilder.setScope("singleton");
         beanBuilder.addPropertyValue("properties", config.getProperties());
         beanBuilder.addPropertyValue("scriptedFlows", scriptedFlowMapReference);
+        beanBuilder.addPropertyValue("JSONOutputResources", jsonOutputResourceMapReference);
         beanBuilder.addPropertyValue("servletName", config.getServletName());
         beanBuilder.addPropertyValue("SSL", config.isSSL());
         beanBuilder.addPropertyValue("contextConfig", contextConfigHolder.getContextConfigObject());
