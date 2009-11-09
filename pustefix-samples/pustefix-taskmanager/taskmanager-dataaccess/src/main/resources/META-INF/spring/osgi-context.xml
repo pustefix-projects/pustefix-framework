@@ -8,6 +8,6 @@
 
 	<reference id="dataSource" interface="javax.sql.DataSource" />
 
-	<service ref="taskListsDao" interface="org.pustefixframework.samples.taskmanager.dataaccess.dao.TaskListsDao"/>
+	<service ref="taskListsDao" interface="org.pustefixframework.samples.taskmanager.dataaccess.dao.TaskListsDao" context-class-loader="service-provider"/>
 	<service ref="transactionManager" interface="org.springframework.transaction.PlatformTransactionManager"/>
 </beans:beans>                                                                           

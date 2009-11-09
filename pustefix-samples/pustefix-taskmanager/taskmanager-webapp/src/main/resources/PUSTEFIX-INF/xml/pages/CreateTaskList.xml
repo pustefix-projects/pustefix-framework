@@ -2,8 +2,8 @@
   
   <part name="content">
     <theme name="default">
-        <h1>Tasklist details</h1>
-       
+        <h1>Create task list</h1>
+        
     </theme>
   </part>
   

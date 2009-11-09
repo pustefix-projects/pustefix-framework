@@ -28,7 +28,7 @@ public class TaskList {
 	@Column(name="description")
     private String description;
     
-	@OneToMany(mappedBy="taskList",fetch=FetchType.EAGER)
+	@OneToMany(mappedBy="taskList",fetch=FetchType.EAGER,cascade=CascadeType.ALL)
 	private List<Task> tasks;
 	
     public int getId() {

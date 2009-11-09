@@ -10,7 +10,7 @@
               <div style="font-size:120%; font-style:italic"><ixsl:value-of select="/formresult/tasks/@description"/></div>
             </td>
             <td valign="bottom" style="padding-left:10px">
-              <pfx:button page="TaskListDetails">
+              <pfx:button page="EditTaskList">
                 <pfx:image src="img/edit-24x24.png" border="0" title="Edit tasklist description"/>
               </pfx:button>
             </td>

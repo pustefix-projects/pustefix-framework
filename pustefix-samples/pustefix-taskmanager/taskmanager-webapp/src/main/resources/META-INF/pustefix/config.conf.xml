@@ -25,15 +25,25 @@
       <flowstep name="TaskOverview"/>
   </pageflow>
 
+  <pageflow name="EditTaskListFlow" final="TaskOverview">
+    <flowstep name="EditTaskList"/>
+  </pageflow>
+
   <extension-point type="context.pagerequest" id="pagerequest.main"/>
 
   <pagerequest name="TaskListOverview">
-    <!--<authconstraint ref="AC_AUTHORIZED"/>-->
+     <authconstraint ref="AC_AUTHORIZED"/>
      <input>
+        <wrapper prefix="create" class="org.pustefixframework.samples.taskmanager.web.CreateTaskList"/>
         <wrapper prefix="select" class="org.pustefixframework.samples.taskmanager.web.SelectTaskList"/>
         <wrapper prefix="delete" class="org.pustefixframework.samples.taskmanager.web.DeleteTaskList"/>
      </input>
      <process>
+        <action name="create" jumptopage="CreateTaskList">
+           <submit>
+              <wrapper ref="create"/>
+           </submit>
+        </action>
         <action name="select" jumptopage="TaskOverview">
            <submit>
              <wrapper ref="select"/>
@@ -49,6 +59,12 @@
         <resource node="user" bean-ref="contextUser"/>
         <resource node="tasklists" bean-ref="contextTaskLists"/>
     </output>
+  </pagerequest>
+
+  <pagerequest name="CreateTaskList">
+     <input>
+        <wrapper prefix="edit" class="org.pustefixframework.samples.taskmanager.web.EditTaskList"/>
+     </input>
   </pagerequest>
 
   <pagerequest name="TaskOverview">
@@ -77,7 +93,7 @@
   
   </pagerequest>
   
-  <pagerequest name="TaskListDetails">
+  <pagerequest name="EditTaskList">
     <input>
       <wrapper prefix="edit" class="org.pustefixframework.samples.taskmanager.web.EditTaskList"/>
     </input>

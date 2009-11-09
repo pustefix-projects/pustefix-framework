@@ -2,8 +2,25 @@
   
   <part name="content">
     <theme name="default">
-        <h1>Edit Task</h1>
-        
+      <h1>Edit tasklist</h1>
+      <table>
+        <pfx:forminput>
+          <pfx:xinp type="hidden" name="edit.id"/>
+          <tr>
+            <td>Name:</td>
+            <td><pfx:xinp type="text" name="edit.name"/></td>
+          </tr>
+          <tr>
+            <td>Description:</td>
+            <td><pfx:xinp type="text" name="edit.description"/></td>
+          </tr>
+          <tr>
+            <td colspan="2">
+              <pfx:xinp type="submit" value="Submit"/>
+            </td>
+          </tr>
+        </pfx:forminput>
+      </table>
     </theme>
   </part>
   

@@ -36,6 +36,9 @@ public class TaskListsDaoImpl implements TaskListsDao {
     }
 
     public void updateTaskList(TaskList taskList) {
+        Query query = em.createQuery("from TaskList as t where t.id = :taskListId");
+        query.setParameter("taskListId", taskList.getId());
+        if(query.getResultList().size()==0) throw new RuntimeException("Tasklist doesn't exist " + taskList.getId());
     	em.merge(taskList);
     }
 

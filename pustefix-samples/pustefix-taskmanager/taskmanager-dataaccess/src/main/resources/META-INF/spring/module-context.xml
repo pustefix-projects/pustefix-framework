@@ -9,9 +9,37 @@
 			http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd">
 
    <context:annotation-config/>
-
+	
 	<bean id="taskListsDao" class="org.pustefixframework.samples.taskmanager.dataaccess.dao.hibernatejpa.TaskListsDaoImpl">
 	</bean>
+
+   <bean id="transactionInterceptor" class="org.springframework.transaction.interceptor.TransactionInterceptor">
+      <property name="transactionManager">
+         <ref bean="transactionManager" />
+      </property>
+      <property name="transactionAttributes">
+         <props>
+            <prop key="delete*">PROPAGATION_REQUIRED</prop>
+            <prop key="add*">PROPAGATION_REQUIRED</prop>
+            <prop key="update*">PROPAGATION_REQUIRED</prop>
+            <prop key="save*">PROPAGATION_REQUIRED</prop>
+            <prop key="find*">PROPAGATION_REQUIRED,readOnly</prop>
+         </props>
+      </property>
+   </bean> 
+
+   <bean class="org.springframework.aop.framework.autoproxy.BeanNameAutoProxyCreator">
+      <property name="beanNames">
+         <list>
+            <value>taskListsDao</value>
+         </list>
+      </property>
+      <property name="interceptorNames">
+         <list>
+            <value>transactionInterceptor</value>
+         </list>
+      </property>
+   </bean> 
 
    <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
       <property name="dataSource" ref="dataSource"/>

@@ -9,21 +9,15 @@ import de.schlund.pfixcore.generator.IHandler;
 import de.schlund.pfixcore.generator.IWrapper;
 import de.schlund.pfixcore.workflow.Context;
 
-public class EditTaskListHandler implements IHandler {
+public class CreateTaskListHandler implements IHandler {
 
 	private ContextUser ctxUser;
 	private ContextTaskLists ctxTaskLists;
 	private TaskListsDao taskListsDao;
 	
 	public void handleSubmittedData(Context context, IWrapper wrapper) throws Exception {
-		EditTaskList sel = (EditTaskList)wrapper;
-		TaskList taskList = taskListsDao.getTaskListByUser(ctxUser.getUserId(), sel.getId());
-		if(taskList != null) {
-		    taskList.setName(sel.getName());
-		    taskList.setDescription(sel.getDescription());
-		    taskListsDao.updateTaskList(taskList);
-		    System.out.println("UPDATED!!!!!!!!!!!!!!!!!");
-		}
+		CreateTaskList sel = (CreateTaskList)wrapper;
+		
 	}
 	
 	public boolean isActive(Context context) throws Exception {
@@ -40,13 +34,6 @@ public class EditTaskListHandler implements IHandler {
 	}
 	
 	public void retrieveCurrentStatus(Context context, IWrapper wrapper) throws Exception {
-	    TaskList taskList = ctxTaskLists.getSelectedTaskList();
-	    if(taskList != null) {
-	        EditTaskList editTaskList = (EditTaskList)wrapper;
-	        editTaskList.setId(taskList.getId());
-	        editTaskList.setName(taskList.getName());
-	        editTaskList.setDescription(taskList.getDescription());
-	    }
 	}
 	
 	@Autowired

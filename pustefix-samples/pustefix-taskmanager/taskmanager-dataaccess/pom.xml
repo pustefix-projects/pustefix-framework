@@ -63,8 +63,12 @@
                         <artifactId>com.springsource.javax.transaction</artifactId>
                         <version>1.1.0</version>
                 </dependency>
-    
-    
+    <dependency>  
+      <groupId>org.springframework</groupId>
+      <artifactId>org.springframework.aop</artifactId>
+      <version>2.5.6.A</version>
+    </dependency>
+    <dependency>  <groupId>org.springframework</groupId>  <artifactId>org.springframework.transaction</artifactId>  <version>2.5.6.A</version> </dependency>
     
   </dependencies>
   
@@ -90,13 +94,15 @@
                             org.hibernate.hql.ast;version="3.3.1.GA",
                             org.springframework.aop;version="2.5.6.A",
                             org.springframework.aop.framework;version="2.5.6.A",
+                            org.springframework.aop.framework.autoproxy;version="2.5.6.A",
                             org.springframework.beans.factory;version="2.5.6.A",
                             org.springframework.core;version="2.5.6.A",
                             org.springframework.dao.support;version="2.5.6.A",
                             org.springframework.orm.jpa;version="2.5.6.A",
                             org.springframework.orm.jpa.support;version="2.5.6.A",
                             org.springframework.orm.jpa.vendor;version="2.5.6.A",
-                            org.springframework.transaction;version="2.5.6.A"
+                            org.springframework.transaction;version="2.5.6.A",
+                            org.springframework.transaction.interceptor;version="2.5.6.A"
             </Import-Package>           
             </instructions>
          </configuration>
