@@ -1,3 +1,48 @@
+2009-11-06  Martin Leidig  <mleidig@schlund.de>
+
+	Added support for specifying and/or restricting the set of modules
+	from the classpath which are taken into account for a specific
+	project when processing dynamic includes.
+	Therefor a module can define so-called filter-attributes in its
+	descriptor and a project can define a filter inside its configuration
+	which will be applied based on these attributes.
+
+	Example (filtering by a language attribute):
+	
+	Module descriptor (META-INF/pustefix-module.xml)
+
+	<module-descriptor>
+	  ...
+	  <override-modules>
+	    <filter-attribute name="lang" value="de"/>
+	    <filter-attribute name="foo" value="bar"/>
+	    <module name="..."/>
+	  </override-modules>
+	</module-descriptor>
+
+	Project configuration (projects/myproject/conf/project.xml.in)
+
+	<project name="myproject">
+	  ...
+	  <dynamic-includes filter="(lang=de)"/>
+	  ...
+	</project>
+
+	In this example the override mechanism only uses modules which define
+	a filter attribute "lang" with value "de", or which set no filter
+	attribute at all (which is the backwards-compatible default
+	behaviour).
+	The filter uses the OSGi filter syntax (see the OSGi Service Platform
+	Release 4 Version 4.2 Core Specification, section 3.2.7 Filter
+	syntax), which itself is based on the syntax of LDAP search 
+	filters (see RFC1960/RFC2254).
+
+	Examples:
+	<dynamic-includes filter="(& (lang=de) (foo=bar))"/>
+	<dynamic-includes filter="(| (lang=de) (foo=baz))"/>
+	<dynamic-includes filter="(! (lang=en))"/>
+
+
 2009-11-03  Martin Leidig  <mleidig@schlund.de>
 
 	Added support for using ant-style patterns to specify overridden module
