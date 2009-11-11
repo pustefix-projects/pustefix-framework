@@ -4,7 +4,7 @@
     <theme name="default">
       <div class="part_module">
         <h3>AAA - A_test</h3>
-        <partinfo part="partA_test" theme="default" path="txt/test.xml" module="sample-module-A"/>
+        <partinfo part="partA_test" theme="default" path="txt/test.xml" module="org.pustefixframework.samples.modules.sample-module-A"/>
       </div>
     </theme>
   </part>

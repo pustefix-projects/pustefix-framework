@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<make lang="en_GB" project="moduletest">
+<xml-generator-config project="moduletest" lang="en_GB" 
+          xmlns="http://www.pustefix-framework.org/2008/namespace/xml-generator-config">
 
   <global>
     <param name="outputdoctype-public" value="-//W3C//DTD HTML 4.01//EN"/>
@@ -24,7 +25,7 @@
   
   <standardmetatags>
     <include stylesheet="xsl/metatags.xsl"/>
-    <include stylesheet="xsl/test.xsl" module="sample-module-A"/>
+    <include stylesheet="bundle://org.pustefixframework.samples.modules.sample-module-A/PUSTEFIX-INF/xsl/test.xsl"/>
     <include stylesheet="xsl/test.xsl" />
   </standardmetatags>
 
@@ -32,4 +33,4 @@
   <standardpage name="include" xml="xml/frame.xml"/>
   <standardpage name="dynamic" xml="xml/frame.xml"/>
   
-</make>
+</xml-generator-config>

@@ -9,7 +9,7 @@
   <groupId>org.pustefixframework.samples</groupId>
   <artifactId>moduletest</artifactId>
   <version>1.0.2-SNAPSHOT</version>
-  <packaging>war</packaging>
+  <packaging>bundle</packaging>
 
   <name>Pustefix module test application</name>
 
@@ -37,7 +37,7 @@
   </dependencies>
  
   <build>
-    <plugins> 
+    <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
@@ -45,18 +45,6 @@
           <source>1.5</source>
           <target>1.5</target>
         </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.pustefixframework.maven.plugins</groupId>
-        <artifactId>pustefix-webapp-plugin</artifactId>
-        <version>1.0.2-SNAPSHOT</version>
-        <executions>
-          <execution>
-            <goals>
-              <goal>generate</goal>
-            </goals>
-          </execution>
-        </executions>
       </plugin>
       <plugin>
         <groupId>org.pustefixframework.maven.plugins</groupId>
@@ -82,6 +70,83 @@
           </execution>
         </executions>
       </plugin>
+     <plugin>
+         <groupId>org.apache.felix</groupId>
+         <artifactId>maven-bundle-plugin</artifactId>
+         <extensions>true</extensions>
+         <version>2.0.0</version>
+         <configuration>
+            <instructions>
+              <Bundle-RequiredExecutionEnvironment>J2SE-1.5</Bundle-RequiredExecutionEnvironment>
+              <Include-Resource>src/main/resources</Include-Resource>
+              <Export-Package></Export-Package>
+              <Import-Package>*, org.aopalliance.aop;version="1.0.0", org.springframework.aop.scope;version="2.5.6.A", org.springframework.aop;version="2.5.6.A", org.springframework.aop.framework;version="2.5.6.A", net.sf.cglib.core;version="2.1.3", net.sf.cglib.proxy;version="2.1.3", net.sf.cglib.reflect;version="2.1.3"</Import-Package>
+            </instructions>
+         </configuration>
+         <executions>
+            <execution>
+               <id>bundle-manifest</id>
+               <phase>process-classes</phase>
+               <goals>
+                  <goal>manifest</goal>
+               </goals>
+            </execution>
+         </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.pustefixframework.maven.plugins</groupId>
+        <artifactId>pustefix-autoconfig-plugin</artifactId>
+        <version>1.0.2-SNAPSHOT</version>
+        <configuration>
+          <mode>${mode}</mode>
+          <logLevel>${logLevel}</logLevel>
+        </configuration>
+        <executions>
+          <execution>
+            <goals>
+              <goal>generate-config-fragments</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.pustefixframework.maven.plugins</groupId>
+        <artifactId>pustefix-bundleindex-plugin</artifactId>
+        <version>1.0.2-SNAPSHOT</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>update-bundle-index</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.pustefixframework.maven.plugins</groupId>
+        <artifactId>pustefix-launcher-plugin</artifactId>
+        <version>1.0.2-SNAPSHOT</version>
+      </plugin>
     </plugins>
   </build>
+  
+  <profiles>
+    <profile>
+      <id>test</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <properties>
+        <mode>test</mode>
+        <logLevel>info</logLevel>
+      </properties>
+    </profile>
+    <profile>
+      <id>prod</id>
+      <properties>
+        <mode>prod</mode>
+        <logLevel>warn</logLevel>
+      </properties>
+     </profile>
+  </profiles>
+  
 </project>

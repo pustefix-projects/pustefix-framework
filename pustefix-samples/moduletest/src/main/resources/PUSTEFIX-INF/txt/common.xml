@@ -54,7 +54,7 @@
       <div class="part_project">
         <h3>PROJECT - Project_inc</h3>
         <xmloutput>
-          <pfx:include part="partC" module="sample-module-C"/>
+          <pfx:include part="partC" module="org.pustefixframework.samples.modules.sample-module-C"/>
         </xmloutput>
         <br/>
         <partinfo part="partProject_inc" theme="default" path="txt/common.xml"/>

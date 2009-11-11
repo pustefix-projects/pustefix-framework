@@ -1,17 +1,14 @@
-<module-descriptor xsi:schemaLocation="http://pustefix.sourceforge.net/moduledescriptor200702 http://pustefix.sourceforge.net/moduledescriptor200702.xsd" xmlns="http://pustefix.sourceforge.net/moduledescriptor200702" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<?xml version="1.0" encoding="utf-8"?>
+<pustefix-module xmlns="http://www.pustefix-framework.org/2009/namespace/module-config">
 
-  <module-name>sample-module-B</module-name>
+  <dynamic-includes>
+    <override-modules>
+      <module name="org.pustefixframework.samples.modules.sample-module-A">
+        <resource path="txt/common.xml"/>
+        <resource path="txt/ab.xml"/>
+        <resource path="txt/abc.xml"/>
+      </module>
+    </override-modules>
+  </dynamic-includes>
 
-  <resources>
-    <resource-mapping srcpath="PUSTEFIX-INF/resources/dyntxt" targetpath="dyntxt"/>
-  </resources>
-
-  <override-modules>
-    <module name="sample-module-A">
-      <resource path="txt/common.xml"/>
-      <resource path="txt/ab.xml"/>
-      <resource path="txt/abc.xml"/>
-    </module>
-  </override-modules>
-
-</module-descriptor>
+</pustefix-module>

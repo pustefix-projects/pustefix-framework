@@ -26,8 +26,6 @@
     <module>pustefix-webservice</module>
 -->
     <module>sample-modules</module>
-<!--
     <module>moduletest</module>
--->
   </modules>  
 </project>

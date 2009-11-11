@@ -1,7 +1,0 @@
-<interface xsi:schemaLocation="http://pustefix.sourceforge.net/interfacewrapper200401 http://pustefix.sourceforge.net/interfacewrapper200401.xsd"
-  xmlns="http://pustefix.sourceforge.net/interfacewrapper200401"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-  
-  <!-- This handler will process the data -->
-  <ihandler class="org.pustefixframework.samples.moduletest.handler.SaveUserDataHandler"/>
-</interface>

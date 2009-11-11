@@ -5,15 +5,15 @@
       <div class="part_project">
         <h2>Module includes</h2>
         <xmloutput>
-          <pfx:include part="partA" href="txt/common.xml" module="sample-module-A"/>
+          <pfx:include part="partA" href="txt/common.xml" module="org.pustefixframework.samples.modules.sample-module-A"/>
         </xmloutput>         
         <br/>
         <xmloutput>
-          <pfx:include part="partB" href="txt/common.xml" module="sample-module-B"/>
+          <pfx:include part="partB" href="txt/common.xml" module="org.pustefixframework.samples.modules.sample-module-B"/>
         </xmloutput>
         <br/>
         <xmloutput>
-          <pfx:include part="partC" href="txt/common.xml" module="sample-module-C"/>
+          <pfx:include part="partC" href="txt/common.xml" module="org.pustefixframework.samples.modules.sample-module-C"/>
         </xmloutput>
         <br/>
         <xmloutput>
@@ -29,7 +29,7 @@
         </xmloutput>
         <br/>
         <xmloutput>
-          <pfx:include part="partA_inc" href="txt/common.xml" module="sample-module-A"/>
+          <pfx:include part="partA_inc" href="txt/common.xml" module="org.pustefixframework.samples.modules.sample-module-A"/>
         </xmloutput>
         <br/>
         <partinfo part="content" theme="default" path="txt/pages/main_home.xml"/>

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<project-config xmlns="http://www.pustefix-framework.org/2008/namespace/project-config">
+<pustefix-application xmlns="http://www.pustefix-framework.org/2009/namespace/application-config">
   
   <project>
     <name>moduletest</name>
@@ -12,7 +12,7 @@
   </editor>
 
   <xml-generator>
-    <config-file>docroot:/WEB-INF/depend.xml</config-file>
+    <config-file>bundle:/META-INF/pustefix/depend.xml</config-file>
     <choose>
       <when test="$mode='prod'">
         <!-- Set this to false if you want to skip the check for changed stylesheets on every request -->
@@ -49,7 +49,7 @@
     
     <context-xml-service>
       <path>/xml/config</path>
-      <config-file>docroot:/WEB-INF/config.conf.xml</config-file>
+      <config-file>bundle:/META-INF/pustefix/config.conf.xml</config-file>
       <additional-trail-info>de.schlund.pfixxml.perflogging.DefaultAdditionalTrailInfoImpl</additional-trail-info>
       <choose>
         <when test="$mode='prod'">
@@ -69,11 +69,11 @@
     </deref-service>
     
     <static>
-      <path>core/img</path>
-      <path>core/script</path>
       <path>img</path>
       <path>css</path>
     </static>
+    
+    <dynamic-includes filter="(lang=en)"/>
     
     <choose>
       <when test="$mode='test'">
@@ -92,4 +92,4 @@
     <prop name="pfixcore.ssl_redirect_port.for.9080">9443</prop>
   </properties>
   
-</project-config>
+</pustefix-application>
