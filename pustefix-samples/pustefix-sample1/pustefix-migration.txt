@@ -44,6 +44,9 @@ Migrating Pustefix applications from 0.14 to 1.0
     replace <make project="..." lang="...">
     by <xml-generator-config project="..." lang="..." 
           xmlns="http://www.pustefix-framework.org/2008/namespace/xml-generator-config">
+          
+    replace <include stylesheet="path/to/file" module="amodule"/> by
+      <include stylesheet="bundle://BUNDLE_SYMBOLIC_NAME_AMODULE/path/to/file"/>
     
 - Replace config-includes by extension-points, configuration-fragments by extensions
     (TODO: describe details)    
@@ -145,7 +148,43 @@ Migrating Pustefix applications from 0.14 to 1.0
       </properties>
      </profile>
 
+- Add the following provision.conf file to the root folder:
+
+#Provisioning configuration
+
+#Exclude bundles resolved from POM but not wanted at runtime (by Bundle-SymbolicName)
+!com.springsource.org.apache.log4j
+
+#Additional bundles required to launch/deploy the application
+
+#HttpService implementation
+mvn:org.apache.felix/org.apache.felix.http.jetty/[1.0.1]/jar
+
+#Pustefix core modules
+mvn:org.pustefixframework.osgi/pustefix-osgi-spring-dm-extender/1.0.2.SNAPSHOT/jar
+mvn:org.pustefixframework.osgi/pustefix-osgi-logservice-bridge/1.0.2.SNAPSHOT/jar@3
+
+#Logging
+mvn:ch.qos.logback/com.springsource.ch.qos.logback.classic/[0.9.15]/jar@3
+mvn:ch.qos.logback/com.springsource.ch.qos.logback.core/[0.9.15]/jar@3
+mvn:org.slf4j/com.springsource.slf4j.api/[1.5.6]/jar@3
+mvn:org.slf4j/com.springsource.slf4j.bridge/[1.5.6]/jar@3
+mvn:org.slf4j/com.springsource.slf4j.org.apache.log4j/[1.5.6]/jar@3
+mvn:org.slf4j/jcl-over-slf4j/[1.5.6]/jar@3
+
+#Logging configuration
+file:target/generated-bundles/org.pustefixframework.logback.config-1.0.0.jar@3
+
+#Pustefix runtime configuration
+file:target/generated-bundles/org.pustefixframework.runtime.config-1.0.0.jar@3
+
+
+
 - View XML changes:
+
+  Replace module names by Bundle-SymbolicNames, e.g.:
+   <pfx:include part="partA" href="txt/common.xml" module="OLD_MODULE_NAME"/> to
+    <pfx:include part="partA" href="txt/common.xml" module="BUNDLE_SYMBOLIC_NAME"/>
 
   Images from modules now are directly referenced from the bundle (no mapping/extracting to module folder any more),
   so the according <pfx:image> tags have to be adapted, examples:
@@ -168,6 +207,10 @@ Migrating Pustefix modules from 0.14 to 1.0
     <pustefix-module xmlns="http://www.pustefix-framework.org/2009/namespace/module-config">
 
     remove <module-name> and <resources> elements
+    
+    replace module name by the according Bundle-SymbolicName in <override-modules><module name"...">
+    
+    add <dynamic-includes> tag around <override-modules>
     
 - Changes in pom.xml:
 
