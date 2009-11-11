@@ -74,19 +74,19 @@ public class DynamicIncludeInfoRegistry implements BundleContextAware, Initializ
     	}
     }
     
-    public List<String> getOverridingModules(String moduleName, String resourcePath) {
+    public List<String> getOverridingModules(String moduleName, DynamicIncludeModuleFilter filter, String resourcePath) {
         List<String> modules = new ArrayList<String>();
-        getOverridingModules(moduleName, resourcePath, modules);
+        getOverridingModules(moduleName, filter, resourcePath, modules);
         return modules;
     }
     
-    private void getOverridingModules(String moduleName, String resourcePath, List<String> modules) {
+    private void getOverridingModules(String moduleName, DynamicIncludeModuleFilter filter, String resourcePath, List<String> modules) {
     	synchronized(nameToInfo) {
 	        for(DynamicIncludeInfo moduleDesc: nameToInfo.values()) {
-	            if(moduleDesc.overridesResource(moduleName, resourcePath)) {
+	            if((filter == null || filter.accept(moduleDesc)) && moduleDesc.overridesResource(moduleName, resourcePath)) {
 	                if(!modules.contains(moduleDesc.getModuleName())) {
 	                    modules.add(0, moduleDesc.getModuleName());
-	                    getOverridingModules(moduleDesc.getModuleName(), resourcePath, modules);
+	                    getOverridingModules(moduleDesc.getModuleName(), filter, resourcePath, modules);
 	                }
 	            }
 	        }

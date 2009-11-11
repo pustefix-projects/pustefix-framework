@@ -23,8 +23,10 @@
     <osgi:service ref="dynamicResourceProvider" interface="org.pustefixframework.resource.ResourceProvider" />
     <bean id="dynamicResourceProvider" class="org.pustefixframework.resource.internal.DynamicResourceProvider">
       <property name="dynamicIncludeInfoRegistry" ref="dynincInfoRegistry"/>
+      <property name="dynamicIncludeModuleFilterRegistry" ref="dynincFilterRegistry"/>
     </bean>
     <bean id="dynincInfoRegistry" class="org.pustefixframework.resource.internal.DynamicIncludeInfoRegistry"/>
+    <bean id="dynincFilterRegistry" class="org.pustefixframework.resource.internal.DynamicIncludeModuleFilterRegistry"/>
     
     <!-- Provides selector for theme preference -->
     <osgi:service ref="themeResourceSelector" interface="org.pustefixframework.resource.ResourceSelector" />

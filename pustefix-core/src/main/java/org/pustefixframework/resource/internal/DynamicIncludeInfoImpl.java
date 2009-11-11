@@ -18,8 +18,10 @@
 package org.pustefixframework.resource.internal;
 
 import java.util.ArrayList;
+import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -43,6 +45,8 @@ public class DynamicIncludeInfoImpl implements DynamicIncludeInfo {
 
     private Map<String,Set<String>> moduleToResourcePaths = new HashMap<String,Set<String>>();
     private Map<String,Set<String>> moduleToResourcePathPatterns = new HashMap<String,Set<String>>();
+    
+    private Dictionary<String,String> filterAttributes = new Hashtable<String,String>();
     
     private AntPathMatcher antPathMatcher = new AntPathMatcher();
     
@@ -97,6 +101,15 @@ public class DynamicIncludeInfoImpl implements DynamicIncludeInfo {
         return false;
     }
     
+    
+    public void addFilterAttribute(String name, String value) {
+        filterAttributes.put(name, value);
+    }
+         
+    public Dictionary<String,String> getFilterAttributes() {
+        return filterAttributes;
+    }
+    
     @Override
     public String toString() {
         return "MODULE " + name;
@@ -113,7 +126,15 @@ public class DynamicIncludeInfoImpl implements DynamicIncludeInfo {
             }
             dynInfo = new DynamicIncludeInfoImpl(moduleName, level);
             Element overrideElem = getSingleChildElement(element, Constants.NS_MODULE, "override-modules", false);
-            if(overrideElem != null) {    
+            if(overrideElem != null) {
+                List<Element> filterAttrElems = getChildElements(overrideElem, Constants.NS_MODULE, "filter-attribute");
+                for(Element filterAttrElem: filterAttrElems) {
+                    String filterAttrName = filterAttrElem.getAttribute("name");
+                    if(filterAttrName.equals("")) throw new IllegalArgumentException("Element 'filter-attribute' requires 'name' attribute!");
+                    String filterAttrValue = filterAttrElem.getAttribute("value");
+                    if(filterAttrValue.equals("")) throw new IllegalArgumentException("Element 'filter-attribute' requires 'value' attribute!");
+                    dynInfo.addFilterAttribute(filterAttrName, filterAttrValue);
+                }
                 List<Element> modElems = getChildElements(overrideElem, Constants.NS_MODULE, "module");
                 for(Element modElem:modElems) {
                     String modName = modElem.getAttribute("name").trim();

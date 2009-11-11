@@ -28,6 +28,11 @@
     <match>/p:pustefix-application/p:application/p:static</match>
   </handler>
   
+  <!--  Handle dynamic include module filter -->
+  <handler class="org.pustefixframework.config.application.parser.DynamicIncludeModuleFilterParsingHandler">
+    <match>/p:pustefix-application/p:application/p:dynamic-includes</match>
+  </handler>
+  
   <!-- Adds the SessionCleaner bean -->
   <handler class="org.pustefixframework.config.application.parser.SessionCleanerParsingHandler">
     <match>/p:pustefix-application/p:application//p:context-xml-service</match>

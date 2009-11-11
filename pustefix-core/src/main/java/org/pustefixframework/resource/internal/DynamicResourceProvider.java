@@ -47,6 +47,7 @@ public class DynamicResourceProvider implements ResourceProvider {
 
     private Log logger = LogFactory.getLog(DynamicResourceProvider.class);
     
+    private DynamicIncludeModuleFilterRegistry dynamicIncludeModuleFilterRegistry;
     private DynamicIncludeInfoRegistry dynamicIncludeInfoRegistry;
     
     public DynamicResourceProvider() {
@@ -54,6 +55,10 @@ public class DynamicResourceProvider implements ResourceProvider {
     
     public String[] getSchemes() {
         return SUPPORTED_SCHEMES;
+    }
+    
+    public void setDynamicIncludeModuleFilterRegistry(DynamicIncludeModuleFilterRegistry dynamicIncludeModuleFilterRegistry) {
+        this.dynamicIncludeModuleFilterRegistry = dynamicIncludeModuleFilterRegistry;
     }
     
     public void setDynamicIncludeInfoRegistry(DynamicIncludeInfoRegistry dynamicIncludeInfoRegistry) {
@@ -134,7 +139,8 @@ public class DynamicResourceProvider implements ResourceProvider {
         	}
         }
 
-        List<String> overMods = dynamicIncludeInfoRegistry.getOverridingModules(module, uri.getPath());
+        DynamicIncludeModuleFilter filter = dynamicIncludeModuleFilterRegistry.getDynamicIncludeModuleFilter(application);
+        List<String> overMods = dynamicIncludeInfoRegistry.getOverridingModules(module, filter, uri.getPath());
         if(overMods.size()>1) {
             logger.warn("Multiple modules found which override resource '" + uri.getPath() + "' from module '" + module + "'.");
         }
