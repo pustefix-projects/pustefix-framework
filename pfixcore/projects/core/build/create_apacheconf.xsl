@@ -61,7 +61,7 @@ RewriteEngine on
 <xsl:if test="$currentprj/p:application/p:default-path/node()">
   RewriteRule ^/$ <xsl:choose>
     <xsl:when test="self::p:https-port">https</xsl:when><xsl:otherwise>http</xsl:otherwise>
-  </xsl:choose>://%{SERVER_NAME}<xsl:apply-templates select="$currentprj/p:application/p:default-path/node()"/> [NC,R,L]
+  </xsl:choose>://%{SERVER_NAME}<xsl:if test="not(normalize-space(substring-after($address,':'))='80' or normalize-space(substring-after($address,':'))='443')">:%{SERVER_PORT}</xsl:if><xsl:apply-templates select="$currentprj/p:application/p:default-path/node()"/> [NC,R,L]
 </xsl:if>
 
 <xsl:if test="self::p:https-port">
