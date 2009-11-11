@@ -28,7 +28,7 @@ RewriteEngine on
 <xsl:if test="$currentprj/defpath/node()">
   RewriteRule ^/$ <xsl:choose>
     <xsl:when test="@ssl = 'true'">https</xsl:when><xsl:otherwise>http</xsl:otherwise>
-  </xsl:choose>://%{SERVER_NAME}<xsl:apply-templates select="$currentprj/defpath/node()"/> [NC,R,L]
+  </xsl:choose>://%{SERVER_NAME}<xsl:if test="not(@number='80' or @number='443')">:%{SERVER_PORT}</xsl:if><xsl:apply-templates select="$currentprj/defpath/node()"/> [NC,R,L]
 </xsl:if>
 
 <xsl:if test="@ssl ='true'">
