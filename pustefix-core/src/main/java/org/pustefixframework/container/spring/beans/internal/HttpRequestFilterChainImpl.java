@@ -26,8 +26,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.pustefixframework.container.spring.http.HttpRequestFilter;
-import org.pustefixframework.container.spring.http.HttpRequestFilterChain;
+import org.pustefixframework.http.HttpRequestFilter;
+import org.pustefixframework.http.HttpRequestFilterChain;
 
 /**
  * Filter chain implementation. Uses filters from a set and a special, 

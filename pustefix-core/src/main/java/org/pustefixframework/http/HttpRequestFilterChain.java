@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-package org.pustefixframework.container.spring.http;
+package org.pustefixframework.http;
 
 import java.io.IOException;
 
@@ -25,31 +25,22 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * Interface for all HTTP request filters.
- * Objects implementing this interface, that are placed in the 
- * {@link org.springframework.context.ApplicationContext} will
- * be detected by Pustefix and invoked on each request.
- * These objects may also implement the 
- * {@link org.springframework.core.Ordered} to provide the order 
- * in which the filters should be chained.  
+ * Provides access to the next filter in the filter chain.  
  * 
  * @author Sebastian Marsching <sebastian.marsching@1und1.de>
  */
-public interface HttpRequestFilter {
+public interface HttpRequestFilterChain {
 
     /**
-     * Handles a request, processing and / or passing it to the next filter
-     * in the chain.
-     * Implementations may replace or decorate the request and response 
-     * objects with their own implementations in order to intercept 
-     * actions on these objects.
+     * Calls the <code>doFilter()</code> method of the next filter 
+     * in the filter chain or passes the request to the actual request 
+     * handler if the calling filter is the last filter in the 
+     * filter chain.
      * 
      * @param request represents the client request
      * @param response represents the response send to the client
-     * @param chain provides a method to pass the request to the next filter in 
-     *  the chain
      * @throws IOException
      * @throws ServletException
      */
-    void doFilter(HttpServletRequest request, HttpServletResponse response, HttpRequestFilterChain chain) throws IOException, ServletException;
+    void doFilter(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException;
 }

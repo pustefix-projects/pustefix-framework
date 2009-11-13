@@ -27,8 +27,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.pustefixframework.container.spring.beans.PustefixOsgiWebApplicationContext;
-import org.pustefixframework.container.spring.http.HttpRequestFilter;
-import org.pustefixframework.container.spring.http.HttpRequestFilterChain;
+import org.pustefixframework.http.HttpRequestFilter;
+import org.pustefixframework.http.HttpRequestFilterChain;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationEvent;
