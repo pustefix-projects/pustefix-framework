@@ -1,3 +1,8 @@
+2009-11-13  Sebastian Marsching <sebastian.marsching@1und1.de>
+
+	Added new tags <pfx:json-resource> and <pfx:json-resources> 
+	to render context resources as javascript in the HTML page.
+
 2009-11-11  Martin Leidig  <mleidig@schlund.de>
 
 	Added support for specifying and/or restricting the set of 

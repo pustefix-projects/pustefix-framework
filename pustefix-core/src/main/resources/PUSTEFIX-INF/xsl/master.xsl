@@ -50,6 +50,7 @@
   <xsl:import href="core/xsl/navigation.xsl"/>
   <xsl:import href="core/xsl/utils.xsl"/>
   <xsl:import href="core/xsl/forminput.xsl"/>
+  <xsl:import href="core/xsl/json_resources.xsl"/>
 
   <cus:custom_xsl/>
 
@@ -102,6 +103,7 @@
 
       <ixsl:import href="core/xsl/default_copy.xsl"/>
       <ixsl:import href="core/xsl/include.xsl"/>
+      <ixsl:import href="core/xsl/json_resources.xsl"/>
       <ixsl:import href="core/xsl/functions.xsl"/>
 
       <!-- generate user defined imports -->
