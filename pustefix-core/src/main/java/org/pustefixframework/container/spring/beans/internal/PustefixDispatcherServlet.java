@@ -18,19 +18,27 @@
 
 package org.pustefixframework.container.spring.beans.internal;
 
+import java.io.IOException;
+import java.util.Set;
+import java.util.TreeSet;
+
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.pustefixframework.container.spring.beans.PustefixOsgiWebApplicationContext;
+import org.pustefixframework.container.spring.http.HttpRequestFilter;
+import org.pustefixframework.container.spring.http.HttpRequestFilterChain;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.SourceFilteringListener;
+import org.springframework.core.OrderComparator;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.servlet.DispatcherServlet;
-
+import org.springframework.web.util.NestedServletException;
 
 /**
  * Provides HTTP access to components within a 
@@ -39,10 +47,14 @@ import org.springframework.web.servlet.DispatcherServlet;
  * @author Sebastian Marsching <sebastian.marsching@1und1.de>
  */
 public class PustefixDispatcherServlet extends DispatcherServlet {
+
     private static final long serialVersionUID = -5527490492537021694L;
-    
+
     private PustefixOsgiWebApplicationContext applicationContext;
-    
+
+    private Set<HttpRequestFilter> filters;
+    private HttpRequestFilter finalFilter;
+
     public PustefixDispatcherServlet(PustefixOsgiWebApplicationContext pustefixOsgiWebApplicationContext) {
         this.applicationContext = pustefixOsgiWebApplicationContext;
         this.applicationContext.addApplicationListener(new SourceFilteringListener(this.applicationContext, this));
@@ -53,6 +65,47 @@ public class PustefixDispatcherServlet extends DispatcherServlet {
         this.applicationContext.setServletContext(getServletContext());
         this.applicationContext.setServletConfig(getServletConfig());
         return this.applicationContext;
+    }
+
+    @Override
+    protected void initStrategies(ApplicationContext context) {
+        super.initStrategies(context);
+        initFilters(context);
+    }
+
+    protected void initFilters(ApplicationContext applicationContext) {
+        @SuppressWarnings("unchecked")
+        TreeSet<HttpRequestFilter> filters = new TreeSet<HttpRequestFilter>(new OrderComparator());
+        for (String beanName : applicationContext.getBeanDefinitionNames()) {
+            Class<?> clazz = applicationContext.getType(beanName);
+            if (clazz != null) {
+                if (HttpRequestFilter.class.isAssignableFrom(clazz)) {
+                    // Ignore scoped beans - there should be a scoped proxy that
+                    // will be used instead.
+                    if (!applicationContext.isPrototype(beanName) && !applicationContext.isSingleton(beanName)) {
+                        continue;
+                    }
+                    Object bean = applicationContext.getBean(beanName);
+                    filters.add((HttpRequestFilter) bean);
+                }
+            }
+        }
+        this.filters = filters;
+        this.finalFilter = new HttpRequestFilter() {
+
+            public void doFilter(HttpServletRequest request, HttpServletResponse response, HttpRequestFilterChain chain) throws IOException, ServletException {
+                try {
+                    PustefixDispatcherServlet.super.doDispatch(request, response);
+                } catch (IOException e) {
+                    throw e;
+                } catch (ServletException e) {
+                    throw e;
+                } catch (Throwable e) {
+                    throw new NestedServletException("Request processing failed", e);
+                }
+            }
+            
+        };
     }
 
     @Override
@@ -68,6 +121,12 @@ public class PustefixDispatcherServlet extends DispatcherServlet {
     }
 
     @Override
+    protected void doDispatch(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        HttpRequestFilterChain chain = new HttpRequestFilterChainImpl(filters, finalFilter);
+        chain.doFilter(request, response);
+    }
+
+    @Override
     protected void onRefresh(ApplicationContext context) throws BeansException {
         if (applicationContext.isRefreshed()) {
             initStrategies(context);
@@ -80,7 +139,7 @@ public class PustefixDispatcherServlet extends DispatcherServlet {
                     initStrategies(applicationContext);
                 }
             }
-            
+
         });
         // Check a second time: If application context has been refreshed
         // between the last check and registering the listener,

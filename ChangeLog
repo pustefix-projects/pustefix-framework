@@ -1,5 +1,9 @@
 2009-11-13  Sebastian Marsching <sebastian.marsching@1und1.de>
 
+	Added support for filtering HTTP requests. Beans implementing the 
+	new interface HttpRequestFilter will be automatically detected.
+	They can be used in the same way J2EE Filter instances are used. 
+
 	Added new tags <pfx:json-resource> and <pfx:json-resources> 
 	to render context resources as javascript in the HTML page.
 
