@@ -1,3 +1,8 @@
+2009-11-20  Sebastian Marsching  <sebastian.marsching@1und1.de>
+
+	* res/META-INF/org/pustefixframework/config/context-xml-service/parser/context-xml-service-config.xml: 
+	Allow <choose> tag within pagerequest variants
+
 2009-11-06  Martin Leidig  <mleidig@schlund.de>
 
 	Added support for specifying and/or restricting the set of modules
