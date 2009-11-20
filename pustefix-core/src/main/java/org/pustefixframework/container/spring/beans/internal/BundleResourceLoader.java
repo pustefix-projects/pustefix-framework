@@ -22,8 +22,8 @@ import java.net.URI;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.Map;
-import java.util.TreeSet;
 
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
@@ -72,15 +72,16 @@ public class BundleResourceLoader extends AbstractResourceLoader {
         return filteredResources;
     }
 
+    @SuppressWarnings("unchecked")
     private Resource[] filterResources(Resource[] resources, Map<String, ?> parameters) {
         // Use a reverse comparator because highest-priority selectors should be 
         // executed last. The last selector decides about the order of the final
         // list and thus has the highest priority.
-        @SuppressWarnings("unchecked")
-        TreeSet<ResourceSelector> resourceSelectors = new TreeSet<ResourceSelector>(Collections.reverseOrder(new OrderComparator()));
+        LinkedList<ResourceSelector> resourceSelectors = new LinkedList<ResourceSelector>();
         synchronized (this.resourceSelectors) {
             resourceSelectors.addAll(this.resourceSelectors);
         }
+        Collections.sort(resourceSelectors, Collections.reverseOrder(new OrderComparator()));
         // Use i
         for (ResourceSelector resourceSelector : resourceSelectors) {
             resources = resourceSelector.selectResources(resources, parameters);

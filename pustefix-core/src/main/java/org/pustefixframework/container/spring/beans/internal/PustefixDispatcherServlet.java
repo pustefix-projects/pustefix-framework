@@ -19,8 +19,9 @@
 package org.pustefixframework.container.spring.beans.internal;
 
 import java.io.IOException;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -52,7 +53,7 @@ public class PustefixDispatcherServlet extends DispatcherServlet {
 
     private PustefixOsgiWebApplicationContext applicationContext;
 
-    private Set<HttpRequestFilter> filters;
+    private List<HttpRequestFilter> filters;
     private HttpRequestFilter finalFilter;
 
     public PustefixDispatcherServlet(PustefixOsgiWebApplicationContext pustefixOsgiWebApplicationContext) {
@@ -73,9 +74,9 @@ public class PustefixDispatcherServlet extends DispatcherServlet {
         initFilters(context);
     }
 
+    @SuppressWarnings("unchecked")
     protected void initFilters(ApplicationContext applicationContext) {
-        @SuppressWarnings("unchecked")
-        TreeSet<HttpRequestFilter> filters = new TreeSet<HttpRequestFilter>(new OrderComparator());
+        LinkedList<HttpRequestFilter> filters = new LinkedList<HttpRequestFilter>();
         for (String beanName : applicationContext.getBeanDefinitionNames()) {
             Class<?> clazz = applicationContext.getType(beanName);
             if (clazz != null) {
@@ -90,6 +91,7 @@ public class PustefixDispatcherServlet extends DispatcherServlet {
                 }
             }
         }
+        Collections.sort(filters, new OrderComparator());
         this.filters = filters;
         this.finalFilter = new HttpRequestFilter() {
 
