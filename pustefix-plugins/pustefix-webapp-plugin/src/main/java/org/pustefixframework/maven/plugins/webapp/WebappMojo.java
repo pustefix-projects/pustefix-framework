@@ -24,12 +24,11 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.project.MavenProject;
 import org.pustefixframework.maven.plugins.launcher.BundleConfig;
 import org.pustefixframework.maven.plugins.launcher.BundleResolver;
-import org.pustefixframework.maven.plugins.launcher.FelixLauncher;
 import org.pustefixframework.util.io.FileUtils;
 
 /**
- * Goal which launches an OSGi runtime including the provisioning of bundles
- * resolved from the project's POM or a configuration file.
+ * Goal which creates a war file containing an OSGi runtime and the needed
+ * bundles resolved from the project's POM or a configuration file.
  *
  * @goal create
  * 
@@ -81,13 +80,12 @@ public class WebappMojo extends AbstractMojo {
      * @required
      */
     private File warDirectory;
-    
+
     /**
-     * @parameter default-value="equinox"
+     * @parameter
      */
-    private String osgiRuntime;
-    
-    
+    protected File contextXMLFile;
+
     public void execute() throws MojoExecutionException {
     	
     	if(warDirectory.exists()) {
@@ -98,7 +96,10 @@ public class WebappMojo extends AbstractMojo {
     	File webInfDir = new File(warDirectory, "WEB-INF");
     	webInfDir.mkdir();
     	
-    	File eclipseDir = new File(webInfDir, "eclipse");
+        File metaInfDir = new File(warDirectory, "META-INF");
+        metaInfDir.mkdir();
+
+        File eclipseDir = new File(webInfDir, "eclipse");
     	eclipseDir.mkdir();
     	
     	File pluginsDir = new File(eclipseDir, "plugins");
@@ -109,7 +110,15 @@ public class WebappMojo extends AbstractMojo {
     	
     	File libDir = new File(webInfDir, "lib");
     	libDir.mkdir();
-    	
+
+        if (contextXMLFile != null && contextXMLFile.exists()) {
+            try {
+                URL contextXMLFileURL = contextXMLFile.toURI().toURL();
+                copyFile(contextXMLFileURL, new File(metaInfDir, "context.xml"));
+            } catch (IOException x) {
+                throw new MojoExecutionException("Can't copy context.xml", x);
+            }
+        }
     
     	URL[] provisioningConfigs;
 		try {
