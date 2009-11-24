@@ -34,6 +34,9 @@ public class YUICompressorAdapter implements Compressor {
     private static boolean isAvailable;
     private static URL jarURL;
     
+    private static Class<?> compressorClass;
+    private static Class<?> reporterClass;
+    
     static {
         //check if compressor is in classpath
         ClassLoader loader = YUICompressorAdapter.class.getClassLoader();
@@ -60,10 +63,28 @@ public class YUICompressorAdapter implements Compressor {
                     }
                 } catch(IOException x) {
                     LOG.error("Error looking up Rhino versions", x);
+                    isAvailable = false;
                 }
             }
-            //TODO: check if working
         }
+        ClassLoader oldLoader = null;
+        try {
+            if(jarURL != null) {
+                oldLoader = Thread.currentThread().getContextClassLoader();
+                loader = new URLClassLoader(new URL[] {jarURL});
+                Thread.currentThread().setContextClassLoader(loader);
+            }       
+            try {
+                compressorClass = Class.forName(COMPRESSOR_CLASS, true, loader);
+                reporterClass = Class.forName(REPORTER_CLASS, true, loader);
+            } catch (ClassNotFoundException x) {
+                LOG.error("Can't get compressor classes", x);
+                isAvailable = false;
+            }
+        } finally {
+            if(jarURL != null) Thread.currentThread().setContextClassLoader(oldLoader);
+        }
+        
     }
     
     public static boolean isAvailable() {
@@ -71,21 +92,9 @@ public class YUICompressorAdapter implements Compressor {
     }
 
     public void compress(Reader reader, Writer writer) throws CompressorException {
-        
-        ClassLoader loader;
-        ClassLoader oldLoader = null;
-        if(jarURL != null) {
-            oldLoader = Thread.currentThread().getContextClassLoader();
-            loader = new URLClassLoader(new URL[] {jarURL});
-            Thread.currentThread().setContextClassLoader(loader);
-        } else {
-            loader = YUICompressorAdapter.class.getClassLoader();
-        }
             
         try {
-            Class<?> compressorClass = Class.forName(COMPRESSOR_CLASS, true, loader);
-            Class<?> reporterClass = Class.forName(REPORTER_CLASS, true, loader);
-            Object reporter = Proxy.newProxyInstance(loader, new Class<?>[] {reporterClass}, new ErrorReporterProxy());
+            Object reporter = Proxy.newProxyInstance(reporterClass.getClassLoader(), new Class<?>[] {reporterClass}, new ErrorReporterProxy());
             Constructor<?> con = compressorClass.getConstructor(Reader.class, reporterClass);
             Object compressor = con.newInstance(reader, reporter);
             Method meth = compressorClass.getMethod("compress", Writer.class, int.class, boolean.class, boolean.class, boolean.class, boolean.class);
@@ -95,15 +104,9 @@ public class YUICompressorAdapter implements Compressor {
         } catch(Exception x) {
             throw new CompressorException("Can't invoke compressor", x);
             
-        } finally {
-            if(jarURL != null) {
-                Thread.currentThread().setContextClassLoader(oldLoader);
-            }
-        }
+        } 
                 
     }
-    
-    
     
     class ErrorReporterProxy implements InvocationHandler {
         
@@ -124,5 +127,5 @@ public class YUICompressorAdapter implements Compressor {
         }
         
     }
-    
+
 }
