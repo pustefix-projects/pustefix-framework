@@ -322,8 +322,8 @@
     <script>
       <xsl:attribute name="language">JavaScript</xsl:attribute>
       <xsl:attribute name="type">text/javascript</xsl:attribute>
-      <xsl:copy-of select="@*[not(name()='compress')]"/>
-      <ixsl:comment>
+      <xsl:copy-of select="@*[not(name()='compress' or name()='transform')]"/>
+      <ixsl:comment><xsl:text>&#10;</xsl:text>
         <xsl:choose>
           <xsl:when test="$compress-inline-javascript='true' and not(@compress='false')">
             <ixsl:variable name="__script">
