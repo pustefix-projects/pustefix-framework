@@ -209,9 +209,11 @@ public class BundleResolver implements URIToFileResolver {
 							restriction.isLowerBoundInclusive() && restriction.isUpperBoundInclusive())
 							latestVersion = restriction.getLowerBound();
 				}
-				if(latestVersion == null) throw new RuntimeException("Artifact not found: " + uri.toString() + " Version: " + versionRange);
+				if(latestVersion == null) {
+				    latestVersion = versionRange.getRecommendedVersion();
+				    if(latestVersion == null) throw new RuntimeException("Artifact not found: " + uri.toString() + " Version: " + versionRange);
+				}
 			}
-			
 			artifact = artifactFactory.createArtifactWithClassifier(groupId, artifactId, latestVersion.toString(), type, null);
     	} catch (ArtifactMetadataRetrievalException x) {
 			throw new RuntimeException("Error while checking available versions: " + uri.toString(), x);
