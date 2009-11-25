@@ -17,6 +17,10 @@
   <description>Pustefix Plugins</description>
   <url>http://pustefixframework.org</url>
 
+  <properties>
+    <maven.api.version>2.2.1</maven.api.version>
+  </properties>
+
   <modules>
     <module>pustefix-statuscode-plugin</module>
     <module>pustefix-iwrapper-plugin</module>
