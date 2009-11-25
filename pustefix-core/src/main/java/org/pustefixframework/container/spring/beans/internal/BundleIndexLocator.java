@@ -33,7 +33,8 @@ public class BundleIndexLocator implements BundleSourceLocator {
 	public BundleIndexLocator() throws IOException {
 		String mode = RuntimeProperties.getProperties().getProperty("mode");
 		if(mode != null && !mode.equals("prod")) {
-			loadIndexFile(new File(DEFAULT_INDEX_FILE));
+		    File file = new File(DEFAULT_INDEX_FILE);
+		    if(file.exists() && file.isFile()) loadIndexFile(file);
 		}
 	}
 	
