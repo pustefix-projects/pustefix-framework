@@ -190,6 +190,7 @@
       <xsl:attribute name="title"><xsl:value-of select="$thetext"/></xsl:attribute>
     </img>
     <xsl:message>*** Include not found:
+      TargetKey = <xsl:value-of select="$__target_key"/> 
       Resource = <xsl:value-of select="$href"/>
       Part = <xsl:value-of select="$part"/> ***</xsl:message>
   </xsl:template>
