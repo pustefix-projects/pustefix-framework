@@ -1,3 +1,7 @@
+2009-11-27  Sebastian Marsching <sebastian.marsching@1und1.de>
+
+	Added URL rewrite filter.
+
 2009-11-21  Andreas Kurth  <andreas.kurth@1und1.de>
 
 	Added "contextXMLFile" configuration parameter to pustefix-webapp-plugin
