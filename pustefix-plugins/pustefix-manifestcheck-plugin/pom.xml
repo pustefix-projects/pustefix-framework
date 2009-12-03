@@ -9,12 +9,12 @@
   <parent>
     <groupId>org.pustefixframework.maven.plugins</groupId>
     <artifactId>pustefix-plugins</artifactId>
-    <version>1.0.2-SNAPSHOT</version>
+    <version>1.0.2</version>
   </parent>
 
   <groupId>org.pustefixframework.maven.plugins</groupId>
   <artifactId>pustefix-manifestcheck-plugin</artifactId>
-  <version>1.0.2-SNAPSHOT</version>
+  <version>1.0.2</version>
   <packaging>maven-plugin</packaging>
   <name>Pustefix Manifest Check Plugin</name>
 
