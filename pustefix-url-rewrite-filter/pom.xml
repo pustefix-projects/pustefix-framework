@@ -5,12 +5,12 @@
   <parent>
     <groupId>org.pustefixframework</groupId>
     <artifactId>pustefixframework</artifactId>
-    <version>1.0.2</version>
+    <version>1.0.3-SNAPSHOT</version>
   </parent>
 
   <groupId>org.pustefixframework</groupId>
   <artifactId>pustefix-url-rewrite-filter</artifactId>
-  <version>1.0.2</version>
+  <version>1.0.3-SNAPSHOT</version>
   <packaging>bundle</packaging>
 
   <name>Pustefix URL rewrite filter</name>
@@ -19,7 +19,7 @@
     <dependency>
       <groupId>org.pustefixframework</groupId>
       <artifactId>pustefix-core</artifactId>
-      <version>1.0.2</version>
+      <version>1.0.3-SNAPSHOT</version>
       <optional>true</optional>
       <scope>provided</scope>
     </dependency>

@@ -5,12 +5,12 @@
   <parent>
     <groupId>org.pustefixframework.osgi</groupId>
     <artifactId>pustefix-osgi</artifactId>
-    <version>1.0.2</version>
+    <version>1.0.3-SNAPSHOT</version>
   </parent>
 
   <groupId>org.pustefixframework.osgi</groupId>
   <artifactId>pustefix-osgi-antlr-hibernate</artifactId>
-  <version>1.0.2</version>
+  <version>1.0.3-SNAPSHOT</version>
   <packaging>bundle</packaging>
 
   <name>Pustefix Antlr Fragment Bundle For Hibernate</name>

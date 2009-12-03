@@ -4,12 +4,12 @@
   <parent>
     <groupId>org.pustefixframework.samples</groupId>
     <artifactId>pustefix-taskmanager</artifactId>
-    <version>1.0.2</version>
+    <version>1.0.3-SNAPSHOT</version>
   </parent>
 
   <groupId>org.pustefixframework.samples.taskmanager</groupId>
   <artifactId>taskmanager-webapp</artifactId>
-  <version>1.0.2</version>
+  <version>1.0.3-SNAPSHOT</version>
   <packaging>bundle</packaging>
 
   <name>Pustefix Taskmanager Application Bundle</name>
@@ -18,12 +18,12 @@
     <dependency>
       <groupId>org.pustefixframework</groupId>
       <artifactId>pustefix-core</artifactId>
-      <version>1.0.2</version>
+      <version>1.0.3-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.pustefixframework.webservices</groupId>
       <artifactId>pustefix-webservices-core</artifactId>
-      <version>1.0.2</version>      
+      <version>1.0.3-SNAPSHOT</version>      
     </dependency>
     <dependency>
       <groupId>javax.servlet</groupId>
@@ -35,18 +35,18 @@
     <dependency>
       <groupId>org.pustefixframework.samples.taskmanager</groupId>
       <artifactId>taskmanager-database</artifactId>
-      <version>1.0.2</version>
+      <version>1.0.3-SNAPSHOT</version>
       <scope>runtime</scope>
     </dependency>
     <dependency>
       <groupId>org.pustefixframework.samples.taskmanager</groupId>
       <artifactId>taskmanager-dataaccess</artifactId>
-      <version>1.0.2</version>
+      <version>1.0.3-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.pustefixframework.samples.taskmanager</groupId>
       <artifactId>taskmanager-user</artifactId>
-      <version>1.0.2</version>
+      <version>1.0.3-SNAPSHOT</version>
     </dependency>
   </dependencies>
  
@@ -107,7 +107,7 @@
       <plugin>
         <groupId>org.pustefixframework.maven.plugins</groupId>
         <artifactId>pustefix-statuscode-plugin</artifactId>
-        <version>1.0.2</version>
+        <version>1.0.3-SNAPSHOT</version>
         <executions>
           <execution>
             <goals>
@@ -119,7 +119,7 @@
       <plugin>
         <groupId>org.pustefixframework.maven.plugins</groupId>
         <artifactId>pustefix-iwrapper-plugin</artifactId>
-        <version>1.0.2</version>
+        <version>1.0.3-SNAPSHOT</version>
         <executions>
           <execution>
             <goals>
@@ -131,7 +131,7 @@
       <plugin>
         <groupId>org.pustefixframework.maven.plugins</groupId>
         <artifactId>pustefix-iwrapperbean-plugin</artifactId>
-        <version>1.0.2</version>
+        <version>1.0.3-SNAPSHOT</version>
         <executions>
           <execution>
             <goals>
@@ -143,7 +143,7 @@
       <plugin>
         <groupId>org.pustefixframework.maven.plugins</groupId>
         <artifactId>pustefix-autoconfig-plugin</artifactId>
-        <version>1.0.2</version>
+        <version>1.0.3-SNAPSHOT</version>
         <configuration>
           <mode>${mode}</mode>
           <logLevel>${logLevel}</logLevel>
@@ -159,7 +159,7 @@
       <plugin>
         <groupId>org.pustefixframework.maven.plugins</groupId>
         <artifactId>pustefix-bundleindex-plugin</artifactId>
-        <version>1.0.2</version>
+        <version>1.0.3-SNAPSHOT</version>
         <executions>
           <execution>
             <goals>
@@ -171,17 +171,17 @@
       <plugin>
         <groupId>org.pustefixframework.maven.plugins</groupId>
         <artifactId>pustefix-launcher-plugin</artifactId>
-        <version>1.0.2</version>
+        <version>1.0.3-SNAPSHOT</version>
       </plugin>
       <plugin>
         <groupId>org.pustefixframework.maven.plugins</groupId>
         <artifactId>pustefix-webapp-plugin</artifactId>
-        <version>1.0.2</version>
+        <version>1.0.3-SNAPSHOT</version>
       </plugin>
       <plugin>
         <groupId>org.pustefixframework.maven.plugins</groupId>
         <artifactId>pustefix-eclipse-plugin</artifactId>
-        <version>1.0.2</version>
+        <version>1.0.3-SNAPSHOT</version>
       </plugin>
     </plugins>
   </build>

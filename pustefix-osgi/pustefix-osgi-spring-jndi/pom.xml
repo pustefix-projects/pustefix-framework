@@ -3,13 +3,13 @@
   <parent>
     <groupId>org.pustefixframework.osgi</groupId>
     <artifactId>pustefix-osgi</artifactId>
-    <version>1.0.2</version>
+    <version>1.0.3-SNAPSHOT</version>
   </parent>
 
   <name>Pustefix OSGi JNDI namespace handlers for Spring</name>
   <groupId>org.pustefixframework.osgi</groupId>
   <artifactId>pustefix-osgi-spring-jndi</artifactId>
-  <version>1.0.2</version>
+  <version>1.0.3-SNAPSHOT</version>
   <packaging>bundle</packaging>
 
   <dependencies>

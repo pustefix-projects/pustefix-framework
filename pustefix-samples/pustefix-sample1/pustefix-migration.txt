@@ -161,8 +161,8 @@ Migrating Pustefix applications from 0.14 to 1.0
 mvn:org.apache.felix/org.apache.felix.http.jetty/[1.0.1]/jar
 
 #Pustefix core modules
-mvn:org.pustefixframework.osgi/pustefix-osgi-spring-dm-extender/1.0.2.SNAPSHOT/jar
-mvn:org.pustefixframework.osgi/pustefix-osgi-logservice-bridge/1.0.2.SNAPSHOT/jar@3
+mvn:org.pustefixframework.osgi/pustefix-osgi-spring-dm-extender/1.0.3.SNAPSHOT/jar
+mvn:org.pustefixframework.osgi/pustefix-osgi-logservice-bridge/1.0.3.SNAPSHOT/jar@3
 
 #Logging
 mvn:ch.qos.logback/com.springsource.ch.qos.logback.classic/[0.9.15]/jar@3

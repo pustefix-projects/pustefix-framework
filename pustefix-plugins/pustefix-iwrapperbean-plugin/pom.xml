@@ -5,11 +5,11 @@
   <parent>
     <artifactId>pustefix-plugins</artifactId>
     <groupId>org.pustefixframework.maven.plugins</groupId>
-    <version>1.0.2</version>
+    <version>1.0.3-SNAPSHOT</version>
   </parent>
   <groupId>org.pustefixframework.maven.plugins</groupId>
   <artifactId>pustefix-iwrapperbean-plugin</artifactId>
-  <version>1.0.2</version>
+  <version>1.0.3-SNAPSHOT</version>
   <packaging>maven-plugin</packaging>
   <name>pustefix-iwrapperbean-plugin Maven Mojo</name>
   <url>http://maven.apache.org</url>
@@ -28,7 +28,7 @@
     <dependency>
       <groupId>org.pustefixframework</groupId>
       <artifactId>pustefix-core</artifactId>
-      <version>1.0.2</version>
+      <version>1.0.3-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>junit</groupId>
