@@ -28,6 +28,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import net.sf.cglib.proxy.Enhancer;
+
 import org.pustefixframework.webservices.spring.WebserviceRegistration;
 
 
@@ -93,6 +95,7 @@ public class ServiceDescriptor {
     private Map<String,List<Method>> introspect(Class<?> clazz) throws ServiceException {
         Map<String,List<Method>> methods=new HashMap<String,List<Method>>();
         Class<?> current=clazz;
+        if(Enhancer.isEnhanced(current)) current = current.getSuperclass();
         while(current!=null && !current.equals(Object.class)) {
             Method[] meths=current.getDeclaredMethods();
             for(int i=0;i<meths.length;i++) {
