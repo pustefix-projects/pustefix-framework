@@ -323,6 +323,9 @@ public class DocrootRequestHandler implements UriProvidingHttpRequestHandler, La
     }
 
     public void setBase(String path) {
+        if (!path.endsWith("/")) {
+            path = path + "/";
+        }
         this.baseURI = URI.create(path);
     }
 
