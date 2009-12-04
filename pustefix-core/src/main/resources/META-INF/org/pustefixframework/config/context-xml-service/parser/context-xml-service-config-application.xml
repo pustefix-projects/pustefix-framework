@@ -254,6 +254,8 @@
     <match>/c:context-xml-service-config/c:global-config/c:choose/c:when</match>
     <match>/c:context-xml-service-config/c:pagerequest//c:properties/c:choose/c:when</match>
     <match>/c:context-xml-service-config/c:pagerequest/c:choose/c:when</match>
+    <match>/c:context-xml-service-config/c:pagerequest/c:default/c:choose/c:when</match>
+    <match>/c:context-xml-service-config/c:pagerequest/c:variant/c:choose/c:when</match>
     <match>/c:context-xml-service-config/c:properties/c:choose/c:when</match>
     <match>/c:context-xml-service-config/c:context/c:resource/c:properties/c:choose/c:when</match>
   </handler>
@@ -263,6 +265,8 @@
     <match>/c:context-xml-service-config/c:global-config/c:choose/c:otherwise</match>
     <match>/c:context-xml-service-config/c:pagerequest//c:properties/c:choose/c:otherwise</match>
     <match>/c:context-xml-service-config/c:pagerequest/c:choose/c:otherwise</match>
+    <match>/c:context-xml-service-config/c:pagerequest/c:default/c:choose/c:otherwise</match>
+    <match>/c:context-xml-service-config/c:pagerequest/c:variant/c:choose/c:otherwise</match>
     <match>/c:context-xml-service-config/c:properties/c:choose/c:otherwise</match>
     <match>/c:context-xml-service-config/c:context/c:resource/c:properties/c:choose/c:otherwise</match>
   </handler>

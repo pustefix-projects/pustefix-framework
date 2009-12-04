@@ -325,11 +325,13 @@
   <handler id="org.pustefixframework.config.customization.WhenParsingHandler" class="org.pustefixframework.config.customization.CustomizationWhenParsingHandler">
     <match>/c:context-xml-service-config/c:extension[@type='context.pagerequest' or @type='context.pagerequestvariant']/c:pagerequest//c:properties/c:choose/c:when</match>
     <match>/c:context-xml-service-config/c:extension[@type='context.pagerequest' or @type='context.pagerequestvariant']/c:pagerequest/c:choose/c:when</match>
+    <match>/c:context-xml-service-config/c:extension[@type='context.pagerequest']/c:pagerequest/c:default/c:choose/c:when</match>
   </handler>
   
   <handler id="org.pustefixframework.config.customization.OtherwiseParsingHandler" class="org.pustefixframework.config.customization.CustomizationOtherwiseParsingHandler">
     <match>/c:context-xml-service-config/c:extension[@type='context.pagerequest' or @type='context.pagerequestvariant']/c:pagerequest//c:properties/c:choose/c:otherwise</match>
     <match>/c:context-xml-service-config/c:extension[@type='context.pagerequest' or @type='context.pagerequestvariant']/c:pagerequest/c:choose/c:otherwise</match>
+    <match>/c:context-xml-service-config/c:extension[@type='context.pagerequest']/c:pagerequest/c:default/c:choose/c:otherwise</match>
   </handler>
   
 </configuration>
