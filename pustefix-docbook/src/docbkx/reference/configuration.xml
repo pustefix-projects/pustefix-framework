@@ -900,6 +900,29 @@
          authconstraints here, for details see <xref linkend="advanced.rolebasedauth"/>.
          <!-- TODO Add link here -->
          <programlisting language="xml"><![CDATA[
+    <json-output>
+      <resource alias="MyResource" class="com.example.MyContextResource" />
+      <resource alias="MyOtherResource" bean-ref="myOtherResource" />
+    </json-output>
+         ]]></programlisting>
+         JSON resources can be used to make context resources available through 
+         the JSON protocol. Similar to the <tag>resource</tag> tag within the 
+         <tag>output</tag> tag of a page request configuration, you can 
+         specify either the class name of the context resource, which is 
+         used for legacy context resources defined in the <tag>context</tag> 
+         section of the same configuration file, or you can specify the name 
+         of a Spring bean.
+       </para>
+       <para>
+         The <tag class="attribute">alias</tag> attribute is used to specify 
+         the name which identifies the context resource in the communication 
+         with the client. This is the name which has to be passed to the 
+         <methodname>pfx.json.requestResource</methodname> or 
+         <methodname>pfx.json.requestResources</methodname> methods of the 
+         client JavaScript library.
+         For mor details on how to use the JSON resource feature see
+         <xref linkend="advanced.json_resources"/>.
+         <programlisting language="xml"><![CDATA[
     <pageflow name="AName" final="APageName" stopnext="true|false">
          ]]></programlisting>
          There may be multiple pageflow tags defined, but you need at 
