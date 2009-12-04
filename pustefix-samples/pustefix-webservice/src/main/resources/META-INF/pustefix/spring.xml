@@ -12,12 +12,17 @@
     <aop:scoped-proxy/>
   </bean>
   
+  <ws:extension id="webservices.extension">
+    <ws:extends extension-point="webservices.root"/>
+ 
   <ws:webservice 
     id="Webservice_Calculator" 
     servicename="Calculator" 
-    interface="de.schlund.pfixcore.example.webservices.Calculator" 
+    
     ref="calcbean" 
     protocol="ANY"
   />
+
+  </ws:extension>
  
 </beans>

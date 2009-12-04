@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<project-config xmlns="http://www.pustefix-framework.org/2008/namespace/project-config">
-  
+<pustefix-application xmlns="http://www.pustefix-framework.org/2009/namespace/application-config">
+
   <project>
     <name>webservice</name>
     <description>Webservice Demo Application</description>
@@ -13,7 +13,7 @@
   </editor>
   
   <xml-generator>
-    <config-file>docroot:/WEB-INF/depend.xml</config-file>
+    <config-file>bundle:/META-INF/pustefix/depend.xml</config-file>
     <choose>
       <when test="$mode='prod'">
         <!-- Set this to false if you want to skip the check for changed stylesheets on every request -->
@@ -22,37 +22,14 @@
     </choose>
   </xml-generator>
   
-  <http-server>
-    
-    <http-port>
-      <address>${fqdn}</address>
-    </http-port>
-    
-    <https-port>
-      <address>${fqdn}</address>
-      <ssl-key>docroot:/WEB-INF/server.key</ssl-key>
-      <ssl-crt>docroot:/WEB-INF/server.crt</ssl-crt>
-    </https-port>
-    
-    <server-name>webservice.${fqdn}</server-name>
-    <server-alias>webservice.${fqdn}</server-alias>
-    
-    <apache>
-      <literal>
-        <!-- Stuff that is copied to the Apache configuration -->
-      </literal>
-    </apache>
-    
-  </http-server>
-  
   <application>
     
-    <docroot-path>docroot:/htdocs</docroot-path>
+    <docroot-path>bundle:/PUSTEFIX-INF/htdocs</docroot-path>
     <default-path>/xml/main</default-path>
     
     <context-xml-service>
       <path>/xml/main</path>
-      <config-file>docroot:/WEB-INF/config.conf.xml</config-file>
+      <config-file>bundle:/META-INF/pustefix/config.conf.xml</config-file>
       <additional-trail-info>de.schlund.pfixxml.perflogging.DefaultAdditionalTrailInfoImpl</additional-trail-info>
       <choose>
         <when test="$mode='prod'">
@@ -66,7 +43,9 @@
     
     <webservice-service>
       <path>/xml/webservice</path>
-      <config-file>docroot:/WEB-INF/webservice.conf.xml</config-file>
+      <admin/>
+      <monitoring scope="session" historysize="10"/>
+      <logging/>
     </webservice-service>
     
     <deref-service>
@@ -77,9 +56,9 @@
     </deref-service>
     
     <static>
+      <path>css</path>
       <path>img</path>
-      <path>core/img</path>
-      <path>core/script</path>
+      <path>script</path>
     </static>
     
     <choose>
@@ -99,4 +78,4 @@
     <prop name="pfixcore.ssl_redirect_port.for.9080">9443</prop>
   </properties>
   
-</project-config>
+</pustefix-application>

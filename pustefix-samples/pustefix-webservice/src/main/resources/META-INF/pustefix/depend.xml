@@ -1,7 +1,5 @@
-<make cachedir=".cache/webservice"
-      record_dir="recorded"
-      project="webservice"
-      lang="en">
+<?xml version="1.0" encoding="utf-8"?>
+<xml-generator-config project="webservice" lang="en" xmlns="http://www.pustefix-framework.org/2008/namespace/xml-generator-config">
 
   <global>
     <!-- <include stylesheet="xsl/runtime.xsl"/> -->
@@ -42,4 +40,4 @@
   <standardpage name="calltest" xml="xml/two_frames.xml"/>
   <standardpage name="beantest" xml="xml/two_frames.xml"/>
 
-</make>
+</xml-generator-config>
