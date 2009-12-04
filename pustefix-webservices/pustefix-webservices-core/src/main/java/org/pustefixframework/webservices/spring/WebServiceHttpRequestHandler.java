@@ -67,7 +67,6 @@ public class WebServiceHttpRequestHandler implements UriProvidingHttpRequestHand
         try {
             runtime.setConfiguration(configuration);
             runtime.setServiceRegistry(new ServiceRegistry());
-            getServletContext().setAttribute(ServiceRuntime.class.getName(), runtime);
             adminWebapp = new AdminWebapp(runtime);
         } catch (Exception x) {
             LOG.error("Error while initializing ServiceRuntime", x);
@@ -84,6 +83,9 @@ public class WebServiceHttpRequestHandler implements UriProvidingHttpRequestHand
     private void tryRefreshRegistry() {
     	if(rootExtension.getWebserviceRegistrations() != runtime.getServiceRegistry().getWebserviceRegistrations()) {
     		runtime.getServiceRegistry().setWebserviceRegistrations(rootExtension.getWebserviceRegistrations());
+    	}
+    	if(getServletContext().getAttribute(ServiceRuntime.class.getName()) == null) {
+    	    getServletContext().setAttribute(ServiceRuntime.class.getName(), runtime);
     	}
     }
 
