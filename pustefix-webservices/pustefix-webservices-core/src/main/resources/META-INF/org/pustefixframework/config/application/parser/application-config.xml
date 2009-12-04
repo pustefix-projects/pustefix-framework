@@ -5,7 +5,18 @@
 
   <handler class="org.pustefixframework.webservices.spring.WebServiceRequestHandlerParsingHandler">
     <match>/p:pustefix-application/p:application/p:webservice-service</match>
+    <match>/p:pustefix-application/p:application/p:webservice-service//p:admin</match>
+    <match>/p:pustefix-application/p:application/p:webservice-service//p:monitoring</match>
+    <match>/p:pustefix-application/p:application/p:webservice-service//p:logging</match>
+  </handler>
+
+  <handler class="org.pustefixframework.config.customization.CustomizationWhenParsingHandler">
+    <match>/p:pustefix-application/p:application/p:webservice-service/p:choose/p:when</match>
   </handler>
   
+  <handler class="org.pustefixframework.config.customization.CustomizationOtherwiseParsingHandler">
+    <match>/p:pustefix-application/p:application/p:webservice-service/p:choose/p:otherwise</match>
+  </handler>
+
 </configuration>
   

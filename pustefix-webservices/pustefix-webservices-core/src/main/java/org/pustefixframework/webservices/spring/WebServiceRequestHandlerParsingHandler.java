@@ -17,8 +17,11 @@
  */
 package org.pustefixframework.webservices.spring;
 
+import javax.security.auth.login.Configuration;
+
 import org.osgi.framework.BundleContext;
 import org.pustefixframework.config.Constants;
+import org.pustefixframework.config.customization.CustomizationAwareParsingHandler;
 import org.pustefixframework.config.generic.ParsingUtils;
 import org.pustefixframework.webservices.ServiceRuntime;
 import org.pustefixframework.webservices.config.WebserviceConfiguration;
@@ -43,49 +46,61 @@ import de.schlund.pfixcore.workflow.context.ServerContextImpl;
  * @author mleidig
  *
  */
-public class WebServiceRequestHandlerParsingHandler implements ParsingHandler {
+public class WebServiceRequestHandlerParsingHandler extends CustomizationAwareParsingHandler {
     
-    public void handleNode(HandlerContext context) throws ParserException {
-      
+    private WebserviceConfiguration configuration;
+    
+    @Override
+    protected void handleNodeIfActive(HandlerContext context) throws ParserException {
+        
         Element serviceElement = (Element)context.getNode();
+        String elementName = serviceElement.getLocalName();
+        if(elementName.equals("webservice-service")) {
         
-        Element pathElement = (Element)serviceElement.getElementsByTagNameNS(Constants.NS_APPLICATION,"path").item(0);
-        if (pathElement == null) throw new ParserException("Could not find expected <path> element");
-        String path = pathElement.getTextContent().trim();
+            Element pathElement = (Element)serviceElement.getElementsByTagNameNS(Constants.NS_APPLICATION,"path").item(0);
+            if (pathElement == null) throw new ParserException("Could not find expected <path> element");
+            String path = pathElement.getTextContent().trim();
+           
+            configuration = new WebserviceConfiguration();
+            
+            BeanDefinitionBuilder beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(WebServiceHttpRequestHandler.class);
+            beanBuilder.setScope("singleton");
+            beanBuilder.addPropertyValue("configuration", configuration);
+            beanBuilder.addPropertyValue("handlerURI", path + "/**");
+            beanBuilder.addPropertyValue("serviceRuntime", new RuntimeBeanReference(ServiceRuntime.class.getName()));
+            BeanDefinition beanDefinition = beanBuilder.getBeanDefinition();
+            BeanDefinitionHolder beanHolder = new BeanDefinitionHolder(beanDefinition, WebServiceHttpRequestHandler.class.getName()+"#"+path);
+            context.getObjectTreeElement().addObject(beanHolder);
+            
+            beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(ServiceRuntime.class);
+            beanBuilder.setScope("singleton");
+            beanBuilder.addPropertyValue("serverContext", new RuntimeBeanReference(ServerContextImpl.class.getName()));
+            beanBuilder.addPropertyValue("context", new RuntimeBeanReference(ContextImpl.class.getName()));
+            beanBuilder.addPropertyValue("protocolProviderRegistry", new RuntimeBeanReference(ProtocolProviderServiceTracker.class.getName()));
+            beanDefinition = beanBuilder.getBeanDefinition();
+            beanHolder = new BeanDefinitionHolder(beanDefinition, ServiceRuntime.class.getName());
+            context.getObjectTreeElement().addObject(beanHolder);
+            
+            beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(ProtocolProviderServiceTracker.class);
+            beanBuilder.setScope("singleton");
+            ConfigurableOsgiBundleApplicationContext appContext = ParsingUtils.getSingleTopObject(ConfigurableOsgiBundleApplicationContext.class, context);
+            BundleContext bundleContext = appContext.getBundleContext();
+            beanBuilder.addConstructorArgValue(bundleContext);
+            beanDefinition = beanBuilder.getBeanDefinition();
+            beanHolder = new BeanDefinitionHolder(beanDefinition, ProtocolProviderServiceTracker.class.getName());
+            context.getObjectTreeElement().addObject(beanHolder);
+            
+            beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(WebserviceExtensionPointImpl.class);
+    		beanBuilder.addPropertyValue("id", "webservice.application");
         
-       
-        WebserviceConfiguration configuration = new WebserviceConfiguration();
-        
-        BeanDefinitionBuilder beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(WebServiceHttpRequestHandler.class);
-        beanBuilder.setScope("singleton");
-        beanBuilder.addPropertyValue("configuration", configuration);
-        beanBuilder.addPropertyValue("handlerURI", path + "/**");
-        beanBuilder.addPropertyValue("serviceRuntime", new RuntimeBeanReference(ServiceRuntime.class.getName()));
-        BeanDefinition beanDefinition = beanBuilder.getBeanDefinition();
-        BeanDefinitionHolder beanHolder = new BeanDefinitionHolder(beanDefinition, WebServiceHttpRequestHandler.class.getName()+"#"+path);
-        context.getObjectTreeElement().addObject(beanHolder);
-        
-        beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(ServiceRuntime.class);
-        beanBuilder.setScope("singleton");
-        beanBuilder.addPropertyValue("serverContext", new RuntimeBeanReference(ServerContextImpl.class.getName()));
-        beanBuilder.addPropertyValue("context", new RuntimeBeanReference(ContextImpl.class.getName()));
-        beanBuilder.addPropertyValue("protocolProviderRegistry", new RuntimeBeanReference(ProtocolProviderServiceTracker.class.getName()));
-        beanDefinition = beanBuilder.getBeanDefinition();
-        beanHolder = new BeanDefinitionHolder(beanDefinition, ServiceRuntime.class.getName());
-        context.getObjectTreeElement().addObject(beanHolder);
-        
-        beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(ProtocolProviderServiceTracker.class);
-        beanBuilder.setScope("singleton");
-        ConfigurableOsgiBundleApplicationContext appContext = ParsingUtils.getSingleTopObject(ConfigurableOsgiBundleApplicationContext.class, context);
-        BundleContext bundleContext = appContext.getBundleContext();
-        beanBuilder.addConstructorArgValue(bundleContext);
-        beanDefinition = beanBuilder.getBeanDefinition();
-        beanHolder = new BeanDefinitionHolder(beanDefinition, ProtocolProviderServiceTracker.class.getName());
-        context.getObjectTreeElement().addObject(beanHolder);
-        
-        beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(WebserviceExtensionPointImpl.class);
-		beanBuilder.addPropertyValue("id", "webservice.application");
-        
+        } else if(elementName.equals("admin")) {
+            configuration.setAdminEnabled(true);
+        } else if(elementName.equals("monitoring")) {
+            configuration.setMonitoringEnabled(true);
+        } else if(elementName.equals("logging")) {
+            configuration.setLoggingEnabled(true);
+        }
+		
     }
 
 }
