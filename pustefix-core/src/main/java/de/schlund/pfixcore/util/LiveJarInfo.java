@@ -89,8 +89,7 @@ public class LiveJarInfo implements ModuleSourceLocator {
                 entries = new HashMap<String, Entry>();
                 urlToLocation = new HashMap<URL, File>();
                 urlsWithNoLocation = new HashSet<URL>();
-                List<Element> jarElems = getChildElements(root, "jar");
-                for(Element jarElem:jarElems) {
+                for(Element jarElem:getChildElements(root, "jar")) {
                     Entry entry = new Entry();
                     Element idElem = getSingleChildElement(jarElem, "id", true);
                     Element groupElem = getSingleChildElement(idElem, "group", true);
