@@ -1,3 +1,11 @@
+2009-12-16  Martin Leidig  <mleidig@schlund.de>
+
+	Added support for form submit buttons using the <button> element.
+	Therefore we introduced the new Pustefix element <pfx:submitbutton>.
+	The element supports the same attributes as <pfx:xinp type="submit">,
+	but is transformed to <button type="submit"> and supports content,
+	which is applied/copied through to the result document.
+
 2009-11-27  Sebastian Marsching <sebastian.marsching@1und1.de>
 
 	Added URL rewrite filter.

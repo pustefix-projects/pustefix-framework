@@ -870,6 +870,15 @@
         <literal>themed-path</literal>, <literal>themed-img</literal>, <literal>search</literal> and <literal>module</literal>. These attributes work exactly as described in
         <xref linkend="xslt.pfx.image"/>.
       </para>
+      <para>
+         You can alternatively use the <literal>pfx:submitbutton</literal> tag to produce a <literal>button</literal> element instead of an <literal>input</literal> element. The <literal>button</literal> elements are more flexible than the traditional <literal>input</literal> elements, but are not supported by some old browsers.
+      </para>
+      <programlisting language="xml"><![CDATA[<pfx:submitbutton pageflow="APageFlow" jumptopage="APage" jumptopageflow="APageFlow" forcestop="true|false|step">
+      <!-- you can put additional stuff here as described above, but in contrast to the traditional
+           submit element you can also have content (like text or images) here -->
+</pfx:submitbutton>]]></programlisting>
+
+
     </section>
     <section xml:id="xslt.controls.arguments">
       <title>Arguments, comands and anchors</title>

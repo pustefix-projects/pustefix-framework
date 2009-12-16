@@ -398,12 +398,22 @@
       </xsl:otherwise>
     </xsl:choose>
   </xsl:template>
+  
+  <xsl:template match="pfx:submitbutton">
+    <xsl:call-template name="pfx:xinp_submit">
+      <xsl:with-param name="tag-name">button</xsl:with-param>
+      <xsl:with-param name="tag-content">true</xsl:with-param>
+    </xsl:call-template>
+  </xsl:template>
 
-  <xsl:template match="pfx:xinp[@type='submit']">
+  <xsl:template match="pfx:xinp[@type='submit']" name="pfx:xinp_submit">
     <xsl:param name="exclude-attributes"/>
+    <xsl:param name="tag-name">input</xsl:param>
+    <xsl:param name="tag-content">false</xsl:param>
     <xsl:variable name="always-exclude-attributes" select="'type|name|jumptopage|jumptopageflow|forcestop|pageflow|action'"/>
     <ixsl:variable><xsl:attribute name="name">genname_<xsl:value-of select="generate-id(.)"/></xsl:attribute><xsl:value-of select="generate-id(.)"/><ixsl:value-of select="generate-id(.)"/></ixsl:variable>
-    <input type="submit">
+    <xsl:element name="{$tag-name}">
+      <xsl:attribute name="type">submit</xsl:attribute>
       <xsl:copy-of select="@*[not(contains(concat('|',$always-exclude-attributes,'|',$exclude-attributes,'|') , concat('|',name(),'|')))]"/>
       <xsl:attribute name="class"><xsl:value-of select="@class"/> PfxInputSubmit</xsl:attribute>
       <ixsl:attribute name="name">__SBMT:<ixsl:value-of select="$genname_{generate-id(.)}"/>:</ixsl:attribute>
@@ -411,10 +421,13 @@
         <xsl:choose>
           <xsl:when test="@value"><xsl:value-of select="@value"/></xsl:when>
           <xsl:when test="./pfx:value"><xsl:apply-templates select="./pfx:value/node()"/></xsl:when>
-          <xsl:otherwise><xsl:apply-templates/></xsl:otherwise>
+          <xsl:when test="not($tag-content='true')"><xsl:apply-templates/></xsl:when>
         </xsl:choose>
       </ixsl:attribute>
-    </input>
+      <xsl:if test="$tag-content='true'">
+        <xsl:apply-templates/>
+      </xsl:if>
+    </xsl:element>
     <xsl:call-template name="generate_coded_input"/>
   </xsl:template>
 
