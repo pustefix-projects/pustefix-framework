@@ -42,8 +42,6 @@ import de.schlund.pfixxml.resources.ResourceUtil;
  */
 public class PustefixWebApplicationContextLoader implements ContextLoader {
     
-    private static File DEFAULT_DOCROOT = GlobalConfig.guessDocroot();
-    
     private File docroot;
     
     public PustefixWebApplicationContextLoader() {
@@ -66,7 +64,7 @@ public class PustefixWebApplicationContextLoader implements ContextLoader {
         
         //Mock ServletContext
         MockServletContext servletContext = new MockServletContext();
-        if(docroot==null) docroot = DEFAULT_DOCROOT;
+        if(docroot==null) docroot = GlobalConfig.guessDocroot();
         servletContext.addInitParameter("pustefix.docroot", docroot.getAbsolutePath());
         
         //Initialize factories
