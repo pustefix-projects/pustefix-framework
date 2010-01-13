@@ -52,7 +52,7 @@ import org.w3c.dom.NodeList;
 /**
  * Provides information where to find live resources.
  */
-class LiveJarInfo {
+public class LiveJarInfo {
 
     private static Logger LOG = Logger.getLogger(LiveJarInfo.class);
 
@@ -417,15 +417,47 @@ class LiveJarInfo {
 
     public static class Entry {
 
-        String groupId;
-        String artifactId;
-        String version;
-        List<File> directories = new ArrayList<File>();
+        private String groupId;
+        private String artifactId;
+        private String version;
+        private List<File> directories = new ArrayList<File>();
 
-        String getId() {
+        public String getId() {
             return groupId + "+" + artifactId + "+" + version;
         }
 
+        public String getGroupId() {
+            return groupId;
+        }
+
+        public void setGroupId(String groupId) {
+            this.groupId = groupId;
+        }
+
+        public String getArtifactId() {
+            return artifactId;
+        }
+
+        public void setArtifactId(String artifactId) {
+            this.artifactId = artifactId;
+        }
+
+        public String getVersion() {
+            return version;
+        }
+
+        public void setVersion(String version) {
+            this.version = version;
+        }
+
+        public List<File> getDirectories() {
+            return directories;
+        }
+
+        public void setDirectories(List<File> directories) {
+            this.directories = directories;
+        }
+        
     }
 
 }

@@ -24,7 +24,7 @@ import org.apache.log4j.Logger;
 
 public class LiveResolver {
 
-    private static Logger LOG = Logger.getLogger(LiveJarInfo.class);
+    private static Logger LOG = Logger.getLogger(LiveResolver.class);
 
     private static LiveJarInfo liveJarInfoInstance = new LiveJarInfo();
 
@@ -83,14 +83,24 @@ public class LiveResolver {
     // NOTE: Be careful when changing the method signature!
     // This method is invoked via reflection from pustefix-core!
     public URL resolveLiveModuleRoot(URL jarUrl, String path) throws Exception {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Resolving live module root from live.xml for " + jarUrl + ":" + path);
+        }
+        
         if (path.startsWith("/")) {
             path = path.substring(1);
         }
-        File location = getLiveJarInfoInstance().getLiveModuleRoot(new URL(jarUrl + path));
-        if (location != null && location.exists()) {
-            return location.toURI().toURL();
+        File moduleRoot = getLiveJarInfoInstance().getLiveModuleRoot(new URL(jarUrl + path));
+        if (moduleRoot != null && moduleRoot.exists()) {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("  --> " + moduleRoot);
+            }
+            return moduleRoot.toURI().toURL();
         }
 
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("  --> not found");
+        }
         return null;
     }
 
@@ -150,6 +160,9 @@ public class LiveResolver {
 
                 for (String s : LiveJarInfo.DEFAULT_DOCROOT_LIVE_EXCLUSIONS) {
                     if (path.startsWith(s)) {
+                        if (LOG.isDebugEnabled()) {
+                            LOG.debug("  --> excluded");
+                        }
                         return null;
                     }
                 }
@@ -165,7 +178,7 @@ public class LiveResolver {
         }
 
         if (LOG.isDebugEnabled()) {
-            LOG.debug("  --> non found");
+            LOG.debug("  --> not found");
         }
         return null;
     }

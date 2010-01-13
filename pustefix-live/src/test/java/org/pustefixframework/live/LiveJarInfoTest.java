@@ -26,17 +26,17 @@ public class LiveJarInfoTest {
         
         // add an entry and write it
         Entry entry = new Entry();
-        entry.groupId = "ggg";
-        entry.artifactId = "aaa";
-        entry.version = "vvv";
-        entry.directories.add(new File(dir, "jar1"));
-        entry.directories.add(new File(dir, "jar2"));
+        entry.setGroupId("ggg");
+        entry.setArtifactId("aaa");
+        entry.setVersion("vvv");
+        entry.getDirectories().add(new File(dir, "jar1"));
+        entry.getDirectories().add(new File(dir, "jar2"));
         liveJarInfo.getJarEntries().put(entry.getId(), entry);
         Entry warEntry = new Entry();
-        warEntry.groupId = "gggggg";
-        warEntry.artifactId = "aaaaaa";
-        warEntry.version = "vvvvvv";
-        warEntry.directories.add(new File(dir, "war"));
+        warEntry.setGroupId("gggggg");
+        warEntry.setArtifactId("aaaaaa");
+        warEntry.setVersion("vvvvvv");
+        warEntry.getDirectories().add(new File(dir, "war"));
         liveJarInfo.getWarEntries().put(warEntry.getId(), warEntry);
         liveJarInfo.write();
         
@@ -45,24 +45,24 @@ public class LiveJarInfoTest {
         assertNotNull(loadedLiveJarInfo.getJarEntries());
         assertEquals(1, loadedLiveJarInfo.getJarEntries().size());
         Entry loadedEntry = loadedLiveJarInfo.getJarEntries().values().iterator().next();
-        assertEquals("ggg", loadedEntry.groupId);
-        assertEquals("aaa", loadedEntry.artifactId);
-        assertEquals("vvv", loadedEntry.version);
-        assertNotNull(loadedEntry.directories);
-        assertEquals(2, loadedEntry.directories.size());
-        assertTrue(loadedEntry.directories.contains(new File(dir, "jar1")));
-        assertTrue(loadedEntry.directories.contains(new File(dir, "jar2")));
+        assertEquals("ggg", loadedEntry.getGroupId());
+        assertEquals("aaa", loadedEntry.getArtifactId());
+        assertEquals("vvv", loadedEntry.getVersion());
+        assertNotNull(loadedEntry.getDirectories());
+        assertEquals(2, loadedEntry.getDirectories().size());
+        assertTrue(loadedEntry.getDirectories().contains(new File(dir, "jar1")));
+        assertTrue(loadedEntry.getDirectories().contains(new File(dir, "jar2")));
 
         assertNotNull(loadedLiveJarInfo.getWarEntries());
         assertEquals(1, loadedLiveJarInfo.getWarEntries().size());
         Entry loadedWarEntry = loadedLiveJarInfo.getWarEntries().values().iterator().next();
-        assertEquals("gggggg", loadedWarEntry.groupId);
-        assertEquals("aaaaaa", loadedWarEntry.artifactId);
-        assertEquals("vvvvvv", loadedWarEntry.version);
+        assertEquals("gggggg", loadedWarEntry.getGroupId());
+        assertEquals("aaaaaa", loadedWarEntry.getArtifactId());
+        assertEquals("vvvvvv", loadedWarEntry.getVersion());
         assertNotNull(loadedWarEntry);
-        assertNotNull(loadedWarEntry.directories);
-        assertEquals(1, loadedWarEntry.directories.size());
-        assertTrue(loadedWarEntry.directories.contains(new File(dir, "war")));
+        assertNotNull(loadedWarEntry.getDirectories());
+        assertEquals(1, loadedWarEntry.getDirectories().size());
+        assertTrue(loadedWarEntry.getDirectories().contains(new File(dir, "war")));
     }
     
 }
