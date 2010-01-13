@@ -39,6 +39,8 @@ public class ModuleInfo {
     
     private SortedMap<String,ModuleDescriptor> moduleDescMap = new TreeMap<String,ModuleDescriptor>();
     
+    private List<String> defaultSearchModules = new ArrayList<String>();
+    
     public static ModuleInfo getInstance() {
         return instance;
     }
@@ -108,6 +110,16 @@ public class ModuleInfo {
                 }
             }
         }
+    }
+    
+    public void addDefaultSearchModule(String moduleName) {
+        if(!moduleDescMap.containsKey(moduleName)) 
+            throw new RuntimeException("Default-search module '" + moduleName + "' doesn't exist.");
+        defaultSearchModules.add(moduleName);
+    }
+    
+    public List<String> getDefaultSearchModules() {
+        return defaultSearchModules;
     }
     
     @Override

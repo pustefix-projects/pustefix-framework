@@ -1,3 +1,26 @@
+2010-01-13  Martin Leidig  <mleidig@schlund.de>
+
+	Added support for inserting modules into the default search
+	chain of dynamic includes. Thus resources can be overridden
+	by a module without having to explicitly configure the
+	overriding of another module.
+	The default-search chain be configured in the
+	project.xml file as follows:
+
+	<project-config>
+	  ...
+	  <dynamic-includes>
+	    <default-search>
+	      <module>mymodule</module>
+	      <module>anothermodule</module>
+	    </default-search>
+	  </dynamic-includes>
+	  ...
+	</project-config>
+
+	Before looking up modules defined here, a dynamic resource
+	is always searched first within the application itself.
+
 2009-12-16  Martin Leidig  <mleidig@schlund.de>
 
 	Added support for form submit buttons using the <button> element.

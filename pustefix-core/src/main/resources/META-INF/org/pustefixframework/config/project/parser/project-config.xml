@@ -71,6 +71,10 @@
     <match>/p:project-config/p:xml-generator//p:cache-statistic</match>
   </handler>
   
+  <handler class="org.pustefixframework.config.project.parser.DynamicIncludesParsingHandler">
+    <match>/p:project-config/p:dynamic-includes</match>
+  </handler>
+  
   <!-- Creates context xml request handler -->
   <handler class="org.pustefixframework.config.project.parser.PustefixContextXMLRequestHandlerParsingHandler">
     <match>/p:project-config/p:application//p:context-xml-service</match>

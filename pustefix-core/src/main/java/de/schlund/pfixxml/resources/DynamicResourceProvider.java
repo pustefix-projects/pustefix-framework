@@ -91,12 +91,33 @@ public class DynamicResourceProvider implements ResourceProvider {
         ModuleInfo moduleInfo = ModuleInfo.getInstance();
         String path = uri.getPath();
         if(path.startsWith("/")) path = path.substring(1);
+        
+        //search in defaultSearchModules
+        List<String> defaultSearchModules = moduleInfo.getDefaultSearchModules();
+        for(String theme:themes) {
+            for(String defaultSearchModule: defaultSearchModules) {
+                try {
+                    String uriPath = uri.getPath();
+                    uriPath = uriPath.replace("THEME", theme);
+                    URI modUri = new URI("module://" + defaultSearchModule + uriPath);
+                    if(LOG.isDebugEnabled()) LOG.debug("trying "+modUri.toString());
+                    Resource resource = ResourceUtil.getResource(modUri);
+                    if(resource.exists()) {
+                        resource.setOriginatingURI(uri);
+                        if(part==null) return resource;
+                        if(containsPart(resource, part)) return resource;
+                    }
+                } catch(URISyntaxException x) {
+                    throw new ResourceProviderException("Error while searching defaultsearch module resource: " + uri, x);
+                }
+            }
+        }
+
+        //search in overriding modules
         List<String> overMods = moduleInfo.getOverridingModules(module, path);
         if(overMods.size()>1) {
             LOG.warn("Multiple modules found which override resource '"+path+"' from module '"+module+"'.");
         }
-        
-        //search in overriding modules
         for(String theme:themes) {
             for(String overMod:overMods) {
                 try {
