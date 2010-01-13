@@ -18,62 +18,73 @@
 
 package de.schlund.pfixxml.resources.internal;
 
-import java.io.File;
+import java.lang.reflect.Method;
 import java.net.URI;
+import java.net.URL;
 
+import org.apache.log4j.Logger;
+
+import de.schlund.pfixcore.exception.PustefixRuntimeException;
+import de.schlund.pfixxml.config.BuildTimeProperties;
 import de.schlund.pfixxml.resources.DocrootResourceProvider;
 import de.schlund.pfixxml.resources.Resource;
 
 /**
- * Provider using a path on the local file system to resolve docroot resources.  
- * 
+ * Provider using a path on the local file system to resolve docroot resources.
  * @author Sebastian Marsching <sebastian.marsching@1und1.de>
  */
 public class DocrootResourceOnFileSystemProvider extends DocrootResourceProvider {
-    
+
+    private static Logger LOG = Logger.getLogger(DocrootResourceProvider.class);
+
     private String docroot;
-    private String fallbackDocroot;
-    
+
+    private boolean liveResolverClassNotFound = false;
+
     public DocrootResourceOnFileSystemProvider(String docroot) {
         this.docroot = docroot;
-        // Support for running webapps from source with 'mvn tomcat:run'
-        // Set the target artifact directory as alternative docroot if docroot is source location 
-        if(docroot.endsWith("src/main/webapp")) {
-            File dir = guessFallbackDocroot();
-            if(dir != null) {
-                fallbackDocroot = dir.getAbsolutePath();
-            }
-        }
-    }
-    
-    public Resource getResource(URI uri) {
-    	String path = uri.getPath();
-    	// Support for running webapps from source with 'mvn tomcat:run'
-    	// Use the alternative docroot for paths which aren't located in source dir when running from source
-    	if( fallbackDocroot != null && 
-    			( path.startsWith("/core/") || 
-    			  path.startsWith("/modules/") ||
-    			  path.startsWith("/.cache/") ||
-    			  path.startsWith("/wsscript/") ||
-    			  path.startsWith("/wsdl/") ||
-    			  path.equals("/WEB-INF/buildtime.prop") ) ) {
-            return new DocrootResourceOnFileSystemImpl(uri, fallbackDocroot);
-        }
-        return new DocrootResourceOnFileSystemImpl(uri, docroot);
     }
 
-    
-    private static File guessFallbackDocroot() {
-        File target = new File("target");
-        if(target.exists() && target.isDirectory()) {
-            for(File file:target.listFiles()) {
-                if(file.isDirectory()) {
-                    File webInfDir = new File(file, "WEB-INF");
-                    if(webInfDir.exists()) return file;
+    public Resource getResource(URI uri) {
+
+        if (!liveResolverClassNotFound) {
+
+            boolean checkLive;
+            if (uri.getPath().equals("/" + BuildTimeProperties.PATH)) {
+                // special case for WEB-INF/buildtime.prop: avoid recursive calls while if they are not loaded
+                checkLive = !new DocrootResourceOnFileSystemImpl(uri, docroot).exists();
+            } else {
+                // Ensure resources are read from real docroot in production environment
+                checkLive = BuildTimeProperties.getProperties().getProperty("mode") != null
+                        && !BuildTimeProperties.getProperties().getProperty("mode").equals("prod");
+            }
+
+            if (checkLive) {
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("Getting live resource for " + uri);
+                }
+                String className = "org.pustefixframework.live.LiveResolver";
+                try {
+                    // avoid ClassNotFoundException as LiveResolver is optional
+                    // URL resolvedDocroot = new LiveResolver().resolveLiveDocroot(docroot, uri.getPath());
+                    Class<?> clazz = Class.forName(className);
+                    Object liveResolver = clazz.newInstance();
+                    Method method = clazz.getMethod("resolveLiveDocroot", String.class, String.class);
+                    URL resolvedLiveDocroot = (URL) method.invoke(liveResolver, docroot, uri.getPath());
+                    if (resolvedLiveDocroot != null) {
+                        return new DocrootResourceOnFileSystemImpl(uri, resolvedLiveDocroot.getFile());
+                    }
+                } catch (ClassNotFoundException e) {
+                    // ignore, LiveResolver is not in class path
+                    liveResolverClassNotFound = true;
+                    LOG.warn("Class " + className + " not found, live resources are disabled!");
+                } catch (Exception e) {
+                    throw new PustefixRuntimeException(e);
                 }
             }
         }
-        return null;
+
+        return new DocrootResourceOnFileSystemImpl(uri, docroot);
     }
-    
+
 }

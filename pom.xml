@@ -191,6 +191,7 @@
     <module>pustefix-samples</module>
     <module>pustefix-editor</module>
     <module>pustefix-docbook</module>
+    <module>pustefix-live</module>
   </modules>
 
 </project>

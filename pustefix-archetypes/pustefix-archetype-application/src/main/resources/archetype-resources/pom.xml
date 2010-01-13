@@ -19,6 +19,11 @@
       <artifactId>pustefix-core</artifactId>
       <version>${pustefix.version}</version>
     </dependency>
+    <dependency>
+      <groupId>org.pustefixframework</groupId>
+      <artifactId>pustefix-live</artifactId>
+      <version>${pustefix.version}</version>
+    </dependency>
   </dependencies>
  
   <build>
