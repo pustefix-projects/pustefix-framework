@@ -40,26 +40,30 @@ public class LiveResolver {
 
     /**
      * Resolves the live root for the given root and path. If the root represents a directory in file system we try to
-     * resolve the <strong>docroot</strong> live root. If the root represents a jar file we try to resolve the
+     * resolve the <strong>docroot</strong> live root. If the root represents a file we try to resolve the
      * <strong>module</strong> live root.
      * @param root
-     *            the root
+     *            path to the root file or root directory
      * @param path
-     *            the resource path, relative to root
+     *            the resource path, relative to root. Must not start with a slash
      * @return the resolved live root, or null if no live root was found
      */
     public File resolveLiveRoot(String root, String path) throws Exception {
-
         URL url;
         File file = new File(root);
+
+        if (path.startsWith("/")) {
+            throw new IllegalArgumentException(path);
+        }
+        
         if (file.exists()) {
             url = file.toURI().toURL();
         } else {
             url = new URL(root);
         }
 
-        if (root.endsWith(".jar")) {
-            URL liveModuleRoot = resolveLiveModuleRoot(url, path);
+        if (file.isFile()) {
+            URL liveModuleRoot = resolveLiveModuleRoot(new URL("jar:" + url.toString() + "!/" + path), path);
             return liveModuleRoot != null ? new File(liveModuleRoot.getFile()) : null;
         } else {
             URL liveDocRoot = resolveLiveDocroot(root, path);
@@ -79,7 +83,10 @@ public class LiveResolver {
     // NOTE: Be careful when changing the method signature!
     // This method is invoked via reflection from pustefix-core!
     public URL resolveLiveModuleRoot(URL jarUrl, String path) throws Exception {
-        File location = getLiveJarInfoInstance().getLiveModuleRoot(jarUrl, path);
+        if (path.startsWith("/")) {
+            path = path.substring(1);
+        }
+        File location = getLiveJarInfoInstance().getLiveModuleRoot(new URL(jarUrl + path));
         if (location != null && location.exists()) {
             return location.toURI().toURL();
         }

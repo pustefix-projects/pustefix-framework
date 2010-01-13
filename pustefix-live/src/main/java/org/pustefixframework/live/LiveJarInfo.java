@@ -257,7 +257,7 @@ class LiveJarInfo {
      * Gets the live docroot.
      * @param docroot
      *            the original docroot
-     * @param filePath
+     * @param path
      *            the path of the resource, relative to docroot, used to determine includes/excludes
      * @return the live location for the docroot resource, or null if no live location is available
      * @throws Exception
@@ -329,13 +329,10 @@ class LiveJarInfo {
     /**
      * Gets the live module root.
      * @param jarUrl
-     *            the URL to the module JAR
-     * @param filePath
-     *            the path of the resource, relative to jarUrl, used to determine includes/excludes
+     *            the URL to the module JAR with the path to the resource appended
      * @return the live location for the module resource, or null if no live location is available
-     * @throws Exception
      */
-    public File getLiveModuleRoot(URL jarUrl, String filePath) throws Exception {
+    public File getLiveModuleRoot(URL jarUrl) {
 
         // TODO: excludes and includes, depending on path, per directory
 
