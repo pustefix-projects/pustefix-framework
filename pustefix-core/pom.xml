@@ -41,7 +41,6 @@
       <groupId>org.pustefixframework</groupId>
       <artifactId>pustefix-live</artifactId>
       <version>${project.version}</version>
-      <optional>true</optional>
     </dependency>
 
     <dependency>

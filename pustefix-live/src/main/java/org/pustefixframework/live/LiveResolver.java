@@ -39,6 +39,14 @@ public class LiveResolver {
     }
 
     /**
+     * Gets the live.xml file, null if none was detected.
+     * @return the live.xml file, null if none was detected
+     */
+    public File getLiveXmlFile() {
+        return getLiveJarInfo().getLiveFile();
+    }
+
+    /**
      * Resolves the live root for the given root and path. If the root represents a directory in file system we try to
      * resolve the <strong>docroot</strong> live root. If the root represents a file we try to resolve the
      * <strong>module</strong> live root.
@@ -80,8 +88,6 @@ public class LiveResolver {
      * @return the resolved live module root, or null if no live module root was found
      * @throws Exception
      */
-    // NOTE: Be careful when changing the method signature!
-    // This method is invoked via reflection from pustefix-core!
     public URL resolveLiveModuleRoot(URL jarUrl, String path) throws Exception {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Resolving live module root from live.xml for " + jarUrl + ":" + path);
@@ -114,8 +120,6 @@ public class LiveResolver {
      * @throws Exception
      *             the exception
      */
-    // NOTE: Be careful when changing the method signature!
-    // This method is invoked via reflection from pustefix-core!
     public URL resolveLiveDocroot(String docroot, String path) throws Exception {
 
         if (getLiveJarInfo().hasWarEntries()) {

@@ -50,7 +50,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 /**
- * Provides information where to find live resources.
+ * Provides information about Pustefix live resources. Also handles read and write operations of live.xml.
  */
 public class LiveJarInfo {
 
@@ -72,7 +72,7 @@ public class LiveJarInfo {
     private Set<String> rootsWithNoLocation;
 
     /**
-     * Creates a.
+     * Creates a new instance of LiveJarInfo, tries to detect the live.xml and parses that live.xml.
      */
     public LiveJarInfo() {
 
@@ -94,14 +94,20 @@ public class LiveJarInfo {
             }
         }
 
-        // fallback: use live.xml from old location in ~/.m2
+        // fallback: use live.xml/life.xml from old location in ~/.m2
         if (file == null) {
             String homeDir = System.getProperty("user.home");
-            file = new File(homeDir + "/.m2/live.xml");
-            if (!file.exists()) {
-                file = new File(homeDir + "/.m2/life.xml"); // support old misspelled name
+            File oldFile = new File(homeDir + "/.m2/live.xml");
+            if (!oldFile.exists()) {
+                oldFile = new File(homeDir + "/.m2/life.xml"); // support old misspelled name
             }
-            LOG.warn("Using live.xml from old location: " + file);
+            if(oldFile.exists()) {
+                file = oldFile;
+                LOG.warn("Using live.xml from old location: " + file);
+            }
+        }
+        if(file == null) {
+            LOG.warn("No live.xml detected, default settings for live resources may be used!");
         }
 
         init();
@@ -118,11 +124,13 @@ public class LiveJarInfo {
         rootToLocation = new HashMap<String, File>();
         rootsWithNoLocation = new HashSet<String>();
 
-        try {
-            read();
-            LOG.info(toString());
-        } catch (Exception x) {
-            throw new RuntimeException(x);
+        if(file != null) {
+            try {
+                read();
+                LOG.info(toString());
+            } catch (Exception x) {
+                throw new RuntimeException(x);
+            }
         }
     }
 
@@ -168,6 +176,11 @@ public class LiveJarInfo {
         return entry;
     }
 
+    /**
+     * Writes the live information to the live.xml file.
+     * 
+     * @throws Exception the exception
+     */
     public void write() throws Exception {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         factory.setNamespaceAware(true);

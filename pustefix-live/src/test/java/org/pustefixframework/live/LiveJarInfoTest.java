@@ -20,6 +20,7 @@ package org.pustefixframework.live;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.pustefixframework.live.Helper.FALLBACK_LIFE_XML;
 import static org.pustefixframework.live.Helper.FALLBACK_LIVE_XML;
@@ -44,11 +45,8 @@ public class LiveJarInfoTest {
 
     @Test
     public void testInitNoLiveNoFallback() throws Exception {
-        // fallback is life.xml, but does not exist
         LiveJarInfo liveJarInfo = new LiveJarInfo();
-        assertNotNull(liveJarInfo.getLiveFile());
-        assertEquals(FALLBACK_LIFE_XML, liveJarInfo.getLiveFile());
-        assertFalse(liveJarInfo.getLiveFile().exists());
+        assertNull(liveJarInfo.getLiveFile());
 
         // as file does not exist there are no jar an war entries
         assertFalse(liveJarInfo.hasJarEntries());

@@ -18,11 +18,11 @@
 
 package de.schlund.pfixxml.resources.internal;
 
-import java.lang.reflect.Method;
 import java.net.URI;
 import java.net.URL;
 
 import org.apache.log4j.Logger;
+import org.pustefixframework.live.LiveResolver;
 
 import de.schlund.pfixcore.exception.PustefixRuntimeException;
 import de.schlund.pfixxml.config.BuildTimeProperties;
@@ -39,7 +39,7 @@ public class DocrootResourceOnFileSystemProvider extends DocrootResourceProvider
 
     private String docroot;
 
-    private boolean liveResolverClassNotFound = false;
+    private LiveResolver liveResolver;
 
     public DocrootResourceOnFileSystemProvider(String docroot) {
         this.docroot = docroot;
@@ -47,40 +47,30 @@ public class DocrootResourceOnFileSystemProvider extends DocrootResourceProvider
 
     public Resource getResource(URI uri) {
 
-        if (!liveResolverClassNotFound) {
+        boolean checkLive;
+        if (uri.getPath().equals("/" + BuildTimeProperties.PATH)) {
+            // special case for WEB-INF/buildtime.prop: avoid recursive calls while they are not loaded
+            checkLive = !new DocrootResourceOnFileSystemImpl(uri, docroot).exists();
+        } else {
+            // Ensure resources are read from real docroot in production environment
+            checkLive = BuildTimeProperties.getProperties().getProperty("mode") != null
+                    && !BuildTimeProperties.getProperties().getProperty("mode").equals("prod");
+        }
 
-            boolean checkLive;
-            if (uri.getPath().equals("/" + BuildTimeProperties.PATH)) {
-                // special case for WEB-INF/buildtime.prop: avoid recursive calls while if they are not loaded
-                checkLive = !new DocrootResourceOnFileSystemImpl(uri, docroot).exists();
-            } else {
-                // Ensure resources are read from real docroot in production environment
-                checkLive = BuildTimeProperties.getProperties().getProperty("mode") != null
-                        && !BuildTimeProperties.getProperties().getProperty("mode").equals("prod");
+        if (checkLive) {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Getting live resource for " + uri);
             }
-
-            if (checkLive) {
-                if (LOG.isDebugEnabled()) {
-                    LOG.debug("Getting live resource for " + uri);
+            if (liveResolver == null) {
+                liveResolver = new LiveResolver();
+            }
+            try {
+                URL resolvedLiveDocroot = liveResolver.resolveLiveDocroot(docroot, uri.getPath());
+                if (resolvedLiveDocroot != null) {
+                    return new DocrootResourceOnFileSystemImpl(uri, resolvedLiveDocroot.getFile());
                 }
-                String className = "org.pustefixframework.live.LiveResolver";
-                try {
-                    // avoid ClassNotFoundException as LiveResolver is optional
-                    // URL resolvedDocroot = new LiveResolver().resolveLiveDocroot(docroot, uri.getPath());
-                    Class<?> clazz = Class.forName(className);
-                    Object liveResolver = clazz.newInstance();
-                    Method method = clazz.getMethod("resolveLiveDocroot", String.class, String.class);
-                    URL resolvedLiveDocroot = (URL) method.invoke(liveResolver, docroot, uri.getPath());
-                    if (resolvedLiveDocroot != null) {
-                        return new DocrootResourceOnFileSystemImpl(uri, resolvedLiveDocroot.getFile());
-                    }
-                } catch (ClassNotFoundException e) {
-                    // ignore, LiveResolver is not in class path
-                    liveResolverClassNotFound = true;
-                    LOG.warn("Class " + className + " not found, live resources are disabled!");
-                } catch (Exception e) {
-                    throw new PustefixRuntimeException(e);
-                }
+            } catch (Exception e) {
+                throw new PustefixRuntimeException(e);
             }
         }
 

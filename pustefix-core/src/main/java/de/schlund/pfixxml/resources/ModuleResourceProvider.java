@@ -18,12 +18,12 @@
 package de.schlund.pfixxml.resources;
 
 import java.io.File;
-import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 
 import org.apache.log4j.Logger;
+import org.pustefixframework.live.LiveResolver;
 
 import de.schlund.pfixcore.exception.PustefixRuntimeException;
 import de.schlund.pfixcore.util.ModuleDescriptor;
@@ -43,38 +43,34 @@ public class ModuleResourceProvider implements ResourceProvider {
     
     private String[] supportedSchemes = {MODULE_SCHEME};
     
-    private boolean liveResolverClassNotFound = false;
+    private LiveResolver liveResolver;
     
     public String[] getSupportedSchemes() {
         return supportedSchemes;
     }
     
     public Resource getResource(URI uri) throws ResourceProviderException {
-        if(uri.getScheme() == null) 
-            throw new ResourceProviderException("Missing URI scheme: "+uri);
-        if(!uri.getScheme().equals(MODULE_SCHEME)) 
-            throw new ResourceProviderException("URI scheme not supported: "+uri);
+        if (uri.getScheme() == null)
+            throw new ResourceProviderException("Missing URI scheme: " + uri);
+        if (!uri.getScheme().equals(MODULE_SCHEME))
+            throw new ResourceProviderException("URI scheme not supported: " + uri);
         String module = uri.getAuthority();
-        if(module == null || module.equals(""))
-            throw new ResourceProviderException("Missing module name: "+uri);
+        if (module == null || module.equals(""))
+            throw new ResourceProviderException("Missing module name: " + uri);
         ModuleDescriptor desc = ModuleInfo.getInstance().getModuleDescriptor(module);
         if (desc != null) {
             URL url = getJarURL(desc.getURL());
             // Ensure module resources are read from classpath in production environment
-            boolean checkLive = !liveResolverClassNotFound
-                    && !BuildTimeProperties.getProperties().getProperty("mode").equals("prod");
+            boolean checkLive = !BuildTimeProperties.getProperties().getProperty("mode").equals("prod");
             if (checkLive) {
                 if (LOG.isDebugEnabled()) {
                     LOG.debug("Getting live resource for " + uri);
                 }
-                String className = "org.pustefixframework.live.LiveResolver";
+                if (liveResolver == null) {
+                    liveResolver = new LiveResolver();
+                }
                 try {
-                    // avoid ClassNotFoundException as LiveResolver is optional
-                    // URL resolvedUrl = new LiveResolver().resolveLiveModuleRoot(url, uri.getPath());
-                    Class<?> clazz = Class.forName(className);
-                    Object liveResolver = clazz.newInstance();
-                    Method method = clazz.getMethod("resolveLiveModuleRoot", URL.class, String.class);
-                    URL resolvedUrl = (URL) method.invoke(liveResolver, url, uri.getPath());
+                    URL resolvedUrl = liveResolver.resolveLiveModuleRoot(url, uri.getPath());
                     if (resolvedUrl != null) {
                         // jar or file?
                         if (resolvedUrl.getProtocol().equals("jar")) {
@@ -83,10 +79,6 @@ public class ModuleResourceProvider implements ResourceProvider {
                             return new ModuleSourceResource(uri, new File(resolvedUrl.getFile()));
                         }
                     }
-                } catch (ClassNotFoundException e) {
-                    // ignore, LiveResolver is not in class path
-                    liveResolverClassNotFound = true;
-                    LOG.warn("Class " + className + " not found, live resources are disabled!");
                 } catch (Exception e) {
                     throw new PustefixRuntimeException(e);
                 }
