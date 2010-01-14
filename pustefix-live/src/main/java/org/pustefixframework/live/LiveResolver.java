@@ -43,16 +43,16 @@ public class LiveResolver {
      * resolve the <strong>docroot</strong> live root. If the root represents a file we try to resolve the
      * <strong>module</strong> live root.
      * @param root
-     *            path to the root file or root directory
+     *            path to the root file or root directory;
      * @param path
-     *            the resource path, relative to root. Must not start with a slash
+     *            the resource path, relative to root. Must start with a slash
      * @return the resolved live root, or null if no live root was found
      */
     public File resolveLiveRoot(String root, String path) throws Exception {
         URL url;
         File file = new File(root);
 
-        if (path.startsWith("/")) {
+        if (!path.startsWith("/")) {
             throw new IllegalArgumentException(path);
         }
         
@@ -63,7 +63,7 @@ public class LiveResolver {
         }
 
         if (file.isFile()) {
-            URL liveModuleRoot = resolveLiveModuleRoot(new URL("jar:" + url.toString() + "!/" + path), path);
+            URL liveModuleRoot = resolveLiveModuleRoot(new URL("jar:" + url.toString() + "!" + path), path);
             return liveModuleRoot != null ? new File(liveModuleRoot.getFile()) : null;
         } else {
             URL liveDocRoot = resolveLiveDocroot(root, path);
@@ -201,7 +201,7 @@ public class LiveResolver {
         File docrootDir = new File(docroot);
         if (docrootDir.exists() && docrootDir.isDirectory()) {
             File targetDir = docrootDir.getParentFile();
-            if (targetDir != null && targetDir.getName().endsWith("target")) {
+            if (targetDir != null && targetDir.getName().equals("target")) {
                 File projectDir = targetDir.getParentFile();
                 if (projectDir != null) {
                     File srcMainWebappDir = new File(projectDir, "src/main/webapp");
