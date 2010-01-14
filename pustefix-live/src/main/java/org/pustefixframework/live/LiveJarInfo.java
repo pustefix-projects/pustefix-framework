@@ -209,6 +209,10 @@ public class LiveJarInfo {
         }
     }
 
+    public File getLiveFile() {
+        return file;
+    }
+
     public Map<String, Entry> getJarEntries() {
         return jarEntries;
     }

@@ -26,16 +26,16 @@ public class LiveResolver {
 
     private static Logger LOG = Logger.getLogger(LiveResolver.class);
 
-    private static LiveJarInfo liveJarInfoInstance = new LiveJarInfo();
+    private LiveJarInfo liveJarInfo;
 
-    private static synchronized LiveJarInfo getLiveJarInfoInstance() {
+    private LiveJarInfo getLiveJarInfo() {
 
-        if (liveJarInfoInstance == null) {
-            liveJarInfoInstance = new LiveJarInfo();
+        if (liveJarInfo == null) {
+            liveJarInfo = new LiveJarInfo();
         }
         // TODO: check if live.xml was modified and reload
 
-        return liveJarInfoInstance;
+        return liveJarInfo;
     }
 
     /**
@@ -90,8 +90,8 @@ public class LiveResolver {
         if (path.startsWith("/")) {
             path = path.substring(1);
         }
-        File moduleRoot = getLiveJarInfoInstance().getLiveModuleRoot(new URL(jarUrl + path));
-        if (moduleRoot != null && moduleRoot.exists()) {
+        File moduleRoot = getLiveJarInfo().getLiveModuleRoot(new URL(jarUrl + path));
+        if (moduleRoot != null) {
             if (LOG.isDebugEnabled()) {
                 LOG.debug("  --> " + moduleRoot);
             }
@@ -118,12 +118,12 @@ public class LiveResolver {
     // This method is invoked via reflection from pustefix-core!
     public URL resolveLiveDocroot(String docroot, String path) throws Exception {
 
-        if (getLiveJarInfoInstance().hasWarEntries()) {
+        if (getLiveJarInfo().hasWarEntries()) {
             // live.xml defines live folders for web applications, use this information
             if (LOG.isDebugEnabled()) {
                 LOG.debug("Resolving live docroot from live.xml for " + docroot + ":" + path);
             }
-            File liveDocroot = getLiveJarInfoInstance().getLiveDocroot(docroot, path);
+            File liveDocroot = getLiveJarInfo().getLiveDocroot(docroot, path);
             if (liveDocroot != null) {
                 if (LOG.isDebugEnabled()) {
                     LOG.debug("  --> " + liveDocroot);
@@ -136,7 +136,7 @@ public class LiveResolver {
             if (LOG.isDebugEnabled()) {
                 LOG.debug("Resolving fallback docroot for " + docroot + ":" + path);
             }
-            File dir = guessFallbackDocroot();
+            File dir = guessFallbackDocroot(docroot);
             if (dir != null) {
                 String fallbackDocroot = dir.getAbsolutePath();
                 if (fallbackDocroot != null
@@ -167,13 +167,10 @@ public class LiveResolver {
                     }
                 }
 
-                File liveFile = new File(liveDocroot, path.substring(1));
-                if (liveFile.exists()) {
-                    if (LOG.isDebugEnabled()) {
-                        LOG.debug("  --> " + liveDocroot);
-                    }
-                    return liveDocroot.toURI().toURL();
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("  --> " + liveDocroot);
                 }
+                return liveDocroot.toURI().toURL();
             }
         }
 
@@ -183,14 +180,18 @@ public class LiveResolver {
         return null;
     }
 
-    private static File guessFallbackDocroot() {
-        File target = new File("target");
-        if (target.exists() && target.isDirectory()) {
-            for (File file : target.listFiles()) {
-                if (file.isDirectory()) {
-                    File webInfDir = new File(file, "WEB-INF");
-                    if (webInfDir.exists())
-                        return file;
+    private static File guessFallbackDocroot(String srcMainWebapp) {
+        File srcMainWebappDir = new File(srcMainWebapp);
+        if (srcMainWebappDir.exists() && srcMainWebappDir.isDirectory()) {
+            File projectDir = srcMainWebappDir.getParentFile().getParentFile().getParentFile();
+            File target = new File(projectDir, "target");
+            if (target.exists() && target.isDirectory()) {
+                for (File file : target.listFiles()) {
+                    if (file.isDirectory()) {
+                        File webInfDir = new File(file, "WEB-INF");
+                        if (webInfDir.exists())
+                            return file;
+                    }
                 }
             }
         }
