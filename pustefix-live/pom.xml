@@ -20,6 +20,7 @@
       <groupId>commons-io</groupId>
       <artifactId>commons-io</artifactId>
       <version>1.2</version>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>log4j</groupId>
