@@ -60,6 +60,23 @@ public class LiveResolverTest {
         assertEquals("/tmp/app1/src/main/webapp", liveRoot.toString());
     }
 
+    /**
+     * Assert no live docroot for the editor. The editor has its own pom.xml below target/editor/META-INF, no live
+     * resources are specified for those coordinates.
+     * @throws Exception
+     */
+    @Test
+    public void testResolveLiveRootOfEditor() throws Exception {
+        createWorkspaceLive();
+        createProjectLayout();
+
+        LiveResolver liveResolver = new LiveResolver();
+        String docroot = new File(APP1_BASE_DIR, "target/editor").toString();
+
+        File liveRoot = liveResolver.resolveLiveRoot(docroot, "/file.xml");
+        assertNull(liveRoot);
+    }
+
     @Test
     public void testResolveLiveRootModule() throws Exception {
         createWorkspaceLive();
@@ -92,6 +109,23 @@ public class LiveResolverTest {
 
         // non-existing docroot
         liveDocroot = liveResolver.resolveLiveDocroot("/tmp", "/path/to/file.xml");
+        assertNull(liveDocroot);
+    }
+
+    /**
+     * Assert no live docroot for the editor. The editor has its own pom.xml below target/editor/META-INF, no live
+     * resources are specified for those coordinates.
+     * @throws Exception
+     */
+    @Test
+    public void testResolveLiveDocrootOfEditorByLiveXml() throws Exception {
+        createWorkspaceLive();
+        createProjectLayout();
+
+        LiveResolver liveResolver = new LiveResolver();
+        String docroot = new File(APP1_BASE_DIR, "target/editor").toString();
+
+        URL liveDocroot = liveResolver.resolveLiveDocroot(docroot, "/path/to/file.xml");
         assertNull(liveDocroot);
     }
 

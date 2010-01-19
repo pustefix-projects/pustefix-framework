@@ -32,6 +32,7 @@ import static org.pustefixframework.live.Helper.createWorkspaceLive;
 
 import java.io.File;
 
+import org.apache.commons.io.FileUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.pustefixframework.live.LiveJarInfo.Entry;
@@ -102,6 +103,35 @@ public class LiveJarInfoTest {
         assertEquals(2, liveJarInfo.getJarEntries().size());
         assertTrue(liveJarInfo.hasWarEntries());
         assertEquals(1, liveJarInfo.getWarEntries().size());
+    }
+    
+    @Test
+    public void testCheckModification() throws Exception {
+        createWorkspaceLive();
+        
+        LiveJarInfo liveJarInfo = new LiveJarInfo();
+        assertNotNull(liveJarInfo.getLiveFile());
+        assertEquals(WORKSPACE_LIVE_XML, liveJarInfo.getLiveFile());
+        assertTrue(liveJarInfo.getLiveFile().exists());
+        assertTrue(liveJarInfo.hasJarEntries());
+        assertEquals(2, liveJarInfo.getJarEntries().size());
+        assertTrue(liveJarInfo.hasWarEntries());
+        assertEquals(1, liveJarInfo.getWarEntries().size());
+        
+        // modify file, check that modifications are reflected
+        // wait a bit to ensure the modification does not occur in the same millisecond
+        Thread.sleep(1000);
+        FileUtils.writeStringToFile(liveJarInfo.getLiveFile(), "<live></live>", "UTF-8");
+        // wait a bit to avoid race conditions
+        Thread.sleep(1000);
+        assertNotNull(liveJarInfo.getLiveFile());
+        assertEquals(WORKSPACE_LIVE_XML, liveJarInfo.getLiveFile());
+        assertTrue(liveJarInfo.getLiveFile().exists());
+        assertFalse(liveJarInfo.hasJarEntries());
+        assertEquals(0, liveJarInfo.getJarEntries().size());
+        assertFalse(liveJarInfo.hasWarEntries());
+        assertEquals(0, liveJarInfo.getWarEntries().size());
+        
     }
 
     @Test

@@ -38,6 +38,8 @@ public class Helper {
     public static final File APP1_POM_XML = new File(APP1_BASE_DIR, "pom.xml");
     public static final File APP1_SRC_MAIN_WEBAPP_DIR = new File(APP1_BASE_DIR, "src/main/webapp");
     public static final File APP1_TARGET_DIR = new File(APP1_BASE_DIR, "target/app1");
+    public static final File EDITOR_TARGET_DIR = new File(APP1_BASE_DIR, "target/editor");
+    public static final File EDITOR_POM_XML = new File(EDITOR_TARGET_DIR, "META-INF/maven/org.pustefixframework.editor/pustefix-editor-webui/pom.xml");
 
     // public static final File RESOURCES_DIR = new File(BASE_DIR, "src/main/resources");
 
@@ -79,7 +81,13 @@ public class Helper {
      * |           |   `-- file.xml
      * |           `-- file.xml
      * `-- target
-     *     `-- f
+     *     `-- editor
+     *         `-- META-INF
+     *             `-- maven
+     *                 `-- org.pustefixframework.editor
+     *                     `-- pustefix-editor-webui
+     *                         `-- pom.xml
+     *     `-- app1
      *         |-- WEB-INF
      *         |   `-- buildTime.prop
      *         `-- core
@@ -96,6 +104,14 @@ public class Helper {
         FileUtils.writeStringToFile(new File(APP1_TARGET_DIR, "WEB-INF/buildTime.prop"), "dummy", "UTF-8");
         FileUtils.forceMkdir(new File(APP1_TARGET_DIR, "core"));
         FileUtils.writeStringToFile(new File(APP1_TARGET_DIR, "core/file.xml"), "dummy", "UTF-8");
+        
+        FileUtils.forceMkdir(EDITOR_POM_XML.getParentFile());
+        String data = "<project>";
+        data += "<groupId>org.pustefixframework.editor</groupId>";
+        data += "<artifactId>pustefix-editor-webui</artifactId>";
+        data += "<version>0.14.4-SNAPSHOT</version>";
+        data += "</project>";
+        FileUtils.writeStringToFile(EDITOR_POM_XML, data, "UTF-8");
 
         FileUtils.forceMkdir(APP1_SRC_MAIN_WEBAPP_DIR);
         FileUtils.writeStringToFile(new File(APP1_SRC_MAIN_WEBAPP_DIR, "file.xml"), "dummy", "UTF-8");

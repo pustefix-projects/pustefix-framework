@@ -56,11 +56,12 @@ public class LiveJarInfo {
 
     private static Logger LOG = Logger.getLogger(LiveJarInfo.class);
     public static final String[] DEFAULT_DOCROOT_LIVE_EXCLUSIONS = { "/WEB-INF/web.xml", "/WEB-INF/buildtime.prop",
-            "/WEB-INF/edit.conf.xml", "/WEB-INF/editor-locations.xml",
             "/.cache/", "/core/", "/modules/", "/wsscript/", "/wsdl/" };
 
     /** The live.xml file */
     private File file;
+    
+    private long lastReadTimestamp;
 
     /** The jar entries */
     private Map<String, Entry> jarEntries;
@@ -136,6 +137,7 @@ public class LiveJarInfo {
 
     private void read() throws Exception {
         if (file.exists()) {
+            lastReadTimestamp = file.lastModified();
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
             factory.setNamespaceAware(true);
             DocumentBuilder builder = factory.newDocumentBuilder();
@@ -174,6 +176,14 @@ public class LiveJarInfo {
             entry.directories.add(dir);
         }
         return entry;
+    }
+
+    public void checkFileModified() {
+        if (file != null && file.exists()) {
+            if (file.lastModified() > lastReadTimestamp) {
+                init();
+            }
+        }
     }
 
     /**
@@ -227,18 +237,22 @@ public class LiveJarInfo {
     }
 
     public Map<String, Entry> getJarEntries() {
+        checkFileModified();
         return jarEntries;
     }
 
     public boolean hasJarEntries() {
+        checkFileModified();
         return jarEntries != null && jarEntries.size() > 0;
     }
 
     public Map<String, Entry> getWarEntries() {
+        checkFileModified();
         return warEntries;
     }
 
     public boolean hasWarEntries() {
+        checkFileModified();
         return warEntries != null && warEntries.size() > 0;
     }
 
@@ -280,17 +294,22 @@ public class LiveJarInfo {
      * @throws Exception
      */
     public File getLiveDocroot(String docroot, String path) throws Exception {
+        checkFileModified();
 
         // TODO: excludes and includes, depending on path, per directory
         for (String s : DEFAULT_DOCROOT_LIVE_EXCLUSIONS) {
             if (path.startsWith(s)) {
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("  --> excluded");
+                }
                 return null;
             }
         }
 
         File location = rootToLocation.get(docroot);
-        if (location != null || rootsWithNoLocation.contains(docroot))
+        if (location != null || rootsWithNoLocation.contains(docroot)) {
             return location;
+        }
 
         // find pom.xml, retrieve groupId, artifactId, version from pom.xml
         File pomFile = guessPom(docroot);
@@ -332,6 +351,62 @@ public class LiveJarInfo {
     }
 
     private static File guessPom(String docroot) throws Exception {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Guessing pom.xml for " + docroot);
+        }
+        
+        /*
+         * Here is a project layout including a pustefix editor. The editor has its
+         * own pom.xml blow META-INF. Otherwise we walk up the parent path till we 
+         * find the project pom.xml.
+         * 
+         * <pre>
+         * pfixui
+         * |-- pom.xml                                        <-- pom of application
+         * |-- target
+         *     |-- pfixui-0.2.29-SNAPSHOT                     <-- docroot of application
+         *         |-- WEB-INF
+         *     |-- editor                                     <-- docroot of editor
+         *         |-- META-INF
+         *             |-- maven
+         *                 |-- org.pustefixframework.editor
+         *                     |-- pustefix-editor-webui
+         *                         |-- pom.xml                <-- pom of editor
+         *     
+         * </pre>
+         */
+        
+        // search pom.xml below META-INF
+        File docrootDir = new File(docroot);
+        if (docrootDir.exists() && docrootDir.isDirectory()) {
+            File metaInfDir = new File(docrootDir, "META-INF");
+            if(LOG.isTraceEnabled()) LOG.trace(metaInfDir);
+            if (metaInfDir.exists() && metaInfDir.isDirectory()) {
+                File mavenDir = new File(metaInfDir, "maven");
+                if(LOG.isTraceEnabled()) LOG.trace(mavenDir);
+                if (mavenDir.exists() && mavenDir.isDirectory()) {
+                    File[] groupIdDirs = mavenDir.listFiles();
+                    for (File groupIdDir : groupIdDirs) {
+                        if(LOG.isTraceEnabled()) LOG.trace(groupIdDir);
+                        if (groupIdDir.exists() && groupIdDir.isDirectory()) {
+                            File[] artifactIdDirs = groupIdDir.listFiles();
+                            for (File artifiactIdDir : artifactIdDirs) {
+                                if(LOG.isTraceEnabled()) LOG.trace(artifiactIdDir);
+                                if (artifiactIdDir.exists() && artifiactIdDir.isDirectory()) {
+                                    File pomFile = new File(artifiactIdDir, "pom.xml");
+                                    if(LOG.isTraceEnabled()) LOG.trace(pomFile);
+                                    if (pomFile.exists() && pomFile.isFile()) {
+                                        return pomFile;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        // search project pom.xml
         File pomDir = new File(docroot);
         while (pomDir != null && pomDir.exists() && pomDir.isDirectory()) {
             File pomFile = new File(pomDir, "pom.xml");
@@ -350,12 +425,14 @@ public class LiveJarInfo {
      * @return the live location for the module resource, or null if no live location is available
      */
     public File getLiveModuleRoot(URL jarUrl) {
+        checkFileModified();
 
         // TODO: excludes and includes, depending on path, per directory
 
         File location = rootToLocation.get(jarUrl.toString());
-        if (location != null || rootsWithNoLocation.contains(jarUrl.toString()))
+        if (location != null || rootsWithNoLocation.contains(jarUrl.toString())) {
             return location;
+        }
 
         String path = jarUrl.getPath();
         int ind = path.indexOf('!');
@@ -369,8 +446,9 @@ public class LiveJarInfo {
         if (entry != null) {
             for (File dir : entry.directories) {
                 if (dir.getName().equals("resources")) {
-                    if (LOG.isDebugEnabled())
+                    if (LOG.isDebugEnabled()) {
                         LOG.debug("Found live location by jar file name: " + path);
+                    }
                     rootToLocation.put(jarUrl.toString(), dir);
                     return dir;
                 }
@@ -396,9 +474,10 @@ public class LiveJarInfo {
                             if (entry != null) {
                                 for (File dir : entry.directories) {
                                     // if (dir.getName().equals("resources")) {
-                                    if (LOG.isDebugEnabled())
+                                    if (LOG.isDebugEnabled()) {
                                         LOG.debug("Found live location by artifact name and MANIFEST attributes: "
                                                 + entryKey);
+                                    }
                                     rootToLocation.put(jarUrl.toString(), dir);
                                     return dir;
                                     // }
@@ -415,8 +494,9 @@ public class LiveJarInfo {
         } catch (IOException x) {
             LOG.warn("IO error reading module data: " + jarUrl.toString(), x);
         }
-        if (LOG.isDebugEnabled())
+        if (LOG.isDebugEnabled()) {
             LOG.debug("Found no live location: " + jarUrl.toString());
+        }
         rootsWithNoLocation.add(jarUrl.toString());
         return null;
     }
