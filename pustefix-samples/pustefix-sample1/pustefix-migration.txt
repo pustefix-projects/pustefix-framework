@@ -37,7 +37,11 @@ Migrating Pustefix applications from 0.14 to 1.0
     from docroot:/WEB-INF/...
     to bundle:/META-INF/pustefix/...
     
+    change <docroot-path> to bundle:/PUSTEFIX-INF/htdocs
+    
     remove <path>core/img</path> and <path>core/script</path> from <static> section
+    
+    remove <http-server> and subelements
     
 - Adapt configuration in src/main/resources/META-INF/pustefix/depend.xml
 
@@ -179,6 +183,13 @@ file:target/generated-bundles/org.pustefixframework.logback.config-1.0.0.jar@3
 file:target/generated-bundles/org.pustefixframework.runtime.config-1.0.0.jar@3
 
 
+- webservice changes:
+
+  put <ws:extension> parent element around <ws:webservice> elements 
+<ws:extension id="webservices.extension">
+<ws:extends extension-point="webservices.root"/>
+<ws:extension-point id="webservices.other" version="1.0" cardinality="0..n"/> 
+  
 
 - View XML changes:
 
