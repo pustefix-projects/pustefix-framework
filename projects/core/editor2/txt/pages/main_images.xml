@@ -144,13 +144,27 @@
                     </ixsl:when>
                     <ixsl:otherwise>
                       <img border="0">
-                        <ixsl:attribute name="src">/<ixsl:value-of select="/formresult/images/currentimage/@path"/>?<ixsl:value-of select="/formresult/images/currentimage/@modtime"/></ixsl:attribute>
+                        <ixsl:attribute name="src">/<ixsl:value-of select="/formresult/images/currentimage/@displaypath"/>?<ixsl:value-of select="/formresult/images/currentimage/@modtime"/></ixsl:attribute>
                       </img>
                     </ixsl:otherwise>
                   </ixsl:choose>
                 </td>
               </tr>
-              <pfx:include part="uploadimage"/>
+              <ixsl:choose>
+                <ixsl:when test="starts-with(/formresult/images/currentimage/@path, 'pfixroot:/modules/')">
+                  <tr class="editor_odd_row" valign="center">
+                    <td colspan="3">
+                      <div class="important_note">
+                      <img align="left" src="/core/editor2/img/info.png"/>
+                      <span class="important_note">The image was supplied by a module. Therefore it can't be changed within the CMS editor.</span>
+                      </div>
+                    </td>
+                  </tr>
+                </ixsl:when>
+                <ixsl:otherwise>
+                  <pfx:include part="uploadimage"/>
+                </ixsl:otherwise>
+              </ixsl:choose>
             </table>
           </ixsl:when>
           <ixsl:otherwise>

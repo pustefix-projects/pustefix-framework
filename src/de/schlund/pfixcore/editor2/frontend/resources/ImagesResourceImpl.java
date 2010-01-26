@@ -35,6 +35,8 @@ import de.schlund.pfixcore.editor2.frontend.util.SpringBeanLocator;
 import de.schlund.pfixcore.workflow.Context;
 import de.schlund.pfixxml.ResultDocument;
 import de.schlund.pfixxml.config.GlobalConfig;
+import de.schlund.pfixxml.resources.Resource;
+import de.schlund.pfixxml.resources.ResourceUtil;
 
 /**
  * Implementation of ImagesResource
@@ -131,12 +133,17 @@ public class ImagesResourceImpl implements ImagesResource {
                 } else {
                     filename = path;
                 }
-                currentImage.setAttribute("filename", filename);
-                File imageFile = new File(GlobalConfig.getDocroot(), path);
-                long modtime = imageFile.lastModified();
+                currentImage.setAttribute("filename", filename);               
+                Resource res = ResourceUtil.getResource(path);
+                String displayPath = path;
+                if(displayPath.startsWith("pfixroot:")) {
+                	displayPath = displayPath.substring(9);
+                	if(displayPath.startsWith("/")) displayPath = displayPath.substring(1);
+                }
+                currentImage.setAttribute("displaypath", displayPath);
+                long modtime = res.lastModified();
                 currentImage.setAttribute("modtime", Long.toString(modtime));
-                if (SpringBeanLocator.getSecurityManagerService().mayEditImage(
-                        this.selectedImage)) {
+                if (SpringBeanLocator.getSecurityManagerService().mayEditImage(this.selectedImage)) {
                     currentImage.setAttribute("mayEdit", "true");
                 } else {
                     currentImage.setAttribute("mayEdit", "false");
