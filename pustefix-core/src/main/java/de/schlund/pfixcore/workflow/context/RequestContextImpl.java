@@ -889,10 +889,11 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
     }
 
     public void addCookie(Cookie cookie) {
-        if (currentpservreq == null) {
-            throw new IllegalStateException("Cookies are only available witihin request handling");
-        }
         cookielist.add(cookie);
+    }
+    
+    public List<Cookie> getCookies() {
+    	return cookielist;
     }
 
     public Cookie[] getRequestCookies() {

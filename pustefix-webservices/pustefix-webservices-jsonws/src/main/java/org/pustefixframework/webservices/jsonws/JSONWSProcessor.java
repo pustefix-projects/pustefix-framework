@@ -28,14 +28,10 @@ import java.net.URL;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.log4j.Logger;
-import org.pustefixframework.webservices.json.JSONArray;
-import org.pustefixframework.webservices.json.JSONObject;
-import org.pustefixframework.webservices.json.parser.JSONParser;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletResponse;
 
-import de.schlund.pfixcore.beans.BeanDescriptorFactory;
-import de.schlund.pfixcore.beans.InitException;
-import de.schlund.pfixcore.beans.metadata.DefaultLocator;
+import org.apache.log4j.Logger;
 import org.pustefixframework.webservices.ProcessingInfo;
 import org.pustefixframework.webservices.ServiceCallContext;
 import org.pustefixframework.webservices.ServiceDescriptor;
@@ -48,6 +44,15 @@ import org.pustefixframework.webservices.ServiceRuntime;
 import org.pustefixframework.webservices.config.ServiceConfig;
 import org.pustefixframework.webservices.fault.Fault;
 import org.pustefixframework.webservices.fault.FaultHandler;
+import org.pustefixframework.webservices.json.JSONArray;
+import org.pustefixframework.webservices.json.JSONObject;
+import org.pustefixframework.webservices.json.parser.JSONParser;
+
+import de.schlund.pfixcore.beans.BeanDescriptorFactory;
+import de.schlund.pfixcore.beans.InitException;
+import de.schlund.pfixcore.beans.metadata.DefaultLocator;
+import de.schlund.pfixcore.workflow.Context;
+import de.schlund.pfixcore.workflow.ContextImpl;
 
 /**
  * @author mleidig@schlund.de
@@ -182,6 +187,17 @@ public class JSONWSProcessor implements ServiceProcessor {
                             procInfo.endInvocation();
                             if(LOG.isDebugEnabled()) LOG.debug("Invocation: "+procInfo.getInvocationTime()+"ms");
                         }
+                    }
+                }
+                
+                if(res.getUnderlyingResponse() instanceof HttpServletResponse){
+                    HttpServletResponse httpRes = (HttpServletResponse)res.getUnderlyingResponse();
+                    Context context = ServiceCallContext.getCurrentContext().getContext();
+                    if(context != null) {
+                    	List<Cookie> cookies = ((ContextImpl)context).getCookies();
+                    	for(Cookie cookie: cookies) {
+                    		httpRes.addCookie(cookie);
+                    	}
                     }
                 }
                 

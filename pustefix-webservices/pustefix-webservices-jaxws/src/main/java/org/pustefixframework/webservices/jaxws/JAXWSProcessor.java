@@ -25,6 +25,7 @@ import java.util.logging.Level;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.namespace.QName;
@@ -39,6 +40,7 @@ import org.pustefixframework.webservices.Constants;
 import org.pustefixframework.webservices.InsertPIResponseWrapper;
 import org.pustefixframework.webservices.ProcessingInfo;
 import org.pustefixframework.webservices.SOAPActionRequestWrapper;
+import org.pustefixframework.webservices.ServiceCallContext;
 import org.pustefixframework.webservices.ServiceException;
 import org.pustefixframework.webservices.ServiceProcessor;
 import org.pustefixframework.webservices.ServiceRegistry;
@@ -58,6 +60,9 @@ import com.sun.xml.ws.api.server.WSEndpoint;
 import com.sun.xml.ws.binding.BindingImpl;
 import com.sun.xml.ws.transport.http.servlet.ServletAdapterList;
 import com.sun.xml.ws.transport.http.servlet.WSServletDelegate;
+
+import de.schlund.pfixcore.workflow.Context;
+import de.schlund.pfixcore.workflow.ContextImpl;
 
 /**
  * @author mleidig@schlund.de
@@ -219,6 +224,17 @@ public class JAXWSProcessor implements ServiceProcessor {
                 throw new ProxyInvocationException(t);
             } finally {
                 ctx.endInvocation();
+                ServiceResponse res = ServiceCallContext.getCurrentContext().getServiceResponse();
+                if(res.getUnderlyingResponse() instanceof HttpServletResponse) {
+                    HttpServletResponse httpRes = (HttpServletResponse)res.getUnderlyingResponse();
+                    Context context = ServiceCallContext.getCurrentContext().getContext();
+                    if(context != null) {
+                        List<Cookie> cookies = ((ContextImpl)context).getCookies();
+                        for(Cookie cookie: cookies) {
+                            httpRes.addCookie(cookie);
+                        }
+                    }
+                }
             }
         }
     }  
