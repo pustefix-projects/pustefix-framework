@@ -28,6 +28,9 @@ import java.net.URL;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletResponse;
+
 import org.apache.log4j.Logger;
 import org.pustefixframework.webservices.ProcessingInfo;
 import org.pustefixframework.webservices.ServiceCallContext;
@@ -48,6 +51,8 @@ import org.pustefixframework.webservices.spring.WebserviceRegistration;
 import de.schlund.pfixcore.beans.BeanDescriptorFactory;
 import de.schlund.pfixcore.beans.InitException;
 import de.schlund.pfixcore.beans.metadata.DefaultLocator;
+import de.schlund.pfixcore.workflow.Context;
+import de.schlund.pfixcore.workflow.ContextImpl;
 
 /**
  * @author mleidig@schlund.de
@@ -182,6 +187,17 @@ public class JSONWSProcessor implements ServiceProcessor {
                             procInfo.endInvocation();
                             if(LOG.isDebugEnabled()) LOG.debug("Invocation: "+procInfo.getInvocationTime()+"ms");
                         }
+                    }
+                }
+                
+                if(res.getUnderlyingResponse() instanceof HttpServletResponse){
+                    HttpServletResponse httpRes = (HttpServletResponse)res.getUnderlyingResponse();
+                    Context context = ServiceCallContext.getCurrentContext().getContext();
+                    if(context != null) {
+                    	List<Cookie> cookies = ((ContextImpl)context).getCookies();
+                    	for(Cookie cookie: cookies) {
+                    		httpRes.addCookie(cookie);
+                    	}
                     }
                 }
                 

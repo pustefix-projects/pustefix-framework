@@ -1,3 +1,12 @@
+2010-01-28  Martin Leidig  <mleidig@schlund.de>
+
+	Added support for setting cookies at webservice responses.
+
+	Therefore cookies set at the context during processing of a
+	webservice request are added to the HttpServletResponse
+	after the service object's method invocation and right before
+	writing the response.
+
 2009-12-16  Martin Leidig  <mleidig@schlund.de>
 
 	Added support for form submit buttons using the <button> element.

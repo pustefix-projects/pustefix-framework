@@ -18,6 +18,7 @@
 
 package de.schlund.pfixcore.workflow;
 
+import java.util.List;
 import java.util.Properties;
 
 import javax.servlet.http.Cookie;
@@ -67,6 +68,10 @@ public class ContextImpl implements AccessibilityChecker, ExtendedContext, Token
     
     public void addCookie(Cookie cookie) {
         getRequestContextForCurrentThreadWithError().addCookie(cookie);
+    }
+    
+    public List<Cookie> getCookies() {
+    	return getRequestContextForCurrentThreadWithError().getCookies();
     }
     
     public Cookie[] getRequestCookies() {
