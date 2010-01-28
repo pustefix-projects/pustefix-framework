@@ -85,7 +85,7 @@ public class AnnotationBeanDefinitionPostProcessor implements BeanFactoryPostPro
         this.scopedProxyMap.clear();
         for (String beanName : beanFactory.getBeanDefinitionNames()) {
             BeanDefinition beanDefinition = beanFactory.getBeanDefinition(beanName);
-            if (!beanDefinition.isAbstract() && beanDefinition.getBeanClassName().equals("org.springframework.aop.scope.ScopedProxyFactoryBean")) {
+            if (!beanDefinition.isAbstract() && beanDefinition.getBeanClassName() != null && beanDefinition.getBeanClassName().equals("org.springframework.aop.scope.ScopedProxyFactoryBean")) {
                 PropertyValue value = beanDefinition.getPropertyValues().getPropertyValue("targetBeanName");
                 if (value != null) {
                     scopedProxyMap.put((String) value.getValue(), beanName);
@@ -105,7 +105,7 @@ public class AnnotationBeanDefinitionPostProcessor implements BeanFactoryPostPro
      * invalid method
      */
     private void processBeanDefinition(String beanName, BeanDefinition beanDefinition, ConfigurableListableBeanFactory beanFactory) {
-        if(beanDefinition.isAbstract()) return;
+        if(beanDefinition.isAbstract() || beanDefinition.getBeanClassName() == null) return;
         ClassLoader beanClassLoader = getClassLoader(beanFactory);
         Class<?> beanClass;
         try {
@@ -206,7 +206,7 @@ public class AnnotationBeanDefinitionPostProcessor implements BeanFactoryPostPro
                 continue;
             }
             BeanDefinition beanDefinition = beanFactory.getBeanDefinition(beanName);
-            if(beanDefinition.isAbstract()) continue;
+            if(beanDefinition.isAbstract() || beanDefinition.getBeanClassName() == null) continue;
             Class<?> beanClass;
             try {
                 beanClass = beanClassLoader.loadClass(beanDefinition.getBeanClassName());
