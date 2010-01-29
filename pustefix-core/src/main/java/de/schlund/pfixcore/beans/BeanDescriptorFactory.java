@@ -21,11 +21,12 @@ package de.schlund.pfixcore.beans;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.WeakHashMap;
 
 import net.sf.cglib.proxy.Enhancer;
-
 import de.schlund.pfixcore.beans.metadata.Beans;
 import de.schlund.pfixcore.beans.metadata.DOMInit;
+import de.schlund.pfixcore.beans.metadata.DOMInitException;
 import de.schlund.pfixcore.beans.metadata.Locator;
 
 
@@ -35,15 +36,16 @@ import de.schlund.pfixcore.beans.metadata.Locator;
 public class BeanDescriptorFactory {
 
     Map<Class<?>,BeanDescriptor> descriptors;
-    Beans metadata;
+    WeakHashMap<ClassLoader, Beans> classLoaderToBeans;
     
     public BeanDescriptorFactory() {
-        descriptors=new HashMap<Class<?>,BeanDescriptor>();
+        descriptors = new HashMap<Class<?>,BeanDescriptor>();
+        classLoaderToBeans = new WeakHashMap<ClassLoader, Beans>();
     }
     
     public BeanDescriptorFactory(Beans metadata) {
         this();
-        this.metadata=metadata;
+        classLoaderToBeans.put(getClass().getClassLoader(), metadata);
     }
     
     public BeanDescriptorFactory(Locator locator) throws InitException {
@@ -52,7 +54,25 @@ public class BeanDescriptorFactory {
         for(URL url:locator.getMetadataResources()) {
             domInit.update(url);
         }
-        metadata=domInit.getBeans();
+        classLoaderToBeans.put(getClass().getClassLoader(), domInit.getBeans());
+    }
+    
+    private Beans getMetaData(Class<?> clazz) {
+        Beans beans = classLoaderToBeans.get(clazz.getClassLoader());
+        if(beans == null) {
+            beans = new Beans();
+            URL url = clazz.getClassLoader().getResource("/META-INF/pustefix/beanmetadata.xml");
+            if(url != null) {
+               DOMInit domInit = new DOMInit(beans);
+               try {
+                   domInit.update(url);
+               } catch(DOMInitException x) {
+                   throw new RuntimeException("Error reading bean metadata", x);
+               }
+            }
+            classLoaderToBeans.put(clazz.getClassLoader(), beans);
+        }
+        return beans;
     }
     
     @SuppressWarnings("unchecked")
@@ -62,7 +82,7 @@ public class BeanDescriptorFactory {
         }
         BeanDescriptor desc=descriptors.get(clazz);
         if(desc==null) {
-            desc=new BeanDescriptor(clazz,metadata);
+            desc=new BeanDescriptor(clazz, getMetaData(clazz));
             descriptors.put(clazz,desc);
         }
         return desc;
