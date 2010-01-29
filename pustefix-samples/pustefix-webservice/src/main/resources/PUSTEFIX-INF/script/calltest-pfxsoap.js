@@ -50,24 +50,27 @@ var wsCall=new WS_CallTest();
 var wsCallObj1=new WS_CallTest(obj1);
 var wsCallObj2=new WS_CallTest(obj2);
 
-var jwsCall=new JWS_CallTest();
-var jwsCallObj1=new JWS_CallTest(obj1);
-var jwsCallObj2=new JWS_CallTest(obj2);
+//var jwsCall=new JWS_CallTest();
+//var jwsCallObj1=new JWS_CallTest(obj1);
+//var jwsCallObj2=new JWS_CallTest(obj2);
 
 var ws=null;
 var wsObj1=null;
 var wsObj2=null;
 
 function initWS() {
-   if(soapEnabled()) {
-      ws=wsCall;
-      wsObj1=wsCallObj1;
-      wsObj2=wsCallObj2;
-   } else {
-      ws=jwsCall;
-      wsObj1=jwsCallObj1;
-      wsObj2=jwsCallObj2;
-   }
+   //if(soapEnabled()) {
+   //   ws=wsCall;
+   //   wsObj1=wsCallObj1;
+   //   wsObj2=wsCallObj2;
+   //} else {
+   //   ws=jwsCall;
+   //  wsObj1=jwsCallObj1;
+   //   wsObj2=jwsCallObj2;
+   //}
+   ws=wsCall;
+   wsObj1=wsCallObj1;
+   wsObj2=wsCallObj2;
 }
 
 function testSync() {

@@ -5,8 +5,8 @@
       <theme name="default">
          <div class="protocol_select">
             Protocol:
-            <span><input id="protocol_soap" type="radio" name="protocol" value="SOAP" checked="checked">SOAP</input></span>
-            <span><input id="protocol_json" type="radio" name="protocol" value="JSON">JSON</input></span>
+            <!--<span><input id="protocol_soap" type="radio" name="protocol" value="SOAP">SOAP</input></span>-->
+            <span><input id="protocol_json" type="radio" name="protocol" value="JSON" checked="checked" >JSON</input></span>
          </div>
       </theme>
    </part>

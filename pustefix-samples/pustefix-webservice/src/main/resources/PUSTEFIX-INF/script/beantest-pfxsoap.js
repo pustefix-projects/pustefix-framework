@@ -31,7 +31,7 @@ function checkResult(res,ref) {
 }
 
 var wsCall=new WS_BeanTest();
-var jwsCall=new JWS_BeanTest();
+//var jwsCall=new JWS_BeanTest();
 var ws=null;
 
 var wsRef1={"foo":1,"bar":2,"baz":3,"pub":4,"ro":5,"blah":9};
@@ -43,15 +43,18 @@ var jwsRef2={"foo":1,"test":3,"public":4,"ro":5,"one":10,"oneplusone":11};
 var ref2=null;
 
 function initWS() {
-   if(soapEnabled()) {
-      ws=wsCall;
-      ref1=wsRef1;
-      ref2=wsRef2;
-   } else {
-      ws=jwsCall;
-      ref1=jwsRef1;
-      ref2=jwsRef2;
-   }
+   //if(soapEnabled()) {
+   //   ws=wsCall;
+   //   ref1=wsRef1;
+   //   ref2=wsRef2;
+   //} else {
+   //   ws=jwsCall;
+   //   ref1=jwsRef1;
+   //   ref2=jwsRef2;
+   //}
+   ws=wsCall;
+   ref1=jwsRef1;
+   ref2=jwsRef2;
 }
 
 function testAsync1() {

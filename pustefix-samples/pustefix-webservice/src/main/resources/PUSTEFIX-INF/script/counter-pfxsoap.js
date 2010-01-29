@@ -1,5 +1,5 @@
 var wsCounter=new WS_Counter();
-var jwsCounter=new JWS_Counter();
+//var jwsCounter=new JWS_Counter();
 
 var timer=new Timer();
 
@@ -13,7 +13,8 @@ function serviceCallback(result,reqID,exception) {
 function serviceCall(method,val) {
    timer.reset();
 	timer.start();
-	var ws=soapEnabled()?wsCounter:jwsCounter;
+	//var ws=soapEnabled()?wsCounter:jwsCounter;
+	var ws=wsCounter;
 	var param=parseInt(val);
 	if(method=="getValue") ws.getValue(serviceCallback);
 	else if(method=="addValue") ws.addValue(param,serviceCallback);

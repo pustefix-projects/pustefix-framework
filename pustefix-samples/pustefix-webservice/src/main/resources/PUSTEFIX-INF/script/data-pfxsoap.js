@@ -16,7 +16,7 @@ function pfxsoapPrintError(msg,time) {
 }
 
 var wsData=new WS_Data();
-var jwsData=new JWS_Data();
+//var jwsData=new JWS_Data();
 
 var timer=new Timer();
 
@@ -30,7 +30,8 @@ function serviceCallback(result,reqid,exception) {
 function serviceCall(method,val1,val2,val3,val4) {
    timer.reset();
 	timer.start();
-	var ws=soapEnabled()?wsData:jwsData;
+	//var ws=soapEnabled()?wsData:jwsData;
+	var ws=wsData;
 	var result=null;
 	if(method=="exchangeData") {
 			var reqStrSize=parseInt(val1);

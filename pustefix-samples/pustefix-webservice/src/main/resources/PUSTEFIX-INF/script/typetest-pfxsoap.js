@@ -82,7 +82,7 @@ function equals(obj1,obj2) {
 
 
 var wsTypeTest=new WS_TypeTest();
-var jwsTypeTest=new JWS_TypeTest();
+//var jwsTypeTest=new JWS_TypeTest();
 
 var timer=new Timer();
 
@@ -90,7 +90,8 @@ function serviceCall() {
     consoleReset();
     timer.reset();
     timer.start();
-    var ws=soapEnabled()?wsTypeTest:jwsTypeTest;
+    //var ws=soapEnabled()?wsTypeTest:jwsTypeTest;
+    var ws=wsTypeTest;
     
     var total1=(new Date()).getTime();
         

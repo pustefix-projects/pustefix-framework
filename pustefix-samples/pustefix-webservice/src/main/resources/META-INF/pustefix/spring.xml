@@ -12,16 +12,69 @@
     <aop:scoped-proxy/>
   </bean>
   
+  <bean id="counterbean" class="de.schlund.pfixcore.example.webservices.CounterImpl" scope="session">
+    <aop:scoped-proxy/>
+  </bean>
+  
+  <bean id="chatbean" class="de.schlund.pfixcore.example.webservices.chat.ChatImpl"/>
+  
+  <bean id="databean" class="de.schlund.pfixcore.example.webservices.DataImpl"/>
+  
+  <bean id="typetestbean" class="de.schlund.pfixcore.example.webservices.TypeTestImpl"/>
+  
+  <bean id="calltestbean" class="de.schlund.pfixcore.example.webservices.CallTestImpl"/>
+  
+  <bean id="beantestbean" class="de.schlund.pfixcore.example.webservices.BeanTestImpl"/>
+  
   <ws:extension id="webservices.extension">
     <ws:extends extension-point="webservices.root"/>
  
-  <ws:webservice 
-    id="Webservice_Calculator" 
-    servicename="Calculator" 
+    <ws:webservice 
+      id="Webservice_Calculator" 
+      servicename="Calculator" 
+      ref="calcbean" 
+      protocol="ANY"/>
+
+    <ws:webservice
+      id="Webservice_Counter"
+      servicename="Counter"
+      ref="counterbean"
+      protocol="ANY"/>
+      
+    <ws:webservice 
+      id="Webservice_Chat"
+      servicename="Chat"
+      ref="chatbean"
+      protocol="ANY"
+      interface="de.schlund.pfixcore.example.webservices.chat.Chat"/>
+   
+    <ws:webservice 
+      id="Webservice_Data"
+      servicename="Data"
+      ref="databean"
+      protocol="ANY"
+      interface="de.schlund.pfixcore.example.webservices.Data"/>
     
-    ref="calcbean" 
-    protocol="ANY"
-  />
+    <ws:webservice 
+      id="Webservice_TypeTest"
+      servicename="TypeTest"
+      ref="typetestbean"
+      protocol="ANY"
+      interface="de.schlund.pfixcore.example.webservices.TypeTest"/>
+   
+    <ws:webservice 
+      id="Webservice_CallTest"
+      servicename="CallTest"
+      ref="calltestbean"
+      protocol="ANY"
+      interface="de.schlund.pfixcore.example.webservices.CallTest"/>
+    
+    <ws:webservice 
+      id="Webservice_BeanTest"
+      servicename="BeanTest"
+      ref="beantestbean"
+      protocol="ANY"
+      interface="de.schlund.pfixcore.example.webservices.BeanTest"/>
 
   </ws:extension>
  
