@@ -37,6 +37,7 @@ import javax.servlet.http.HttpSessionBindingEvent;
 import javax.servlet.http.HttpSessionBindingListener;
 
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
 /**
@@ -44,7 +45,7 @@ import org.springframework.beans.factory.InitializingBean;
  *
  */
 
-public class SessionAdmin implements HttpSessionBindingListener, SessionAdminMBean, InitializingBean {
+public class SessionAdmin implements HttpSessionBindingListener, SessionAdminMBean, InitializingBean, DisposableBean {
     
     public  static String       LISTENER       = "__SESSION_LISTENER__"; 
     public  static String       PARENT_SESS_ID = "__PARENT_SESSION_ID__";
@@ -66,6 +67,16 @@ public class SessionAdmin implements HttpSessionBindingListener, SessionAdminMBe
             mbeanServer.registerMBean(this, objectName);
         } catch(Exception x) {
             LOG.error("Can't register SessionAdmin MBean!",x);
+        } 
+    }
+    
+    public void destroy() throws Exception {
+        try {
+            MBeanServer mbeanServer = ManagementFactory.getPlatformMBeanServer(); 
+            ObjectName objectName = new ObjectName("Pustefix:type=SessionAdmin,project="+projectName);
+            if(mbeanServer.isRegistered(objectName)) mbeanServer.unregisterMBean(objectName);
+        } catch(Exception x) {
+            LOG.error("Can't unregister SessionAdmin MBean!",x);
         } 
     }
     
