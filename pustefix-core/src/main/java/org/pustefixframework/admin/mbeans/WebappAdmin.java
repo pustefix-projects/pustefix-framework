@@ -27,6 +27,7 @@ import javax.management.ObjectName;
 import org.apache.log4j.Logger;
 import org.pustefixframework.container.spring.beans.PustefixWebApplicationContext;
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -38,7 +39,7 @@ import de.schlund.pfixcore.exception.PustefixRuntimeException;
  * @author mleidig
  *
  */
-public class WebappAdmin implements WebappAdminMBean, InitializingBean, ApplicationContextAware {
+public class WebappAdmin implements WebappAdminMBean, InitializingBean, DisposableBean, ApplicationContextAware {
     
     private Logger LOG = Logger.getLogger(WebappAdmin.class);
     
@@ -62,7 +63,17 @@ public class WebappAdmin implements WebappAdminMBean, InitializingBean, Applicat
             if(mbeanServer.isRegistered(objectName)) mbeanServer.unregisterMBean(objectName);
             mbeanServer.registerMBean(this, objectName);
         } catch(Exception x) {
-            LOG.error("Can't register SessionAdmin MBean!",x);
+            LOG.error("Can't register WebappAdmin MBean!",x);
+        } 
+    }
+    
+    public void destroy() throws Exception {
+        try {
+            MBeanServer mbeanServer = ManagementFactory.getPlatformMBeanServer(); 
+            ObjectName objectName = new ObjectName("Pustefix:type=WebappAdmin,project="+projectName);
+            if(mbeanServer.isRegistered(objectName)) mbeanServer.unregisterMBean(objectName);
+        } catch(Exception x) {
+            LOG.error("Can't unregister WebappAdmin MBean!",x);
         } 
     }
     
