@@ -32,6 +32,7 @@ import org.pustefixframework.resource.FileResource;
 import org.pustefixframework.resource.InputStreamResource;
 import org.pustefixframework.resource.OutputStreamResource;
 import org.pustefixframework.resource.Resource;
+import org.pustefixframework.resource.support.NullResource;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -78,12 +79,8 @@ public class AuxDependencyManager {
                     if(!path_attr.equals("")) {
                     	URI uri = new URI(path_attr);
                     	path = target.getTargetGenerator().getResourceLoader().getResource(uri);
-                    }
-                    if(path != null) {
-                        String          orig_uri       = ((Element) auxdeps.item(j)).getAttribute("orig_uri");
-                        URI uri = new URI(orig_uri);
-                        //TODO: set original URI
-                        //path.setOriginatingURI();
+                    	if(path == null) path = new NullResource(uri);
+                    	//TODO: attach original uri
                     }
                     String          part           = ((Element) auxdeps.item(j)).getAttribute("part");
                     String          theme          = ((Element) auxdeps.item(j)).getAttribute("theme");
@@ -159,7 +156,7 @@ public class AuxDependencyManager {
     
     public synchronized void addDependencyImage(Resource path, Resource parent_path, String parent_part, String parent_theme) {
         if (path == null) {
-            throw new IllegalArgumentException("Null pointer is not allowed here");
+            throw new IllegalArgumentException("Path: " + path + " Parent path: " + parent_path + " Parent part: " + parent_part + " Parent theme: " + parent_theme);
         }
         
         AuxDependency child  = null;
