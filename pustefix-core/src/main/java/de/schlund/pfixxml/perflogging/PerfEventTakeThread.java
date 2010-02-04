@@ -31,6 +31,7 @@ public class PerfEventTakeThread extends Thread {
     private PerfStatistic perfStatistic;
  
     public PerfEventTakeThread(BoundedBufferWrapper b, PerfStatistic perfStatistic) {
+        super("PerfEventTakeThread");
         bBuffer = b;
         this.perfStatistic = perfStatistic;
     }

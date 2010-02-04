@@ -28,6 +28,7 @@ import javax.management.ObjectName;
 import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
 import de.schlund.pfixcore.auth.Role;
@@ -41,7 +42,7 @@ import de.schlund.pfixxml.serverutil.SessionAdmin;
  * @author mleidig@schlund.de
  * 
  */
-public class AuthAdmin implements AuthAdminMBean, InitializingBean {
+public class AuthAdmin implements AuthAdminMBean, InitializingBean, DisposableBean {
 
     public final static Logger LOG = Logger.getLogger(AuthAdmin.class);
 
@@ -56,6 +57,16 @@ public class AuthAdmin implements AuthAdminMBean, InitializingBean {
             mbeanServer.registerMBean(this, objectName);
         } catch (Exception x) {
             LOG.error("Can't register AuthAdmin MBean!", x);
+        }
+    }
+    
+    public void destroy() throws Exception {
+        try {
+            MBeanServer mbeanServer = ManagementFactory.getPlatformMBeanServer();
+            ObjectName objectName = new ObjectName("Pustefix:type=AuthAdmin,project="+projectName);
+            if(mbeanServer.isRegistered(objectName)) mbeanServer.unregisterMBean(objectName);
+        } catch (Exception x) {
+            LOG.error("Can't unregister AuthAdmin MBean!", x);
         }
     }
 

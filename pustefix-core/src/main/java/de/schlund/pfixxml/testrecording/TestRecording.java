@@ -28,13 +28,14 @@ import javax.management.ObjectName;
 import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
 import de.schlund.pfixxml.serverutil.SessionAdmin;
 import de.schlund.pfixxml.serverutil.SessionData;
 import de.schlund.pfixxml.serverutil.SessionInfoStruct;
 
-public class TestRecording implements TestRecordingMBean, InitializingBean {
+public class TestRecording implements TestRecordingMBean, InitializingBean, DisposableBean {
 
    private final static Logger LOG=Logger.getLogger(TestRecording.class);
    
@@ -55,6 +56,16 @@ public class TestRecording implements TestRecordingMBean, InitializingBean {
          throw new RuntimeException("Can't register TestRecording MBean.",x);
      } 
    }
+
+    public void destroy() throws Exception {
+       try {
+           MBeanServer mbeanServer = ManagementFactory.getPlatformMBeanServer(); 
+           ObjectName objectName = new ObjectName("Pustefix:type=TestRecording,project="+projectName);
+           if(mbeanServer.isRegistered(objectName)) mbeanServer.unregisterMBean(objectName);
+       } catch(Exception x) {
+           throw new RuntimeException("Can't unregister TestRecording MBean.",x);
+       } 
+    }
    
    public void setProjectName(String projectName) {
        this.projectName = projectName;

@@ -26,6 +26,7 @@ import javax.management.NotificationBroadcasterSupport;
 import javax.management.ObjectName;
 
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
 
@@ -33,7 +34,7 @@ import org.springframework.beans.factory.InitializingBean;
  * @author jh
  *
  */
-public class PerfLogging extends NotificationBroadcasterSupport implements PerfLoggingMBean, InitializingBean {
+public class PerfLogging extends NotificationBroadcasterSupport implements PerfLoggingMBean, InitializingBean, DisposableBean {
     
     private final static Logger LOG = Logger.getLogger(PerfLogging.class);
     
@@ -109,6 +110,20 @@ public class PerfLogging extends NotificationBroadcasterSupport implements PerfL
                
         }
         
+    }
+    
+    public void destroy() throws Exception {
+        if(perfEventTakeThread != null) {
+            stopPerfEventTakeThread();
+            perfEventTakeThread = null;
+        }
+        try {
+            MBeanServer mbeanServer = ManagementFactory.getPlatformMBeanServer(); 
+            ObjectName objectName = new ObjectName("Pustefix:type=PerfLogging,project="+projectName); 
+            if(mbeanServer.isRegistered(objectName)) mbeanServer.unregisterMBean(objectName);
+        } catch(Exception x) {
+            LOG.error("Can't unregister PerfLogging MBean!",x);
+        } 
     }
     
     public boolean isPerfLoggingActive() {
