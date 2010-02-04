@@ -182,16 +182,13 @@ public class PustefixOsgiWebApplicationContext extends PustefixAbstractOsgiAppli
 
     @Override
     public void refresh() throws BeansException, IllegalStateException {
-        initTrackers();
         
         try {
             super.refresh();
         } catch (RuntimeException e) {
-            closeTrackers();
             logger.error(e);
             throw e;
         } catch (Error e) {
-            closeTrackers();
             logger.error(e);
             throw e;
         }
@@ -201,6 +198,12 @@ public class PustefixOsgiWebApplicationContext extends PustefixAbstractOsgiAppli
         synchronized (refreshLock) {
             refreshed = true;
         }
+    }
+    
+    @Override
+    public void completeRefresh() {
+        super.completeRefresh();
+        initTrackers();
     }
     
     /**
@@ -217,9 +220,9 @@ public class PustefixOsgiWebApplicationContext extends PustefixAbstractOsgiAppli
     }
 
     @Override
-    protected void finalize() throws Throwable {
+    protected void doClose() {
         closeTrackers();
-        super.finalize();
+        super.doClose();
     }
 
     private static class HttpServiceTracker extends ServiceTracker {

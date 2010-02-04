@@ -39,6 +39,7 @@ import org.springframework.context.event.SourceFilteringListener;
 import org.springframework.core.OrderComparator;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.servlet.DispatcherServlet;
+import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.util.NestedServletException;
 
 /**
@@ -124,8 +125,12 @@ public class PustefixDispatcherServlet extends DispatcherServlet {
 
     @Override
     protected void doDispatch(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        HttpRequestFilterChain chain = new HttpRequestFilterChainImpl(filters, finalFilter);
-        chain.doFilter(request, response);
+        if(filters != null && filters.size() > 0) {
+            HttpRequestFilterChain chain = new HttpRequestFilterChainImpl(filters, finalFilter);
+            chain.doFilter(request, response);
+        } else {
+            super.doDispatch(request, response);
+        }
     }
 
     @Override
@@ -150,7 +155,7 @@ public class PustefixDispatcherServlet extends DispatcherServlet {
             initStrategies(context);
         }
     }
-
+    
     @Override
     public void destroy() {
         // Do nothing. Parent implementation destroys the ApplicationContext,
