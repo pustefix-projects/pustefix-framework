@@ -267,6 +267,10 @@
     <appender-ref ref="LOGGER_JMX"/>
   </category>
 
+  <category name="org.pustefixframework.live" additivity="false">
+    <priority value="WARN"/>
+    <appender-ref ref="LOGGER_GENERAL"/>
+  </category>
 
   <!-- default category -->
 

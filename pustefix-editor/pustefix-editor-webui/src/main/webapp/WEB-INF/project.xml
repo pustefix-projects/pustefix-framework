@@ -96,21 +96,7 @@
       <path>img</path>
       <path>script</path>
     </static>
-    
-    <web-xml>
-      <jee:web-app>
-        <jee:filter>
-          <jee:filter-name>editor-session-cookie-filter</jee:filter-name>
-          <jee:filter-class>org.pustefixframework.editor.webui.util.SessionCookieFilter</jee:filter-class>
-        </jee:filter>
-        
-        <jee:filter-mapping>
-          <jee:filter-name>editor-session-cookie-filter</jee:filter-name>
-          <jee:url-pattern>/xml/main/*</jee:url-pattern>
-        </jee:filter-mapping>
-      </jee:web-app>
-    </web-xml>
-    
+
   </application>
 
   <properties>

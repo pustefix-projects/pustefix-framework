@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projects>
   <project>
-    <location>http://localhost:8081/pustefix-sample1/</location>
+    <location>http://localhost:8080/pustefix-sample1</location>
     <secret>foobar</secret>
   </project>
 </projects>
