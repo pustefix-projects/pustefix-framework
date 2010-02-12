@@ -22,6 +22,11 @@
     <url>http://www.unitedinternet.de/</url>
   </organization>
 
+  <issueManagement>
+    <system>trac</system>
+    <url>http://dev.pustefix-framework.org/</url>
+  </issueManagement>
+
   <scm>
     <connection>scm:svn:https://pustefix.svn.sourceforge.net/svnroot/pustefix/branches/release-0.14.x</connection>
     <developerConnection>scm:svn:https://pustefix.svn.sourceforge.net/svnroot/pustefix/branches/release-0.14.x</developerConnection>
