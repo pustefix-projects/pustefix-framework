@@ -239,7 +239,7 @@ public class UserManagementServiceImpl implements UserManagementService, Applica
     private void storeToResource() {
         
         if(!(userDataResource instanceof FileSystemResource)) {
-            throw new IllegalArgumentException("Userdata resource can't be stored because it's no file system resource.");
+            throw new IllegalArgumentException("Userdata resource can't be stored because it's no file system resource: " + (userDataResource == null ? "null" : userDataResource.getClass()));
         }
         FileSystemResource resource = (FileSystemResource)userDataResource;
         
